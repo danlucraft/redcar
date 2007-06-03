@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>button_convert (Redcar::Dialog)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/dialog.rb, line 118</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">button_convert</span>(<span class="ruby-identifier">buttoninfo</span>)
+      <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">buttoninfo</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">downcase</span>
+      <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;find&quot;</span>
+        <span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">Stock</span><span class="ruby-operator">::</span><span class="ruby-constant">FIND</span>
+      <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;replace&quot;</span>
+        <span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">Stock</span><span class="ruby-operator">::</span><span class="ruby-constant">FIND_AND_REPLACE</span>
+      <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;ok&quot;</span>
+        <span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">Stock</span><span class="ruby-operator">::</span><span class="ruby-constant">OK</span>
+      <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;save&quot;</span>
+        <span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">Stock</span><span class="ruby-operator">::</span><span class="ruby-constant">SAVE</span>
+      <span class="ruby-keyword kw">else</span>
+        <span class="ruby-identifier">buttoninfo</span>
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

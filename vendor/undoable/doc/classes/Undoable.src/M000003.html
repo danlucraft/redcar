@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>to_undo (Undoable)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File undoable.rb, line 169</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_undo</span>(<span class="ruby-identifier">method_name</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+    <span class="ruby-ivar">@undo_stack</span> <span class="ruby-operator">||=</span> []
+    <span class="ruby-ivar">@open_undo_stack</span> <span class="ruby-operator">||=</span> <span class="ruby-ivar">@undo_stack</span>
+    <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+      <span class="ruby-ivar">@open_undo_stack</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">block</span>
+    <span class="ruby-keyword kw">else</span>
+      <span class="ruby-ivar">@open_undo_stack</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">UndoItem</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">method_name</span>, <span class="ruby-identifier">args</span>)
+      <span class="ruby-identifier">compose</span> = <span class="ruby-keyword kw">true</span>
+      <span class="ruby-ivar">@@compose_blocks</span> <span class="ruby-operator">||=</span> []
+      <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">compose</span>
+        <span class="ruby-identifier">compose</span> = <span class="ruby-keyword kw">false</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@open_undo_stack</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>
+          <span class="ruby-ivar">@@compose_blocks</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">block</span><span class="ruby-operator">|</span>
+            <span class="ruby-identifier">a</span>, <span class="ruby-identifier">b</span> = <span class="ruby-operator">*</span><span class="ruby-ivar">@open_undo_stack</span>[<span class="ruby-value">-2</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>]
+            <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">a</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">b</span> <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">not</span> <span class="ruby-identifier">a</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">Array</span> <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">not</span> <span class="ruby-identifier">b</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">Array</span>
+              <span class="ruby-identifier">result</span> = <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">a</span>, <span class="ruby-identifier">b</span>)
+              <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">result</span>
+                <span class="ruby-identifier">compose</span> = <span class="ruby-keyword kw">true</span>
+                <span class="ruby-ivar">@open_undo_stack</span>.<span class="ruby-identifier">pop</span> 
+                <span class="ruby-ivar">@open_undo_stack</span>.<span class="ruby-identifier">pop</span>
+                <span class="ruby-ivar">@open_undo_stack</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">result</span>
+              <span class="ruby-keyword kw">end</span>
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span>
+    <span class="ruby-ivar">@undo_point</span> = <span class="ruby-ivar">@undo_stack</span>.<span class="ruby-identifier">length</span>
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

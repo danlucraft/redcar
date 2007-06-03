@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Module: Redcar::Keymap</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Module</strong></td>
+          <td class="class-name-in-header">Redcar::Keymap</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../../files/lib/command_rb.html">
+                lib/command.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+
+
+   </div>
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+      <a href="#M000116">add_to_command_history</a>&nbsp;&nbsp;
+      <a href="#M000113">append_features</a>&nbsp;&nbsp;
+      <a href="#M000115">clear_command_history</a>&nbsp;&nbsp;
+      <a href="#M000114">command_history</a>&nbsp;&nbsp;
+      <a href="#M000119">execute_key</a>&nbsp;&nbsp;
+      <a href="#M000112">find_all_keymaps</a>&nbsp;&nbsp;
+      <a href="#M000111">find_focussed_keymap</a>&nbsp;&nbsp;
+      <a href="#M000117">get_keymap</a>&nbsp;&nbsp;
+      <a href="#M000110">get_keymap</a>&nbsp;&nbsp;
+      <a href="#M000118">keymap_respond_to?</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Public Class methods</h3>
+
+      <div id="method-M000113" class="method-detail">
+        <a name="M000113"></a>
+
+        <div class="method-heading">
+          <a href="Keymap.src/M000113.html" target="Code" class="method-signature"
+            onclick="popupCode('Keymap.src/M000113.html');return false;">
+          <span class="method-name">append_features</span><span class="method-args">(dest_class)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000112" class="method-detail">
+        <a name="M000112"></a>
+
+        <div class="method-heading">
+          <a href="Keymap.src/M000112.html" target="Code" class="method-signature"
+            onclick="popupCode('Keymap.src/M000112.html');return false;">
+          <span class="method-name">find_all_keymaps</span><span class="method-args">(keybinding)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000111" class="method-detail">
+        <a name="M000111"></a>
+
+        <div class="method-heading">
+          <a href="Keymap.src/M000111.html" target="Code" class="method-signature"
+            onclick="popupCode('Keymap.src/M000111.html');return false;">
+          <span class="method-name">find_focussed_keymap</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000110" class="method-detail">
+        <a name="M000110"></a>
+
+        <div class="method-heading">
+          <a href="Keymap.src/M000110.html" target="Code" class="method-signature"
+            onclick="popupCode('Keymap.src/M000110.html');return false;">
+          <span class="method-name">get_keymap</span><span class="method-args">(keybinding)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <h3 class="section-bar">Public Instance methods</h3>
+
+      <div id="method-M000116" class="method-detail">
+        <a name="M000116"></a>
+
+        <div class="method-heading">
+          <a href="Keymap.src/M000116.html" target="Code" class="method-signature"
+            onclick="popupCode('Keymap.src/M000116.html');return false;">
+          <span class="method-name">add_to_command_history</span><span class="method-args">(command)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000115" class="method-detail">
+        <a name="M000115"></a>
+
+        <div class="method-heading">
+          <a href="Keymap.src/M000115.html" target="Code" class="method-signature"
+            onclick="popupCode('Keymap.src/M000115.html');return false;">
+          <span class="method-name">clear_command_history</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000114" class="method-detail">
+        <a name="M000114"></a>
+
+        <div class="method-heading">
+          <a href="Keymap.src/M000114.html" target="Code" class="method-signature"
+            onclick="popupCode('Keymap.src/M000114.html');return false;">
+          <span class="method-name">command_history</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000119" class="method-detail">
+        <a name="M000119"></a>
+
+        <div class="method-heading">
+          <a href="Keymap.src/M000119.html" target="Code" class="method-signature"
+            onclick="popupCode('Keymap.src/M000119.html');return false;">
+          <span class="method-name">execute_key</span><span class="method-args">(keybinding)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000117" class="method-detail">
+        <a name="M000117"></a>
+
+        <div class="method-heading">
+          <a href="Keymap.src/M000117.html" target="Code" class="method-signature"
+            onclick="popupCode('Keymap.src/M000117.html');return false;">
+          <span class="method-name">get_keymap</span><span class="method-args">(keybinding)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000118" class="method-detail">
+        <a name="M000118"></a>
+
+        <div class="method-heading">
+          <a href="Keymap.src/M000118.html" target="Code" class="method-signature"
+            onclick="popupCode('Keymap.src/M000118.html');return false;">
+          <span class="method-name">keymap_respond_to?</span><span class="method-args">(keybinding)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

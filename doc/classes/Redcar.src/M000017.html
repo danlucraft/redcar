@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>common (Redcar)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/menus.rb, line 89</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">common</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">block</span>)
+    <span class="ruby-ivar">@menus</span> <span class="ruby-operator">||=</span> {}
+    <span class="ruby-identifier">menu</span> = (<span class="ruby-ivar">@menus</span>[<span class="ruby-identifier">name</span>] <span class="ruby-operator">||=</span> <span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">Menu</span>.<span class="ruby-identifier">new</span>)
+    <span class="ruby-identifier">menu</span>.<span class="ruby-identifier">accel_group</span> = <span class="ruby-identifier">$ag</span>
+    <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span> <span class="ruby-constant">Menu</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">menu</span>, <span class="ruby-identifier">name</span>)
+    <span class="ruby-identifier">menu</span>.<span class="ruby-identifier">show</span>
+    <span class="ruby-identifier">menu</span>
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

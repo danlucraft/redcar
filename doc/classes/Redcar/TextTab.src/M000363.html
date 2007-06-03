@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>apply_theme (Redcar::TextTab)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/texttab.rb, line 648</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">apply_theme</span>(<span class="ruby-identifier">theme</span>)
+      <span class="ruby-comment cmt"># FIXME</span>
+<span class="ruby-comment cmt">#       p (@textview.methods - Object.new.methods).sort</span>
+
+      <span class="ruby-identifier">background_colour</span> = <span class="ruby-constant">Theme</span>.<span class="ruby-identifier">parse_colour</span>(<span class="ruby-identifier">theme</span>.<span class="ruby-identifier">global_settings</span>[<span class="ruby-value str">'background'</span>])
+      <span class="ruby-ivar">@textview</span>.<span class="ruby-identifier">modify_base</span>(<span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">STATE_NORMAL</span>, <span class="ruby-identifier">background_colour</span>)
+      <span class="ruby-identifier">foreground_colour</span> = <span class="ruby-constant">Theme</span>.<span class="ruby-identifier">parse_colour</span>(<span class="ruby-identifier">theme</span>.<span class="ruby-identifier">global_settings</span>[<span class="ruby-value str">'foreground'</span>])
+      <span class="ruby-ivar">@textview</span>.<span class="ruby-identifier">modify_text</span>(<span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">STATE_NORMAL</span>, <span class="ruby-identifier">foreground_colour</span>)
+      <span class="ruby-identifier">selection_colour</span>  = <span class="ruby-constant">Theme</span>.<span class="ruby-identifier">parse_colour</span>(<span class="ruby-identifier">theme</span>.<span class="ruby-identifier">global_settings</span>[<span class="ruby-value str">'selection'</span>])
+      <span class="ruby-ivar">@textview</span>.<span class="ruby-identifier">modify_base</span>(<span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">STATE_SELECTED</span>, <span class="ruby-identifier">selection_colour</span>)
+      
+   <span class="ruby-comment cmt">#    unless tag = @buffer.tag_table.lookup(&quot;default-text&quot;)</span>
+<span class="ruby-comment cmt">#         tag = @buffer.create_tag(&quot;default-text&quot;, :foreground =&gt; theme.global_settings['foreground'])</span>
+<span class="ruby-comment cmt">#       end</span>
+<span class="ruby-comment cmt">#       tag.priority = 0</span>
+<span class="ruby-comment cmt">#      @buffer.apply_tag(tag, iter(start_mark), iter(end_mark))</span>
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

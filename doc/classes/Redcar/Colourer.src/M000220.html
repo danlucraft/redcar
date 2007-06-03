@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>colour_line (Redcar::Colourer)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/colourer.rb, line 11</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">colour_line</span>(<span class="ruby-identifier">buffer</span>, <span class="ruby-identifier">scope_tree</span>, <span class="ruby-identifier">line_num</span>, <span class="ruby-identifier">priority</span>=<span class="ruby-value">1</span>)
+      <span class="ruby-identifier">scope_tree</span>.<span class="ruby-identifier">children</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">scope</span><span class="ruby-operator">|</span>
+        <span class="ruby-keyword kw">begin</span>
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">scope</span>.<span class="ruby-identifier">start</span>.<span class="ruby-identifier">line</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">line_num</span> <span class="ruby-keyword kw">or</span> (<span class="ruby-identifier">scope</span>.<span class="ruby-identifier">end</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">scope</span>.<span class="ruby-identifier">end</span>.<span class="ruby-identifier">line</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">line_num</span>)
+            <span class="ruby-identifier">sl</span> = <span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">get_iter_at_line_offset</span>(<span class="ruby-identifier">scope</span>.<span class="ruby-identifier">start</span>.<span class="ruby-identifier">line</span>, <span class="ruby-value">0</span>)
+            <span class="ruby-identifier">el</span> = <span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">get_iter_at_line_offset</span>(<span class="ruby-identifier">scope</span>.<span class="ruby-identifier">start</span>.<span class="ruby-identifier">line</span><span class="ruby-operator">+</span><span class="ruby-value">1</span>, <span class="ruby-value">0</span>)
+                    <span class="ruby-identifier">tx</span> = <span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">get_slice</span>(<span class="ruby-identifier">sl</span>, <span class="ruby-identifier">el</span>)
+            <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">scope</span>.<span class="ruby-identifier">end</span> <span class="ruby-keyword kw">and</span> 
+                <span class="ruby-identifier">scope</span>.<span class="ruby-identifier">start</span>.<span class="ruby-identifier">offset</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">scope</span>.<span class="ruby-identifier">end</span>.<span class="ruby-identifier">offset</span> <span class="ruby-keyword kw">and</span> 
+                <span class="ruby-identifier">scope</span>.<span class="ruby-identifier">start</span>.<span class="ruby-identifier">line</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">scope</span>.<span class="ruby-identifier">end</span>.<span class="ruby-identifier">line</span>
+              <span class="ruby-identifier">start_iter</span> = <span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">get_iter_at_offset</span>(<span class="ruby-identifier">sl</span>.<span class="ruby-identifier">offset</span><span class="ruby-operator">+</span><span class="ruby-identifier">minify</span>(<span class="ruby-identifier">scope</span>.<span class="ruby-identifier">start</span>.<span class="ruby-identifier">offset</span>))
+              <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">scope</span>.<span class="ruby-identifier">end</span>
+                <span class="ruby-identifier">end_iter</span>   = <span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">get_iter_at_offset</span>(<span class="ruby-identifier">sl</span>.<span class="ruby-identifier">offset</span><span class="ruby-operator">+</span><span class="ruby-identifier">minify</span>(<span class="ruby-identifier">scope</span>.<span class="ruby-identifier">end</span>.<span class="ruby-identifier">offset</span>))
+              <span class="ruby-keyword kw">else</span>
+                <span class="ruby-identifier">end_iter</span> = <span class="ruby-identifier">el</span>
+                <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">el</span>.<span class="ruby-identifier">offset</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">sl</span>.<span class="ruby-identifier">offset</span>
+                  <span class="ruby-identifier">end_iter</span> = <span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">get_iter_at_offset</span>(<span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">char_count</span>)
+                <span class="ruby-keyword kw">end</span>
+              <span class="ruby-keyword kw">end</span>
+              <span class="ruby-comment cmt">#debug_puts &quot;#{scope.name}(#{priority}): #{scope.start.offset}-#{end_iter.line_offset} (#{tx.length})&quot;</span>
+              <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">tag</span> = <span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">tag_table</span>.<span class="ruby-identifier">lookup</span>(<span class="ruby-identifier">scope</span>.<span class="ruby-identifier">name</span><span class="ruby-operator">+</span><span class="ruby-identifier">priority</span>.<span class="ruby-identifier">to_s</span>)
+                <span class="ruby-identifier">all_settings</span> = <span class="ruby-ivar">@theme</span>.<span class="ruby-identifier">settings_for_scope</span>(<span class="ruby-identifier">scope</span>.<span class="ruby-identifier">name</span>)
+              <span class="ruby-comment cmt">#  p all_settings.map{|s| s.inspect}.inspect</span>
+                <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">all_settings</span>.<span class="ruby-identifier">empty?</span>
+                  <span class="ruby-identifier">tag</span> = <span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">create_tag</span>(<span class="ruby-identifier">scope</span>.<span class="ruby-identifier">name</span><span class="ruby-operator">+</span><span class="ruby-identifier">priority</span>.<span class="ruby-identifier">to_s</span>,
+                                          <span class="ruby-identifier">:foreground</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">theme</span>.<span class="ruby-identifier">global_settings</span>[<span class="ruby-value str">'foreground'</span>])
+                  <span class="ruby-identifier">tag</span>.<span class="ruby-identifier">priority</span> = <span class="ruby-identifier">priority</span>
+                <span class="ruby-keyword kw">else</span>
+                  <span class="ruby-identifier">settings</span> = <span class="ruby-identifier">all_settings</span>[<span class="ruby-value">0</span>][<span class="ruby-value str">&quot;settings&quot;</span>]
+                  <span class="ruby-identifier">tag</span> = <span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">create_tag</span>(<span class="ruby-identifier">scope</span>.<span class="ruby-identifier">name</span><span class="ruby-operator">+</span><span class="ruby-identifier">priority</span>.<span class="ruby-identifier">to_s</span>,
+                                          <span class="ruby-constant">Theme</span>.<span class="ruby-identifier">textmate_settings_to_pango_options</span>(<span class="ruby-identifier">settings</span>))
+                  <span class="ruby-identifier">tag</span>.<span class="ruby-identifier">priority</span> = <span class="ruby-identifier">priority</span>
+                <span class="ruby-keyword kw">end</span>
+              <span class="ruby-keyword kw">end</span>
+              <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">tag</span>
+                <span class="ruby-comment cmt">#debug_puts &quot;#{start_iter.offset}-#{end_iter.offset}&quot;</span>
+                <span class="ruby-comment cmt">#debug_puts tag.inspect</span>
+                <span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">apply_tag</span>(<span class="ruby-identifier">tag</span>, <span class="ruby-identifier">start_iter</span>, <span class="ruby-identifier">end_iter</span>)
+              <span class="ruby-keyword kw">end</span>
+              <span class="ruby-identifier">colour_line</span>(<span class="ruby-identifier">buffer</span>, <span class="ruby-identifier">scope</span>, <span class="ruby-identifier">line_num</span>, <span class="ruby-identifier">priority</span><span class="ruby-operator">+</span><span class="ruby-value">1</span>)
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Object</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+          <span class="ruby-identifier">puts</span> <span class="ruby-identifier">e</span>
+          <span class="ruby-identifier">puts</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span>
+      
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

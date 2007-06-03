@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>clear_hooks (Redcar)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/application.rb, line 38</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">clear_hooks</span>(<span class="ruby-identifier">who</span>=<span class="ruby-keyword kw">nil</span>)
+    <span class="ruby-identifier">who</span> = <span class="ruby-identifier">caller_file</span>(<span class="ruby-identifier">caller</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">who</span>
+    <span class="ruby-ivar">@@hooks</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">key</span>, <span class="ruby-identifier">eventlist</span><span class="ruby-operator">|</span>
+      <span class="ruby-ivar">@@hooks</span>[<span class="ruby-identifier">key</span>] = <span class="ruby-identifier">eventlist</span>.<span class="ruby-identifier">select</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">hk</span><span class="ruby-operator">|</span> <span class="ruby-identifier">hk</span>[<span class="ruby-identifier">:caller</span>] <span class="ruby-operator">!=</span> <span class="ruby-identifier">who</span>}
+    <span class="ruby-keyword kw">end</span>
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>textmate_settings_to_pango_options (Redcar::Theme)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/theme.rb, line 66</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">textmate_settings_to_pango_options</span>(<span class="ruby-identifier">settings</span>)
+      <span class="ruby-identifier">options</span> = { <span class="ruby-identifier">:foreground</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">settings</span>[<span class="ruby-value str">&quot;foreground&quot;</span>],
+                  <span class="ruby-identifier">:background</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">settings</span>[<span class="ruby-value str">&quot;background&quot;</span>] }
+      <span class="ruby-identifier">options</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete_if</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">k</span>, <span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-operator">!</span><span class="ruby-identifier">v</span>}
+      <span class="ruby-identifier">settings</span>[<span class="ruby-value str">&quot;fontStyle&quot;</span>] <span class="ruby-operator">||=</span> <span class="ruby-value str">&quot;&quot;</span>
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">settings</span>[<span class="ruby-value str">&quot;fontStyle&quot;</span>].<span class="ruby-identifier">include?</span> <span class="ruby-value str">&quot;italic&quot;</span>
+        <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:style</span>] = <span class="ruby-constant">Pango</span><span class="ruby-operator">::</span><span class="ruby-constant">STYLE_ITALIC</span>
+      <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">settings</span>[<span class="ruby-value str">&quot;fontStyle&quot;</span>].<span class="ruby-identifier">include?</span> <span class="ruby-value str">&quot;underline&quot;</span>
+        <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:underline</span>] = <span class="ruby-constant">Pango</span><span class="ruby-operator">::</span><span class="ruby-constant">UNDERLINE_LOW</span>
+      <span class="ruby-keyword kw">end</span>
+      <span class="ruby-identifier">options</span>
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

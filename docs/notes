@@ -1,0 +1,51 @@
+
+classes:
+  Command
+	includes documentation, arguments, and whatnot
+  CommandResult
+	the output from a command
+  KeyStroke (wraps Gdk::KeyVal ??)
+  Interpreter
+	interprets keystrokes in terms of commands
+    DynamicMacro
+	does the special interpretation in terms of dynamic macros
+  ModuleLoader
+	manages dynamic module loading
+  Tab
+  EditWindow <- includes Sv and speedbar section
+  TextTabContents
+  TextTabLines
+  TextTab
+  TreeTab
+  ListTab
+  Panes/Pane
+  RedcarException
+	many such classes for dealing with errors
+  Dialog
+  Speedbar <- including the command buffer
+
+idioms:
+
+  defining a command:
+  
+  command("My-command") do |com|
+    com.doc=<<ENDSTR-
+      Does a special thing.
+    ENDSTR
+    com.contexts << [:c-mode, :ruby-mode]
+    com.instructions do
+      Redcar.Tab.do_stuff
+    end
+  end
+
+  remembers where the cursor was:
+
+  def my_command <- this is not how we define a command. see above.
+    Redcar.do_this
+    cursor_invariant do <- creates a mark to keep track of where the cursor was
+      insert("foo", 19)
+      back_word     <- it has to be this simple, much better than Redcar.Tab.current.back_word
+      delete_char
+    end
+  end
+  

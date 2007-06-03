@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>connect_signals (Redcar::TextTab)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/texttab.rb, line 564</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">connect_signals</span>
+      <span class="ruby-ivar">@textview</span>.<span class="ruby-identifier">signal_connect</span>(<span class="ruby-value str">'focus-in-event'</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">widget</span>, <span class="ruby-identifier">event</span><span class="ruby-operator">|</span>
+        <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">current_pane</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">pane</span>
+        <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">current_tab</span> = <span class="ruby-keyword kw">self</span>
+        <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">event</span> <span class="ruby-identifier">:tab_focus</span>, <span class="ruby-keyword kw">self</span>
+        <span class="ruby-keyword kw">false</span>
+      <span class="ruby-keyword kw">end</span>
+      <span class="ruby-ivar">@was_modified</span> = <span class="ruby-keyword kw">false</span>
+      <span class="ruby-ivar">@buffer</span>.<span class="ruby-identifier">signal_connect</span>(<span class="ruby-value str">&quot;changed&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">widget</span>, <span class="ruby-identifier">event</span><span class="ruby-operator">|</span>
+        <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">event</span> <span class="ruby-identifier">:tab_modified</span>, <span class="ruby-keyword kw">self</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@was_modified</span>
+        <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">event</span> <span class="ruby-identifier">:tab_changed</span>
+        <span class="ruby-ivar">@was_modified</span> = <span class="ruby-keyword kw">true</span>
+      <span class="ruby-keyword kw">end</span>
+      <span class="ruby-ivar">@buffer</span>.<span class="ruby-identifier">signal_connect</span>(<span class="ruby-value str">&quot;insert_text&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">widget</span>, <span class="ruby-identifier">iter</span>, <span class="ruby-identifier">text</span>, <span class="ruby-identifier">length</span><span class="ruby-operator">|</span>
+        <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">event</span> <span class="ruby-identifier">:tab_modified</span>, <span class="ruby-keyword kw">self</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@was_modified</span>
+        <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">event</span> <span class="ruby-identifier">:tab_changed</span>
+        <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;inserted text at #{iter.offset}, length: #{length}&quot;</span>
+        <span class="ruby-ivar">@was_modified</span> = <span class="ruby-keyword kw">true</span>
+      <span class="ruby-keyword kw">end</span>
+      <span class="ruby-ivar">@buffer</span>.<span class="ruby-identifier">signal_connect</span>(<span class="ruby-value str">&quot;delete_range&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">widget</span>, <span class="ruby-identifier">iter1</span>, <span class="ruby-identifier">iter2</span><span class="ruby-operator">|</span>
+        <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">event</span> <span class="ruby-identifier">:tab_modified</span>, <span class="ruby-keyword kw">self</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@was_modified</span>
+        <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">event</span> <span class="ruby-identifier">:tab_changed</span>
+        <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;deleted range from #{iter1.offset} to #{iter2.offset}&quot;</span>
+        <span class="ruby-ivar">@was_modified</span> = <span class="ruby-keyword kw">true</span>
+      <span class="ruby-keyword kw">end</span>
+      
+      <span class="ruby-ivar">@buffer</span>.<span class="ruby-identifier">signal_connect</span>(<span class="ruby-value str">&quot;mark_set&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">widget</span>, <span class="ruby-identifier">event</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">mark</span> = <span class="ruby-ivar">@buffer</span>.<span class="ruby-identifier">get_mark</span>(<span class="ruby-value str">'insert'</span>)
+        <span class="ruby-identifier">iter</span> = <span class="ruby-ivar">@buffer</span>.<span class="ruby-identifier">get_iter_at_mark</span>(<span class="ruby-identifier">mark</span>)
+        <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">event</span> <span class="ruby-identifier">:tab_changed</span>
+        
+        <span class="ruby-constant">Redcar</span>.<span class="ruby-constant">StatusBar</span>.<span class="ruby-identifier">main</span> = <span class="ruby-value str">&quot;&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span> <span class="ruby-operator">-</span> <span class="ruby-constant">Redcar</span>.<span class="ruby-constant">StatusBar</span>.<span class="ruby-identifier">main_time</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">5</span>
+        <span class="ruby-constant">Redcar</span>.<span class="ruby-constant">StatusBar</span>.<span class="ruby-identifier">sub</span> = <span class="ruby-value str">&quot;line &quot;</span><span class="ruby-operator">+</span> (<span class="ruby-identifier">iter</span>.<span class="ruby-identifier">line</span><span class="ruby-operator">+</span><span class="ruby-value">1</span>).<span class="ruby-identifier">to_s</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;   col &quot;</span><span class="ruby-operator">+</span>(<span class="ruby-identifier">iter</span>.<span class="ruby-identifier">line_offset</span><span class="ruby-operator">+</span><span class="ruby-value">1</span>).<span class="ruby-identifier">to_s</span>
+      <span class="ruby-keyword kw">end</span>
+      <span class="ruby-comment cmt"># eat right button clicks:</span>
+      <span class="ruby-ivar">@textview</span>.<span class="ruby-identifier">signal_connect</span>(<span class="ruby-value str">&quot;button_press_event&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">widget</span>, <span class="ruby-identifier">event</span><span class="ruby-operator">|</span>
+        <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">current_tab</span> = <span class="ruby-keyword kw">self</span>
+        <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">current_pane</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">pane</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">event</span>.<span class="ruby-identifier">kind_of?</span> <span class="ruby-constant">Gdk</span><span class="ruby-operator">::</span><span class="ruby-constant">EventButton</span> 
+          <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">event</span> <span class="ruby-identifier">:tab_clicked</span>, <span class="ruby-keyword kw">self</span>
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">event</span>.<span class="ruby-identifier">button</span> <span class="ruby-operator">==</span> <span class="ruby-value">3</span>
+            <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">context_menus</span>[<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">to_s</span>].<span class="ruby-identifier">popup</span>(<span class="ruby-keyword kw">nil</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">event</span>.<span class="ruby-identifier">button</span>, <span class="ruby-identifier">event</span>.<span class="ruby-identifier">time</span>)
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span>
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

@@ -1,0 +1,60 @@
+/* =================== */
+/* = RubyMate Styles = */
+/* =================== */
+
+div.rubymate {
+}
+
+div.rubymate > div {
+	border-bottom: 1px dotted #666;
+	padding: 1ex;
+}
+
+div.rubymate pre strong {
+	/* used for messages */
+	font-weight: normal;
+}
+
+div.rubymate pre em
+{
+	/* used for stderr */
+	font-style: normal;
+	color: #FF5600;
+}
+
+div.rubymate div#exception_report
+{
+/*	background-color: rgb(210, 220, 255);*/
+}
+
+div.rubymate p#exception strong
+{
+	color: #E4450B;
+}
+
+div.rubymate p#traceback
+{
+	font-size: 8pt;
+}
+
+div.rubymate blockquote {
+	font-style: normal;
+	border: none;
+}
+
+
+div.rubymate table {
+	margin: 0;
+	padding: 0;
+}
+
+div.rubymate td {
+	margin: 0;
+	padding: 2px 2px 2px 5px;
+	font-size: 10pt;
+}
+
+div.rubymate a {
+	color: #FF5600;
+}
+

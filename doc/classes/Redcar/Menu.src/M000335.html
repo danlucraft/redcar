@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>command (Redcar::Menu)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/menus.rb, line 28</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">command</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">id</span>, <span class="ruby-identifier">icon</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">keybinding</span>=<span class="ruby-value str">&quot;&quot;</span>, <span class="ruby-identifier">options</span>={}, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+      <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">add_command</span>(<span class="ruby-identifier">id</span>, <span class="ruby-identifier">block</span>)
+<span class="ruby-comment cmt">#       accel = Gtk::Accelerator.parse(keymap)</span>
+<span class="ruby-comment cmt">#       Gtk::AccelMap.add_entry(&quot;&lt;Redcar&gt;/&quot;+name, *accel)</span>
+      <span class="ruby-identifier">menuitem</span> = <span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">ImageMenuItem</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">name</span>)
+      <span class="ruby-identifier">menuitem</span>.<span class="ruby-identifier">accel_path</span> = <span class="ruby-value str">&quot;&lt;Redcar&gt;/&quot;</span><span class="ruby-operator">+</span><span class="ruby-identifier">name</span>
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">keybinding</span>.<span class="ruby-identifier">blank?</span>
+        <span class="ruby-identifier">$no_key_count</span> <span class="ruby-operator">||=</span> <span class="ruby-value">0</span>
+        <span class="ruby-identifier">keybinding</span> = <span class="ruby-node">&quot;no_key_#{$no_key_count}&quot;</span>
+        <span class="ruby-identifier">$no_key_count</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+      <span class="ruby-keyword kw">end</span>
+      <span class="ruby-identifier">this_name</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">name</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-value str">&quot;_&quot;</span>, <span class="ruby-value str">&quot;&quot;</span>).<span class="ruby-identifier">downcase</span>
+      <span class="ruby-constant">Redcar</span>.<span class="ruby-constant">GlobalKeymap</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">class_eval</span> <span class="ruby-keyword kw">do</span>
+        <span class="ruby-identifier">keymap</span> <span class="ruby-identifier">keybinding</span>, <span class="ruby-node">&quot;menu_#{this_name}_#{id}&quot;</span>.<span class="ruby-identifier">intern</span>
+        <span class="ruby-identifier">define_method</span>(<span class="ruby-node">&quot;menu_#{this_name}_#{id}&quot;</span>) <span class="ruby-keyword kw">do</span>
+          <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">current_pane</span>, <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">current_tab</span>)
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span>
+      <span class="ruby-identifier">menuitem</span>.<span class="ruby-identifier">signal_connect</span>(<span class="ruby-value str">&quot;activate&quot;</span>) <span class="ruby-keyword kw">do</span>
+        <span class="ruby-identifier">puts</span> <span class="ruby-identifier">:foovar</span>
+        <span class="ruby-identifier">puts</span> <span class="ruby-identifier">keybinding</span>
+        <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">current_pane</span>, <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">current_tab</span>)
+        <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">keystrokes</span>.<span class="ruby-identifier">add_to_history</span>(<span class="ruby-identifier">keybinding</span>)
+      <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">icon</span>
+        <span class="ruby-identifier">iconimg</span> = <span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">Image</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">Redcar</span><span class="ruby-operator">::</span><span class="ruby-constant">Icon</span>.<span class="ruby-identifier">get</span>(<span class="ruby-identifier">icon</span>), 
+                                 <span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">IconSize</span><span class="ruby-operator">::</span><span class="ruby-constant">MENU</span>)
+        <span class="ruby-identifier">menuitem</span>.<span class="ruby-identifier">image</span> = <span class="ruby-identifier">iconimg</span>
+      <span class="ruby-keyword kw">end</span>
+      
+      <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:sensitize_to</span>]
+        <span class="ruby-identifier">menuitem</span>.<span class="ruby-identifier">sensitize_to</span>(<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:sensitize_to</span>])
+      <span class="ruby-keyword kw">end</span>
+      
+      <span class="ruby-identifier">menuitem</span>.<span class="ruby-identifier">show</span>
+      <span class="ruby-ivar">@menu</span>.<span class="ruby-identifier">append</span>(<span class="ruby-identifier">menuitem</span>)
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

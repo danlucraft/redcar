@@ -1,0 +1,999 @@
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html lang='en' xml:lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+      <head>
+        <title>lib/redcar_window.rb - C0 code coverage information</title>
+        <style type='text/css'>body { background-color: rgb(240, 240, 245); }</style>
+        <style type='text/css'>span.cross-ref-title {
+ font-size: 140%;
+}
+span.cross-ref a {
+ text-decoration: none;
+}
+span.cross-ref {
+ background-color:#f3f7fa;
+ border: 1px dashed #333;
+ margin: 1em;
+ padding: 0.5em;
+ overflow: hidden;
+}
+a.crossref-toggle {
+ text-decoration: none;
+}
+span.marked0 {
+ background-color: rgb(185, 210, 200);
+ display: block;
+}
+span.marked1 {
+ background-color: rgb(190, 215, 205);
+ display: block;
+}
+span.inferred0 {
+ background-color: rgb(175, 200, 200);
+ display: block;
+}
+span.inferred1 {
+ background-color: rgb(180, 205, 205);
+ display: block;
+}
+span.uncovered0 {
+ background-color: rgb(225, 110, 110);
+ display: block;
+}
+span.uncovered1 {
+ background-color: rgb(235, 120, 120);
+ display: block;
+}
+span.overview {
+ border-bottom: 8px solid black;
+}
+div.overview {
+ border-bottom: 8px solid black;
+}
+body {
+ font-family: verdana, arial, helvetica;
+}
+div.footer {
+ font-size: 68%;
+ margin-top: 1.5em;
+}
+h1, h2, h3, h4, h5, h6 {
+ margin-bottom: 0.5em;
+}
+h5 {
+ margin-top: 0.5em;
+}
+.hidden {
+ display: none;
+}
+div.separator {
+ height: 10px;
+}
+/* Commented out for better readability, esp. on IE */
+/*
+table tr td, table tr th {
+ font-size: 68%;
+}
+td.value table tr td {
+ font-size: 11px;
+}
+*/
+table.percent_graph {
+ height: 12px;
+ border: #808080 1px solid;
+ empty-cells: show;
+}
+table.percent_graph td.covered {
+ height: 10px;
+ background: #00f000;
+}
+table.percent_graph td.uncovered {
+ height: 10px;
+ background: #e00000;
+}
+table.percent_graph td.NA {
+ height: 10px;
+ background: #eaeaea;
+}
+table.report {
+ border-collapse: collapse;
+ width: 100%;
+}
+table.report td.heading {
+ background: #dcecff;
+ border: #d0d0d0 1px solid;
+ font-weight: bold;
+ text-align: center;
+}
+table.report td.heading:hover {
+ background: #c0ffc0;
+}
+table.report td.text {
+ border: #d0d0d0 1px solid;
+}
+table.report td.value {
+ text-align: right;
+ border: #d0d0d0 1px solid;
+}
+table.report tr.light {
+ background-color: rgb(240, 240, 245);
+}
+table.report tr.dark {
+ background-color: rgb(230, 230, 235);
+}
+</style>
+        <script type='text/javascript'>
+// <![CDATA[
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make cross-references hidden by default
+  document.writeln( "<style type=\"text/css\">span.cross-ref { display: none }</style>" )
+  // ]]>
+</script>
+        <style type='text/css'>span.run0 {
+  background-color: rgb(178, 204, 255);
+  display: block;
+}
+span.run1 {
+  background-color: rgb(178, 206, 255);
+  display: block;
+}
+span.run2 {
+  background-color: rgb(178, 209, 255);
+  display: block;
+}
+span.run3 {
+  background-color: rgb(178, 211, 255);
+  display: block;
+}
+span.run4 {
+  background-color: rgb(178, 214, 255);
+  display: block;
+}
+span.run5 {
+  background-color: rgb(178, 218, 255);
+  display: block;
+}
+span.run6 {
+  background-color: rgb(178, 220, 255);
+  display: block;
+}
+span.run7 {
+  background-color: rgb(178, 223, 255);
+  display: block;
+}
+span.run8 {
+  background-color: rgb(178, 225, 255);
+  display: block;
+}
+span.run9 {
+  background-color: rgb(178, 228, 255);
+  display: block;
+}
+span.run10 {
+  background-color: rgb(178, 232, 255);
+  display: block;
+}
+span.run11 {
+  background-color: rgb(178, 234, 255);
+  display: block;
+}
+span.run12 {
+  background-color: rgb(178, 237, 255);
+  display: block;
+}
+span.run13 {
+  background-color: rgb(178, 239, 255);
+  display: block;
+}
+span.run14 {
+  background-color: rgb(178, 242, 255);
+  display: block;
+}
+span.run15 {
+  background-color: rgb(178, 246, 255);
+  display: block;
+}
+span.run16 {
+  background-color: rgb(178, 248, 255);
+  display: block;
+}
+span.run17 {
+  background-color: rgb(178, 251, 255);
+  display: block;
+}
+span.run18 {
+  background-color: rgb(178, 253, 255);
+  display: block;
+}
+span.run19 {
+  background-color: rgb(178, 255, 253);
+  display: block;
+}
+span.run20 {
+  background-color: rgb(178, 255, 249);
+  display: block;
+}
+span.run21 {
+  background-color: rgb(178, 255, 247);
+  display: block;
+}
+span.run22 {
+  background-color: rgb(178, 255, 244);
+  display: block;
+}
+span.run23 {
+  background-color: rgb(178, 255, 242);
+  display: block;
+}
+span.run24 {
+  background-color: rgb(178, 255, 239);
+  display: block;
+}
+span.run25 {
+  background-color: rgb(178, 255, 235);
+  display: block;
+}
+span.run26 {
+  background-color: rgb(178, 255, 233);
+  display: block;
+}
+span.run27 {
+  background-color: rgb(178, 255, 230);
+  display: block;
+}
+span.run28 {
+  background-color: rgb(178, 255, 228);
+  display: block;
+}
+span.run29 {
+  background-color: rgb(178, 255, 225);
+  display: block;
+}
+span.run30 {
+  background-color: rgb(178, 255, 221);
+  display: block;
+}
+span.run31 {
+  background-color: rgb(178, 255, 219);
+  display: block;
+}
+span.run32 {
+  background-color: rgb(178, 255, 216);
+  display: block;
+}
+span.run33 {
+  background-color: rgb(178, 255, 214);
+  display: block;
+}
+span.run34 {
+  background-color: rgb(178, 255, 211);
+  display: block;
+}
+span.run35 {
+  background-color: rgb(178, 255, 207);
+  display: block;
+}
+span.run36 {
+  background-color: rgb(178, 255, 205);
+  display: block;
+}
+span.run37 {
+  background-color: rgb(178, 255, 202);
+  display: block;
+}
+span.run38 {
+  background-color: rgb(178, 255, 200);
+  display: block;
+}
+span.run39 {
+  background-color: rgb(178, 255, 197);
+  display: block;
+}
+span.run40 {
+  background-color: rgb(178, 255, 193);
+  display: block;
+}
+span.run41 {
+  background-color: rgb(178, 255, 191);
+  display: block;
+}
+span.run42 {
+  background-color: rgb(178, 255, 188);
+  display: block;
+}
+span.run43 {
+  background-color: rgb(178, 255, 186);
+  display: block;
+}
+span.run44 {
+  background-color: rgb(178, 255, 183);
+  display: block;
+}
+span.run45 {
+  background-color: rgb(178, 255, 179);
+  display: block;
+}
+span.run46 {
+  background-color: rgb(179, 255, 178);
+  display: block;
+}
+span.run47 {
+  background-color: rgb(182, 255, 178);
+  display: block;
+}
+span.run48 {
+  background-color: rgb(184, 255, 178);
+  display: block;
+}
+span.run49 {
+  background-color: rgb(187, 255, 178);
+  display: block;
+}
+span.run50 {
+  background-color: rgb(191, 255, 178);
+  display: block;
+}
+span.run51 {
+  background-color: rgb(193, 255, 178);
+  display: block;
+}
+span.run52 {
+  background-color: rgb(196, 255, 178);
+  display: block;
+}
+span.run53 {
+  background-color: rgb(198, 255, 178);
+  display: block;
+}
+span.run54 {
+  background-color: rgb(201, 255, 178);
+  display: block;
+}
+span.run55 {
+  background-color: rgb(205, 255, 178);
+  display: block;
+}
+span.run56 {
+  background-color: rgb(207, 255, 178);
+  display: block;
+}
+span.run57 {
+  background-color: rgb(210, 255, 178);
+  display: block;
+}
+span.run58 {
+  background-color: rgb(212, 255, 178);
+  display: block;
+}
+span.run59 {
+  background-color: rgb(215, 255, 178);
+  display: block;
+}
+span.run60 {
+  background-color: rgb(219, 255, 178);
+  display: block;
+}
+span.run61 {
+  background-color: rgb(221, 255, 178);
+  display: block;
+}
+span.run62 {
+  background-color: rgb(224, 255, 178);
+  display: block;
+}
+span.run63 {
+  background-color: rgb(226, 255, 178);
+  display: block;
+}
+span.run64 {
+  background-color: rgb(229, 255, 178);
+  display: block;
+}
+span.run65 {
+  background-color: rgb(233, 255, 178);
+  display: block;
+}
+span.run66 {
+  background-color: rgb(235, 255, 178);
+  display: block;
+}
+span.run67 {
+  background-color: rgb(238, 255, 178);
+  display: block;
+}
+span.run68 {
+  background-color: rgb(240, 255, 178);
+  display: block;
+}
+span.run69 {
+  background-color: rgb(243, 255, 178);
+  display: block;
+}
+span.run70 {
+  background-color: rgb(247, 255, 178);
+  display: block;
+}
+span.run71 {
+  background-color: rgb(249, 255, 178);
+  display: block;
+}
+span.run72 {
+  background-color: rgb(252, 255, 178);
+  display: block;
+}
+span.run73 {
+  background-color: rgb(255, 255, 178);
+  display: block;
+}
+span.run74 {
+  background-color: rgb(255, 252, 178);
+  display: block;
+}
+span.run75 {
+  background-color: rgb(255, 248, 178);
+  display: block;
+}
+span.run76 {
+  background-color: rgb(255, 246, 178);
+  display: block;
+}
+span.run77 {
+  background-color: rgb(255, 243, 178);
+  display: block;
+}
+span.run78 {
+  background-color: rgb(255, 240, 178);
+  display: block;
+}
+span.run79 {
+  background-color: rgb(255, 238, 178);
+  display: block;
+}
+span.run80 {
+  background-color: rgb(255, 234, 178);
+  display: block;
+}
+span.run81 {
+  background-color: rgb(255, 232, 178);
+  display: block;
+}
+span.run82 {
+  background-color: rgb(255, 229, 178);
+  display: block;
+}
+span.run83 {
+  background-color: rgb(255, 226, 178);
+  display: block;
+}
+span.run84 {
+  background-color: rgb(255, 224, 178);
+  display: block;
+}
+span.run85 {
+  background-color: rgb(255, 220, 178);
+  display: block;
+}
+span.run86 {
+  background-color: rgb(255, 218, 178);
+  display: block;
+}
+span.run87 {
+  background-color: rgb(255, 215, 178);
+  display: block;
+}
+span.run88 {
+  background-color: rgb(255, 212, 178);
+  display: block;
+}
+span.run89 {
+  background-color: rgb(255, 210, 178);
+  display: block;
+}
+span.run90 {
+  background-color: rgb(255, 206, 178);
+  display: block;
+}
+span.run91 {
+  background-color: rgb(255, 204, 178);
+  display: block;
+}
+span.run92 {
+  background-color: rgb(255, 201, 178);
+  display: block;
+}
+span.run93 {
+  background-color: rgb(255, 198, 178);
+  display: block;
+}
+span.run94 {
+  background-color: rgb(255, 196, 178);
+  display: block;
+}
+span.run95 {
+  background-color: rgb(255, 192, 178);
+  display: block;
+}
+span.run96 {
+  background-color: rgb(255, 189, 178);
+  display: block;
+}
+span.run97 {
+  background-color: rgb(255, 187, 178);
+  display: block;
+}
+span.run98 {
+  background-color: rgb(255, 184, 178);
+  display: block;
+}
+span.run99 {
+  background-color: rgb(255, 182, 178);
+  display: block;
+}
+span.run100 {
+  background-color: rgb(255, 178, 178);
+  display: block;
+}
+</style>
+      </head>
+      <body>
+        <h3>C0 code coverage information</h3>
+        <p>Generated on Sun Apr 01 11:19:37 +0100 2007 with <a href='http://eigenclass.org/hiki.rb?rcov'>rcov 0.7.0</a>
+        </p>
+        <hr /><pre><span class='marked0'>Code reported as executed by Ruby looks like this...
+</span><span class='marked1'>and this: this line is also marked as covered.
+</span><span class='inferred0'>Lines considered as run by rcov, but not reported by Ruby, look like this,
+</span><span class='inferred1'>and this: these lines were inferred by rcov (using simple heuristics).
+</span><span class='uncovered0'>Finally, here&apos;s a line marked as not executed.
+</span></pre>                       
+    <table class='report'>
+      <thead>
+        <tr>
+          <td class='heading'>Name</td>
+          <td class='heading'>Total lines</td>
+          <td class='heading'>Lines of code</td>
+          <td class='heading'>Total coverage</td>
+          <td class='heading'>Code coverage</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class='light'>
+          <td>
+            <a href='lib-redcar_window_rb.html'>lib/redcar_window.rb</a>
+          </td>
+          <td class='value'>
+            <tt>370</tt>
+          </td>
+          <td class='value'>
+            <tt>300</tt>
+          </td>
+          <td>
+            <table cellspacing='0' cellpadding='0' align='right'>
+              <tr>
+                <td>
+                  <tt>89.7%</tt>&nbsp;</td>
+                <td>
+                  <table cellspacing='0' class='percent_graph' cellpadding='0' width='100'>
+                    <tr>
+                      <td class='covered' width='90' />
+                      <td class='uncovered' width='10' />
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td>
+            <table cellspacing='0' cellpadding='0' align='right'>
+              <tr>
+                <td>
+                  <tt>87.3%</tt>&nbsp;</td>
+                <td>
+                  <table cellspacing='0' class='percent_graph' cellpadding='0' width='100'>
+                    <tr>
+                      <td class='covered' width='87' />
+                      <td class='uncovered' width='13' />
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table><pre><span class="inferred1"><a name="line1" />  1 
+</span><span class="marked0"><a name="line2" />  2 class &lt;&lt; Redcar
+</span><span class="marked1"><a name="line3" />  3   attr_accessor :toolbar
+</span><span class="inferred0"><a name="line4" />  4 end
+</span><span class="inferred1"><a name="line5" />  5 
+</span><span class="marked0"><a name="line6" />  6 class Redcar
+</span><span class="marked1"><a name="line7" />  7   class RedcarWindow &lt; Gtk::Window
+</span><span class="marked0"><a name="line8" />  8     attr_accessor :notebooks, :speedbar, :panes
+</span><span class="inferred1"><a name="line9" />  9     
+</span><span class="marked0"><a name="line10" /> 10     def initialize
+</span><span class="marked1"><a name="line11" /> 11       super &quot;Redcar&quot;
+</span><span class="marked0"><a name="line12" /> 12       set_size_request(800, 600)
+</span><span class="inferred1"><a name="line13" /> 13       
+</span><span class="marked0"><a name="line14" /> 14       $ag = Gtk::AccelGroup.new
+</span><span class="marked1"><a name="line15" /> 15       self.add_accel_group($ag)
+</span><span class="inferred0"><a name="line16" /> 16       
+</span><span class="marked1"><a name="line17" /> 17       @notebooks = []
+</span><span class="marked0"><a name="line18" /> 18       signal_connect(&quot;destroy&quot;) { Gtk.main_quit }
+</span><span class="marked1"><a name="line19" /> 19       signal_connect('key-press-event') do |b, a|
+</span><span class="uncovered0"><a name="line20" /> 20         Redcar.keystrokes.issue_from_gdk_eventkey(a)
+</span><span class="uncovered1"><a name="line21" /> 21         true
+</span><span class="uncovered0"><a name="line22" /> 22       end
+</span><span class="inferred1"><a name="line23" /> 23 
+</span><span class="marked0"><a name="line24" /> 24       paned = Gtk::HPaned.new
+</span><span class="inferred1"><a name="line25" /> 25       
+</span><span class="marked0"><a name="line26" /> 26       Redcar.menubar = Gtk::MenuBar.new
+</span><span class="inferred1"><a name="line27" /> 27       
+</span><span class="marked0"><a name="line28" /> 28       table = Gtk::Table.new(1, 4, false)
+</span><span class="marked1"><a name="line29" /> 29       table.attach(Redcar.menubar,
+</span><span class="inferred0"><a name="line30" /> 30                    # X direction            # Y direction
+</span><span class="inferred1"><a name="line31" /> 31                    0, 1,                    0, 1,
+</span><span class="inferred0"><a name="line32" /> 32                    Gtk::EXPAND | Gtk::FILL, 0,
+</span><span class="inferred1"><a name="line33" /> 33                    0,                       0)
+</span><span class="inferred0"><a name="line34" /> 34       
+</span><span class="marked1"><a name="line35" /> 35       toolbar = Gtk::Toolbar.new
+</span><span class="marked0"><a name="line36" /> 36       Redcar.toolbar = toolbar
+</span><span class="marked1"><a name="line37" /> 37       table.attach(toolbar,
+</span><span class="inferred0"><a name="line38" /> 38                    # X direction            # Y direction
+</span><span class="inferred1"><a name="line39" /> 39                    0, 1,                    1, 2,
+</span><span class="inferred0"><a name="line40" /> 40                    Gtk::EXPAND | Gtk::FILL, 0,
+</span><span class="inferred1"><a name="line41" /> 41                    0,                       0)
+</span><span class="inferred0"><a name="line42" /> 42 
+</span><span class="inferred1"><a name="line43" /> 43       
+</span><span class="inferred0"><a name="line44" /> 44 
+</span><span class="marked1"><a name="line45" /> 45       hpaned = Gtk::HPaned.new
+</span><span class="marked0"><a name="line46" /> 46       edit_view = Gtk::VBox.new
+</span><span class="marked1"><a name="line47" /> 47       edit_view.pack_start(hpaned)
+</span><span class="marked0"><a name="line48" /> 48       @speedbar = Gtk::VBox.new
+</span><span class="marked1"><a name="line49" /> 49       edit_view.pack_start(@speedbar, false)
+</span><span class="marked0"><a name="line50" /> 50       @speedbar.show
+</span><span class="marked1"><a name="line51" /> 51       hpaned.show
+</span><span class="marked0"><a name="line52" /> 52       table.attach(edit_view,
+</span><span class="inferred1"><a name="line53" /> 53                    # X direction            # Y direction
+</span><span class="inferred0"><a name="line54" /> 54                    0, 1,                    2, 3,
+</span><span class="inferred1"><a name="line55" /> 55                    Gtk::EXPAND | Gtk::FILL, Gtk::EXPAND | Gtk::FILL,
+</span><span class="inferred0"><a name="line56" /> 56                    0,      0)  
+</span><span class="inferred1"><a name="line57" /> 57 
+</span><span class="marked0"><a name="line58" /> 58       @status_hbox = Gtk::HBox.new
+</span><span class="inferred1"><a name="line59" /> 59       
+</span><span class="marked0"><a name="line60" /> 60       @status1 = Gtk::Statusbar.new
+</span><span class="marked1"><a name="line61" /> 61       @status2 = Gtk::Statusbar.new
+</span><span class="marked0"><a name="line62" /> 62       Redcar.StatusBar.statusbar1 = @status1
+</span><span class="marked1"><a name="line63" /> 63       Redcar.StatusBar.statusbar2 = @status2
+</span><span class="marked0"><a name="line64" /> 64       @status_hbox.pack_start(@status1)
+</span><span class="marked1"><a name="line65" /> 65       @status_hbox.pack_start(@status2)
+</span><span class="marked0"><a name="line66" /> 66       @status_hbox.show
+</span><span class="marked1"><a name="line67" /> 67       @status1.show
+</span><span class="marked0"><a name="line68" /> 68       @status2.show
+</span><span class="marked1"><a name="line69" /> 69       table.attach(@status_hbox,
+</span><span class="inferred0"><a name="line70" /> 70                    # X direction            # Y direction
+</span><span class="inferred1"><a name="line71" /> 71                    0, 1,                    3, 4,
+</span><span class="inferred0"><a name="line72" /> 72                    Gtk::EXPAND | Gtk::FILL, Gtk::FILL,
+</span><span class="inferred1"><a name="line73" /> 73                    0,      0)  
+</span><span class="inferred0"><a name="line74" /> 74       #     @notebook.add_document(Gtk::MDI::Document.new(label, &quot;First&quot;))
+</span><span class="inferred1"><a name="line75" /> 75       #     @notebook.show_all 
+</span><span class="marked0"><a name="line76" /> 76       n = @notebook
+</span><span class="inferred1"><a name="line77" /> 77       
+</span><span class="inferred0"><a name="line78" /> 78 
+</span><span class="marked1"><a name="line79" /> 79       signal_connect(&quot;delete_event&quot;) do
+</span><span class="uncovered0"><a name="line80" /> 80         Redcar.quit
+</span><span class="uncovered1"><a name="line81" /> 81       end
+</span><span class="marked0"><a name="line82" /> 82       add(table)
+</span><span class="inferred1"><a name="line83" /> 83       
+</span><span class="inferred0"><a name="line84" /> 84       # setup panes business:-
+</span><span class="marked1"><a name="line85" /> 85       @paneds = [hpaned]
+</span><span class="marked0"><a name="line86" /> 86       @top_paned = hpaned
+</span><span class="marked1"><a name="line87" /> 87       notebook = make_new_notebook
+</span><span class="marked0"><a name="line88" /> 88       hpaned.add(notebook)
+</span><span class="marked1"><a name="line89" /> 89       notebook.show
+</span><span class="marked0"><a name="line90" /> 90       hpaned.show
+</span><span class="marked1"><a name="line91" /> 91       @top_pane_done = false
+</span><span class="marked0"><a name="line92" /> 92       pane = Redcar::Pane.new(self, notebook)
+</span><span class="marked1"><a name="line93" /> 93       @panes = [pane]
+</span><span class="marked0"><a name="line94" /> 94       @notebook_to_pane = {}
+</span><span class="marked1"><a name="line95" /> 95       @notebook_to_pane[notebook] = pane
+</span><span class="marked0"><a name="line96" /> 96       @sensitives = []
+</span><span class="marked1"><a name="line97" /> 97       Redcar.last_pane = Redcar.current_pane
+</span><span class="marked0"><a name="line98" /> 98       Redcar.current_pane = pane
+</span><span class="inferred1"><a name="line99" /> 99       
+</span><span class="marked0"><a name="line100" />100       Redcar.menubar.show_all
+</span><span class="marked1"><a name="line101" />101       table.show
+</span><span class="marked0"><a name="line102" />102       show
+</span><span class="inferred1"><a name="line103" />103     end
+</span><span class="inferred0"><a name="line104" />104     
+</span><span class="marked1"><a name="line105" />105     def current_pane
+</span><span class="uncovered0"><a name="line106" />106       @panes.current_pane
+</span><span class="uncovered1"><a name="line107" />107     end
+</span><span class="inferred0"><a name="line108" />108     
+</span><span class="marked1"><a name="line109" />109     def self.set_context_menu(menu)
+</span><span class="uncovered0"><a name="line110" />110       @@context_menu = menu
+</span><span class="uncovered1"><a name="line111" />111     end
+</span><span class="inferred0"><a name="line112" />112     
+</span><span class="marked1"><a name="line113" />113     include Enumerable
+</span><span class="inferred0"><a name="line114" />114     
+</span><span class="marked1"><a name="line115" />115     def each
+</span><span class="marked0"><a name="line116" />116       self.panes.each do |pane|
+</span><span class="marked1"><a name="line117" />117         yield pane
+</span><span class="inferred0"><a name="line118" />118       end
+</span><span class="marked1"><a name="line119" />119     end
+</span><span class="inferred0"><a name="line120" />120     
+</span><span class="marked1"><a name="line121" />121     def panes_struct
+</span><span class="marked0"><a name="line122" />122       @panes
+</span><span class="marked1"><a name="line123" />123     end
+</span><span class="inferred0"><a name="line124" />124     
+</span><span class="marked1"><a name="line125" />125     def panes
+</span><span class="marked0"><a name="line126" />126       if @panes[0].is_a? Redcar::Pane
+</span><span class="marked1"><a name="line127" />127         @panes
+</span><span class="inferred0"><a name="line128" />128       else
+</span><span class="marked1"><a name="line129" />129         get_panes(@panes[0])
+</span><span class="inferred0"><a name="line130" />130       end
+</span><span class="marked1"><a name="line131" />131     end
+</span><span class="inferred0"><a name="line132" />132     
+</span><span class="marked1"><a name="line133" />133     def get_panes(hash)
+</span><span class="marked0"><a name="line134" />134       obj = []
+</span><span class="marked1"><a name="line135" />135       [&quot;left&quot;, &quot;right&quot;, &quot;top&quot;, &quot;bottom&quot;].each do |dir|
+</span><span class="marked0"><a name="line136" />136         if hash[dir].is_a? Redcar::Pane
+</span><span class="marked1"><a name="line137" />137           obj &lt;&lt; hash[dir]
+</span><span class="inferred0"><a name="line138" />138         else
+</span><span class="marked1"><a name="line139" />139           if hash[dir]
+</span><span class="marked0"><a name="line140" />140             obj += get_panes(hash[dir])
+</span><span class="inferred1"><a name="line141" />141           end
+</span><span class="inferred0"><a name="line142" />142         end
+</span><span class="inferred1"><a name="line143" />143       end
+</span><span class="marked0"><a name="line144" />144       obj
+</span><span class="inferred1"><a name="line145" />145     end
+</span><span class="inferred0"><a name="line146" />146     
+</span><span class="marked1"><a name="line147" />147     def [](obj)
+</span><span class="uncovered0"><a name="line148" />148       case obj.class.to_s
+</span><span class="uncovered1"><a name="line149" />149       when &quot;Integer&quot;
+</span><span class="uncovered0"><a name="line150" />150         @panes[obj]
+</span><span class="uncovered1"><a name="line151" />151       end
+</span><span class="uncovered0"><a name="line152" />152     end
+</span><span class="inferred1"><a name="line153" />153     
+</span><span class="marked0"><a name="line154" />154     def find_tab(name)
+</span><span class="uncovered1"><a name="line155" />155       each do |pane|
+</span><span class="uncovered0"><a name="line156" />156         pane.each {|tab| return tab if tab.name == name }
+</span><span class="uncovered1"><a name="line157" />157       end
+</span><span class="uncovered0"><a name="line158" />158     end
+</span><span class="inferred1"><a name="line159" />159     
+</span><span class="marked0"><a name="line160" />160     def size
+</span><span class="marked1"><a name="line161" />161       panes.length
+</span><span class="marked0"><a name="line162" />162     end
+</span><span class="inferred1"><a name="line163" />163     
+</span><span class="marked0"><a name="line164" />164     def add_sensitive(item)
+</span><span class="marked1"><a name="line165" />165       @sensitives &lt;&lt; item
+</span><span class="marked0"><a name="line166" />166     end
+</span><span class="inferred1"><a name="line167" />167     
+</span><span class="marked0"><a name="line168" />168     def sensitives
+</span><span class="uncovered1"><a name="line169" />169       @sensitives
+</span><span class="uncovered0"><a name="line170" />170     end
+</span><span class="inferred1"><a name="line171" />171     
+</span><span class="marked0"><a name="line172" />172     def desensitize
+</span><span class="uncovered1"><a name="line173" />173       @sensitives.each do |sensitive_item|
+</span><span class="uncovered0"><a name="line174" />174         sensitive_item.sensitive = false
+</span><span class="uncovered1"><a name="line175" />175       end
+</span><span class="uncovered0"><a name="line176" />176     end
+</span><span class="inferred1"><a name="line177" />177     
+</span><span class="marked0"><a name="line178" />178     def sensitize
+</span><span class="marked1"><a name="line179" />179       @sensitives.each do |sensitive_item|
+</span><span class="marked0"><a name="line180" />180         sensitive_item.sensitive = true
+</span><span class="inferred1"><a name="line181" />181       end
+</span><span class="marked0"><a name="line182" />182     end
+</span><span class="inferred1"><a name="line183" />183     
+</span><span class="marked0"><a name="line184" />184     def tab_from_document(doc)
+</span><span class="uncovered1"><a name="line185" />185       self.each do |pane|
+</span><span class="uncovered0"><a name="line186" />186         tab = pane.tab_from_doc(doc)
+</span><span class="uncovered1"><a name="line187" />187         return tab if tab
+</span><span class="uncovered0"><a name="line188" />188       end
+</span><span class="uncovered1"><a name="line189" />189       nil
+</span><span class="uncovered0"><a name="line190" />190     end
+</span><span class="inferred1"><a name="line191" />191     
+</span><span class="marked0"><a name="line192" />192     def tabs_array
+</span><span class="uncovered1"><a name="line193" />193       self.collect do |pane| 
+</span><span class="uncovered0"><a name="line194" />194         pane.all.map do |tab|
+</span><span class="uncovered1"><a name="line195" />195           tab.name
+</span><span class="uncovered0"><a name="line196" />196         end
+</span><span class="uncovered1"><a name="line197" />197       end
+</span><span class="uncovered0"><a name="line198" />198     end
+</span><span class="inferred1"><a name="line199" />199     
+</span><span class="marked0"><a name="line200" />200     def current_pane
+</span><span class="marked1"><a name="line201" />201       Redcar.current_pane
+</span><span class="inferred0"><a name="line202" />202       #       @notebook_to_pane.values.each do |pane|
+</span><span class="inferred1"><a name="line203" />203       #         if pane.notebook.focus?
+</span><span class="inferred0"><a name="line204" />204       #           return pane
+</span><span class="inferred1"><a name="line205" />205       #         end
+</span><span class="inferred0"><a name="line206" />206       #       end
+</span><span class="inferred1"><a name="line207" />207       #       return @notebook_to_pane.values.first
+</span><span class="marked0"><a name="line208" />208     end
+</span><span class="inferred1"><a name="line209" />209     
+</span><span class="marked0"><a name="line210" />210     def find_pane_from_notebook(notebook)
+</span><span class="uncovered1"><a name="line211" />211       @notebook_to_pane[notebook]
+</span><span class="uncovered0"><a name="line212" />212     end
+</span><span class="inferred1"><a name="line213" />213     
+</span><span class="marked0"><a name="line214" />214     def replace_in_panes(panes, from, to)
+</span><span class="marked1"><a name="line215" />215       if panes.is_a? Array
+</span><span class="marked0"><a name="line216" />216         if from == panes[0]
+</span><span class="marked1"><a name="line217" />217           panes[0] = to
+</span><span class="marked0"><a name="line218" />218         elsif panes[0].is_a? Hash and panes[0][&quot;paned&quot;] == from
+</span><span class="marked1"><a name="line219" />219           panes[0] = to
+</span><span class="inferred0"><a name="line220" />220         else
+</span><span class="marked1"><a name="line221" />221           replace_in_panes(panes[0], from, to)
+</span><span class="inferred0"><a name="line222" />222         end
+</span><span class="marked1"><a name="line223" />223       elsif panes.is_a? Hash
+</span><span class="marked0"><a name="line224" />224         [&quot;left&quot;, &quot;right&quot;, &quot;top&quot;, &quot;bottom&quot;].each do |dir|
+</span><span class="marked1"><a name="line225" />225           if panes[dir] == from
+</span><span class="marked0"><a name="line226" />226             panes[dir] = to
+</span><span class="marked1"><a name="line227" />227           elsif panes[dir].is_a? Hash and panes[dir][&quot;paned&quot;] == from
+</span><span class="marked0"><a name="line228" />228             panes[dir] = to
+</span><span class="marked1"><a name="line229" />229           elsif panes[dir].is_a? Hash
+</span><span class="marked0"><a name="line230" />230             replace_in_panes(panes[dir], from, to)
+</span><span class="inferred1"><a name="line231" />231           end
+</span><span class="inferred0"><a name="line232" />232         end
+</span><span class="inferred1"><a name="line233" />233       end 
+</span><span class="marked0"><a name="line234" />234     end
+</span><span class="inferred1"><a name="line235" />235     
+</span><span class="inferred0"><a name="line236" />236     # creates the default new notebook that goes into a pane using the 
+</span><span class="inferred1"><a name="line237" />237     # passed in class and block.
+</span><span class="marked0"><a name="line238" />238     def make_new_notebook
+</span><span class="marked1"><a name="line239" />239       notebook = Gtk::MDI::Notebook.new
+</span><span class="marked0"><a name="line240" />240       notebook.show
+</span><span class="inferred1"><a name="line241" />241       
+</span><span class="marked0"><a name="line242" />242       Redcar.window_controller.notebook_added(self, notebook)
+</span><span class="marked1"><a name="line243" />243       self.notebooks &lt;&lt; notebook
+</span><span class="inferred0"><a name="line244" />244       
+</span><span class="marked1"><a name="line245" />245       return notebook
+</span><span class="inferred0"><a name="line246" />246     end
+</span><span class="inferred1"><a name="line247" />247     
+</span><span class="marked0"><a name="line248" />248     def split_horizontal(current_notebook)
+</span><span class="marked1"><a name="line249" />249       paned = current_notebook.parent
+</span><span class="marked0"><a name="line250" />250       new_notebook = make_new_notebook
+</span><span class="inferred1"><a name="line251" />251       #       return nil unless @paneds.include? paned
+</span><span class="marked0"><a name="line252" />252       if paned.child1 == current_notebook # (on the left)
+</span><span class="marked1"><a name="line253" />253         paned.remove(current_notebook)
+</span><span class="marked0"><a name="line254" />254         hpaned = Gtk::HPaned.new
+</span><span class="marked1"><a name="line255" />255         hpaned.add(current_notebook)
+</span><span class="marked0"><a name="line256" />256         hpaned.add(new_notebook)
+</span><span class="marked1"><a name="line257" />257         paned.add1(hpaned)
+</span><span class="inferred0"><a name="line258" />258       else
+</span><span class="marked1"><a name="line259" />259         paned.remove(current_notebook)
+</span><span class="marked0"><a name="line260" />260         hpaned = Gtk::HPaned.new
+</span><span class="marked1"><a name="line261" />261         hpaned.add(current_notebook)
+</span><span class="marked0"><a name="line262" />262         hpaned.add(new_notebook)
+</span><span class="marked1"><a name="line263" />263         paned.add2(hpaned)
+</span><span class="inferred0"><a name="line264" />264       end
+</span><span class="marked1"><a name="line265" />265       hpaned.show
+</span><span class="marked0"><a name="line266" />266       hpaned.position = 200
+</span><span class="inferred1"><a name="line267" />267       
+</span><span class="inferred0"><a name="line268" />268       # update Panes tracking information
+</span><span class="marked1"><a name="line269" />269       currentpane = @notebook_to_pane[current_notebook]
+</span><span class="marked0"><a name="line270" />270       newpane = Redcar::Pane.new(self, new_notebook)
+</span><span class="marked1"><a name="line271" />271       replace_in_panes(@panes, 
+</span><span class="inferred0"><a name="line272" />272                        currentpane, 
+</span><span class="inferred1"><a name="line273" />273                        {&quot;split&quot; =&gt; &quot;horizontal&quot;,
+</span><span class="inferred0"><a name="line274" />274                          &quot;paned&quot; =&gt; hpaned,
+</span><span class="inferred1"><a name="line275" />275                          &quot;left&quot; =&gt; currentpane,
+</span><span class="inferred0"><a name="line276" />276                          &quot;right&quot; =&gt; newpane })
+</span><span class="marked1"><a name="line277" />277       @notebook_to_pane[new_notebook] = newpane
+</span><span class="marked0"><a name="line278" />278       Redcar.current_pane = newpane
+</span><span class="marked1"><a name="line279" />279       return hpaned, newpane
+</span><span class="inferred0"><a name="line280" />280     end
+</span><span class="inferred1"><a name="line281" />281     
+</span><span class="marked0"><a name="line282" />282     def split_vertical(current_notebook)
+</span><span class="marked1"><a name="line283" />283       paned = current_notebook.parent
+</span><span class="marked0"><a name="line284" />284       new_notebook = make_new_notebook
+</span><span class="inferred1"><a name="line285" />285       #       return nil unless @paneds.include? paned
+</span><span class="marked0"><a name="line286" />286       if paned.child1 == current_notebook # (on the top)
+</span><span class="marked1"><a name="line287" />287         paned.remove(current_notebook)
+</span><span class="marked0"><a name="line288" />288         vpaned = Gtk::VPaned.new
+</span><span class="marked1"><a name="line289" />289         vpaned.add(current_notebook)
+</span><span class="marked0"><a name="line290" />290         vpaned.add(new_notebook)
+</span><span class="marked1"><a name="line291" />291         paned.add1(vpaned)
+</span><span class="inferred0"><a name="line292" />292       else
+</span><span class="marked1"><a name="line293" />293         paned.remove(current_notebook)
+</span><span class="marked0"><a name="line294" />294         vpaned = Gtk::VPaned.new
+</span><span class="marked1"><a name="line295" />295         vpaned.add(current_notebook)
+</span><span class="marked0"><a name="line296" />296         vpaned.add(new_notebook)
+</span><span class="marked1"><a name="line297" />297         paned.add2(vpaned)
+</span><span class="inferred0"><a name="line298" />298       end
+</span><span class="marked1"><a name="line299" />299       vpaned.show
+</span><span class="marked0"><a name="line300" />300       vpaned.position = 200
+</span><span class="inferred1"><a name="line301" />301       
+</span><span class="inferred0"><a name="line302" />302       # update Panes tracking information
+</span><span class="marked1"><a name="line303" />303       currentpane = @notebook_to_pane[current_notebook]
+</span><span class="marked0"><a name="line304" />304       newpane = Redcar::Pane.new(self, new_notebook)
+</span><span class="marked1"><a name="line305" />305       replace_in_panes(@panes, 
+</span><span class="inferred0"><a name="line306" />306                        currentpane, 
+</span><span class="inferred1"><a name="line307" />307                        {&quot;split&quot; =&gt; &quot;vertical&quot;,
+</span><span class="inferred0"><a name="line308" />308                          &quot;paned&quot; =&gt; vpaned,
+</span><span class="inferred1"><a name="line309" />309                          &quot;top&quot; =&gt; currentpane,
+</span><span class="inferred0"><a name="line310" />310                          &quot;bottom&quot; =&gt; newpane })
+</span><span class="marked1"><a name="line311" />311       @notebook_to_pane[new_notebook] = newpane
+</span><span class="marked0"><a name="line312" />312       Redcar.current_pane = newpane
+</span><span class="marked1"><a name="line313" />313       return vpaned, newpane
+</span><span class="inferred0"><a name="line314" />314     end
+</span><span class="inferred1"><a name="line315" />315     
+</span><span class="marked0"><a name="line316" />316     def unify(current_notebook)
+</span><span class="marked1"><a name="line317" />317       Redcar.event :unify, @notebook_to_pane[current_notebook]
+</span><span class="marked0"><a name="line318" />318       paned = current_notebook.parent
+</span><span class="marked1"><a name="line319" />319       upper_paned = paned.parent
+</span><span class="marked0"><a name="line320" />320       return if paned.children.length == 1
+</span><span class="marked1"><a name="line321" />321       other_notebook = paned.children.find {|p| p != current_notebook}
+</span><span class="marked0"><a name="line322" />322       if paned.child1 == current_notebook
+</span><span class="marked1"><a name="line323" />323         single_notebook = current_notebook
+</span><span class="marked0"><a name="line324" />324         removed_notebook = other_notebook
+</span><span class="inferred1"><a name="line325" />325       else
+</span><span class="marked0"><a name="line326" />326         single_notebook = other_notebook
+</span><span class="marked1"><a name="line327" />327         removed_notebook = current_notebook
+</span><span class="inferred0"><a name="line328" />328       end
+</span><span class="inferred1"><a name="line329" />329       #       if single_notebook.is_a? Gtk::HPaned or
+</span><span class="inferred0"><a name="line330" />330       #           single_notebook.is_a? Gtk::VPaned
+</span><span class="inferred1"><a name="line331" />331       #         single_notebook = unify(single_notebook.children.first)
+</span><span class="inferred0"><a name="line332" />332       #       end
+</span><span class="inferred1"><a name="line333" />333       if removed_notebook.is_a? Gtk::HPaned or
+</span><span class="marked0"><a name="line334" />334           removed_notebook.is_a? Gtk::VPaned
+</span><span class="marked1"><a name="line335" />335         removed_notebook = unify(removed_notebook.children.first)
+</span><span class="inferred0"><a name="line336" />336       end
+</span><span class="marked1"><a name="line337" />337       paned.remove(single_notebook)
+</span><span class="marked0"><a name="line338" />338       paned.remove(removed_notebook)
+</span><span class="marked1"><a name="line339" />339       single_pane = @notebook_to_pane[single_notebook]
+</span><span class="marked0"><a name="line340" />340       removed_pane = @notebook_to_pane[removed_notebook]
+</span><span class="marked1"><a name="line341" />341       removed_pane.tabs.each do |tab|
+</span><span class="marked0"><a name="line342" />342         removed_pane.migrate_tab(tab, single_pane)
+</span><span class="inferred1"><a name="line343" />343 #         removed_notebook.move_document(doc, single_notebook)
+</span><span class="inferred0"><a name="line344" />344 #         single_pane.add_tab(removed_pane.tab_from_doc(doc))
+</span><span class="inferred1"><a name="line345" />345       end
+</span><span class="marked0"><a name="line346" />346       if upper_paned.child1 == paned
+</span><span class="marked1"><a name="line347" />347         upper_paned.remove(paned)
+</span><span class="marked0"><a name="line348" />348         upper_paned.add1(single_notebook)
+</span><span class="inferred1"><a name="line349" />349       else
+</span><span class="marked0"><a name="line350" />350         upper_paned.remove(paned)
+</span><span class="marked1"><a name="line351" />351         upper_paned.add2(single_notebook)
+</span><span class="inferred0"><a name="line352" />352       end
+</span><span class="marked1"><a name="line353" />353       paned.hide
+</span><span class="marked0"><a name="line354" />354       removed_notebook.hide  #TODO: should these be delete or similar?
+</span><span class="marked1"><a name="line355" />355       Redcar.window_controller.notebook_removed(self, removed_notebook)
+</span><span class="marked0"><a name="line356" />356       if paned.is_a? Gtk::HPaned
+</span><span class="marked1"><a name="line357" />357         hv = :h
+</span><span class="inferred0"><a name="line358" />358       else
+</span><span class="marked1"><a name="line359" />359         hv = :v
+</span><span class="inferred0"><a name="line360" />360       end
+</span><span class="marked1"><a name="line361" />361       replace_in_panes(@panes, 
+</span><span class="inferred0"><a name="line362" />362                        paned,
+</span><span class="inferred1"><a name="line363" />363                        @notebook_to_pane[single_notebook])
+</span><span class="marked0"><a name="line364" />364       @notebook_to_pane[removed_notebook] = nil
+</span><span class="marked1"><a name="line365" />365       pane = @notebook_to_pane[single_notebook]
+</span><span class="marked0"><a name="line366" />366       Redcar.current_pane = pane
+</span><span class="marked1"><a name="line367" />367       pane.notebook
+</span><span class="inferred0"><a name="line368" />368     end
+</span><span class="inferred1"><a name="line369" />369   end
+</span><span class="inferred0"><a name="line370" />370 end
+</span></pre><hr />    <p>Generated using the <a href='http://eigenclass.org/hiki.rb?rcov'>rcov code coverage analysis tool for Ruby</a> version 0.7.0.</p><p>
+          <a href='http://validator.w3.org/check/referer'>
+            <img src='http://www.w3.org/Icons/valid-xhtml10' height='31' alt='Valid XHTML 1.0!' width='88' />
+          </a>
+          <a href='http://jigsaw.w3.org/css-validator/check/referer'>
+            <img src='http://jigsaw.w3.org/css-validator/images/vcss' alt='Valid CSS!' style='border:0;width:88px;height:31px' />
+          </a>
+        </p>
+      </body>
+    </html>

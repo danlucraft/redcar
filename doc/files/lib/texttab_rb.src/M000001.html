@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>ask_and_save_tab (lib/texttab.rb)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/texttab.rb, line 706</span>
+<span class="ruby-keyword kw">def</span> <span class="ruby-identifier">ask_and_save_tab</span>(<span class="ruby-identifier">tab</span>)
+  <span class="ruby-identifier">tab</span>.<span class="ruby-identifier">focus</span>
+  <span class="ruby-identifier">dialog</span> = <span class="ruby-constant">Redcar</span><span class="ruby-operator">::</span><span class="ruby-constant">Dialog</span>.<span class="ruby-identifier">build</span>(<span class="ruby-identifier">:title</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;Save?&quot;</span>,
+                                <span class="ruby-identifier">:buttons</span> =<span class="ruby-operator">&gt;</span> [<span class="ruby-identifier">:Save</span>, <span class="ruby-identifier">:Discard</span>, <span class="ruby-identifier">:Cancel</span>],
+                                <span class="ruby-identifier">:message</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;Tab modified. Save or discard?&quot;</span>)
+  <span class="ruby-identifier">dialog</span>.<span class="ruby-identifier">on_button</span>(<span class="ruby-identifier">:Save</span>) <span class="ruby-keyword kw">do</span>
+    <span class="ruby-identifier">dialog</span>.<span class="ruby-identifier">close</span>
+    <span class="ruby-identifier">tab</span>.<span class="ruby-identifier">save</span>
+    <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">tab</span>.<span class="ruby-identifier">modified?</span>
+      <span class="ruby-identifier">tab</span>.<span class="ruby-identifier">close!</span>
+    <span class="ruby-keyword kw">end</span>
+  <span class="ruby-keyword kw">end</span>
+  <span class="ruby-identifier">dialog</span>.<span class="ruby-identifier">on_button</span>(<span class="ruby-identifier">:Discard</span>) <span class="ruby-keyword kw">do</span>
+    <span class="ruby-identifier">dialog</span>.<span class="ruby-identifier">close</span>
+    <span class="ruby-identifier">tab</span>.<span class="ruby-identifier">close!</span>
+  <span class="ruby-keyword kw">end</span>
+  <span class="ruby-identifier">dialog</span>.<span class="ruby-identifier">on_button</span>(<span class="ruby-identifier">:Cancel</span>) <span class="ruby-keyword kw">do</span>
+    <span class="ruby-identifier">dialog</span>.<span class="ruby-identifier">close</span>
+  <span class="ruby-keyword kw">end</span>
+  <span class="ruby-identifier">dialog</span>.<span class="ruby-identifier">show</span> <span class="ruby-identifier">:modal</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">true</span>
+<span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

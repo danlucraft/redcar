@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>parse_line (Redcar::Grammar::Parser)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/old_syntax.rb, line 188</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">parse_line</span>(<span class="ruby-identifier">line</span>, <span class="ruby-identifier">line_num</span>)
+        <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">line_num</span> <span class="ruby-operator">&lt;</span> <span class="ruby-ivar">@lines</span>.<span class="ruby-identifier">length</span>
+          <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-value str">&quot;cannot parse line that does not already exist&quot;</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-identifier">current</span>    = <span class="ruby-ivar">@lines</span>[<span class="ruby-identifier">line_num</span>]
+        <span class="ruby-identifier">new_scopes</span> = []
+        
+        <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;current: #{current.inspect}&quot;</span>
+        <span class="ruby-identifier">start_scope</span> = <span class="ruby-identifier">line_start</span>(<span class="ruby-identifier">line_num</span>)
+        <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;start_scope: #{start_scope.inspect}&quot;</span>
+        <span class="ruby-identifier">end_scope</span>   = <span class="ruby-identifier">line_end</span>(<span class="ruby-identifier">line_num</span>)
+        <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;end_scope: #{end_scope.inspect}&quot;</span>
+        
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">start_scope</span>.<span class="ruby-identifier">respond_to?</span> <span class="ruby-identifier">:grammar</span>
+          <span class="ruby-identifier">active_grammar</span> = <span class="ruby-identifier">start_scope</span>.<span class="ruby-identifier">grammar</span>
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-identifier">active_grammar</span> = <span class="ruby-identifier">grammar_for_scope</span>(<span class="ruby-identifier">start_scope</span>)
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;active_grammar: #{active_grammar.inspect}&quot;</span>
+        
+        <span class="ruby-identifier">pos</span> = <span class="ruby-value">0</span>
+        <span class="ruby-identifier">current_scope</span> = <span class="ruby-identifier">start_scope</span>
+        
+        <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">pos</span> <span class="ruby-operator">&lt;</span> <span class="ruby-identifier">line</span>.<span class="ruby-identifier">length</span>
+          <span class="ruby-identifier">puts</span>
+          <span class="ruby-identifier">rest_line</span> = <span class="ruby-identifier">line</span>[<span class="ruby-identifier">pos</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>]
+          <span class="ruby-identifier">p</span> <span class="ruby-identifier">rest_line</span>
+          <span class="ruby-identifier">pps</span> = <span class="ruby-identifier">active_grammar</span>.<span class="ruby-identifier">possible_patterns</span>(<span class="ruby-identifier">current_scope</span>)
+          <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;current_scope: #{current_scope.inspect}&quot;</span>
+          <span class="ruby-identifier">puts</span> <span class="ruby-value str">&quot;possible patterns:&quot;</span>
+          <span class="ruby-identifier">pps</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">p</span><span class="ruby-operator">|</span> <span class="ruby-identifier">p</span> <span class="ruby-identifier">p</span>}
+          <span class="ruby-identifier">new_scope_markers</span> = []
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">current_scope</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">ScopeMarker</span>
+            <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;closing regexp: #{current_scope.closing_regexp}&quot;</span>
+            <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">md</span> = <span class="ruby-constant">Regexp</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">current_scope</span>.<span class="ruby-identifier">closing_regexp</span>).<span class="ruby-identifier">match</span>(<span class="ruby-identifier">rest_line</span>)
+              <span class="ruby-identifier">p</span> <span class="ruby-identifier">:closing_matches</span>
+              <span class="ruby-identifier">sm</span> = <span class="ruby-constant">CloseScopeMarker</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">md</span>.<span class="ruby-identifier">pre_match</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">+</span><span class="ruby-identifier">pos</span>,
+                                        <span class="ruby-identifier">md</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">+</span><span class="ruby-identifier">md</span>.<span class="ruby-identifier">pre_match</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">+</span><span class="ruby-identifier">pos</span>,
+                                        <span class="ruby-identifier">current_scope</span>.<span class="ruby-identifier">pattern</span>, <span class="ruby-identifier">active_grammar</span>,
+                                        <span class="ruby-identifier">md</span>, <span class="ruby-keyword kw">nil</span>)
+              <span class="ruby-identifier">new_scope_markers</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">sm</span>
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">end</span>
+          <span class="ruby-identifier">puts</span> <span class="ruby-value str">&quot;matches:&quot;</span>
+          <span class="ruby-identifier">pps</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">pattern</span><span class="ruby-operator">|</span>
+            <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">pattern</span>
+            <span class="ruby-keyword kw">when</span> <span class="ruby-constant">SinglePattern</span>
+              <span class="ruby-identifier">md</span> = <span class="ruby-constant">Regexp</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">pattern</span>.<span class="ruby-identifier">match</span>).<span class="ruby-identifier">match</span>(<span class="ruby-identifier">rest_line</span>)
+              <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">md</span>
+                <span class="ruby-identifier">puts</span> <span class="ruby-value str">&quot;matched SinglePattern&quot;</span>
+                <span class="ruby-identifier">p</span> <span class="ruby-identifier">md</span>.<span class="ruby-identifier">to_s</span>
+                <span class="ruby-identifier">p</span> <span class="ruby-identifier">md</span>.<span class="ruby-identifier">captures</span>
+                <span class="ruby-identifier">p</span> <span class="ruby-identifier">md</span>.<span class="ruby-identifier">pre_match</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">+</span><span class="ruby-identifier">pos</span>
+                <span class="ruby-identifier">p</span> <span class="ruby-identifier">md</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">+</span><span class="ruby-identifier">md</span>.<span class="ruby-identifier">pre_match</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">+</span><span class="ruby-identifier">pos</span>
+                <span class="ruby-identifier">sm</span> = <span class="ruby-constant">SingleScopeMarker</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">md</span>.<span class="ruby-identifier">pre_match</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">+</span><span class="ruby-identifier">pos</span>,
+                                           <span class="ruby-identifier">md</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">+</span><span class="ruby-identifier">md</span>.<span class="ruby-identifier">pre_match</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">+</span><span class="ruby-identifier">pos</span>,
+                                           <span class="ruby-identifier">pattern</span>, <span class="ruby-identifier">active_grammar</span>,
+                                           <span class="ruby-identifier">md</span>, <span class="ruby-identifier">current_scope</span>)
+                <span class="ruby-identifier">new_scope_markers</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">sm</span>
+              <span class="ruby-keyword kw">end</span>
+            <span class="ruby-keyword kw">when</span> <span class="ruby-constant">DoublePattern</span>
+              <span class="ruby-identifier">md</span> = <span class="ruby-constant">Regexp</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">pattern</span>.<span class="ruby-identifier">begin</span>).<span class="ruby-identifier">match</span>(<span class="ruby-identifier">rest_line</span>)
+              <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">md</span>
+                <span class="ruby-identifier">puts</span> <span class="ruby-value str">&quot;matched DoublePattern&quot;</span>
+                <span class="ruby-identifier">p</span> <span class="ruby-identifier">md</span>.<span class="ruby-identifier">to_s</span>
+                <span class="ruby-identifier">p</span> <span class="ruby-identifier">md</span>.<span class="ruby-identifier">captures</span>
+                <span class="ruby-identifier">p</span> <span class="ruby-identifier">md</span>.<span class="ruby-identifier">pre_match</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">+</span><span class="ruby-identifier">pos</span>
+                <span class="ruby-identifier">p</span> <span class="ruby-identifier">md</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">+</span><span class="ruby-identifier">md</span>.<span class="ruby-identifier">pre_match</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">+</span><span class="ruby-identifier">pos</span>
+                <span class="ruby-identifier">sm</span> = <span class="ruby-constant">OpenScopeMarker</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">md</span>.<span class="ruby-identifier">pre_match</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">+</span><span class="ruby-identifier">pos</span>,
+                                         <span class="ruby-identifier">md</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">+</span><span class="ruby-identifier">md</span>.<span class="ruby-identifier">pre_match</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">+</span><span class="ruby-identifier">pos</span>,
+                                         <span class="ruby-identifier">pattern</span>, <span class="ruby-identifier">active_grammar</span>,
+                                         <span class="ruby-identifier">md</span>, <span class="ruby-identifier">current_scope</span>)
+                <span class="ruby-identifier">sm</span>.<span class="ruby-identifier">previous_scope</span> = <span class="ruby-identifier">current_scope</span>
+                <span class="ruby-identifier">sm</span>.<span class="ruby-identifier">closing_regexp</span> = <span class="ruby-identifier">build_closing_regexp</span>(<span class="ruby-identifier">pattern</span>, <span class="ruby-identifier">md</span>)
+                <span class="ruby-identifier">new_scope_markers</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">sm</span>
+              <span class="ruby-keyword kw">end</span>
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">new_scope_markers</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+            <span class="ruby-identifier">first_new_scope</span> = <span class="ruby-identifier">new_scope_markers</span>.<span class="ruby-identifier">sort_by</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">sm</span><span class="ruby-operator">|</span> <span class="ruby-identifier">sm</span>.<span class="ruby-identifier">from</span> }[<span class="ruby-value">0</span>]
+            <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;first_new_scope: #{first_new_scope.pattern.inspect}&quot;</span>
+            <span class="ruby-identifier">new_scopes</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">first_new_scope</span>
+            <span class="ruby-identifier">pos</span> = <span class="ruby-identifier">first_new_scope</span>.<span class="ruby-identifier">to</span>
+            <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">first_new_scope</span>.<span class="ruby-identifier">pattern</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">DoublePattern</span>
+              <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">first_new_scope</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">OpenScopeMarker</span>
+                <span class="ruby-identifier">current_scope</span> = <span class="ruby-identifier">first_new_scope</span>
+              <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">first_new_scope</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">CloseScopeMarker</span>
+                <span class="ruby-identifier">puts</span> <span class="ruby-value str">&quot;resetting scope to previous&quot;</span>
+                <span class="ruby-identifier">current_scope</span> = <span class="ruby-identifier">current_scope</span>.<span class="ruby-identifier">previous_scope</span>
+              <span class="ruby-keyword kw">else</span>
+                <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-value str">&quot;unknown scope marker&quot;</span>
+              <span class="ruby-keyword kw">end</span>
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">else</span>
+            <span class="ruby-identifier">pos</span> = <span class="ruby-identifier">line</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-identifier">p</span> <span class="ruby-identifier">new_scopes</span>.<span class="ruby-identifier">map</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">sm</span><span class="ruby-operator">|</span> <span class="ruby-node">&quot;#{sm.from}-#{sm.to}:#{sm.pattern.name} (#{sm.matchdata.to_s})&quot;</span>}
+        
+        <span class="ruby-ivar">@lines</span>[<span class="ruby-identifier">line_num</span>] = <span class="ruby-identifier">new_scopes</span>
+        <span class="ruby-identifier">new_scopes</span>.<span class="ruby-identifier">last</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">end_scope</span>
+      <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

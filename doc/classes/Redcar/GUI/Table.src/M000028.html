@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>new (Redcar::GUI::Table)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/list_abstraction.rb, line 24</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">options</span>={})
+        <span class="ruby-identifier">options</span> = <span class="ruby-identifier">process_params</span>(<span class="ruby-identifier">options</span>,
+                                 { <span class="ruby-identifier">:columns</span> =<span class="ruby-operator">&gt;</span> [{ <span class="ruby-identifier">:type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">String</span> }],
+                                   <span class="ruby-identifier">:multiple_select</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>})
+        <span class="ruby-identifier">columntypes</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:columns</span>].<span class="ruby-identifier">map</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">h</span><span class="ruby-operator">|</span> <span class="ruby-identifier">h</span>[<span class="ruby-identifier">:type</span>]}
+        <span class="ruby-ivar">@options</span> = <span class="ruby-identifier">options</span>
+        <span class="ruby-identifier">ordered_standard_types</span> = <span class="ruby-constant">STANDARD_COLUMNS</span>.<span class="ruby-identifier">values</span>.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">ind</span><span class="ruby-operator">|</span> 
+          <span class="ruby-constant">STANDARD_COLUMN_TYPES</span>[<span class="ruby-constant">STANDARD_COLUMNS</span>.<span class="ruby-identifier">invert</span>[<span class="ruby-identifier">ind</span>]]
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-ivar">@liststore</span> = <span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">ListStore</span>.<span class="ruby-identifier">new</span>(<span class="ruby-operator">*</span>(<span class="ruby-identifier">ordered_standard_types</span><span class="ruby-operator">+</span><span class="ruby-identifier">columntypes</span>))
+        <span class="ruby-ivar">@treeview</span> = <span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">TreeView</span>.<span class="ruby-identifier">new</span>(<span class="ruby-ivar">@liststore</span>)
+        <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:multiple_select</span>]
+          <span class="ruby-ivar">@treeview</span>.<span class="ruby-identifier">selection</span>.<span class="ruby-identifier">mode</span> = <span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">SELECTION_MULTIPLE</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-identifier">any_headers</span> = <span class="ruby-keyword kw">false</span>
+        <span class="ruby-constant">STANDARD_COLUMNS</span>.<span class="ruby-identifier">values</span>.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">index</span><span class="ruby-operator">|</span>
+          <span class="ruby-keyword kw">case</span> <span class="ruby-constant">STANDARD_COLUMN_TYPES</span>[<span class="ruby-constant">STANDARD_COLUMNS</span>.<span class="ruby-identifier">invert</span>[<span class="ruby-identifier">index</span>]].<span class="ruby-identifier">to_s</span>
+          <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;String&quot;</span>, <span class="ruby-value str">&quot;Integer&quot;</span>
+            <span class="ruby-identifier">renderer</span> = <span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">CellRendererText</span>.<span class="ruby-identifier">new</span>
+          <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;TrueClass&quot;</span>
+            <span class="ruby-identifier">renderer</span> = <span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">CellRendererToggle</span>.<span class="ruby-identifier">new</span>
+          <span class="ruby-keyword kw">end</span>
+          <span class="ruby-identifier">column</span> = <span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">TreeViewColumn</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">STANDARD_COLUMNS</span>.<span class="ruby-identifier">invert</span>[<span class="ruby-identifier">index</span>].<span class="ruby-identifier">to_s</span>, 
+                                           <span class="ruby-identifier">renderer</span>, 
+                                           <span class="ruby-keyword kw">nil</span>)
+          <span class="ruby-identifier">column</span>.<span class="ruby-identifier">visible</span> = <span class="ruby-keyword kw">false</span>
+          <span class="ruby-ivar">@treeview</span>.<span class="ruby-identifier">append_column</span>(<span class="ruby-identifier">column</span>)
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-identifier">i</span> = <span class="ruby-constant">FIRST_COL</span>
+        <span class="ruby-ivar">@options</span>[<span class="ruby-identifier">:columns</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">columnhash</span><span class="ruby-operator">|</span>
+          <span class="ruby-identifier">columnhash</span> = <span class="ruby-identifier">process_params</span>(<span class="ruby-identifier">columnhash</span>, 
+                                      { <span class="ruby-identifier">:type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">String</span>,
+                                        <span class="ruby-identifier">:heading</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;&quot;</span>,
+                                        <span class="ruby-identifier">:sortable</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">true</span> })
+          <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">columnhash</span>[<span class="ruby-identifier">:type</span>].<span class="ruby-identifier">to_s</span>
+          <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;String&quot;</span>, <span class="ruby-value str">&quot;Integer&quot;</span>
+            <span class="ruby-identifier">renderer</span> = <span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">CellRendererText</span>.<span class="ruby-identifier">new</span>
+          <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;TrueClass&quot;</span>
+            <span class="ruby-identifier">renderer</span> = <span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">CellRendererToggle</span>.<span class="ruby-identifier">new</span>
+          <span class="ruby-keyword kw">end</span>
+          <span class="ruby-identifier">any_headers</span> = <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">columnhash</span>[<span class="ruby-identifier">:heading</span>]
+          <span class="ruby-identifier">column</span> = <span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">TreeViewColumn</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">columnhash</span>[<span class="ruby-identifier">:heading</span>]<span class="ruby-operator">||</span><span class="ruby-value str">&quot;&quot;</span>,
+                                           <span class="ruby-identifier">renderer</span>,
+                                           <span class="ruby-value str">'text'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">i</span>,
+                                           <span class="ruby-value str">'foreground-set'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">STANDARD_COLUMNS</span>[<span class="ruby-identifier">:foreground_set</span>],
+                                           <span class="ruby-value str">'foreground'</span>     =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">STANDARD_COLUMNS</span>[<span class="ruby-identifier">:foreground</span>],
+                                           <span class="ruby-value str">'background-set'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">STANDARD_COLUMNS</span>[<span class="ruby-identifier">:background_set</span>],
+                                           <span class="ruby-value str">'background'</span>     =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">STANDARD_COLUMNS</span>[<span class="ruby-identifier">:background</span>],
+                                           <span class="ruby-value str">'strikethrough'</span>  =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">STANDARD_COLUMNS</span>[<span class="ruby-identifier">:strikethrough</span>]
+                                           )
+          <span class="ruby-identifier">column</span>.<span class="ruby-identifier">set_sort_column_id</span>(<span class="ruby-identifier">i</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">columnhash</span>[<span class="ruby-identifier">:sortable</span>]
+          <span class="ruby-ivar">@treeview</span>.<span class="ruby-identifier">append_column</span>(<span class="ruby-identifier">column</span>)
+          <span class="ruby-identifier">i</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-ivar">@treeview</span>.<span class="ruby-identifier">headers_visible</span> = <span class="ruby-identifier">any_headers</span>
+      <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

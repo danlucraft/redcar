@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>issue_from_gdk_eventkey (Redcar::Keystrokes)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/command.rb, line 252</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">issue_from_gdk_eventkey</span>(<span class="ruby-identifier">gdk_eventkey</span>)
+      <span class="ruby-identifier">keyname</span> = <span class="ruby-value str">&quot; &quot;</span>
+      <span class="ruby-identifier">keyname</span>[<span class="ruby-value">0</span>] = <span class="ruby-constant">Gdk</span><span class="ruby-operator">::</span><span class="ruby-constant">Keyval</span>.<span class="ruby-identifier">to_unicode</span>(<span class="ruby-identifier">gdk_eventkey</span>.<span class="ruby-identifier">keyval</span>)
+      <span class="ruby-identifier">keyname</span> = <span class="ruby-constant">Gdk</span><span class="ruby-operator">::</span><span class="ruby-constant">Keyval</span>.<span class="ruby-identifier">to_name</span>(<span class="ruby-identifier">gdk_eventkey</span>.<span class="ruby-identifier">keyval</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">keyname</span><span class="ruby-operator">==</span><span class="ruby-value str">&quot;\000&quot;</span>
+      <span class="ruby-identifier">gdk_modifier_type</span> = <span class="ruby-identifier">gdk_eventkey</span>.<span class="ruby-identifier">state</span>
+      <span class="ruby-identifier">modifiers</span> = []
+      <span class="ruby-identifier">modifiers</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">:control</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">gdk_modifier_type</span>.<span class="ruby-identifier">control_mask?</span>
+      <span class="ruby-identifier">modifiers</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">:alt</span>     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">gdk_modifier_type</span>.<span class="ruby-identifier">mod1_mask?</span>
+      <span class="ruby-identifier">modifiers</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">:caps</span>    <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">gdk_modifier_type</span>.<span class="ruby-identifier">lock_mask?</span>
+      <span class="ruby-identifier">modifiers</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">:shift</span>   <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">gdk_modifier_type</span>.<span class="ruby-identifier">shift_mask?</span>
+      <span class="ruby-identifier">modifiers</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">:super</span>   <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">gdk_modifier_type</span>.<span class="ruby-identifier">mod4_mask?</span>
+      
+      <span class="ruby-identifier">keybinding</span> = <span class="ruby-constant">KeyBinding</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">modifiers</span>, <span class="ruby-identifier">keyname</span>)
+      <span class="ruby-identifier">issue_from_keybinding</span>(<span class="ruby-identifier">keybinding</span>)
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby
+
+file = ENV['TM_CURRENT_WORD'].to_s + '.rb'
+dir = $:.find { |d| File.exist?(File.join(d, file)) }
+
+if dir &amp;&amp; file then
+  ENV['FILE'] = File.join(dir, file)
+  %x{ "$TM_SUPPORT_PATH/bin/mate" "$FILE" }
+else
+  puts "File not found."
+end
+</string>
+	<key>input</key>
+	<string>none</string>
+	<key>keyEquivalent</key>
+	<string>@D</string>
+	<key>name</key>
+	<string>Open Require</string>
+	<key>output</key>
+	<string>showAsTooltip</string>
+	<key>scope</key>
+	<string>source.ruby</string>
+	<key>uuid</key>
+	<string>8646378E-91F5-4771-AC7C-43FC49A93576</string>
+</dict>
+</plist>

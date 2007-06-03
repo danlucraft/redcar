@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Class: Redcar::StatusBar</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Class</strong></td>
+          <td class="class-name-in-header">Redcar::StatusBar</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../../files/lib/statusbar_rb.html">
+                lib/statusbar.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        <tr class="top-aligned-row">
+            <td><strong>Parent:</strong></td>
+            <td>
+                Object
+            </td>
+        </tr>
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+
+
+   </div>
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+      <a href="#M000200">clear_histories</a>&nbsp;&nbsp;
+      <a href="#M000192">main</a>&nbsp;&nbsp;
+      <a href="#M000190">main=</a>&nbsp;&nbsp;
+      <a href="#M000194">main_clear</a>&nbsp;&nbsp;
+      <a href="#M000193">main_history</a>&nbsp;&nbsp;
+      <a href="#M000191">main_time</a>&nbsp;&nbsp;
+      <a href="#M000187">statusbar1</a>&nbsp;&nbsp;
+      <a href="#M000186">statusbar1=</a>&nbsp;&nbsp;
+      <a href="#M000189">statusbar2</a>&nbsp;&nbsp;
+      <a href="#M000188">statusbar2=</a>&nbsp;&nbsp;
+      <a href="#M000195">sub</a>&nbsp;&nbsp;
+      <a href="#M000197">sub=</a>&nbsp;&nbsp;
+      <a href="#M000199">sub_clear</a>&nbsp;&nbsp;
+      <a href="#M000198">sub_history</a>&nbsp;&nbsp;
+      <a href="#M000196">sub_time</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+    <div id="constants-list">
+      <h3 class="section-bar">Constants</h3>
+
+      <div class="name-list">
+        <table summary="Constants">
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">MAX_LENGTH</td>
+          <td>=</td>
+          <td class="context-item-value">100</td>
+        </tr>
+        </table>
+      </div>
+    </div>
+
+
+
+      
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Public Class methods</h3>
+
+      <div id="method-M000200" class="method-detail">
+        <a name="M000200"></a>
+
+        <div class="method-heading">
+          <a href="StatusBar.src/M000200.html" target="Code" class="method-signature"
+            onclick="popupCode('StatusBar.src/M000200.html');return false;">
+          <span class="method-name">clear_histories</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000192" class="method-detail">
+        <a name="M000192"></a>
+
+        <div class="method-heading">
+          <a href="StatusBar.src/M000192.html" target="Code" class="method-signature"
+            onclick="popupCode('StatusBar.src/M000192.html');return false;">
+          <span class="method-name">main</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000190" class="method-detail">
+        <a name="M000190"></a>
+
+        <div class="method-heading">
+          <a href="StatusBar.src/M000190.html" target="Code" class="method-signature"
+            onclick="popupCode('StatusBar.src/M000190.html');return false;">
+          <span class="method-name">main=</span><span class="method-args">(text)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000194" class="method-detail">
+        <a name="M000194"></a>
+
+        <div class="method-heading">
+          <a href="StatusBar.src/M000194.html" target="Code" class="method-signature"
+            onclick="popupCode('StatusBar.src/M000194.html');return false;">
+          <span class="method-name">main_clear</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000193" class="method-detail">
+        <a name="M000193"></a>
+
+        <div class="method-heading">
+          <a href="StatusBar.src/M000193.html" target="Code" class="method-signature"
+            onclick="popupCode('StatusBar.src/M000193.html');return false;">
+          <span class="method-name">main_history</span><span class="method-args">(num)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000191" class="method-detail">
+        <a name="M000191"></a>
+
+        <div class="method-heading">
+          <a href="StatusBar.src/M000191.html" target="Code" class="method-signature"
+            onclick="popupCode('StatusBar.src/M000191.html');return false;">
+          <span class="method-name">main_time</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000187" class="method-detail">
+        <a name="M000187"></a>
+
+        <div class="method-heading">
+          <a href="StatusBar.src/M000187.html" target="Code" class="method-signature"
+            onclick="popupCode('StatusBar.src/M000187.html');return false;">
+          <span class="method-name">statusbar1</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000186" class="method-detail">
+        <a name="M000186"></a>
+
+        <div class="method-heading">
+          <a href="StatusBar.src/M000186.html" target="Code" class="method-signature"
+            onclick="popupCode('StatusBar.src/M000186.html');return false;">
+          <span class="method-name">statusbar1=</span><span class="method-args">(w)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000189" class="method-detail">
+        <a name="M000189"></a>
+
+        <div class="method-heading">
+          <a href="StatusBar.src/M000189.html" target="Code" class="method-signature"
+            onclick="popupCode('StatusBar.src/M000189.html');return false;">
+          <span class="method-name">statusbar2</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000188" class="method-detail">
+        <a name="M000188"></a>
+
+        <div class="method-heading">
+          <a href="StatusBar.src/M000188.html" target="Code" class="method-signature"
+            onclick="popupCode('StatusBar.src/M000188.html');return false;">
+          <span class="method-name">statusbar2=</span><span class="method-args">(w)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000195" class="method-detail">
+        <a name="M000195"></a>
+
+        <div class="method-heading">
+          <a href="StatusBar.src/M000195.html" target="Code" class="method-signature"
+            onclick="popupCode('StatusBar.src/M000195.html');return false;">
+          <span class="method-name">sub</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000197" class="method-detail">
+        <a name="M000197"></a>
+
+        <div class="method-heading">
+          <a href="StatusBar.src/M000197.html" target="Code" class="method-signature"
+            onclick="popupCode('StatusBar.src/M000197.html');return false;">
+          <span class="method-name">sub=</span><span class="method-args">(text)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000199" class="method-detail">
+        <a name="M000199"></a>
+
+        <div class="method-heading">
+          <a href="StatusBar.src/M000199.html" target="Code" class="method-signature"
+            onclick="popupCode('StatusBar.src/M000199.html');return false;">
+          <span class="method-name">sub_clear</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000198" class="method-detail">
+        <a name="M000198"></a>
+
+        <div class="method-heading">
+          <a href="StatusBar.src/M000198.html" target="Code" class="method-signature"
+            onclick="popupCode('StatusBar.src/M000198.html');return false;">
+          <span class="method-name">sub_history</span><span class="method-args">(num)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000196" class="method-detail">
+        <a name="M000196"></a>
+
+        <div class="method-heading">
+          <a href="StatusBar.src/M000196.html" target="Code" class="method-signature"
+            onclick="popupCode('StatusBar.src/M000196.html');return false;">
+          <span class="method-name">sub_time</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Module: Redcar::Undoable</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Module</strong></td>
+          <td class="class-name-in-header">Redcar::Undoable</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../../files/lib/undoable_rb.html">
+                lib/undoable.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+
+
+   </div>
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+      <a href="#M000121">any_undo?</a>&nbsp;&nbsp;
+      <a href="#M000120">append_features</a>&nbsp;&nbsp;
+      <a href="#M000123">clear_undo</a>&nbsp;&nbsp;
+      <a href="#M000126">to_undo</a>&nbsp;&nbsp;
+      <a href="#M000127">undo</a>&nbsp;&nbsp;
+      <a href="#M000124">undo_array</a>&nbsp;&nbsp;
+      <a href="#M000125">undo_stack</a>&nbsp;&nbsp;
+      <a href="#M000128">undo_tiny</a>&nbsp;&nbsp;
+      <a href="#M000122">undoable</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+    <div id="constants-list">
+      <h3 class="section-bar">Constants</h3>
+
+      <div class="name-list">
+        <table summary="Constants">
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">UndoItem</td>
+          <td>=</td>
+          <td class="context-item-value">Struct.new(:method_name, :args)</td>
+        </tr>
+        </table>
+      </div>
+    </div>
+
+
+
+      
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Public Class methods</h3>
+
+      <div id="method-M000120" class="method-detail">
+        <a name="M000120"></a>
+
+        <div class="method-heading">
+          <a href="Undoable.src/M000120.html" target="Code" class="method-signature"
+            onclick="popupCode('Undoable.src/M000120.html');return false;">
+          <span class="method-name">append_features</span><span class="method-args">(destclass)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <h3 class="section-bar">Public Instance methods</h3>
+
+      <div id="method-M000121" class="method-detail">
+        <a name="M000121"></a>
+
+        <div class="method-heading">
+          <a href="Undoable.src/M000121.html" target="Code" class="method-signature"
+            onclick="popupCode('Undoable.src/M000121.html');return false;">
+          <span class="method-name">any_undo?</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000123" class="method-detail">
+        <a name="M000123"></a>
+
+        <div class="method-heading">
+          <a href="Undoable.src/M000123.html" target="Code" class="method-signature"
+            onclick="popupCode('Undoable.src/M000123.html');return false;">
+          <span class="method-name">clear_undo</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000126" class="method-detail">
+        <a name="M000126"></a>
+
+        <div class="method-heading">
+          <a href="Undoable.src/M000126.html" target="Code" class="method-signature"
+            onclick="popupCode('Undoable.src/M000126.html');return false;">
+          <span class="method-name">to_undo</span><span class="method-args">(method_name=nil, *args, &amp;block)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Record the inverse of the method being called.
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000127" class="method-detail">
+        <a name="M000127"></a>
+
+        <div class="method-heading">
+          <a href="Undoable.src/M000127.html" target="Code" class="method-signature"
+            onclick="popupCode('Undoable.src/M000127.html');return false;">
+          <span class="method-name">undo</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Undoes the last action, or the last composite action.
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000124" class="method-detail">
+        <a name="M000124"></a>
+
+        <div class="method-heading">
+          <a href="Undoable.src/M000124.html" target="Code" class="method-signature"
+            onclick="popupCode('Undoable.src/M000124.html');return false;">
+          <span class="method-name">undo_array</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000125" class="method-detail">
+        <a name="M000125"></a>
+
+        <div class="method-heading">
+          <a href="Undoable.src/M000125.html" target="Code" class="method-signature"
+            onclick="popupCode('Undoable.src/M000125.html');return false;">
+          <span class="method-name">undo_stack</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000128" class="method-detail">
+        <a name="M000128"></a>
+
+        <div class="method-heading">
+          <a href="Undoable.src/M000128.html" target="Code" class="method-signature"
+            onclick="popupCode('Undoable.src/M000128.html');return false;">
+          <span class="method-name">undo_tiny</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Undoes the last action, or if this is a composite action, the last action
+within that composition.
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000122" class="method-detail">
+        <a name="M000122"></a>
+
+        <div class="method-heading">
+          <a href="Undoable.src/M000122.html" target="Code" class="method-signature"
+            onclick="popupCode('Undoable.src/M000122.html');return false;">
+          <span class="method-name">undoable</span><span class="method-args">() {|| ...}</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

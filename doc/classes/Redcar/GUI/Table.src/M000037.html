@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>on_double_click (Redcar::GUI::Table)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/list_abstraction.rb, line 149</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">on_double_click</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+        <span class="ruby-ivar">@on_double_click</span> = <span class="ruby-identifier">block</span>
+        <span class="ruby-ivar">@treeview</span>.<span class="ruby-identifier">signal_connect</span>(<span class="ruby-value str">'row-activated'</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">tv</span>, <span class="ruby-identifier">path</span>, <span class="ruby-identifier">col</span><span class="ruby-operator">|</span>
+          <span class="ruby-ivar">@on_double_click</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">get_row_from_path</span>(<span class="ruby-identifier">path</span>).<span class="ruby-identifier">tap</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">r</span><span class="ruby-operator">|</span> <span class="ruby-identifier">p</span> <span class="ruby-identifier">r</span>})
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

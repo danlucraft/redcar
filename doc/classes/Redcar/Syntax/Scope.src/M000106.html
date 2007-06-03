@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>scope_at (Redcar::Syntax::Scope)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/syntax/scope.rb, line 264</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">scope_at</span>(<span class="ruby-identifier">textloc</span>)
+        <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">start</span> <span class="ruby-operator">&lt;=</span> <span class="ruby-identifier">textloc</span>
+          <span class="ruby-keyword kw">if</span> ((<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">end</span><span class="ruby-operator">==</span><span class="ruby-keyword kw">nil</span>) <span class="ruby-keyword kw">or</span> (<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">end</span> <span class="ruby-operator">&gt;</span> <span class="ruby-identifier">textloc</span>))
+            <span class="ruby-comment cmt"># children has a tendency to be very long for 1 scope in each document,</span>
+            <span class="ruby-comment cmt"># so do a simple check that looks to see if it is the last child we need,</span>
+            <span class="ruby-comment cmt"># which it often is when we are parsing an entire tab.</span>
+            <span class="ruby-comment cmt"># TODO: should put a binary search here or something for fast lookup</span>
+            <span class="ruby-comment cmt"># even when it is not the last scope we need.</span>
+            <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">children</span>.<span class="ruby-identifier">last</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">children</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">end</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">children</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">end</span> <span class="ruby-operator">&lt;</span> <span class="ruby-identifier">textloc</span>
+              <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">self</span>
+            <span class="ruby-keyword kw">else</span>
+              <span class="ruby-identifier">children</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">cs</span><span class="ruby-operator">|</span>
+                <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">r</span> = <span class="ruby-identifier">cs</span>.<span class="ruby-identifier">scope_at</span>(<span class="ruby-identifier">textloc</span>)
+                  <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">r</span>
+                <span class="ruby-keyword kw">end</span>
+              <span class="ruby-keyword kw">end</span>
+              <span class="ruby-keyword kw">self</span>
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">else</span>
+            <span class="ruby-keyword kw">nil</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-comment cmt"># My start is too late.</span>
+          <span class="ruby-keyword kw">nil</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

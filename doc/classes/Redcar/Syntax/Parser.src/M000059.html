@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>delete_line (Redcar::Syntax::Parser)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/syntax/parser.rb, line 45</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">delete_line</span>(<span class="ruby-identifier">num</span>)
+<span class="ruby-comment cmt">#         before_scope = @scope_tree.scope_at(TextLoc.new(num, @text[num].length)) </span>
+<span class="ruby-comment cmt">#         @text.delete_at(num)</span>
+<span class="ruby-comment cmt">#         @fold_counts.delete_at(num)</span>
+<span class="ruby-comment cmt">#         @scope_tree.clear_between(num, num)</span>
+<span class="ruby-comment cmt">#         @scope_tree.shift_after(num, -1)</span>
+<span class="ruby-comment cmt">#         after_scope  = @scope_tree.scope_at(TextLoc.new(num, @text[num].length))</span>
+<span class="ruby-comment cmt">#         debug_puts &quot;before: #{before_scope.inspect}&quot;</span>
+<span class="ruby-comment cmt">#         debug_puts &quot;after:  #{after_scope.inspect}&quot;</span>
+<span class="ruby-comment cmt">#         starts = @scope_tree.scope_beginning_on_line(num)</span>
+<span class="ruby-comment cmt">#         ends = @scope_tree.scopes_ending_on_line(num)</span>
+<span class="ruby-comment cmt">#         affected_from = affected_to = num</span>
+<span class="ruby-comment cmt">#         unless starts.empty?</span>
+<span class="ruby-comment cmt">#           affected_to = starts.map do |s|</span>
+<span class="ruby-comment cmt">#             if s.end</span>
+<span class="ruby-comment cmt">#               s.end.line</span>
+<span class="ruby-comment cmt">#             else</span>
+<span class="ruby-comment cmt">#               @text.length</span>
+<span class="ruby-comment cmt">#             end</span>
+<span class="ruby-comment cmt">#           end.max</span>
+<span class="ruby-comment cmt">#         end</span>
+<span class="ruby-comment cmt">#         unless ends.empty?</span>
+<span class="ruby-comment cmt">#           affected_from = starts.map {|s| s.start.line}.min</span>
+<span class="ruby-comment cmt">#         end</span>
+<span class="ruby-comment cmt">#         @scope_tree.clear_between(</span>
+<span class="ruby-comment cmt">#         affected_from.upto(affected_to) do |reparse_line|</span>
+          
+<span class="ruby-comment cmt">#         end</span>
+<span class="ruby-comment cmt">#         until before_scope == after_scope</span>
+<span class="ruby-comment cmt">#           before_scope = @scope_tree.scope_at(TextLoc.new(num, @text[num].length)) </span>
+<span class="ruby-comment cmt">#           parse_line(@text[num], num)</span>
+<span class="ruby-comment cmt">#           after_scope  = @scope_tree.scope_at(TextLoc.new(num, @text[num].length))</span>
+<span class="ruby-comment cmt">#         debug_puts &quot;before: #{before_scope.inspect}&quot;</span>
+<span class="ruby-comment cmt">#         debug_puts &quot;after:  #{after_scope.inspect}&quot;</span>
+<span class="ruby-comment cmt">#           num += 1</span>
+<span class="ruby-comment cmt">#         end</span>
+        
+        <span class="ruby-identifier">before_scope</span> = <span class="ruby-ivar">@scope_tree</span>.<span class="ruby-identifier">scope_at</span>(<span class="ruby-constant">TextLoc</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">num</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>, <span class="ruby-ivar">@text</span>[<span class="ruby-identifier">num</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>].<span class="ruby-identifier">length</span>)) 
+        <span class="ruby-identifier">after_scope</span>  = <span class="ruby-ivar">@scope_tree</span>.<span class="ruby-identifier">scope_at</span>(<span class="ruby-constant">TextLoc</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">num</span>, <span class="ruby-ivar">@text</span>[<span class="ruby-identifier">num</span>].<span class="ruby-identifier">length</span>))
+        <span class="ruby-ivar">@text</span>.<span class="ruby-identifier">delete_at</span>(<span class="ruby-identifier">num</span>)
+        <span class="ruby-ivar">@fold_counts</span>.<span class="ruby-identifier">delete_at</span>(<span class="ruby-identifier">num</span>)
+        <span class="ruby-ivar">@scope_tree</span>.<span class="ruby-identifier">clear_between</span>(<span class="ruby-identifier">num</span>, <span class="ruby-identifier">num</span>)
+        <span class="ruby-ivar">@scope_tree</span>.<span class="ruby-identifier">shift_after</span>(<span class="ruby-identifier">num</span>, <span class="ruby-value">-1</span>)
+        <span class="ruby-identifier">debug_puts</span> <span class="ruby-node">&quot;before: #{before_scope.inspect}&quot;</span>
+        <span class="ruby-identifier">debug_puts</span> <span class="ruby-node">&quot;after:  #{after_scope.inspect}&quot;</span>
+        <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">before_scope</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">after_scope</span>
+          <span class="ruby-comment cmt"># if we have deleted a scope opener:</span>
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">after_scope</span>.<span class="ruby-identifier">child_of?</span> <span class="ruby-identifier">before_scope</span>
+            <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">after_scope</span>.<span class="ruby-identifier">end</span>
+              <span class="ruby-identifier">affected_until</span> = <span class="ruby-identifier">after_scope</span>.<span class="ruby-identifier">end</span>.<span class="ruby-identifier">line</span>
+            <span class="ruby-keyword kw">else</span>
+              <span class="ruby-identifier">affected_until</span> = <span class="ruby-ivar">@text</span>.<span class="ruby-identifier">length</span>
+            <span class="ruby-keyword kw">end</span>
+            <span class="ruby-ivar">@scope_tree</span>.<span class="ruby-identifier">clear_between</span>(<span class="ruby-identifier">num</span>, <span class="ruby-identifier">affected_until</span>)
+            <span class="ruby-identifier">num</span>.<span class="ruby-identifier">upto</span>(<span class="ruby-identifier">affected_until</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">reparse_num</span><span class="ruby-operator">|</span>
+              <span class="ruby-identifier">parse_line</span>(<span class="ruby-ivar">@text</span>[<span class="ruby-identifier">reparse_num</span>], <span class="ruby-identifier">reparse_num</span>)
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-comment cmt"># else if we have deleted a scope closer</span>
+          <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">before_scope</span>.<span class="ruby-identifier">child_of?</span> <span class="ruby-identifier">after_scope</span>
+            <span class="ruby-identifier">ending_scope</span> = <span class="ruby-identifier">before_scope</span>
+            <span class="ruby-keyword kw">until</span> <span class="ruby-identifier">ending_scope</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">after_scope</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">num</span> <span class="ruby-operator">==</span> <span class="ruby-ivar">@text</span>.<span class="ruby-identifier">length</span>
+              <span class="ruby-identifier">debug_puts</span> <span class="ruby-ivar">@scope_tree</span>.<span class="ruby-identifier">pretty</span>
+              <span class="ruby-identifier">parse_line</span>(<span class="ruby-ivar">@text</span>[<span class="ruby-identifier">num</span>], <span class="ruby-identifier">num</span>)
+              <span class="ruby-identifier">ending_scope</span> = <span class="ruby-ivar">@scope_tree</span>.<span class="ruby-identifier">scope_at</span>(<span class="ruby-constant">TextLoc</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">num</span>, <span class="ruby-ivar">@text</span>[<span class="ruby-identifier">num</span>].<span class="ruby-identifier">length</span>))
+              <span class="ruby-identifier">debug_puts</span> <span class="ruby-node">&quot;ending_scope:  #{ending_scope.inspect}&quot;</span>
+              <span class="ruby-identifier">num</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

@@ -1,0 +1,1201 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Class: Redcar::TextTab</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Class</strong></td>
+          <td class="class-name-in-header">Redcar::TextTab</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../../files/lib/syntax_rb.html">
+                lib/syntax.rb
+                </a>
+        <br />
+                <a href="../../files/lib/texttab_rb.html">
+                lib/texttab.rb
+                </a>
+        <br />
+                <a href="../../files/lib/tooltips_rb.html">
+                lib/tooltips.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        <tr class="top-aligned-row">
+            <td><strong>Parent:</strong></td>
+            <td>
+                Object
+            </td>
+        </tr>
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+
+
+   </div>
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+      <a href="#M000251">[]</a>&nbsp;&nbsp;
+      <a href="#M000252">[]=</a>&nbsp;&nbsp;
+      <a href="#M000277">above_offset</a>&nbsp;&nbsp;
+      <a href="#M000291">apply_theme</a>&nbsp;&nbsp;
+      <a href="#M000242">backspace</a>&nbsp;&nbsp;
+      <a href="#M000278">below_offset</a>&nbsp;&nbsp;
+      <a href="#M000268">char_count</a>&nbsp;&nbsp;
+      <a href="#M000290">close</a>&nbsp;&nbsp;
+      <a href="#M000292">colour</a>&nbsp;&nbsp;
+      <a href="#M000294">colour_line</a>&nbsp;&nbsp;
+      <a href="#M000293">colour_page</a>&nbsp;&nbsp;
+      <a href="#M000285">connect_signals</a>&nbsp;&nbsp;
+      <a href="#M000282">contents</a>&nbsp;&nbsp;
+      <a href="#M000253">contents=</a>&nbsp;&nbsp;
+      <a href="#M000240">copy</a>&nbsp;&nbsp;
+      <a href="#M000230">cursor=</a>&nbsp;&nbsp;
+      <a href="#M000270">cursor_line</a>&nbsp;&nbsp;
+      <a href="#M000272">cursor_line_offset</a>&nbsp;&nbsp;
+      <a href="#M000269">cursor_mark</a>&nbsp;&nbsp;
+      <a href="#M000271">cursor_offset</a>&nbsp;&nbsp;
+      <a href="#M000239">cut</a>&nbsp;&nbsp;
+      <a href="#M000243">del</a>&nbsp;&nbsp;
+      <a href="#M000256">delete</a>&nbsp;&nbsp;
+      <a href="#M000244">delete_selection</a>&nbsp;&nbsp;
+      <a href="#M000234">down</a>&nbsp;&nbsp;
+      <a href="#M000276">end_mark</a>&nbsp;&nbsp;
+      <a href="#M000257">find_next</a>&nbsp;&nbsp;
+      <a href="#M000284">focus</a>&nbsp;&nbsp;
+      <a href="#M000265">get_line</a>&nbsp;&nbsp;
+      <a href="#M000266">get_lines</a>&nbsp;&nbsp;
+      <a href="#M000255">insert</a>&nbsp;&nbsp;
+      <a href="#M000245">insert_at_cursor</a>&nbsp;&nbsp;
+      <a href="#M000261">iter</a>&nbsp;&nbsp;
+      <a href="#M000262">iter_at_line</a>&nbsp;&nbsp;
+      <a href="#M000231">left</a>&nbsp;&nbsp;
+      <a href="#M000247">length</a>&nbsp;&nbsp;
+      <a href="#M000267">line_count</a>&nbsp;&nbsp;
+      <a href="#M000264">line_end</a>&nbsp;&nbsp;
+      <a href="#M000263">line_start</a>&nbsp;&nbsp;
+      <a href="#M000287">load</a>&nbsp;&nbsp;
+      <a href="#M000249">modified=</a>&nbsp;&nbsp;
+      <a href="#M000260">modified?</a>&nbsp;&nbsp;
+      <a href="#M000283">new</a>&nbsp;&nbsp;
+      <a href="#M000241">paste</a>&nbsp;&nbsp;
+      <a href="#M000254">replace</a>&nbsp;&nbsp;
+      <a href="#M000259">replace_line</a>&nbsp;&nbsp;
+      <a href="#M000258">replace_selection</a>&nbsp;&nbsp;
+      <a href="#M000246">return</a>&nbsp;&nbsp;
+      <a href="#M000232">right</a>&nbsp;&nbsp;
+      <a href="#M000288">save</a>&nbsp;&nbsp;
+      <a href="#M000289">save!</a>&nbsp;&nbsp;
+      <a href="#M000229">scope_at_cursor</a>&nbsp;&nbsp;
+      <a href="#M000227">scope_tooltip</a>&nbsp;&nbsp;
+      <a href="#M000250">select</a>&nbsp;&nbsp;
+      <a href="#M000228">select_scope</a>&nbsp;&nbsp;
+      <a href="#M000279">selected?</a>&nbsp;&nbsp;
+      <a href="#M000281">selection</a>&nbsp;&nbsp;
+      <a href="#M000280">selection_bounds</a>&nbsp;&nbsp;
+      <a href="#M000273">selection_mark</a>&nbsp;&nbsp;
+      <a href="#M000274">selection_offset</a>&nbsp;&nbsp;
+      <a href="#M000286">set_font</a>&nbsp;&nbsp;
+      <a href="#M000238">shift_down</a>&nbsp;&nbsp;
+      <a href="#M000235">shift_left</a>&nbsp;&nbsp;
+      <a href="#M000236">shift_right</a>&nbsp;&nbsp;
+      <a href="#M000237">shift_up</a>&nbsp;&nbsp;
+      <a href="#M000275">start_mark</a>&nbsp;&nbsp;
+      <a href="#M000248">to_s</a>&nbsp;&nbsp;
+      <a href="#M000295">tooltip_at_cursor</a>&nbsp;&nbsp;
+      <a href="#M000233">up</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- if includes -->
+    <div id="includes">
+      <h3 class="section-bar">Included Modules</h3>
+
+      <div id="includes-list">
+        <span class="include-name"><a href="Undoable.html">Redcar::Undoable</a></span>
+        <span class="include-name"><a href="Keymap.html">Keymap</a></span>
+      </div>
+    </div>
+
+    <div id="section">
+
+
+
+
+
+    <div id="attribute-list">
+      <h3 class="section-bar">Attributes</h3>
+
+      <div class="name-list">
+        <table>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">buffer</td>
+          <td class="context-item-value">&nbsp;[RW]&nbsp;</td>
+          <td class="context-item-desc"></td>
+        </tr>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">filename</td>
+          <td class="context-item-value">&nbsp;[RW]&nbsp;</td>
+          <td class="context-item-desc"></td>
+        </tr>
+        </table>
+      </div>
+    </div>
+      
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Public Class methods</h3>
+
+      <div id="method-M000283" class="method-detail">
+        <a name="M000283"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000283.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000283.html');return false;">
+          <span class="method-name">new</span><span class="method-args">(pane)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <hr size="6"></hr>
+        </div>
+      </div>
+
+      <h3 class="section-bar">Public Instance methods</h3>
+
+      <div id="method-M000251" class="method-detail">
+        <a name="M000251"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000251.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000251.html');return false;">
+          <span class="method-name">[]</span><span class="method-args">(obj)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000252" class="method-detail">
+        <a name="M000252"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000252.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000252.html');return false;">
+          <span class="method-name">[]=</span><span class="method-args">(obj, str)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000277" class="method-detail">
+        <a name="M000277"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000277.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000277.html');return false;">
+          <span class="method-name">above_offset</span><span class="method-args">(offset)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000291" class="method-detail">
+        <a name="M000291"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000291.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000291.html');return false;">
+          <span class="method-name">apply_theme</span><span class="method-args">(theme)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000242" class="method-detail">
+        <a name="M000242"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000242.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000242.html');return false;">
+          <span class="method-name">backspace</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000278" class="method-detail">
+        <a name="M000278"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000278.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000278.html');return false;">
+          <span class="method-name">below_offset</span><span class="method-args">(offset)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000268" class="method-detail">
+        <a name="M000268"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000268.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000268.html');return false;">
+          <span class="method-name">char_count</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000290" class="method-detail">
+        <a name="M000290"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000290.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000290.html');return false;">
+          <span class="method-name">close</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000292" class="method-detail">
+        <a name="M000292"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000292.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000292.html');return false;">
+          <span class="method-name">colour</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000294" class="method-detail">
+        <a name="M000294"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000294.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000294.html');return false;">
+          <span class="method-name">colour_line</span><span class="method-args">(line_num)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+end
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000293" class="method-detail">
+        <a name="M000293"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000293.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000293.html');return false;">
+          <span class="method-name">colour_page</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000285" class="method-detail">
+        <a name="M000285"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000285.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000285.html');return false;">
+          <span class="method-name">connect_signals</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000282" class="method-detail">
+        <a name="M000282"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000282.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000282.html');return false;">
+          <span class="method-name">contents</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000253" class="method-detail">
+        <a name="M000253"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000253.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000253.html');return false;">
+          <span class="method-name">contents=</span><span class="method-args">(str)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000240" class="method-detail">
+        <a name="M000240"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000240.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000240.html');return false;">
+          <span class="method-name">copy</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000230" class="method-detail">
+        <a name="M000230"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000230.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000230.html');return false;">
+          <span class="method-name">cursor=</span><span class="method-args">(offset)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000270" class="method-detail">
+        <a name="M000270"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000270.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000270.html');return false;">
+          <span class="method-name">cursor_line</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000272" class="method-detail">
+        <a name="M000272"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000272.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000272.html');return false;">
+          <span class="method-name">cursor_line_offset</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000269" class="method-detail">
+        <a name="M000269"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000269.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000269.html');return false;">
+          <span class="method-name">cursor_mark</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000271" class="method-detail">
+        <a name="M000271"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000271.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000271.html');return false;">
+          <span class="method-name">cursor_offset</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000239" class="method-detail">
+        <a name="M000239"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000239.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000239.html');return false;">
+          <span class="method-name">cut</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000243" class="method-detail">
+        <a name="M000243"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000243.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000243.html');return false;">
+          <span class="method-name">del</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000256" class="method-detail">
+        <a name="M000256"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000256.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000256.html');return false;">
+          <span class="method-name">delete</span><span class="method-args">(from, to, text=&quot;&quot;)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000244" class="method-detail">
+        <a name="M000244"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000244.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000244.html');return false;">
+          <span class="method-name">delete_selection</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000234" class="method-detail">
+        <a name="M000234"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000234.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000234.html');return false;">
+          <span class="method-name">down</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000276" class="method-detail">
+        <a name="M000276"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000276.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000276.html');return false;">
+          <span class="method-name">end_mark</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000257" class="method-detail">
+        <a name="M000257"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000257.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000257.html');return false;">
+          <span class="method-name">find_next</span><span class="method-args">(str)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000284" class="method-detail">
+        <a name="M000284"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000284.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000284.html');return false;">
+          <span class="method-name">focus</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000265" class="method-detail">
+        <a name="M000265"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000265.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000265.html');return false;">
+          <span class="method-name">get_line</span><span class="method-args">(num=nil)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000266" class="method-detail">
+        <a name="M000266"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000266.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000266.html');return false;">
+          <span class="method-name">get_lines</span><span class="method-args">(selector)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000255" class="method-detail">
+        <a name="M000255"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000255.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000255.html');return false;">
+          <span class="method-name">insert</span><span class="method-args">(offset, str)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000245" class="method-detail">
+        <a name="M000245"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000245.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000245.html');return false;">
+          <span class="method-name">insert_at_cursor</span><span class="method-args">(str)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000261" class="method-detail">
+        <a name="M000261"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000261.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000261.html');return false;">
+          <span class="method-name">iter</span><span class="method-args">(thing)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000262" class="method-detail">
+        <a name="M000262"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000262.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000262.html');return false;">
+          <span class="method-name">iter_at_line</span><span class="method-args">(num)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000231" class="method-detail">
+        <a name="M000231"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000231.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000231.html');return false;">
+          <span class="method-name">left</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+the undo actions for these are not quite <a
+href="TextTab.html#M000232">right</a>
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000247" class="method-detail">
+        <a name="M000247"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000247.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000247.html');return false;">
+          <span class="method-name">length</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000267" class="method-detail">
+        <a name="M000267"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000267.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000267.html');return false;">
+          <span class="method-name">line_count</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000264" class="method-detail">
+        <a name="M000264"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000264.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000264.html');return false;">
+          <span class="method-name">line_end</span><span class="method-args">(num)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000263" class="method-detail">
+        <a name="M000263"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000263.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000263.html');return false;">
+          <span class="method-name">line_start</span><span class="method-args">(num)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000287" class="method-detail">
+        <a name="M000287"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000287.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000287.html');return false;">
+          <span class="method-name">load</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000249" class="method-detail">
+        <a name="M000249"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000249.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000249.html');return false;">
+          <span class="method-name">modified=</span><span class="method-args">(val)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000260" class="method-detail">
+        <a name="M000260"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000260.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000260.html');return false;">
+          <span class="method-name">modified?</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000241" class="method-detail">
+        <a name="M000241"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000241.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000241.html');return false;">
+          <span class="method-name">paste</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000254" class="method-detail">
+        <a name="M000254"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000254.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000254.html');return false;">
+          <span class="method-name">replace</span><span class="method-args">(str)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000259" class="method-detail">
+        <a name="M000259"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000259.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000259.html');return false;">
+          <span class="method-name">replace_line</span><span class="method-args">(text=nil) {|current_text.chars| ...}</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000258" class="method-detail">
+        <a name="M000258"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000258.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000258.html');return false;">
+          <span class="method-name">replace_selection</span><span class="method-args">(text=nil) {|current_text.chars| ...}</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000246" class="method-detail">
+        <a name="M000246"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000246.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000246.html');return false;">
+          <span class="method-name">return</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000232" class="method-detail">
+        <a name="M000232"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000232.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000232.html');return false;">
+          <span class="method-name">right</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000288" class="method-detail">
+        <a name="M000288"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000288.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000288.html');return false;">
+          <span class="method-name">save</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000289" class="method-detail">
+        <a name="M000289"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000289.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000289.html');return false;">
+          <span class="method-name">save!</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000229" class="method-detail">
+        <a name="M000229"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000229.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000229.html');return false;">
+          <span class="method-name">scope_at_cursor</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000227" class="method-detail">
+        <a name="M000227"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000227.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000227.html');return false;">
+          <span class="method-name">scope_tooltip</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000250" class="method-detail">
+        <a name="M000250"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000250.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000250.html');return false;">
+          <span class="method-name">select</span><span class="method-args">(from, to)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000228" class="method-detail">
+        <a name="M000228"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000228.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000228.html');return false;">
+          <span class="method-name">select_scope</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000279" class="method-detail">
+        <a name="M000279"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000279.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000279.html');return false;">
+          <span class="method-name">selected?</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000281" class="method-detail">
+        <a name="M000281"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000281.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000281.html');return false;">
+          <span class="method-name">selection</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000280" class="method-detail">
+        <a name="M000280"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000280.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000280.html');return false;">
+          <span class="method-name">selection_bounds</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000273" class="method-detail">
+        <a name="M000273"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000273.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000273.html');return false;">
+          <span class="method-name">selection_mark</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000274" class="method-detail">
+        <a name="M000274"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000274.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000274.html');return false;">
+          <span class="method-name">selection_offset</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000286" class="method-detail">
+        <a name="M000286"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000286.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000286.html');return false;">
+          <span class="method-name">set_font</span><span class="method-args">(font)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000238" class="method-detail">
+        <a name="M000238"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000238.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000238.html');return false;">
+          <span class="method-name">shift_down</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000235" class="method-detail">
+        <a name="M000235"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000235.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000235.html');return false;">
+          <span class="method-name">shift_left</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000236" class="method-detail">
+        <a name="M000236"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000236.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000236.html');return false;">
+          <span class="method-name">shift_right</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000237" class="method-detail">
+        <a name="M000237"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000237.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000237.html');return false;">
+          <span class="method-name">shift_up</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000275" class="method-detail">
+        <a name="M000275"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000275.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000275.html');return false;">
+          <span class="method-name">start_mark</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000248" class="method-detail">
+        <a name="M000248"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000248.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000248.html');return false;">
+          <span class="method-name">to_s</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000295" class="method-detail">
+        <a name="M000295"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000295.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000295.html');return false;">
+          <span class="method-name">tooltip_at_cursor</span><span class="method-args">(label)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000233" class="method-detail">
+        <a name="M000233"></a>
+
+        <div class="method-heading">
+          <a href="TextTab.src/M000233.html" target="Code" class="method-signature"
+            onclick="popupCode('TextTab.src/M000233.html');return false;">
+          <span class="method-name">up</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

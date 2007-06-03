@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby -w
+
+require "#{ENV["TM_SUPPORT_PATH"]}/lib/exit_codes"
+require "#{ENV["TM_SUPPORT_PATH"]}/lib/escape"
+require "#{ENV["TM_SUPPORT_PATH"]}/lib/web_preview"
+
+# first escape for use in the shell, then escape for use in a JS string
+def e_js_sh(str)
+  (e_sh str).gsub("\\", "\\\\\\\\")
+end
+
+term = STDIN.read.strip
+TextMate.exit_show_tool_tip("Please select a term to look up.") if term.empty?
+
+linked_ri     = "#{ENV["TM_BUNDLE_SUPPORT"]}/bin/linked_ri.rb"
+documentation = `#{e_sh linked_ri} 2&gt;&amp;1 #{e_sh term}` rescue "&lt;h1&gt;ri Command Error.&lt;/h1&gt;"
+TextMate.exit_show_tool_tip(documentation) if documentation =~ /Nothing known about /
+
+html_header("Documentation for ‘#{term}’", "RDoc", &lt;&lt;-HTML)
+  &lt;script type="text/javascript" charset="utf-8"&gt;
+    function ri (arg) {
+			var res = TextMate.system("RUBYLIB=#{e_js_sh "#{ENV['TM_SUPPORT_PATH']}/lib"} #{e_js_sh linked_ri} 2&gt;&amp;1 '" + arg + "'", null).outputString;
+			document.getElementById("actual_output").innerHTML = res;
+			window.location.hash = "actual_output";
+		}
+  &lt;/script&gt;
+HTML
+puts &lt;&lt;-HTML
+  &lt;pre&gt;&lt;div id="actual_output"&gt;#{documentation}&lt;/div&gt;&lt;/pre&gt;
+HTML
+html_footer
+TextMate.exit_show_html</string>
+	<key>fallbackInput</key>
+	<string>word</string>
+	<key>input</key>
+	<string>selection</string>
+	<key>keyEquivalent</key>
+	<string>^h</string>
+	<key>name</key>
+	<string>Documentation for Word / Selection</string>
+	<key>output</key>
+	<string>showAsTooltip</string>
+	<key>scope</key>
+	<string>source.ruby</string>
+	<key>uuid</key>
+	<string>63F3B3B7-CBE2-426B-B551-657733F3868B</string>
+</dict>
+</plist>

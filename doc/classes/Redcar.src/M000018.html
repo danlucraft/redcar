@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>menu (Redcar)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/menus.rb, line 98</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">menu</span>(<span class="ruby-identifier">name</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+    <span class="ruby-ivar">@menus</span> <span class="ruby-operator">||=</span> {}
+    <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@menus</span>[<span class="ruby-identifier">name</span>]
+      <span class="ruby-identifier">menu</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">common</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">block</span>)
+    <span class="ruby-keyword kw">else</span>
+      <span class="ruby-identifier">menu</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">common</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">block</span>)
+      <span class="ruby-identifier">menuitem</span> = <span class="ruby-constant">Gtk</span><span class="ruby-operator">::</span><span class="ruby-constant">MenuItem</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">name</span>)
+      <span class="ruby-identifier">menuitem</span>.<span class="ruby-identifier">submenu</span> = <span class="ruby-identifier">menu</span>
+      <span class="ruby-identifier">menuitem</span>.<span class="ruby-identifier">show</span>
+      <span class="ruby-constant">Redcar</span>.<span class="ruby-identifier">menubar</span>.<span class="ruby-identifier">append</span>(<span class="ruby-identifier">menuitem</span>)
+    <span class="ruby-keyword kw">end</span>
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

@@ -1,0 +1,432 @@
+
+$spare_name = "aaaa"
+
+module Redcar
+  module Syntax
+    class ScopeException < Exception; end;
+    class OverlappingScopeException < ScopeException; end;
+    
+    class Scope
+      attr_accessor(:children, 
+                    :pattern, 
+                    :grammar, 
+                    :start, 
+                    :end, 
+                    :open_start,
+                    :open_end,
+                    :open_matchdata,
+                    :close_start,
+                    :close_end,
+                    :close_matchdata,
+                    :parent,
+                    :name,
+                    :closing_regexp)
+
+      def initialize(options={})
+        @name               = options[:name]
+        self.pattern        = options[:pattern]
+        self.grammar        = options[:grammar]
+        self.start          = options[:start]
+        self.end            = options[:end]
+        self.parent         = options[:parent]
+        self.closing_regexp = options[:closing_regexp]
+        @open_start         = options[:open_start]
+        @open_end           = options[:open_end]
+        @close_start        = options[:close_start]
+        @close_end          = options[:close_end]
+        @open_matchdata     = options[:open_matchdata]
+        @close_matchdata    = options[:close_matchdata]
+        @children = []
+      end
+      
+      def overlaps?(other)
+        (self.start >= other.start and (!other.end or (self.start <= other.end))) or
+         (self.end and (self.end >= other.start and (!other.end or (self.end <= other.end))))
+      end
+      
+      # Sees if the the scope is the same as the other scope, modulo their children
+      # and THEIR CLOSING MARKERS.
+      def surface_identical_modulo_ending?(other)
+        self_same = (other.name  == self.name and
+                     other.grammar == self.grammar and
+                     other.pattern == self.pattern and
+                     other.start   == self.start and
+                     other.open_start  == self.open_start and
+                     other.open_end    == self.open_end and
+                     other.open_matchdata.to_s  == self.open_matchdata.to_s)
+      end
+      
+      def surface_identical?(other)
+        self_same = (other.name  == self.name and
+                     other.grammar == self.grammar and
+                     other.pattern == self.pattern and
+                     other.start   == self.start and
+                     other.end     == self.end and
+                     other.open_start  == self.open_start and
+                     other.open_end    == self.open_end and
+                     other.close_start == self.close_start and
+                     other.close_end   == self.close_end and
+                     other.open_matchdata.to_s  == self.open_matchdata.to_s and
+                     other.close_matchdata.to_s == self.close_matchdata.to_s and
+                     other.closing_regexp.to_s  == self.closing_regexp.to_s)
+      end
+      
+      def identical?(other)
+#        p self
+#        p other
+        self_same = (other.name  == self.name and
+                     other.grammar == self.grammar and
+                     other.pattern == self.pattern and
+                     other.start   == self.start and
+                     other.end     == self.end and
+                     other.open_start  == self.open_start and
+                     other.open_end    == self.open_end and
+                     other.close_start == self.close_start and
+                     other.close_end   == self.close_end and
+                     other.open_matchdata.to_s  == self.open_matchdata.to_s and
+                     other.close_matchdata.to_s == self.close_matchdata.to_s and
+                     other.closing_regexp.to_s  == self.closing_regexp.to_s)
+ #       p self_same
+        return false unless self_same
+
+        children_same = self.children.length == other.children.length
+#        p children_same
+        return false unless children_same
+        self.children.zip(other.children) do |c1, c2| 
+          return false unless c1.identical?(c2)
+        end
+        true
+      end
+        
+      def copy
+        new_self = Scope.new
+        new_self.name    = self.name
+        new_self.grammar = self.grammar
+        new_self.pattern = self.pattern
+        new_self.start   = self.start.copy
+        new_self.end     = self.end.copy
+        new_self.open_start  = self.open_start.copy
+        new_self.open_end    = self.open_end.copy
+        new_self.close_start = self.close_start.copy
+        new_self.close_end   = self.close_end.copy
+        new_self.open_matchdata  = self.open_matchdata
+        new_self.close_matchdata = self.close_matchdata
+        new_self.closing_regexp  = self.closing_regexp
+        
+        new_self.children = self.children.collect{|c| c.copy}
+        new_self
+      end
+
+      # Is this scope active on line num?
+      def on_line?(num)
+        self.start.line <= num and 
+          (!self.end or (self.end and self.end.line >= num))
+      end
+      
+      # Clear all scopes that are not active on line num.
+      def clear_not_on_line(num)
+        @children = @children.select do |cs|
+          keep = cs.on_line?(num)
+          cs.clear_not_on_line(num)
+          keep
+        end
+        nil
+      end
+
+      # Is this scope a descendent of scope other?
+      def child_of?(other)
+        @parent == other or (@parent and @parent.child_of?(other))
+      end
+      
+      # Return the names of all scopes in the hierarchy above this scope.
+      def hierarchy_names
+        if @parent
+          @parent.hierarchy_names+[self.name]
+        else
+          [self.name]
+        end
+      end
+      
+      # Returns the nearest common ancestor of scopes s1 and s2 or 
+      # nil if none.
+      def self.common_ancestor(s1, s2)
+        an, di = self.common_ancestor1(s1, s2)
+        an
+      end
+      
+      def self.common_ancestor1(s1, s2, distance=0) # :nodoc:
+        if s1 == s2
+          return [s1, distance]
+        else
+          if s1.parent
+            c1, d1 = self.common_ancestor1(s1.parent, s2, distance+1)
+          else
+            c1 = nil
+          end
+          if s2.parent
+            c2, d2 = self.common_ancestor1(s1, s2.parent, distance+1)
+          else
+            c2 = nil
+          end
+          if c1 and not c2
+            return c1, d1
+          elsif c2 and not c1
+            return c2, d2
+          elsif c1 and c2
+            if d1 <= d2
+              return c1, d1
+            else
+              return c2, d2
+            end
+          else
+            return nil, distance
+          end
+        end
+      end
+      
+      def pretty(indent=0)
+        str = ""
+        str += " "*indent + self.inspect+"\n"
+        children.each do |cs|
+          str += cs.pretty(indent+2)
+        end
+        str
+      end
+      
+      def captures
+        @open_matchdata.captures
+      end
+      
+      def name
+        return @name if @name
+        case self.pattern
+        when Pattern
+          self.pattern.name
+        when Grammar
+          self.pattern.scope_name
+        end
+      end
+      
+      def to_s
+        self.name
+      end
+      
+      def inspect
+        if self.pattern.is_a? SinglePattern
+          hanging = ""
+        else
+          if self.end
+            hanging = " closed"
+          else
+            hanging = " hanging"
+          end
+        end
+        startstr = "(#{start.line},#{start.offset})-"
+        if self.end
+          endstr = "(#{self.end.line},#{self.end.offset})"
+        else
+          endstr = "?"
+        end
+        "<scope(#{self.object_id*-1%1000}):"+(self.name||"noname")+" #{startstr}#{endstr} #{hanging}>"
+      end
+      
+      def sort_children
+        children.sort_by {|cs| cs.start}
+      end
+      
+      def assert_does_not_overlap(scope)
+        if (scope.start < self.start) or 
+            (scope.end and self.end and scope.end > self.end)
+          raise OverlappingScopeException, "child overlaps edges of scope"
+        end
+        children.each do |cs| 
+          if (cs.end and cs.start < scope.start and scope.start < cs.end) or
+              (cs.end and scope.end and cs.start < scope.end and scope.end < cs.end) 
+            raise OverlappingScopeException, "scope has overlapping children"
+          end
+        end
+      end
+      
+      def add_child(child)
+        unless child.is_a? Scope
+          raise ScopeException, "trying to add non-scope as child of scope"
+        end
+#         assert_does_not_overlap(child)
+        # if it goes on the end:
+        if @children.empty? or (@children.last.end and child.start > @children.last.end)
+          @children << child
+        else
+          @children << child
+          @children = @children.sort_by do |c|
+            [c.start.line, c.start.offset]
+          end
+        end
+        child.parent = self
+      end
+
+      def clear_after(textloc)
+        if self.end and self.end > textloc
+          self.end = nil
+          self.close_start = nil
+          self.close_end = nil
+        end
+        
+        @children = @children.select do |cs|
+          keep = (cs.start < textloc)
+          if keep
+            cs.clear_after(textloc)
+          end
+          keep
+        end
+      end
+      
+      # Clear all scopes that start between lines from and to inclusive, and
+      # re-open scopes that ended between these lines.
+      def clear_between(from, to)
+        range = from..to
+        if self.end and range.include? self.end.line
+          self.end = nil
+          self.close_start = nil
+          self.close_end = nil
+        end
+        @children = @children.select do |cs|
+          keep = (!range.include? cs.start.line)
+          if keep
+            cs.clear_between(from, to)
+          end
+          keep
+        end
+      end
+      
+      # Shifts all scopes after offset in the given line 
+      # by the given amount.
+      def shift_chars(line, amount, offset)
+#        if self.parent # don't do this for the top scope in the page
+          if self.start.line == line and self.start.offset > offset
+            self.start.offset += amount
+            if self.open_start
+              self.open_start.offset += amount
+              self.open_end.offset   += amount
+            end
+          end
+          if self.end and self.end.line == line and 
+              self.end.offset > offset
+            self.end.offset += amount
+            if self.close_start
+              self.close_start.offset += amount
+              self.close_end.offset   += amount
+            end
+          end
+ #       end
+        @children.each {|cs| cs.shift_chars(line, amount, offset)}
+      end
+      
+      def shift_after(line, amount)
+        if self.start.line >= line
+          self.start.line += amount
+        end
+        if self.end and self.end.line >= line
+          self.end.line   += amount
+        end
+        
+        @children.each do |cs|
+          cs.shift_after(line, amount)
+        end
+      end
+      
+      def size
+        size = 0
+        children.each do |cs|
+          size += 1 + cs.size
+        end
+        size
+      end
+
+      def delete_any_on_line_not_in(line_num, scopes)
+        @children = @children.reject do |cs|
+          if cs.start.line == line_num and !scopes.include?(cs)
+            debug_puts "deleting: #{cs.inspect}"
+            true
+          else
+            false
+          end
+        end
+      end
+      
+      # Returns the active scope at TextLoc textloc.
+      def scope_at(textloc)
+        if self.start <= textloc
+          if ((self.end==nil) or (self.end > textloc))
+            # children has a tendency to be very long for 1 scope in each document,
+            # so do a simple check that looks to see if it is the last child we need,
+            # which it often is when we are parsing an entire tab.
+            # TODO: should put a binary search here or something for fast lookup
+            # even when it is not the last scope we need.
+            if children.last and children.last.end and children.last.end < textloc
+              return self
+            else
+              children.each do |cs|
+                if r = cs.scope_at(textloc)
+                  return r
+                end
+              end
+              self
+            end
+          else
+            nil
+          end
+        else
+          # My start is too late.
+          nil
+        end
+      end
+      
+      def first_child_after(loc)
+        @children.find{|cs| cs.start >= loc}
+      end
+      
+      def each(&block)
+        block.call(self)
+        @children.each do |cs| 
+          cs.each(&block)
+        end
+      end
+      
+      def scopes_closed_on_line(line_num)
+        self.each {|s| yield(s) if s.end and s.end.line == line_num}
+      end
+      
+      def detach_from_parent
+        self.parent.children.delete(self)
+      end
+      
+      def line_start(line_num)
+        sc = scope_at(TextLoc.new(line_num, 0))
+        while sc.start.line == line_num
+          unless sc.parent
+            return sc
+          end
+          sc = sc.parent
+        end
+        sc
+      end
+      
+      def line_end(line_num)
+        scope_at(TextLoc.new(line_num+1, -1))
+      end
+      
+      def last_scope
+        if children.empty?
+          self
+        else
+          if self.end == nil
+            self
+          else
+            children.last
+          end
+        end
+      end
+    end
+  end
+end
+

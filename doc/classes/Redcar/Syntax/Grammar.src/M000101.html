@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>new (Redcar::Syntax::Grammar)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/old_syntax2.rb, line 474</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">grammar</span>)
+        <span class="ruby-ivar">@grammar</span> = <span class="ruby-identifier">grammar</span>
+        <span class="ruby-ivar">@name</span> = <span class="ruby-ivar">@grammar</span>[<span class="ruby-value str">&quot;name&quot;</span>]
+        <span class="ruby-ivar">@scope_name</span> = <span class="ruby-ivar">@grammar</span>[<span class="ruby-value str">&quot;scopeName&quot;</span>]
+        <span class="ruby-ivar">@file_types</span> = <span class="ruby-ivar">@grammar</span>[<span class="ruby-value str">&quot;fileTypes&quot;</span>]
+        <span class="ruby-ivar">@first_line_match</span> = <span class="ruby-ivar">@grammar</span>[<span class="ruby-value str">&quot;firstLineMatch&quot;</span>]
+        <span class="ruby-ivar">@folding_start_marker</span> = <span class="ruby-ivar">@grammar</span>[<span class="ruby-value str">&quot;foldingStartMarker&quot;</span>]
+        <span class="ruby-ivar">@folding_stop_marker</span> = <span class="ruby-ivar">@grammar</span>[<span class="ruby-value str">&quot;foldingStopMarker&quot;</span>]
+        <span class="ruby-ivar">@patterns</span> = (<span class="ruby-identifier">grammar</span>[<span class="ruby-value str">&quot;patterns&quot;</span>]<span class="ruby-operator">||</span>[]).<span class="ruby-identifier">collect</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">hash</span><span class="ruby-operator">|</span>
+          <span class="ruby-constant">Grammar</span>.<span class="ruby-identifier">pattern_from_hash</span>(<span class="ruby-identifier">hash</span>)
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-ivar">@repository</span> = {}
+        (<span class="ruby-identifier">grammar</span>[<span class="ruby-value str">&quot;repository&quot;</span>]<span class="ruby-operator">||</span>[]).<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">name</span>, <span class="ruby-identifier">pattern_hash</span><span class="ruby-operator">|</span>
+          <span class="ruby-ivar">@repository</span>[<span class="ruby-identifier">name</span>] = <span class="ruby-constant">Grammar</span>.<span class="ruby-identifier">pattern_from_hash</span>(<span class="ruby-identifier">pattern_hash</span>)
+        <span class="ruby-keyword kw">end</span>
+        
+        <span class="ruby-identifier">collate_patterns</span>
+      <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>
