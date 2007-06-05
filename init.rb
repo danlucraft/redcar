@@ -2,4 +2,5 @@
 
 require File.dirname(__FILE__) + '/lib/redcar'
 Redcar.startup(:output => :silent)
+
 Gtk.main

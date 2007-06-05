@@ -29,7 +29,6 @@ require File.dirname(__FILE__) + '/texttab'
 require File.dirname(__FILE__) + '/tooltips'
 require File.dirname(__FILE__) + '/shelltab'
 require File.dirname(__FILE__) + '/syntax'
-require File.dirname(__FILE__) + '/theme'
 require File.dirname(__FILE__) + '/colourer'
 require File.dirname(__FILE__) + '/../vendor/mdi5'
 require File.dirname(__FILE__) + '/../vendor/keyword_processor'
@@ -40,19 +39,12 @@ require File.dirname(__FILE__) + '/list_abstraction'
 module Redcar
   class << self
     attr_accessor :current_window, :keystrokes
-    
-    def []=(key, val)
-      @gconf_client["/apps/redcar"+key, val]
-    end
-    
-    def [](key)
-      @gconf_client["/apps/redcar"+key]
-    end
-    
+        
     def startup(options={})
       options = process_params(options,
                                { :load_scripts => true,
                                  :output => :debug  })
+      
       Redcar.keystrokes = Redcar::Keystrokes.new
       Redcar.window_controller = Gtk::MDI::Controller.new(RedcarWindow, :notebooks)
       Redcar.windows ||= []
@@ -66,8 +58,7 @@ module Redcar
           end
         end
       end
-
-      @gconf_client = GConf::Client.new
+      
       Redcar.event :startup
     end
     attr_accessor :CUSTOM_DIR

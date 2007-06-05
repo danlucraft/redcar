@@ -1,4 +1,6 @@
 
+Redcar["texttab/font"] ||= "Monospace 11"
+
 module Gtk
   class TextBuffer
 #     signal_new("inserted_text",     # name
@@ -554,7 +556,7 @@ module Redcar
       @buffer = @textview.buffer
       new_buffer
 #       @textview = Redcar::GUI::Text.new(buffer, textview)
-      self.set_font("Monospace 11")
+      self.set_font(Redcar["texttab/font"])
       super(pane, @textview)
       Redcar.tab_length ||= 2
       connect_signals

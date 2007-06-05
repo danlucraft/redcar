@@ -1,5 +1,15 @@
 
 module Redcar
+  @@gconf_client = GConf::Client.default
+  
+  def self.[]=(key, val)
+    @@gconf_client["/apps/redcar/"+key] = val
+  end
+  
+  def self.[](key)
+    @@gconf_client["/apps/redcar/"+key]
+  end
+    
   # Closes the entire Redcar application, after 
   # calling the Redcar event :quit
   def self.quit

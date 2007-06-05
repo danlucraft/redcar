@@ -103,7 +103,7 @@ module Redcar
     def initialize(pane)
       initialize_without_syntax(pane)
       
-      set_theme(Theme.current_theme)
+      set_theme(Theme.default_theme)
       if ext = File.extname(@filename||"")
         debug_puts "extension: #{ext}"
         set_grammar(Syntax.grammar(:extension => ext))
@@ -259,7 +259,7 @@ module Redcar
       if insertion[:lines] == 1
         @parser.insert_in_line(insertion[:from].line, insertion[:text], insertion[:from].offset)
         @colr.colour_line(self, @scope_tree, insertion[:from].line)
-        debug_puts "parsed and coloured line"
+        puts "parsed and coloured line"
       else
         debug_puts "processing insertion of #{insertion[:lines]} lines"
         @parser.insert(insertion[:from], insertion[:text])
