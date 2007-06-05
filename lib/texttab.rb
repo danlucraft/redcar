@@ -1,6 +1,14 @@
 
 module Gtk
   class TextBuffer
+#     signal_new("inserted_text",     # name
+#            GLib::Signal::RUN_FIRST, # flags
+#            nil,                     # accumulator (XXX: not supported yet)
+#            nil,                     # return type (void == nil)
+#            Gtk::TextIter,
+#            String,
+#            Fixnum
+#            )
   end
   
   class TextIter
@@ -88,6 +96,7 @@ module Redcar
   class TextTab < Tab
     include Redcar::Undoable
     include Keymap
+    include DebugPrinter
     
     keymap "ctrl a",     :cursor=, :line_start
     keymap "ctrl e",     :cursor=, :line_end
@@ -217,7 +226,6 @@ module Redcar
         current_indent = get_line.match(/^\s+/).to_s.gsub("\n", "").length
         p current_indent
         insert_at_cursor("\n"+" "*current_indent)
-        @parser.insert_line(get_line, cursor_line)
       end
       
       def length
@@ -274,11 +282,16 @@ module Redcar
       end
       
       def insert(offset, str)
+        offset = iter(offset).offset
         to_undo :delete, offset, str.length+offset, str
         @buffer.insert(iter(offset), str)
+#         @buffer.signal_emit("inserted_text", iter(offset), 
+#                             str, str.length)
       end
       
       def delete(from, to, text="")
+        from = iter(from).offset
+        to = iter(to).offset
         to_undo :cursor=, cursor_offset
         text = @buffer.get_slice(iter(from), iter(to))
         @buffer.delete(iter(from), iter(to))
@@ -537,17 +550,26 @@ module Redcar
 #       @tag_table = Gtk::SourceTagTable.new
       @textview = Gtk::SourceView.new()# @tag_table)
       @textview.wrap_mode = Gtk::TextTag::WRAP_WORD
-      @buffer = @textview.buffer
-      @buffer.check_brackets = false
-      @buffer.highlight = true
       @textview.show_line_numbers = 1
-      @buffer.max_undo_levels = 0
+      @buffer = @textview.buffer
+      new_buffer
 #       @textview = Redcar::GUI::Text.new(buffer, textview)
       self.set_font("Monospace 11")
       super(pane, @textview)
       Redcar.tab_length ||= 2
       connect_signals
     end
+  
+  def new_buffer
+    text = @buffer.text
+    @buffer = Gtk::SourceBuffer.new
+    @textview.buffer = @buffer
+    @buffer.check_brackets = false
+    @buffer.highlight = true
+    @buffer.max_undo_levels = 0
+    @buffer.text = text
+  end
+    
     
     def focus
       super

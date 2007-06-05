@@ -131,7 +131,7 @@ module Redcar
   end
 end
 
-ruby = Redcar::TextmateBundle.new(Redcar.ROOT_PATH+'/textmate/bundles/Ruby.tmbundle/')
+ruby = Redcar::TextmateBundle.new(Redcar.ROOT_PATH+'/textmate/Bundles/Ruby.tmbundle/')
 Redcar.menu("Ruby") do |menu|
   ruby.build_menu(menu)
 end

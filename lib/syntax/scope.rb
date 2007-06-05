@@ -7,6 +7,7 @@ module Redcar
     class OverlappingScopeException < ScopeException; end;
     
     class Scope
+      include DebugPrinter
       attr_accessor(:children, 
                     :pattern, 
                     :grammar, 
@@ -72,8 +73,6 @@ module Redcar
       end
       
       def identical?(other)
-#        p self
-#        p other
         self_same = (other.name  == self.name and
                      other.grammar == self.grammar and
                      other.pattern == self.pattern and
@@ -86,11 +85,23 @@ module Redcar
                      other.open_matchdata.to_s  == self.open_matchdata.to_s and
                      other.close_matchdata.to_s == self.close_matchdata.to_s and
                      other.closing_regexp.to_s  == self.closing_regexp.to_s)
- #       p self_same
+        debug_puts "(#{self.inspect} == #{other.inspect}) == #{self_same}"
+        unless self_same
+          debug_puts "name: #{other.name}  == #{self.name} "
+          debug_puts "open_start.inspect: #{other.open_start.inspect}  == #{self.open_start.inspect} "
+          debug_puts "open_end.inspect: #{other.open_end.inspect}  == #{self.open_end.inspect} "
+          debug_puts "name: #{other.name}  == #{self.name} "
+          debug_puts "grammar: #{other.grammar}  == #{self.grammar} "
+          debug_puts "pattern.inspect: #{other.pattern.inspect}  == #{self.pattern.inspect} "
+          debug_puts "end: #{other.end}  == #{self.end} "
+          debug_puts "close_end: #{other.close_end}  == #{self.close_end} "
+          debug_puts "close_matchdata.to_s: #{other.close_matchdata.to_s}  == #{self.close_matchdata.to_s} "
+          debug_puts "open_matchdata.to_s: #{other.open_matchdata.to_s}  == #{self.open_matchdata.to_s} "
+          debug_puts "closing_regexp.to_s: #{other.closing_regexp.to_s}  == #{self.closing_regexp.to_s} "
+        end
         return false unless self_same
 
         children_same = self.children.length == other.children.length
-#        p children_same
         return false unless children_same
         self.children.zip(other.children) do |c1, c2| 
           return false unless c1.identical?(c2)
@@ -280,9 +291,27 @@ module Redcar
         end
       end
       
-      # Clear all scopes that start between lines from and to inclusive, and
+      # Clear all scopes that start between TextLocs from and to, and
       # re-open scopes that ended between these lines.
       def clear_between(from, to)
+        if self.end and self.end >= from and self.end < to
+          self.end = nil
+          self.close_start = nil
+          self.close_end = nil
+        end
+        @children = @children.select do |cs|
+          discard = (cs.start >= from and cs.start < to) or
+            (cs.end and cs.end >= from and cs.end < to)
+          unless discard
+            cs.clear_between(from, to)
+          end
+          !discard
+        end
+      end
+      
+      # Clear all scopes that start between lines from and to inclusive, and
+      # re-open scopes that ended between these lines.
+      def clear_between_lines(from, to)
         range = from..to
         if self.end and range.include? self.end.line
           self.end = nil
@@ -292,7 +321,7 @@ module Redcar
         @children = @children.select do |cs|
           keep = (!range.include? cs.start.line)
           if keep
-            cs.clear_between(from, to)
+            cs.clear_between_lines(from, to)
           end
           keep
         end
@@ -302,19 +331,26 @@ module Redcar
       # by the given amount.
       def shift_chars(line, amount, offset)
 #        if self.parent # don't do this for the top scope in the page
-          if self.start.line == line and self.start.offset > offset
-            self.start.offset += amount
-            if self.open_start
-              self.open_start.offset += amount
-              self.open_end.offset   += amount
+          if self.start.line == line 
+            if self.start.offset > offset
+              self.start.offset += amount
+              if self.open_start
+                self.open_start.offset += amount
+              end
+            end
+            if self.open_end and self.open_end.offset > offset
+              self.open_end.offset += amount
             end
           end
-          if self.end and self.end.line == line and 
-              self.end.offset > offset
-            self.end.offset += amount
-            if self.close_start
-              self.close_start.offset += amount
-              self.close_end.offset   += amount
+          if self.end and self.end.line == line
+            if self.end.offset > offset
+              self.end.offset += amount
+              if self.close_start
+                self.close_start.offset += amount
+              end
+            end
+            if self.close_end and self.close_end.offset > offset
+              self.close_end.offset += amount
             end
           end
  #       end
@@ -324,9 +360,17 @@ module Redcar
       def shift_after(line, amount)
         if self.start.line >= line
           self.start.line += amount
+          if self.open_start
+            self.open_start.line += amount
+            self.open_end.line += amount
+          end
         end
         if self.end and self.end.line >= line
           self.end.line   += amount
+          if self.close_start
+            self.close_start.line += amount
+            self.close_end.line   += amount
+          end
         end
         
         @children.each do |cs|

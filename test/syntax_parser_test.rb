@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/../lib/redcar'
 require 'test/unit'
 require File.dirname(__FILE__) + '/test_helper'
 
-xml = IO.readlines(File.dirname(__FILE__)+"/../textmate/bundles/Ruby.tmbundle/Syntaxes/Ruby.plist").join
+xml = IO.readlines(File.dirname(__FILE__)+"/../textmate/Bundles/Ruby.tmbundle/Syntaxes/Ruby.plist").join
 plist = Redcar::Plist.xml_to_plist(xml)
 $ruby_grammar = Redcar::Syntax::Grammar.new(plist[0])
 
@@ -266,6 +266,16 @@ class TestSyntax < Test::Unit::TestCase
     smp.add_lines(lines)
     assert_equal 1, smp.scope_tree.children.length
     assert_equal 1, smp.scope_tree.children[0].children.length
+  end
+  
+  def test_parse_text_bug
+    gr = $ruby_grammar
+    sc = Scope.new(:pattern => gr,
+                   :grammar => gr,
+                   :start   => TextLoc.new(0, 0))
+    smp = Parser.new(sc, [gr], nil)
+    text = File.read("test/fixtures/init.rb")
+    smp.add_lines(text)
   end
   
   # Parse line should work repeatedly with no ill effects.
@@ -574,7 +584,7 @@ ENDSTR
     sc = Scope.new(:pattern => gr,
                    :grammar => gr,
                    :start => TextLoc.new(0, 0))
-    md = Regexp.new(gr.pattern("text.heredoc").begin).match("text=<<END:FOR")
+    md = Regexp.new(gr.pattern("text.heredoc").begin).match("text=\<\<END:FOR")
     smp = Parser.new(sc, [gr], nil)
     assert_equal "^END,FOR$", smp.build_closing_regexp(gr.pattern("text.heredoc"), md)
   end
@@ -812,7 +822,7 @@ CROW
     assert_equal 2, smp.scope_tree.children.length
   end
   
-  def test_delete_line
+  def test_delete_return_from_line
     gr = $ruby_grammar
     sc = Scope.new(:pattern => gr,
                    :grammar => gr,
@@ -820,9 +830,22 @@ CROW
     smp = Parser.new(sc, [gr], nil)
     rubycode = "class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
     smp.add_lines(rubycode)
-    smp.delete_line(2)
-    assert_equal 4, smp.scope_tree.children.length
-    assert_equal 2, smp.scope_tree.children[2].start.line
+    assert_equal 6, smp.text.length
+    smp.delete_between(TextLoc.new(1, 15), TextLoc.new(2,0))
+    assert_equal 5, smp.text.length
+  end
+  
+  def test_delete_line 
+    gr = $ruby_grammar
+     sc = Scope.new(:pattern => gr,
+                    :grammar => gr,
+                    :start   => TextLoc.new(0, 0))
+     smp = Parser.new(sc, [gr], nil)
+     rubycode = "class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
+     smp.add_lines(rubycode)
+     smp.delete_line(2)
+     assert_equal 4, smp.scope_tree.children.length
+     assert_equal 2, smp.scope_tree.children[2].start.line
   end
   
   def test_delete_line_that_opens_scope
@@ -929,11 +952,124 @@ LOKI
     assert_equal 3, smp.scope_tree.children.length
   end
   
-  def test_insert_lineS
-    raise NotImplementedError, "not implemented Parser#insert_lines"
+  def test_insert
+    gr = $ruby_grammar
+    sc = Scope.new(:pattern => gr,
+                   :grammar => gr,
+                   :start   => TextLoc.new(0, 0))
+    smp = Parser.new(sc, [gr], nil)
+    source=<<STR
+#! /usr/bin/env ruby
+
+require File.dirname(__FILE__) + '/lib/redcar'
+Redcar.startup(:output => :silent)
+Gtk.main
+STR
+    smp.add_lines(source)
+    assert_equal 6, smp.text.length
+    assert_equal 6, smp.scope_tree.children.length
+    
+    smp.insert(TextLoc.new(3, 14), "\nclass Red; attr :foo; end\nFile.rm")
+    newsource=<<STR
+#! /usr/bin/env ruby
+
+require File.dirname(__FILE__) + '/lib/redcar'
+Redcar.startup
+class Red; attr :foo; end
+File.rm(:output => :silent)
+Gtk.main
+STR
+    assert_equal newsource, smp.text.join
+    assert_equal 8, smp.text.length
+    assert_equal 11, smp.scope_tree.children.length
+  end
+
+  def test_insert_new_lines
+    gr = $ruby_grammar
+    sc = Scope.new(:pattern => gr,
+                   :grammar => gr,
+                   :start   => TextLoc.new(0, 0))
+    smp = Parser.new(sc, [gr], nil)
+    source=<<STR
+#! /usr/bin/env ruby
+
+require File.dirname(__FILE__) + '/lib/redcar'
+Redcar.startup(:output => :silent)
+Gtk.main
+STR
+    smp.add_lines(source)
+    assert_equal 6, smp.text.length
+    assert_equal 6, smp.scope_tree.children.length
+    pre = smp.scope_tree.copy
+    pre.shift_after(3, 1)
+    
+    smp.insert(TextLoc.new(3, 0), "\n")
+    newsource=<<STR
+#! /usr/bin/env ruby
+
+require File.dirname(__FILE__) + '/lib/redcar'
+
+Redcar.startup(:output => :silent)
+Gtk.main
+STR
+    assert_equal newsource, smp.text.join
+    assert_equal 7, smp.text.length
+    assert_equal 6, smp.scope_tree.children.length
+    
+    pre.shift_after(4, 1)
+    smp.insert(TextLoc.new(3, 0), "\n")
+    newsource=<<STR
+#! /usr/bin/env ruby
+
+require File.dirname(__FILE__) + '/lib/redcar'
+
+
+Redcar.startup(:output => :silent)
+Gtk.main
+STR
+    assert_equal newsource, smp.text.join
+    assert_equal 8, smp.text.length
+    assert_equal 6, smp.scope_tree.children.length
+    
+    pre.shift_after(5, 1)
+    smp.insert(TextLoc.new(3, 0), "\n")
+    newsource=<<STR
+#! /usr/bin/env ruby
+
+require File.dirname(__FILE__) + '/lib/redcar'
+
+
+
+Redcar.startup(:output => :silent)
+Gtk.main
+STR
+    assert_equal newsource, smp.text.join
+    assert_equal 9, smp.text.length
+    assert_equal 6, smp.scope_tree.children.length
+    assert smp.scope_tree.identical?(pre)
   end
   
-  def test_delete_lineS
-    raise NotImplementedError, "not implemented Parser#delete_lines"
+  def test_delete_between
+    gr = $ruby_grammar
+    sc = Scope.new(:pattern => gr,
+                   :grammar => gr,
+                   :start   => TextLoc.new(0, 0))
+    smp = Parser.new(sc, [gr], nil)
+    source=<<STR
+#! /usr/bin/env ruby
+
+require File.dirname(__FILE__) + '/lib/redcar'
+Redcar.startup(:output => :silent)
+Gtk.main
+STR
+    smp.add_lines(source)
+    assert_equal 6, smp.text.length
+    smp.delete_between(TextLoc.new(0, 7), TextLoc.new(3, 9))
+    new_source=<<BSTR
+#! /usrartup(:output => :silent)
+Gtk.main
+BSTR
+    assert_equal 3, smp.text.length
+    assert_equal 2, smp.scope_tree.children.length
   end
 end

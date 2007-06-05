@@ -11,8 +11,8 @@ Redcar.menu("HTML") do |menu|
     else
       # use previous word
       p tab.get_line
-      if tab.get_line[0..(tab.cursor_line_offset-1)].reverse =~ /^(\w+)\b/
-        tag_name = $1.reverse
+      if md = tab.get_line[0..(tab.cursor_line_offset-1)].reverse.match(/^(\w+)\b/)
+        tag_name = md[1].reverse
         tab.delete(tab.cursor_offset-tag_name.length, tab.cursor_offset)
         pre_off = tab.cursor_offset
       end

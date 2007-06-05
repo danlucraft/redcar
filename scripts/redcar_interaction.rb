@@ -18,7 +18,7 @@ module Redcar
     end
     
     def prompt
-      "ris:#{@commands}>>"
+      "ris:#{@commands}>> "
     end
   end
 end

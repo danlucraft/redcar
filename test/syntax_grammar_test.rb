@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/../lib/redcar'
 require 'test/unit'
 require File.dirname(__FILE__) + '/test_helper'
 
-xml = IO.readlines(File.dirname(__FILE__)+"/../textmate/bundles/Ruby.tmbundle/Syntaxes/Ruby.plist").join
+xml = IO.readlines(File.dirname(__FILE__)+"/../textmate/Bundles/Ruby.tmbundle/Syntaxes/Ruby.plist").join
 plist = Redcar::Plist.xml_to_plist(xml)
 $ruby_grammar = Redcar::Syntax::Grammar.new(plist[0])
 

@@ -1,5 +1,13 @@
 
 module Redcar
+  
+  def self.process_command_error(name, e)
+    puts "* Error in user command: #{name}"
+    puts "  trace:"
+    puts e.to_s
+    puts e.backtrace
+  end
+  
   module Keymap
     def Keymap.get_keymap(keybinding)
       if Redcar.GlobalKeymap.keymap_respond_to?(keybinding)
@@ -101,7 +109,7 @@ module Redcar
           if @should_add
             @adding = true
             self.class_eval do
-              alias_method "old_#{meth}", "#{meth}"
+              alias_method "__base_#{meth}", "#{meth}"
               define_method(meth) do |*args|
                 unless defined? @recording
                   @recording = true
@@ -111,8 +119,12 @@ module Redcar
                 was_on = @recording
                 @recording = false
                 result = nil
-                undoable do
-                  result = self.send("old_#{meth}", *args)
+                begin
+                  undoable do
+                    result = self.send("__base_#{meth}", *args)
+                  end
+                rescue Object => e
+                  Redcar.process_command_error(meth, e)
                 end
                 @recording = was_on
                 result
@@ -166,7 +178,7 @@ module Redcar
   class GlobalKeymap
     include Keymap
   end
-  
+    
   class KeyBinding
     attr_reader :modifiers, :keyname
     def initialize(modifiers, keyname)

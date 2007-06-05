@@ -8,13 +8,15 @@ require 'lib/syntax/parser'
 
 module Redcar
   module Syntax
+    include DebugPrinter
+    
     def self.load_grammars
       # FIXME to not load all grammars upfront
 
       @grammars ||= {}
       @grammars_by_extension ||= {}
       if @grammars.keys.empty?
-        Dir.glob("textmate/bundles/*/Syntaxes/*").each do |file|
+        Dir.glob("textmate/Bundles/*/Syntaxes/*").each do |file|
           puts "loading #{file}"
           xml = IO.readlines(file).join
           plist = Redcar::Plist.plist_from_xml(xml)
@@ -34,20 +36,21 @@ module Redcar
         @grammars_by_extension[options[:extension]]
       end
     end
-  end
-end
-
-module Kernel
-  def debug_puts(*args)
-    if $debug_puts
-      puts *args
+    
+    def self.grammar_names
+      @grammars.keys
     end
   end
 end
 
+
 Redcar.hook :startup do
   Redcar::Syntax.load_grammars
+  Redcar.MainToolbar.append_combo(Redcar::Syntax.grammar_names) do |_, tab, grammar|
+    tab.set_grammar(Redcar::Syntax.grammar(:name => grammar))
+  end
 end
+
 
 module Redcar
   class TextTab
@@ -56,9 +59,11 @@ module Redcar
     keymap "control-super s", :print_scope_tree
     keymap "alt-super s", :reparse_tab
     
+    attr_accessor :scope_tree, :parser
+    
     def reparse_tab
       colour
-      puts @scope_tree.pretty
+      debug_puts @scope_tree.pretty
     end
     
     def print_scope_tree
@@ -67,6 +72,7 @@ module Redcar
     
     def scope_tooltip
       scope = scope_at_cursor
+      puts "scope_at_cursor: #{scope.inspect}"
       tooltip_at_cursor(scope.hierarchy_names.join("\n"))
     end
     
@@ -90,17 +96,28 @@ module Redcar
     end
     
     def scope_at_cursor
-      scope = @scope_tree.scope_at(TextLoc.new(cursor_line, cursor_offset))
+      scope = @scope_tree.scope_at(TextLoc.new(cursor_line, cursor_line_offset))
     end
     
     alias :initialize_without_syntax :initialize
     def initialize(pane)
       initialize_without_syntax(pane)
       
-      set_theme(Theme.theme("Twilight"))
-      set_grammar(Syntax.grammar(:name => 'Ruby'))
+      set_theme(Theme.current_theme)
+      if ext = File.extname(@filename||"")
+        debug_puts "extension: #{ext}"
+        set_grammar(Syntax.grammar(:extension => ext))
+      end
+      
+#       @buffer.signal_connect("inserted_text") do |widget, iter, text, length|
+#         Redcar.event :tab_modified, self unless @was_modified
+#         Redcar.event :tab_changed
+#         store_insertion(iter, text, length)
+#         @was_modified = true
+#       end
       
       @buffer.signal_connect("insert_text") do |widget, iter, text, length|
+#         @buffer.signal_emit("inserted_text", iter, text, length)
         Redcar.event :tab_modified, self unless @was_modified
         Redcar.event :tab_changed
         store_insertion(iter, text, length)
@@ -114,18 +131,31 @@ module Redcar
       end
       @no_colouring = false
       @operations = []
-    #  $debug_puts = true
+    #  $debug_debug_puts = true
     end
     
     def set_theme(th)
-      apply_theme(th)
-      @colr = Redcar::Colourer.new(th)
+      if th
+        apply_theme(th)
+        @colr = Redcar::Colourer.new(th)
+        new_buffer
+        colour
+        #if syntax?
+        #  @colr.colour(@buffer, @parser.scope_tree)
+        #end
+      else
+        raise StandardError, "nil theme passed to set_theme"
+      end
+    end
+    
+    def set_syntax(name)
+      set_grammar(Syntax.grammar(:name => name))
     end
     
     def set_grammar(gr)
       if gr
         @grammar = gr
-        puts "setting grammar: #{@grammar.name}"
+        debug_puts "setting grammar: #{@grammar.name}"
         @scope_tree = Redcar::Syntax::Scope.new(:pattern => gr,
                                                 :grammar => gr,
                                                 :start => TextLoc.new(0, 0))
@@ -153,7 +183,9 @@ module Redcar
       if @filename
         ext = File.extname(@filename)
         set_grammar(Syntax.grammar(:extension => ext))
-        puts "setting grammar #{@grammar.name} from file extension: #{ext}"
+        if syntax?
+          debug_puts "setting grammar #{@grammar.name} from file extension: #{ext}"
+        end
         colour
       end
     end
@@ -172,7 +204,7 @@ module Redcar
       insertion[:from] = TextLoc.new(iter.line,  iter.line_offset)
       insertion[:to]   = TextLoc.new(iter2.line, iter2.line_offset)
       insertion[:text] = text
-      insertion[:lines] = text.scan("\n").length
+      insertion[:lines] = text.scan("\n").length+1
       @operations << insertion
       debug_puts "insertion of #{insertion[:lines]} lines from #{insertion[:from]} to #{insertion[:to]}"
       
@@ -190,11 +222,11 @@ module Redcar
       deletion[:type] = :deletion
       deletion[:from] = TextLoc.new(iter1.line, iter1.line_offset)
       deletion[:to]   = TextLoc.new(iter2.line, iter2.line_offset)
-      deletion[:lines] = iter2.line-iter1.line
+      deletion[:lines] = iter2.line-iter1.line+1
       deletion[:length] = iter2.offset-iter1.offset
       
       @operations << deletion
-      debug_puts "deletion of #{deletion[:lines]} lines from #{deletion[:from]} to #{deletion[:to]}"
+      debug_puts "deletion over #{deletion[:lines]} lines from #{deletion[:from]} to #{deletion[:to]}"
       
       Gtk.idle_add do
         unless @operations.empty?
@@ -204,32 +236,45 @@ module Redcar
       end
     end
     
+    def syntax?
+      @grammar and @scope_tree and @parser and @colr
+    end
+    
     def process_operation(operation)
-      case operation[:type]
-      when :insertion
-        process_insertion(operation)
-      when :deletion
-        process_deletion(operation)
+      if syntax?
+        case operation[:type]
+        when :insertion
+          process_insertion(operation)
+        when :deletion
+          process_deletion(operation)
+        end
       end
     end
     
+    def num_lines
+      @parser.text.length
+    end
+    
     def process_insertion(insertion)
-      if insertion[:lines] = 0
+      if insertion[:lines] == 1
         @parser.insert_in_line(insertion[:from].line, insertion[:text], insertion[:from].offset)
         @colr.colour_line(self, @scope_tree, insertion[:from].line)
         debug_puts "parsed and coloured line"
       else
-        puts "dont know how to handle multiple line insertions yet"
+        debug_puts "processing insertion of #{insertion[:lines]} lines"
+        @parser.insert(insertion[:from], insertion[:text])
       end
     end
     
     def process_deletion(deletion)
-      if deletion[:lines] = 0
+      if deletion[:lines] == 1
         @parser.delete_from_line(deletion[:from].line, deletion[:length], deletion[:from].offset)
         @colr.colour_line(self, @scope_tree, deletion[:from].line)
         debug_puts "parsed and coloured line"
       else
-        puts "dont know how to handle multiple line deletions yet"
+        @parser.delete_between(deletion[:from], deletion[:to])
+        @colr.colour_line(self, @scope_tree, deletion[:from].line)
+        @colr.colour_line(self, @scope_tree, deletion[:from].line+1)
       end
     end
     
@@ -243,12 +288,12 @@ module Redcar
     end
     
     def colour
-      if @parser
+      if syntax?
         #       Thread.new do
         startt = Time.now
         @parser.clear_after(0)
         @parser.add_lines(self.contents)
-        #      puts @scope_tree.pretty
+        #      debug_puts @scope_tree.pretty
         @buffer.remove_all_tags(iter(start_mark), iter(end_mark))
         @colr.colour(@buffer, @parser.scope_tree)
         endt = Time.now

@@ -1,9 +1,13 @@
 
 $spare_name = "aaaa"
 
+class RedcarSyntaxError < StandardError; end
+
 module Redcar
   module Syntax
     class Parser
+      include DebugPrinter
+      
       attr_accessor :grammars, :lines, :scope_tree, :fold_counts, :text
       
       def initialize(opening_scope, grammars=[], text="")
@@ -87,7 +91,7 @@ module Redcar
         after_scope  = @scope_tree.scope_at(TextLoc.new(num, @text[num].length))
         @text.delete_at(num)
         @fold_counts.delete_at(num)
-        @scope_tree.clear_between(num, num)
+        @scope_tree.clear_between_lines(num, num)
         @scope_tree.shift_after(num, -1)
         debug_puts "before: #{before_scope.inspect}"
         debug_puts "after:  #{after_scope.inspect}"
@@ -99,7 +103,7 @@ module Redcar
             else
               affected_until = @text.length
             end
-            @scope_tree.clear_between(num, affected_until)
+            @scope_tree.clear_between_lines(num, affected_until)
             num.upto(affected_until) do |reparse_num|
               clear_line(reparse_num)
               parse_line(@text[reparse_num], reparse_num)
@@ -135,25 +139,108 @@ module Redcar
         end
       end
       
+      def string_to_lines(text)
+        lines = text.split("\n")
+        lines << "" if text[-1..-1] == "\n"
+        lines << "" if text == "\n"
+        lines
+      end
+    
+      def insert(loc, text)
+        unless text.include?("\n")
+          insert_in_line(loc.line, text, loc.offset)
+        else
+          lines = string_to_lines(text)
+          
+          # end of first inserted line
+          before = @text[loc.line][0..(loc.offset-1)]
+          after  = @text[loc.line][(loc.offset)..-1]
+          after_scope = line_end(loc.line)
+          @text[loc.line].delete_slice((loc.offset)..-1)
+          @text[loc.line] << lines[0]+"\n"
+          @text.insert(loc.line+1, after)
+          # middle lines
+          lines[1..-2].each_with_index do |line, i|
+            @text.insert(loc.line+i+1, line+"\n")
+          end
+          # start of last inserted_line
+          @text[loc.line+lines.length-1].insert(0, lines.last)
+          
+          @scope_tree.shift_after(loc.line+1, lines.length-1)
+          
+          line_num = loc.line
+          debug_puts "parsing new lines"
+          lines.length.times do |i|
+            parse_line(@text[line_num], line_num)
+            line_num += 1
+          end
+          new_after_scope = line_end(loc.line+lines.length)
+          unless new_after_scope == after_scope
+            debug_puts "have some reparsing to do"
+            until line_num >= @text.length or parse_line(@text[line_num], line_num)
+              debug_puts "not finished parsing"
+              line_num += 1
+            end
+          end
+        end
+      end
+      
       def scope_at_end_of(num)
         @scope_tree.scope_at(TextLoc.new(num, @text[num].length))
       end
       
       def insert_in_line(line_num, text, offset)
-        @text[line_num].insert(offset, text)
-        @scope_tree.shift_chars(line_num, text.length, offset)
-        until line_num >= @text.length or parse_line(@text[line_num], line_num)
-          debug_puts "not finished parsing at end of #{line_num}"
-          line_num += 1
+        if @text[line_num]
+          @text[line_num].insert(offset, text)
+          @scope_tree.shift_chars(line_num, text.length, offset)
+          until line_num >= @text.length or parse_line(@text[line_num], line_num)
+            debug_puts "not finished parsing at end of #{line_num}"
+            line_num += 1
+          end
+        else
+          raise RedcarSyntaxError, "RedcarSyntaxError: trying to insert text in line that"+
+            "doesn't exist (#{line_num})"
+        end
+      end
+      
+      def delete_between(from, to)
+        if from.line == to.line
+          delete_from_line(from.line, to.offset-from.offset, from.offset)
+        else
+          debug_puts "multiple line deletion"
+          # end of first line
+          @text[from.line].delete_slice(from.offset..-1)
+          # all of middle lines
+          (to.line-from.line-1).times do |i|
+            @text.delete_at(from.line+1)
+          end
+          # start of last line
+          @text[from.line] << @text[from.line+1][to.offset..-1]
+          @text.delete_at(from.line+1)
+          
+          @scope_tree.clear_between_lines(from.line+1, to.line)
+          @scope_tree.shift_after(from.line+1, -(to.line-from.line))
+          debug_puts @scope_tree.pretty
+          
+          line_num = from.line
+          until line_num >= @text.length or parse_line(@text[line_num], line_num)
+            debug_puts "not finished parsing"
+            line_num += 1
+          end
         end
       end
       
       def delete_from_line(line_num, amount, offset)
-        @text[line_num].delete_slice(offset..(offset+amount-1))
-        @scope_tree.shift_chars(line_num, -amount, offset)
-        until line_num >= @text.length or parse_line(@text[line_num], line_num)
-          debug_puts "not finished parsing"
-          line_num += 1
+        if @text[line_num]
+          @text[line_num].delete_slice(offset..(offset+amount-1))
+          @scope_tree.shift_chars(line_num, -amount, offset)
+          until line_num >= @text.length or parse_line(@text[line_num], line_num)
+            debug_puts "not finished parsing"
+            line_num += 1
+          end
+        else
+          raise RedcarSyntaxError, "RedcarSyntaxError: trying to delete text from line that"+
+            "doesn't exist (#{line_num})"
         end
       end
         
@@ -216,11 +303,11 @@ module Redcar
       end
       
       def clear_line(line)
-        @scope_tree.clear_between(line, line)
+        @scope_tree.clear_between_lines(line, line)
       end
       
-      def clear_between(line_from, line_to)
-        @scope_tree.clear_between(line_from, line_to)
+      def clear_between_lines(line_from, line_to)
+        @scope_tree.clear_between_lines(line_from, line_to)
       end
       
       def scope_at(loc)
@@ -341,6 +428,9 @@ module Redcar
           end
           
           expected_scope = current_scope.first_child_after(TextLoc.new(line_num, pos))
+          if expected_scope
+            expected_scope = nil unless expected_scope.start.line == line_num
+          end
           debug_puts "  expected_scope: #{expected_scope.inspect}"
           if new_scope_markers.length > 0
             new_scope_marker = new_scope_markers.sort_by {|sm| sm; sm[:from] }[0]
@@ -534,13 +624,6 @@ module Redcar
         else
           tmp = md.captures.map{|c| (c==nil ? "" : c)}
           capture = tmp[capture_index]
-        end
-        if capture == nil
-          p md
-          p md.to_s
-          p md.captures
-          p capture_index
-          raise StandardError, "capture not found"
         end
         capture
       end

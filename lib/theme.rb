@@ -5,22 +5,61 @@ module Redcar
     def self.load_themes
       @themes ||= {}
       if @themes.keys.empty?
-        Dir.glob("textmate/Themes/Twi*").each do |file|
+        Dir.glob("textmate/Themes/*").each do |file|
           xml = IO.readlines(file).join
           plist = Redcar::Plist.plist_from_xml(xml)
           @themes[plist[0]['name']] = Redcar::Theme.new(plist[0])
         end
       end
+      unless Redcar["theme/default_theme"]
+        Redcar["theme/default_theme"] = "Mac Classic"
+      end
+      @current_theme = self.theme(Redcar["theme/default_theme"])
+    end
+    
+    def current_theme
+      @current_theme
     end
     
     def self.theme(name)
       @themes[name]
     end
+    
+    def self.theme_names
+      @themes.keys
+    end
   end
 end
 
+
 Redcar.hook :startup do
   Redcar::Theme.load_themes
+end
+
+Redcar.menu("_Options") do |menu|
+  menu.command("Select Theme", :select_theme, nil, "") do |pane, tab|
+    list = Redcar::GUI::List.new
+    list.replace(Redcar::Theme.theme_names)
+    
+    dialog = Redcar::Dialog.build :title => "Choose Theme",
+                                  :buttons => [:Apply, :cancel],
+                                  :entry => [{:name => :list, :type => :list, :abs => list}]
+    dialog.on_button(:cancel) { dialog.close }
+    dialog.on_button(:Apply) do
+      name = list.selected
+      dialog.close
+      puts "applying theme: #{name}"
+      tab.set_theme(Redcar::Theme.theme(name))
+    end
+    list.on_double_click do |row|
+      name = row
+      dialog.close
+      puts "applying theme: #{name}"
+      tab.set_theme(Redcar::Theme.theme(name))
+    end
+    
+    dialog.show :modal => true
+  end
 end
     
 module Redcar
@@ -96,6 +135,9 @@ module Redcar
       end
       if settings["fontStyle"].include? "underline"
         options[:underline] = Pango::UNDERLINE_LOW
+      end
+      if settings["fontStyle"].include? "bold"
+        options[:weight] = Pango::WEIGHT_BOLD
       end
       options
     end

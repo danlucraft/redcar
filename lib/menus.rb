@@ -20,6 +20,8 @@ module Redcar
   end
   
   class Menu
+    include DebugPrinter
+    
     attr_accessor :name
     def initialize(menu, name)
       @menu = menu
@@ -40,13 +42,20 @@ module Redcar
       Redcar.GlobalKeymap.class.class_eval do
         keymap keybinding, "menu_#{this_name}_#{id}".intern
         define_method("menu_#{this_name}_#{id}") do
-          block.call(Redcar.current_pane, Redcar.current_tab)
+          begin
+            block.call(Redcar.current_pane, Redcar.current_tab)
+          rescue Object => e
+            Redcar.process_command_error(id, e)
+          end
         end
       end
       menuitem.signal_connect("activate") do
-        puts :foovar
-        puts keybinding
-        block.call(Redcar.current_pane, Redcar.current_tab)
+        debug_puts keybinding
+        begin
+          block.call(Redcar.current_pane, Redcar.current_tab)
+        rescue Object => e
+          Redcar.process_command_error(id, e)
+        end
         Redcar.keystrokes.add_to_history(keybinding)
       end
       if icon

@@ -27,14 +27,11 @@ end
 
 class String
   def delete_slice(range)
-    unless range.begin <= range.end
-      raise ArgumentError, "String#delete_slice expects an *ordered* range."
-    end
-    unless range.begin >= 0 and range.end >= 0
-      raise ArgumentError, "String#delete_slice expects only positive range endpoints."
-    end
     s = range.begin
     e = range.end
+    s = self.length + s if s < 0
+    e = self.length + e if e < 0
+    s, e = e, s if s > e
     first = self[0..(s-1)]
     second = self[(e+1)..-1]
     if s == 0
@@ -54,4 +51,6 @@ if $0 == __FILE__
   p "01234".delete_slice(0..0) == "1234"
   p "01234".delete_slice(0..4) == ""
   p "01234".delete_slice(4..4) == "0123"
+  p "01234".delete_slice(1..-1) == "0"
+  p "01234".delete_slice(-1..-1) == "0123"
 end

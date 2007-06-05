@@ -1,6 +1,8 @@
 
 module Redcar
   class Colourer
+    include DebugPrinter
+    
     attr_accessor :theme
     
     def initialize(theme)
@@ -60,8 +62,8 @@ module Redcar
             end
           end
         rescue Object => e
-          puts e
-          puts e.backtrace
+          debug_puts e
+          debug_puts e.backtrace
         end
       end
       
@@ -112,8 +114,8 @@ module Redcar
             colour(buffer, scope, priority+1)
           end
         rescue Object => e
-          puts e
-          puts e.backtrace
+          debug_puts e
+          debug_puts e.backtrace
         end
       end
     end

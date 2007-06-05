@@ -7,6 +7,10 @@ class Test::Unit::TestCase
     (@win.panes[0].first||null).name = "first"
   end
   
+  def run_gtk
+    Gtk.main_iteration while Gtk.events_pending?
+  end
+  
   def load_test_custom_files
     FileUtils.mv(Redcar.ROOT_PATH + "/custom/arrangements.yaml",
                  Redcar.ROOT_PATH + "/custom/arrangements.yaml.backup")

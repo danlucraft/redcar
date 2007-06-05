@@ -3,10 +3,12 @@
 $KCODE = "U"
 require 'gtk2'
 require 'gtksourceview'
+require 'gconf2'
 
 require File.dirname(__FILE__) + '/../vendor/active_support'
 require File.dirname(__FILE__) + '/../vendor/null'
 require File.dirname(__FILE__) + '/../vendor/ruby_extensions'
+require File.dirname(__FILE__) + '/../vendor/debugprinter'
 
 require 'lib/plist'
 require File.dirname(__FILE__) + '/application'
@@ -39,6 +41,14 @@ module Redcar
   class << self
     attr_accessor :current_window, :keystrokes
     
+    def []=(key, val)
+      @gconf_client["/apps/redcar"+key, val]
+    end
+    
+    def [](key)
+      @gconf_client["/apps/redcar"+key]
+    end
+    
     def startup(options={})
       options = process_params(options,
                                { :load_scripts => true,
@@ -57,8 +67,8 @@ module Redcar
         end
       end
 
+      @gconf_client = GConf::Client.new
       Redcar.event :startup
-      ToolTip.new
     end
     attr_accessor :CUSTOM_DIR
     attr_accessor :ROOT_PATH

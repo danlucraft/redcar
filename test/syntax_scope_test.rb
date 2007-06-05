@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/../lib/redcar'
 require 'test/unit'
 require File.dirname(__FILE__) + '/test_helper'
 
-xml = IO.readlines(File.dirname(__FILE__)+"/../textmate/bundles/Ruby.tmbundle/Syntaxes/Ruby.plist").join
+xml = IO.readlines(File.dirname(__FILE__)+"/../textmate/Bundles/Ruby.tmbundle/Syntaxes/Ruby.plist").join
 plist = Redcar::Plist.xml_to_plist(xml)
 $ruby_grammar = Redcar::Syntax::Grammar.new(plist[0])
 
@@ -254,7 +254,7 @@ class TestSyntax < Test::Unit::TestCase
                  smp.scope_tree.children.map{|c| c.name})
   end
   
-  def test_clear_between
+  def test_clear_between_lines
     gr = $ruby_grammar
     sc = Scope.new(:pattern => gr,
                    :grammar => gr,
@@ -263,7 +263,7 @@ class TestSyntax < Test::Unit::TestCase
     rubycode = "class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
     smp.add_lines(rubycode)    
     names = smp.scope_tree.children.map{|c| c.name}
-    smp.clear_between(1, 2)
+    smp.clear_between_lines(1, 2)
     assert_equal([names[0]]+names[4..5], 
                  smp.scope_tree.children.map{|c| c.name})
   end
