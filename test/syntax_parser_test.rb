@@ -117,6 +117,7 @@ class TestSyntax < Test::Unit::TestCase
                    :start => TextLoc.new(0, 0))
     smp = Parser.new(sc, [gr], nil)
     smp.add_lines(line)
+    run_gtk
     assert_equal "source.example1", smp.scope_tree.name
     assert_equal 2, smp.scope_tree.children.length
     smp.scope_tree.children.each do |cs|
@@ -145,6 +146,7 @@ class TestSyntax < Test::Unit::TestCase
                    :start => TextLoc.new(0, 0))
     smp = Parser.new(sc, [gr], nil)
     smp.add_lines(line)
+    run_gtk
     assert_equal "source.example1", smp.scope_tree.name
     assert_equal 3, smp.scope_tree.children.length
     assert_equal "if", smp.scope_tree.children[0].name
@@ -175,6 +177,7 @@ class TestSyntax < Test::Unit::TestCase
                    :start => TextLoc.new(0, 0))
     smp = Parser.new(sc, [gr], nil)
     smp.add_lines(line)
+    run_gtk
     assert_equal "source.example1", smp.scope_tree.name
     assert_equal 1, smp.scope_tree.children.length
     ch0 = smp.scope_tree.children[0]
@@ -211,6 +214,7 @@ class TestSyntax < Test::Unit::TestCase
                    :start => TextLoc.new(0, 0))
     smp = Parser.new(sc, [gr], nil)
     smp.add_lines(line)
+    run_gtk
     assert_equal 3, smp.scope_tree.children.length
     assert_equal "keyword.if", smp.scope_tree.children[0].name
     assert_equal 3, smp.scope_tree.children[1].children.length
@@ -238,6 +242,7 @@ class TestSyntax < Test::Unit::TestCase
                    :start => TextLoc.new(0, 0))
     smp = Parser.new(sc, [gr], nil)
     smp.add_lines(line)
+    run_gtk
     assert_equal 1, smp.scope_tree.children.length
     assert_equal 1, smp.scope_tree.children[0].children.length
     assert_equal "code.list", smp.scope_tree.children[0].name
@@ -264,6 +269,7 @@ class TestSyntax < Test::Unit::TestCase
                    :start => TextLoc.new(0, 0))
     smp = Parser.new(sc, [gr], nil)
     smp.add_lines(lines)
+    run_gtk
     assert_equal 1, smp.scope_tree.children.length
     assert_equal 1, smp.scope_tree.children[0].children.length
   end
@@ -276,6 +282,7 @@ class TestSyntax < Test::Unit::TestCase
     smp = Parser.new(sc, [gr], nil)
     text = File.read("test/fixtures/init.rb")
     smp.add_lines(text)
+    run_gtk
   end
   
   # Parse line should work repeatedly with no ill effects.
@@ -287,6 +294,7 @@ class TestSyntax < Test::Unit::TestCase
     smp = Parser.new(sc, [gr], nil)
     rubycode="class Redcar::File\n  def nice_name\n    @filename.split(\"asdf \#{foo} asdf\").last\n  end\nend\n"
     smp.add_lines(rubycode)
+    run_gtk
     copy = smp.scope_tree.copy
     10.times { assert smp.parse_line("class Redcar::File\n", 0) }
     assert copy.identical?(smp.scope_tree)
@@ -308,6 +316,7 @@ HI
 puts "hello"
 P1END
     smp.add_lines(rubycode)
+    run_gtk
     copy = smp.scope_tree.copy
     1.times { assert smp.parse_line("foo=\<\<HI", 1) }
     assert copy.identical?(smp.scope_tree)
@@ -329,6 +338,7 @@ HI
 puts "hello"
 P2END
     smp.add_lines(rubycode)
+    run_gtk
     copy = smp.scope_tree.copy
     10.times { assert smp.parse_line("HI", 4) }
     assert copy.identical?(smp.scope_tree)
@@ -352,6 +362,7 @@ HI
 puts "hello"
 P2END
     smp.add_lines(rubycode)
+    run_gtk
     assert_equal 3, smp.scope_tree.children.length
     assert smp.parse_line("puts \"hello\", @hello", 0)
     assert_equal 4, smp.scope_tree.children.length
@@ -367,6 +378,7 @@ P2END
     smp = Parser.new(sc, [gr], nil)
     rubycode="class Redcar::File\n  def nice_name\n    @filename.split(\"asdf asdf\").last\n  end\nend\n"
     smp.add_lines(rubycode)
+    run_gtk
     assert_equal 6, smp.scope_tree.children.length
     assert !smp.parse_line("    @filename.split(\"asdf asdf\").last=\<\<HI", 2)
     assert_equal 7, smp.scope_tree.children.length # <- this is not up to date for the entire text.
@@ -388,6 +400,7 @@ foo=\<\<HI
 puts "hello"
 APE
     smp.add_lines(rubycode)
+    run_gtk
     assert_equal 2, smp.scope_tree.children.length
     assert_equal "string.unquoted.heredoc.ruby", smp.scope_tree.line_end(4).name
     assert !smp.parse_line("HI", 4)
@@ -403,6 +416,7 @@ APE
     smp = Parser.new(sc, [gr], nil)
     rubycode="class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
     smp.add_lines(rubycode)
+    run_gtk
     assert_equal [0, 1, 2, 2, 3, 4], smp.scope_tree.children.map{|c| c.start.line}
     smp.shift_after(2, 2)
     assert_equal [0, 1, 4, 4, 5, 6], smp.scope_tree.children.map{|c| c.start.line}
@@ -456,6 +470,7 @@ ENDSTR
                    :start   => TextLoc.new(0, 0))
     smp = Parser.new(sc, [gr], nil)
     smp.add_lines(source)
+    run_gtk
 
     assert_equal "string.quoted.double.lisp", smp.scope_tree.children[2].name
     assert_equal "string.quoted.double.lisp", smp.scope_tree.children[3].name
@@ -520,8 +535,10 @@ ENDSTR
                    :grammar => gr,
                    :start   => TextLoc.new(0, 0))
     smp = Parser.new(sc, [gr], nil)
+
     rubycode = "class Foo\n  def hello\n    puts \"hello\"\n  end\nend\n"
     smp.add_lines(rubycode)
+    run_gtk
     
     assert_equal 5, smp.scope_tree.children.length
     class_scope = smp.scope_tree.children[0]
@@ -550,6 +567,7 @@ class Redcar::File
 end
 ENDSTR
     smp.add_lines(rubycode)
+    run_gtk
 
     # check that the "class" and "Redcar::File" are picked up:
     class_scope = smp.scope_tree.children[0]
@@ -567,6 +585,7 @@ ENDSTR
     smp = Parser.new(sc, [gr], nil)
     rubycode = "puts \"asdf \#{1+2} asdf\""
     smp.add_lines(rubycode)
+    run_gtk
   end
     
   def test_build_closing_regexp
@@ -597,6 +616,7 @@ ENDSTR
     smp = Parser.new(sc, [gr], nil)
     rubycode="class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
     smp.add_lines(rubycode)
+    run_gtk
     smp.clear_after(2)
     assert_equal 2, smp.scope_tree.children.length
   end
@@ -609,6 +629,7 @@ ENDSTR
     smp = Parser.new(sc, [gr], nil)
     rubycode="class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
     smp.add_lines(rubycode)
+    run_gtk
     assert_equal 6, smp.scope_tree.children.length
     
     old = smp.scope_tree.copy
@@ -616,6 +637,7 @@ ENDSTR
     
     # no changes to scopes:
     smp.insert_in_line(2, "    ", 0)
+    run_gtk
     assert smp.scope_tree.identical?(old)
   end
   
@@ -634,12 +656,14 @@ HILL
                    :start   => TextLoc.new(0, 0))
     smp = Parser.new(sc, [gr], nil)
     smp.add_lines(source)
+    run_gtk
     assert_equal 3, smp.scope_tree.children.length
     assert smp.scope_tree.children[1].end # heredoc is closed
     copy = smp.scope_tree.copy
     copy.shift_chars(1, 2, 0)
     
     smp.insert_in_line(1, "a;", 0)
+    run_gtk
     assert_equal 3, smp.scope_tree.children.length
     assert smp.scope_tree.children[1].end # heredoc is closed
     assert copy.identical?(smp.scope_tree)
@@ -653,6 +677,7 @@ HILL
     smp = Parser.new(sc, [gr], nil)
     rubycode="class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
     smp.add_lines(rubycode)
+    run_gtk
     assert_equal 6, smp.scope_tree.children.length
     
     smp.insert_in_line(2, "(\"asdf\")", smp.text[2].length)
@@ -667,6 +692,7 @@ HILL
     smp = Parser.new(sc, [gr], nil)
     rubycode="class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
     smp.add_lines(rubycode)
+    run_gtk
     assert_equal 6, smp.scope_tree.children.length
     
     smp.insert_in_line(2, "@thing ", 4)
@@ -681,9 +707,11 @@ HILL
     smp = Parser.new(sc, [gr], nil)
     rubycode="class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
     smp.add_lines(rubycode)
+    run_gtk
     assert_equal 6, smp.scope_tree.children.length
     
     smp.insert_in_line(2, "=\<\<HI", smp.text[2].length)
+    run_gtk
     assert_equal 5, smp.scope_tree.children.length
     assert_equal "string.unquoted.heredoc.ruby", smp.scope_tree.children.last.name
   end
@@ -703,9 +731,11 @@ foo=\<\<HI
 puts "hello"
 CRALL
     smp.add_lines(rubycode)
+    run_gtk
     assert_equal 2, smp.scope_tree.children.length
     
     smp.insert_in_line(4, "HI", 0)
+    run_gtk
     assert_equal 3, smp.scope_tree.children.length
   end
   
@@ -717,6 +747,7 @@ CRALL
     smp = Parser.new(sc, [gr], nil)
     initcode = "# Comment line one\n# Comment line two\n"
     smp.add_lines(initcode)
+    run_gtk
     assert_equal 2, smp.scope_tree.children.length
     
     %w{F i l e}.each do |l|
@@ -772,6 +803,7 @@ CRALL
     smp = Parser.new(sc, [gr], nil)
     rubycode="class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
     smp.add_lines(rubycode)
+    run_gtk
     
     old = smp.scope_tree.copy
     old.shift_chars(2, -2, 0)
@@ -796,8 +828,10 @@ HI
 puts "hello"
 CROW
     smp.add_lines(rubycode)
+    run_gtk
     assert_equal 3, smp.scope_tree.children.length
     smp.delete_from_line(1, 2, 4)
+    run_gtk
     assert_equal 6, smp.scope_tree.children.length
   end
   
@@ -817,6 +851,7 @@ HI
 puts "hello"
 CROW
     smp.add_lines(rubycode)
+    run_gtk
     assert_equal 3, smp.scope_tree.children.length
     smp.delete_from_line(4, 2, 0)
     assert_equal 2, smp.scope_tree.children.length
@@ -830,64 +865,68 @@ CROW
     smp = Parser.new(sc, [gr], nil)
     rubycode = "class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
     smp.add_lines(rubycode)
+    run_gtk
     assert_equal 6, smp.text.length
     smp.delete_between(TextLoc.new(1, 15), TextLoc.new(2,0))
     assert_equal 5, smp.text.length
   end
   
-  def test_delete_line 
-    gr = $ruby_grammar
-     sc = Scope.new(:pattern => gr,
-                    :grammar => gr,
-                    :start   => TextLoc.new(0, 0))
-     smp = Parser.new(sc, [gr], nil)
-     rubycode = "class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
-     smp.add_lines(rubycode)
-     smp.delete_line(2)
-     assert_equal 4, smp.scope_tree.children.length
-     assert_equal 2, smp.scope_tree.children[2].start.line
-  end
+#   def test_delete_line 
+#     gr = $ruby_grammar
+#      sc = Scope.new(:pattern => gr,
+#                     :grammar => gr,
+#                     :start   => TextLoc.new(0, 0))
+#      smp = Parser.new(sc, [gr], nil)
+#      rubycode = "class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
+#      smp.add_lines(rubycode)
+#     run_gtk
+#      smp.delete_line(2)
+#      assert_equal 4, smp.scope_tree.children.length
+#      assert_equal 2, smp.scope_tree.children[2].start.line
+#   end
   
-  def test_delete_line_that_opens_scope
-    source=<<POOF
-puts "hello"
-foo=\<\<HI
-  Here.foo
-  Here.foo
-HI
-puts "hello"
-POOF
-    gr = $ruby_grammar
-    sc = Scope.new(:pattern => gr,
-                   :grammar => gr,
-                   :start   => TextLoc.new(0, 0))
-    smp = Parser.new(sc, [gr], nil)
-    smp.add_lines(source)
-    assert_equal 3, smp.scope_tree.children.length
-    smp.delete_line(1)
-    assert_equal 5, smp.scope_tree.children.length
-  end
+#   def test_delete_line_that_opens_scope
+#     source=<<POOF
+# puts "hello"
+# foo=\<\<HI
+#   Here.foo
+#   Here.foo
+# HI
+# puts "hello"
+# POOF
+#     gr = $ruby_grammar
+#     sc = Scope.new(:pattern => gr,
+#                    :grammar => gr,
+#                    :start   => TextLoc.new(0, 0))
+#     smp = Parser.new(sc, [gr], nil)
+#     smp.add_lines(source)
+#     run_gtk
+#     assert_equal 3, smp.scope_tree.children.length
+#     smp.delete_line(1)
+#     assert_equal 5, smp.scope_tree.children.length
+#   end
   
-  def test_delete_line_that_closes_scope
-    source=<<ENDSTR
-puts "hello"
-foo=<<HI
-  Here.foo
-  Here.foo
-HI
-puts "hello"
-ENDSTR
-    gr = $ruby_grammar
-    sc = Scope.new(:pattern => gr,
-                   :grammar => gr,
-                   :start   => TextLoc.new(0, 0))
-    smp = Parser.new(sc, [gr], nil)
-    smp.add_lines(source)
-    assert_equal 3, smp.scope_tree.children.length
-    smp.delete_line(4)
-    assert_equal 2, smp.scope_tree.children.length
-    assert_equal [0, 1], smp.scope_tree.children.map{|c|c.start.line}
-  end
+#   def test_delete_line_that_closes_scope
+#     source=<<ENDSTR
+# puts "hello"
+# foo=<<HI
+#   Here.foo
+#   Here.foo
+# HI
+# puts "hello"
+# ENDSTR
+#     gr = $ruby_grammar
+#     sc = Scope.new(:pattern => gr,
+#                    :grammar => gr,
+#                    :start   => TextLoc.new(0, 0))
+#     smp = Parser.new(sc, [gr], nil)
+#     smp.add_lines(source)
+#     run_gtk
+#     assert_equal 3, smp.scope_tree.children.length
+#     smp.delete_line(4)
+#     assert_equal 2, smp.scope_tree.children.length
+#     assert_equal [0, 1], smp.scope_tree.children.map{|c|c.start.line}
+#   end
   
   def test_insert_line
     source=<<LOKI
@@ -904,12 +943,16 @@ LOKI
                    :start   => TextLoc.new(0, 0))
     smp = Parser.new(sc, [gr], nil)
     smp.add_lines(source)
+    run_gtk
+
     assert_equal 3, smp.scope_tree.children.length
 
     smp.insert_line("@foobar", 1)
+    run_gtk
     assert_equal 4, smp.scope_tree.children.length
 
     smp.insert_line("puts \"woot\"", 6)
+    run_gtk
     assert_equal 5, smp.scope_tree.children.length
   end
   
@@ -926,9 +969,11 @@ LOKI
                    :start   => TextLoc.new(0, 0))
     smp = Parser.new(sc, [gr], nil)
     smp.add_lines(source)
+    run_gtk
     assert_equal 4, smp.scope_tree.children.length
     
     smp.insert_line("foo=\<\<HI", 1)
+    run_gtk
     assert_equal 2, smp.scope_tree.children.length
   end
   
@@ -946,6 +991,7 @@ LOKI
                    :start   => TextLoc.new(0, 0))
     smp = Parser.new(sc, [gr], nil)
     smp.add_lines(source)
+    run_gtk
     assert_equal 2, smp.scope_tree.children.length
     
     smp.insert_line("HI", 4)
@@ -966,6 +1012,7 @@ Redcar.startup(:output => :silent)
 Gtk.main
 STR
     smp.add_lines(source)
+    run_gtk
     assert_equal 6, smp.text.length
     assert_equal 6, smp.scope_tree.children.length
     
@@ -998,6 +1045,7 @@ Redcar.startup(:output => :silent)
 Gtk.main
 STR
     smp.add_lines(source)
+    run_gtk
     assert_equal 6, smp.text.length
     assert_equal 6, smp.scope_tree.children.length
     pre = smp.scope_tree.copy
@@ -1049,6 +1097,25 @@ STR
     assert smp.scope_tree.identical?(pre)
   end
   
+  def test_insert_single_newline_at_end
+    gr = $ruby_grammar
+    sc = Scope.new(:pattern => gr,
+                   :grammar => gr,
+                   :start   => TextLoc.new(0, 0))
+    smp = Parser.new(sc, [gr], nil)
+    source=<<STR
+#! /usr/bin/env ruby
+
+require File.dirname(__FILE__) + '/lib/redcar'
+Redcar.startup(:output => :silent)
+Gtk.main
+STR
+    smp.add_lines(source[0..-2])
+    run_gtk
+    smp.insert(TextLoc.new(4, 8), "\n")
+    assert_equal "Gtk.main\n", smp.text[-2]
+  end
+  
   def test_delete_between
     gr = $ruby_grammar
     sc = Scope.new(:pattern => gr,
@@ -1063,13 +1130,42 @@ Redcar.startup(:output => :silent)
 Gtk.main
 STR
     smp.add_lines(source)
+    run_gtk
     assert_equal 6, smp.text.length
     smp.delete_between(TextLoc.new(0, 7), TextLoc.new(3, 9))
+    run_gtk
     new_source=<<BSTR
 #! /usrartup(:output => :silent)
 Gtk.main
 BSTR
     assert_equal 3, smp.text.length
     assert_equal 2, smp.scope_tree.children.length
+  end
+  
+  def test_bug
+    gr = $ruby_grammar
+    sc = Scope.new(:pattern => gr,
+                   :grammar => gr,
+                   :start   => TextLoc.new(0, 0))
+    smp = Parser.new(sc, [gr], nil)
+    source=<<STR
+#! /usr/bin/env ruby
+
+require File.dirname(__FILE__) + '/lib/redcar'
+Redcar.startup(:output => :silent)
+Gtk.main
+STR
+    smp.add_lines(source)
+    run_gtk
+    assert_equal 6, smp.text.length
+    arr = %w{p u t s} << " " << "\"" << "h" << "#" << "{"
+    arr.each_with_index do |l, i|
+      smp.insert(TextLoc.new(1, i), l)
+    end
+    smp.delete_from_line(1, 1, smp.text[1].length-1)
+    smp.delete_from_line(1, 1, smp.text[1].length-1)
+    smp.delete_from_line(1, 1, smp.text[1].length-1)
+    smp.insert(TextLoc.new(1, smp.text[1].length), "\"")
+    assert_equal 2, smp.scope_tree.children[1].children.length
   end
 end

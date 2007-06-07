@@ -95,7 +95,8 @@ class TestSyntax < Test::Unit::TestCase
                    :start   => TextLoc.new(0, 0))
     smp = Parser.new(sc, [gr], nil)
     rubycode = "class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
-    smp.add_lines(rubycode)    
+    smp.add_lines(rubycode)
+    run_gtk
     @scope_tree = smp.scope_tree
     
     $debug_puts = false
@@ -243,6 +244,7 @@ class TestSyntax < Test::Unit::TestCase
     smp = Parser.new(sc, [gr], nil)
     rubycode = "class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
     smp.add_lines(rubycode)
+    run_gtk
     names = smp.scope_tree.children.map{|c| c.name}
     sc2 = Scope.new(:pattern => gr.pattern("entity.name.type.class.ruby"),
                     :grammar => gr,
@@ -262,6 +264,7 @@ class TestSyntax < Test::Unit::TestCase
     smp = Parser.new(sc, [gr], nil)
     rubycode = "class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
     smp.add_lines(rubycode)    
+    run_gtk
     names = smp.scope_tree.children.map{|c| c.name}
     smp.clear_between_lines(1, 2)
     assert_equal([names[0]]+names[4..5], 
@@ -276,6 +279,7 @@ class TestSyntax < Test::Unit::TestCase
     smp = Parser.new(sc, [gr], nil)
     rubycode = "class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
     smp.add_lines(rubycode)    
+    run_gtk
     names = smp.scope_tree.children.map{|c| c.name}
     smp.clear_line(1)
     assert_equal([names[0]]+names[2..5], 

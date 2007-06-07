@@ -18,9 +18,14 @@ module DebugPrinter
     $debugging[self.class] = pre
   end
   
-  def debug_puts(*args)
+  def debug_puts(*args, &block)
     if @debugging or $debugging[self.class]
-      Kernel.puts *args
+      if block_given?
+        arg = block.call
+        Kernel.puts *(args+[arg])
+      else
+        Kernel.puts *(args)
+      end
     end
   end
 end

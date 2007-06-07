@@ -18,7 +18,7 @@ class TestSensitivity < Test::Unit::TestCase
     widget.sensitive = true
     Redcar::Sensitivity.add(:foo, :hooks => [:foo]) { @on }
     widget.sensitize_to :foo
-    assert widget.sensitive?
+    assert !widget.sensitive?
     @on = false
     Redcar.event :foo
     assert !widget.sensitive?
@@ -29,9 +29,9 @@ class TestSensitivity < Test::Unit::TestCase
     Redcar.event :foo
     assert !widget.sensitive?
     widget.desensitize
-    @on = true
+    @on = false
     Redcar.event :foo
-    assert !widget.sensitive?
+    assert widget.sensitive?
   end
 end
   

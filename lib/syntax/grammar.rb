@@ -19,7 +19,7 @@ module Redcar
       end
       
       def to_scope
-        new_scope = Scope.new(:pattern => self, :grammar => self.grammar)
+        new_scope = Scope.create3(self, self.grammar)
       end
     end
     
@@ -184,9 +184,13 @@ module Redcar
       end
       
       def possible_patterns(pattern)
+        @possible_patterns ||= {}
+        r = @possible_patterns[pattern]
+        return r if r
         if pattern
           if pattern.to_s == self.scope_name.to_s
             poss_patterns = self.patterns
+            pattern = self
           else
             if pattern.is_a? String
               pattern = pattern(pattern)
@@ -195,8 +199,9 @@ module Redcar
           end
         else
           poss_patterns = self.patterns
+          pattern = self
         end
-        poss_patterns.map do |pn|
+        @possible_patterns[pattern] = poss_patterns.map do |pn|
           if pn.is_a? IncludePattern
             case pn.type
             when :self

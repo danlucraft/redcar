@@ -1,4 +1,7 @@
 
+$REDCAR_ENV ||= {}
+$REDCAR_ENV["test"] = true
+
 class Test::Unit::TestCase
   def startup(options={:output => :silent})
     Redcar.startup(options)

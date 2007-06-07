@@ -12,19 +12,35 @@ module Redcar
     
     def self.load_grammars
       # FIXME to not load all grammars upfront
-
-      @grammars ||= {}
-      @grammars_by_extension ||= {}
-      if @grammars.keys.empty?
-        Dir.glob("textmate/Bundles/*/Syntaxes/*").each do |file|
-          puts "loading #{file}"
-          xml = IO.readlines(file).join
-          plist = Redcar::Plist.plist_from_xml(xml)
-          gr = plist[0]
-          @grammars[gr['name']] = Redcar::Syntax::Grammar.new(plist[0])
-          gr['fileTypes'].each do |ext|
-            @grammars_by_extension["."+ext] = @grammars[gr['name']]
+      if File.exist?("cache/grammars.dump")
+        str = File.read("cache/grammars.dump")
+        @grammars = Marshal.load(str)
+        @grammars_by_extension ||= {}
+        @grammars.each do |name, gr|
+          gr.file_types.each do |ext|
+            @grammars_by_extension["."+ext] = @grammars[name]
           end
+        end
+      else
+        @grammars ||= {}
+        @grammars_by_extension ||= {}
+        plists = []
+        if @grammars.keys.empty?
+          Dir.glob("textmate/Bundles/*/Syntaxes/*").each do |file|
+            puts "loading #{file}"
+            xml = IO.readlines(file).join
+            plist = Redcar::Plist.plist_from_xml(xml)
+            gr = plist[0]
+            plists << plist
+            @grammars[gr['name']] = Redcar::Syntax::Grammar.new(plist[0])
+            gr['fileTypes'].each do |ext|
+              @grammars_by_extension["."+ext] = @grammars[gr['name']]
+            end
+          end
+        end
+        str = Marshal.dump(@grammars)
+        File.open("cache/grammars.dump", "w") do |f|
+          f.puts str
         end
       end
     end
@@ -137,12 +153,12 @@ module Redcar
     def set_theme(th)
       if th
         apply_theme(th)
-        @colr = Redcar::Colourer.new(th)
+        @colr = Redcar::Colourer.new(self, th)
+        if @parser
+          @parser.colourer = @colr
+        end
         new_buffer
         colour
-        #if syntax?
-        #  @colr.colour(@buffer, @parser.scope_tree)
-        #end
       else
         raise StandardError, "nil theme passed to set_theme"
       end
@@ -159,7 +175,7 @@ module Redcar
         @scope_tree = Redcar::Syntax::Scope.new(:pattern => gr,
                                                 :grammar => gr,
                                                 :start => TextLoc.new(0, 0))
-        @parser = Redcar::Syntax::Parser.new(@scope_tree, [gr], "")
+        @parser = Redcar::Syntax::Parser.new(@scope_tree, [gr], "", @colr)
       else
         @grammar = nil
         @scope_tree = nil
@@ -258,8 +274,7 @@ module Redcar
     def process_insertion(insertion)
       if insertion[:lines] == 1
         @parser.insert_in_line(insertion[:from].line, insertion[:text], insertion[:from].offset)
-        @colr.colour_line(self, @scope_tree, insertion[:from].line)
-        puts "parsed and coloured line"
+        debug_puts "parsed and coloured line"
       else
         debug_puts "processing insertion of #{insertion[:lines]} lines"
         @parser.insert(insertion[:from], insertion[:text])
@@ -269,12 +284,10 @@ module Redcar
     def process_deletion(deletion)
       if deletion[:lines] == 1
         @parser.delete_from_line(deletion[:from].line, deletion[:length], deletion[:from].offset)
-        @colr.colour_line(self, @scope_tree, deletion[:from].line)
         debug_puts "parsed and coloured line"
       else
+        debug_puts "processing deletion of #{deletion[:lines]} lines"
         @parser.delete_between(deletion[:from], deletion[:to])
-        @colr.colour_line(self, @scope_tree, deletion[:from].line)
-        @colr.colour_line(self, @scope_tree, deletion[:from].line+1)
       end
     end
     
@@ -292,10 +305,9 @@ module Redcar
         #       Thread.new do
         startt = Time.now
         @parser.clear_after(0)
+        @buffer.remove_all_tags(iter(start_mark), iter(end_mark))
         @parser.add_lines(self.contents)
         #      debug_puts @scope_tree.pretty
-        @buffer.remove_all_tags(iter(start_mark), iter(end_mark))
-        @colr.colour(@buffer, @parser.scope_tree)
         endt = Time.now
         diff = endt-startt
         puts "time to parse and colour: #{diff}"

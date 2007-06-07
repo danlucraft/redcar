@@ -5,20 +5,21 @@ module Redcar
     
     attr_accessor :theme
     
-    def initialize(theme)
+    def initialize(tab, theme)
+      @tab = tab
       @theme = theme
       raise ArgumentError, "colourer needs a Redcar::Theme" unless theme.is_a? Theme
     end
     
-    def colour_line(tab, scope_tree, line_num, priority=1)
-      buffer = tab.buffer
-      buffer.remove_all_tags(tab.line_start(line_num),
-                             tab.line_end(line_num))
-      colour_line1(tab, scope_tree, line_num, priority)
+    def colour_line(scope_tree, line_num, priority=1)
+      buffer = @tab.buffer
+      buffer.remove_all_tags(@tab.line_start(line_num),
+                             @tab.line_end(line_num))
+      colour_line1(scope_tree, line_num, priority)
     end
     
-    def colour_line1(tab, scope_tree, line_num, priority)
-      buffer = tab.buffer
+    def colour_line1(scope_tree, line_num, priority)
+      buffer = @tab.buffer
       scope_tree.children.each do |scope|
         begin
           if scope.on_line?(line_num)
@@ -58,7 +59,7 @@ module Redcar
                 debug_puts "  "*priority + tag.inspect
                 buffer.apply_tag(tag, start_iter, end_iter)
               end
-              colour_line1(tab, scope, line_num, priority+1)
+              colour_line1(scope, line_num, priority+1)
             end
           end
         rescue Object => e
@@ -70,14 +71,8 @@ module Redcar
     end
     
     # Syntax colours the given buffer from the given scope_tree.
-    def colour(buffer, scope_tree, priority=1)
-#       #debug_puts scope_tree.pretty
-#       contents = buffer.get_slice(buffer.bounds[0], buffer.bounds[1])
-#       contents.each do |line|
-#         #debug_puts line.length
-#       end
-#       buffer.remove_all_tags(buffer.iter(buffer.start_mark),
-#                              buffer.iter(buffer.end_mark))
+    def colour(scope_tree, priority=1)
+      buffer = @tab.buffer
       scope_tree.children.each do |scope|
         begin
            sl = buffer.get_iter_at_line_offset(scope.start.line, 0)
@@ -111,7 +106,7 @@ module Redcar
               debug_puts tag.inspect
               buffer.apply_tag(tag, start_iter, end_iter)
             end
-            colour(buffer, scope, priority+1)
+            colour(scope, priority+1)
           end
         rescue Object => e
           debug_puts e

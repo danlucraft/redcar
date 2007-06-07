@@ -4,11 +4,14 @@ $KCODE = "U"
 require 'gtk2'
 require 'gtksourceview'
 require 'gconf2'
+require 'fileutils'
 
 require File.dirname(__FILE__) + '/../vendor/active_support'
 require File.dirname(__FILE__) + '/../vendor/null'
 require File.dirname(__FILE__) + '/../vendor/ruby_extensions'
 require File.dirname(__FILE__) + '/../vendor/debugprinter'
+require File.dirname(__FILE__) + '/../vendor/binary_enum'
+require 'vendor/instruments'
 
 require 'lib/plist'
 require File.dirname(__FILE__) + '/application'
@@ -35,6 +38,9 @@ require File.dirname(__FILE__) + '/../vendor/keyword_processor'
 require File.dirname(__FILE__) + '/panes'
 require File.dirname(__FILE__) + '/redcar_window'
 require File.dirname(__FILE__) + '/list_abstraction'
+
+$REDCAR_ENV ||= {}
+$REDCAR_ENV["test"] = false
 
 module Redcar
   class << self

@@ -6,11 +6,11 @@ Redcar.context_menu("Redcar::TextTab") do |menu|
   
   menu.separator
   
-  menu.command("Cu_t", :context_cut, :cut, "") do
+  menu.command("Cu_t", :context_cut, :cut, "", :sensitize_to => :text_selected?) do
     Redcar.command(:cut)
   end
   
-  menu.command("_Copy", :context_copy, :copy, "") do
+  menu.command("_Copy", :context_copy, :copy, "", :sensitize_to => :text_selected?) do
     Redcar.command(:copy)
   end
   

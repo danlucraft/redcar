@@ -164,15 +164,15 @@ BSTR
     assert_equal 2, @nt.scope_tree.children.length
   end
   
-  def __test_bug
+  def test_bug
     assert_equal 6, @nt.scope_tree.children.length
-    %w(p u t s " h i ").each_with_index do |l, i|
+    %w(p u t s ( " h i " )).each_with_index do |l, i|
       @nt.insert(TextLoc.new(1, i), l)
     end
     run_gtk
     new_source=<<CSTR
 #! /usr/bin/env ruby
-puts "hi"
+puts("hi")
 require File.dirname(__FILE__) + '/lib/redcar'
 Redcar.startup(:output => :silent)
 Gtk.main

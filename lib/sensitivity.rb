@@ -14,14 +14,18 @@ module Redcar
     def self.add(name, hooks, &block)
       @@sensitivities ||= {}
       @@sensitivities[name] ||= []
-      hooks[:hooks].each do |hook|
-        Redcar.hook(hook) do |obj| 
-          should_be_active = block.call(obj)
-          @@sensitivities[name].each do |gtkw|
-            if should_be_active
-              gtkw.sensitive = true
-            else
-              gtkw.sensitive = false
+      unless $REDCAR_ENV["test"]
+        hooks[:hooks].each do |hook|
+          Redcar.hook(hook) do |obj| 
+            Gtk.idle_add do
+              should_be_active = block.call(obj)
+              @@sensitivities[name].each do |gtkw|
+                if should_be_active
+                  gtkw.sensitive = true
+                else
+                  gtkw.sensitive = false
+                end
+              end
             end
           end
         end

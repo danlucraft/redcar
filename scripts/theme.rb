@@ -2,27 +2,26 @@
 
 module Redcar
   class Theme
-    # FIXME replace all this loading crap with a cached Marshal dump
-    # (It will need to check the timestamps and reload if necessary).
-    def self.scan_themes
-      @themes_files = {}
-      Dir["textmate/Themes/*"].each do |file|
-        @themes_files[File.basename(file, ".tmTheme")] = file
-      end
-    end
-  
     def self.load_themes
-      scan_themes
-      @themes_files.keys.each {|name| load_theme(name) }
-    end
-  
-    def self.load_theme(name)
-      scan_themes
-      @themes ||= {}
-      file = @themes_files[name]
-      xml = IO.readlines(file).join
-      plist = Redcar::Plist.plist_from_xml(xml)
-      @themes[plist[0]['name']] = Redcar::Theme.new(plist[0])
+      print "loading themes ["
+      if File.exist?("cache/themes.dump")
+        str = File.read("cache/themes.dump")
+        @themes = Marshal.load(str)
+        puts " ... from cache]"
+      else
+        @themes = {}        
+        Dir["textmate/Themes/*"].each do |file|
+          print "."
+          xml = IO.readlines(file).join
+          plist = Redcar::Plist.plist_from_xml(xml)
+          @themes[plist[0]['name']] = Redcar::Theme.new(plist[0])
+        end
+        puts "]"
+        str = Marshal.dump(@themes)
+        File.open("cache/themes.dump", "w") do |f|
+          f.puts str
+        end
+      end
     end
     
     def self.default_theme
@@ -42,39 +41,39 @@ module Redcar
     end
     
     def self.theme(name)
-      @themes ||= {}
-      scan_themes
       case name
       when String
         th = @themes[name]
         unless th
-          if @themes_files.keys.include? name
-            load_theme(name)
-          else
-            puts "no such theme"
-          end
+          puts "no such theme: #{name}\nthemes: #{@themes.keys.join(', ')}"
+          th = @themes[@themes.keys.first]
         end
+        th
       when Theme
         name
       end
     end
     
     def self.theme_names
-      @themes_files.keys
+      @themes.keys
     end
   end
 end
 
 Redcar.menu("_Options") do |menu|
   menu.command("Select Theme", :select_theme, nil, "") do |pane, tab|
-    Redcar::Theme.scan_themes
     list = Redcar::GUI::List.new
     list.replace(Redcar::Theme.theme_names)
     
     dialog = Redcar::Dialog.build :title => "Choose Theme",
-                                  :buttons => [:Apply, :cancel],
+                                  :buttons => [:Apply, :Refresh, :cancel],
                                   :entry => [{:name => :list, :type => :list, :abs => list}]
     dialog.on_button(:cancel) { dialog.close }
+    dialog.on_button(:Refresh) do 
+      FileUtils.rm_f("cache/themes.dump")
+      Redcar::Theme.load_themes 
+      list.replace(Redcar::Theme.theme_names)
+    end
     dialog.on_button(:Apply) do
       name = list.selected
       dialog.close
@@ -173,3 +172,5 @@ module Redcar
     end
   end
 end
+
+Redcar::Theme.load_themes

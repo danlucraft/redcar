@@ -8,14 +8,15 @@ module Redcar
     class Parser
       include DebugPrinter
       
-      attr_accessor :grammars, :lines, :scope_tree, :fold_counts, :text
+      attr_accessor :grammars, :lines, :scope_tree, :fold_counts, :text, :colourer
       
-      def initialize(opening_scope, grammars=[], text="")
+      def initialize(opening_scope, grammars=[], text="", colourer=nil)
         @text = []
         @scope_tree = opening_scope
         @fold_counts = []
         @ending_scopes = []
         @grammars = grammars
+        @colourer = colourer
         add_lines(text) if text
       end
       
@@ -40,85 +41,48 @@ module Redcar
         end
       end
       
-      def add_line(line)
-        last_scope = @scope_tree.last_scope
+      def add_lines(text, options=nil)
+        curr_last = @text.length-1
+        text.each do |line|
+          add_line_info(line)
+        end
+        if text[-1..-1] == "\n" or text == ""
+          add_line_info("")
+        end
+        lazy_parse_from(curr_last+1, options)
+      end
+      
+      def add_line_info(line)
         @text << line
         @fold_counts << 0
         @ending_scopes << nil
+      end
+      
+      def add_line(line)
+        add_line_info(line)
         parse_line(line, @text.length-1)
       end
       
-      def delete_line(num)
-        
-        
-#         before_scope = @scope_tree.scope_at(TextLoc.new(num, @text[num].length)) 
-#         @text.delete_at(num)
-#         @fold_counts.delete_at(num)
-#         @scope_tree.clear_between(num, num)
-#         @scope_tree.shift_after(num, -1)
-#         after_scope  = @scope_tree.scope_at(TextLoc.new(num, @text[num].length))
-#         debug_puts "before: #{before_scope.inspect}"
-#         debug_puts "after:  #{after_scope.inspect}"
-#         starts = @scope_tree.scope_beginning_on_line(num)
-#         ends = @scope_tree.scopes_ending_on_line(num)
-#         affected_from = affected_to = num
-#         unless starts.empty?
-#           affected_to = starts.map do |s|
-#             if s.end
-#               s.end.line
-#             else
-#               @text.length
-#             end
-#           end.max
-#         end
-#         unless ends.empty?
-#           affected_from = starts.map {|s| s.start.line}.min
-#         end
-#         @scope_tree.clear_between(
-#         affected_from.upto(affected_to) do |reparse_line|
-          
-#         end
-#         until before_scope == after_scope
-#           before_scope = @scope_tree.scope_at(TextLoc.new(num, @text[num].length)) 
-#           parse_line(@text[num], num)
-#           after_scope  = @scope_tree.scope_at(TextLoc.new(num, @text[num].length))
-#         debug_puts "before: #{before_scope.inspect}"
-#         debug_puts "after:  #{after_scope.inspect}"
-#           num += 1
-#         end
-        
-        before_scope = @scope_tree.scope_at(TextLoc.new(num-1, @text[num-1].length)) 
-        after_scope  = @scope_tree.scope_at(TextLoc.new(num, @text[num].length))
-        @text.delete_at(num)
-        @fold_counts.delete_at(num)
-        @scope_tree.clear_between_lines(num, num)
-        @scope_tree.shift_after(num, -1)
-        debug_puts "before: #{before_scope.inspect}"
-        debug_puts "after:  #{after_scope.inspect}"
-        unless before_scope == after_scope
-          # if we have deleted a scope opener:
-          if after_scope.child_of? before_scope
-            if after_scope.end
-              affected_until = after_scope.end.line
-            else
-              affected_until = @text.length
+      def lazy_parse_from(line_num, options=nil)
+        count = 0
+        ok = true
+        #debug_puts {"lazy_parse: parsing five: #{line_num} (#{@text.length}), #{count}, #{ok}"}
+        #debug_puts {@scope_tree.pretty}
+        until line_num >= @text.length or 
+            count >= 5 or 
+            ok = parse_line(@text[line_num], line_num)
+          #debug_puts {"lazy_parse: not done: #{line_num} (#{@text.length}), #{count}, #{ok}"}
+          line_num += 1
+          count += 1
+        end
+        unless ok or line_num >= @text.length
+          #debug_puts {"lazy parsing line: #{line_num}"}
+          if !options or options[:lazy]
+            Gtk.idle_add do
+              lazy_parse_from(line_num, options)
             end
-            @scope_tree.clear_between_lines(num, affected_until)
-            num.upto(affected_until) do |reparse_num|
-              clear_line(reparse_num)
-              parse_line(@text[reparse_num], reparse_num)
-            end
-          # else if we have deleted a scope closer
-          elsif before_scope.child_of? after_scope
-            ending_scope = before_scope
-            until ending_scope == after_scope or num == @text.length
-              debug_puts @scope_tree.pretty
-              clear_line(num)
-              parse_line(@text[num], num)
-              ending_scope = @scope_tree.scope_at(TextLoc.new(num, @text[num].length))
-              debug_puts "ending_scope:  #{ending_scope.inspect}"
-              num += 1
-            end
+          else
+            lazy_parse_from(line_num, options)
           end
         end
       end
@@ -132,10 +96,7 @@ module Redcar
         if (line_num > 0 and @ending_scopes[line_num] != @ending_scopes[line_num-1]) or
             (line_num == 0 and @ending_scopes[line_num] != @scope_tree)
           line_num += 1
-          until line_num >= @text.length or parse_line(@text[line_num], line_num)
-            debug_puts "not finished parsing"
-            line_num += 1
-          end
+          lazy_parse_from(line_num)
         end
       end
       
@@ -151,12 +112,13 @@ module Redcar
           insert_in_line(loc.line, text, loc.offset)
         else
           lines = string_to_lines(text)
-          
           # end of first inserted line
           before = @text[loc.line][0..(loc.offset-1)]
           after  = @text[loc.line][(loc.offset)..-1]
           after_scope = line_end(loc.line)
-          @text[loc.line].delete_slice((loc.offset)..-1)
+          unless loc.offset == @text[loc.line].length
+            @text[loc.line].delete_slice((loc.offset)..-1)
+          end
           @text[loc.line] << lines[0]+"\n"
           @text.insert(loc.line+1, after)
           # middle lines
@@ -169,18 +131,15 @@ module Redcar
           @scope_tree.shift_after(loc.line+1, lines.length-1)
           
           line_num = loc.line
-          debug_puts "parsing new lines"
+          #debug_puts {"parsing new lines"}
           lines.length.times do |i|
             parse_line(@text[line_num], line_num)
             line_num += 1
           end
           new_after_scope = line_end(loc.line+lines.length)
           unless new_after_scope == after_scope
-            debug_puts "have some reparsing to do"
-            until line_num >= @text.length or parse_line(@text[line_num], line_num)
-              debug_puts "not finished parsing"
-              line_num += 1
-            end
+            #debug_puts {"have some reparsing to do"}
+            lazy_parse_from(line_num)
           end
         end
       end
@@ -193,10 +152,7 @@ module Redcar
         if @text[line_num]
           @text[line_num].insert(offset, text)
           @scope_tree.shift_chars(line_num, text.length, offset)
-          until line_num >= @text.length or parse_line(@text[line_num], line_num)
-            debug_puts "not finished parsing at end of #{line_num}"
-            line_num += 1
-          end
+          lazy_parse_from(line_num)
         else
           raise RedcarSyntaxError, "RedcarSyntaxError: trying to insert text in line that"+
             "doesn't exist (#{line_num})"
@@ -207,7 +163,7 @@ module Redcar
         if from.line == to.line
           delete_from_line(from.line, to.offset-from.offset, from.offset)
         else
-          debug_puts "multiple line deletion"
+          #debug_puts "multiple line deletion"
           # end of first line
           @text[from.line].delete_slice(from.offset..-1)
           # all of middle lines
@@ -220,13 +176,9 @@ module Redcar
           
           @scope_tree.clear_between_lines(from.line+1, to.line)
           @scope_tree.shift_after(from.line+1, -(to.line-from.line))
-          debug_puts @scope_tree.pretty
           
           line_num = from.line
-          until line_num >= @text.length or parse_line(@text[line_num], line_num)
-            debug_puts "not finished parsing"
-            line_num += 1
-          end
+          lazy_parse_from(line_num)
         end
       end
       
@@ -234,48 +186,10 @@ module Redcar
         if @text[line_num]
           @text[line_num].delete_slice(offset..(offset+amount-1))
           @scope_tree.shift_chars(line_num, -amount, offset)
-          until line_num >= @text.length or parse_line(@text[line_num], line_num)
-            debug_puts "not finished parsing"
-            line_num += 1
-          end
+          lazy_parse_from(line_num)
         else
           raise RedcarSyntaxError, "RedcarSyntaxError: trying to delete text from line that"+
             "doesn't exist (#{line_num})"
-        end
-      end
-        
-#         @text[line_num].insert(offset, text)
-#         before_end_scope = @scope_tree.line_end(line_num)
-        
-#         # Create a target to compare against (model of
-#         # situation where no scopes have changed).
-#         target = @scope_tree.copy
-#         target.clear_not_on_line(line_num)
-#         target.shift_chars(line_num, text.length, offset)
-        
-#         # Reparse the line
-#         @scope_tree.clear_between(line_num, line_num)
-#         parse_line(@text[line_num], line_num)
-#         after_end_scope = @scope_tree.line_end(line_num)
-#         previous = @scope_tree.copy
-#         @scope_tree.clear_not_on_line(line_num)
-        
-#         if target.identical?(@scope_tree)
-#           # ... all the single scopes have just been bumped along
-#           # and there were no open scopes so just save the target.
-#           @scope_tree = previous
-#         else
-#           # ... there are differences, so merge the changes in.
-          
-#         end
-#       end
-      
-      def add_lines(text)
-        text.each do |line|
-          add_line(line)
-        end
-        if text[-1..-1] == "\n" or text == ""
-          add_line("")
         end
       end
       
@@ -322,7 +236,7 @@ module Redcar
 #       end
       
       def find_fold_marker(line, grammar)
-        debug_puts "looking for fold_marker:"
+        #debug_puts "looking for fold_marker:"
         fline = line
         fold_count = 0
         md_start, md_stop = nil, nil
@@ -353,14 +267,14 @@ module Redcar
       
       # Parses line_num, using text line.
       def parse_line(line, line_num)
-                debug_puts "parsing line #{line_num}"
+        #debug_puts {"parsing line #{line_num}"}
         unless line_num <= @text.length-1 and line_num >= 0
           raise ArgumentError, "cannot parse line that does not exist"
         end
         
         start_scope = line_start(line_num)
         start_end_scope = line_end(line_num)
-                debug_puts "start_scope:    #{start_scope.inspect}"
+        #debug_puts {"start_scope:    #{start_scope.inspect}"}
         
         if start_scope.respond_to? :grammar
           active_grammar = start_scope.grammar
@@ -375,66 +289,88 @@ module Redcar
         closed_scopes = []
         
         while pos < line.length
-          rest_line = line[pos..-1]
-                  debug_puts "rest of line: #{rest_line.inspect}"
-                  debug_puts "  current_scope:     #{current_scope.inspect}"
-          pps = active_grammar.possible_patterns(current_scope.pattern)
-                  debug_puts "  possible patterns: "
-                  debug_puts "    closing: " + Regexp.new(current_scope.closing_regexp).inspect if current_scope.closing_regexp
-                  #pps.each {|p|     debug_puts "    " + p.inspect}
           new_scope_markers = []
-                  debug_puts "  matches:"
+          rest_line = line[pos..-1]
+          #debug_puts {"rest of line: #{rest_line.inspect}"}
+          #debug_puts {"  current_scope:     #{current_scope.inspect}"}
+          pps ||= active_grammar.possible_patterns(current_scope.pattern)
+          #debug_puts "  possible patterns: "
+          #if current_scope.closing_regexp
+          #  debug_puts { "    closing: " + 
+          #    Regexp.new(current_scope.closing_regexp).inspect
+          #  } 
+          #end
+                  #pps.each {|p|     #debug_puts "    " + p.inspect}
+          #debug_puts {"  matches:"}
           
           # See if the current scope is closed on this line.
           if current_scope.closing_regexp
-                    debug_puts "  closing regexp: #{current_scope.closing_regexp}"
-            if md = current_scope.closing_regexp.match(rest_line)
-                      debug_puts "    matched closing regexp for #{current_scope.inspect}"
-                      debug_puts "       match: \"#{md.to_s}\", captures: #{md.captures.inspect}"
-              from = pos+md.begin(0)
-              to   = pos+md.end(0)
-                      debug_puts "       from: #{from}, to: #{to}"
-              new_scope_markers << { :type => :close_scope, :from => from, 
-                                     :to => to, :md => md }.picky
-            end
+#             if newscope_markers.select{|sm| sm[:type] == :close_scope}.empty?
+              #debug_puts {"  closing regexp: #{current_scope.closing_regexp}"}
+              if md = current_scope.closing_regexp.match(rest_line)
+                #debug_puts {"    matched closing regexp for #{current_scope.inspect}"}
+                #debug_puts {"       match: \"#{md.to_s}\", captures: #{md.captures.inspect}"}
+                from = pos+md.begin(0)
+                to   = pos+md.end(0)
+                #debug_puts {"       from: #{from}, to: #{to}"}
+                new_scope_markers << { :type => :close_scope, :from => from, 
+                  :to => to, :md => md }
+              end
+#             end
           end
           
           # See if any scopes are opened on this line.
+          Instrument("possible_patterns_#{active_grammar.name}".intern, pps.length)
+          count = 0
           pps.each do |pattern|
-            case pattern
-            when SinglePattern
-              md = pattern.match.match(rest_line)
-              if md
-                        debug_puts "    matched SinglePattern: #{pattern.inspect}"
-                        debug_puts "       match: \"#{md.to_s}\", captures: #{md.captures.inspect}"
-                from = pos+md.begin(0)
-                to   = pos+md.end(0)
-                        debug_puts "       from: #{from}, to: #{to}"
-                new_scope_markers << { :type => :single_scope, :from => from, 
-                                       :to => to, :md => md, :pattern => pattern}.picky
+#             old_patterns = new_scope_markers.map do |sm|
+#               if sm[:type] == :single_scope or 
+#                   sm[:type] == :double_scope
+#                 sm[:pattern]
+#               else
+#                 nil
+#               end
+#             end.compact
+#             unless old_patterns.include? pattern
+            count += 1
+              if pattern.is_a? SinglePattern
+                md = pattern.match.match(rest_line)
+                if md
+                  #debug_puts {"    matched SinglePattern: #{pattern.inspect}"}
+                  #debug_puts {"       match: \"#{md.to_s}\", captures: #{md.captures.inspect}"}
+                  from = pos+md.begin(0)
+                  to   = pos+md.end(0)
+                  #debug_puts {"       from: #{from}, to: #{to}"}
+                  new_scope_markers << { :type => :single_scope, :from => from, 
+                    :to => to, :md => md, :pattern => pattern}
+                end
+              elsif pattern.is_a? DoublePattern
+                md = pattern.begin.match(rest_line)
+                if md
+                  #debug_puts {"    matched DoublePattern #{pattern.inspect}"}
+                  #debug_puts {"       match: \"#{md.to_s}\", captures: #{md.captures.inspect}"}
+                  from = pos+md.begin(0)
+                  to   = pos+md.end(0)
+                  #debug_puts {"       from: #{from}, to: #{to}"}
+                  new_scope_markers << { :type => :open_scope, :from => from, 
+                    :to => to, :pattern => pattern, :md => md}
+                end
               end
-            when DoublePattern
-              md = pattern.begin.match(rest_line)
-              if md
-                        debug_puts "    matched DoublePattern #{pattern.inspect}"
-                        debug_puts "       match: \"#{md.to_s}\", captures: #{md.captures.inspect}"
-                from = pos+md.begin(0)
-                to   = pos+md.end(0)
-                        debug_puts "       from: #{from}, to: #{to}"
-                new_scope_markers << { :type => :open_scope, :from => from, 
-                                       :to => to, :pattern => pattern, :md => md}.picky
-              end
-            end
+#             end
+          end
+          Instrument("possible_patterns_checked_#{active_grammar.name}".intern, count)
+          
+          if parsed_before?(line_num)
+            expected_scope = current_scope.first_child_after(TextLoc.new(line_num, pos))
           end
           
-          expected_scope = current_scope.first_child_after(TextLoc.new(line_num, pos))
           if expected_scope
             expected_scope = nil unless expected_scope.start.line == line_num
           end
-          debug_puts "  expected_scope: #{expected_scope.inspect}"
+          #debug_puts {"  expected_scope: #{expected_scope.inspect}"}
           if new_scope_markers.length > 0
             new_scope_marker = new_scope_markers.sort_by {|sm| sm; sm[:from] }[0]
-                    debug_puts "  first_new_scope: #{new_scope_marker.inspect}"
+            #debug_puts {"  first_new_scope: #{new_scope_marker.inspect}"}
             from = new_scope_marker[:from]
             to   = new_scope_marker[:to]
             md   = new_scope_marker[:md]
@@ -447,7 +383,7 @@ module Redcar
                   current_scope.close_end   == TextLoc.new(line_num, to) and
                   current_scope.close_matchdata.to_s == md.to_s
                 # we have already parsed this line and this scope ends here
-                debug_puts "closes as expected"
+                #debug_puts {"closes as expected"}
                 true
               else
                 current_scope.end         = TextLoc.new(line_num, to)
@@ -467,9 +403,15 @@ module Redcar
                     end
                   end
                 end
+                if expected_scope
+                  #debug_puts "deleting expected scope"
+                  current_scope.children.delete(expected_scope)
+                end
               end
               closed_scopes << current_scope
               current_scope = current_scope.parent
+              pps = nil
+#               new_scope_markers = []
             when :open_scope
               pattern = new_scope_marker[:pattern]
               new_scope = pattern.to_scope
@@ -483,9 +425,9 @@ module Redcar
               new_scope.closing_regexp = Regexp.new(build_closing_regexp(pattern, md))
               
               if new_scope.pattern.respond_to? :begin_captures
-                debug_puts new_scope.pattern.begin_captures.inspect
+                #debug_puts {new_scope.pattern.begin_captures.inspect}
                 new_scope.pattern.begin_captures.each do |num, name|
-                  debug_puts "  child capture: #{num}-#{name}"
+                  #debug_puts {"  child capture: #{num}-#{name}"}
                   md = new_scope.open_matchdata
                   sc = scope_from_capture(line_num, pos, num, md)
                   if sc
@@ -502,15 +444,17 @@ module Redcar
                 # check mod ending scopes as the new one will not have a closing marker
                 # but the expected one will:
                 if new_scope.surface_identical_modulo_ending?(expected_scope)
-                  debug_puts "  identical to expected scope"
+                  #debug_puts {"  identical to expected scope"}
                   # don't need to do anything as we have already found this,
                   # but let's keep the old scope since it will have children and what not.
                   new_scope = expected_scope
                   expected_scope.children.each {|c| closed_scopes << c}
                 else
-                  debug_puts "  not as expected:"
-                  debug_puts "    #{new_scope.inspect}\n    #{expected_scope.inspect}"
-                  if new_scope.overlaps?(expected_scope)
+                  #debug_puts "  not as expected:"
+                  #debug_puts {"    #{new_scope.inspect}\n    #{expected_scope.inspect}"}
+                  if new_scope.overlaps?(expected_scope) or
+                      new_scope.start > expected_scope.start
+                    #debug_puts "  so deleting expected scope"
                     current_scope.children.delete(expected_scope)
                   end
                   current_scope.add_child(new_scope)
@@ -520,6 +464,8 @@ module Redcar
               end
               all_scopes << new_scope
               current_scope = new_scope
+ #              new_scope_markers = []
+              pps = nil
             when :single_scope
               new_scope = new_scope_marker[:pattern].to_scope
               new_scope.grammar = active_grammar
@@ -531,9 +477,9 @@ module Redcar
               new_scope.open_matchdata = md
               new_scope.parent = current_scope
               if new_scope.pattern.respond_to? :captures
-                        debug_puts "  children:"
+                        #debug_puts "  children:"
                 new_scope.pattern.captures.each do |num, name|
-                          debug_puts "    (#{num}) #{name}:"
+                  #debug_puts { "    (#{num}) #{name}:" }
                   md = new_scope.open_matchdata
                   sc = scope_from_capture(line_num, pos, num, md)
                   if sc
@@ -548,13 +494,15 @@ module Redcar
               
               if expected_scope
                 if new_scope.surface_identical?(expected_scope)
-                  debug_puts "identical to expected scope"
+                  #debug_puts "identical to expected scope"
                   # don't need to do anything
                   new_scope = expected_scope
                   expected_scope.children.each {|c| closed_scopes << c}
                 else  
-                  debug_puts "not as expected"
-                  if new_scope.overlaps?(expected_scope)
+                  #debug_puts "not as expected"
+                  if new_scope.overlaps?(expected_scope) or
+                      new_scope.start > expected_scope.start
+                    #debug_puts "  so deleting expected scope"
                     current_scope.children.delete(expected_scope)
                   end
                   current_scope.add_child(new_scope)
@@ -564,33 +512,42 @@ module Redcar
               end
               all_scopes << new_scope
               closed_scopes << new_scope
+#               new_scope_markers.delete new_scope_marker
+#               new_scope_markers.reject! do |sm|
+#                 sm[:to] and sm[:to] <= new_scope_marker[:to]
+#               end
             end
             pos = new_scope_marker[:to]
           else
-                    debug_puts "  no matches"
-#             # If we are reparsing, we might find that some scopes have disappeared,
-#             # delete them:
-#             while unwanted = current_scope.first_child_after(TextLoc.new(line_num, pos)) and 
-#                 unwanted.start.line == line_num
-#               debug_puts "deleting: #{unwanted.inspect}"
-#               current_scope.children.delete(unwanted)
-#               pos = unwanted.open_end.offset
-#             end
-            @scope_tree.delete_any_on_line_not_in(line_num, all_scopes)
-            
-            # any that we expected to close on this line that now don't?
-            @scope_tree.scopes_closed_on_line(line_num) do |s|
-              unless closed_scopes.include? s
-                debug_puts "scope closes on line and should be deleted: #{s.inspect}"
-                s.detach_from_parent
+                    #debug_puts "  no matches"
+            if parsed_before?(line_num)
+              # If we are reparsing, we might find that some scopes have disappeared,
+              # delete them:
+              @scope_tree.delete_any_on_line_not_in(line_num, all_scopes)
+              
+              # any that we expected to close on this line that now don't?
+              @scope_tree.scopes_closed_on_line(line_num) do |s|
+                unless closed_scopes.include? s
+                  #debug_puts {"scope closes on line and should be deleted: #{s.inspect}"}
+                  s.detach_from_parent
+                end
               end
             end
             pos = line.length + 1
           end
         end
-        same = (@ending_scopes[line_num] == current_scope)
+        if @colourer
+          @colourer.colour_line(@scope_tree, line_num)
+        end
+        # should we parse the next line? If we've changed the scope or the 
+        # next line has not yet been parsed.
+        same = ((@ending_scopes[line_num] == current_scope) and @ending_scopes[line_num+1] != nil)
         @ending_scopes[line_num] = current_scope
         same
+      end
+      
+      def parsed_before?(line_num)
+        @ending_scopes[line_num]
       end
       
       def scope_from_capture(line_num, pos, num, md)
@@ -598,9 +555,10 @@ module Redcar
         unless capture.blank?
           from = pos + md.begin(num.to_i)
           to   = pos + md.end(num.to_i)
-                  debug_puts "      #{capture} #{from}-#{to}"
-          Scope.new(:start => TextLoc.new(line_num, from),
-                    :end   => TextLoc.new(line_num, to))
+          #debug_puts {"      #{capture} #{from}-#{to}"}
+          Scope.create2(TextLoc.new(line_num, from), TextLoc.new(line_num, to))
+#           Scope.new(:start => TextLoc.new(line_num, from),
+#                     :end   => TextLoc.new(line_num, to))
         end
       end
       
@@ -612,7 +570,7 @@ module Redcar
       
       def build_closing_regexp(pattern, md)
         new_end = pattern.end.gsub(/\\([0-9]+)/) do
-          #        debug_puts "replace with: #{md.captures.send(:[], $1.to_i-1)}"
+          #        #debug_puts "replace with: #{md.captures.send(:[], $1.to_i-1)}"
           md.captures.send(:[], $1.to_i-1)
         end
       end

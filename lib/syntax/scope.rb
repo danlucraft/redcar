@@ -8,6 +8,8 @@ module Redcar
     
     class Scope
       include DebugPrinter
+      include Enumerable
+      
       attr_accessor(:children, 
                     :pattern, 
                     :grammar, 
@@ -23,6 +25,42 @@ module Redcar
                     :name,
                     :closing_regexp)
 
+      def self.create3(pattern, grammar)
+        obj = self.allocate
+        obj.pattern = pattern
+        obj.grammar = grammar
+        obj.children = []
+        obj
+      end
+      
+      def self.create2(start_loc, end_loc)
+        obj = self.allocate
+        obj.start = start_loc
+        obj.end = end_loc
+        obj.children = []
+        obj
+      end
+      
+      def create(name, pattern, grammar, start_loc, end_loc, parent, 
+                 open_start, open_end, close_start, close_end, open_matchdata,
+                 close_matchdata)
+        allocate
+        @name               = name
+        self.pattern        = pattern
+        self.grammar        = grammar
+        self.start          = start
+        self.end            = end_loc
+        self.parent         = parent
+        self.closing_regexp = nil
+        @open_start         = open_start
+        @open_end           = open_end
+        @close_start        = close_start
+        @close_end          = close_end
+        @open_matchdata     = open_matchdata
+        @close_matchdata    = close_matchdata
+        @children = []
+      end
+      
       def initialize(options={})
         @name               = options[:name]
         self.pattern        = options[:pattern]
@@ -262,15 +300,22 @@ module Redcar
         unless child.is_a? Scope
           raise ScopeException, "trying to add non-scope as child of scope"
         end
-#         assert_does_not_overlap(child)
         # if it goes on the end:
-        if @children.empty? or (@children.last.end and child.start > @children.last.end)
+        if @children.empty? or (@children.last.end and child.start >= @children.last.end)
           @children << child
         else
-          @children << child
-          @children = @children.sort_by do |c|
-            [c.start.line, c.start.offset]
+          # the old slow way:
+          # @children << child
+          # @children = @children.sort_by do |c|
+          #   [c.start.line, c.start.offset]
+          # end
+          
+          # the new faster way (see vendor/binary_enum):
+          ix = @children.find_flip_index {|cs| cs.start > child.start }
+          unless ix
+            ix = @children.length
           end
+          @children.insert(ix, child)
         end
         child.parent = self
       end
@@ -404,17 +449,34 @@ module Redcar
             # children has a tendency to be very long for 1 scope in each document,
             # so do a simple check that looks to see if it is the last child we need,
             # which it often is when we are parsing an entire tab.
-            # TODO: should put a binary search here or something for fast lookup
-            # even when it is not the last scope we need.
             if children.last and children.last.end and children.last.end < textloc
               return self
             else
-              children.each do |cs|
-                if r = cs.scope_at(textloc)
-                  return r
-                end
+              # old slow way:
+              # children.each do |cs|
+              #   if r = cs.scope_at(textloc)
+              #     return r
+              #   end
+              # end
+              
+              # new fast way (see vendor/binary_enum):
+              first_ix = @children.find_flip_index do |cs|
+                !cs.end or cs.end >= textloc
               end
-              self
+              if first_ix
+                second_ix = @children.find_flip_index do |cs|
+                  cs.start > textloc
+                end
+                second_ix = @children.length-1 unless second_ix
+                @children[first_ix..second_ix].each do |cs|
+                  if r = cs.scope_at(textloc)
+                    return r
+                  end
+                end
+                self
+              else
+                self
+              end
             end
           else
             nil
@@ -426,7 +488,11 @@ module Redcar
       end
       
       def first_child_after(loc)
-        @children.find{|cs| cs.start >= loc}
+        # this is the obvious way:
+        # @children.find {|cs| cs.start >= loc}
+        
+        # this is a faster way (see vendor/binary_enum):
+        @children.find_flip {|cs| cs.start >= loc}
       end
       
       def each(&block)
@@ -436,8 +502,33 @@ module Redcar
         end
       end
       
-      def scopes_closed_on_line(line_num)
-        self.each {|s| yield(s) if s.end and s.end.line == line_num}
+      def scopes_closed_on_line(line_num, &block)
+        # this is the obvious way:
+        # self.each { |s| yield(s) if s.end and s.end.line == line_num }
+        
+#         # this is a faster way:
+#         if self.end and self.end.line == line_num
+#           yield self
+#         end
+#         self.children.each do |cs|
+#           unless cs.start.line > line_num or
+#               (cs.end and cs.end.line < line_num)
+#             cs.scopes_closed_on_line(line_num, &block)
+#           end
+#         end
+        
+        # this is another faster way
+        if self.end and self.end.line == line_num
+          yield self
+        end
+        first_ix = self.children.find_flip_index {|cs| cs.end and cs.end.line >= line_num }
+        if first_ix
+          second_ix = self.children.find_flip_index {|cs| cs.start.line > line_num }
+          second_ix = self.children.length-1 unless second_ix
+          self.children[first_ix..second_ix].each do |cs|
+            cs.scopes_closed_on_line(line_num, &block)
+          end
+        end
       end
       
       def detach_from_parent
