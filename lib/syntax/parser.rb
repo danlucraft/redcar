@@ -69,7 +69,7 @@ module Redcar
         #debug_puts {"lazy_parse: parsing five: #{line_num} (#{@text.length}), #{count}, #{ok}"}
         #debug_puts {@scope_tree.pretty}
         until line_num >= @text.length or 
-            count >= 5 or 
+            count >= 100 or 
             ok = parse_line(@text[line_num], line_num)
           #debug_puts {"lazy_parse: not done: #{line_num} (#{@text.length}), #{count}, #{ok}"}
           line_num += 1
@@ -77,7 +77,8 @@ module Redcar
         end
         unless ok or line_num >= @text.length
           #debug_puts {"lazy parsing line: #{line_num}"}
-          if !options or options[:lazy]
+          if (!options or options[:lazy]) and Gtk.events_pending? and
+              !$REDCAR_ENV["nonlazy"]
             Gtk.idle_add do
               lazy_parse_from(line_num, options)
             end
@@ -210,9 +211,11 @@ module Redcar
         if line_num == 0
           @text = []
           @fold_counts = []
+          @ending_scopes = []
         else
-          @text = @text[0..line_num-1]
-          @fold_counts[0..line_num-1]
+          @text = @text[0..(line_num-1)]
+          @fold_counts = @fold_counts[0..(line_num-1)]
+          @ending_scopes = @ending_scopes[0..(line_num-1)]
         end
       end
       
@@ -272,25 +275,25 @@ module Redcar
           raise ArgumentError, "cannot parse line that does not exist"
         end
         
-        start_scope = line_start(line_num)
-        start_end_scope = line_end(line_num)
-        #debug_puts {"start_scope:    #{start_scope.inspect}"}
+        current_scope = line_start(line_num)
+        #debug_puts {"current_scope:    #{current_scope.inspect}"}
         
-        if start_scope.respond_to? :grammar
-          active_grammar = start_scope.grammar
+        if current_scope.respond_to? :grammar
+          active_grammar = current_scope.grammar
         else
-          active_grammar = grammar_for_scope(start_scope)
+          active_grammar = grammar_for_scope(current_scope)
         end
         
         pos = 0
-        current_scope = start_scope
-        
         all_scopes = [current_scope]
         closed_scopes = []
-        
+         
+        matching_patterns = nil
+        count2 = 0
         while pos < line.length
-          new_scope_markers = []
+          count2 += 1
           rest_line = line[pos..-1]
+          new_scope_markers = []
           #debug_puts {"rest of line: #{rest_line.inspect}"}
           #debug_puts {"  current_scope:     #{current_scope.inspect}"}
           pps ||= active_grammar.possible_patterns(current_scope.pattern)
@@ -305,24 +308,32 @@ module Redcar
           
           # See if the current scope is closed on this line.
           if current_scope.closing_regexp
-#             if newscope_markers.select{|sm| sm[:type] == :close_scope}.empty?
+#             if new_scope_markers.select{|sm| sm[:type] == :close_scope}.empty?
               #debug_puts {"  closing regexp: #{current_scope.closing_regexp}"}
               if md = current_scope.closing_regexp.match(rest_line)
                 #debug_puts {"    matched closing regexp for #{current_scope.inspect}"}
                 #debug_puts {"       match: \"#{md.to_s}\", captures: #{md.captures.inspect}"}
-                from = pos+md.begin(0)
-                to   = pos+md.end(0)
+                from = md.begin(0)
                 #debug_puts {"       from: #{from}, to: #{to}"}
-                new_scope_markers << { :type => :close_scope, :from => from, 
-                  :to => to, :md => md }
+                new_scope_markers << { :from => from, :md => md, :pattern => :close_scope }
               end
 #             end
           end
           
           # See if any scopes are opened on this line.
           Instrument("possible_patterns_#{active_grammar.name}".intern, pps.length)
-          count = 0
-          pps.each do |pattern|
+          #count = 0
+          if matching_patterns == nil
+            recording_patterns = true
+            possible_patterns = pps
+            matching_patterns = []
+          else
+            recording_patterns = false
+            possible_patterns = matching_patterns
+            Instrument("matching_patterns_#{active_grammar.name}".intern, matching_patterns.length)
+          end
+          possible_patterns.each do |pattern|
+            md = nil
 #             old_patterns = new_scope_markers.map do |sm|
 #               if sm[:type] == :single_scope or 
 #                   sm[:type] == :double_scope
@@ -332,33 +343,32 @@ module Redcar
 #               end
 #             end.compact
 #             unless old_patterns.include? pattern
-            count += 1
-              if pattern.is_a? SinglePattern
-                md = pattern.match.match(rest_line)
-                if md
-                  #debug_puts {"    matched SinglePattern: #{pattern.inspect}"}
-                  #debug_puts {"       match: \"#{md.to_s}\", captures: #{md.captures.inspect}"}
-                  from = pos+md.begin(0)
-                  to   = pos+md.end(0)
-                  #debug_puts {"       from: #{from}, to: #{to}"}
-                  new_scope_markers << { :type => :single_scope, :from => from, 
-                    :to => to, :md => md, :pattern => pattern}
-                end
-              elsif pattern.is_a? DoublePattern
-                md = pattern.begin.match(rest_line)
-                if md
-                  #debug_puts {"    matched DoublePattern #{pattern.inspect}"}
-                  #debug_puts {"       match: \"#{md.to_s}\", captures: #{md.captures.inspect}"}
-                  from = pos+md.begin(0)
-                  to   = pos+md.end(0)
-                  #debug_puts {"       from: #{from}, to: #{to}"}
-                  new_scope_markers << { :type => :open_scope, :from => from, 
-                    :to => to, :pattern => pattern, :md => md}
-                end
+              #count += 1
+              md = pattern.match.match(rest_line)
+              if md
+                #debug_puts {"    matched SinglePattern: #{pattern.inspect}"}
+                #debug_puts {"       match: \"#{md.to_s}\", captures: #{md.captures.inspect}"}
+                from = md.begin(0)
+                #debug_puts {"       from: #{from}, to: #{md.end(0)}"}
+                new_scope_markers << { :from => from, :md => md, :pattern => pattern }
+                matching_patterns << pattern if recording_patterns
               end
 #             end
+#             if !recording_patterns and md and (md.begin(0) == 0 or 
+#                        (rest_line[0..(md.begin(0)-1)] =~ /^\s*$/))
+#               pattern.hint = pattern.hint + 1
+#               break
+#             end
           end
-          Instrument("possible_patterns_checked_#{active_grammar.name}".intern, count)
+          #Instrument("possible_patterns_checked_#{active_grammar.name}".intern, count)
+#           count = 0
+#           froms = new_scope_markers.map {|sm| sm[:from]}
+#           froms.each do |i|
+#             if froms.select{|v| v==i}.length > 1
+#               count += 1
+#             end
+#           end
+#           Instrument("duplicate_starts_#{active_grammar.name}".intern, count)
           
           if parsed_before?(line_num)
             expected_scope = current_scope.first_child_after(TextLoc.new(line_num, pos))
@@ -371,11 +381,12 @@ module Redcar
           if new_scope_markers.length > 0
             new_scope_marker = new_scope_markers.sort_by {|sm| sm; sm[:from] }[0]
             #debug_puts {"  first_new_scope: #{new_scope_marker.inspect}"}
+            new_scope_marker[:from] += pos
             from = new_scope_marker[:from]
-            to   = new_scope_marker[:to]
             md   = new_scope_marker[:md]
+            to   = new_scope_marker[:to] = pos+md.end(0)
             
-            case new_scope_marker[:type]
+            case new_scope_marker[:pattern]
             when :close_scope
               if current_scope.end and 
                   current_scope.end == TextLoc.new(line_num, to) and
@@ -412,7 +423,8 @@ module Redcar
               current_scope = current_scope.parent
               pps = nil
 #               new_scope_markers = []
-            when :open_scope
+              matching_patterns = nil
+            when DoublePattern
               pattern = new_scope_marker[:pattern]
               new_scope = pattern.to_scope
               new_scope.grammar = active_grammar
@@ -464,9 +476,10 @@ module Redcar
               end
               all_scopes << new_scope
               current_scope = new_scope
- #              new_scope_markers = []
+#               new_scope_markers = []
+              matching_patterns = nil
               pps = nil
-            when :single_scope
+            when SinglePattern
               new_scope = new_scope_marker[:pattern].to_scope
               new_scope.grammar = active_grammar
               new_scope.parent  = current_scope
@@ -536,6 +549,7 @@ module Redcar
             pos = line.length + 1
           end
         end
+        Instrument("line_repeats_#{active_grammar.name}".intern, count2)
         if @colourer
           @colourer.colour_line(@scope_tree, line_num)
         end
@@ -551,10 +565,11 @@ module Redcar
       end
       
       def scope_from_capture(line_num, pos, num, md)
+        num = num.to_i
         capture = get_capture(num, md)
-        unless capture.blank?
-          from = pos + md.begin(num.to_i)
-          to   = pos + md.end(num.to_i)
+        unless capture == ""
+          from = pos + md.begin(num)
+          to   = pos + md.end(num)
           #debug_puts {"      #{capture} #{from}-#{to}"}
           Scope.create2(TextLoc.new(line_num, from), TextLoc.new(line_num, to))
 #           Scope.new(:start => TextLoc.new(line_num, from),
@@ -575,15 +590,12 @@ module Redcar
         end
       end
 
-      def get_capture(str, md)
-        capture_index = str.to_i-1
-        if capture_index == -1
-          capture = md.to_s
+      def get_capture(capture_index, md)
+        if capture_index == 0
+          md.to_s
         else
-          tmp = md.captures.map{|c| (c==nil ? "" : c)}
-          capture = tmp[capture_index]
+          md.captures[capture_index-1] || ""
         end
-        capture
       end
     end
   end

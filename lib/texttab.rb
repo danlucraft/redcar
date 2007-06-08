@@ -26,13 +26,23 @@ module Gtk
   end
 end
   
-module Redcar          
-  TextLoc = Struct.new(:line, :offset)
-  
+module Redcar  
+#  TextLoc = Struct.new(:line, :offset)
   class TextLoc
+     attr_accessor :line, :offset
+    
+     def initialize(line, offset)
+       @line = line
+       @offset = offset
+     end
+    
     def copy
       TextLoc.new(self.line, self.offset)
     end
+    
+    def ==(other)
+      other and @line == other.line and @offset == other.offset
+    end  
     
     def <(other)
       if self.line < other.line
@@ -79,12 +89,16 @@ module Redcar
     end
     
     def >=(other)
-      if self.line > other.line
+      sl = self.line
+      ol = other.line
+      if sl > ol
         return true
-      elsif self.line == other.line
-        if self.offset > other.offset
+      elsif sl == ol
+        so = self.offset
+        oo = other.offset
+        if so > oo
           return true
-        elsif self.offset == other.offset
+        elsif so == oo
           return true
         else
           return false

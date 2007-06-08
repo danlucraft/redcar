@@ -1,10 +1,9 @@
 
 def Instrument(name, value)
-  Instruments.instrument(name, value)
+  Instrument.instrument(name, value)
 end
 
-module Instruments
-  
+module Instrument
   def self.instrument(name, value)
     @@instruments ||= {}
     (@@instruments[name] ||= []) << value
@@ -13,11 +12,10 @@ module Instruments
   def self.report(name)
     arr = @@instruments[name]
     if arr and !arr.empty?
-      puts "name: #{name}"
-      puts "  num:  #{arr.length}"
-      puts "  min:  #{arr.min}"
-      puts "  max:  #{arr.max}"
-      puts "  mean: #{arr.inject(0.0){|m,o| m+=o}.div(arr.length)}"
+      puts "name: #{name}\n  num:  #{arr.length},  min:  #{arr.min}, "+
+        "max:  #{arr.max}, mean: "+
+        "#{arr.inject(0.0){|m,o| m+=(o.to_f)}/arr.length.to_f},"+
+        " median: #{arr.sort[arr.length/2]}"
     else
       puts "no instrumentation with name: #{name}"
     end

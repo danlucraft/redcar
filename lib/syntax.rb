@@ -10,6 +10,15 @@ module Redcar
   module Syntax
     include DebugPrinter
     
+    def self.cache_grammars
+      if @grammars
+        str = Marshal.dump(@grammars)
+        File.open("cache/grammars.dump", "w") do |f|
+          f.puts str
+        end
+      end
+    end
+    
     def self.load_grammars
       # FIXME to not load all grammars upfront
       if File.exist?("cache/grammars.dump")
@@ -38,10 +47,6 @@ module Redcar
             end
           end
         end
-        str = Marshal.dump(@grammars)
-        File.open("cache/grammars.dump", "w") do |f|
-          f.puts str
-        end
       end
     end
     
@@ -51,6 +56,10 @@ module Redcar
       elsif options[:extension]
         @grammars_by_extension[options[:extension]]
       end
+    end
+    
+    def self.grammars
+      @grammars
     end
     
     def self.grammar_names

@@ -1,5 +1,4 @@
 
-
 class Array
   # Finds the first point in the enumerable where
   # blocks returns true. Assumes that self.map(&block)
@@ -15,7 +14,7 @@ class Array
   
   def find_flip_index(low=0, high=self.length-1, &block)
     return nil if high < low
-    mid = (high+low)/2
+    mid = (2*high+low)/3
     midv = block[self[mid]]
     if mid == 0 and midv
       return mid

@@ -433,7 +433,7 @@ ENDSTR
                    :grammar => gr,
                    :start   => TextLoc.new(0, 0))
     smp = Parser.new(sc, [gr], nil)
-    smp.add_lines(source)
+    smp.add_lines(source, :lazy => false)
     assert_equal "comment.line.semicolon.lisp", smp.scope_tree.children[0].name
     assert_equal 1, smp.scope_tree.children[0].children.length
     assert_equal "punctuation.definition.comment.lisp", smp.scope_tree.children[0].children[0].name
@@ -447,7 +447,7 @@ ENDSTR
                    :start   => TextLoc.new(0, 0))
     smp = Parser.new(sc, [gr], nil)
     rubycode = "puts \"\#{1+2}\""
-    smp.add_lines(rubycode)
+    smp.add_lines(rubycode, :lazy => false)
     
     assert_equal 1, smp.scope_tree.children.length
     assert_equal(["punctuation.section.embedded.ruby",

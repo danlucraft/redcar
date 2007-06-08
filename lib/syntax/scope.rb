@@ -128,14 +128,14 @@ module Redcar
           debug_puts "name: #{other.name}  == #{self.name} "
           debug_puts "open_start.inspect: #{other.open_start.inspect}  == #{self.open_start.inspect} "
           debug_puts "open_end.inspect: #{other.open_end.inspect}  == #{self.open_end.inspect} "
-          debug_puts "name: #{other.name}  == #{self.name} "
           debug_puts "grammar: #{other.grammar}  == #{self.grammar} "
           debug_puts "pattern.inspect: #{other.pattern.inspect}  == #{self.pattern.inspect} "
-          debug_puts "end: #{other.end}  == #{self.end} "
-          debug_puts "close_end: #{other.close_end}  == #{self.close_end} "
-          debug_puts "close_matchdata.to_s: #{other.close_matchdata.to_s}  == #{self.close_matchdata.to_s} "
-          debug_puts "open_matchdata.to_s: #{other.open_matchdata.to_s}  == #{self.open_matchdata.to_s} "
-          debug_puts "closing_regexp.to_s: #{other.closing_regexp.to_s}  == #{self.closing_regexp.to_s} "
+          debug_puts "start: #{other.start.inspect}  == #{self.start.inspect} "
+          debug_puts "end: #{other.end.inspect}  == #{self.end.inspect} "
+          debug_puts "close_end: #{other.close_end.inspect}  == #{self.close_end.inspect} "
+          debug_puts "close_matchdata.to_s: #{other.close_matchdata.to_s.inspect}  == #{self.close_matchdata.to_s.inspect} "
+          debug_puts "open_matchdata.to_s.inspect: #{other.open_matchdata.to_s.inspect}  == #{self.open_matchdata.to_s.inspect} "
+          debug_puts "closing_regexp.to_s.inspect: #{other.closing_regexp.to_s.inspect}  == #{self.closing_regexp.to_s.inspect} "
         end
         return false unless self_same
 
@@ -300,10 +300,13 @@ module Redcar
         unless child.is_a? Scope
           raise ScopeException, "trying to add non-scope as child of scope"
         end
+        #Instrument(:add_child, 1)
         # if it goes on the end:
         if @children.empty? or (@children.last.end and child.start >= @children.last.end)
           @children << child
+          #Instrument(:add_child_at_end?, 1)
         else
+          #Instrument(:add_child_at_end?, 0)
           # the old slow way:
           # @children << child
           # @children = @children.sort_by do |c|

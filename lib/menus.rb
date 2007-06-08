@@ -49,7 +49,8 @@ module Redcar
           end
         end
       end
-      menuitem.signal_connect("activate") do
+      menuitem2 = menuitem
+      menuitem2.signal_connect("activate") do
         debug_puts keybinding
         begin
           block.call(Redcar.current_pane, Redcar.current_tab)

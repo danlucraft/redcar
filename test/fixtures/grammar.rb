@@ -127,14 +127,9 @@ module Redcar
           if pattern_hash.keys.include? "begin" or
               pattern_hash.keys.include? "match"
             @repository[name] = Grammar.pattern_from_hash(pattern_hash)
-            @repository[name].name = name unless @repository[name].name
           elsif pattern_hash.keys.include? "patterns"
             @repository[name] = pattern_hash["patterns"].map do |ph|
-              p = Grammar.pattern_from_hash(ph)
-              if p.respond_to? :name=
-                p.name = name
-              end
-              p
+              Grammar.pattern_from_hash(ph)
             end
           end
         end
@@ -203,8 +198,6 @@ module Redcar
             pattern = self
           else
             if pattern.is_a? String
-              p pattern
-              p @pattern_lookup
               pattern = pattern(pattern)
             end
             poss_patterns = pattern.patterns

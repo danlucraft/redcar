@@ -102,8 +102,11 @@ module Redcar
       @settings = hash["settings"].reject{|h| h.keys == ["settings"]}
     end
     
-    # For a given scope finds all the settings in the theme which apply to it.
+    # For a given scopename finds all the settings in the theme which apply to it.
     def settings_for_scope(scope)
+      @settings_for_scope ||= {}
+      r = @settings_for_scope[scope]
+      return r if r
       applicables = []
       @settings.each do |setting|
         if setting['scope']
@@ -112,7 +115,7 @@ module Redcar
           end
         end
       end
-      applicables.sort_by {|a| -a[0]}.map {|a| a[1]}
+      @settings_for_scope[scope] = applicables.sort_by {|a| -a[0]}.map {|a| a[1]}
     end
     
     # Given a scope selector, returns its specificity. E.g keyword.if == 2 and string constant == 2

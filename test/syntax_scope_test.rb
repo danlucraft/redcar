@@ -323,7 +323,6 @@ class TestSyntax < Test::Unit::TestCase
   
   def test_identical
     copy = @scope_tree.copy
-    
     assert copy.identical?(@scope_tree)
     copy.clear_not_on_line(2)
     assert !copy.identical?(@scope_tree)
