@@ -12,9 +12,9 @@ module Redcar
     end
     
     def colour_line(scope_tree, line_num, priority=1)
-#       buffer = @tab.buffer
-#       buffer.remove_all_tags(@tab.line_start(line_num),
-#                              @tab.line_end(line_num))
+      buffer = @tab.buffer
+      buffer.remove_all_tags(@tab.line_start(line_num),
+                             @tab.line_end(line_num))
       colour_line1(scope_tree, line_num, nil, nil, priority)
     end
     
@@ -43,27 +43,38 @@ module Redcar
       for scope in scope_tree.children[first_ix..second_ix]
         if scope.on_line?(line_num)
           count += 1
-          #             unless sl
-          sl = buffer.get_iter_at_line_offset(scope.start.line, 0)
-          #             end
-          #             unless el
-          el = buffer.get_iter_at_line_offset(scope.start.line+1, 0)
-          #             end
+#           #             unless sl
+#           #             end
+#           #             unless el
+#           #             end
           unless scope.start == scope.end
+            sl = buffer.get_iter_at_line_offset(scope.start.line, 0)
             start_iter = buffer.get_iter_at_offset(sl.offset+minify(scope.start.offset))
             if scope.end
               end_iter   = buffer.get_iter_at_offset(sl.offset+minify(scope.end.offset))
             else
+              el = buffer.get_iter_at_line_offset(scope.start.line+1, 0)
               end_iter = el
               if el.offset == sl.offset
                 end_iter = buffer.get_iter_at_offset(buffer.char_count)
               end
             end
-            #debug_puts {"  "*priority + 
-            #  "#{scope.name+"("+priority.to_s+")"}(#{priority}): #{scope.start.offset}-#{end_iter.line_offset}"}
+#             debug_puts {scope.inspect}
+#             start_iter = buffer.get_iter_at_line_offset(scope.start.line, scope.start.offset)
+#             if scope.end
+#               if scope.end.offset >= @tab.get_line(scope.end.line).length
+#                 end_iter = buffer.get_iter_at_line_offset(scope.end.line,   scope.end.offset-1)
+#               else
+#                 end_iter = buffer.get_iter_at_line_offset(scope.end.line,   scope.end.offset)
+#               end
+#             else
+#               end_iter = buffer.get_iter_at_offset(buffer.char_count)
+#             end
+            debug_puts {"  "*priority + 
+              "#{scope.name+"("+priority.to_s+")"}(#{priority}): #{scope.start.offset}-#{end_iter.line_offset}"}
             unless tag = buffer.tag_table.lookup(scope.name+"("+priority.to_s+")")
               all_settings = @theme.settings_for_scope(scope.name)
-              #debug_puts {"  "*priority + all_settings.map{|s| s.inspect}.inspect}
+              debug_puts {"  "*priority + all_settings.map{|s| s.inspect}.inspect}
               if all_settings.empty?
                 tag = buffer.create_tag(scope.name+"("+priority.to_s+")",
                                         :foreground => theme.global_settings['foreground'])
