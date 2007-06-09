@@ -130,7 +130,8 @@ module Redcar
     
     # Returns false if the selector is not applicable to the scope, and returns the specificity of the
     # selector if it is applicable.
-    def applicable?(selector, scope)
+    def applicable?(selector, scopes)
+      scope = scopes.join(" ")
       debug_puts {"applicable?(#{selector.inspect}, #{scope.inspect})"}
       # split by commas (which are ORs)
       selector.split(',').each do |subselector|
