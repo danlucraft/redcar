@@ -93,6 +93,7 @@ end
     
 module Redcar
   class Theme
+    include DebugPrinter
     attr_accessor :name, :uuid, :global_settings
   
     def initialize(hash)
@@ -104,18 +105,22 @@ module Redcar
     
     # For a given scopename finds all the settings in the theme which apply to it.
     def settings_for_scope(scope)
+      scopes = scope.hierarchy_names
+      scope_join = scopes.join(" ")
+      #scope = scope.name
+      debug_puts scopes
       @settings_for_scope ||= {}
-      r = @settings_for_scope[scope]
+      r = @settings_for_scope[scope_join]
       return r if r
       applicables = []
       @settings.each do |setting|
         if setting['scope']
-          if spec = applicable?(setting['scope'], scope)
+          if spec = applicable?(setting['scope'], scopes)
             applicables << [spec, setting]
           end
         end
       end
-      @settings_for_scope[scope] = applicables.sort_by {|a| -a[0]}.map {|a| a[1]}
+      @settings_for_scope[scope_join] = applicables.sort_by {|a| -a[0]}.map {|a| a[1]}
     end
     
     # Given a scope selector, returns its specificity. E.g keyword.if == 2 and string constant == 2
@@ -126,22 +131,32 @@ module Redcar
     # Returns false if the selector is not applicable to the scope, and returns the specificity of the
     # selector if it is applicable.
     def applicable?(selector, scope)
+      debug_puts {"applicable?(#{selector.inspect}, #{scope.inspect})"}
       # split by commas (which are ORs)
       selector.split(',').each do |subselector|
         subselector = subselector.strip
-        return specificity(subselector) if subselector == scope
+        if subselector == scope
+          debug_puts "  perfect match"
+          return specificity(subselector)
+        end
         
         # split on spaces (which are ANDs)
         selector_components = subselector.split(' ')
+        prev_offset = -1
         has_all = selector_components.inject(1) do |memo, comp|
-          if scope.include? comp
-            memo *= 1
+          if offset = scope.index(comp) and offset > prev_offset
+            debug_puts {"  has #{comp.inspect} at #{offset}"}
+            prev_offset = offset
+            memo
           else
-            memo *= 0
+            0
           end
         end
-        spec = selector_components.inject(0) {|m, c| m += specificity(c) }
-        return spec if has_all == 1
+        if has_all == 1
+          debug_puts "has all required components"
+          spec = selector_components.inject(0) {|m, c| m += specificity(c) }
+          return spec 
+        end
       end
       false
     end
