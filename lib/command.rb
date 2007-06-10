@@ -265,6 +265,7 @@ module Redcar
       keyname = " "
       keyname[0] = Gdk::Keyval.to_unicode(gdk_eventkey.keyval)
       keyname = Gdk::Keyval.to_name(gdk_eventkey.keyval) if keyname=="\000"
+      p keyname
       gdk_modifier_type = gdk_eventkey.state
       modifiers = []
       modifiers << :control if gdk_modifier_type.control_mask?

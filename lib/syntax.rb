@@ -6,6 +6,13 @@ require 'lib/syntax/grammar'
 require 'lib/syntax/scope'
 require 'lib/syntax/parser'
 
+Redcar.hook :startup do
+  Redcar::Syntax.load_grammars
+  Redcar.MainToolbar.append_combo(Redcar::Syntax.grammar_names.sort) do |_, tab, grammar|
+    tab.set_grammar(Redcar::Syntax.grammar(:name => grammar))
+  end
+end
+
 module Redcar
   module Syntax
     include DebugPrinter
@@ -26,7 +33,7 @@ module Redcar
         @grammars = Marshal.load(str)
         @grammars_by_extension ||= {}
         @grammars.each do |name, gr|
-          gr.file_types.each do |ext|
+          (gr.file_types||[]).each do |ext|
             @grammars_by_extension["."+ext] = @grammars[name]
           end
         end
@@ -36,16 +43,23 @@ module Redcar
         plists = []
         if @grammars.keys.empty?
           Dir.glob("textmate/Bundles/*/Syntaxes/*").each do |file|
-            puts "loading #{file}"
-            xml = IO.readlines(file).join
-            plist = Redcar::Plist.plist_from_xml(xml)
-            gr = plist[0]
-            plists << plist
-            @grammars[gr['name']] = Redcar::Syntax::Grammar.new(plist[0])
-            gr['fileTypes'].each do |ext|
-              @grammars_by_extension["."+ext] = @grammars[gr['name']]
+            if %w(.plist .tmLanguage).include? File.extname(file)
+              begin
+                puts "loading #{file}"
+                xml = IO.readlines(file).join
+                plist = Redcar::Plist.plist_from_xml(xml)
+                gr = plist[0]
+                plists << plist
+                @grammars[gr['name']] = Redcar::Syntax::Grammar.new(plist[0])
+                (gr['fileTypes'] || []).each do |ext|
+                  @grammars_by_extension["."+ext] = @grammars[gr['name']]
+                end
+              rescue
+                puts "failed to load syntax: #{file}"
+              end
             end
           end
+          self.cache_grammars
         end
       end
     end
@@ -55,6 +69,20 @@ module Redcar
         @grammars[options[:name]]
       elsif options[:extension]
         @grammars_by_extension[options[:extension]]
+      elsif options[:first_line]
+        @grammars.each do |name, gr|
+          if gr.first_line_match and options[:first_line] =~ gr.first_line_match
+            return gr 
+          end
+        end
+        nil
+      elsif options[:scope]
+        @grammars.each do |_, gr|
+          if gr.scope_name == options[:scope]
+            return gr
+          end
+        end
+        nil
       end
     end
     
@@ -67,15 +95,6 @@ module Redcar
     end
   end
 end
-
-
-Redcar.hook :startup do
-  Redcar::Syntax.load_grammars
-  Redcar.MainToolbar.append_combo(Redcar::Syntax.grammar_names) do |_, tab, grammar|
-    tab.set_grammar(Redcar::Syntax.grammar(:name => grammar))
-  end
-end
-
 
 module Redcar
   class TextTab
@@ -106,8 +125,10 @@ module Redcar
         x, y = selection_bounds
         xi = iter(x)
         yi = iter(y)
-        scope = Syntax::Scope.common_ancestor(@scope_tree.scope_at(TextLoc.new(xi.line, xi.line_offset)),
-                                              @scope_tree.scope_at(TextLoc.new(yi.line, yi.line_offset)))
+        scope = Syntax::Scope.common_ancestor(
+            @scope_tree.scope_at(TextLoc.new(xi.line, xi.line_offset)),
+            @scope_tree.scope_at(TextLoc.new(yi.line, yi.line_offset))
+          )
       else
         scope = scope_at_cursor
       end
@@ -185,11 +206,25 @@ module Redcar
                                                 :grammar => gr,
                                                 :start => TextLoc.new(0, 0))
         @parser = Redcar::Syntax::Parser.new(@scope_tree, [gr], "", @colr)
+        colour
       else
         @grammar = nil
         @scope_tree = nil
         @parser = nil
       end
+    end
+    
+    def language
+      return @grammar.name if @grammar
+    end
+    
+    def apply_theme(theme)
+      background_colour = Theme.parse_colour(theme.global_settings['background'])
+      @textview.modify_base(Gtk::STATE_NORMAL, background_colour)
+      foreground_colour = Theme.parse_colour(theme.global_settings['foreground'])
+      @textview.modify_text(Gtk::STATE_NORMAL, foreground_colour)
+      selection_colour  = Theme.parse_colour(theme.global_settings['selection'])
+      @textview.modify_base(Gtk::STATE_SELECTED, selection_colour)
     end
     
     alias :replace_without_syntax :replace
@@ -201,15 +236,22 @@ module Redcar
     end
     
     alias :load_without_syntax :load
-    def load
+    def load(filename=nil)
       no_colouring do
-        load_without_syntax
+        load_without_syntax(filename)
       end
       if @filename
         ext = File.extname(@filename)
         set_grammar(Syntax.grammar(:extension => ext))
         if syntax?
           debug_puts "setting grammar #{@grammar.name} from file extension: #{ext}"
+        end
+        colour
+      end
+      if !syntax?
+        set_grammar(Syntax.grammar(:first_line => self.get_line(0)))
+        if syntax?
+          debug_puts "setting grammar #{@grammar.name} from first line"
         end
         colour
       end
@@ -232,12 +274,12 @@ module Redcar
       insertion[:lines] = text.scan("\n").length+1
       @operations << insertion
       debug_puts "insertion of #{insertion[:lines]} lines from #{insertion[:from]} to #{insertion[:to]}"
-      
-      Gtk.idle_add do
-        unless @operations.empty?
-          process_operation(@operations.shift)
+      unless $REDCAR_ENV["nonlazy"]
+        Gtk.idle_add do
+          process_operation
         end
-        debug_puts "processing an operation"
+      else
+        process_operation
       end
     end
     
@@ -253,11 +295,12 @@ module Redcar
       @operations << deletion
       debug_puts "deletion over #{deletion[:lines]} lines from #{deletion[:from]} to #{deletion[:to]}"
       
-      Gtk.idle_add do
-        unless @operations.empty?
-          process_operation(@operations.shift)
+      unless $REDCAR_ENV["nonlazy"]
+        Gtk.idle_add do
+          process_operation
         end
-        debug_puts "processing an operation"
+      else
+        process_operation
       end
     end
     
@@ -265,13 +308,16 @@ module Redcar
       @grammar and @scope_tree and @parser and @colr
     end
     
-    def process_operation(operation)
-      if syntax?
-        case operation[:type]
-        when :insertion
-          process_insertion(operation)
-        when :deletion
-          process_deletion(operation)
+    def process_operation
+      unless @operations.empty?
+        operation = @operations.shift
+        if syntax?
+          case operation[:type]
+          when :insertion
+            process_insertion(operation)
+          when :deletion
+            process_deletion(operation)
+          end
         end
       end
     end
@@ -300,27 +346,16 @@ module Redcar
       end
     end
     
-    def apply_theme(theme)
-      background_colour = Theme.parse_colour(theme.global_settings['background'])
-      @textview.modify_base(Gtk::STATE_NORMAL, background_colour)
-      foreground_colour = Theme.parse_colour(theme.global_settings['foreground'])
-      @textview.modify_text(Gtk::STATE_NORMAL, foreground_colour)
-      selection_colour  = Theme.parse_colour(theme.global_settings['selection'])
-      @textview.modify_base(Gtk::STATE_SELECTED, selection_colour)
-    end
-    
     def colour
       if syntax?
-        #       Thread.new do
         startt = Time.now
         @parser.clear_after(0)
         @buffer.remove_all_tags(iter(start_mark), iter(end_mark))
-        @parser.add_lines(self.contents)
+        @parser.add_lines(self.contents, :lazy => false)
         #      debug_puts @scope_tree.pretty
         endt = Time.now
         diff = endt-startt
-        puts "time to parse and colour: #{diff}"
-        #       end
+        debug_puts "time to parse and colour: #{diff}"
       end
     end
     

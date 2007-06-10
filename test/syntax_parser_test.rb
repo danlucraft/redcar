@@ -6,6 +6,10 @@ require File.dirname(__FILE__) + '/test_helper'
 xml = IO.readlines(File.dirname(__FILE__)+"/../textmate/Bundles/Ruby.tmbundle/Syntaxes/Ruby.plist").join
 plist = Redcar::Plist.xml_to_plist(xml)
 $ruby_grammar = Redcar::Syntax::Grammar.new(plist[0])
+xml2 = IO.readlines(File.dirname(__FILE__)+"/../textmate/Bundles/HTML.tmbundle/Syntaxes/HTML.plist").join
+plist2 = Redcar::Plist.xml_to_plist(xml2)
+$html_grammar = Redcar::Syntax::Grammar.new(plist2[0])
+Redcar::Syntax.load_grammars
 
 class TestSyntax < Test::Unit::TestCase
   include Redcar
@@ -285,6 +289,19 @@ class TestSyntax < Test::Unit::TestCase
     run_gtk
   end
   
+  def test_parse_text_bug_for_included_base_pattern
+    gr = $ruby_grammar
+    sc = Scope.new( :pattern => gr,
+                    :grammar => gr,
+                    :start => TextLoc.new(0, 0))
+    smp = Parser.new(sc, [gr], nil)
+    source=<<HI
+require "foobar"
+HI
+    smp.add_lines(source, :lazy => false)
+    assert_equal 2, smp.scope_tree.children[0].children.length
+  end
+  
   # Parse line should work repeatedly with no ill effects.
   def test_re_parse_line
     gr = $ruby_grammar
@@ -450,6 +467,8 @@ ENDSTR
     smp.add_lines(rubycode, :lazy => false)
     
     assert_equal 1, smp.scope_tree.children.length
+    assert_equal "source.ruby.embedded.source", smp.scope_tree.children[0].
+      children[1].pattern.name
     assert_equal(["punctuation.section.embedded.ruby",
                   "constant.numeric.ruby",
                   "constant.numeric.ruby",
@@ -793,6 +812,24 @@ CRALL
     emb_scope = str_scope.children[1]
     assert_equal 4, emb_scope.children.length
     assert_equal 3, str_scope.children.length
+  end
+  
+  def test_insert_in_line_bug_with_comments
+    gr = $ruby_grammar
+    sc = Scope.new(:pattern => gr,
+                   :grammar => gr,
+                   :start   => TextLoc.new(0, 0))
+    smp = Parser.new(sc, [gr], nil)
+    initcode = "# Comment line one"
+    smp.add_lines(initcode, :lazy => false)
+    Parser.debug = true
+    %w(R e).each_with_index do |l, i|
+      smp.insert(TextLoc.new(0, i), l)
+      run_gtk
+      puts smp.scope_tree.pretty
+      puts
+    end
+    assert_equal 2, smp.scope_tree.children.length
   end
   
   def test_delete_text_from_line
@@ -1167,5 +1204,23 @@ STR
     smp.delete_from_line(1, 1, smp.text[1].length-1)
     smp.insert(TextLoc.new(1, smp.text[1].length), "\"")
     assert_equal 2, smp.scope_tree.children[1].children.length
+  end
+  
+  def test_embedded_grammar
+    gr = $ruby_grammar
+    sc = Scope.new(:pattern => gr,
+                   :grammar => gr,
+                   :start   => TextLoc.new(0, 0))
+    smp = Parser.new(sc, [gr], nil)
+    source=<<STR
+#! /usr/bin/env ruby
+foo<<-HTML
+<p>Foo</p>
+HTML
+STR
+    smp.add_lines(source)
+    run_gtk
+    assert_equal "string.unquoted.embedded.html.ruby", smp.scope_tree.children[1].name
+    assert_equal "meta.tag.block.any.html", smp.scope_tree.children[1].children[1].name
   end
 end

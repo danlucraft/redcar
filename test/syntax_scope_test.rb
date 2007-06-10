@@ -294,6 +294,7 @@ class TestSyntax < Test::Unit::TestCase
     smp = Parser.new(sc, [gr], nil)
     rubycode = "class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
     smp.add_lines(rubycode)    
+    run_gtk
     assert_equal(["source.ruby", "meta.class.ruby", "keyword.control.class.ruby"],
                  smp.scope_tree.children[0].children[0].hierarchy_names)
   end

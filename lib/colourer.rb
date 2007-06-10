@@ -15,10 +15,10 @@ module Redcar
       buffer = @tab.buffer
       buffer.remove_all_tags(@tab.line_start(line_num),
                              @tab.line_end(line_num))
-      colour_line1(scope_tree, line_num, nil, nil, priority)
+      colour_line1(scope_tree, line_num, priority)
     end
     
-    def colour_line1(scope_tree, line_num, sl=nil, el=nil, priority=1)
+    def colour_line1(scope_tree, line_num, priority=1)
       buffer = @tab.buffer
       return if scope_tree.children.empty?
       if e=scope_tree.children.first.end and e.line >= line_num
@@ -27,13 +27,10 @@ module Redcar
         first_ix  = scope_tree.children.find_flip_index {|cs| !cs.end or cs.end.line >= line_num }
       end
       if scope_tree.children.last.start.line > line_num
-        second_ix = 0
+        second_ix = -1
       else
         second_ix = scope_tree.children.find_flip_index {|cs| cs.start.line > line_num }
      end
-#       puts
-#       p first_ix
-#       p second_ix
       return unless first_ix
       second_ix = -1 unless second_ix
 #       scope_tree.children.each do |scope|
@@ -41,17 +38,16 @@ module Redcar
       Instrument(:colourer_children_checked, children_checked)
       count = 0
       for scope in scope_tree.children[first_ix..second_ix]
-        if scope.on_line?(line_num)
+        extra_priority = 0
+        if scope.on_line?(line_num) 
           count += 1
-#           #             unless sl
-#           #             end
-#           #             unless el
-#           #             end
-          unless scope.start == scope.end
+          unless scope.start == scope.end or 
+              (!scope.name and (scope.pattern and !scope.pattern.content_name))# scope.children.empty?)
             sl = buffer.get_iter_at_line_offset(scope.start.line, 0)
             start_iter = buffer.get_iter_at_offset(sl.offset+minify(scope.start.offset))
             if scope.end
-              end_iter   = buffer.get_iter_at_offset(sl.offset+minify(scope.end.offset))
+              el = buffer.get_iter_at_line_offset(scope.end.line, 0)
+              end_iter   = buffer.get_iter_at_offset(el.offset+minify(scope.end.offset))
             else
               el = buffer.get_iter_at_line_offset(scope.start.line+1, 0)
               end_iter = el
@@ -59,40 +55,31 @@ module Redcar
                 end_iter = buffer.get_iter_at_offset(buffer.char_count)
               end
             end
-#             debug_puts {scope.inspect}
-#             start_iter = buffer.get_iter_at_line_offset(scope.start.line, scope.start.offset)
-#             if scope.end
-#               if scope.end.offset >= @tab.get_line(scope.end.line).length
-#                 end_iter = buffer.get_iter_at_line_offset(scope.end.line,   scope.end.offset-1)
-#               else
-#                 end_iter = buffer.get_iter_at_line_offset(scope.end.line,   scope.end.offset)
-#               end
-#             else
-#               end_iter = buffer.get_iter_at_offset(buffer.char_count)
-#             end
+            tag_reference = scope.hierarchy_names.join(" ")
             debug_puts {"  "*priority + 
-              "#{scope.name+"("+priority.to_s+")"}(#{priority}): #{scope.start.offset}-#{end_iter.line_offset}"}
-            unless tag = buffer.tag_table.lookup(scope.name+"("+priority.to_s+")")
-              all_settings = @theme.settings_for_scope(scope.name)
+              "#{tag_reference+"("+priority.to_s+")"}: #{scope.start.offset}-#{end_iter.line_offset}"}
+            unless tag = buffer.tag_table.lookup(tag_reference+"("+priority.to_s+")")
+              all_settings = @theme.settings_for_scope(scope)
               debug_puts {"  "*priority + all_settings.map{|s| s.inspect}.inspect}
+              debug_puts "  "*priority + scope.hierarchy_names.inspect
               if all_settings.empty?
-                tag = buffer.create_tag(scope.name+"("+priority.to_s+")",
+                tag = buffer.create_tag(tag_reference+"("+priority.to_s+")",
                                         :foreground => theme.global_settings['foreground'])
-                tag.priority = priority
               else
                 settings = all_settings[0]["settings"]
-                tag = buffer.create_tag(scope.name+"("+priority.to_s+")",
+                tag = buffer.create_tag(tag_reference+"("+priority.to_s+")",
                                         Theme.textmate_settings_to_pango_options(settings))
-                tag.priority = priority
               end
+              tag.priority = priority
             end
             if tag
               #debug_puts {"  "*priority + "#{start_iter.offset}-#{end_iter.offset}"}
               #debug_puts {"  "*priority + tag.inspect}
               buffer.apply_tag(tag, start_iter, end_iter)
+              extra_priority = 1
             end
-            colour_line1(scope, line_num, sl, el, priority+1)
           end
+          colour_line1(scope, line_num, priority+extra_priority)
         end
       end
       Instrument(:prop_children_on_line, count.to_f/children_checked)

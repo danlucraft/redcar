@@ -1,12 +1,13 @@
-#! /usr/bin/env ruby
+#!/usr/local/bin/ruby -Ku
 
 require File.dirname(__FILE__) + '/lib/redcar'
 begin
- # Redcar::Colourer.debug = true
   Redcar.startup(:output => :silent)
+  #Redcar::Colourer.debug = true
+  #Redcar::Theme.debug = true
   Gtk.main
 rescue => e
-  $stderr.puts <<ERR
+  $stderr.puts str=<<ERR
 ---------------------------
 Redcar has crashed.
 ---------------------------

@@ -7,6 +7,12 @@ module Redcar
     class OverlappingScopeException < ScopeException; end;
     
     class Scope
+      class << self
+        def specificity(scope_name)
+          scope_name.split(".").length
+        end
+      end
+      
       include DebugPrinter
       include Enumerable
       
@@ -79,8 +85,10 @@ module Redcar
       end
       
       def overlaps?(other)
-        (self.start >= other.start and (!other.end or (self.start <= other.end))) or
-         (self.end and (self.end >= other.start and (!other.end or (self.end <= other.end))))
+       # (self.start >= other.start and (!other.end or (self.start < other.end))) or
+       #  (self.end and (self.end >= other.start and (!other.end or (self.end <= other.end))))
+       (self.start >= other.start and (!other.end or (self.start < other.end))) or
+        (self.end and (self.end > other.start and (!other.end or (self.end <= other.end))))
       end
       
       # Sees if the the scope is the same as the other scope, modulo their children
@@ -190,10 +198,15 @@ module Redcar
       # Return the names of all scopes in the hierarchy above this scope.
       def hierarchy_names
         if @parent
-          @parent.hierarchy_names+[self.name]
+          names = @parent.hierarchy_names
         else
-          [self.name]
+          names = []
         end
+        names << self.name if self.name
+        if self.pattern
+          names << self.pattern.content_name
+        end
+        names.compact
       end
       
       # Returns the nearest common ancestor of scopes s1 and s2 or 
@@ -276,7 +289,12 @@ module Redcar
         else
           endstr = "?"
         end
-        "<scope(#{self.object_id*-1%1000}):"+(self.name||"noname")+" #{startstr}#{endstr} #{hanging}>"
+        if self.pattern
+          cname = ""+self.pattern.content_name.to_s
+        else
+          cname = ""
+        end
+        "<scope(#{self.object_id*-1%1000}):"+(self.name||"noname")+" "+cname+" #{startstr}#{endstr} #{hanging}>"
       end
       
       def sort_children

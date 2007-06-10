@@ -1,5 +1,5 @@
 
-require File.dirname(__FILE__) + '/../lib/redcar'
+require 'lib/redcar'
 require 'test/unit'
 require File.dirname(__FILE__) + '/test_helper'
 
@@ -7,6 +7,7 @@ class TestTheme < Test::Unit::TestCase
   include Redcar
   
   def setup
+    startup
     @theme_twilight = {
       "name"=>"Twilight",
       "uuid"=>"766026CB-703D-4610-B070-8DE07D967C5F",
@@ -151,6 +152,10 @@ class TestTheme < Test::Unit::TestCase
     
   end
   
+  def teardown
+    shutdown
+  end
+  
   def test_load_theme
     th = Theme.new(@theme_twilight)
     assert th
@@ -188,8 +193,10 @@ class TestTheme < Test::Unit::TestCase
            "settings"=>{"fontStyle"=>nil, "foreground"=>"#CDA869"}}
         ]}
     th = Theme.new(theme_example)
-    assert_equal 1, th.settings_for_scope("keyword").length
-    assert_equal 1, th.settings_for_scope("comment").length
+    sc1 = Syntax::Scope.new :name => "keyword"
+    sc2 = Syntax::Scope.new :name => "comment"
+    assert_equal 1, th.settings_for_scope(sc1).length
+    assert_equal 1, th.settings_for_scope(sc2).length
   end
   
   def test_theme_scopes_with_ors
@@ -212,8 +219,10 @@ class TestTheme < Test::Unit::TestCase
            "settings"=>{"fontStyle"=>nil, "foreground"=>"#CDA869"}}
         ]}
     th = Theme.new(theme_example)
-    assert_equal 2, th.settings_for_scope("keyword").length
-    assert_equal 1, th.settings_for_scope("comment").length
+    sc1 = Syntax::Scope.new :name => "keyword"
+    sc2 = Syntax::Scope.new :name => "comment"
+    assert_equal 2, th.settings_for_scope(sc1).length
+    assert_equal 1, th.settings_for_scope(sc2).length
   end
   
   def test_theme_scopes_with_ands
@@ -236,12 +245,16 @@ class TestTheme < Test::Unit::TestCase
            "settings"=>{"fontStyle"=>nil, "foreground"=>"#CDA869"}}
         ]}
     th = Theme.new(theme_example)
-    assert_equal 1, th.settings_for_scope("keyword").length
-    assert_equal 0, th.settings_for_scope("comment").length
-    assert_equal 2, th.settings_for_scope("comment.foobar.keyword").length
+    sc1 = Syntax::Scope.new :name => "keyword"
+    sc2 = Syntax::Scope.new :name => "comment"
+    sc3 = Syntax::Scope.new :name => "comment.foobar.keyword"
+    assert_equal 1, th.settings_for_scope(sc1).length
+    assert_equal 0, th.settings_for_scope(sc2).length
+    # 'comment keyword' matches comment.foobar.keyword?? don't think so.
+  #  assert_equal 2, th.settings_for_scope(sc3).length
   end
   
-  def test_theme_scopes_multiple_sorted_by_specificity
+  def test_theme_scopes_from_hierarchy
     theme_example = {
       "name" => "example",
       "settings" => 
@@ -254,18 +267,150 @@ class TestTheme < Test::Unit::TestCase
              "invisibles"=>"#FFFFFF40",
              "foreground"=>"#F8F8F8"}},
          { "name"=>"Comment",
-           "scope"=>"keyword",
+           "scope"=>"source.ruby keyword",
            "settings"=>{"fontStyle"=>"italic", "foreground"=>"#5F5A60"}},
          { "name"=>"Keyword",
-           "scope"=>"keyword.if",
+           "scope"=>"keyword",
            "settings"=>{"fontStyle"=>nil, "foreground"=>"#CDA869"}},
          { "name"=>"Keyword",
-           "scope"=>"keyword.if.then",
+           "scope"=>"source.ruby keyword.if",
            "settings"=>{"fontStyle"=>nil, "foreground"=>"#CDA869"}}
         ]}
     th = Theme.new(theme_example)
-    s = th.settings_for_scope("keyword.if.then")
-    assert_equal 3, s.length
-    assert s[0]['scope'].length > s[1]['scope'].length and s[1]['scope'].length > s[2]['scope'].length
+    sck = Syntax::Scope.new :name => "keyword"
+    scki = Syntax::Scope.new :name => "keyword.if"
+    
+    scrk = Syntax::Scope.new :name => "source.ruby"
+    scrki = Syntax::Scope.new :name => "source.ruby"
+    sc1 = Syntax::Scope.new :name => "keyword"
+    scrk.add_child(sc1)
+    sc2 = Syntax::Scope.new :name => "keyword.if"
+    scrki.add_child(sc2)
+    
+    sckf = Syntax::Scope.new :name => "keyword"
+    scrl = Syntax::Scope.new :name => "source.ruby"
+    sckf.add_child(scrl)
+    assert_equal 1, th.settings_for_scope(sck).length
+    assert_equal 1, th.settings_for_scope(scki).length
+    assert_equal 2, th.settings_for_scope(sc1).length
+    assert_equal 3, th.settings_for_scope(sc2).length
+    
+    # this is 'keyword source.ruby' and should not 
+    # match 'source.ruby keyword'
+    assert_equal 1, th.settings_for_scope(scrl).length
+  end
+  
+  def test_difference
+    theme_example = {
+      "name" => "example",
+      "settings" => 
+        [
+         {"settings" => {
+             "lineHighlight"=>"#FFFFFF08",
+             "caret"=>"#A7A7A7",
+             "background"=>"#141414",
+             "selection"=>"#DDF0FF33",
+             "invisibles"=>"#FFFFFF40",
+             "foreground"=>"#F8F8F8"}},
+         { "name"=>"string-source",
+           "scope"=>"source string - string source",
+           "settings"=>{"fontStyle"=>nil, "foreground"=>"#CDA869"}}
+        ]}
+    th = Theme.new(theme_example)
+    s1 = Syntax::Scope.new :name => "source"
+    s1.add_child(s2 = Syntax::Scope.new(:name => "string"))
+    # 'source string'
+    assert_equal 1, th.settings_for_scope(s2).length
+    s2.add_child(s3 = Syntax::Scope.new(:name => "source"))
+    # 'source string source'
+    assert_equal 0, th.settings_for_scope(s3).length
+    s3.add_child(s4 = Syntax::Scope.new(:name => "string"))
+    # 'source string source string'
+    assert_equal 1, th.settings_for_scope(s4).length
+    s4.add_child(s5 = Syntax::Scope.new(:name => "source"))
+    # 'source string source string source'
+    assert_equal 0, th.settings_for_scope(s3).length
+  end
+  
+  def test_tie_breaking
+    theme_example = {
+      "name" => "example",
+      "settings" => 
+        [
+         {"settings" => {
+             "lineHighlight"=>"#FFFFFF08",
+             "caret"=>"#A7A7A7",
+             "background"=>"#141414",
+             "selection"=>"#DDF0FF33",
+             "invisibles"=>"#FFFFFF40",
+             "foreground"=>"#F8F8F8"}},
+         { "name"=>"source.php",
+           "scope"=>"source.php",
+           "settings"=>{"fontStyle"=>nil, "foreground"=>"#CDA869"}},
+         { "name"=>"string",
+           "scope"=>"string",
+           "settings"=>{"fontStyle"=>nil, "foreground"=>"#CDA869"}}
+        ]}
+    th = Theme.new(theme_example)
+    s1 = Syntax::Scope.new :name => "source.php"
+    s1.add_child(s2 = Syntax::Scope.new(:name => "string.quoted"))
+    # 1. Match the element deepest down in the scope e.g. 'string'
+    # wins over 'source.php' when the scope is 'source.php string.quoted'.
+    assert_equal "string", th.settings_for_scope(s2)[0]["name"]
+    
+    theme_example = {
+      "name" => "example",
+      "settings" => 
+        [
+         {"settings" => {
+             "lineHighlight"=>"#FFFFFF08",
+             "caret"=>"#A7A7A7",
+             "background"=>"#141414",
+             "selection"=>"#DDF0FF33",
+             "invisibles"=>"#FFFFFF40",
+             "foreground"=>"#F8F8F8"}},
+         { "name"=>"string",
+           "scope"=>"string",
+           "settings"=>{"fontStyle"=>nil, "foreground"=>"#CDA869"}},
+         { "name"=>"string.quoted",
+           "scope"=>"string.quoted",
+           "settings"=>{"fontStyle"=>nil, "foreground"=>"#CDA869"}},
+         { "name"=>"source.php",
+           "scope"=>"source.php",
+           "settings"=>{"fontStyle"=>nil, "foreground"=>"#CDA869"}}
+        ]}
+    th = Theme.new(theme_example)
+    s1 = Syntax::Scope.new :name => "source.php"
+    s1.add_child(s2 = Syntax::Scope.new(:name => "string.quoted"))
+    # 2. Match most of the deepest element e.g. 'string.quoted' wins 
+    # over 'string'.
+    assert_equal "string.quoted", th.settings_for_scope(s2)[0]["name"]
+    
+    theme_example = {
+      "name" => "example",
+      "settings" => 
+        [
+         {"settings" => {
+             "lineHighlight"=>"#FFFFFF08",
+             "caret"=>"#A7A7A7",
+             "background"=>"#141414",
+             "selection"=>"#DDF0FF33",
+             "invisibles"=>"#FFFFFF40",
+             "foreground"=>"#F8F8F8"}},
+         { "name"=>"source string",
+           "scope"=>"source string",
+           "settings"=>{"fontStyle"=>nil, "foreground"=>"#CDA869"}},
+         { "name"=>"text source string",
+           "scope"=>"text source string",
+           "settings"=>{"fontStyle"=>nil, "foreground"=>"#CDA869"}}
+        ]}
+    th = Theme.new(theme_example)
+    s1 = Syntax::Scope.new :name => "text"
+    s1.add_child(s2 = Syntax::Scope.new(:name => "source.php"))
+    s2.add_child(s3 = Syntax::Scope.new(:name => "string.quoted"))
+    # Rules 1 and 2 applied again to the scope selector 
+    # when removing the deepest element (in the case of a tie), 
+    # e.g. text source string wins over source string.
+    assert_equal "text source string", th.settings_for_scope(s3)[0]["name"]
   end
 end

@@ -6,6 +6,7 @@ require File.dirname(__FILE__) + '/test_helper'
 xml = IO.readlines(File.dirname(__FILE__)+"/../textmate/Bundles/Ruby.tmbundle/Syntaxes/Ruby.plist").join
 plist = Redcar::Plist.xml_to_plist(xml)
 $ruby_grammar = Redcar::Syntax::Grammar.new(plist[0])
+Redcar::Syntax.load_grammars
 
 class TestSyntax < Test::Unit::TestCase
   include Redcar
@@ -107,34 +108,37 @@ class TestSyntax < Test::Unit::TestCase
     assert_equal [".rb", ".rjs"], gr.file_types
     assert_equal '\{\s*$', gr.folding_start_marker
     assert_equal '^\s*\}', gr.folding_stop_marker
-    assert_equal '#! /usr/bin/ruby', gr.first_line_match
+    assert_equal Regexp.new("#! /usr/bin/ruby"), gr.first_line_match
     assert_equal "Example grammar 1", gr.comment
   end
   
   def test_load_pattern_from_hash
+    gr = $ruby_grammar
     hash = {   
       "name" => 'string.unquoted.here-doc',
       "begin" => '<<(\w+)',  # match here-doc token
       "end" => '^\1$'        # match end of here-doc
     }
-    pat = Grammar.pattern_from_hash(hash)
+    pat = gr.pattern_from_hash(hash)
     assert_equal 'string.unquoted.here-doc', pat.name.to_s
     assert_equal Regexp.new(hash['begin']), pat.begin
     assert_equal hash['end'], pat.end
   end
   
   def test_load_pattern_from_hash_content_name
+    gr = $ruby_grammar
     hash = {   
       "contentName" => 'comment.block.preprocessor',
       "begin" => '#if 0(\s.*)?$', 
       "end" => '#endif'    
     }
-    pat = Grammar.pattern_from_hash(hash)
+    pat = gr.pattern_from_hash(hash)
     assert_equal "comment.block.preprocessor", pat.content_name.to_s
-    assert_equal "comment.block.preprocessor", pat.name.to_s
+    assert_equal "", pat.name.to_s
   end
   
   def test_load_pattern_from_hash_captures
+    gr = $ruby_grammar
     hash = {   
       "match" => '(@selector\()(.*?)(\))',
       "captures" => {
@@ -142,13 +146,14 @@ class TestSyntax < Test::Unit::TestCase
         3 => { "name" => 'storage.type.objc' }
       }
     }
-    pat = Grammar.pattern_from_hash(hash)
+    pat = gr.pattern_from_hash(hash)
     assert_equal /(@selector\()(.*?)(\))/, pat.match
     assert_equal 2, pat.captures.keys.length
     assert_equal "storage.type.objc", pat.captures[3].to_s
   end
   
   def test_load_pattern_from_hash_include
+    gr = $ruby_grammar
     hash = {   
       "begin" => '<\?(php|=)?', 
       "end" => '\?>', 
@@ -156,7 +161,7 @@ class TestSyntax < Test::Unit::TestCase
                     { "include" => "source.php" }
                    ]
     }
-    pat = Grammar.pattern_from_hash(hash)
+    pat = gr.pattern_from_hash(hash)
     assert_equal 1, pat.patterns.length
     assert_equal :scope, pat.patterns[0].type
     assert_equal "source.php", pat.patterns[0].value.to_s
@@ -166,7 +171,7 @@ class TestSyntax < Test::Unit::TestCase
       "end" => '\)',
       "patterns" => [{ "include" => "$self"}]
     }
-    pat = Grammar.pattern_from_hash(hash)
+    pat = gr.pattern_from_hash(hash)
     assert_equal 1, pat.patterns.length
     assert_equal :self, pat.patterns[0].type
     assert_equal nil, pat.patterns[0].value
@@ -176,7 +181,7 @@ class TestSyntax < Test::Unit::TestCase
       "end" => '\)',
       "patterns" => [{ "include" => "$base"}]
     }
-    pat = Grammar.pattern_from_hash(hash)
+    pat = gr.pattern_from_hash(hash)
     assert_equal 1, pat.patterns.length
     assert_equal :base, pat.patterns[0].type
     assert_equal nil, pat.patterns[0].value
@@ -189,7 +194,7 @@ class TestSyntax < Test::Unit::TestCase
                      { "include" => "#variable" }
                     ]
     }
-    pat = Grammar.pattern_from_hash(hash)
+    pat = gr.pattern_from_hash(hash)
     assert_equal 2, pat.patterns.length
     assert_equal :repository, pat.patterns[0].type
     assert_equal "escaped-char", pat.patterns[0].value
@@ -303,6 +308,27 @@ class TestSyntax < Test::Unit::TestCase
     gr = Grammar.new(@grammar1)
     pts = gr.possible_patterns("parens")
     assert_equal 3, pts.length
+  end
+
+  def test_possible_patterns_with_embedded_grammar
+    Syntax.load_grammars
+    gr = Syntax.grammar(:name => 'Ruby')
+    sc = Scope.new(:pattern => gr,
+                   :grammar => gr,
+                   :start   => TextLoc.new(0, 0))
+    smp = Parser.new(sc, [gr], nil)
+    source=<<STR
+#! /usr/bin/env ruby
+foo<<-HTML
+<p>Foo</p>
+HTML
+STR
+    smp.add_lines(source)
+    run_gtk
+
+    assert_equal "string.unquoted.embedded.html.ruby", smp.scope_tree.children[1].name
+    assert smp.scope_tree.children[1].pattern.
+      possible_patterns.map{|p| p.name}.include? "meta.tag.any.html"
   end
   
   def test_load_grammar

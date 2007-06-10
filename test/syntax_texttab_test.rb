@@ -180,4 +180,16 @@ CSTR
     assert_equal new_source[0..-2], @nt.contents
     assert_equal 7, @nt.scope_tree.children.length
   end
+  
+  def test_loads_ruby_grammar_from_extension
+    newtab = Redcar.new_tab
+    newtab.load("test/fixtures/init.rb")
+    assert_equal 'Ruby', newtab.language
+  end
+  
+  def test_loads_ruby_grammar_from_first_line
+    newtab = Redcar.new_tab
+    newtab.load("test/fixtures/init")
+    assert_equal 'Ruby', newtab.language
+  end
 end

@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 
 namespace :test do
   task :all => [:syntax]
@@ -7,11 +8,13 @@ namespace :test do
     sh "rg test/syntax_grammar_test.rb"
     sh "rg test/syntax_scope_test.rb"
     sh "rg test/syntax_parser_test.rb"
+    sh "rg test/syntax_theme_test.rb"
   end
 
   task :syntax_quick do
     sh "rg test/syntax_grammar_test.rb"
     sh "rg test/syntax_scope_test.rb"
     sh "rg test/syntax_parser_test.rb"
+    sh "rg test/syntax_theme_test.rb"
   end
 end

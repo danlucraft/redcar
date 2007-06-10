@@ -115,12 +115,39 @@ module Redcar
       applicables = []
       @settings.each do |setting|
         if setting['scope']
-          if spec = applicable?(setting['scope'], scopes)
-            applicables << [spec, setting]
+          if rating = applicable?(setting['scope'], scopes)
+            applicables << [rating, setting]
           end
         end
       end
-      @settings_for_scope[scope_join] = applicables.sort_by {|a| -a[0]}.map {|a| a[1]}
+      # need to rank them
+      applicables = applicables.sort do |a, b|
+        if a[0][0] > b[0][0]
+          -1
+        elsif a[0][0] < b[0][0]
+          1
+        elsif a[0][0] == b[0][0]
+          k = nil
+          n = [a[0][1].length, b[0][1].length].max
+          0.upto(n-1) do |i|
+            ae = a[0][1][i]
+            be = b[0][1][i]
+            if !k
+              if ae and !be
+                k = -1
+              elsif be and !ae
+                k = 1
+              elsif ae > be
+                k = -1
+              elsif ae < be
+                k = 1
+              end
+            end
+          end
+          k||0
+        end
+      end.map {|a| a[1]}
+      @settings_for_scope[scope_join] = applicables
     end
     
     # Given a scope selector, returns its specificity. E.g keyword.if == 2 and string constant == 2
@@ -131,51 +158,115 @@ module Redcar
     # Returns false if the selector is not applicable to the scope, and returns the specificity of the
     # selector if it is applicable.
     def applicable?(selector, scopes)
-      scope = scopes.join(" ")
-      debug_puts {"applicable?(#{selector.inspect}, #{scope.inspect})"}
+      debug_puts {"applicable?(#{selector.inspect}, #{scopes.inspect})"}
       # split by commas (which are ORs)
       selector.split(',').each do |subselector|
         subselector = subselector.strip
-        if subselector == scope
-          debug_puts "  perfect match"
-          return specificity(subselector)
+        # # quick check to see if there's a perfect match
+#         if scopes.include?(subselector)
+#           debug_puts "  perfect match"
+#           return [-scopes.index(subselector)]
+#         end
+        
+        positive_subselector, negative_subselector = 
+          *subselector.split("-")
+        positive_subselector_components = 
+          positive_subselector.split(' ')
+        if negative_subselector
+          negative_subselector_components = 
+            negative_subselector.split(' ')
+        else
+          negative_subselector_components = nil
         end
         
-        # split on spaces (which are ANDs)
-        selector_components = subselector.split(' ')
-        prev_offset = -1
-        has_all = selector_components.inject(1) do |memo, comp|
-          if offset = scope.index(comp) and offset > prev_offset
-            debug_puts {"  has #{comp.inspect} at #{offset}"}
-            prev_offset = offset
-            memo
-          else
-            0
+        debug_puts positive_subselector_components.inspect
+        debug_puts negative_subselector_components.inspect
+        
+        # the bump along: (a la regular expressions)
+        (0..(scopes.length-1)).each do |i|
+          j = i
+          last_matching_index = -1
+          last_num_elements = []
+          pos_match = positive_subselector_components.all? do |comp|
+            match = (scopes[j]||"").include? comp
+            if match
+              last_matching_index = j
+              last_num_elements << comp.split(".").length
+            end
+            j += 1
+            match
+          end
+          if pos_match
+            debug_puts "has all required positive components"
+            if negative_subselector_components
+              j -= 2
+              neg_match = negative_subselector_components.all? do |comp|
+                j += 1
+                scopes[j..-1].any? do |scope|
+                  scope.include? comp
+                end
+              end
+            else
+              neg_match = false
+            end
+          end
+          if pos_match and not neg_match
+            debug_puts last_num_elements
+            spec = positive_subselector_components.
+              inject(0) {|m, c| m += specificity(c) }
+            return [last_matching_index, last_num_elements.reverse]
           end
         end
-        if has_all == 1
-          debug_puts "has all required components"
-          spec = selector_components.inject(0) {|m, c| m += specificity(c) }
-          return spec 
-        end
-      end
+        
+#         # split on spaces (which are ANDs)
+#         selector_components = subselector.split(' ')
+#         prev_offset = -1
+#         has_all = selector_components.inject(1) do |memo, comp|
+#           if offset = scope.index(comp) and offset > prev_offset
+#             debug_puts {"  has #{comp.inspect} at #{offset}"}
+#             prev_offset = offset
+#             memo
+#           else
+#             0
+#           end
+#         end
+#         if has_all == 1
+#           debug_puts "has all required components"
+#           spec = selector_components.inject(0) {|m, c| m += specificity(c) }
+#           return spec 
+#         end
+       end
       false
     end
     
     def self.parse_colour(str_colour)
+      Gdk::Color.parse(clean_colour(str_colour))
+    end
+    
+    def self.clean_colour(str_colour)
       return nil unless str_colour
       if str_colour.length == 7
-        Gdk::Color.parse(str_colour)
+        str_colour
       elsif str_colour.length == 9
         # FIXME: what are the extra two hex values for? 
         # (possibly they are an opacity)
-        Gdk::Color.parse(str_colour[0..6])
+        # #12345678
+        #'#'+str_colour[3..-1]
+#         r = str_colour[1..2].hex
+#         g = str_colour[3..4].hex
+#         b = str_colour[5..6].hex
+#         t = str_colour[7..8].hex
+#         r = (255-r*t)/255
+#         g = (255-g*t)/255
+#         b = (255-b*t)/255
+#         '#'+("%02x"%r)+("%02x"%g)+("%02x"%b)
+        str_colour[0..6]
       end
     end
     
     def self.textmate_settings_to_pango_options(settings)
-      options = { :foreground => settings["foreground"],
-                  :background => settings["background"] }
+      options = { :foreground => self.clean_colour(settings["foreground"]),
+                  :background => self.clean_colour(settings["background"]) }
       options = options.delete_if{|k, v| !v}
       settings["fontStyle"] ||= ""
       if settings["fontStyle"].include? "italic"

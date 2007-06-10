@@ -6,12 +6,14 @@ module Redcar
     class Pattern
       attr_accessor :name, :captures, :grammar, :hint, :match
       
-      def initialize(hash)
-        unless hash["name"] or hash["contentName"]
-          hash["name"] = $spare_name.clone
-          $spare_name = $spare_name.succ
-        end
-        @name = hash["name"] || hash["contentName"]
+      def initialize(hash, grammar)
+ #        unless hash["name"] or hash["contentName"]
+#           hash["name"] = $spare_name.clone
+#           $spare_name = $spare_name.succ
+#         end
+        @grammar = grammar
+        @name = hash["name"]
+        @content_name = hash["content_name"] 
         @captures = hash["captures"] || {}
         @captures.each do |key, value|
           @captures[key] = value['name']
@@ -22,11 +24,15 @@ module Redcar
       def to_scope
         new_scope = Scope.create3(self, self.grammar)
       end
+      
+      def possible_patterns
+        self.grammar.possible_patterns(self)
+      end
     end
     
     class SinglePattern < Pattern
-      def initialize(hash)
-        super(hash)
+      def initialize(hash, grammar)
+        super(hash, grammar)
         
         @match = Regexp.new(hash["match"])
       end
@@ -38,19 +44,29 @@ module Redcar
       def inspect
         "<singlepattern:#{self.name}, matches:#{Regexp.new(@match).inspect}>"
       end
+      
+      def content_name
+        nil
+      end
     end
     
     class DoublePattern < Pattern
       attr_accessor(:begin, :end, :patterns, :content_name, :begin_captures, 
                     :end_captures, :captures)
       
-      def initialize(hash)
-        super(hash)
+      def initialize(hash, grammar)
+        super(hash, grammar)
         @begin = Regexp.new(hash["begin"])
         @match = @begin
         @end   = hash["end"] || hash["endif"] # FIXME : what is "endif"??
+        count = 0
         @patterns = (hash["patterns"]||[]).collect do |this_hash|
-          Grammar.pattern_from_hash(this_hash)
+          pn = self.grammar.pattern_from_hash(this_hash)
+          unless pn.is_a? IncludePattern
+            pn.hint = count
+            count += 1
+          end
+          pn
         end
         @content_name = hash["contentName"]
         @begin_captures = hash["beginCaptures"] || {}
@@ -73,8 +89,9 @@ module Redcar
     end
     
     class IncludePattern
-      attr_accessor :type, :value
-      def initialize(hash)
+      attr_accessor :type, :value, :grammar
+      def initialize(hash, grammar)
+        @grammar = grammar
         case hash["include"][0..0]
         when '#'
           @type = :repository
@@ -116,24 +133,25 @@ module Redcar
         @comment = @grammar["comment"]
         @scope_name = @grammar["scopeName"]
         @file_types = @grammar["fileTypes"]
-        @first_line_match = @grammar["firstLineMatch"]
+        @first_line_match = Regexp.new(@grammar["firstLineMatch"]) if @grammar["firstLineMatch"]
         @folding_start_marker = @grammar["foldingStartMarker"]
         @folding_stop_marker = @grammar["foldingStopMarker"]
         @patterns = (grammar["patterns"]||[]).collect do |hash|
-          Grammar.pattern_from_hash(hash)
+          pn = pattern_from_hash(hash)
+          pn
         end
         @repository = {}
         (grammar["repository"]||[]).each do |name, pattern_hash|
           if pattern_hash.keys.include? "begin" or
               pattern_hash.keys.include? "match"
-            @repository[name] = Grammar.pattern_from_hash(pattern_hash)
-            @repository[name].name = name unless @repository[name].name
+            @repository[name] = pattern_from_hash(pattern_hash)
+ #           @repository[name].name = name unless @repository[name].name
           elsif pattern_hash.keys.include? "patterns"
             @repository[name] = pattern_hash["patterns"].map do |ph|
-              p = Grammar.pattern_from_hash(ph)
-              if p.respond_to? :name=
-                p.name = name
-              end
+              p = pattern_from_hash(ph)
+#               if p.respond_to? :name= and not p.name
+#                 p.name = name
+#               end
               p
             end
           end
@@ -141,6 +159,10 @@ module Redcar
         
         collate_patterns
         @pattern_lookup.each_value {|p| p.grammar = self if p.is_a? Pattern}
+      end
+      
+      def content_name
+        nil
       end
       
       def inspect
@@ -193,7 +215,8 @@ module Redcar
         @possible_patterns = nil
       end
       
-      def possible_patterns(pattern)
+      def possible_patterns(pattern=nil)
+        pattern = self unless pattern
         @possible_patterns ||= {}
         r = @possible_patterns[pattern]
         return r if r
@@ -203,8 +226,6 @@ module Redcar
             pattern = self
           else
             if pattern.is_a? String
-              p pattern
-              p @pattern_lookup
               pattern = pattern(pattern)
             end
             poss_patterns = pattern.patterns
@@ -231,10 +252,16 @@ module Redcar
               case pn.type
               when :self
                 self.patterns
+              when :base
+                self.patterns
               when :repository
                 @pattern_lookup[pn.value.to_s]
-              when :Scope
-                @pattern_lookup[pn.value.to_s]
+              when :scope
+                p = @pattern_lookup[pn.value.to_s]
+                unless p
+                  p = Syntax.grammar(:scope => pn.value)
+                end
+                p.patterns
               end
             end
           else
@@ -242,18 +269,15 @@ module Redcar
           end
         end.compact.flatten
       end
-      
-    end
-    
-    class << Grammar
+
       def pattern_from_hash(hash)
         # FIXME: what is "endif"?
         if hash["begin"] and (hash["end"] or hash["endif"])
-          DoublePattern.new(hash)
+          DoublePattern.new(hash, self)
         elsif hash["match"]
-          SinglePattern.new(hash)
+          SinglePattern.new(hash, self)
         elsif hash["include"]
-          IncludePattern.new(hash)
+          IncludePattern.new(hash, self)
         else
           raise ArgumentError, "unknown Pattern type #{hash.inspect}"
         end

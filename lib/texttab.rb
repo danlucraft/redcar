@@ -631,7 +631,8 @@ module Redcar
       @textview.modify_font(Pango::FontDescription.new(font))
     end
     
-    def load
+    def load(filename=nil)
+      @filename = filename if filename
       Redcar.event :load, self do
         if @filename
           self.replace(Redcar::RedcarFile.load(@filename))

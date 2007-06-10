@@ -9,6 +9,8 @@ $medium_plist_file = IO.readlines("test/fixtures/ruby.plist").join
 
 $large_html_file = IO.readlines("test/fixtures/medium.html").join
 
+rubylines = $small_ruby_file.split("\n")
+htmllines = $large_html_file.split("\n")
 Syntax.load_grammars
 $ruby_gr = Syntax.grammar(:name => "Ruby")
 $html_gr = Syntax.grammar(:name => "HTML")
@@ -103,8 +105,14 @@ elsif ARGV[0] == "colour"
   $REDCAR_ENV["nonlazy"] = true
   Benchmark.bmbm(15) do |x|
     x.report("Ruby") do
-      5.times do
+      10.times do
         rtab.replace($small_ruby_file)
+      end
+    end
+    x.report("Ruby Replace") do
+      1000.times do
+        rtab.insert(TextLoc.new(lines.length/2, 0), "puts \"hello\" + :foo ")
+        rtab.delete(TextLoc.new(lines.length/2, 0), TextLoc.new(lines.length/2, 20))
       end
     end
     x.report("HTML") do
@@ -128,16 +136,25 @@ elsif ARGV[0] == "colourprofile"
   require 'ruby-prof'
   RubyProf.start
 
-  5.times do
-    rtab.replace($small_ruby_file)
+#   10.times do
+#     rtab.replace($small_ruby_file)
+#   end
+  1000.times do
+    rtab.insert(TextLoc.new(rubylines.length/2, 0), "puts \"hello\" + :foo ")
+    rtab.delete(TextLoc.new(rubylines.length/2, 0), TextLoc.new(rubylines.length/2, 20))
   end
-  2.times do
-    htab.replace($large_html_file)
+  1000.times do
+    htab.insert(TextLoc.new(htmllines.length/2, 0), "<p>Hello</p>")
+    htab.delete(TextLoc.new(htmllines.length/2, 0), TextLoc.new(htmllines.length/2, 20))
   end
+#   2.times do
+#     htab.replace($large_html_file)
+#   end
   result = RubyProf.stop
   printer = RubyProf::GraphHtmlPrinter.new(result)
   printer.print(STDOUT, 0)
   Instrument.report :priority
+  
   Instrument.report :colourer_children_checked
   Instrument.report :colourer_children_on_line
 end
