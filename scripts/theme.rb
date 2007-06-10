@@ -162,11 +162,6 @@ module Redcar
       # split by commas (which are ORs)
       selector.split(',').each do |subselector|
         subselector = subselector.strip
-        # # quick check to see if there's a perfect match
-#         if scopes.include?(subselector)
-#           debug_puts "  perfect match"
-#           return [-scopes.index(subselector)]
-#         end
         
         positive_subselector, negative_subselector = 
           *subselector.split("-")
@@ -183,21 +178,27 @@ module Redcar
         debug_puts negative_subselector_components.inspect
         
         # the bump along: (a la regular expressions)
-        (0..(scopes.length-1)).each do |i|
+        (scopes.length-1).downto(0) do |i|
+          debug_puts "  checking at index: #{i}"
           j = i
-          last_matching_index = -1
-          last_num_elements = []
+        #  last_matching_index = -1
+          last_num_elements = Array.new(scopes.length, 0)
           pos_match = positive_subselector_components.all? do |comp|
-            match = (scopes[j]||"").include? comp
+            k = j-1
+            match = scopes[j..-1].any? do |scope|
+              k += 1
+              scope.include? comp
+            end
+            debug_puts "      matched component #{comp.inspect} at #{k}"
             if match
-              last_matching_index = j
-              last_num_elements << comp.split(".").length
+             # last_matching_index = j
+              last_num_elements[k] = comp.split(".").length
             end
             j += 1
             match
           end
           if pos_match
-            debug_puts "has all required positive components"
+            debug_puts "    pos_match"
             if negative_subselector_components
               j -= 2
               neg_match = negative_subselector_components.all? do |comp|
@@ -209,11 +210,15 @@ module Redcar
             else
               neg_match = false
             end
+          else
+            debug_puts "    no pos_match"
           end
           if pos_match and not neg_match
             debug_puts last_num_elements
             spec = positive_subselector_components.
               inject(0) {|m, c| m += specificity(c) }
+            last_matching_index = 0
+            last_num_elements.each_with_index {|e, i| last_matching_index = i if e > 0}
             return [last_matching_index, last_num_elements.reverse]
           end
         end

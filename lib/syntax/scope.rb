@@ -29,7 +29,8 @@ module Redcar
                     :close_matchdata,
                     :parent,
                     :name,
-                    :closing_regexp)
+                    :closing_regexp,
+                    :capture)
 
       def self.create3(pattern, grammar)
         obj = self.allocate
@@ -419,6 +420,9 @@ module Redcar
               self.close_end.offset += amount
             end
           end
+#         if self.start == self.end
+#           self.detach_from_parent
+#         end
  #       end
         @children.each {|cs| cs.shift_chars(line, amount, offset)}
       end
@@ -465,7 +469,7 @@ module Redcar
       
       # Returns the active scope at TextLoc textloc.
       def scope_at(textloc)
-        if self.start <= textloc
+        if self.start <= textloc or !self.parent
           if ((self.end==nil) or (self.end > textloc))
             # children has a tendency to be very long for 1 scope in each document,
             # so do a simple check that looks to see if it is the last child we need,
@@ -557,7 +561,7 @@ module Redcar
       end
       
       def line_start(line_num)
-        sc = scope_at(TextLoc.new(line_num, 0))
+        sc = scope_at(TextLoc.new(line_num, -1))
         while sc.start.line == line_num
           unless sc.parent
             return sc

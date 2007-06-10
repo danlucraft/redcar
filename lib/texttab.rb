@@ -25,7 +25,11 @@ module Gtk
     end
   end
 end
-  
+
+def TextLoc(a, b)
+  Redcar::TextLoc.new(a, b)
+end
+
 module Redcar  
 #  TextLoc = Struct.new(:line, :offset)
   class TextLoc
@@ -126,6 +130,10 @@ module Redcar
     keymap "shift Right", :shift_right
     keymap "shift Up",    :shift_up
     keymap "shift Down",  :shift_down
+    keymap "Page_Down",   :page_down
+    keymap "Page_Up",     :page_up
+    keymap "Home",  :cursor=, :line_start
+    keymap "End",   :cursor=, :line_end
     keymap "ctrl z",     :undo
     keymap "ctrl x",     :cut
     keymap "ctrl c",     :copy
@@ -153,7 +161,9 @@ module Redcar
         when :line_start
           offset = @buffer.get_iter_at_line(iter(cursor_mark).line).offset
         when :line_end
-          offset = @buffer.get_iter_at_line(iter(cursor_mark).line+1).offset-1
+          line_num = iter(cursor_mark).line
+          length = get_line(line_num).to_s.chomp.chars.length
+          offset = @buffer.get_iter_at_line_offset(line_num, length)
         when :tab_start
           offset = 0
         when :tab_end
@@ -196,6 +206,16 @@ module Redcar
       
       def shift_down
         @buffer.move_mark(cursor_mark, iter(below_offset(cursor_offset)))
+      end
+      
+      def page_down
+        new_line = [cursor_line+20, line_count].min
+        self.cursor = TextLoc.new(new_line, 0)
+      end
+      
+      def page_up
+        new_line = [cursor_line-20, 0].max
+        self.cursor = TextLoc.new(new_line, 0)
       end
       
       def cut
@@ -584,6 +604,7 @@ module Redcar
     @buffer.highlight = true
     @buffer.max_undo_levels = 0
     @buffer.text = text
+    connect_signals
   end
     
     
@@ -599,21 +620,26 @@ module Redcar
         Redcar.event :tab_focus, self
         false
       end
+
       @was_modified = false
       @buffer.signal_connect("changed") do |widget, event|
         Redcar.event :tab_modified, self unless @was_modified
         Redcar.event :tab_changed
         @was_modified = true
+        false
       end
       
-      @buffer.signal_connect("mark_set") do |widget, event|
-        mark = @buffer.get_mark('insert')
-        iter = @buffer.get_iter_at_mark(mark)
-        Redcar.event :tab_changed
-        
+      @buffer.signal_connect("mark_set") do |widget, event, mark|
+        if mark.name == "insert"
+          insert_iter = @buffer.get_iter_at_mark(mark)
+          Redcar.StatusBar.sub = "line "+ (insert_iter.line+1).to_s + 
+            "   col "+(insert_iter.line_offset+1).to_s
+        end
         Redcar.StatusBar.main = "" unless Time.now - Redcar.StatusBar.main_time < 5
-        Redcar.StatusBar.sub = "line "+ (iter.line+1).to_s + "   col "+(iter.line_offset+1).to_s
+        Redcar.event :tab_changed
+        false
       end
+      
       # eat right button clicks:
       @textview.signal_connect("button_press_event") do |widget, event|
         Redcar.current_tab = self
@@ -621,7 +647,8 @@ module Redcar
         if event.kind_of? Gdk::EventButton 
           Redcar.event :tab_clicked, self
           if event.button == 3
-            Redcar.context_menus[self.class.to_s].popup(nil, nil, event.button, event.time)
+            Redcar.context_menus[self.class.to_s].
+              popup(nil, nil, event.button, event.time)
           end
         end
       end

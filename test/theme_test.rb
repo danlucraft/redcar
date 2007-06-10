@@ -413,4 +413,26 @@ class TestTheme < Test::Unit::TestCase
     # e.g. text source string wins over source string.
     assert_equal "text source string", th.settings_for_scope(s3)[0]["name"]
   end
+  
+  def test_applicable
+    th = Theme.new(@theme_twilight)
+    scopes = [ "source.ruby",
+               "string.unquoted.embedded.html.ruby",
+               "text.html.embedded.ruby",
+               "meta.tag.block.any.html",
+               "string.quoted.double.html",
+               "punctuation.definition.tag.html"]
+    v1 = th.applicable?("declaration.tag, declaration.tag entity, meta.tag, meta.tag entity",
+                        scopes)
+    v2 = th.applicable?("string", scopes)
+    assert v2[0] > v1[0]
+    scopes = [ "text.html.basic",
+               "meta.tag.inline.any.html",
+               "string.quoted.double.html",
+               "source.ruby.embedded.html",
+               "punctuation.section.embedded.ruby"]
+    assert_equal [3, [0, 1, 0, 0, 1]], th.applicable?("text source", scopes)
+    assert_equal [2, [0, 0, 1, 0, 0]], th.applicable?("string", scopes)
+    assert_equal [3, [0, 1, 1, 0, 0]], th.applicable?("string source - string", scopes)
+  end
 end

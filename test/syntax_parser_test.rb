@@ -622,7 +622,7 @@ ENDSTR
     sc = Scope.new(:pattern => gr,
                    :grammar => gr,
                    :start => TextLoc.new(0, 0))
-    md = Regexp.new(gr.pattern("text.heredoc").begin).match("text=\<\<END:FOR")
+    md = gr.pattern("text.heredoc").begin.match("text=\<\<END:FOR")
     smp = Parser.new(sc, [gr], nil)
     assert_equal "^END,FOR$", smp.build_closing_regexp(gr.pattern("text.heredoc"), md)
   end
@@ -822,12 +822,9 @@ CRALL
     smp = Parser.new(sc, [gr], nil)
     initcode = "# Comment line one"
     smp.add_lines(initcode, :lazy => false)
-    Parser.debug = true
     %w(R e).each_with_index do |l, i|
       smp.insert(TextLoc.new(0, i), l)
       run_gtk
-      puts smp.scope_tree.pretty
-      puts
     end
     assert_equal 2, smp.scope_tree.children.length
   end
@@ -1222,5 +1219,55 @@ STR
     run_gtk
     assert_equal "string.unquoted.embedded.html.ruby", smp.scope_tree.children[1].name
     assert_equal "meta.tag.block.any.html", smp.scope_tree.children[1].children[1].name
+  end
+  
+  def test_embedded_grammar2
+    gr = Syntax.grammar :name => 'Ruby'
+    sc = Scope.new(:pattern => gr,
+                   :grammar => gr,
+                   :start   => TextLoc.new(0, 0))
+    smp = Parser.new(sc, [gr], nil)
+    source=<<STR
+    html_template=<<-HTML
+  <title><%= :foo %></title>
+HTML
+STR
+    smp.add_lines(source, :lazy => false)
+    assert_equal("constant.other.symbol.ruby",
+                 smp.scope_tree.children[0].children[2].children[1].name)
+  end
+  
+  def test_embedded_grammar_delete_closing_scope
+    gr = Syntax.grammar :name => 'Ruby'
+    sc = Scope.new(:pattern => gr,
+                   :grammar => gr,
+                   :start   => TextLoc.new(0, 0))
+    smp = Parser.new(sc, [gr], nil)
+    source=<<STR
+    html_template=<<-HTML
+  <title><%= :foo %></title>
+HTML
+File
+STR
+    smp.add_lines(source, :lazy => false)
+    assert_equal 2, smp.scope_tree.children.length
+    assert_equal "variable.other.constant.ruby", smp.scope_tree.children.last.name
+    smp.delete_between(TextLoc(2, 2), TextLoc(2, 4))
+    run_gtk
+    assert_equal 1, smp.scope_tree.children.length
+  end
+  
+  def test_embedded_grammar3
+    gr = Syntax.grammar :name => 'HTML'
+    sc = Scope.new(:pattern => gr,
+                   :grammar => gr,
+                   :start   => TextLoc.new(0, 0))
+    smp = Parser.new(sc, [gr], nil)
+    source=<<STR
+<script>
+</script>
+STR
+    smp.add_lines(source, :lazy => false)
+    puts smp.scope_tree.pretty
   end
 end

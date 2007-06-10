@@ -34,7 +34,7 @@ module Redcar
       def initialize(hash, grammar)
         super(hash, grammar)
         
-        @match = Regexp.new(hash["match"])
+        @match = Oniguruma::ORegexp.new(hash["match"])
       end
       
       def patterns
@@ -42,7 +42,7 @@ module Redcar
       end
       
       def inspect
-        "<singlepattern:#{self.name}, matches:#{Regexp.new(@match).inspect}>"
+        "<singlepattern:#{self.name}, matches:#{@match.inspect}>"
       end
       
       def content_name
@@ -56,8 +56,7 @@ module Redcar
       
       def initialize(hash, grammar)
         super(hash, grammar)
-        @begin = Regexp.new(hash["begin"])
-        @match = @begin
+        @begin = Oniguruma::ORegexp.new(hash["begin"])
         @end   = hash["end"] || hash["endif"] # FIXME : what is "endif"??
         count = 0
         @patterns = (hash["patterns"]||[]).collect do |this_hash|
@@ -84,7 +83,11 @@ module Redcar
       end
       
       def inspect
-        "<doublepattern:#{self.name}, begin:#{Regexp.new(@begin).inspect}, end:#{@end}>"
+        "<doublepattern:#{self.name}, begin:#{@begin.source}, end:#{@end.inspect}>"
+      end
+      
+      def match
+        @begin
       end
     end
     
@@ -116,6 +119,7 @@ module Redcar
     end
 
     class Grammar
+      include DebugPrinter
       attr_accessor(:name,
                     :comment,
                     :scope_name, 
@@ -133,7 +137,7 @@ module Redcar
         @comment = @grammar["comment"]
         @scope_name = @grammar["scopeName"]
         @file_types = @grammar["fileTypes"]
-        @first_line_match = Regexp.new(@grammar["firstLineMatch"]) if @grammar["firstLineMatch"]
+        @first_line_match = Oniguruma::ORegexp.new(@grammar["firstLineMatch"]) if @grammar["firstLineMatch"]
         @folding_start_marker = @grammar["foldingStartMarker"]
         @folding_stop_marker = @grammar["foldingStopMarker"]
         @patterns = (grammar["patterns"]||[]).collect do |hash|
@@ -216,12 +220,14 @@ module Redcar
       end
       
       def possible_patterns(pattern=nil)
+        debug_puts "possible patterns for: #{pattern.inspect}"
         pattern = self unless pattern
         @possible_patterns ||= {}
         r = @possible_patterns[pattern]
         return r if r
         if pattern
-          if pattern.to_s == self.scope_name.to_s
+          if pattern.to_s == self.scope_name.to_s or
+              pattern.to_s == self.to_s
             poss_patterns = self.patterns
             pattern = self
           else
@@ -234,17 +240,23 @@ module Redcar
           poss_patterns = self.patterns
           pattern = self
         end
+        debug_puts "  poss_patterns: #{poss_patterns.inspect}"
         already_included = []
         r = expand_possible_patterns(poss_patterns, already_included)
         while r.any? {|pn| pn.is_a? IncludePattern }
+          debug_puts
           r = expand_possible_patterns(r, already_included)
+          debug_puts "  poss_patterns: #{r.inspect}"
         end
+        debug_puts
+        debug_puts "  poss_patterns: #{r.compact.sort_by{|p| -p.hint}.inspect}"
         @possible_patterns[pattern] = r.compact.sort_by{|p| -p.hint}
       end
       
       def expand_possible_patterns(pps, already_included)
         pps.map do |pn|
           if pn.is_a? IncludePattern
+            debug_puts "  expanding IncludePattern: #{pn.inspect}"
             if already_included.include? [pn.type, pn.value]
               nil
             else
@@ -255,9 +267,9 @@ module Redcar
               when :base
                 self.patterns
               when :repository
-                @pattern_lookup[pn.value.to_s]
+                pn.grammar.pattern_lookup[pn.value.to_s]
               when :scope
-                p = @pattern_lookup[pn.value.to_s]
+                p = pn.grammar.pattern_lookup[pn.value.to_s]
                 unless p
                   p = Syntax.grammar(:scope => pn.value)
                 end

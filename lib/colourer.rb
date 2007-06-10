@@ -12,6 +12,7 @@ module Redcar
     end
     
     def colour_line(scope_tree, line_num, priority=1)
+      debug_puts "\n"
       buffer = @tab.buffer
       buffer.remove_all_tags(@tab.line_start(line_num),
                              @tab.line_end(line_num))
@@ -55,23 +56,26 @@ module Redcar
                 end_iter = buffer.get_iter_at_offset(buffer.char_count)
               end
             end
-            tag_reference = scope.hierarchy_names.join(" ")
-            debug_puts {"  "*priority + 
-              "#{tag_reference+"("+priority.to_s+")"}: #{scope.start.offset}-#{end_iter.line_offset}"}
-            unless tag = buffer.tag_table.lookup(tag_reference+"("+priority.to_s+")")
-              all_settings = @theme.settings_for_scope(scope)
-              debug_puts {"  "*priority + all_settings.map{|s| s.inspect}.inspect}
-              debug_puts "  "*priority + scope.hierarchy_names.inspect
-              if all_settings.empty?
-                tag = buffer.create_tag(tag_reference+"("+priority.to_s+")",
-                                        :foreground => theme.global_settings['foreground'])
-              else
-                settings = all_settings[0]["settings"]
-                tag = buffer.create_tag(tag_reference+"("+priority.to_s+")",
-                                        Theme.textmate_settings_to_pango_options(settings))
-              end
-              tag.priority = priority
+            all_settings = @theme.settings_for_scope(scope)
+            debug_puts "  "*priority+"<"+scope.hierarchy_names.join("\n  "+"  "*priority)+">"
+            all_settings.each {|s| debug_puts "  "*(priority)+ s.inspect}
+            if all_settings.empty?
+              tag_reference = "default ("+priority.to_s+")"
+              settings_hash = {:foreground => theme.global_settings['foreground']}
+            else
+              settings = all_settings[0]["settings"]
+#               p all_settings
+#               p settings
+              tag_reference = all_settings[0]["scope"]+" ("+priority.to_s+")"
+              settings_hash = Theme.textmate_settings_to_pango_options(settings)
             end
+            unless tag = buffer.tag_table.lookup(tag_reference)
+              tag = buffer.create_tag(tag_reference, settings_hash)
+            end
+            debug_puts {"  "*priority + 
+              "tag:#{tag_reference}: (#{start_iter.line}, #{start_iter.line_offset})-"+
+              "(#{end_iter.line}, #{end_iter.line_offset})"}
+            tag.priority = priority
             if tag
               #debug_puts {"  "*priority + "#{start_iter.offset}-#{end_iter.offset}"}
               #debug_puts {"  "*priority + tag.inspect}

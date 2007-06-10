@@ -54,8 +54,9 @@ module Redcar
                 (gr['fileTypes'] || []).each do |ext|
                   @grammars_by_extension["."+ext] = @grammars[gr['name']]
                 end
-              rescue
+              rescue => e
                 puts "failed to load syntax: #{file}"
+                puts e.message
               end
             end
           end
@@ -154,30 +155,28 @@ module Redcar
         debug_puts "extension: #{ext}"
         set_grammar(Syntax.grammar(:extension => ext))
       end
-      
-#       @buffer.signal_connect("inserted_text") do |widget, iter, text, length|
-#         Redcar.event :tab_modified, self unless @was_modified
-#         Redcar.event :tab_changed
-#         store_insertion(iter, text, length)
-#         @was_modified = true
-#       end
-      
+    end
+    
+    alias :connect_signals_without_syntax :connect_signals
+    def connect_signals
+      connect_signals_without_syntax
       @buffer.signal_connect("insert_text") do |widget, iter, text, length|
 #         @buffer.signal_emit("inserted_text", iter, text, length)
         Redcar.event :tab_modified, self unless @was_modified
         Redcar.event :tab_changed
         store_insertion(iter, text, length)
         @was_modified = true
+        false
       end
       @buffer.signal_connect("delete_range") do |widget, iter1, iter2|
         Redcar.event :tab_modified, self unless @was_modified
         Redcar.event :tab_changed
         store_deletion(iter1, iter2)
         @was_modified = true
+        false
       end
       @no_colouring = false
       @operations = []
-    #  $debug_debug_puts = true
     end
     
     def set_theme(th)

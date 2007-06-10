@@ -3,7 +3,7 @@
 require File.dirname(__FILE__) + '/lib/redcar'
 begin
   Redcar.startup(:output => :silent)
-  #Redcar::Colourer.debug = true
+  Redcar::Colourer.debug = true
   #Redcar::Theme.debug = true
   Gtk.main
 rescue => e

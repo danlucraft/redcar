@@ -5,6 +5,17 @@ require 'gtk2'
 require 'gtksourceview'
 require 'gconf2'
 require 'fileutils'
+require 'oniguruma'
+module Oniguruma
+  class ORegexp
+    def _dump(_)
+      self.source
+    end
+    def self._load(str)
+      self.new(str)
+    end
+  end
+end
 
 require File.dirname(__FILE__) + '/../vendor/active_support'
 require File.dirname(__FILE__) + '/../vendor/null'
