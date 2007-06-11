@@ -58,7 +58,7 @@ module Redcar
             end
             all_settings = @theme.settings_for_scope(scope)
             debug_puts "  "*priority+"<"+scope.hierarchy_names.join("\n  "+"  "*priority)+">"
-            all_settings.each {|s| debug_puts "  "*(priority)+ s.inspect}
+            #all_settings.each {|s| debug_puts "  "*(priority)+ s.inspect}
             if all_settings.empty?
               tag_reference = "default ("+priority.to_s+")"
               settings_hash = {:foreground => theme.global_settings['foreground']}
@@ -71,14 +71,14 @@ module Redcar
             end
             unless tag = buffer.tag_table.lookup(tag_reference)
               tag = buffer.create_tag(tag_reference, settings_hash)
+              tag.priority = priority
             end
             debug_puts {"  "*priority + 
               "tag:#{tag_reference}: (#{start_iter.line}, #{start_iter.line_offset})-"+
               "(#{end_iter.line}, #{end_iter.line_offset})"}
-            tag.priority = priority
             if tag
-              #debug_puts {"  "*priority + "#{start_iter.offset}-#{end_iter.offset}"}
-              #debug_puts {"  "*priority + tag.inspect}
+              debug_puts {"  "*priority + "#{start_iter.offset}-#{end_iter.offset}"}
+              debug_puts {"  "*priority + tag.inspect}
               buffer.apply_tag(tag, start_iter, end_iter)
               extra_priority = 1
             end
@@ -90,53 +90,13 @@ module Redcar
                 Instrument(:priority, priority)
     end
     
-    # Syntax colours the given buffer from the given scope_tree.
-    def colour(scope_tree, priority=1)
-      buffer = @tab.buffer
-      scope_tree.children.each do |scope|
-        begin
-           sl = buffer.get_iter_at_line_offset(scope.start.line, 0)
-           el = buffer.get_iter_at_line_offset(scope.start.line+1, 0)
-          tx = buffer.get_slice(sl, el)
-          unless scope.start.offset == scope.end.offset and 
-              scope.start.line == scope.end.line
-            #debug_puts "#{scope.name+"("+priority.to_s+")"}: #{scope.start.offset}-#{scope.end.offset} (#{tx.length})"
-            #debug_puts scope.start
-            #debug_puts scope.end
-            #debug_puts sl.offset+minify(scope.start.offset)
-            #debug_puts sl.offset+minify(scope.end.offset)
-            start_iter = buffer.get_iter_at_offset(sl.offset+minify(scope.start.offset))
-            end_iter   = buffer.get_iter_at_offset(sl.offset+minify(scope.end.offset))
-            unless tag = buffer.tag_table.lookup(scope.name+"("+priority.to_s+")")
-              all_settings = @theme.settings_for_scope(scope.name)
-              #debug_puts all_settings.map{|s| s.inspect}.inspect
-              if all_settings.empty?
-                tag = buffer.create_tag(scope.name+"("+priority.to_s+")",
-                                        :foreground => theme.global_settings['foreground'])
-                tag.priority = priority
-              else
-                settings = all_settings[0]["settings"]
-                tag = buffer.create_tag(scope.name+"("+priority.to_s+")",
-                                        Theme.textmate_settings_to_pango_options(settings))
-                tag.priority = priority
-              end
-            end
-            if tag
-              #debug_puts "#{start_iter.line_offset}-#{end_iter.line_offset}"
-              #debug_puts tag.inspect
-              buffer.apply_tag(tag, start_iter, end_iter)
-            end
-            colour(scope, priority+1)
-          end
-        rescue Object => e
-          #debug_puts e
-          #debug_puts e.backtrace
-        end
-      end
-    end
-    
+
     def minify(offset)
-      [offset, 200].min
+      if offset < 200
+        offset
+      else
+        200
+      end
     end
   end
 end

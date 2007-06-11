@@ -4,7 +4,7 @@ $spare_name = "aaaa"
 module Redcar
   module Syntax
     class Pattern
-      attr_accessor :name, :captures, :grammar, :hint, :match
+      attr_accessor :name, :captures, :grammar, :hint, :match, :scope_name
       
       def initialize(hash, grammar)
  #        unless hash["name"] or hash["contentName"]
@@ -13,6 +13,7 @@ module Redcar
 #         end
         @grammar = grammar
         @name = hash["name"]
+        @scope_name = @name
         @content_name = hash["content_name"] 
         @captures = hash["captures"] || {}
         @captures.each do |key, value|
@@ -220,7 +221,7 @@ module Redcar
       end
       
       def possible_patterns(pattern=nil)
-        debug_puts "possible patterns for: #{pattern.inspect}"
+        #debug_puts "possible patterns for: #{pattern.inspect}"
         pattern = self unless pattern
         @possible_patterns ||= {}
         r = @possible_patterns[pattern]
@@ -240,23 +241,23 @@ module Redcar
           poss_patterns = self.patterns
           pattern = self
         end
-        debug_puts "  poss_patterns: #{poss_patterns.inspect}"
+        #debug_puts "  poss_patterns: #{poss_patterns.inspect}"
         already_included = []
         r = expand_possible_patterns(poss_patterns, already_included)
         while r.any? {|pn| pn.is_a? IncludePattern }
-          debug_puts
+          #debug_puts
           r = expand_possible_patterns(r, already_included)
-          debug_puts "  poss_patterns: #{r.inspect}"
+          #debug_puts "  poss_patterns: #{r.inspect}"
         end
-        debug_puts
-        debug_puts "  poss_patterns: #{r.compact.sort_by{|p| -p.hint}.inspect}"
+        #debug_puts
+        #debug_puts "  poss_patterns: #{r.compact.sort_by{|p| -p.hint}.inspect}"
         @possible_patterns[pattern] = r.compact.sort_by{|p| -p.hint}
       end
       
       def expand_possible_patterns(pps, already_included)
         pps.map do |pn|
           if pn.is_a? IncludePattern
-            debug_puts "  expanding IncludePattern: #{pn.inspect}"
+            #debug_puts "  expanding IncludePattern: #{pn.inspect}"
             if already_included.include? [pn.type, pn.value]
               nil
             else

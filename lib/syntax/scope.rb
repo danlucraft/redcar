@@ -31,7 +31,7 @@ module Redcar
                     :name,
                     :closing_regexp,
                     :capture)
-
+      
       def self.create3(pattern, grammar)
         obj = self.allocate
         obj.pattern = pattern
@@ -204,10 +204,10 @@ module Redcar
           names = []
         end
         names << self.name if self.name
-        if self.pattern
+        if self.pattern and self.pattern.content_name
           names << self.pattern.content_name
         end
-        names.compact
+        names
       end
       
       # Returns the nearest common ancestor of scopes s1 and s2 or 
@@ -261,13 +261,7 @@ module Redcar
       end
       
       def name
-        return @name if @name
-        case self.pattern
-        when Pattern
-          self.pattern.name
-        when Grammar
-          self.pattern.scope_name
-        end
+        @name ||= self.pattern.scope_name
       end
       
       def to_s
