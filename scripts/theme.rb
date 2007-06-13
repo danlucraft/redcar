@@ -104,8 +104,8 @@ module Redcar
     end
     
     # For a given scopename finds all the settings in the theme which apply to it.
-    def settings_for_scope(scope)
-      scopes = scope.hierarchy_names
+    def settings_for_scope(scope, inner)
+      scopes = scope.hierarchy_names(inner)
       scope_join = scopes.join(" ")
       #scope = scope.name
       #debug_puts scopes
@@ -257,15 +257,15 @@ module Redcar
         # (possibly they are an opacity)
         # #12345678
         #'#'+str_colour[3..-1]
-#         r = str_colour[1..2].hex
-#         g = str_colour[3..4].hex
-#         b = str_colour[5..6].hex
-#         t = str_colour[7..8].hex
-#         r = (255-r*t)/255
-#         g = (255-g*t)/255
-#         b = (255-b*t)/255
-#         '#'+("%02x"%r)+("%02x"%g)+("%02x"%b)
-        str_colour[0..6]
+        r = str_colour[1..2].hex
+        g = str_colour[3..4].hex
+        b = str_colour[5..6].hex
+        t = str_colour[7..8].hex
+        r = (r*t)/255
+        g = (g*t)/255
+        b = (b*t)/255
+        '#'+("%02x"%r)+("%02x"%g)+("%02x"%b)
+#        str_colour[0..6]
       end
     end
     

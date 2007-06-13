@@ -33,7 +33,13 @@ Redcar.menu("_Textmate") do |menu|
 end
 
 module Redcar
-  class TextmateBundle
+  class Bundle
+    def self.load_bundles
+      Dir["textmate/Bundles/*"].each do |dir|
+        p dir
+      end
+    end
+    
     def initialize(dir)
       @dir = dir
       info_plist = IO.readlines(@dir + 'info.plist').join
@@ -131,11 +137,21 @@ module Redcar
   end
 end
 
-ruby = Redcar::TextmateBundle.new(Redcar.ROOT_PATH+'/textmate/Bundles/Ruby.tmbundle/')
-html = Redcar::TextmateBundle.new(Redcar.ROOT_PATH+'/textmate/Bundles/HTML.tmbundle/')
-Redcar.menu("Ruby") do |menu|
-  ruby.build_menu(menu)
-end
-Redcar.menu("HTML") do |menu|
-  html.build_menu(menu)
+# ruby = Redcar::Bundle.new(Redcar.ROOT_PATH+'/textmate/Bundles/Ruby.tmbundle/')
+# html = Redcar::Bundle.new(Redcar.ROOT_PATH+'/textmate/Bundles/HTML.tmbundle/')
+# Redcar.menu("Ruby") do |menu|
+#   ruby.build_menu(menu)
+# end
+# Redcar.menu("HTML") do |menu|
+#   html.build_menu(menu)
+# end
+
+# Redcar::Bundle.load_bundles
+
+class Redcar::TextTab
+  keymap "Escape", :insert_snippet
+  def insert_snippet
+    current_scope = scope_at_cursor
+    
+  end
 end

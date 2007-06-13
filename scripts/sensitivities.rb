@@ -17,7 +17,8 @@ module Redcar
   end
   
   Sensitivity.add(:text_selected?,
-                  :hooks => [:after_select, :after_focus, :tab_focus, :tab_clicked, :tab_changed]) do
+                  :hooks => [:after_select, :after_focus, 
+                             :tab_focus, :tab_clicked, :tab_changed]) do
     Redcar.current_tab and Redcar.current_tab.selected?
   end
   

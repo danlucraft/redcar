@@ -77,9 +77,9 @@ module Redcar
         end
         unless ok or line_num >= @text.length
           #debug_puts {"lazy parsing line: #{line_num}"}
-          if (!options or options[:lazy]) #and
-          #    !$REDCAR_ENV["nonlazy"]
-            Gtk.idle_add_priority(GLib::PRIORITY_LOW) do
+          if (!options or options[:lazy]) and
+              !$REDCAR_ENV["nonlazy"]
+            Gtk.idle_add do #_priority(GLib::PRIORITY_LOW) do
               lazy_parse_from(line_num, options)
               false
             end
@@ -276,7 +276,7 @@ module Redcar
           raise ArgumentError, "cannot parse line that does not exist"
         end
         
-        current_scope = line_start(line_num)
+        start_scope = current_scope = line_start(line_num)
         #debug_puts {"current_scope:    #{current_scope.inspect}"}
         
         if current_scope.respond_to? :grammar
@@ -294,7 +294,6 @@ module Redcar
         rest_line = line
         while pos < line.length
           count2 += 1
-          #rest_line = line[pos..-1]
           new_scope_markers = []
           #debug_puts {"rest of line: #{rest_line.inspect}\npos: #{pos}"}
           #debug_puts {"  current_scope:     #{current_scope.inspect}"}
@@ -305,7 +304,7 @@ module Redcar
           #    Regexp.new(current_scope.closing_regexp).inspect
           #  } 
           #end
-                  #pps.each {|p|     #debug_puts "    " + p.inspect}
+          #pps.each {|p|     #debug_puts "    " + p.inspect}
           #debug_puts {"  matches:"}
           
           # See if the current scope is closed on this line.
@@ -336,16 +335,6 @@ module Redcar
           end
           possible_patterns.each do |pattern|
             md = nil
-#             old_patterns = new_scope_markers.map do |sm|
-#               if sm[:type] == :single_scope or 
-#                   sm[:type] == :double_scope
-#                 sm[:pattern]
-#               else
-#                 nil
-#               end
-#             end.compact
-#             unless old_patterns.include? pattern
-              #count += 1
               md = pattern.match.match(rest_line, pos)
               if md
                 #debug_puts {"    matched: #{pattern.inspect}"}
@@ -355,23 +344,7 @@ module Redcar
                 new_scope_markers << { :from => from, :md => md, :pattern => pattern }
                 matching_patterns << pattern if recording_patterns
               end
-#             end
-#             if !recording_patterns and md and (md.begin(0) == 0 or 
-#                        (rest_line[0..(md.begin(0)-1)] =~ /^\s*$/))
-#               pattern.hint = pattern.hint + 1
-#               break
-#             end
           end
-          #Instrument("possible_patterns_checked_#{active_grammar.name}".intern, count)
-#           count = 0
-#           froms = new_scope_markers.map {|sm| sm[:from]}
-#           froms.each do |i|
-#             if froms.select{|v| v==i}.length > 1
-#               count += 1
-#             end
-#           end
-#           Instrument("duplicate_starts_#{active_grammar.name}".intern, count)
-          
           if parsed_before?(line_num)
             expected_scope = current_scope.first_child_after(TextLoc.new(line_num, pos))
           end
@@ -437,6 +410,7 @@ module Redcar
                       sc.grammar = active_grammar
                       sc.capture = true
                       closed_scopes << sc
+                      all_scopes << sc
                     end
                   end
                 end
@@ -447,6 +421,7 @@ module Redcar
               end
               closed_scopes << current_scope
               current_scope = current_scope.parent
+              all_scopes << current_scope
               pps = nil
 #               new_scope_markers = []
               matching_patterns = nil
@@ -475,6 +450,7 @@ module Redcar
                     sc.grammar = active_grammar
                     sc.capture = true
                     closed_scopes << sc
+                    all_scopes << sc
                   end
                 end
               end
@@ -529,6 +505,7 @@ module Redcar
                     sc.grammar = active_grammar
                     sc.capture = true
                     closed_scopes << sc
+                    all_scopes << sc
                   end
                 end
               end
@@ -576,13 +553,18 @@ module Redcar
               @scope_tree.delete_any_on_line_not_in(line_num, all_scopes)
               
               # any that we expected to close on this line that now don't?
-#               while current_scope.end
-#                 #debug_puts {"current_scope has end #{current_scope.inspect}"}
-#                 current_scope.end = nil
-#                 current_scope.close_start = nil
-#                 current_scope.close_end   = nil
-#               end
-              @scope_tree.scopes_closed_on_line(line_num) do |s|
+              #  first build list of scopes that close on this line (including ones
+              #  that did but haven't been removed yet).
+              scopes_that_closed_on_line = []
+              ts = start_scope
+              while ts.parent
+                if ts.end and ts.end.line == line_num
+                  scopes_that_closed_on_line << ts
+                end
+                ts = ts.parent
+              end
+        #      @scope_tree.scopes_closed_on_line(line_num) do |s|
+              scopes_that_closed_on_line.each do |s|
                 unless closed_scopes.include? s
                   #debug_puts {"scope closes on line and should be reopened #{s.inspect}"}
                   s.end = nil
@@ -601,7 +583,8 @@ module Redcar
         Instrument("line_repeats_#{active_grammar.name}".intern, count2)
         if @colourer
           #debug_puts {"calling colourer"}
-          @colourer.colour_line(@scope_tree, line_num)
+#          @colourer.colour_line(@scope_tree, line_num)
+          @colourer.colour_line_with_scopes(line_num, all_scopes)
         else
           #debug_puts {"no colourer"}
         end

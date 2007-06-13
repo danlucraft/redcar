@@ -299,6 +299,25 @@ class TestSyntax < Test::Unit::TestCase
                  smp.scope_tree.children[0].children[0].hierarchy_names)
   end
   
+  def test_scope_hierarchy_inner_false
+    gr = $ruby_grammar
+    sc = Scope.new(:pattern => gr,
+                   :grammar => gr,
+                   :start   => TextLoc.new(0, 0))
+    smp = Parser.new(sc, [gr], nil)
+    rubycode = "def nice_name(arg)\n"
+    smp.add_lines(rubycode)    
+    run_gtk
+    puts smp.scope_tree.pretty
+    assert_equal(["source.ruby", 
+                  "meta.function.method.with-arguments.ruby",
+                  "variable.parameter.function.ruby"],
+                 smp.scope_tree.children[0].hierarchy_names(true))
+    assert_equal(["source.ruby", 
+                  "meta.function.method.with-arguments.ruby"],
+                 smp.scope_tree.children[0].hierarchy_names(false))
+  end
+  
   def test_common_ancestor
     st = @scope_tree
     can1 = Scope.common_ancestor(st.children[0].children[0], st.children[0].children[1])

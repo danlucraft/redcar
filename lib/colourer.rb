@@ -11,6 +11,91 @@ module Redcar
       raise ArgumentError, "colourer needs a Redcar::Theme" unless theme.is_a? Theme
     end
     
+    def get_start_end_iters(scope, buffer, inner)
+      if inner
+        get_start_end_iters_inner(scope, buffer)
+      else
+        get_start_end_iters_outer(scope, buffer)
+      end
+    end
+    
+    def get_start_end_iters_inner(scope, buffer)
+      sl = buffer.get_iter_at_line_offset(scope.start.line, 0)
+      start_iter = buffer.get_iter_at_offset(sl.offset+minify(scope.open_end.offset))
+      if scope.end
+        el = buffer.get_iter_at_line_offset(scope.close_start.line, 0)
+        end_iter = buffer.get_iter_at_offset(el.offset+minify(scope.close_start.offset))
+      else
+        el = buffer.get_iter_at_line_offset(scope.open_end.line+1, 0)
+        end_iter = el
+        if el.offset == sl.offset
+          end_iter = buffer.get_iter_at_offset(buffer.char_count)
+        end
+      end
+      return start_iter, end_iter
+    end
+    
+    def get_start_end_iters_outer(scope, buffer)
+      sl = buffer.get_iter_at_line_offset(scope.start.line, 0)
+      start_iter = buffer.get_iter_at_offset(sl.offset+minify(scope.start.offset))
+      if scope.end
+        el = buffer.get_iter_at_line_offset(scope.end.line, 0)
+        end_iter   = buffer.get_iter_at_offset(el.offset+minify(scope.end.offset))
+      else
+        el = buffer.get_iter_at_line_offset(scope.start.line+1, 0)
+        end_iter = el
+        if el.offset == sl.offset
+          end_iter = buffer.get_iter_at_offset(buffer.char_count)
+        end
+      end
+      return start_iter, end_iter
+    end
+    
+    def colour_scope(scope, buffer, inner=true)
+      start_iter, end_iter = get_start_end_iters(scope, buffer, inner)
+      all_settings = @theme.settings_for_scope(scope, inner)
+      debug_puts "  "*scope.priority+"<"+scope.hierarchy_names(inner).join("\n  "+"  "*scope.priority)+">"
+      all_settings.each {|s| debug_puts "  "*(scope.priority)+ s.inspect}
+      if all_settings.empty?
+        tag_reference = "default ("+scope.priority.to_s+")"
+        settings_hash = {:foreground => theme.global_settings['foreground']}
+      else
+        settings = all_settings[0]["settings"]
+        #               p all_settings
+        #               p settings
+        tag_reference = all_settings[0]["scope"]+" ("+scope.priority.to_s+")"
+        settings_hash = Theme.textmate_settings_to_pango_options(settings)
+      end
+      unless tag = buffer.tag_table.lookup(tag_reference)
+        tag = buffer.create_tag(tag_reference, settings_hash)
+        tag.priority = scope.priority-1
+      end
+      debug_puts {"  "*scope.priority + 
+        "tag:#{tag_reference}: (#{start_iter.line}, #{start_iter.line_offset})-"+
+        "(#{end_iter.line}, #{end_iter.line_offset})"}
+      if tag
+        debug_puts {"  "*scope.priority + "#{start_iter.offset}-#{end_iter.offset}"}
+        debug_puts {"  "*scope.priority + tag.inspect}
+        buffer.apply_tag(tag, start_iter, end_iter)
+      end
+    end
+    
+    def colour_line_with_scopes(line_num, scopes)
+      buffer = @tab.buffer
+      buffer.remove_all_tags(@tab.line_start(line_num),
+                             @tab.line_end(line_num))
+      scopes.each do |scope|
+        unless scope.start == scope.end or 
+            (!scope.name and (scope.pattern and !scope.pattern.content_name))# scope.children.empty?)
+          colour_scope(scope, buffer, false)
+          if scope.pattern and scope.pattern.content_name
+            colour_scope(scope, buffer, true)
+          end
+        end
+        
+      end
+    end
+    
     def colour_line(scope_tree, line_num, priority=1)
       debug_puts "\n"
       buffer = @tab.buffer

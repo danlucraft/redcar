@@ -22,9 +22,9 @@ module Redcar
           [what, response_id]
         end
         @dialog = Gtk::Dialog.new(options[:title],
-                                 Redcar.current_window,
-                                 Gtk::Dialog::DESTROY_WITH_PARENT,
-                                 *gtkbuttons)
+                                  Redcar.current_window,
+                                  Gtk::Dialog::DESTROY_WITH_PARENT,
+                                  *gtkbuttons)
         if options[:message]
           widget = Gtk::Label.new(options[:message])
           dialog.vbox.add(widget)

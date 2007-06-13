@@ -1,9 +1,14 @@
 #! /usr/bin/env ruby
 
 $KCODE = "U"
+$REDCAR_ENV ||= {}
+$REDCAR_ENV["test"] = false
+
+print "loading gems ..."
 require 'gtk2'
 require 'gtksourceview'
 require 'gconf2'
+require 'libglade2'
 require 'fileutils'
 require 'oniguruma'
 module Oniguruma
@@ -16,14 +21,18 @@ module Oniguruma
     end
   end
 end
+puts "done"
 
+print "loading vendor/ ..."
 require File.dirname(__FILE__) + '/../vendor/active_support'
 require File.dirname(__FILE__) + '/../vendor/null'
 require File.dirname(__FILE__) + '/../vendor/ruby_extensions'
 require File.dirname(__FILE__) + '/../vendor/debugprinter'
 require File.dirname(__FILE__) + '/../vendor/binary_enum'
 require 'vendor/instruments'
+puts "done"
 
+print "loading lib/ ..."
 require 'lib/plist'
 require File.dirname(__FILE__) + '/application'
 require File.dirname(__FILE__) + '/undoable'
@@ -49,9 +58,9 @@ require File.dirname(__FILE__) + '/../vendor/keyword_processor'
 require File.dirname(__FILE__) + '/panes'
 require File.dirname(__FILE__) + '/redcar_window'
 require File.dirname(__FILE__) + '/list_abstraction'
-
-$REDCAR_ENV ||= {}
-$REDCAR_ENV["test"] = false
+require 'lib/menu_edit_dialog.rb'
+require 'lib/preferences_dialog.rb'
+puts "done"
 
 module Redcar
   class << self
@@ -68,6 +77,7 @@ module Redcar
       Redcar.windows << Redcar.window_controller.open_window
       Redcar.current_window = Redcar.windows.first
       Redcar.output_style = options[:output]
+      print "loading scripts/ ..."; $stdout.flush
       if options[:load_scripts]
         Dir.glob("scripts/*.rb").sort.each do |f|
           if File.file?(f) and not f.include? "~"
@@ -75,6 +85,7 @@ module Redcar
           end
         end
       end
+      puts "done"
       
       Redcar.event :startup
     end

@@ -14,4 +14,14 @@ Redcar.menu("_Options") do |menu|
       tab.set_font(fn)
     end
   end
+  
+  menu.command("Preferences...", :edit_menus, nil, nil) do
+    dialog = Redcar::PreferencesDialog.new
+    dialog.run
+  end
+
+  menu.command("Edit Menus...", :edit_menus, nil, nil) do
+    dialog = Redcar::MenuEditDialog.new
+    dialog.run
+  end
 end

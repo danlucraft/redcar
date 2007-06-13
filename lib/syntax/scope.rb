@@ -92,6 +92,14 @@ module Redcar
         (self.end and (self.end > other.start and (!other.end or (self.end <= other.end))))
       end
       
+      def priority
+        @priority ||= if @parent
+                        @parent.priority + 1
+                      else
+                        1
+                      end
+      end
+      
       # Sees if the the scope is the same as the other scope, modulo their children
       # and THEIR CLOSING MARKERS.
       def surface_identical_modulo_ending?(other)
@@ -196,15 +204,21 @@ module Redcar
         @parent == other or (@parent and @parent.child_of?(other))
       end
       
-      # Return the names of all scopes in the hierarchy above this scope.
-      def hierarchy_names
+      # Return the names of all scopes in the hierarchy above this scope. Inner 
+      # is true or false depending on whether you want to include this scopes
+      # 'inner' scope (content_name scope).
+      def hierarchy_names(inner=true)
         if @parent
-          names = @parent.hierarchy_names
+          next_inner = (@parent.open_end and 
+                        self.start >= @parent.open_end and 
+                        (!self.end or !@parent.close_start or 
+                         self.end < @parent.close_start))
+          names = @parent.hierarchy_names(next_inner)
         else
           names = []
         end
         names << self.name if self.name
-        if self.pattern and self.pattern.content_name
+        if self.pattern and self.pattern.content_name and inner
           names << self.pattern.content_name
         end
         names
@@ -418,7 +432,9 @@ module Redcar
 #           self.detach_from_parent
 #         end
  #       end
-        @children.each {|cs| cs.shift_chars(line, amount, offset)}
+        @children.each do |cs| 
+          cs.shift_chars(line, amount, offset)
+        end
       end
       
       def shift_after(line, amount)

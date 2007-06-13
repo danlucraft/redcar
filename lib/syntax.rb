@@ -27,7 +27,7 @@ module Redcar
     end
     
     def self.load_grammars
-      # FIXME to not load all grammars upfront
+      print "loading grammars ..."
       if File.exist?("cache/grammars.dump")
         str = File.read("cache/grammars.dump")
         @grammars = Marshal.load(str)
@@ -63,6 +63,7 @@ module Redcar
           self.cache_grammars
         end
       end
+      puts "done"
     end
     
     def self.grammar(options)
@@ -118,7 +119,10 @@ module Redcar
     def scope_tooltip
       scope = scope_at_cursor
       puts "scope_at_cursor: #{scope.inspect}"
-      tooltip_at_cursor(scope.hierarchy_names.join("\n"))
+      inner = scope.pattern and scope.pattern.content_name and
+        (cursor_offset >= scope.open_end.offset and 
+         (!scope.close_start or cursor_offset < scope.close_start.offset))
+      tooltip_at_cursor(scope.hierarchy_names(inner).join("\n"))
     end
     
     def select_scope

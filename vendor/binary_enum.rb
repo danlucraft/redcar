@@ -12,7 +12,17 @@ class Array
     end
   end
   
-  def find_flip_index(low=0, high=self.length-1, &block)
+  def find_flip_index(&block)
+    return nil if self.empty?
+    if block[self[0]]
+      return 0
+    elsif block[self[-1]] and !block[self[-2]]
+      return self.length-1
+    end
+    find_flip_index1(&block)
+  end
+  
+  def find_flip_index1(low=0, high=self.length-1, &block)
     return nil if high < low
     mid = (2*high+low)/3
     midv = block[self[mid]]
@@ -33,9 +43,9 @@ class Array
     elsif !midv and block[self[mid+1]]
       return mid+1
     elsif midv
-      return self.find_flip_index(low, mid-1, &block)
+      return self.find_flip_index1(low, mid-1, &block)
     elsif !midv
-      return self.find_flip_index(mid+1, high, &block)
+      return self.find_flip_index1(mid+1, high, &block)
     else
       puts "hmmm.."
     end

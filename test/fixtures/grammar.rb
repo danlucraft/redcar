@@ -139,7 +139,6 @@ module Redcar
       end
       
       def inspect
-#        "<grammar:#{@name}, scope:#{@scope_name}, patterns:[#{@patterns.map{|p| (p.respond_to?(:name) ? p.name : "[noname]")}.join(", ")}]>"
         "<grammar:#{@name}, scope:#{@scope_name}>"
       end
       

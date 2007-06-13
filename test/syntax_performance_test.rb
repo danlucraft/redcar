@@ -140,11 +140,11 @@ elsif ARGV[0] == "colourprofile"
 #     rtab.replace($small_ruby_file)
 #   end
   rtab.insert(TextLoc.new(rubylines.length/2, 0), "File.new \"foobar\"\n")
-  50.times do
+  100.times do
     rtab.insert(TextLoc.new(rubylines.length/2, 9), "puts \"hello\" + :foo ")
     rtab.delete(TextLoc.new(rubylines.length/2, 9), TextLoc.new(rubylines.length/2, 29))
   end
-  50.times do
+  100.times do
     htab.insert(TextLoc.new(htmllines.length/2, 0), "<p>Hello</p>")
     htab.delete(TextLoc.new(htmllines.length/2, 0), TextLoc.new(htmllines.length/2, 20))
   end

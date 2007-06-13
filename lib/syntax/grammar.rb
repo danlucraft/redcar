@@ -274,7 +274,7 @@ module Redcar
                 unless p
                   p = Syntax.grammar(:scope => pn.value)
                 end
-                p.patterns
+                p.patterns if p
               end
             end
           else
