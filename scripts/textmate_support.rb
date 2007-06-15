@@ -137,14 +137,14 @@ module Redcar
   end
 end
 
-# ruby = Redcar::Bundle.new(Redcar.ROOT_PATH+'/textmate/Bundles/Ruby.tmbundle/')
-# html = Redcar::Bundle.new(Redcar.ROOT_PATH+'/textmate/Bundles/HTML.tmbundle/')
-# Redcar.menu("Ruby") do |menu|
-#   ruby.build_menu(menu)
-# end
-# Redcar.menu("HTML") do |menu|
-#   html.build_menu(menu)
-# end
+ ruby = Redcar::Bundle.new(Redcar.ROOT_PATH+'/textmate/Bundles/Ruby.tmbundle/')
+ html = Redcar::Bundle.new(Redcar.ROOT_PATH+'/textmate/Bundles/HTML.tmbundle/')
+ Redcar.menu("Ruby") do |menu|
+   ruby.build_menu(menu)
+ end
+ Redcar.menu("HTML") do |menu|
+   html.build_menu(menu)
+ end
 
 # Redcar::Bundle.load_bundles
 

@@ -1,4 +1,10 @@
 
+class Symbol
+  def to_title_string
+    self.to_s.gsub(/_|-/, " ").split(" ").map{|w| w.capitalize}.join(" ")
+  end
+end
+
 class PickyHash < Hash
   def [](id)
     r = super(id)

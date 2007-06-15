@@ -20,16 +20,30 @@ module Redcar
   end
   
   class Menu
-    def self.load_menus
-      @menus = YAML.load("environment/menus.yaml")
-    end
-    
-    def self.save_menus
-      File.open("environment/menus.yaml", "w") do |f| 
-        f.puts @menus.to_yaml
+    INPUTS = ["None", "Document", "Line", "Word", 
+              "Character", "Scope", "Nothing", 
+              "Selected Text"]
+    OUTPUTS = ["Discard", "Replace Selected Text", 
+               "Replace Document", "Insert as Text", 
+               "Insert as Snippet", "Show as HTML",
+               "Show as Tool Tip", "Create New Document"]
+    ACTIVATIONS = ["Key Combination"]
+    class << self
+      attr_accessor :menus
+      def menus
+        @menus ||= load_menus
       end
-    end
-  
+      
+      def load_menus
+        @menus = YAML.load(IO.read("environment/menus.yaml"))
+      end
+      
+      def save_menus
+        File.open("environment/menus.yaml", "w") do |f| 
+          f.puts @menus.to_yaml
+        end
+      end
+    end      
     include DebugPrinter
     
     attr_accessor :name
