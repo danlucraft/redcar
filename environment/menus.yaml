@@ -1,0 +1,16 @@
+--- 
+:scope_selector: 
+:object: :menu
+:name: Options
+:items: 
+- :type: :inline
+  :scope_selector: 
+  :command: |
+    Redcar::MenuEditDialog.new
+
+  :object: :menuitem
+  :activated_by: 
+  :name: Edit Menus
+  :tooltip: ""
+  :enabled: true
+  :icon: :preferences

@@ -20,6 +20,16 @@ module Redcar
   end
   
   class Menu
+    def self.load_menus
+      @menus = YAML.load("environment/menus.yaml")
+    end
+    
+    def self.save_menus
+      File.open("environment/menus.yaml", "w") do |f| 
+        f.puts @menus.to_yaml
+      end
+    end
+  
     include DebugPrinter
     
     attr_accessor :name

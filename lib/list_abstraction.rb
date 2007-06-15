@@ -153,6 +153,13 @@ module Redcar
         end
       end
       
+      def on_single_click(&block)
+        @on_single_click = block
+        @treeview.signal_connect('cursor_changed') do |tv|
+          @on_single_click.call(selected)
+        end
+      end
+      
       def multiple_select?
         @options[:multiple_select]
       end

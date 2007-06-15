@@ -35,7 +35,7 @@ module Redcar
       def initialize(hash, grammar)
         super(hash, grammar)
         
-        @match = Oniguruma::ORegexp.new(hash["match"])
+        @match = Oniguruma::ORegexp.new(hash["match"], :options => Oniguruma::OPTION_CAPTURE_GROUP)
       end
       
       def patterns
@@ -57,7 +57,7 @@ module Redcar
       
       def initialize(hash, grammar)
         super(hash, grammar)
-        @begin = Oniguruma::ORegexp.new(hash["begin"])
+        @begin = Oniguruma::ORegexp.new(hash["begin"], :options => Oniguruma::OPTION_CAPTURE_GROUP)
         @end   = hash["end"] || hash["endif"] # FIXME : what is "endif"??
         count = 0
         @patterns = (hash["patterns"]||[]).collect do |this_hash|
@@ -138,7 +138,7 @@ module Redcar
         @comment = @grammar["comment"]
         @scope_name = @grammar["scopeName"]
         @file_types = @grammar["fileTypes"]
-        @first_line_match = Oniguruma::ORegexp.new(@grammar["firstLineMatch"]) if @grammar["firstLineMatch"]
+        @first_line_match = Oniguruma::ORegexp.new(@grammar["firstLineMatch"], :options => Oniguruma::OPTION_CAPTURE_GROUP) if @grammar["firstLineMatch"]
         @folding_start_marker = @grammar["foldingStartMarker"]
         @folding_stop_marker = @grammar["foldingStopMarker"]
         @patterns = (grammar["patterns"]||[]).collect do |hash|

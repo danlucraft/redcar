@@ -258,6 +258,9 @@ module Redcar
       if keymap
         add_to_history(keybinding)
         keymap.execute_key keybinding
+        true
+      else
+        false
       end
     end
     

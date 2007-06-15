@@ -435,7 +435,7 @@ module Redcar
               new_scope.open_start = TextLoc.new(line_num, from)
               new_scope.open_end   = TextLoc.new(line_num, to)
               new_scope.open_matchdata = md
-              new_scope.closing_regexp = Oniguruma::ORegexp.new(build_closing_regexp(pattern, md))
+              new_scope.closing_regexp = Oniguruma::ORegexp.new(build_closing_regexp(pattern, md), :options => Oniguruma::OPTION_CAPTURE_GROUP)
               
               if new_scope.pattern.respond_to? :begin_captures
                 #debug_puts {new_scope.pattern.begin_captures.inspect}
@@ -598,6 +598,7 @@ module Redcar
         same
       end
       
+      
       def parsed_before?(line_num)
         @ending_scopes[line_num]
       end
@@ -609,7 +610,9 @@ module Redcar
           from = md.begin(num)
           to   = md.end(num)
           #debug_puts {"      #{capture} #{from}-#{to}"}
-          Scope.create2(TextLoc.new(line_num, from), TextLoc.new(line_num, to))
+#           ::Redcar::Syntax::Scope.create2(::Redcar::TextLoc.new(line_num, from), ::Redcar::TextLoc.new(line_num, to))
+          ::Redcar::Syntax::Scope.create2(::Redcar::TextLoc.new(line_num, from), ::Redcar::TextLoc.new(line_num, to))
+          
 #           Scope.new(:start => TextLoc.new(line_num, from),
 #                     :end   => TextLoc.new(line_num, to))
         end
@@ -635,6 +638,8 @@ module Redcar
           md.captures[capture_index-1] || ""
         end
       end
+      
+      # $e2c.compile_methods(self, :scope_from_capture, :get_capture)
     end
   end
 end

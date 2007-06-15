@@ -1,3 +1,6 @@
+require "ruby2cext/eval2c" 
+
+$e2c = Ruby2CExtension::Eval2C.new
 
 class Array
   # Finds the first point in the enumerable where
@@ -12,6 +15,7 @@ class Array
     end
   end
   
+#  $e2c.module_eval(self, %{
   def find_flip_index(&block)
     return nil if self.empty?
     if block[self[0]]
@@ -23,33 +27,36 @@ class Array
   end
   
   def find_flip_index1(low=0, high=self.length-1, &block)
-    return nil if high < low
-    mid = (2*high+low)/3
-    midv = block[self[mid]]
-    if mid == 0 and midv
-      return mid
-    elsif mid == 0 and !midv
-      if self[mid+1] and block[self[mid+1]]
-        return mid+1
-      else
+    while true
+      return nil if high < low
+      mid = (2*high+low)/3
+      midv = block[self[mid]]
+      if mid == 0 and midv
+        return mid
+      elsif mid == 0 and !midv
+        if self[mid+1] and block[self[mid+1]]
+          return mid+1
+        else
+          return nil
+        end
+      elsif mid == self.length-1 and midv
+        return midv
+      elsif mid == self.length-1 and !midv
         return nil
+      elsif midv and !block[self[mid-1]]
+        return mid
+      elsif !midv and block[self[mid+1]]
+        return mid+1
+      elsif midv
+        high = mid-1
+      elsif !midv
+        low = mid+1
+      else
+        puts "hmmm.."
       end
-    elsif mid == self.length-1 and midv
-      return midv
-    elsif mid == self.length-1 and !midv
-      return nil
-    elsif midv and !block[self[mid-1]]
-      return mid
-    elsif !midv and block[self[mid+1]]
-      return mid+1
-    elsif midv
-      return self.find_flip_index1(low, mid-1, &block)
-    elsif !midv
-      return self.find_flip_index1(mid+1, high, &block)
-    else
-      puts "hmmm.."
     end
   end
+#})
   
   # Finds all elements e where the :transform of e is :value
   # and assumes that the array is in the form:
@@ -110,5 +117,19 @@ if $0 == __FILE__
       assert_equal nil, [10, 20, 30].find_flip {|v| v >= 100}
       assert_equal nil, [10, 20, 30].find_flip {|v| v <= 1}
     end
+    
+#     def test_long
+#       require 'benchmark'
+#       arr = (1..10_000).to_a
+#       #proc = $e2c.compile_to_proc("|v| v >= 500_000")
+#       Benchmark.bmbm do |x|
+#         x.report("asdf") do
+#           100_000.times do 
+#             arr.find_flip_index {|v| v >= 500_000}
+#             #arr.find_flip_index(&proc)
+#           end
+#         end
+#       end
+#     end
   end
 end

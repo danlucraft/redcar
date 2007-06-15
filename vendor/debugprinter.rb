@@ -19,6 +19,7 @@ module DebugPrinter
   end
   
   def debug_puts(*args, &block)
+    @debugging ||= false
     if @debugging or $debugging[self.class]
       if block_given?
         arg = block.call

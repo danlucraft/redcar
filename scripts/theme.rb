@@ -2,6 +2,20 @@
 
 module Redcar
   class Theme
+    include Preferences
+    
+    preferences "Appearance" do |p|
+      p.add("Theme", :type => :combo, :default => "Mac Classic", 
+            :values => fn { Theme.theme_names },
+            :if_changed => fn { 
+              Redcar.current_window.all_tabs.each do |tab|
+                if tab.respond_to? :set_theme
+                  tab.set_theme(Theme.theme(TextTab.Preferences["Theme"]))
+                end
+              end}
+            )
+    end
+    
     def self.load_themes
       print "loading themes ["
       if File.exist?("cache/themes.dump")
@@ -25,10 +39,7 @@ module Redcar
     end
     
     def self.default_theme
-      unless Redcar["theme/default_theme"]
-        Redcar["theme/default_theme"] = "Mac Classic"
-      end
-      @default_theme ||= theme(Redcar["theme/default_theme"])
+      @default_theme ||= theme(Theme.Preferences["Theme"])
     end
     
     def self.set_theme(th)
@@ -60,37 +71,6 @@ module Redcar
   end
 end
 
-Redcar.menu("_Options") do |menu|
-  menu.command("Select Theme", :select_theme, nil, "") do |pane, tab|
-    list = Redcar::GUI::List.new
-    list.replace(Redcar::Theme.theme_names)
-    
-    dialog = Redcar::Dialog.build :title => "Choose Theme",
-                                  :buttons => [:Apply, :Refresh, :cancel],
-                                  :entry => [{:name => :list, :type => :list, :abs => list}]
-    dialog.on_button(:cancel) { dialog.close }
-    dialog.on_button(:Refresh) do 
-      FileUtils.rm_f("cache/themes.dump")
-      Redcar::Theme.load_themes 
-      list.replace(Redcar::Theme.theme_names)
-    end
-    dialog.on_button(:Apply) do
-      name = list.selected
-      dialog.close
-      puts "applying theme: #{name}"
-      Redcar::Theme.set_theme(name)
-    end
-    list.on_double_click do |row|
-      name = row
-      dialog.close
-      puts "applying theme: #{name}"
-      Redcar::Theme.set_theme(name)
-    end
-    
-    dialog.show :modal => true
-  end
-end
-    
 module Redcar
   class Theme
     include DebugPrinter

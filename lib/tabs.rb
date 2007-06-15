@@ -80,6 +80,14 @@ module Redcar
     def label_angle=(angle)
       @doc.label_angle = angle
     end
+    
+    def selected?
+      nil
+    end
+    
+    def any_undo?
+      nil
+    end
   end
   
 end

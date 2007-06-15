@@ -12,9 +12,9 @@ module Redcar
       
       @notebooks = []
       signal_connect("destroy") { Gtk.main_quit }
-      signal_connect('key-press-event') do |b, a|
-        Redcar.keystrokes.issue_from_gdk_eventkey(a)
-        true
+      signal_connect('key-press-event') do |gtk_widget, gdk_eventkey|
+        continue = Redcar.keystrokes.issue_from_gdk_eventkey(gdk_eventkey)
+        continue
       end
 
       paned = Gtk::HPaned.new

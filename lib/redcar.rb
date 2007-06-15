@@ -4,6 +4,9 @@ $KCODE = "U"
 $REDCAR_ENV ||= {}
 $REDCAR_ENV["test"] = false
 
+require "ruby2cext/eval2c" 
+$e2c = Ruby2CExtension::Eval2C.new
+
 print "loading gems ..."
 require 'gtk2'
 require 'gtksourceview'
@@ -17,7 +20,7 @@ module Oniguruma
       self.source
     end
     def self._load(str)
-      self.new(str)
+      self.new(str, :options => Oniguruma::OPTION_CAPTURE_GROUP)
     end
   end
 end
@@ -29,11 +32,13 @@ require File.dirname(__FILE__) + '/../vendor/null'
 require File.dirname(__FILE__) + '/../vendor/ruby_extensions'
 require File.dirname(__FILE__) + '/../vendor/debugprinter'
 require File.dirname(__FILE__) + '/../vendor/binary_enum'
+require File.dirname(__FILE__) + '/../vendor/keyword_processor'
 require 'vendor/instruments'
 puts "done"
 
 print "loading lib/ ..."
 require 'lib/plist'
+require 'lib/preferences_dialog.rb'
 require File.dirname(__FILE__) + '/application'
 require File.dirname(__FILE__) + '/undoable'
 require File.dirname(__FILE__) + '/command'
@@ -54,12 +59,11 @@ require File.dirname(__FILE__) + '/shelltab'
 require File.dirname(__FILE__) + '/syntax'
 require File.dirname(__FILE__) + '/colourer'
 require File.dirname(__FILE__) + '/../vendor/mdi5'
-require File.dirname(__FILE__) + '/../vendor/keyword_processor'
 require File.dirname(__FILE__) + '/panes'
 require File.dirname(__FILE__) + '/redcar_window'
 require File.dirname(__FILE__) + '/list_abstraction'
 require 'lib/menu_edit_dialog.rb'
-require 'lib/preferences_dialog.rb'
+require 'lib/plugin.rb'
 puts "done"
 
 module Redcar

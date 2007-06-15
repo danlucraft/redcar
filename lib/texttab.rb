@@ -117,23 +117,65 @@ module Redcar
     include Redcar::Undoable
     include Keymap
     include DebugPrinter
+    include Redcar::Preferences
+    
+    preferences "Appearance" do |p|
+      p.add_with_widget("Font", 
+         :default => "Monospace 12",
+         :widget => fn { TextTab.font_chooser_button },
+         :if_changed => fn {
+           Redcar.current_window.all_tabs.each do |tab|
+             if tab.respond_to? :set_font
+               tab.set_font(TextTab.Preferences["Font"])
+             end
+           end
+         })
+    end
+    
+    def self.font_chooser_button
+      gtk_image = Gtk::Image.new(Gtk::Stock::SELECT_FONT, 
+                                 Gtk::IconSize::MENU)
+      gtk_hbox = Gtk::HBox.new
+      gtk_label = Gtk::Label.new(TextTab.Preferences["Font"])
+      gtk_hbox.pack_start(gtk_image, false)
+      gtk_hbox.pack_start(gtk_label)
+      widget = Gtk::Button.new
+      widget.add(gtk_hbox)
+      class << widget
+        attr_accessor :preference_value
+      end
+      widget.preference_value = TextTab.Preferences["Font"]
+      widget.signal_connect('clicked') do
+        dialog = Gtk::FontSelectionDialog.new("Select Application Font")
+        dialog.font_name = widget.preference_value
+        dialog.preview_text = "Redcar is for Ruby"
+        if dialog.run == Gtk::Dialog::RESPONSE_OK
+          puts font = dialog.font_name
+          font = dialog.font_name
+          widget.preference_value = font
+          gtk_label.text = font
+        end
+        dialog.destroy
+      end
+      widget
+    end
     
     keymap "ctrl a",     :cursor=, :line_start
     keymap "ctrl e",     :cursor=, :line_end
     keymap "ctrl-alt a", :cursor=, :tab_start
     keymap "ctrl-alt e", :cursor=, :tab_end
-    keymap "Left",   :left
-    keymap "Right",  :right
-    keymap "Up",     :up
-    keymap "Down",   :down
-    keymap "shift Left",  :shift_left
-    keymap "shift Right", :shift_right
-    keymap "shift Up",    :shift_up
-    keymap "shift Down",  :shift_down
-    keymap "Page_Down",   :page_down
-    keymap "Page_Up",     :page_up
-    keymap "Home",  :cursor=, :line_start
-    keymap "End",   :cursor=, :line_end
+#     keymap "Left",   :left
+#     keymap "Right",  :right
+#     keymap "Up",     :up
+#     keymap "Down",   :down
+#     keymap "shift Left",  :shift_left
+#     keymap "shift Right", :shift_right
+#     keymap "shift Up",    :shift_up
+#     keymap "shift Down",  :shift_down
+    #     keymap "Page_Down",   :page_down
+#     keymap "Page_Up",     :page_up
+#     keymap "Home",  :cursor=, :line_start
+#     keymap "End",   :cursor=, :line_end
     keymap "ctrl z",     :undo
     keymap "ctrl x",     :cut
     keymap "ctrl c",     :copy
@@ -142,12 +184,13 @@ module Redcar
     keymap "ctrl t",     :transpose
     keymap "Delete",     :del
     keymap "BackSpace",  :backspace
+
     keymap "Space",      :insert_at_cursor,  " "
     keymap "Tab",        :insert_at_cursor,  " "*(Redcar.tab_length||=2)
     keymap "Return",      :return
-    keymap /^(.)$/,       :insert_at_cursor, '\1'
-    keymap /^shift (.)$/, :insert_at_cursor, '\1'
-    keymap /^caps (.)$/,  :insert_at_cursor, '\1'
+#     keymap /^(.)$/,       :insert_at_cursor, '\1'
+#     keymap /^shift (.)$/, :insert_at_cursor, '\1'
+#     keymap /^caps (.)$/,  :insert_at_cursor, '\1'
     keymap "ctrl d",     :print_command_history
     
     attr_accessor :filename, :buffer
@@ -590,7 +633,7 @@ module Redcar
       @buffer = @textview.buffer
       new_buffer
 #       @textview = Redcar::GUI::Text.new(buffer, textview)
-      self.set_font(Redcar["texttab/font"])
+      self.set_font(TextTab.Preferences["Font"])
       super(pane, @textview)
       Redcar.tab_length ||= 2
       connect_signals
