@@ -24,23 +24,34 @@ module Redcar
               "Character", "Scope", "Nothing", 
               "Selected Text"]
     OUTPUTS = ["Discard", "Replace Selected Text", 
-               "Replace Document", "Insert as Text", 
-               "Insert as Snippet", "Show as HTML",
-               "Show as Tool Tip", "Create New Document"]
+               "Replace Document", "Insert As Text", 
+               "Insert As Snippet", "Show As HTML",
+               "Show As Tool Tip", "Create New Document"]
     ACTIVATIONS = ["Key Combination"]
     class << self
-      attr_accessor :menus
+      attr_accessor :menus, :menu_defs, :commands
       def menus
-        @menus ||= load_menus
+        load_menus
       end
       
       def load_menus
         @menus = YAML.load(IO.read("environment/menus.yaml"))
+        @menu_defs = YAML.load(IO.read("environment/menu_definitions.yaml"))
+        @commands = YAML.load(IO.read("environment/commands.yaml"))
+        return [@menus, @menu_defs, @commands]
       end
       
       def save_menus
         File.open("environment/menus.yaml", "w") do |f| 
+          p :before_save
+          p @menus
           f.puts @menus.to_yaml
+        end
+        File.open("environment/menu_definitions.yaml", "w") do |f| 
+          f.puts @menu_defs.to_yaml
+        end
+        File.open("environment/commands.yaml", "w") do |f| 
+          f.puts @commands.to_yaml
         end
       end
     end      

@@ -5,15 +5,17 @@ module Redcar
     include Preferences
     
     preferences "Appearance" do |p|
-      p.add("Theme", :type => :combo, :default => "Mac Classic", 
+      p.add("Tab Theme", :type => :combo, :default => "Mac Classic", 
             :values => fn { Theme.theme_names },
             :if_changed => fn { 
               Redcar.current_window.all_tabs.each do |tab|
                 if tab.respond_to? :set_theme
-                  tab.set_theme(Theme.theme(TextTab.Preferences["Theme"]))
+                  tab.set_theme(Theme.theme(TextTab.Preferences["Tab Theme"]))
                 end
               end}
             )
+      p.add("Entry Theme", :type => :combo, :default => "Mac Classic", 
+            :values => fn { Theme.theme_names })
     end
     
     def self.load_themes
@@ -39,7 +41,7 @@ module Redcar
     end
     
     def self.default_theme
-      @default_theme ||= theme(Theme.Preferences["Theme"])
+      @default_theme ||= theme(Theme.Preferences["Tab Theme"])
     end
     
     def self.set_theme(th)
@@ -144,7 +146,7 @@ module Redcar
         subselector = subselector.strip
         
         positive_subselector, negative_subselector = 
-          *subselector.split("-")
+          *subselector.split(" - ")
         positive_subselector_components = 
           positive_subselector.split(' ')
         if negative_subselector

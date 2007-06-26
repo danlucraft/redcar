@@ -108,12 +108,12 @@ module Redcar
     attr_accessor :scope_tree, :parser
     
     def reparse_tab
-      colour
-      debug_puts @scope_tree.pretty
+      @textview.colour
+      debug_puts @textview.scope_tree.pretty
     end
     
     def print_scope_tree
-      puts @scope_tree.pretty
+      puts @textview.scope_tree.pretty
     end
     
     def scope_tooltip
@@ -147,24 +147,23 @@ module Redcar
     end
     
     def scope_at_cursor
-      scope = @scope_tree.scope_at(TextLoc.new(cursor_line, cursor_line_offset))
+      scope = @textview.scope_tree.scope_at(TextLoc.new(cursor_line, cursor_line_offset))
     end
+  end
+  
+  class SyntaxSourceView < Gtk::SourceView
+    include DebugPrinter
     
-    alias :initialize_without_syntax :initialize
-    def initialize(pane)
-      initialize_without_syntax(pane)
-      
+#    attr_accessor :buffer
+    attr_reader :scope_tree, :parser
+    
+    def initialize
+      super
       set_theme(Theme.default_theme)
-      if ext = File.extname(@filename||"")
-        debug_puts "extension: #{ext}"
-        set_grammar(Syntax.grammar(:extension => ext))
-      end
     end
     
-    alias :connect_signals_without_syntax :connect_signals
     def connect_signals
-      connect_signals_without_syntax
-      @buffer.signal_connect("insert_text") do |widget, iter, text, length|
+      self.buffer.signal_connect("insert_text") do |widget, iter, text, length|
 #         @buffer.signal_emit("inserted_text", iter, text, length)
         Redcar.event :tab_modified, self unless @was_modified
         Redcar.event :tab_changed
@@ -172,7 +171,7 @@ module Redcar
         @was_modified = true
         false
       end
-      @buffer.signal_connect("delete_range") do |widget, iter1, iter2|
+      self.buffer.signal_connect("delete_range") do |widget, iter1, iter2|
         Redcar.event :tab_modified, self unless @was_modified
         Redcar.event :tab_changed
         store_deletion(iter1, iter2)
@@ -181,6 +180,17 @@ module Redcar
       end
       @no_colouring = false
       @operations = []
+    end
+    
+    def new_buffer
+      text = self.buffer.text
+      newbuffer = Gtk::SourceBuffer.new
+      self.buffer = newbuffer
+      newbuffer.check_brackets = false
+      newbuffer.highlight = true
+      newbuffer.max_undo_levels = 0
+      newbuffer.text = text
+      connect_signals
     end
     
     def set_theme(th)
@@ -202,13 +212,14 @@ module Redcar
     end
     
     def set_grammar(gr)
-      if gr
+      if gr and @grammar != gr
         @grammar = gr
         debug_puts "setting grammar: #{@grammar.name}"
         @scope_tree = Redcar::Syntax::Scope.new(:pattern => gr,
                                                 :grammar => gr,
                                                 :start => TextLoc.new(0, 0))
         @parser = Redcar::Syntax::Parser.new(@scope_tree, [gr], "", @colr)
+        @operations.clear
         colour
       else
         @grammar = nil
@@ -223,41 +234,11 @@ module Redcar
     
     def apply_theme(theme)
       background_colour = Theme.parse_colour(theme.global_settings['background'])
-      @textview.modify_base(Gtk::STATE_NORMAL, background_colour)
+      modify_base(Gtk::STATE_NORMAL, background_colour)
       foreground_colour = Theme.parse_colour(theme.global_settings['foreground'])
-      @textview.modify_text(Gtk::STATE_NORMAL, foreground_colour)
+      modify_text(Gtk::STATE_NORMAL, foreground_colour)
       selection_colour  = Theme.parse_colour(theme.global_settings['selection'])
-      @textview.modify_base(Gtk::STATE_SELECTED, selection_colour)
-    end
-    
-    alias :replace_without_syntax :replace
-    def replace(text)
-      no_colouring do
-        replace_without_syntax(text)
-      end
-      colour
-    end
-    
-    alias :load_without_syntax :load
-    def load(filename=nil)
-      no_colouring do
-        load_without_syntax(filename)
-      end
-      if @filename
-        ext = File.extname(@filename)
-        set_grammar(Syntax.grammar(:extension => ext))
-        if syntax?
-          debug_puts "setting grammar #{@grammar.name} from file extension: #{ext}"
-        end
-        colour
-      end
-      if !syntax?
-        set_grammar(Syntax.grammar(:first_line => self.get_line(0)))
-        if syntax?
-          debug_puts "setting grammar #{@grammar.name} from first line"
-        end
-        colour
-      end
+      modify_base(Gtk::STATE_SELECTED, selection_colour)
     end
     
     def no_colouring
@@ -268,13 +249,16 @@ module Redcar
     
     def store_insertion(iter, text, length)
       return if @no_colouring
-      iter2 = @buffer.get_iter_at_offset(iter.offset+length)
+      iter2 = self.buffer.get_iter_at_offset(iter.offset+length)
+      @count ||= 1
       insertion = {}
       insertion[:type] = :insertion
       insertion[:from] = TextLoc.new(iter.line,  iter.line_offset)
       insertion[:to]   = TextLoc.new(iter2.line, iter2.line_offset)
       insertion[:text] = text
       insertion[:lines] = text.scan("\n").length+1
+      insertion[:count] = @count
+      @count += 1
       @operations << insertion
       debug_puts "insertion of #{insertion[:lines]} lines from #{insertion[:from]} to #{insertion[:to]}"
       unless $REDCAR_ENV["nonlazy"]
@@ -288,12 +272,15 @@ module Redcar
     
     def store_deletion(iter1, iter2)
       return if @no_colouring
+      @count ||= 1
       deletion = {}
       deletion[:type] = :deletion
       deletion[:from] = TextLoc.new(iter1.line, iter1.line_offset)
       deletion[:to]   = TextLoc.new(iter2.line, iter2.line_offset)
       deletion[:lines] = iter2.line-iter1.line+1
       deletion[:length] = iter2.offset-iter1.offset
+      deletion[:count] = @count
+      @count += 1
       
       @operations << deletion
       debug_puts "deletion over #{deletion[:lines]} lines from #{deletion[:from]} to #{deletion[:to]}"
@@ -353,8 +340,9 @@ module Redcar
       if syntax?
         startt = Time.now
         @parser.clear_after(0)
-        @buffer.remove_all_tags(iter(start_mark), iter(end_mark))
-        @parser.add_lines(self.contents, :lazy => false)
+        start_iter, end_iter = self.buffer.bounds
+        self.buffer.remove_all_tags(start_iter, end_iter)
+        @parser.add_lines(self.buffer.text, :lazy => true)
         #      debug_puts @scope_tree.pretty
         endt = Time.now
         diff = endt-startt

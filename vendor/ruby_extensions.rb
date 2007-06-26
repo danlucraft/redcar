@@ -1,7 +1,13 @@
 
 class Symbol
   def to_title_string
-    self.to_s.gsub(/_|-/, " ").split(" ").map{|w| w.capitalize}.join(" ")
+    self.to_s.gsub("_", " ").split(" ").map{|w| w.capitalize}.join(" ")
+  end
+end
+
+class String
+  def to_title_symbol
+    self.downcase.gsub(/ |-/, "_").intern
   end
 end
 

@@ -3,6 +3,8 @@
 require File.dirname(__FILE__) + '/lib/redcar'
 begin
   Redcar.startup(:output => :silent)
+  #Redcar::Syntax::Parser.debug = true
+  #Redcar::SyntaxSourceView.debug = true
   #Redcar::Colourer.debug = true
   #Redcar::Theme.debug = true
   Gtk.main

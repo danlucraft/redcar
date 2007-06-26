@@ -120,23 +120,26 @@ module Redcar
     include Redcar::Preferences
     
     preferences "Appearance" do |p|
-      p.add_with_widget("Font", 
+      p.add_with_widget("Tab Font", 
          :default => "Monospace 12",
-         :widget => fn { TextTab.font_chooser_button },
+         :widget => fn { TextTab.font_chooser_button("Tab Font") },
          :if_changed => fn {
            Redcar.current_window.all_tabs.each do |tab|
              if tab.respond_to? :set_font
-               tab.set_font(TextTab.Preferences["Font"])
+               tab.set_font(TextTab.Preferences["Tab Font"])
              end
            end
          })
+      p.add_with_widget("Entry Font", 
+         :default => "Monospace 12",
+         :widget => fn { TextTab.font_chooser_button("Entry Font") })
     end
     
-    def self.font_chooser_button
+    def self.font_chooser_button(name)
       gtk_image = Gtk::Image.new(Gtk::Stock::SELECT_FONT, 
                                  Gtk::IconSize::MENU)
       gtk_hbox = Gtk::HBox.new
-      gtk_label = Gtk::Label.new(TextTab.Preferences["Font"])
+      gtk_label = Gtk::Label.new(TextTab.Preferences[name])
       gtk_hbox.pack_start(gtk_image, false)
       gtk_hbox.pack_start(gtk_label)
       widget = Gtk::Button.new
@@ -144,7 +147,7 @@ module Redcar
       class << widget
         attr_accessor :preference_value
       end
-      widget.preference_value = TextTab.Preferences["Font"]
+      widget.preference_value = TextTab.Preferences[name]
       widget.signal_connect('clicked') do
         dialog = Gtk::FontSelectionDialog.new("Select Application Font")
         dialog.font_name = widget.preference_value
@@ -619,6 +622,8 @@ module Redcar
     
     # --------
     
+    attr_accessor :textview
+    
     def initialize(pane)
       Gtk::RC.parse_string(<<-EOR)
   style "green-cursor" {
@@ -627,29 +632,18 @@ module Redcar
   class "GtkWidget" style "green-cursor"
   EOR
 #       @tag_table = Gtk::SourceTagTable.new
-      @textview = Gtk::SourceView.new()# @tag_table)
+      @textview = SyntaxSourceView.new()# @tag_table)01942715078
       @textview.wrap_mode = Gtk::TextTag::WRAP_WORD
       @textview.show_line_numbers = 1
+      @textview.new_buffer
       @buffer = @textview.buffer
-      new_buffer
 #       @textview = Redcar::GUI::Text.new(buffer, textview)
-      self.set_font(TextTab.Preferences["Font"])
+      self.set_font(TextTab.Preferences["Tab Font"])
       super(pane, @textview)
       Redcar.tab_length ||= 2
       connect_signals
     end
   
-  def new_buffer
-    text = @buffer.text
-    @buffer = Gtk::SourceBuffer.new
-    @textview.buffer = @buffer
-    @buffer.check_brackets = false
-    @buffer.highlight = true
-    @buffer.max_undo_levels = 0
-    @buffer.text = text
-    connect_signals
-  end
-    
     
     def focus
       super
@@ -708,6 +702,21 @@ module Redcar
           self.replace(Redcar::RedcarFile.load(@filename))
         else
           p :no_filename_to_load_into_tab
+        end
+      end
+      if @filename
+        ext = File.extname(@filename)
+        @textview.set_grammar(gr = Syntax.grammar(:extension => ext))
+        if gr
+          debug_puts "setting grammar #{gr.name} from file extension: #{ext}"
+          @textview.colour
+        end
+      end
+      if 
+        @textview.set_grammar(gr = Syntax.grammar(:first_line => self.get_line(0)))
+        if gr
+          debug_puts "setting grammar #{gr.name} from first line"
+          @textview.colour
         end
       end
     end

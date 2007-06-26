@@ -5,54 +5,56 @@ module Redcar
     
     attr_accessor :theme
     
-    def initialize(tab, theme)
-      @tab = tab
+    def initialize(sourceview, theme)
+      @sourceview = sourceview
+      @buffer = @sourceview.buffer
       @theme = theme
       raise ArgumentError, "colourer needs a Redcar::Theme" unless theme.is_a? Theme
     end
     
-    def get_start_end_iters(scope, buffer, inner)
+    def get_start_end_iters(scope,inner)
       if inner
-        get_start_end_iters_inner(scope, buffer)
+        get_start_end_iters_inner(scope)
       else
-        get_start_end_iters_outer(scope, buffer)
+        get_start_end_iters_outer(scope)
       end
     end
     
-    def get_start_end_iters_inner(scope, buffer)
-      sl = buffer.get_iter_at_line_offset(scope.start.line, 0)
-      start_iter = buffer.get_iter_at_offset(sl.offset+minify(scope.open_end.offset))
+    def get_start_end_iters_inner(scope)
+      sl = @buffer.get_iter_at_line_offset(scope.start.line, 0)
+      start_iter = @buffer.get_iter_at_offset(sl.offset+minify(scope.open_end.offset))
       if scope.end
-        el = buffer.get_iter_at_line_offset(scope.close_start.line, 0)
-        end_iter = buffer.get_iter_at_offset(el.offset+minify(scope.close_start.offset))
+        el = @buffer.get_iter_at_line_offset(scope.close_start.line, 0)
+        end_iter = @buffer.get_iter_at_offset(el.offset+minify(scope.close_start.offset))
       else
-        el = buffer.get_iter_at_line_offset(scope.open_end.line+1, 0)
+        el = @buffer.get_iter_at_line_offset(scope.open_end.line+1, 0)
         end_iter = el
         if el.offset == sl.offset
-          end_iter = buffer.get_iter_at_offset(buffer.char_count)
+          end_iter = @buffer.get_iter_at_offset(@buffer.char_count)
         end
       end
       return start_iter, end_iter
     end
     
-    def get_start_end_iters_outer(scope, buffer)
-      sl = buffer.get_iter_at_line_offset(scope.start.line, 0)
-      start_iter = buffer.get_iter_at_offset(sl.offset+minify(scope.start.offset))
+    def get_start_end_iters_outer(scope)
+      sl = @buffer.get_iter_at_line_offset(scope.start.line, 0)
+      start_iter = @buffer.get_iter_at_offset(sl.offset+minify(scope.start.offset))
       if scope.end
-        el = buffer.get_iter_at_line_offset(scope.end.line, 0)
-        end_iter   = buffer.get_iter_at_offset(el.offset+minify(scope.end.offset))
+        el = @buffer.get_iter_at_line_offset(scope.end.line, 0)
+        end_iter   = @buffer.get_iter_at_offset(el.offset+minify(scope.end.offset))
       else
-        el = buffer.get_iter_at_line_offset(scope.start.line+1, 0)
+        el = @buffer.get_iter_at_line_offset(scope.start.line+1, 0)
         end_iter = el
         if el.offset == sl.offset
-          end_iter = buffer.get_iter_at_offset(buffer.char_count)
+          end_iter = @buffer.get_iter_at_offset(@buffer.char_count)
         end
       end
       return start_iter, end_iter
     end
     
-    def colour_scope(scope, buffer, inner=true)
-      start_iter, end_iter = get_start_end_iters(scope, buffer, inner)
+    def colour_scope(scope, inner=true)
+      @buffer = @sourceview.buffer
+      start_iter, end_iter = get_start_end_iters(scope, inner)
       all_settings = @theme.settings_for_scope(scope, inner)
       debug_puts "  "*scope.priority+"<"+scope.hierarchy_names(inner).join("\n  "+"  "*scope.priority)+">"
       all_settings.each {|s| debug_puts "  "*(scope.priority)+ s.inspect}
@@ -66,8 +68,8 @@ module Redcar
         tag_reference = all_settings[0]["scope"]+" ("+scope.priority.to_s+")"
         settings_hash = Theme.textmate_settings_to_pango_options(settings)
       end
-      unless tag = buffer.tag_table.lookup(tag_reference)
-        tag = buffer.create_tag(tag_reference, settings_hash)
+      unless tag = @buffer.tag_table.lookup(tag_reference)
+        tag = @buffer.create_tag(tag_reference, settings_hash)
         tag.priority = scope.priority-1
       end
       debug_puts {"  "*scope.priority + 
@@ -76,20 +78,21 @@ module Redcar
       if tag
         debug_puts {"  "*scope.priority + "#{start_iter.offset}-#{end_iter.offset}"}
         debug_puts {"  "*scope.priority + tag.inspect}
-        buffer.apply_tag(tag, start_iter, end_iter)
+        @buffer.apply_tag(tag, start_iter, end_iter)
       end
     end
     
     def colour_line_with_scopes(line_num, scopes)
-      buffer = @tab.buffer
-      buffer.remove_all_tags(@tab.line_start(line_num),
-                             @tab.line_end(line_num))
+      @buffer = @sourceview.buffer
+      start_iter = @buffer.get_iter_at_line_offset(line_num, 0)
+      end_iter   = @buffer.get_iter_at_line_offset(line_num+1, 0) # FIXME!
+      @buffer.remove_all_tags(start_iter, end_iter)
       scopes.each do |scope|
         unless scope.start == scope.end or 
             (!scope.name and (scope.pattern and !scope.pattern.content_name))# scope.children.empty?)
-          colour_scope(scope, buffer, false)
+          colour_scope(scope, false)
           if scope.pattern and scope.pattern.content_name
-            colour_scope(scope, buffer, true)
+            colour_scope(scope, true)
           end
         end
         

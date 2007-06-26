@@ -1,0 +1,29 @@
+--- 
+de849830-ff33-0129-2069-000ae4ee635c: 
+  :type: :inline
+  :fallback_input: :none
+  :output: :discard
+  :activated_by: :key_combination
+  :name: Edit Menus
+  :scope_selector: ""
+  :command: |
+    Redcar::MenuEditDialog.new
+
+  :enabled: true
+  :tooltip: ""
+  :icon: preferences
+  :input: :none
+de623300-ff33-0129-2069-000ae4ee635c: 
+  :type: :shell
+  :fallback_input: :document
+  :output: :replace_selected_text
+  :activated_by: :key_combination
+  :name: Insert Tag
+  :scope_selector: text.html.basic
+  :command: |
+    p :insert_tag
+
+  :enabled: false
+  :tooltip: ""
+  :icon: ""
+  :input: :selected_text

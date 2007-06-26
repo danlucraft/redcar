@@ -8,22 +8,30 @@ module Redcar
                             nil, 
                             GladeXML::FILE) {|handler| method(handler)}
       @treeview = @glade["treeview_menu"]
+     # @treeview.reorderable = true
       @treestore = Gtk::TreeStore.new(String, String)
       @treeview.model = @treestore
-      @menu_path_to_menu_hash = {}
+
+      @menu_ids = []
+      @item_ids = []
       load_menus
+      
       renderer = Gtk::CellRendererText.new
-      renderer.text = "Boooo!"
       col = Gtk::TreeViewColumn.new("Last Name", renderer, :text => 0)
       @treeview.append_column(col)
+      
       hide_edit_command
       hide_edit_menu
       @selection = @treeview.selection
       @selection.set_select_function do |_, _, path, is_sel|
+        record_changes
         iter = @treestore.get_iter(path)
         puts "selected: #{@treestore.get_value(iter, 1).inspect}"
         selected_item(@treestore.get_value(iter, 1))
         true
+      end
+      @treestore.signal_connect('row-deleted') do |_, _, _, _|
+        reorder_menus
       end
       @glade["radio_shell"].signal_connect('clicked') do
         switch_to_shell
@@ -60,17 +68,130 @@ module Redcar
         @combo_activated_by.append_text activation
       end
       hbox_combo_activated_by.show_all
+      
+      sw_command = @glade["sw_command"]
+      @sourceview = Redcar::SyntaxSourceView.new
+      sw_command.add(@sourceview)
+      @sourceview.modify_font(Pango::FontDescription.new(TextTab.Preferences["Entry Font"]))
+      @sourceview.set_theme(Theme.theme(TextTab.Preferences["Entry Theme"]))
+      
+      connect_drag_drop_callbacks
     end
     
-    def selected_item(menu_path)
-      menu_hash = @menu_path_to_menu_hash[menu_path]
-      puts "selected: #{menu_hash.inspect}"
-      case menu_hash[:object] 
-      when :menu
-        show_menu(menu_hash)
-      when :menuitem
-        show_menuitem(menu_hash)
+    def load_menus
+      @menus, @menu_defs, @commands = Redcar::Menu.menus
+      load_menus1(@menus, nil)
+    end
+    
+    def load_menus1(menus, parent_iter)
+      menus.each do |menu|
+        iter = @treestore.append(parent_iter)
+        case menu
+        when Hash # it's a menu
+          uuid = menu.keys[0]
+          @menu_ids << uuid
+          items = menu.values[0]
+          p uuid
+          p @menu_defs
+          iter[0] = @menu_defs[uuid][:name]
+          iter[1] = uuid
+          load_menus1(items, iter)
+        when String # it's a menu item
+          uuid = menu
+          @item_ids << uuid
+          iter[0] = @commands[uuid][:name]
+          iter[1] = uuid
+        end
       end
+    end
+
+    def reorder_menus
+      update_menu_tree
+      puts @menus.to_yaml
+    end
+    
+    def on_cancel
+      @glade["MenuEditDialog"].destroy
+    end
+    
+    def on_ok
+      on_apply
+      on_cancel
+    end
+    
+    def update_menu_tree
+      @menus = []
+      top_iter = @treestore.iter_first
+      update_menu_tree1(@menus, top_iter)
+      while top_iter.next!
+        update_menu_tree1(@menus, top_iter)
+      end
+    end
+    
+    def update_menu_tree1(arr, iter)
+      uuid = iter[1]
+      if @menu_ids.include? uuid
+        submenu = []
+        arr << {uuid => submenu}
+        iter.n_children.times do |i|
+          update_menu_tree1(submenu, iter.nth_child(i))
+        end
+      elsif @item_ids.include? uuid
+        arr << uuid
+      end
+    end
+    
+    def on_apply
+      p :Applying_Changes
+      p @menus
+      p @menu_defs
+      p @commands
+      record_changes
+      update_menu_tree
+      Menu.menus = @menus
+      Menu.menu_defs = @menu_defs
+      Menu.commands = @commands
+      Menu.save_menus
+    end
+    
+    def record_changes
+      if uuid = @current_menu
+        if @menu_ids.include? uuid
+          p :Saving_menu
+          p uuid
+          menu = @menu_defs[uuid]
+          menu[:name] = @glade["entry_menu_name"].text
+          menu[:enabled] = @glade["check_menu_enabled"].active?
+        elsif @item_ids.include? uuid
+          p :Saving_item
+          p uuid
+          menuitem = @commands[uuid]
+          menuitem[:name] = @glade["entry_name"].text
+          menuitem[:enabled] = @glade["check_enabled"].active?
+          menuitem[:tooltip] = @glade["entry_tooltip"].text
+          menuitem[:command] = @sourceview.buffer.text
+          if @glade["radio_inline"].active?
+            menuitem[:type] = :inline
+          else
+            menuitem[:type] = :shell
+          end
+          menuitem[:input] = @combo_input1.active_text.to_title_symbol
+          menuitem[:fallback_input] = @combo_input2.active_text.to_title_symbol
+          menuitem[:output] = @combo_output.active_text.to_title_symbol
+          menuitem[:activated_by] = @combo_activated_by.active_text.to_title_symbol
+          menuitem[:scope_selector] = @glade["entry_scope_selector"].text
+          menuitem[:icon] = @glade["entry_icon"].text
+        end
+      end
+    end
+    
+    def selected_item(uuid)
+      if @menu_ids.include? uuid
+        show_menu(@menu_defs[uuid])
+      elsif @item_ids.include? uuid
+        show_menuitem(@commands[uuid])
+      end
+      @current_menu = uuid
     end
     
     def show_menuitem(menuitem)
@@ -79,14 +200,18 @@ module Redcar
       show_edit_command
       @glade["entry_name"].text = menuitem[:name]||""
       @glade["entry_tooltip"].text = menuitem[:tooltip]||""
-      @glade["check_enabled"].active = menuitem[:enabled]||""
-      @glade["textview_command"].buffer.text = menuitem[:command]||""
+      @glade["check_enabled"].active = menuitem[:enabled]||false
+      command = menuitem[:command]||""
+      @sourceview.buffer.text = command
+      @sourceview.show_all
       case menuitem[:type]
       when :inline
         @glade["radio_inline"].active = true
+        @sourceview.set_grammar(Syntax.grammar(:name => 'Ruby'))
         switch_to_inline
       when :shell
         @glade["radio_shell"].active = true
+        @sourceview.set_grammar(Syntax.grammar(:first_line => command.split("\n")[0]))
         switch_to_shell
       end
       input = menuitem[:input]||:none
@@ -145,22 +270,167 @@ module Redcar
       @glade["label_intro"].hide
     end
     
-    def load_menus
-      @menus = Redcar::Menu.menus
-      load_menus1(@menus, nil, "")
-    end
-    
-    def load_menus1(menus, parent_iter, menu_path)
-      menus.each do |menu|
-        iter = @treestore.append(parent_iter)
-        iter[0] = menu[:name]
-        new_menu_path = menu_path + menu[:name]
-        iter[1] = new_menu_path
-        @menu_path_to_menu_hash[new_menu_path] = menu
-        if menu[:object] == :menu
-          load_menus1(menu[:items], iter, new_menu_path)
+    def connect_drag_drop_callbacks
+      tv = @treeview
+      ts = @treestore
+      tv.enable_model_drag_source(Gdk::Window::BUTTON1_MASK,
+                                  [['text/plain', 0, 0]],
+                                  Gdk::DragContext::ACTION_MOVE)
+
+      tv.enable_model_drag_dest([['text/plain', 0, 0]],
+                                Gdk::DragContext::ACTION_MOVE)
+
+      # define the callbacks
+      tv.signal_connect "drag-data-get" do |_, context, data, info, time|
+        tree_selection = tv.selection
+        iter = tree_selection.selected
+        text = ts.get_value(iter, 1) #uuid
+        data.text = text
+        #data.set(data.target, 8, text)
+      end
+
+      tv.signal_connect "drag-data-received" do |_, context, x, y, data, info, time|
+        path, position = tv.get_dest_row(x, y)
+        from_uuid = data.text
+        if path
+          to_iter = ts.get_iter(path)
+        end
+        success = false
+        if @menu_ids.include? from_uuid
+          if to_iter
+            if @item_ids.include? to_iter[1]
+              st = drop_menu_on_item(tv, position, data.text, to_iter)
+              Gtk::Drag.finish(context, st, st, time)
+            else # onto menu
+              st = drop_menu_on_menu(tv, position, data.text, to_iter)
+              Gtk::Drag.finish(context, st, st, time)
+            end
+          else
+            drop_menu_on_end(tv, data.text)
+            Gtk::Drag.finish(context, true, true, time)
+          end
+        elsif @item_ids.include? from_uuid
+          if to_iter
+            if @item_ids.include? to_iter[1]
+              drop_item_on_item(tv, position, data.text, to_iter)
+              Gtk::Drag.finish(context, true, true, time)
+            else # onto menu
+              drop_item_on_menu(tv, data.text, to_iter)
+              Gtk::Drag.finish(context, true, true, time)
+            end
+          else
+            Gtk::Drag.finish(context, false, false, time)
+          end
         end
       end
+
+      tv.signal_connect "drag-data-delete" do |_, context|
+        tree_selection = tv.selection
+        iter = tree_selection.selected
+        ts.remove(iter)
+      end
+    end
+    
+    def drop_item_on_item(tv, position, uuid, to_iter)
+      ts = tv.model
+      if position == Gtk::TreeView::DROP_BEFORE or 
+          position == Gtk::TreeView::DROP_INTO_OR_BEFORE
+        new_iter = ts.insert_before(to_iter.parent, to_iter)
+      elsif position == Gtk::TreeView::DROP_INTO_OR_AFTER or
+          position == Gtk::TreeView::DROP_AFTER
+        new_iter = ts.insert_after(to_iter.parent, to_iter)
+      end
+      new_iter[0] = @commands[uuid][:name]
+      new_iter[1] = uuid
+    end
+
+    def drop_item_on_menu(tv, uuid, to_iter)
+      ts = tv.model
+      new_iter = ts.append(to_iter)
+      new_iter[0] = @commands[uuid][:name]
+      new_iter[1] = uuid
+    end
+    
+    def drop_menu_on_end(tv, uuid)
+      ts = tv.model
+      new_iter = ts.append(nil)
+      new_iter[0] = @menu_defs[uuid][:name]
+      new_iter[1] = uuid
+      from_iter = tv.selection.selected
+      copy_children(ts, from_iter, new_iter)
+    end
+    
+    def parent_list(to_iter)
+      if to_iter.parent
+        [to_iter[1]] + parent_list(to_iter.parent)
+      else
+        [to_iter[1]]
+      end
+    end
+
+    def drop_menu_on_menu(tv, position, uuid, to_iter)
+      ancestors = parent_list(to_iter)
+      if ancestors.include? uuid
+        false
+      else
+        ts = tv.model
+        if position == Gtk::TreeView::DROP_BEFORE
+          new_iter = ts.insert_before(to_iter.parent, to_iter)
+        elsif position == Gtk::TreeView::DROP_INTO_OR_BEFORE or
+            position == Gtk::TreeView::DROP_INTO_OR_AFTER
+          new_iter = ts.append(to_iter)
+        else
+          new_iter = ts.insert_after(to_iter.parent, to_iter)
+        end
+        new_iter[0] = @menu_defs[uuid]
+        new_iter[1] = uuid
+        from_iter = tv.selection.selected
+        copy_children(ts, from_iter, new_iter)
+        true
+      end
+    end
+
+    def drop_menu_on_item(tv, position, uuid, to_iter)
+      ancestors = parent_list(to_iter)
+      if ancestors.include? uuid
+        false
+      else
+        ts = tv.model
+        if position == Gtk::TreeView::DROP_BEFORE or 
+            position == Gtk::TreeView::DROP_INTO_OR_BEFORE
+          new_iter = ts.insert_before(to_iter.parent, to_iter)
+        elsif position == Gtk::TreeView::DROP_INTO_OR_AFTER or
+            position == Gtk::TreeView::DROP_AFTER
+          new_iter = ts.insert_after(to_iter.parent, to_iter)
+        end
+        new_iter[0] = @menu_defs[uuid]
+        new_iter[1] = uuid
+        from_iter = tv.selection.selected
+        copy_children(ts, from_iter, new_iter)
+        true
+      end
+    end
+
+
+    def copy_children(ts, from_iter, to_iter)
+      from_iter.n_children.times do |i|
+        name = from_iter.nth_child(i)[0]
+        uuid = from_iter.nth_child(i)[1]
+        citer = ts.append(to_iter)
+        citer[0] = name
+        citer[1] = uuid
+        copy_children(ts, from_iter.nth_child(i), citer)
+      end
+    end
+    
+    def on_new_command
+    end
+    
+    def on_new_menu
+    end
+    
+    def on_delete
+      
     end
   end
 end

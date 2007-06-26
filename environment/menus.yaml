@@ -1,26 +1,4 @@
 --- 
-- :scope_selector: 
-  :object: :menu
-  :name: Options
-  :items: 
-  - :type: :inline
-    :scope_selector: 
-    :command: |
-      Redcar::MenuEditDialog.new
-
-    :object: :menuitem
-    :activated_by: 
-    :name: Edit Menus
-    :tooltip: ""
-    :enabled: true
-    :icon: :preferences
-  - :type: :shell
-    :scope_selector: text.html.basic
-    :output: :replace_selected_text
-    :command: |
-      p :insert_tag
-
-    :object: :menuitem
-    :name: Insert Tag
-    :fallback_input: :document
-    :input: :selected_text
+- deafd620-ff33-0129-2069-000ae4ee635c: 
+  - de849830-ff33-0129-2069-000ae4ee635c
+  - de623300-ff33-0129-2069-000ae4ee635c
