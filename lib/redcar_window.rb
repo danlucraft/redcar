@@ -1,14 +1,40 @@
 
+# class Gtk::Widget
+#   alias old_show show
+#   def show
+#     puts "showing: #{self.inspect}"
+#     puts caller
+#     old_show
+#   end
+  
+#   alias old_show_all show_all
+#   def show_all
+#     puts "showing all: #{self.inspect}"
+#     puts caller
+#     old_show_all
+#   end
+# end
+
 module Redcar
   class RedcarWindow < Gtk::Window
     attr_accessor :notebooks, :speedbar, :panes
     
+    def show_window
+      @show_objects.each(&:show_all)
+    end
+    
+    def hide_window
+      @show_objects.each(&:hide_all)
+    end
+    
     def initialize
       super "Redcar"
-      set_size_request(900, 700)
+      set_size_request(800, 600)
       
       $ag = Gtk::AccelGroup.new
       self.add_accel_group($ag)
+      
+      @show_objects = []
       
       @notebooks = []
       signal_connect("destroy") { Gtk.main_quit }
@@ -39,8 +65,8 @@ module Redcar
       edit_view.pack_start(hpaned)
       @speedbar = Gtk::VBox.new
       edit_view.pack_start(@speedbar, false)
-      @speedbar.show
-      hpaned.show
+      @show_objects << @speedbar
+      @show_objects << hpaned
       table.attach(edit_view,
                    # X direction            # Y direction
                    0, 1,                    2, 3,
@@ -55,9 +81,9 @@ module Redcar
       Redcar.StatusBar.statusbar2 = @status2
       @status_hbox.pack_start(@status1)
       @status_hbox.pack_start(@status2)
-      @status_hbox.show
-      @status1.show
-      @status2.show
+      @show_objects << @status_hbox
+      @show_objects << @status1
+      @show_objects << @status2
       table.attach(@status_hbox,
                    # X direction            # Y direction
                    0, 1,                    3, 4,
@@ -78,8 +104,8 @@ module Redcar
       @top_paned = hpaned
       notebook = make_new_notebook
       hpaned.add(notebook)
-      notebook.show
-      hpaned.show
+      @show_objects << notebook
+      @show_objects << hpaned
       @top_pane_done = false
       pane = Redcar::Pane.new(self, notebook)
       @panes = [pane]
@@ -88,9 +114,9 @@ module Redcar
       Redcar.last_pane = Redcar.current_pane
       Redcar.current_pane = pane
       
-      Redcar.menubar.show_all
-      table.show
-      show
+      @show_objects << Redcar.menubar
+      @show_objects << table
+      @show_objects << self
     end
     
     def current_pane
@@ -220,7 +246,7 @@ module Redcar
     # passed in class and block.
     def make_new_notebook
       notebook = Gtk::MDI::Notebook.new
-      notebook.show
+      @show_objects << notebook
       
       Redcar.window_controller.notebook_added(self, notebook)
       self.notebooks << notebook

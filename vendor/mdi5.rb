@@ -57,7 +57,6 @@ module Gtk
         
         @box.pack_start(@label, true, false, 0)
         @box.pack_start(@button, false, false, 0)
-        
         show_all
       end
       
@@ -531,7 +530,7 @@ module Gtk
       # managed windows.
       def open_window(*args)
         window = @window_class.new(*args)
-        window.show_all
+        window.show_all if window.visible?
         add_window(window)
         window
       end

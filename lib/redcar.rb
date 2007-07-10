@@ -7,7 +7,6 @@ $REDCAR_ENV["test"] = false
 require "ruby2cext/eval2c" 
 $e2c = Ruby2CExtension::Eval2C.new
 
-print "loading gems ..."
 require 'gtk2'
 require 'gtksourceview'
 require 'gconf2'
@@ -24,9 +23,7 @@ module Oniguruma
     end
   end
 end
-puts "done"
 
-print "loading vendor/ ..."
 require File.dirname(__FILE__) + '/../vendor/active_support'
 require File.dirname(__FILE__) + '/../vendor/null'
 require File.dirname(__FILE__) + '/../vendor/ruby_extensions'
@@ -34,9 +31,7 @@ require File.dirname(__FILE__) + '/../vendor/debugprinter'
 require File.dirname(__FILE__) + '/../vendor/binary_enum'
 require File.dirname(__FILE__) + '/../vendor/keyword_processor'
 require 'vendor/instruments'
-puts "done"
 
-print "loading lib/ ..."
 require 'lib/plist'
 require 'lib/preferences_dialog.rb'
 require File.dirname(__FILE__) + '/application'
@@ -57,6 +52,7 @@ require File.dirname(__FILE__) + '/texttab'
 require File.dirname(__FILE__) + '/tooltips'
 require File.dirname(__FILE__) + '/shelltab'
 require File.dirname(__FILE__) + '/syntax'
+require 'lib/theme'
 require File.dirname(__FILE__) + '/colourer'
 require File.dirname(__FILE__) + '/../vendor/mdi5'
 require File.dirname(__FILE__) + '/panes'
@@ -67,7 +63,6 @@ require 'lib/menu_edit_tab.rb'
 require 'lib/button_text_tab.rb'
 
 require 'lib/plugin.rb'
-puts "done"
 
 module Redcar
   class << self
@@ -81,7 +76,7 @@ module Redcar
       Redcar.current_window = Redcar.windows.first
     end
     
-    def load_stuff
+    def load_stuff(options)
       print "loading menus/ ..."; $stdout.flush
       Redcar::Menu.load_menus
       Redcar::Menu.create_menus
@@ -103,8 +98,9 @@ module Redcar
                                  :output => :debug  })
       
       add_objects
-      load_stuff
+      load_stuff(options)
       Redcar.output_style = options[:output]
+      Redcar.current_window.show_window
       Redcar.event :startup
     end
     attr_accessor :CUSTOM_DIR

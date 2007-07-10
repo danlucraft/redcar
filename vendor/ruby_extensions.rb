@@ -46,24 +46,32 @@ class Module
       m1 = m.bind(self)
       (class << obj; self; end).module_eval { 
         define_method(:[]) { |x|
-          m1[x] 
+          m1.call(x)
         } 
       }
       obj
     end
   end
   
-  def define_method_bracket_equals(name, &code)
-    define_method("#{name}_bracketed", &code)
-    m = instance_method("#{name}_bracketed")
-    remove_method "#{name}_bracketed"
+  def define_method_bracket_with_equals(name, blocks)
+    define_method("#{name}_get_bracketed", &blocks[:get])
+    m_get = instance_method("#{name}_get_bracketed")
+    remove_method "#{name}_get_bracketed"
+
+    define_method("#{name}_set_bracketed", &blocks[:set])
+    m_set = instance_method("#{name}_set_bracketed")
+    remove_method "#{name}_set_bracketed"
 
     define_method(name) do ||
         obj = Object.new
-      m1 = m.bind(self)
+      m1 = m_get.bind(self)
+      m2 = m_set.bind(self)
       (class << obj; self; end).module_eval { 
-        define_method(:[]) { |x, v|
-          m1[x] = v
+        define_method(:[]) { |x|
+          m1.call(x)
+        } 
+        define_method(:[]=) { |x, v|
+          m2.call(x, v)
         } 
       }
       obj

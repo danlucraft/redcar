@@ -3,6 +3,10 @@ module Redcar
   class << self
     attr_accessor :last_pane, :arrangments
 
+    def new_tab(type=TextTab)
+      Redcar.current_pane.new_tab(type)
+    end
+    
     def current_pane=(pane)
       Redcar.last_pane = Redcar.current_pane
       @current_pane = pane

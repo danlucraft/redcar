@@ -8,15 +8,13 @@ module Redcar
       @current_tab = tab
     end
     
-    alias tab current_tab
-    
     # Allows Redcar.tab["name.rb"] and Redcar.tab[3]
     define_method_bracket :tab do |id|
       case id
       when Integer
-        Redcar.all_tabs[id]
+        Redcar.current_window.all_tabs[id]
       when String
-        Redcar.all_tabs.select {|tab| tab.name == id}
+        Redcar.current_window.all_tabs.find {|tab| tab.name == id}
       end
     end
   end
@@ -45,7 +43,7 @@ module Redcar
       @tab_num = pane.count
       pane.count += 1
       pane.tab_hash[@doc] = self
-      @pane.notebook.show_all
+      @pane.notebook.show_all if Redcar.current_window.visible?
       Redcar.event :new_tab, self
     end
         

@@ -27,7 +27,7 @@ module Redcar
     end
     
     def self.load_grammars
-      print "loading grammars ..."
+  #    print "loading grammars ..."
       if File.exist?("cache/grammars.dump")
         str = File.read("cache/grammars.dump")
         @grammars = Marshal.load(str)
@@ -63,7 +63,7 @@ module Redcar
           self.cache_grammars
         end
       end
-      puts "done"
+    #  puts "done"
     end
     
     def self.grammar(options)
@@ -150,7 +150,7 @@ module Redcar
         unless scope.end
           end_iter = iter(end_mark)
         end
-        self.buffer.slice(iter(scope.start), end_iter)
+        self.buffer.get_slice(iter(scope.start), end_iter)
       end
     end
     
@@ -166,7 +166,9 @@ module Redcar
     end
     
     def scope_at_cursor
-      scope = @textview.scope_tree.scope_at(TextLoc.new(cursor_line, cursor_line_offset))
+      if @textview.scope_tree
+        scope = @textview.scope_tree.scope_at(TextLoc.new(cursor_line, cursor_line_offset))
+      end
     end
   end
   
@@ -241,7 +243,7 @@ module Redcar
     def set_grammar(gr)
       if gr and @grammar != gr
         @grammar = gr
-        puts "setting grammar: #{@grammar.name}"
+     #   puts "setting grammar: #{@grammar.name}"
         @scope_tree = Redcar::Syntax::Scope.new(:pattern => gr,
                                                 :grammar => gr,
                                                 :start => TextLoc.new(0, 0))
@@ -371,15 +373,13 @@ module Redcar
       if syntax?
         startt = Time.now
         @parser.clear_after(0)
-        p :here
         start_iter, end_iter = self.buffer.bounds
         self.buffer.remove_all_tags(start_iter, end_iter)
         @parser.add_lines(self.buffer.text, :lazy => true)
-        p @parser.text
         #      debug_puts @scope_tree.pretty
         endt = Time.now
         diff = endt-startt
-        puts "time to parse and colour: #{diff}"
+        debug_puts "time to parse and colour: #{diff}"
       end
     end
   end

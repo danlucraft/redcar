@@ -335,18 +335,7 @@ module Redcar
         @textview.scroll_mark_onscreen(cursor_mark)
       end
       
-      # tab.text[1..10]
-      define_method_bracket :text do |obj|
-        case obj.class.to_s
-        when "Fixnum", "Bignum", "Integer"
-          self.buffer.text.at(obj)
-        when "Range"
-          self.buffer.text[obj]
-        end
-      end
-      
-      # tab.text[1..10] = "foobar"
-      define_method_bracket_equals :text do |obj, str|
+      def set_text(obj, str)
         case obj.class.to_s
         when "Fixnum", "Bignum", "Integer"
           old = self[obj]
@@ -395,6 +384,21 @@ module Redcar
         else
           nil
         end
+      end
+    end
+    
+    # tab.text[1..10]
+    # tab.text[1..10] = "foobar"
+    define_method_bracket_with_equals :text,
+    :get => fn { |obj|      get_text(obj) },
+    :set => fn { |obj, str| set_text(obj, str) }
+    
+    def get_text(obj)
+      case obj.class.to_s
+      when "Fixnum", "Bignum", "Integer"
+        self.buffer.text.at(obj)
+      when "Range"
+        self.buffer.text[obj]
       end
     end
     

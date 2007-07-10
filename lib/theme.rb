@@ -19,11 +19,11 @@ module Redcar
     end
     
     def self.load_themes
-      print "loading themes ["
+      #print "loading themes ["
       if File.exist?("cache/themes.dump")
         str = File.read("cache/themes.dump")
         @themes = Marshal.load(str)
-        puts " ... from cache]"
+        #puts " ... from cache]"
       else
         @themes = {}        
         Dir["textmate/Themes/*"].each do |file|
@@ -32,7 +32,7 @@ module Redcar
           plist = Redcar::Plist.plist_from_xml(xml)
           @themes[plist[0]['name']] = Redcar::Theme.new(plist[0])
         end
-        puts "]"
+        #puts "]"
         str = Marshal.dump(@themes)
         File.open("cache/themes.dump", "w") do |f|
           f.puts str
