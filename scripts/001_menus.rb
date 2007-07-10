@@ -1,6 +1,6 @@
 
-require 'scripts/sensitivities'
+ require 'scripts/sensitivities'
 
-Dir.glob("scripts/menus/*.rb").sort.each do |file|
-  require file
-end
+ Dir.glob("scripts/menus/*.rb").sort.each do |file|
+   require file
+ end

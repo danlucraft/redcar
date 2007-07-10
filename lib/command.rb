@@ -120,8 +120,12 @@ module Redcar
                 @recording = false
                 result = nil
                 begin
-                  undoable do
-                    result = self.send("__base_#{meth}", *args)
+                  if self.class == Redcar::TextTab
+                    self.buffer.begin_user_action
+                  end
+                  result = self.send("__base_#{meth}", *args)
+                  if self.class == Redcar::TextTab
+                    self.buffer.end_user_action
                   end
                 rescue Object => e
                   Redcar.process_command_error(meth, e)
@@ -236,6 +240,24 @@ module Redcar
       @history = []
     end
     
+    def enable(win=Redcar.current_window)
+      if @keyhandler_id
+        win.signal_handler_unblock(@keyhandler_id)
+      else
+        id = win.signal_connect('key-press-event') do |gtk_widget, gdk_eventkey|
+          continue = Redcar.keystrokes.issue_from_gdk_eventkey(gdk_eventkey)
+          continue
+        end
+        @keyhandler_id = id
+      end
+    end
+    
+    def disable(win=Redcar.current_window)
+      if @keyhandler_id
+        win.signal_handler_block(@keyhandler_id)
+      end
+    end
+    
     def add_to_history(keybinding)
       keybinding = KeyBinding.parse(keybinding)
       @history << keybinding
@@ -264,7 +286,7 @@ module Redcar
       end
     end
     
-    def issue_from_gdk_eventkey(gdk_eventkey)
+    def gdk_eventkey_to_keybinding(gdk_eventkey)
       keyname = " "
       keyname[0] = Gdk::Keyval.to_unicode(gdk_eventkey.keyval)
       keyname = Gdk::Keyval.to_name(gdk_eventkey.keyval) if keyname=="\000"
@@ -276,8 +298,11 @@ module Redcar
       modifiers << :shift   if gdk_modifier_type.shift_mask?
       modifiers << :super   if gdk_modifier_type.mod4_mask?
       
-      keybinding = KeyBinding.new(modifiers, keyname)
-      issue_from_keybinding(keybinding)
+      KeyBinding.new(modifiers, keyname)
+    end
+    
+    def issue_from_gdk_eventkey(gdk_eventkey)
+      issue_from_keybinding(gdk_eventkey_to_keybinding(gdk_eventkey))
     end
   end
 end

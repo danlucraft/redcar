@@ -9,7 +9,7 @@ require 'lib/syntax/parser'
 Redcar.hook :startup do
   Redcar::Syntax.load_grammars
   Redcar.MainToolbar.append_combo(Redcar::Syntax.grammar_names.sort) do |_, tab, grammar|
-    tab.set_grammar(Redcar::Syntax.grammar(:name => grammar))
+    tab.sourceview.set_grammar(Redcar::Syntax.grammar(:name => grammar))
   end
 end
 
@@ -107,6 +107,10 @@ module Redcar
     
     attr_accessor :scope_tree, :parser
     
+    def sourceview
+      @textview
+    end
+    
     def reparse_tab
       @textview.colour
       debug_puts @textview.scope_tree.pretty
@@ -125,7 +129,7 @@ module Redcar
       tooltip_at_cursor(scope.hierarchy_names(inner).join("\n"))
     end
     
-    def select_scope
+    def current_scope
       if selected?
         x, y = selection_bounds
         xi = iter(x)
@@ -137,6 +141,21 @@ module Redcar
       else
         scope = scope_at_cursor
       end
+    end
+    
+    def current_scope_text
+      scope = current_scope
+      if scope
+        end_iter = iter(scope.end)
+        unless scope.end
+          end_iter = iter(end_mark)
+        end
+        self.buffer.slice(iter(scope.start), end_iter)
+      end
+    end
+    
+    def select_scope
+      scope = current_scope
       if scope
         end_iter = iter(scope.end)
         unless scope.end
@@ -211,10 +230,18 @@ module Redcar
       set_grammar(Syntax.grammar(:name => name))
     end
     
+    def grammar
+      @grammar
+    end
+    
+    def grammar=(gr)
+      set_grammar(gr)
+    end
+    
     def set_grammar(gr)
       if gr and @grammar != gr
         @grammar = gr
-        debug_puts "setting grammar: #{@grammar.name}"
+        puts "setting grammar: #{@grammar.name}"
         @scope_tree = Redcar::Syntax::Scope.new(:pattern => gr,
                                                 :grammar => gr,
                                                 :start => TextLoc.new(0, 0))
@@ -318,7 +345,9 @@ module Redcar
     
     def process_insertion(insertion)
       if insertion[:lines] == 1
-        @parser.insert_in_line(insertion[:from].line, insertion[:text], insertion[:from].offset)
+        @parser.insert_in_line(insertion[:from].line, 
+                               insertion[:text], 
+                               insertion[:from].offset)
         debug_puts "parsed and coloured line"
       else
         debug_puts "processing insertion of #{insertion[:lines]} lines"
@@ -328,7 +357,9 @@ module Redcar
     
     def process_deletion(deletion)
       if deletion[:lines] == 1
-        @parser.delete_from_line(deletion[:from].line, deletion[:length], deletion[:from].offset)
+        @parser.delete_from_line(deletion[:from].line, 
+                                 deletion[:length], 
+                                 deletion[:from].offset)
         debug_puts "parsed and coloured line"
       else
         debug_puts "processing deletion of #{deletion[:lines]} lines"
@@ -340,15 +371,16 @@ module Redcar
       if syntax?
         startt = Time.now
         @parser.clear_after(0)
+        p :here
         start_iter, end_iter = self.buffer.bounds
         self.buffer.remove_all_tags(start_iter, end_iter)
         @parser.add_lines(self.buffer.text, :lazy => true)
+        p @parser.text
         #      debug_puts @scope_tree.pretty
         endt = Time.now
         diff = endt-startt
-        debug_puts "time to parse and colour: #{diff}"
+        puts "time to parse and colour: #{diff}"
       end
     end
-    
   end
 end

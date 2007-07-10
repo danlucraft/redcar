@@ -7,4 +7,3 @@ module Redcar
   end
 end
       
-    

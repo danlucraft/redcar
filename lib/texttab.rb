@@ -1,18 +1,5 @@
 
-Redcar["texttab/font"] ||= "Monospace 11"
-
 module Gtk
-  class TextBuffer
-#     signal_new("inserted_text",     # name
-#            GLib::Signal::RUN_FIRST, # flags
-#            nil,                     # accumulator (XXX: not supported yet)
-#            nil,                     # return type (void == nil)
-#            Gtk::TextIter,
-#            String,
-#            Fixnum
-#            )
-  end
-  
   class TextIter
     def forward_cursor_position!
       self.forward_cursor_position
@@ -23,6 +10,16 @@ module Gtk
       self.backward_cursor_position
       self
     end
+    
+    def forward_word_end!
+      self.forward_word_end
+      self
+    end
+    
+    def backward_word_start!
+      self.backward_word_start
+      self
+    end
   end
 end
 
@@ -31,7 +28,6 @@ def TextLoc(a, b)
 end
 
 module Redcar  
-#  TextLoc = Struct.new(:line, :offset)
   class TextLoc
      attr_accessor :line, :offset
     
@@ -114,10 +110,13 @@ module Redcar
   end
 
   class TextTab < Tab
-    include Redcar::Undoable
     include Keymap
     include DebugPrinter
     include Redcar::Preferences
+    
+    def to_undo(*args, &block)
+      true
+    end
     
     preferences "Appearance" do |p|
       p.add_with_widget("Tab Font", 
@@ -163,10 +162,10 @@ module Redcar
       widget
     end
     
-    keymap "ctrl a",     :cursor=, :line_start
-    keymap "ctrl e",     :cursor=, :line_end
-    keymap "ctrl-alt a", :cursor=, :tab_start
-    keymap "ctrl-alt e", :cursor=, :tab_end
+#     keymap "ctrl a",     :cursor=, :line_start
+#     keymap "ctrl e",     :cursor=, :line_end
+#     keymap "ctrl-alt a", :cursor=, :tab_start
+#     keymap "ctrl-alt e", :cursor=, :tab_end
 #     keymap "Left",   :left
 #     keymap "Right",  :right
 #     keymap "Up",     :up
@@ -179,22 +178,22 @@ module Redcar
 #     keymap "Page_Up",     :page_up
 #     keymap "Home",  :cursor=, :line_start
 #     keymap "End",   :cursor=, :line_end
-    keymap "ctrl z",     :undo
-    keymap "ctrl x",     :cut
-    keymap "ctrl c",     :copy
-    keymap "ctrl v",     :paste
-    keymap "ctrl s",     :save
-    keymap "ctrl t",     :transpose
-    keymap "Delete",     :del
-    keymap "BackSpace",  :backspace
+#     keymap "ctrl z",     :undo
+#     keymap "ctrl x",     :cut
+#     keymap "ctrl c",     :copy
+#     keymap "ctrl v",     :paste
+#     keymap "ctrl s",     :save
+#     keymap "ctrl t",     :transpose
+#     keymap "Delete",     :del
+#     keymap "BackSpace",  :backspace
 
-    keymap "Space",      :insert_at_cursor,  " "
-    keymap "Tab",        :insert_at_cursor,  " "*(Redcar.tab_length||=2)
-    keymap "Return",      :return
+#     keymap "Space",      :insert_at_cursor,  " "
+#     keymap "Tab",        :insert_at_cursor,  " "*(Redcar.tab_length||=2)
+#     keymap "Return",      :return
 #     keymap /^(.)$/,       :insert_at_cursor, '\1'
 #     keymap /^shift (.)$/, :insert_at_cursor, '\1'
 #     keymap /^caps (.)$/,  :insert_at_cursor, '\1'
-    keymap "ctrl d",     :print_command_history
+#     keymap "ctrl d",     :print_command_history
     
     attr_accessor :filename, :buffer
     
@@ -202,22 +201,25 @@ module Redcar
     
     user_commands do
       def cursor=(offset)
-        to_undo :cursor=, cursor_offset
-        case offset
-        when :line_start
-          offset = @buffer.get_iter_at_line(iter(cursor_mark).line).offset
-        when :line_end
-          line_num = iter(cursor_mark).line
-          length = get_line(line_num).to_s.chomp.chars.length
-          offset = @buffer.get_iter_at_line_offset(line_num, length)
-        when :tab_start
-          offset = 0
-        when :tab_end
-          offset = length
+        if offset.is_a? Gtk::TextIter
+          self.buffer.place_cursor(offset)
         else
-          true
+          case offset
+          when :line_start
+            offset = self.buffer.get_iter_at_line(iter(cursor_mark).line).offset
+          when :line_end
+            line_num = iter(cursor_mark).line
+            length = get_line(line_num).to_s.chomp.chars.length
+            offset = self.buffer.get_iter_at_line_offset(line_num, length)
+          when :tab_start
+            offset = 0
+          when :tab_end
+            offset = length
+          else
+            true
+          end
+          self.buffer.place_cursor(iter(offset))
         end
-        @buffer.place_cursor(iter(offset))
         @textview.scroll_mark_onscreen(cursor_mark)
       end
       
@@ -239,19 +241,19 @@ module Redcar
       end
       
       def shift_left
-        @buffer.move_mark(cursor_mark, iter(cursor_mark).backward_cursor_position!)
+        self.buffer.move_mark(cursor_mark, iter(cursor_mark).backward_cursor_position!)
       end
       
       def shift_right
-        @buffer.move_mark(cursor_mark, iter(cursor_mark).forward_cursor_position!)
+        self.buffer.move_mark(cursor_mark, iter(cursor_mark).forward_cursor_position!)
       end
       
       def shift_up
-        @buffer.move_mark(cursor_mark, iter(above_offset(cursor_offset)))
+        self.buffer.move_mark(cursor_mark, iter(above_offset(cursor_offset)))
       end
       
       def shift_down
-        @buffer.move_mark(cursor_mark, iter(below_offset(cursor_offset)))
+        self.buffer.move_mark(cursor_mark, iter(below_offset(cursor_offset)))
       end
       
       def page_down
@@ -311,16 +313,16 @@ module Redcar
       end
       
       def length
-        @buffer.char_count
+        self.buffer.char_count
       end
       
       def to_s
-        @buffer.text
+        self.buffer.text
       end
       
       def modified=(val)
         to_undo :modified=, modified?
-        @buffer.modified = val
+        self.buffer.modified = val
         Redcar.event :tab_modified, self
         @was_modified = val
       end
@@ -328,21 +330,23 @@ module Redcar
       def select(from, to)
         Redcar.event :select, self
         to_undo :cursor=, cursor_offset
-        @buffer.move_mark(cursor_mark, iter(to))
-        @buffer.move_mark(selection_mark, iter(from))
+        self.buffer.move_mark(cursor_mark, iter(to))
+        self.buffer.move_mark(selection_mark, iter(from))
         @textview.scroll_mark_onscreen(cursor_mark)
       end
       
-      def [](obj)
+      # tab.text[1..10]
+      define_method_bracket :text do |obj|
         case obj.class.to_s
         when "Fixnum", "Bignum", "Integer"
-          @buffer.text.at(obj)
+          self.buffer.text.at(obj)
         when "Range"
-          @buffer.text[obj]
+          self.buffer.text[obj]
         end
       end
       
-      def []=(obj, str)
+      # tab.text[1..10] = "foobar"
+      define_method_bracket_equals :text do |obj, str|
         case obj.class.to_s
         when "Fixnum", "Bignum", "Integer"
           old = self[obj]
@@ -366,8 +370,8 @@ module Redcar
       def insert(offset, str)
         offset = iter(offset).offset
         to_undo :delete, offset, str.length+offset, str
-        @buffer.insert(iter(offset), str)
-#         @buffer.signal_emit("inserted_text", iter(offset), 
+        self.buffer.insert(iter(offset), str)
+#         self.buffer.signal_emit("inserted_text", iter(offset), 
 #                             str, str.length)
       end
       
@@ -375,8 +379,8 @@ module Redcar
         from = iter(from).offset
         to = iter(to).offset
         to_undo :cursor=, cursor_offset
-        text = @buffer.get_slice(iter(from), iter(to))
-        @buffer.delete(iter(from), iter(to))
+        text = self.buffer.get_slice(iter(from), iter(to))
+        self.buffer.delete(iter(from), iter(to))
         to_undo :insert, from, text
         text
       end
@@ -392,6 +396,22 @@ module Redcar
           nil
         end
       end
+    end
+    
+    def undo
+      self.buffer.undo!
+    end
+    
+    def redo
+      self.buffer.redo!
+    end
+    
+    def forward_word
+      self.cursor = cursor_iter.forward_word_end!
+    end
+    
+    def backward_word
+      self.cursor = cursor_iter.backward_word_start!
     end
     
     def replace_selection(text=nil)
@@ -428,28 +448,32 @@ module Redcar
     end
     
     def modified?
-      @buffer.modified?
+      self.buffer.modified?
     end
       
+    def buffer
+      @textview.buffer
+    end
+    
     def iter(thing)
       case thing
       when Integer
         thing = [0, thing].max
         thing = [length, thing].min
-        @buffer.get_iter_at_offset(thing)
+        self.buffer.get_iter_at_offset(thing)
       when Gtk::TextMark
-        @buffer.get_iter_at_mark(thing)
+        self.buffer.get_iter_at_mark(thing)
       when Gtk::TextIter
         thing
       when TextLoc
-        line_start = @buffer.get_iter_at_line(thing.line)
+        line_start = self.buffer.get_iter_at_line(thing.line)
         iter(line_start.offset+thing.offset)
       end
     end
     
     def iter_at_line(num)
       return iter(end_mark) if num == line_count
-      @buffer.get_iter_at_line(num)
+      self.buffer.get_iter_at_line(num)
     end
     
     def line_start(num)
@@ -468,20 +492,20 @@ module Redcar
       if num == nil
         return get_line(cursor_line)
       end
-      if num == @buffer.line_count-1
+      if num == self.buffer.line_count-1
         end_iter = iter(end_mark)
-      elsif num > @buffer.line_count-1
+      elsif num > self.buffer.line_count-1
         return nil
       elsif num < 0
-        if num >= -@buffer.line_count
-          return get_line(@buffer.line_count+num).chars
+        if num >= -self.buffer.line_count
+          return get_line(self.buffer.line_count+num).chars
         else
           return nil
         end
       else
         end_iter = iter_at_line(num+1)
       end
-      @buffer.get_slice(iter_at_line(num), end_iter).chars
+      self.buffer.get_slice(iter_at_line(num), end_iter).chars
     end
     
     def get_lines(selector)
@@ -489,12 +513,12 @@ module Redcar
         st = selector.begin
         en = selector.end
         if st < 0
-          nst = @buffer.line_count+st
+          nst = self.buffer.line_count+st
         else
           nst = st
         end
         if en < 0
-          nen = @buffer.line_count+en
+          nen = self.buffer.line_count+en
         else
           nen = en
         end
@@ -505,15 +529,19 @@ module Redcar
     end
     
     def line_count
-      @buffer.line_count
+      self.buffer.line_count
     end
     
     def char_count
-      @buffer.char_count
+      self.buffer.char_count
     end
     
     def cursor_mark
-      @buffer.get_mark("insert")
+      self.buffer.get_mark("insert")
+    end
+    
+    def cursor_iter
+      iter(self.buffer.get_mark("insert"))
     end
     
     def cursor_line
@@ -529,7 +557,7 @@ module Redcar
     end
     
     def selection_mark
-      @buffer.get_mark("selection_bound")
+      self.buffer.get_mark("selection_bound")
     end
     
     def selection_offset
@@ -537,20 +565,20 @@ module Redcar
     end
     
     def start_mark
-      @buffer.get_mark("start-mark") or
-        @buffer.create_mark("start-mark", iter(0), true)
+      self.buffer.get_mark("start-mark") or
+        self.buffer.create_mark("start-mark", iter(0), true)
     end
     
     def end_mark
-      @buffer.get_mark("end-mark") or
-        @buffer.create_mark("end-mark", iter(self.length), false)
+      self.buffer.get_mark("end-mark") or
+        self.buffer.create_mark("end-mark", iter(self.length), false)
     end
     
     def above_offset(offset)
       above_line_num = [iter(offset).line-1, 0].max
       return 0 if above_line_num == 0
       [
-       @buffer.get_iter_at_line(above_line_num).offset + 
+       self.buffer.get_iter_at_line(above_line_num).offset + 
          [iter(offset).line_offset, get_line(above_line_num).length-1].min,
        0
       ].max
@@ -560,64 +588,28 @@ module Redcar
       below_line_num = iter(offset).line+1
       return char_count-1 if below_line_num == line_count
       [
-       @buffer.get_iter_at_line(below_line_num).offset + 
+       self.buffer.get_iter_at_line(below_line_num).offset + 
          [iter(offset).line_offset, get_line(below_line_num).length-1].min,
        length
       ].min
     end
     
     def selected?
-      start_iter, end_iter, bool = @buffer.selection_bounds
+      start_iter, end_iter, bool = self.buffer.selection_bounds
       bool
     end
     
     def selection_bounds
-      start_iter, end_iter, bool = @buffer.selection_bounds
+      start_iter, end_iter, bool = self.buffer.selection_bounds
       return start_iter.offset, end_iter.offset
     end
     
     def selection
-      @buffer.get_text(iter(selection_mark), iter(cursor_mark))
+      self.buffer.get_text(iter(selection_mark), iter(cursor_mark))
     end
     
     def contents
-      @buffer.text
-    end
-    
-    undo_composable do |a, b|
-      # break up inserts by words, not characters
-      if a.method_name == :insert and
-          b.method_name == :insert and
-          b.args[1].length == 1 and
-          b.args[0] == a.args[0] and
-          !(b.args[1] != " " and a.args[1].last == " ")
-        c=UndoItem.new(:insert, [b.args[0], a.args[1]+b.args[1]])
-        c
-      end
-    end
-    
-    undo_composable do |a, b|
-      # add a delete onto another delete (corresponds to the delete action),
-      # breaking up on words
-      if a.method_name == :delete and
-          b.method_name == :delete and
-          a.args[1] == b.args[0] and
-          b.args[2].first != " "
-        c=UndoItem.new(:delete, [a.args[0], b.args[1], a.args[2]+b.args[2]])
-        c
-      end
-    end
-    
-    undo_composable do |a, b|
-      # add a delete onto another delete (composing spaces)
-      if a.method_name == :delete and
-          b.method_name == :delete and
-          a.args[1] == b.args[0] and
-          a.args[2].last == " " and 
-          b.args[2] == " "
-        c=UndoItem.new(:delete, [a.args[0], b.args[1], a.args[2]+b.args[2]])
-        c
-      end
+      self.buffer.text
     end
     
     # --------
@@ -636,7 +628,6 @@ module Redcar
       @textview.wrap_mode = Gtk::TextTag::WRAP_WORD
       @textview.show_line_numbers = 1
       @textview.new_buffer
-      @buffer = @textview.buffer
 #       @textview = Redcar::GUI::Text.new(buffer, textview)
       self.set_font(TextTab.Preferences["Tab Font"])
       super(pane, @textview)
@@ -659,16 +650,16 @@ module Redcar
       end
 
       @was_modified = false
-      @buffer.signal_connect("changed") do |widget, event|
+      self.buffer.signal_connect("changed") do |widget, event|
         Redcar.event :tab_modified, self unless @was_modified
         Redcar.event :tab_changed
         @was_modified = true
         false
       end
       
-      @buffer.signal_connect("mark_set") do |widget, event, mark|
+      self.buffer.signal_connect("mark_set") do |widget, event, mark|
         if mark.name == "insert"
-          insert_iter = @buffer.get_iter_at_mark(mark)
+          insert_iter = self.buffer.get_iter_at_mark(mark)
           Redcar.StatusBar.sub = "line "+ (insert_iter.line+1).to_s + 
             "   col "+(insert_iter.line_offset+1).to_s
         end
@@ -731,13 +722,14 @@ module Redcar
       if @filename
         Redcar::RedcarFile.save(@filename, self.to_s)
       end
-      @buffer.modified = false
+      self.buffer.modified = false
     end
     
+    attr_accessor :discard_changes
     
     def close
       pane = self.pane
-      if self.modified?
+      if self.modified? and not @discard_changes
         ask_and_save_tab(self)
       else
         self.close!

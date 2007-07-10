@@ -7,6 +7,18 @@ module Redcar
       Redcar.current_pane = tab.pane
       @current_tab = tab
     end
+    
+    alias tab current_tab
+    
+    # Allows Redcar.tab["name.rb"] and Redcar.tab[3]
+    define_method_bracket :tab do |id|
+      case id
+      when Integer
+        Redcar.all_tabs[id]
+      when String
+        Redcar.all_tabs.select {|tab| tab.name == id}
+      end
+    end
   end
 
   def self.tabs
@@ -25,7 +37,9 @@ module Redcar
       @sw.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC)
       @sw.add(widget)
       @widget = widget
-      @doc = Gtk::MDI::Document.new(@sw, "#new#{pane.count}")
+      @tab_vbox = Gtk::VBox.new
+      @tab_vbox.pack_end(@sw)
+      @doc = Gtk::MDI::Document.new(@tab_vbox, "#new#{pane.count}")
       @pane = pane
       @pane.notebook.add_document(@doc)
       @tab_num = pane.count

@@ -9,11 +9,11 @@ module Redcar
             :values => fn { Theme.theme_names },
             :if_changed => fn { 
               Redcar.current_window.all_tabs.each do |tab|
-                if tab.respond_to? :set_theme
-                  tab.set_theme(Theme.theme(TextTab.Preferences["Tab Theme"]))
+                if tab.respond_to? :sourceview
+                  tab.sourceview.set_theme(
+                    Theme.theme(TextTab.Preferences["Tab Theme"]))
                 end
-              end}
-            )
+              end})
       p.add("Entry Theme", :type => :combo, :default => "Mac Classic", 
             :values => fn { Theme.theme_names })
     end

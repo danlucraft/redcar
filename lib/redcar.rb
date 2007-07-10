@@ -63,6 +63,9 @@ require File.dirname(__FILE__) + '/panes'
 require File.dirname(__FILE__) + '/redcar_window'
 require File.dirname(__FILE__) + '/list_abstraction'
 require 'lib/menu_edit_dialog.rb'
+require 'lib/menu_edit_tab.rb'
+require 'lib/button_text_tab.rb'
+
 require 'lib/plugin.rb'
 puts "done"
 
@@ -70,17 +73,19 @@ module Redcar
   class << self
     attr_accessor :current_window, :keystrokes
         
-    def startup(options={})
-      options = process_params(options,
-                               { :load_scripts => true,
-                                 :output => :debug  })
-      
+    def add_objects
       Redcar.keystrokes = Redcar::Keystrokes.new
       Redcar.window_controller = Gtk::MDI::Controller.new(RedcarWindow, :notebooks)
       Redcar.windows ||= []
       Redcar.windows << Redcar.window_controller.open_window
       Redcar.current_window = Redcar.windows.first
-      Redcar.output_style = options[:output]
+    end
+    
+    def load_stuff
+      print "loading menus/ ..."; $stdout.flush
+      Redcar::Menu.load_menus
+      Redcar::Menu.create_menus
+      
       print "loading scripts/ ..."; $stdout.flush
       if options[:load_scripts]
         Dir.glob("scripts/*.rb").sort.each do |f|
@@ -90,7 +95,16 @@ module Redcar
         end
       end
       puts "done"
+    end
+    
+    def startup(options={})
+      options = process_params(options,
+                               { :load_scripts => true,
+                                 :output => :debug  })
       
+      add_objects
+      load_stuff
+      Redcar.output_style = options[:output]
       Redcar.event :startup
     end
     attr_accessor :CUSTOM_DIR

@@ -21,6 +21,56 @@ class PickyHash < Hash
   end
 end
 
+# note how we use UnboundMethod#bind to ensure 
+# that the context of the block is the instance, rather
+# than the class.
+#
+# usage:
+# class Foo
+#   define_method_bracket :logins do |val|
+#     @logins[val]
+#   end
+# end
+
+# f = Foo.new([1, 2, 3])
+# f.logins[1] # => 2
+
+class Module
+  def define_method_bracket(name, &code)
+    define_method("#{name}_bracketed", &code)
+    m = instance_method("#{name}_bracketed")
+    remove_method "#{name}_bracketed"
+
+    define_method(name) do ||
+        obj = Object.new
+      m1 = m.bind(self)
+      (class << obj; self; end).module_eval { 
+        define_method(:[]) { |x|
+          m1[x] 
+        } 
+      }
+      obj
+    end
+  end
+  
+  def define_method_bracket_equals(name, &code)
+    define_method("#{name}_bracketed", &code)
+    m = instance_method("#{name}_bracketed")
+    remove_method "#{name}_bracketed"
+
+    define_method(name) do ||
+        obj = Object.new
+      m1 = m.bind(self)
+      (class << obj; self; end).module_eval { 
+        define_method(:[]) { |x, v|
+          m1[x] = v
+        } 
+      }
+      obj
+    end
+  end
+end
+
 class Hash
   def picky
     ph = PickyHash.new

@@ -19,7 +19,6 @@ module Redcar
           "Redcar.startup(:output => \"silent\")"
         nt.cursor = 0
         nt.modified = false
-        nt.clear_undo
       end
     end
   end

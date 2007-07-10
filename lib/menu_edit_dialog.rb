@@ -1,4 +1,6 @@
 
+require 'uuid'
+
 module Redcar
   class MenuEditDialog
     def initialize
@@ -12,12 +14,13 @@ module Redcar
       @treestore = Gtk::TreeStore.new(String, String)
       @treeview.model = @treestore
 
+      @menus = {}
       @menu_ids = []
       @item_ids = []
       load_menus
       
       renderer = Gtk::CellRendererText.new
-      col = Gtk::TreeViewColumn.new("Last Name", renderer, :text => 0)
+      col = Gtk::TreeViewColumn.new("", renderer, :text => 0)
       @treeview.append_column(col)
       
       hide_edit_command
@@ -79,8 +82,8 @@ module Redcar
     end
     
     def load_menus
-      @menus, @menu_defs, @commands = Redcar::Menu.menus
-      load_menus1(@menus, nil)
+      @menu_tree, @menu_defs, @commands = Redcar::Menu.menus
+      load_menus1(@menu_tree, nil)
     end
     
     def load_menus1(menus, parent_iter)
@@ -91,8 +94,7 @@ module Redcar
           uuid = menu.keys[0]
           @menu_ids << uuid
           items = menu.values[0]
-          p uuid
-          p @menu_defs
+          @menus[uuid] = menu[uuid]
           iter[0] = @menu_defs[uuid][:name]
           iter[1] = uuid
           load_menus1(items, iter)
@@ -107,7 +109,7 @@ module Redcar
 
     def reorder_menus
       update_menu_tree
-      puts @menus.to_yaml
+      puts @menu_tree.to_yaml
     end
     
     def on_cancel
@@ -120,11 +122,11 @@ module Redcar
     end
     
     def update_menu_tree
-      @menus = []
+      @menu_tree = []
       top_iter = @treestore.iter_first
-      update_menu_tree1(@menus, top_iter)
+      update_menu_tree1(@menu_tree, top_iter)
       while top_iter.next!
-        update_menu_tree1(@menus, top_iter)
+        update_menu_tree1(@menu_tree, top_iter)
       end
     end
     
@@ -143,12 +145,12 @@ module Redcar
     
     def on_apply
       p :Applying_Changes
-      p @menus
+      p @menu_tree
       p @menu_defs
       p @commands
       record_changes
       update_menu_tree
-      Menu.menus = @menus
+      Menu.menus = @menu_tree
       Menu.menu_defs = @menu_defs
       Menu.commands = @commands
       Menu.save_menus
@@ -423,14 +425,92 @@ module Redcar
       end
     end
     
+    def selected_iter
+      @treeview.selection.selected
+    end
+    
+    def selected_menu_iter
+      if @menu_ids.include? selected_uuid
+        selected_iter
+      else
+        if selected_iter
+          selected_iter.parent
+        else
+          nil
+        end
+      end
+    end
+    
+    def selected_uuid
+      (selected_iter||[])[1]
+    end
+    
+    def selected_menu
+      (selected_menu_iter||[])[1]
+    end
+    
     def on_new_command
+      uuid = UUID.new
+      command = {  
+        :uuid => uuid, 
+        :name => "New Command",
+        :type => :inline,
+        :fallback_input => :line,
+        :input => :selected_text,
+        :output => :discard,
+        :activated_by => :key_combination,
+        :scope_selector => "",
+        :command => "",
+        :enabled => true,
+        :tooltip => "",
+        :icon => ""      
+      }
+      @item_ids << uuid
+      @commands[uuid] = command
+      puts "selected menu: #{selected_menu}"
+      p @menus
+      @menus[selected_menu] << uuid
+      iter = @treestore.append(selected_menu_iter)
+      iter[0] = "New Command"
+      iter[1] = uuid
     end
     
     def on_new_menu
+      uuid = UUID.new
+      menu = {
+        :uuid => uuid,
+        :name => "New Menu",
+        :enabled => true
+      }
+      @menu_ids << uuid
+      @menu_defs[uuid] = menu
+      @menus[uuid] = []
+      if selected_menu
+        @menus[selected_menu] << uuid
+        iter = @treestore.append(selected_menu_iter)
+        iter[0] = "New Menu"
+        iter[1] = uuid
+      else
+        iter = @treestore.append(nil)
+        iter[0] = "New Menu"
+        iter[1] = uuid
+      end
     end
     
     def on_delete
-      
+      uuid = selected_uuid
+      iter = selected_iter
+      if @menu_ids.include? uuid
+        @menus.delete(uuid)
+        @menu_ids.delete(uuid)
+      else
+        @commands.delete(uuid)
+        @item_ids.delete(uuid)
+      end
+      @treestore.remove(iter)
+    end
+    
+    def on_edit_in_tab
     end
   end
 end

@@ -5,17 +5,14 @@ module Redcar
     
     def initialize
       super "Redcar"
-      set_size_request(800, 600)
+      set_size_request(900, 700)
       
       $ag = Gtk::AccelGroup.new
       self.add_accel_group($ag)
       
       @notebooks = []
       signal_connect("destroy") { Gtk.main_quit }
-      signal_connect('key-press-event') do |gtk_widget, gdk_eventkey|
-        continue = Redcar.keystrokes.issue_from_gdk_eventkey(gdk_eventkey)
-        continue
-      end
+      Redcar.keystrokes.enable(self)
 
       paned = Gtk::HPaned.new
       
