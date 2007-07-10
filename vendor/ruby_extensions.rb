@@ -95,26 +95,6 @@ class NilClass
   end
 end
 
-class String
-  def delete_slice(range)
-    s = range.begin
-    e = range.end
-    s = self.length + s if s < 0
-    e = self.length + e if e < 0
-    s, e = e, s if s > e
-    first = self[0..(s-1)]
-    second = self[(e+1)..-1]
-    if s == 0
-      first = ""
-    end
-    if e >= self.length-1
-      second = ""
-    end
-    self.replace(first+second)
-    self
-  end
-end
-
 if $0 == __FILE__
   p "01234".delete_slice(1..2) == "034"
   p "01234".delete_slice(0..1) == "234"
