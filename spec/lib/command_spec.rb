@@ -55,8 +55,8 @@ context Redcar::Command, "when collecting input for command" do
   specify "should get the scope as input" do
     @tab.replace "puts \"hello\""
     @tab.cursor = 7
-    Redcar::Syntax.load_grammars
-    @tab.textview.set_grammar(Redcar::Syntax.grammar(:name => 'Ruby'))
+    Redcar::SyntaxSourceView.load_grammars
+    @tab.textview.set_grammar(Redcar::SyntaxSourceView.grammar(:name => 'Ruby'))
     @command.input_by_type(:scope).should == "\"hello\""
   end
   

@@ -1,79 +1,171 @@
 --- 
+:menu_defs: 
+  854d1120-0955-012a-2076-000ae4ee635c: 
+    :uuid: 854d1120-0955-012a-2076-000ae4ee635c
+    :enabled: true
+    :name: New Menu
+  fb61c5b0-0e22-012a-207d-000ae4ee635c: 
+    :icon: none
+    :uuid: fb61c5b0-0e22-012a-207d-000ae4ee635c
+    :enabled: true
+    :name: Text
+    :visible: true
+  3fd33a80-0f9a-012a-2094-000ae4ee635c: 
+    :icon: none
+    :uuid: 3fd33a80-0f9a-012a-2094-000ae4ee635c
+    :enabled: true
+    :name: Tools
+    :visible: true
+  9ed5d780-0e23-012a-207e-000ae4ee635c: 
+    :uuid: 9ed5d780-0e23-012a-207e-000ae4ee635c
+    :enabled: true
+    :name: New Menu
+  89ee6260-0955-012a-2076-000ae4ee635c: 
+    :uuid: 89ee6260-0955-012a-2076-000ae4ee635c
+    :enabled: true
+    :name: New Menu
+  92764550-0955-012a-2076-000ae4ee635c: 
+    :uuid: 92764550-0955-012a-2076-000ae4ee635c
+    :enabled: true
+    :name: New Menu
+  51426e80-0955-012a-2073-000ae4ee635c: 
+    :uuid: 51426e80-0955-012a-2073-000ae4ee635c
+    :enabled: true
+    :name: New Menu
+  9663ea20-0dc3-012a-2078-000ae4ee635c: 
+    :uuid: 9663ea20-0dc3-012a-2078-000ae4ee635c
+    :enabled: true
+    :name: New Menu
+  fefe8410-0f94-012a-2092-000ae4ee635c: 
+    :icon: none
+    :uuid: fefe8410-0f94-012a-2092-000ae4ee635c
+    :enabled: true
+    :name: Move Cursor
+    :visible: true
+  a7545f50-102c-012a-2096-000ae4ee635c: 
+    :icon: none
+    :uuid: a7545f50-102c-012a-2096-000ae4ee635c
+    :enabled: true
+    :name: Invisible
+    :visible: true
+  c4b97cd0-0dc3-012a-2078-000ae4ee635c: 
+    :icon: none
+    :uuid: c4b97cd0-0dc3-012a-2078-000ae4ee635c
+    :enabled: true
+    :name: File
+    :visible: true
+  510bb3e0-0e23-012a-207e-000ae4ee635c: 
+    :icon: none
+    :uuid: 510bb3e0-0e23-012a-207e-000ae4ee635c
+    :enabled: true
+    :name: Convert
+    :visible: true
+  cf7bf240-101b-012a-2095-000ae4ee635c: 
+    :icon: none
+    :uuid: cf7bf240-101b-012a-2095-000ae4ee635c
+    :enabled: true
+    :name: Debug
+    :visible: true
+  deafd620-ff33-0129-2069-000ae4ee635c: 
+    :icon: none
+    :enabled: true
+    :name: Options
+    :visible: true
+  082365a0-0f8e-012a-208e-000ae4ee635c: 
+    :icon: none
+    :uuid: 082365a0-0f8e-012a-208e-000ae4ee635c
+    :enabled: true
+    :name: Edit
+    :visible: true
+  9ce91d00-10f1-012a-2098-000ae4ee635c: 
+    :icon: none
+    :uuid: 9ce91d00-10f1-012a-2098-000ae4ee635c
+    :enabled: true
+    :name: Select
+    :visible: true
+  82032ae0-0e2d-012a-2081-000ae4ee635c: 
+    :icon: none
+    :uuid: 82032ae0-0e2d-012a-2081-000ae4ee635c
+    :enabled: true
+    :name: Tab
+    :visible: true
+  81482170-0955-012a-2076-000ae4ee635c: 
+    :uuid: 81482170-0955-012a-2076-000ae4ee635c
+    :enabled: true
+    :name: New Menu
 :commands: 
   3a0df920-10eb-012a-2097-000ae4ee635c: 
     :type: :inline
     :icon: none
     :tooltip: ""
     :uuid: 3a0df920-10eb-012a-2097-000ae4ee635c
+    :command: p Redcar.tabs["#scratch"]
+    :enabled: true
     :output: :discard
     :sensitive: :nothing
-    :command: p Redcar.tabs["#scratch"]
+    :activated_by: :key_combination
     :name: Find Tab
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
-    :scope_selector: ""
     :activated_by_value: ""
+    :scope_selector: ""
     :input: :none
   41481270-0f79-012a-2088-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :icon: none
     :uuid: 41481270-0f79-012a-2088-000ae4ee635c
-    :output: :replace_input
     :command: input.swapcase
+    :enabled: true
+    :output: :replace_input
     :sensitive: :current_tab_is_text_tab?
+    :activated_by: :key_combination
     :name: iNVERT cASE
     :fallback_input: :line
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: control g
     :scope_selector: ""
     :input: :selected_text
-    :activated_by_value: control g
   de849830-ff33-0129-2069-000ae4ee635c: 
     :type: :inline
     :icon: PREFERENCES
     :tooltip: ""
-    :output: :discard
     :command: |-
       nt = Redcar.new_tab(Redcar::MenuEditTab)
       nt.name = "Edit Menus"
       nt.focus
-    :sensitive: :nothing
-    :name: Edit Menus
-    :fallback_input: :none
-    :version: :original
     :enabled: true
+    :output: :discard
+    :sensitive: :nothing
     :activated_by: :key_combination
+    :name: Edit Menus
+    :version: :original
+    :fallback_input: :none
     :visible: true
+    :activated_by_value: ""
     :scope_selector: ""
     :input: :none
-    :activated_by_value: ""
   25c6bba0-0f8e-012a-208e-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :icon: PASTE
     :uuid: 25c6bba0-0f8e-012a-208e-000ae4ee635c
-    :output: :discard
     :command: tab.paste
+    :enabled: true
+    :output: :discard
     :sensitive: :can_paste?
+    :activated_by: :key_combination
     :name: Paste
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: control v
     :scope_selector: ""
     :input: :none
-    :activated_by_value: control v
   3b1cf3c0-0f89-012a-208b-000ae4ee635c: 
     :type: :inline
     :icon: SAVE
     :tooltip: ""
     :uuid: 3b1cf3c0-0f89-012a-208b-000ae4ee635c
-    :output: :discard
-    :sensitive: :unsaved_text_tabs?
     :command: |-
       puts "saving file #{tab.filename}"
       if tab.filename
@@ -84,38 +176,40 @@
         tab.name = tab.filename.split(/\//).last
         tab.save
       end
+    :enabled: true
+    :output: :discard
+    :sensitive: :unsaved_text_tabs?
+    :activated_by: :key_combination
     :name: Save
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: super s
     :scope_selector: ""
     :input: :none
-    :activated_by_value: super s
   85ff4460-0955-012a-2076-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :uuid: 85ff4460-0955-012a-2076-000ae4ee635c
-    :output: :discard
     :command: ""
-    :name: New Command
-    :fallback_input: :line
-    :version: :original
     :enabled: true
+    :output: :discard
     :activated_by: :key_combination
+    :name: New Command
+    :version: :original
+    :fallback_input: :line
     :scope_selector: ""
     :input: :selected_text
   93a68850-0955-012a-2076-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :uuid: 93a68850-0955-012a-2076-000ae4ee635c
-    :output: :discard
     :command: ""
-    :name: New Command
-    :fallback_input: :line
-    :version: :original
     :enabled: true
+    :output: :discard
     :activated_by: :key_combination
+    :name: New Command
+    :version: :original
+    :fallback_input: :line
     :scope_selector: ""
     :input: :selected_text
   b2799270-0f96-012a-2093-000ae4ee635c: 
@@ -123,58 +217,58 @@
     :tooltip: ""
     :icon: GOTO_BOTTOM
     :uuid: b2799270-0f96-012a-2093-000ae4ee635c
-    :output: :discard
     :command: tab.cursor = tab.char_count
+    :enabled: true
+    :output: :discard
     :sensitive: :current_tab_is_text_tab?
+    :activated_by: :key_combination
     :name: Document end
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: alt-shift >
     :scope_selector: ""
     :input: :none
-    :activated_by_value: alt-shift >
   a0741ab0-0e23-012a-207e-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :icon: none
     :uuid: a0741ab0-0e23-012a-207e-000ae4ee635c
-    :output: :replace_input
     :command: input.downcase
-    :sensitive: :current_tab_is_text_tab?
-    :name: to lowercase
-    :fallback_input: :line
-    :version: :original
     :enabled: true
+    :output: :replace_input
+    :sensitive: :current_tab_is_text_tab?
     :activated_by: :key_combination
+    :name: to lowercase
+    :version: :original
+    :fallback_input: :line
     :visible: true
+    :activated_by_value: control-shift U
     :scope_selector: ""
     :input: :selected_text
-    :activated_by_value: control-shift U
   84767210-0955-012a-2076-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :uuid: 84767210-0955-012a-2076-000ae4ee635c
-    :output: :discard
     :command: ""
-    :name: New Command
-    :fallback_input: :line
-    :version: :original
     :enabled: true
+    :output: :discard
     :activated_by: :key_combination
+    :name: New Command
+    :version: :original
+    :fallback_input: :line
     :scope_selector: ""
     :input: :selected_text
   93daa5f0-0955-012a-2076-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :uuid: 93daa5f0-0955-012a-2076-000ae4ee635c
-    :output: :discard
     :command: ""
-    :name: New Command
-    :fallback_input: :line
-    :version: :original
     :enabled: true
+    :output: :discard
     :activated_by: :key_combination
+    :name: New Command
+    :version: :original
+    :fallback_input: :line
     :scope_selector: ""
     :input: :selected_text
   27006cf0-0f8b-012a-208c-000ae4ee635c: 
@@ -182,168 +276,197 @@
     :tooltip: ""
     :icon: CLOSE
     :uuid: 27006cf0-0f8b-012a-208c-000ae4ee635c
+    :command: Redcar.quit
+    :enabled: true
     :output: :discard
     :sensitive: :nothing
-    :command: Redcar.quit
+    :activated_by: :key_combination
     :name: Exit
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: ""
     :scope_selector: ""
     :input: :none
-    :activated_by_value: ""
   07219450-0f95-012a-2092-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :icon: GO_FORWARD
     :uuid: 07219450-0f95-012a-2092-000ae4ee635c
-    :output: :discard
     :command: tab.forward_word
+    :enabled: true
+    :output: :discard
     :sensitive: :current_tab_is_text_tab?
+    :activated_by: :key_combination
     :name: Forward Word
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: control f
     :scope_selector: ""
     :input: :none
-    :activated_by_value: control f
   b269f400-0e23-012a-207e-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :icon: none
     :uuid: b269f400-0e23-012a-207e-000ae4ee635c
-    :output: :replace_input
     :command: |-
       input.gsub(/\b([^\s]+)\b/) do |word| 
         word[0..0].upcase + word[1..-1].downcase
       end
-    :sensitive: :current_tab_is_text_tab?
-    :name: to Title Case
-    :fallback_input: :line
-    :version: :original
     :enabled: true
+    :output: :replace_input
+    :sensitive: :current_tab_is_text_tab?
     :activated_by: :key_combination
+    :name: to Title Case
+    :version: :original
+    :fallback_input: :line
     :visible: true
+    :activated_by_value: alt-control u
     :scope_selector: ""
     :input: :selected_text
-    :activated_by_value: alt-control u
   9fbff660-0f96-012a-2093-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :icon: GOTO_LAST
     :uuid: 9fbff660-0f96-012a-2093-000ae4ee635c
-    :output: :discard
     :command: tab.cursor = :line_end
+    :enabled: true
+    :output: :discard
     :sensitive: :current_tab_is_text_tab?
+    :activated_by: :key_combination
     :name: Line end
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: control e
     :scope_selector: ""
     :input: :none
-    :activated_by_value: control e
   46a15e70-10f1-012a-2098-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :icon: none
     :uuid: 46a15e70-10f1-012a-2098-000ae4ee635c
-    :output: :insert_after_input
     :command: |-
       input =~ /^(\s*)/
       "\n" + ($1.length-2)*" " + "end"
+    :enabled: true
+    :output: :insert_after_input
     :sensitive: :nothing
+    :activated_by: :key_combination
     :name: Insert 'end'
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: control-shift E
     :scope_selector: ""
     :input: :line
-    :activated_by_value: control-shift E
+  1d475080-114c-012a-209a-000ae4ee635c: 
+    :type: :inline
+    :tooltip: ""
+    :icon: none
+    :uuid: 1d475080-114c-012a-209a-000ae4ee635c
+    :command: |-
+      nt = Redcar.new_tab(HtmlTab, <<-HTML
+      <html>
+        <body>
+      <A HREF="noplace" onMouseover="alert('HAI?')"> Don't click this link!</A>
+          I CAN HAZ CHEEZBURGER?<br />
+      <br />
+      <img src="foo.png" />
+        </body>
+      </html>
+      HTML
+      )
+      nt.focus
+      nt.name = "HTML"
+    :enabled: true
+    :output: :discard
+    :sensitive: :nothing
+    :activated_by: :key_combination
+    :name: HTML Tab
+    :fallback_input: :none
+    :visible: true
+    :activated_by_value: ""
+    :scope_selector: ""
+    :input: :none
   886fbf90-0f8e-012a-208f-000ae4ee635c: 
     :type: :inline
     :icon: SELECT_ALL
     :tooltip: ""
     :uuid: 886fbf90-0f8e-012a-208f-000ae4ee635c
-    :output: :discard
     :command: tab.select(0, tab.char_count)
+    :enabled: true
+    :output: :discard
     :sensitive: :current_tab_is_text_tab?
+    :activated_by: :key_combination
     :name: Select All
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: control-shift A
     :scope_selector: ""
     :input: :none
-    :activated_by_value: control-shift A
   1438cbd0-0f8b-012a-208c-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :icon: CLOSE
     :uuid: 1438cbd0-0f8b-012a-208c-000ae4ee635c
+    :command: tab.close
+    :enabled: true
     :output: :discard
     :sensitive: :open_tabs?
-    :command: tab.close
+    :activated_by: :key_combination
     :name: Close Tab
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: super w
     :scope_selector: ""
     :input: :none
-    :activated_by_value: super w
   957770e0-0f89-012a-208b-000ae4ee635c: 
     :type: :inline
     :icon: SAVE_AS
     :tooltip: ""
     :uuid: 957770e0-0f89-012a-208b-000ae4ee635c
-    :output: :discard
-    :sensitive: :unsaved_text_tabs?
     :command: |-
       puts "saving file #{tab.filename}"
       if tab.filename = Redcar::Dialog.save
         tab.name = tab.filename.split(/\//).last
         tab.save
       end
+    :enabled: true
+    :output: :discard
+    :sensitive: :unsaved_text_tabs?
+    :activated_by: :key_combination
     :name: Save As
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: alt-super s
     :scope_selector: ""
     :input: :none
-    :activated_by_value: alt-super s
   56785a10-0e23-012a-207e-000ae4ee635c: 
     :type: :inline
     :icon: none
     :tooltip: ""
     :uuid: 56785a10-0e23-012a-207e-000ae4ee635c
-    :output: :replace_input
     :command: input.upcase
-    :sensitive: :current_tab_is_text_tab?
-    :name: to UPPERCASE
-    :fallback_input: :line
-    :version: :original
     :enabled: true
+    :output: :replace_input
+    :sensitive: :current_tab_is_text_tab?
     :activated_by: :key_combination
+    :name: to UPPERCASE
+    :version: :original
+    :fallback_input: :line
     :visible: true
+    :activated_by_value: control u
     :scope_selector: ""
     :input: :selected_text
-    :activated_by_value: control u
   82360cd0-0955-012a-2076-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :uuid: 82360cd0-0955-012a-2076-000ae4ee635c
-    :output: :discard
     :command: ""
-    :name: New Command
-    :fallback_input: :line
-    :version: :original
     :enabled: true
+    :output: :discard
     :activated_by: :key_combination
+    :name: New Command
+    :version: :original
+    :fallback_input: :line
     :scope_selector: ""
     :input: :selected_text
   00926a20-0e23-012a-207d-000ae4ee635c: 
@@ -351,24 +474,23 @@
     :icon: COPY
     :tooltip: ""
     :uuid: 00926a20-0e23-012a-207d-000ae4ee635c
-    :output: :insert_after_input
     :command: input
-    :sensitive: :current_tab_is_text_tab?
-    :name: Duplicate
-    :fallback_input: :line
-    :version: :original
     :enabled: true
+    :output: :show_as_html
+    :sensitive: :current_tab_is_text_tab?
     :activated_by: :key_combination
+    :name: Duplicate
+    :version: :original
+    :fallback_input: :line
     :visible: true
+    :activated_by_value: control-shift D
     :scope_selector: ""
     :input: :selected_text
-    :activated_by_value: control-shift D
   8bc64050-0e2d-012a-2081-000ae4ee635c: 
     :type: :inline
     :icon: INFO
     :tooltip: ""
     :uuid: 8bc64050-0e2d-012a-2081-000ae4ee635c
-    :output: :discard
     :command: "\n\
       def statistics(tab)\n  chars = tab.contents.length\n  lines = tab.contents.to_s.split(/\\n/).length\n  words = tab.contents.to_s.split(/\\s/).length\n  return chars, lines, words\n\
       end\n  \n\
@@ -377,23 +499,22 @@
       dialog.on_button(:Update) do\n  ct = Redcar.current_tab\n  dialog.chars, dialog.lines, dialog.words = statistics(ct)\n\
       end\n\
       dialog.show { dialog.press_button(:Update) }      "
-    :sensitive: :open_text_tabs?
-    :name: Statistics
-    :fallback_input: :none
-    :version: :original
     :enabled: true
+    :output: :discard
+    :sensitive: :open_text_tabs?
     :activated_by: :key_combination
+    :name: Statistics
+    :version: :original
+    :fallback_input: :none
     :visible: true
+    :activated_by_value: ""
     :scope_selector: ""
     :input: :none
-    :activated_by_value: ""
   fd75e990-0e2e-012a-2082-000ae4ee635c: 
     :type: :inline
     :icon: OPEN
     :tooltip: ""
     :uuid: fd75e990-0e2e-012a-2082-000ae4ee635c
-    :output: :discard
-    :sensitive: :nothing
     :command: |-
       new_tab = Redcar.new_tab
       if new_tab.filename = Redcar::Dialog.open and File.file?(new_tab.filename)
@@ -403,62 +524,64 @@
         new_tab.focus
         new_tab.cursor = 0
       end
-    :name: Open
-    :fallback_input: :none
-    :version: :original
     :enabled: true
+    :output: :discard
+    :sensitive: :nothing
     :activated_by: :key_combination
+    :name: Open
+    :version: :original
+    :fallback_input: :none
     :visible: true
+    :activated_by_value: super o
     :scope_selector: ""
     :input: :none
-    :activated_by_value: super o
   2107b4d0-0f8e-012a-208e-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :icon: COPY
     :uuid: 2107b4d0-0f8e-012a-208e-000ae4ee635c
-    :output: :discard
     :command: tab.copy
+    :enabled: true
+    :output: :discard
     :sensitive: :text_selected?
+    :activated_by: :key_combination
     :name: Copy
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: control c
     :scope_selector: ""
     :input: :none
-    :activated_by_value: control c
   c9b78970-0dc3-012a-2078-000ae4ee635c: 
     :type: :inline
     :icon: FILE
     :tooltip: Open a blank text tab.
     :uuid: c9b78970-0dc3-012a-2078-000ae4ee635c
-    :output: :discard
-    :sensitive: :nothing
     :command: |-
       new_tab = Redcar.new_tab
       new_tab.focus
       Redcar.StatusBar.main = "New document"
-    :name: New
-    :fallback_input: :none
-    :version: :original
     :enabled: true
+    :output: :discard
+    :sensitive: :nothing
     :activated_by: :key_combination
+    :name: New
+    :version: :original
+    :fallback_input: :none
     :visible: true
+    :activated_by_value: super n
     :scope_selector: ""
     :input: :none
-    :activated_by_value: super n
   97c95480-0dc3-012a-2078-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :uuid: 97c95480-0dc3-012a-2078-000ae4ee635c
-    :output: :discard
     :command: ""
-    :name: New Command
-    :fallback_input: :line
-    :version: :original
     :enabled: true
+    :output: :discard
     :activated_by: :key_combination
+    :name: New Command
+    :version: :original
+    :fallback_input: :line
     :scope_selector: ""
     :input: :selected_text
   dcfed670-1019-012a-2095-000ae4ee635c: 
@@ -466,80 +589,80 @@
     :tooltip: ""
     :icon: PREFERENCES
     :uuid: dcfed670-1019-012a-2095-000ae4ee635c
-    :output: :discard
     :command: Redcar::PreferencesDialog.new
+    :enabled: true
+    :output: :discard
     :sensitive: :nothing
+    :activated_by: :key_combination
     :name: Preferences
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: ""
     :scope_selector: ""
     :input: :none
-    :activated_by_value: ""
   a063f1a0-10f1-012a-2098-000ae4ee635c: 
     :type: :inline
     :icon: none
     :tooltip: ""
     :uuid: a063f1a0-10f1-012a-2098-000ae4ee635c
-    :output: :discard
-    :sensitive: :nothing
     :command: |-
       tab.select(
           tab.cursor_offset, 
           [tab.cursor_offset+1, tab.char_count].min
         )
+    :enabled: true
+    :output: :discard
+    :sensitive: :nothing
+    :activated_by: :key_combination
     :name: Character
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
-    :scope_selector: ""
     :activated_by_value: ""
+    :scope_selector: ""
     :input: :none
   1af7a920-0f8e-012a-208e-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :icon: CUT
     :uuid: 1af7a920-0f8e-012a-208e-000ae4ee635c
-    :output: :discard
     :command: tab.cut
+    :enabled: true
+    :output: :discard
     :sensitive: :text_selected?
+    :activated_by: :key_combination
     :name: Cut
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: control x
     :scope_selector: ""
     :input: :none
-    :activated_by_value: control x
   f615c840-0f92-012a-2091-000ae4ee635c: 
     :type: :inline
     :icon: REDO
     :tooltip: ""
     :uuid: f615c840-0f92-012a-2091-000ae4ee635c
-    :output: :discard
     :command: tab.redo
+    :enabled: true
+    :output: :discard
     :sensitive: :can_redo?
+    :activated_by: :key_combination
     :name: Redo
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: alt-control z
     :scope_selector: ""
     :input: :none
-    :activated_by_value: alt-control z
   981bd370-0dc3-012a-2078-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :uuid: 981bd370-0dc3-012a-2078-000ae4ee635c
-    :output: :discard
     :command: ""
-    :name: New Command
-    :fallback_input: :line
-    :version: :original
     :enabled: true
+    :output: :discard
     :activated_by: :key_combination
+    :name: New Command
+    :version: :original
+    :fallback_input: :line
     :scope_selector: ""
     :input: :selected_text
   17aced50-0f95-012a-2092-000ae4ee635c: 
@@ -547,78 +670,78 @@
     :tooltip: ""
     :icon: GO_BACK
     :uuid: 17aced50-0f95-012a-2092-000ae4ee635c
-    :output: :discard
     :command: tab.backward_word
+    :enabled: true
+    :output: :discard
     :sensitive: :current_tab_is_text_tab?
+    :activated_by: :key_combination
     :name: Backward Word
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: control b
     :scope_selector: ""
     :input: :none
-    :activated_by_value: control b
   9031eb70-0f96-012a-2093-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :icon: GOTO_FIRST
     :uuid: 9031eb70-0f96-012a-2093-000ae4ee635c
-    :output: :discard
     :command: tab.cursor = :line_start
+    :enabled: true
+    :output: :discard
     :sensitive: :current_tab_is_text_tab?
+    :activated_by: :key_combination
     :name: Line start
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: control a
     :scope_selector: ""
     :input: :none
-    :activated_by_value: control a
   d428c1f0-101b-012a-2095-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :icon: none
     :uuid: d428c1f0-101b-012a-2095-000ae4ee635c
-    :output: :discard
     :command: |-
       puts "Tabs:"
       puts "  - " + Redcar.current_window.all_tabs.map(&:name).to_s
+    :enabled: true
+    :output: :discard
     :sensitive: :nothing
+    :activated_by: :key_combination
     :name: List Tabs
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: ""
     :scope_selector: ""
     :input: :none
-    :activated_by_value: ""
   aeacca30-102c-012a-2096-000ae4ee635c: 
     :type: :inline
     :icon: none
     :tooltip: ""
     :uuid: aeacca30-102c-012a-2096-000ae4ee635c
+    :command: tab.insert_at_cursor "  "
+    :enabled: true
     :output: :discard
     :sensitive: :current_tab_is_text_tab?
-    :command: tab.insert_at_cursor "  "
+    :activated_by: :key_combination
     :name: Tab
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: Tab
     :scope_selector: ""
     :input: :none
-    :activated_by_value: Tab
   8639dba0-0955-012a-2076-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :uuid: 8639dba0-0955-012a-2076-000ae4ee635c
-    :output: :discard
     :command: ""
-    :name: New Command
-    :fallback_input: :line
-    :version: :original
     :enabled: true
+    :output: :discard
     :activated_by: :key_combination
+    :name: New Command
+    :version: :original
+    :fallback_input: :line
     :scope_selector: ""
     :input: :selected_text
   0d631080-0f8e-012a-208e-000ae4ee635c: 
@@ -626,41 +749,40 @@
     :tooltip: ""
     :icon: UNDO
     :uuid: 0d631080-0f8e-012a-208e-000ae4ee635c
-    :output: :discard
     :command: |-
       tab.undo
       puts "blarrrg"
+    :enabled: true
+    :output: :discard
     :sensitive: :can_undo?
+    :activated_by: :key_combination
     :name: Undo
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: control z
     :scope_selector: ""
     :input: :none
-    :activated_by_value: control z
   af02e620-0f96-012a-2093-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :icon: GOTO_TOP
     :uuid: af02e620-0f96-012a-2093-000ae4ee635c
-    :output: :discard
     :command: tab.cursor = 0
+    :enabled: true
+    :output: :discard
     :sensitive: :current_tab_is_text_tab?
+    :activated_by: :key_combination
     :name: Document start
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
     :visible: true
+    :activated_by_value: alt-shift <
     :scope_selector: ""
     :input: :none
-    :activated_by_value: alt-shift <
   b1b0dd30-110a-012a-2099-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :icon: none
     :uuid: b1b0dd30-110a-012a-2099-000ae4ee635c
-    :output: :discard
     :command: |-
       if tab.cursor_iter.inside_word?
         s = tab.cursor_iter.backward_word_start!.offset
@@ -668,35 +790,36 @@
         s1, e1 = [s, e].sort
         tab.select(s1, e1)
       end
+    :enabled: true
+    :output: :discard
     :sensitive: :nothing
+    :activated_by: :key_combination
     :name: Word
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
-    :scope_selector: ""
     :visible: true
-    :input: :none
     :activated_by_value: control w
+    :scope_selector: ""
+    :input: :none
   1d217670-110b-012a-2099-000ae4ee635c: 
     :type: :inline
     :tooltip: ""
     :icon: none
     :uuid: 1d217670-110b-012a-2099-000ae4ee635c
-    :output: :discard
     :command: |-
       tab.select(
         tab.line_start(tab.cursor_line), 
         tab.line_end(tab.cursor_line)
       )
+    :enabled: true
+    :output: :discard
     :sensitive: :nothing
+    :activated_by: :key_combination
     :name: Line
     :fallback_input: :none
-    :enabled: true
-    :activated_by: :key_combination
-    :scope_selector: ""
     :visible: true
-    :input: :none
     :activated_by_value: shift-super L
+    :scope_selector: ""
+    :input: :none
 :menus: 
 - c4b97cd0-0dc3-012a-2078-000ae4ee635c: 
   - c9b78970-0dc3-012a-2078-000ae4ee635c
@@ -745,99 +868,6 @@
 - cf7bf240-101b-012a-2095-000ae4ee635c: 
   - d428c1f0-101b-012a-2095-000ae4ee635c
   - 3a0df920-10eb-012a-2097-000ae4ee635c
+  - 1d475080-114c-012a-209a-000ae4ee635c
 - a7545f50-102c-012a-2096-000ae4ee635c: 
   - aeacca30-102c-012a-2096-000ae4ee635c
-:menu_defs: 
-  854d1120-0955-012a-2076-000ae4ee635c: 
-    :uuid: 854d1120-0955-012a-2076-000ae4ee635c
-    :name: New Menu
-    :enabled: true
-  fb61c5b0-0e22-012a-207d-000ae4ee635c: 
-    :icon: none
-    :uuid: fb61c5b0-0e22-012a-207d-000ae4ee635c
-    :name: Text
-    :enabled: true
-    :visible: true
-  3fd33a80-0f9a-012a-2094-000ae4ee635c: 
-    :icon: none
-    :uuid: 3fd33a80-0f9a-012a-2094-000ae4ee635c
-    :name: Tools
-    :enabled: true
-    :visible: true
-  9ed5d780-0e23-012a-207e-000ae4ee635c: 
-    :uuid: 9ed5d780-0e23-012a-207e-000ae4ee635c
-    :name: New Menu
-    :enabled: true
-  89ee6260-0955-012a-2076-000ae4ee635c: 
-    :uuid: 89ee6260-0955-012a-2076-000ae4ee635c
-    :name: New Menu
-    :enabled: true
-  92764550-0955-012a-2076-000ae4ee635c: 
-    :uuid: 92764550-0955-012a-2076-000ae4ee635c
-    :name: New Menu
-    :enabled: true
-  51426e80-0955-012a-2073-000ae4ee635c: 
-    :uuid: 51426e80-0955-012a-2073-000ae4ee635c
-    :name: New Menu
-    :enabled: true
-  9663ea20-0dc3-012a-2078-000ae4ee635c: 
-    :uuid: 9663ea20-0dc3-012a-2078-000ae4ee635c
-    :name: New Menu
-    :enabled: true
-  fefe8410-0f94-012a-2092-000ae4ee635c: 
-    :icon: none
-    :uuid: fefe8410-0f94-012a-2092-000ae4ee635c
-    :name: Move Cursor
-    :enabled: true
-    :visible: true
-  a7545f50-102c-012a-2096-000ae4ee635c: 
-    :icon: none
-    :uuid: a7545f50-102c-012a-2096-000ae4ee635c
-    :name: Invisible
-    :enabled: true
-    :visible: true
-  c4b97cd0-0dc3-012a-2078-000ae4ee635c: 
-    :icon: none
-    :uuid: c4b97cd0-0dc3-012a-2078-000ae4ee635c
-    :name: File
-    :enabled: true
-    :visible: true
-  510bb3e0-0e23-012a-207e-000ae4ee635c: 
-    :icon: none
-    :uuid: 510bb3e0-0e23-012a-207e-000ae4ee635c
-    :name: Convert
-    :enabled: true
-    :visible: true
-  cf7bf240-101b-012a-2095-000ae4ee635c: 
-    :icon: none
-    :uuid: cf7bf240-101b-012a-2095-000ae4ee635c
-    :name: Debug
-    :enabled: true
-    :visible: true
-  deafd620-ff33-0129-2069-000ae4ee635c: 
-    :icon: none
-    :name: Options
-    :enabled: true
-    :visible: true
-  082365a0-0f8e-012a-208e-000ae4ee635c: 
-    :icon: none
-    :uuid: 082365a0-0f8e-012a-208e-000ae4ee635c
-    :name: Edit
-    :enabled: true
-    :visible: true
-  9ce91d00-10f1-012a-2098-000ae4ee635c: 
-    :icon: none
-    :uuid: 9ce91d00-10f1-012a-2098-000ae4ee635c
-    :name: Select
-    :enabled: true
-    :visible: true
-  82032ae0-0e2d-012a-2081-000ae4ee635c: 
-    :icon: none
-    :uuid: 82032ae0-0e2d-012a-2081-000ae4ee635c
-    :name: Tab
-    :enabled: true
-    :visible: true
-  81482170-0955-012a-2076-000ae4ee635c: 
-    :uuid: 81482170-0955-012a-2076-000ae4ee635c
-    :name: New Menu
-    :enabled: true

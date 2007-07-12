@@ -94,8 +94,8 @@ module Redcar
       @arrangements[name] = Redcar.current_window.saveable_object
     end
     
-    def new_tab(type=TextTab)
-      nt = Redcar.current_pane.new_tab(type)
+    def new_tab(type=TextTab, *args)
+      nt = Redcar.current_pane.new_tab(type, *args)
       Redcar.current_window.place_tab(nt)
       nt
     end

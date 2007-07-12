@@ -99,6 +99,10 @@ module Redcar
         when :word
           Redcar.tab.text[@s..@e] = output
         end
+      when :show_as_html
+        new_tab = Redcar.new_tab(HtmlTab, output.to_s)
+        new_tab.name = "output: " + @def[:name]
+        new_tab.focus
       when :insert_after_input
         case valid_input_type
         when :selected_text

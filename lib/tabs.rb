@@ -30,13 +30,18 @@ module Redcar
   class Tab
     attr_accessor :pane, :doc, :widget
     
-    def initialize(pane, widget)
-      @sw = Gtk::ScrolledWindow.new
-      @sw.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC)
-      @sw.add(widget)
+    def initialize(pane, widget, options)
       @widget = widget
       @tab_vbox = Gtk::VBox.new
-      @tab_vbox.pack_end(@sw)
+      if options[:scrolled]
+        @sw = Gtk::ScrolledWindow.new
+        @sw.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC)
+        @sw.add(widget)
+        @tab_vbox.pack_end(@sw)
+      else
+        @tab_vbox.pack_end(widget)
+      end
+        
       @doc = Gtk::MDI::Document.new(@tab_vbox, "#new#{pane.count}")
       @pane = pane
       @pane.notebook.add_document(@doc)

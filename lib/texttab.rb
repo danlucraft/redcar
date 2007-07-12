@@ -23,92 +23,14 @@ module Gtk
   end
 end
 
-def TextLoc(a, b)
-  Redcar::TextLoc.new(a, b)
+Redcar.hook :after_startup do
+  Redcar.MainToolbar.append_combo(
+      Redcar::SyntaxSourceView.grammar_names.sort) do |_, tab, grammar|
+    tab.sourceview.set_grammar(Redcar::SyntaxSourceView.grammar(:name => grammar))
+  end
 end
 
 module Redcar  
-  class TextLoc
-     attr_accessor :line, :offset
-    
-     def initialize(line, offset)
-       @line = line
-       @offset = offset
-     end
-    
-    def copy
-      TextLoc.new(self.line, self.offset)
-    end
-    
-    def ==(other)
-      other and @line == other.line and @offset == other.offset
-    end  
-    
-    def <(other)
-      if self.line < other.line
-        return true
-      elsif self.line == other.line
-        if self.offset < other.offset
-          return true
-        else
-          return false
-        end
-      else
-        return false
-      end
-    end
-    
-    def >(other)
-      if self.line > other.line
-        return true
-      elsif self.line == other.line
-        if self.offset > other.offset
-          return true
-        else
-          return false
-        end
-      else
-        return false
-      end
-    end
-    
-    def <=(other)
-      if self.line < other.line
-        return true
-      elsif self.line == other.line
-        if self.offset < other.offset
-          return true
-        elsif self.offset == other.offset
-          return true
-        else
-          return false
-        end
-      else
-        return false
-      end
-    end
-    
-    def >=(other)
-      sl = self.line
-      ol = other.line
-      if sl > ol
-        return true
-      elsif sl == ol
-        so = self.offset
-        oo = other.offset
-        if so > oo
-          return true
-        elsif so == oo
-          return true
-        else
-          return false
-        end
-      else
-        return false
-      end
-    end
-  end
-
   class TextTab < Tab
     include Keymap
     include DebugPrinter
@@ -129,9 +51,22 @@ module Redcar
              end
            end
          })
+      
       p.add_with_widget("Entry Font", 
          :default => "Monospace 12",
          :widget => fn { TextTab.font_chooser_button("Entry Font") })
+      
+      p.add("Tab Theme", :type => :combo, :default => "Mac Classic", 
+            :values => fn { Theme.theme_names },
+            :if_changed => fn { 
+              Redcar.current_window.all_tabs.each do |tab|
+                if tab.respond_to? :sourceview
+                  tab.sourceview.set_theme(
+                    Theme.theme(TextTab.Preferences["Tab Theme"]))
+                end
+              end})
+      p.add("Entry Theme", :type => :combo, :default => "Mac Classic", 
+            :values => fn { Theme.theme_names })
     end
     
     def self.font_chooser_button(name)
@@ -619,6 +554,7 @@ module Redcar
     # --------
     
     attr_accessor :textview
+    alias sourceview textview
     
     def initialize(pane)
       Gtk::RC.parse_string(<<-EOR)
@@ -627,14 +563,13 @@ module Redcar
   }
   class "GtkWidget" style "green-cursor"
   EOR
-#       @tag_table = Gtk::SourceTagTable.new
-      @textview = SyntaxSourceView.new()# @tag_table)01942715078
-      @textview.wrap_mode = Gtk::TextTag::WRAP_WORD
-      @textview.show_line_numbers = 1
-      @textview.new_buffer
+      @textview = SyntaxSourceView.new(:bundles_dir => "textmate/Bundles/",
+                                       :themes_dir  => "textmate/Themes/",
+                                       :cache_dir   => "cache/")
+#      @textview.wrap_mode = Gtk::TextTag::WRAP_WORD
 #       @textview = Redcar::GUI::Text.new(buffer, textview)
       self.set_font(TextTab.Preferences["Tab Font"])
-      super(pane, @textview)
+      super(pane, @textview, :scrolled => true)
       Redcar.tab_length ||= 2
       connect_signals
     end
@@ -701,14 +636,14 @@ module Redcar
       end
       if @filename
         ext = File.extname(@filename)
-        @textview.set_grammar(gr = Syntax.grammar(:extension => ext))
+        @textview.set_grammar(gr = SyntaxSourceView.grammar(:extension => ext))
         if gr
           debug_puts "setting grammar #{gr.name} from file extension: #{ext}"
           @textview.colour
         end
       end
       if 
-        @textview.set_grammar(gr = Syntax.grammar(:first_line => self.get_line(0)))
+        @textview.set_grammar(gr = SyntaxSourceView.grammar(:first_line => self.get_line(0)))
         if gr
           debug_puts "setting grammar #{gr.name} from first line"
           @textview.colour

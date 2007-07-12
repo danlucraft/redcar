@@ -8,27 +8,15 @@ require "ruby2cext/eval2c"
 $e2c = Ruby2CExtension::Eval2C.new
 
 require 'gtk2'
-require 'gtksourceview'
 require 'gconf2'
 require 'libglade2'
 require 'fileutils'
-require 'oniguruma'
-module Oniguruma
-  class ORegexp
-    def _dump(_)
-      self.source
-    end
-    def self._load(str)
-      self.new(str, :options => Oniguruma::OPTION_CAPTURE_GROUP)
-    end
-  end
-end
+require 'uuid'
 
 require File.dirname(__FILE__) + '/../vendor/active_support'
 require File.dirname(__FILE__) + '/../vendor/null'
 require File.dirname(__FILE__) + '/../vendor/ruby_extensions'
 require File.dirname(__FILE__) + '/../vendor/debugprinter'
-require File.dirname(__FILE__) + '/../vendor/binary_enum'
 require File.dirname(__FILE__) + '/../vendor/keyword_processor'
 require 'vendor/instruments'
 
@@ -51,16 +39,15 @@ require File.dirname(__FILE__) + '/textentry'
 require File.dirname(__FILE__) + '/texttab'
 require File.dirname(__FILE__) + '/tooltips'
 require File.dirname(__FILE__) + '/shelltab'
-require File.dirname(__FILE__) + '/syntax'
-require 'lib/theme'
-require File.dirname(__FILE__) + '/colourer'
 require File.dirname(__FILE__) + '/../vendor/mdi5'
 require File.dirname(__FILE__) + '/panes'
 require File.dirname(__FILE__) + '/redcar_window'
 require File.dirname(__FILE__) + '/list_abstraction'
-require 'lib/menu_edit_dialog.rb'
 require 'lib/menu_edit_tab.rb'
 require 'lib/button_text_tab.rb'
+require 'lib/sourceview/sourceview'
+require 'lib/texttab_syntax'
+require 'lib/html_tab'
 
 require 'lib/plugin.rb'
 
@@ -74,6 +61,8 @@ module Redcar
       Redcar.windows ||= []
       Redcar.windows << Redcar.window_controller.open_window
       Redcar.current_window = Redcar.windows.first
+      Redcar.moz = Gtk::MozEmbed.new
+     # Redcar.moz.sensitive = false
     end
     
     def load_stuff(options)
@@ -101,6 +90,8 @@ module Redcar
       load_stuff(options)
       Redcar.output_style = options[:output]
       Redcar.current_window.show_window
+      Redcar.moz.show_all
+      
       Redcar.event :startup
     end
     attr_accessor :CUSTOM_DIR

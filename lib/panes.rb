@@ -127,8 +127,8 @@ module Redcar
       end
     end
     
-    def new_tab(type=TextTab)
-      tab = type.new(self)
+    def new_tab(type=TextTab, *args)
+      tab = type.new(self, *args)
       tab.label_angle = @tab_angle
       tab
     end
