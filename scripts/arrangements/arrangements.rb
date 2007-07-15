@@ -13,51 +13,6 @@ Redcar.hook :after_startup do
   Redcar.current_window.apply_arrangement Redcar.arrangements["default"]
 end
 
-Redcar.menu("_View") do |menu|
-  menu.command("_Save Arrangement", :save_arrangement, nil, "") do
-    dialog = Redcar::Dialog.build :title => "Save Arrangement As",
-                                  :buttons => [:ok],
-                                  :entry => [{:name => :name, :type => :text}]
-    dialog.on_button(:ok) do
-      name = dialog.name
-      dialog.close      
-      Redcar.arrangements[name] = Redcar.current_window.get_arrangement
-      Redcar.save_arrangements
-    end
-    dialog.show :modal => true
-  end
-  
-  menu.command("_Print Arrangement", :print_arrangement, nil, "") do |pane, tab|
-    nt = pane.new_tab
-    nt.contents.replace Redcar.current_window.get_arrangement.to_yaml
-    nt.name = "Current Arrangement"
-    nt.focus
-    nt.modified = false
-  end
-  
-  menu.command("_Apply Arrangement", :apply_arrangement, nil, "") do
-    list = Redcar::GUI::List.new
-    list.replace(Redcar.arrangements.keys)
-    
-    dialog = Redcar::Dialog.build :title => "Apply Arrangment",
-                                  :buttons => [:Apply, :cancel],
-                                  :entry => [{:name => :list, :type => :list, :abs => list}]
-    dialog.on_button(:cancel) { dialog.close }
-    dialog.on_button(:Apply) do
-      name = list.selected
-      dialog.close
-      Redcar.current_window.apply_arrangement Redcar.arrangements[name] 
-    end
-    list.on_double_click do |row|
-      name = row
-      dialog.close
-      Redcar.current_window.apply_arrangement Redcar.arrangements[name]   
-    end
-    
-    dialog.show :modal => true
-  end
-end
-
 module Redcar
   DEFAULT_ARRANGEMENT = { "types" => ["Redcar::TextTab"],
                           "tab_angle" => "horizontal",
