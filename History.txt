@@ -1,0 +1,4 @@
+== 0.0.2 / 2007-07-12
+
+* Pre-release, contains most editor functionality and a plugin system.
+

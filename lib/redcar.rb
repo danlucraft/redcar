@@ -56,6 +56,7 @@ require 'vendor/mdi5'
 require 'lib/redcar/plugin.rb'
 
 module Redcar
+  VERSION = '0.0.1'
   class << self
     attr_accessor :current_window, :keystrokes
         
