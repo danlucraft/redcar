@@ -7,18 +7,23 @@ $REDCAR_ENV["test"] = false
 require "ruby2cext/eval2c" 
 $e2c = Ruby2CExtension::Eval2C.new
 
+print "loading gems..."
 require 'gtk2'
 require 'gconf2'
 require 'libglade2'
 require 'fileutils'
 require 'uuid'
+puts "done"
 
+print "loading lib..."
 require 'vendor/active_support'
 require 'vendor/null'
 require 'vendor/ruby_extensions'
 require 'vendor/debugprinter'
 require 'vendor/keyword_processor'
 require 'vendor/instruments'
+
+require 'lib/image/image'
 
 require 'lib/redcar/plist'
 require 'lib/redcar/preferences_dialog.rb'
@@ -55,6 +60,8 @@ require 'vendor/mdi5'
 
 require 'lib/redcar/plugin.rb'
 
+puts "done"
+
 module Redcar
   VERSION = '0.0.1'
   class << self
@@ -70,25 +77,35 @@ module Redcar
      # Redcar.moz.sensitive = false
     end
     
+    def show_time
+      st = Time.now
+      yield
+      en = Time.now
+      puts "done in #{en-st} seconds"
+    end
+    
     def load_stuff(options)
       print "loading menus/ ..."; $stdout.flush
-      Redcar::Menu.load_menus
-      Redcar::Menu.create_menus
+      show_time do
+        Redcar::Menu.load_menus
+        Redcar::Menu.create_menus
+      end
       
-      print "loading scripts/ ..."; $stdout.flush
       if options[:load_scripts]
-        Dir.glob("scripts/*/*.rb").sort.each do |f|
-          if File.file?(f) and not f.include? "~"
-            require f
+        print "loading scripts/ ..."; $stdout.flush
+        show_time do
+          Dir.glob("scripts/*/*.rb").sort.each do |f|
+            if File.file?(f) and not f.include? "~"
+              require f
+            end
           end
-        end
-        Dir.glob("scripts/*.rb").sort.each do |f|
-          if File.file?(f) and not f.include? "~"
-            require f
+          Dir.glob("scripts/*.rb").sort.each do |f|
+            if File.file?(f) and not f.include? "~"
+              require f
+            end
           end
         end
       end
-      puts "done"
     end
     
     def startup(options={})

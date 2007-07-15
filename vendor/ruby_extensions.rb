@@ -34,6 +34,16 @@ class Object
     end
     before_dot_const_method_missing(sym, *args, &block)
   end
+  
+  def sputs
+    Kernel.puts self
+    self
+  end
+  
+  def sp
+    Kernel.p self
+    self
+  end
 end
 
 # note how we use UnboundMethod#bind to ensure 
