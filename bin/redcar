@@ -1,6 +1,7 @@
 #!/usr/local/bin/ruby -Ku
 
-require File.dirname(__FILE__) + '/lib/redcar'
+require File.dirname(__FILE__) + '/../lib/redcar'
+
 begin
   Redcar.startup(:output => :silent)
   #Redcar::Syntax::Parser.debug = true
