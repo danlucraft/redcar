@@ -516,8 +516,9 @@
     :tooltip: ""
     :uuid: fd75e990-0e2e-012a-2082-000ae4ee635c
     :command: |-
-      new_tab = Redcar.new_tab
-      if new_tab.filename = Redcar::Dialog.open and File.file?(new_tab.filename)
+      if filename = Redcar::Dialog.open and File.file?(filename)
+        new_tab = Redcar.new_tab
+        new_tab.filename = filename
         puts "loading file #{new_tab.filename}"
         new_tab.load
         new_tab.name = new_tab.filename.split(/\//).last
