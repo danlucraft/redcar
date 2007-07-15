@@ -21,6 +21,21 @@ class PickyHash < Hash
   end
 end
 
+class Object
+  alias before_dot_const_method_missing method_missing
+  def method_missing(sym, *args, &block)
+    if sym.to_s =~ /[A-Z][a-z]*/
+      begin
+        if const = const_get(sym.to_s)
+          return const
+        end
+      rescue NameError
+      end
+    end
+    before_dot_const_method_missing(sym, *args, &block)
+  end
+end
+
 # note how we use UnboundMethod#bind to ensure 
 # that the context of the block is the instance, rather
 # than the class.
