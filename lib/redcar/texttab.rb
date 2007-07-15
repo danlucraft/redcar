@@ -25,8 +25,8 @@ end
 
 Redcar.hook :after_startup do
   Redcar.MainToolbar.append_combo(
-      Redcar::SyntaxSourceView.grammar_names.sort) do |_, tab, grammar|
-    tab.sourceview.set_grammar(Redcar::SyntaxSourceView.grammar(:name => grammar))
+      Redcar.SyntaxSourceView.grammar_names.sort) do |_, tab, grammar|
+    tab.sourceview.set_grammar(Redcar.SyntaxSourceView.grammar(:name => grammar))
   end
 end
 
@@ -34,7 +34,7 @@ module Redcar
   class TextTab < Tab
     include Keymap
     include DebugPrinter
-    include Redcar::Preferences
+    include Redcar.Preferences
     
     def to_undo(*args, &block)
       true
@@ -70,23 +70,23 @@ module Redcar
     end
     
     def self.font_chooser_button(name)
-      gtk_image = Gtk::Image.new(Gtk::Stock::SELECT_FONT, 
-                                 Gtk::IconSize::MENU)
-      gtk_hbox = Gtk::HBox.new
-      gtk_label = Gtk::Label.new(TextTab.Preferences[name])
+      gtk_image = Gtk.Image.new(Gtk.Stock.SELECT_FONT, 
+                                 Gtk.IconSize.MENU)
+      gtk_hbox = Gtk.HBox.new
+      gtk_label = Gtk.Label.new(TextTab.Preferences[name])
       gtk_hbox.pack_start(gtk_image, false)
       gtk_hbox.pack_start(gtk_label)
-      widget = Gtk::Button.new
+      widget = Gtk.Button.new
       widget.add(gtk_hbox)
       class << widget
         attr_accessor :preference_value
       end
       widget.preference_value = TextTab.Preferences[name]
       widget.signal_connect('clicked') do
-        dialog = Gtk::FontSelectionDialog.new("Select Application Font")
+        dialog = Gtk.FontSelectionDialog.new("Select Application Font")
         dialog.font_name = widget.preference_value
         dialog.preview_text = "Redcar is for Ruby"
-        if dialog.run == Gtk::Dialog::RESPONSE_OK
+        if dialog.run == Gtk.Dialog.RESPONSE_OK
           puts font = dialog.font_name
           font = dialog.font_name
           widget.preference_value = font
@@ -136,7 +136,7 @@ module Redcar
     
     user_commands do
       def cursor=(offset)
-        if offset.is_a? Gtk::TextIter
+        if offset.is_a? Gtk.TextIter
           self.buffer.place_cursor(offset)
         else
           case offset
@@ -400,9 +400,9 @@ module Redcar
         thing = [0, thing].max
         thing = [length, thing].min
         self.buffer.get_iter_at_offset(thing)
-      when Gtk::TextMark
+      when Gtk.TextMark
         self.buffer.get_iter_at_mark(thing)
-      when Gtk::TextIter
+      when Gtk.TextIter
         thing
       when TextLoc
         line_start = self.buffer.get_iter_at_line(thing.line)
@@ -557,15 +557,15 @@ module Redcar
     alias sourceview textview
     
     def initialize(pane)
-      Gtk::RC.parse_string(<<-EOR)
+      Gtk.RC.parse_string(<<-EOR)
   style "green-cursor" {
     GtkTextView::cursor-color = "grey"
   }
   class "GtkWidget" style "green-cursor"
   EOR
       @textview = SyntaxSourceView.new
-#      @textview.wrap_mode = Gtk::TextTag::WRAP_WORD
-#       @textview = Redcar::GUI::Text.new(buffer, textview)
+#      @textview.wrap_mode = Gtk.TextTag.WRAP_WORD
+#       @textview = Redcar.GUI.Text.new(buffer, textview)
       self.set_font(TextTab.Preferences["Tab Font"])
       super(pane, @textview, :scrolled => true)
       Redcar.tab_length ||= 2
@@ -609,7 +609,7 @@ module Redcar
       @textview.signal_connect("button_press_event") do |widget, event|
         Redcar.current_tab = self
         Redcar.current_pane = self.pane
-        if event.kind_of? Gdk::EventButton 
+        if event.kind_of? Gdk.EventButton 
           Redcar.event :tab_clicked, self
           if event.button == 3
             Redcar.context_menus[self.class.to_s].
@@ -620,14 +620,14 @@ module Redcar
     end
     
     def set_font(font)
-      @textview.modify_font(Pango::FontDescription.new(font))
+      @textview.modify_font(Pango.FontDescription.new(font))
     end
     
     def load(filename=nil)
       @filename = filename if filename
       Redcar.event :load, self do
         if @filename
-          self.replace(Redcar::RedcarFile.load(@filename))
+          self.replace(Redcar.RedcarFile.load(@filename))
         else
           p :no_filename_to_load_into_tab
         end
@@ -657,7 +657,7 @@ module Redcar
     
     def save!
       if @filename
-        Redcar::RedcarFile.save(@filename, self.to_s)
+        Redcar.RedcarFile.save(@filename, self.to_s)
       end
       self.buffer.modified = false
     end
@@ -677,7 +677,7 @@ end
 
 def ask_and_save_tab(tab)
   tab.focus
-  dialog = Redcar::Dialog.build(:title => "Save?",
+  dialog = Redcar.Dialog.build(:title => "Save?",
                                 :buttons => [:Save, :Discard, :Cancel],
                                 :message => "Tab modified. Save or discard?")
   dialog.on_button(:Save) do
