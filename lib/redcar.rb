@@ -48,6 +48,7 @@ require 'lib/button_text_tab.rb'
 require 'lib/sourceview/sourceview'
 require 'lib/texttab_syntax'
 require 'lib/html_tab'
+require 'lib/keymap'
 
 require 'lib/plugin.rb'
 
