@@ -28,10 +28,10 @@ module Redcar
     class << self
       attr_accessor :bundles_dir, :themes_dir, :cache_dir
       
-      def init(bundles_dir, themes_dir, cache_dir)
-        @bundles_dir = bundles_dir
-        @themes_dir = themes_dir
-        @cache_dir   = cache_dir
+      def init(options)
+        @bundles_dir = options[:bundles_dir]
+        @themes_dir = options[:themes_dir]
+        @cache_dir   = options[:cache_dir]
         load_grammars unless @grammars
         Redcar::Theme.load_themes unless Redcar::Theme.themes
       end
@@ -107,21 +107,27 @@ module Redcar
       end
       
       def grammars
+        load_grammars unless @grammars
         @grammars
       end
       
       def grammar_names
+        load_grammars unless @grammars
         @grammars.keys
       end
     end
     
     attr_reader :scope_tree, :parser
     
-    def initialize(options)
+    def initialize(options={})
       super()
-      SyntaxSourceView.init(options[:bundles_dir], 
-                            options[:themes_dir], 
-                            options[:cache_dir])
+      unless SyntaxSourceView.bundles_dir
+        if options[:bundles_dir]
+          SyntaxSourceView.init(options)
+        else
+          raise ArgumentError, "SyntaxSourceView.new expects :bundle_dir, :themes_dir and (optionally) :cache_dir."
+        end
+      end
       set_theme(Theme.default_theme)
       modify_font(Pango::FontDescription.new("Monospace 12"))
       self.tabs_width = 2

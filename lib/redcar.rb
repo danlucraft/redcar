@@ -13,42 +13,45 @@ require 'libglade2'
 require 'fileutils'
 require 'uuid'
 
-require File.dirname(__FILE__) + '/../vendor/active_support'
-require File.dirname(__FILE__) + '/../vendor/null'
-require File.dirname(__FILE__) + '/../vendor/ruby_extensions'
-require File.dirname(__FILE__) + '/../vendor/debugprinter'
-require File.dirname(__FILE__) + '/../vendor/keyword_processor'
+require 'vendor/active_support'
+require 'vendor/null'
+require 'vendor/ruby_extensions'
+require 'vendor/debugprinter'
+require 'vendor/keyword_processor'
 require 'vendor/instruments'
 
 require 'lib/plist'
 require 'lib/preferences_dialog.rb'
-require File.dirname(__FILE__) + '/application'
-require File.dirname(__FILE__) + '/undoable'
-require File.dirname(__FILE__) + '/command'
-require File.dirname(__FILE__) + '/sensitivity'
-require File.dirname(__FILE__) + '/menus'
-require File.dirname(__FILE__) + '/toolbars'
-require File.dirname(__FILE__) + '/tabs'
-require File.dirname(__FILE__) + '/file'
-require File.dirname(__FILE__) + '/icons'
-require File.dirname(__FILE__) + '/dialog'
-require File.dirname(__FILE__) + '/speedbar'
-require File.dirname(__FILE__) + '/statusbar'
-require File.dirname(__FILE__) + '/clipboard'
-require File.dirname(__FILE__) + '/textentry'
-require File.dirname(__FILE__) + '/texttab'
-require File.dirname(__FILE__) + '/tooltips'
-require File.dirname(__FILE__) + '/shelltab'
-require File.dirname(__FILE__) + '/../vendor/mdi5'
-require File.dirname(__FILE__) + '/panes'
-require File.dirname(__FILE__) + '/redcar_window'
-require File.dirname(__FILE__) + '/list_abstraction'
+require 'lib/application'
+require 'lib/undoable'
+require 'lib/command'
+require 'lib/sensitivity'
+require 'lib/menus'
+require 'lib/keymap'
+require 'lib/toolbars'
+require 'lib/tabs'
+require 'lib/file'
+require 'lib/icons'
+require 'lib/dialog'
+require 'lib/speedbar'
+require 'lib/statusbar'
+require 'lib/clipboard'
+require 'lib/textentry'
+require 'lib/texttab'
+require 'lib/tooltips'
+require 'lib/shelltab'
+require 'lib/panes'
+require 'lib/redcar_window'
+require 'lib/list_abstraction'
 require 'lib/menu_edit_tab.rb'
 require 'lib/button_text_tab.rb'
 require 'lib/sourceview/sourceview'
+Redcar::SyntaxSourceView.init(:bundles_dir => "textmate/Bundles/",
+                              :themes_dir  => "textmate/Themes/",
+                              :cache_dir   => "cache/")
 require 'lib/texttab_syntax'
 require 'lib/html_tab'
-require 'lib/keymap'
+require 'vendor/mdi5'
 
 require 'lib/plugin.rb'
 
@@ -73,6 +76,11 @@ module Redcar
       
       print "loading scripts/ ..."; $stdout.flush
       if options[:load_scripts]
+        Dir.glob("scripts/*/*.rb").sort.each do |f|
+          if File.file?(f) and not f.include? "~"
+            require f
+          end
+        end
         Dir.glob("scripts/*.rb").sort.each do |f|
           if File.file?(f) and not f.include? "~"
             require f

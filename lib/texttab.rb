@@ -563,9 +563,7 @@ module Redcar
   }
   class "GtkWidget" style "green-cursor"
   EOR
-      @textview = SyntaxSourceView.new(:bundles_dir => "textmate/Bundles/",
-                                       :themes_dir  => "textmate/Themes/",
-                                       :cache_dir   => "cache/")
+      @textview = SyntaxSourceView.new
 #      @textview.wrap_mode = Gtk::TextTag::WRAP_WORD
 #       @textview = Redcar::GUI::Text.new(buffer, textview)
       self.set_font(TextTab.Preferences["Tab Font"])
