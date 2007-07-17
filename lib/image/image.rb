@@ -5,14 +5,16 @@ module Redcar
     class Item
       attr_accessor :uuid, :version, :type, :tags, :data
       
-      def [](key)
-        @data[key]
+      def method_missing(sym, *args, &block)
+        @data.send(sym, *args, &block)
       end
     end
   
     attr_reader :cache_dir, :source_globs, :items, :timestamps
     
     def initialize(options)
+      process_params(options, :cache_dir => nil,
+                              :sources   => [])
       @cache_dir = options[:cache_dir]
       @source_globs = options[:sources]
       @timestamps = {}
@@ -75,13 +77,13 @@ module Redcar
     
     def load_cache
       if File.exists? cache_file
-        Marshal.load(File.read(cache_file))
+        YAML.load(File.read(cache_file))
       end
     end
     
     def cache
       File.open(cache_file, "w") do |f|
-        f.puts Marshal.dump(self)
+        f.puts self.to_yaml
       end
     end
     
@@ -132,10 +134,24 @@ module Redcar
       item
     end
     
-    def with_tag(tag)
+    def find_with_tag(tag)
       items = []
       @items.each do |uuid, defn|
         if defn[:tags].include? tag
+          items << get_item(uuid)
+        end
+      end
+      items
+    end
+    
+    def find_with_tags(*tags)
+      items = []
+      @items.each do |uuid, defn|
+        all = true
+        tags.each do |tag|
+          all = false unless defn[:tags].include? tag
+        end
+        if all
           items << get_item(uuid)
         end
       end
@@ -146,6 +162,30 @@ module Redcar
       i = 0
       @items.each {|k, v| i += v[:definitions].length}
       i
+    end
+    
+    def []=(id, data)
+      if @items[id]
+        @items[id][:definitions] << {:type => :user,
+          :version => self[id].version+1,
+          :data => data}
+      else
+        @items[id] = {}
+        @items[id][:tags] = []
+        @items[id][:definitions] = defs = []
+        defs << {:type => :user,
+          :version => 1,
+          :data => data}
+      end
+    end
+    
+    def tag(uuid, *tags)
+      if include? uuid
+        @items[uuid][:tags] += tags
+        @items[uuid][:tags].uniq!
+      else
+        raise ArgumentError, "no Image item with uuid #{uuid}"
+      end
     end
   end
 end

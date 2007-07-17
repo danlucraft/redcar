@@ -31,6 +31,7 @@ module Redcar
   # calling the Redcar event :quit
   def self.quit
     Redcar.event :quit
+    Redcar.event :shutdown
     Gtk.main_quit
   end
   

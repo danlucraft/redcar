@@ -40,8 +40,24 @@ describe Redcar.Image do
     item[:name].should == "Caprica User"
   end
   
-  it 'should get all with a given tag' do
-    @image.with_tag(:menuitem).length.should == 2
+  it 'should find items with a given tag' do
+    @image.find_with_tag(:menuitem).length.should == 2
+  end
+  
+  it 'should find items with all the given tags' do
+    @image.find_with_tags(:menuitem, :core).length.should == 1
+  end
+  
+  it 'should save new data by id' do
+    @image["ca72aab0-1517-012a-209c-000ae4ee635c"] = {
+      :name => "Caprica V3.0"
+    }
+    @image.cache
+    @image = load_image
+    item = @image["ca72aab0-1517-012a-209c-000ae4ee635c"]
+    item.version.should == 3
+    item.type.should == :user
+    item[:name].should == "Caprica V3.0"
   end
 end
 
@@ -58,7 +74,7 @@ describe Redcar.Image.Item do
   end
 end
 
-describe Redcar.Image do
+describe Redcar.Image, 'cache' do
   before :each do 
     remove_cache
     @original = File.read("spec/image/fixtures/source2.yaml")

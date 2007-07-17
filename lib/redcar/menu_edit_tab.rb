@@ -187,7 +187,13 @@ module Redcar
           if uuid == "---"
             name = "------"
           else
-            name = @menu_defs[uuid][:name]
+            name = @menu_defs[uuid]
+            unless name
+              puts "missing menu definition for #{uuid}"
+              @treestore.remove(iter)
+              next
+            end
+            name = name[:name]
           end
           iter[0] = name
           iter[1] = uuid
@@ -198,7 +204,13 @@ module Redcar
           if uuid == "---"
             name = "------"
           else
-            name = @commands[uuid][:name]
+            name = @commands[uuid]
+            unless name
+              puts "missing command definition for #{uuid}"
+              @treestore.remove(iter)
+              next
+            end
+            name = name[:name]
           end
           iter[0] = name
           iter[1] = uuid

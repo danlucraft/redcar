@@ -65,7 +65,7 @@ puts "done"
 module Redcar
   VERSION = '0.0.1'
   class << self
-    attr_accessor :current_window, :keystrokes
+    attr_accessor :current_window, :keystrokes, :image
         
     def add_objects
       Redcar.keystrokes = Redcar::Keystrokes.new
@@ -85,11 +85,22 @@ module Redcar
     end
     
     def load_stuff(options)
+      print "loading image/ ..."
+      show_time do
+        self.image = Redcar.Image.new(:cache_dir => "environment/",
+                                      :sources => ["scripts/*/image.yaml"])
+      end
+      
+      Redcar.hook :shutdown do
+        Redcar.image.cache
+      end
+
       print "loading menus/ ..."; $stdout.flush
       show_time do
         Redcar::Menu.load_menus
         Redcar::Menu.create_menus
       end
+      
       
       if options[:load_scripts]
         print "loading scripts/ ..."; $stdout.flush

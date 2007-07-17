@@ -63,30 +63,42 @@ module Redcar
       end
       
       def load_menus
-        begin
-          @data = YAML.load(IO.read("environment/menus.yaml"))
-          @menus     = @data[:menus]
-          @menu_defs = @data[:menu_defs]
-          @commands  = @data[:commands]
-        rescue
-          @menus_user = []
-          @menu_defs_user = {}
-          @commands_user = {}
-          @menus     = YAML.load(IO.read("environment/menus/menus.yaml"))
-          @menu_defs = YAML.load(IO.read("environment/menus/menu_definitions.yaml"))
-          @commands  = YAML.load(IO.read("environment/menus/commands.yaml"))
+        commands = Redcar.image.find_with_tags(:core, :command)
+        menudefs  = Redcar.image.find_with_tags(:core, :menudef)
+        menu_tree = Redcar.image.find_with_tags(:core, :menu_layout)
+        @menu_defs = {}
+        @commands = {}
+        commands.each do |comm|
+          @commands[comm.uuid] = comm.data
         end
-        
+        menudefs.each do |menu|
+          @menu_defs[menu.uuid] = menu.data
+        end
+        @menus = menu_tree[0]
+        @menus_uuid = menu_tree[0].uuid
         return [@menus, @menu_defs, @commands]
+        
       end
       
       def save_menus
-        File.open("environment/menus.yaml", "w") do |f|
-          f.puts({ :menus => @menus, 
-            :menu_defs => @menu_defs,
-            :commands => @commands
-          }.to_yaml)
+        Redcar.image[@menus_uuid] = @menus
+        @commands.each do |uuid, comm|
+          if !Redcar.image.include? uuid
+            Redcar.image[uuid] = comm
+            Redcar.image.tag(uuid, :core, :command)
+          elsif comm != Redcar.image[uuid].data
+            Redcar.image[uuid] = comm
+          end
         end
+        @menu_defs.each do |uuid, menu|
+          if !Redcar.image.include? uuid
+            Redcar.image[uuid] = menu
+            Redcar.image.tag(uuid, :core, :menudef)
+          elsif menu != Redcar.image[uuid].data
+            Redcar.image[uuid] = menu
+          end
+        end
+        Redcar.image.cache
       end
       
       def create_menus
@@ -145,6 +157,10 @@ module Redcar
               gtk_sep.show
             else
               command_def = @commands[uuid]
+              unless command_def
+                puts "Missing menu item definition for :#{uuid}"
+                next
+              end
               if command_def[:enabled]
                 if command_def[:icon] and command_def[:icon] != "none"
                   gtk_menuitem = Gtk::ImageMenuItem.create(command_def[:icon],
