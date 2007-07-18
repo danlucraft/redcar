@@ -2,9 +2,9 @@
 
 module Redcar
   class TextTab
-    keymap "ctrl-shift (", :start_recording
-    keymap "ctrl-shift )", :end_recording
-    keymap "ctrl-shift E", :run_macro
+#    keymap "ctrl-shift (", :start_recording
+#    keymap "ctrl-shift )", :end_recording
+#    keymap "ctrl-shift E", :run_macro
     
     user_commands do
       def start_recording

@@ -38,7 +38,7 @@ module Redcar
       
       @notebooks = []
       signal_connect("destroy") { Gtk.main_quit }
-      Redcar.keystrokes.enable(self)
+      Redcar.keycatcher.enable(self)
 
       paned = Gtk::HPaned.new
       

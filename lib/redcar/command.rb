@@ -1,6 +1,23 @@
 
 module Redcar
   class Command
+    def self.execute(command_def)
+      return nil unless command_def
+      command = Command.new(command_def)
+      begin
+        command.execute
+      rescue Object => e
+        process_command_error(command_def[:name], e)
+      end
+    end
+  
+    def self.process_command_error(name, e)
+      puts "* Error in command: #{name}"
+      puts "  trace:"
+      puts e.to_s
+      puts e.backtrace
+    end
+    
     attr_accessor :def
     
     def initialize(hash)
@@ -134,6 +151,76 @@ module Redcar
       p output
       output ||= @output
       direct_output(@def[:output], output) if output
+    end
+  end
+  
+  module UserCommands
+    def self.included(klass)
+      klass.extend ClassMethods
+    end
+    
+    module ClassMethods
+      def start_commands
+        @should_add = true
+      end
+      
+      def end_commands
+        @should_add = false
+      end
+      
+      def user_commands(&block)
+        @should_add = true
+        self.class_eval(&block)
+        @should_add = false
+      end
+      
+      def method_added(meth)
+        unless @adding
+          if @should_add
+            @adding = true
+            self.class_eval do
+              alias_method "__base_#{meth}", "#{meth}"
+              define_method(meth) do |*args|
+                unless defined? @recording
+                  @recording = true
+                end
+                add_to_command_history([meth, args]) if @recording
+                #puts "#{meth} called, recording:#{@recording.to_s}. Params = #{args.inspect}"
+                was_on = @recording
+                @recording = false
+                result = nil
+                begin
+                  if self.class == Redcar::TextTab
+                    self.buffer.begin_user_action
+                  end
+                  result = self.send("__base_#{meth}", *args)
+                  if self.class == Redcar::TextTab
+                    self.buffer.end_user_action
+                  end
+                rescue Object => e
+                  Redcar.process_command_error(meth, e)
+                end
+                @recording = was_on
+                result
+              end
+            end
+            @adding = false
+          end
+        end
+      end
+    end
+    
+    def command_history
+      @command_history
+    end
+    
+    def clear_command_history
+      @command_history = []
+    end
+    
+    def add_to_command_history(command)
+      @command_history ||= []
+      @command_history << command
     end
   end
 end

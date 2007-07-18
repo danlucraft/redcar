@@ -3,8 +3,8 @@ DYN_MAX = 30
 
 module Redcar
   class TextTab
-    keymap "ctrl g", :repeat
-    keymap "ctrl h", :predict
+    #keymap "ctrl g", :repeat
+    #keymap "ctrl h", :predict
     
     def repeat
       Redcar.StatusBar.main = "repeat, (hit 'predict' for alternative suggestion)"

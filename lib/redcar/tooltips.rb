@@ -32,7 +32,7 @@ module Redcar
   end
   
   class TextTab
-    keymap "ctrl b", :tooltip_at_cursor, "foo"
+    #keymap "ctrl b", :tooltip_at_cursor, "foo"
     
     def tooltip_at_cursor(label)
       rect = @textview.get_iter_location(iter(cursor_mark))

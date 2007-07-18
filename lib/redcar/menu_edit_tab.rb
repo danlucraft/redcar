@@ -108,6 +108,15 @@ module Redcar
       hbox_sens.pack_start @combo_sensitive
       hbox_sens.show_all
       
+      hbox_keymap = @glade["hbox_focus"]
+      @combo_keymap = Gtk::ComboBox.new
+      @keymap_options = Redcar.Keymap.KEYMAP_SCOPES
+      @keymap_options.each do |sty|
+        @combo_keymap.append_text sty
+      end
+      hbox_keymap.pack_start @combo_keymap
+      hbox_keymap.show_all
+      
       sw_command = @glade["sw_command"]
       @sourceview = Redcar::SyntaxSourceView.new(:bundles_dir => "textmate/Bundles/",
                                                  :themes_dir  => "textmate/Themes/",
@@ -305,6 +314,7 @@ module Redcar
           menuitem[:icon] = @combo_icon.active_text
           menuitem[:activated_by_value] = @glade["entry_key"].text
           menuitem[:sensitive] = @combo_sensitive.active_text.to_title_symbol
+          menuitem[:keymap] = @combo_keymap.active_text
         end
       end
     end
@@ -366,6 +376,8 @@ module Redcar
         sensitive = "Nothing"
       end
       @combo_sensitive.active = @sensitive_options.index(sensitive)
+      keymap = menuitem[:keymap]||"Redcar::Keymap::Global"
+      @combo_keymap.active = @keymap_options.index(keymap)
     end
     
     def show_menu(menu)

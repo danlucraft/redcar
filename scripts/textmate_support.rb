@@ -149,7 +149,7 @@ end
 # Redcar::Bundle.load_bundles
 
 class Redcar::TextTab
-  keymap "Escape", :insert_snippet
+#  keymap "Escape", :insert_snippet
   def insert_snippet
     current_scope = scope_at_cursor
     

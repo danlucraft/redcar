@@ -2,28 +2,28 @@
 module Redcar
   class TextEntry
     include Redcar::Undoable
-    include Keymap
+    include UserCommands
     
-    keymap "ctrl a",     :cursor=, :line_start
-    keymap "ctrl e",     :cursor=, :line_end
-#     keymap "Left",   :left
-#     keymap "Right",  :right
-#     keymap "Up",     :up
-#     keymap "Down",   :down
-#     keymap "shift Left",  :shift_left
-#     keymap "shift Right", :shift_right
-    keymap "ctrl z",     :undo
-    keymap "ctrl x",     :cut
-    keymap "ctrl c",     :copy
-    keymap "ctrl v",     :paste
-    keymap "ctrl t",     :transpose
-    keymap "Delete",     :del
-    keymap "BackSpace",  :backspace
-#     keymap "Space",      :insert_at_cursor,  " "
-    keymap "Tab",        :insert_at_cursor,  " "*(Redcar.tab_length||=2)
-#     keymap /^(.)$/,       :insert_at_cursor, '\1'
-#     keymap /^shift (.)$/, :insert_at_cursor, '\1'
-#     keymap /^caps (.)$/,  :insert_at_cursor, '\1'
+    #keymap "ctrl a",     :cursor=, :line_start
+    #keymap "ctrl e",     :cursor=, :line_end
+#     #keymap "Left",   :left
+#     #keymap "Right",  :right
+#     #keymap "Up",     :up
+#     #keymap "Down",   :down
+#     #keymap "shift Left",  :shift_left
+#     #keymap "shift Right", :shift_right
+    #keymap "ctrl z",     :undo
+    #keymap "ctrl x",     :cut
+    #keymap "ctrl c",     :copy
+    #keymap "ctrl v",     :paste
+    #keymap "ctrl t",     :transpose
+    #keymap "Delete",     :del
+    #keymap "BackSpace",  :backspace
+#     #keymap "Space",      :insert_at_cursor,  " "
+    #keymap "Tab",        :insert_at_cursor,  " "*(Redcar.tab_length||=2)
+#     #keymap /^(.)$/,       :insert_at_cursor, '\1'
+#     #keymap /^shift (.)$/, :insert_at_cursor, '\1'
+#     #keymap /^caps (.)$/,  :insert_at_cursor, '\1'
 
     user_commands do
       def cursor=(offset)

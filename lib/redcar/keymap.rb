@@ -1,188 +1,49 @@
 module Redcar
-  
-  def self.process_command_error(name, e)
-    puts "* Error in user command: #{name}"
-    puts "  trace:"
-    puts e.to_s
-    puts e.backtrace
-  end
-  
+  # The Keymap stack is as follows:
+  # 1. Global
+  # 2. Focussed tab class
+  # 3. Focussed tab instance
+  # 4. Focussed widget class
+  # 5. Focussed widget instance
+  # 6. (GTK widget keybindings)
+  #
+  # Lower numbers have higher priority. The global and 'class' keymaps
+  # are usually pre-defined, and the instance keymaps are usually
+  # activated programatically. E.g. the snippets keymap is activated
+  # on a particular tab at runtime.
   module Keymap
-    def Keymap.get_keymap(keybinding)
-      if Redcar.GlobalKeymap.keymap_respond_to?(keybinding)
-        return Redcar.GlobalKeymap
-      else
-        focussed_keymap = find_focussed_keymap
-        if focussed_keymap and 
-            focussed_keymap.keymap_respond_to?(keybinding)
-          return focussed_keymap
+    KEYMAP_SCOPES = []
+    
+    def self.included(klass)
+      KEYMAP_SCOPES << klass.to_s
+    end
+    
+    class Global
+      include Keymap
+    end
+    
+    def self.load_keymaps
+      commands = Redcar.image.find_with_tags(:command)
+      commands.each do |command|
+        if command[:activated_by] == :key_combination
+          self.attach_command(command)
         end
       end
     end
     
-    def Keymap.find_focussed_keymap
-      focussed_object = Redcar.current_window.focus
-      ObjectSpace.each_object(Redcar::Keymap) do |obj|
-        if obj.respond_to? :widget
-          if obj.widget == focussed_object
-            return obj
-          end
-        elsif obj.respond_to? :widgets
-          if obj.widgets.include? focussed_object
-            return obj
-          end
-        end
-      end
-      nil
+    def self.attach_command(command)
+      @keymaps ||= {}
+      @keymaps[command[:activated_by_value]] = command
     end
     
-    def Keymap.find_all_keymaps(keybinding)
-      keymaps = []
-      ObjectSpace.each_object(Redcar::Keymap) do |obj|
-        if obj.respond_to? :keymap_respond_to?
-          if obj.keymap_respond_to? keybinding
-            keymaps << obj
-          end
-        end
-      end
-      keymaps
+    def self.execute_keystroke(keystroke)
+      command = @keymaps[keystroke.to_s]
+      Command.execute(command)
+      command
     end
-    
-    def Keymap.append_features(dest_class)
-      def dest_class.keymap(keybinding, func_name, *args)
-        @map ||= {}
-        unless keybinding.is_a? Regexp
-          keybinding = KeyBinding.parse(keybinding).to_s
-        end
-        @map[keybinding] = [func_name, args]
-      end
-      
-      def dest_class.get_keymap_this(keybinding)
-        t = @map[keybinding]
-        return t if t
-        @map.keys.select{|r| r.is_a? Regexp}.each do |rx|
-          if keybinding =~ rx
-            result = @map[rx].clone
-            result[1] = result[1].clone
-            result[1][0] = result[1][0].gsub('\1', $1)
-            return result
-          end
-        end
-        nil
-      end
-      
-      def dest_class.get_keymap(keybinding)
-        @map ||= {}
-        keybinding = KeyBinding.parse(keybinding).to_s
-        self.ancestors.each do |thisclass|
-          if thisclass.respond_to? :get_keymap_this
-            km = thisclass.get_keymap_this(keybinding)
-            return km if km
-          end
-        end
-        nil
-      end
-      
-      def dest_class.keymap_respond_to?(keybinding)
-        puts keybinding
-        a, b = get_keymap(keybinding)
-        a
-      end
-      
-      def dest_class.start_commands
-        @should_add = true
-      end
-      
-      def dest_class.end_commands
-        @should_add = false
-      end
-      
-      def dest_class.user_commands(&block)
-        @should_add = true
-        self.class_eval(&block)
-        @should_add = false
-      end
-      
-      def dest_class.method_added(meth)
-        unless @adding
-          if @should_add
-            @adding = true
-            self.class_eval do
-              alias_method "__base_#{meth}", "#{meth}"
-              define_method(meth) do |*args|
-                unless defined? @recording
-                  @recording = true
-                end
-                add_to_command_history([meth, args]) if @recording
-                #puts "#{meth} called, recording:#{@recording.to_s}. Params = #{args.inspect}"
-                was_on = @recording
-                @recording = false
-                result = nil
-                begin
-                  if self.class == Redcar::TextTab
-                    self.buffer.begin_user_action
-                  end
-                  result = self.send("__base_#{meth}", *args)
-                  if self.class == Redcar::TextTab
-                    self.buffer.end_user_action
-                  end
-                rescue Object => e
-                  Redcar.process_command_error(meth, e)
-                end
-                @recording = was_on
-                result
-              end
-            end
-            @adding = false
-          end
-        end
-      end
-      
-      super
-    end
-    
-    def command_history
-      @command_history
-    end
-    
-    def clear_command_history
-      @command_history = []
-    end
-    
-    def add_to_command_history(command)
-      @command_history ||= []
-      @command_history << command
-    end
-    
-    def get_keymap(keybinding)
-      self.class.get_keymap(keybinding)
-    end
-    
-    def keymap_respond_to?(keybinding)
-      a, b = self.class.get_keymap(keybinding)
-      a
-    end
-    
-    def execute_key(keybinding)
-      Redcar.event :keystroke, keybinding
-      method_name, method_args = self.class.get_keymap(keybinding)
-      begin
-        self.send(method_name, *method_args)
-        #         rescue Object => ex
-        #           Redcar.StatusBar.main = "command failed: #{method_name}(#{method_args.join(", ")}) [#{ex}]"
-      end
-    end
-  end        
-
-  def self.GlobalKeymap
-    @@gbkm ||= GlobalKeymap.new
-  end
-
-  class GlobalKeymap
-    include Keymap
   end
     
-  class KeyBinding
+  class KeyStroke
     attr_reader :modifiers, :keyname
     def initialize(modifiers, keyname)
       @modifiers = modifiers.sort_by {|m| m.to_s }
@@ -199,13 +60,13 @@ module Redcar
     end
     
     def ==(other)
-      other = KeyBinding.parse(other)
+      other = KeyStroke.parse(other)
       self.keyname == other.keyname and
         self.modifiers == other.modifiers
     end
     
     def self.parse(str)
-      return str if str.is_a? KeyBinding
+      return str if str.is_a? KeyStroke
       str = str.strip
       if str.strip.include? " "
         str_mods, str_keyname = str.strip.split(" ")
@@ -230,7 +91,7 @@ module Redcar
     end
   end
   
-  class Keystrokes
+  class KeyCatcher
     attr_reader :history_size, :history
     def initialize(options={})
       options = process_params(options,
@@ -244,7 +105,7 @@ module Redcar
         win.signal_handler_unblock(@keyhandler_id)
       else
         id = win.signal_connect('key-press-event') do |gtk_widget, gdk_eventkey|
-          continue = Redcar.keystrokes.issue_from_gdk_eventkey(gdk_eventkey)
+          continue = Redcar.keycatcher.issue_from_gdk_eventkey(gdk_eventkey)
           continue
         end
         @keyhandler_id = id
@@ -257,9 +118,9 @@ module Redcar
       end
     end
     
-    def add_to_history(keybinding)
-      keybinding = KeyBinding.parse(keybinding)
-      @history << keybinding
+    def add_to_history(keystroke)
+      keystroke = KeyStroke.parse(keystroke)
+      @history << keystroke
       if @history.length == @history_size
         @history = @history[1..-1]
       end
@@ -270,22 +131,21 @@ module Redcar
     end
     
     def issue(kb)
-      issue_from_keybinding(kb)
+      issue_from_keystroke(kb)
     end
     
-    def issue_from_keybinding(keybinding)
-      keybinding = KeyBinding.parse(keybinding)
-      keymap = Keymap.get_keymap(keybinding)
-      if keymap
-        add_to_history(keybinding)
-        keymap.execute_key keybinding
+    def issue_from_keystroke(keystroke)
+      keystroke = KeyStroke.parse(keystroke)
+      exists = Keymap.execute_keystroke(keystroke)
+      if exists
+        add_to_history(keystroke)
         true
       else
         false
       end
     end
     
-    def gdk_eventkey_to_keybinding(gdk_eventkey)
+    def gdk_eventkey_to_keystroke(gdk_eventkey)
       keyname = " "
       keyname[0] = Gdk::Keyval.to_unicode(gdk_eventkey.keyval)
       keyname = Gdk::Keyval.to_name(gdk_eventkey.keyval) if keyname=="\000"
@@ -297,11 +157,11 @@ module Redcar
       modifiers << :shift   if gdk_modifier_type.shift_mask?
       modifiers << :super   if gdk_modifier_type.mod4_mask?
       
-      KeyBinding.new(modifiers, keyname)
+      KeyStroke.new(modifiers, keyname)
     end
     
     def issue_from_gdk_eventkey(gdk_eventkey)
-      issue_from_keybinding(gdk_eventkey_to_keybinding(gdk_eventkey))
+      issue_from_keystroke(gdk_eventkey_to_keystroke(gdk_eventkey))
     end
   end
 end

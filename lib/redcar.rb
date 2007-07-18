@@ -4,10 +4,11 @@ $KCODE = "U"
 $REDCAR_ENV ||= {}
 $REDCAR_ENV["test"] = false
 
-require "ruby2cext/eval2c" 
-$e2c = Ruby2CExtension::Eval2C.new
+#require "ruby2cext/eval2c" 
+#$e2c = Ruby2CExtension::Eval2C.new
 
 print "loading gems..."
+require 'rubygems'
 require 'gtk2'
 require 'gconf2'
 require 'libglade2'
@@ -65,10 +66,10 @@ puts "done"
 module Redcar
   VERSION = '0.0.1'
   class << self
-    attr_accessor :current_window, :keystrokes, :image
+    attr_accessor :current_window, :keycatcher, :image
         
     def add_objects
-      Redcar.keystrokes = Redcar::Keystrokes.new
+      Redcar.keycatcher = Redcar::KeyCatcher.new
       Redcar.window_controller = Gtk::MDI::Controller.new(RedcarWindow, :notebooks)
       Redcar.windows ||= []
       Redcar.windows << Redcar.window_controller.open_window
@@ -97,8 +98,9 @@ module Redcar
 
       print "loading menus/ ..."; $stdout.flush
       show_time do
-        Redcar::Menu.load_menus
-        Redcar::Menu.create_menus
+        Redcar.Menu.load_menus
+        Redcar.Menu.create_menus
+        Redcar.Keymap.load_keymaps
       end
       
       
@@ -139,3 +141,5 @@ end
 
 Redcar.CUSTOM_DIR = File.expand_path(File.dirname(__FILE__) + "/../custom") 
 Redcar.ROOT_PATH = File.expand_path(File.dirname(__FILE__) + "/../") 
+
+p Redcar.Keymap.KEYMAP_SCOPES

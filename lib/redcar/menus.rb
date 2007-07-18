@@ -178,26 +178,26 @@ module Redcar
                     puts e.message
                   end
                 end
-                if command_def[:activated_by] == :key_combination and
-                    command_def[:activated_by_value]
-                  keybinding = Redcar::KeyBinding.parse(
-                                                        command_def[:activated_by_value])
-                  this_name = command_def[:name].gsub(/_|-|\s/, "").downcase
-                  Redcar.GlobalKeymap.class.class_eval do
-                    keymap keybinding, "menu_#{this_name}".intern
-                    define_method("menu_#{this_name}") do
-                      command = Command.new(command_def)
-                      begin
-                        command.execute
-                      rescue Object => e
-                        puts e
-                        puts e.message
-                      end
-                      # used to do this:
-                      #      Redcar.process_command_error(id, e)
-                    end
-                  end
-                end
+#                 if command_def[:activated_by] == :key_combination and
+#                     command_def[:activated_by_value]
+#                   keybinding = Redcar::KeyBinding.parse(
+#                                                         command_def[:activated_by_value])
+#                   this_name = command_def[:name].gsub(/_|-|\s/, "").downcase
+#                   Redcar.GlobalKeymap.class.class_eval do
+#                     keymap keybinding, "menu_#{this_name}".intern
+#                     define_method("menu_#{this_name}") do
+#                       command = Command.new(command_def)
+#                       begin
+#                         command.execute
+#                       rescue Object => e
+#                         puts e
+#                         puts e.message
+#                       end
+#                       # used to do this:
+#                       #      Redcar.process_command_error(id, e)
+#                     end
+#                   end
+#                 end
               end
 
               if command_def[:sensitive] and command_def[:sensitive].to_s.downcase != "nothing"
