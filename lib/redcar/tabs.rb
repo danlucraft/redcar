@@ -26,9 +26,9 @@ module Redcar
   def self.Tabs
     Redcar.current_pane
   end
-  
+
   class Tab
-    include Keymap
+      
     attr_accessor :pane, :doc, :widget
     
     def initialize(pane, widget, options)

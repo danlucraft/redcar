@@ -2,8 +2,6 @@
   
 module Redcar
   class ShellTab < TextTab
-    include Keymap
-    
 #    keymap "Return", :execute_line
     
     def insert_at_cursor(str)

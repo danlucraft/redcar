@@ -31,8 +31,8 @@ Redcar.hook :after_startup do
 end
 
 module Redcar  
+
   class TextTab < Tab
-    include Keymap
     include UserCommands
     include DebugPrinter
     include Redcar.Preferences

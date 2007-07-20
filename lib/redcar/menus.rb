@@ -46,7 +46,7 @@ module Redcar
     OUTPUTS = [
                "Discard", "Replace Selected Text", 
                "Replace Document", "Replace Line", "Insert As Text", 
-               "Insert As Snippet", "Show As HTML",
+               "Insert As Snippet", "Show As Html",
                "Show As Tool Tip", "Create New Document",
                "Replace Input", "Insert After Input"
               ]

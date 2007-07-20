@@ -147,8 +147,6 @@ module Redcar
         puts e.message
         puts e.backtrace
       end
-      p :output
-      p output
       output ||= @output
       direct_output(@def[:output], output) if output
     end

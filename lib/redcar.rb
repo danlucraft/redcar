@@ -103,6 +103,7 @@ module Redcar
         Redcar.Keymap.load_keymaps
       end
       
+      puts Redcar.Keymap.all      
       
       if options[:load_scripts]
         print "loading scripts/ ..."; $stdout.flush
@@ -133,6 +134,8 @@ module Redcar
       Redcar.moz.show_all
       
       Redcar.event :startup
+      
+      p Gtk.current
     end
     attr_accessor :CUSTOM_DIR
     attr_accessor :ROOT_PATH
@@ -142,4 +145,3 @@ end
 Redcar.CUSTOM_DIR = File.expand_path(File.dirname(__FILE__) + "/../custom") 
 Redcar.ROOT_PATH = File.expand_path(File.dirname(__FILE__) + "/../") 
 
-p Redcar.Keymap.KEYMAP_SCOPES

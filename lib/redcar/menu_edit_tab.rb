@@ -110,7 +110,7 @@ module Redcar
       
       hbox_keymap = @glade["hbox_focus"]
       @combo_keymap = Gtk::ComboBox.new
-      @keymap_options = Redcar.Keymap.KEYMAP_SCOPES
+      @keymap_options = Redcar.Keymap.all.map(&:name)
       @keymap_options.each do |sty|
         @combo_keymap.append_text sty
       end
@@ -376,7 +376,7 @@ module Redcar
         sensitive = "Nothing"
       end
       @combo_sensitive.active = @sensitive_options.index(sensitive)
-      keymap = menuitem[:keymap]||"Redcar::Keymap::Global"
+      keymap = menuitem[:keymap]||"Application Wide"
       @combo_keymap.active = @keymap_options.index(keymap)
     end
     

@@ -1,45 +1,122 @@
 module Redcar
-  # The Keymap stack is as follows:
-  # 1. Global
-  # 2. Focussed tab class
-  # 3. Focussed tab instance
-  # 4. Focussed widget class
-  # 5. Focussed widget instance
-  # 6. (GTK widget keybindings)
-  #
-  # Lower numbers have higher priority. The global and 'class' keymaps
-  # are usually pre-defined, and the instance keymaps are usually
-  # activated programatically. E.g. the snippets keymap is activated
-  # on a particular tab at runtime.
-  module Keymap
-    KEYMAP_SCOPES = []
+  # A Keymap may be attached to any of the following with
+  # Keymap#push_before
+  # 1. Redcar.Keymap.Global
+  # 2. Redcar.Keymap.Tab
+  # 3. Any tab class
+  # 4. Any tab instance
+  # 5. Any Gtk widget class
+  # 6. Any Gtk widget instance
+  # If the correct keybinding is not found anywhere in this stack, the
+  # key event will fall through to the current Gtk widget (if any), which
+  # can deal with it or not.
+  class Keymap
+    Global = :global
+    Tab    = :tab
     
-    def self.included(klass)
-      KEYMAP_SCOPES << klass.to_s
+    @@keymaps = []
+    @@stack = {}
+    
+    attr_accessor :name
+    
+    def initialize(name)
+      @name = name
+      @@keymaps << self
+      @commands = {}
     end
     
-    class Global
-      include Keymap
+    def push_before(object)
+      @@stack[object] ||= []
+      @@stack[object] << self
+    end
+    
+    def add_command(command)
+      @commands[command[:activated_by_value]] = command
+    end
+    
+    def contains?(keystroke)
+      @commands[keystroke]
+    end
+    
+    def execute_keystroke(keystroke)
+      if command = @commands[keystroke]
+        Command.execute(command)
+        return true
+      end
+    end
+    
+    def inspect
+      "#<Keymap:\"#{@name}\" #{@commands.length} commands>"
+    end
+    
+    alias to_s inspect
+    
+    def self.clear
+      @@stack = {}
+      @@keymaps = []
+    end
+    
+    def self.all
+      @@keymaps
+    end
+    
+    def self.[](name)
+      @@keymaps.find{|km| km.name == name}
     end
     
     def self.load_keymaps
       commands = Redcar.image.find_with_tags(:command)
       commands.each do |command|
         if command[:activated_by] == :key_combination
-          self.attach_command(command)
+          keymap_name = command[:keymap]
+          keymap_name = "Application Wide" unless keymap_name
+          keymap = Redcar.Keymap[keymap_name]
+          if keymap
+            keymap.add_command(command)
+          else
+            puts "trying to load command into non-existent"+
+              "keymap: #{keymap_name}"
+          end
         end
       end
     end
     
-    def self.attach_command(command)
-      @keymaps ||= {}
-      @keymaps[command[:activated_by_value]] = command
+    def self.execute_keystroke(keystroke)
+      if execute_keystroke_on(:global, keystroke)
+        return true
+      end
+      if tab = Redcar.current_tab
+        if execute_keystroke_on(:tab, keystroke)
+          return true
+        end
+        if execute_keystroke_on(tab.class, keystroke)
+          return true
+        end
+        if execute_keystroke_on(tab, keystroke)
+          return true
+        end
+      end
+      if widget = Gtk.current
+        if execute_keystroke_on(widget.class, keystroke)
+          return true
+        end
+        if execute_keystroke_on(widget, keystroke)
+          return true
+        end
+      end
+      false
     end
     
-    def self.execute_keystroke(keystroke)
-      command = @keymaps[keystroke.to_s]
-      Command.execute(command)
-      command
+    def self.execute_keystroke_on(object, keystroke)
+      if object and @@stack[object]
+        @@stack[object].reverse.each do |keymap|
+          if keymap.contains? keystroke
+            keymap.execute_keystroke keystroke
+            return true
+          end
+        end
+      end
+      false
     end
   end
     
@@ -106,6 +183,7 @@ module Redcar
       else
         id = win.signal_connect('key-press-event') do |gtk_widget, gdk_eventkey|
           continue = Redcar.keycatcher.issue_from_gdk_eventkey(gdk_eventkey)
+          # falls through to Gtk widget if nothing handles it
           continue
         end
         @keyhandler_id = id
@@ -165,3 +243,9 @@ module Redcar
     end
   end
 end
+
+global_keymap = Redcar.Keymap.new("Application Wide")
+global_keymap.push_before(Redcar.Keymap.Global)
+
+tab_keymap = Redcar.Keymap.new("Tab")
+tab_keymap.push_before(Redcar.Keymap.Tab)
