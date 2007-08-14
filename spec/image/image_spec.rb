@@ -18,26 +18,15 @@ describe Redcar.Image do
   end
   
   it 'should load from sources' do
-    @image.size.should == 6
+    @image.size.should == 4
   end
   
-  it 'should have access to the latest version by uuid' do
+  it 'should have access to the item by uuid' do
     item = @image["ca72aab0-1517-012a-209c-000ae4ee635c"]
     item.should_not be_nil
     item.should be_an_instance_of(Redcar.Image.Item)
-    item[:name].should == "Caprica V2.0"
-  end
-  
-  it 'should have access to any version by uuid' do
-    item = @image["ca72aab0-1517-012a-209c-000ae4ee635c", 1]
-    item.should_not be_nil
     item[:name].should == "Caprica"
-  end
-  
-  it 'should have access to any version and type by uuid' do
-    item = @image["ca72aab0-1517-012a-209c-000ae4ee635c", 1, :user]
-    item.should_not be_nil
-    item[:name].should == "Caprica User"
+    item.type.should == :source
   end
   
   it 'should find items with a given tag' do
@@ -48,16 +37,51 @@ describe Redcar.Image do
     @image.find_with_tags(:menuitem, :core).length.should == 1
   end
   
-  it 'should save new data by id' do
+  it 'should update data by id without changing tags' do
     @image["ca72aab0-1517-012a-209c-000ae4ee635c"] = {
-      :name => "Caprica V3.0"
+      :name => "Caprica V2.0"
     }
     @image.cache
     @image = load_image
     item = @image["ca72aab0-1517-012a-209c-000ae4ee635c"]
-    item.version.should == 3
     item.type.should == :user
-    item[:name].should == "Caprica V3.0"
+    item.tags.should == [:menuitem]
+    item[:name].should == "Caprica V2.0"
+  end
+  
+  it 'should update data by id and changing tags' do
+    @image["ca72aab0-1517-012a-209c-000ae4ee635c"] = {
+      :name => "Caprica V2.0",
+      :tags => [:foobar]
+    }
+    @image.cache
+    @image = load_image
+    item = @image["ca72aab0-1517-012a-209c-000ae4ee635c"]
+    item.type.should == :user
+    item.tags.should == [:foobar]
+    item[:name].should == "Caprica V2.0"
+  end
+  
+  it 'should add new data with tags' do
+    id = @image.add :name => "Pikon", :tags => [:foo]
+    @image.cache
+    @image = load_image
+    item = @image[id]
+    item.type.should == :user
+    item[:name].should == "Pikon"
+  end
+  
+  it 'should tag items (and create user versions)' do
+    item = @image["ca72aab0-1517-012a-209c-000ae4ee635c"]
+    item.type.should == :source
+    
+    @image.tag("ca72aab0-1517-012a-209c-000ae4ee635c", :foobar)
+    
+    @image.cache
+    @image = load_image
+    item = @image["ca72aab0-1517-012a-209c-000ae4ee635c"]
+    item.type.should == :user
+    item.tags.should == [:menuitem, :foobar]
   end
 end
 
@@ -69,8 +93,8 @@ describe Redcar.Image.Item do
   
   it 'should allow us to inspect item metadata' do
     item = @image["ca72aab0-1517-012a-209c-000ae4ee635c"]
-    item.version.should == 2
-    item.type.should == :master
+    item.type.should == :source
+    item.tags.should == [:menuitem]
   end
 end
 
@@ -95,15 +119,15 @@ describe Redcar.Image, 'cache' do
   
   it 'should check for updates after loading from the cache' do
     item = @image["dffc3af0-1517-012a-209c-000ae4ee635c"]
-    item.version.should == 1
     item[:name].should == "Geminon"
     
     # alter file
     yaml = YAML.load(@original)
-    yaml["dffc3af0-1517-012a-209c-000ae4ee635c"][:definitions] << 
-      {:type=>:master, 
-      :version=>2, 
-      :data=>{:name=>"Geminon V2.0"}}
+    yaml["dffc3af0-1517-012a-209c-000ae4ee635c"] = {
+      :name => "Geminon V2.0",
+      :tags => [:menuitem, :core],
+      :created => Time.now
+    }
     sleep 1
     File.open("spec/image/fixtures/source2.yaml", "w") do |f|
       f.puts yaml.to_yaml
@@ -111,7 +135,6 @@ describe Redcar.Image, 'cache' do
     @image = load_image
     
     item = @image["dffc3af0-1517-012a-209c-000ae4ee635c"]
-    item.version.should == 2
     item[:name].should == "Geminon V2.0"
   end
   

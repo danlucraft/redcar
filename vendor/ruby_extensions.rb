@@ -129,3 +129,56 @@ if $0 == __FILE__
   p "01234".delete_slice(1..-1) == "0"
   p "01234".delete_slice(-1..-1) == "0123"
 end
+
+# Methodphitamine
+
+module Kernel
+  protected
+  def it() It.new end
+  alias its it
+end
+
+class It
+
+  undef_method(*(instance_methods - %w*__id__ __send__*))
+
+  def initialize
+    @methods = []
+  end
+
+  def method_missing(*args, &block)
+    @methods << [args, block] unless args == [:respond_to?, :to_proc]
+    self
+  end
+
+  def to_proc
+    lambda do |obj|
+      @methods.inject(obj) do |current,(args,block)|
+        current.send(*args, &block)
+      end
+    end
+  end
+end
+
+if $0.include? "spec"
+  describe "Methodphitamine" do
+    it 'should work simple' do
+      new = (1..10).select &it % 2 == 0
+      old = (1..10).select {|i| i % 2 == 0}
+      new.should == old
+    end
+
+    it 'should work more complex' do
+      old = "dan:1\nmithu:2".split.sort_by {|l| l.split(":")[1]}
+      new = "dan:1\nmithu:2".split.sort_by &it.split(":")[1]
+      new.should == old
+    end
+    
+    it 'should work more complex2' do
+      w = [[%w{A B C}, [1, 2, 3]], [%w{D E F}, [1, 2, 3]]]
+      old = w.map {|e| e.first.map {|x| x.downcase}}
+      new = w.map &its.first.map(&its.downcase)
+      new.should == old
+    end
+  end
+end

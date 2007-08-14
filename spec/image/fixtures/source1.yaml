@@ -1,17 +1,6 @@
 --- 
 ca72aab0-1517-012a-209c-000ae4ee635c: 
+  :name: Caprica
   :tags:
   - :menuitem
-  :definitions:
-  - :type: :master
-    :version: 1
-    :data: 
-      :name: Caprica
-  - :type: :master
-    :version: 2
-    :data: 
-      :name: Caprica V2.0
-  - :type: :user
-    :version: 1
-    :data: 
-      :name: Caprica User
+  :created: 2007-08-12 11:00:02.505207 +01:00

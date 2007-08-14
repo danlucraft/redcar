@@ -3,7 +3,23 @@ module Redcar
   class Image
    
     class Item
-      attr_accessor :uuid, :version, :type, :tags, :data
+      attr_accessor :uuid, :type, :data
+      
+      def created
+        @data[:created]
+      end
+      
+      def created=(v)
+        @data[:created] = v
+      end
+      
+      def tags=(v)
+        @data[:tags] = v
+      end
+      
+      def tags
+        @data[:tags]
+      end
       
       def method_missing(sym, *args, &block)
         @data.send(sym, *args, &block)
@@ -48,7 +64,7 @@ module Redcar
       each_source_file do |filename|
         @timestamps[filename] = File.mtime(filename)
         YAML.load(File.read(filename)).each do |uuid, v|
-          @items[uuid] = v
+          @items[uuid] = {:source => v, :user => nil}
         end
       end
     end
@@ -60,15 +76,11 @@ module Redcar
           new_data = YAML.load(File.read(filename))
           new_data.each do |uuid, v|
             if self.include?(uuid)
-              @items[uuid][:tags] += v[:tags]
-              @items[uuid][:tags].uniq!
-              v[:definitions].each do |defn|
-                unless self[uuid, defn[:version], defn[:type]]
-                  @items[uuid][:definitions] << defn
-                end
+              if v[:created] > self[uuid][:created]
+                self[uuid] = v
               end
             else
-              @items[uuid] = v
+              @items[uuid] = {:source => v, :user => nil}
             end
           end
         end
@@ -95,48 +107,38 @@ module Redcar
       @items.keys.include? uuid
     end
     
-    def [](id, version=nil, type=nil)
-      get_item(id, version, type)
+    def [](id, type=nil)
+      get_item(id, type)
     end
     
-    def get_item(id, version=nil, type=nil)
+    def get_item(id, type=nil)
       return nil unless @items[id]
       item = Item.new
       item.uuid = id
-      item.tags = @items[id][:tags]
-      if version and type
-        item.version = version
+      if type
         item.type = type
-        defn = @items[id][:definitions].find do |i|
-          i[:version] == version and i[:type] == type
-        end
+        defn = @items[id][type]
         return nil unless defn
-        item.data = defn[:data]
-      elsif version
-        item = Item.new
-        item.uuid = id
-        item.version = version
-        defn = @items[id][:definitions].find do |i|
-          i[:version] == version
-        end
-        return nil unless defn
-        item.data = defn[:data]
-        item.type = defn[:type]
+        item.data = defn
       else
         item = Item.new
         item.uuid = id
-        defn = @items[id][:definitions].sort_by {|i| i[:version] }.last
-        item.type = defn[:type]
-        item.version = defn[:version]
-        item.data = defn[:data]
+        defn = @items[id][:user]
+        item.type = :user
+        unless defn
+          defn = @items[id][:source]
+          item.type = :source
+        end
+        return nil unless defn
+        item.data = defn
       end
-      return nil unless item.data
       item
     end
     
     def find_with_tag(tag)
       items = []
-      @items.each do |uuid, defn|
+      @items.each do |uuid, types|
+        defn = types[:user] || types[:source]
         if defn[:tags].include? tag
           items << get_item(uuid)
         end
@@ -146,8 +148,9 @@ module Redcar
     
     def find_with_tags(*tags)
       items = []
-      @items.each do |uuid, defn|
+      @items.each do |uuid, types|
         all = true
+        defn = types[:user] || types[:source]
         tags.each do |tag|
           all = false unless defn[:tags].include? tag
         end
@@ -159,30 +162,29 @@ module Redcar
     end
     
     def size
-      i = 0
-      @items.each {|k, v| i += v[:definitions].length}
-      i
+      @items.keys.length
     end
     
     def []=(id, data)
       if @items[id]
-        @items[id][:definitions] << {:type => :user,
-          :version => self[id].version+1,
-          :data => data}
-      else
-        @items[id] = {}
-        @items[id][:tags] = []
-        @items[id][:definitions] = defs = []
-        defs << {:type => :user,
-          :version => 1,
-          :data => data}
+        defn = @items[id][:user] || @items[id][:source]
+        data[:tags] ||= defn[:tags]
+        @items[id][:user] = data
       end
+    end
+    
+    def add(data)
+      uuid = UUID.new
+      data[:tags] ||= []
+      @items[uuid] = {:user => data}
+      uuid
     end
     
     def tag(uuid, *tags)
       if include? uuid
-        @items[uuid][:tags] += tags
-        @items[uuid][:tags].uniq!
+        @items[uuid][:user] ||= @items[uuid][:source]
+        @items[uuid][:user][:tags] += tags
+        @items[uuid][:user][:tags].uniq!
       else
         raise ArgumentError, "no Image item with uuid #{uuid}"
       end
