@@ -11,6 +11,7 @@ begin
   Gtk.main
 rescue => e
   $stderr.puts str=<<ERR
+
 ---------------------------
 Redcar has crashed.
 ---------------------------

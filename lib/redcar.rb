@@ -86,7 +86,7 @@ module Redcar
     end
     
     def load_stuff(options)
-      print "loading image/ ..."
+      print "loading image ..."; $stdout.flush
       show_time do
         self.image = Redcar.Image.new(:cache_dir => "environment/",
                                       :sources => ["scripts/*/image.yaml"])
@@ -96,7 +96,7 @@ module Redcar
         Redcar.image.cache
       end
 
-      print "loading menus/ ..."; $stdout.flush
+      print "loading menus ..."; $stdout.flush
       show_time do
         Redcar.Menu.load_menus
         Redcar.Menu.create_menus
@@ -106,7 +106,7 @@ module Redcar
       puts Redcar.Keymap.all      
       
       if options[:load_scripts]
-        print "loading scripts/ ..."; $stdout.flush
+        print "loading scripts ..."; $stdout.flush
         show_time do
           Dir.glob("scripts/*/*.rb").sort.each do |f|
             if File.file?(f) and not f.include? "~"

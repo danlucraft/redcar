@@ -6,6 +6,9 @@ require 'lib/redcar'
 require 'pp'
 require 'vendor/keyword_processor'
 require 'vendor/ruby_extensions'
+require 'md5'
+
+BundleMenuUUID = "9ccd2a50-2d98-012a-20c0-000ae4ee635c"
 
 def rubyize(camelcase)
   words = camelcase.split(/(?=[A-Z])/).map {|w| w.downcase }
@@ -74,7 +77,7 @@ def get_commands(name, bundle_uuid, items)
       :capture_format_string => chash["captureFormatString"],
       :line_capture_register => chash["lineCaptureRegister"],
       :disable_output_auto_indent => disable_output_auto_indent,
-      :tags => [:textmate, :command],
+      :tags => [:command],
       :created => Time.now
     }
     items[redcar_chash[:uuid]] = redcar_chash
@@ -85,7 +88,7 @@ def get_snippets(name, bundle_uuid, items)
   Dir["textmate/Bundles/"+name+".tmbundle/Snippets/*"].each do |filename|
     chash = Redcar.Plist.xml_to_plist(File.read(filename))[0]
     items[chash["uuid"]] = {
-      :tags => [:textmate, :snippet],
+      :tags => [:snippet],
       :bundle_uuid => bundle_uuid,
       :created => Time.now,
       :name => chash["name"],
@@ -107,7 +110,7 @@ def get_macros(name, bundle_uuid, items)
       }
     end
     items[chash["uuid"]] = {
-      :tags => [:textmate, :macro],
+      :tags => [:macro],
       :created => Time.now,
       :bundle_uuid => bundle_uuid,
       :name => chash["name"],
@@ -120,25 +123,45 @@ def get_macros(name, bundle_uuid, items)
 end
 
 def get_menus(name, bundle_uuid, items)
-  chash = Redcar.Plist.xml_to_plist(File.read("textmate/Bundles/"+name+".tmbundle/info.plist"))[0]
+  chash = Redcar.Plist.xml_to_plist(
+            File.read("textmate/Bundles/"+name+".tmbundle/info.plist")
+          )[0]
   
   tm_submenus = (chash["mainMenu"]||{})["submenus"]||{}
   submenus = {}
   tm_submenus.each do |uuid, smh|
+    items[MD5.new("bundle"+name+smh["name"]).to_s] = {
+      :tags => [:menudef],
+      :created_at => Time.now,
+      :name    => smh["name"],
+      :visible => true,
+      :enabled => true,
+      :icon    => "none"
+    }
     submenus[uuid] = {
-      :name => smh["name"],
       :items => smh["items"]
     }
   end
   
+  menudef_id = MD5.new("bundle"+name).to_s
+  items[menudef_id] = {
+    :tags => [:menudef],
+    :created_at => Time.now,
+    :name    => name,
+    :visible => true,
+    :enabled => true,
+    :icon    => "none"
+  }
+  
   items[chash["uuid"]] = {
-    :tags => [:textmate, :menus],
+    :tags => [:menu],
     :created => Time.now,
     :bundle_uuid => bundle_uuid,
     :description => chash["description"],
-    :items => (chash["mainMenu"]||{})["items"],
+    :toplevel => [BundleMenuUUID],
+    :items    => [menudef_id],
     :excluded_items => (chash["mainMenu"]||{})["excludedItems"],
-    :submenus => submenus,
+    :submenus => {menudef_id => (chash["mainMenu"]||{})["items"]}.merge(submenus),
     :deleted => chash["deleted"],
     :ordering => chash["ordering"]
   }
@@ -155,17 +178,18 @@ def with_feedback
   end
 end
 
-def get_bundle(name, hash)
+def get_bundle(name, items)
   name1 = name[0..25]
   name1 = name1+" "*(26-name1.length)
   print name1+" ["; $stdout.flush
   bundle_uuid = nil
-  with_feedback { bundle_uuid = get_info(name, hash)    }
-  with_feedback { get_commands(name, bundle_uuid, hash) }
-  with_feedback { get_snippets(name, bundle_uuid, hash) }
-  with_feedback { get_macros(name, bundle_uuid, hash)   }
-#  with_feedback { get_grammars(name, bundle_uuid, hash) }
-  with_feedback { get_menus(name, bundle_uuid, hash)    }
+  with_feedback { bundle_uuid = get_info(name, items)    }
+  with_feedback { get_commands(name, bundle_uuid, items) }
+  with_feedback { get_snippets(name, bundle_uuid, items) }
+  with_feedback { get_macros(name, bundle_uuid, items)   }
+#  with_feedback { get_grammars(name, bundle_uuid, items) }
+  with_feedback { get_menus(name, bundle_uuid, items)    }
+  
   puts "]"
 end
 
@@ -175,6 +199,15 @@ bundle_names = Dir[InDir].
   sort_by {|d| d.downcase }
 
 items = {}
+
+items[BundleMenuUUID] = {
+  :tags => [:menudef],
+  :created => Time.now,
+  :icon    => "none",
+  :visible => true,
+  :name    => "Bundles",
+  :enabled => true
+}
 
 puts
 puts "Importing (#{bundle_names.length}) TextMate bundles to Redcar image file"

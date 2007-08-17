@@ -7,12 +7,6 @@ module Redcar
       p.add("Default Shell Command", :type => :string, :default => "bash")
     end
     
-    Redcar.menu("Tools") do |menu|
-      menu.command("Open Shell", :open_shell, nil, nil) do
-        Redcar.new_tab(NewShellTab).focus
-      end
-    end
-    
     class NewShellTab < Tab
       def initialize(pane)
         vte = Vte::Terminal.new

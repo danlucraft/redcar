@@ -5,7 +5,6 @@ fb61c5b0-0e22-012a-207d-000ae4ee635c:
   :enabled: true
   :tags: 
   - :menudef
-  - :core
   :created: 2007-08-12 15:14:31.090336 +01:00
   :icon: none
   :uuid: fb61c5b0-0e22-012a-207d-000ae4ee635c
@@ -31,7 +30,6 @@ fb61c5b0-0e22-012a-207d-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: ""
   :created: 2007-08-12 15:14:31.090363 +01:00
@@ -51,7 +49,6 @@ fb61c5b0-0e22-012a-207d-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: control v
   :created: 2007-08-12 15:14:31.090372 +01:00
@@ -74,7 +71,6 @@ de849830-ff33-0129-2069-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :version: :original
   :activated_by_value: ""
@@ -94,7 +90,6 @@ de849830-ff33-0129-2069-000ae4ee635c:
   :output: :replace_input
   :tags: 
   - :command
-  - :core
   :fallback_input: :line
   :activated_by_value: control g
   :created: 2007-08-12 15:14:31.090386 +01:00
@@ -114,7 +109,6 @@ de849830-ff33-0129-2069-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: ""
   :created: 2007-08-12 15:14:31.090394 +01:00
@@ -132,9 +126,9 @@ de849830-ff33-0129-2069-000ae4ee635c:
   - 3fd33a80-0f9a-012a-2094-000ae4ee635c
   - cf7bf240-101b-012a-2095-000ae4ee635c
   - a7545f50-102c-012a-2096-000ae4ee635c
+  :position: 0
   :tags: 
   - :menu
-  - :core
   :submenus: 
     fb61c5b0-0e22-012a-207d-000ae4ee635c: 
     - 00926a20-0e23-012a-207d-000ae4ee635c
@@ -199,7 +193,6 @@ de849830-ff33-0129-2069-000ae4ee635c:
   :enabled: true
   :tags: 
   - :menudef
-  - :core
   :created: 2007-08-12 15:14:31.090410 +01:00
   :icon: none
   :uuid: 3fd33a80-0f9a-012a-2094-000ae4ee635c
@@ -224,7 +217,6 @@ de849830-ff33-0129-2069-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: super s
   :created: 2007-08-12 15:14:31.090417 +01:00
@@ -244,7 +236,6 @@ b2799270-0f96-012a-2093-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: alt-shift >
   :created: 2007-08-12 15:14:31.090423 +01:00
@@ -264,7 +255,6 @@ b2799270-0f96-012a-2093-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: control f
   :created: 2007-08-12 15:14:31.090431 +01:00
@@ -284,7 +274,6 @@ b2799270-0f96-012a-2093-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: ""
   :created: 2007-08-12 15:14:31.090439 +01:00
@@ -304,7 +293,6 @@ a0741ab0-0e23-012a-207e-000ae4ee635c:
   :output: :replace_input
   :tags: 
   - :command
-  - :core
   :fallback_input: :line
   :version: :original
   :activated_by_value: control-shift U
@@ -343,7 +331,6 @@ afba2860-14ed-012a-209b-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: ""
   :created: 2007-08-12 15:14:31.090454 +01:00
@@ -376,7 +363,6 @@ afba2860-14ed-012a-209b-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: ""
   :created: 2007-08-12 15:14:31.090461 +01:00
@@ -398,7 +384,6 @@ afba2860-14ed-012a-209b-000ae4ee635c:
   :output: :insert_after_input
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: control-shift E
   :created: 2007-08-12 15:14:31.090468 +01:00
@@ -418,7 +403,6 @@ afba2860-14ed-012a-209b-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: control e
   :created: 2007-08-12 15:14:31.090476 +01:00
@@ -441,7 +425,6 @@ b269f400-0e23-012a-207e-000ae4ee635c:
   :output: :replace_input
   :tags: 
   - :command
-  - :core
   :fallback_input: :line
   :version: :original
   :activated_by_value: alt-control u
@@ -456,7 +439,6 @@ fefe8410-0f94-012a-2092-000ae4ee635c:
   :enabled: true
   :tags: 
   - :menudef
-  - :core
   :created: 2007-08-12 15:14:31.090490 +01:00
   :icon: none
   :uuid: fefe8410-0f94-012a-2092-000ae4ee635c
@@ -472,7 +454,6 @@ a5f25da0-14ed-012a-209b-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: ""
   :created: 2007-08-12 15:14:31.090498 +01:00
@@ -492,7 +473,6 @@ a5f25da0-14ed-012a-209b-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: super w
   :created: 2007-08-12 15:14:31.090506 +01:00
@@ -512,7 +492,6 @@ a5f25da0-14ed-012a-209b-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: control-shift A
   :created: 2007-08-12 15:14:31.090513 +01:00
@@ -526,7 +505,6 @@ c4b97cd0-0dc3-012a-2078-000ae4ee635c:
   :enabled: true
   :tags: 
   - :menudef
-  - :core
   :created: 2007-08-12 15:14:31.090520 +01:00
   :icon: none
   :uuid: c4b97cd0-0dc3-012a-2078-000ae4ee635c
@@ -536,7 +514,6 @@ a7545f50-102c-012a-2096-000ae4ee635c:
   :enabled: true
   :tags: 
   - :menudef
-  - :core
   :created: 2007-08-12 15:14:31.090527 +01:00
   :icon: none
   :uuid: a7545f50-102c-012a-2096-000ae4ee635c
@@ -552,7 +529,6 @@ a7545f50-102c-012a-2096-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: control c
   :created: 2007-08-12 15:14:31.090534 +01:00
@@ -581,7 +557,6 @@ fd75e990-0e2e-012a-2082-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :version: :original
   :activated_by_value: super o
@@ -609,7 +584,6 @@ fd75e990-0e2e-012a-2082-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :version: :original
   :activated_by_value: ""
@@ -630,7 +604,6 @@ fd75e990-0e2e-012a-2082-000ae4ee635c:
   :output: :show_as_html
   :tags: 
   - :command
-  - :core
   :fallback_input: :line
   :version: :original
   :activated_by_value: control-shift D
@@ -651,7 +624,6 @@ fd75e990-0e2e-012a-2082-000ae4ee635c:
   :output: :replace_input
   :tags: 
   - :command
-  - :core
   :fallback_input: :line
   :version: :original
   :activated_by_value: control u
@@ -677,7 +649,6 @@ fd75e990-0e2e-012a-2082-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: alt-super s
   :created: 2007-08-12 15:14:31.090569 +01:00
@@ -691,7 +662,6 @@ cf7bf240-101b-012a-2095-000ae4ee635c:
   :enabled: true
   :tags: 
   - :menudef
-  - :core
   :created: 2007-08-12 15:14:31.090575 +01:00
   :icon: none
   :uuid: cf7bf240-101b-012a-2095-000ae4ee635c
@@ -701,7 +671,6 @@ cf7bf240-101b-012a-2095-000ae4ee635c:
   :enabled: true
   :tags: 
   - :menudef
-  - :core
   :created: 2007-08-12 15:14:31.090582 +01:00
   :icon: none
   :uuid: 510bb3e0-0e23-012a-207e-000ae4ee635c
@@ -717,7 +686,6 @@ dcfed670-1019-012a-2095-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: ""
   :created: 2007-08-12 15:14:31.090587 +01:00
@@ -740,7 +708,6 @@ c9b78970-0dc3-012a-2078-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :version: :original
   :activated_by_value: super n
@@ -755,7 +722,6 @@ c9b78970-0dc3-012a-2078-000ae4ee635c:
   :enabled: true
   :tags: 
   - :menudef
-  - :core
   :created: 2007-08-12 15:14:31.090599 +01:00
   :icon: none
   :uuid: 082365a0-0f8e-012a-208e-000ae4ee635c
@@ -765,7 +731,6 @@ deafd620-ff33-0129-2069-000ae4ee635c:
   :enabled: true
   :tags: 
   - :menudef
-  - :core
   :created: 2007-08-12 15:14:31.090605 +01:00
   :icon: none
 1af7a920-0f8e-012a-208e-000ae4ee635c: 
@@ -780,7 +745,6 @@ deafd620-ff33-0129-2069-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: control x
   :created: 2007-08-12 15:14:31.090613 +01:00
@@ -804,7 +768,6 @@ a063f1a0-10f1-012a-2098-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: ""
   :created: 2007-08-12 15:14:31.090620 +01:00
@@ -818,7 +781,6 @@ a063f1a0-10f1-012a-2098-000ae4ee635c:
   :enabled: true
   :tags: 
   - :menudef
-  - :core
   :created: 2007-08-12 15:14:31.090628 +01:00
   :icon: none
   :uuid: 82032ae0-0e2d-012a-2081-000ae4ee635c
@@ -828,7 +790,6 @@ a063f1a0-10f1-012a-2098-000ae4ee635c:
   :enabled: true
   :tags: 
   - :menudef
-  - :core
   :created: 2007-08-12 15:14:31.090635 +01:00
   :icon: none
   :uuid: 9ce91d00-10f1-012a-2098-000ae4ee635c
@@ -846,7 +807,6 @@ d428c1f0-101b-012a-2095-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: ""
   :created: 2007-08-12 15:14:31.090641 +01:00
@@ -866,7 +826,6 @@ d428c1f0-101b-012a-2095-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: control a
   :created: 2007-08-12 15:14:31.090646 +01:00
@@ -886,7 +845,6 @@ d428c1f0-101b-012a-2095-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: control b
   :created: 2007-08-12 15:14:31.090652 +01:00
@@ -906,7 +864,6 @@ f615c840-0f92-012a-2091-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: alt-control z
   :created: 2007-08-12 15:14:31.090659 +01:00
@@ -930,7 +887,6 @@ f615c840-0f92-012a-2091-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: shift-super L
   :created: 2007-08-12 15:14:31.090665 +01:00
@@ -956,7 +912,6 @@ b1b0dd30-110a-012a-2099-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: control w
   :created: 2007-08-12 15:14:31.090670 +01:00
@@ -976,7 +931,6 @@ af02e620-0f96-012a-2093-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: alt-shift <
   :created: 2007-08-12 15:14:31.090675 +01:00
@@ -998,7 +952,6 @@ af02e620-0f96-012a-2093-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: control z
   :created: 2007-08-12 15:14:31.090681 +01:00
@@ -1018,7 +971,6 @@ aeacca30-102c-012a-2096-000ae4ee635c:
   :output: :discard
   :tags: 
   - :command
-  - :core
   :fallback_input: :none
   :activated_by_value: Tab
   :created: 2007-08-12 15:14:31.090687 +01:00

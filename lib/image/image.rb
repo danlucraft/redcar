@@ -3,7 +3,7 @@ module Redcar
   class Image
    
     class Item
-      attr_accessor :uuid, :type, :data
+      attr_accessor :type, :data, :uuid
       
       def created
         @data[:created]
@@ -89,13 +89,14 @@ module Redcar
     
     def load_cache
       if File.exists? cache_file
-        YAML.load(File.read(cache_file))
+        #YAML.load(File.read(cache_file))
+        Marshal.load(File.read(cache_file))
       end
     end
     
     def cache
       File.open(cache_file, "w") do |f|
-        f.puts self.to_yaml
+        f.puts Marshal.dump(self)#self.to_yaml
       end
     end
     

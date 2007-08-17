@@ -63,21 +63,13 @@ module Redcar
       end
       
       def load_menus
-        commands = Redcar.image.find_with_tags(:core, :command)
-        menudefs  = Redcar.image.find_with_tags(:core, :menudef)
-        menu_tree = Redcar.image.find_with_tags(:core, :menu_layout)
-        @menu_defs = {}
-        @commands = {}
-        commands.each do |comm|
-          @commands[comm.uuid] = comm.data
-        end
-        menudefs.each do |menu|
-          @menu_defs[menu.uuid] = menu.data
-        end
-        @menus = menu_tree[0]
-        @menus_uuid = menu_tree[0].uuid
+        @commands, @menudefs, @menus = {}, {}, {}
+        Redcar.image.find_with_tags(:command).
+          each {|i| @commands[i.uuid] = i}
+        Redcar.image.find_with_tags(:menudef).
+          each {|i| @menudefs[i.uuid] = i}
+        @menus = Redcar.image.find_with_tags(:menu)
         return [@menus, @menu_defs, @commands]
-        
       end
       
       def save_menus
@@ -106,25 +98,31 @@ module Redcar
           Redcar.menubar.remove(gtk_menuitem)
         end
         @gtk_menuitems = []
+        toplevel_menu_items = []
         @menus.each do |menu|
-          uuid = menu.keys[0]
-          menu_def = @menu_defs[uuid]
-          gtk_menu = Gtk::Menu.new
-          if menu_def[:icon] and menu_def[:icon] != "none"
-            gtk_menuitem = Gtk::ImageMenuItem.create(menu_def[:icon],
-                                                     menu_def[:name])
-          else
-            gtk_menuitem = Gtk::MenuItem.new(menu_def[:name])
+          menu[:items].each do |uuid|
+            menu_def = @menudefs[uuid]
+            gtk_menu = Gtk::Menu.new
+            if menu_def[:icon] and menu_def[:icon] != "none"
+              gtk_menuitem = Gtk::ImageMenuItem.create(menu_def[:icon],
+                                                       menu_def[:name])
+            else
+              gtk_menuitem = Gtk::MenuItem.new(menu_def[:name])
+            end
+            @gtk_menuitems << gtk_menuitem
+            gtk_menuitem.submenu = gtk_menu
+            gtk_menuitem.show
+            if menu_def[:visible]
+              toplevel_menu_items << [menu_def[:position]||100, gtk_menuitem]
+            end
+            if menu_def[:enabled]
+              add_menu_items(@menus[:submenus][uuid], gtk_menu)
+            end
           end
-          @gtk_menuitems << gtk_menuitem
-          gtk_menuitem.submenu = gtk_menu
-          gtk_menuitem.show
-          if menu_def[:visible]
-            Redcar.menubar.append(gtk_menuitem)
-          end
-          if menu_def[:enabled]
-            add_menu_items(menu.values[0], gtk_menu)
-          end
+        end
+        toplevel_menu_items.sort.each do |a|
+          gtk_menuitem = a[1]
+          Redcar.menubar.append(gtk_menuitem)
         end
       end
       
@@ -178,26 +176,6 @@ module Redcar
                     puts e.message
                   end
                 end
-#                 if command_def[:activated_by] == :key_combination and
-#                     command_def[:activated_by_value]
-#                   keybinding = Redcar::KeyBinding.parse(
-#                                                         command_def[:activated_by_value])
-#                   this_name = command_def[:name].gsub(/_|-|\s/, "").downcase
-#                   Redcar.GlobalKeymap.class.class_eval do
-#                     keymap keybinding, "menu_#{this_name}".intern
-#                     define_method("menu_#{this_name}") do
-#                       command = Command.new(command_def)
-#                       begin
-#                         command.execute
-#                       rescue Object => e
-#                         puts e
-#                         puts e.message
-#                       end
-#                       # used to do this:
-#                       #      Redcar.process_command_error(id, e)
-#                     end
-#                   end
-#                 end
               end
 
               if command_def[:sensitive] and command_def[:sensitive].to_s.downcase != "nothing"
@@ -213,101 +191,101 @@ module Redcar
       end
     end
     
-    include DebugPrinter
+#     include DebugPrinter
     
-    attr_accessor :name
-    def initialize(menu, name)
-      @menu = menu
-      @name = name
-    end
-    def command(name, id, icon=nil, keybinding="", options={}, &block)
-      Redcar.add_command(id, block)
-#       accel = Gtk::Accelerator.parse(keymap)
-#       Gtk::AccelMap.add_entry("<Redcar>/"+name, *accel)
-      menuitem = Gtk::ImageMenuItem.new(name)
-      menuitem.accel_path = "<Redcar>/"+name
-      if keybinding.blank?
-        $no_key_count ||= 0
-        keybinding = "no_key_#{$no_key_count}"
-        $no_key_count += 1
-      end
-      this_name = self.name.gsub("_", "").downcase
-#       Redcar.GlobalKeymap.class.class_eval do
-#         keymap keybinding, "menu_#{this_name}_#{id}".intern
-#         define_method("menu_#{this_name}_#{id}") do
-#           begin
-#             block.call(Redcar.current_pane, Redcar.current_tab)
-#           rescue Object => e
-#             Redcar.process_command_error(id, e)
-#           end
-#         end
+#     attr_accessor :name
+#     def initialize(menu, name)
+#       @menu = menu
+#       @name = name
+#     end
+#     def command(name, id, icon=nil, keybinding="", options={}, &block)
+#       Redcar.add_command(id, block)
+# #       accel = Gtk::Accelerator.parse(keymap)
+# #       Gtk::AccelMap.add_entry("<Redcar>/"+name, *accel)
+#       menuitem = Gtk::ImageMenuItem.new(name)
+#       menuitem.accel_path = "<Redcar>/"+name
+#       if keybinding.blank?
+#         $no_key_count ||= 0
+#         keybinding = "no_key_#{$no_key_count}"
+#         $no_key_count += 1
 #       end
-      menuitem2 = menuitem
-      menuitem2.signal_connect("activate") do
-        debug_puts keybinding
-        begin
-          block.call(Redcar.current_pane, Redcar.current_tab)
-        rescue Object => e
-          Redcar.process_command_error(id, e)
-        end
-        Redcar.keystrokes.add_to_history(keybinding)
-      end
-      if icon
-        iconimg = Gtk::Image.new(Redcar::Icon.get(icon), 
-                                 Gtk::IconSize::MENU)
-        menuitem.image = iconimg
-      end
+#       this_name = self.name.gsub("_", "").downcase
+# #       Redcar.GlobalKeymap.class.class_eval do
+# #         keymap keybinding, "menu_#{this_name}_#{id}".intern
+# #         define_method("menu_#{this_name}_#{id}") do
+# #           begin
+# #             block.call(Redcar.current_pane, Redcar.current_tab)
+# #           rescue Object => e
+# #             Redcar.process_command_error(id, e)
+# #           end
+# #         end
+# #       end
+#       menuitem2 = menuitem
+#       menuitem2.signal_connect("activate") do
+#         debug_puts keybinding
+#         begin
+#           block.call(Redcar.current_pane, Redcar.current_tab)
+#         rescue Object => e
+#           Redcar.process_command_error(id, e)
+#         end
+#         Redcar.keystrokes.add_to_history(keybinding)
+#       end
+#       if icon
+#         iconimg = Gtk::Image.new(Redcar::Icon.get(icon), 
+#                                  Gtk::IconSize::MENU)
+#         menuitem.image = iconimg
+#       end
       
-      if options[:sensitize_to]
-        menuitem.sensitize_to(options[:sensitize_to])
-      end
+#       if options[:sensitize_to]
+#         menuitem.sensitize_to(options[:sensitize_to])
+#       end
       
-      menuitem.show
-      @menu.append(menuitem)
-    end
+#       menuitem.show
+#       @menu.append(menuitem)
+#     end
     
-    def submenu(name)
-      submenu = Gtk::Menu.new
-      yield Menu.new(submenu, name)
-      submenu_item = Gtk::MenuItem.new(name)
-      submenu_item.submenu = submenu
-      submenu.show
-      submenu_item.show
-      @menu.append(submenu_item)
-    end
+#     def submenu(name)
+#       submenu = Gtk::Menu.new
+#       yield Menu.new(submenu, name)
+#       submenu_item = Gtk::MenuItem.new(name)
+#       submenu_item.submenu = submenu
+#       submenu.show
+#       submenu_item.show
+#       @menu.append(submenu_item)
+#     end
     
-    def separator
-      sep = Gtk::SeparatorMenuItem.new
-      @menu.append(sep)
-      sep.show
-    end
+#     def separator
+#       sep = Gtk::SeparatorMenuItem.new
+#       @menu.append(sep)
+#       sep.show
+#     end
   end
   
-  def self.context_menu(id, &block)
-    menu = self.common(id, block)
-    menu.show
-    Redcar.context_menus[id] = menu
-  end
+#   def self.context_menu(id, &block)
+#     menu = self.common(id, block)
+#     menu.show
+#     Redcar.context_menus[id] = menu
+#   end
   
-  def self.common(name, block)
-    @menus ||= {}
-    menu = (@menus[name] ||= Gtk::Menu.new)
-    menu.accel_group = $ag
-    block.call Menu.new(menu, name)
-    menu.show
-    menu
-  end
+#   def self.common(name, block)
+#     @menus ||= {}
+#     menu = (@menus[name] ||= Gtk::Menu.new)
+#     menu.accel_group = $ag
+#     block.call Menu.new(menu, name)
+#     menu.show
+#     menu
+#   end
   
-  def self.menu(name, &block)
-    @menus ||= {}
-    if @menus[name]
-      menu = self.common(name, block)
-    else
-      menu = self.common(name, block)
-      menuitem = Gtk::MenuItem.new(name)
-      menuitem.submenu = menu
-      menuitem.show
-      Redcar.menubar.append(menuitem)
-    end
-  end
+#   def self.menu(name, &block)
+#     @menus ||= {}
+#     if @menus[name]
+#       menu = self.common(name, block)
+#     else
+#       menu = self.common(name, block)
+#       menuitem = Gtk::MenuItem.new(name)
+#       menuitem.submenu = menu
+#       menuitem.show
+#       Redcar.menubar.append(menuitem)
+#     end
+#   end
 end

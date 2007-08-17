@@ -3,34 +3,34 @@ Bundles = []
 
 require 'pp'
 
-Redcar.menu("_Textmate") do |menu|
-  menu.command("XML to _plist", :xml_to_plist) do |pane, tab|
-    new_tab = Redcar.new_tab
-    p new_tab.class
-    result = Redcar::Plist.plist_from_xml(tab.to_s)
-    str = ""
-    def str.write(text)
-      self << text
-    end
-    $stdout = str
-    pp result
-    $stdout = STDOUT
-    new_tab.contents = str
-    new_tab.focus
-    new_tab.modified = false
-    tab.modified = false
-  end
+# Redcar.menu("_Textmate") do |menu|
+#   menu.command("XML to _plist", :xml_to_plist) do |pane, tab|
+#     new_tab = Redcar.new_tab
+#     p new_tab.class
+#     result = Redcar::Plist.plist_from_xml(tab.to_s)
+#     str = ""
+#     def str.write(text)
+#       self << text
+#     end
+#     $stdout = str
+#     pp result
+#     $stdout = STDOUT
+#     new_tab.contents = str
+#     new_tab.focus
+#     new_tab.modified = false
+#     tab.modified = false
+#   end
   
-  menu.command("plist to _XML", :plist_to_xml) do |pane, tab|
-    new_tab = Redcar.new_tab
-    plist = eval(tab.contents)
-    result = Redcar::Plist.plist_to_xml(plist)
-    new_tab.contents = result
-    new_tab.focus
-    new_tab.modified = false
-    tab.modified = false
-  end
-end
+#   menu.command("plist to _XML", :plist_to_xml) do |pane, tab|
+#     new_tab = Redcar.new_tab
+#     plist = eval(tab.contents)
+#     result = Redcar::Plist.plist_to_xml(plist)
+#     new_tab.contents = result
+#     new_tab.focus
+#     new_tab.modified = false
+#     tab.modified = false
+#   end
+# end
 
 module Redcar
   class Bundle

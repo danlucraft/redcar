@@ -1,12 +1,6 @@
 # redcar/scripts/documents
 # A tab with a list of open documents.
 
-Redcar.menu("_View") do |menu|
-  menu.command("List Documents", :list_documents, nil, "") do |pane, tab|
-    Redcar.new_tab(Redcar::DocumentsTab)
-  end
-end
-
 module Redcar
   class DocumentsTab < Tab
     @@la = nil
