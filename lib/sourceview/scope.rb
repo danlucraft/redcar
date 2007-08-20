@@ -13,7 +13,6 @@ module Redcar
         end
       end
       
-#      include DebugPrinter
       include Enumerable
       
       attr_accessor(:children, 
@@ -140,19 +139,19 @@ module Redcar
                      other.open_matchdata.to_s  == self.open_matchdata.to_s and
                      other.close_matchdata.to_s == self.close_matchdata.to_s and
                      other.closing_regexp.to_s  == self.closing_regexp.to_s)
-        #debug_puts "(#{self.inspect} == #{other.inspect}) == #{self_same}"
+        #SyntaxLogger.debug { "(#{self.inspect} == #{other.inspect}) == #{self_same}"}
         unless self_same
-          #debug_puts "name: #{other.name}  == #{self.name} "
-          #debug_puts "open_start.inspect: #{other.open_start.inspect}  == #{self.open_start.inspect} "
-          #debug_puts "open_end.inspect: #{other.open_end.inspect}  == #{self.open_end.inspect} "
-          #debug_puts "grammar: #{other.grammar}  == #{self.grammar} "
-          #debug_puts "pattern.inspect: #{other.pattern.inspect}  == #{self.pattern.inspect} "
-          #debug_puts "start: #{other.start.inspect}  == #{self.start.inspect} "
-          #debug_puts "end: #{other.end.inspect}  == #{self.end.inspect} "
-          #debug_puts "close_end: #{other.close_end.inspect}  == #{self.close_end.inspect} "
-          #debug_puts "close_matchdata.to_s: #{other.close_matchdata.to_s.inspect}  == #{self.close_matchdata.to_s.inspect} "
-          #debug_puts "open_matchdata.to_s.inspect: #{other.open_matchdata.to_s.inspect}  == #{self.open_matchdata.to_s.inspect} "
-          #debug_puts "closing_regexp.to_s.inspect: #{other.closing_regexp.to_s.inspect}  == #{self.closing_regexp.to_s.inspect} "
+          #SyntaxLogger.debug { "name: #{other.name}  == #{self.name} " }
+          #SyntaxLogger.debug { "open_start.inspect: #{other.open_start.inspect}  == #{self.open_start.inspect} " }
+          #SyntaxLogger.debug { "open_end.inspect: #{other.open_end.inspect}  == #{self.open_end.inspect} " }
+          #SyntaxLogger.debug { "grammar: #{other.grammar}  == #{self.grammar} " }
+          #SyntaxLogger.debug { "pattern.inspect: #{other.pattern.inspect}  == #{self.pattern.inspect} " }
+          #SyntaxLogger.debug { "start: #{other.start.inspect}  == #{self.start.inspect} " }
+          #SyntaxLogger.debug { "end: #{other.end.inspect}  == #{self.end.inspect} " }
+          #SyntaxLogger.debug { "close_end: #{other.close_end.inspect}  == #{self.close_end.inspect} " }
+          #SyntaxLogger.debug { "close_matchdata.to_s: #{other.close_matchdata.to_s.inspect}  == #{self.close_matchdata.to_s.inspect} " }
+          #SyntaxLogger.debug { "open_matchdata.to_s.inspect: #{other.open_matchdata.to_s.inspect}  == #{self.open_matchdata.to_s.inspect} " }
+          #SyntaxLogger.debug { "closing_regexp.to_s.inspect: #{other.closing_regexp.to_s.inspect}  == #{self.closing_regexp.to_s.inspect} " }
         end
         return false unless self_same
 
@@ -469,7 +468,7 @@ module Redcar
       def delete_any_on_line_not_in(line_num, scopes)
         @children = @children.reject do |cs|
           if cs.start.line == line_num and !scopes.include?(cs)
-            #debug_puts "deleting: #{cs.inspect}"
+            #SyntaxLogger.debug { "deleting: #{cs.inspect}" }
             true
           else
             false

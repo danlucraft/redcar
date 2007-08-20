@@ -46,7 +46,7 @@ module Redcar
     
     def input_by_type(type)
       case type
-      when :selected_text
+      when :selected_text, :selection
         Redcar.current_tab.selection
       when :document
         Redcar.current_tab.buffer.text
@@ -98,8 +98,17 @@ module Redcar
         tab.replace_selection(output)
       when :insert_as_text
         tab.insert_at_cursor(output)
-      when :show_as_tool_tip
+      when :insert_as_snippet
+        tab.insert_as_snippet(output)
+      when :show_as_tool_tip, :show_as_tooltip
         tab.tooltip_at_cursor(output)
+      when :after_selected_text
+        if tab.selected?
+          s, e = tab.selection_bounds
+        else
+          e = tab.cursor_offset
+        end
+        tab.insert(e, output)
       when :create_new_document
         new_tab = Redcar.current_pane.new_tab
         new_tab.name = "output: " + @def[:name]
@@ -115,6 +124,13 @@ module Redcar
           tab.replace output
         when :word
           Redcar.tab.text[@s..@e] = output
+        when :scope
+          if Redcar.current_tab.respond_to? :current_scope
+            s = tab.iter(Redcar.current_tab.current_scope.start).offset
+            e = tab.iter(Redcar.current_tab.current_scope.end).offset
+            tab.delete(s, e)
+            tab.insert(s, output)
+          end
         end
       when :show_as_html
         new_tab = Redcar.new_tab(HtmlTab, output.to_s)
@@ -137,7 +153,7 @@ module Redcar
       end
     end
     
-    def execute
+    def execute_as_inline
       @output = nil
       tab = Redcar.current_tab
       input = get_input
@@ -149,6 +165,71 @@ module Redcar
       end
       output ||= @output
       direct_output(@def[:output], output) if output
+    end
+
+    def shell_command
+      if @def[:command][0..1] == "#!"
+        "./cache/tmp.command"
+      else
+        "/bin/sh cache/tmp.command"
+      end
+    end
+    
+    def execute_as_shell
+      File.open("cache/tmp.command", "w") {|f| f.puts @def[:command]}
+      File.chmod(0770, "cache/tmp.command")
+      output, error = nil, nil
+      Open3.popen3(shell_command) do |stdin, stdout, stderr|
+        stdin.write(input = get_input)
+#        puts "input: #{input}"
+        stdin.close
+        output = stdout.read
+        error = stderr.read
+      end
+      unless error.blank?
+        puts "shell command failed with error:"
+        puts error
+      end
+#      puts "output: #{output}"
+      direct_output(@def[:output], output) if output
+    end
+    
+    def execute
+      set_environment_variables
+      case @def[:type]
+      when :inline
+        execute_as_inline
+      when :shell
+        execute_as_shell
+      end
+    end
+    
+    # Shell commands
+    def set_environment_variables
+      ENV['RUBYLIB'] = (ENV['RUBYLIB']||"")+":textmate/Support/lib"
+      
+      ENV['TM_RUBY'] = "/usr/bin/ruby"
+      if @def[:bundle_uuid]
+        ENV['TM_BUNDLE_SUPPORT'] = Redcar.image[@def[:bundle_uuid]][:directory]+"Support"
+      end
+      if tab
+        ENV['TM_CURRENT_LINE'] = tab.get_line
+        ENV['TM_LINE_INDEX'] = tab.cursor_line_offset.to_s
+        ENV['TM_LINE_NUMBER'] = (tab.cursor_line+1).to_s
+        if tab.selected?
+          ENV['TM_SELECTED_TEXT'] = tab.selection
+        end
+        if tab.filename
+          ENV['TM_DIRECTORY'] = File.dirname(tab.filename)
+          ENV['TM_FILEPATH'] = tab.filename
+        end
+        if tab.sourceview.grammar
+          ENV['TM_SCOPE'] = tab.scope_at_cursor.to_s
+        end
+        ENV['TM_SOFT_TABS'] = "YES"
+        ENV['TM_SUPPORT_PATH'] = "textmate/Support"
+        ENV['TM_TAB_SIZE'] = "2"
+      end
     end
   end
   

@@ -14,6 +14,10 @@ module Gtk
       gtk_menuitem
     end
   end
+  
+  class MenuItem
+    attr_accessor :redcar_position
+  end
 end
 
 module Redcar  
@@ -63,13 +67,17 @@ module Redcar
       end
       
       def load_menus
-        @commands, @menudefs, @menus = {}, {}, {}
+        @commands, @menudefs, @snippets, @macros= {}, {}, {}, {}
         Redcar.image.find_with_tags(:command).
           each {|i| @commands[i.uuid] = i}
         Redcar.image.find_with_tags(:menudef).
           each {|i| @menudefs[i.uuid] = i}
+        Redcar.image.find_with_tags(:snippet).
+          each {|i| @snippets[i.uuid] = i}
+        Redcar.image.find_with_tags(:macro).
+          each {|i| @macros[i.uuid] = i}
         @menus = Redcar.image.find_with_tags(:menu)
-        return [@menus, @menu_defs, @commands]
+        return [@menus, @menudefs, @commands, @snippets, @macros]
       end
       
       def save_menus
@@ -93,199 +101,114 @@ module Redcar
         Redcar.image.cache
       end
       
-      def create_menus
-        (@gtk_menuitems||=[]).each do |gtk_menuitem|
+      def clear_menus
+        (@toplevel_gtk_menuitems||={}).each do |uuid, gtk_menuitem|
           Redcar.menubar.remove(gtk_menuitem)
         end
-        @gtk_menuitems = []
-        toplevel_menu_items = []
+        @toplevel_gtk_menuitems = {}
+        @gtk_menuitems = {}
+      end
+      
+      def make_gtk_menuitem(menu_def)
+        if menu_def[:icon] and menu_def[:icon] != "none"
+          Gtk::ImageMenuItem.create(menu_def[:icon],
+                                    menu_def[:name])
+        else
+          Gtk::MenuItem.new(menu_def[:name])
+        end
+      end
+
+      def create_menus
+        clear_menus
+        items_to_add = []
         @menus.each do |menu|
-          menu[:items].each do |uuid|
-            menu_def = @menudefs[uuid]
-            gtk_menu = Gtk::Menu.new
-            if menu_def[:icon] and menu_def[:icon] != "none"
-              gtk_menuitem = Gtk::ImageMenuItem.create(menu_def[:icon],
-                                                       menu_def[:name])
-            else
-              gtk_menuitem = Gtk::MenuItem.new(menu_def[:name])
-            end
-            @gtk_menuitems << gtk_menuitem
-            gtk_menuitem.submenu = gtk_menu
-            gtk_menuitem.show
-            if menu_def[:visible]
-              toplevel_menu_items << [menu_def[:position]||100, gtk_menuitem]
+          menu[:toplevel].each do |menu_uuid|
+            menu_def = @menudefs[menu_uuid]
+            unless gtk_menu = @gtk_menuitems[menu_uuid]
+              if menu_def[:visible]
+                gtk_menu = Gtk::Menu.new
+                gtk_menuitem = make_gtk_menuitem(menu_def)
+                @toplevel_gtk_menuitems[menu_uuid] = gtk_menuitem
+                gtk_menuitem.submenu = gtk_menu
+                gtk_menuitem.show
+                @gtk_menuitems[menu_uuid] = gtk_menu
+                items_to_add << [menu_def[:position]||100, gtk_menuitem]
+              end
             end
             if menu_def[:enabled]
-              add_menu_items(@menus[:submenus][uuid], gtk_menu)
+              create_submenu(menu_uuid, menu, gtk_menu)
             end
           end
         end
-        toplevel_menu_items.sort.each do |a|
+        items_to_add.sort_by(&its[0]).each do |a|
           gtk_menuitem = a[1]
           Redcar.menubar.append(gtk_menuitem)
         end
       end
       
-      def add_menu_items(menu_entries, gtk_menu)
-        menu_entries.each do |entry|
-          case entry
-          when Hash # it's a menu
-            uuid = entry.keys[0]
-            menu_def = @menu_defs[uuid]
-            if menu_def[:enabled]
-              if menu_def[:icon] and menu_def[:icon] != "none"
-                gtk_menuitem = Gtk::ImageMenuItem.create(menu_def[:icon],
-                                                         menu_def[:name])
-              else
-                gtk_menuitem = Gtk::MenuItem.new(menu_def[:name])
-              end
-              gtk_menuitem.show
-              gtk_submenu = Gtk::Menu.new
-              gtk_menuitem.submenu = gtk_submenu
-              add_menu_items(entry.values[0], gtk_submenu)
+      def connect_item_signal(item, gtk_menuitem)
+        if item.tags.include? :command
+          gtk_menuitem.signal_connect("activate") do 
+            command = Command.new(item)
+            begin
+              command.execute
+            rescue Object => e
+              puts e
+              puts e.message
             end
-            if menu_def[:visible]
-              gtk_menu.append(gtk_menuitem)
-            end
-          when String # it's an item
-            uuid = entry
-            if uuid == "---"
-              gtk_sep = Gtk::SeparatorMenuItem.new
-              gtk_menu.append(gtk_sep)
-              gtk_sep.show
-            else
-              command_def = @commands[uuid]
-              unless command_def
-                puts "Missing menu item definition for :#{uuid}"
-                next
-              end
-              if command_def[:enabled]
-                if command_def[:icon] and command_def[:icon] != "none"
-                  gtk_menuitem = Gtk::ImageMenuItem.create(command_def[:icon],
-                                                           command_def[:name])
-                else
-                  gtk_menuitem = Gtk::MenuItem.new(command_def[:name])
-                end
-                gtk_menuitem.show
-                gtk_menuitem.signal_connect("activate") do 
-                  command = Command.new(command_def)
-                  begin
-                    command.execute
-                  rescue Object => e
-                    puts e
-                    puts e.message
-                  end
-                end
-              end
-
-              if command_def[:sensitive] and command_def[:sensitive].to_s.downcase != "nothing"
-                gtk_menuitem.sensitize_to(command_def[:sensitive])
-              end
-              
-              if command_def[:visible]
-                gtk_menu.append(gtk_menuitem)
-              end
-            end
+          end
+        elsif item.tags.include? :snippet
+          gtk_menuitem.signal_connect("activate") do 
+            puts "do not know how to activate snippets yet"
+          end
+        elsif item.tags.include? :macro
+          gtk_menuitem.signal_connect("activate") do 
+            puts "do not know how to activate macros yet"
           end
         end
       end
+      
+      def create_submenu(uuid, menu, gtk_menu)
+        unless submenu_items = menu[:submenus][uuid]
+          raise Exception, "Missing submenu for #{uuid} in #{menu.inspect}"
+        end
+        items_to_add = []
+        submenu_items.each do |item_uuid|
+          if item_uuid =~ /---/
+            gtk_menuitem = Gtk::SeparatorMenuItem.new
+          elsif item_def = @menudefs[item_uuid]
+            unless gtk_submenu = @gtk_menuitems[item_uuid]
+              gtk_menuitem = make_gtk_menuitem(item_def)
+              gtk_submenu = Gtk::Menu.new
+              gtk_menuitem.submenu = gtk_submenu
+              @gtk_menuitems[item_uuid] = gtk_submenu
+            end
+            create_submenu(item_uuid, menu, gtk_submenu)
+          elsif item_def = @commands[item_uuid] || 
+              @snippets[item_uuid] ||
+              @macros[item_uuid]
+            gtk_menuitem = make_gtk_menuitem(item_def)
+            connect_item_signal(item_def, gtk_menuitem)
+          elsif
+            unless (menu[:deleted]||[]).include? item_uuid
+              puts "Missing menu or command definition"+
+                " for #{item_uuid}"
+            end
+          end
+          if (item_def and item_def[:visible] and item_def[:enabled]) or
+              item_uuid =~ /---/
+            gtk_menuitem.redcar_position = (item_def||{})[:position]||100
+            items_to_add << gtk_menuitem
+          end
+        end
+        items_to_add.each do |gtk_menuitem|
+          gtk_menu.append(gtk_menuitem)
+          gtk_menuitem.show
+        end
+        gtk_menu.children.
+          sort_by(&:redcar_position).
+          each_with_index {|m, i| gtk_menu.reorder_child(m, i)}
+      end
     end
-    
-#     include DebugPrinter
-    
-#     attr_accessor :name
-#     def initialize(menu, name)
-#       @menu = menu
-#       @name = name
-#     end
-#     def command(name, id, icon=nil, keybinding="", options={}, &block)
-#       Redcar.add_command(id, block)
-# #       accel = Gtk::Accelerator.parse(keymap)
-# #       Gtk::AccelMap.add_entry("<Redcar>/"+name, *accel)
-#       menuitem = Gtk::ImageMenuItem.new(name)
-#       menuitem.accel_path = "<Redcar>/"+name
-#       if keybinding.blank?
-#         $no_key_count ||= 0
-#         keybinding = "no_key_#{$no_key_count}"
-#         $no_key_count += 1
-#       end
-#       this_name = self.name.gsub("_", "").downcase
-# #       Redcar.GlobalKeymap.class.class_eval do
-# #         keymap keybinding, "menu_#{this_name}_#{id}".intern
-# #         define_method("menu_#{this_name}_#{id}") do
-# #           begin
-# #             block.call(Redcar.current_pane, Redcar.current_tab)
-# #           rescue Object => e
-# #             Redcar.process_command_error(id, e)
-# #           end
-# #         end
-# #       end
-#       menuitem2 = menuitem
-#       menuitem2.signal_connect("activate") do
-#         debug_puts keybinding
-#         begin
-#           block.call(Redcar.current_pane, Redcar.current_tab)
-#         rescue Object => e
-#           Redcar.process_command_error(id, e)
-#         end
-#         Redcar.keystrokes.add_to_history(keybinding)
-#       end
-#       if icon
-#         iconimg = Gtk::Image.new(Redcar::Icon.get(icon), 
-#                                  Gtk::IconSize::MENU)
-#         menuitem.image = iconimg
-#       end
-      
-#       if options[:sensitize_to]
-#         menuitem.sensitize_to(options[:sensitize_to])
-#       end
-      
-#       menuitem.show
-#       @menu.append(menuitem)
-#     end
-    
-#     def submenu(name)
-#       submenu = Gtk::Menu.new
-#       yield Menu.new(submenu, name)
-#       submenu_item = Gtk::MenuItem.new(name)
-#       submenu_item.submenu = submenu
-#       submenu.show
-#       submenu_item.show
-#       @menu.append(submenu_item)
-#     end
-    
-#     def separator
-#       sep = Gtk::SeparatorMenuItem.new
-#       @menu.append(sep)
-#       sep.show
-#     end
   end
-  
-#   def self.context_menu(id, &block)
-#     menu = self.common(id, block)
-#     menu.show
-#     Redcar.context_menus[id] = menu
-#   end
-  
-#   def self.common(name, block)
-#     @menus ||= {}
-#     menu = (@menus[name] ||= Gtk::Menu.new)
-#     menu.accel_group = $ag
-#     block.call Menu.new(menu, name)
-#     menu.show
-#     menu
-#   end
-  
-#   def self.menu(name, &block)
-#     @menus ||= {}
-#     if @menus[name]
-#       menu = self.common(name, block)
-#     else
-#       menu = self.common(name, block)
-#       menuitem = Gtk::MenuItem.new(name)
-#       menuitem.submenu = menu
-#       menuitem.show
-#       Redcar.menubar.append(menuitem)
-#     end
-#   end
 end

@@ -11,9 +11,11 @@ require 'md5'
 BundleMenuUUID = "9ccd2a50-2d98-012a-20c0-000ae4ee635c"
 
 def rubyize(camelcase)
+  return nil unless camelcase
   words = camelcase.split(/(?=[A-Z])/).map {|w| w.downcase }
-  r = words.join("_")
+  r = words.join("_").intern
   r = :show_as_html if r == :show_as_h_t_m_l
+  r
 end
 
 def parse_keycombination(comb)
@@ -37,6 +39,8 @@ def get_info(name, items)
   items[chash["uuid"]] = {
     :tags => [:bundle, :textmate],
     :created => Time.now,
+    :name => name,
+    :directory => "textmate/Bundles/"+name+".tmbundle/",
     :description => chash["description"],
     :contact_name => chash["contactName"],
     :contact_email_rot13 => chash["contactEmailRot13"]
@@ -67,8 +71,8 @@ def get_commands(name, bundle_uuid, items)
       :uuid => chash["uuid"],
       :output => rubyize(chash["output"]),
       :tab_trigger => chash["tabTrigger"],
-      :input => chash["input"],
-      :fallback_input => chash["fallbackInput"],
+      :input => rubyize(chash["input"]),
+      :fallback_input => rubyize(chash["fallbackInput"]),
       :activated_by_value => parse_keycombination(chash["keyEquivalent"]),
       :auto_scroll_output => auto_scroll_output,
       :bundle_uuid => bundle_uuid,
@@ -78,7 +82,9 @@ def get_commands(name, bundle_uuid, items)
       :line_capture_register => chash["lineCaptureRegister"],
       :disable_output_auto_indent => disable_output_auto_indent,
       :tags => [:command],
-      :created => Time.now
+      :created => Time.now,
+      :visible => true,
+      :enabled => true
     }
     items[redcar_chash[:uuid]] = redcar_chash
   end
@@ -95,7 +101,10 @@ def get_snippets(name, bundle_uuid, items)
       :scope => chash["scope"],
       :tab_trigger => chash["tabTrigger"],
       :content => chash["content"],
-      :input_pattern => chash["inputPattern"]
+      :input_pattern => chash["inputPattern"],
+      :icon => "none",
+      :visible => true,
+      :enabled => true
     }
   end
 end
@@ -117,7 +126,10 @@ def get_macros(name, bundle_uuid, items)
       :scope => chash["scope"],
       :scope_type => chash["scopeType"],
       :key_equivalent => chash["keyEquivalent"],
-      :commands => commands
+      :commands => commands,
+      :icon => "none",
+      :visible => true,
+      :enabled => true
     }
   end
 end
@@ -126,45 +138,47 @@ def get_menus(name, bundle_uuid, items)
   chash = Redcar.Plist.xml_to_plist(
             File.read("textmate/Bundles/"+name+".tmbundle/info.plist")
           )[0]
-  
-  tm_submenus = (chash["mainMenu"]||{})["submenus"]||{}
-  submenus = {}
-  tm_submenus.each do |uuid, smh|
-    items[MD5.new("bundle"+name+smh["name"]).to_s] = {
+  if chash["mainMenu"]
+    tm_submenus = (chash["mainMenu"]||{})["submenus"]||{}
+    submenus = {}
+    tm_submenus.each do |uuid, smh|
+      items[uuid] = {
+        :tags => [:menudef],
+        :created => Time.now,
+        :name    => smh["name"],
+        :visible => true,
+        :enabled => true,
+        :icon    => "none"
+      }
+      submenus[uuid] = smh["items"]
+    end
+    
+    menudef_id = MD5.new("daniellucraft70818bundle"+name).to_s
+    items[menudef_id] = {
       :tags => [:menudef],
-      :created_at => Time.now,
-      :name    => smh["name"],
+      :created => Time.now,
+      :name    => name,
       :visible => true,
       :enabled => true,
-      :icon    => "none"
+      :icon    => "none",
+      :position => name.downcase[0]
     }
-    submenus[uuid] = {
-      :items => smh["items"]
-    }
+    
+    items[chash["uuid"]] = items[chash["uuid"]].merge({
+      :tags => [:menu, :bundle],
+      :created => Time.now,
+      :bundle_uuid => bundle_uuid,
+      :description => chash["description"],
+      :toplevel => [BundleMenuUUID],
+      :excluded_items => (chash["mainMenu"]||{})["excludedItems"],
+      :submenus => {
+        BundleMenuUUID => [menudef_id], 
+        menudef_id => (chash["mainMenu"]||{})["items"]
+      }.merge(submenus),
+      :deleted => chash["deleted"],
+      :ordering => chash["ordering"]
+    })
   end
-  
-  menudef_id = MD5.new("bundle"+name).to_s
-  items[menudef_id] = {
-    :tags => [:menudef],
-    :created_at => Time.now,
-    :name    => name,
-    :visible => true,
-    :enabled => true,
-    :icon    => "none"
-  }
-  
-  items[chash["uuid"]] = {
-    :tags => [:menu],
-    :created => Time.now,
-    :bundle_uuid => bundle_uuid,
-    :description => chash["description"],
-    :toplevel => [BundleMenuUUID],
-    :items    => [menudef_id],
-    :excluded_items => (chash["mainMenu"]||{})["excludedItems"],
-    :submenus => {menudef_id => (chash["mainMenu"]||{})["items"]}.merge(submenus),
-    :deleted => chash["deleted"],
-    :ordering => chash["ordering"]
-  }
 end
 
 def with_feedback
@@ -216,23 +230,23 @@ puts "  output file          : #{OutFile}"
 puts 
 
 doit = true
-if File.exist? "scripts/textmate_support/image.yaml"
-  puts "output file exists, overwrite y/n? [y]"
-  f = gets.chomp
-  unless f == "" or f.downcase == "y"
-    doit = false
-  end
+if File.exist? "scripts/textmate_support/image.yaml" and
+    !ARGV.include? "-f"
+  puts "file exists, aborting. (use -f to force)"
+  exit
 end
 
 if doit
   bundle_names.each do |name|
     get_bundle(name, items)
   end
-  puts "(done)."
 else
   puts "aborted."
 end
   
+print "exporting to YAML..."; $stdout.flush
 File.open("scripts/textmate_support/image.yaml", "w") do |f|
   f.puts items.to_yaml
 end
+puts " done."
+puts "(done)."

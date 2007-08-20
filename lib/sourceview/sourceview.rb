@@ -3,7 +3,9 @@
 # Copyright 2007 Daniel Lucraft.
 
 require 'gtksourceview'
+require 'rubygems'
 require 'oniguruma'
+
 module Oniguruma
   class ORegexp
     def _dump(_)
@@ -15,6 +17,11 @@ module Oniguruma
   end
 end
 
+require 'logger'
+SyntaxLogger = Logger.new('syntax.log')
+SyntaxLogger.datetime_format = "%H:%M:%S"
+SyntaxLogger.level = Logger::DEBUG
+
 require File.dirname(__FILE__) + '/grammar'
 require File.dirname(__FILE__) + '/scope'
 require File.dirname(__FILE__) + '/parser'
@@ -22,6 +29,7 @@ require File.dirname(__FILE__) + '/theme'
 require File.dirname(__FILE__) + '/colourer'
 require File.dirname(__FILE__) + '/textloc'
 require File.dirname(__FILE__) + '/fast_enum'
+require File.dirname(__FILE__) + '/plist'
 
 module Redcar
   class SyntaxSourceView < Gtk::SourceView
@@ -125,7 +133,7 @@ module Redcar
         if options[:bundles_dir]
           SyntaxSourceView.init(options)
         else
-          raise ArgumentError, "SyntaxSourceView.new expects :bundle_dir, :themes_dir and (optionally) :cache_dir."
+          raise ArgumentError, "SyntaxSourceView.new expects :bundles_dir, :themes_dir and (optionally) :cache_dir."
         end
       end
       set_theme(Theme.default_theme)
@@ -173,7 +181,7 @@ module Redcar
     end
     
     def set_syntax(name)
-      set_grammar(Syntax.grammar(:name => name))
+      set_grammar(SyntaxSourceView.grammar(:name => name))
     end
     
     def grammar
@@ -187,7 +195,7 @@ module Redcar
     def set_grammar(gr)
       if gr and @grammar != gr
         @grammar = gr
-     #   puts "setting grammar: #{@grammar.name}"
+        SyntaxLogger.debug { "setting grammar: #{@grammar.name}" }
         @scope_tree = Redcar::Syntax::Scope.new(:pattern => gr,
                                                 :grammar => gr,
                                                 :start => TextLoc.new(0, 0))
@@ -233,7 +241,7 @@ module Redcar
       insertion[:count] = @count
       @count += 1
       @operations << insertion
-      #debug_puts "insertion of #{insertion[:lines]} lines from #{insertion[:from]} to #{insertion[:to]}"
+      SyntaxLogger.debug {"insertion of #{insertion[:lines]} lines from #{insertion[:from]} to #{insertion[:to]}"}
       unless $REDCAR_ENV and $REDCAR_ENV["nonlazy"]
         Gtk.idle_add do
           process_operation
@@ -256,7 +264,7 @@ module Redcar
       @count += 1
       
       @operations << deletion
-      #debug_puts "deletion over #{deletion[:lines]} lines from #{deletion[:from]} to #{deletion[:to]}"
+      SyntaxLogger.debug { "deletion over #{deletion[:lines]} lines from #{deletion[:from]} to #{deletion[:to]}" }
       
       unless $REDCAR_ENV and $REDCAR_ENV["nonlazy"]
         Gtk.idle_add do

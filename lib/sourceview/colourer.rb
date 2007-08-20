@@ -56,8 +56,8 @@ module Redcar
       @buffer = @sourceview.buffer
       start_iter, end_iter = get_start_end_iters(scope, inner)
       all_settings = @theme.settings_for_scope(scope, inner)
-      #debug_puts "  "*scope.priority+"<"+scope.hierarchy_names(inner).join("\n  "+"  "*scope.priority)+">"
-#      all_settings.each {|s| debug_puts "  "*(scope.priority)+ s.inspect}
+      #SyntaxLogger.debug "  "*scope.priority+"<"+scope.hierarchy_names(inner).join("\n  "+"  "*scope.priority)+">"
+#      all_settings.each {|s| SyntaxLogger.debug "  "*(scope.priority)+ s.inspect}
       if all_settings.empty?
         tag_reference = "default ("+scope.priority.to_s+")"
         settings_hash = {:foreground => theme.global_settings['foreground']}
@@ -72,12 +72,12 @@ module Redcar
         tag = @buffer.create_tag(tag_reference, settings_hash)
         tag.priority = scope.priority-1
       end
-      #debug_puts {"  "*scope.priority + 
+      #SyntaxLogger.debug {"  "*scope.priority + 
       #  "tag:#{tag_reference}: (#{start_iter.line}, #{start_iter.line_offset})-"+
       #  "(#{end_iter.line}, #{end_iter.line_offset})"}
       if tag
-        #debug_puts {"  "*scope.priority + "#{start_iter.offset}-#{end_iter.offset}"}
-        #debug_puts {"  "*scope.priority + tag.inspect}
+        #SyntaxLogger.debug {"  "*scope.priority + "#{start_iter.offset}-#{end_iter.offset}"}
+        #SyntaxLogger.debug {"  "*scope.priority + tag.inspect}
         @buffer.apply_tag(tag, start_iter, end_iter)
       end
     end
@@ -100,7 +100,7 @@ module Redcar
     end
     
     def colour_line(scope_tree, line_num, priority=1)
-      #debug_puts "\n"
+      #SyntaxLogger.debug "\n"
       buffer = @tab.buffer
       buffer.remove_all_tags(@tab.line_start(line_num),
                              @tab.line_end(line_num))
@@ -145,8 +145,8 @@ module Redcar
               end
             end
             all_settings = @theme.settings_for_scope(scope)
-            #debug_puts "  "*priority+"<"+scope.hierarchy_names.join("\n  "+"  "*priority)+">"
-            #all_settings.each {|s| debug_puts "  "*(priority)+ s.inspect}
+            #SyntaxLogger.debug "  "*priority+"<"+scope.hierarchy_names.join("\n  "+"  "*priority)+">"
+            #all_settings.each {|s| SyntaxLogger.debug "  "*(priority)+ s.inspect}
             if all_settings.empty?
               tag_reference = "default ("+priority.to_s+")"
               settings_hash = {:foreground => theme.global_settings['foreground']}
@@ -161,12 +161,12 @@ module Redcar
               tag = buffer.create_tag(tag_reference, settings_hash)
               tag.priority = priority
             end
-#            debug_puts {"  "*priority + 
+#            SyntaxLogger.debug {"  "*priority + 
 #              "tag:#{tag_reference}: (#{start_iter.line}, #{start_iter.line_offset})-"+
 #              "(#{end_iter.line}, #{end_iter.line_offset})"}
             if tag
-#              debug_puts {"  "*priority + "#{start_iter.offset}-#{end_iter.offset}"}
-#              debug_puts {"  "*priority + tag.inspect}
+#              SyntaxLogger.debug {"  "*priority + "#{start_iter.offset}-#{end_iter.offset}"}
+#              SyntaxLogger.debug {"  "*priority + tag.inspect}
               buffer.apply_tag(tag, start_iter, end_iter)
               extra_priority = 1
             end

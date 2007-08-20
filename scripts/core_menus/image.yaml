@@ -3,6 +3,7 @@ fb61c5b0-0e22-012a-207d-000ae4ee635c:
   :visible: true
   :name: Text
   :enabled: true
+  :position: 2
   :tags: 
   - :menudef
   :created: 2007-08-12 15:14:31.090336 +01:00
@@ -126,7 +127,6 @@ de849830-ff33-0129-2069-000ae4ee635c:
   - 3fd33a80-0f9a-012a-2094-000ae4ee635c
   - cf7bf240-101b-012a-2095-000ae4ee635c
   - a7545f50-102c-012a-2096-000ae4ee635c
-  :position: 0
   :tags: 
   - :menu
   :submenus: 
@@ -191,6 +191,7 @@ de849830-ff33-0129-2069-000ae4ee635c:
   :visible: true
   :name: Tools
   :enabled: true
+  :position: 5
   :tags: 
   - :menudef
   :created: 2007-08-12 15:14:31.090410 +01:00
@@ -503,6 +504,7 @@ c4b97cd0-0dc3-012a-2078-000ae4ee635c:
   :visible: true
   :name: File
   :enabled: true
+  :position: 0
   :tags: 
   - :menudef
   :created: 2007-08-12 15:14:31.090520 +01:00
@@ -660,6 +662,7 @@ cf7bf240-101b-012a-2095-000ae4ee635c:
   :visible: true
   :name: Debug
   :enabled: true
+  :position: 6
   :tags: 
   - :menudef
   :created: 2007-08-12 15:14:31.090575 +01:00
@@ -720,6 +723,7 @@ c9b78970-0dc3-012a-2078-000ae4ee635c:
   :visible: true
   :name: Edit
   :enabled: true
+  :position: 1
   :tags: 
   - :menudef
   :created: 2007-08-12 15:14:31.090599 +01:00
@@ -729,6 +733,7 @@ deafd620-ff33-0129-2069-000ae4ee635c:
   :visible: true
   :name: Options
   :enabled: true
+  :position: 4
   :tags: 
   - :menudef
   :created: 2007-08-12 15:14:31.090605 +01:00
@@ -779,6 +784,7 @@ a063f1a0-10f1-012a-2098-000ae4ee635c:
   :visible: true
   :name: Tab
   :enabled: true
+  :position: 3
   :tags: 
   - :menudef
   :created: 2007-08-12 15:14:31.090628 +01:00

@@ -14,11 +14,11 @@ require 'gconf2'
 require 'libglade2'
 require 'fileutils'
 require 'uuid'
+require 'open3'
 puts "done"
 
 print "loading lib..."
 require 'vendor/active_support'
-require 'vendor/null'
 require 'vendor/ruby_extensions'
 require 'vendor/debugprinter'
 require 'vendor/keyword_processor'
@@ -78,6 +78,11 @@ module Redcar
      # Redcar.moz.sensitive = false
     end
     
+    def load_image
+      self.image = Redcar.Image.new(:cache_dir => "environment/",
+                                    :sources => ["scripts/*/image.yaml"])
+    end
+    
     def show_time
       st = Time.now
       yield
@@ -88,8 +93,7 @@ module Redcar
     def load_stuff(options)
       print "loading image ..."; $stdout.flush
       show_time do
-        self.image = Redcar.Image.new(:cache_dir => "environment/",
-                                      :sources => ["scripts/*/image.yaml"])
+        load_image
       end
       
       Redcar.hook :shutdown do

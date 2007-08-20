@@ -1,4 +1,25 @@
 
+# Some helpful Ruby language extensions
+
+module Kernel
+  alias fn lambda
+end
+
+class Object
+  def tap
+    yield self
+    self
+  end
+end
+  
+def null
+  n = Object.new
+  def null.method_missing(name, *args)
+    null
+  end
+  n
+end
+
 class Symbol
   def to_title_string
     self.to_s.gsub("_", " ").split(" ").map{|w| w.capitalize}.join(" ")
@@ -22,8 +43,9 @@ class PickyHash < Hash
 end
 
 class Object
-  alias before_dot_const_method_missing method_missing
-  def method_missing(sym, *args, &block)
+  # This allows Constant lookup like Math.PI == Math::PI.
+  # If there is a method PI then it calls that preferentially.
+  def method_missing_with_const_lookup(sym, *args, &block)
     if sym.to_s =~ /[A-Z][a-z]*/
       begin
         if const = const_get(sym.to_s)
@@ -32,8 +54,9 @@ class Object
       rescue NameError
       end
     end
-    before_dot_const_method_missing(sym, *args, &block)
+    method_missing_without_const_lookup(sym, *args, &block)
   end
+  alias_method_chain :method_missing, :const_lookup
   
   def sputs
     Kernel.puts self
@@ -160,25 +183,25 @@ class It
   end
 end
 
-if $0.include? "spec"
-  describe "Methodphitamine" do
-    it 'should work simple' do
-      new = (1..10).select &it % 2 == 0
-      old = (1..10).select {|i| i % 2 == 0}
-      new.should == old
-    end
+# if $0.include? "spec"
+#   describe "Methodphitamine" do
+#     it 'should work simple' do
+#       new = (1..10).select &it % 2 == 0
+#       old = (1..10).select {|i| i % 2 == 0}
+#       new.should == old
+#     end
 
-    it 'should work more complex' do
-      old = "dan:1\nmithu:2".split.sort_by {|l| l.split(":")[1]}
-      new = "dan:1\nmithu:2".split.sort_by &it.split(":")[1]
-      new.should == old
-    end
+#     it 'should work more complex' do
+#       old = "dan:1\nmithu:2".split.sort_by {|l| l.split(":")[1]}
+#       new = "dan:1\nmithu:2".split.sort_by &it.split(":")[1]
+#       new.should == old
+#     end
     
-    it 'should work more complex2' do
-      w = [[%w{A B C}, [1, 2, 3]], [%w{D E F}, [1, 2, 3]]]
-      old = w.map {|e| e.first.map {|x| x.downcase}}
-      new = w.map &its.first.map(&its.downcase)
-      new.should == old
-    end
-  end
-end
+#     it 'should work more complex2' do
+#       w = [[%w{A B C}, [1, 2, 3]], [%w{D E F}, [1, 2, 3]]]
+#       old = w.map {|e| e.first.map {|x| x.downcase}}
+#       new = w.map &its.first.map(&its.downcase)
+#       new.should == old
+#     end
+#   end
+# end

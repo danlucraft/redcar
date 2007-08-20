@@ -64,8 +64,16 @@ module Redcar
       each_source_file do |filename|
         @timestamps[filename] = File.mtime(filename)
         YAML.load(File.read(filename)).each do |uuid, v|
+          assert_valid_item(v)
           @items[uuid] = {:source => v, :user => nil}
         end
+      end
+    end
+    
+    def assert_valid_item(item)
+      unless item[:created].is_a? Time and
+          item[:tags].is_a? Array
+        raise Exception, "invalid item: #{item.inspect}"
       end
     end
     
@@ -74,8 +82,10 @@ module Redcar
         if !@timestamps[filename] or
             File.mtime(filename) > @timestamps[filename]
           new_data = YAML.load(File.read(filename))
+          @timestamps[filename] = File.mtime(filename)
           new_data.each do |uuid, v|
             if self.include?(uuid)
+              assert_valid_item(v)
               if v[:created] > self[uuid][:created]
                 self[uuid] = v
               end

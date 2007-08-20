@@ -4,13 +4,13 @@ require 'test/unit'
 require File.dirname(__FILE__) + '/test_helper'
 
 xml = IO.readlines(File.dirname(__FILE__)+"/../textmate/Bundles/Ruby.tmbundle/Syntaxes/Ruby.plist").join
-plist = Redcar::Plist.xml_to_plist(xml)
-$ruby_grammar = Redcar::Syntax::Grammar.new(plist[0])
-Redcar::Syntax.load_grammars
+plist = Redcar.Plist.xml_to_plist(xml)
+$ruby_grammar = Redcar.Syntax.Grammar.new(plist[0])
+Redcar.SyntaxSourceView.load_grammars
 
-class TestSyntax < Test::Unit::TestCase
+class TestSyntax < Test.Unit.TestCase
   include Redcar
-  include Redcar::Syntax
+  include Redcar.Syntax
   
   def setup
     @grammar1 =

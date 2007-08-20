@@ -36,14 +36,14 @@ module Redcar
       theme("Twilight")#Mac Classic")
     end
     
-    def self.set_theme(th)
-      th = theme(th)
-      @default_theme = th
-      Redcar["theme/default_theme"] = th.name
-      Redcar.current_window.all_tabs.each do |tab|
-        tab.set_theme(th)
-      end
-    end
+#     def self.set_theme(th)
+#       th = theme(th)
+#       @default_theme = th
+#       Redcar["theme/default_theme"] = th.name
+#       Redcar.current_window.all_tabs.each do |tab|
+#         tab.set_theme(th)
+#       end
+#     end
     
     def self.theme(name)
       case name
@@ -82,7 +82,6 @@ module Redcar
       scopes = scope.hierarchy_names(inner)
       scope_join = scopes.join(" ")
       #scope = scope.name
-      #debug_puts scopes
       @settings_for_scope ||= {}
       r = @settings_for_scope[scope_join]
       return r if r
@@ -132,7 +131,6 @@ module Redcar
     # Returns false if the selector is not applicable to the scope, and returns the specificity of the
     # selector if it is applicable.
     def applicable?(selector, scopes)
-      #debug_puts {"applicable?(#{selector.inspect}, #{scopes.inspect})"}
       # split by commas (which are ORs)
       selector.split(',').each do |subselector|
         subselector = subselector.strip
@@ -148,12 +146,12 @@ module Redcar
           negative_subselector_components = nil
         end
         
-        #debug_puts positive_subselector_components.inspect
-        #debug_puts negative_subselector_components.inspect
+        #SyntaxLogger.debug { positive_subselector_components.inspect }
+        #SyntaxLogger.debug { negative_subselector_components.inspect }
         
         # the bump along: (a la regular expressions)
         (scopes.length-1).downto(0) do |i|
-          #debug_puts "  checking at index: #{i}"
+          #SyntaxLogger.debug { "  checking at index: #{i}" }
           j = i
         #  last_matching_index = -1
           last_num_elements = Array.new(scopes.length, 0)
@@ -163,7 +161,7 @@ module Redcar
               k += 1
               scope.include? comp
             end
-            #debug_puts "      matched component #{comp.inspect} at #{k}"
+            #SyntaxLogger.debug { "      matched component #{comp.inspect} at #{k}" }
             if match
              # last_matching_index = j
               last_num_elements[k] = comp.split(".").length
@@ -172,7 +170,7 @@ module Redcar
             match
           end
           if pos_match
-            #debug_puts "    pos_match"
+            #SyntaxLogger.debug { "    pos_match" }
             if negative_subselector_components
               j -= 2
               neg_match = negative_subselector_components.all? do |comp|
@@ -185,10 +183,10 @@ module Redcar
               neg_match = false
             end
           else
-            #debug_puts "    no pos_match"
+            #SyntaxLogger.debug { "    no pos_match" }
           end
           if pos_match and not neg_match
-            #debug_puts last_num_elements
+            #SyntaxLogger.debug { last_num_elements }
             spec = positive_subselector_components.
               inject(0) {|m, c| m += specificity(c) }
             last_matching_index = 0
@@ -202,7 +200,7 @@ module Redcar
 #         prev_offset = -1
 #         has_all = selector_components.inject(1) do |memo, comp|
 #           if offset = scope.index(comp) and offset > prev_offset
-#             #debug_puts {"  has #{comp.inspect} at #{offset}"}
+        #             #SyntaxLogger.debug {"  has #{comp.inspect} at #{offset}"}
 #             prev_offset = offset
 #             memo
 #           else
@@ -210,7 +208,7 @@ module Redcar
 #           end
 #         end
 #         if has_all == 1
-#           #debug_puts "has all required components"
+        #           #SyntaxLogger.debug { "has all required components" }
 #           spec = selector_components.inject(0) {|m, c| m += specificity(c) }
 #           return spec 
 #         end

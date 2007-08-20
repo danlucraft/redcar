@@ -552,6 +552,10 @@ module Redcar
       self.buffer.text
     end
     
+    def insert_as_snippet(str)
+      puts "do not know how to insert snippets yet"
+    end
+    
     # --------
     
     attr_accessor :textview
