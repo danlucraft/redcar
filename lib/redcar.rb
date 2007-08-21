@@ -20,7 +20,6 @@ puts "done"
 print "loading lib..."
 require 'vendor/active_support'
 require 'vendor/ruby_extensions'
-require 'vendor/debugprinter'
 require 'vendor/keyword_processor'
 require 'vendor/instruments'
 
@@ -57,7 +56,7 @@ Redcar::SyntaxSourceView.init(:bundles_dir => "textmate/Bundles/",
                               :cache_dir   => "cache/")
 require 'lib/redcar/texttab_syntax'
 require 'lib/redcar/html_tab'
-require 'vendor/mdi5'
+#require 'vendor/mdi5'
 
 require 'lib/redcar/plugin.rb'
 
@@ -69,12 +68,12 @@ module Redcar
     attr_accessor :current_window, :keycatcher, :image
         
     def add_objects
-      Redcar.keycatcher = Redcar::KeyCatcher.new
-      Redcar.window_controller = Gtk::MDI::Controller.new(RedcarWindow, :notebooks)
-      Redcar.windows ||= []
-      Redcar.windows << Redcar.window_controller.open_window
-      Redcar.current_window = Redcar.windows.first
-      Redcar.moz = Gtk::MozEmbed.new
+      Redcar.keycatcher = Redcar.KeyCatcher.new
+      #Redcar.window_controller = Gtk::MDI::Controller.new(RedcarWindow, :notebooks)
+      #Redcar.windows ||= []
+      #Redcar.windows << Redcar.window_controller.open_window
+      Redcar.current_window = Redcar.RedcarWindow.new
+      Redcar.moz = Gtk.MozEmbed.new
      # Redcar.moz.sensitive = false
     end
     

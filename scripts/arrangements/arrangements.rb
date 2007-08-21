@@ -86,7 +86,7 @@ module Redcar
       
       def saveable_object1(el)
         if el.is_a? Pane
-          types = el.all.collect do |tab|
+          types = el.tabs.collect do |tab|
             Arrangements.get_type(tab)
           end
           @build_pane_types << types
@@ -139,7 +139,7 @@ module Redcar
         panes.first
       end
       
-      def apply_arrangement(arrangement)
+      def apply_arrangement(arrangement=Redcar.DEFAULT_ARRANGEMENT)
         Redcar.arrangements["current"] = arrangement
         @pane_types = {}
         while size > 1
@@ -148,8 +148,6 @@ module Redcar
         apply_arrangement1(arrangement, panes_struct[0])
         update_pane_types(arrangement, panes_struct[0])
         distribute_tabs_by_type
-      rescue Object
-        apply_arrangement(Redcar::DEFAULT_ARRANGEMENT)
       end
       
       def update_pane_types(arrangement, pane)
@@ -190,8 +188,8 @@ module Redcar
       end
       
       def distribute_tabs_by_type
-        self.each do |source_pane|
-          source_pane.each do |tab|
+        each_pane do |source_pane|
+          source_pane.each_tab do |tab|
             if dest_pane = type_to_pane(Arrangements.get_type(tab))
               source_pane.migrate_tab(tab, dest_pane)
             end
@@ -202,8 +200,8 @@ module Redcar
       # Places a tab wherever we are currently placing tabs of its type
       def place_tab(tab)
         source_pane = nil
-        self.each do |pane|
-          if pane.all.include? tab
+        each_pane do |pane|
+          if pane.tabs.include? tab
             source_pane = pane
           end
         end

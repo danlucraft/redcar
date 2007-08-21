@@ -34,7 +34,6 @@ module Redcar
 
   class TextTab < Tab
     include UserCommands
-    include DebugPrinter
     include Redcar.Preferences
     
     def to_undo(*args, &block)
@@ -641,14 +640,12 @@ module Redcar
         ext = File.extname(@filename)
         @textview.set_grammar(gr = SyntaxSourceView.grammar(:extension => ext))
         if gr
-          debug_puts "setting grammar #{gr.name} from file extension: #{ext}"
           @textview.colour
         end
       end
       if 
         @textview.set_grammar(gr = SyntaxSourceView.grammar(:first_line => self.get_line(0)))
         if gr
-          debug_puts "setting grammar #{gr.name} from first line"
           @textview.colour
         end
       end

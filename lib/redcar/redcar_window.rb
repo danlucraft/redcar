@@ -1,20 +1,4 @@
 
-# class Gtk::Widget
-#   alias old_show show
-#   def show
-#     puts "showing: #{self.inspect}"
-#     puts caller
-#     old_show
-#   end
-  
-#   alias old_show_all show_all
-#   def show_all
-#     puts "showing all: #{self.inspect}"
-#     puts caller
-#     old_show_all
-#   end
-# end
-
 module Redcar
   class RedcarWindow < Gtk::Window
     attr_accessor :notebooks, :speedbar, :panes
@@ -89,8 +73,6 @@ module Redcar
                    0, 1,                    3, 4,
                    Gtk::EXPAND | Gtk::FILL, Gtk::FILL,
                    0,      0)  
-      #     @notebook.add_document(Gtk::MDI::Document.new(label, "First"))
-      #     @notebook.show_all 
       n = @notebook
       
 
@@ -129,7 +111,7 @@ module Redcar
     
     include Enumerable
     
-    def each
+    def each_pane
       self.panes.each do |pane|
         yield pane
       end
@@ -169,7 +151,7 @@ module Redcar
     end
     
     def find_tab(name)
-      each do |pane|
+      each_pane do |pane|
         pane.each {|tab| return tab if tab.name == name }
       end
     end
@@ -178,8 +160,15 @@ module Redcar
       panes.length
     end
     
+    def pane_from_tab(tab)
+      each_pane do |pane|
+        return pane if pane.tabs.include? tab
+      end
+      nil
+    end
+    
     def tab_from_document(doc)
-      self.each do |pane|
+      each_pane do |pane|
         tab = pane.tab_from_doc(doc)
         return tab if tab
       end
@@ -187,19 +176,23 @@ module Redcar
     end
     
     def tabs_array
-      self.collect do |pane| 
-        pane.all.map do |tab|
-          tab.name
+      returning(a=[]) do
+        each_pane do |pane| 
+          pane.tabs.each do |tab|
+            a << tab.name
+          end
         end
       end
     end
     
     def all_tabs
-      self.collect do |pane| 
-        pane.all.map do |tab|
-          tab
+      returning(a=[]) do
+        each_pane do |pane| 
+          pane.tabs.map do |tab|
+            a << tab
+          end
         end
-      end.flatten
+      end
     end
     
     def focussed_tab
@@ -245,12 +238,10 @@ module Redcar
     # creates the default new notebook that goes into a pane using the 
     # passed in class and block.
     def make_new_notebook
-      notebook = Gtk::MDI::Notebook.new
+      notebook = Gtk::Notebook.new
+      notebook.set_group_id(0)
       @show_objects << notebook
-      
-      Redcar.window_controller.notebook_added(self, notebook)
       self.notebooks << notebook
-      
       return notebook
     end
     
@@ -361,7 +352,6 @@ module Redcar
       end
       paned.hide
       removed_notebook.hide  #TODO: should these be delete or similar?
-      Redcar.window_controller.notebook_removed(self, removed_notebook)
       if paned.is_a? Gtk::HPaned
         hv = :h
       else

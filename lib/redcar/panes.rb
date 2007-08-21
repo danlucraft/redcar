@@ -21,8 +21,13 @@ module Redcar
   end
   
   class Pane
-    def self.context_menu=(menu)
-      @@context_menu = menu
+    class << self
+      def panes
+        Redcar.current_window.panes
+      end
+      def context_menu=(menu)
+        @@context_menu = menu
+      end
     end
     
     attr_accessor :notebook, :count, :tab_position, :tab_angle
@@ -34,14 +39,13 @@ module Redcar
       @panes = panes
       @notebook = notebook
       @count = 0
-      @tab_hash = {}
       @tab_position = options[:tab_position]
       @tab_angle    = options[:tab_angle]
     end
     
     def tab_angle=(angle)
       @tab_angle = angle
-      each do |tab|
+      each_tab do |tab|
         tab.label_angle = angle
       end
     end
@@ -78,72 +82,62 @@ module Redcar
       @panes.unify(@notebook)
     end
     
-    def tab_from_doc(doc)
-      @tab_hash[doc]
-    end
-    
-    def tab_hash
-      @tab_hash
-    end
-    
     def first
-      @tab_hash[@notebook.document_at_index(0)]
+      Tab.widget_to_tab[@notebook.get_nth_page(0)]
     end
     
     def last
-      @tab_hash[@notebook.document_at_index(@count-1)]
+      Tab.widget_to_tab[@notebook.get_nth_page(n_pages-1)]
     end
     
     def current
-      @tab_hash[@notebook.document_at_index(@notebook.page)]
+      Tab.widget_to_tab[@notebook.get_nth_page(@notebook.page)]
     end
     
     # returns an array of tabs, ordered by position in notebook
-    def all
-      @notebook.documents.map {|doc| @tab_hash[doc]}
+    def tabs
+      returning(tabs = []) do
+        0.upto(n_pages-1) do |i| 
+          tabs << Tab.widget_to_tab[@notebook.get_nth_page(i)]
+        end
+      end
+    end
+    
+    def n_pages
+      @notebook.n_pages
     end
     
     def [](id)
       if id.is_a? Integer
-        @tab_hash[@notebook.document_at_index(id)]
+        @tab_hash[@notebook.get_nth_page(id)]
       elsif id.is_a? String
-        @tab_hash[@notebook.documents.find{|doc|doc.title == id}]
+        @tab_hash[all.find{|tab| tab.title == id}]
       end
-    end
-    
-    def count
-      @tab_hash.values.length
-    end
-    
-    def tabs
-      self.to_a
     end
     
     include Enumerable
     
-    def each
-      all.each do |tab|
+    def each_tab
+      tabs.each do |tab|
         yield tab
       end
     end
     
     def new_tab(type=TextTab, *args)
-      tab = type.new(self, *args)
-      tab.label_angle = @tab_angle
-      tab
+      returning tab = type.new(self, *args) do
+        tab.label_angle = @tab_angle
+      end
     end
     
     def add_tab(tab)
-      @tab_hash[tab.doc] = tab
-      tab.pane = self
       tab.label_angle = @tab_angle
-      @notebook.add_document(tab.doc)
+      @notebook.append_page(tab.nb_widget, tab.label)
+      @notebook.set_tab_reorderable(tab.nb_widget, true)
+      @notebook.set_tab_detachable(tab.nb_widget, true)
     end
     
     def remove_tab(tab)
-      @tab_hash.delete(tab.doc)
-      tab.pane = nil
-      @notebook.remove_document(tab.doc)
+      @notebook.remove(tab.nb_widget)
     end
     
     def migrate_tab(tab, dest_pane)
