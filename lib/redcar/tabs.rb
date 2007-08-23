@@ -33,9 +33,9 @@ module Redcar
     type_register
     
     # Creates a new notebook label labeled with the text *str*.
-    def initialize(str='')
+    def initialize(tab, str='')
       super()
-      
+      @tab = tab
       self.homogeneous = false
       self.spacing = 4
       
@@ -56,7 +56,11 @@ module Redcar
       
       @box.pack_start(@label, true, false, 0)
       @box.pack_start(@button, false, false, 0)
-        show_all
+      
+      @button.signal_connect('clicked') do |widget, event|
+        @tab.close if @tab.open
+      end
+      show_all
     end
     
     attr_reader :label, :button
@@ -116,7 +120,7 @@ module Redcar
       end
       @label_text = "#new#{inpane.n_pages}"
       @label_angle = :horizontal
-      @label = NotebookLabel.new(@label_text)
+      @label = NotebookLabel.new(self, @label_text)
       inpane.notebook.append_page(@nb_widget, @label)
       inpane.notebook.set_tab_reorderable(@nb_widget, true)
       inpane.notebook.set_tab_detachable(@nb_widget, true)
@@ -181,10 +185,6 @@ module Redcar
       else
         @label.make_horizontal
         @label.label.angle = 0
-      end
-      
-      @label.button.signal_connect('clicked') do |widget, event|
-        self.close if self.open
       end
     end
     

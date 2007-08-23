@@ -110,12 +110,25 @@ module Redcar
       end
       
       def make_gtk_menuitem(menu_def)
-        if menu_def[:icon] and menu_def[:icon] != "none"
-          Gtk::ImageMenuItem.create(menu_def[:icon],
-                                    menu_def[:name])
-        else
-          Gtk::MenuItem.new(menu_def[:name])
+        c = if menu_def[:icon] and menu_def[:icon] != "none"
+              Gtk::ImageMenuItem.create(menu_def[:icon],
+                                        menu_def[:name])
+            else
+              Gtk::MenuItem.new(menu_def[:name])
+            end
+        if menu_def[:activated_by] == :key_combination or
+            menu_def[:activated_by] == nil
+          child = c.child
+          c.remove(child)
+          hbox = Gtk::HBox.new
+          hbox.pack_start(child)
+          accel = menu_def[:activated_by_value].to_s
+          hbox.pack_start(l=Gtk::Label.new(accel))
+          l.show
+          hbox.show
+          c.add(hbox)
         end
+        c
       end
 
       def create_menus

@@ -31,7 +31,11 @@ module Redcar
     end
     
     def add_command(command)
-      @commands[command[:activated_by_value]] = command
+      @commands[command[:activated_by_value].to_s] = command
+    end
+    
+    def keystrokes
+      @commands.keys
     end
     
     def contains?(keystroke)
@@ -39,7 +43,7 @@ module Redcar
     end
     
     def execute_keystroke(keystroke)
-      if command = @commands[keystroke]
+      if command = @commands[keystroke.to_s]
         Command.execute(command)
         return true
       end
@@ -64,10 +68,11 @@ module Redcar
       @@keymaps.find{|km| km.name == name}
     end
     
-    def self.load_keymaps
+    def self.load
       commands = Redcar.image.find_with_tags(:command)
       commands.each do |command|
-        if command[:activated_by] == :key_combination
+        if command[:activated_by] == :key_combination or
+            command[:activated_by] == nil
           keymap_name = command[:keymap]
           keymap_name = "Application Wide" unless keymap_name
           keymap = Redcar.Keymap[keymap_name]
@@ -110,7 +115,7 @@ module Redcar
     def self.execute_keystroke_on(object, keystroke)
       if object and @@stack[object]
         @@stack[object].reverse.each do |keymap|
-          if keymap.contains? keystroke
+          if keymap.contains? keystroke.to_s
             keymap.execute_keystroke keystroke
             return true
           end

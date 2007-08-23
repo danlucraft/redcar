@@ -73,8 +73,6 @@ module Redcar
       #Redcar.windows ||= []
       #Redcar.windows << Redcar.window_controller.open_window
       Redcar.current_window = Redcar.RedcarWindow.new
-      Redcar.moz = Gtk.MozEmbed.new
-     # Redcar.moz.sensitive = false
     end
     
     def load_image
@@ -103,7 +101,7 @@ module Redcar
       show_time do
         Redcar.Menu.load_menus
         Redcar.Menu.create_menus
-        Redcar.Keymap.load_keymaps
+        Redcar.Keymap.load
       end
       
       puts Redcar.Keymap.all      
@@ -134,7 +132,6 @@ module Redcar
       load_stuff(options)
       Redcar.output_style = options[:output]
       Redcar.current_window.show_window
-      Redcar.moz.show_all
       
       Redcar.event :startup
       

@@ -668,7 +668,7 @@ module Redcar
     
     def close
       pane = self.pane
-      if self.modified? and not @discard_changes
+      if self.modified?
         ask_and_save_tab(self)
       else
         self.close!
@@ -678,16 +678,13 @@ module Redcar
 end
 
 def ask_and_save_tab(tab)
-  tab.focus
   dialog = Redcar.Dialog.build(:title => "Save?",
                                 :buttons => [:Save, :Discard, :Cancel],
                                 :message => "Tab modified. Save or discard?")
   dialog.on_button(:Save) do
     dialog.close
     tab.save
-    unless tab.modified?
-      tab.close!
-    end
+    tab.close!
   end
   dialog.on_button(:Discard) do
     dialog.close

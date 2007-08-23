@@ -603,7 +603,7 @@ fd75e990-0e2e-012a-2082-000ae4ee635c:
   :name: Duplicate
   :enabled: true
   :input: :selected_text
-  :output: :show_as_html
+  :output: :insert_after_input
   :tags: 
   - :command
   :fallback_input: :line

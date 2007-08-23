@@ -7,18 +7,13 @@ module Redcar
   end
   
   class HtmlTab < Tab
-    def initialize(pane, source)
-      hbox = Gtk::HBox.new
-      @moz = Redcar.moz
-      if @moz.parent
-        @moz.reparent(hbox)
-      else
-        hbox.pack_start(@moz)
-      end
-      
-      super(pane, hbox, :scrolled => false)
+    def initialize(inpane, source)
+      hbox = Gtk.HBox.new
+      @moz = Gtk.MozEmbed.new
+      hbox.pack_start(@moz)
+      super(inpane, hbox, :scrolled => false)
       Thread.new {
-        sleep 0.05
+        sleep 0.5
         self.contents = source
       }
     end
