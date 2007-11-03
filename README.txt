@@ -1,6 +1,6 @@
 Redcar
     by Daniel Lucraft
-    http://www.redcareditor.com/
+    http://www.RedcarEditor.com/
 
 == DESCRIPTION:
   
