@@ -8,13 +8,15 @@ module Redcar
   
   class PluginTab < Tab
     def initialize(pane)
-      @ts = Gtk::ListStore.new(String, String)
+      @ts = Gtk::ListStore.new(String, String, String)
       @tv = Gtk::TreeView.new(@ts)
       renderer = Gtk::CellRendererText.new
       col1 = Gtk::TreeViewColumn.new("Name", renderer, :text => 0)
-      col2 = Gtk::TreeViewColumn.new("State", renderer, :text => 1)
+      col2 = Gtk::TreeViewColumn.new("Version", renderer, :text => 1)
+      col3 = Gtk::TreeViewColumn.new("State", renderer, :text => 2)
       @tv.append_column(col1)
       @tv.append_column(col2)
+      @tv.append_column(col3)
       @tv.show
       super(pane, @tv, :scrolled => true)
       build_tree
@@ -41,6 +43,7 @@ Name: #{slot.name}
 Version: #{slot['info/version'].data}
 Author: #{slot['info/author'].data}
 Description: #{slot['info/description'].data}
+Files: #{(slot['files'].data||[]).length}
 END
         dialog = Gtk::MessageDialog.new(Redcar.current_window, 
                                         Gtk::Dialog::DESTROY_WITH_PARENT,
@@ -62,7 +65,8 @@ END
       plugins_slot.each_slot do |plugin_slot|
         iter = @ts.append
         @ts.set_value(iter, 0, plugin_slot.name)
-        @ts.set_value(iter, 1, plugin_slot['state'].data.to_s.downcase)
+        @ts.set_value(iter, 1, plugin_slot['info/version'].data.to_s)
+        @ts.set_value(iter, 2, plugin_slot['state'].data.to_s.downcase)
       end
     end
   end
