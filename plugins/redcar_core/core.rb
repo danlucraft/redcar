@@ -11,7 +11,8 @@ module Redcar
       end
       
       def self.start(plugin)
-        Redcar.startup(:output => :silent)
+        Redcar.main_startup(:output => :silent)
+        $BUS = plugin.core.bus
         plugin["/system/ui/messagepump"].set_proc do
           begin
             Gtk.main

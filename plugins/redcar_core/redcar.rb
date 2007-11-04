@@ -4,9 +4,6 @@ $KCODE = "U"
 $REDCAR_ENV ||= {}
 $REDCAR_ENV["test"] = false
 
-#require "ruby2cext/eval2c" 
-#$e2c = Ruby2CExtension::Eval2C.new
-
 $: << File.dirname(__FILE__)
 
 print "loading gems..."
@@ -50,7 +47,6 @@ require 'redcar/shelltab'
 require 'redcar/panes'
 require 'redcar/redcar_window'
 require 'redcar/list_abstraction'
-require 'redcar/menu_edit_tab.rb'
 require 'redcar/button_text_tab.rb'
 require 'sourceview/sourceview'
 Redcar::SyntaxSourceView.init(:bundles_dir => "textmate/Bundles/",
@@ -58,9 +54,10 @@ Redcar::SyntaxSourceView.init(:bundles_dir => "textmate/Bundles/",
                               :cache_dir   => "cache/")
 require 'redcar/texttab_syntax'
 require 'redcar/html_tab'
-#require 'vendor/mdi5'
 
-require 'redcar/plugin.rb'
+require 'redcar/plugin'
+
+#require 'vendor/mdi5'
 
 puts "done"
 
@@ -71,15 +68,12 @@ module Redcar
         
     def add_objects
       Redcar.keycatcher = Redcar.KeyCatcher.new
-      #Redcar.window_controller = Gtk::MDI::Controller.new(RedcarWindow, :notebooks)
-      #Redcar.windows ||= []
-      #Redcar.windows << Redcar.window_controller.open_window
       Redcar.current_window = Redcar.RedcarWindow.new
     end
     
     def load_image
       self.image = Redcar.Image.new(:cache_dir => "environment/",
-                                    :sources => ["scripts/*/image.yaml"])
+                                    :sources => ["scripts/*/image.yaml", "plugins/*/image.yaml"])
     end
     
     def show_time
@@ -125,7 +119,7 @@ module Redcar
       end
     end
     
-    def startup(options={})
+    def main_startup(options={})
       options = process_params(options,
                                { :load_scripts => true,
                                  :output => :debug  })

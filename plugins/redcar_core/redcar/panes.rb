@@ -130,12 +130,7 @@ module Redcar
     end
     
     def add_tab(tab)
-      p :add_tab
-      puts caller.join("\n")
-      p tab.nb_widget
-      p tab.label
       tab.label_angle = @tab_angle
-      p tab.nb_widget.parent
       @notebook.append_page(tab.nb_widget, tab.label)
       @notebook.set_tab_reorderable(tab.nb_widget, true)
       @notebook.set_tab_detachable(tab.nb_widget, true)

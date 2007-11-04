@@ -117,6 +117,28 @@ de849830-ff33-0129-2069-000ae4ee635c:
   :sensitive: :nothing
   :uuid: 3a0df920-10eb-012a-2097-000ae4ee635c
   :activated_by: :key_combination
+db-tab-menu-item: 
+  :command: |-
+    new_tab = Redcar.new_tab(Redcar::DatabusTab)
+    new_tab.focus
+    Redcar.StatusBar.main = "Opened Databus Inspector"
+  :type: :inline
+  :scope_selector: ""
+  :visible: true
+  :tooltip: ""
+  :name: Find Tab
+  :enabled: true
+  :input: :none
+  :output: :discard
+  :tags: 
+  - :command
+  :fallback_input: :none
+  :activated_by_value: ""
+  :created: 2007-08-12 15:14:31.090394 +01:00
+  :icon: none
+  :sensitive: :nothing
+  :uuid: 3a0df920-10eb-012a-2097-000ae4ee635c
+  :activated_by: :key_combination
 0cd4a420-1908-012a-20ae-000ae4ee635c: 
   :toplevel: 
   - c4b97cd0-0dc3-012a-2078-000ae4ee635c
@@ -161,6 +183,7 @@ de849830-ff33-0129-2069-000ae4ee635c:
     - d428c1f0-101b-012a-2095-000ae4ee635c
     - 3a0df920-10eb-012a-2097-000ae4ee635c
     - 1d475080-114c-012a-209a-000ae4ee635c
+    - db-tab-menu-item
     510bb3e0-0e23-012a-207e-000ae4ee635c: 
     - 56785a10-0e23-012a-207e-000ae4ee635c
     - a0741ab0-0e23-012a-207e-000ae4ee635c

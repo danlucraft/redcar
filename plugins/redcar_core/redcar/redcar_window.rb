@@ -22,7 +22,7 @@ module Redcar
       
       @notebooks = []
       signal_connect("destroy") do
-        plugin["/system/shutdown"].call(nil)
+        $BUS["/system/shutdown"].call(nil)
         Gtk.main_quit
       end
       Redcar.keycatcher.enable(self)

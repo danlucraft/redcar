@@ -2,7 +2,9 @@
 # D.B. Lucraft
 
 module Redcar
-  class StartPage < Plugin
+  class StartPage
+    extend Redcar::Preferences::ClassMethods
+    
     preferences "General" do |p|
       p.add "Open Page at Start Up", :type => :toggle, :default => :true
     end

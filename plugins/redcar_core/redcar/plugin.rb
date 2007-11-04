@@ -1,4 +1,3 @@
-
 module Redcar
   class Plugin
     include Redcar::Preferences

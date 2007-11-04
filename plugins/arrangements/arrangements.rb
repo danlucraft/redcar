@@ -9,8 +9,17 @@
 
 require 'pp'
 
-Redcar.hook :after_startup do 
-  Redcar.current_window.apply_arrangement Redcar.arrangements["default"]
+module Redcar
+  module Plugins
+    module Arrangements
+      extend FreeBASE::StandardPlugin
+      
+      def self.start(plugin)
+        Redcar.current_window.apply_arrangement Redcar.arrangements["default"]
+        plugin.transition(FreeBASE::RUNNING)
+      end
+    end
+  end
 end
 
 module Redcar

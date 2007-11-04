@@ -1,0 +1,8 @@
+--- !ruby/object:FreeBASE::PluginConfiguration 
+name: arrangements
+version: 1.0
+autoload: (true)
+require_path: arrangements/arrangements.rb
+startup_module: Redcar::Plugins::Arrangements
+start_dependencies: 
+  redcar-core: "*"

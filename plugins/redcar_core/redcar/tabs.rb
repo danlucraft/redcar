@@ -107,7 +107,7 @@ module Redcar
     
     attr_accessor :doc, :widget, :nb_widget, :label, :open
     
-    def initialize(inpane, widget, options)
+    def initialize(inpane, widget, options={})
       @widget = widget
       @nb_widget = Gtk.VBox.new
       if options[:scrolled]
