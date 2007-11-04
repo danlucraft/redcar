@@ -204,6 +204,7 @@ module FreeBASE
           raise Exception.new("unment dependencies") unless @plugin_configuration.dependencies_met?
           eval(@plugin_configuration.startup_module).start(self)
         rescue Exception => error
+          p error
           log_error << "Error starting #{@plugin_configuration.name}\n#{error.to_s}\n#{error.backtrace.join("\n")}"
           transition_failure
         end
