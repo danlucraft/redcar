@@ -7,13 +7,14 @@ module Redcar
       @ts = Gtk::TreeStore.new(String, String)
       @tv = Gtk::TreeView.new(@ts)
       renderer = Gtk::CellRendererText.new
-      col1 = Gtk::TreeViewColumn.new("Address", renderer, :text => 0)
+      col1 = Gtk::TreeViewColumn.new("Slot Name", renderer, :text => 0)
       col2 = Gtk::TreeViewColumn.new("Value", renderer, :text => 1)
       @tv.append_column(col1)
       @tv.append_column(col2)
       @tv.show
       super(pane, @tv, :scrolled => true)
       build_tree
+      @ts.iter_first[0] = "/"
     end
     
     def build_tree
@@ -33,7 +34,7 @@ module Redcar
     def set_iter_values(node, iter)
       @ts.set_value(iter, 0, node.name)
       if node.is_data_slot?
-        @ts.set_value(iter, 1, node.data.inspect)
+        @ts.set_value(iter, 1, node.data.inspect[0..50])
       elsif node.is_queue_slot?
         @ts.set_value(iter, 1, "<queue>")
       elsif node.is_stack_slot?

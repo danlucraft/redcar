@@ -121,6 +121,7 @@ db-tab-menu-item:
   :command: |-
     new_tab = Redcar.new_tab(Redcar::DatabusTab)
     new_tab.focus
+    new_tab.name = "Databus Inspector"
     Redcar.StatusBar.main = "Opened Databus Inspector"
   :type: :inline
   :scope_selector: ""

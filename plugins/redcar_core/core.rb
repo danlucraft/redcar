@@ -16,8 +16,9 @@ module Redcar
         plugin["/system/ui/messagepump"].set_proc do
           begin
             Gtk.main
-          rescue
-            p $!
+          rescue => e
+            puts e
+            puts e.backtrace
           ensure
             plugin["/system/shutdown"].call(1)
           end

@@ -1,7 +1,13 @@
---- !ruby/object:FreeBASE::PluginConfiguration 
+--- !ruby/object:FreeBASE::SubsystemConfiguration 
 name: redcar-core
 version: 1.0
-autoload: (true)
-require_path: redcar_core/core.rb
-startup_module: Redcar::Plugins::Core
+plugins: 
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name: redcar-core\core
+    version: 1.0
+    autoload: true
+    require_path: redcar_core/core
+    startup_module: Redcar::Plugins::Core
+    properties_path: core.yaml
 
