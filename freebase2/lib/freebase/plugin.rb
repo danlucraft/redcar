@@ -108,6 +108,12 @@ module FreeBASE
       @base_slot["log/debug"].queue
       @base_slot["log"].subscribe self
       @base_slot["state"].data = UNLOADED
+      @base_slot["info/author"].data = @plugin_configuration.author
+      @base_slot["info/version"].data = @plugin_configuration.version
+      @base_slot["info/description"].data = @plugin_configuration.description
+      @base_slot["reload"].set_proc do 
+        self.reload
+      end
     end
     
     ##
@@ -185,8 +191,10 @@ module FreeBASE
       transition(LOADING)
       begin
         raise Exception.new("unment dependencies") unless @plugin_configuration.dependencies_met?
-        require @plugin_configuration.require_path if @plugin_configuration.require_path
-        eval(@plugin_configuration.startup_module).load(self)
+        log_requires do
+          require @plugin_configuration.require_path if @plugin_configuration.require_path
+          eval(@plugin_configuration.startup_module).load(self)
+        end
       rescue Exception => error
         puts error
         puts error.backtrace
@@ -203,7 +211,9 @@ module FreeBASE
         transition(STARTING)
         begin
           raise Exception.new("unment dependencies") unless @plugin_configuration.dependencies_met?
-          eval(@plugin_configuration.startup_module).start(self)
+          log_requires do
+            eval(@plugin_configuration.startup_module).start(self)
+          end
         rescue Exception => error
           puts error
           puts error.backtrace
@@ -238,6 +248,29 @@ module FreeBASE
     #
     def [](path)
       return @base_slot[path]
+    end
+    
+    ##
+    # Logs all files that Ruby loads during the invocation of the block passed in.
+    #
+    def log_requires
+      before = $".dup
+      yield
+      after = $".dup
+      prev = @base_slot["files"].data || []
+      @base_slot["files"].data = (prev + (after-before)).uniq
+    end
+    
+    ##
+    # Reloads all files logged as having been loaded by this plugin.
+    #
+    def reload
+      @base_slot["files"].data.each do |f|
+        if File.extname(f) == ".rb"
+          p f
+          Kernel.load f
+        end
+      end
     end
   end
 end
