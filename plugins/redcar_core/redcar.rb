@@ -7,6 +7,8 @@ $REDCAR_ENV["test"] = false
 #require "ruby2cext/eval2c" 
 #$e2c = Ruby2CExtension::Eval2C.new
 
+$: << File.dirname(__FILE__)
+
 print "loading gems..."
 require 'rubygems'
 require 'gtk2'
@@ -23,42 +25,42 @@ require 'vendor/ruby_extensions'
 require 'vendor/keyword_processor'
 require 'vendor/instruments'
 
-require 'lib/image/image'
+require 'image/image'
 
-require 'lib/redcar/plist'
-require 'lib/redcar/preferences_dialog.rb'
-require 'lib/redcar/application'
-require 'lib/redcar/undoable'
-require 'lib/redcar/command'
-require 'lib/redcar/sensitivity'
-require 'lib/redcar/menus'
-require 'lib/redcar/keymap'
-require 'lib/redcar/toolbars'
-require 'lib/redcar/tabs'
-require 'lib/redcar/file'
-require 'lib/redcar/icons'
-require 'lib/redcar/dialog'
-require 'lib/redcar/speedbar'
-require 'lib/redcar/statusbar'
-require 'lib/redcar/clipboard'
-require 'lib/redcar/textentry'
-require 'lib/redcar/texttab'
-require 'lib/redcar/tooltips'
-require 'lib/redcar/shelltab'
-require 'lib/redcar/panes'
-require 'lib/redcar/redcar_window'
-require 'lib/redcar/list_abstraction'
-require 'lib/redcar/menu_edit_tab.rb'
-require 'lib/redcar/button_text_tab.rb'
-require 'lib/sourceview/sourceview'
+require 'redcar/plist'
+require 'redcar/preferences_dialog.rb'
+require 'redcar/application'
+require 'redcar/undoable'
+require 'redcar/command'
+require 'redcar/sensitivity'
+require 'redcar/menus'
+require 'redcar/keymap'
+require 'redcar/toolbars'
+require 'redcar/tabs'
+require 'redcar/file'
+require 'redcar/icons'
+require 'redcar/dialog'
+require 'redcar/speedbar'
+require 'redcar/statusbar'
+require 'redcar/clipboard'
+require 'redcar/textentry'
+require 'redcar/texttab'
+require 'redcar/tooltips'
+require 'redcar/shelltab'
+require 'redcar/panes'
+require 'redcar/redcar_window'
+require 'redcar/list_abstraction'
+require 'redcar/menu_edit_tab.rb'
+require 'redcar/button_text_tab.rb'
+require 'sourceview/sourceview'
 Redcar::SyntaxSourceView.init(:bundles_dir => "textmate/Bundles/",
                               :themes_dir  => "textmate/Themes/",
                               :cache_dir   => "cache/")
-require 'lib/redcar/texttab_syntax'
-require 'lib/redcar/html_tab'
+require 'redcar/texttab_syntax'
+require 'redcar/html_tab'
 #require 'vendor/mdi5'
 
-require 'lib/redcar/plugin.rb'
+require 'redcar/plugin.rb'
 
 puts "done"
 
@@ -142,6 +144,6 @@ module Redcar
   end
 end
 
-Redcar.CUSTOM_DIR = File.expand_path(File.dirname(__FILE__) + "/../custom") 
-Redcar.ROOT_PATH = File.expand_path(File.dirname(__FILE__) + "/../") 
+Redcar.CUSTOM_DIR = File.expand_path(File.dirname(__FILE__) + "/../../custom") 
+Redcar.ROOT_PATH = File.expand_path(File.dirname(__FILE__) + "/../../") 
 

@@ -21,7 +21,10 @@ module Redcar
       @show_objects = []
       
       @notebooks = []
-      signal_connect("destroy") { Gtk.main_quit }
+      signal_connect("destroy") do
+        plugin["/system/shutdown"].call(nil)
+        Gtk.main_quit
+      end
       Redcar.keycatcher.enable(self)
 
       paned = Gtk::HPaned.new

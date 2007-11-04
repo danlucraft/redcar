@@ -1,10 +1,9 @@
 
-require 'gtk2'
-require File.dirname(__FILE__) + '/gtk/window'
+require File.dirname(__FILE__) + '/redcar'
 
 module Redcar
-  module Gui
-    class Window
+  module Plugins
+    module Core
       extend FreeBASE::StandardPlugin
       
       def self.load(plugin)
@@ -12,12 +11,7 @@ module Redcar
       end
       
       def self.start(plugin)
-        win = Redcar::Widgets::RedcarWindow.new
-        win.show
-        win.signal_connect("destroy") do 
-          Gtk.main_quit
-          plugin["/system/shutdown"].call(nil)
-        end
+        Redcar.startup(:output => :silent)
         plugin["/system/ui/messagepump"].set_proc do
           begin
             Gtk.main
