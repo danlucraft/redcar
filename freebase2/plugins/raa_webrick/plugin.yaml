@@ -1,0 +1,7 @@
+--- !ruby/object:FreeBASE::PluginConfiguration 
+name: raa_webrick
+version: 1.0
+autoload: true
+require_path: raa_webrick/httpd
+startup_module: FreeBASE::RAA::WEBrick_Plugin
+properties_path: webserver.yaml

@@ -1,0 +1,8 @@
+--- !ruby/object:FreeBASE::PluginConfiguration 
+name: raa_xmlrpc4r
+version: 1.0
+autoload: false
+require_path: raa_xmlrpc4r/rpcd
+startup_module: FreeBASE::RAA::XMLRPC_Plugin
+start_dependencies:
+  raa_webrick: "*"

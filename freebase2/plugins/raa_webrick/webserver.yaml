@@ -1,0 +1,6 @@
+#### Properties: raa_webrick - Version: 1.0
+properties: ~
+"|": 
+  - port: 8080
+  - web_path: "web_root"
+  - default_url: "/index.html"

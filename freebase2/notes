@@ -1,0 +1,61 @@
+
+FreeBASE Load Sequence
+
+FreeBASE::Core.startup {
+  Core.new {
+    init_bus {
+      # - creates the master databus
+      # - adds /system/shutdown and /logs/
+    }
+    load_properties {
+      # - unless it already exists, create a properties file 
+      #   from the defaults
+      # - set up the version information
+    }
+    load_setup # - loads the setup.rb file if it exists (specified in the 
+               #   properties file)
+    # - gets all plugin paths from /config/plugin_path and adds 
+    #   them to the Ruby path
+    conf = Configuration.new {
+      YAMLConfigurationReader.new {
+        # - loads all plugin.yamls by registering with the conf obj
+        # - they are PluginConfiguration objects
+      }
+      resolve_dependencies {
+        # build forward and backward dep stars for each plugin
+        # compute_levels for each plugin
+        # build load list
+        # build start list
+      }
+    }
+    conf.load_plugins {
+      # for each plugin in load list:
+      pl = (PluginConfiguration).instance {
+        FreeBASE::Plugin.new {
+          # - create /plugin/plugin_name/ and add self as manager
+          # - create properties manager (with hard coded v "1.0" ??)
+          # - create /plugin/plugin_name/log/...
+          # - set state = UNLOADED
+        }
+      }
+      pl.load {
+        # - transition to LOADING
+        # - require the plugins load path
+        # - create the plugin module
+        # - hit module.load (this is what you can override)
+        # - cancel the transition if there was an error
+      }
+    }
+    conf.start_plugins {
+      # for each plugin in load list:
+      pl = (PluginConfiguration).instance # cached
+      pl.start
+    }
+    # - set /system/state/all_plugins_loaded to true
+    # - call /system/ui/messagepump
+  }
+}
+
+Properties
+
+

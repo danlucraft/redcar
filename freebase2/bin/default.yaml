@@ -1,0 +1,15 @@
+#### Properties: Core configuration file - Version: 1.0
+properties: ~
+"|":
+  - config: ''
+    "|":
+      - log_file: "freebase.log"
+      - log_level: 2
+      - log_name: FREEBASE
+      - plugin_path: "../plugins"
+      - product_name: "Freebase Example Application"
+  - version: ''
+    "|":
+      - major: 1
+      - minor: 2
+      - release: 0
