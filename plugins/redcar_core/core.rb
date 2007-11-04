@@ -17,8 +17,22 @@ module Redcar
           begin
             Gtk.main
           rescue => e
-            puts e
-            puts e.backtrace
+            $stderr.puts str=<<ERR
+
+---------------------------
+Redcar has crashed.
+---------------------------
+Check #filename for backups of your documents. Redcar will 
+notice these backups and prompt for recovery if you restart.
+
+Please report this error message to the Redcar mailing list, along
+with the actions you were taking at the time:
+
+Time: #{Time.now}
+Message: #{e.message}
+Backtrace: \n#{e.backtrace.map{|l| "    "+l}.join("\n")}
+Uname -a: #{`uname -a`.chomp}
+ERR
           ensure
             plugin["/system/shutdown"].call(1)
           end
