@@ -42,40 +42,28 @@ module Redcar
       true
     end
     
-    preferences "Appearance" do |p|
-      p.add_with_widget("Tab Font", 
-         :default => "Monospace 12",
-         :widget => fn { TextTab.font_chooser_button("Tab Font") },
-         :if_changed => fn {
-           Redcar.current_window.all_tabs.each do |tab|
-             if tab.respond_to? :set_font
-               tab.set_font(TextTab.Preferences["Tab Font"])
-             end
-           end
-         })
-      
-      p.add_with_widget("Entry Font", 
-         :default => "Monospace 12",
-         :widget => fn { TextTab.font_chooser_button("Entry Font") })
-      
-      p.add("Tab Theme", :type => :combo, :default => "Mac Classic", 
-            :values => fn { Theme.theme_names },
-            :if_changed => fn { 
-              Redcar.current_window.all_tabs.each do |tab|
-                if tab.respond_to? :sourceview
-                  tab.sourceview.set_theme(
-                    Theme.theme(TextTab.Preferences["Tab Theme"]))
-                end
-              end})
-      p.add("Entry Theme", :type => :combo, :default => "Mac Classic", 
-            :values => fn { Theme.theme_names })
+    preference "Appearance/Tab Font" do |p|
+      p.default = "Monospace 12"
+      p.widget = fn { TextTab.font_chooser_button("Appearance/Tab Font") }
+      p.change do
+        Redcar.current_window.all_tabs.each do |tab|
+          if tab.respond_to? :set_font
+            tab.set_font($BUS["/redcar/preferences/Appearance/Tab Font"].data)
+          end
+        end
+      end
+    end
+    
+    preference "Appearance/Entry Font" do |p|
+      p.default = "Monospace 12"
+      p.widget = fn { TextTab.font_chooser_button("Appearance/Entry Font") }
     end
     
     def self.font_chooser_button(name)
       gtk_image = Gtk.Image.new(Gtk.Stock.SELECT_FONT, 
                                  Gtk.IconSize.MENU)
       gtk_hbox = Gtk.HBox.new
-      gtk_label = Gtk.Label.new(TextTab.Preferences[name])
+      gtk_label = Gtk.Label.new($BUS["/redcar/preferences/"+name].data)
       gtk_hbox.pack_start(gtk_image, false)
       gtk_hbox.pack_start(gtk_label)
       widget = Gtk.Button.new
@@ -83,7 +71,7 @@ module Redcar
       class << widget
         attr_accessor :preference_value
       end
-      widget.preference_value = TextTab.Preferences[name]
+      widget.preference_value = $BUS["/redcar/preferences/"+name].data
       widget.signal_connect('clicked') do
         dialog = Gtk.FontSelectionDialog.new("Select Application Font")
         dialog.font_name = widget.preference_value
@@ -98,39 +86,6 @@ module Redcar
       end
       widget
     end
-    
-#     keymap "ctrl a",     :cursor=, :line_start
-#     keymap "ctrl e",     :cursor=, :line_end
-#     keymap "ctrl-alt a", :cursor=, :tab_start
-#     keymap "ctrl-alt e", :cursor=, :tab_end
-#     keymap "Left",   :left
-#     keymap "Right",  :right
-#     keymap "Up",     :up
-#     keymap "Down",   :down
-#     keymap "shift Left",  :shift_left
-#     keymap "shift Right", :shift_right
-#     keymap "shift Up",    :shift_up
-#     keymap "shift Down",  :shift_down
-    #     keymap "Page_Down",   :page_down
-#     keymap "Page_Up",     :page_up
-#     keymap "Home",  :cursor=, :line_start
-#     keymap "End",   :cursor=, :line_end
-#     keymap "ctrl z",     :undo
-#     keymap "ctrl x",     :cut
-#     keymap "ctrl c",     :copy
-#     keymap "ctrl v",     :paste
-#     keymap "ctrl s",     :save
-#     keymap "ctrl t",     :transpose
-#     keymap "Delete",     :del
-#     keymap "BackSpace",  :backspace
-
-#     keymap "Space",      :insert_at_cursor,  " "
-#     keymap "Tab",        :insert_at_cursor,  " "*(Redcar.tab_length||=2)
-#     keymap "Return",      :return
-#     keymap /^(.)$/,       :insert_at_cursor, '\1'
-#     keymap /^shift (.)$/, :insert_at_cursor, '\1'
-#     keymap /^caps (.)$/,  :insert_at_cursor, '\1'
-#     keymap "ctrl d",     :print_command_history
     
     attr_accessor :filename, :buffer
     
@@ -572,7 +527,7 @@ module Redcar
       @textview = SyntaxSourceView.new
 #      @textview.wrap_mode = Gtk.TextTag.WRAP_WORD
 #       @textview = Redcar.GUI.Text.new(buffer, textview)
-      self.set_font(TextTab.Preferences["Tab Font"])
+      self.set_font(Redcar.preferences("Appearance/Tab Font"))
       super(pane, @textview, :scrolled => true)
       Redcar.tab_length ||= 2
       connect_signals

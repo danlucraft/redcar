@@ -1,5 +1,4 @@
 
-require File.dirname(__FILE__) + '/redcar'
 
 module Redcar
   module Plugins
@@ -7,12 +6,13 @@ module Redcar
       extend FreeBASE::StandardPlugin
       
       def self.load(plugin)
+        $BUS = plugin.core.bus
+        require File.dirname(__FILE__) + '/redcar'
         plugin.transition(FreeBASE::LOADED)
       end
       
       def self.start(plugin)
         Redcar.main_startup(:output => :silent)
-        $BUS = plugin.core.bus
         plugin["/system/ui/messagepump"].set_proc do
           begin
             Gtk.main

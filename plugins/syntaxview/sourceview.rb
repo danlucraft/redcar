@@ -30,6 +30,7 @@ require File.dirname(__FILE__) + '/colourer'
 require File.dirname(__FILE__) + '/textloc'
 require File.dirname(__FILE__) + '/fast_enum'
 require File.dirname(__FILE__) + '/plist'
+require File.dirname(__FILE__) + '/texttab_syntax'
 
 module Redcar
   class SyntaxSourceView < Gtk::SourceView
@@ -361,3 +362,6 @@ class String
     self
   end
 end
+
+sourceview_keymap = Redcar.Keymap.new("Text Editor")
+sourceview_keymap.push_before(Redcar.SyntaxSourceView)

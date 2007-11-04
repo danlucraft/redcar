@@ -1,32 +1,5 @@
 
 module Redcar
-  @@gconf_client = GConf::Client.default
-  
-  def self.[]=(key, val)
-    if $REDCAR_ENV["test"]
-      @@gconf_client["/apps/redcar/test/"+key] = val
-    else
-      @@gconf_client["/apps/redcar/"+key] = val
-    end
-  end
-  
-  def self.[](key)
-    if $REDCAR_ENV["test"]
-      @@gconf_client["/apps/redcar/test/"+key]
-    else
-      @@gconf_client["/apps/redcar/"+key]
-    end
-  end
-  
-  def self.clear(key)
-    if $REDCAR_ENV["test"]
-      @@gconf_client.unset("/apps/redcar/test/"+key)
-    else
-      @@gconf_client.unset("/apps/redcar/"+key)
-    end
-    
-  end
-    
   # Closes the entire Redcar application, after 
   # calling the Redcar event :quit
   def self.quit

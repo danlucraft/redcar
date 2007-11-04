@@ -3,9 +3,9 @@ require 'vte'
 
 module Redcar
   class Shell < Plugin
-    preferences "Shell" do |p|
-      p.add("Default Shell Command", :type => :string, :default => "bash")
-    end
+#     preference "Shell" do |p|
+#       p.add("Default Shell Command", :type => :string, :default => "bash")
+#     end
     
     class NewShellTab < Tab
       def initialize(pane)

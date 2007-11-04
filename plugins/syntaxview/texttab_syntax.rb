@@ -73,6 +73,3 @@ module Redcar
     end
   end
 end
-
-sourceview_keymap = Redcar.Keymap.new("Text Editor")
-sourceview_keymap.push_before(Redcar.SyntaxSourceView)

@@ -4,5 +4,7 @@ version: 1.0
 autoload: (true)
 require_path: syntaxview/syntaxview.rb
 startup_module: Redcar::Plugins::SyntaxView
+load_dependencies: 
+  redcar-core: "*"
 start_dependencies: 
   redcar-core: "*"

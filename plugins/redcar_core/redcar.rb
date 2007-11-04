@@ -25,7 +25,7 @@ require 'vendor/instruments'
 require 'image/image'
 
 require 'redcar/plist'
-require 'redcar/preferences_dialog.rb'
+require 'redcar/preferences_dialog'
 require 'redcar/application'
 require 'redcar/undoable'
 require 'redcar/command'
@@ -47,8 +47,7 @@ require 'redcar/shelltab'
 require 'redcar/panes'
 require 'redcar/redcar_window'
 require 'redcar/list_abstraction'
-require 'redcar/button_text_tab.rb'
-require 'redcar/texttab_syntax'
+require 'redcar/button_text_tab'
 require 'redcar/html_tab'
 
 require 'redcar/plugin'
@@ -68,7 +67,7 @@ module Redcar
     end
     
     def load_image
-      self.image = Redcar.Image.new(:cache_dir => "environment/",
+      self.image = Redcar.Image.new(:cache_dir => "cache/",
                                     :sources => ["scripts/*/image.yaml", "plugins/*/image.yaml"])
     end
     

@@ -1,99 +1,49 @@
 
-#preferences "Macros" do |p|
-#  p.add "Name", :type => :string, :default => "Untitled Macro"
-#  p.add "Macros enabled", :type => :toggle, :default => :true
-#end
-
 module Redcar
+  def self.preferences(name)
+    $BUS['/redcar/preferences/'+name].data
+  end
+    
   module Preferences
+    FreeBASE.Properties.new("Redcar Preferences", 
+                            Redcar.VERSION, 
+                            $BUS['/redcar/preferences'], 
+                            File.dirname(__FILE__) + "/../../../custom/preferences.yaml")
+    
     module ClassMethods
-      def preferences(plugin_name=self.class, &block)
-        @plugin_name = plugin_name
+      def preference(name)
+        preferences_slot = $BUS['/redcar/preferences']
         builder = PreferencesBuilder.new
         yield builder
-        Redcar::Preferences.register_preferences(@plugin_name, builder)
+        preferences_slot[name].attr_pref = true
+        preferences_slot[name].data ||= builder.default
+        preferences_slot[name].attr_default = builder.default
+        preferences_slot[name].attr_type = builder.type
+        preferences_slot[name].attr_widget = builder.widget
+        preferences_slot[name].attr_values = builder.values
+        preferences_slot[name].attr_change = builder.change_proc
+        preferences_slot[name].attr_bounds = builder.bounds
+        preferences_slot[name].attr_step = builder.step
       end
       
-      def Preferences
-        Redcar::Preferences::Preferences.new(@plugin_name)
+      class PreferencesBuilder
+        attr_accessor(:default, :widget, :values, :change_proc, :type,
+                      :bounds, :step)
+        
+        def change(&block)
+          @change = block
+        end
       end
     end
     
     def self.included(klass)
       klass.extend(ClassMethods)
     end
-    
-    def self.register_preferences(plugin_name, builder)
-      @preferences ||= {}
-      if @preferences[plugin_name]
-        @preferences[plugin_name] = 
-          @preferences[plugin_name].merge(builder.prefs)
-      else
-        @preferences[plugin_name] = builder.prefs
-      end
-      @preferences[plugin_name].each do |pref_name, pref_hash|
-        path =  "preferences/"+plugin_name.gsub(" ", "-")+"/"
-        Redcar[path+pref_name.gsub(" ", "-")+"/type"] ||= pref_hash[:type].to_s
-        Redcar[path+pref_name.gsub(" ", "-")+"/value"] ||= pref_hash[:default].to_s
-      end
-    end
-    
-    def self.plugin_names
-      @preferences.keys
-    end
-    
-    def self.preferences
-      @preferences ||= {}
-    end
-    
-    class PreferencesBuilder
-      attr_reader :prefs
-      def initialize
-        @prefs = {}
-      end
-      
-      def add(name, options)
-        options = process_params(options,
-                                 { :type => :MANDATORY,
-                                   :default => "" ,
-                                   :values => [],
-                                   :min => nil,
-                                   :max => nil,
-                                   :step => nil,
-                                   :if_changed => nil
-                                 })
-        @prefs[name] = options
-      end
-      
-      def add_with_widget(name, options)
-        options = process_params(options,
-                                 { :widget => :MANDATORY,
-                                   :default => "",
-                                   :if_changed => nil
-                                 })
-        @prefs[name] = options
-      end
-    end
-    
-    class Preferences
-      def initialize(plugin_name)
-        @plugin_name = plugin_name.gsub(" ", "-")
-        @path =  "preferences/"+@plugin_name+"/"
-      end
-      
-      def [](n)
-        Redcar[@path+n.gsub(" ", "-")+"/value"]
-      end
-      
-      def []=(n, v)
-        Redcar[@path+n.gsub(" ", "-")+"/value"] = v
-      end
-   end
   end
   
   class PreferencesDialog
     def initialize
-      @glade = GladeXML.new("lib/glade/preferences-dialog.glade",
+      @glade = GladeXML.new("plugins/redcar_core/glade/preferences-dialog.glade",
                             nil,
                             "Redcar",
                             nil,
@@ -101,125 +51,149 @@ module Redcar
         method(handler)
       end
       @dialog = @glade["dialog_preferences"]
-      @preferences = Redcar::Preferences.preferences
+      @preferences_slot = $BUS['/redcar/preferences/']
+      @properties = @preferences_slot.manager
+
+      @ts = Gtk::TreeStore.new(String, String)
+      @tv = Gtk::TreeView.new(@ts)
+      renderer = Gtk::CellRendererText.new
+      col = Gtk::TreeViewColumn.new("", renderer, :text => 0)
+      @tv.append_column(col)
+      @tv.headers_visible = false
+      populate_list(@preferences_slot, nil)
+      @tv.show
+      
       @sw = @glade["list_sw"]
-      @list = Redcar::GUI::List.new
-      @sw.add(@list.treeview)
-      @plugin_names = Redcar::Preferences.plugin_names
+      @sw.add(@tv)
+      
       @initial_values = {}
       @on_change = {}
-      build_list
-      @list.treeview.show_all
+      
       @frame = @glade["frame_options"]
-      build_widgets(@plugin_names[0])
-      @list.select(0)
-      @list.on_single_click do |row|
-        build_widgets(row)
+      
+      @tv.signal_connect('cursor-changed') do |iter|
+        build_widgets(@tv.selection.selected)
       end
+      
       @lazy_apply = []
+      
+      @properties.save
     end
     
-    def on_ok
-      if @current_plugin_name
+    def populate_list(parent_slot, parent_iter)
+      parent_slot.each_slot do |slot|
+        unless slot.attr_pref
+          iter = @ts.append(parent_iter)
+          @ts.set_value(iter, 0, slot.name)
+          @ts.set_value(iter, 1, slot.path)
+          populate_list(slot, iter)
+        end
+      end
+    end
+    
+     def on_ok
+      if @current_path
         save_values
       end
       @lazy_apply.each {|p| p.call}
       puts :applied_changes
       @dialog.destroy
       puts :destroyed
-    end
+     end
     
     def on_cancel
       @dialog.destroy
     end
     
-    def build_list
-      @list.replace(@plugin_names)
-    end
-    
     def save_values
-      prefs = Redcar::Preferences::Preferences.new(@current_plugin_name)
-      plugin_name = @current_plugin_name
-      @widgets.each do |pref_name, widget|
+      @widgets.each do |pref_path, widget|
         val = widget.preference_value
         @lazy_apply << fn { 
-          prefs[pref_name] = val  
-          if @initial_values[plugin_name+"/"+pref_name] and 
-              @initial_values[plugin_name+"/"+pref_name] != val and
-              @on_change[plugin_name+"/"+pref_name] != nil
-            @on_change[plugin_name+"/"+pref_name].call
+          $BUS[pref_path].data = val  
+          if @initial_values[pref_path] and 
+              @initial_values[pref_path] != val and
+              @on_change[pref_path] != nil
+            @on_change[pref_path].call
           end
         }
       end
     end
     
-    def build_widgets(plugin_name)
-      if @current_plugin_name
+    def build_widgets(iter)
+      if @current_path
         save_values
       end
-      @current_plugin_name = plugin_name
-      plugin_prefs = @preferences[plugin_name]
-      pref_values = Redcar::Preferences::Preferences.new(plugin_name)
+      path = iter[1]
+      @current_path = path
       vbox = Gtk::VBox.new
       @widgets = {}
-      plugin_prefs.each do |pref_name, pref_hash|
-        if pref_hash[:widget]
-          label = Gtk::Label.new(pref_name)
-          widget = pref_hash[:widget].call
-        else
-          case pref_hash[:type]
-          when :string
-            label = Gtk::Label.new(pref_name)
-            widget = Gtk::Entry.new
-            widget.text = pref_values[pref_name]
-            def widget.preference_value
-              self.text
+      $BUS[path].each_slot do |slot|
+        p slot.name
+        if slot.attr_pref
+          name = slot.name
+          if widget = slot.attr_widget
+            label = Gtk::Label.new(name)
+            if widget.is_a? Proc
+              widget = widget.call
             end
-          when :integer
-            label = Gtk::Label.new(pref_name)
-            if pref_hash[:min] and pref_hash[:max]
-              widget = Gtk::SpinButton.new(pref_hash[:min].to_f, 
-                                           pref_hash[:max].to_f,
-                                           (pref_hash[:step]||1).to_f)
-            else
-              widget = Gtk::SpinButton.new
-            end
-            widget.value = pref_values[pref_name]
-            def widget.preference_value
-              self.value.to_s
-            end
-          when :combo
-            label = Gtk::Label.new(pref_name)
-            widget = Gtk::ComboBox.new
-            if pref_hash[:values].is_a? Array
-              values = pref_hash[:values]
-            elsif pref_hash[:values].is_a? Proc
-              values = pref_hash[:values].call
-            end
-            values.each do |entry|
-              widget.append_text(entry)
-            end
-            widget.active = values.index(pref_values[pref_name])
-            def widget.preference_value
-              self.active_text
-            end
-          when :toggle
-            label = nil
-            widget = Gtk::CheckButton.new(pref_name)
-            widget.active = (pref_values[pref_name] == "true")
-            def widget.preference_value
-              self.active?.to_s
+          else
+            case slot.attr_type
+            when :string
+              label = Gtk::Label.new(name)
+              widget = Gtk::Entry.new
+              widget.text = slot.data
+              def widget.preference_value
+                self.text
+              end
+            when :integer
+              label = Gtk::Label.new(name)
+              if bounds = slot.attr_bounds
+                widget = Gtk::SpinButton.new(bounds[0].to_f, 
+                                             bounds[1].to_f,
+                                             (slot.attr_step||1).to_f)
+              else
+                widget = Gtk::SpinButton.new
+              end
+              widget.value = slot.data
+              def widget.preference_value
+                self.value.to_s
+              end
+            when :combo
+              label = Gtk::Label.new(name)
+              widget = Gtk::ComboBox.new
+              if slot.attr_values.is_a? Array
+                values = slot.attr_values
+              elsif slot.attr_values.is_a? Proc
+                values = slot.attr_values.call
+              end
+              values.each do |entry|
+                widget.append_text(entry)
+              end
+              unless current_value = values.index(slot.data)
+                raise "No such value in combo box: #{name}"
+              end
+              widget.active = current_value
+              def widget.preference_value
+                self.active_text
+              end
+            when :toggle
+              label = nil
+              widget = Gtk::CheckButton.new(name)
+              widget.active = (slot.data == true)
+              def widget.preference_value
+                self.active?.to_s
+              end
             end
           end
+          hbox = Gtk::HBox.new
+          hbox.pack_start(label) if label
+          hbox.pack_start(widget)
+          vbox.pack_start(hbox, false)
+          hbox.show_all
+          @widgets[slot.path] = widget
+          @initial_values[slot.path] = widget.preference_value
+          @on_change[slot.path] = slot.attr_change
         end
-        hbox = Gtk::HBox.new
-        hbox.pack_start(label) if label
-        hbox.pack_start(widget)
-        vbox.pack_start(hbox, false)
-        hbox.show_all
-        @widgets[pref_name] = widget
-        @initial_values[plugin_name+"/"+pref_name] = widget.preference_value
-        @on_change[plugin_name+"/"+pref_name] = pref_hash[:if_changed]
       end
       @frame.children.each {|child| @frame.remove(child)}
       @frame.add(vbox)
