@@ -26,7 +26,9 @@ end
 Redcar.hook :after_startup do
   Redcar.MainToolbar.append_combo(
       Redcar.SyntaxSourceView.grammar_names.sort) do |_, tab, grammar|
-    tab.sourceview.set_grammar(Redcar.SyntaxSourceView.grammar(:name => grammar))
+    if tab.respond_to? :sourceview
+      tab.sourceview.set_grammar(Redcar.SyntaxSourceView.grammar(:name => grammar))
+    end
   end
 end
 

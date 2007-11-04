@@ -126,7 +126,7 @@ db-tab-menu-item:
   :scope_selector: ""
   :visible: true
   :tooltip: ""
-  :name: Find Tab
+  :name: Databus Inspector
   :enabled: true
   :input: :none
   :output: :discard
@@ -156,8 +156,8 @@ db-tab-menu-item:
     - 00926a20-0e23-012a-207d-000ae4ee635c
     - 510bb3e0-0e23-012a-207e-000ae4ee635c
     - 46a15e70-10f1-012a-2098-000ae4ee635c
-    3fd33a80-0f9a-012a-2094-000ae4ee635c: []
-
+    3fd33a80-0f9a-012a-2094-000ae4ee635c:
+    - db-tab-menu-item
     fefe8410-0f94-012a-2092-000ae4ee635c: 
     - 07219450-0f95-012a-2092-000ae4ee635c
     - 17aced50-0f95-012a-2092-000ae4ee635c
@@ -183,7 +183,6 @@ db-tab-menu-item:
     - d428c1f0-101b-012a-2095-000ae4ee635c
     - 3a0df920-10eb-012a-2097-000ae4ee635c
     - 1d475080-114c-012a-209a-000ae4ee635c
-    - db-tab-menu-item
     510bb3e0-0e23-012a-207e-000ae4ee635c: 
     - 56785a10-0e23-012a-207e-000ae4ee635c
     - a0741ab0-0e23-012a-207e-000ae4ee635c

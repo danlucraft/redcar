@@ -1,0 +1,8 @@
+--- !ruby/object:FreeBASE::PluginConfiguration 
+name: syntaxview
+version: 1.0
+autoload: (true)
+require_path: syntaxview/syntaxview.rb
+startup_module: Redcar::Plugins::SyntaxView
+start_dependencies: 
+  redcar-core: "*"

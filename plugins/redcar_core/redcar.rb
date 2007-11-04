@@ -48,10 +48,6 @@ require 'redcar/panes'
 require 'redcar/redcar_window'
 require 'redcar/list_abstraction'
 require 'redcar/button_text_tab.rb'
-require 'sourceview/sourceview'
-Redcar::SyntaxSourceView.init(:bundles_dir => "textmate/Bundles/",
-                              :themes_dir  => "textmate/Themes/",
-                              :cache_dir   => "cache/")
 require 'redcar/texttab_syntax'
 require 'redcar/html_tab'
 
