@@ -1,0 +1,4 @@
+textmate/*
+cache/*
+environment/*
+*.log
