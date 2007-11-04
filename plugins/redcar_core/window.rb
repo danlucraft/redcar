@@ -1,5 +1,6 @@
 
 require 'gtk2'
+require File.dirname(__FILE__) + '/gtk/window'
 
 module Redcar
   module Gui
@@ -11,7 +12,7 @@ module Redcar
       end
       
       def self.start(plugin)
-        win = RedcarWindow.new
+        win = Redcar::Widgets::RedcarWindow.new
         win.show
         win.signal_connect("destroy") do 
           Gtk.main_quit
@@ -27,12 +28,6 @@ module Redcar
           end
         end
         plugin.transition(FreeBASE::RUNNING)
-      end
-      
-      class RedcarWindow < Gtk::Window
-        def initialize
-          super("Redcar")
-        end
       end
     end
   end
