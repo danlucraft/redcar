@@ -139,6 +139,29 @@ db-tab-menu-item:
   :sensitive: :nothing
   :uuid: 3a0df920-10eb-012a-2097-000ae4ee635c
   :activated_by: :key_combination
+pm-tab-menu-item: 
+  :command: |-
+    new_tab = Redcar.new_tab(Redcar::PluginTab)
+    new_tab.focus
+    new_tab.name = "Plugin Manager"
+    Redcar.StatusBar.main = "Opened Plugin Manager"
+  :type: :inline
+  :scope_selector: ""
+  :visible: true
+  :tooltip: ""
+  :name: Plugin Manager
+  :enabled: true
+  :input: :none
+  :output: :discard
+  :tags: 
+  - :command
+  :fallback_input: :none
+  :activated_by_value: ""
+  :created: 2007-08-12 15:14:31.090394 +01:00
+  :icon: none
+  :sensitive: :nothing
+  :uuid: 3a0df920-10eb-012a-2097-000ae4ee635c
+  :activated_by: :key_combination
 0cd4a420-1908-012a-20ae-000ae4ee635c: 
   :toplevel: 
   - c4b97cd0-0dc3-012a-2078-000ae4ee635c
@@ -158,6 +181,7 @@ db-tab-menu-item:
     - 46a15e70-10f1-012a-2098-000ae4ee635c
     3fd33a80-0f9a-012a-2094-000ae4ee635c:
     - db-tab-menu-item
+    - pm-tab-menu-item
     fefe8410-0f94-012a-2092-000ae4ee635c: 
     - 07219450-0f95-012a-2092-000ae4ee635c
     - 17aced50-0f95-012a-2092-000ae4ee635c

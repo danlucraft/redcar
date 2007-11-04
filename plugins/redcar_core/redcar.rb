@@ -14,10 +14,10 @@ require 'libglade2'
 require 'fileutils'
 require 'uuid'
 require 'open3'
+require 'active_support'
 puts "done"
 
 print "loading lib..."
-require 'vendor/active_support'
 require 'vendor/ruby_extensions'
 require 'vendor/keyword_processor'
 require 'vendor/instruments'

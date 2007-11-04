@@ -33,7 +33,7 @@ module Redcar
     def set_iter_values(node, iter)
       @ts.set_value(iter, 0, node.name)
       if node.is_data_slot?
-        @ts.set_value(iter, 1, node.data.to_s)
+        @ts.set_value(iter, 1, node.data.inspect)
       elsif node.is_queue_slot?
         @ts.set_value(iter, 1, "<queue>")
       elsif node.is_stack_slot?
