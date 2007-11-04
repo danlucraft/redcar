@@ -1,0 +1,15 @@
+#### Properties: Core configuration file - Version: 1.0
+properties: ~
+"|":
+  - config: ''
+    "|":
+      - log_file: "redcar.log"
+      - log_level: 2
+      - log_name: REDCAR
+      - plugin_path: "../plugins"
+      - product_name: "Redcar"
+  - version: ''
+    "|":
+      - major: 0
+      - minor: 0
+      - release: 1

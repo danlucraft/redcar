@@ -2,3 +2,4 @@ textmate/*
 cache/*
 environment/*
 *.log
+*~

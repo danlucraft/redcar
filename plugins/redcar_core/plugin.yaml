@@ -1,0 +1,14 @@
+--- !ruby/object:FreeBASE::SubsystemConfiguration 
+name: redcar_core
+version: 1.0
+plugins: 
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name: redcar_core-window
+    version: 1.0
+    autoload: true
+    require_path: redcar_core/window
+    startup_module: Redcar::Gui::Window
+    properties_path: window.yaml
+
+    
