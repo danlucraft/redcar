@@ -2,6 +2,12 @@
 # A tab with a list of open documents.
 
 module Redcar
+  module Plugins
+    module Documents
+      extend FreeBASE::StandardPlugin
+    end
+  end
+  
   class DocumentsTab < Tab
     @@la = nil
     def initialize(pane)
@@ -24,12 +30,7 @@ module Redcar
     def self.refresh
       if @@la
         @@la.each do |list|
-          tabs = []
-          Redcar.current_window.panes.each do |pane|
-            pane.each do |tab|
-              tabs << tab
-            end
-          end
+          tabs = Redcar.current_window.all_tabs
           tab_list = tabs.select{|tab| tab.is_a? TextTab}
           list.replace tab_list.map(&:name)
           tab_list.each_with_index do |tab, i| 
