@@ -10,6 +10,16 @@ class Object
     yield self
     self
   end
+  
+  def to_bool
+    case self
+    when nil, false, "false"
+      return false
+    when true, "true"
+      return true
+    end
+    true
+  end
 end
   
 def null
