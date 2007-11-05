@@ -111,8 +111,13 @@ module FreeBASE
       @base_slot["info/author"].data = @plugin_configuration.author
       @base_slot["info/version"].data = @plugin_configuration.version
       @base_slot["info/description"].data = @plugin_configuration.description
-      @base_slot["reload"].set_proc do 
+      @base_slot["actions/reload"].set_proc do 
         self.reload
+      end
+      if @plugin_configuration.test_path
+        @base_slot["actions/test"].set_proc do 
+          self.test
+        end
       end
     end
     
@@ -253,22 +258,46 @@ module FreeBASE
     ##
     # Logs all files that Ruby loads during the invocation of the block passed in.
     #
-    def log_requires
+    def log_requires(type=:plugin)
       before = $".dup
       yield
       after = $".dup
-      prev = @base_slot["files"].data || []
-      @base_slot["files"].data = (prev + (after-before)).uniq
+      prev = @base_slot["files/"+type.to_s].data || []
+      @base_slot["files/"+type.to_s].data = (prev + (after-before)).uniq
     end
     
     ##
     # Reloads all files logged as having been loaded by this plugin.
     #
     def reload
-      @base_slot["files"].data.each do |f|
-        if File.extname(f) == ".rb"
-          p f
-          Kernel.load f
+      @base_slot["files"].each_slot do |s|
+        s.data.each do |f|
+          if File.extname(f) == ".rb"
+            p f
+            Kernel.load f
+          end
+        end
+      end
+    end
+    
+    ##
+    # Loads and executes the plugin's test path.
+    #
+    def test(output=:console)
+      if @plugin_configuration.test_path
+        require 'test/unit'
+        
+        # we do not want the tests to run on exit:
+        Test::Unit.run = false
+        
+        log_requires(:test) do
+          require @plugin_configuration.test_path
+        end
+        
+        case output
+        when :console
+          require 'test/unit/ui/console/testrunner'
+          Test::Unit::UI::Console::TestRunner.new(eval(@plugin_configuration.test_module).suite).start
         end
       end
     end
