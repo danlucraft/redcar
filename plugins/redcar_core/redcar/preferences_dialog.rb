@@ -4,6 +4,11 @@ module Redcar
     $BUS['/redcar/preferences/'+name].data
   end
     
+  def self.set_preference(name, value)
+    $BUS['/redcar/preferences/'+name].data = value
+    $BUS['/redcar/preferences/'].manager.save
+  end
+  
   module Preferences
     FreeBASE.Properties.new("Redcar Preferences", 
                             Redcar.VERSION, 
@@ -16,7 +21,9 @@ module Redcar
         builder = PreferencesBuilder.new
         yield builder
         preferences_slot[name].attr_pref = true
-        preferences_slot[name].data ||= builder.default
+        if preferences_slot[name].data.nil?
+          preferences_slot[name].data = builder.default
+        end
         preferences_slot[name].attr_default = builder.default
         preferences_slot[name].attr_type = builder.type
         preferences_slot[name].attr_widget = builder.widget
