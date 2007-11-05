@@ -212,7 +212,7 @@ module Redcar
       if @def[:bundle_uuid]
         ENV['TM_BUNDLE_SUPPORT'] = Redcar.image[@def[:bundle_uuid]][:directory]+"Support"
       end
-      if tab
+      if tab and tab.is_a? TextTab
         ENV['TM_CURRENT_LINE'] = tab.get_line
         ENV['TM_LINE_INDEX'] = tab.cursor_line_offset.to_s
         ENV['TM_LINE_NUMBER'] = (tab.cursor_line+1).to_s

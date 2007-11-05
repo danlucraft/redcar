@@ -105,11 +105,18 @@ module Redcar
       attr_accessor :widget_to_tab
     end
     
-    attr_accessor :doc, :widget, :nb_widget, :label, :open
+    attr_accessor :doc, :widget, :nb_widget, :label, :open, :toolbar
     
     def initialize(inpane, widget, options={})
       @widget = widget
       @nb_widget = Gtk.VBox.new
+      
+      if options[:toolbar?]
+        @toolbar = Gtk.Toolbar.new
+        @nb_widget.pack_start(@toolbar, false)
+        @toolbar.show_all
+      end
+      
       if options[:scrolled]
         @sw = Gtk::ScrolledWindow.new
         @sw.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC)
@@ -118,6 +125,7 @@ module Redcar
       else
         @nb_widget.pack_end(widget)
       end
+      
       @label_text = "#new#{inpane.n_pages}"
       @label_angle = :horizontal
       @label = NotebookLabel.new(self, @label_text)

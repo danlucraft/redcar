@@ -1,5 +1,5 @@
 
-require File.dirname(__FILE__) + '/../lib/redcar'
+require File.dirname(__FILE__) + '/../plugins/redcar_core/redcar'
 require 'test/unit'
 require File.dirname(__FILE__) + '/test_helper'
 

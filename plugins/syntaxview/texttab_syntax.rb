@@ -1,11 +1,6 @@
 
 module Redcar
   class TextTab
-    #keymap "super s", :scope_tooltip
-    #keymap "super-shift S", :select_scope
-    #keymap "control-super s", :print_scope_tree
-    #keymap "alt-super s", :reparse_tab
-    
     attr_accessor :scope_tree, :parser
     
     def sourceview

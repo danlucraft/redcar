@@ -168,6 +168,7 @@ module Redcar
             rescue Object => e
               puts e
               puts e.message
+              puts e.backtrace
             end
           end
         elsif item.tags.include? :snippet

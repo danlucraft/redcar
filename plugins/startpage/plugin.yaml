@@ -1,6 +1,8 @@
 --- !ruby/object:FreeBASE::PluginConfiguration 
 name: startpage
 version: 1.0
+author: Daniel Lucraft
+description: Creates a blank tab on startup.
 autoload: (true)
 require_path: startpage/startpage.rb
 startup_module: Redcar::Plugins::StartPage

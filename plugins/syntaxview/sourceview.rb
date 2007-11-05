@@ -303,9 +303,9 @@ module Redcar
         @parser.insert_in_line(insertion[:from].line, 
                                insertion[:text], 
                                insertion[:from].offset)
-        #debug_puts "parsed and coloured line"
+        SyntaxLogger.debug{ "parsed and coloured line" }
       else
-        #debug_puts "processing insertion of #{insertion[:lines]} lines"
+        SyntaxLogger.debug{ "processing insertion of #{insertion[:lines]} lines" }
         @parser.insert(insertion[:from], insertion[:text])
       end
     end
