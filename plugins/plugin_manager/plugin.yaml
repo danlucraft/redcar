@@ -6,6 +6,8 @@ version: 1.0
 autoload: (true)
 require_path: plugin_manager/plugin_manager.rb
 startup_module: Redcar::Plugins::PluginManager
+test_path: plugin_manager/test.rb
+test_module: Redcar::Tests::PluginManagerTest
 load_dependencies:
   redcar-core: "*"
 start_dependencies: 

@@ -32,8 +32,10 @@ module Redcar
       @menu = Gtk::Menu.new
       item_reload = Gtk::MenuItem.new("Reload")
       item_info   = Gtk::MenuItem.new("Info")
+      item_test   = Gtk::MenuItem.new("Test")
       @menu.append(item_reload)
       @menu.append(item_info)
+      @menu.append(item_test)
       @menu.show_all
       
       item_info.signal_connect("activate") do
@@ -56,7 +58,16 @@ END
       end
       
       item_reload.signal_connect("activate") do
-        $BUS['/plugins/'+@tv.selection.selected[0]+"/reload"].call
+        $BUS['/plugins/'+@tv.selection.selected[0]+"/actions/reload"].call
+      end
+      
+      item_test.signal_connect("activate") do
+        plugin_slot = $BUS['/plugins/'+@tv.selection.selected[0]]
+        if plugin_slot["actions"].has_child?("test")
+          plugin_slot["actions/test"].call
+        else
+          puts "No tests for #{@tv.selection.selected[0]}"
+        end
       end
     end
 
