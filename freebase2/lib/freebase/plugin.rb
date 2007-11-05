@@ -271,7 +271,7 @@ module FreeBASE
     #
     def reload
       @base_slot["files"].each_slot do |s|
-        s.data.each do |f|
+        (s.data||[]).each do |f|
           if File.extname(f) == ".rb"
             p f
             Kernel.load f
