@@ -274,6 +274,15 @@ module FreeBASE
       end
       
       ##
+      # Returns all the children of this slot.
+      #
+      def children
+        c = []
+        self.each_slot {|slot| c << slot }
+        c
+      end
+      
+      ##
       # Navigates to a path (relative) to the current object (with DataBus as root)
       #
       # path:: [String] The path (i.e. /foo/bar or foo/bar)

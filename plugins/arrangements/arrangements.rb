@@ -13,7 +13,61 @@ module Redcar
   module Plugins
     module Arrangements
       extend FreeBASE::StandardPlugin
+      extend Redcar::MenuBuilder
+      extend Redcar::CommandBuilder
       
+      command "Arrangements/Save" do |c|
+        c.menu = "View/Arrangements/Save"
+        c.icon = :SAVE
+        c.command =<<-RUBY
+          dialog = Redcar::Dialog.build :title => "Save Arrangement As",
+                                  :buttons => [:ok],
+                                  :entry => [{:name => :name, :type => :text}]
+          dialog.on_button(:ok) do
+            name = dialog.name
+            dialog.close      
+            Redcar.arrangements[name] = Redcar.current_window.get_arrangement
+            Redcar.save_arrangements
+          end
+          dialog.show :modal => true
+        RUBY
+      end
+      
+      command "Arrangements/Apply" do |c|
+        c.menu = "View/Arrangements/Apply"
+        c.command do
+          list = Redcar::GUI::List.new
+          list.replace(Redcar.arrangements.keys)
+          
+          dialog = Redcar::Dialog.build(:title => "Apply Arrangment",
+                                        :buttons => [:Apply, :cancel],
+                                        :entry => [{:name => :list, :type => :list, :abs => list}])
+          dialog.on_button(:cancel) { dialog.close }
+          dialog.on_button(:Apply) do
+            name = list.selected
+            dialog.close
+            Redcar.current_window.apply_arrangement Redcar.arrangements[name] 
+          end
+          list.on_double_click do |row|
+            name = row
+            dialog.close
+            Redcar.current_window.apply_arrangement Redcar.arrangements[name]   
+          end
+          dialog.show :modal => true
+        end
+      end
+      
+      command "Arrangements/Print" do |c|
+        c.menu = "View/Arrangements/Print"
+        c.command do |pane, tab|
+          nt = Redcar.new_tab
+          nt.contents.replace Redcar.current_window.get_arrangement.to_yaml
+          nt.name = "Current Arrangement"
+          nt.focus
+          nt.modified = false
+        end
+      end
+
       def self.start(plugin)
         Redcar.current_window.apply_arrangement Redcar.arrangements["default"]
         plugin.transition(FreeBASE::RUNNING)

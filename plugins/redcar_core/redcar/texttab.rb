@@ -36,7 +36,7 @@ module Redcar
 
   class TextTab < Tab
     include UserCommands
-    include Redcar.Preferences
+    extend Redcar::PreferencesBuilder
     
     def to_undo(*args, &block)
       true

@@ -41,66 +41,45 @@ module Redcar
   class ContextMenu
   end
   
+  module MenuBuilder
+    def menu(name)
+      $menunum ||= 0
+      $menunum += 1
+      bits = name.split("/")
+      build = ""
+      bits.each do |bit|
+        build += "/" + bit
+        $BUS['/redcar/menus/'+build].attr_id = $menunum
+        $menunum += 1
+      end
+      slot = $BUS['/redcar/menus/'+name]
+      yield b = Builder.new
+      slot.data = b
+      slot.attr_menu_entry = true
+      slot.attr_id = $menunum
+      $menunum += 1
+      if $BUS['/system/state/all_plugins_loaded'].data.to_bool
+        Redcar::Menu.draw_menus
+      end
+    end
+    
+    def menu_separator(name)
+      slot = $BUS['/redcar/menus/'+name+'/separator_'+$menunum.to_s]
+      slot.attr_id = $menunum
+      $menunum += 1
+    end
+      
+    class Builder
+      attr_accessor :command, :icon
+      
+      def [](v)
+        instance_variable_get("@"+v.to_s)
+      end
+    end
+  end
+  
   class Menu
-    INPUTS = [
-              "None", "Document", "Line", "Word", 
-              "Character", "Scope", "Nothing", 
-              "Selected Text"
-             ]
-    OUTPUTS = [
-               "Discard", "Replace Selected Text", 
-               "Replace Document", "Replace Line", "Insert As Text", 
-               "Insert As Snippet", "Show As Html",
-               "Show As Tool Tip", "Create New Document",
-               "Replace Input", "Insert After Input"
-              ]
-    ACTIVATIONS = ["Key Combination"]
     class << self
-      attr_accessor :menus, :menu_defs, :commands
-      def menus
-        load_menus
-      end
-      
-      def original_version(uuid)
-        @menu_defs_original[uuid] ||
-          @commands_original[uuid]
-      end
-      
-      def load_menus
-        @commands, @menudefs, @snippets, @macros= {}, {}, {}, {}
-        Redcar.image.find_with_tags(:command).
-          each {|i| @commands[i.uuid] = i}
-        Redcar.image.find_with_tags(:menudef).
-          each {|i| @menudefs[i.uuid] = i}
-        Redcar.image.find_with_tags(:snippet).
-          each {|i| @snippets[i.uuid] = i}
-        Redcar.image.find_with_tags(:macro).
-          each {|i| @macros[i.uuid] = i}
-        @menus = Redcar.image.find_with_tags(:menu)
-        return [@menus, @menudefs, @commands, @snippets, @macros]
-      end
-      
-      def save_menus
-        Redcar.image[@menus_uuid] = @menus
-        @commands.each do |uuid, comm|
-          if !Redcar.image.include? uuid
-            Redcar.image[uuid] = comm
-            Redcar.image.tag(uuid, :core, :command)
-          elsif comm != Redcar.image[uuid].data
-            Redcar.image[uuid] = comm
-          end
-        end
-        @menu_defs.each do |uuid, menu|
-          if !Redcar.image.include? uuid
-            Redcar.image[uuid] = menu
-            Redcar.image.tag(uuid, :core, :menudef)
-          elsif menu != Redcar.image[uuid].data
-            Redcar.image[uuid] = menu
-          end
-        end
-        Redcar.image.cache
-      end
-      
       def clear_menus
         (@toplevel_gtk_menuitems||={}).each do |uuid, gtk_menuitem|
           Redcar.menubar.remove(gtk_menuitem)
@@ -131,53 +110,52 @@ module Redcar
         c
       end
 
-      def create_menus
+      def draw_menus
         clear_menus
-        items_to_add = []
-        @menus.each do |menu|
-          menu[:toplevel].each do |menu_uuid|
-            menu_def = @menudefs[menu_uuid]
-            unless gtk_menu = @gtk_menuitems[menu_uuid]
-              if menu_def[:visible]
-                gtk_menu = Gtk::Menu.new
-                gtk_menuitem = make_gtk_menuitem(menu_def)
-                @toplevel_gtk_menuitems[menu_uuid] = gtk_menuitem
-                gtk_menuitem.submenu = gtk_menu
-                gtk_menuitem.show
-                @gtk_menuitems[menu_uuid] = gtk_menu
-                items_to_add << [menu_def[:position]||100, gtk_menuitem]
-              end
-            end
-            if menu_def[:enabled]
-              create_submenu(menu_uuid, menu, gtk_menu)
-            end
-          end
-        end
-        items_to_add.sort_by(&its[0]).each do |a|
-          gtk_menuitem = a[1]
+        $BUS['/redcar/menus'].children.
+          sort_by(&its.attr_id).each do |slot|
+          gtk_menu = Gtk::Menu.new
+          gtk_menuitem = make_gtk_menuitem(:name => slot.name)
+          @toplevel_gtk_menuitems[slot.name] = gtk_menuitem
+          gtk_menuitem.submenu = gtk_menu
+          gtk_menuitem.show
           Redcar.menubar.append(gtk_menuitem)
+          draw_menus1(slot, gtk_menu)
         end
       end
       
-      def connect_item_signal(item, gtk_menuitem)
-        if item.tags.include? :command
-          gtk_menuitem.signal_connect("activate") do 
-            command = Command.new(item)
-            begin
-              command.execute
-            rescue Object => e
-              puts e
-              puts e.message
-              puts e.backtrace
+      def draw_menus1(parent, gtk_menu)
+        parent.children.sort_by(&its.attr_id).each do |slot|
+          if slot.name =~ /separator/
+            gtk_menuitem = Gtk::SeparatorMenuItem.new
+          else
+            if slot.attr_menu_entry
+              gtk_menuitem = make_gtk_menuitem(:name => slot.name, 
+                                               :icon => slot.data[:icon])
+              connect_item_signal(slot.data[:command], gtk_menuitem)
+            else
+              gtk_menuitem = make_gtk_menuitem(:name => slot.name, 
+                                               :icon => (slot.data||{})[:icon])
+              gtk_submenu = Gtk::Menu.new
+              gtk_menuitem.submenu = gtk_submenu
+              draw_menus1(slot, gtk_submenu)
             end
           end
-        elsif item.tags.include? :snippet
-          gtk_menuitem.signal_connect("activate") do 
-            puts "do not know how to activate snippets yet"
-          end
-        elsif item.tags.include? :macro
-          gtk_menuitem.signal_connect("activate") do 
-            puts "do not know how to activate macros yet"
+          gtk_menu.append(gtk_menuitem)
+          gtk_menuitem.show
+        end
+      end
+      
+      def connect_item_signal(command_name, gtk_menuitem)
+        gtk_menuitem.signal_connect("activate") do 
+          c = $BUS['/redcar/commands/'+command_name.to_s].data
+          command = Command.new(c)
+          begin
+            command.execute
+          rescue Object => e
+            puts e
+            puts e.message
+            puts e.backtrace
           end
         end
       end

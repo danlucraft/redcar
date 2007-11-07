@@ -5,6 +5,18 @@ module Redcar
   module Plugins
     module Documents
       extend FreeBASE::StandardPlugin
+      extend Redcar::MenuBuilder
+      extend Redcar::CommandBuilder
+      
+      command "Documents/Open" do |c|
+        c.menu = "Tools/Documents"
+        c.icon = :COPY
+        c.command do 
+          new_tab = Redcar.new_tab(Redcar::DocumentsTab)
+          new_tab.focus
+          Redcar.StatusBar.main = "Opened Documents tab"
+        end
+      end
     end
   end
   

@@ -18,6 +18,11 @@ require 'active_support'
 puts "done"
 
 print "loading lib..."
+require 'redcar/menus'
+require 'redcar/command'
+require 'redcar/preferences'
+require 'redcar/plugin'
+
 require 'vendor/ruby_extensions'
 require 'vendor/keyword_processor'
 require 'vendor/instruments'
@@ -25,13 +30,10 @@ require 'vendor/instruments'
 require 'image/image'
 
 require 'redcar/plist'
-require 'redcar/preferences_dialog'
 require 'redcar/application'
 require 'redcar/events'
 require 'redcar/undoable'
-require 'redcar/command'
 require 'redcar/sensitivity'
-require 'redcar/menus'
 require 'redcar/keymap'
 require 'redcar/toolbars'
 require 'redcar/tabs'
@@ -51,7 +53,6 @@ require 'redcar/list_abstraction'
 require 'redcar/button_text_tab'
 require 'redcar/html_tab'
 
-require 'redcar/plugin'
 
 #require 'vendor/mdi5'
 
@@ -91,8 +92,7 @@ module Redcar
 
       print "loading menus ..."; $stdout.flush
       show_time do
-        Redcar.Menu.load_menus
-        Redcar.Menu.create_menus
+        Redcar.Menu.draw_menus
         Redcar.Keymap.load
       end
       

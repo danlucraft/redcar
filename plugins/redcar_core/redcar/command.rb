@@ -1,9 +1,86 @@
 
 module Redcar
+  
+  module CommandBuilder
+    
+    def command(name)
+      b = Builder.new
+      yield b
+#       if self.is_a? FreeBASE::StandardPlugin
+#         name = self.ancestors.first.to_s+"/"+name.to_s
+#       end
+      slot = $BUS['/redcar/commands/'+name.to_s].data = b
+      if b.menu
+        self.menu b.menu do |m|
+          m.command = name
+          m.icon = b.icon
+        end
+        unless b.name
+          b.name = b.menu.split("/").last
+        end
+      end
+      if b.keybinding
+        puts "I should be creating a keybinding right now"
+      end
+      b.type ||= :inline
+      b.tooltip ||= nil
+      b.scope_selector ||= ""
+      b.input ||= :none
+      b.output ||= :discard
+      b.fallback_input ||= :none
+      b.icon ||= nil
+      b.sensitive ||= :nothing
+      b.name ||= ""
+#       slot['type'] = b.type
+#       slot['tooltip'] = b.tooltip
+#       slot['scope_selector'] = b.scope_selector
+#       slot['input'] = b.input
+#       slot['fallback_input'] = b.fallback_input
+#       slot['output'] = b.output
+#       slot['icon'] = b.icon
+#       slot['sensitive'] = b.sensitive
+#       slot['command'] = b.command
+    end
+    class Builder
+      attr_accessor(:name, :type, :tooltip, :scope_selector, 
+                    :input, :output, :fallback_input, :icon, :sensitive,
+                    :menu, :keybinding)
+      def [](v)
+        instance_variable_get("@"+v.to_s)
+      end
+      
+      def command=(v)
+        @command = v
+      end
+      
+      def command(v=nil, &blk)
+        if v
+          @command = v
+        elsif blk
+          @command = blk
+        end
+      end
+    end
+  end
+  
   class Command
-    def self.execute(command_def)
-      return nil unless command_def
-      command = Command.new(command_def)
+    INPUTS = [
+              "None", "Document", "Line", "Word", 
+              "Character", "Scope", "Nothing", 
+              "Selected Text"
+             ]
+    OUTPUTS = [
+               "Discard", "Replace Selected Text", 
+               "Replace Document", "Replace Line", "Insert As Text", 
+               "Insert As Snippet", "Show As Html",
+               "Show As Tool Tip", "Create New Document",
+               "Replace Input", "Insert After Input"
+              ]
+    ACTIVATIONS = ["Key Combination"]
+    
+    def self.execute(name)
+      b = $BUS['/redcar/commands/'+name].data
+      command = Command.new(b)
       begin
         command.execute
       rescue Object => e
@@ -158,7 +235,12 @@ module Redcar
       tab = Redcar.current_tab
       input = get_input
       begin
-        output = (@block ||= eval("Proc.new {\n"+@def[:command]+"\n}")).call
+        p @def[:command].class
+        if @def[:command].is_a? Proc
+          output = @def[:command].call
+        else
+          output = (@block ||= eval("Proc.new {\n"+@def[:command]+"\n}")).call
+        end
       rescue Object => e
         puts e.message
         puts e.backtrace

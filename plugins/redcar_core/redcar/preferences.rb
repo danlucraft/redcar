@@ -9,16 +9,16 @@ module Redcar
     $BUS['/redcar/preferences/'].manager.save
   end
   
-  module Preferences
-    FreeBASE.Properties.new("Redcar Preferences", 
-                            Redcar.VERSION, 
-                            $BUS['/redcar/preferences'], 
-                            File.dirname(__FILE__) + "/../../../custom/preferences.yaml")
+  module PreferencesBuilder
+    FreeBASE::Properties.new("Redcar Preferences", 
+                             Redcar::VERSION, 
+                             $BUS['/redcar/preferences'], 
+                             File.dirname(__FILE__) + "/../../../custom/preferences.yaml")
     
-    module ClassMethods
+#     module ClassMethods
       def preference(name)
         preferences_slot = $BUS['/redcar/preferences']
-        builder = PreferencesBuilder.new
+        builder = Builder.new
         yield builder
         preferences_slot[name].attr_pref = true
         if preferences_slot[name].data.nil?
@@ -33,7 +33,7 @@ module Redcar
         preferences_slot[name].attr_step = builder.step
       end
       
-      class PreferencesBuilder
+      class Builder
         attr_accessor(:default, :widget, :values, :change_proc, :type,
                       :bounds, :step)
         
@@ -41,11 +41,11 @@ module Redcar
           @change = block
         end
       end
-    end
+#     end
     
-    def self.included(klass)
-      klass.extend(ClassMethods)
-    end
+#     def self.included(klass)
+#       klass.extend ClassMethods
+#     end
   end
   
   class PreferencesDialog

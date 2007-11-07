@@ -5,7 +5,7 @@ module Redcar
   module Plugins
     module SyntaxView
       extend FreeBASE::StandardPlugin
-      include Redcar.Preferences
+      extend Redcar::PreferencesBuilder
       
       preference "Appearance/Tab Theme" do |p|
         p.type = :combo
@@ -14,7 +14,7 @@ module Redcar
         p.change do 
           Redcar.current_window.all_tabs.each do |tab|
             if tab.respond_to? :sourceview
-              tab.sourceview.set_theme(Theme.theme(TextTab.Preferences["Tab Theme"]))
+              tab.sourceview.set_theme(Theme.theme(TextTab::Preferences["Tab Theme"]))
             end
           end
         end

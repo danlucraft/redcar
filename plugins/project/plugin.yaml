@@ -1,0 +1,14 @@
+--- !ruby/object:FreeBASE::PluginConfiguration 
+name: project
+description: Manage projects through Redcar.
+author: Daniel Lucraft
+version: 1.0
+autoload: (true)
+require_path: project/project.rb
+startup_module: Redcar::Plugins::Project
+test_path: project/test.rb
+test_module: Redcar::Tests::ProjectTest
+load_dependencies:
+  redcar-core: "*"
+start_dependencies: 
+  redcar-core: "*"

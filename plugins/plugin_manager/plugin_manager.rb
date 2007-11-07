@@ -3,11 +3,24 @@ module Redcar
   module Plugins
     module PluginManager
       extend FreeBASE::StandardPlugin
-      include Redcar.Preferences
+      extend Redcar::PreferencesBuilder
+      extend Redcar::CommandBuilder
+      extend Redcar::MenuBuilder
       
       preference "Plugins/Plugin Manager/Warn me about reloading" do |p|
         p.type = :toggle
         p.default = true
+      end
+      
+      command "Plugin Manager/Open" do |c|
+        c.menu = "Tools/Plugin Manager"
+        c.icon = :PREFERENCES
+        c.command =<<-RUBY
+          new_tab = Redcar.new_tab(Redcar::PluginTab)
+          new_tab.focus
+          new_tab.name = "Plugin Manager"
+          Redcar.StatusBar.main = "Opened Plugin Manager"
+        RUBY
       end
     end
   end
@@ -42,6 +55,10 @@ module Redcar
       end
       
       self.toolbar.append("Test", "", "", Redcar.Icon.get_image(:EXECUTE)) do 
+        test((@tv.selection.selected||[])[0])
+      end
+      
+      self.toolbar.append("Icon", "", "", Gtk::Image.new(Gtk::IconTheme.default.load_icon("accessories-text-editor", Gtk::IconSize::DND, 0))) do 
         test((@tv.selection.selected||[])[0])
       end
       
@@ -99,7 +116,6 @@ END
     def reload(plugin)
       return if plugin.blank?
       continue = true
-      p Redcar.preferences("Plugins/Plugin Manager/Warn me about reloading")
       if Redcar.preferences("Plugins/Plugin Manager/Warn me about reloading").to_bool
         message=<<END
 Reloading a plugin can have strange effects, including causing Redcar

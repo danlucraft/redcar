@@ -1,5 +1,7 @@
 module Redcar
-  class Plugin
-    include Redcar::Preferences
+  module Plugin
+    include Redcar::PreferencesBuilder
+    include Redcar::MenuBuilder
+    include Redcar::CommandBuilder
   end
 end
