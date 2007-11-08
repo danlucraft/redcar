@@ -15,11 +15,12 @@ module Redcar
       extend FreeBASE::StandardPlugin
       extend Redcar::MenuBuilder
       extend Redcar::CommandBuilder
+      extend Redcar::ContextMenuBuilder
       
       command "Arrangements/Save" do |c|
         c.menu = "View/Arrangements/Save"
         c.icon = :SAVE
-        c.command =<<-RUBY
+        c.command %q{
           dialog = Redcar::Dialog.build :title => "Save Arrangement As",
                                   :buttons => [:ok],
                                   :entry => [{:name => :name, :type => :text}]
@@ -30,9 +31,35 @@ module Redcar
             Redcar.save_arrangements
           end
           dialog.show :modal => true
-        RUBY
+        }
       end
       
+      command "Arrangements/Split Horizontal" do |c|
+        c.command %q{ pane.split_horizontal }
+      end
+      
+      command "Arrangements/Split Vertical" do |c|
+        c.command %q{ pane.split_vertical }
+      end
+      
+      command "Arrangements/Unify" do |c|
+        c.command %q{ pane.unify }
+      end
+  
+      context_menu_separator "TextTab"
+      
+      context_menu "TextTab/Split Horizontal" do |m|
+        m.command = "Arrangements/Split Horizontal"
+      end
+    
+      context_menu "TextTab/Split Vertical" do |m|
+        m.command = "Arrangements/Split Vertical"
+      end
+    
+      context_menu "TextTab/Unify" do |m|
+        m.command = "Arrangements/Unify"
+      end
+    
       command "Arrangements/Apply" do |c|
         c.menu = "View/Arrangements/Apply"
         c.command do

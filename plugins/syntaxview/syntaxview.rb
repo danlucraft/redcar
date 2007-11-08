@@ -30,6 +30,17 @@ module Redcar
         Redcar::SyntaxSourceView.init(:bundles_dir => "textmate/Bundles/",
                                       :themes_dir  => "textmate/Themes/",
                                       :cache_dir   => "cache/")
+        
+        Redcar.hook :startup do 
+          gtk_hbox = $BUS['/redcar/gtk/layout/status_hbox'].data
+          gtk_combo_box = Gtk::ComboBox.new(true)
+          list = Redcar.SyntaxSourceView.grammar_names.sort
+          list.each {|item| gtk_combo_box.append_text(item) }
+          gtk_combo_box.signal_connect("changed") do |gtk_combo_box1|
+          end
+          gtk_hbox.pack_end(gtk_combo_box, false)
+          gtk_combo_box.show
+        end
         plugin.transition(FreeBASE::LOADED)
       end
     end

@@ -62,6 +62,7 @@ module Redcar
                    0,      0)  
 
       @status_hbox = Gtk::HBox.new
+      $BUS['/redcar/gtk/layout/status_hbox'].data = @status_hbox
       
       @status1 = Gtk::Statusbar.new
       @status2 = Gtk::Statusbar.new

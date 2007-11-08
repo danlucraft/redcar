@@ -152,6 +152,10 @@ module Redcar
       Redcar.current_tab
     end
     
+    def pane
+      Redcar.current_pane
+    end
+    
     def output=(val)
       @output = val
     end
