@@ -32,17 +32,68 @@ module Redcar
     extend Redcar::ContextMenuBuilder
     
     context_menu "TextTab/Cut" do |m|
-      m.icon = :COPY
+      m.icon = :CUT
       m.command = "Core/Edit/Cut"
     end
     
-    command "TextTab/Print Foo" do |m|
-      m.icon = :INFO
-      m.keybinding = "alt f"
+    context_menu "TextTab/Copy" do |m|
+      m.icon = :COPY
+      m.command = "Core/Edit/Copy"
+    end
+    
+    context_menu "TextTab/Paste" do |m|
+      m.icon = :PASTE
+      m.command = "Core/Edit/Paste"
+    end
+    
+    context_menu_separator "TextTab"
+    
+    command "TextTab/Set Bookmark" do |m|
+      m.icon = :ADD
+      m.keybinding = "super F2"
       m.command %q{
-        puts :"Foo!"
+        line = tab.cursor_iter.line
+        buffer = tab.sourceview.buffer
+        if marker = buffer.get_marker(line.to_s)
+          buffer.delete_marker(marker)
+        else
+          tab.sourceview.buffer.create_marker(tab.cursor_iter.line.to_s, "bookmark", tab.cursor_iter)
+          tab.sourceview.show_line_markers = true
+        end
       }
-      m.context_menu = "TextTab/Foo!"
+      m.context_menu = "TextTab/Set Bookmark"
+    end
+    
+    command "TextTab/Next Bookmark" do |m|
+      m.icon = :GO_FORWARD
+      m.keybinding = "F2"
+      m.command %q{
+        iter = tab.sourceview.buffer.get_next_marker(tab.iter(tab.cursor_iter.offset + 1))
+        tab.cursor = iter if iter
+      }
+      m.context_menu = "TextTab/Next Bookmark"
+    end
+    
+    command "TextTab/Prev Bookmark" do |m|
+      m.icon = :GO_BACK
+      m.keybinding = "shift F2"
+      m.command %q{
+        iter = tab.sourceview.buffer.get_prev_marker(tab.iter(tab.cursor_iter.offset - 1))
+        tab.cursor = iter if iter
+      }
+      m.context_menu = "TextTab/Next Bookmark"
+    end
+    
+    command "TextTab/Clear All Bookmarks" do |m|
+      m.icon = :CANCEL
+      m.command %q{
+        buffer = tab.sourceview.buffer
+        buffer.get_markers(tab.iter(0), tab.iter(tab.char_count)).each do |marker|
+          buffer.delete_marker(marker)
+        end
+        tab.sourceview.show_line_markers = false
+      }
+      m.context_menu = "TextTab/Clear All Bookmarks"
     end
     
     def to_undo(*args, &block)
@@ -532,6 +583,12 @@ module Redcar
   class "GtkWidget" style "green-cursor"
   EOR
       @textview = SyntaxSourceView.new
+      @textview.left_margin = 5
+    @@bookmark_pixbuf ||= Gdk::Pixbuf.new($BUS['/system/properties/config/codebase/'].data+
+                                                 '/../plugins/redcar_core/icons/bookmark.png')
+    @textview.set_marker_pixbuf("bookmark", @@bookmark_pixbuf)
+    
+    @textview.show_line_numbers = true
 #      @textview.wrap_mode = Gtk.TextTag.WRAP_WORD
 #       @textview = Redcar.GUI.Text.new(buffer, textview)
       self.set_font(Redcar.preferences("Appearance/Tab Font"))
