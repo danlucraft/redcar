@@ -38,7 +38,52 @@ module Redcar
     @@commands[id].call(Redcar.current_pane, Redcar.current_tab)
   end
     
-  class ContextMenu
+  module ContextMenuBuilder
+    
+    $BUS['/redcar/services/context_menu_popup/'].set_proc do |name, button, time|
+      slot = $BUS['/redcar/menus/context/'+name]
+      unless slot.attr_gtk_menu
+        gtk_menu = Gtk::Menu.new
+        Redcar::Menu.draw_menus1(slot, gtk_menu)
+        slot.attr_gtk_menu = gtk_menu
+        gtk_menu.show
+      end
+      slot.attr_gtk_menu.popup(nil, nil, button, time)
+    end
+    
+    def context_menu(name)
+      $menunum ||= 0
+      $menunum += 1
+      bits = name.split("/")
+      build = ""
+      bits.each do |bit|
+        build += "/" + bit
+        $BUS['/redcar/menus/context/'+build].attr_id = $menunum
+        $menunum += 1
+      end
+      slot = $BUS['/redcar/menus/context/'+name]
+      yield b = Builder.new
+      slot.data = b
+      slot.attr_menu_entry = true
+      slot.attr_gtk_menu = nil
+      slot.attr_id = $menunum
+      $menunum += 1
+    end
+    
+    def context_menu_separator(name)
+      slot = $BUS['/redcar/menus/context/'+name+'/separator_'+$menunum.to_s]
+      slot.attr_id = $menunum
+      $menunum += 1
+    end
+    
+    class Builder
+      attr_accessor :command, :icon, :keybinding
+      
+      def [](v)
+        instance_variable_get("@"+v.to_s)
+      end
+      
+    end
   end
   
   module MenuBuilder
@@ -49,10 +94,10 @@ module Redcar
       build = ""
       bits.each do |bit|
         build += "/" + bit
-        $BUS['/redcar/menus/'+build].attr_id = $menunum
+        $BUS['/redcar/menus/menubar/'+build].attr_id = $menunum
         $menunum += 1
       end
-      slot = $BUS['/redcar/menus/'+name]
+      slot = $BUS['/redcar/menus/menubar/'+name]
       yield b = Builder.new
       slot.data = b
       slot.attr_menu_entry = true
@@ -64,13 +109,13 @@ module Redcar
     end
     
     def menu_separator(name)
-      slot = $BUS['/redcar/menus/'+name+'/separator_'+$menunum.to_s]
+      slot = $BUS['/redcar/menus/menubar/'+name+'/separator_'+$menunum.to_s]
       slot.attr_id = $menunum
       $menunum += 1
     end
       
     class Builder
-      attr_accessor :command, :icon
+      attr_accessor :command, :icon, :keybinding
       
       def [](v)
         instance_variable_get("@"+v.to_s)
@@ -110,9 +155,13 @@ module Redcar
           child = c.child
           c.remove(child)
           hbox = Gtk::HBox.new
-          hbox.pack_start(child)
+          hbox.pack_start(child, false)
           accel = keybinding.to_s
-          hbox.pack_start(l=Gtk::Label.new(accel))
+          l = Gtk::Label.new(accel)
+          l.justify = Gtk::JUSTIFY_RIGHT
+          l.set_padding(10, 0)
+          l.xalign = 1
+          hbox.pack_end(l, true)
           l.show
           hbox.show
           c.add(hbox)
@@ -122,7 +171,7 @@ module Redcar
 
       def draw_menus
         clear_menus
-        $BUS['/redcar/menus'].children.
+        $BUS['/redcar/menus/menubar/'].children.
           sort_by(&its.attr_id).each do |slot|
           gtk_menu = Gtk::Menu.new
           gtk_menuitem = make_gtk_menuitem(slot)

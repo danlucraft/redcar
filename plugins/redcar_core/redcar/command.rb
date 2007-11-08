@@ -16,6 +16,12 @@ module Redcar
           b.name = b.menu.split("/").last
         end
       end
+      if b.context_menu
+        self.context_menu b.context_menu do |m|
+          m.command = name
+          m.icon = b.icon
+        end
+      end
       if b.keybinding
         Redcar::Keymap["Application Wide"].add_command(b)
       end
@@ -32,7 +38,7 @@ module Redcar
     class Builder
       attr_accessor(:name, :type, :tooltip, :scope_selector, 
                     :input, :output, :fallback_input, :icon, :sensitive,
-                    :menu, :keybinding)
+                    :menu, :keybinding, :context_menu)
       def [](v)
         instance_variable_get("@"+v.to_s)
       end

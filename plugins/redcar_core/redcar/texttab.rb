@@ -37,6 +37,22 @@ module Redcar
   class TextTab < Tab
     include UserCommands
     extend Redcar::PreferencesBuilder
+    extend Redcar::CommandBuilder
+    extend Redcar::ContextMenuBuilder
+    
+    context_menu "TextTab/Cut" do |m|
+      m.icon = :COPY
+      m.command = "Core/Edit/Cut"
+    end
+    
+    command "TextTab/Print Foo" do |m|
+      m.icon = :INFO
+      m.keybinding = "alt f"
+      m.command %q{
+        puts :"Foo!"
+      }
+      m.context_menu = "TextTab/Foo!"
+    end
     
     def to_undo(*args, &block)
       true
@@ -573,8 +589,7 @@ module Redcar
         if event.kind_of? Gdk.EventButton 
           Redcar.event :tab_clicked, self
           if event.button == 3
-            Redcar.context_menus[self.class.to_s].
-              popup(nil, nil, event.button, event.time)
+            $BUS['/redcar/services/context_menu_popup'].call("TextTab", event.button, event.time)
           end
         end
       end
