@@ -1,4 +1,5 @@
 module Redcar
+  
   # A Keymap may be attached to any of the following with
   # Keymap#push_before
   # 1. Redcar.Keymap.Global
@@ -10,9 +11,10 @@ module Redcar
   # If the correct keybinding is not found anywhere in this stack, the
   # key event will fall through to the current Gtk widget (if any), which
   # can deal with it or not.
+  
   class Keymap
-    Global = :global
-    Tab    = :tab
+    GlobalPoint = :global
+    TabPoint    = :tab
     
     @@keymaps = []
     @@stack = {}
@@ -31,7 +33,7 @@ module Redcar
     end
     
     def add_command(command)
-      @commands[command[:activated_by_value].to_s] = command
+      @commands[command[:keybinding].to_s] = command
     end
     
     def keystrokes
@@ -218,6 +220,7 @@ module Redcar
     end
     
     def issue_from_keystroke(keystroke)
+      p keystroke
       keystroke = KeyStroke.parse(keystroke)
       exists = Keymap.execute_keystroke(keystroke)
       if exists
@@ -250,7 +253,7 @@ module Redcar
 end
 
 global_keymap = Redcar.Keymap.new("Application Wide")
-global_keymap.push_before(Redcar.Keymap.Global)
+global_keymap.push_before(Redcar.Keymap.GlobalPoint)
 
 tab_keymap = Redcar.Keymap.new("Tab")
-tab_keymap.push_before(Redcar.Keymap.Tab)
+tab_keymap.push_before(Redcar.Keymap.TabPoint)

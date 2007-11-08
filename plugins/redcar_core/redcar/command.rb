@@ -6,9 +6,6 @@ module Redcar
     def command(name)
       b = Builder.new
       yield b
-#       if self.is_a? FreeBASE::StandardPlugin
-#         name = self.ancestors.first.to_s+"/"+name.to_s
-#       end
       slot = $BUS['/redcar/commands/'+name.to_s].data = b
       if b.menu
         self.menu b.menu do |m|
@@ -20,7 +17,7 @@ module Redcar
         end
       end
       if b.keybinding
-        puts "I should be creating a keybinding right now"
+        Redcar::Keymap["Application Wide"].add_command(b)
       end
       b.type ||= :inline
       b.tooltip ||= nil
@@ -31,15 +28,6 @@ module Redcar
       b.icon ||= nil
       b.sensitive ||= :nothing
       b.name ||= ""
-#       slot['type'] = b.type
-#       slot['tooltip'] = b.tooltip
-#       slot['scope_selector'] = b.scope_selector
-#       slot['input'] = b.input
-#       slot['fallback_input'] = b.fallback_input
-#       slot['output'] = b.output
-#       slot['icon'] = b.icon
-#       slot['sensitive'] = b.sensitive
-#       slot['command'] = b.command
     end
     class Builder
       attr_accessor(:name, :type, :tooltip, :scope_selector, 
@@ -79,7 +67,11 @@ module Redcar
     ACTIVATIONS = ["Key Combination"]
     
     def self.execute(name)
-      b = $BUS['/redcar/commands/'+name].data
+      if name.is_a? String
+        b = $BUS['/redcar/commands/'+name].data
+      else
+        b = name
+      end
       command = Command.new(b)
       begin
         command.execute
@@ -235,7 +227,6 @@ module Redcar
       tab = Redcar.current_tab
       input = get_input
       begin
-        p @def[:command].class
         if @def[:command].is_a? Proc
           output = @def[:command].call
         else

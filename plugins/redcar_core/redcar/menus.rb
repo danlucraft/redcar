@@ -88,20 +88,30 @@ module Redcar
         @gtk_menuitems = {}
       end
       
-      def make_gtk_menuitem(menu_def)
-        c = if menu_def[:icon] and menu_def[:icon] != "none"
-              Gtk::ImageMenuItem.create(menu_def[:icon],
-                                        menu_def[:name])
+      def make_gtk_menuitem(slot)
+        name    = slot.name
+        builder = slot.data || {}
+        c = if icon = builder[:icon] and 
+                icon != "none"
+              Gtk::ImageMenuItem.create icon, name
             else
-              Gtk::MenuItem.new(menu_def[:name])
+              Gtk::MenuItem.new name
             end
-        if menu_def[:activated_by] == :key_combination or
-            menu_def[:activated_by] == nil
+        keybinding = builder[:keybinding]
+        unless keybinding
+          if command = builder[:command]
+            command = $BUS['/redcar/commands/'+command.to_s].data
+            if command and command[:keybinding]
+              keybinding = command[:keybinding]
+            end
+          end
+        end
+        if keybinding
           child = c.child
           c.remove(child)
           hbox = Gtk::HBox.new
           hbox.pack_start(child)
-          accel = menu_def[:activated_by_value].to_s
+          accel = keybinding.to_s
           hbox.pack_start(l=Gtk::Label.new(accel))
           l.show
           hbox.show
@@ -115,7 +125,7 @@ module Redcar
         $BUS['/redcar/menus'].children.
           sort_by(&its.attr_id).each do |slot|
           gtk_menu = Gtk::Menu.new
-          gtk_menuitem = make_gtk_menuitem(:name => slot.name)
+          gtk_menuitem = make_gtk_menuitem(slot)
           @toplevel_gtk_menuitems[slot.name] = gtk_menuitem
           gtk_menuitem.submenu = gtk_menu
           gtk_menuitem.show
@@ -130,12 +140,10 @@ module Redcar
             gtk_menuitem = Gtk::SeparatorMenuItem.new
           else
             if slot.attr_menu_entry
-              gtk_menuitem = make_gtk_menuitem(:name => slot.name, 
-                                               :icon => slot.data[:icon])
+              gtk_menuitem = make_gtk_menuitem(slot)
               connect_item_signal(slot.data[:command], gtk_menuitem)
             else
-              gtk_menuitem = make_gtk_menuitem(:name => slot.name, 
-                                               :icon => (slot.data||{})[:icon])
+              gtk_menuitem = make_gtk_menuitem(slot)
               gtk_submenu = Gtk::Menu.new
               gtk_menuitem.submenu = gtk_submenu
               draw_menus1(slot, gtk_submenu)
@@ -158,48 +166,6 @@ module Redcar
             puts e.backtrace
           end
         end
-      end
-      
-      def create_submenu(uuid, menu, gtk_menu)
-        unless submenu_items = menu[:submenus][uuid]
-          raise Exception, "Missing submenu for #{uuid} in #{menu.inspect}"
-        end
-        items_to_add = []
-        submenu_items.each do |item_uuid|
-          if item_uuid =~ /---/
-            gtk_menuitem = Gtk::SeparatorMenuItem.new
-          elsif item_def = @menudefs[item_uuid]
-            unless gtk_submenu = @gtk_menuitems[item_uuid]
-              gtk_menuitem = make_gtk_menuitem(item_def)
-              gtk_submenu = Gtk::Menu.new
-              gtk_menuitem.submenu = gtk_submenu
-              @gtk_menuitems[item_uuid] = gtk_submenu
-            end
-            create_submenu(item_uuid, menu, gtk_submenu)
-          elsif item_def = @commands[item_uuid] || 
-              @snippets[item_uuid] ||
-              @macros[item_uuid]
-            gtk_menuitem = make_gtk_menuitem(item_def)
-            connect_item_signal(item_def, gtk_menuitem)
-          elsif
-            unless (menu[:deleted]||[]).include? item_uuid
-              puts "Missing menu or command definition"+
-                " for #{item_uuid}"
-            end
-          end
-          if (item_def and item_def[:visible] and item_def[:enabled]) or
-              item_uuid =~ /---/
-            gtk_menuitem.redcar_position = (item_def||{})[:position]||100
-            items_to_add << gtk_menuitem
-          end
-        end
-        items_to_add.each do |gtk_menuitem|
-          gtk_menu.append(gtk_menuitem)
-          gtk_menuitem.show
-        end
-        gtk_menu.children.
-          sort_by(&:redcar_position).
-          each_with_index {|m, i| gtk_menu.reorder_child(m, i)}
       end
     end
   end
