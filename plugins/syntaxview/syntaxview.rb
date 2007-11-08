@@ -14,7 +14,7 @@ module Redcar
         p.change do 
           Redcar.current_window.all_tabs.each do |tab|
             if tab.respond_to? :sourceview
-              tab.sourceview.set_theme(Theme.theme(TextTab::Preferences["Tab Theme"]))
+              tab.sourceview.set_theme(Theme.theme(Redcar.preference("Appearance/Tab Theme")))
             end
           end
         end
@@ -31,17 +31,22 @@ module Redcar
                                       :themes_dir  => "textmate/Themes/",
                                       :cache_dir   => "cache/")
         
-        Redcar.hook :startup do 
-          gtk_hbox = $BUS['/redcar/gtk/layout/status_hbox'].data
-          gtk_combo_box = Gtk::ComboBox.new(true)
-          list = Redcar.SyntaxSourceView.grammar_names.sort
-          list.each {|item| gtk_combo_box.append_text(item) }
-          gtk_combo_box.signal_connect("changed") do |gtk_combo_box1|
-          end
-          gtk_hbox.pack_end(gtk_combo_box, false)
-          gtk_combo_box.show
-        end
         plugin.transition(FreeBASE::LOADED)
+      end
+      
+      def self.start(plugin)
+        gtk_hbox = $BUS['/redcar/gtk/layout/status_hbox'].data
+        gtk_combo_box = Gtk::ComboBox.new(true)
+        list = Redcar::SyntaxSourceView.grammar_names.sort
+        list.each {|item| gtk_combo_box.append_text(item) }
+        gtk_combo_box.signal_connect("changed") do |gtk_combo_box1|
+          p gtk_combo_box1.active
+          Redcar.current_tab.sourceview.set_grammar(Redcar::SyntaxSourceView.grammar(:name => list[gtk_combo_box1.active]))
+        end
+        gtk_hbox.pack_end(gtk_combo_box, false)
+        gtk_combo_box.show
+        
+        plugin.transition(FreeBASE::RUNNING)
       end
     end
   end
