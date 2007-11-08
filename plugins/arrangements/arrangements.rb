@@ -45,18 +45,16 @@ module Redcar
       command "Arrangements/Unify" do |c|
         c.command %q{ pane.unify }
       end
-  
-      context_menu_separator "TextTab"
       
-      context_menu "TextTab/Split Horizontal" do |m|
+      context_menu "Pane/Split Horizontal" do |m|
         m.command = "Arrangements/Split Horizontal"
       end
     
-      context_menu "TextTab/Split Vertical" do |m|
+      context_menu "Pane/Split Vertical" do |m|
         m.command = "Arrangements/Split Vertical"
       end
     
-      context_menu "TextTab/Unify" do |m|
+      context_menu "Pane/Unify" do |m|
         m.command = "Arrangements/Unify"
       end
     

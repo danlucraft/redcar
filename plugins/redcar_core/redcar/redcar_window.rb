@@ -247,6 +247,19 @@ module Redcar
       notebook.set_group_id(0)
       @show_objects << notebook
       self.notebooks << notebook
+      notebook.signal_connect("button_press_event") do |widget, event|
+        Redcar.current_pane = @notebook_to_pane[notebook]
+        if event.kind_of? Gdk.EventButton 
+          if event.button == 3
+            $BUS['/redcar/services/context_menu_popup'].call("Pane", event.button, event.time)
+          end
+        end
+      end
+      notebook.signal_connect("page-added") do |nb, widget, _, _|
+        pane = @notebook_to_pane[nb]
+        tab = (Tab.widget_to_tab||{})[widget]
+        tab.label_angle = pane.tab_angle if tab
+      end
       return notebook
     end
     

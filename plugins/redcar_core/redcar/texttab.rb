@@ -45,8 +45,6 @@ module Redcar
       m.context_menu = "TextTab/Foo!"
     end
     
-    context_menu_separator "TextTab"
-    
     def to_undo(*args, &block)
       true
     end
