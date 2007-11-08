@@ -1,0 +1,3 @@
+Command (curly hash)  = Super
+Option  (open switch) = Alt
+Control (^)           = Control
