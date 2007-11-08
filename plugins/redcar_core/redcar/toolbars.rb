@@ -20,7 +20,7 @@ module Redcar
     end
     
     def toolbar_separator(name)
-      slot = $BUS['/redcar/toolbars/'+name+'/separator']
+      slot = $BUS['/redcar/toolbars/'+name+'/separator_'+$toolbarnum.to_s]
       slot.attr_id = $toolbarnum
       $toolbarnum += 1
     end

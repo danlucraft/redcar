@@ -20,5 +20,8 @@ module Redcar::Plugins::CoreMenus
     
     toolbar "Main/Cut", :icon => :CUT, :command => "Core/Edit/Cut"
     toolbar "Main/Copy", :icon => :COPY, :command => "Core/Edit/Copy"
+    toolbar "Main/Paste", :icon => :PASTE, :command => "Core/Edit/Paste"
+    
+    toolbar_separator "Main"
   end
 end
