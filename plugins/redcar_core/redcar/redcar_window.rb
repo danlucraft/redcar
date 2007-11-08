@@ -38,8 +38,9 @@ module Redcar
                    0,                       0)
       
       toolbar_widget = Gtk::Toolbar.new
-      Redcar.MainToolbar.toolbar_widget = toolbar_widget
-      table.attach(Redcar.MainToolbar.toolbar_widget,
+      Redcar::Toolbar.set_toolbar_widget("Main", toolbar_widget)
+      
+      table.attach(Redcar::Toolbar.get_toolbar_widget("Main"),
                    # X direction            # Y direction
                    0, 1,                    1, 2,
                    Gtk::EXPAND | Gtk::FILL, 0,

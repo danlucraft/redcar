@@ -64,13 +64,13 @@ module Redcar
     attr_accessor :current_window, :keycatcher, :image
         
     def add_objects
-      Redcar.keycatcher = Redcar.KeyCatcher.new
-      Redcar.current_window = Redcar.RedcarWindow.new
+      Redcar.keycatcher = Redcar::KeyCatcher.new
+      Redcar.current_window = Redcar::RedcarWindow.new
     end
     
     def load_image
-      self.image = Redcar.Image.new(:cache_dir => "cache/",
-                                    :sources => ["scripts/*/image.yaml", "plugins/*/image.yaml"])
+      self.image = Redcar::Image.new(:cache_dir => "cache/",
+                                     :sources => ["scripts/*/image.yaml", "plugins/*/image.yaml"])
     end
     
     def show_time
@@ -92,11 +92,12 @@ module Redcar
 
       print "loading menus ..."; $stdout.flush
       show_time do
-        Redcar.Menu.draw_menus
-        Redcar.Keymap.load
+        Redcar::Menu.draw_menus
+        Redcar::Toolbar.draw_toolbars
+        Redcar::Keymap.load
       end
       
-      puts Redcar.Keymap.all      
+      puts Redcar::Keymap.all      
       
       if options[:load_scripts]
         print "loading scripts ..."; $stdout.flush

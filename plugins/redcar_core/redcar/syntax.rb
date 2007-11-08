@@ -6,12 +6,12 @@ require 'lib/syntax/grammar'
 require 'lib/syntax/scope'
 require 'lib/syntax/parser'
 
-Redcar.hook :startup do
-  Redcar::Syntax.load_grammars
-  Redcar.MainToolbar.append_combo(Redcar::Syntax.grammar_names.sort) do |_, tab, grammar|
-    tab.sourceview.set_grammar(Redcar::Syntax.grammar(:name => grammar))
-  end
-end
+# Redcar.hook :startup do
+#   Redcar::Syntax.load_grammars
+#   Redcar.MainToolbar.append_combo(Redcar::Syntax.grammar_names.sort) do |_, tab, grammar|
+#     tab.sourceview.set_grammar(Redcar::Syntax.grammar(:name => grammar))
+#   end
+# end
 
 module Redcar
   module Syntax
