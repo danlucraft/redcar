@@ -38,7 +38,7 @@ module Redcar
                       :bounds, :step)
         
         def change(&block)
-          @change = block
+          @change_proc = block
         end
       end
 #     end
@@ -103,9 +103,7 @@ module Redcar
         save_values
       end
       @lazy_apply.each {|p| p.call}
-      puts :applied_changes
       @dialog.destroy
-      puts :destroyed
      end
     
     def on_cancel
@@ -117,6 +115,8 @@ module Redcar
         val = widget.preference_value
         @lazy_apply << fn { 
           $BUS[pref_path].data = val  
+          p pref_path
+          p val
           if @initial_values[pref_path] and 
               @initial_values[pref_path] != val and
               @on_change[pref_path] != nil
@@ -135,7 +135,6 @@ module Redcar
       vbox = Gtk::VBox.new
       @widgets = {}
       $BUS[path].each_slot do |slot|
-        p slot.name
         if slot.attr_pref
           name = slot.name
           if widget = slot.attr_widget
@@ -186,7 +185,7 @@ module Redcar
             when :toggle
               label = nil
               widget = Gtk::CheckButton.new(name)
-              widget.active = (slot.data == true)
+              widget.active = slot.data.to_bool
               def widget.preference_value
                 self.active?.to_s
               end

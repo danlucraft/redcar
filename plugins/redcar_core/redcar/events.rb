@@ -44,7 +44,7 @@ module Redcar
     end
 
     yield if block_given?
-
+    
     ($BUS['/redcar/events/'+name.to_s+'/after'].data||[]).each do |hash|
       hash[:block].call(object)
     end

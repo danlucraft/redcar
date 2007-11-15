@@ -14,10 +14,10 @@ module Redcar
         p.default = true
       end
       
-      command :startpage do |c|
+      command "startpage/display" do |c|
         c.menu = "Tools/Display Startpage"
         c.icon = :CUT
-        c.command =<<-RUBY
+        c.command %q{
           nt = Redcar.new_tab
           nt.name = "#scratch"
           nt.textview.set_grammar(Redcar::SyntaxSourceView.grammar(:name => 'Ruby'))
@@ -28,7 +28,7 @@ module Redcar
                         "Redcar.startup(:output => \\"silent\\")"
           nt.cursor = 0
           nt.modified = false
-        RUBY
+        }
       end
       
 #       menu "Tools/Display Startpage" do |m|
@@ -36,10 +36,14 @@ module Redcar
 #         m.icon    = :CUT
 #       end
       
-      def self.start(plugin)
+      def self.load(plugin)
         if Redcar.preferences("General/Start Page/Open at start up")
+          Redcar.hook :startup do 
+            p :sat
+            Redcar::Command.execute('startpage/display')
+          end
         end
-        plugin.transition(FreeBASE::RUNNING)
+        plugin.transition(FreeBASE::LOADED)
       end
     end
   end

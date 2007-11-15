@@ -117,6 +117,23 @@ module Redcar
       p.widget = fn { TextTab.font_chooser_button("Appearance/Entry Font") }
     end
     
+    preference "Text Tab/Wrap words" do |p|
+      p.default = true
+      p.type = :toggle
+      p.change do
+        puts :foobar
+        Redcar.current_window.all_tabs.each do |tab|
+          if tab.respond_to? :textview 
+            if $BUS['/redcar/preferences/Text Tab/Wrap words']
+              tab.textview.wrap_mode = Gtk::TextTag::WRAP_WORD
+            else
+              tab.textview.wrap_mode = Gtk::TextTag::WRAP_NONE
+            end
+          end
+        end
+      end
+    end
+    
     def self.font_chooser_button(name)
       gtk_image = Gtk.Image.new(Gtk.Stock.SELECT_FONT, 
                                  Gtk.IconSize.MENU)

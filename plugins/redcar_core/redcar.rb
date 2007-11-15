@@ -127,8 +127,6 @@ module Redcar
       Redcar.current_window.show_window
       
       Redcar.event :startup
-      
-      p Gtk.current
     end
     attr_accessor :CUSTOM_DIR
     attr_accessor :ROOT_PATH
