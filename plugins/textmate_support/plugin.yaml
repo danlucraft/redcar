@@ -11,13 +11,13 @@ plugins:
     startup_module: Redcar::Plugins::Textmate::Bundles
     properties_path: bundles.yaml
 
-  - !ruby/object:FreeBASE::PluginConfiguration 
-    name: textmate-support\commands
-    version: 1.0
-    autoload: true
-    require_path: textmate_support/commands.rb
-    startup_module: Redcar::Plugins::Textmate::Commands
-    properties_path: commands.yaml
-    load_dependencies:
-      textmate-support\bundles: "*"
+#  - !ruby/object:FreeBASE::PluginConfiguration 
+#    name: textmate-support\commands
+#    version: 1.0
+#    autoload: true
+#    require_path: textmate_support/commands.rb
+#    startup_module: Redcar::Plugins::Textmate::Commands
+#    properties_path: commands.yaml
+#    load_dependencies:
+#      textmate-support\bundles: "*"
 

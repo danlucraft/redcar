@@ -33,6 +33,16 @@ require 'pp'
 # end
 
 module Redcar
+  module Plugins
+    module Textmate
+      module Bundles
+        extend FreeBASE::StandardPlugin
+      end
+    end
+  end
+end
+
+module Redcar
   class Bundle
     def self.load_bundles
       Dir["textmate/Bundles/*"].each do |dir|
