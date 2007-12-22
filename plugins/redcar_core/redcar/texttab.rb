@@ -61,7 +61,7 @@ module Redcar
           tab.sourceview.show_line_markers = true
         end
       }
-      m.context_menu = "TextTab/Set Bookmark"
+      m.context_menu = "TextTab/Bookmarks/Set Bookmark"
     end
     
     command "TextTab/Next Bookmark" do |m|
@@ -71,7 +71,7 @@ module Redcar
         iter = tab.sourceview.buffer.get_next_marker(tab.iter(tab.cursor_iter.offset + 1))
         tab.cursor = iter if iter
       }
-      m.context_menu = "TextTab/Next Bookmark"
+      m.context_menu = "TextTab/Bookmarks/Next Bookmark"
     end
     
     command "TextTab/Prev Bookmark" do |m|
@@ -81,7 +81,20 @@ module Redcar
         iter = tab.sourceview.buffer.get_prev_marker(tab.iter(tab.cursor_iter.offset - 1))
         tab.cursor = iter if iter
       }
-      m.context_menu = "TextTab/Next Bookmark"
+      m.context_menu = "TextTab/Bookmarks/Prev Bookmark"
+    end
+    
+    command "TextTab/Clear Bookmark" do |m|
+      m.icon = :CANCEL
+      m.command %q{
+        buffer = tab.sourceview.buffer
+        buffer.get_markers(tab.iter(0), tab.iter(tab.char_count)).each do |marker|
+          if buffer.get_iter_at_mark(marker).line == tab.cursor_line
+            buffer.delete_marker(marker)
+          end
+        end
+      }
+      m.context_menu = "TextTab/Bookmarks/Clear Bookmark"
     end
     
     command "TextTab/Clear All Bookmarks" do |m|
@@ -93,7 +106,7 @@ module Redcar
         end
         tab.sourceview.show_line_markers = false
       }
-      m.context_menu = "TextTab/Clear All Bookmarks"
+      m.context_menu = "TextTab/Bookmarks/Clear All Bookmarks"
     end
     
     def to_undo(*args, &block)
