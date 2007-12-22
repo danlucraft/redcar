@@ -9,7 +9,6 @@ module Redcar
     
     def reparse_tab
       @textview.colour
-      #debug_puts @textview.scope_tree.pretty
     end
     
     def print_scope_tree

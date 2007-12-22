@@ -28,6 +28,7 @@ module Redcar::Plugins::CoreMenus
           new_tab.name = new_tab.filename.split(/\//).last
           new_tab.focus
           new_tab.cursor = 0
+          new_tab.modified = false
         end
       }
     end

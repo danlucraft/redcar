@@ -194,7 +194,7 @@ module Redcar
     end
     
     def set_grammar(gr)
-      if gr and @grammar != gr
+      if gr
         @grammar = gr
         SyntaxLogger.debug { "setting grammar: #{@grammar.name}" }
         @scope_tree = Redcar::Syntax::Scope.new(:pattern => gr,
@@ -315,9 +315,7 @@ module Redcar
         @parser.delete_from_line(deletion[:from].line, 
                                  deletion[:length], 
                                  deletion[:from].offset)
-        #debug_puts "parsed and coloured line"
       else
-        #debug_puts "processing deletion of #{deletion[:lines]} lines"
         @parser.delete_between(deletion[:from], deletion[:to])
       end
     end
@@ -329,18 +327,11 @@ module Redcar
         start_iter, end_iter = self.buffer.bounds
         self.buffer.remove_all_tags(start_iter, end_iter)
         @parser.add_lines(self.buffer.text, :lazy => true)
-        #      #debug_puts @scope_tree.pretty
         endt = Time.now
         diff = endt-startt
-#        #debug_puts "time to parse and colour: #{diff}"
       end
     end
   end
-end
-
-module Redcar
-#   class TextTab
-#   end
 end
 
 class String

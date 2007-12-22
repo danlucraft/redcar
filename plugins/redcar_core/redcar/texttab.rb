@@ -693,7 +693,7 @@ module Redcar
           @textview.colour
         end
       end
-      if 
+      unless gr
         @textview.set_grammar(gr = SyntaxSourceView.grammar(:first_line => self.get_line(0)))
         if gr
           @textview.colour

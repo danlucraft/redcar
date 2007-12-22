@@ -40,7 +40,6 @@ module Redcar
         list = Redcar::SyntaxSourceView.grammar_names.sort
         list.each {|item| gtk_combo_box.append_text(item) }
         gtk_combo_box.signal_connect("changed") do |gtk_combo_box1|
-          p gtk_combo_box1.active
           Redcar.current_tab.sourceview.set_grammar(Redcar::SyntaxSourceView.grammar(:name => list[gtk_combo_box1.active]))
         end
         gtk_hbox.pack_end(gtk_combo_box, false)
