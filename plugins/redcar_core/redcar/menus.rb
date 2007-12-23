@@ -125,6 +125,11 @@ module Redcar
   
   class Menu
     class << self
+      def set_node_id(node)
+        node.attr_id = $menunum
+        $menunum += 1
+      end
+      
       def clear_menus
         (@toplevel_gtk_menuitems||={}).each do |uuid, gtk_menuitem|
           Redcar.menubar.remove(gtk_menuitem)
@@ -170,9 +175,9 @@ module Redcar
       end
 
       def draw_menus
-        clear_menus
+        clear_menus        
         $BUS['/redcar/menus/menubar/'].children.
-          sort_by(&its.attr_id).each do |slot|
+          sort_by(&:attr_id).each do |slot|
           gtk_menu = Gtk::Menu.new
           gtk_menuitem = make_gtk_menuitem(slot)
           @toplevel_gtk_menuitems[slot.name] = gtk_menuitem
@@ -184,7 +189,9 @@ module Redcar
       end
       
       def draw_menus1(parent, gtk_menu)
-        parent.children.sort_by(&its.attr_id).each do |slot|
+        parent.children.each {|c| p c.path}
+        parent.children.each {|c| p c.attr_id}
+        parent.children.sort_by(&:attr_id).each do |slot|
           if slot.name =~ /separator/
             gtk_menuitem = Gtk::SeparatorMenuItem.new
           else
@@ -204,7 +211,7 @@ module Redcar
       end
       
       def connect_item_signal(command_name, gtk_menuitem)
-        gtk_menuitem.signal_connect("activate") do 
+        gtk_menuitem.signal_connect("activate") do
           c = $BUS['/redcar/commands/'+command_name.to_s].data
           command = Command.new(c)
           begin

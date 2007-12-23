@@ -38,7 +38,7 @@ module Redcar
     class Builder
       attr_accessor(:name, :type, :tooltip, :scope_selector, 
                     :input, :output, :fallback_input, :icon, :sensitive,
-                    :menu, :keybinding, :context_menu)
+                    :menu, :keybinding, :context_menu, :tm_uuid)
       def [](v)
         instance_variable_get("@"+v.to_s)
       end
@@ -278,6 +278,7 @@ module Redcar
     end
     
     def execute
+      $BUS['/log/debug'] << "executing: #{self.def['name']}"
       set_environment_variables
       case @def[:type]
       when :inline

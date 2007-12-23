@@ -1,23 +1,14 @@
---- !ruby/object:FreeBASE::SubsystemConfiguration 
+--- !ruby/object:FreeBASE::PluginConfiguration 
 name: textmate-support
+description: Adds textmate commands, menus, macros and snippets to Redcar.
+author: Daniel Lucraft
 version: 1.0
-plugins: 
-
-  - !ruby/object:FreeBASE::PluginConfiguration 
-    name: textmate-support\bundles
-    version: 1.0
-    autoload: true
-    require_path: textmate_support/bundles.rb
-    startup_module: Redcar::Plugins::Textmate::Bundles
-    properties_path: bundles.yaml
-
-#  - !ruby/object:FreeBASE::PluginConfiguration 
-#    name: textmate-support\commands
-#    version: 1.0
-#    autoload: true
-#    require_path: textmate_support/commands.rb
-#    startup_module: Redcar::Plugins::Textmate::Commands
-#    properties_path: commands.yaml
-#    load_dependencies:
-#      textmate-support\bundles: "*"
-
+autoload: (true)
+require_path: textmate_support/textmate_support.rb
+startup_module: Redcar::Plugins::TextmateSupport
+test_path: textmate_support/test.rb
+test_module: Redcar::Tests::TextmateSupportTest
+load_dependencies:
+  redcar-core: "*"
+start_dependencies: 
+  redcar-core: "*"
