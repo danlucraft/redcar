@@ -41,7 +41,6 @@ module Redcar
         Redcar::SyntaxSourceView.init(:bundles_dir => "textmate/Bundles/",
                                       :themes_dir  => "textmate/Themes/",
                                       :cache_dir   => "cache/")
-        
         plugin.transition(FreeBASE::LOADED)
       end
       
