@@ -137,7 +137,7 @@ module Redcar
           raise ArgumentError, "SyntaxSourceView.new expects :bundles_dir, :themes_dir and (optionally) :cache_dir."
         end
       end
-      set_theme(Theme.default_theme)
+      set_theme(Theme.theme($BUS["/redcar/preferences/Appearance/Tab Theme"].data))
       modify_font(Pango::FontDescription.new("Monospace 12"))
       self.tabs_width = 2
       set_grammar(SyntaxSourceView.grammar(:name => 'Ruby'))

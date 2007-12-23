@@ -16,7 +16,8 @@ module Redcar
         p.change do 
           Redcar.current_window.all_tabs.each do |tab|
             if tab.respond_to? :sourceview
-              tab.sourceview.set_theme(Theme.theme(Redcar.preference("Appearance/Tab Theme")))
+              theme_name = $BUS["/redcar/preferences/Appearance/Tab Theme"].data
+              tab.sourceview.set_theme(Theme.theme(theme_name))
             end
           end
         end

@@ -23,9 +23,8 @@ module Redcar
           nt.textview.set_grammar(Redcar::SyntaxSourceView.grammar(:name => 'Ruby'))
           nt.focus
           nt.contents = "# This is Redcar, scriptable editing for Linux.\\n" + 
-                        "# Copyright Daniel Lucraft 2007\\n"+
-                        "\\n#! /usr/bin/env ruby\\n\\n"+
-                        "Redcar.startup(:output => \\"silent\\")"
+                        "# Copyright Daniel Lucraft 2008\\n"+
+                        "# \\n# In Redcar, the super key is the 'Windows' key, usually next to Alt."
           nt.cursor = 0
           nt.modified = false
         }
