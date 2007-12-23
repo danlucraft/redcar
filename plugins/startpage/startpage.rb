@@ -37,7 +37,7 @@ module Redcar
 #       end
       
       def self.load(plugin)
-        if Redcar.preferences("General/Start Page/Open at start up")
+        if Redcar.preferences("General/Start Page/Open at start up").to_bool
           Redcar.hook :startup do 
             p :sat
             Redcar::Command.execute('startpage/display')

@@ -139,6 +139,7 @@ module Redcar
     
     def new_tab(type=TextTab, *args)
       nt = Redcar.current_pane.new_tab(type, *args)
+      p :placing_tab
       Redcar.current_window.place_tab(nt)
       nt
     end
@@ -218,7 +219,8 @@ module Redcar
       end
       
       def type_to_pane(type)
-        update_current_arrangement unless @pane_types
+        update_current_arrangement
+        p @pane_types
         @pane_types.each do |pane, types|
           if types.include? type
             return pane
@@ -293,7 +295,11 @@ module Redcar
             source_pane = pane
           end
         end
+        p Arrangements.get_type(tab)
         if dest_pane = type_to_pane(Arrangements.get_type(tab))
+          p :migrating_tab
+          p source_pane
+          p dest_pane
           source_pane.migrate_tab(tab, dest_pane)
         end
       end
