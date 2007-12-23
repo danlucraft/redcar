@@ -189,8 +189,6 @@ module Redcar
       end
       
       def draw_menus1(parent, gtk_menu)
-        parent.children.each {|c| p c.path}
-        parent.children.each {|c| p c.attr_id}
         parent.children.sort_by(&:attr_id).each do |slot|
           if slot.name =~ /separator/
             gtk_menuitem = Gtk::SeparatorMenuItem.new

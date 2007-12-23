@@ -121,7 +121,7 @@ module Redcar
     
     def input_by_type(type)
       case type
-      when :selected_text, :selection
+      when :selected_text, :selection, :selectedText
         Redcar.current_tab.selection
       when :document
         Redcar.current_tab.buffer.text
@@ -169,33 +169,33 @@ module Redcar
 #               ]
     def direct_output(type, output)
       case type
-      when :replace_document
+      when :replace_document, :replaceDocument
         tab.replace output
-      when :replace_line
+      when :replace_line, :replaceLine
         tab.replace_line(output)
-      when :replace_selected_text
+      when :replace_selected_text, :replaceSelectedText
         tab.replace_selection(output)
-      when :insert_as_text
+      when :insert_as_text, :insertAsText
         tab.insert_at_cursor(output)
-      when :insert_as_snippet
+      when :insert_as_snippet, :insertAsSnippet
         tab.insert_as_snippet(output)
-      when :show_as_tool_tip, :show_as_tooltip
+      when :show_as_tool_tip, :show_as_tooltip, :showAsTooltip
         tab.tooltip_at_cursor(output)
-      when :after_selected_text
+      when :after_selected_text, :afterSelectedText
         if tab.selected?
           s, e = tab.selection_bounds
         else
           e = tab.cursor_offset
         end
         tab.insert(e, output)
-      when :create_new_document
+      when :create_new_document, :createNewDocument
         new_tab = Redcar.current_pane.new_tab
         new_tab.name = "output: " + @def[:name]
         new_tab.replace output
         new_tab.focus
-      when :replace_input
+      when :replace_input, :replaceInput
         case valid_input_type
-        when :selected_text
+        when :selected_text, :selectedText
           tab.replace_selection(output)
         when :line
           tab.replace_line(output)
@@ -211,13 +211,13 @@ module Redcar
             tab.insert(s, output)
           end
         end
-      when :show_as_html
+      when :show_as_html, :showAsHTML
         new_tab = Redcar.new_tab(HtmlTab, output.to_s)
         new_tab.name = "output: " + @def[:name]
         new_tab.focus
-      when :insert_after_input
+      when :insert_after_input, :insertAfterInput
         case valid_input_type
-        when :selected_text
+        when :selected_text, :selectedText
           s, e = tab.selection_bounds
           offset = [s, e].sort[1]
           tab.insert(offset, output)
@@ -264,21 +264,21 @@ module Redcar
       output, error = nil, nil
       Open3.popen3(shell_command) do |stdin, stdout, stderr|
         stdin.write(input = get_input)
-#        puts "input: #{input}"
+        puts "input: #{input}"
         stdin.close
         output = stdout.read
+        puts "output: #{output}"
         error = stderr.read
       end
       unless error.blank?
         puts "shell command failed with error:"
         puts error
       end
-#      puts "output: #{output}"
       direct_output(@def[:output], output) if output
     end
     
     def execute
-      $BUS['/log/debug'] << "executing: #{self.def['name']}"
+      puts "executing: #{self.def['name']}"
       set_environment_variables
       case @def[:type]
       when :inline

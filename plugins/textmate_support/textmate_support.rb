@@ -27,7 +27,6 @@ module Redcar::Plugins
     
     # retrieves from the cache or the Bundles dir
     def self.load_bundle_infos
-      p :loading_bundle_infos
       if File.exists? BUNDLE_CACHE_FILE
         YAML.load(File.read(BUNDLE_CACHE_FILE))
       else
@@ -58,7 +57,7 @@ module Redcar::Plugins
           c.scope_selector = bc["scope"]
           c.input = bc["input"].intern
           c.fallback_input = (fi = bc["fallbackInput"]) ? fi.intern : "none"
-          c.output = bc["output"]
+          c.output = bc["output"].intern
           c.keybinding = decode_textmate_keyequivalent(bc["keyEquivalent"])
           c.tm_uuid = bc["uuid"]
         end
@@ -87,7 +86,6 @@ module Redcar::Plugins
     end
     
     def self.add_commands_to_menus(bundles, commands)
-      p :adding_commands_to_menus
       root = $BUS['/redcar/menus/menubar/Bundles']
       Redcar::Menu.set_node_id(root)
       bundles.each do |name, b|
@@ -101,7 +99,6 @@ module Redcar::Plugins
     end
     
     def self.build_bundle_menu(binfo, menu_name, menu_hash, commands)
-      puts "Building: #{menu_name}"
       menu_hash.each do |uuid|
         if uuid =~ /---------/
           menu_separator(menu_name)
