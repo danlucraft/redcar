@@ -6,6 +6,8 @@ module Redcar
     module SyntaxView
       extend FreeBASE::StandardPlugin
       extend Redcar::PreferencesBuilder
+      extend Redcar::CommandBuilder
+      extend Redcar::ContextMenuBuilder
       
       preference "Appearance/Tab Theme" do |p|
         p.type = :combo
@@ -26,6 +28,14 @@ module Redcar
         p.values = fn { Theme.theme_names }
       end
     
+      command "TextTab/Display Current Scope" do |m|
+        m.keybinding = "super-shift S"
+        m.command %q{
+          Redcar.current_tab.scope_tooltip
+        }
+        m.context_menu = "TextTab/Current Scope"
+      end
+      
       def self.load(plugin)
         Redcar::SyntaxSourceView.init(:bundles_dir => "textmate/Bundles/",
                                       :themes_dir  => "textmate/Themes/",

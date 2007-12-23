@@ -13,7 +13,6 @@ module Redcar
       ToolTip.hide_all
       super(Gtk::Window::POPUP)
       set_border_width(1)
-      modify_bg(Gtk::STATE_NORMAL, Gdk::Color.parse("#FFFFCC"))
       label = Gtk::Label.new(text)
       add(label)
       move(x, y)
@@ -23,16 +22,28 @@ module Redcar
       end
       show_all
       @@visible_tooltips << self
+      @@tooltip_handlers ||= []
+      @@tooltip_handlers << Redcar.current_tab.textview.signal_connect("button_press_event") do 
+        clear_tooltips
+      end
       Thread.new do 
         sleep 3
-        self.hide
-        @@visible_tooltips.delete(self)
+        clear_tooltips
+      end
+    end
+    
+    def clear_tooltips
+      @@visible_tooltips.each {|tt| tt.hide }
+      @@visible_tooltips.clear
+      @@tooltip_handlers.each do |th|
+        if Redcar.current_tab.textview.signal_handler_is_connected?(th)
+          Redcar.current_tab.textview.signal_handler_disconnect(th)
+        end
       end
     end
   end
   
   class TextTab
-    #keymap "ctrl b", :tooltip_at_cursor, "foo"
     
     def tooltip_at_cursor(label)
       rect = @textview.get_iter_location(iter(cursor_mark))
