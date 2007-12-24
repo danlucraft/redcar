@@ -89,7 +89,7 @@ module Redcar
       @buffer.remove_all_tags(start_iter, end_iter)
       scopes.each do |scope|
         unless scope.start == scope.end or 
-            (!scope.name and (scope.pattern and !scope.pattern.content_name))# scope.children.empty?)
+            (!scope.name and (scope.pattern and !scope.pattern.content_name))
           colour_scope(scope, false)
           if scope.pattern and scope.pattern.content_name
             colour_scope(scope, true)
