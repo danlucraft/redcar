@@ -21,6 +21,22 @@ static VALUE set_window_title(VALUE self, VALUE rbgobj, VALUE title) {
   return self;
 }
 
+typedef struct ScopeData_ {
+  VALUE pattern;
+  VALUE grammar;
+  TextLoc start;
+  TextLoc end;
+  TextLoc open_start;
+  TextLoc open_end;
+  VALUE open_matchdata;
+  TextLoc close_start;
+  TextLoc close_end;
+  VALUE close_matchdata;
+  char *name;
+  VALUE closing_regexp;
+  VALUE capture;
+} ScopeData;
+
 static VALUE make_red(VALUE self, VALUE rg_buffer) {
   GtkTextIter start, end;
   GtkTextBuffer *buf = (GtkTextBuffer *) get_gobject(rg_buffer);

@@ -15,6 +15,7 @@ require 'fileutils'
 require 'uuid'
 require 'open3'
 require 'active_support'
+require 'oniguruma'
 puts "done"
 
 print "loading lib..."

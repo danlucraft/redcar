@@ -58,10 +58,6 @@ module Redcar
         test((@tv.selection.selected||[])[0])
       end
       
-      self.toolbar.append("Icon", "", "", Gtk::Image.new(Gtk::IconTheme.default.load_icon("accessories-text-editor", Gtk::IconSize::DND, 0))) do 
-        test((@tv.selection.selected||[])[0])
-      end
-      
       self.toolbar.append("Test All", "", "", Redcar.Icon.get_image(:EXECUTE)) do 
         puts "\nTesting all plugins:"
         @ts.each do |_, _, iter|

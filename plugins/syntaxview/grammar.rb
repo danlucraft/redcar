@@ -7,10 +7,6 @@ module Redcar
       attr_accessor :name, :captures, :grammar, :hint, :match, :scope_name
       
       def initialize(hash, grammar)
- #        unless hash["name"] or hash["contentName"]
-#           hash["name"] = $spare_name.clone
-#           $spare_name = $spare_name.succ
-#         end
         @grammar = grammar
         @name = hash["name"]
         @scope_name = @name
@@ -120,7 +116,6 @@ module Redcar
     end
 
     class Grammar
-#      include DebugPrinter
       attr_accessor(:name,
                     :comment,
                     :scope_name, 
@@ -150,18 +145,12 @@ module Redcar
           if pattern_hash.keys.include? "begin" or
               pattern_hash.keys.include? "match"
             @repository[name] = pattern_from_hash(pattern_hash)
- #           @repository[name].name = name unless @repository[name].name
           elsif pattern_hash.keys.include? "patterns"
             @repository[name] = pattern_hash["patterns"].map do |ph|
-              p = pattern_from_hash(ph)
-#               if p.respond_to? :name= and not p.name
-#                 p.name = name
-#               end
-              p
+              pattern_from_hash(ph)
             end
           end
         end
-        
         collate_patterns
         @pattern_lookup.each_value {|p| p.grammar = self if p.is_a? Pattern}
       end
@@ -241,21 +230,17 @@ module Redcar
           poss_patterns = self.patterns
           pattern = self
         end
-        #SyntaxLogger.debug { "  poss_patterns: #{poss_patterns.inspect}" }
         already_included = []
         r = expand_possible_patterns(poss_patterns, already_included)
         while r.any? {|pn| pn.is_a? IncludePattern }
           r = expand_possible_patterns(r, already_included)
-          #SyntaxLogger.debug { "  poss_patterns: #{r.inspect}" }
         end
-        #SyntaxLogger.debug { "  poss_patterns: #{r.compact.sort_by{|p| -p.hint}.inspect}" }
         @possible_patterns[pattern] = r.compact.sort_by{|p| -p.hint}
       end
       
       def expand_possible_patterns(pps, already_included)
         pps.map do |pn|
           if pn.is_a? IncludePattern
-            #SyntaxLogger.debug { "  expanding IncludePattern: #{pn.inspect}" }
             if already_included.include? [pn.type, pn.value]
               nil
             else

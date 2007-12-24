@@ -4,7 +4,6 @@
 
 require 'gtksourceview'
 require 'rubygems'
-require 'oniguruma'
 
 module Oniguruma
   class ORegexp
