@@ -3,21 +3,6 @@
 
 #include <gtk/gtk.h>
 
-typedef struct {
-    VALUE self;
-    GObject* gobj;
-    void* cinfo;
-    gboolean destroyed;
-} gobj_holder;
-
-static VALUE thing_get_gobj(VALUE self, void *rbgobj) {
-  gobj_holder *gh;
-  Data_Get_Struct(rbgobj, gobj_holder, gh);
-  GtkWidget *window = (GtkWidget *) gh->gobj;
-  gtk_window_set_title(GTK_WINDOW(window), "Hello from C");
-  return self;
-}
-
 /* The C Object */
 
 typedef struct Thing_ {

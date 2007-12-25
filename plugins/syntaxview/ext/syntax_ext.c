@@ -1,6 +1,8 @@
 
 #include "ruby.h"
 #include <gtk/gtk.h>
+#include "textloc.h"
+#include <glib.h>
 
 typedef struct {
     VALUE self;
@@ -22,83 +24,42 @@ static VALUE set_window_title(VALUE self, VALUE rbgobj, VALUE title) {
 }
 
 typedef struct ScopeData_ {
-  VALUE pattern;
-  VALUE grammar;
-  TextLoc start;
-  TextLoc end;
-  TextLoc open_start;
-  TextLoc open_end;
-  VALUE open_matchdata;
-  TextLoc close_start;
-  TextLoc close_end;
-  VALUE close_matchdata;
-  char *name;
-  VALUE closing_regexp;
-  VALUE capture;
+  int a;
 } ScopeData;
 
-static VALUE make_red(VALUE self, VALUE rg_buffer) {
-  GtkTextIter start, end;
-  GtkTextBuffer *buf = (GtkTextBuffer *) get_gobject(rg_buffer);
-  GtkTextTag *tag;
+typedef GNode Scope;
 
-  tag = gtk_text_buffer_create_tag (buf, "colors", "foreground", "#FF0000", NULL);
-  gtk_text_buffer_get_selection_bounds (buf, &start, &end);
-  gtk_text_buffer_apply_tag_by_name (buf, "colors", &start, &end);
-}
-
-typedef struct TextLoc_ {
-  int line;
-  int offset;
-} TextLoc;
-
-int textloc_equal(TextLoc t1, TextLoc t2) {
-  return t1.line == t2.line && t1.offset == t2.offset;
-}
-
-TextLoc scope_get_start(VALUE scope) {
-  VALUE start = rb_iv_get(scope, "@start");
-  TextLoc tl;
-  tl.line   = FIX2INT(rb_iv_get(start, "@line"));
-  tl.offset = FIX2INT(rb_iv_get(start, "@offset"));
-  return tl;
-}
-
-TextLoc scope_get_end(VALUE scope) {
-  VALUE start = rb_iv_get(scope, "@end");
-  TextLoc tl;
-  tl.line   = FIX2INT(rb_iv_get(start, "@line"));
-  tl.offset = FIX2INT(rb_iv_get(start, "@offset"));
-  return tl;
-}
-
-static VALUE colour_line_with_scopes(VALUE self, VALUE colourer, 
-				     VALUE line_num, VALUE scopes) {
-  printf("colouring line\n");
-  VALUE rg_buffer = rb_iv_get(colourer, "@buffer");
-  GtkTextBuffer *buffer = (GtkTextBuffer *) get_gobject(rg_buffer);
-  GtkTextIter start_iter, end_iter;
-  gtk_text_buffer_get_iter_at_line_offset(buffer, &start_iter, FIX2INT(line_num), 0);
-  gtk_text_buffer_get_iter_at_line_offset(buffer, &end_iter, FIX2INT(line_num)+1, 0);
-  gtk_text_buffer_remove_all_tags(buffer, &start_iter, &end_iter);
-  
-  int length = RARRAY(scopes)->len;
-  int i;
-  TextLoc locs, loce;
-  for (i = 0; i < length; i++) {
-    locs = scope_get_start(rb_ary_entry(scopes, (long) i));
-    loce = scope_get_end(rb_ary_entry(scopes, (long) i));
-    if (!textloc_equal(locs, loce))
-      printf("start: (%d,%d)  end: (%d, %d)\n", locs.line, locs.offset, loce.line, loce.offset);
-  }
+static VALUE scope_init(VALUE self) {
   return self;
 }
 
+void scope_destroy(Scope* scope) {
+  g_node_destroy((gpointer) scope);
+  return;
+}
+
+static VALUE scope_alloc(VALUE klass) {
+  Scope *scope;
+  VALUE obj;
+
+  scope = g_node_new(NULL);
+  obj = Data_Wrap_Struct(klass, 0, scope_destroy, scope);
+  return obj;
+}
+
+static VALUE scope_print(VALUE rb_scope) {
+  printf("scope\n");
+  return Qnil;
+}
+
 static VALUE mSyntaxExt;
+static VALUE cScope;
 
 void Init_syntax_ext() {
   mSyntaxExt = rb_define_module("SyntaxExt");
   rb_define_module_function(mSyntaxExt, "set_window_title", set_window_title, 2);
-  rb_define_module_function(mSyntaxExt, "make_red", make_red, 1);
-  rb_define_module_function(mSyntaxExt, "colour_line_with_scopes", colour_line_with_scopes, 3);
+  cScope = rb_define_class("CScope", rb_cObject);
+  rb_define_alloc_func(cScope, scope_alloc);
+  rb_define_method(cScope, "initialize", scope_init, 0);
+  rb_define_method(cScope, "display", scope_print, 0);
 }
