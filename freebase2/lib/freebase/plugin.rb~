@@ -108,6 +108,17 @@ module FreeBASE
       @base_slot["log/debug"].queue
       @base_slot["log"].subscribe self
       @base_slot["state"].data = UNLOADED
+      @base_slot["info/author"].data = @plugin_configuration.author
+      @base_slot["info/version"].data = @plugin_configuration.version
+      @base_slot["info/description"].data = @plugin_configuration.description
+      @base_slot["actions/reload"].set_proc do 
+        self.reload
+      end
+      if @plugin_configuration.test_path
+        @base_slot["actions/test"].set_proc do 
+          self.test
+        end
+      end
     end
     
     ##
@@ -185,10 +196,13 @@ module FreeBASE
       transition(LOADING)
       begin
         raise Exception.new("unment dependencies") unless @plugin_configuration.dependencies_met?
-        require @plugin_configuration.require_path if @plugin_configuration.require_path
-        eval(@plugin_configuration.startup_module).load(self)
+        log_requires do
+          require @plugin_configuration.require_path if @plugin_configuration.require_path
+          eval(@plugin_configuration.startup_module).load(self)
+        end
       rescue Exception => error
-        p error
+        puts error
+        puts error.backtrace
         log_error << "Error loading #{@plugin_configuration.name}\n#{error.to_s}\n#{error.backtrace.join("\n")}"
         transition_failure
       end
@@ -202,8 +216,12 @@ module FreeBASE
         transition(STARTING)
         begin
           raise Exception.new("unment dependencies") unless @plugin_configuration.dependencies_met?
-          eval(@plugin_configuration.startup_module).start(self)
+          log_requires do
+            eval(@plugin_configuration.startup_module).start(self)
+          end
         rescue Exception => error
+          puts error
+          puts error.backtrace
           log_error << "Error starting #{@plugin_configuration.name}\n#{error.to_s}\n#{error.backtrace.join("\n")}"
           transition_failure
         end
@@ -235,6 +253,53 @@ module FreeBASE
     #
     def [](path)
       return @base_slot[path]
+    end
+    
+    ##
+    # Logs all files that Ruby loads during the invocation of the block passed in.
+    #
+    def log_requires(type=:plugin)
+      before = $".dup
+      yield
+      after = $".dup
+      prev = @base_slot["files/"+type.to_s].data || []
+      @base_slot["files/"+type.to_s].data = (prev + (after-before)).uniq
+    end
+    
+    ##
+    # Reloads all files logged as having been loaded by this plugin.
+    #
+    def reload
+      @base_slot["files"].each_slot do |s|
+        (s.data||[]).each do |f|
+          if File.extname(f) == ".rb"
+            p f
+            Kernel.load f
+          end
+        end
+      end
+    end
+    
+    ##
+    # Loads and executes the plugin's test path.
+    #
+    def test(output=:console)
+      if @plugin_configuration.test_path
+        require 'test/unit'
+        
+        # we do not want the tests to run on exit:
+        Test::Unit.run = false
+        
+        log_requires(:test) do
+          require @plugin_configuration.test_path
+        end
+        
+        case output
+        when :console
+          require 'test/unit/ui/console/testrunner'
+          Test::Unit::UI::Console::TestRunner.new(eval(@plugin_configuration.test_module).suite).start
+        end
+      end
     end
   end
 end

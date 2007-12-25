@@ -377,6 +377,7 @@ ENDSTR
       children[1].pattern.name
     assert_equal(["punctuation.section.embedded.ruby",
                   "constant.numeric.ruby",
+                  "keyword.operator.arithmetic.ruby",
                   "constant.numeric.ruby",
                   "punctuation.section.embedded.ruby"],
                  smp.scope_tree.children[0].children[1].children.map{|c| c.name})
@@ -555,7 +556,7 @@ ENDSTR
     rubycode="class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
     smp.add_lines(rubycode)
     
-    assert_equal 6, smp.scope_tree.children.length
+    assert_equal 10, smp.scope_tree.children.length
     
     old = smp.scope_tree.copy
     old.shift_chars(2, 4, 0)
@@ -591,7 +592,7 @@ HILL
     
     assert_equal 4, smp.scope_tree.children.length
     assert smp.scope_tree.children[1].end # heredoc is closed
-    assert copy.identical?(smp.scope_tree)
+    assert copy.children[1].identical?(smp.scope_tree.children[2])
   end
   
   def test_insert_text_in_line_that_appends_a_scope
@@ -600,13 +601,19 @@ HILL
                    :grammar => gr,
                    :start   => TextLoc.new(0, 0))
     smp = Parser.new(sc, [gr], nil)
-    rubycode="class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
+    rubycode=<<SRC1
+class Redcar::File
+  def nice_name
+    @filename.split(\"/\").last
+  end
+end
+SRC1
     smp.add_lines(rubycode)
     
-    assert_equal 6, smp.scope_tree.children.length
+    assert_equal 10, smp.scope_tree.children.length
     
     smp.insert_in_line(2, "(\"asdf\")", smp.text[2].length)
-    assert_equal 7, smp.scope_tree.children.length
+    assert_equal 13, smp.scope_tree.children.length
   end
   
   def test_insert_text_in_line_that_prepends_a_scope
@@ -615,7 +622,13 @@ HILL
                    :grammar => gr,
                    :start   => TextLoc.new(0, 0))
     smp = Parser.new(sc, [gr], nil)
-    rubycode="class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
+    rubycode=<<SRC1
+class Redcar::File
+  def nice_name
+    @filename.split(\"/\").last
+  end
+end
+SRC1
     smp.add_lines(rubycode)
     
     assert_equal 10, smp.scope_tree.children.length
@@ -630,14 +643,21 @@ HILL
                    :grammar => gr,
                    :start   => TextLoc.new(0, 0))
     smp = Parser.new(sc, [gr], nil)
-    rubycode="class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
+
+    rubycode=<<SRC1
+class Redcar::File
+  def nice_name
+    @filename.split(\"/\").last
+  end
+end
+SRC1
     smp.add_lines(rubycode)
     
-    assert_equal 6, smp.scope_tree.children.length
+    assert_equal 10, smp.scope_tree.children.length
     
     smp.insert_in_line(2, "=\<\<HI", smp.text[2].length)
     
-    assert_equal 5, smp.scope_tree.children.length
+    assert_equal 9, smp.scope_tree.children.length
     assert_equal "string.unquoted.heredoc.ruby", smp.scope_tree.children.last.name
   end
   
@@ -678,6 +698,7 @@ CRALL
     %w{F i l e}.each do |l|
       smp.insert_in_line(2, l, smp.text[2].length)
     end
+    
     assert_equal 3, smp.scope_tree.children.length
     new_scope = smp.scope_tree.children[2]
     assert_equal([0, 4, "variable.other.constant.ruby"],
@@ -686,7 +707,7 @@ CRALL
                   new_scope.name])
     
     smp.insert_in_line(2, ".", smp.text[2].length)
-    assert_equal 3, smp.scope_tree.children.length
+    assert_equal 4, smp.scope_tree.children.length
     new_scope = smp.scope_tree.children[2]
     assert_equal([0, 4, "variable.other.constant.ruby"],
                  [new_scope.start.offset,
@@ -711,12 +732,12 @@ CRALL
       smp.insert_in_line(1, l, smp.text[1].length)
     end
     emb_scope = str_scope.children[1]
-    assert_equal 3, emb_scope.children.length
+    assert_equal 4, emb_scope.children.length
     "}\"".split(//).each do |l|
       smp.insert_in_line(1, l, smp.text[1].length)
     end
     emb_scope = str_scope.children[1]
-    assert_equal 4, emb_scope.children.length
+    assert_equal 5, emb_scope.children.length
     assert_equal 3, str_scope.children.length
   end
   
@@ -772,7 +793,7 @@ CROW
     assert_equal 3, smp.scope_tree.children.length
     smp.delete_from_line(1, 2, 4)
     
-    assert_equal 6, smp.scope_tree.children.length
+    assert_equal 9, smp.scope_tree.children.length
   end
   
   
@@ -954,7 +975,7 @@ STR
     smp.add_lines(source)
     
     assert_equal 6, smp.text.length
-    assert_equal 6, smp.scope_tree.children.length
+    assert_equal 11, smp.scope_tree.children.length
     
     smp.insert(TextLoc.new(3, 14), "\nclass Red; attr :foo; end\nFile.rm")
     newsource=<<STR
@@ -968,7 +989,7 @@ Gtk.main
 STR
     assert_equal newsource, smp.text.join
     assert_equal 8, smp.text.length
-    assert_equal 11, smp.scope_tree.children.length
+    assert_equal 19, smp.scope_tree.children.length
   end
 
   def test_insert_new_lines
@@ -987,7 +1008,8 @@ STR
     smp.add_lines(source)
     
     assert_equal 6, smp.text.length
-    assert_equal 6, smp.scope_tree.children.length
+
+    assert_equal 11, smp.scope_tree.children.length
     pre = smp.scope_tree.copy
     pre.shift_after(3, 1)
     
@@ -1002,7 +1024,7 @@ Gtk.main
 STR
     assert_equal newsource, smp.text.join
     assert_equal 7, smp.text.length
-    assert_equal 6, smp.scope_tree.children.length
+    assert_equal 11, smp.scope_tree.children.length
     
     pre.shift_after(4, 1)
     smp.insert(TextLoc.new(3, 0), "\n")
@@ -1017,7 +1039,7 @@ Gtk.main
 STR
     assert_equal newsource, smp.text.join
     assert_equal 8, smp.text.length
-    assert_equal 6, smp.scope_tree.children.length
+    assert_equal 11, smp.scope_tree.children.length
     
     pre.shift_after(5, 1)
     smp.insert(TextLoc.new(3, 0), "\n")
@@ -1033,7 +1055,7 @@ Gtk.main
 STR
     assert_equal newsource, smp.text.join
     assert_equal 9, smp.text.length
-    assert_equal 6, smp.scope_tree.children.length
+    assert_equal 11, smp.scope_tree.children.length
     assert smp.scope_tree.identical?(pre)
   end
   
@@ -1079,7 +1101,7 @@ STR
 Gtk.main
 BSTR
     assert_equal 3, smp.text.length
-    assert_equal 2, smp.scope_tree.children.length
+    assert_equal 3, smp.scope_tree.children.length
   end
   
   def test_bug
@@ -1128,7 +1150,7 @@ STR
   end
   
   def test_embedded_grammar2
-    gr = Syntax.grammar :name => 'Ruby'
+    gr = SyntaxSourceView.grammar :name => 'Ruby'
     sc = Scope.new(:pattern => gr,
                    :grammar => gr,
                    :start   => TextLoc.new(0, 0))
@@ -1139,12 +1161,13 @@ STR
 HTML
 STR
     smp.add_lines(source, :lazy => false)
+    
     assert_equal("constant.other.symbol.ruby",
-                 smp.scope_tree.children[0].children[2].children[1].name)
+                 smp.scope_tree.children[1].children[2].children[1].name)
   end
   
   def test_embedded_grammar_delete_closing_scope
-    gr = Syntax.grammar :name => 'Ruby'
+    gr = SyntaxSourceView.grammar :name => 'Ruby'
     sc = Scope.new(:pattern => gr,
                    :grammar => gr,
                    :start   => TextLoc.new(0, 0))
@@ -1156,15 +1179,16 @@ HTML
 File
 STR
     smp.add_lines(source, :lazy => false)
-    assert_equal 2, smp.scope_tree.children.length
+    
+    assert_equal 3, smp.scope_tree.children.length
     assert_equal "variable.other.constant.ruby", smp.scope_tree.children.last.name
     smp.delete_between(TextLoc(2, 2), TextLoc(2, 4))
     
-    assert_equal 1, smp.scope_tree.children.length
+    assert_equal 2, smp.scope_tree.children.length
   end
   
   def test_embedded_grammar3
-    gr = Syntax.grammar :name => 'HTML'
+    gr = SyntaxSourceView.grammar :name => 'HTML'
     sc = Scope.new(:pattern => gr,
                    :grammar => gr,
                    :start   => TextLoc.new(0, 0))
@@ -1174,6 +1198,5 @@ STR
 </script>
 STR
     smp.add_lines(source, :lazy => false)
-    puts smp.scope_tree.pretty
   end
 end

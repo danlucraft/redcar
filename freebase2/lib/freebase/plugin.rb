@@ -297,7 +297,13 @@ module FreeBASE
         case output
         when :console
           require 'test/unit/ui/console/testrunner'
-          Test::Unit::UI::Console::TestRunner.new(eval(@plugin_configuration.test_module).suite).start
+          begin
+            Test::Unit::UI::Console::TestRunner.new(eval(@plugin_configuration.test_module).suite).start
+          rescue Object => e
+            puts e
+            puts e.message
+            puts e.backtrace
+          end
         end
       end
     end
