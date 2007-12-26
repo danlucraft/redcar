@@ -52,6 +52,7 @@ module Redcar
                  close_matchdata)
         allocate
         @name               = name
+        cscope.set_name(@name) if @name
         self.pattern        = pattern
         self.grammar        = grammar
         self.start          = start
@@ -69,6 +70,7 @@ module Redcar
       
       def initialize(options={})
         @name               = options[:name]
+        cscope.set_name(@name) if @name
         self.pattern        = options[:pattern]
         self.grammar        = options[:grammar]
         self.start          = options[:start]
@@ -84,11 +86,36 @@ module Redcar
         @children = []
       end
       
+      def cscope
+        @cscope ||= CScope.new
+      end
+      
+      def start=(loc)
+        @start = loc
+        if loc
+          cscope.set_start(loc.line, loc.offset)
+        end
+      end
+      
+      def end=(loc)
+        @end = loc
+        if loc
+          cscope.set_end(loc.line, loc.offset)
+        end
+      end
+      
       def overlaps?(other)
-       # (self.start >= other.start and (!other.end or (self.start < other.end))) or
-       #  (self.end and (self.end >= other.start and (!other.end or (self.end <= other.end))))
-       (self.start >= other.start and (!other.end or (self.start < other.end))) or
+        # this ruby version was actually wrong!
+       rbv = (self.start >= other.start and (!other.end or (self.start < other.end))) or
         (self.end and (self.end > other.start and (!other.end or (self.end <= other.end))))
+        cv = cscope.overlaps?(other.cscope)
+        unless rbv == cv
+          p :overlaps_failure
+          p cscope.display
+          p other.cscope.display
+          puts "rbv: #{rbv.inspect}, cv:#{cv.inspect}"
+        end
+        cv
       end
       
       def priority
@@ -263,6 +290,11 @@ module Redcar
         @name ||= self.pattern.scope_name
       end
       
+      def name=(newname)
+        @name = newname
+        cscope.set_name(newname)
+      end
+      
       def to_s
         self.name
       end
@@ -288,7 +320,7 @@ module Redcar
         else
           cname = ""
         end
-        "<scope(#{self.object_id*-1%1000}):"+(self.name||"noname")+" "+cname+" #{startstr}#{endstr} #{hanging}>"
+        "<scope(#{self.object_id*-1%1000}):"+(self.name rescue "noname")+" "+cname+" #{startstr}#{endstr} #{hanging}>"
       end
       
       def sort_children
@@ -421,14 +453,14 @@ module Redcar
       
       def shift_after(line, amount)
         if self.start.line >= line
-          self.start.line += amount
+          self.start = TextLoc(self.start.line + amount, self.start.offset)
           if self.open_start
             self.open_start.line += amount
             self.open_end.line += amount
           end
         end
         if self.end and self.end.line >= line
-          self.end.line   += amount
+          self.end = TextLoc(self.end.line + amount, self.end.offset)
           if self.close_start
             self.close_start.line += amount
             self.close_end.line   += amount

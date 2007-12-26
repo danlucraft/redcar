@@ -1024,6 +1024,7 @@ Gtk.main
 STR
     assert_equal newsource, smp.text.join
     assert_equal 7, smp.text.length
+    puts smp.scope_tree.pretty
     assert_equal 11, smp.scope_tree.children.length
     
     pre.shift_after(4, 1)
