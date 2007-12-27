@@ -5,6 +5,7 @@
 
 #include "textloc.h"
 
+// ----- Get a GTK object from a Ruby-Gnome object ----
 typedef struct {
     VALUE self;
     GObject* gobj;
@@ -23,6 +24,8 @@ static VALUE set_window_title(VALUE self, VALUE rbgobj, VALUE title) {
   gtk_window_set_title(GTK_WINDOW(window), RSTRING_PTR(title));
   return self;
 }
+
+// ----- Scope object
 
 typedef struct ScopeData_ {
   TextLoc start;
@@ -120,10 +123,23 @@ static VALUE scope_set_name(VALUE self, VALUE name) {
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
-  sd->name = RSTRING_PTR(name); // what if the string gets garbage collected?
-                                // This shouldn't happen in Redcar because the grammars
-                                // are always in memory.
+  if (name == Qnil)
+    sd->name = NULL;
+  else
+    sd->name = RSTRING_PTR(name); // what if the string gets garbage collected?
+                                  // This shouldn't happen in Redcar because the grammars
+                                  // are always in memory.
   return Qnil;
+}
+
+static VALUE scope_get_name(VALUE self) {
+  Scope *s;
+  Data_Get_Struct(self, Scope, s);
+  ScopeData *sd = s->data;
+  if (sd->name)
+    return rb_str_new2(sd->name);
+  else
+    return Qnil;
 }
 
 // Boolean scope methods
@@ -185,6 +201,7 @@ void Init_syntax_ext() {
   rb_define_method(cScope, "get_start", scope_get_start, 0);
   rb_define_method(cScope, "get_end",   scope_get_end, 0);
   rb_define_method(cScope, "set_name",  scope_set_name, 1);
+  rb_define_method(cScope, "get_name",  scope_get_name, 0);
   rb_define_method(cScope, "overlaps?", scope_overlaps, 1);
   rb_define_method(cScope, "on_line?",  scope_active_on_line, 1);
 }

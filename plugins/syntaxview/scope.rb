@@ -58,8 +58,7 @@ module Redcar
                  open_start, open_end, close_start, close_end, open_matchdata,
                  close_matchdata)
         allocate
-        @name               = name
-        cscope.set_name(@name) if @name
+        self.name           = name
         self.pattern        = pattern
         self.grammar        = grammar
         self.start          = start
@@ -76,8 +75,7 @@ module Redcar
       end
       
       def initialize(options={})
-        @name               = options[:name]
-        cscope.set_name(@name) if @name
+        self.name           = options[:name]
         self.pattern        = options[:pattern]
         self.grammar        = options[:grammar]
         self.start          = options[:start]
@@ -98,7 +96,6 @@ module Redcar
       end
       
       def start=(loc)
-        @start = loc
         if loc
           cscope.set_start(loc.line, loc.offset)
         else
@@ -107,7 +104,6 @@ module Redcar
       end
       
       def end=(loc)
-        @end = loc
         if loc
           cscope.set_end(loc.line, loc.offset)
         else
@@ -129,6 +125,18 @@ module Redcar
       
       def close_end
         self.end if @close_matchdata
+      end
+      
+      def name
+        if name = cscope.get_name
+          name
+        else
+          self.name = self.pattern.scope_name
+        end
+      end
+      
+      def name=(newname)
+        cscope.set_name(newname)
       end
       
       def overlaps?(other)
@@ -307,15 +315,6 @@ module Redcar
       
       def captures
         @open_matchdata.captures
-      end
-      
-      def name
-        @name ||= self.pattern.scope_name
-      end
-      
-      def name=(newname)
-        @name = newname
-        cscope.set_name(newname)
       end
       
       def to_s
