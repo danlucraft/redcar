@@ -1,5 +1,7 @@
 --- !ruby/object:FreeBASE::PluginConfiguration 
 name: syntaxview
+author: Daniel Lucraft
+description: Adds syntax highlighting and scope support.
 version: 1.0
 autoload: (true)
 require_path: syntaxview/syntaxview.rb

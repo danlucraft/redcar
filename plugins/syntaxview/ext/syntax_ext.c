@@ -126,6 +126,20 @@ static VALUE scope_set_name(VALUE self, VALUE name) {
   return Qnil;
 }
 
+// Boolean scope methods
+
+static VALUE scope_active_on_line(VALUE self, VALUE line_num) {
+  int num = FIX2INT(line_num);
+  Scope *s;
+  ScopeData *sd;
+  Data_Get_Struct(self, Scope, s);
+  sd = s->data;
+  if (sd->start.line <= num)
+    if (!TEXTLOC_VALID(sd->end) || sd->end.line >= num)
+      return Qtrue;
+  return Qfalse;
+}
+
 static VALUE scope_overlaps(VALUE self, VALUE other) {
   Scope *s1, *s2;
   ScopeData *sd1, *sd2;
@@ -172,4 +186,5 @@ void Init_syntax_ext() {
   rb_define_method(cScope, "get_end",   scope_get_end, 0);
   rb_define_method(cScope, "set_name",  scope_set_name, 1);
   rb_define_method(cScope, "overlaps?", scope_overlaps, 1);
+  rb_define_method(cScope, "on_line?",  scope_active_on_line, 1);
 }

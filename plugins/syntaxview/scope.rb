@@ -11,6 +11,13 @@ module Redcar
         def specificity(scope_name)
           scope_name.split(".").length
         end
+        
+        # use this method to compare the ruby and C implementations.
+        def c_diff(name, rbv, cv,data)
+          if rbv != cv
+            puts "'#{name}' C version differs. rb: #{rbv.inspect}, c:#{cv.inspect}, data:#{data.inspect}"
+          end
+        end
       end
       
       include Enumerable
@@ -109,19 +116,19 @@ module Redcar
       end
       
       def start
-        t = cscope.get_start
-        if t != @start
-          puts "start differs: rb:#{@start.inspect}, c:#{t.inspect}"
-        end
-        t
+        cscope.get_start
       end
       
       def end
-        t = cscope.get_end
-        if t != @end
-          puts "end differs: rb:#{@end.inspect}, c:#{t.inspect}"
-        end
-        t
+        cscope.get_end
+      end
+      
+      def open_start
+        self.start if @open_matchdata
+      end
+      
+      def close_end
+        self.end if @close_matchdata
       end
       
       def overlaps?(other)
@@ -210,8 +217,11 @@ module Redcar
 
       # Is this scope active on line num?
       def on_line?(num)
-        self.start.line <= num and 
-          (!self.end or (self.end and self.end.line >= num))
+        #rbv = self.start.line <= num and 
+        #  (!self.end or (self.end and self.end.line >= num))
+        cv = cscope.on_line?(num)
+        #c_diff('on_line?', rbv, cv, [self, num])
+        cv 
       end
       
       # Clear all scopes that are not active on line num.
