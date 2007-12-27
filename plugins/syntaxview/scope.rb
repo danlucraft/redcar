@@ -167,7 +167,6 @@ module Redcar
                      other.close_matchdata.to_s == self.close_matchdata.to_s and
                      other.closing_regexp.to_s  == self.closing_regexp.to_s)
         return false unless self_same
-
         children_same = self.children.length == other.children.length
         return false unless children_same
         self.children.zip(other.children) do |c1, c2| 
@@ -422,24 +421,30 @@ module Redcar
 #        if self.parent # don't do this for the top scope in the page
           if self.start.line == line 
             if self.start.offset > offset
-              self.start.offset += amount
+              self.start = TextLoc(self.start.line,
+                                   self.start.offset + amount)
               if self.open_start
-                self.open_start.offset += amount
+                self.open_start = TextLoc(self.open_start.line,
+                                          self.open_start.offset + amount)
               end
             end
             if self.open_end and self.open_end.offset > offset
-              self.open_end.offset += amount
+              self.open_end = TextLoc(self.open_end.line,
+                                      self.open_end.offset + amount)
             end
           end
           if self.end and self.end.line == line
             if self.end.offset > offset
-              self.end.offset += amount
+              self.end = TextLoc(self.end.line,
+                                 self.end.offset + amount)
               if self.close_start
-                self.close_start.offset += amount
+                self.close_start = TextLoc(self.close_start.line,
+                                           self.close_start.offset + amount)
               end
             end
             if self.close_end and self.close_end.offset > offset
-              self.close_end.offset += amount
+              self.close_end = TextLoc(self.close_end.line,
+                                       self.close_end.offset + amount)
             end
           end
 #         if self.start == self.end
@@ -455,15 +460,19 @@ module Redcar
         if self.start.line >= line
           self.start = TextLoc(self.start.line + amount, self.start.offset)
           if self.open_start
-            self.open_start.line += amount
-            self.open_end.line += amount
+            self.open_start = TextLoc(self.open_start.line + amount,
+                                      self.open_start.offset)
+            self.open_end = TextLoc(self.open_end.line + amount,
+                                    self.open_end.offset)
           end
         end
         if self.end and self.end.line >= line
           self.end = TextLoc(self.end.line + amount, self.end.offset)
           if self.close_start
-            self.close_start.line += amount
-            self.close_end.line   += amount
+            self.close_start = TextLoc(self.close_start.line + amount,
+                                       self.close_start.offset)
+            self.close_end = TextLoc(self.close_end.line + amount,
+                                     self.close_end.offset)
           end
         end
         

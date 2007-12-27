@@ -5,7 +5,7 @@ end
 
 module Redcar  
   class TextLoc
-     attr_accessor :line, :offset
+     attr_reader :line, :offset
     
      def initialize(line, offset)
        @line = line

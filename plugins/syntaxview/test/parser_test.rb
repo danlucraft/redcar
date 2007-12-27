@@ -765,7 +765,6 @@ CRALL
     rubycode="class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
     smp.add_lines(rubycode)
     
-    
     old = smp.scope_tree.copy
     old.shift_chars(2, -2, 0)
     
@@ -1024,7 +1023,6 @@ Gtk.main
 STR
     assert_equal newsource, smp.text.join
     assert_equal 7, smp.text.length
-    puts smp.scope_tree.pretty
     assert_equal 11, smp.scope_tree.children.length
     
     pre.shift_after(4, 1)
