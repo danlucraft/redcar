@@ -17,9 +17,11 @@ module Oniguruma
 end
 
 require 'logger'
-SyntaxLogger = Logger.new('syntax.log')
-SyntaxLogger.datetime_format = "%H:%M:%S"
-SyntaxLogger.level = Logger::DEBUG
+unless defined? SyntaxLogger
+  SyntaxLogger = Logger.new('syntax.log')
+  SyntaxLogger.datetime_format = "%H:%M:%S"
+  SyntaxLogger.level = Logger::DEBUG
+end
 
 require File.dirname(__FILE__) + '/grammar'
 require File.dirname(__FILE__) + '/scope'

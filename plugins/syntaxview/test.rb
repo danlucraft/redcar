@@ -1,14 +1,20 @@
 
 module Redcar::Tests; end
 
-ORegexp = Oniguruma::ORegexp
+unless defined? ORegexp
+  ORegexp = Oniguruma::ORegexp
+end
 
-xml = IO.read(File.dirname(__FILE__)+"/../../textmate/Bundles/Ruby.tmbundle/Syntaxes/Ruby.plist")
-plist = Redcar::Plist.xml_to_plist(xml)
-$ruby_grammar = Redcar::Syntax::Grammar.new(plist[0])
-xml2 = IO.read(File.dirname(__FILE__)+"/../../textmate/Bundles/HTML.tmbundle/Syntaxes/HTML.plist")
-plist2 = Redcar::Plist.xml_to_plist(xml2)
-$html_grammar = Redcar::Syntax::Grammar.new(plist2[0])
+unless $ruby_grammar
+  xml = IO.read(File.dirname(__FILE__)+"/../../textmate/Bundles/Ruby.tmbundle/Syntaxes/Ruby.plist")
+  plist = Redcar::Plist.xml_to_plist(xml)
+  $ruby_grammar = Redcar::Syntax::Grammar.new(plist[0])
+end
+unless $html_grammar
+  xml2 = IO.read(File.dirname(__FILE__)+"/../../textmate/Bundles/HTML.tmbundle/Syntaxes/HTML.plist")
+  plist2 = Redcar::Plist.xml_to_plist(xml2)
+  $html_grammar = Redcar::Syntax::Grammar.new(plist2[0])
+end
 
 require File.dirname(__FILE__) + '/test/grammar_test.rb'
 require File.dirname(__FILE__) + '/test/scope_test.rb'

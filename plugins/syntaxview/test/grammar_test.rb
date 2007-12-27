@@ -315,7 +315,7 @@ STR
 
     assert_equal "string.unquoted.embedded.html.ruby", smp.scope_tree.children[1].name
     assert smp.scope_tree.children[1].pattern.
-      possible_patterns.map{|p| p.name}.include? "meta.tag.any.html"
+      possible_patterns.map{|p| p.name}.include?("meta.tag.any.html")
   end
   
   def test_load_grammar

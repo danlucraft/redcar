@@ -270,10 +270,10 @@ module FreeBASE
     # Reloads all files logged as having been loaded by this plugin.
     #
     def reload
+      puts "reloading #{@plugin_configuration.name}"
       @base_slot["files"].each_slot do |s|
         (s.data||[]).each do |f|
           if File.extname(f) == ".rb"
-            p f
             Kernel.load f
           end
         end
