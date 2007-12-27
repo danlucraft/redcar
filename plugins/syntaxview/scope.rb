@@ -94,6 +94,8 @@ module Redcar
         @start = loc
         if loc
           cscope.set_start(loc.line, loc.offset)
+        else
+          cscope.set_start(-1, -1)
         end
       end
       
@@ -101,20 +103,32 @@ module Redcar
         @end = loc
         if loc
           cscope.set_end(loc.line, loc.offset)
+        else
+          cscope.set_end(-1, -1)
         end
+      end
+      
+      def start
+        t = cscope.get_start
+        if t != @start
+          puts "start differs: rb:#{@start.inspect}, c:#{t.inspect}"
+        end
+        t
+      end
+      
+      def end
+        t = cscope.get_end
+        if t != @end
+          puts "end differs: rb:#{@end.inspect}, c:#{t.inspect}"
+        end
+        t
       end
       
       def overlaps?(other)
         # this ruby version was actually wrong!
-       rbv = (self.start >= other.start and (!other.end or (self.start < other.end))) or
-        (self.end and (self.end > other.start and (!other.end or (self.end <= other.end))))
+        #rbv = (self.start >= other.start and (!other.end or (self.start < other.end))) or
+        #  (self.end and (self.end > other.start and (!other.end or (self.end <= other.end))))
         cv = cscope.overlaps?(other.cscope)
-        unless rbv == cv
-          p :overlaps_failure
-          p cscope.display
-          p other.cscope.display
-          puts "rbv: #{rbv.inspect}, cv:#{cv.inspect}"
-        end
         cv
       end
       

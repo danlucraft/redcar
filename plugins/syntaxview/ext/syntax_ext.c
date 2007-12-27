@@ -38,6 +38,7 @@ static VALUE scope_init(VALUE self) {
 
 int scope_free_data(Scope* scope) {
   //  free(((ScopeData *) scope->data)->name);
+  // don't free the name because it's likely an RSTRING
   free(scope->data);
   return FALSE;
 }
@@ -95,6 +96,26 @@ static VALUE scope_set_end(VALUE self, VALUE e_line, VALUE e_off) {
   return Qnil;
 }
 
+static VALUE scope_get_start(VALUE self) {
+  Scope *s;
+  Data_Get_Struct(self, Scope, s);
+  ScopeData *sd = s->data;
+  if (!TEXTLOC_VALID(sd->start))
+    return Qnil;
+  return rb_funcall(rb_cObject, rb_intern("TextLoc"),
+		    2, INT2FIX(sd->start.line), INT2FIX(sd->start.offset));
+}
+
+static VALUE scope_get_end(VALUE self) {
+  Scope *s;
+  Data_Get_Struct(self, Scope, s);
+  ScopeData *sd = s->data;
+  if (!TEXTLOC_VALID(sd->end))
+    return Qnil;
+  return rb_funcall(rb_cObject, rb_intern("TextLoc"),
+		    2, INT2FIX(sd->end.line), INT2FIX(sd->end.offset));
+}
+
 static VALUE scope_set_name(VALUE self, VALUE name) {
   Scope *s;
   Data_Get_Struct(self, Scope, s);
@@ -117,26 +138,18 @@ static VALUE scope_overlaps(VALUE self, VALUE other) {
   // sd1     +---
   // sd2  +---
   if (TEXTLOC_GTE(sd1->start, sd2->start)) {
-    if (!TEXTLOC_VALID(sd2->end)) {
-      //      printf("case 1\n");
+    if (!TEXTLOC_VALID(sd2->end))
       return Qtrue;
-    }
-    if (TEXTLOC_LT(sd1->start, sd2->end)) {
-      //printf("case 2\n");
+    if (TEXTLOC_LT(sd1->start, sd2->end))
       return Qtrue;
-    }
     return Qfalse;
   }
   // sd1 +----
   // sd2   +---
-  if (!TEXTLOC_VALID(sd1->end)) {
-    //printf("case 3\n");
+  if (!TEXTLOC_VALID(sd1->end))
     return Qtrue;
-  }
-  if (TEXTLOC_GT(sd1->end, sd2->start) && TEXTLOC_LT(sd1->end, sd2->end)) {
-    //printf("case 4\n");
+  if (TEXTLOC_GT(sd1->end, sd2->start) && TEXTLOC_LT(sd1->end, sd2->end))
     return Qtrue;
-  }
   return Qfalse;
 }
 
@@ -152,9 +165,11 @@ void Init_syntax_ext() {
   cScope = rb_define_class("CScope", rb_cObject);
   rb_define_alloc_func(cScope, scope_alloc);
   rb_define_method(cScope, "initialize", scope_init, 0);
-  rb_define_method(cScope, "display", scope_print, 0);
+  rb_define_method(cScope, "display",   scope_print, 0);
   rb_define_method(cScope, "set_start", scope_set_start, 2);
-  rb_define_method(cScope, "set_end", scope_set_end, 2);  
-  rb_define_method(cScope, "set_name", scope_set_name, 1);
+  rb_define_method(cScope, "set_end",   scope_set_end, 2);  
+  rb_define_method(cScope, "get_start", scope_get_start, 0);
+  rb_define_method(cScope, "get_end",   scope_get_end, 0);
+  rb_define_method(cScope, "set_name",  scope_set_name, 1);
   rb_define_method(cScope, "overlaps?", scope_overlaps, 1);
 }
