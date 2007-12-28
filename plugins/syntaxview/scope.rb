@@ -12,26 +12,25 @@ module Redcar
           scope_name.split(".").length
         end
         
-        # use this method to compare the ruby and C implementations.
+        # use this method to compare ruby and C implementations.
         def c_diff(name, rbv, cv,data)
           if rbv != cv
             puts "'#{name}' C version differs. rb: #{rbv.inspect}, c:#{cv.inspect}, data:#{data.inspect}"
           end
+          rbv != cv
         end
+        
       end
       
       include Enumerable
       
-      attr_accessor(:children, 
-                    :pattern, 
+      attr_accessor(:pattern, 
                     :grammar, 
                     :start, 
                     :end, 
-                    :open_start,
                     :open_end,
                     :open_matchdata,
                     :close_start,
-                    :close_end,
                     :close_matchdata,
                     :parent,
                     :name,
@@ -42,7 +41,7 @@ module Redcar
         obj = self.allocate
         obj.pattern = pattern
         obj.grammar = grammar
-        obj.children = []
+        obj.set_children []
         obj
       end
       
@@ -50,7 +49,7 @@ module Redcar
         obj = self.allocate
         obj.start = start_loc
         obj.end = end_loc
-        obj.children = []
+        obj.set_children []
         obj
       end
       
@@ -65,10 +64,8 @@ module Redcar
         self.end            = end_loc
         self.parent         = parent
         self.closing_regexp = nil
-        @open_start         = open_start
         @open_end           = open_end
         @close_start        = close_start
-        @close_end          = close_end
         @open_matchdata     = open_matchdata
         @close_matchdata    = close_matchdata
         @children = []
@@ -82,17 +79,46 @@ module Redcar
         self.end            = options[:end]
         self.parent         = options[:parent]
         self.closing_regexp = options[:closing_regexp]
-        @open_start         = options[:open_start]
         @open_end           = options[:open_end]
         @close_start        = options[:close_start]
-        @close_end          = options[:close_end]
         @open_matchdata     = options[:open_matchdata]
         @close_matchdata    = options[:close_matchdata]
         @children = []
       end
       
+      def delete_child(scope)
+        Scope.c_diff("delete_child1", @children.length, cscope.n_children, [])
+        @children.delete(scope)
+        cscope.delete_child(scope)
+        Scope.c_diff("delete_child2", @children.length, cscope.n_children, [])
+      end
+      
+      def children
+        cc = cscope.get_children
+        rc = @children
+        Scope.c_diff("children", rc, cc, [])
+        rc
+      end
+      
+      def parent
+        rp = @parent
+        cp = cscope.get_parent
+        if Scope.c_diff("parent", rp, cp, [])
+          puts "self: #{self.inspect}"
+        end
+        rp
+      end
+      
+      def set_children(children)
+        @children = children
+      end
+      
+      def each_child
+        cscope.get_children.each {|c| yield c}
+      end
+      
       def cscope
-        @cscope ||= CScope.new
+        @cscope ||= CScope.new(self)
       end
       
       def start=(loc)
@@ -140,16 +166,16 @@ module Redcar
       end
       
       def overlaps?(other)
-        # this ruby version was actually wrong!
-        #rbv = (self.start >= other.start and (!other.end or (self.start < other.end))) or
-        #  (self.end and (self.end > other.start and (!other.end or (self.end <= other.end))))
-        cv = cscope.overlaps?(other.cscope)
-        cv
+        cscope.overlaps?(other.cscope)
+      end
+      
+      def on_line?(num)
+        cscope.on_line?(num)
       end
       
       def priority
-        @priority ||= if @parent
-                        @parent.priority + 1
+        @priority ||= if parent
+                        parent.priority + 1
                       else
                         1
                       end
@@ -211,52 +237,34 @@ module Redcar
         new_self.pattern = self.pattern
         new_self.start   = self.start.copy
         new_self.end     = self.end.copy
-        new_self.open_start  = self.open_start.copy
+#        new_self.open_start  = self.open_start.copy
         new_self.open_end    = self.open_end.copy
         new_self.close_start = self.close_start.copy
-        new_self.close_end   = self.close_end.copy
+#        new_self.close_end   = self.close_end.copy
         new_self.open_matchdata  = self.open_matchdata
         new_self.close_matchdata = self.close_matchdata
         new_self.closing_regexp  = self.closing_regexp
-        
-        new_self.children = self.children.collect{|c| c.copy}
-        new_self
-      end
-
-      # Is this scope active on line num?
-      def on_line?(num)
-        #rbv = self.start.line <= num and 
-        #  (!self.end or (self.end and self.end.line >= num))
-        cv = cscope.on_line?(num)
-        #c_diff('on_line?', rbv, cv, [self, num])
-        cv 
-      end
-      
-      # Clear all scopes that are not active on line num.
-      def clear_not_on_line(num)
-        @children = @children.select do |cs|
-          keep = cs.on_line?(num)
-          cs.clear_not_on_line(num)
-          keep
+        self.each_child do |child|
+          new_self.add_child child.copy
         end
-        nil
+        new_self
       end
 
       # Is this scope a descendent of scope other?
       def child_of?(other)
-        @parent == other or (@parent and @parent.child_of?(other))
+        parent == other or (parent and parent.child_of?(other))
       end
       
       # Return the names of all scopes in the hierarchy above this scope. Inner 
       # is true or false depending on whether you want to include this scopes
       # 'inner' scope (content_name scope).
       def hierarchy_names(inner=true)
-        if @parent
-          next_inner = (@parent.open_end and 
-                        self.start >= @parent.open_end and 
-                        (!self.end or !@parent.close_start or 
-                         self.end < @parent.close_start))
-          names = @parent.hierarchy_names(next_inner)
+        if parent
+          next_inner = (parent.open_end and 
+                        self.start >= parent.open_end and 
+                        (!self.end or !parent.close_start or 
+                         self.end < parent.close_start))
+          names = parent.hierarchy_names(next_inner)
         else
           names = []
         end
@@ -346,7 +354,9 @@ module Redcar
       end
       
       def sort_children
-        children.sort_by {|cs| cs.start}
+#        puts "sort_by"
+#        puts cscope.display
+#         @children.sort_by {|cs| cs.start}
       end
       
       def assert_does_not_overlap(scope)
@@ -363,11 +373,16 @@ module Redcar
       end
       
       def add_child(child)
+#         puts :add_child_start
+#         puts self.root.pretty
+#         puts self.root.cscope.display(0)
+        Scope.c_diff("add_child1", @children, cscope.get_children, [])
         unless child.is_a? Scope
           raise ScopeException, "trying to add non-scope as child of scope"
         end
         # if it goes on the end:
-        if @children.empty? or (@children.last.end and child.start >= @children.last.end)
+        if @children.empty? or 
+            (@children.last.end and child.start >= @children.last.end)
           @children << child
         else
           # the old slow way:
@@ -383,10 +398,18 @@ module Redcar
           end
           @children.insert(ix, child)
         end
+        cscope.add_child(child.cscope)
         child.parent = self
+#         puts :add_child_end
+#         puts self.root.pretty
+#         puts self.root.cscope.display(0)
+        Scope.c_diff("add_child2", @children, cscope.get_children, [])
+        self
       end
 
       def clear_after(textloc)
+        Scope.c_diff("clear_after1", @children.length, cscope.n_children, [])
+        cscope.clear_after(textloc)
         if self.end and self.end > textloc
           self.end = nil
           self.close_start = nil
@@ -400,11 +423,14 @@ module Redcar
           end
           keep
         end
+        Scope.c_diff("clear_after2", @children.length, cscope.n_children, [])
       end
       
       # Clear all scopes that start between TextLocs from and to, and
       # re-open scopes that ended between these lines.
       def clear_between(from, to)
+        Scope.c_diff("clear_between1", @children.length, cscope.n_children, [])
+        cscope.clear_between(from, to)
         if self.end and self.end >= from and self.end < to
           self.end = nil
           self.close_start = nil
@@ -418,11 +444,14 @@ module Redcar
           end
           !discard
         end
+        Scope.c_diff("clear_between2", @children.length, cscope.n_children, [])
       end
       
       # Clear all scopes that start between lines from and to inclusive, and
       # re-open scopes that ended between these lines.
       def clear_between_lines(from, to)
+        Scope.c_diff("clear_between_lines1", @children.length, cscope.n_children, [])
+        cscope.clear_between_lines(from, to)
         range = from..to
         if self.end and range.include? self.end.line
           self.end = nil
@@ -436,45 +465,46 @@ module Redcar
           end
           keep
         end
+        Scope.c_diff("clear_between_lines2", @children.length, cscope.n_children, [])
       end
       
+      # Clear all scopes that are not active on line num.
+      def clear_not_on_line(num)
+        Scope.c_diff("clear_not_on_line1", @children.length, cscope.n_children, [])
+        cscope.clear_not_on_line(num)
+        @children = @children.select do |cs|
+          keep = cs.on_line?(num)
+          cs.clear_not_on_line(num)
+          keep
+        end
+        Scope.c_diff("clear_not_on_line2", @children.length, cscope.n_children, [])
+        nil
+      end
+
       # Shifts all scopes after offset in the given line 
       # by the given amount.
       def shift_chars(line, amount, offset)
-#        if self.parent # don't do this for the top scope in the page
-          if self.start.line == line 
-            if self.start.offset > offset
-              self.start = TextLoc(self.start.line,
-                                   self.start.offset + amount)
-              if self.open_start
-                self.open_start = TextLoc(self.open_start.line,
-                                          self.open_start.offset + amount)
-              end
-            end
-            if self.open_end and self.open_end.offset > offset
-              self.open_end = TextLoc(self.open_end.line,
-                                      self.open_end.offset + amount)
+        if self.start.line == line 
+          if self.start.offset > offset
+            self.start = TextLoc(self.start.line,
+                                 self.start.offset + amount)
+          end
+          if self.open_end and self.open_end.offset > offset
+            self.open_end = TextLoc(self.open_end.line,
+                                    self.open_end.offset + amount)
+          end
+        end
+        if self.end and self.end.line == line
+          if self.end.offset > offset
+            self.end = TextLoc(self.end.line,
+                               self.end.offset + amount)
+            if self.close_start
+              self.close_start = TextLoc(self.close_start.line,
+                                         self.close_start.offset + amount)
             end
           end
-          if self.end and self.end.line == line
-            if self.end.offset > offset
-              self.end = TextLoc(self.end.line,
-                                 self.end.offset + amount)
-              if self.close_start
-                self.close_start = TextLoc(self.close_start.line,
-                                           self.close_start.offset + amount)
-              end
-            end
-            if self.close_end and self.close_end.offset > offset
-              self.close_end = TextLoc(self.close_end.line,
-                                       self.close_end.offset + amount)
-            end
-          end
-#         if self.start == self.end
-#           self.detach_from_parent
-#         end
- #       end
-        @children.each do |cs| 
+        end
+        children.each do |cs| 
           cs.shift_chars(line, amount, offset)
         end
       end
@@ -483,8 +513,6 @@ module Redcar
         if self.start.line >= line
           self.start = TextLoc(self.start.line + amount, self.start.offset)
           if self.open_start
-            self.open_start = TextLoc(self.open_start.line + amount,
-                                      self.open_start.offset)
             self.open_end = TextLoc(self.open_end.line + amount,
                                     self.open_end.offset)
           end
@@ -494,12 +522,10 @@ module Redcar
           if self.close_start
             self.close_start = TextLoc(self.close_start.line + amount,
                                        self.close_start.offset)
-            self.close_end = TextLoc(self.close_end.line + amount,
-                                     self.close_end.offset)
           end
         end
         
-        @children.each do |cs|
+        children.each do |cs|
           cs.shift_after(line, amount)
         end
       end
@@ -513,14 +539,16 @@ module Redcar
       end
 
       def delete_any_on_line_not_in(line_num, scopes)
+        Scope.c_diff("daolni1", @children.length, cscope.n_children, [])
+        cscope.delete_any_on_line_not_in(line_num, scopes)
         @children = @children.reject do |cs|
           if cs.start.line == line_num and !scopes.include?(cs)
-            #SyntaxLogger.debug { "deleting: #{cs.inspect}" }
             true
           else
             false
           end
         end
+        Scope.c_diff("daolni2", @children.length, cscope.n_children, [])
       end
       
       # Returns the active scope at TextLoc textloc.
@@ -541,15 +569,15 @@ module Redcar
               # end
               
               # new fast way (see vendor/binary_enum):
-              first_ix = @children.find_flip_index do |cs|
+              first_ix = children.find_flip_index do |cs|
                 !cs.end or cs.end >= textloc
               end
               if first_ix
-                second_ix = @children.find_flip_index do |cs|
+                second_ix = children.find_flip_index do |cs|
                   cs.start > textloc
                 end
-                second_ix = @children.length-1 unless second_ix
-                @children[first_ix..second_ix].each do |cs|
+                second_ix = children.length-1 unless second_ix
+                children[first_ix..second_ix].each do |cs|
                   if r = cs.scope_at(textloc)
                     return r
                   end
@@ -573,12 +601,12 @@ module Redcar
         # @children.find {|cs| cs.start >= loc}
         
         # this is a faster way (see vendor/binary_enum):
-        @children.find_flip {|cs| cs.start >= loc}
+        children.find_flip {|cs| cs.start >= loc}
       end
       
       def each(&block)
         block.call(self)
-        @children.each do |cs| 
+        children.each do |cs| 
           cs.each(&block)
         end
       end
@@ -613,7 +641,10 @@ module Redcar
       end
       
       def detach_from_parent
-        self.parent.children.delete(self)
+#         Scope.c_diff("detach1", @children.length, cscope.n_children, [])
+        self.parent.delete_child(self)
+ #       cscope.detach
+#         Scope.c_diff("detach2", @children.length, cscope.n_children, [])
       end
       
       def line_start(line_num)
@@ -640,6 +671,14 @@ module Redcar
           else
             children.last
           end
+        end
+      end
+      
+      def root
+        if parent
+          parent.root
+        else
+          self
         end
       end
     end

@@ -390,7 +390,7 @@ module Redcar
               if current_scope.end and 
                   current_scope.end == TextLoc.new(line_num, to) and
                   current_scope.close_start == TextLoc.new(line_num, from) and
-                  current_scope.close_end   == TextLoc.new(line_num, to) and
+#                  current_scope.close_end   == TextLoc.new(line_num, to) and
                   current_scope.close_matchdata.to_s == md.to_s
                 # we have already parsed this line and this scope ends here
                 #SyntaxLogger.debug {"closes as expected"}
@@ -398,7 +398,7 @@ module Redcar
               else
                 current_scope.end         = TextLoc.new(line_num, to)
                 current_scope.close_start = TextLoc.new(line_num, from)
-                current_scope.close_end   = TextLoc.new(line_num, to)
+#                current_scope.close_end   = TextLoc.new(line_num, to)
                 current_scope.close_matchdata = md
                 if current_scope.pattern.respond_to? :end_captures
                   current_scope.pattern.end_captures.each do |num, name|
@@ -407,7 +407,6 @@ module Redcar
                     sc = scope_from_capture(line_num, num, md)
                     if sc
                       current_scope.add_child(sc)
-                      sc.parent = current_scope
                       sc.name = name
                       sc.grammar = active_grammar
                       sc.capture = true
@@ -418,7 +417,7 @@ module Redcar
                 end
                 if expected_scope
                   #SyntaxLogger.debug { "deleting expected scope" }
-                  current_scope.children.delete(expected_scope)
+                  current_scope.delete_child(expected_scope)
                 end
               end
               closed_scopes << current_scope
@@ -434,7 +433,7 @@ module Redcar
               new_scope.parent  = current_scope
               new_scope.start   = TextLoc.new(line_num, from)
               new_scope.end     = nil
-              new_scope.open_start = TextLoc.new(line_num, from)
+#              new_scope.open_start = TextLoc.new(line_num, from)
               new_scope.open_end   = TextLoc.new(line_num, to)
               new_scope.open_matchdata = md
               new_scope.closing_regexp = Oniguruma::ORegexp.new(build_closing_regexp(pattern, md), :options => Oniguruma::OPTION_CAPTURE_GROUP)
@@ -447,7 +446,6 @@ module Redcar
                   sc = scope_from_capture(line_num, num, md)
                   if sc
                     new_scope.add_child(sc)
-                    sc.parent = new_scope
                     sc.name = name
                     sc.grammar = active_grammar
                     sc.capture = true
@@ -465,14 +463,14 @@ module Redcar
                   # don't need to do anything as we have already found this,
                   # but let's keep the old scope since it will have children and what not.
                   new_scope = expected_scope
-                  expected_scope.children.each {|c| closed_scopes << c}
+                  expected_scope.each_child {|c| closed_scopes << c}
                 else
                   #SyntaxLogger.debug { "  not as expected:" }
                   #SyntaxLogger.debug {"    #{new_scope.inspect}\n    #{expected_scope.inspect}"}
                   if new_scope.overlaps?(expected_scope) or
                       new_scope.start > expected_scope.start
                     #SyntaxLogger.debug { "  so deleting expected scope: #{expected_scope}" }
-                    current_scope.children.delete(expected_scope)
+                    current_scope.delete_child(expected_scope)
                   end
                   current_scope.add_child(new_scope)
                 end
@@ -490,10 +488,9 @@ module Redcar
               new_scope.parent  = current_scope
               new_scope.start   = TextLoc.new(line_num, from)
               new_scope.end     = TextLoc.new(line_num, to)
-              new_scope.open_start = TextLoc.new(line_num, from)
+#              new_scope.open_start = TextLoc.new(line_num, from)
               new_scope.open_end   = TextLoc.new(line_num, to)
               new_scope.open_matchdata = md
-              new_scope.parent = current_scope
               if new_scope.pattern.respond_to? :captures
                 #SyntaxLogger.debug { "  children:" }
                 new_scope.pattern.captures.each do |num, name|
@@ -502,7 +499,6 @@ module Redcar
                   sc = scope_from_capture(line_num, num, md)
                   if sc
                     new_scope.add_child(sc)
-                    sc.parent = new_scope
                     sc.name = name
                     sc.grammar = active_grammar
                     sc.capture = true
@@ -517,26 +513,25 @@ module Redcar
                   #SyntaxLogger.debug { "identical to expected scope" }
                   # don't need to do anything
                   new_scope = expected_scope
-                  expected_scope.children.each {|c| closed_scopes << c}
+                  expected_scope.each_child {|c| closed_scopes << c}
                 else  
                   #SyntaxLogger.debug { "not as expected" }
                   #SyntaxLogger.debug {"    #{new_scope.inspect}\n    #{expected_scope.inspect}"}
                   if new_scope.overlaps?(expected_scope) or
                       new_scope.start > expected_scope.start
                     #SyntaxLogger.debug { "  so deleting expected scope: #{expected_scope.inspect}" }
-                    current_scope.children.delete(expected_scope)
-                    #SyntaxLogger.debug { "  current_scope.children: #{current_scope.children.inspect}" }
+                    current_scope.delete_child(expected_scope)
                   end
                   current_scope.add_child(new_scope)
                 end
               else
                 current_scope.add_child(new_scope)
               end
-              current_scope.children.each do |child|
+              current_scope.each_child do |child|
                 if child.overlaps?(new_scope) and 
                     child != new_scope
                   #SyntaxLogger.debug { "deleting: #{child.inspect}" }
-                  current_scope.children.delete(child)
+                  current_scope.delete_child(child)
                 end
               end
               all_scopes << new_scope
@@ -571,7 +566,7 @@ module Redcar
                   #SyntaxLogger.debug {"scope closes on line and should be reopened #{s.inspect}"}
                   s.end = nil
                   s.close_start = nil
-                  s.close_end   = nil
+#                  s.close_end   = nil
                   if s.capture
                     #SyntaxLogger.debug { "...actually deleted" }
                     s.detach_from_parent

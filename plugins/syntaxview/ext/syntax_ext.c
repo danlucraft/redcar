@@ -31,11 +31,17 @@ typedef struct ScopeData_ {
   TextLoc start;
   TextLoc end;
   char* name;
+  VALUE rb_scope;
+  VALUE rb_rb_scope;
 } ScopeData;
 
 typedef GNode Scope;
 
-static VALUE scope_init(VALUE self) {
+static VALUE scope_init(VALUE self, VALUE rb_rb_scope) {
+  Scope *scope;
+  Data_Get_Struct(self, Scope, scope);
+  ScopeData *sd = scope->data;
+  sd->rb_rb_scope = rb_rb_scope;
   return self;
 }
 
@@ -47,10 +53,21 @@ int scope_free_data(Scope* scope) {
 }
 
 void scope_destroy(Scope* scope) {
-  g_node_traverse(scope, G_IN_ORDER, G_TRAVERSE_ALL, -1,
-		  (GNodeTraverseFunc) scope_free_data, NULL);
-  g_node_destroy((gpointer) scope);
+  scope_free_data(scope);
+  //  g_node_destroy((gpointer) scope);
   return;
+}
+
+void scope_mark(Scope* scope) {
+  Scope *child;
+  ScopeData *sd = scope->data;
+  ScopeData *sdc = NULL;
+  int i;
+  for (i = 0; i < g_node_n_children(scope); i++) {
+    child = g_node_nth_child(scope, i);
+    sdc = child->data;
+    rb_gc_mark(sdc->rb_scope);
+  }
 }
 
 static VALUE scope_alloc(VALUE klass) {
@@ -63,21 +80,31 @@ static VALUE scope_alloc(VALUE klass) {
   (scope_data->end).offset = -1;
   (scope_data->name) = NULL;
   scope = g_node_new((gpointer) scope_data);
-  obj = Data_Wrap_Struct(klass, 0, scope_destroy, scope);
+  obj = Data_Wrap_Struct(klass, scope_mark, scope_destroy, scope);
+  scope_data->rb_scope = obj;
   return obj;
 }
 
-static VALUE scope_print(VALUE self) {
-  Scope *s;
+static VALUE scope_print(VALUE self, VALUE indent) {
+  Scope *s, *child;
+  int in = FIX2INT(indent);
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
   char *name = "noname";
   if (sd->name)
     name = sd->name;
-  printf("<scope %s (%d,%d)-(%d,%d)>\n", 
-	 name,
+  int i;
+  for (i = 0; i < in; i++)
+    printf(" ");
+  printf("<scope %p %s (%d,%d)-(%d,%d)>\n", 
+	 s, name,
   	 sd->start.line, sd->start.offset, sd->end.line,
   	 sd->end.offset);
+  for (i = 0; i < g_node_n_children(s); i++) {
+    child = g_node_nth_child(s, i);
+    sd = child->data;
+    scope_print(sd->rb_scope, INT2FIX(in+2));
+  }
   return Qnil;
 }
 
@@ -85,6 +112,7 @@ static VALUE scope_set_start(VALUE self, VALUE s_line, VALUE s_off) {
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
+  sd->rb_scope = self;
   sd->start.line = FIX2INT(s_line);
   sd->start.offset = FIX2INT(s_off);
   return Qnil;
@@ -183,6 +211,220 @@ static VALUE scope_overlaps(VALUE self, VALUE other) {
   return Qfalse;
 }
 
+// Scope children methods
+
+static VALUE scope_add_child(VALUE self, VALUE c_scope) {
+  Scope *sp, *sc, *lc;
+  ScopeData *sdp, *sdc, *lcd, *current_data;
+  Data_Get_Struct(self, Scope, sp);
+  Data_Get_Struct(c_scope, Scope, sc);
+
+  sdp = sp->data;
+  sdc = sc->data;
+  if (g_node_n_children(sp) == 0) {
+    g_node_append(sp, sc);
+    return Qtrue;
+  }
+  else {
+    lc = g_node_last_child(sp);
+    lcd = lc->data;
+    if (TEXTLOC_VALID(lcd->end) &&
+	TEXTLOC_GTE(sdc->start, lcd->end)) {
+      g_node_append(sp, sc);
+      return Qtrue;
+    }
+  }
+  int insert_index = 0;
+  int i;
+  Scope *current = NULL;
+  for (i = 0; i < g_node_n_children(sp); i++) {
+    current = g_node_nth_child(sp, i);
+    current_data = current->data;
+    if (TEXTLOC_LTE(current_data->start, sdc->start))
+      insert_index = i+1;
+  }
+  g_node_insert(sp, insert_index, sc);
+  return Qtrue;
+}
+
+static VALUE scope_clear_after(VALUE self, VALUE rb_loc) {
+  TextLoc loc;
+  loc.line = FIX2INT(rb_iv_get(rb_loc, "@line"));
+  loc.offset = FIX2INT(rb_iv_get(rb_loc, "@offset"));
+  Scope *s, *c;
+  ScopeData *sd, *sdc;
+  Data_Get_Struct(self, Scope, s);
+  sd = s->data;
+  if (TEXTLOC_VALID(sd->end) && TEXTLOC_GT(sd->end, loc)) {
+    sd->end.line = -1;
+    sd->end.offset = -1;
+  }
+  int i;
+  for (i = 0; i < g_node_n_children(s); i++) {
+    c = g_node_nth_child(s, i);
+    sdc = c->data;
+    if (TEXTLOC_GTE(sdc->start, loc)) {
+      g_node_unlink(c);
+      i -= 1;
+    } else {
+      scope_clear_after(sdc->rb_scope, rb_loc);
+    }
+  }
+  return Qtrue;
+}
+
+static VALUE scope_n_children(VALUE self) {
+  Scope *s;
+  Data_Get_Struct(self, Scope, s);
+  return INT2FIX(g_node_n_children(s));
+}
+
+static VALUE scope_clear_between(VALUE self, VALUE rb_from, VALUE rb_to) {
+  TextLoc from, to;
+  from.line = FIX2INT(rb_iv_get(rb_from, "@line"));
+  from.offset = FIX2INT(rb_iv_get(rb_from, "@offset"));
+  to.line = FIX2INT(rb_iv_get(rb_to, "@line"));
+  to.offset = FIX2INT(rb_iv_get(rb_to, "@offset"));
+  Scope *s, *c;
+  ScopeData *sd, *sdc;
+  Data_Get_Struct(self, Scope, s);
+  sd = s->data;
+  if (TEXTLOC_VALID(sd->end) && TEXTLOC_GTE(sd->end, from) &&
+      TEXTLOC_LT(sd->end, to)) {
+    sd->end.line = -1;
+    sd->end.offset = -1;
+  }
+  int i;
+  for (i = 0; i < g_node_n_children(s); i++) {
+    c = g_node_nth_child(s, i);
+    sdc = c->data;
+    if ((TEXTLOC_GTE(sdc->start, from) && 
+	 TEXTLOC_LT(sdc->start, to)) ||
+	(TEXTLOC_VALID(sdc->end) && 
+	 TEXTLOC_GTE(sdc->end, from) &&
+	 TEXTLOC_LT(sdc->end, to))) {
+      g_node_unlink(c);
+      i -= 1;
+    } else {
+      scope_clear_between(sdc->rb_scope, rb_from, rb_to);
+    }
+  }
+  return Qtrue;
+}
+
+static VALUE scope_clear_between_lines(VALUE self, VALUE rb_from, VALUE rb_to) {
+  int from = FIX2INT(rb_from);
+  int to   = FIX2INT(rb_to);
+  Scope *s, *c;
+  ScopeData *sd, *sdc;
+  Data_Get_Struct(self, Scope, s);
+  sd = s->data;
+  if (TEXTLOC_VALID(sd->end) && sd->end.line >= from &&
+      sd->end.line <= to) {
+    sd->end.line = -1;
+    sd->end.offset = -1;
+  }
+  int i;
+  for (i = 0; i < g_node_n_children(s); i++) {
+    c = g_node_nth_child(s, i);
+    sdc = c->data;
+    if (sdc->start.line >= from && sdc->start.line <= to) {
+      g_node_unlink(c);
+      i -= 1;
+    } else {
+      scope_clear_between_lines(sdc->rb_scope, rb_from, rb_to);
+    }
+  }
+  return Qtrue;
+}
+
+static VALUE scope_detach(VALUE self) {
+  Scope *s;
+  Data_Get_Struct(self, Scope, s);
+  g_node_unlink(s);
+  return Qtrue;
+}
+
+static VALUE scope_delete_any_on_line_not_in(VALUE self, VALUE line_num, VALUE scopes) {
+  Scope *s, *c, *s1;
+  ScopeData *sdc;
+  Data_Get_Struct(self, Scope, s);
+  int num = FIX2INT(line_num);
+  int i, j, remove;
+  VALUE rs1;
+  for (i = 0; i < g_node_n_children(s); i++) {
+    c = g_node_nth_child(s, i);
+    sdc = c->data;
+    if (sdc->start.line == num) {
+      remove = TRUE;
+      for (j = 0; j < RARRAY(scopes)->len; j++) {
+	rs1 = rb_ary_entry(scopes, (long) j);
+	rs1 = rb_funcall(rs1, rb_intern("cscope"), 0);
+	Data_Get_Struct(rs1, Scope, s1);
+	if (c == s1)
+	  remove = FALSE;
+      }
+      if (remove) {
+	g_node_unlink(c);
+	i -= 1;
+      }
+    }
+  }
+  return Qtrue;
+}
+
+static VALUE scope_clear_not_on_line(VALUE self, VALUE rb_num) {
+  Scope *s, *c;
+  ScopeData *sd, *sdc;
+  Data_Get_Struct(self, Scope, s);
+  int i;
+  int num = FIX2INT(rb_num);
+  for (i = 0; i < g_node_n_children(s); i++) {
+    c = g_node_nth_child(s, i);
+    sdc = c->data;
+    if (scope_active_on_line(sdc->rb_scope, rb_num) == Qfalse) {
+      g_node_unlink(c);
+      i -= 1;
+    }
+  }
+}
+
+static VALUE scope_delete_child(VALUE self, VALUE rb_scope) {
+  Scope *parent, *child;
+  Data_Get_Struct(self, Scope, parent);
+  VALUE rb_cscope = rb_funcall(rb_scope, rb_intern("cscope"), 0);
+  Data_Get_Struct(rb_cscope, Scope, child);
+  if (child->parent == parent)
+    g_node_unlink(child);
+  return Qtrue;
+}
+
+static VALUE scope_get_children(VALUE self) {
+  Scope *scope, *child;
+  ScopeData *sd, *cd;
+  Data_Get_Struct(self, Scope, scope);
+  int i;
+  VALUE ary = rb_ary_new2(g_node_n_children(scope));
+  for (i = 0; i < g_node_n_children(scope); i++) {
+    child = g_node_nth_child(scope, i);
+    cd = child->data;
+    rb_ary_store(ary, i, cd->rb_rb_scope);
+  }
+  return ary;
+}
+
+static VALUE scope_get_parent(VALUE self) {
+  Scope *scope, *parent;
+  ScopeData *sd, *pd;
+  Data_Get_Struct(self, Scope, scope);
+  parent = scope->parent;
+  if (parent) {
+    pd = parent->data;
+    return pd->rb_rb_scope;
+  }
+  return Qnil;
+}
+
 static VALUE mSyntaxExt;
 static VALUE cScope;
 
@@ -194,8 +436,8 @@ void Init_syntax_ext() {
   // the CScope class
   cScope = rb_define_class("CScope", rb_cObject);
   rb_define_alloc_func(cScope, scope_alloc);
-  rb_define_method(cScope, "initialize", scope_init, 0);
-  rb_define_method(cScope, "display",   scope_print, 0);
+  rb_define_method(cScope, "initialize", scope_init, 1);
+  rb_define_method(cScope, "display",   scope_print, 1);
   rb_define_method(cScope, "set_start", scope_set_start, 2);
   rb_define_method(cScope, "set_end",   scope_set_end, 2);  
   rb_define_method(cScope, "get_start", scope_get_start, 0);
@@ -204,4 +446,16 @@ void Init_syntax_ext() {
   rb_define_method(cScope, "get_name",  scope_get_name, 0);
   rb_define_method(cScope, "overlaps?", scope_overlaps, 1);
   rb_define_method(cScope, "on_line?",  scope_active_on_line, 1);
+
+  rb_define_method(cScope, "add_child",  scope_add_child, 1);
+  rb_define_method(cScope, "delete_child",  scope_delete_child, 1);
+  rb_define_method(cScope, "get_children",  scope_get_children, 0);
+  rb_define_method(cScope, "get_parent",  scope_get_parent, 0);
+  rb_define_method(cScope, "clear_after",  scope_clear_after, 1);
+  rb_define_method(cScope, "clear_between",  scope_clear_between, 2);
+  rb_define_method(cScope, "clear_between_lines",  scope_clear_between_lines, 2);
+  rb_define_method(cScope, "n_children",  scope_n_children, 0);
+  rb_define_method(cScope, "detach",  scope_detach, 0);
+  rb_define_method(cScope, "delete_any_on_line_not_in",  scope_delete_any_on_line_not_in, 2);
+  rb_define_method(cScope, "clear_not_on_line",  scope_clear_not_on_line, 1);
 }
