@@ -9,6 +9,7 @@ module Redcar
     $BUS['/redcar/preferences/'].manager.save
   end
   
+  PrefLogger = Logger.new("prefs.log")
   module PreferencesBuilder
     FreeBASE::Properties.new("Redcar Preferences", 
                              Redcar::VERSION, 
@@ -17,6 +18,7 @@ module Redcar
     
 #     module ClassMethods
       def preference(name)
+        PrefLogger.info("PreferencesBuilder.preferences(#{name}):in")
         preferences_slot = $BUS['/redcar/preferences']
         builder = Builder.new
         yield builder
@@ -31,6 +33,7 @@ module Redcar
         preferences_slot[name].attr_change = builder.change_proc
         preferences_slot[name].attr_bounds = builder.bounds
         preferences_slot[name].attr_step = builder.step
+        PrefLogger.info("PreferencesBuilder.preferences(#{name}):out")
       end
       
       class Builder
@@ -48,16 +51,32 @@ module Redcar
 #     end
   end
   
-  class PreferencesDialog
+  class PreferencesDialog < Gtk::Dialog
+    def build_dialog
+      self.set_size_request(600, 500)
+      vb = self.vbox
+      hb = Gtk::HBox.new
+      vb.pack_start(hb)
+      fr1 = Gtk::Frame.new("Group")
+      fr1.set_size_request(150, 0)
+      @frame = Gtk::Frame.new("Options")
+      vs = Gtk::VSeparator.new
+      hb.pack_start(fr1)
+      hb.pack_start(vs, false, true)
+      hb.pack_start(@frame)
+      @sw = Gtk::ScrolledWindow.new
+      @sw.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC)
+      fr1.add(@sw)
+      vb.show_all
+    end
+    
     def initialize
-      @glade = GladeXML.new("plugins/redcar_core/glade/preferences-dialog.glade",
-                            nil,
-                            "Redcar",
-                            nil,
-                            GladeXML::FILE) do |handler|
-        method(handler)
-      end
-      @dialog = @glade["dialog_preferences"]
+      PrefLogger.info("PreferencesDialog#initialize():in")
+      super("Preferences", Redcar.current_window, Gtk::Dialog::DESTROY_WITH_PARENT,
+            [Gtk::Stock::OK,  Gtk::Dialog::RESPONSE_OK],
+            [Gtk::Stock::CANCEL, Gtk::Dialog::RESPONSE_CANCEL])
+      build_dialog
+      @dialog = self
       @preferences_slot = $BUS['/redcar/preferences/']
       @properties = @preferences_slot.manager
 
@@ -70,24 +89,32 @@ module Redcar
       populate_list(@preferences_slot, nil)
       @tv.show
       
-      @sw = @glade["list_sw"]
       @sw.add(@tv)
       
       @initial_values = {}
       @on_change = {}
       
-      @frame = @glade["frame_options"]
-      
       @tv.signal_connect('cursor-changed') do |iter|
         build_widgets(@tv.selection.selected)
+      end
+      
+      @dialog.signal_connect("response") do |_, resp_id|
+        case resp_id
+        when Gtk::Dialog::RESPONSE_CANCEL
+          on_cancel
+        when Gtk::Dialog::RESPONSE_OK
+          on_ok
+        end
       end
       
       @lazy_apply = []
       
       @properties.save
+      PrefLogger.info("PreferencesDialog#initialize():out")
     end
     
     def populate_list(parent_slot, parent_iter)
+      PrefLogger.info("PreferencesDialog#populate_list(#{parent_slot}, #{parent_iter}):in")
       parent_slot.each_slot do |slot|
         unless slot.attr_pref
           iter = @ts.append(parent_iter)
@@ -96,37 +123,45 @@ module Redcar
           populate_list(slot, iter)
         end
       end
+      PrefLogger.info("PreferencesDialog#populate_list(#{parent_slot}, #{parent_iter}):out")
     end
     
      def on_ok
+      PrefLogger.info("PreferencesDialog#on_ok():in")
       if @current_path
         save_values
       end
       @lazy_apply.each {|p| p.call}
       @dialog.destroy
+      PrefLogger.info("PreferencesDialog#on_ok():out")
      end
     
     def on_cancel
+      PrefLogger.info("PreferencesDialog#on_cancel():in")
       @dialog.destroy
+      PrefLogger.info("PreferencesDialog#on_cancel():out")
     end
     
     def save_values
+      PrefLogger.info("PreferencesDialog#save_values():in")
       @widgets.each do |pref_path, widget|
         val = widget.preference_value
         @lazy_apply << fn { 
           $BUS[pref_path].data = val  
-          p pref_path
-          p val
           if @initial_values[pref_path] and 
               @initial_values[pref_path] != val and
               @on_change[pref_path] != nil
+            PrefLogger.info("Applying prefererence:#{pref_path}, value:#{val}")
             @on_change[pref_path].call
+            PrefLogger.info("Done prefererence:#{pref_path}, value:#{val}")
           end
         }
       end
+      PrefLogger.info("PreferencesDialog#save_values():out")
     end
     
     def build_widgets(iter)
+      PrefLogger.info("PreferencesDialog#build_widgets(#{iter}):in")
       if @current_path
         save_values
       end
@@ -204,6 +239,7 @@ module Redcar
       @frame.children.each {|child| @frame.remove(child)}
       @frame.add(vbox)
       vbox.show
+      PrefLogger.info("PreferencesDialog#build_widgets(#{iter}):out")
     end
   end
 end

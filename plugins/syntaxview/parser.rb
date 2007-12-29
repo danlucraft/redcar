@@ -430,7 +430,7 @@ module Redcar
               pattern = new_scope_marker[:pattern]
               new_scope = pattern.to_scope
               new_scope.grammar = active_grammar
-              new_scope.parent  = current_scope
+#              new_scope.parent  = current_scope
               new_scope.start   = TextLoc.new(line_num, from)
               new_scope.end     = nil
 #              new_scope.open_start = TextLoc.new(line_num, from)
@@ -485,7 +485,7 @@ module Redcar
             when SinglePattern
               new_scope = new_scope_marker[:pattern].to_scope
               new_scope.grammar = active_grammar
-              new_scope.parent  = current_scope
+#              new_scope.parent  = current_scope
               new_scope.start   = TextLoc.new(line_num, from)
               new_scope.end     = TextLoc.new(line_num, to)
 #              new_scope.open_start = TextLoc.new(line_num, from)

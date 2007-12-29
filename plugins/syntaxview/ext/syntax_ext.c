@@ -86,6 +86,8 @@ static VALUE scope_alloc(VALUE klass) {
 }
 
 static VALUE scope_print(VALUE self, VALUE indent) {
+  if (self == Qnil || indent == Qnil)
+    printf("scope_print(nil or nil)");
   Scope *s, *child;
   int in = FIX2INT(indent);
   Data_Get_Struct(self, Scope, s);
@@ -109,6 +111,8 @@ static VALUE scope_print(VALUE self, VALUE indent) {
 }
 
 static VALUE scope_set_start(VALUE self, VALUE s_line, VALUE s_off) {
+  if (self == Qnil || s_line == Qnil || s_off == Qnil)
+    printf("scope_set_start(nil, or nil, or nil)");
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
@@ -119,6 +123,8 @@ static VALUE scope_set_start(VALUE self, VALUE s_line, VALUE s_off) {
 }
 
 static VALUE scope_set_end(VALUE self, VALUE e_line, VALUE e_off) {
+  if (self == Qnil || e_line == Qnil ||e_off == Qnil)
+    printf("scope_set_end(nil, or nil, or nil)");
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
@@ -128,6 +134,8 @@ static VALUE scope_set_end(VALUE self, VALUE e_line, VALUE e_off) {
 }
 
 static VALUE scope_get_start(VALUE self) {
+  if (self == Qnil)
+    printf("scope_get_start(nil)");
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
@@ -138,6 +146,8 @@ static VALUE scope_get_start(VALUE self) {
 }
 
 static VALUE scope_get_end(VALUE self) {
+  if (self == Qnil)
+    printf("scope_get_end(nil)");
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
@@ -148,6 +158,8 @@ static VALUE scope_get_end(VALUE self) {
 }
 
 static VALUE scope_set_name(VALUE self, VALUE name) {
+  if (self == Qnil)
+    printf("scope_set_name(nil)");
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
@@ -161,6 +173,8 @@ static VALUE scope_set_name(VALUE self, VALUE name) {
 }
 
 static VALUE scope_get_name(VALUE self) {
+  if (self == Qnil)
+    printf("scope_get_name(nil)");
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
@@ -173,6 +187,8 @@ static VALUE scope_get_name(VALUE self) {
 // Boolean scope methods
 
 static VALUE scope_active_on_line(VALUE self, VALUE line_num) {
+  if (self == Qnil || line_num == Qnil)
+    printf("scope_active_on_line(nil, or nil)");
   int num = FIX2INT(line_num);
   Scope *s;
   ScopeData *sd;
@@ -185,6 +201,8 @@ static VALUE scope_active_on_line(VALUE self, VALUE line_num) {
 }
 
 static VALUE scope_overlaps(VALUE self, VALUE other) {
+  if (self == Qnil || other == Qnil)
+    printf("scope_overlaps(nil, or nil)");
   Scope *s1, *s2;
   ScopeData *sd1, *sd2;
   Data_Get_Struct(self, Scope, s1);
@@ -214,6 +232,8 @@ static VALUE scope_overlaps(VALUE self, VALUE other) {
 // Scope children methods
 
 static VALUE scope_add_child(VALUE self, VALUE c_scope) {
+  if (self == Qnil || c_scope == Qnil)
+    printf("scope_add_child(nil, or nil)");
   Scope *sp, *sc, *lc;
   ScopeData *sdp, *sdc, *lcd, *current_data;
   Data_Get_Struct(self, Scope, sp);
@@ -248,6 +268,8 @@ static VALUE scope_add_child(VALUE self, VALUE c_scope) {
 }
 
 static VALUE scope_clear_after(VALUE self, VALUE rb_loc) {
+  if (self == Qnil || rb_loc == Qnil)
+    printf("scope_clear_after(nil, or nil)");
   TextLoc loc;
   loc.line = FIX2INT(rb_iv_get(rb_loc, "@line"));
   loc.offset = FIX2INT(rb_iv_get(rb_loc, "@offset"));
@@ -274,12 +296,16 @@ static VALUE scope_clear_after(VALUE self, VALUE rb_loc) {
 }
 
 static VALUE scope_n_children(VALUE self) {
+  if (self == Qnil)
+    printf("scope_n_children(nil)");
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   return INT2FIX(g_node_n_children(s));
 }
 
 static VALUE scope_clear_between(VALUE self, VALUE rb_from, VALUE rb_to) {
+  if (self == Qnil || rb_from == Qnil || rb_to == Qnil)
+    printf("scope_clear_between(nil, or nil, or nil)");
   TextLoc from, to;
   from.line = FIX2INT(rb_iv_get(rb_from, "@line"));
   from.offset = FIX2INT(rb_iv_get(rb_from, "@offset"));
@@ -313,6 +339,8 @@ static VALUE scope_clear_between(VALUE self, VALUE rb_from, VALUE rb_to) {
 }
 
 static VALUE scope_clear_between_lines(VALUE self, VALUE rb_from, VALUE rb_to) {
+  if (self == Qnil || rb_from == Qnil || rb_to == Qnil)
+    printf("scope_clear_between_lines(nil, or nil, or nil)");
   int from = FIX2INT(rb_from);
   int to   = FIX2INT(rb_to);
   Scope *s, *c;
@@ -339,13 +367,18 @@ static VALUE scope_clear_between_lines(VALUE self, VALUE rb_from, VALUE rb_to) {
 }
 
 static VALUE scope_detach(VALUE self) {
+  if (self == Qnil)
+    printf("scope_detach(nil)");
   Scope *s;
   Data_Get_Struct(self, Scope, s);
-  g_node_unlink(s);
+  if (s->parent)
+    g_node_unlink(s);
   return Qtrue;
 }
 
 static VALUE scope_delete_any_on_line_not_in(VALUE self, VALUE line_num, VALUE scopes) {
+  if (self == Qnil || line_num == Qnil || scopes == Qnil)
+    printf("scope_delete_any_on_line_not_in(nil, or nil, or nil)");
   Scope *s, *c, *s1;
   ScopeData *sdc;
   Data_Get_Struct(self, Scope, s);
@@ -374,6 +407,8 @@ static VALUE scope_delete_any_on_line_not_in(VALUE self, VALUE line_num, VALUE s
 }
 
 static VALUE scope_clear_not_on_line(VALUE self, VALUE rb_num) {
+  if (self == Qnil || rb_num == Qnil)
+    printf("scope_clear_not_on_line(nil, or nil)");
   Scope *s, *c;
   ScopeData *sd, *sdc;
   Data_Get_Struct(self, Scope, s);
@@ -390,6 +425,8 @@ static VALUE scope_clear_not_on_line(VALUE self, VALUE rb_num) {
 }
 
 static VALUE scope_delete_child(VALUE self, VALUE rb_scope) {
+  if (self == Qnil || rb_scope == Qnil)
+    printf("scope_delete_child(nil, or nil)");
   Scope *parent, *child;
   Data_Get_Struct(self, Scope, parent);
   VALUE rb_cscope = rb_funcall(rb_scope, rb_intern("cscope"), 0);
@@ -400,6 +437,8 @@ static VALUE scope_delete_child(VALUE self, VALUE rb_scope) {
 }
 
 static VALUE scope_get_children(VALUE self) {
+  if (self == Qnil)
+    printf("scope_get_children(nil)");
   Scope *scope, *child;
   ScopeData *sd, *cd;
   Data_Get_Struct(self, Scope, scope);
@@ -414,6 +453,8 @@ static VALUE scope_get_children(VALUE self) {
 }
 
 static VALUE scope_get_parent(VALUE self) {
+  if (self == Qnil)
+    printf("scope_get_parent(nil)");
   Scope *scope, *parent;
   ScopeData *sd, *pd;
   Data_Get_Struct(self, Scope, scope);

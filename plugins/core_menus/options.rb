@@ -7,7 +7,7 @@ module Redcar::Plugins::CoreMenus
     command "Core/Options/Preferences" do |c|
       c.menu = "Options/Preferences"
       c.icon = :PREFERENCES
-      c.command %q{ Redcar::PreferencesDialog.new }
+      c.command %q{ Redcar::PreferencesDialog.new.run }
     end
     
   end
