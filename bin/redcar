@@ -1,5 +1,8 @@
 
 require 'getoptlong'
+
+$argv = ARGV.clone
+
 opts = GetoptLong.new(['--codebase', '-b', GetoptLong::REQUIRED_ARGUMENT ],
                       ['--project', '-p', GetoptLong::REQUIRED_ARGUMENT ],
                       ['--help', '-h', GetoptLong::NO_ARGUMENT ]
@@ -78,8 +81,8 @@ begin
     end
   end
 rescue GetoptLong::InvalidOption
-  usage
-  exit 1
+#   usage
+#   exit 1
 end
 
 config_dir = File.join(codebase, "..", "config")

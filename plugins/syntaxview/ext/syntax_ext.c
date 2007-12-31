@@ -11,11 +11,11 @@ typedef struct {
     GObject* gobj;
     void* cinfo;
     gboolean destroyed;
-} gobj_holder;
+} my_gobj_holder;
 
 GObject* get_gobject(VALUE rbgobj) {
-  gobj_holder *gh;
-  Data_Get_Struct(rbgobj, gobj_holder, gh);
+  my_gobj_holder *gh;
+  Data_Get_Struct(rbgobj, my_gobj_holder, gh);
   return gh->gobj;
 }
 
@@ -67,6 +67,7 @@ void scope_mark(Scope* scope) {
     child = g_node_nth_child(scope, i);
     sdc = child->data;
     rb_gc_mark(sdc->rb_scope);
+    rb_gc_mark(sdc->rb_rb_scope);
   }
 }
 
@@ -224,7 +225,7 @@ static VALUE scope_overlaps(VALUE self, VALUE other) {
   // sd2   +---
   if (!TEXTLOC_VALID(sd1->end))
     return Qtrue;
-  if (TEXTLOC_GT(sd1->end, sd2->start) && TEXTLOC_LT(sd1->end, sd2->end))
+  if (TEXTLOC_GT(sd1->end, sd2->start))
     return Qtrue;
   return Qfalse;
 }

@@ -87,30 +87,30 @@ module Redcar
       end
       
       def delete_child(scope)
-        Scope.c_diff("delete_child1", @children, cscope.get_children, [])
+#         Scope.c_diff("delete_child1", @children, cscope.get_children, [])
         @children.delete(scope)
-        if scope
-          cscope.delete_child(scope)
-        else
-          puts "delete_child(nil)"
-        end
-        Scope.c_diff("delete_child2", @children, cscope.get_children, [])
+#         if scope
+#           cscope.delete_child(scope)
+#         else
+#           puts "delete_child(nil)"
+#         end
+#         Scope.c_diff("delete_child2", @children, cscope.get_children, [])
       end
       
       def children
-        cc = cscope.get_children
+#         cc = cscope.get_children
         rc = @children
-        Scope.c_diff("children", rc, cc, [])
-        cc
+#         Scope.c_diff("children", rc, cc, [])
+#         rc
       end
       
       def parent
         rp = @parent
-        cp = cscope.get_parent
-        if Scope.c_diff("parent", rp, cp, [])
-          puts "self: #{self.inspect}"
-        end
-        cp
+#         cp = cscope.get_parent
+#         if Scope.c_diff("parent", rp, cp, [])
+#           puts "self: #{self.inspect}"
+#         end
+#         rp
       end
       
       def set_children(children)
@@ -118,35 +118,40 @@ module Redcar
       end
       
       def each_child
-        cscope.get_children.each {|c| yield c}
+#         cscope.get_children.each {|c| yield c}
+        @children.each {|c| yield c}
       end
       
       def cscope
-        @cscope ||= CScope.new(self)
+#         @cscope ||= CScope.new(self)
       end
       
       def start=(loc)
-        if loc
-          cscope.set_start(loc.line, loc.offset)
-        else
-          cscope.set_start(-1, -1)
-        end
+        @start = loc
+#         if loc
+#           cscope.set_start(loc.line, loc.offset)
+#         else
+#           cscope.set_start(-1, -1)
+#         end
       end
       
       def end=(loc)
-        if loc
-          cscope.set_end(loc.line, loc.offset)
-        else
-          cscope.set_end(-1, -1)
-        end
+        @end = loc
+#         if loc
+#           cscope.set_end(loc.line, loc.offset)
+#         else
+#           cscope.set_end(-1, -1)
+#         end
       end
       
       def start
-        cscope.get_start
+#         cscope.get_start
+        @start
       end
       
       def end
-        cscope.get_end
+#         cscope.get_end
+        @end
       end
       
       def open_start
@@ -158,31 +163,54 @@ module Redcar
       end
       
       def name
-        if name = cscope.get_name
-          name
-        else
-          self.name = self.pattern.scope_name
-        end
+        @name ||= self.pattern.scope_name
+#         if name = cscope.get_name
+#           name
+#         else
+#           self.name = self.pattern.scope_name
+#         end
       end
       
       def name=(newname)
-        cscope.set_name(newname) if newname
+#         cscope.set_name(newname) if newname
+        @name = newname
       end
       
       def overlaps?(other)
-        if other.cscope
-          cscope.overlaps?(other.cscope)
-        else
-          puts "overlaps?(nil)"
+        if self.start >= other.start
+          if !other.end
+            return true
+          end
+          if self.start < other.end
+            return true
+          end
         end
+        if !self.end
+          return true
+        end
+        if self.end > other.start
+          return true
+        end
+        false
+#         if other.cscope
+#           cscope.overlaps?(other.cscope)
+#         else
+#           puts "overlaps?(nil)"
+#         end
       end
       
       def on_line?(num)
-        if num
-          cscope.on_line?(num)
-        else
-          puts "on_line?(nil)"
+        if self.start.line <= num
+          if !self.end or self.end.line >= num
+            return true
+          end
         end
+        false
+#         if num
+#           cscope.on_line?(num)
+#         else
+#           puts "on_line?(nil)"
+#         end
       end
       
       def priority
@@ -362,7 +390,7 @@ module Redcar
         else
           cname = ""
         end
-        "<scope(#{self.object_id*-1%1000}):"+(self.name rescue "noname")+" "+cname+" #{startstr}#{endstr} #{hanging}>"
+        "<scope(#{self.object_id*-1%1000}):"+(self.name||"" rescue "noname")+" "+cname+" #{startstr}#{endstr} #{hanging}>"
       end
       
       def sort_children
@@ -385,17 +413,17 @@ module Redcar
       end
       
       def detach_from_parent
-        Scope.c_diff("detach1", @children.length, cscope.n_children, [])
+#         Scope.c_diff("detach1", @children.length, cscope.n_children, [])
         self.parent.delete_child(self)
-       cscope.detach
-        Scope.c_diff("detach2", @children.length, cscope.n_children, [])
+#        cscope.detach
+#         Scope.c_diff("detach2", @children.length, cscope.n_children, [])
       end
 
       def add_child(child)
 #         puts :add_child_start
 #         puts self.root.pretty
 #         puts self.root.cscope.display(0)
-        Scope.c_diff("add_child1", @children, cscope.get_children, [])
+#         Scope.c_diff("add_child1", @children, cscope.get_children, [])
         unless child.is_a? Scope
           raise ScopeException, "trying to add non-scope as child of scope"
         end
@@ -417,26 +445,26 @@ module Redcar
           end
           @children.insert(ix, child)
         end
-        if child.cscope
-          cscope.add_child(child.cscope)
-        else
-          puts "add_child(nil)"
-        end
         child.parent = self
+#         if child.cscope
+#           cscope.add_child(child.cscope)
+#         else
+#           puts "add_child(nil)"
+#         end
 #         puts :add_child_end
 #         puts self.root.pretty
 #         puts self.root.cscope.display(0)
-        Scope.c_diff("add_child2", @children, cscope.get_children, [])
+#         Scope.c_diff("add_child2", @children, cscope.get_children, [])
         self
       end
 
       def clear_after(textloc)
-        Scope.c_diff("clear_after1", @children, cscope.get_children, [])
-        if textloc
-          cscope.clear_after(textloc)
-        else
-          puts "clear_after(nil)"
-        end
+#         Scope.c_diff("clear_after1", @children, cscope.get_children, [])
+#         if textloc
+#           cscope.clear_after(textloc)
+#         else
+#           puts "clear_after(nil)"
+#         end
         if self.end and self.end > textloc
           self.end = nil
           self.close_start = nil
@@ -450,18 +478,18 @@ module Redcar
           end
           keep
         end
-        Scope.c_diff("clear_after2", @children, cscope.get_children, [])
+#         Scope.c_diff("clear_after2", @children, cscope.get_children, [])
       end
       
       # Clear all scopes that start between TextLocs from and to, and
       # re-open scopes that ended between these lines.
       def clear_between(from, to)
-        Scope.c_diff("clear_between1", @children, cscope.get_children, [])
-        if from and to
-          cscope.clear_between(from, to)
-        else
-          puts "clear_between(nil, <or> nil)"
-        end
+#         Scope.c_diff("clear_between1", @children, cscope.get_children, [])
+#         if from and to
+#           cscope.clear_between(from, to)
+#         else
+#           puts "clear_between(nil, <or> nil)"
+#         end
         if self.end and self.end >= from and self.end < to
           self.end = nil
           self.close_start = nil
@@ -475,18 +503,18 @@ module Redcar
           end
           !discard
         end
-        Scope.c_diff("clear_between2", @children, cscope.get_children, [])
+#         Scope.c_diff("clear_between2", @children, cscope.get_children, [])
       end
       
       # Clear all scopes that start between lines from and to inclusive, and
       # re-open scopes that ended between these lines.
       def clear_between_lines(from, to)
-        Scope.c_diff("clear_between_lines1", @children, cscope.get_children, [])
-        if from and to
-          cscope.clear_between_lines(from, to)
-        else
-          puts "clear_between_lines(nil, <or> nil)"
-        end
+#         Scope.c_diff("clear_between_lines1", @children, cscope.get_children, [])
+#         if from and to
+#           cscope.clear_between_lines(from, to)
+#         else
+#           puts "clear_between_lines(nil, <or> nil)"
+#         end
         range = from..to
         if self.end and range.include? self.end.line
           self.end = nil
@@ -500,23 +528,23 @@ module Redcar
           end
           keep
         end
-        Scope.c_diff("clear_between_lines2", @children, cscope.get_children, [])
+#         Scope.c_diff("clear_between_lines2", @children, cscope.get_children, [])
       end
       
       # Clear all scopes that are not active on line num.
       def clear_not_on_line(num)
-        Scope.c_diff("clear_not_on_line1", @children, cscope.get_children, [])
-        if num
-          cscope.clear_not_on_line(num)
-        else
-          puts "clear_not_on_line(nil)"
-        end
+#         Scope.c_diff("clear_not_on_line1", @children, cscope.get_children, [])
+#         if num
+#           cscope.clear_not_on_line(num)
+#         else
+#           puts "clear_not_on_line(nil)"
+#         end
         @children = @children.select do |cs|
           keep = cs.on_line?(num)
           cs.clear_not_on_line(num)
           keep
         end
-        Scope.c_diff("clear_not_on_line2", @children, cscope.get_children, [])
+#         Scope.c_diff("clear_not_on_line2", @children, cscope.get_children, [])
         nil
       end
 
@@ -578,12 +606,12 @@ module Redcar
       end
 
       def delete_any_on_line_not_in(line_num, scopes)
-        Scope.c_diff("daolni1", @children, cscope.get_children, [])
-        if line_num and scopes
-          cscope.delete_any_on_line_not_in(line_num, scopes)
-        else
-          puts "delete_any_on_line_not_in(nil or nil)"
-        end
+#         Scope.c_diff("daolni1", @children, cscope.get_children, [])
+#         if line_num and scopes
+#           cscope.delete_any_on_line_not_in(line_num, scopes)
+#         else
+#           puts "delete_any_on_line_not_in(nil or nil)"
+#         end
         @children = @children.reject do |cs|
           if cs.start.line == line_num and !scopes.include?(cs)
             true
@@ -591,7 +619,7 @@ module Redcar
             false
           end
         end
-        Scope.c_diff("daolni2", @children, cscope.get_children, [])
+#         Scope.c_diff("daolni2", @children, cscope.get_children, [])
       end
       
       # Returns the active scope at TextLoc textloc.

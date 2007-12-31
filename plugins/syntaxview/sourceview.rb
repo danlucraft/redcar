@@ -23,6 +23,9 @@ unless defined? SyntaxLogger
   SyntaxLogger.level = Logger::DEBUG
 end
 
+# C extension
+#require File.dirname(__FILE__) + '/ext/syntax_ext'
+
 require File.dirname(__FILE__) + '/grammar'
 require File.dirname(__FILE__) + '/scope'
 require File.dirname(__FILE__) + '/parser'

@@ -1,7 +1,6 @@
 
 $spare_name = "aaaa"
 
-require File.dirname(__FILE__) + '/ext/syntax_ext'
 
 class RedcarSyntaxError < StandardError; end
 
