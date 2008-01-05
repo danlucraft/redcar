@@ -53,7 +53,7 @@ module Redcar
       
       def initialize(hash, grammar)
         super(hash, grammar)
-        @begin = Oniguruma::ORegexp.new(hash["begin"], :options => Oniguruma::OPTION_CAPTURE_GROUP)
+        @begin = Oniguruma::ORegexp.new(hash["begin"]||"", :options => Oniguruma::OPTION_CAPTURE_GROUP)
         @end   = hash["end"] || hash["endif"] # FIXME : what is "endif"??
         count = 0
         @patterns = (hash["patterns"]||[]).collect do |this_hash|
@@ -268,11 +268,12 @@ module Redcar
 
       def pattern_from_hash(hash)
         # FIXME: what is "endif"?
-        if hash["begin"] and (hash["end"] or hash["endif"])
+        ks = hash.keys
+        if ks.include? "begin"  and (ks.include? "end" or ks.include? "endif")
           DoublePattern.new(hash, self)
-        elsif hash["match"]
+        elsif ks.include? "match"
           SinglePattern.new(hash, self)
-        elsif hash["include"]
+        elsif ks.include? "include"
           IncludePattern.new(hash, self)
         else
           raise ArgumentError, "unknown Pattern type #{hash.inspect}"
