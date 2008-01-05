@@ -92,6 +92,8 @@ module Redcar::Plugins
         if b['mainMenu']
           menu_name = 'Bundles/'+b['name']
           menu_hash = b['mainMenu']['items']
+          root = $BUS['/redcar/menus/menubar/'+menu_name]
+          Redcar::Menu.set_node_id(root)
           build_bundle_menu(b, menu_name, menu_hash, commands)
         end
       end
