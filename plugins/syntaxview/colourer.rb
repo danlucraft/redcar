@@ -56,35 +56,19 @@ module Redcar
       @buffer = @sourceview.buffer
       start_iter, end_iter = get_start_end_iters(scope, inner)
       all_settings = @theme.settings_for_scope(scope, inner)
-      SyntaxLogger.debug "  "*scope.priority+"<"+scope.hierarchy_names(inner).join("\n  "+"  "*scope.priority)+">"
-#      all_settings.each {|s| SyntaxLogger.debug "  "*(scope.priority)+ s.inspect}
       if all_settings.empty?
         tag_reference = "default ("+scope.priority.to_s+")"
         settings_hash = {:foreground => theme.global_settings['foreground']}
       else
         settings = all_settings[0]["settings"]
-        #               p all_settings
-        #               p settings
         tag_reference = all_settings[0]["scope"]+" ("+scope.priority.to_s+")"
-        settings_hash = Theme.textmate_settings_to_pango_options(settings)
+        settings_hash = theme.textmate_settings_to_pango_options(settings)
       end
       unless tag = @buffer.tag_table.lookup(tag_reference)
-        p tag_reference
-        p settings_hash
-#         $tag_names ||= []
-#         p $tag_names.include? tag_reference
-#         unless $tag_names.include? tag_reference
-#           $tag_names << tag_reference
         tag = @buffer.create_tag(tag_reference, settings_hash)
         tag.priority = scope.priority-1
-#         end
       end
-#       SyntaxLogger.debug {"  "*scope.priority + 
-#         "tag:#{tag_reference}: (#{start_iter.line}, #{start_iter.line_offset})-"+
-#         "(#{end_iter.line}, #{end_iter.line_offset})"}
       if tag
-#         SyntaxLogger.debug {"  "*scope.priority + "#{start_iter.offset}-#{end_iter.offset}"}
-#         SyntaxLogger.debug {"  "*scope.priority + tag.inspect}
         @buffer.apply_tag(tag, start_iter, end_iter)
       end
     end
@@ -99,7 +83,7 @@ module Redcar
             (!scope.name and (scope.pattern and !scope.pattern.content_name))
           colour_scope(scope, false)
           if scope.pattern and scope.pattern.content_name
-        #    colour_scope(scope, true)
+            colour_scope(scope, true)
           end
         end
         
@@ -162,7 +146,7 @@ module Redcar
 #               p all_settings
 #               p settings
               tag_reference = all_settings[0]["scope"]+" ("+priority.to_s+")"
-              settings_hash = Theme.textmate_settings_to_pango_options(settings)
+              settings_hash = theme.textmate_settings_to_pango_options(settings)
             end
             unless tag = buffer.tag_table.lookup(tag_reference)
               tag = buffer.create_tag(tag_reference, settings_hash)

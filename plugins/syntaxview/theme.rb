@@ -241,21 +241,21 @@ module Redcar
       end
     end
     
-    def self.textmate_settings_to_pango_options(settings)
+    def textmate_settings_to_pango_options(settings)
       v = settings["pango"]
       return v if v
-      options = { :foreground => self.clean_colour(settings["foreground"]),
-                  :background => self.clean_colour(settings["background"]) }
+      options = { :foreground => Theme.clean_colour(settings["foreground"]),
+                  :background => Theme.clean_colour(settings["background"]) }
       options = options.delete_if{|k, v| !v}
       settings["fontStyle"] ||= ""
       if settings["fontStyle"].include? "italic"
-        options[:style] = Pango::STYLE_ITALIC
+        options["style"] = Pango::STYLE_ITALIC
       end
       if settings["fontStyle"].include? "underline"
-        options[:underline] = Pango::UNDERLINE_LOW
+        options["underline"] = Pango::UNDERLINE_LOW
       end
       if settings["fontStyle"].include? "bold"
-        options[:weight] = Pango::WEIGHT_BOLD
+        options["weight"] = Pango::WEIGHT_BOLD
       end
       settings["pango"] = options
     end

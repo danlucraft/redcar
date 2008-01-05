@@ -580,9 +580,9 @@ module Redcar
         if @colourer
           #SyntaxLogger.debug {"calling colourer"}
 #          @colourer.colour_line(@scope_tree, line_num)
-          @colourer.colour_line_with_scopes(line_num, all_scopes)
+#          @colourer.colour_line_with_scopes(line_num, all_scopes)
+          SyntaxExt.colour_line_with_scopes(colourer, colourer.theme, line_num, all_scopes)
 #          p all_scopes
-#          SyntaxExt.colour_line_with_scopes(colourer, line_num, all_scopes)
         else
           #SyntaxLogger.debug {"no colourer"}
         end
