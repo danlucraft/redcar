@@ -84,48 +84,40 @@ module Redcar
         @close_matchdata    = options[:close_matchdata]
       end
       
-      def delete_child(scope)
-        cscope.delete_child(scope)
-      end
-      
       def children
-        cscope.get_children
+        get_children
       end
       
       def parent
-        cp = cscope.get_parent
+        get_parent
       end
       
       def each_child
-        cscope.get_children.each {|c| yield c}
-      end
-      
-      def cscope
-        @cscope ||= CScope.new(self)
+        get_children.each {|c| yield c}
       end
       
       def start=(loc)
         if loc
-          cscope.set_start(loc.line, loc.offset)
+          set_start(loc.line, loc.offset)
         else
-          cscope.set_start(-1, -1)
+          set_start(-1, -1)
         end
       end
       
       def end=(loc)
         if loc
-          cscope.set_end(loc.line, loc.offset)
+          set_end(loc.line, loc.offset)
         else
-          cscope.set_end(-1, -1)
+          set_end(-1, -1)
         end
       end
       
       def start
-        cscope.get_start
+        get_start
       end
       
       def end
-        cscope.get_end
+        get_end
       end
       
       def open_start
@@ -138,30 +130,30 @@ module Redcar
       
       def open_end=(loc)
         if loc
-          cscope.set_open_end(loc.line, loc.offset)
+          set_open_end(loc.line, loc.offset)
         else
-          cscope.set_open_end(-1, -1)
+          set_open_end(-1, -1)
         end
       end
       
       def close_start=(loc)
         if loc
-          cscope.set_close_start(loc.line, loc.offset)
+          set_close_start(loc.line, loc.offset)
         else
-          cscope.set_close_start(-1, -1)
+          set_close_start(-1, -1)
         end
       end
       
       def open_end
-        cscope.get_open_end
+        get_open_end
       end
       
       def close_start
-        cscope.get_close_start
+        get_close_start
       end
       
       def name
-        if name = cscope.get_name
+        if name = get_name
           name
         else
           self.name = self.pattern.scope_name
@@ -169,19 +161,7 @@ module Redcar
       end
       
       def name=(newname)
-        cscope.set_name(newname) if newname
-      end
-      
-      def overlaps?(other)
-        cscope.overlaps?(other.cscope)
-      end
-      
-      def on_line?(num)
-        if num
-          cscope.on_line?(num)
-        else
-          puts "on_line?(nil)"
-        end
+        set_name(newname) if newname
       end
       
       def priority
@@ -379,31 +359,6 @@ module Redcar
         self.parent.delete_child(self)
       end
 
-      def add_child(child)
-        cscope.add_child(child.cscope)
-      end
-
-      def clear_after(textloc)
-        cscope.clear_after(textloc)
-      end
-      
-      # Clear all scopes that start between TextLocs from and to, and
-      # re-open scopes that ended between these lines.
-      def clear_between(from, to)
-        cscope.clear_between(from, to)
-      end
-      
-      # Clear all scopes that start between lines from and to inclusive, and
-      # re-open scopes that ended between these lines.
-      def clear_between_lines(from, to)
-        cscope.clear_between_lines(from, to)
-      end
-      
-      # Clear all scopes that are not active on line num.
-      def clear_not_on_line(num)
-        cscope.clear_not_on_line(num)
-      end
-
       # Shifts all scopes after offset in the given line 
       # by the given amount.
       def shift_chars(line, amount, offset)
@@ -461,10 +416,6 @@ module Redcar
         size
       end
 
-      def delete_any_on_line_not_in(line_num, scopes)
-        cscope.delete_any_on_line_not_in(line_num, scopes)
-      end
-      
       # Returns the active scope at TextLoc textloc.
       def scope_at(textloc)
         if self.start <= textloc or !self.parent

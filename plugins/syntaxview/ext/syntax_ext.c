@@ -489,7 +489,6 @@ static VALUE rb_scope_delete_any_on_line_not_in(VALUE self,
       remove = TRUE;
       for (j = 0; j < RARRAY(scopes)->len; j++) {
 	rs1 = rb_ary_entry(scopes, (long) j);
-	rs1 = rb_funcall(rs1, rb_intern("cscope"), 0);
 	Data_Get_Struct(rs1, Scope, s1);
 	if (c == s1)
 	  remove = FALSE;
@@ -526,8 +525,7 @@ static VALUE rb_scope_delete_child(VALUE self, VALUE rb_scope) {
     printf("rb_scope_delete_child(nil, or nil)");
   Scope *parent, *child;
   Data_Get_Struct(self, Scope, parent);
-  VALUE rb_cscope = rb_funcall(rb_scope, rb_intern("cscope"), 0);
-  Data_Get_Struct(rb_cscope, Scope, child);
+  Data_Get_Struct(rb_scope, Scope, child);
   if (child->parent == parent)
     g_node_unlink(child);
   return Qtrue;
@@ -736,13 +734,12 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
 
   // colour each scope
   int i;
-  VALUE rb_current, rbc_current, pattern, content_name;
+  VALUE rb_current, pattern, content_name;
   Scope* current;
   ScopeData* current_data;
   for (i = 0; i < RARRAY(scopes)->len; i++) {
     rb_current = rb_ary_entry(scopes, i);
-    rbc_current = rb_iv_get(rb_current, "@cscope");
-    Data_Get_Struct(rbc_current, Scope, current);
+    Data_Get_Struct(rb_current, Scope, current);
     current_data = current->data;
     if (TEXTLOC_EQUAL(current_data->start, current_data->end))
       continue;
@@ -773,7 +770,7 @@ void Init_syntax_ext() {
   rb_mSyntax = rb_define_module_under (rb_mRedcar, "Syntax");
 
   // the CScope class
-  cScope = rb_define_class("Scope", rb_cObject);
+  cScope = rb_define_class_under(rb_mSyntax, "Scope", rb_cObject);
   rb_define_alloc_func(cScope, rb_scope_alloc);
   rb_define_method(cScope, "initialize", rb_scope_init, 1);
   rb_define_method(cScope, "display",   rb_scope_print, 1);

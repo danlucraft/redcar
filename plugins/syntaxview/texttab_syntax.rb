@@ -19,7 +19,7 @@ module Redcar
       scope = scope_at_cursor
       puts "scope_at_cursor: #{scope.inspect}"
       puts scope.root.pretty
-      scope.root.cscope.display(0)
+      scope.root.display(0)
       inner = scope.pattern and scope.pattern.content_name and
         (cursor_offset >= scope.open_end.offset and 
          (!scope.close_start or cursor_offset < scope.close_start.offset))
