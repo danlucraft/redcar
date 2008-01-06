@@ -81,7 +81,6 @@ module Redcar
     def settings_for_scope(scope, inner)
       scopes = scope.hierarchy_names(inner)
       scope_join = scopes.join(" ")
-      #scope = scope.name
       @settings_for_scope ||= {}
       r = @settings_for_scope[scope_join]
       return r if r
@@ -131,7 +130,6 @@ module Redcar
     # Returns false if the selector is not applicable to the scope, and returns the specificity of the
     # selector if it is applicable.
     def applicable?(selector, scopes)
-      # split by commas (which are ORs)
       selector.split(',').each do |subselector|
         subselector = subselector.strip
         
@@ -146,14 +144,8 @@ module Redcar
           negative_subselector_components = nil
         end
         
-        #SyntaxLogger.debug { positive_subselector_components.inspect }
-        #SyntaxLogger.debug { negative_subselector_components.inspect }
-        
-        # the bump along: (a la regular expressions)
         (scopes.length-1).downto(0) do |i|
-          #SyntaxLogger.debug { "  checking at index: #{i}" }
           j = i
-        #  last_matching_index = -1
           last_num_elements = Array.new(scopes.length, 0)
           pos_match = positive_subselector_components.all? do |comp|
             k = j-1
@@ -161,16 +153,13 @@ module Redcar
               k += 1
               scope.include? comp
             end
-            #SyntaxLogger.debug { "      matched component #{comp.inspect} at #{k}" }
             if match
-             # last_matching_index = j
               last_num_elements[k] = comp.split(".").length
             end
             j += 1
             match
           end
           if pos_match
-            #SyntaxLogger.debug { "    pos_match" }
             if negative_subselector_components
               j -= 2
               neg_match = negative_subselector_components.all? do |comp|
@@ -182,11 +171,8 @@ module Redcar
             else
               neg_match = false
             end
-          else
-            #SyntaxLogger.debug { "    no pos_match" }
           end
           if pos_match and not neg_match
-            #SyntaxLogger.debug { last_num_elements }
             spec = positive_subselector_components.
               inject(0) {|m, c| m += specificity(c) }
             last_matching_index = 0
@@ -194,24 +180,6 @@ module Redcar
             return [last_matching_index, last_num_elements.reverse]
           end
         end
-        
-#         # split on spaces (which are ANDs)
-#         selector_components = subselector.split(' ')
-#         prev_offset = -1
-#         has_all = selector_components.inject(1) do |memo, comp|
-#           if offset = scope.index(comp) and offset > prev_offset
-        #             #SyntaxLogger.debug {"  has #{comp.inspect} at #{offset}"}
-#             prev_offset = offset
-#             memo
-#           else
-#             0
-#           end
-#         end
-#         if has_all == 1
-        #           #SyntaxLogger.debug { "has all required components" }
-#           spec = selector_components.inject(0) {|m, c| m += specificity(c) }
-#           return spec 
-#         end
        end
       false
     end
