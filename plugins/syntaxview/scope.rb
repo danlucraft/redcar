@@ -30,8 +30,6 @@ module Redcar
                     :grammar, 
                     :open_matchdata,
                     :close_matchdata,
-                    :parent,
-                    :name,
                     :closing_regexp,
                     :capture)
       
@@ -62,7 +60,6 @@ module Redcar
         self.grammar        = grammar
         self.start          = start
         self.end            = end_loc
-        self.parent         = parent
         self.closing_regexp = nil
         self.open_end       = open_end
         self.close_start    = close_start
@@ -76,7 +73,6 @@ module Redcar
         self.grammar        = options[:grammar]
         self.start          = options[:start]
         self.end            = options[:end]
-        self.parent         = options[:parent]
         self.closing_regexp = options[:closing_regexp]
         self.open_end       = options[:open_end]
         self.close_start    = options[:close_start]
@@ -84,16 +80,8 @@ module Redcar
         @close_matchdata    = options[:close_matchdata]
       end
       
-      def children
-        get_children
-      end
-      
-      def parent
-        get_parent
-      end
-      
       def each_child
-        get_children.each {|c| yield c}
+        children.each {|c| yield c}
       end
       
       def start=(loc)
@@ -110,14 +98,6 @@ module Redcar
         else
           set_end(-1, -1)
         end
-      end
-      
-      def start
-        get_start
-      end
-      
-      def end
-        get_end
       end
       
       def open_start
@@ -142,14 +122,6 @@ module Redcar
         else
           set_close_start(-1, -1)
         end
-      end
-      
-      def open_end
-        get_open_end
-      end
-      
-      def close_start
-        get_close_start
       end
       
       def name

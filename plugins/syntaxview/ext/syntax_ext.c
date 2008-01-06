@@ -777,13 +777,13 @@ void Init_syntax_ext() {
 
   rb_define_method(cScope, "set_start", rb_scope_set_start, 2);
   rb_define_method(cScope, "set_end",   rb_scope_set_end, 2);  
-  rb_define_method(cScope, "get_start", rb_scope_get_start, 0);
-  rb_define_method(cScope, "get_end",   rb_scope_get_end, 0);
+  rb_define_method(cScope, "start", rb_scope_get_start, 0);
+  rb_define_method(cScope, "end",   rb_scope_get_end, 0);
 
   rb_define_method(cScope, "set_open_end",    rb_scope_set_open_end, 2);
   rb_define_method(cScope, "set_close_start", rb_scope_set_close_start, 2);  
-  rb_define_method(cScope, "get_open_end",    rb_scope_get_open_end, 0);
-  rb_define_method(cScope, "get_close_start", rb_scope_get_close_start, 0);
+  rb_define_method(cScope, "open_end",    rb_scope_get_open_end, 0);
+  rb_define_method(cScope, "close_start", rb_scope_get_close_start, 0);
 
   rb_define_method(cScope, "set_name",  rb_scope_set_name, 1);
   rb_define_method(cScope, "get_name",  rb_scope_get_name, 0);
@@ -792,8 +792,8 @@ void Init_syntax_ext() {
 
   rb_define_method(cScope, "add_child",  rb_scope_add_child, 1);
   rb_define_method(cScope, "delete_child",  rb_scope_delete_child, 1);
-  rb_define_method(cScope, "get_children",  rb_scope_get_children, 0);
-  rb_define_method(cScope, "get_parent",  rb_scope_get_parent, 0);
+  rb_define_method(cScope, "children",  rb_scope_get_children, 0);
+  rb_define_method(cScope, "parent",  rb_scope_get_parent, 0);
   rb_define_method(cScope, "clear_after",  rb_scope_clear_after, 1);
   rb_define_method(cScope, "clear_between",  rb_scope_clear_between, 2);
   rb_define_method(cScope, "clear_between_lines",  rb_scope_clear_between_lines, 2);
