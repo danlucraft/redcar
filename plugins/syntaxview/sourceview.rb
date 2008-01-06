@@ -247,13 +247,13 @@ module Redcar
       @count += 1
       @operations << insertion
       SyntaxLogger.debug {"insertion of #{insertion[:lines]} lines from #{insertion[:from]} to #{insertion[:to]}"}
-      unless $REDCAR_ENV and $REDCAR_ENV["nonlazy"]
-        Gtk.idle_add do
-          process_operation
-        end
-      else
+#       unless $REDCAR_ENV and $REDCAR_ENV["nonlazy"]
+#         Gtk.idle_add do
+#           process_operation
+#         end
+#       else
         process_operation
-      end
+#       end
     end
     
     def store_deletion(iter1, iter2)
@@ -271,13 +271,13 @@ module Redcar
       @operations << deletion
       SyntaxLogger.debug { "deletion over #{deletion[:lines]} lines from #{deletion[:from]} to #{deletion[:to]}" }
       
-      unless $REDCAR_ENV and $REDCAR_ENV["nonlazy"]
-        Gtk.idle_add do
-          process_operation
-        end
-      else
+#       unless $REDCAR_ENV and $REDCAR_ENV["nonlazy"]
+#         Gtk.idle_add do
+#           process_operation
+#         end
+#       else
         process_operation
-      end
+#       end
     end
     
     def syntax?

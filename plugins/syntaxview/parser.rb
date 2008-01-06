@@ -77,15 +77,15 @@ module Redcar
         end
         unless ok or line_num >= @text.length
           #SyntaxLogger.debug {"lazy parsing line: #{line_num}"}
-          if (!options or options[:lazy]) and
-              !$REDCAR_ENV["nonlazy"]
-            Gtk.idle_add do #_priority(GLib::PRIORITY_LOW) do
-              lazy_parse_from(line_num, options)
-              false
-            end
-          else
+#           if (!options or options[:lazy]) and
+#               !$REDCAR_ENV["nonlazy"]
+#             Gtk.idle_add do #_priority(GLib::PRIORITY_LOW) do
+#               lazy_parse_from(line_num, options)
+#               false
+#             end
+#           else
             lazy_parse_from(line_num, options)
-          end
+#           end
         end
       end
       

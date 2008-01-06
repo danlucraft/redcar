@@ -827,18 +827,18 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
   else
     set_tag_properties(tag, rb_settings);
 
-  printf("colouring scope: %s [%s] ", sd->name, tag_name);
-  print_iter(&start_iter);
-  printf("-"); 
-  print_iter(&end_iter);
-  puts("");
+/*   printf("colouring scope: %s [%s] ", sd->name, tag_name); */
+/*   print_iter(&start_iter); */
+/*   printf("-");  */
+/*   print_iter(&end_iter); */
+/*   puts(""); */
   gtk_text_buffer_apply_tag(buffer, tag, &start_iter, &end_iter);
   return;
 }
 
 static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE theme,
 				     VALUE rb_line_num, VALUE scopes) {
-  printf("%d in line.\n", RARRAY(scopes)->len);
+/*   printf("%d in line.\n", RARRAY(scopes)->len); */
   int line_num = FIX2INT(rb_line_num);
   VALUE rb_buffer;
   GtkTextBuffer* buffer;
