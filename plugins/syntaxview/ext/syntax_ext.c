@@ -35,7 +35,6 @@ typedef struct ScopeData_ {
   TextLoc close_start;
   char* name;
   VALUE rb_scope;
-  VALUE rb_rb_scope;
 } ScopeData;
 
 typedef GNode Scope;
@@ -96,12 +95,12 @@ void scope_get_close_start(Scope* scope, TextLoc* loc) {
   return;
 }
 
-static VALUE rb_scope_init(VALUE self, VALUE rb_rb_scope) {
+static VALUE rb_scope_init(VALUE self, VALUE options) {
   Scope *scope;
   Data_Get_Struct(self, Scope, scope);
   ScopeData *sd = scope->data;
   sd->rb_scope = self;
-  sd->rb_rb_scope = rb_rb_scope;
+  rb_funcall(self, rb_intern("initialize2"), 1, options);
   return self;
 }
 
@@ -127,7 +126,6 @@ void rb_scope_mark(Scope* scope) {
     child = g_node_nth_child(scope, i);
     sdc = child->data;
     rb_gc_mark(sdc->rb_scope);
-    rb_gc_mark(sdc->rb_rb_scope);
   }
 }
 
@@ -546,7 +544,7 @@ static VALUE rb_scope_get_children(VALUE self) {
   for (i = 0; i < g_node_n_children(scope); i++) {
     child = g_node_nth_child(scope, i);
     cd = child->data;
-    rb_ary_store(ary, i, cd->rb_rb_scope);
+    rb_ary_store(ary, i, cd->rb_scope);
   }
   return ary;
 }
@@ -560,7 +558,7 @@ static VALUE rb_scope_get_parent(VALUE self) {
   parent = scope->parent;
   if (parent) {
     pd = parent->data;
-    return pd->rb_rb_scope;
+    return pd->rb_scope;
   }
   return Qnil;
 }
@@ -675,7 +673,7 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
   GtkTextIter start_iter, end_iter;
   VALUE rba_settings, rbh_setting, rb_settings, rb_settings_scope, rbh_tag_settings, rbh, rba_tag_settings, rba;
   char tag_name[256] = "nil";
-  int priority = FIX2INT(rb_iv_get(sd->rb_rb_scope, "@priority"));
+  int priority = FIX2INT(rb_iv_get(sd->rb_scope, "@priority"));
   GtkTextTag* tag;
   GtkTextTagTable* tag_table;
   int i;
@@ -686,7 +684,7 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
   rbh = rb_funcall(theme, rb_intern("global_settings"), 0);
 
   // set name
-  rba_settings = rb_funcall(theme, rb_intern("settings_for_scope"), 2, sd->rb_rb_scope, (inner ? Qtrue : Qnil));
+  rba_settings = rb_funcall(theme, rb_intern("settings_for_scope"), 2, sd->rb_scope, (inner ? Qtrue : Qnil));
   if (RARRAY(rba_settings)->len == 0) {
     snprintf(tag_name, 250, "default (%d)", priority);
   }
@@ -761,7 +759,7 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
   return Qnil;
 }
 
-static VALUE mSyntaxExt;
+static VALUE mSyntaxExt, rb_mRedcar, rb_mSyntax;
 static VALUE cScope;
 
 void Init_syntax_ext() {
@@ -771,8 +769,11 @@ void Init_syntax_ext() {
   rb_define_module_function(mSyntaxExt, "colour_line_with_scopes", 
 		rb_colour_line_with_scopes, 4);
 
+  rb_mRedcar = rb_define_module ("Redcar");
+  rb_mSyntax = rb_define_module_under (rb_mRedcar, "Syntax");
+
   // the CScope class
-  cScope = rb_define_class("CScope", rb_cObject);
+  cScope = rb_define_class("Scope", rb_cObject);
   rb_define_alloc_func(cScope, rb_scope_alloc);
   rb_define_method(cScope, "initialize", rb_scope_init, 1);
   rb_define_method(cScope, "display",   rb_scope_print, 1);

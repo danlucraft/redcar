@@ -70,7 +70,7 @@ module Redcar
         @close_matchdata    = close_matchdata
       end
       
-      def initialize(options={})
+      def initialize2(options={})
         self.name           = options[:name]
         self.pattern        = options[:pattern]
         self.grammar        = options[:grammar]
