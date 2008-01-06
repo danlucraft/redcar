@@ -4,7 +4,127 @@
 #include <glib.h>
 #include <string.h>
 
-#include "textloc.h"
+/* ------------- TextLoc */
+
+typedef struct TextLoc_ {
+  int line;
+  int offset;
+} TextLoc;
+
+int textloc_init(TextLoc* t) {
+  t->line = -1;
+  t->offset = -1;
+}
+
+int textloc_equal(TextLoc* t1, TextLoc* t2) {
+  return (t1->line == t2->line && t1->offset == t2->offset);
+}
+
+int textloc_gt(TextLoc* t1, TextLoc* t2) {
+  return ((t1->line > t2->line) || (t1->line >= t2->line && t1->offset > t2->offset));
+}
+
+int textloc_lt(TextLoc* t1, TextLoc* t2) {
+  return (!textloc_equal(t1, t2) && !textloc_gt(t1, t2));
+}
+
+int textloc_gte(TextLoc* t1, TextLoc* t2) {
+  return (!textloc_lt(t1, t2));
+}
+
+int textloc_lte(TextLoc* t1, TextLoc* t2) {
+  return (!textloc_gt(t1, t2));
+}
+
+int textloc_valid(TextLoc* t) {
+  return (t->line != -1 && t->offset != -1);
+}
+
+static void rb_textloc_destroy(void* tl) {
+  free(tl);
+}
+
+static VALUE rb_textloc_alloc(VALUE klass) {
+  TextLoc *textloc = malloc(sizeof(TextLoc));
+  textloc_init(textloc);
+  VALUE obj;
+  obj = Data_Wrap_Struct(klass, 0, rb_textloc_destroy, textloc);
+  return obj;
+}
+
+static VALUE rb_textloc_init(VALUE self, VALUE line, VALUE offset) {
+  TextLoc *textloc;
+  Data_Get_Struct(self, TextLoc, textloc);
+  textloc->line = FIX2INT(line);
+  textloc->offset = FIX2INT(offset);
+  return self;
+}
+
+static VALUE rb_textloc_line(VALUE self, VALUE rbt) {
+  TextLoc *t;
+  Data_Get_Struct(self, TextLoc, t);
+  return INT2FIX(t->line);
+}
+
+static VALUE rb_textloc_offset(VALUE self, VALUE rbt) {
+  TextLoc *t;
+  Data_Get_Struct(self, TextLoc, t);
+  return INT2FIX(t->offset);
+}
+
+static VALUE rb_textloc_equal(VALUE self, VALUE rbt) {
+  TextLoc *t1, *t2;
+  Data_Get_Struct(self, TextLoc, t1);
+  if (rbt == Qnil) {
+    if (!textloc_valid(t1))
+      return Qtrue;
+    else
+      return Qfalse;
+  }
+	
+  Data_Get_Struct(rbt, TextLoc, t2);
+  if (textloc_equal(t1, t2))
+    return Qtrue;
+  return Qfalse;
+}
+
+static VALUE rb_textloc_lt(VALUE self, VALUE rbt) {
+  TextLoc *t1, *t2;
+  Data_Get_Struct(self, TextLoc, t1);
+  Data_Get_Struct(rbt, TextLoc, t2);
+  if (textloc_lt(t1, t2))
+    return Qtrue;
+  return Qfalse;
+}
+
+static VALUE rb_textloc_gt(VALUE self, VALUE rbt) {
+  TextLoc *t1, *t2;
+  Data_Get_Struct(self, TextLoc, t1);
+  Data_Get_Struct(rbt, TextLoc, t2);
+  if (textloc_gt(t1, t2))
+    return Qtrue;
+  return Qfalse;
+}
+
+static VALUE rb_textloc_gte(VALUE self, VALUE rbt) {
+  TextLoc *t1, *t2;
+  Data_Get_Struct(self, TextLoc, t1);
+  Data_Get_Struct(rbt, TextLoc, t2);
+  if (textloc_gte(t1, t2))
+    return Qtrue;
+  return Qfalse;
+}
+
+static VALUE rb_textloc_lte(VALUE self, VALUE rbt) {
+  TextLoc *t1, *t2;
+  Data_Get_Struct(self, TextLoc, t1);
+  Data_Get_Struct(rbt, TextLoc, t2);
+  if (textloc_lte(t1, t2))
+    return Qtrue;
+  return Qfalse;
+}
+
+/* ----------------- end TextLoc */
 
 // ----- Get a GTK object from a Ruby-Gnome object ----
 typedef struct {
@@ -193,7 +313,7 @@ static VALUE rb_scope_get_start(VALUE self) {
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
-  if (!TEXTLOC_VALID(sd->start))
+  if (!textloc_valid(&sd->start))
     return Qnil;
   return rb_funcall(rb_cObject, rb_intern("TextLoc"),
 		    2, INT2FIX(sd->start.line), INT2FIX(sd->start.offset));
@@ -205,7 +325,7 @@ static VALUE rb_scope_get_end(VALUE self) {
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
-  if (!TEXTLOC_VALID(sd->end))
+  if (!textloc_valid(&sd->end))
     return Qnil;
   return rb_funcall(rb_cObject, rb_intern("TextLoc"),
 		    2, INT2FIX(sd->end.line), INT2FIX(sd->end.offset));
@@ -235,7 +355,7 @@ static VALUE rb_scope_get_open_end(VALUE self) {
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
-  if (!TEXTLOC_VALID(sd->open_end))
+  if (!textloc_valid(&sd->open_end))
     return Qnil;
   return rb_funcall(rb_cObject, rb_intern("TextLoc"),
 		    2, INT2FIX(sd->open_end.line), INT2FIX(sd->open_end.offset));
@@ -247,7 +367,7 @@ static VALUE rb_scope_get_close_start(VALUE self) {
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
-  if (!TEXTLOC_VALID(sd->close_start))
+  if (!textloc_valid(&sd->close_start))
     return Qnil;
   return rb_funcall(rb_cObject, rb_intern("TextLoc"),
 		    2, INT2FIX(sd->close_start.line), INT2FIX(sd->close_start.offset));
@@ -291,7 +411,7 @@ static VALUE rb_scope_active_on_line(VALUE self, VALUE line_num) {
   Data_Get_Struct(self, Scope, s);
   sd = s->data;
   if (sd->start.line <= num)
-    if (!TEXTLOC_VALID(sd->end) || sd->end.line >= num)
+    if (!textloc_valid(&sd->end) || sd->end.line >= num)
       return Qtrue;
   return Qfalse;
 }
@@ -309,18 +429,18 @@ static VALUE rb_scope_overlaps(VALUE self, VALUE other) {
 
   // sd1     +---
   // sd2  +---
-  if (TEXTLOC_GTE(sd1->start, sd2->start)) {
-    if (!TEXTLOC_VALID(sd2->end))
+  if (textloc_gte(&sd1->start, &sd2->start)) {
+    if (!textloc_valid(&sd2->end))
       return Qtrue;
-    if (TEXTLOC_LT(sd1->start, sd2->end))
+    if (textloc_lt(&sd1->start, &sd2->end))
       return Qtrue;
     return Qfalse;
   }
   // sd1 +----
   // sd2   +---
-  if (!TEXTLOC_VALID(sd1->end))
+  if (!textloc_valid(&sd1->end))
     return Qtrue;
-  if (TEXTLOC_GT(sd1->end, sd2->start))
+  if (textloc_gt(&sd1->end, &sd2->start))
     return Qtrue;
   return Qfalse;
 }
@@ -344,8 +464,8 @@ static VALUE rb_scope_add_child(VALUE self, VALUE c_scope) {
   else {
     lc = g_node_last_child(sp);
     lcd = lc->data;
-    if (TEXTLOC_VALID(lcd->end) &&
-	TEXTLOC_GTE(sdc->start, lcd->end)) {
+    if (textloc_valid(&lcd->end) &&
+	textloc_gte(&sdc->start, &lcd->end)) {
       g_node_append(sp, sc);
       return Qtrue;
     }
@@ -356,7 +476,7 @@ static VALUE rb_scope_add_child(VALUE self, VALUE c_scope) {
   for (i = 0; i < g_node_n_children(sp); i++) {
     current = g_node_nth_child(sp, i);
     current_data = current->data;
-    if (TEXTLOC_LTE(current_data->start, sdc->start))
+    if (textloc_lte(&current_data->start, &sdc->start))
       insert_index = i+1;
   }
   g_node_insert(sp, insert_index, sc);
@@ -373,7 +493,7 @@ static VALUE rb_scope_clear_after(VALUE self, VALUE rb_loc) {
   ScopeData *sd, *sdc;
   Data_Get_Struct(self, Scope, s);
   sd = s->data;
-  if (TEXTLOC_VALID(sd->end) && TEXTLOC_GT(sd->end, loc)) {
+  if (textloc_valid(&sd->end) && textloc_gt(&sd->end, &loc)) {
     sd->end.line = -1;
     sd->end.offset = -1;
   }
@@ -381,11 +501,11 @@ static VALUE rb_scope_clear_after(VALUE self, VALUE rb_loc) {
   for (i = 0; i < g_node_n_children(s); i++) {
     c = g_node_nth_child(s, i);
     sdc = c->data;
-    if (TEXTLOC_GTE(sdc->start, loc)) {
+    if (textloc_gte(&sdc->start, &loc)) {
       g_node_unlink(c);
       i -= 1;
     } else {
-      scope_clear_after(sdc->rb_scope, rb_loc);
+      rb_scope_clear_after(sdc->rb_scope, rb_loc);
     }
   }
   return Qtrue;
@@ -411,8 +531,8 @@ static VALUE rb_scope_clear_between(VALUE self, VALUE rb_from, VALUE rb_to) {
   ScopeData *sd, *sdc;
   Data_Get_Struct(self, Scope, s);
   sd = s->data;
-  if (TEXTLOC_VALID(sd->end) && TEXTLOC_GTE(sd->end, from) &&
-      TEXTLOC_LT(sd->end, to)) {
+  if (textloc_valid(&sd->end) && textloc_gte(&sd->end, &from) &&
+      textloc_lt(&sd->end, &to)) {
     sd->end.line = -1;
     sd->end.offset = -1;
   }
@@ -420,11 +540,11 @@ static VALUE rb_scope_clear_between(VALUE self, VALUE rb_from, VALUE rb_to) {
   for (i = 0; i < g_node_n_children(s); i++) {
     c = g_node_nth_child(s, i);
     sdc = c->data;
-    if ((TEXTLOC_GTE(sdc->start, from) && 
-	 TEXTLOC_LT(sdc->start, to)) ||
-	(TEXTLOC_VALID(sdc->end) && 
-	 TEXTLOC_GTE(sdc->end, from) &&
-	 TEXTLOC_LT(sdc->end, to))) {
+    if ((textloc_gte(&sdc->start, &from) && 
+	 textloc_lt(&sdc->start, &to)) ||
+	(textloc_valid(&sdc->end) && 
+	 textloc_gte(&sdc->end, &from) &&
+	 textloc_lt(&sdc->end, &to))) {
       g_node_unlink(c);
       i -= 1;
     } else {
@@ -443,7 +563,7 @@ static VALUE rb_scope_clear_between_lines(VALUE self, VALUE rb_from, VALUE rb_to
   ScopeData *sd, *sdc;
   Data_Get_Struct(self, Scope, s);
   sd = s->data;
-  if (TEXTLOC_VALID(sd->end) && sd->end.line >= from &&
+  if (textloc_valid(&sd->end) && sd->end.line >= from &&
       sd->end.line <= to) {
     sd->end.line = -1;
     sd->end.offset = -1;
@@ -588,7 +708,7 @@ void scope_get_end_iter(Scope* scope, GtkTextBuffer* buffer,
   int offset, so, eo, len;
   gtk_text_buffer_get_iter_at_line_offset(buffer, &sl, sd->start.line, 0);
   if (inner) {
-    if (TEXTLOC_VALID(sd->end)) {
+    if (textloc_valid(&sd->end)) {
       gtk_text_buffer_get_iter_at_line_offset(buffer, &sel, sd->close_start.line, 0);
       offset = (int) gtk_text_iter_get_offset(&sel) + minify(sd->close_start.offset);
     }
@@ -601,7 +721,7 @@ void scope_get_end_iter(Scope* scope, GtkTextBuffer* buffer,
     }
   }
   else {
-    if (TEXTLOC_VALID(sd->end)) {
+    if (textloc_valid(&sd->end)) {
       gtk_text_buffer_get_iter_at_line_offset(buffer, &sel, sd->end.line, 0);
       offset = (int) gtk_text_iter_get_offset(&sel) + minify(sd->end.offset);
     }
@@ -741,7 +861,7 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
     rb_current = rb_ary_entry(scopes, i);
     Data_Get_Struct(rb_current, Scope, current);
     current_data = current->data;
-    if (TEXTLOC_EQUAL(current_data->start, current_data->end))
+    if (textloc_equal(&current_data->start, &current_data->end))
       continue;
     pattern = rb_iv_get(rb_current, "@pattern");
     content_name = Qnil;
@@ -757,7 +877,7 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
 }
 
 static VALUE mSyntaxExt, rb_mRedcar, rb_mSyntax;
-static VALUE cScope;
+static VALUE cScope, cTextLoc;
 
 void Init_syntax_ext() {
   // utility functions are in SyntaxExt
@@ -768,6 +888,17 @@ void Init_syntax_ext() {
 
   rb_mRedcar = rb_define_module ("Redcar");
   rb_mSyntax = rb_define_module_under (rb_mRedcar, "Syntax");
+
+  cTextLoc = rb_define_class_under(rb_mRedcar, "TextLoc", rb_cObject);
+  rb_define_alloc_func(cTextLoc, rb_textloc_alloc);
+  rb_define_method(cTextLoc, "initialize", rb_textloc_init, 2);
+  rb_define_method(cTextLoc, "line", rb_textloc_line, 0);
+  rb_define_method(cTextLoc, "offset", rb_textloc_offset, 0);
+  rb_define_method(cTextLoc, "==", rb_textloc_equal, 1);
+  rb_define_method(cTextLoc, "<", rb_textloc_lt, 1);
+  rb_define_method(cTextLoc, ">", rb_textloc_gt, 1);
+  rb_define_method(cTextLoc, "<=", rb_textloc_lte, 1);
+  rb_define_method(cTextLoc, ">=", rb_textloc_gte, 1);
 
   // the CScope class
   cScope = rb_define_class_under(rb_mSyntax, "Scope", rb_cObject);
