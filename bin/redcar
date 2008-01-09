@@ -1,13 +1,6 @@
 
 require 'getoptlong'
 
-$argv = ARGV.clone
-
-opts = GetoptLong.new(['--codebase', '-b', GetoptLong::REQUIRED_ARGUMENT ],
-                      ['--project', '-p', GetoptLong::REQUIRED_ARGUMENT ],
-                      ['--help', '-h', GetoptLong::NO_ARGUMENT ]
-                     )
-
 # See if a code base was passed as an argument. If not
 # default the codebase to the path of the freeride.rb script
 codebase = File.expand_path(File.dirname(__FILE__))
@@ -26,6 +19,16 @@ module Redcar
   VERSION_MAJOR = 0
   VERSION_MINOR = 0
   VERSION_RELEASE = 1
+  
+  module App
+    def self.ARGV=(v)
+      @argv = v
+    end
+    def self.ARGV
+      @argv
+    end
+  end
+  
   ##
   # Start up FreeRIDE and block until shut down event is received
   #
@@ -69,6 +72,13 @@ def usage
   puts "   -h --help       print this help message"
   puts "   files:          open the files at startup (not yet implemented)"
 end
+
+Redcar::App.ARGV = Marshal.load(Marshal.dump(ARGV))
+
+opts = GetoptLong.new(['--codebase', '-b', GetoptLong::REQUIRED_ARGUMENT ],
+                      ['--project', '-p', GetoptLong::REQUIRED_ARGUMENT ],
+                      ['--help', '-h', GetoptLong::NO_ARGUMENT ]
+                     )
 
 begin
   opts.each do |opt, arg|

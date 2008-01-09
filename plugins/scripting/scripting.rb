@@ -12,10 +12,12 @@ module Redcar
       STARTUP_SCRIPT = File.expand_path("~/.Redcar/startup.rb")
       
       def self.run_startup_script
-        if File.exists?(STARTUP_SCRIPT)
-          require STARTUP_SCRIPT
-        else
-          puts "(no startup script)"
+        unless Redcar::App.ARGV.include? "--nostartup"
+          if File.exists?(STARTUP_SCRIPT)
+            require STARTUP_SCRIPT
+          else
+            puts "(no startup script)"
+          end
         end
       end
       
