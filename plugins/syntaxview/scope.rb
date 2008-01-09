@@ -194,7 +194,7 @@ module Redcar
       end
         
       def copy
-        new_self = Scope.new
+        new_self = Scope.new({})
         new_self.name    = self.name
         new_self.grammar = self.grammar
         new_self.pattern = self.pattern

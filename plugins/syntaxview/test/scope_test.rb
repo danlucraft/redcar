@@ -89,9 +89,7 @@ module ScopeTest
                     :start => TextLoc.new(1, 2),
                     :end => TextLoc.new(2, 0))
     sm.add_child(sm2)
-    sm2.parent = sm
     sm.add_child(sm3)
-    sm3.parent = sm
     assert_equal sm, sm.scope_at(TextLoc.new(0, 0))
     assert_equal sm, sm.scope_at(TextLoc.new(0, 1))
     assert_equal sm2, sm.scope_at(TextLoc.new(0, 4))
