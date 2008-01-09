@@ -279,7 +279,7 @@ module Redcar
       class LineParser
         attr_accessor(:pos, :start_scope, :current_scope, :active_grammar,
                       :all_scopes, :closed_scopes, :matching_patterns, :rest_line,
-                      :need_new_patterns)
+                      :need_new_patterns, :new_scope_markers)
         def initialize(p, line_num, line)
           @parser = p
           @line = line
@@ -292,6 +292,7 @@ module Redcar
           @matching_patterns = []
           @rest_line = line
           @need_new_patterns = true
+          @new_scope_markers = []
         end
         
         def current_scope_closes?
@@ -340,6 +341,206 @@ module Redcar
             { :from => from, :md => md, :pattern => pattern }
           end
         end
+        
+        def collect_captures(scope, type)
+          case type
+          when :end_captures
+            matchdata_name = :close_matchdata
+          when :begin_captures, :captures
+            matchdata_name = :open_matchdata
+          end
+          if scope.pattern.respond_to? type
+            scope.pattern.send(type).each do |num, name|
+              md = scope.send(matchdata_name)
+              sc = @parser.scope_from_capture(@line_num, num, md)
+              if sc
+                scope.add_child(sc)
+                sc.name = name
+                sc.grammar = active_grammar
+                sc.capture = true
+                closed_scopes << sc
+                all_scopes << sc
+              end
+            end
+          end
+        end
+        
+        def close_current_scope(new_scope_marker)
+          current_scope.end         = TextLoc.new(@line_num, new_scope_marker[:to])
+          current_scope.close_start = TextLoc.new(@line_num, new_scope_marker[:from])
+          current_scope.close_matchdata = new_scope_marker[:md]
+        end
+        
+        def new_single_scope(new_scope_marker)
+          new_scope = new_scope_marker[:pattern].to_scope
+          new_scope.grammar   = active_grammar
+          new_scope.start     = TextLoc.new(@line_num, new_scope_marker[:from])
+          new_scope.end       = TextLoc.new(@line_num, new_scope_marker[:to])
+          new_scope.open_end  = TextLoc.new(@line_num, new_scope_marker[:to])
+          new_scope.open_matchdata = new_scope_marker[:md]
+          new_scope
+        end
+        
+        def new_double_scope(new_scope_marker)
+          pattern = new_scope_marker[:pattern]
+          new_scope = pattern.to_scope
+          new_scope.grammar = active_grammar
+          new_scope.start   = TextLoc.new(@line_num, new_scope_marker[:from])
+          new_scope.end     = nil
+          new_scope.open_end   = TextLoc.new(@line_num, new_scope_marker[:to])
+          new_scope.open_matchdata = new_scope_marker[:md]
+          re = Oniguruma::ORegexp.new(@parser.build_closing_regexp(pattern, 
+                                                                   new_scope_marker[:md]
+                                                                   ), 
+                                      :options => Oniguruma::OPTION_CAPTURE_GROUP)
+          new_scope.closing_regexp = re
+          new_scope
+        end
+        
+        def remove_if_overlaps_with(expected_scope, new_scope)
+          if new_scope.overlaps?(expected_scope) or
+              new_scope.start > expected_scope.start
+            current_scope.delete_child(expected_scope)
+          end
+        end
+        
+        def remove_children_that_overlap_with(new_scope)
+          current_scope.each_child do |child|
+            if child.overlaps?(new_scope) and 
+                child != new_scope
+              current_scope.delete_child(child)
+            end
+          end
+        end
+        
+        def scan_line
+          @new_scope_markers = []
+          if close_marker = current_scope_closes?
+            @new_scope_markers << close_marker
+          end
+          possible_patterns.each do |pattern|
+            if nsm = match_pattern(pattern)
+              @new_scope_markers << nsm
+              matching_patterns << pattern if need_new_patterns
+            end
+          end          
+        end
+      
+        def any_markers?
+          @new_scope_markers.length > 0
+        end
+        
+        def get_first_scope_marker
+          new_scope_marker = new_scope_markers.sort_by {|sm| sm[:from] }.first
+          new_scope_markers.select do |sm|
+            sm[:from] == new_scope_marker[:from]
+          end.sort_by do |sm|
+            sm[:pattern] == :close_scope ? 0 : sm[:pattern].hint
+          end.first
+        end
+        
+        def process_marker
+          if @parser.parsed_before?(@line_num)
+            expected_scope = get_expected_scope
+          end
+          
+          new_scope_marker = get_first_scope_marker
+          from = new_scope_marker[:from]
+          md   = new_scope_marker[:md]
+          to   = new_scope_marker[:to] = md.end(0)
+          
+          case new_scope_marker[:pattern]
+          when :close_scope
+            if current_scope.end and 
+                current_scope.end == TextLoc.new(@line_num, to) and
+                current_scope.close_start == TextLoc.new(@line_num, from) and
+                current_scope.close_matchdata.to_s == md.to_s
+              # we have already parsed this line and this scope ends here
+              true
+            else
+              close_current_scope(new_scope_marker)
+              collect_captures(current_scope, :end_captures)
+              if expected_scope
+                current_scope.delete_child(expected_scope)
+              end
+            end
+            closed_scopes << current_scope
+            self.current_scope = current_scope.parent
+            all_scopes << current_scope
+            self.need_new_patterns = true
+          when DoublePattern
+            new_scope = new_double_scope(new_scope_marker)
+            collect_captures(new_scope, :begin_captures)
+            if expected_scope
+              # check mod ending scopes as the new one will not have a closing marker
+              # but the expected one will:
+              if new_scope.surface_identical_modulo_ending?(expected_scope)
+                # don't need to do anything as we have already found this,
+                # but let's keep the old scope since it will have children and what not.
+                new_scope = expected_scope
+                expected_scope.each_child {|c| closed_scopes << c}
+              else
+                remove_if_overlaps_with(expected_scope, new_scope)
+                current_scope.add_child(new_scope)
+              end
+            else
+              current_scope.add_child(new_scope)
+            end
+            all_scopes << new_scope
+            self.current_scope = new_scope
+            need_new_patterns = true
+          when SinglePattern
+            new_scope = new_single_scope(new_scope_marker)
+            collect_captures(new_scope, :captures)
+            
+            if expected_scope
+              if new_scope.surface_identical?(expected_scope)
+                # don't need to do anything
+                new_scope = expected_scope
+                expected_scope.each_child {|c| closed_scopes << c}
+              else  
+                remove_if_overlaps_with(expected_scope, new_scope)
+                current_scope.add_child(new_scope)
+              end
+            else
+              current_scope.add_child(new_scope)
+            end
+            remove_children_that_overlap_with(new_scope)
+            all_scopes << new_scope
+            closed_scopes << new_scope
+          end
+          self.pos = new_scope_marker[:to]          
+        end
+        
+        def clear_line
+          if @parser.parsed_before?(@line_num)
+            # If we are reparsing, we might find that some scopes have disappeared,
+            # delete them:
+            current_scope.root.delete_any_on_line_not_in(@line_num, all_scopes)
+            
+            # any that we expected to close on this line that now don't?
+            #  first build list of scopes that close on this line (including ones
+            #  that did but haven't been removed yet).
+            scopes_that_closed_on_line = []
+            ts = start_scope
+            while ts.parent
+              if ts.end and ts.end.line == @line_num
+                scopes_that_closed_on_line << ts
+              end
+              ts = ts.parent
+            end
+            scopes_that_closed_on_line.each do |s|
+              unless closed_scopes.include? s
+                s.end = nil
+                s.close_start = nil
+                if s.capture
+                  s.detach_from_parent
+                end
+              end
+            end
+          end
+          self.pos = @line.length + 1          
+        end
       end
       
       # Parses line_num, using text line.
@@ -349,195 +550,19 @@ module Redcar
         lp = LineParser.new(self, line_num, line)
         
         while lp.any_line_left?
-          new_scope_markers = []
-          if close_marker = lp.current_scope_closes?
-            new_scope_markers << close_marker
-          end
-          lp.possible_patterns.each do |pattern|
-            if nsm = lp.match_pattern(pattern)
-              new_scope_markers << nsm
-              lp.matching_patterns << pattern if lp.need_new_patterns
-            end
-          end
+          lp.scan_line
           
-          if parsed_before?(line_num)
-            expected_scope = lp.get_expected_scope
-          end
-          
-          if new_scope_markers.length > 0
-            new_scope_marker = new_scope_markers.sort_by {|sm| sm[:from] }.first
-            from = new_scope_marker[:from]
-            new_scope_marker = new_scope_markers.select do |sm|
-              sm[:from] == from
-            end.sort_by do |sm|
-              sm[:pattern] == :close_scope ? 0 : sm[:pattern].hint
-              # The hint tells the parser to tie-break matches
-              # by which came first in the bundle.
-            end.first
-            
-            md   = new_scope_marker[:md]
-            to   = new_scope_marker[:to] = md.end(0)
-            
-            case new_scope_marker[:pattern]
-            when :close_scope
-              if lp.current_scope.end and 
-                  lp.current_scope.end == TextLoc.new(line_num, to) and
-                  lp.current_scope.close_start == TextLoc.new(line_num, from) and
-                  lp.current_scope.close_matchdata.to_s == md.to_s
-                # we have already parsed this line and this scope ends here
-                true
-              else
-                lp.current_scope.end         = TextLoc.new(line_num, to)
-                lp.current_scope.close_start = TextLoc.new(line_num, from)
-                lp.current_scope.close_matchdata = md
-                if lp.current_scope.pattern.respond_to? :end_captures
-                  lp.current_scope.pattern.end_captures.each do |num, name|
-                    md = lp.current_scope.close_matchdata
-                    sc = scope_from_capture(line_num, num, md)
-                    if sc
-                      lp.current_scope.add_child(sc)
-                      sc.name = name
-                      sc.grammar = lp.active_grammar
-                      sc.capture = true
-                      lp.closed_scopes << sc
-                      lp.all_scopes << sc
-                    end
-                  end
-                end
-                if expected_scope
-                  lp.current_scope.delete_child(expected_scope)
-                end
-              end
-              lp.closed_scopes << lp.current_scope
-              lp.current_scope = lp.current_scope.parent
-              lp.all_scopes << lp.current_scope
-              lp.need_new_patterns = true
-            when DoublePattern
-              pattern = new_scope_marker[:pattern]
-              new_scope = pattern.to_scope
-              new_scope.grammar = lp.active_grammar
-              new_scope.start   = TextLoc.new(line_num, from)
-              new_scope.end     = nil
-              new_scope.open_end   = TextLoc.new(line_num, to)
-              new_scope.open_matchdata = md
-              new_scope.closing_regexp = Oniguruma::ORegexp.new(build_closing_regexp(pattern, md), :options => Oniguruma::OPTION_CAPTURE_GROUP)
-              
-              if new_scope.pattern.respond_to? :begin_captures
-                new_scope.pattern.begin_captures.each do |num, name|
-                  md = new_scope.open_matchdata
-                  sc = scope_from_capture(line_num, num, md)
-                  if sc
-                    new_scope.add_child(sc)
-                    sc.name = name
-                    sc.grammar = lp.active_grammar
-                    sc.capture = true
-                    lp.closed_scopes << sc
-                    lp.all_scopes << sc
-                  end
-                end
-              end
-              
-              if expected_scope
-                # check mod ending scopes as the new one will not have a closing marker
-                # but the expected one will:
-                if new_scope.surface_identical_modulo_ending?(expected_scope)
-                  # don't need to do anything as we have already found this,
-                  # but let's keep the old scope since it will have children and what not.
-                  new_scope = expected_scope
-                  expected_scope.each_child {|c| lp.closed_scopes << c}
-                else
-                  if new_scope.overlaps?(expected_scope) or
-                      new_scope.start > expected_scope.start
-                    lp.current_scope.delete_child(expected_scope)
-                  end
-                  lp.current_scope.add_child(new_scope)
-                end
-              else
-                lp.current_scope.add_child(new_scope)
-              end
-              lp.all_scopes << new_scope
-              lp.current_scope = new_scope
-              lp.need_new_patterns = true
-            when SinglePattern
-              new_scope = new_scope_marker[:pattern].to_scope
-              new_scope.grammar = lp.active_grammar
-              new_scope.start   = TextLoc.new(line_num, from)
-              new_scope.end     = TextLoc.new(line_num, to)
-              new_scope.open_end   = TextLoc.new(line_num, to)
-              new_scope.open_matchdata = md
-              if new_scope.pattern.respond_to? :captures
-                new_scope.pattern.captures.each do |num, name|
-                  md = new_scope.open_matchdata
-                  sc = scope_from_capture(line_num, num, md)
-                  if sc
-                    new_scope.add_child(sc)
-                    sc.name = name
-                    sc.grammar = lp.active_grammar
-                    sc.capture = true
-                    lp.closed_scopes << sc
-                    lp.all_scopes << sc
-                  end
-                end
-              end
-              
-              if expected_scope
-                if new_scope.surface_identical?(expected_scope)
-                  # don't need to do anything
-                  new_scope = expected_scope
-                  expected_scope.each_child {|c| lp.closed_scopes << c}
-                else  
-                  if new_scope.overlaps?(expected_scope) or
-                      new_scope.start > expected_scope.start
-                    lp.current_scope.delete_child(expected_scope)
-                  end
-                  lp.current_scope.add_child(new_scope)
-                end
-              else
-                lp.current_scope.add_child(new_scope)
-              end
-              lp.current_scope.each_child do |child|
-                if child.overlaps?(new_scope) and 
-                    child != new_scope
-                  lp.current_scope.delete_child(child)
-                end
-              end
-              lp.all_scopes << new_scope
-              lp.closed_scopes << new_scope
-            end
-            lp.pos = new_scope_marker[:to]
+          if lp.any_markers?
+            lp.process_marker
           else
-            if parsed_before?(line_num)
-              # If we are reparsing, we might find that some scopes have disappeared,
-              # delete them:
-              @scope_tree.delete_any_on_line_not_in(line_num, lp.all_scopes)
-              
-              # any that we expected to close on this line that now don't?
-              #  first build list of scopes that close on this line (including ones
-              #  that did but haven't been removed yet).
-              scopes_that_closed_on_line = []
-              ts = lp.start_scope
-              while ts.parent
-                if ts.end and ts.end.line == line_num
-                  scopes_that_closed_on_line << ts
-                end
-                ts = ts.parent
-              end
-              scopes_that_closed_on_line.each do |s|
-                unless lp.closed_scopes.include? s
-                  s.end = nil
-                  s.close_start = nil
-                  if s.capture
-                    s.detach_from_parent
-                  end
-                end
-              end
-            end
-            lp.pos = line.length + 1
+            lp.clear_line
           end
         end
+        
         if @colourer
           SyntaxExt.colour_line_with_scopes(@colourer, @colourer.theme, line_num, lp.all_scopes)
         end
+        
         # should we parse the next line? If we've changed the scope or the 
         # next line has not yet been parsed.
         same = ((@ending_scopes[line_num] == lp.current_scope) and @ending_scopes[line_num+1] != nil)
