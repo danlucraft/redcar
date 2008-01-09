@@ -563,6 +563,50 @@ static VALUE rb_scope_overlaps(VALUE self, VALUE other) {
 
 // Scope children methods
 
+Scope* scope_at(Scope* s, TextLoc* loc) {
+  Scope *scope, *child;
+  ScopeData *sd, *child_data;
+  int i;
+  sd = s->data;
+  if (textloc_lte(&sd->start, loc) || G_NODE_IS_ROOT(s)) {
+    if (!textloc_valid(&sd->end) || textloc_gt(&sd->end, loc)) {
+      if (g_node_n_children(s) == 0)
+	return s;
+      child = g_node_last_child(s);
+      child_data = child->data;
+      if (textloc_valid(&child_data->end) && 
+	  textloc_lt(&child_data->end, loc))
+	return s;
+      for (i = 0; i < g_node_n_children(s); i++) {
+	child = g_node_nth_child(s, i);
+	scope = scope_at(child, loc);
+	if (scope != NULL)
+	  return scope;
+      }
+      return s;
+    }
+    else
+      return NULL;
+  }
+  else
+    return NULL;
+}
+
+static VALUE rb_scope_at(VALUE self, VALUE rb_loc) {
+  Scope *s, *scope;
+  ScopeData *sd;
+  TextLoc *loc;
+  Data_Get_Struct(self, Scope, s);
+  Data_Get_Struct(rb_loc, TextLoc, loc);
+  scope = scope_at(s, loc);
+  if (scope == NULL)
+    return Qnil;
+  else {
+    sd = scope->data;
+    return sd->rb_scope;
+  }
+}
+
 static VALUE rb_scope_add_child(VALUE self, VALUE c_scope) {
   if (self == Qnil || c_scope == Qnil)
     printf("rb_scope_add_child(nil, or nil)");
@@ -961,6 +1005,7 @@ void Init_syntax_ext() {
   rb_define_method(cScope, "delete_child",  rb_scope_delete_child, 1);
   rb_define_method(cScope, "children",  rb_scope_get_children, 0);
   rb_define_method(cScope, "parent",  rb_scope_get_parent, 0);
+  rb_define_method(cScope, "scope_at",  rb_scope_at, 1);
   rb_define_method(cScope, "clear_after",  rb_scope_clear_after, 1);
   rb_define_method(cScope, "clear_between",  rb_scope_clear_between, 2);
   rb_define_method(cScope, "clear_between_lines",  rb_scope_clear_between_lines, 2);

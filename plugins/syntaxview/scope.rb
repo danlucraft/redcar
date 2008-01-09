@@ -388,8 +388,7 @@ module Redcar
         size
       end
 
-      # Returns the active scope at TextLoc textloc.
-      def scope_at(textloc)
+      def rb_scope_at(textloc)
         if self.start <= textloc or !self.parent
           if ((self.end==nil) or (self.end > textloc))
             # children has a tendency to be very long for 1 scope in each document,
@@ -432,6 +431,14 @@ module Redcar
           nil
         end
       end
+      
+#       # Returns the active scope at TextLoc textloc.
+#       def scope_at(textloc)
+#         cv = c_scope_at(textloc)
+# #         rv = rb_scope_at(textloc)
+# #         Scope.c_diff("scope_at", rv, cv, [])
+# #         rv
+#       end
       
       def first_child_after(loc)
         # this is the obvious way:
