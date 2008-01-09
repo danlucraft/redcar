@@ -720,6 +720,28 @@ static VALUE rb_scope_clear_not_on_line(VALUE self, VALUE rb_num) {
   }
 }
 
+int scope_remove_children_that_overlap(Scope* scope, Scope* other) {
+  ScopeData *od = other->data;
+  Scope *child;
+  Scope *child_data;
+  child = g_node_first_child(scope);
+  while (child != NULL) {
+    child_data = child->data;
+    if (scope_overlaps(child, other) && child != other)
+      g_node_unlink(child);
+    child = g_node_next_sibling(child);
+  }
+  return 1;
+}
+
+static VALUE rb_scope_remove_children_that_overlap(VALUE self, VALUE rb_other) {
+  Scope *s, *o;
+  Data_Get_Struct(self, Scope, s);
+  Data_Get_Struct(rb_other, Scope, o);
+  scope_remove_children_that_overlap(s, o);
+  return Qtrue;
+}
+
 static VALUE rb_scope_delete_child(VALUE self, VALUE rb_scope) {
   if (self == Qnil || rb_scope == Qnil)
     printf("rb_scope_delete_child(nil, or nil)");
@@ -1014,4 +1036,5 @@ void Init_syntax_ext() {
   rb_define_method(cScope, "delete_any_on_line_not_in",  
 		rb_scope_delete_any_on_line_not_in, 2);
   rb_define_method(cScope, "clear_not_on_line",  rb_scope_clear_not_on_line, 1);
+  rb_define_method(cScope, "remove_children_that_overlap", rb_scope_remove_children_that_overlap, 1);
 }

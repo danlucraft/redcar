@@ -432,12 +432,13 @@ module Redcar
         end
       end
       
-#       # Returns the active scope at TextLoc textloc.
-#       def scope_at(textloc)
-#         cv = c_scope_at(textloc)
-# #         rv = rb_scope_at(textloc)
-# #         Scope.c_diff("scope_at", rv, cv, [])
-# #         rv
+#       def remove_children_that_overlap(new_scope)
+#         each_child do |child|
+#           if child.overlaps?(new_scope) and 
+#               child != new_scope
+#             delete_child(child)
+#           end
+#         end
 #       end
       
       def first_child_after(loc)

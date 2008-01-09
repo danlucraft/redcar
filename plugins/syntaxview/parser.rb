@@ -405,12 +405,7 @@ module Redcar
         end
         
         def remove_children_that_overlap_with(new_scope)
-          current_scope.each_child do |child|
-            if child.overlaps?(new_scope) and 
-                child != new_scope
-              current_scope.delete_child(child)
-            end
-          end
+          current_scope.remove_children_that_overlap(new_scope)
         end
         
         def scan_line
