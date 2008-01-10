@@ -36,6 +36,7 @@ module Redcar
       def self.create3(pattern, grammar)
         obj = self.allocate
         obj.pattern = pattern
+        obj.name    = pattern.scope_name
         obj.grammar = grammar
         obj.open_end = nil
         obj.close_start = nil
@@ -55,8 +56,8 @@ module Redcar
                  open_start, open_end, close_start, close_end, open_matchdata,
                  close_matchdata)
         allocate
-        self.name           = name
         self.pattern        = pattern
+        self.name           = name || self.pattern.scope_name
         self.grammar        = grammar
         self.start          = start
         self.end            = end_loc
@@ -68,8 +69,8 @@ module Redcar
       end
       
       def initialize2(options={})
-        self.name           = options[:name]
         self.pattern        = options[:pattern]
+        self.name           = options[:name] || self.pattern.scope_name
         self.grammar        = options[:grammar]
         self.start          = options[:start]
         self.end            = options[:end]
@@ -431,15 +432,6 @@ module Redcar
           nil
         end
       end
-      
-#       def remove_children_that_overlap(new_scope)
-#         each_child do |child|
-#           if child.overlaps?(new_scope) and 
-#               child != new_scope
-#             delete_child(child)
-#           end
-#         end
-#       end
       
       def first_child_after(loc)
         # this is the obvious way:

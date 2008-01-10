@@ -888,7 +888,8 @@ void print_iter(GtkTextIter* iter) {
   return;
 }
 
-void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
+void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner, 
+		  GtkTextIter* line_start_iter, GtkTextIter* line_end_iter) {
   ScopeData* sd = scope->data;
   GtkTextIter start_iter, end_iter;
   VALUE rba_settings, rbh_setting, rb_settings, rb_settings_scope, rbh_tag_settings, rbh, rba_tag_settings, rba;
@@ -901,6 +902,11 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
   scope_get_start_iter(scope, buffer, &start_iter, inner);
   scope_get_end_iter(scope, buffer, &end_iter, inner);
 
+/*   if (gtk_text_iter_compare(&start_iter, line_start_iter) == -1) */
+/*     start_iter = *line_start_iter; */
+/*   if (gtk_text_iter_compare(line_end_iter, &end_iter) == -1) */
+/*     end_iter = *line_end_iter; */
+
   rbh = rb_funcall(theme, rb_intern("global_settings"), 0);
 
   // set name
@@ -912,26 +918,28 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
     rbh_setting = rb_ary_entry(rba_settings, 0);
     rb_settings = rb_hash_aref(rbh_setting, rb_str_new2("settings"));
     rb_settings_scope = rb_hash_aref(rbh_setting, rb_str_new2("scope"));
-    snprintf(tag_name, 250, "%s (%d)", RSTRING(rb_settings_scope)->ptr, priority);
+    snprintf(tag_name, 250, "%s (%d)", RSTRING(rb_settings_scope)->ptr, priority-1);
     rbh_tag_settings = rb_funcall(theme, rb_intern("textmate_settings_to_pango_options"), 1, rb_settings);
   }
 
   // lookup or create tag
   tag_table = gtk_text_buffer_get_tag_table(buffer);
   tag = gtk_text_tag_table_lookup(tag_table, tag_name);
-  if (tag == NULL)
+  if (tag == NULL) {
     tag = gtk_text_buffer_create_tag(buffer, tag_name, NULL);
-
+  }
+  
   // set tag properties
   gtk_text_tag_set_priority(tag, priority-1);
-  if (RARRAY(rba_settings)->len == 0)
-    g_object_set(G_OBJECT(tag), "foreground", RSTRING(rb_hash_aref(rbh, rb_str_new2("foreground")))->ptr, NULL);
-  else
+
+  if (RARRAY(rba_settings)->len > 0)
+/*     g_object_set(G_OBJECT(tag), "foreground", RSTRING(rb_hash_aref(rbh, rb_str_new2("foreground")))->ptr, NULL); */
+/*   else */
     set_tag_properties(tag, rb_settings);
 
 /*   printf("colouring scope: %s [%s] ", sd->name, tag_name); */
 /*   print_iter(&start_iter); */
-/*   printf("-");  */
+/*   printf("-"); */
 /*   print_iter(&end_iter); */
 /*   puts(""); */
   gtk_text_buffer_apply_tag(buffer, tag, &start_iter, &end_iter);
@@ -972,7 +980,7 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
     if (current_data->name == NULL && pattern != Qnil && 
 	content_name == Qnil)
       continue;
-    colour_scope(buffer, current, theme, FALSE);
+    colour_scope(buffer, current, theme, FALSE, &start_iter, &end_iter);
   }
   
   return Qnil;

@@ -147,13 +147,29 @@ module Redcar
       set_grammar(SyntaxSourceView.grammar(:name => 'Ruby'))
     end
     
+    def iterize(offset)
+      self.buffer.get_iter_at_offset(offset)
+    end
+    
     def connect_signals
+      @insertion = []
+      @deletion = []
       self.buffer.signal_connect("insert_text") do |widget, iter, text, length|
+#        @insertion = [widget, iter.offset, text, length]
         store_insertion(iter, text, length)
         false
       end
       self.buffer.signal_connect("delete_range") do |widget, iter1, iter2|
+#        @deletion = [widget, iter1.offset, iter2.offset]
         store_deletion(iter1, iter2)
+        false
+      end
+      self.buffer.signal_connect_after("insert_text") do |widget, iter, text, length|
+        process_operation
+        false
+      end
+      self.buffer.signal_connect_after("delete_range") do |widget, iter1, iter2|
+        process_operation
         false
       end
       @no_colouring = false
@@ -248,11 +264,10 @@ module Redcar
       @operations << insertion
       SyntaxLogger.debug {"insertion of #{insertion[:lines]} lines from #{insertion[:from]} to #{insertion[:to]}"}
 #       unless $REDCAR_ENV and $REDCAR_ENV["nonlazy"]
-#         Gtk.idle_add do
-#           process_operation
-#         end
+#      Gtk.idle_add do
+#      end
 #       else
-        process_operation
+#        process_operation
 #       end
     end
     

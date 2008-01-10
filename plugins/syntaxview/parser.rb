@@ -555,6 +555,7 @@ module Redcar
         end
         
         if @colourer
+#          lp.all_scopes.each {|s| s.name}
           SyntaxExt.colour_line_with_scopes(@colourer, @colourer.theme, line_num, lp.all_scopes)
         end
         
