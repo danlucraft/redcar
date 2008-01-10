@@ -57,7 +57,7 @@ module Redcar
                  close_matchdata)
         allocate
         self.pattern        = pattern
-        self.name           = name || self.pattern.scope_name
+        self.name           = name || (self.pattern ? self.pattern.scope_name : nil)
         self.grammar        = grammar
         self.start          = start
         self.end            = end_loc
@@ -70,7 +70,7 @@ module Redcar
       
       def initialize2(options={})
         self.pattern        = options[:pattern]
-        self.name           = options[:name] || self.pattern.scope_name
+        self.name           = options[:name] || (self.pattern ? self.pattern.scope_name : nil)
         self.grammar        = options[:grammar]
         self.start          = options[:start]
         self.end            = options[:end]

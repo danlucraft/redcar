@@ -449,8 +449,8 @@ static VALUE rb_scope_get_start(VALUE self) {
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
-  if (!textloc_valid(&sd->start))
-    return Qnil;
+  //  if (!textloc_valid(&sd->start))
+  //    return Qnil;
   return rb_funcall(rb_cObject, rb_intern("TextLoc"),
 		    2, INT2FIX(sd->start.line), INT2FIX(sd->start.offset));
 }
@@ -461,8 +461,8 @@ static VALUE rb_scope_get_end(VALUE self) {
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
-  if (!textloc_valid(&sd->end))
-    return Qnil;
+/*   if (!textloc_valid(&sd->end)) */
+/*     return Qnil; */
   return rb_funcall(rb_cObject, rb_intern("TextLoc"),
 		    2, INT2FIX(sd->end.line), INT2FIX(sd->end.offset));
 }
