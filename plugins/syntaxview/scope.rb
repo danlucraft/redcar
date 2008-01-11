@@ -332,34 +332,6 @@ module Redcar
         self.parent.delete_child(self)
       end
 
-      # Shifts all scopes after offset in the given line 
-      # by the given amount.
-      def rb_shift_chars(line, amount, offset)
-        if self.start.line == line 
-          if self.start.offset > offset
-            self.start = TextLoc(self.start.line,
-                                 self.start.offset + amount)
-          end
-          if self.open_end and self.open_end.offset > offset
-            self.open_end = TextLoc(self.open_end.line,
-                                    self.open_end.offset + amount)
-          end
-        end
-        if self.end and self.end.line == line
-          if self.end.offset > offset
-            self.end = TextLoc(self.end.line,
-                               self.end.offset + amount)
-            if self.close_start
-              self.close_start = TextLoc(self.close_start.line,
-                                         self.close_start.offset + amount)
-            end
-          end
-        end
-        children.each do |cs| 
-          cs.shift_chars(line, amount, offset)
-        end
-      end
-      
       def shift_after(line, amount)
         if self.start.line >= line
           self.start = TextLoc(self.start.line + amount, self.start.offset)
@@ -387,50 +359,6 @@ module Redcar
           size += 1 + cs.size
         end
         size
-      end
-
-      def rb_scope_at(textloc)
-        if self.start <= textloc or !self.parent
-          if ((self.end==nil) or (self.end > textloc))
-            # children has a tendency to be very long for 1 scope in each document,
-            # so do a simple check that looks to see if it is the last child we need,
-            # which it often is when we are parsing an entire tab.
-            if children.last and children.last.end and children.last.end < textloc
-              return self
-            else
-              # old slow way:
-              # children.each do |cs|
-              #   if r = cs.scope_at(textloc)
-              #     return r
-              #   end
-              # end
-              
-              # new fast way (see vendor/binary_enum):
-              first_ix = children.find_flip_index do |cs|
-                !cs.end or cs.end >= textloc
-              end
-              if first_ix
-                second_ix = children.find_flip_index do |cs|
-                  cs.start > textloc
-                end
-                second_ix = children.length-1 unless second_ix
-                children[first_ix..second_ix].each do |cs|
-                  if r = cs.scope_at(textloc)
-                    return r
-                  end
-                end
-                self
-              else
-                self
-              end
-            end
-          else
-            nil
-          end
-        else
-          # My start is too late.
-          nil
-        end
       end
       
       def each(&block)

@@ -140,12 +140,6 @@ GObject* get_gobject(VALUE rbgobj) {
   return gh->gobj;
 }
 
-static VALUE set_window_title(VALUE self, VALUE rbgobj, VALUE title) {
-  GtkWidget *window = (GtkWidget *) get_gobject(rbgobj);
-  gtk_window_set_title(GTK_WINDOW(window), RSTRING_PTR(title));
-  return self;
-}
-
 // ----- Scope object
 
 typedef struct ScopeData_ {
@@ -1048,7 +1042,6 @@ static VALUE cScope, cTextLoc;
 void Init_syntax_ext() {
   // utility functions are in SyntaxExt
   mSyntaxExt = rb_define_module("SyntaxExt");
-  rb_define_module_function(mSyntaxExt, "set_window_title", set_window_title, 2);
   rb_define_module_function(mSyntaxExt, "colour_line_with_scopes", 
 		rb_colour_line_with_scopes, 4);
 

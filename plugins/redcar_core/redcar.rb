@@ -28,8 +28,6 @@ require 'vendor/ruby_extensions'
 require 'vendor/keyword_processor'
 require 'vendor/instruments'
 
-require 'image/image'
-
 require 'redcar/plist'
 require 'redcar/application'
 require 'redcar/events'
@@ -69,11 +67,6 @@ module Redcar
       Redcar.current_window = Redcar::RedcarWindow.new
     end
     
-    def load_image
-      self.image = Redcar::Image.new(:cache_dir => "cache/",
-                                     :sources => ["scripts/*/image.yaml", "plugins/*/image.yaml"])
-    end
-    
     def show_time
       st = Time.now
       yield
@@ -82,20 +75,10 @@ module Redcar
     end
     
     def load_stuff(options)
-      print "loading image ..."; $stdout.flush
-      show_time do
-        load_image
-      end
-      
-      Redcar.hook :shutdown do
-        Redcar.image.cache
-      end
-
       print "loading menus ..."; $stdout.flush
       show_time do
         Redcar::Menu.draw_menus
         Redcar::Toolbar.draw_toolbars
-        Redcar::Keymap.load
       end
       
       puts Redcar::Keymap.all      

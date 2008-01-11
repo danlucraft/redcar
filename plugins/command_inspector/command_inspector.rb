@@ -11,12 +11,12 @@ module Redcar
       command "Command Inspector/Open" do |c|
         c.menu = "Tools/Command Inspector"
         c.icon = :PREFERENCES
-        c.command =<<-RUBY
+        c.command do
           new_tab = Redcar.new_tab(Redcar::CommandInspectorTab)
           new_tab.name = "Command Inspector"
           new_tab.focus
           Redcar.StatusBar.main = "Opened Command Inspector"
-        RUBY
+        end
       end
     end
   end
