@@ -181,7 +181,7 @@ module Redcar
     
     user_commands do
       def cursor=(offset)
-        if offset.is_a? Gtk.TextIter
+        if offset.is_a? Gtk::TextIter
           self.buffer.place_cursor(offset)
         else
           case offset

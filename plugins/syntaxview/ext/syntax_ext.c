@@ -942,6 +942,7 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner,
 /*   printf("-"); */
 /*   print_iter(&end_iter); */
 /*   puts(""); */
+
   gtk_text_buffer_apply_tag(buffer, tag, &start_iter, &end_iter);
   return;
 }
