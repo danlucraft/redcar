@@ -334,7 +334,7 @@ module Redcar
 
       # Shifts all scopes after offset in the given line 
       # by the given amount.
-      def shift_chars(line, amount, offset)
+      def rb_shift_chars(line, amount, offset)
         if self.start.line == line 
           if self.start.offset > offset
             self.start = TextLoc(self.start.line,
@@ -432,14 +432,6 @@ module Redcar
           nil
         end
       end
-      
-#       def first_child_after(loc)
-#         # this is the obvious way:
-#         # @children.find {|cs| cs.start >= loc}
-        
-#         # this is a faster way (see vendor/binary_enum):
-#         children.find_flip {|cs| cs.start >= loc}
-#       end
       
       def each(&block)
         block.call(self)

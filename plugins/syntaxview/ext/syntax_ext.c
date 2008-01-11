@@ -738,6 +738,43 @@ static VALUE rb_scope_clear_not_on_line(VALUE self, VALUE rb_num) {
   }
 }
 
+int scope_shift_chars(Scope* scope, int line, int amount, int offset) {
+  ScopeData *sd;
+  sd = scope->data;
+  if (sd->start.line == line) {
+    if (sd->start.offset > offset)
+      sd->start.offset += amount;
+    if (textloc_valid(&sd->open_end) && sd->open_end.offset > offset)
+      sd->open_end.offset += amount;
+  }
+  if (textloc_valid(&sd->end) && sd->end.line == line) {
+    if (sd->end.offset > offset) {
+      sd->end.offset += amount;
+      if (textloc_valid(&sd->close_start))
+	sd->close_start.offset += amount;
+    }
+  }
+
+  Scope *child;
+  child = g_node_first_child(scope);
+  while (child != NULL) {
+    scope_shift_chars(child, line, amount, offset);
+    child = g_node_next_sibling(child);
+  }
+  return 1;
+}
+
+static VALUE rb_scope_shift_chars(VALUE self, VALUE rb_line, 
+				  VALUE rb_amount, VALUE rb_offset) {
+  int line = FIX2INT(rb_line);
+  int amount = FIX2INT(rb_amount);
+  int offset = FIX2INT(rb_offset);
+  Scope *s;
+  Data_Get_Struct(self, Scope, s);
+  scope_shift_chars(s, line, amount, offset);
+  return Qtrue;
+}
+
 int scope_remove_children_that_overlap(Scope* scope, Scope* other) {
   ScopeData *od = other->data;
   Scope *child;
@@ -1059,6 +1096,7 @@ void Init_syntax_ext() {
   rb_define_method(cScope, "clear_after",  rb_scope_clear_after, 1);
   rb_define_method(cScope, "clear_between",  rb_scope_clear_between, 2);
   rb_define_method(cScope, "clear_between_lines",  rb_scope_clear_between_lines, 2);
+  rb_define_method(cScope, "shift_chars",  rb_scope_shift_chars, 3);
   rb_define_method(cScope, "n_children",  rb_scope_n_children, 0);
   rb_define_method(cScope, "detach",  rb_scope_detach, 0);
   rb_define_method(cScope, "delete_any_on_line_not_in",  
