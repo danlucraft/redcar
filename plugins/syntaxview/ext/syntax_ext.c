@@ -607,6 +607,24 @@ static VALUE rb_scope_at(VALUE self, VALUE rb_loc) {
   }
 }
 
+static VALUE rb_scope_first_child_after(VALUE self, VALUE rb_loc) {
+  Scope *s, *child;
+  ScopeData *sd;
+  TextLoc *loc;
+  Data_Get_Struct(self, Scope, s);
+  Data_Get_Struct(rb_loc, TextLoc, loc);
+  if (g_node_n_children(s) == 0)
+    return Qnil;
+  child = g_node_first_child(s);
+  while (child != NULL) {
+    sd = child->data;
+    if (textloc_gte(&sd->start, loc))
+      return sd->rb_scope;
+    child = g_node_next_sibling(child);
+  }
+  return Qnil;
+}
+
 static VALUE rb_scope_add_child(VALUE self, VALUE c_scope) {
   if (self == Qnil || c_scope == Qnil)
     printf("rb_scope_add_child(nil, or nil)");
@@ -1037,6 +1055,7 @@ void Init_syntax_ext() {
   rb_define_method(cScope, "children",  rb_scope_get_children, 0);
   rb_define_method(cScope, "parent",  rb_scope_get_parent, 0);
   rb_define_method(cScope, "scope_at",  rb_scope_at, 1);
+  rb_define_method(cScope, "first_child_after",  rb_scope_first_child_after, 1);
   rb_define_method(cScope, "clear_after",  rb_scope_clear_after, 1);
   rb_define_method(cScope, "clear_between",  rb_scope_clear_between, 2);
   rb_define_method(cScope, "clear_between_lines",  rb_scope_clear_between_lines, 2);
