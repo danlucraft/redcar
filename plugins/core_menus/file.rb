@@ -7,7 +7,7 @@ module Redcar::Plugins::CoreMenus
     command "Core/File/New" do |c|
       c.menu = "File/New"
       c.icon = :FILE
-      c.keybinding = "super n"
+      c.keybinding = "control n"
       c.command %q{
         new_tab = Redcar.new_tab
         new_tab.focus
@@ -18,7 +18,7 @@ module Redcar::Plugins::CoreMenus
     command "Core/File/Open" do |c|
       c.menu = "File/Open"
       c.icon = :OPEN
-      c.keybinding = "super o"
+      c.keybinding = "control o"
       c.command %q{
         if filename = Redcar::Dialog.open and File.file?(filename)
           new_tab = Redcar.new_tab
@@ -38,7 +38,7 @@ module Redcar::Plugins::CoreMenus
     command "Core/File/Save" do |c|
       c.menu = "File/Save"
       c.icon = :SAVE
-      c.keybinding = "super s"
+      c.keybinding = "control s"
       c.sensitive = :unsaved_text_tabs?
       c.command %q{
         puts "saving file #{tab.filename}"
@@ -56,7 +56,7 @@ module Redcar::Plugins::CoreMenus
     command "Core/File/Save As" do |c|
       c.menu = "File/Save As"
       c.icon = :SAVE_AS
-      c.keybinding = "alt-super s"
+      c.keybinding = "alt-control s"
       c.sensitive = :unsaved_text_tabs?
       c.command %q{
         puts "saving file #{tab.filename}"
@@ -73,7 +73,7 @@ module Redcar::Plugins::CoreMenus
       c.menu = "File/Close"
       c.icon = :CLOSE
       c.command %q{ tab.close }
-      c.keybinding = "super w"
+      c.keybinding = "control w"
       c.sensitive = :open_tabs?
     end
     

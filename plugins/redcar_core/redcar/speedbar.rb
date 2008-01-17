@@ -77,6 +77,13 @@ module Redcar
     def self.build(options)
       hbox = Gtk::HBox.new
       
+      # title
+      if options[:title]
+        label = Gtk::Label.new(options[:title])
+        label.set_padding(5, 1)
+        hbox.pack_start(label, false)
+      end
+      
       # text entry boxes:
       entries = []
       options[:entry] ||= []

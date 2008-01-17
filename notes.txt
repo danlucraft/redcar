@@ -2,3 +2,154 @@ Command (curly hash)  = Super
 Option  (open switch) = Alt
 Control (^)           = Control
 
+
+___Menus
+
+  File
+    . New                     Cmd N
+    . New from Template >
+      . Edit Templates  Ctrl-Alt-Cmd T
+      . Template s>
+    . Open		Cmd O ?
+    . Open Recent >
+    . Re-Open With Encoding >
+    ---
+    . Close		Cmd W
+    . Close Tab		Cmd W
+    . Save  		Cmd S
+    . Save As		Shift-Cmd S
+    . Save All		Alt-Cmd S
+    ---
+    . New Project		Ctrl-Cmd N
+    . Save Project	Ctrl-Cmd S
+    . Save Project As	Shift-Ctrl-Cmd S
+    . Reveal in Project	Ctrl-Cmd R
+    ---
+    . Print				Cmd P
+  Edit
+    . Undo				Cmd Z
+    . Redo				Shift-Cmd Z
+    --
+    . Cut				Cmd X
+    . Copy				Cmd C
+    . Paste			    	Cmd V
+    . Paste Previous		    	Shift-Cmd V
+    . Paste from History		Ctrl-Alt-Cmd V
+    ---
+    . Mode				>
+    . Select				>
+    . Change to column selection	Alt
+    ---
+    . Find				>
+    . Spelling				>
+    . Completion			>
+    . Special Characters		Alt-Cmd T
+    ---
+    . Edit in Textmate			Alt-Cmd E
+  View
+    . Font				>
+    . Gutter				>
+    . Show/Hide Project Drawer		Ctrl-Alt-Cmd D
+    ---
+    . Soft Wrap TOG			Alt-Cmd W
+    . Wrap Column >
+    . Show Invisibles			AltCmd-I
+    ---
+    . Fold Current Block		F1
+    . Toggle Foldings at Level		>
+  Text
+    . Align				>
+    . Convert				>
+    . Move Selection			>
+    ---
+    . Shift Left			Cmd [
+    . Shift Right			Cmd ]
+    . Indent Selection			Alt-Cmd [
+    ---
+    . Edit Each Line in Selection	Alt-Cmd A
+    ---
+    . Reformat Selection		Ctrl Q
+    . Reformat and Justify		Ctrl J
+    . Unwrap Selection			Ctrl-Alt Q
+    ---
+    . Execute Selection Inserting Result Ctrl R
+    . Filter Through Command	  	Alt-Cmd R
+  Navigation
+    . Add Bookmark			Cmd F2
+    . Next Bookmark			F2
+    . Previous Bookmark			shift F2
+    ---
+    . Next File Tab			Alt-Cmd-Right
+    . Previous File Tab			Alt-Cmd-Left
+    . Go to Header/Source		Alt-Cmd-Up
+    . Go to File...			Cmd-T
+    . Go to Symbol...			Shift-Cmd T
+    . Go to Tab				>
+    ---
+    . Scroll				>
+    . Go to Line			Cmd L
+  Automation
+    . Start Macro Recording		Alt-Cmd M
+    . Abort Macro Recording
+    ---
+    . Save Scratch Macro...		Ctrl-Cmd M
+    . Replay Scratch Macro...		Shift-Cmd M
+    ---
+    . Replay Macro			>
+    . Insert Snippet			>
+    . Run Command			>
+    ---
+    . Insert Closing Tag		Alt-Cmd .
+  Window
+    . Minimize				Cmd M
+    . Zoom
+    ---
+    . Show Web Preview			Ctrl-Alt-Cmd P
+    . Show Bundle Editor		Ctrl-Alt-Cmd B
+    . Show CodeBrowser			Ctrl-Cmd T
+    ---
+    . Bring All to Front
+    . Arrange in Front
+    ---
+    Advanced
+    [window list]
+  Help
+
+___Screencasts
+
+Features in screencasts that should be in Redcar.
+
+_____Python Usage 101
+
+   . document templates
+   . snippets
+   . auto-completion on escape
+   . open parens around selection
+   . html window output
+
+_____Latex Intro
+
+   . (folding markers <- hate these)
+   . column typing ??
+   . bundle editor
+   . shell variable editor
+
+_____Latex Intro 2
+
+   . open folder in project window
+   . comments from bundles
+   . "Go to File" dialog
+   . Symbols -> sections in document etc.
+   . project specific shell variables
+   . tm_dialog?
+
+_____Scopes and Comments
+
+   . select scope
+   . control Q reflows the paragraph
+
+
+_____Rails Bundle Improvements
+
+   . multiple commands for one keybinding -> popup menu
+   . 

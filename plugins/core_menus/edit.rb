@@ -17,18 +17,10 @@ module Redcar::Plugins::CoreMenus
       c.icon = :REDO
       c.command %q{ tab.redo }
       c.sensitive = :can_redo?
-      c.keybinding = "alt-control z"
+      c.keybinding = "shift-control z"
     end
     
     menu_separator "Edit"
-    
-    command "Core/Edit/Copy" do |c|
-      c.menu = "Edit/Copy"
-      c.keybinding = "control c"
-      c.icon = :COPY
-      c.sensitive = :text_selected?
-      c.command = %{tab.copy}
-    end
     
     command "Core/Edit/Cut" do |c|
       c.menu = "Edit/Cut"
@@ -36,6 +28,14 @@ module Redcar::Plugins::CoreMenus
       c.icon = :CUT
       c.sensitive = :text_selected?
       c.command = %{tab.cut}
+    end
+    
+    command "Core/Edit/Copy" do |c|
+      c.menu = "Edit/Copy"
+      c.keybinding = "control c"
+      c.icon = :COPY
+      c.sensitive = :text_selected?
+      c.command = %{tab.copy}
     end
     
     command "Core/Edit/Paste" do |c|
@@ -61,7 +61,7 @@ module Redcar::Plugins::CoreMenus
     
     command "Core/Edit/Select All" do |c|
       c.menu = "Edit/Select/All"
-      c.keybinding = "control-shift A"
+      c.keybinding = "super-shift A"
       c.icon = :SELECT_ALL
       c.sensitive = :current_tab_is_text_tab?
       c.command %{ tab.select(0, tab.char_count) }
@@ -70,6 +70,7 @@ module Redcar::Plugins::CoreMenus
     command "Core/Edit/Select Character" do |c|
       c.menu = "Edit/Select/Character"
       c.sensitive = :current_tab_is_text_tab?
+      c.keybinding = "super c"
       c.command %{ 
         tab.select(
           tab.cursor_offset, 
@@ -81,7 +82,7 @@ module Redcar::Plugins::CoreMenus
     command "Core/Edit/Select Character" do |c|
       c.menu = "Edit/Select/Word"
       c.sensitive = :current_tab_is_text_tab?
-      c.keybinding = "control w"
+      c.keybinding = "super w"
       c.command %{ 
         if tab.cursor_iter.inside_word?
           s = tab.cursor_iter.backward_word_start!.offset
@@ -159,7 +160,7 @@ module Redcar::Plugins::CoreMenus
       c.fallback_input = :line
       c.command = %{input.downcase}
       c.output = :replace_input
-      c.keybinding = "control-shift U"
+      c.keybinding = "super-shift U"
     end
     
     command "Core/Edit/Title Case" do |c|
@@ -173,7 +174,7 @@ module Redcar::Plugins::CoreMenus
         end
       }
       c.output = :replace_input
-      c.keybinding = "alt-control U"
+      c.keybinding = "alt-super U"
     end
     
     command "Core/Edit/Upper Case" do |c|
@@ -183,7 +184,7 @@ module Redcar::Plugins::CoreMenus
       c.fallback_input = :line
       c.command %q{ input.upcase }
       c.output = :replace_input
-      c.keybinding = "control U"
+      c.keybinding = "super U"
     end
     
     command "Core/Edit/Invert Case" do |c|
@@ -193,9 +194,37 @@ module Redcar::Plugins::CoreMenus
       c.fallback_input = :line
       c.command = %{input.swapcase}
       c.output = :replace_input
-      c.keybinding = "control g"
+      c.keybinding = "super g"
     end
     
-    
+    command "Core/Edit/Find" do |c|
+      c.menu = "Edit/Find"
+      c.sensitive = :current_tab_is_text_tab?
+      c.command do
+        if $sb_find
+          $sb_find.close
+          $sb_find = nil
+        else
+          speedbar = Redcar::Speedbar.build(:title => "Find",
+                                            :buttons => [:find, :ok],
+                                            :entry => [
+                                                       {:name => :query_string, :type => :text}
+                                                      ])
+          $sb_find = speedbar
+          speedbar.on_button(:ok) { speedbar.close; $sb_find = nil }
+          speedbar.on_button(:find) do 
+            tab = Redcar.tabs.current
+            if tab
+              unless tab.find_next(speedbar.query_string)
+                Redcar.StatusBar.main = "not found"
+              end
+            end
+          end
+          speedbar.show
+        end 
+      end
+    end
   end
 end
+
+

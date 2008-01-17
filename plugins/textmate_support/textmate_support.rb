@@ -73,12 +73,12 @@ module Redcar::Plugins
         modifier_str = keyeq.strip[0..-2]
         modifiers = modifier_str.split("").map do |modchar|
           case modchar
-          when "^"
-            "control"
-          when "~"
-            "alt"
-          when "@"
+          when "^" # TM: Control
             "super"
+          when "~" # TM: Option
+            "alt"
+          when "@" # TM: Command
+            "control"
           end
         end
         modifiers.join("-") + " " + key_str.gsub("\e", "Escape")
