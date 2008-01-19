@@ -46,6 +46,24 @@ module Redcar
       m.command = "Core/Edit/Paste"
     end
     
+    command "TextTab/Invisiblize" do |m|
+      m.icon = :ADD
+      m.keybinding = "control i"
+      m.command do
+        tab = Redcar.current_tab
+        buffer = tab.sourceview.buffer
+        unless tag = buffer.tag_table.lookup("inv")
+          tag = Gtk::TextTag.new("inv")
+          tag.invisible = true
+          buffer.tag_table.add(tag)
+        end
+        sb = buffer.selection_bounds
+        buffer.apply_tag(tag, sb[0], sb[1])
+      end
+      m.context_menu = "TextTab/Invisiblize"
+    end
+    
+    
     context_menu_separator "TextTab"
     
     command "TextTab/Set Bookmark" do |m|
