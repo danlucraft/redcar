@@ -220,7 +220,6 @@ module Redcar
     end
     
     def issue_from_keystroke(keystroke)
-      p keystroke
       keystroke = KeyStroke.parse(keystroke)
       exists = Keymap.execute_keystroke(keystroke)
       if exists
