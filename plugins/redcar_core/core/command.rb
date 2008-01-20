@@ -7,6 +7,7 @@ module Redcar
       b = Builder.new
       yield b
       slot = $BUS['/redcar/commands/'+name.to_s].data = b
+      b.path = name
       if b.menu
         self.menu b.menu do |m|
           m.command = name
@@ -39,7 +40,7 @@ module Redcar
     class Builder
       attr_accessor(:name, :type, :tooltip, :scope_selector, 
                     :input, :output, :fallback_input, :icon, :sensitive,
-                    :menu, :keybinding, :context_menu, :tm_uuid)
+                    :menu, :keybinding, :context_menu, :tm_uuid, :path)
       def [](v)
         instance_variable_get("@"+v.to_s)
       end

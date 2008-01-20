@@ -74,9 +74,14 @@ module Redcar
     end
     
     def execute_keystroke(keystroke)
-      if command = @commands[keystroke.to_s].first
-        Command.execute(command)
-        return true
+      if candidates = @commands[keystroke.to_s]
+        if candidates.length > 1
+          puts "candidates: #{candidates.map{|c| c.path}.inspect}"
+        end
+        if command = candidates.first
+          Command.execute(command)
+          return true
+        end
       end
     end
     
