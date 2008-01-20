@@ -152,7 +152,7 @@ module Redcar
           if command = builder[:command]
             command = $BUS['/redcar/commands/'+command.to_s].data
             if command and command[:keybinding]
-              keybinding = command[:keybinding]
+              keybinding = KeyStroke.parse(command[:keybinding]).to_s
             end
           end
         end
@@ -160,6 +160,7 @@ module Redcar
           child = c.child
           c.remove(child)
           hbox = Gtk::HBox.new
+          child.set_size_request(120, 0)
           hbox.pack_start(child, false)
           accel = keybinding.to_s
           l = Gtk::Label.new(accel)

@@ -1,5 +1,22 @@
+
+
 module Redcar
-  
+  module Plugins
+    module Keymaps
+      extend FreeBASE::StandardPlugin
+      
+      def self.load(plugin)
+        Redcar::Keymap.set_standard_keymaps
+
+        plugin.transition(FreeBASE::LOADED)
+      end
+      
+      def self.start(plugin)
+        plugin.transition(FreeBASE::RUNNING)
+      end
+    end
+  end
+
   # A Keymap may be attached to any of the following with
   # Keymap#push_before
   # 1. Redcar.Keymap.Global
@@ -16,6 +33,15 @@ module Redcar
     GlobalPoint = :global
     TabPoint    = :tab
     
+    def self.set_standard_keymaps
+      # set up standard keymaps
+      global_keymap = Redcar::Keymap.new("Application Wide")
+      global_keymap.push_before(Redcar::Keymap::GlobalPoint)
+      
+      tab_keymap = Redcar::Keymap.new("Tab")
+      tab_keymap.push_before(Redcar::Keymap::TabPoint)
+    end
+
     @@keymaps = []
     @@stack = {}
     
@@ -25,6 +51,7 @@ module Redcar
       @name = name
       @@keymaps << self
       @commands = {}
+      @count = 0
     end
     
     def push_before(object)
@@ -33,7 +60,9 @@ module Redcar
     end
     
     def add_command(command)
-      @commands[command[:keybinding].to_s] = command
+      @count += 1
+      arr = (@commands[KeyStroke.parse(command[:keybinding].to_s).to_s] ||= [])
+      arr << command
     end
     
     def keystrokes
@@ -45,14 +74,14 @@ module Redcar
     end
     
     def execute_keystroke(keystroke)
-      if command = @commands[keystroke.to_s]
+      if command = @commands[keystroke.to_s].first
         Command.execute(command)
         return true
       end
     end
     
     def inspect
-      "#<Keymap:\"#{@name}\" #{@commands.length} commands>"
+      "#<Keymap:\"#{@name}\" #{@count} commands>"
     end
     
     alias to_s inspect
@@ -126,21 +155,21 @@ module Redcar
       false
     end
   end
-    
+  
   class KeyStroke
     attr_reader :modifiers, :keyname
     def initialize(modifiers, keyname)
       @modifiers = modifiers.sort_by {|m| m.to_s }
-      @keyname = keyname
+      @keyname = keyname.upcase
     end
     
     def to_s
       if self.modifiers.length > 0
-        str = self.modifiers.join('-')+" "
+        str = self.modifiers.join('+')+"+"
       else
         str = ""
       end
-      str+self.keyname
+      str+self.keyname.upcase
     end
     
     def ==(other)
@@ -157,15 +186,15 @@ module Redcar
         mods = str_mods.split('-').map do |sm|
           case sm.downcase
           when "alt", "a"
-            :alt
+            :Alt
           when "control", "ctrl", "c"
-            :control
+            :Ctrl
           when "shift", "sh", "s"
-            :shift
+            :Shift
           when "caps", "lock", "capslock", "cl"
-            :caps
+            :Caps
           when "super", "sup", "spr", "sp"
-            :super
+            :Super
           end
         end
         self.new(mods, str_keyname)
@@ -236,13 +265,15 @@ module Redcar
       keyname = Gdk::Keyval.to_name(gdk_eventkey.keyval) if keyname=="\000"
       gdk_modifier_type = gdk_eventkey.state
       modifiers = []
-      modifiers << :control if gdk_modifier_type.control_mask?
-      modifiers << :alt     if gdk_modifier_type.mod1_mask?
-      modifiers << :caps    if gdk_modifier_type.lock_mask?
-      modifiers << :shift   if gdk_modifier_type.shift_mask?
-      modifiers << :super   if gdk_modifier_type.mod4_mask?
+      modifiers << :Ctrl if gdk_modifier_type.control_mask?
+      modifiers << :Alt     if gdk_modifier_type.mod1_mask?
+      modifiers << :Caps    if gdk_modifier_type.lock_mask?
+      modifiers << :Shift   if gdk_modifier_type.shift_mask?
+      modifiers << :Super   if gdk_modifier_type.mod4_mask?
       
-      KeyStroke.new(modifiers, keyname)
+      ks = KeyStroke.new(modifiers, keyname)
+      p ks
+      ks
     end
     
     def issue_from_gdk_eventkey(gdk_eventkey)
@@ -250,9 +281,3 @@ module Redcar
     end
   end
 end
-
-global_keymap = Redcar.Keymap.new("Application Wide")
-global_keymap.push_before(Redcar.Keymap.GlobalPoint)
-
-tab_keymap = Redcar.Keymap.new("Tab")
-tab_keymap.push_before(Redcar.Keymap.TabPoint)

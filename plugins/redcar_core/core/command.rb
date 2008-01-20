@@ -35,6 +35,7 @@ module Redcar
       b.sensitive ||= :nothing
       b.name ||= ""
     end
+    
     class Builder
       attr_accessor(:name, :type, :tooltip, :scope_selector, 
                     :input, :output, :fallback_input, :icon, :sensitive,

@@ -13,6 +13,11 @@ module Redcar
       
       def self.start(plugin)
         Redcar.main_startup(:output => :silent)
+        set_main_loop(plugin)
+        plugin.transition(FreeBASE::RUNNING)
+      end
+      
+      def self.set_main_loop(plugin)
         plugin["/system/ui/messagepump"].set_proc do
           begin
             Gtk.main
@@ -37,7 +42,6 @@ ERR
             plugin["/system/shutdown"].call(1)
           end
         end
-        plugin.transition(FreeBASE::RUNNING)
       end
     end
   end
