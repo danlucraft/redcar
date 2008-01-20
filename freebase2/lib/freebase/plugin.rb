@@ -271,6 +271,19 @@ module FreeBASE
     #
     def reload
       puts "reloading #{@plugin_configuration.name}"
+      
+      # remove methods from testcase
+      if pm = @plugin_configuration.test_module
+        begin
+          if tc = eval(pm)
+            tc.instance_methods.select{|m| m=~/^test_/}.each do |meth|
+              tc.class_eval { remove_method(meth) }
+            end
+          end
+        rescue
+        end
+      end
+        
       @base_slot["files"].each_slot do |s|
         (s.data||[]).each do |f|
           if File.extname(f) == ".rb"
