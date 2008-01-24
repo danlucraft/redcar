@@ -65,8 +65,8 @@
   %li <b>menu</b> creates a menu-item at the location specified.
   %li <b>icon</b> sets the icon for the menu and/or toolbar.
   %li <b>keymap</b> creates a keymap for the command. 
-  %li <b>scope</b> sets a scope selector for this command. If the cursor is not in a matching scope, the menu item and/or toolbar items will be greyed out and the keymap will not work. The command can still be executed explicitly through <b>Alt+X</b> however.
-  %li <b>sensitive</b>, like 'scope', allows you to sensitize the command to the current state of the editor. But 'sensitive' is more general. Options are :texttab_focussed?, :tab_focussed?, :can_undo?, :can_redo? etc.
+  %li <b>scope</b> sets a scope selector for this command. If the cursor is not in a matching scope, the keymap for this command will not work. The command can still be executed explicitly through the menus/toolbars and <b>Alt+X</b> however.
+  %li <b>sensitive</b>, like 'scope', allows you to sensitize the command to the current state of the editor. But 'sensitive' is more general with options such as :texttab_focussed?, :tab_focussed?, :can_undo?, :can_redo? etc. Sensitive also greys out menu items. (Example: <b>Edit|Cut</b> is sensitive to :text_selected?.)
   %li <b>primitive</b> is either true or false, with the default false. The difference is that primitive commands are entered into the <a href="">command history</a> and non-primitive commands are not. This largely depends upon whether a command requires user input: if it does, it is not primitive, as it could not be automatically repeated.
- 
+%p You can see some examples of commands in plugins/core_menus/edit.rb.
 %h2 Writing Plugins
