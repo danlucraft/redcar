@@ -3,7 +3,7 @@
 
 module Redcar
   module Plugins
-    module StartPage
+    class StartPage
       extend FreeBASE::StandardPlugin
       extend Redcar::PreferencesBuilder
       extend Redcar::MenuBuilder
@@ -17,7 +17,7 @@ module Redcar
       command "startpage/display" do |c|
         c.menu = "Tools/Display Startpage"
         c.icon = :CUT
-        c.command %q{
+        c.command do
           nt = Redcar.new_tab
           nt.name = "#scratch"
           nt.textview.set_grammar(Redcar::SyntaxSourceView.grammar(:name => 'Ruby'))
@@ -28,7 +28,7 @@ module Redcar
                         "class Red < Car\\n  def foobar\\n    puts :foo "
           nt.cursor = 0
           nt.modified = false
-        }
+        end
       end
       
 #       menu "Tools/Display Startpage" do |m|
