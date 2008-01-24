@@ -5,6 +5,7 @@ $REDCAR_ENV ||= {}
 $REDCAR_ENV["test"] = false
 
 $: << File.dirname(__FILE__)
+$: << File.dirname(__FILE__) + "/../../vendor"
 
 print "loading gems..."
 require 'rubygems'

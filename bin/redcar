@@ -1,6 +1,8 @@
 
 require 'getoptlong'
 
+HERE = File.dirname(__FILE__)
+
 # See if a code base was passed as an argument. If not
 # default the codebase to the path of the freeride.rb script
 codebase = File.expand_path(File.dirname(__FILE__))
@@ -12,7 +14,7 @@ $FREEBASE_APPLICATION = "Redcar"
 
 $:.unshift(File.join(codebase, "..", "lib"))
 
-require 'freebase2/lib/freebase/freebase'
+require HERE + '/../freebase2/lib/freebase/freebase'
 
 module Redcar
   VERSION = '0.0.1'

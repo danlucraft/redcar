@@ -76,9 +76,13 @@ module Redcar
     def execute_keystroke(keystroke)
       if candidates = @commands[keystroke.to_s]
         if candidates.length > 1
+          menu_entries = candidates.map do |command|
+            [nil, command.name, command.path]
+          end
+          $BUS['/redcar/services/context_menu_options_popup'].call(menu_entries)
           puts "candidates: #{candidates.map{|c| c.path}.inspect}"
-        end
-        if command = candidates.first
+        else
+          command = candidates.first
           Command.execute(command)
           return true
         end
@@ -277,8 +281,6 @@ module Redcar
       modifiers << :Super   if gdk_modifier_type.mod4_mask?
       
       ks = KeyStroke.new(modifiers, keyname)
-      p ks
-      ks
     end
     
     def issue_from_gdk_eventkey(gdk_eventkey)

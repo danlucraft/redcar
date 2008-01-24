@@ -1,0 +1,195 @@
+%h1 Redcar API
+#col1
+  %ul
+    %li=link "Redcar::App", "api.html#app"
+    %li=link "Redcar::Window"
+    %li=link "Redcar::Pane"
+    %li=link "Redcar::Tab"
+    %li=link "Redcar::TextTab"
+    %li=link "Redcar::Document"
+    %li=link "Redcar::View"
+    %li=link "Redcar::Plugin"
+    %li=link "Redcar::Command"
+  %h3 Redcar::App
+  %p Redcar::App is a module that controls the application state. There is only ever one instance of the databus per application, and it is accessible through this module. Redcar::App controls the creation of Redcar::Windows, and if ever all Redcar::Windows are closed, the application will terminate.
+  %table
+    %tr
+      %td.meth App.quit
+      %td Closes all tabs, stops all plugins, and quits the application
+    %tr
+      %td.meth App.bus
+      %td The application databus. 
+    %tr
+      %td.meth App.new_window (focus = true)
+      %td Opens a new window.
+    %tr
+      %td.meth App.windows
+      %td Returns an array of open Redcar Windows (or [])
+    %tr
+      %td.meth App.focussed_window
+      %td Returns the currently focussed window.
+    %tr
+      %td.meth App.close_all_windows
+      %td Alias for App.quit
+  %h3 Redcar::Window
+  %p A Redcar::Window inherits from Gtk::Window. Windows provide access to their child Panes and a Window will always have at least one child Pane. A Window can (and should) be used to control the creation of Tabs, but in fact the Window delegates this to its child Panes.
+  %table
+    %tr
+      %td.meth close
+      %td Closes the Window.
+    %tr
+      %td.meth new_tab (focus = true)
+      %td Opens a new tab in the appropriate child Pane. Returns a Tab.
+    %tr
+      %td.meth panes
+      %td Returns an array of the Window's child panes.      
+    %tr
+      %td.meth tabs
+      %td Returns an array of all tabs in this window (or []).
+    %tr
+      %td.meth active_tabs
+      %td Returns an array of the visible tabs in all panes (or []).
+    %tr
+      %td.meth focussed_tab
+      %td Returns the currently focussed tab in this window (or nil).
+  %h3 Redcar::Pane
+  %p Redcar::Panes wrap Gtk::Notebooks inside a nested set of Gtk::VBoxs and Gtk::HBoxs. A Pane controls the creation of Redcar::Tabs.
+  %table
+    %tr
+      %td.meth new_tab (focus = true)
+      %td Opens a new tab in this pane. Returns a Redcar::Tab.
+    %tr
+      %td.meth close_tab (tab)
+      %td Closes a Tab.
+    %tr
+      %td.meth close_all_tabs
+      %td Closes all Tabs in this pane.
+    %tr
+      %td.meth tabs
+      %td Returns an array of all tabs in this pane.
+    %tr
+      %td.meth active_tab
+      %td Returns the visible tab in this pane.
+    %tr
+      %td.meth orientation
+      %td Returns the orientation of this Pane's tabs.
+    %tr
+      %td.meth orientation= (o)
+      %td Sets the orientation. o is one of (:horizontal, :top_to_bottom, :bottom_to_top)
+    %tr
+      %td.meth position
+      %td Returns the position of this Pane's tabs.
+    %tr
+      %td.meth position= (p)
+      %td Sets the position of this Pane's tabs. p is one of (:top, :bottom, :left, :right)
+    %tr
+      %td.meth split_horizontal
+      %td Divides this Pane into two Panes: left and right. The Tabs will be placed in the right pane.
+    %tr
+      %td.meth split_vertical
+      %td Divides this Pane into two Panes: top and bottom. The Tabs will be placed in the top pane.
+    %tr
+      %td.meth unify
+      %td Undoes the split that created this pane. 
+
+  %h3 Redcar::Tab
+  %p A wrapper for a Gtk::Notebook tab. This is an 'abstract' class that contains no actual Gtk widgets.
+  %table
+    %tr
+      %td.meth close
+      %td Closes the Tab
+    %tr
+      %td.meth title
+      %td The title of the Tab.
+    %tr
+      %td.meth title= (name)
+      %td Sets the title of the Tab.
+    %tr
+      %td.meth move_pane (pane)
+      %td Moves the Tab into pane.
+    %tr
+      %td.meth focus
+      %td Focusses the tab.
+  %h3 Redcar::TextTab < Redcar::Tab
+  %p A Tab containing a View and a Document.
+  %table
+    %tr
+      %td.meth document
+      %td Returns the Document contained in this Tab.
+    %tr
+      %td.meth view
+      %td Returns the View contained in this Tab.
+  %h3 Redcar::Document
+  %p The Document class contains the text in a Tab and controls most 'text editing' features. It has a special significance as the methods in this class are recorded in the command history for use in macros, undo, redo, repeat etc.
+  %table
+    %tr
+      %td.meth cursor_offset
+      %td The offset of the cursor.
+    %tr
+      %td.meth selection_offset
+      %td The offset of the selection point.
+    %tr
+      %td.meth selection_bounds
+      %td [cursor_offset, selection_offset]
+    %tr
+      %td.meth forward_character
+      %td Moves the cursor forward a character.
+    %tr
+      %td.meth backward_character
+      %td Moves the cursor backward a character.
+    %tr
+      %td.meth forward_word
+      %td Moves the cursor forward a word.
+    %tr
+      %td.meth backward_word
+      %td Moves the cursor backward a word.
+    %tr
+      %td.meth find_next (string|re)
+      %td Find next occurrence of the string or regular expression argument.
+    %tr
+      %td.meth find_previous (string|re)
+      %td Find previous occurrence of the string or regular expression argument.
+    %tr
+      %td.meth insert (offset, text)
+      %td Inserts the string text at offset.
+    %tr
+      %td.meth delete (start_offset, end_offset)
+      %td Deletes the text between start_offset and end_offset.
+    %tr
+      %td.meth replace_line (n, text = nil) {|line| ...}
+      %td Replaces line n with text, or the value returned by the block.
+    %tr
+      %td.meth replace_selection (text = nil) {|seln| ...}
+      %td Replaces the selection with text, or the value returned by the block.
+  %h3 Redcar::View
+  %table
+    %tr
+      %td.meth scope_at_cursor
+      %td Returns the scope at the cursor position as a string.
+  %h3 Redcar::Plugin
+  %p The Redcar::Plugin class should be inherited from to create your Redcar plugins. It should define the instance methods below and may make use of the class methods. From with the load, start, stop and unload methods you can call 'abort' to abort the transition to the next plugin state. 
+  %table
+    %tr
+      %td.meth load
+      %td This method will be executed when the plugin loads.
+    %tr
+      %td.meth start
+      %td This method will be executed when the plugin starts.
+    %tr
+      %td.meth stop
+      %td This method will be executed when the plugin is stopped.
+    %tr
+      %td.meth unload
+      %td This method will be executed when the plugin is unloaded (this doesn't often happen).
+    %tr
+      %td.meth abort
+      %td When called from within load, start, stop or unload this will abort the plugin state transition.
+    %tr
+      %td.meth Plugin.preference (path) {|pb| ... }
+      %td Creates a user definable plugin preference, using the builder passed into the block.
+    %tr
+      %td.meth Plugin.command (path) {|cb| ... }
+      %td Creates a Redcar::Command, using the builder passed into the block.
+    %tr
+      %td.meth Plugin.menu_item (menupath, compath) 
+      %td Creates a menu item.
