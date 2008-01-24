@@ -1,0 +1,72 @@
+
+
+
+%h1 Commands and Plugins in Redcar
+%p Redcar has a rich interface for writing commands and plugins. Both commands and plugins make use of the same <a href="/api.html">API</a>, but plugins extend this by providing a convenient way to define sets of commands, menu items, toolbar items and context menus.
+%h2 Writing Commands
+%p To add a command to the currently running Redcar session, select <b>Automation|Command Pad</b>. This will open a new tab. In this tab write your command as a method, and then click the <em>Evaluate</em> button. For instance, if you entered this:
+%code 
+  &nbsp;&nbsp;def strip_trailing_whitespace
+  %br
+  &nbsp;&nbsp;&nbsp;&nbsp;(0..tab.num_lines).each do |n|
+  %br
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tab.replace_line(n) do |line|
+  %br
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;line.gsub(/\s+$/, "")
+  %br
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end
+  %br
+  &nbsp;&nbsp;&nbsp;&nbsp;end
+  %br
+  &nbsp;&nbsp;end
+%p You would now have the <em>strip_trailing_whitespace</em> command available. If you type <b>Alt+X</b>, and then "CommandPad.strip_trailing_whitespace" into the speedbar that appears, this command would be executed. The Command Pad automatically adds the command as a menu item, which you would find as <b>Automation|User Commands|Strip Trailing Whitespace</b>.
+%p If you would like to give this command a keymap or a scope selector, you can include some declarations:
+%code 
+  &nbsp;&nbsp;keymap "Ctrl+Shift+P"
+  %br
+  &nbsp;&nbsp;scope&nbsp;  "source"
+  %br
+  %br
+  &nbsp;&nbsp;def strip_trailing_whitespace
+  %br
+  &nbsp;&nbsp;&nbsp;&nbsp;(0..tab.num_lines).each do |n|
+  %br
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tab.replace_line(n) do |line|
+  %br
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;line.gsub(/\s+$/, "")
+  %br
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end
+  %br
+  &nbsp;&nbsp;&nbsp;&nbsp;end
+  %br
+  &nbsp;&nbsp;end
+%p Here's an example showing all the properties of a command you can specify.
+%code 
+  &nbsp;&nbsp;menu&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "File/Talk"
+  %br
+  &nbsp;&nbsp;icon&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  :EXECUTE
+  %br
+  &nbsp;&nbsp;keymap&nbsp;&nbsp;&nbsp;&nbsp; "Global/Ctrl+Shift+P"
+  %br
+  &nbsp;&nbsp;scope&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "source"
+  %br
+  &nbsp;&nbsp;sensitive&nbsp;  :texttab_focussed?
+  %br
+  &nbsp;&nbsp;primitive&nbsp;  true
+  %br
+  %br
+  &nbsp;&nbsp;def talk
+  %br
+  &nbsp;&nbsp;&nbsp;&nbsp;puts "hello"
+  %br
+  &nbsp;&nbsp;end
+%p What do each of these mean?
+%ul
+  %li <b>menu</b> creates a menu-item at the location specified.
+  %li <b>icon</b> sets the icon for the menu and/or toolbar.
+  %li <b>keymap</b> creates a keymap for the command. 
+  %li <b>scope</b> sets a scope selector for this command. If the cursor is not in a matching scope, the menu item and/or toolbar items will be greyed out and the keymap will not work. The command can still be executed explicitly through <b>Alt+X</b> however.
+  %li <b>sensitive</b>, like 'scope', allows you to sensitize the command to the current state of the editor. But 'sensitive' is more general. Options are :texttab_focussed?, :tab_focussed?, :can_undo?, :can_redo? etc.
+  %li <b>primitive</b> is either true or false, with the default false. The difference is that primitive commands are entered into the <a href="">command history</a> and non-primitive commands are not. This largely depends upon whether a command requires user input: if it does, it is not primitive, as it could not be automatically repeated.
+ 
+%h2 Writing Plugins
