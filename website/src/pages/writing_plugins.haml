@@ -8,9 +8,9 @@
 %code 
   &nbsp;&nbsp;def strip_trailing_whitespace
   %br
-  &nbsp;&nbsp;&nbsp;&nbsp;(0..tab.num_lines).each do |n|
+  &nbsp;&nbsp;&nbsp;&nbsp;(0..doc.num_lines).each do |n|
   %br
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tab.replace_line(n) do |line|
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;doc.replace_line(n) do |line|
   %br
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;line.gsub(/\s+$/, "")
   %br
@@ -29,9 +29,9 @@
   %br
   &nbsp;&nbsp;def strip_trailing_whitespace
   %br
-  &nbsp;&nbsp;&nbsp;&nbsp;(0..tab.num_lines).each do |n|
+  &nbsp;&nbsp;&nbsp;&nbsp;(0..doc.num_lines).each do |n|
   %br
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tab.replace_line(n) do |line|
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;doc.replace_line(n) do |line|
   %br
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;line.gsub(/\s+$/, "")
   %br
@@ -70,3 +70,37 @@
   %li <b>primitive</b> is either true or false, with the default false. The difference is that primitive commands are entered into the <a href="">command history</a> and non-primitive commands are not. This largely depends upon whether a command requires user input: if it does, it is not primitive, as it could not be automatically repeated.
 %p You can see some examples of commands in plugins/core_menus/edit.rb.
 %h2 Writing Plugins
+
+%h3 Redcar::Plugin
+%p The Redcar::Plugin class should be inherited from to create your Redcar plugins. It should define the instance methods below and may make use of the class methods. From with the load, start, stop and unload methods you can call 'abort' to abort the transition to the next plugin state. 
+%table
+  %tr
+    %td.meth load
+    %td This method will be executed when the plugin loads.
+  %tr
+    %td.meth start
+    %td This method will be executed when the plugin starts.
+  %tr
+    %td.meth stop
+    %td This method will be executed when the plugin is stopped.
+  %tr
+    %td.meth unload
+    %td This method will be executed when the plugin is unloaded (this doesn't often happen).
+  %tr
+    %td.meth abort
+    %td When called from within load, start, stop or unload this will abort the plugin state transition.
+  %tr
+    %td.meth Plugin.preference (path) {|pb| ... }
+    %td Creates a user definable plugin preference, using the builder passed into the block.
+  %tr
+    %td.meth Plugin.command { ... }
+    %td Creates a Redcar::Command.
+  %tr
+    %td.meth Plugin.menu_item (menupath, compath) 
+    %td Creates a menu item.
+%h3 Testing Plugins
+%p Your plugin configuration file may specify testing parameters:
+%code
+  &nbsp;&nbsp;test_path: plugins/my_plugin/test.rb
+  %br
+  &nbsp;&nbsp;test_module: MyPlugin::Test
