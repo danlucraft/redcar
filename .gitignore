@@ -1,3 +1,16 @@
 *~
 *.o
 *.so
+*.log
+
+cache/bundle_commands.yml
+cache/bundles.yml
+cache/cache.img
+cache/grammars.dump
+cache/themes.dump
+cache/tmp.command
+
+custom/arrangements.yaml
+custom/preferences.yaml
+
+textmate/*
