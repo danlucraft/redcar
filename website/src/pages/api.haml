@@ -9,6 +9,7 @@
     %li=link "Redcar::TextTab"
     %li=link "Redcar::Document"
     %li=link "Redcar::View"
+    %li=link "Redcar::Project"
   %h3 Object
   %p Certain useful methods are added to Object.
   %table
@@ -130,6 +131,18 @@
     %tr
       %td.meth.red view
       %td Returns the View contained in this Tab.
+    %tr
+      %td.meth.red set_file (filename) 
+      %td Sets the filename of the document.
+    %tr
+      %td.meth.red load
+      %td Loads the file.
+    %tr
+      %td.meth.red save
+      %td Saves the file.
+    %tr
+      %td.meth.red modified?
+      %td Returns whether the document has been modified.
   %h3 Redcar::Document
   %p The Document class contains the text in a Tab and controls most 'text editing' features.
   %table
@@ -258,3 +271,20 @@
     %tr
       %td.meth.red scope_at_cursor
       %td Returns the scope at the cursor position as a string.
+  %h3 Redcar::Project
+  %table
+    %tr
+      %td.meth.red objects
+      %td Returns files and folders in the current project. ["README", "lib/"]
+    %tr
+      %td.meth.red add_object (file_or_dir)
+      %td Add a file or folder to the project.
+    %tr
+      %td.meth.red remove_object (file_or_dir)
+      %td Removes the file or folder from the project.
+    %tr
+      %td.meth.red open_file (file)
+      %td Open a file in a new tab, or focus a tab if already open.
+    %tr
+      %td.meth.red open_folder (folder)
+      %td Opens a folder in the project tab.

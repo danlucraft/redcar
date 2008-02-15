@@ -22,10 +22,10 @@ module Redcar
           nt.name = "#scratch"
           nt.textview.set_grammar(Redcar::SyntaxSourceView.grammar(:name => 'Ruby'))
           nt.focus
-          nt.contents = "# This is Redcar, scriptable editing for Linux.\\n" + 
-                        "# Copyright Daniel Lucraft 2008\\n"+
-                        "# \\n# In Redcar, the super key is the 'Windows' key, usually next to Alt.\\n"+
-                        "class Red < Car\\n  def foobar\\n    puts :foo "
+          nt.contents = "# This is Redcar, scriptable editing for Linux.\n" + 
+                        "# Copyright Daniel Lucraft 2008\n"+
+                        "# \n# In Redcar, the super key is the 'Windows' key, usually next to Alt.\n"+
+                        "class Red < Car\n  def foobar\n    puts :foo "
           nt.cursor = 0
           nt.modified = false
         end

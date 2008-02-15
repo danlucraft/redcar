@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <title>StaticMatic</title>
+    <link href="stylesheets/application.css" media="all" rel="stylesheet" type="text/css"/>
+  </head>
+  <body>
+    <h1>Commands and Plugins in Redcar</h1>
+    <p>
+      Redcar has a rich interface for writing commands and plugins. Both commands and plugins make use of the same <a href="/api.html">API</a>, but plugins extend this by providing a convenient way to define sets of commands, menu items, toolbar items and context menus.
+    </p>
+    <h2>Writing Commands</h2>
+    <p>
+      To add a command to the currently running Redcar session, select <b>Automation|Command Pad</b>. This will open a new tab. In this tab write your command as a method, and then click the <em>Evaluate</em> button. For instance, if you entered this:
+    </p>
+    <code>
+      &nbsp;&nbsp;def strip_trailing_whitespace
+      <br />
+      &nbsp;&nbsp;&nbsp;&nbsp;(0..doc.num_lines).each do |n|
+      <br />
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;doc.replace_line(n) do |line|
+      <br />
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;line.gsub(/\s+$/, "")
+      <br />
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end
+      <br />
+      &nbsp;&nbsp;&nbsp;&nbsp;end
+      <br />
+      &nbsp;&nbsp;end
+    </code>
+    <p>
+      You would now have the <em>strip_trailing_whitespace</em> command available. If you type <b>Alt+X</b>, and then "CommandPad.strip_trailing_whitespace" into the speedbar that appears, this command would be executed. The Command Pad automatically adds the command as a menu item, which you would find as <b>Automation|User Commands|Strip Trailing Whitespace</b>.
+    </p>
+    <p>
+      If you would like to give this command a keymap or a scope selector, you can include some declarations:
+    </p>
+    <code>
+      &nbsp;&nbsp;keymap "Ctrl+Shift+P"
+      <br />
+      &nbsp;&nbsp;scope&nbsp;  "source"
+      <br />
+      <br />
+      &nbsp;&nbsp;def strip_trailing_whitespace
+      <br />
+      &nbsp;&nbsp;&nbsp;&nbsp;(0..doc.num_lines).each do |n|
+      <br />
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;doc.replace_line(n) do |line|
+      <br />
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;line.gsub(/\s+$/, "")
+      <br />
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end
+      <br />
+      &nbsp;&nbsp;&nbsp;&nbsp;end
+      <br />
+      &nbsp;&nbsp;end
+    </code>
+    <p>
+      Here's an example showing all the properties of a command you can specify.
+    </p>
+    <code>
+      &nbsp;&nbsp;menu&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "File/Talk"
+      <br />
+      &nbsp;&nbsp;icon&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  :EXECUTE
+      <br />
+      &nbsp;&nbsp;keymap&nbsp;&nbsp;&nbsp;&nbsp; "Global/Ctrl+Shift+P"
+      <br />
+      &nbsp;&nbsp;scope&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  "source"
+      <br />
+      &nbsp;&nbsp;sensitive&nbsp;  :texttab_focussed?
+      <br />
+      &nbsp;&nbsp;primitive&nbsp;  true
+      <br />
+      <br />
+      &nbsp;&nbsp;def talk
+      <br />
+      &nbsp;&nbsp;&nbsp;&nbsp;puts "hello"
+      <br />
+      &nbsp;&nbsp;end
+    </code>
+    <p>What do each of these mean?</p>
+    <ul>
+      <li>
+        <b>menu</b> creates a menu-item at the location specified.
+      </li>
+      <li>
+        <b>icon</b> sets the icon for the menu and/or toolbar.
+      </li>
+      <li><b>keymap</b> creates a keymap for the command.</li>
+      <li>
+        <b>scope</b> sets a scope selector for this command. If the cursor is not in a matching scope, the keymap for this command will not work. The command can still be executed explicitly through the menus/toolbars and <b>Alt+X</b> however.
+      </li>
+      <li>
+        <b>sensitive</b>, like 'scope', allows you to sensitize the command to the current state of the editor. But 'sensitive' is more general with options such as :texttab_focussed?, :tab_focussed?, :can_undo?, :can_redo? etc. Sensitive also greys out menu items. (Example: <b>Edit|Cut</b> is sensitive to :text_selected?.)
+      </li>
+      <li>
+        <b>primitive</b> is either true or false, with the default false. The difference is that primitive commands are entered into the <a href="">command history</a> and non-primitive commands are not. This largely depends upon whether a command requires user input: if it does, it is not primitive, as it could not be automatically repeated.
+      </li>
+    </ul>
+    <p>
+      You can see some examples of commands in plugins/core_menus/edit.rb.
+    </p>
+    <h2>Writing Plugins</h2>
+    <h3>Redcar::Plugin</h3>
+    <p>
+      The Redcar::Plugin class should be inherited from to create your Redcar plugins. It should define the instance methods below and may make use of the class methods. From with the load, start, stop and unload methods you can call 'abort' to abort the transition to the next plugin state.
+    </p>
+    <table>
+      <tr>
+        <td class='meth'>load</td>
+        <td>
+          This method will be executed when the plugin loads.
+        </td>
+      </tr>
+      <tr>
+        <td class='meth'>start</td>
+        <td>
+          This method will be executed when the plugin starts.
+        </td>
+      </tr>
+      <tr>
+        <td class='meth'>stop</td>
+        <td>
+          This method will be executed when the plugin is stopped.
+        </td>
+      </tr>
+      <tr>
+        <td class='meth'>unload</td>
+        <td>
+          This method will be executed when the plugin is unloaded (this doesn't often happen).
+        </td>
+      </tr>
+      <tr>
+        <td class='meth'>abort</td>
+        <td>
+          When called from within load, start, stop or unload this will abort the plugin state transition.
+        </td>
+      </tr>
+      <tr>
+        <td class='meth'>Plugin.preference (path) {|pb| ... }</td>
+        <td>
+          Creates a user definable plugin preference, using the builder passed into the block.
+        </td>
+      </tr>
+      <tr>
+        <td class='meth'>Plugin.command { ... }</td>
+        <td>Creates a Redcar::Command.</td>
+      </tr>
+      <tr>
+        <td class='meth'>Plugin.menu_item (menupath, compath)</td>
+        <td>Creates a menu item.</td>
+      </tr>
+    </table>
+    <h3>Testing Plugins</h3>
+    <p>
+      Your plugin configuration file may specify testing parameters:
+    </p>
+    <code>
+      &nbsp;&nbsp;test_path: plugins/my_plugin/test.rb
+      <br />
+      &nbsp;&nbsp;test_module: MyPlugin::Test
+    </code>
+  </body>
+</html>
