@@ -4,7 +4,7 @@ require 'spec/spec_helper'
 context Redcar.Command, 'shell command' do
   before :all do
     Redcar.add_objects
-    Redcar.output_style = :silent
+    Redcar::App.output_style = :silent
     Redcar.load_image
   end
   

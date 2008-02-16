@@ -4,7 +4,7 @@ require 'lib/redcar'
 describe Redcar.Keymap do
   before :all do
     Redcar.add_objects
-    Redcar.output_style = :silent
+    Redcar::App.output_style = :silent
     tab = Redcar.new_tab
     tab.focus
     tab.textview.has_focus = true

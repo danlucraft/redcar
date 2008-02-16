@@ -7,7 +7,7 @@ require 'ruby-prof'
 def stop
   Thread.new {
     sleep 1
-    Redcar.quit
+    Redcar::App.quit
   }
 end
 

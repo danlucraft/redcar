@@ -57,7 +57,7 @@ module Redcar
     end
     
     def show
-      Redcar.current_window.speedbar.pack_start(@barwidget)
+      window.speedbar.pack_start(@barwidget)
       @barwidget.show_all
       @entries[@entries.keys[0]].grab_focus
       Redcar.event :speedbar_on, @barwidget
@@ -65,7 +65,7 @@ module Redcar
     
     def close
       Redcar.event :speedbar_off, @barwidget
-      Redcar.current_window.speedbar.remove @barwidget
+      window.speedbar.remove @barwidget
     end
   end
   

@@ -1,6 +1,6 @@
 
 module Redcar
-  class RedcarWindow < Gtk::Window
+  class Window < Gtk::Window
     attr_accessor :notebooks, :speedbar, :panes
     
     def show_window
@@ -66,8 +66,8 @@ module Redcar
       
       @status1 = Gtk::Statusbar.new
       @status2 = Gtk::Statusbar.new
-      Redcar.StatusBar.statusbar1 = @status1
-      Redcar.StatusBar.statusbar2 = @status2
+      Redcar::StatusBar.statusbar1 = @status1
+      Redcar::StatusBar.statusbar2 = @status2
       @status_hbox.pack_start(@status1)
       @status_hbox.pack_start(@status2)
       @show_objects << @status_hbox
@@ -82,7 +82,7 @@ module Redcar
       
 
       signal_connect("delete_event") do
-        Redcar.quit
+        Redcar::App.quit
       end
       add(table)
       

@@ -34,7 +34,7 @@ end
 context Redcar.Command, "inline command input" do 
   before(:all) do
     Redcar.add_objects
-    Redcar.output_style = :silent
+    Redcar::App.output_style = :silent
   end
 
   before(:each) do
@@ -93,7 +93,7 @@ context Redcar.Command, "inline command output" do
   
   before(:all) do
     Redcar.add_objects
-    Redcar.output_style = :silent
+    Redcar::App.output_style = :silent
   end
 
   before(:each) do

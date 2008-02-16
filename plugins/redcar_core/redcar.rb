@@ -30,7 +30,8 @@ require 'vendor/keyword_processor'
 require 'vendor/instruments'
 
 require 'core/plist'
-require 'core/application'
+require 'core/object'
+require 'core/app'
 require 'core/events'
 require 'core/undoable'
 require 'core/sensitivity'
@@ -49,6 +50,7 @@ require 'core/tooltips'
 require 'core/shelltab'
 require 'core/panes'
 require 'core/redcar_window'
+require 'core/window'
 require 'core/list_abstraction'
 require 'core/button_text_tab'
 require 'core/html_tab'
@@ -64,8 +66,6 @@ module Redcar
     attr_accessor :current_window, :keycatcher, :image
         
     def add_objects
-      Redcar.keycatcher = Redcar::KeyCatcher.new
-      Redcar.current_window = Redcar::RedcarWindow.new
     end
     
     def show_time
@@ -100,16 +100,17 @@ module Redcar
         end
       end
     end
-    
+
     def main_startup(options={})
       options = process_params(options,
                                { :load_scripts => true,
                                  :output => :debug  })
       
-      add_objects
+      Redcar.keycatcher = Redcar::KeyCatcher.new
+      Redcar::App.new_window
       load_stuff(options)
-      Redcar.output_style = options[:output]
-      Redcar.current_window.show_window
+      Redcar::App.output_style = options[:output]
+      window.show_window
       
       Redcar.event :startup
     end

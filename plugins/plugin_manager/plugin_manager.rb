@@ -99,7 +99,7 @@ Author: #{slot['info/author'].data}
 Description: #{slot['info/description'].data}
 Files: #{((slot['files/plugin'].data||[])+(slot['files/test'].data||[])).length}
 END
-      dialog = Gtk::MessageDialog.new(Redcar.current_window, 
+      dialog = Gtk::MessageDialog.new(window, 
                                       Gtk::Dialog::DESTROY_WITH_PARENT,
                                       Gtk::MessageDialog::INFO,
                                       Gtk::MessageDialog::BUTTONS_CLOSE,
@@ -118,7 +118,7 @@ Reloading a plugin can have strange effects, including causing Redcar
 to crash. Are you sure you would like to reload this plugin?
 END
         dialog = Gtk::Dialog.new("Are you sure?",
-                                 Redcar.current_window, 
+                                 window, 
                                  Gtk::Dialog::DESTROY_WITH_PARENT,
                                  [ Gtk::Stock::OK, Gtk::Dialog::RESPONSE_OK ],
                                  [ Gtk::Stock::CANCEL, Gtk::Dialog::RESPONSE_CANCEL]

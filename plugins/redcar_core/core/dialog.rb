@@ -22,7 +22,7 @@ module Redcar
           [what, response_id]
         end
         @dialog = Gtk::Dialog.new(options[:title],
-                                  Redcar.current_window,
+                                  window,
                                   Gtk::Dialog::DESTROY_WITH_PARENT,
                                   *gtkbuttons)
         if options[:message]
@@ -158,7 +158,7 @@ module Redcar
     
     def self.open_folder
       dialog = Gtk::FileChooserDialog.new("Open Folder",
-                                          Redcar.current_window,
+                                          window,
                                           Gtk::FileChooser::ACTION_SELECT_FOLDER,
                                           nil,
                                           [Gtk::Stock::CANCEL, Gtk::Dialog::RESPONSE_CANCEL],
@@ -175,7 +175,7 @@ module Redcar
     
     def self.open
       dialog = Gtk::FileChooserDialog.new("Open",
-                                          Redcar.current_window,
+                                          window,
                                           Gtk::FileChooser::ACTION_OPEN,
                                           nil,
                                           [Gtk::Stock::CANCEL, Gtk::Dialog::RESPONSE_CANCEL],
@@ -194,7 +194,7 @@ module Redcar
     
     def self.save
       dialog = Gtk::FileChooserDialog.new("Save",
-                                          Redcar.current_window,
+                                          window,
                                           Gtk::FileChooser::ACTION_SAVE,
                                           nil,
                                           [Gtk::Stock::CANCEL, Gtk::Dialog::RESPONSE_CANCEL],

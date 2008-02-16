@@ -28,22 +28,9 @@ module Redcar
       end
     end
     
-#     def self.default_theme
-#       @default_theme ||= theme(Theme.Preferences["Tab Theme"])
-#     end
-    
     def self.default_theme
       theme("Twilight")#Mac Classic")
     end
-    
-#     def self.set_theme(th)
-#       th = theme(th)
-#       @default_theme = th
-#       Redcar["theme/default_theme"] = th.name
-#       Redcar.current_window.all_tabs.each do |tab|
-#         tab.set_theme(th)
-#       end
-#     end
     
     def self.theme(name)
       case name

@@ -4,7 +4,7 @@ require 'lib/redcar'
 describe Redcar::TextTab do
   before do
     Redcar.add_objects
-    Redcar.output_style = :silent
+    Redcar::App.output_style = :silent
     @tab = Redcar::TextTab.new(Redcar.current_pane)
     @str = "foo\nbar\nbaz\n"
     @tab.contents = @str

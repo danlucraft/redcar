@@ -55,12 +55,12 @@ end
 module Redcar
   Sensitivity.add(:open_text_tabs?, 
                   :hooks => [:after_tab_close, :after_new_tab]) do 
-    !Redcar.current_window.all_tabs.empty?
+    !window.all_tabs.empty?
   end
   
   Sensitivity.add(:open_tabs?, 
                   :hooks => [:after_tab_close, :after_new_tab]) do 
-    !Redcar.current_window.all_tabs.empty?
+    !window.all_tabs.empty?
   end
   
   Sensitivity.add(:unsaved_text_tabs?,
@@ -69,7 +69,7 @@ module Redcar
                              :after_close_tab,
                              :after_save_tab
                              ]) do
-    Redcar.current_window.all_tabs.find do |tab| 
+    window.all_tabs.find do |tab| 
       tab.modified? if tab.respond_to? :modified?
     end
   end
@@ -110,12 +110,12 @@ module Redcar
   Sensitivity.add(:can_paste?,
                   :hooks => [:after_new_tab, :after_tab_close, 
                              :after_focus, :after_clipboard_added]) do
-    !Clipboard.to_a.empty? and Redcar.current_window.focussed_tab.respond_to? :paste
+    !Clipboard.to_a.empty? and window.focussed_tab.respond_to? :paste
   end
   
   Sensitivity.add(:has_grammar?,
                   :hooks => [:after_new_tab, :after_tab_close, 
                              :after_focus, :after_clipboard_added]) do
-    Redcar.current_window.focussed_tab.respond_to? :grammar=
+    window.focussed_tab.respond_to? :grammar=
   end
 end

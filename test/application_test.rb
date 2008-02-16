@@ -32,7 +32,7 @@ class TestApplication < Test::Unit::TestCase
   end
   
   def test_event_before
-    Redcar.output_style = :chatty
+    Redcar::App.output_style = :chatty
     Redcar.hook :before_event_ba do |obj|
       obj << "2"
     end

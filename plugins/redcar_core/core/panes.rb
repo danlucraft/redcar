@@ -59,7 +59,7 @@ module Redcar
     
     class << self
       def panes
-        Redcar.current_window.panes
+        window.panes
       end
       def context_menu=(menu)
         @@context_menu = menu

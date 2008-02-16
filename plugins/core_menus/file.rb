@@ -81,7 +81,7 @@ module Redcar::Plugins::CoreMenus
       c.menu = "File/Exit"
       c.keybinding = "alt F4"
       c.icon = :CLOSE
-      c.command = %q{ Redcar.quit }
+      c.command = %q{ Redcar::App.quit }
     end
   end
 end

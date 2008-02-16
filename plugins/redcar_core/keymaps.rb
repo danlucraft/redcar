@@ -222,7 +222,7 @@ module Redcar
       @history = []
     end
     
-    def enable(win=Redcar.current_window)
+    def enable(win=Redcar::App.focussed_window)
       if @keyhandler_id
         win.signal_handler_unblock(@keyhandler_id)
       else
@@ -235,7 +235,7 @@ module Redcar
       end
     end
     
-    def disable(win=Redcar.current_window)
+    def disable(win=Redcar::App.focussed_window)
       if @keyhandler_id
         win.signal_handler_block(@keyhandler_id)
       end
