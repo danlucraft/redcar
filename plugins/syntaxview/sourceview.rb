@@ -141,27 +141,53 @@ module Redcar
           raise ArgumentError, "SyntaxSourceView.new expects :bundles_dir, :themes_dir and (optionally) :cache_dir."
         end
       end
-      set_theme(Theme.theme($BUS["/redcar/preferences/Appearance/Tab Theme"].data))
+      @parsed_upto = -1
+      set_theme(Theme.theme($BUS["/redcar/preferences/Appearance/Tab Theme"].data), false)
       modify_font(Pango::FontDescription.new("Monospace 12"))
       self.tabs_width = 2
-      set_grammar(SyntaxSourceView.grammar(:name => 'Ruby'))
+      set_grammar(SyntaxSourceView.grammar(:name => 'Ruby'), false)
+      parse_upto(visible_lines.last+50)
     end
     
     def iterize(offset)
       self.buffer.get_iter_at_offset(offset)
+    end
+
+    def visible_lines
+      [visible_rect.y, visible_rect.y+visible_rect.height].map do |bufy|
+        get_line_at_y(bufy)[0].line
+      end
+    end
+    
+    def view_changed
+      parse_upto visible_lines[1] + 50
+    end
+    
+    def parse_upto(line_num)
+      puts "parsing upto: #{line_num}-#{@parsed_upto}"
+      return unless @parser
+      if line_num > @parsed_upto
+        s = buffer.get_iter_at_line(@parsed_upto)
+        e = buffer.get_iter_at_line(line_num+1)
+        @parser.max_parse_line = line_num
+        @parser.add_lines(buffer.get_text(s, e).chomp)
+        @parsed_upto = line_num+1
+      end
     end
     
     def connect_signals
       @insertion = []
       @deletion = []
       self.buffer.signal_connect("insert_text") do |widget, iter, text, length|
-#        @insertion = [widget, iter.offset, text, length]
-        store_insertion(iter, text, length)
+        if iter.line <= @parsed_upto
+          store_insertion(iter, text, length)
+        end
         false
       end
       self.buffer.signal_connect("delete_range") do |widget, iter1, iter2|
-#        @deletion = [widget, iter1.offset, iter2.offset]
-        store_deletion(iter1, iter2)
+        if iter1.line <= @parsed_upto
+          store_deletion(iter1, iter2)
+        end
         false
       end
       self.buffer.signal_connect_after("insert_text") do |widget, iter, text, length|
@@ -187,7 +213,7 @@ module Redcar
       connect_signals
     end
     
-    def set_theme(th)
+    def set_theme(th, should_colour=true)
       if th
         apply_theme(th)
         @colr = Redcar::Colourer.new(self, th)
@@ -195,7 +221,10 @@ module Redcar
           @parser.colourer = @colr
         end
         new_buffer
-        colour
+        @parsed_upto = 0
+        @parser.clear_after(0) if @parser
+        @parser.max_parse_line = 0 if @parser
+        parse_upto visible_lines[1]+50
       else
         raise StandardError, "nil theme passed to set_theme"
       end
@@ -213,7 +242,7 @@ module Redcar
       set_grammar(gr)
     end
     
-    def set_grammar(gr)
+    def set_grammar(gr, should_colour=true)
       if gr
         @grammar = gr
         SyntaxLogger.debug { "setting grammar: #{@grammar.name}" }
@@ -222,7 +251,7 @@ module Redcar
                                                 :start => TextLoc.new(0, 0))
         @parser = Redcar::Syntax::Parser.new(@scope_tree, [gr], "", @colr)
         @operations.clear
-        colour
+        colour if should_colour
       else
         @grammar = nil
         @scope_tree = nil
@@ -327,6 +356,8 @@ module Redcar
         SyntaxLogger.debug{ "processing insertion of #{insertion[:lines]} lines" }
         @parser.insert(insertion[:from], insertion[:text])
       end
+      @parsed_upto = [@parsed_upto, @parser.text.length-1].min
+      @parser.max_parse_line = @parsed_upto
     end
     
     def process_deletion(deletion)
@@ -337,6 +368,8 @@ module Redcar
       else
         @parser.delete_between(deletion[:from], deletion[:to])
       end
+      @parsed_upto = [@parsed_upto, @parser.text.length-1].min
+      @parser.max_parse_line = @parsed_upto
     end
     
     def colour
@@ -345,7 +378,14 @@ module Redcar
         @parser.clear_after(0)
         start_iter, end_iter = self.buffer.bounds
         self.buffer.remove_all_tags(start_iter, end_iter)
-        @parser.add_lines(self.buffer.text, :lazy => true)
+        @parsed_upto = 0
+        @parser.max_parse_line = @parsed_upto
+        if @parsed_upto == 0 and visible_lines[1] > 50
+          n = 100
+        else
+          n = visible_lines[1]+50
+        end
+        parse_upto n
         endt = Time.now
         diff = endt-startt
       end

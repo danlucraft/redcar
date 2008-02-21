@@ -12,7 +12,7 @@ snippets, macros and is highly extensible.
 * Syntax Highlighting.
 * Snippets.
 * Macros.
-* _Dynamic macros_.
+* _Dynamic_ macros.
 * Can edit menu layout and definitions on the fly.
 * Can script new Ruby commands on the fly.
 
@@ -26,6 +26,11 @@ snippets, macros and is highly extensible.
 * Ruby-Gnome 0.16.0
 * Ruby-Gnome 0.15.0 (in Ubuntu <=Fiesty repository) works with
   apparently harmless errors, but no guarantees.
+
+Ubuntu dependencies:
+
+* libxul-dev
+
 
 == INSTALL:
 

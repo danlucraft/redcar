@@ -105,7 +105,7 @@ module Redcar
       attr_accessor :widget_to_tab
     end
     
-    attr_accessor :doc, :widget, :nb_widget, :label, :open, :toolbar
+    attr_accessor :doc, :widget, :nb_widget, :label, :open, :toolbar, :scolledwindow
     
     def initialize(inpane, widget, options={})
       @widget = widget
@@ -122,6 +122,11 @@ module Redcar
         @sw.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC)
         @sw.add(widget)
         @nb_widget.pack_end(@sw)
+        @sw.vscrollbar.signal_connect("value_changed") do 
+          if widget.class == SyntaxSourceView
+            widget.view_changed
+          end
+        end
       else
         @nb_widget.pack_end(widget)
       end
