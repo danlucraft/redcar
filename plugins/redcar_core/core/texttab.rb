@@ -734,12 +734,12 @@ module Redcar
     
     attr_accessor :discard_changes
     
-    def close
+    def close(force=false)
       pane = self.pane
-      if self.modified?
-        ask_and_save_tab(self)
-      else
+      if force or !self.modified?
         self.close!
+      else
+        ask_and_save_tab(self)
       end
     end
   end

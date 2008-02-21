@@ -49,6 +49,7 @@ module Redcar
         #SyntaxLogger.debug {"lazy_parse: parsing five: #{line_num} (#{@text.length}), #{count}, #{ok}"}
         until line_num >= @text.length or 
             count >= 100 or 
+            line_num > (@max_parse_line||0) or
             ok = parse_line(@text[line_num], line_num)
           #SyntaxLogger.debug {"lazy_parse: not done: #{line_num} (#{@text.length}), #{count}, #{ok}"}
           line_num += 1
@@ -494,6 +495,7 @@ module Redcar
       
       # Parses line_num, using text line.
       def parse_line(line, line_num)
+#        print line_num, " "; $stdout.flush
         check_line_exists(line_num)
         
         lp = LineParser.new(self, line_num, line)

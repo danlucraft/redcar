@@ -191,11 +191,15 @@ module Redcar
         false
       end
       self.buffer.signal_connect_after("insert_text") do |widget, iter, text, length|
-        process_operation
+        if iter.line <= @parsed_upto
+          process_operation
+        end
         false
       end
       self.buffer.signal_connect_after("delete_range") do |widget, iter1, iter2|
-        process_operation
+        if iter1.line <= @parsed_upto
+          process_operation
+        end
         false
       end
       @no_colouring = false
