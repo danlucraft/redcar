@@ -27,7 +27,7 @@ module Redcar
           dialog.on_button(:ok) do
             name = dialog.name
             dialog.close      
-            Redcar.arrangements[name] = window.get_arrangement
+            Redcar.arrangements[name] = win.get_arrangement
             Redcar.save_arrangements
           end
           dialog.show :modal => true
@@ -71,12 +71,12 @@ module Redcar
           dialog.on_button(:Apply) do
             name = list.selected
             dialog.close
-            window.apply_arrangement Redcar.arrangements[name] 
+            win.apply_arrangement Redcar.arrangements[name] 
           end
           list.on_double_click do |row|
             name = row
             dialog.close
-            window.apply_arrangement Redcar.arrangements[name]   
+            win.apply_arrangement Redcar.arrangements[name]   
           end
           dialog.show :modal => true
         end
@@ -86,7 +86,7 @@ module Redcar
         c.menu = "View/Arrangements/Print"
         c.command do |pane, tab|
           nt = Redcar.new_tab
-          nt.contents.replace window.get_arrangement.to_yaml
+          nt.contents.replace win.get_arrangement.to_yaml
           nt.name = "Current Arrangement"
           nt.focus
           nt.modified = false
@@ -94,7 +94,7 @@ module Redcar
       end
 
       def self.start(plugin)
-        window.apply_arrangement Redcar.arrangements["default"]
+        win.apply_arrangement Redcar.arrangements["default"]
         plugin.transition(FreeBASE::RUNNING)
       end
     end
@@ -134,12 +134,12 @@ module Redcar
     end
     
     def save_arrangement(name)
-      @arrangements[name] = window.saveable_object
+      @arrangements[name] = win.saveable_object
     end
     
     def new_tab(type=TextTab, *args)
       nt = Redcar.current_pane.new_tab(type, *args)
-      window.place_tab(nt)
+      win.place_tab(nt)
       nt
     end
   end
@@ -263,12 +263,12 @@ module Redcar
           case arrangement["split"]
           when "horizontal"
             paned, pane1, pane2 = pane.split_horizontal
-            paned.position = window.allocation.width*pc
+            paned.position = win.allocation.width*pc
             apply_arrangement1(arrangement["left"], pane1)
             apply_arrangement1(arrangement["right"], pane2)
           when "vertical"
             paned, pane1, pane2 = pane.split_vertical
-            paned.position = window.allocation.height*pc
+            paned.position = win.allocation.height*pc
             apply_arrangement1(arrangement["top"], pane1)
             apply_arrangement1(arrangement["bottom"], pane2)
           end

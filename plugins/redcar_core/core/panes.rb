@@ -1,65 +1,28 @@
 
 module Redcar  
-  class << self
-    attr_accessor :last_pane, :arrangments
+#   class << self
+#     attr_accessor :last_pane, :arrangments
 
-    def new_tab(type=TextTab)
-      Redcar.current_pane.new_tab(type)
-    end
+#     def new_tab(type=TextTab)
+#       Redcar.current_pane.new_tab(type)
+#     end
     
-    def current_pane=(pane)
-      Redcar.last_pane = Redcar.current_pane
-      @current_pane = pane
-    end
+#     def current_pane=(pane)
+#       Redcar.last_pane = Redcar.current_pane
+#       @current_pane = pane
+#     end
     
-    def current_pane
-      return @current_pane if @current_pane
-      ct = Redcar.current_tab
-      ct.pane if ct
-    end
-  end
+#     def current_pane
+#       return @current_pane if @current_pane
+#       ct = Redcar.current_tab
+#       ct.pane if ct
+#     end
+#   end
   
   class Pane
-    extend Redcar::ContextMenuBuilder
-    extend Redcar::CommandBuilder
-    
-    context_menu_separator "Panes"
-    
-    command "Panes/Alignment/Top" do |c|
-      c.context_menu = "Pane/Alignment/Top"
-      c.command %q{ 
-        pane.tab_position = :top
-        pane.tab_angle    = :horizontal
-      }
-    end
-    
-    command "Panes/Alignment/Left" do |c|
-      c.context_menu = "Pane/Alignment/Left"
-      c.command %q{ 
-        pane.tab_position = :left
-        pane.tab_angle    = :bottom_to_top
-      }
-    end
-    
-    command "Panes/Alignment/Right" do |c|
-      c.context_menu = "Pane/Alignment/Right"
-      c.command %q{ 
-        pane.tab_position = :right
-        pane.tab_angle    = :top_to_bottom
-      }
-    end
-    
-    command "Panes/Alignment/Bottom" do |c|
-      c.context_menu = "Pane/Alignment/Bottom"
-      c.command %q{ 
-        pane.tab_position = :bottom
-        pane.tab_angle    = :horizontal
-      }
-    end
-    
     class << self
       def panes
-        window.panes
+        win.panes
       end
       def context_menu=(menu)
         @@context_menu = menu

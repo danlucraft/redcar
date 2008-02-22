@@ -6,6 +6,7 @@ require File.dirname(__FILE__) + '/edit'
 require File.dirname(__FILE__) + '/text'
 require File.dirname(__FILE__) + '/options'
 require File.dirname(__FILE__) + '/toolbar'
+require File.dirname(__FILE__) + '/context_panes'
 $menunum += 5000
 
 module Redcar::Plugins::CoreMenus

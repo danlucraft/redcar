@@ -31,7 +31,7 @@ module Redcar
       @@la ||= []
       @@la << (list = Redcar::GUI::List.new(:type => String, :heading => "name"))
       list.on_double_click do |item|
-        window.find_tab(item).focus
+        win.find_tab(item).focus
       end
       super(pane, @@la.last.treeview)
       @@la.last.treeview.show_all
@@ -42,7 +42,7 @@ module Redcar
     def self.refresh
       if @@la
         @@la.each do |list|
-          tabs = window.all_tabs
+          tabs = win.all_tabs
           tab_list = tabs.select{|tab| tab.is_a? TextTab}
           list.replace tab_list.map(&:name)
           tab_list.each_with_index do |tab, i| 

@@ -110,7 +110,7 @@ module Redcar
       Redcar::App.new_window
       load_stuff(options)
       Redcar::App.output_style = options[:output]
-      window.show_window
+      win.show_window
       
       Redcar.event :startup
     end

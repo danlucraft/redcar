@@ -8,11 +8,11 @@ class Object
   
   # The current or last focussed Tab
   def tab
-    window.focussed_tab
+    win.focussed_tab
   end
   
   # The current or last focussed Window
-  def window
+  def win
     Redcar::App.focussed_window
   end
 end

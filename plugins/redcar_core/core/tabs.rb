@@ -12,9 +12,9 @@ module Redcar
     define_method_bracket :tab do |id|
       case id
       when Integer
-        window.all_tabs[id]
+        win.all_tabs[id]
       when String
-        window.all_tabs.find {|tab| tab.name == id}
+        win.all_tabs.find {|tab| tab.name == id}
       end
     end
   end
@@ -132,7 +132,7 @@ module Redcar
       inpane.notebook.append_page(@nb_widget, @label)
       inpane.notebook.set_tab_reorderable(@nb_widget, true)
       inpane.notebook.set_tab_detachable(@nb_widget, true)
-      inpane.notebook.show_all if window.visible?
+      inpane.notebook.show_all if win.visible?
       Redcar.event :new_tab, self
       Tab.widget_to_tab ||= {}
       Tab.widget_to_tab[@nb_widget] = self
@@ -140,7 +140,7 @@ module Redcar
     end
         
     def pane
-      window.pane_from_tab(self)
+      win.pane_from_tab(self)
     end
     
     def focus

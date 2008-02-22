@@ -72,7 +72,7 @@ module Redcar
     
     def initialize
       PrefLogger.info("PreferencesDialog#initialize():in")
-      super("Preferences", window, Gtk::Dialog::DESTROY_WITH_PARENT,
+      super("Preferences", win, Gtk::Dialog::DESTROY_WITH_PARENT,
             [Gtk::Stock::OK,  Gtk::Dialog::RESPONSE_OK],
             [Gtk::Stock::CANCEL, Gtk::Dialog::RESPONSE_CANCEL])
       build_dialog

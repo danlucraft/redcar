@@ -7,12 +7,13 @@ module Redcar
     def self.quit
       Redcar.event :quit
       Redcar.event :shutdown
+      $BUS["/system/shutdown"].call(nil)
       Gtk.main_quit
     end
     
     def self.bus
+      
     end
-    
     
     # Makes a new window. Currently only one window is allowed.
     def self.new_window(focus = true)
@@ -37,6 +38,12 @@ module Redcar
 
     class << self
       attr_accessor :output_style
+    end
+    
+    def self.close_window(win)
+      win.hide_all
+     # TODO close window logic - remove tabs etc.
+      quit
     end
     
     def self.silent?

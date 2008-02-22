@@ -16,7 +16,7 @@ module Redcar
         p.values = fn { Theme.theme_names }
         p.change do 
           PrefLogger.info("Changing theme to :#{$BUS["/redcar/preferences/Appearance/Tab Theme"].data}")
-          window.all_tabs.each do |tab|
+          win.all_tabs.each do |tab|
             if tab.respond_to? :sourceview
               theme_name = $BUS["/redcar/preferences/Appearance/Tab Theme"].data
               tab.sourceview.set_theme(Theme.theme(theme_name))
