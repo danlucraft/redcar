@@ -706,15 +706,15 @@ module Redcar
       if @filename
         ext = File.extname(@filename)
         @textview.set_grammar(gr = SyntaxSourceView.grammar(:extension => ext))
-        if gr
-          @textview.colour
-        end
+#        if gr
+#          @textview.colour
+#        end
       end
       unless gr
         @textview.set_grammar(gr = SyntaxSourceView.grammar(:first_line => self.get_line(0)))
-        if gr
-          @textview.colour
-        end
+#        if gr
+#          @textview.colour
+#        end
       end
     end
     
@@ -733,12 +733,12 @@ module Redcar
     
     attr_accessor :discard_changes
     
-    def close
+    def close(force=false)
       pane = self.pane
-      if self.modified?
-        ask_and_save_tab(self)
-      else
+      if force or !self.modified?
         self.close!
+      else
+        ask_and_save_tab(self)
       end
     end
   end

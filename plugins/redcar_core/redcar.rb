@@ -53,7 +53,11 @@ require 'core/redcar_window'
 require 'core/window'
 require 'core/list_abstraction'
 require 'core/button_text_tab'
-require 'core/html_tab'
+begin
+  require 'core/html_tab'
+rescue Object => e
+  puts "can't load html_tab (probably missing Gtkmozembed). No HTML preview"
+end
 
 
 #require 'vendor/mdi5'

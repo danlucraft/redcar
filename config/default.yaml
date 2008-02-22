@@ -6,7 +6,7 @@ properties: ~
       - log_file: "redcar.log"
       - log_level: 0
       - log_name: REDCAR
-      - plugin_path: "../plugins"
+      - plugin_path: "../plugins2"
       - product_name: "Redcar"
   - version: ''
     "|":

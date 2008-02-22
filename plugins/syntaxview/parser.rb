@@ -20,27 +20,6 @@ module Redcar
         add_lines(text) if text
       end
       
-      def indent(line_num)
-        if line_num == 0
-          0
-        else
-          ind = 0
-          prev = indent(line_num-1)
-          if @fold_counts[line_num-1] > 0
-            ind = prev + 1
-          elsif @fold_counts[line_num-1] < 0
-            ind = prev
-          elsif @fold_counts[line_num-1] == 0
-            ind = prev
-          end
-          if @fold_counts[line_num] < 0
-            ind - 1
-          else
-            ind
-          end
-        end
-      end
-      
       def add_lines(text, options=nil)
         curr_last = @text.length-1
         text.each do |line|
@@ -70,6 +49,7 @@ module Redcar
         #SyntaxLogger.debug {"lazy_parse: parsing five: #{line_num} (#{@text.length}), #{count}, #{ok}"}
         until line_num >= @text.length or 
             count >= 100 or 
+            line_num > (@max_parse_line||0) or
             ok = parse_line(@text[line_num], line_num)
           #SyntaxLogger.debug {"lazy_parse: not done: #{line_num} (#{@text.length}), #{count}, #{ok}"}
           line_num += 1
@@ -198,12 +178,16 @@ module Redcar
       
       def parse_from(num)
         @scope_tree.clear_after(TextLoc.new(num, 0))
-        (num).upto(@text.length-1) do |i|
-        clear_line(line_num)
+        (num).upto([@text.length-1, @max_parse_line].min) do |i|
+          clear_line(line_num)
           parse_line(@text[i], i)
         end
       end
 
+      def max_parse_line=(v)
+        @max_parse_line = v
+      end
+      
       def shift_after(line, amount)
         @scope_tree.shift_after(line, amount)
       end
@@ -231,35 +215,6 @@ module Redcar
       
       def scope_at(loc)
         @scope_tree.scope_at(loc)
-      end
-      
-#       def find_all_fold_markers
-#         @text.each_with_index do |line, i|
-#           start_scope = scope_at(TextLoc.new(line_num, 0))
-          
-#         end
-#       end
-      
-      def find_fold_marker(line, grammar)
-        #SyntaxLogger.debug { "looking for fold_marker:" }
-        fline = line
-        fold_count = 0
-        md_start, md_stop = nil, nil
-        md_start = fline.match(grammar.folding_start_marker) if grammar.folding_start_marker
-        md_stop = fline.match(grammar.folding_stop_marker) if grammar.folding_stop_marker
-        if md_start and md_stop
-          if md_start.begin(0) < md_stop.begin(0)
-            1
-          elsif md_start.begin(0) > md_stop.begin(0)
-            -1
-          end
-        elsif md_start
-          1
-        elsif md_stop
-          -1
-        else
-          0
-        end
       end
       
       def scope_at_line_start(num)
@@ -540,6 +495,7 @@ module Redcar
       
       # Parses line_num, using text line.
       def parse_line(line, line_num)
+#        print line_num, " "; $stdout.flush
         check_line_exists(line_num)
         
         lp = LineParser.new(self, line_num, line)

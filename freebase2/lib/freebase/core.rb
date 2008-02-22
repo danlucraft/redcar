@@ -55,8 +55,8 @@ module FreeBASE
       # push all plugin paths into the require path. Prepend codebase
       # if it's a relative path
       @properties["config/plugin_path"].split(";").each do |path|
-	path = File.join($FR_CODEBASE,path) unless File.absolute_path?(path)
-	$:.push path
+        path = File.join($FR_CODEBASE,path) unless File.absolute_path?(path)
+        $:.push path
       end
       @bus["/log/info"] << "--- #{@properties['config/product_name']} Started on #{Time.now.to_s}"
       @bus["/system/state/all_plugins_loaded"].data = false;
@@ -130,7 +130,7 @@ module FreeBASE
     #
     def load_properties
       unless Properties.exist?(@propertiesFile)
-	Properties.copy(@defaultPropertiesFile, @propertiesFile)
+        Properties.copy(@defaultPropertiesFile, @propertiesFile)
         @properties = Properties.new("Core configuration file", 
                                      "1.0", 
                                      @bus["/system/properties"], 
@@ -143,18 +143,18 @@ module FreeBASE
                                      "1.0", 
                                      @bus["/system/properties"], 
                                      @propertiesFile)
-	was_version = [@properties["version/major"],@properties["version/minor"],@properties["version/release"]].join('.')
-	is_version = [Redcar::VERSION_MAJOR, Redcar::VERSION_MINOR, Redcar::VERSION_RELEASE].join('.')
-
-	if (is_version < was_version)
-	  puts "="*70
-	  puts "WARNING!! You are running an old version of #{$FREEBASE_APPLICATION} (#{is_version}) against #{$FREEBASE_APPLICATION} configuration files created with a newer version (#{was_version}). This may cause serious troubles including #{$FREEBASE_APPLICATION} crashes."
-	  puts "="*70
-	else
-	  @properties["version/major"] = Redcar::VERSION_MAJOR
-	  @properties["version/minor"] = Redcar::VERSION_MINOR
-	  @properties["version/release"] = Redcar::VERSION_RELEASE
-	end
+        was_version = [@properties["version/major"],@properties["version/minor"],@properties["version/release"]].join('.')
+        is_version = [Redcar::VERSION_MAJOR, Redcar::VERSION_MINOR, Redcar::VERSION_RELEASE].join('.')
+        
+        if (is_version < was_version)
+          puts "="*70
+          puts "WARNING!! You are running an old version of #{$FREEBASE_APPLICATION} (#{is_version}) against #{$FREEBASE_APPLICATION} configuration files created with a newer version (#{was_version}). This may cause serious troubles including #{$FREEBASE_APPLICATION} crashes."
+          puts "="*70
+        else
+          @properties["version/major"] = Redcar::VERSION_MAJOR
+          @properties["version/minor"] = Redcar::VERSION_MINOR
+          @properties["version/release"] = Redcar::VERSION_RELEASE
+        end
       end
       @properties['config/codebase'] = $FR_CODEBASE
     end
