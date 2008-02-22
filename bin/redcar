@@ -53,10 +53,9 @@ module Redcar
     rescue
       raise "Could not locate directory #{configDir}"
     end
-
     #make sure that either properties.yaml exists or default.yaml
-    unless files.include?("properties.yaml")
-      raise "Could not locate default.yaml in #{configDir}" unless files.include?("default.yaml")
+    unless files.include?("properties.yaml") or files.include?("default.yaml")
+      raise "Could not locate default.yaml in #{configDir}"
     end
     
     #This method will not return until Redcar is closed (shut down)
