@@ -12,7 +12,7 @@ module Redcar
       end
       
       def self.set_main_loop(plugin)
-        plugin["/system/ui/messagepump"].set_proc do
+        bus["/system/ui/messagepump"].set_proc do
           begin
             puts "starting Gui.main"
             Gtk.main
@@ -34,7 +34,7 @@ Backtrace: \n#{e.backtrace.map{|l| "    "+l}.join("\n")}
 Uname -a: #{`uname -a`.chomp}
 ERR
           ensure
-            plugin["/system/shutdown"].call(1)
+            bus["/system/shutdown"].call(1)
           end
         end
       end

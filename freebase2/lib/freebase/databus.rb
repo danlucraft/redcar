@@ -74,6 +74,9 @@ module FreeBASE
       @idCount = 0
       @validation_enabled = true
       @propagate_notifications = true
+      
+      # If only one bus, last created is available through $BUS and Object#bus:
+      $BUS = self
       #start
     end
     
