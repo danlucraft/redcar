@@ -3,11 +3,25 @@ name: core
 version: 1.0
 plugins: 
   - !ruby/object:FreeBASE::PluginConfiguration 
-    name:            core\gui-main
+    name:            core\gui
     version:         1.0
     autoload:        true
-    require_path:    core/gui_main
-    startup_module:  Redcar::Plugins::GuiMain
-    properties_path: gui-main.yaml
+    require_path:    core/gui
+    startup_module:  Redcar::Plugins::Gui
+    properties_path: gui.yaml
+    load_dependencies:
+        core\app: "*"
+    start_dependencies:
+        core\app: "*"
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core\app
+    version:         1.0
+    autoload:        true
+    require_path:    core/app
+    startup_module:  Redcar::App
+    properties_path: app.yaml
+
+
 
 

@@ -3,7 +3,7 @@ require 'gtk2'
 
 module Redcar
   module Plugins
-    module GuiMain
+    module Gui
       extend FreeBASE::StandardPlugin
 
       def self.start(plugin)

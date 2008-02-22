@@ -179,6 +179,9 @@ module FreeBASE
     def transition(state)
       currentState = @base_slot["state"].data
       @base_slot["log/debug"] << "State transition: #{currentState} -> #{state}"
+#       puts "#{plugin_configuration.name} State transition: #{currentState} -> #{state}"
+#       puts "dependencies: #{plugin_configuration.fwd_start_graph.map{|p| p.name}.inspect}"
+#       puts "reverse_deps: #{plugin_configuration.rev_start_graph.map{|p| p.name}.inspect}"
       unless LEGAL_TRANSITIONS[currentState].include?(state)
         raise "Cannot transition to #{state} from #{currentState}"
       end
