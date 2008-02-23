@@ -67,9 +67,11 @@ module FreeBASE
         plugin = @load_list[num]
         plugin.instance.load
         if plugin.instance.state != LOADED
+          puts "[FB2] failed to load: #{plugin.name}"
           fail_load_dependencies(plugin)
           fail_start_dependencies(plugin)
         else
+          puts "[FB2] loaded: #{plugin.name}"
           num += 1
         end
       end
@@ -84,8 +86,10 @@ module FreeBASE
         plugin = @start_list[num]
         plugin.instance.start
         if plugin.instance.state != RUNNING
+          puts "[FB2] failed to start: #{plugin.name}"
           fail_start_dependencies(plugin)
         else
+          puts "[FB2] started: #{plugin.name}"
           num += 1
         end
       end
