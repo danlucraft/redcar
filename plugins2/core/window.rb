@@ -19,6 +19,7 @@ module Redcar
       super("Redcar")
       build_widgets
       connect_signals
+      attach_accel_groups
       show_all
     end
     
@@ -54,6 +55,22 @@ module Redcar
       signal_connect("destroy") do
         self.close
       end
+      signal_connect('key-press-event') do |gtk_widget, gdk_eventkey|
+        continue = Keymap.process(gdk_eventkey)
+        # falls through to Gtk widget if nothing handles it
+        continue
+      end
+    end
+    
+    def attach_accel_groups
+      ag = Gtk::AccelGroup.new
+      ag.connect(Gdk::Keyval::GDK_A, Gdk::Window::CONTROL_MASK,
+                 Gtk::ACCEL_VISIBLE) {
+        p "Hello World."
+        true
+      }
+
+      add_accel_group(ag)
     end
   
     def build_widgets
@@ -79,6 +96,7 @@ module Redcar
       bus["/gtk/window/editview"].data = gtk_edit_view
       bus["/gtk/window/panes_container"].data = gtk_panes
       gtk_edit_view.pack_start(gtk_panes)
+      gtk_edit_view.pack_start(Gtk::TextView.new)
       gtk_table.attach(gtk_edit_view,
                    # X direction            # Y direction
                    0, 1,                    2, 3,

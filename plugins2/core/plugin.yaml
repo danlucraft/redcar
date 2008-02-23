@@ -9,10 +9,9 @@ plugins:
     require_path:    core/gui
     startup_module:  Redcar::Plugins::Gui
     properties_path: gui.yaml
-    load_dependencies:
-        core\app: "*"
     start_dependencies:
         core\app: "*"
+
   - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core\app
     version:         1.0
@@ -20,10 +19,9 @@ plugins:
     require_path:    core/app
     startup_module:  Redcar::App
     properties_path: app.yaml
-    load_dependencies:
-        core\window: "*"
     start_dependencies:
         core\window: "*"
+
   - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core\window
     version:         1.0
@@ -31,6 +29,16 @@ plugins:
     require_path:    core/window
     startup_module:  Redcar::Window
     properties_path: window.yaml
+    start_dependencies:
+        core\keymap: "*"
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core\keymap
+    version:         1.0
+    autoload:        true
+    require_path:    core/keymap
+    startup_module:  Redcar::Keymap
+    properties_path: keymap.yaml
 
 
 
