@@ -2,10 +2,17 @@
 require 'gtk2'
 
 module Gtk
-  class OneBox < Bin
-    type_register
+  class Widget
+    alias old_initialize initialize
+    def initialize
+      old_initialize
+      signal_connect('move_focus') do |_, _, _|
+        p :grab_notify
+        false
+      end
+    end
   end
-
+  
   class ImageMenuItem
     # Helper to create a Gtk::ImageMenuItem from a string
     # corresponding to a Gtk::Stock constant, and a string
@@ -55,7 +62,7 @@ module Gtk
       @box.pack_start(@button, false, false, 0)
       
       @button.signal_connect('clicked') do |widget, event|
-        on_close.call
+        on_close.call if on_close
       end
       show_all
     end

@@ -3,16 +3,29 @@ module Redcar
   class Tab
     extend FreeBASE::StandardPlugin
     
+    def self.start(plugin)
+      @widget_to_tab = {}
+      plugin.transition(FreeBASE::RUNNING)
+    end
+    
+    def self.stop(plugin)
+      @widget_to_tab.values.each do |tab|
+        tab.close
+      end
+      plugin.transition(FreeBASE::LOADED)
+    end
+    
     class << self
       attr_accessor :widget_to_tab
     end
     
     attr_accessor :gtk_tab_widget, :gtk_nb_widget, :pane, :label
     
-    def initialize(pane, gtk_widget, options)
+    def initialize(pane, gtk_widget, options={})
       @pane = pane
       @gtk_tab_widget = gtk_widget
       @gtk_nb_widget = Gtk::VBox.new
+      
       if options[:toolbar?]
         @gtk_toolbar = Gtk::Toolbar.new
         @gtk_nb_widget.pack_start(@gtk_toolbar, false)
@@ -33,17 +46,25 @@ module Redcar
         @gtk_nb_widget.pack_end(gtk_widget)
       end
       
-      @label = NotebookLabel.new(self, "#new#{@pane.tabs.length}")
+      @label = Gtk::NotebookLabel.new(self, "#new#{@pane.tabs.length}") do
+        puts "closing tab:#{self.label.text}"
+        self.close
+      end
       @label_angle = :horizontal
       
-      Tab.widget_to_tab ||= {}
       Tab.widget_to_tab[@gtk_nb_widget] = self
+      
+      @gtk_nb_widget.show
     end
     
     def close
-      nb = @pane.gtk_notebook
-      nb.remove_page(nb.page_num(@gtk_nb_widget))
-      Tab.widget_to_tab.delete @gtk_nb_widget
+      if @pane
+        nb = @pane.gtk_notebook
+        unless nb.destroyed?
+          nb.remove_page(nb.page_num(@gtk_nb_widget))
+          Tab.widget_to_tab.delete @gtk_nb_widget
+        end
+      end
     end
 
     def label_angle=(angle)

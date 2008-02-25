@@ -15,6 +15,8 @@ module Redcar
       plugin.transition(FreeBASE::LOADED)
     end
     
+    attr_reader :notebooks_panes, :previous_tab
+    
     def initialize
       super("Redcar")
       @notebooks_panes = {}
@@ -37,8 +39,12 @@ module Redcar
     def unify_all
     end
     
-    def new_tab(tab_class, focus = true)
-      
+    def new_tab(tab_class, *args)
+      if focussed_tab
+        focussed_tab.pane.new_tab(tab_class, *args)
+      else
+        first_pane.new_tab(tab_class, *args)
+      end
     end
     
     def tabs
@@ -46,17 +52,33 @@ module Redcar
     end
     
     def active_tabs
+      panes.map do |pane| 
+        pageid = pane.gtk_notebook.page
+        unless pageid == -1
+          Tab.widget_to_tab[pane.gtk_notebook.get_nth_page(pageid)]
+        end
+      end.compact
     end
     
     def focussed_tab
-    end
-    
-    def focus_previous_tab
+      if @focussed_tab
+        @focussed_tab
+      else
+        active_tabs.first
+      end
     end
     
     def focus_tab(name)
     end
 
+    def first_pane
+      panes_container = bus["/gtk/window/panes_container"].data
+      until panes_container.children.first.class == Gtk::Notebook
+        panes_container = panes_container.children.first
+      end
+      @notebooks_panes[panes_container.children.first]
+    end
+    
     def split_horizontal(pane)
       split_pane(:horizontal, pane)
     end
@@ -67,29 +89,37 @@ module Redcar
     
     def unify(pane)
       panes_container = pane.gtk_notebook.parent
-      unless panes_container.class = Gtk::OneBox
+      unless panes_container.class == Gtk::HBox
         other_side = panes_container.children.find do |p|
           p != pane.gtk_notebook
         end
         panes_container.remove(pane.gtk_notebook)
         panes_container.remove(other_side)
         if [Gtk::HPaned, Gtk::VPaned].include? other_side.class
+          p :collect_tabs_from_dual
           other_tabs = collect_tabs_from_dual(other_side)
         else
-          other_tabs = other_side.tabs
+          p :tabs_from_nb
+          p @notebooks_panes[other_side]
+          other_tabs = @notebooks_panes[other_side].tabs
+          p other_tabs
         end
         container_of_container = panes_container.parent
-        other_panes = tabs.map{|t| t.pane}.uniq
+        other_panes = other_tabs.map{|t| t.pane}.uniq
         tabs.each do |tab|
           tab.pane.move_tab(tab, pane)
         end
-        other_panes.each{|op| op.close}
-        if container_of_container.child1 == panes_container
+        if container_of_container.class == Gtk::HBox
           container_of_container.remove panes_container
-          container_of_container.add1 pane.gtk_notebook
+          container_of_container.pack_start pane.gtk_notebook
         else
-          container_of_container.remove panes_container
-          container_of_container.add2 pane.gtk_notebook
+          if container_of_container.child1 == panes_container
+            container_of_container.remove panes_container
+            container_of_container.add1 pane.gtk_notebook
+          else
+            container_of_container.remove panes_container
+            container_of_container.add2 pane.gtk_notebook
+          end
         end
       end
     end
@@ -114,14 +144,14 @@ module Redcar
         dual = Gtk::HPaned.new
       end
       new_pane = Pane.new self
-      panes_container = bus("/gtk/window/panes_container").data
-      if panes_container.child == pane.gtk_notebook
+      @notebooks_panes[new_pane.gtk_notebook] = new_pane
+      panes_container = pane.gtk_notebook.parent
+      if panes_container.class == Gtk::HBox
         panes_container.remove(pane.gtk_notebook)
         dual.add(new_pane.gtk_notebook)
         dual.add(pane.gtk_notebook)
-        panes_container.add(dual)
+        panes_container.pack_start(dual)
       else
-        panes_container = pane.gtk_notebook.parent
         if panes_container.child1 == pane.gtk_notebook # (on the left or top)
           panes_container.remove(pane.gtk_notebook)
           dual.add(new_pane.gtk_notebook)
@@ -151,6 +181,27 @@ module Redcar
         # falls through to Gtk widget if nothing handles it
         continue
       end
+      
+      # Everytime the focus changes, check to see if we have changed tabs.
+      signal_connect('set-focus') do |_, gtk_widget, _|
+        until gtk_widget == nil or 
+            Tab.widget_to_tab.keys.include? gtk_widget or
+            @notebooks_panes.keys.include? gtk_widget
+          gtk_widget = gtk_widget.parent
+        end
+        if gtk_widget
+          if Tab.widget_to_tab[gtk_widget]
+            @previously_focussed_tab = @focussed_tab
+            @focussed_tab = Tab.widget_to_tab[gtk_widget]
+          elsif @notebooks_panes.keys.include? gtk_widget
+            @previously_focussed_tab = @focussed_tab
+            gtk_notebook = @notebooks_panes.keys.find{|nb| nb == gtk_widget}
+            pageid = gtk_notebook.page
+            gtk_nb_widget = gtk_notebook.get_nth_page(pageid)
+            @focussed_tab = Tab.widget_to_tab[gtk_nb_widget]
+          end
+        end
+      end
     end
     
     def build_widgets
@@ -172,7 +223,7 @@ module Redcar
                        Gtk::EXPAND | Gtk::FILL, 0,
                        0,                       0)
       gtk_project = Gtk::Button.new("PROJECT")
-      gtk_panes_box = Gtk::OneBox.new
+      gtk_panes_box = Gtk::HBox.new
       gtk_edit_view = Gtk::HBox.new
       bus["/gtk/window/editview"].data = gtk_edit_view
       bus["/gtk/window/panes_container"].data = gtk_panes_box
@@ -211,7 +262,8 @@ module Redcar
          gtk_panes_box,
          gtk_toolbar,
          gtk_edit_view,
-         gtk_menubar
+         gtk_menubar,
+         pane.gtk_notebook
         ]
     end
     

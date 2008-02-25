@@ -37,13 +37,8 @@ plugins:
     require_path:    core/keymap
     startup_module:  Redcar::Keymap
     properties_path: keymap.yaml
-
-  - !ruby/object:FreeBASE::PluginConfiguration 
-    name:            core-pane
-    autoload:        true
-    require_path:    core/pane
-    startup_module:  Redcar::Pane
-    properties_path: pane.yaml
+    start_dependencies:
+        core-command: "*"
 
   - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-menu
@@ -51,7 +46,31 @@ plugins:
     require_path:    core/menu
     startup_module:  Redcar::Menu
     properties_path: menu.yaml
+    start_dependencies:
+        core-command: "*"
 
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-command
+    autoload:        true
+    require_path:    core/command
+    startup_module:  Redcar::Command
+    properties_path: command.yaml
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-pane
+    autoload:        true
+    require_path:    core/pane
+    startup_module:  Redcar::Pane
+    properties_path: pane.yaml
+    start_dependencies:
+        core-tab: "*"
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-tab
+    autoload:        true
+    require_path:    core/tab
+    startup_module:  Redcar::Tab
+    properties_path: tab.yaml
 
 
 

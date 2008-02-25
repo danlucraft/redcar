@@ -15,13 +15,16 @@
   %table
     %tr
       %td.meth.red doc
-      %td Alias for Redcar::App.focussed_window.focussed_tab.document
+      %td The document in the currently focussed tab, if any.
     %tr
       %td.meth.red tab
-      %td Alias for Redcar::App.focussed_window.focussed_tab
+      %td The currently focussed tab, if any.
     %tr
       %td.meth.red win
-      %td Alias for Redcar::App.focussed_window
+      %td The currently focussed window.
+    %tr
+      %td.meth.red bus
+      %td The Redcar Freebase 2.0 Databus
   %h3 Redcar::App
   %p Redcar::App is a module that controls the application state. There is only ever one instance of the databus per application, and it is accessible through this module. Redcar::App controls the creation of Redcar::Windows, and if ever all Redcar::Windows are closed, the application will terminate.
   %table

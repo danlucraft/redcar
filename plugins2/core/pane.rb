@@ -28,8 +28,8 @@ module Redcar
     end
     
     def tabs
-      (0..@gtk_notebook.n_pages).map do |i|
-        Tab.widget_to_tab(@gtk_notebook.get_nth_page(i))
+      (0...@gtk_notebook.n_pages).map do |i|
+        Tab.widget_to_tab[@gtk_notebook.get_nth_page(i)]
       end
     end
 
@@ -51,6 +51,20 @@ module Redcar
       @window.unify(self)
     end
     
+    def move_tab(tab, dest_pane)
+      remove_tab(tab)
+      dest_pane.add_tab(tab)
+    end
+
+    def add_tab(tab)
+      tab.label_angle = @label_angle
+      @gtk_notebook.append_page(tab.gtk_nb_widget, tab.label)
+      @gtk_notebook.set_tab_reorderable(tab.gtk_nb_widget, true)
+      @gtk_notebook.set_tab_detachable(tab.gtk_nb_widget, true)
+      @gtk_notebook.show_all
+      tab.pane = self
+    end
+    
     private
 
     def make_notebook
@@ -59,19 +73,19 @@ module Redcar
     end
     
     def connect_notebook_signals
-      @gtk_notebook.signal_connect("button_press_event") do |widget, event|
+#       @gtk_notebook.signal_connect("button_press_event") do |widget, event|
 # TODO: uncomment lines:        
 #         if event.kind_of? Gdk::EventButton 
 #           if event.button == 3
 #             bus['/redcar/services/context_menu_popup'].call("Pane", event.button, event.time)
 #           end
 #         end
-      end
+#       end
       @gtk_notebook.signal_connect("page-added") do |nb, widget, _, _|
-# TODO: uncomment lines:       
-#        pane = @notebook_to_pane[nb]
-#        tab = (Tab.widget_to_tab||{})[widget]
-#        tab.label_angle = pane.tab_angle if tab
+        tab = Tab.widget_to_tab[widget]
+        tab.label_angle = @label_angle
+        tab.pane = self
+        false
       end
     end
     
@@ -79,23 +93,11 @@ module Redcar
       @gtk_notebook.show
     end
     
-    def add_tab(tab)
-      tab.label_angle = @label_angle
-      @gtk_notebook.append_page(tab.gtk_nb_widget, tab.label)
-      @gtk_notebook.set_tab_reorderable(tab.gtk_nb_widget, true)
-      @gtk_notebook.set_tab_detachable(tab.gtk_nb_widget, true)
-      @gtk_notebook.show_all
-    end
-    
     def remove_tab(tab)
       @gtk_notebook.remove(tab.gtk_nb_widget)
+      tab.pane = nil
     end
     
-    def move_tab(tab, dest_pane)
-      remove_tab(tab)
-      dest_pane.add_tab(tab)
-    end
-
     def label_angle=(angle)
       @label_angle = angle
       tabs.each do |tab|
