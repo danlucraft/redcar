@@ -17,6 +17,8 @@ $:.unshift(File.join(codebase, "..", "lib"))
 
 require HERE + '/../freebase2/lib/freebase/freebase'
 
+Dir[HERE + "/../lib/*"].each {|f| require f }
+
 module Redcar
   VERSION = '0.0.1'
   VERSION_MAJOR = 0

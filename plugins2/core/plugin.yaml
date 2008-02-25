@@ -3,42 +3,54 @@ name: core
 version: 1.0
 plugins: 
   - !ruby/object:FreeBASE::PluginConfiguration 
-    name:            core\gui
-    version:         1.0
+    name:            core-gui
     autoload:        true
     require_path:    core/gui
     startup_module:  Redcar::Plugins::Gui
     properties_path: gui.yaml
     start_dependencies:
-        core\app: "*"
+        core-app: "*"
 
   - !ruby/object:FreeBASE::PluginConfiguration 
-    name:            core\app
-    version:         1.0
+    name:            core-app
     autoload:        true
     require_path:    core/app
     startup_module:  Redcar::App
     properties_path: app.yaml
     start_dependencies:
-        core\window: "*"
+        core-window: "*"
 
   - !ruby/object:FreeBASE::PluginConfiguration 
-    name:            core\window
-    version:         1.0
+    name:            core-window
     autoload:        true
     require_path:    core/window
     startup_module:  Redcar::Window
     properties_path: window.yaml
     start_dependencies:
-        core\keymap: "*"
+        core-keymap: "*"
+        core-pane: "*"
+        core-menu: "*"
 
   - !ruby/object:FreeBASE::PluginConfiguration 
-    name:            core\keymap
-    version:         1.0
+    name:            core-keymap
     autoload:        true
     require_path:    core/keymap
     startup_module:  Redcar::Keymap
     properties_path: keymap.yaml
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-pane
+    autoload:        true
+    require_path:    core/pane
+    startup_module:  Redcar::Pane
+    properties_path: pane.yaml
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-menu
+    autoload:        true
+    require_path:    core/menu
+    startup_module:  Redcar::Menu
+    properties_path: menu.yaml
 
 
 
