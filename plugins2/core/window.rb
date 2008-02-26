@@ -26,8 +26,7 @@ module Redcar
     end
     
     def close
-      # TODO: uncomment next line
-      # panes.each {|pane| pane.close.each {|tab| tab.close} }
+      panes.each {|pane| pane.tabs.each {|tab| tab.close} }
       Keymap.clear_keymaps_from_object(self)
       App.close_window(self, true)
     end
@@ -37,13 +36,16 @@ module Redcar
     end
     
     def unify_all
+      while panes.length > 1
+        panes.first.unify
+      end
     end
     
     def new_tab(tab_class, *args)
       if focussed_tab
         focussed_tab.pane.new_tab(tab_class, *args)
       else
-        first_pane.new_tab(tab_class, *args)
+        panes.first.new_tab(tab_class, *args)
       end
     end
     
@@ -68,17 +70,10 @@ module Redcar
       end
     end
     
-    def focus_tab(name)
+    def focus_tab(tab)
+      tab.pane.focus_tab(tab)
     end
 
-    def first_pane
-      panes_container = bus["/gtk/window/panes_container"].data
-      until panes_container.children.first.class == Gtk::Notebook
-        panes_container = panes_container.children.first
-      end
-      @notebooks_panes[panes_container.children.first]
-    end
-    
     def split_horizontal(pane)
       split_pane(:horizontal, pane)
     end
@@ -96,13 +91,10 @@ module Redcar
         panes_container.remove(pane.gtk_notebook)
         panes_container.remove(other_side)
         if [Gtk::HPaned, Gtk::VPaned].include? other_side.class
-          p :collect_tabs_from_dual
           other_tabs = collect_tabs_from_dual(other_side)
         else
-          p :tabs_from_nb
-          p @notebooks_panes[other_side]
           other_tabs = @notebooks_panes[other_side].tabs
-          p other_tabs
+          @notebooks_panes.delete other_side
         end
         container_of_container = panes_container.parent
         other_panes = other_tabs.map{|t| t.pane}.uniq

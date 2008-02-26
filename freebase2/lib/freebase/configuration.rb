@@ -281,7 +281,7 @@ module FreeBASE
                   :properties_path, :startup_module, 
                   :resource_path, :base_path, 
                   :full_base_path, 
-                  :description, :author, :test_path, :test_module)
+                  :description, :author, :tests, :test_module)
     attr_writer :autoload
     attr_reader :configuration
     attr_reader :fwd_load_graph, :fwd_start_graph

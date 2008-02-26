@@ -47,7 +47,6 @@ module Redcar
       end
       
       @label = Gtk::NotebookLabel.new(self, "#new#{@pane.tabs.length}") do
-        puts "closing tab:#{self.label.text}"
         self.close
       end
       @label_angle = :horizontal

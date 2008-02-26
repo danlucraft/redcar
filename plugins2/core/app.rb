@@ -3,9 +3,12 @@ module Redcar
   module App
     extend FreeBASE::StandardPlugin
 
-    def self.quit
-      bus["/system/shutdown"].call(nil)
-      Gtk.main_quit
+    def self.quit 
+      unless @gtk_quit
+        bus["/system/shutdown"].call(nil)
+        Gtk.main_quit
+      end
+      @gtk_quit = true
     end
     
     def self.new_window(focus = true)
@@ -14,9 +17,7 @@ module Redcar
     end
     
     def self.windows
-      if @window
-        [@window]
-      end
+      [@window]
     end
     
     def self.focussed_window
@@ -24,14 +25,14 @@ module Redcar
     end
     
     def self.close_window(window, close_if_no_win=true)
-      is_win = windows
+      is_win = !windows.empty?
       @window = nil if window == @window
-      # TODO close window logic - remove tabs etc.
+      window.hide_all if window
       quit if close_if_no_win and is_win
     end
     
     def self.close_all_windows(close_if_no_win=true)
-      is_win = windows
+      is_win = !windows.empty?
       close_window(@window)
       quit if close_if_no_win and is_win
     end

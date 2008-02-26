@@ -21,7 +21,7 @@ class Object
     true
   end
 end
-  
+
 def null
   n = Object.new
   def null.method_missing(name, *args)
@@ -33,6 +33,10 @@ end
 class Symbol
   def to_title_string
     self.to_s.gsub("_", " ").split(" ").map{|w| w.capitalize}.join(" ")
+  end
+  
+  def to_proc
+    fn {|v| v.send(self)}
   end
 end
 

@@ -114,7 +114,7 @@ module FreeBASE
       @base_slot["actions/reload"].set_proc do 
         self.reload
       end
-      if @plugin_configuration.test_path
+      if @plugin_configuration.tests
         @base_slot["actions/test"].set_proc do 
           self.test
         end
@@ -300,25 +300,27 @@ module FreeBASE
     # Loads and executes the plugin's test path.
     #
     def test(output=:console)
-      if @plugin_configuration.test_path
+      if @plugin_configuration.tests
         require 'test/unit'
         
         # we do not want the tests to run on exit:
         Test::Unit.run = false
         
-        log_requires(:test) do
-          require @plugin_configuration.test_path
-        end
-        
-        case output
-        when :console
-          require 'test/unit/ui/console/testrunner'
-          begin
-            Test::Unit::UI::Console::TestRunner.new(eval(@plugin_configuration.test_module).suite).start
-          rescue Object => e
-            puts e
-            puts e.message
-            puts e.backtrace
+        @plugin_configuration.tests.each do |test_info|
+          log_requires(:test) do
+            require test_info["path"]
+          end
+          
+          case output
+          when :console
+            require 'test/unit/ui/console/testrunner'
+            begin
+              Test::Unit::UI::Console::TestRunner.new(eval(test_info["testcase"]).suite).start
+            rescue Object => e
+              puts e
+              puts e.message
+              puts e.backtrace
+            end
           end
         end
       end

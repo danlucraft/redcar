@@ -30,6 +30,9 @@ plugins:
         core-keymap: "*"
         core-pane: "*"
         core-menu: "*"
+    tests:
+      - path: core/tests/window_test.rb
+        testcase: Redcar::PluginTests::WindowTest
 
   - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-keymap
@@ -64,6 +67,9 @@ plugins:
     properties_path: pane.yaml
     start_dependencies:
         core-tab: "*"
+    tests:
+      - path: core/tests/pane_test.rb
+        testcase: Redcar::PluginTests::PaneTest
 
   - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-tab
@@ -71,10 +77,6 @@ plugins:
     require_path:    core/tab
     startup_module:  Redcar::Tab
     properties_path: tab.yaml
-
-
-
-
-
-
-
+    tests:
+      - path: core/tests/tab_test.rb
+        testcase: Redcar::PluginTests::TabTest
