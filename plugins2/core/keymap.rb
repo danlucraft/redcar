@@ -17,4 +17,14 @@ module Redcar
       (@instance_keymaps||{}).delete obj
     end
   end
+  
+  class GlobalKeymap < Keymap
+  end
+  
+  class EditTabKeymap < Keymap
+  end
+  
+  class SnippetKeymap < Keymap
+  end
 end
+

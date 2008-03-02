@@ -1,6 +1,10 @@
 
 class Object
-  def bus
-    $BUS
+  def bus(arg=nil)
+    if arg
+      $BUS[arg]
+    else
+      $BUS
+    end
   end
 end

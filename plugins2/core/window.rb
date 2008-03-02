@@ -15,12 +15,13 @@ module Redcar
       plugin.transition(FreeBASE::LOADED)
     end
     
-    attr_reader :notebooks_panes, :previous_tab
+    attr_reader :notebooks_panes, :previous_tab, :gtk_menubar
     
     def initialize
       super("Redcar")
       @notebooks_panes = {}
       build_widgets
+      MenuBuilder.draw_menus(self)
       connect_signals
       show_initial_widgets
     end
@@ -198,11 +199,11 @@ module Redcar
     
     def build_widgets
       set_size_request(800, 600)
-      gtk_menubar = Gtk::MenuBar.new 
+      @gtk_menubar = Gtk::MenuBar.new 
       gtk_table = Gtk::Table.new(1, 4, false)
       bus["/gtk/window/table"].data = gtk_table
-      bus["/gtk/window/menubar"].data = gtk_menubar
-      gtk_table.attach(gtk_menubar,
+      bus["/gtk/window/menubar"].data = @gtk_menubar
+      gtk_table.attach(@gtk_menubar,
                        # X direction            # Y direction
                        0, 1,                    0, 1,
                        Gtk::EXPAND | Gtk::FILL, 0,
@@ -254,7 +255,7 @@ module Redcar
          gtk_panes_box,
          gtk_toolbar,
          gtk_edit_view,
-         gtk_menubar,
+         @gtk_menubar,
          pane.gtk_notebook
         ]
     end

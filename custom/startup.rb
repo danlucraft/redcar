@@ -2,7 +2,7 @@
 puts "(startup.rb)"
 
 require 'ruby-prof'
-
+include Redcar
 def stop
   Thread.new {
     Redcar::App.quit
@@ -59,4 +59,9 @@ elsif Redcar::App.ARGV.include? "--test-all"
     plugin["actions/test"].call
   end
   stop
+elsif Redcar::App.ARGV.include? "--demo"
+  win.panes.first.split_horizontal
+  win.panes.last.new_tab(Tab, Gtk::Button.new("foo"))
+  win.panes.last.new_tab(Tab, Gtk::Button.new("bar"))
+  win.panes.last.new_tab(Tab, Gtk::Button.new("baz"))
 end

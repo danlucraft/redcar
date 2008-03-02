@@ -6,8 +6,9 @@ version: 1.0
 autoload: (true)
 require_path: scripting/scripting.rb
 startup_module: Redcar::Plugins::Scripting
-#test_path: scripting/test.rb
-#test_module: Redcar::Tests::ScriptingTest
+tests:
+  - path: scripting/test.rb
+    testcase: Redcar::PluginTests::ScriptingTest
 load_dependencies: 
   core: "*"
 start_dependencies: 

@@ -1,7 +1,7 @@
 
 
 module Redcar
-  module Tests
+  module PluginTests
     class ScriptingTest < Test::Unit::TestCase
       def test1
         assert_equal 1, 1

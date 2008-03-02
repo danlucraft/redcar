@@ -11,6 +11,31 @@ module Redcar
       
       STARTUP_SCRIPT = File.expand_path("~/.Redcar/startup.rb")
       
+      UserCommands do
+        icon :PREFERENCES
+        key  "Global/Ctrl+B"
+        def run_startup_script
+          Redcar::Plugins::Scripting.run_startup_script
+        end
+      end
+      
+      UserCommands("Scripts/") do
+        menu "Tools/Say Hello"
+        key  "Global/Ctrl+Alt+G"
+        def say_hello
+          puts "Hello World!"
+        end
+      end
+      
+      MainMenu "Tools" do
+        item "Run Startup Script", "run_startup_script", :icon => :PREFERENCES
+        separator
+        item "Say Hello!", "Scripts/say_hello"
+        submenu "My First Pony!" do
+          item "Say Hi There Pardner", "Scripts/say_hello"
+        end
+      end
+      
       def self.run_startup_script
         unless Redcar::App.ARGV.include? "--nostartup"
           if File.exists?(STARTUP_SCRIPT)
@@ -22,8 +47,8 @@ module Redcar
       end
       
       def self.load(plugin)
-        $BUS["/system/state/all_plugins_loaded"].subscribe do |event, slot|
-          if $BUS["/system/state/all_plugins_loaded"].data.to_bool
+        bus["/system/state/all_plugins_loaded"].subscribe do |event, slot|
+          if bus["/system/state/all_plugins_loaded"].data.to_bool
             run_startup_script
           end
         end
