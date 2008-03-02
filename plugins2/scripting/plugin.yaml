@@ -5,10 +5,10 @@ author: Daniel Lucraft
 version: 1.0
 autoload: (true)
 require_path: scripting/scripting.rb
-startup_module: Redcar::Plugins::Scripting
+startup_module: Com::RedcarIDE::Scripting
 tests:
   - path: scripting/test.rb
-    testcase: Redcar::PluginTests::ScriptingTest
+    testcase: Com::RedcarIDE::Scripting::Test
 load_dependencies: 
   core: "*"
 start_dependencies: 
