@@ -25,7 +25,7 @@ module Redcar
       @focussed_tab = nil
       @focussed_gtk_widget = nil
       build_widgets
-      MenuBuilder.draw_menus(self)
+      MenuDrawer.draw_menus(self)
       connect_signals
       show_initial_widgets
     end

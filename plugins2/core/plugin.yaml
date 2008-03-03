@@ -3,6 +3,14 @@ name: core
 version: 1.0
 plugins: 
   - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-standard_menus
+    autoload:        true
+    require_path:    core/standard_menus
+    startup_module:  Redcar::StandardMenus
+    load_dependencies:
+        core-app: "*"
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-gui
     autoload:        true
     require_path:    core/gui

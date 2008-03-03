@@ -28,7 +28,7 @@ module Redcar
         slot = bus['/redcar/menus/context/'+name]
         unless slot.attr_gtk_menu
           gtk_menu = Gtk::Menu.new
-          Redcar::Menu.draw_menus1(slot, gtk_menu)
+          MenuDrawer.draw_menus1(slot, gtk_menu)
           slot.attr_gtk_menu = gtk_menu
           gtk_menu.show
         end
@@ -68,42 +68,6 @@ module Redcar
     end
   end
   
-  module ContextMenuBuilder
-    def context_menu(name)
-      $menunum ||= 0
-      $menunum += 1
-      bits = name.split("/")
-      build = ""
-      bits.each do |bit|
-        build += "/" + bit
-        bus['/redcar/menus/context/'+build].attr_id = $menunum
-        $menunum += 1
-      end
-      slot = bus['/redcar/menus/context/'+name]
-      yield b = Builder.new
-      slot.data = b
-      slot.attr_menu_entry = true
-      slot.attr_gtk_menu = nil
-      slot.attr_id = $menunum
-      $menunum += 1
-    end
-    
-    def context_menu_separator(name)
-      slot = bus['/redcar/menus/context/'+name+'/separator_'+$menunum.to_s]
-      slot.attr_id = $menunum
-      $menunum += 1
-    end
-    
-    class Builder
-      attr_accessor :command, :icon, :keybinding
-      
-      def [](v)
-        instance_variable_get("@"+v.to_s)
-      end
-      
-    end
-  end
-  
   module MenuBuilder
     class << self
       attr_reader :menuid
@@ -125,7 +89,15 @@ module Redcar
     
     def MainMenu(menu, &block)
       MenuBuilder.command_scope = self.to_s
-      MenuBuilder.menu_scope    = menu
+      MenuBuilder.menu_scope    = "menubar/"+menu
+      MenuBuilder.class_eval(&block)
+      MenuBuilder.command_scope = ""
+      MenuBuilder.menu_scope    = ""
+    end
+    
+    def ContextMenu(menu, &block)
+      MenuBuilder.command_scope = self.to_s
+      MenuBuilder.menu_scope    = "context/"+menu
       MenuBuilder.class_eval(&block)
       MenuBuilder.command_scope = ""
       MenuBuilder.menu_scope    = ""
@@ -135,7 +107,7 @@ module Redcar
       attr_accessor :menu_scope, :command_scope
       
       def item(item_name, command_name, options={})
-        slot = bus("/redcar/menus/menubar/#{menu_scope}/#{item_name}")
+        slot = bus("/redcar/menus/#{menu_scope}/#{item_name}")
         slot.data = bus("/redcar/commands/#{command_scope}/#{command_name}").data
         slot.attr_menu_entry = true
         slot.attr_icon = options[:icon]
@@ -145,12 +117,12 @@ module Redcar
         build = ""
         bits.each do |bit|
           build += "/" + bit
-          set_menuid(bus['/redcar/menus/menubar/'+build])
+          set_menuid(bus['/redcar/menus/'+build])
         end
       end
       
       def separator
-        slot = bus("/redcar/menus/menubar/#{menu_scope}/separator_#{MenuBuilder.menuid}")
+        slot = bus("/redcar/menus/#{menu_scope}/separator_#{MenuBuilder.menuid}")
         set_menuid(slot)
       end
       
@@ -161,7 +133,9 @@ module Redcar
         @menu_scope = old_menu_scope
       end
     end
-    
+  end
+  
+  module MenuDrawer
     class << self
       def clear_menus
         (@toplevel_gtk_menuitems||={}).each do |uuid, gtk_menuitem|

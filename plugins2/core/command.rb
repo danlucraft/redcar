@@ -264,7 +264,7 @@ module Redcar
           end
           bus("/redcar/commands/#{com.name}").data = com
           if @annotations[:menu]
-            MenuBuilder.item @annotations[:menu], com.name
+            MenuBuilder.item "menubar/"+@annotations[:menu], com.name
             puts "add menu item for #{com.name}"
           end
         end
