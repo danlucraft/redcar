@@ -1,8 +1,6 @@
 
 module Com::RedcarIDE
   class Scripting < Redcar::Plugin
-    STARTUP_SCRIPT = File.expand_path("~/.Redcar/startup.rb")
-    
     UserCommands do
       icon :PREFERENCES
       key  "Global/Ctrl+B"
@@ -28,10 +26,18 @@ module Com::RedcarIDE
       end
     end
     
+    def self.startup_script_file
+      if File.exists?(file = File.expand_path("~/.Redcar/startup.rb"))
+        file
+      else
+        File.dirname(__FILE__) + "/startup.rb"
+      end
+    end
+    
     def self.run_startup_script
       unless Redcar::App.ARGV.include? "--nostartup"
-        if File.exists?(STARTUP_SCRIPT)
-          require STARTUP_SCRIPT
+        if File.exists?(startup_script_file)
+          require startup_script_file
         else
           puts "(no startup script)"
         end

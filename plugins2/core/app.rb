@@ -3,6 +3,10 @@ module Redcar
   module App
     extend FreeBASE::StandardPlugin
 
+    def self.root_path
+      File.expand_path(File.dirname(__FILE__)+"/../..")
+    end
+    
     def self.quit 
       unless @gtk_quit
         bus["/system/shutdown"].call(nil)

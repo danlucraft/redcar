@@ -1,5 +1,5 @@
 
-puts "(startup.rb)"
+puts "(scripting/startup.rb)"
 
 require 'ruby-prof'
 include Redcar
