@@ -18,13 +18,5 @@ module Redcar
     end
   end
   
-  class GlobalKeymap < Keymap
-  end
-  
-  class EditTabKeymap < Keymap
-  end
-  
-  class SnippetKeymap < Keymap
-  end
 end
 

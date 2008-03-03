@@ -1,6 +1,14 @@
 
 module Com::RedcarIDE
   class Scripting < Redcar::Plugin
+    on_load do
+      bus["/system/state/all_plugins_loaded"].subscribe do |event, slot|
+        if bus["/system/state/all_plugins_loaded"].data.to_bool
+          run_startup_script
+        end
+      end
+    end
+    
     UserCommands do
       icon :PREFERENCES
       key  "Global/Ctrl+B"
@@ -9,7 +17,7 @@ module Com::RedcarIDE
       end
     end
     
-    UserCommands("Scripts/") do
+    UserCommands "Scripts/" do
       menu "Tools/Say Hello"
       key  "Global/Ctrl+Alt+G"
       def say_hello
@@ -36,21 +44,9 @@ module Com::RedcarIDE
     
     def self.run_startup_script
       unless Redcar::App.ARGV.include? "--nostartup"
-        if File.exists?(startup_script_file)
-          require startup_script_file
-        else
-          puts "(no startup script)"
-        end
+        require startup_script_file
       end
     end
     
-    def self.load(plugin)
-      bus["/system/state/all_plugins_loaded"].subscribe do |event, slot|
-        if bus["/system/state/all_plugins_loaded"].data.to_bool
-          run_startup_script
-        end
-      end
-      plugin.transition(FreeBASE::LOADED)
-    end
   end
 end
