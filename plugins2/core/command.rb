@@ -259,13 +259,12 @@ module Redcar
           com.sensitive = @annotations[:sensitive]
           com.block     = Proc.new { @selfobj.send(name) }
           if @annotations[:key]
-            # this is for display in the menus:
             com.key = @annotations[:key].split("/").last
-            # this is for activation:
-            puts "add key for #{com.name}"
+            Keymap.register_key(@annotations[:key], com)
           end
           bus("/redcar/commands/#{com.name}").data = com
           if @annotations[:menu]
+            MenuBuilder.item @annotations[:menu], com.name
             puts "add menu item for #{com.name}"
           end
         end

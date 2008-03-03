@@ -125,8 +125,10 @@ module Redcar
     
     def MainMenu(menu, &block)
       MenuBuilder.command_scope = self.to_s
-      MenuBuilder.menu_scope = menu
+      MenuBuilder.menu_scope    = menu
       MenuBuilder.class_eval(&block)
+      MenuBuilder.command_scope = ""
+      MenuBuilder.menu_scope    = ""
     end
     
     class << self
@@ -157,41 +159,6 @@ module Redcar
         @menu_scope += "/#{name}"
         MenuBuilder.class_eval(&block)
         @menu_scope = old_menu_scope
-      end
-    end
-    
-    def __menu(name)
-      $menunum ||= 0
-      $menunum += 1
-      bits = name.split("/")
-      build = ""
-      bits.each do |bit|
-        build += "/" + bit
-        bus['/redcar/menus/menubar/'+build].attr_id = $menunum
-        $menunum += 1
-      end
-      slot = bus['/redcar/menus/menubar/'+name]
-      yield b = Builder.new
-      slot.data = b
-      slot.attr_menu_entry = true
-      slot.attr_id = $menunum
-      $menunum += 1
-      if bus['/system/state/all_plugins_loaded'].data.to_bool
-        Redcar::Menu.draw_menus
-      end
-    end
-    
-    def __menu_separator(name)
-      slot = bus['/redcar/menus/menubar/'+name+'/separator_'+$menunum.to_s]
-      slot.attr_id = $menunum
-      $menunum += 1
-    end
-    
-    class Builder
-      attr_accessor :command, :icon, :keybinding
-      
-      def [](v)
-        instance_variable_get("@"+v.to_s)
       end
     end
     

@@ -28,7 +28,6 @@ module Com::RedcarIDE
     MainMenu "Tools" do
       item "Run Startup Script", "run_startup_script", :icon => :PREFERENCES
       separator
-      item "Say Hello!", "Scripts/say_hello"
       submenu "My First Pony!" do
         item "Say Hi There Pardner", "Scripts/say_hello"
       end
@@ -47,6 +46,5 @@ module Com::RedcarIDE
         require startup_script_file
       end
     end
-    
   end
 end

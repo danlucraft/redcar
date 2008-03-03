@@ -7,6 +7,7 @@ module Redcar
     
     def self.start(plugin)
       App.new_window
+      Keymap.push_onto(self, "Global")
       plugin.transition(FreeBASE::RUNNING)
     end
     
@@ -15,11 +16,14 @@ module Redcar
       plugin.transition(FreeBASE::LOADED)
     end
     
-    attr_reader :notebooks_panes, :previous_tab, :gtk_menubar
+    attr_reader(:notebooks_panes, :previous_tab, :gtk_menubar, 
+                :focussed_gtk_widget)
     
     def initialize
       super("Redcar")
       @notebooks_panes = {}
+      @focussed_tab = nil
+      @focussed_gtk_widget = nil
       build_widgets
       MenuBuilder.draw_menus(self)
       connect_signals
@@ -177,6 +181,7 @@ module Redcar
       
       # Everytime the focus changes, check to see if we have changed tabs.
       signal_connect('set-focus') do |_, gtk_widget, _|
+        @focussed_gtk_widget = gtk_widget
         until gtk_widget == nil or 
             Tab.widget_to_tab.keys.include? gtk_widget or
             @notebooks_panes.keys.include? gtk_widget
