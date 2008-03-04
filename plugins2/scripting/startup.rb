@@ -45,7 +45,7 @@ elsif Redcar::App.ARGV.include? "--test-perf-edit"
   printer.print(STDOUT, 0)
   stop
 elsif Redcar::App.ARGV.include? "--test-syntax"
-  $BUS['/plugins/syntaxview/actions/test'].call
+  bus['/plugins/syntaxview/actions/test'].call
   stop
 elsif Redcar::App.ARGV.include? "--test"
   ix = Redcar::App.ARGV.index "--test"
@@ -64,4 +64,10 @@ elsif Redcar::App.ARGV.include? "--demo"
   win.panes.last.new_tab(Tab, Gtk::Button.new("foo"))
   win.panes.last.new_tab(Tab, Gtk::Button.new("bar"))
   win.panes.last.new_tab(Tab, Gtk::Button.new("baz"))
+elsif Redcar::App.ARGV.include? "--current-bug"
+  win.panes.first.split_horizontal
+  win.panes.last.new_tab(Tab, Gtk::Button.new("foo"))
+  win.panes.last.new_tab(Tab, Gtk::Button.new("bar"))
+  win.unify_all
+  win.panes.first.split_horizontal
 end

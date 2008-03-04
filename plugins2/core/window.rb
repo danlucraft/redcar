@@ -37,7 +37,7 @@ module Redcar
     end
     
     def panes
-      @notebooks_panes.values
+      @notebooks_panes.values.sort_by {|p| p.object_id }
     end
     
     def unify_all

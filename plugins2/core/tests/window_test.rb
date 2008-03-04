@@ -69,6 +69,19 @@ module Redcar
         win.focus_tab(tab1)
         assert_equal tab1, win.focussed_tab
       end
+      
+      def test_unify_keeps_tabs
+        win.new_tab(Tab, Gtk::Label.new("foo"))
+        win.new_tab(Tab, Gtk::Label.new("bar"))
+        win.new_tab(Tab, Gtk::Label.new("baz"))
+        win.split_horizontal(win.panes.first)
+        win.panes.last.move_tab(win.panes.last.tabs.first, win.panes.first)
+        assert_equal 3, win.tabs.length
+        assert_equal [1, 2], win.panes.map{|p| p.tabs.length}
+        win.unify_all
+        assert_equal 3, win.tabs.length
+        assert_equal [3], win.panes.map{|p| p.tabs.length}
+      end
     end
   end
 end
