@@ -17,6 +17,13 @@ module Redcar
         end
       end
       
+      key "Global/Ctrl+Shift+W"
+      def close_all
+        win.active_tabs.each do |tab|
+          tab.close
+        end
+      end
+      
       key "Global/Alt+F4"
       def quit
         Redcar::App.quit
