@@ -39,6 +39,28 @@ module Gtk
     end
   end
   
+  class TextIter
+    def forward_cursor_position!
+      self.forward_cursor_position
+      self
+    end
+    
+    def backward_cursor_position!
+      self.backward_cursor_position
+      self
+    end
+    
+    def forward_word_end!
+      self.forward_word_end
+      self
+    end
+    
+    def backward_word_start!
+      self.backward_word_start
+      self
+    end
+  end
+  
   # A simple notebook "label" (HBox container) with a text label and 
   # a close button.
   class NotebookLabel < HBox

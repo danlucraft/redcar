@@ -13,7 +13,7 @@ module Redcar
       show_notebook
     end
     
-    def new_tab(type=TextTab, *args)
+    def new_tab(type=EditTab, *args)
       tab = type.new(self, *args)
       add_tab(tab)
       tab

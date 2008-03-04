@@ -66,10 +66,7 @@ elsif Redcar::App.ARGV.include? "--demo"
   win.panes.last.new_tab(Tab, Gtk::Button.new("foo"))
   win.panes.last.new_tab(Tab, Gtk::Button.new("bar"))
   win.panes.last.new_tab(Tab, Gtk::Button.new("baz"))
-elsif Redcar::App.ARGV.include? "--current-bug"
-  win.panes.first.split_horizontal
-  win.panes.last.new_tab(Tab, Gtk::Button.new("foo"))
-  win.panes.last.new_tab(Tab, Gtk::Button.new("bar"))
-  win.unify_all
-  win.panes.first.split_horizontal
+elsif Redcar::App.ARGV.include? "--current"
+  win.new_tab(EditTab)
+  stop
 end

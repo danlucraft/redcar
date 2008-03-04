@@ -1,13 +1,15 @@
 module Redcar
   module StandardMenus
     extend FreeBASE::StandardPlugin
-    extend Redcar::CommandBuilder
-    extend Redcar::MenuBuilder
+    
+    CommandBuilder.enable(self)
+    MenuBuilder.enable(self)
     
     UserCommands "File" do
       key "Global/Ctrl+N"
+      p self
       def new
-        win.new_tab(Tab, Gtk::Button.new("foo")).focus
+        win.new_tab(EditTab).focus
       end
       
       key "Global/Ctrl+W"

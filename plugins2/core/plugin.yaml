@@ -3,6 +3,34 @@ name: core
 version: 1.0
 plugins: 
   - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-edit_tab
+    autoload:        true
+    require_path:    core/edit_tab
+    startup_module:  Redcar::EditTab
+    load_dependencies:
+        core-tab: "*"
+        core-document: "*"
+        core-edit_view: "*"
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-document
+    autoload:        true
+    require_path:    core/document
+    startup_module:  Redcar::Document
+    load_dependencies:
+        core-edit_view: "*"
+        core-plugin:    "*"
+        core-window:    "*"
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-edit_view
+    autoload:        true
+    require_path:    core/edit_view
+    startup_module:  Redcar::EditView
+    load_dependencies:
+        core-plugin: "*"
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-standard_menus
     autoload:        true
     require_path:    core/standard_menus
@@ -23,8 +51,10 @@ plugins:
     autoload:        true
     require_path:    core/plugin
     startup_module:  Redcar::Plugin
-    start_dependencies:
-        core-app: "*"
+    load_dependencies:
+        core-menu: "*"
+        core-command: "*"
+        core-preference: "*"
 
   - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-app
@@ -89,3 +119,8 @@ plugins:
       - path: core/tests/tab_test.rb
         testcase: Redcar::PluginTests::TabTest
 
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-preference
+    autoload:        true
+    require_path:    core/preference
+    startup_module:  Redcar::Preference

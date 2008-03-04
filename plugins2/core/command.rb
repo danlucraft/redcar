@@ -242,63 +242,122 @@ module Redcar
   end
   
   module CommandBuilder
-    def UserCommands(scope="", &block)
-      CommandBuilder.selfobj = self
-      CommandBuilder.db_scope = self.to_s+"/" + scope
-      CommandBuilder.class_eval(&block)
-    end
+    def self.enable(klass)
+      klass.class_eval do
+        class << self
+          attr_accessor :db_scope
+        end
 
-    class << self
-      attr_accessor :db_scope, :selfobj
-      
-      def method_added(name)
-        if @annotations
-          com           = InlineCommand.new
-          com.name      = "#{db_scope}/#{name}".gsub("//", "/")
-          com.scope     = @annotations[:scope]
-          com.sensitive = @annotations[:sensitive]
-          com.block     = Proc.new { @selfobj.send(name) }
-          if @annotations[:key]
-            com.key = @annotations[:key].split("/").last
-            Keymap.register_key(@annotations[:key], com)
-          end
-          bus("/redcar/commands/#{com.name}").data = com
-          if @annotations[:menu]
-            MenuBuilder.item "menubar/"+@annotations[:menu], com.name
+        def self.UserCommands(scope="", &block)
+          @db_scope = self.to_s+"/" + scope
+          self.class_eval do 
+            block.call
           end
         end
-        @annotations = nil
-      end
-      
-      def annotate(name, val)
-        @annotations ||= {}
-        @annotations[name] = val
-      end
-      
-      def menu(menu)
-        annotate :menu, menu
-      end
-      
-      def icon(icon)
-        annotate :icon, icon
-      end
-      
-      def key(key)
-        annotate :key, key
-      end
-      
-      def scope(scope)
-        annotate :scope, scope
-      end
-      
-      def sensitive(sens)
-        annotate :sensitive, sens
-      end
-      
-      def primitive(prim)
-        annotate :primitive, prim
+
+        def method_added(name)
+          if @annotations
+            com           = InlineCommand.new
+            com.name      = "#{db_scope}/#{name}".gsub("//", "/")
+            com.scope     = @annotations[:scope]
+            com.sensitive = @annotations[:sensitive]
+            com.block     = Proc.new { self.class.send(name) }
+            if @annotations[:key]
+              com.key = @annotations[:key].split("/").last
+              Keymap.register_key(@annotations[:key], com)
+            end
+            p self
+            p "/redcar/commands/#{com.name}"
+            bus("/redcar/commands/#{com.name}").data = com
+            if @annotations[:menu]
+              self.class.item "menubar/"+@annotations[:menu], com.name
+            end
+          end
+          @annotations = nil
+        end
+        
+        def self.annotate(name, val)
+          @annotations ||= {}
+          @annotations[name] = val
+        end
+        
+        def self.menu(menu)
+          annotate :menu, menu
+        end
+        
+        def self.icon(icon)
+          annotate :icon, icon
+        end
+        
+        def self.key(key)
+          annotate :key, key
+        end
+        
+        def self.scope(scope)
+          annotate :scope, scope
+        end
+        
+        def self.sensitive(sens)
+          annotate :sensitive, sens
+        end
+        
+        def self.primitive(prim)
+          annotate :primitive, prim
+        end
       end
     end
+    
+#     class << self
+#       attr_accessor :db_scope, :selfobj
+      
+#       def method_added(name)
+#         if @annotations
+#           com           = InlineCommand.new
+#           com.name      = "#{db_scope}/#{name}".gsub("//", "/")
+#           com.scope     = @annotations[:scope]
+#           com.sensitive = @annotations[:sensitive]
+#           com.block     = Proc.new { @selfobj.send(name) }
+#           if @annotations[:key]
+#             com.key = @annotations[:key].split("/").last
+#             Keymap.register_key(@annotations[:key], com)
+#           end
+#           bus("/redcar/commands/#{com.name}").data = com
+#           if @annotations[:menu]
+#             MenuBuilder.item "menubar/"+@annotations[:menu], com.name
+#           end
+#         end
+#         @annotations = nil
+#       end
+      
+#       def annotate(name, val)
+#         @annotations ||= {}
+#         @annotations[name] = val
+#       end
+      
+#       def menu(menu)
+#         annotate :menu, menu
+#       end
+      
+#       def icon(icon)
+#         annotate :icon, icon
+#       end
+      
+#       def key(key)
+#         annotate :key, key
+#       end
+      
+#       def scope(scope)
+#         annotate :scope, scope
+#       end
+      
+#       def sensitive(sens)
+#         annotate :sensitive, sens
+#       end
+      
+#       def primitive(prim)
+#         annotate :primitive, prim
+#       end
+#     end
   end
   
   module UserCommands

@@ -33,6 +33,11 @@ module Com::RedcarIDE
       end
     end
     
+    Preference "Run startup script" do
+      type    :toggle 
+      default true
+    end
+      
     def self.startup_script_file
       if File.exists?(file = File.expand_path("~/.Redcar/startup.rb"))
         file

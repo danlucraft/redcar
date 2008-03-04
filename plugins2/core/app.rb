@@ -59,4 +59,5 @@ class Object
   def win
     Redcar::App.focussed_window
   end
+  
 end

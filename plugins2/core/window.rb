@@ -13,6 +13,7 @@ module Redcar
     
     def self.stop(plugin)
       App.close_all_windows
+      Keymap.remove_from(self, "Global")
       plugin.transition(FreeBASE::LOADED)
     end
     
@@ -201,8 +202,6 @@ module Redcar
       
       # Everytime the focus changes, check to see if we have changed tabs.
       signal_connect('set-focus') do |_, gtk_widget, _|
-        p :set_focus
-          p gtk_widget
         @focussed_gtk_widget = gtk_widget
         until gtk_widget == nil or 
             Tab.widget_to_tab.keys.include? gtk_widget or

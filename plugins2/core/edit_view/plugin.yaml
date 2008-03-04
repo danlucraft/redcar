@@ -1,0 +1,14 @@
+--- !ruby/object:FreeBASE::PluginConfiguration 
+name: syntaxview
+author: Daniel Lucraft
+description: Adds syntax highlighting and scope support.
+version: 1.0
+autoload: (true)
+require_path: syntaxview/syntaxview.rb
+startup_module: Redcar::Plugins::SyntaxView
+test_path: syntaxview/test.rb
+test_module: Redcar::Tests::SyntaxViewTest
+load_dependencies: 
+  redcar-core: "*"
+start_dependencies: 
+  redcar-core: "*"

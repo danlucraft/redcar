@@ -87,50 +87,54 @@ module Redcar
       end
     end
     
-    def MainMenu(menu, &block)
-      MenuBuilder.command_scope = self.to_s
-      MenuBuilder.menu_scope    = "menubar/"+menu
-      MenuBuilder.class_eval(&block)
-      MenuBuilder.command_scope = ""
-      MenuBuilder.menu_scope    = ""
-    end
-    
-    def ContextMenu(menu, &block)
-      MenuBuilder.command_scope = self.to_s
-      MenuBuilder.menu_scope    = "context/"+menu
-      MenuBuilder.class_eval(&block)
-      MenuBuilder.command_scope = ""
-      MenuBuilder.menu_scope    = ""
-    end
-    
-    class << self
-      attr_accessor :menu_scope, :command_scope
-      
-      def item(item_name, command_name, options={})
-        slot = bus("/redcar/menus/#{menu_scope}/#{item_name}")
-        slot.data = bus("/redcar/commands/#{command_scope}/#{command_name}").data
-        slot.attr_menu_entry = true
-        slot.attr_icon = options[:icon]
-        slot.attr_key = slot.data.key
-        # sets the menuid of this menuitem and it's ancestors if necessary:
-        bits = "#{menu_scope}/#{item_name}".split("/")
-        build = ""
-        bits.each do |bit|
-          build += "/" + bit
-          set_menuid(bus['/redcar/menus/'+build])
+    def self.enable(klass)
+      klass.class_eval do
+        class << self
+          attr_accessor :menu_scope, :command_scope
         end
-      end
-      
-      def separator
-        slot = bus("/redcar/menus/#{menu_scope}/separator_#{MenuBuilder.menuid}")
-        set_menuid(slot)
-      end
-      
-      def submenu(name, &block)
-        old_menu_scope = @menu_scope
-        @menu_scope += "/#{name}"
-        MenuBuilder.class_eval(&block)
-        @menu_scope = old_menu_scope
+        
+        def self.MainMenu(menu, &block)
+          @command_scope = self.to_s
+          @menu_scope    = "menubar/"+menu
+          self.class_eval(&block)
+          @command_scope = ""
+          @menu_scope    = ""
+        end
+        
+        def self.ContextMenu(menu, &block)
+          @command_scope = self.to_s
+          @menu_scope    = "context/"+menu
+          self.class_eval(&block)
+          @command_scope = ""
+          @menu_scope    = ""
+        end
+        
+        def self.item(item_name, command_name, options={})
+          slot = bus("/redcar/menus/#{@menu_scope}/#{item_name}")
+          slot.data = bus("/redcar/commands/#{@command_scope}/#{command_name}").data
+          slot.attr_menu_entry = true
+          slot.attr_icon = options[:icon]
+          slot.attr_key = slot.data.key
+          # sets the menuid of this menuitem and it's ancestors if necessary:
+          bits = "#{@menu_scope}/#{item_name}".split("/")
+          build = ""
+          bits.each do |bit|
+            build += "/" + bit
+            MenuBuilder.set_menuid(bus['/redcar/menus/'+build])
+          end
+        end
+        
+        def self.separator
+          slot = bus("/redcar/menus/#{@menu_scope}/separator_#{MenuBuilder.menuid}")
+          MenuBuilder.set_menuid(slot)
+        end
+        
+        def self.submenu(name, &block)
+          old_menu_scope = @menu_scope
+          @menu_scope += "/#{name}"
+          self.class_eval(&block)
+          @menu_scope = old_menu_scope
+        end
       end
     end
   end

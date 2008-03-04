@@ -50,6 +50,12 @@ module Redcar
       @obj_keymaps[obj] << keymap_path
     end
     
+    # Removes a keymap from an obj eg.
+    #   Keymap.remove_from(Redcar::EditView, "EditView")
+    def self.remove_from(obj, keymap_path)
+      @obj_keymaps[obj].delete keymap_path
+    end
+    
     # Use to execute a key. key_name should be a string like "Ctrl+G".
     # Execute key will scan the keymap stacks for the first instance of
     # this key then execute the appropriate command.
