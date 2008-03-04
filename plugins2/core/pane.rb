@@ -82,7 +82,8 @@ module Redcar
       @gtk_notebook.signal_connect("button_press_event") do |gtk_widget, gtk_event|
         gtk_widget.grab_focus
         if gtk_event.kind_of? Gdk::EventButton and gtk_event.button == 3
-          bus('/redcar/services/context_menu_popup').call("Pane", gtk_event.button, gtk_event.time)        end
+          bus('/redcar/services/context_menu_popup').call("Pane", gtk_event.button, gtk_event.time)
+        end
       end
       @gtk_notebook.signal_connect("page-added") do |nb, gtk_widget, _, _|
         tab = Tab.widget_to_tab[gtk_widget]
