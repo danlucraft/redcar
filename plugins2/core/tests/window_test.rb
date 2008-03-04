@@ -25,6 +25,13 @@ module Redcar
         assert_equal 2, win.notebooks_panes.length
       end
       
+      def test_split_horizontal_no_tabs
+        win.split_horizontal(win.panes.first)
+        assert_equal 2, win.panes.length
+        assert_equal 0, win.tabs.length
+        assert_equal 2, win.notebooks_panes.length
+      end
+      
       def test_split_vertical
         win.new_tab(Tab, Gtk::Label.new("foo"))
         win.split_vertical(win.panes.first)

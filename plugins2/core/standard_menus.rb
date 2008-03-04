@@ -17,11 +17,9 @@ module Redcar
         end
       end
       
-      key "Global/Ctrl+Shift+W"
+      key "Global/Ctrl+Super+W"
       def close_all
-        win.active_tabs.each do |tab|
-          tab.close
-        end
+        win.tabs.each &:close
       end
       
       key "Global/Alt+F4"
@@ -38,26 +36,35 @@ module Redcar
       
       key "Global/Ctrl+2"
       def split_horizontal
-        win.focussed_tab.pane.split_horizontal
+        if tab
+          tab.pane.split_horizontal
+        else
+          win.panes.first.split_horizontal
+        end
       end
       
       key "Global/Ctrl+3"
       def split_vertical
-        win.focussed_tab.pane.split_vertical
+        if tab
+          tab.pane.split_vertical
+        else
+          win.panes.first.split_vertical
+        end
       end
     end
     
     ContextMenu "Pane" do
-      item "Split Horizontal", "Pane/split_horizontal"
-      item "Split Vertical", "Pane/split_vertical"
-      item "Unify All", "Pane/unify_all"
+      item "Split Horizontal",  "Pane/split_horizontal"
+      item "Split Vertical",    "Pane/split_vertical"
+      item "Unify All",         "Pane/unify_all"
     end
     
     MainMenu "File" do
-      item "New", "File/new", :icon => :NEW
-      item "Close", "File/close", :icon => :CLOSE
+      item "New",        "File/new",       :icon => :NEW
+      item "Close",      "File/close",     :icon => :CLOSE
+      item "Close All",  "File/close_all", :icon => :CLOSE
       separator
-      item "Quit", "File/quit", :icon => :QUIT
+      item "Quit",       "File/quit",      :icon => :QUIT
     end
     
   end
