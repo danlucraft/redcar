@@ -32,6 +32,13 @@ module Gtk
     attr_accessor :redcar_position
   end
 
+  class Notebook
+    # Returns the child widget of the current page.
+    def page_child
+      get_nth_page page
+    end
+  end
+  
   # A simple notebook "label" (HBox container) with a text label and 
   # a close button.
   class NotebookLabel < HBox

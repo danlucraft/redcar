@@ -86,6 +86,26 @@ module Redcar
     def split_vertical(pane)
       split_pane(:vertical, pane)
     end
+
+    def close_tab(tab)
+      if tab.pane
+        nb = tab.pane.gtk_notebook
+        unless nb.destroyed?
+          nb.remove_page(nb.page_num(tab.gtk_nb_widget))
+          Tab.widget_to_tab.delete tab.gtk_nb_widget
+          if nb.n_pages > 0
+            update_focussed_tab(Tab.widget_to_tab[nb.page_child])
+          else
+            if nexttab = active_tabs.first
+              nexttab.gtk_tab_widget.grab_focus
+              update_focussed_tab(nexttab)
+            end
+          end
+        end
+      else
+        raise "trying to close tab with no pane: #{tab.label.text}"
+      end      
+    end
     
     def unify(pane)
       panes_container = pane.gtk_notebook.parent
@@ -181,6 +201,8 @@ module Redcar
       
       # Everytime the focus changes, check to see if we have changed tabs.
       signal_connect('set-focus') do |_, gtk_widget, _|
+        p :set_focus
+          p gtk_widget
         @focussed_gtk_widget = gtk_widget
         until gtk_widget == nil or 
             Tab.widget_to_tab.keys.include? gtk_widget or
@@ -278,6 +300,11 @@ module Redcar
           debug_print_widgets gtk_child, indent+2
         end
       end
+    end
+    
+    def update_focussed_tab(tab)
+      @previously_focussed_tab = @focussed_tab
+      @focussed_tab = tab
     end
   end
 end

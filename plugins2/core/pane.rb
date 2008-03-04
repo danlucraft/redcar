@@ -3,7 +3,7 @@ module Redcar
   class Pane
     extend FreeBASE::StandardPlugin
     
-    attr_accessor :gtk_notebook
+    attr_accessor :gtk_notebook, :window
     attr_reader   :label_angle,  :label_position
     
     def initialize(window)
@@ -20,11 +20,11 @@ module Redcar
     end
     
     def close_tab(tab)
-      tab.close
+      @window.close_tab(tab)
     end
     
     def close_all_tabs
-      tabs.each{|tab| tab.close}
+      tabs.each{|tab| @window.close_tab(tab)}
     end
     
     def tabs
@@ -89,6 +89,10 @@ module Redcar
         tab = Tab.widget_to_tab[gtk_widget]
         tab.label_angle = @label_angle
         tab.pane = self
+        false
+      end
+      @gtk_notebook.signal_connect("switch-page") do |nb, _, page_num|
+        @window.update_focussed_tab(Tab.widget_to_tab[nb.get_nth_page(page_num)])
         false
       end
     end

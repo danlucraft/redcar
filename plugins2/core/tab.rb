@@ -46,7 +46,9 @@ module Redcar
         @gtk_nb_widget.pack_end(gtk_widget)
       end
       
-      @label = Gtk::NotebookLabel.new(self, "#new#{@pane.tabs.length}") do
+      $tabcount ||= 0
+      $tabcount += 1
+      @label = Gtk::NotebookLabel.new(self, "#new#{$tabcount}") do
         self.close
       end
       @label_angle = :horizontal
@@ -57,13 +59,7 @@ module Redcar
     end
     
     def close
-      if @pane
-        nb = @pane.gtk_notebook
-        unless nb.destroyed?
-          nb.remove_page(nb.page_num(@gtk_nb_widget))
-          Tab.widget_to_tab.delete @gtk_nb_widget
-        end
-      end
+      @pane.window.close_tab(self)
     end
 
     def label_angle=(angle)
@@ -96,6 +92,7 @@ module Redcar
     def focus
       nb = @pane.gtk_notebook
       nb.set_page(nb.page_num(@gtk_nb_widget))
+      @gtk_nb_widget.grab_focus
     end
   end
 end
