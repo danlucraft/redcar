@@ -103,7 +103,7 @@ module Redcar
         end
         container_of_container = panes_container.parent
         other_panes = other_tabs.map{|t| t.pane}.uniq
-        tabs.each do |tab|
+        other_tabs.each do |tab|
           tab.pane.move_tab(tab, pane)
         end
         if container_of_container.class == Gtk::HBox
@@ -268,6 +268,16 @@ module Redcar
     def show_initial_widgets
       @initial_show_widgets.each {|w| w.show }
       show
+    end
+    
+    public
+    def debug_print_widgets(gtk_widget=self, indent=0)
+      puts " "*indent + gtk_widget.class.to_s
+      if gtk_widget.respond_to? :children
+        gtk_widget.children.each do |gtk_child|
+          debug_print_widgets gtk_child, indent+2
+        end
+      end
     end
   end
 end

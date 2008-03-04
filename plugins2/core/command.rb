@@ -2,21 +2,7 @@
 module Redcar
   class Command
     extend FreeBASE::StandardPlugin
-        
-    INPUTS = [
-              "None", "Document", "Line", "Word", 
-              "Character", "Scope", "Nothing", 
-              "Selected Text"
-             ]
-    OUTPUTS = [
-               "Discard", "Replace Selected Text", 
-               "Replace Document", "Replace Line", "Insert As Text", 
-               "Insert As Snippet", "Show As Html",
-               "Show As Tool Tip", "Create New Document",
-               "Replace Input", "Insert After Input"
-              ]
-    ACTIVATIONS = ["Key Combination"]
-    
+
     def self.execute(name)
       if name.is_a? String
         command = bus['/redcar/commands/'+name].data
@@ -38,7 +24,7 @@ module Redcar
     end
     
     attr_accessor(:name, :scope, :key)
-    
+
     def execute
       puts "executing: #{@name}"
     end
@@ -65,6 +51,20 @@ module Redcar
   class ShellCommand < Command
     attr_accessor(:input, :output, :fallback_input,
                   :tm_uuid, :bundle_uuid)
+    
+    INPUTS = [
+              "None", "Document", "Line", "Word", 
+              "Character", "Scope", "Nothing", 
+              "Selected Text"
+             ]
+    OUTPUTS = [
+               "Discard", "Replace Selected Text", 
+               "Replace Document", "Replace Line", "Insert As Text", 
+               "Insert As Snippet", "Show As Html",
+               "Show As Tool Tip", "Create New Document",
+               "Replace Input", "Insert After Input"
+              ]
+    ACTIVATIONS = ["Key Combination"]
     
     def execute
       super
@@ -265,7 +265,6 @@ module Redcar
           bus("/redcar/commands/#{com.name}").data = com
           if @annotations[:menu]
             MenuBuilder.item "menubar/"+@annotations[:menu], com.name
-            puts "add menu item for #{com.name}"
           end
         end
         @annotations = nil

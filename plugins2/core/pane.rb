@@ -79,15 +79,13 @@ module Redcar
     end
     
     def connect_notebook_signals
-      @gtk_notebook.signal_connect("button_press_event") do |widget, event|
-        if event.kind_of? Gdk::EventButton 
-          if event.button == 3
-            bus['/redcar/services/context_menu_popup'].call("Pane", event.button, event.time)
-          end
-        end
+      @gtk_notebook.signal_connect("button_press_event") do |gtk_widget, gtk_event|
+        gtk_widget.grab_focus
+        if gtk_event.kind_of? Gdk::EventButton and gtk_event.button == 3
+          bus('/redcar/services/context_menu_popup').call("Pane", gtk_event.button, gtk_event.time)        end
       end
-      @gtk_notebook.signal_connect("page-added") do |nb, widget, _, _|
-        tab = Tab.widget_to_tab[widget]
+      @gtk_notebook.signal_connect("page-added") do |nb, gtk_widget, _, _|
+        tab = Tab.widget_to_tab[gtk_widget]
         tab.label_angle = @label_angle
         tab.pane = self
         false
