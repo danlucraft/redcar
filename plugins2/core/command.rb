@@ -262,7 +262,6 @@ module Redcar
     def self.record(com)
       if recording
         @history << com
-        p @history.map{|com| com.name}
       end
     end
     
@@ -280,13 +279,33 @@ module Redcar
 
         def self.UserCommands(scope="", &block)
           @db_scope = self.to_s+"/" + scope
+          self.start_defining_commands
           self.class_eval do 
             block.call
           end
+          self.stop_defining_commands
         end
 
+        def self.start_defining_commands
+          @annotations       = nil
+          @aliasing          = false
+          @defining_commands = true
+        end
+          
+        def self.stop_defining_commands
+          @annotations       = nil
+          @aliasing          = false
+          @defining_commands = false
+        end
+        
+        def self.check_defining_commands
+          unless @defining_commands
+            raise "Attempting to annotate a command outside UserCommands { ... }"
+          end
+        end
+        
         def self.singleton_method_added(method_name)
-          if @annotations and !@aliasing
+          if @defining_commands and @annotations and !@aliasing
             com           = InlineCommand.new
             com.name      = "#{db_scope}/#{method_name}".gsub("//", "/")
             com.scope     = @annotations[:scope]
@@ -319,6 +338,7 @@ module Redcar
         end
         
         def self.annotate(name, val)
+          check_defining_commands
           @annotations ||= {}
           @annotations[name] = val
         end
@@ -345,6 +365,13 @@ module Redcar
         
         def self.primitive(prim)
           annotate :primitive, prim
+        end
+        
+        def self.input(input)
+          check_defining_commands
+          @annotations         ||= {}
+          @annotations[:input] ||= []
+          @annotations[:input] << input
         end
       end
     end

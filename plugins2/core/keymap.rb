@@ -23,9 +23,15 @@ module Redcar
         alt  = (bits.include?("Alt")   ? 1 : 0)
         supr = (bits.include?("Super") ? 1 : 0)
         shift = (bits.include?("Shift") ? 1 : 0)
-        key = "Ctrl+"*ctrl + "Super+"*supr + "Alt+"*alt + "Shift+"*shift+ bits.last
+        key = "Ctrl+"*ctrl + 
+          "Super+"*supr + 
+          "Alt+"*alt + 
+          "Shift+"*shift + 
+          bits.last
         puts key
         execute_key(key)
+      else
+        true # indicates to fall through to Gtk
       end
     end
     
@@ -80,11 +86,13 @@ module Redcar
           end
         end
       end
+      false
     end
     
     def self.execute_key_on_keymap(key_name, keymap_path)
       if com = bus("/redcar/keymaps/#{keymap_path}/#{key_name}").data
         com.execute
+        true
       end
     end
   end

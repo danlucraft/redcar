@@ -196,7 +196,7 @@ module Redcar
       end
       signal_connect('key-press-event') do |gtk_widget, gdk_eventkey|
         continue = Keymap.process(gdk_eventkey)
-        # falls through to Gtk widget if nothing handles it
+        # falls through to Gtk widgets if nothing handles it
         continue
       end
       

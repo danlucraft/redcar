@@ -8,7 +8,6 @@ module Redcar
     UserCommands "File" do
       key "Global/Ctrl+N"
       def self.new
-        hello
         win.new_tab(EditTab).focus
       end
       
@@ -19,11 +18,6 @@ module Redcar
         end
       end
       
-      key "Global/Ctrl+H"
-      def self.hello
-        p :hello
-      end
-      
       key "Global/Ctrl+Super+W"
       def self.close_all
         win.tabs.each &:close
@@ -32,6 +26,15 @@ module Redcar
       key "Global/Alt+F4"
       def self.quit
         Redcar::App.quit
+      end
+    end
+    
+    UserCommands "Text" do
+      key   "Global/Ctrl+U"
+      input :selection
+      input :line
+      def self.upcase(input)
+        input.upcase
       end
     end
     
