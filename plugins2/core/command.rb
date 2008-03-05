@@ -253,14 +253,17 @@ module Redcar
   
   module CommandHistory
     class << self
-      attr_accessor :max
+      attr_accessor :max, :recording
     end
     
-    max = 50
+    self.max       = 50
+    self.recording = true
     
-    def self.push(com)
-      @history << com
-      p @history.map{|com| com.name}
+    def self.record(com)
+      if recording
+        @history << com
+        p @history.map{|com| com.name}
+      end
     end
     
     def self.clear
@@ -283,7 +286,6 @@ module Redcar
         end
 
         def self.singleton_method_added(method_name)
-          @record_command = true
           if @annotations and !@aliasing
             com           = InlineCommand.new
             com.name      = "#{db_scope}/#{method_name}".gsub("//", "/")
@@ -304,14 +306,10 @@ module Redcar
               @aliasing = true
               metaclass.send(:alias_method, newname, method_name)
               metaclass.send(:define_method, method_name) do
-                if @record_command
-                  CommandHistory.push(com)
-                  @record_command = false
-                  self.send(newname)
-                  @record_command = true
-                else
-                  self.send(newname)
-                end
+                CommandHistory.record(com)
+                CommandHistory.recording = false
+                self.send(newname)
+                CommandHistory.recording = true
               end
               @aliasing = false
             end
