@@ -3,6 +3,16 @@ module Redcar
   class Command
     extend FreeBASE::StandardPlugin
 
+    def self.start(plugin)
+      CommandHistory.clear
+      plugin.transition(FreeBASE::RUNNING)
+    end
+
+    def self.stop(plugin)
+      CommandHistory.clear
+      plugin.transition(FreeBASE::LOADED)
+    end
+    
     def self.execute(name)
       if name.is_a? String
         command = bus['/redcar/commands/'+name].data
@@ -241,6 +251,23 @@ module Redcar
     end
   end
   
+  module CommandHistory
+    class << self
+      attr_accessor :max
+    end
+    
+    max = 50
+    
+    def self.push(com)
+      @history << com
+      p @history.map{|com| com.name}
+    end
+    
+    def self.clear
+      @history = []
+    end
+  end
+  
   module CommandBuilder
     def self.enable(klass)
       klass.class_eval do
@@ -255,13 +282,14 @@ module Redcar
           end
         end
 
-        def self.singleton_method_added(name)
-          if @annotations
+        def self.singleton_method_added(method_name)
+          @record_command = true
+          if @annotations and !@aliasing
             com           = InlineCommand.new
-            com.name      = "#{db_scope}/#{name}".gsub("//", "/")
+            com.name      = "#{db_scope}/#{method_name}".gsub("//", "/")
             com.scope     = @annotations[:scope]
             com.sensitive = @annotations[:sensitive]
-            com.block     = Proc.new { self.send(name) }
+            com.block     = Proc.new { self.send(method_name) }
             if @annotations[:key]
               com.key = @annotations[:key].split("/").last
               Keymap.register_key(@annotations[:key], com)
@@ -270,8 +298,26 @@ module Redcar
             if @annotations[:menu]
               MenuBuilder.item "menubar/"+@annotations[:menu], com.name
             end
+            @aliasing = true
+            if @aliasing
+              newname = ("__defined_"+method_name.to_s).intern
+              @aliasing = true
+              metaclass.send(:alias_method, newname, method_name)
+              metaclass.send(:define_method, method_name) do
+                if @record_command
+                  CommandHistory.push(com)
+                  @record_command = false
+                  self.send(newname)
+                  @record_command = true
+                else
+                  self.send(newname)
+                end
+              end
+              @aliasing = false
+            end
+            @aliasing = false
+            @annotations = nil
           end
-          @annotations = nil
         end
         
         def self.annotate(name, val)

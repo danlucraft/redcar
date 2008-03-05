@@ -20,8 +20,13 @@ class Object
     end
     true
   end
+  
+  def metaclass
+    class << self; self; end
+  end
 end
 
+  
 def null
   n = Object.new
   def null.method_missing(name, *args)

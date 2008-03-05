@@ -8,6 +8,7 @@ module Redcar
     UserCommands "File" do
       key "Global/Ctrl+N"
       def self.new
+        hello
         win.new_tab(EditTab).focus
       end
       
