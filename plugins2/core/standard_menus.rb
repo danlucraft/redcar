@@ -65,12 +65,16 @@ module Redcar
       
       key "Global/Ctrl+Page Down"
       def self.previous_tab
-        tab.pane.gtk_notebook.prev_page
+        if tab
+          tab.pane.gtk_notebook.prev_page
+        end
       end
       
       key "Global/Ctrl+Page Up"
       def self.next_tab
-        tab.pane.gtk_notebook.next_page
+        if tab
+          tab.pane.gtk_notebook.next_page
+        end
       end
     end
     
