@@ -255,22 +255,20 @@ module Redcar
           end
         end
 
-        def method_added(name)
+        def self.singleton_method_added(name)
           if @annotations
             com           = InlineCommand.new
             com.name      = "#{db_scope}/#{name}".gsub("//", "/")
             com.scope     = @annotations[:scope]
             com.sensitive = @annotations[:sensitive]
-            com.block     = Proc.new { self.class.send(name) }
+            com.block     = Proc.new { self.send(name) }
             if @annotations[:key]
               com.key = @annotations[:key].split("/").last
               Keymap.register_key(@annotations[:key], com)
             end
-            p self
-            p "/redcar/commands/#{com.name}"
             bus("/redcar/commands/#{com.name}").data = com
             if @annotations[:menu]
-              self.class.item "menubar/"+@annotations[:menu], com.name
+              MenuBuilder.item "menubar/"+@annotations[:menu], com.name
             end
           end
           @annotations = nil

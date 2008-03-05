@@ -3,41 +3,45 @@ module Redcar
     extend FreeBASE::StandardPlugin
     
     CommandBuilder.enable(self)
-    MenuBuilder.enable(self)
+    extend Redcar::MenuBuilder
     
     UserCommands "File" do
       key "Global/Ctrl+N"
-      p self
-      def new
+      def self.new
         win.new_tab(EditTab).focus
       end
       
       key "Global/Ctrl+W"
-      def close
+      def self.close
         if tab
           tab.close
         end
       end
       
+      key "Global/Ctrl+H"
+      def self.hello
+        p :hello
+      end
+      
       key "Global/Ctrl+Super+W"
-      def close_all
+      def self.close_all
         win.tabs.each &:close
       end
       
       key "Global/Alt+F4"
-      def quit
+      def self.quit
         Redcar::App.quit
       end
     end
     
     UserCommands "Pane" do
       key "Global/Ctrl+1"
-      def unify_all
+      def self.unify_all
         win.unify_all
       end
       
       key "Global/Ctrl+2"
-      def split_horizontal
+      def self.split_horizontal
         if tab
           tab.pane.split_horizontal
         else
@@ -46,7 +50,7 @@ module Redcar
       end
       
       key "Global/Ctrl+3"
-      def split_vertical
+      def self.split_vertical
         if tab
           tab.pane.split_vertical
         else

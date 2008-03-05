@@ -12,7 +12,7 @@ module Com::RedcarIDE
     UserCommands do
       icon :PREFERENCES
       key  "Global/Ctrl+B"
-      def run_startup_script
+      def self.run_startup_script
         Scripting.run_startup_script
       end
     end
@@ -20,7 +20,7 @@ module Com::RedcarIDE
     UserCommands "Scripts/" do
       menu "Tools/Say Hello"
       key  "Global/Ctrl+Alt+G"
-      def say_hello
+      def self.say_hello
         puts "Hello World!"
       end
     end

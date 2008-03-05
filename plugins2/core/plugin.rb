@@ -3,9 +3,9 @@ module Redcar
   class Plugin
     extend FreeBASE::StandardPlugin
     extend Redcar::PreferenceBuilder
+    extend Redcar::MenuBuilder
     
     CommandBuilder.enable(self)
-    MenuBuilder.enable(self)
     
     class PluginTransitionException < Exception; end
     
