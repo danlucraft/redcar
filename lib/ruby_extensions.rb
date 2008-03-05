@@ -29,7 +29,7 @@ end
   
 def null
   n = Object.new
-  def null.method_missing(name, *args)
+  def n.method_missing(name, *args)
     null
   end
   n

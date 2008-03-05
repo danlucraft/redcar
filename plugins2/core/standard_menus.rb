@@ -30,10 +30,11 @@ module Redcar
     end
     
     UserCommands "Text" do
-      key   "Global/Ctrl+U"
-      input :selection
-      input :line
+      key    "Global/Ctrl+U"
+      inputs :selection, :line
+      output :replace_input
       def self.upcase(input)
+        p input
         input.upcase
       end
     end
@@ -60,6 +61,16 @@ module Redcar
         else
           win.panes.first.split_vertical
         end
+      end
+      
+      key "Global/Ctrl+Page Down"
+      def self.previous_tab
+        tab.pane.gtk_notebook.prev_page
+      end
+      
+      key "Global/Ctrl+Page Up"
+      def self.next_tab
+        tab.pane.gtk_notebook.next_page
       end
     end
     

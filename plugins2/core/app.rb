@@ -47,17 +47,17 @@ end
 class Object
   # The current or last focussed Document.
   def doc
-    tab.document
+    tab.document || null
   end
   
   # The current or last focussed Tab
   def tab
-    win.focussed_tab
+    win.focussed_tab || null
   end
   
   # The current or last focussed Window
   def win
-    Redcar::App.focussed_window
+    Redcar::App.focussed_window || null
   end
   
 end
