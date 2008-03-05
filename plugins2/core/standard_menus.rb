@@ -12,10 +12,9 @@ module Redcar
       end
       
       key "Global/Ctrl+W"
+      sensitive :tab
       def self.close
-        if tab
-          tab.close
-        end
+        tab.close
       end
       
       key "Global/Ctrl+Super+W"
@@ -41,6 +40,7 @@ module Redcar
     
     UserCommands "Pane" do
       key "Global/Ctrl+1"
+      sensitive :multiple_panes
       def self.unify_all
         win.unify_all
       end
@@ -64,17 +64,27 @@ module Redcar
       end
       
       key "Global/Ctrl+Page Down"
+      sensitive :tab
       def self.previous_tab
-        if tab
-          tab.pane.gtk_notebook.prev_page
-        end
+        tab.pane.gtk_notebook.prev_page
       end
       
       key "Global/Ctrl+Page Up"
+      sensitive :tab
       def self.next_tab
-        if tab
-          tab.pane.gtk_notebook.next_page
-        end
+        tab.pane.gtk_notebook.next_page
+      end
+      
+      key "Global/Ctrl+Shift+Page Down"
+      sensitive :tab
+      def self.move_tab_down
+        tab.move_down
+      end
+      
+      key "Global/Ctrl+Shift+Page Up"
+      sensitive :tab
+      def self.move_tab_up
+        tab.move_up
       end
     end
     

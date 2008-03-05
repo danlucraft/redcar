@@ -94,5 +94,17 @@ module Redcar
       nb.set_page(nb.page_num(@gtk_nb_widget))
       @gtk_nb_widget.grab_focus
     end
+    
+    def move_up
+      nb = @pane.gtk_notebook
+      new_ix = nb.page_num(@gtk_nb_widget)+1
+      nb.reorder_child(@gtk_nb_widget, new_ix)
+    end
+    
+    def move_down
+      nb = @pane.gtk_notebook
+      new_ix = [nb.page_num(@gtk_nb_widget)-1, 0].max
+      nb.reorder_child(@gtk_nb_widget, new_ix)
+    end
   end
 end

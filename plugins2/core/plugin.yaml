@@ -124,3 +124,9 @@ plugins:
     autoload:        true
     require_path:    core/preference
     startup_module:  Redcar::Preference
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-sensitive
+    autoload:        true
+    require_path:    core/sensitive
+    startup_module:  Redcar::Sensitive
