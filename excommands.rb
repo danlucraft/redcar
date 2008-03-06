@@ -48,14 +48,14 @@ command "MyCommands/Find" do
 end
 
 
-# ____ Uses Dialog
-
 command "MyCommands/Go To File" do
   dialog.make_dialog_here
-
 end
 
-command :keymap => "Ctrl+Shift+P", :scope => "source" do
+command "Go to File", 
+  :keymap    => "Ctrl+Shift+P", 
+  :scope     => "source",
+  :sensitive => :open_tab do
   (0..tab.num_lines).each do |n|
     tab.replace_line(n) do |line|
       line.gsub(/\s+$/, "")

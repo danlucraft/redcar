@@ -73,6 +73,7 @@ plugins:
         core-keymap: "*"
         core-pane: "*"
         core-menu: "*"
+        core-speedbar: "*"
     tests:
       - path: core/tests/window_test.rb
         testcase: Redcar::PluginTests::WindowTest
@@ -139,3 +140,12 @@ plugins:
     tests:
       - path: core/tests/hook_test.rb
         testcase: Redcar::PluginTests::HookTest
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-speedbar
+    autoload:        true
+    require_path:    core/speedbar
+    startup_module:  Redcar::Speedbar
+    tests:
+      - path: core/tests/speedbar_test.rb
+        testcase: Redcar::PluginTests::SpeedbarTest

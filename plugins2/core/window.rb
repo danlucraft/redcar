@@ -46,6 +46,10 @@ module Redcar
       App.close_window(self, true)
     end
     
+    def speedbar
+      @gtk_speedbar
+    end
+    
     def panes
       @notebooks_panes.values.sort_by {|p| p.object_id }
     end
@@ -267,6 +271,13 @@ module Redcar
                    0, 1,                    2, 3,
                    Gtk::EXPAND | Gtk::FILL, Gtk::EXPAND | Gtk::FILL,
                    0,      0)  
+      @gtk_speedbar = Redcar::Speedbar.new
+      bus["/gtk/window/speedbar"].data = @gtk_speedbar
+      gtk_table.attach(@gtk_speedbar,
+                   # X direction            # Y direction
+                   0, 1,                    3, 4,
+                   Gtk::EXPAND | Gtk::FILL, Gtk::FILL,
+                   0,      0)  
       gtk_status_hbox = Gtk::HBox.new
       bus["/gtk/window/statusbar"].data = gtk_status_hbox
       gtk_status1 = Gtk::Statusbar.new
@@ -277,7 +288,7 @@ module Redcar
       gtk_status_hbox.pack_start(gtk_status2)
       gtk_table.attach(gtk_status_hbox,
                    # X direction            # Y direction
-                   0, 1,                    3, 4,
+                   0, 1,                    4, 5,
                    Gtk::EXPAND | Gtk::FILL, Gtk::FILL,
                    0,      0)  
       add(gtk_table)

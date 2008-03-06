@@ -38,6 +38,20 @@ module Redcar
       end
     end
     
+    user_commands do
+      def self.speedbarex
+        win.speedbar.build do
+          label   "Find:"
+          textbox :find_text
+          label   "Match Case"
+          toggle  :match_case?, "Alt+C"
+          button  "Find Next", "Alt+N | Return" do |sb|
+            puts "Find next"
+          end
+        end
+      end
+    end
+    
     user_commands "Pane" do
       key "Global/Ctrl+1"
       sensitive :multiple_panes
@@ -100,6 +114,10 @@ module Redcar
       item "Close All",  "File/close_all", :icon => :CLOSE
       separator
       item "Quit",       "File/quit",      :icon => :QUIT
+    end
+    
+    main_menu "Debug" do
+      item "Speedbar Example",  "speedbarex",  :icon => :NEW
     end
     
   end

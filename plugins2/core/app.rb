@@ -5,7 +5,7 @@ module Redcar
   module App
     extend FreeBASE::StandardPlugin
 
-    def self.bstart(plugin)
+    def self.start(plugin) # :nodoc:
       Hook.register :open_window
       Hook.register :close_window
       plugin.transition(FreeBASE::RUNNING)
@@ -31,14 +31,18 @@ module Redcar
       @window = Redcar::Window.new
     end
     
+    # Returns an array of all Redcar windows.
     def self.windows
       [@window]
     end
     
+    # Returns the currently focussed window.
     def self.focussed_window
       @window
     end
     
+    # Closes the given window. If close_if_no_win is true (the default)
+    # then Redcar will quit if there are no more windows.
     def self.close_window(window, close_if_no_win=true)
       is_win = !windows.empty?
       @window = nil if window == @window
@@ -46,6 +50,8 @@ module Redcar
       quit if close_if_no_win and is_win
     end
     
+    # Closes all Redcar windows. If close_if_no_win is true (the 
+    # default) then Redcar will quit.
     def self.close_all_windows(close_if_no_win=true)
       is_win = !windows.empty?
       close_window(@window, close_if_no_win)
