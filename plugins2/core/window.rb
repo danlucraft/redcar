@@ -8,12 +8,20 @@ module Redcar
     def self.start(plugin)
       App.new_window
       Keymap.push_onto(self, "Global")
+      
+      Hook.register :open_tab
+      Hook.register :close_tab
+      Hook.register :focus_tab
+      
       plugin.transition(FreeBASE::RUNNING)
     end
     
     def self.stop(plugin)
       App.close_all_windows(false)
       Keymap.remove_from(self, "Global")
+      
+      Hook.clear_plugin_hooks(self)
+      
       plugin.transition(FreeBASE::LOADED)
     end
     
@@ -218,14 +226,12 @@ module Redcar
         end
         if gtk_widget
           if Tab.widget_to_tab[gtk_widget]
-            @previously_focussed_tab = @focussed_tab
-            @focussed_tab = Tab.widget_to_tab[gtk_widget]
+            update_focussed_tab(Tab.widget_to_tab[gtk_widget])
           elsif @notebooks_panes.keys.include? gtk_widget
-            @previously_focussed_tab = @focussed_tab
             gtk_notebook = @notebooks_panes.keys.find{|nb| nb == gtk_widget}
             pageid = gtk_notebook.page
             gtk_nb_widget = gtk_notebook.get_nth_page(pageid)
-            @focussed_tab = Tab.widget_to_tab[gtk_nb_widget]
+            update_focussed_tab(Tab.widget_to_tab[gtk_nb_widget])
           end
         end
       end
@@ -310,6 +316,7 @@ module Redcar
     end
     
     def update_focussed_tab(tab)
+      Hook.trigger :focus_tab
       @previously_focussed_tab = @focussed_tab
       @focussed_tab = tab
     end

@@ -2,22 +2,23 @@
 require 'gtk2'
 
 module Redcar
-  module Plugins
-    module Gui
-      extend FreeBASE::StandardPlugin
+  # Redcar::Gui sets up the Gtk main thread to begin when FreeBASE 2.0 
+  # has loaded all the plugins.
+  module Gui
+    extend FreeBASE::StandardPlugin
 
-      def self.start(plugin)
-        set_main_loop(plugin)
-        plugin.transition(FreeBASE::RUNNING)
-      end
-      
-      def self.set_main_loop(plugin)
-        bus["/system/ui/messagepump"].set_proc do
-          begin
-            puts "starting Gui.main"
-            Gtk.main
-          rescue => e
-            $stderr.puts str=<<ERR
+    def self.start(plugin)
+      set_main_loop(plugin)
+      plugin.transition(FreeBASE::RUNNING)
+    end
+    
+    def self.set_main_loop(plugin)
+      bus["/system/ui/messagepump"].set_proc do
+        begin
+          puts "starting Gui.main"
+          Gtk.main
+        rescue => e
+          $stderr.puts str=<<ERR
 
 ---------------------------
 Redcar has crashed.
@@ -33,9 +34,8 @@ Message: #{e.message}
 Backtrace: \n#{e.backtrace.map{|l| "    "+l}.join("\n")}
 Uname -a: #{`uname -a`.chomp}
 ERR
-          ensure
-            bus["/system/shutdown"].call(1)
-          end
+        ensure
+          bus["/system/shutdown"].call(1)
         end
       end
     end

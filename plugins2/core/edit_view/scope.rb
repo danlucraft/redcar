@@ -16,7 +16,8 @@ class Redcar::EditView
       # use this method to compare ruby and C implementations.
       def c_diff(name, rbv, cv,data)
         if rbv != cv
-          puts "'#{name}' C version differs. rb: #{rbv.inspect}, c:#{cv.inspect}, data:#{data.inspect}"
+          puts "'#{name}' C version differs. rb: #{rbv.inspect}," +
+            " c:#{cv.inspect}, data:#{data.inspect}"
         end
         rbv != cv
       end
@@ -397,7 +398,7 @@ class Redcar::EditView
     end
     
     def line_start(line_num)
-      sc = scope_at(TextLoc.new(line_num, -1))
+      sc = scope_at(Redcar::TextLoc.new(line_num, -1))
       while sc.start.line == line_num
         unless sc.parent
           return sc
@@ -408,7 +409,7 @@ class Redcar::EditView
     end
     
     def line_end(line_num)
-      scope_at(TextLoc.new(line_num+1, -1))
+      scope_at(Redcar::TextLoc.new(line_num+1, -1))
     end
     
     def last_scope

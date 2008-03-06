@@ -42,7 +42,7 @@ plugins:
     name:            core-gui
     autoload:        true
     require_path:    core/gui
-    startup_module:  Redcar::Plugins::Gui
+    startup_module:  Redcar::Gui
     start_dependencies:
         core-app: "*"
 

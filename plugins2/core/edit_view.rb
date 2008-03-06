@@ -383,8 +383,8 @@ module Redcar
   end
 end
 
-module Oniguruma
-  class ORegexp
+module Oniguruma #:nodoc:
+  class ORegexp #:nodoc:
     def _dump(_)
       self.source
     end

@@ -1,5 +1,7 @@
 
 module Redcar
+  # The Redcar::Menu module registers the context menu services
+  # on startup and initializes the MenuBuilder.
   module Menu
     extend FreeBASE::StandardPlugin
     
@@ -135,7 +137,7 @@ module Redcar
     end
   end
   
-  module MenuDrawer
+  module MenuDrawer #:nodoc:
     class << self
       def clear_menus
         (@toplevel_gtk_menuitems||={}).each do |uuid, gtk_menuitem|
