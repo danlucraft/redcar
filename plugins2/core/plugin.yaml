@@ -130,3 +130,12 @@ plugins:
     autoload:        true
     require_path:    core/sensitive
     startup_module:  Redcar::Sensitive
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-hook
+    autoload:        true
+    require_path:    core/hook
+    startup_module:  Redcar::Hook
+    tests:
+      - path: core/tests/hook_test.rb
+        testcase: Redcar::PluginTests::HookTest

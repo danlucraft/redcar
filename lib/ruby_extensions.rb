@@ -24,9 +24,16 @@ class Object
   def metaclass
     class << self; self; end
   end
+  
+  # Returns the filename of the caller of the caller of this method.
+  def caller_file(callstack, exclude=[])
+    callstack.each do |callline|
+      val = callline.split(":").first
+      return val unless exclude.include? val
+    end
+  end
 end
 
-  
 def null
   n = Object.new
   def n.method_missing(name, *args)

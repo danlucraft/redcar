@@ -262,11 +262,12 @@ module FreeBASE
     # Logs all files that Ruby loads during the invocation of the block passed in.
     #
     def log_requires(type=:plugin)
-      before = $".dup
+      before = $".dup 
       yield
       after = $".dup
       prev = @base_slot["files/"+type.to_s].data || []
-      @base_slot["files/"+type.to_s].data = (prev + (after-before)).uniq
+      diff = (after-before)
+      @base_slot["files/"+type.to_s].data = (prev + diff).uniq
     end
     
     ##
@@ -310,7 +311,6 @@ module FreeBASE
           log_requires(:test) do
             require test_info["path"]
           end
-          
           case output
           when :console
             require 'test/unit/ui/console/testrunner'

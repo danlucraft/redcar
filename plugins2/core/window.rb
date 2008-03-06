@@ -76,11 +76,9 @@ module Redcar
     end
     
     def signal_do_tab_opened(tab_name)
-      puts "opened:#{tab_name}"
     end
     
     def signal_do_num_tabs_changed(num)
-      p num
     end
     
     def tabs
