@@ -315,7 +315,8 @@ module Redcar
         end
         
         def self.singleton_method_added(method_name)
-          if @defining_commands and @annotations and !@aliasing
+          if @defining_commands and !@aliasing
+            @annotations ||= {}
             com           = InlineCommand.new
             com.name      = "#{db_scope}/#{method_name}".gsub("//", "/")
             com.scope     = @annotations[:scope]

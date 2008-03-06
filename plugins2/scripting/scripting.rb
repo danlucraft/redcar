@@ -47,7 +47,7 @@ module Com::RedcarIDE
     end
     
     def self.run_startup_script
-      unless Redcar::App.ARGV.include? "--nostartup"
+      if Redcar::Preference.get(self, "Run startup script").to_bool
         require startup_script_file
       end
     end
