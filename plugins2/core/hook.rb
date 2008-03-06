@@ -1,6 +1,6 @@
 module Redcar
   # The Hook module allows plugins to register hooks that other
-  # plugins can attach arbitrary code blocks to.
+  # plugins can attach arbitrary code blocks to. 
   #
   # === Examples
   #
@@ -119,8 +119,8 @@ module Redcar
         module_to_plugin[mod] = slot.name
       end
       plugin_name = module_to_plugin[plugin.to_s]
-      files = bus("/plugins/#{plugin_name}/files/plugin").data
-      files += bus("/plugins/#{plugin_name}/files/test").data
+      files = (bus("/plugins/#{plugin_name}/files/plugin").data || [])
+      files += (bus("/plugins/#{plugin_name}/files/test").data || [])
       files.each do |file|
         clear_my_hooks(file)
       end
