@@ -287,7 +287,7 @@ module Redcar
           attr_accessor :db_scope
         end
 
-        def self.UserCommands(scope="", &block)
+        def self.user_commands(scope="", &block)
           @db_scope = self.to_s+"/" + scope
           self.start_defining_commands
           self.class_eval do 
@@ -310,7 +310,7 @@ module Redcar
         
         def self.check_defining_commands
           unless @defining_commands
-            raise "Attempting to annotate a command outside UserCommands { ... }"
+            raise "Attempting to annotate a command outside user_commands { ... }"
           end
         end
         

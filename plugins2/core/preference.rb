@@ -14,10 +14,14 @@ module Redcar
     def self.get(scope, name)
       bus("/redcar/preferences/#{scope}/#{name}").data
     end
+    
+    def self.set(scope, name, val)
+      bus("/redcar/preferences/#{scope}/#{name}").data = val
+    end
   end
   
   module PreferenceBuilder
-    def Preference(name, &block)
+    def preference(name, &block)
       plugin_scope = self.to_s
       PreferenceBuilder.clear
       PreferenceBuilder.class_eval &block

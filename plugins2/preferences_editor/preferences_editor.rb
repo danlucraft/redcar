@@ -1,20 +1,19 @@
 module Com::RedcarIDE
   class PreferencesEditor < Redcar::Plugin
     
-    UserCommands do
+    user_commands do
       def self.open_preferences_dialog
         PreferencesDialog.new.run
       end
     end
     
-    MainMenu "Options" do
+    main_menu "Options" do
       item "Preferences", :open_preferences_dialog, :icon => :PREFERENCES
     end
   end
   
   PrefLogger = Object.new
   def PrefLogger.info(str)
-    puts str
   end
   
   class PreferencesDialog < Gtk::Dialog
@@ -82,7 +81,6 @@ module Com::RedcarIDE
     def populate_list(parent_slot, parent_iter)
       PrefLogger.info("PreferencesDialog#populate_list(#{parent_slot.path}, #{parent_iter.inspect}):in")
       parent_slot.each_slot do |slot|
-        p slot.path
         unless slot.attr_pref
           iter = @ts.append(parent_iter)
           @ts.set_value(iter, 0, slot.name)
@@ -98,7 +96,7 @@ module Com::RedcarIDE
       if @current_path
         save_values
       end
-      @lazy_apply.each {|p| p.call}
+      @lazy_apply.each {|p| p.call }
       @dialog.destroy
 #       PrefLogger.info("PreferencesDialog#on_ok():out")
      end

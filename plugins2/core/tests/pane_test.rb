@@ -7,6 +7,10 @@ module Redcar
         Redcar::App.new_window
       end
       
+      def teardown
+        win.tabs.each(&:close)
+      end
+      
       def test_tabs
         tab1 = win.new_tab(Tab, Gtk::Label.new("foo"))
         tab2 = win.new_tab(Tab, Gtk::Label.new("bar"))

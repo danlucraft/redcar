@@ -1,0 +1,10 @@
+--- !ruby/object:FreeBASE::PluginConfiguration 
+name: databus-inspector
+version: 1.0
+autoload: (true)
+require_path: databus_inspector/databus_inspector.rb
+startup_module: Com::RedcarIDE::DatabusInspector
+load_dependencies:
+  core: "*"
+start_dependencies: 
+  core: "*"

@@ -3,22 +3,6 @@ require 'gtk2'
 
 module Redcar
   class Window < Gtk::Window
-    type_register
-
-    signal_new("tab_opened",        # name
-           GLib::Signal::RUN_FIRST, # flags
-           nil,                     # accumulator (XXX: not supported yet)
-           nil,                     # return type (void == nil)
-           String
-           )
-    
-    signal_new("num_tabs_changed",
-           GLib::Signal::RUN_FIRST,
-           nil, nil,
-           Fixnum
-           )
-    
-
     extend FreeBASE::StandardPlugin
     
     def self.start(plugin)
@@ -28,7 +12,7 @@ module Redcar
     end
     
     def self.stop(plugin)
-      App.close_all_windows
+      App.close_all_windows(false)
       Keymap.remove_from(self, "Global")
       plugin.transition(FreeBASE::LOADED)
     end
@@ -37,7 +21,7 @@ module Redcar
                 :focussed_gtk_widget)
     
     def initialize
-      super#("Redcar")
+      super()#("Redcar")
       title = "Redcar"
       @notebooks_panes = {}
       @focussed_tab = nil
@@ -70,19 +54,17 @@ module Redcar
           else
             panes.first.new_tab(tab_class, *args)
           end
-      signal_emit("tab_opened", t.label.text)
-      signal_emit("num_tabs_changed", tabs.length)
       t
-    end
-    
-    def signal_do_tab_opened(tab_name)
-    end
-    
-    def signal_do_num_tabs_changed(num)
     end
     
     def tabs
       panes.map {|pane| pane.tabs }.flatten
+    end
+    
+    define_method_bracket :tab do |id|
+      if id.is_a? String
+        tabs.find{|t| t.label.text == id}
+      end
     end
     
     def active_tabs
@@ -129,7 +111,6 @@ module Redcar
             end
           end
         end
-        signal_emit("num_tabs_changed", tabs.length)
       else
         raise "trying to close tab with no pane: #{tab.label.text}"
       end      

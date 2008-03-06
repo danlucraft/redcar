@@ -274,8 +274,9 @@ module FreeBASE
     # Reloads all files logged as having been loaded by this plugin.
     #
     def reload
-      puts "reloading #{@plugin_configuration.name}"
-      
+      puts "[FB2] reloading #{@plugin_configuration.name}"
+      plugin = @base_slot.manager
+      plugin.stop
       # remove methods from testcase
       if pm = @plugin_configuration.test_module
         begin
@@ -295,6 +296,7 @@ module FreeBASE
           end
         end
       end
+      plugin.start
     end
     
     ##

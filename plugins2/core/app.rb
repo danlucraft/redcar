@@ -42,7 +42,7 @@ module Redcar
     
     def self.close_all_windows(close_if_no_win=true)
       is_win = !windows.empty?
-      close_window(@window)
+      close_window(@window, close_if_no_win)
       quit if close_if_no_win and is_win
     end
   end
