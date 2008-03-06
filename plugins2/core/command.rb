@@ -1,5 +1,8 @@
 
 module Redcar
+  # Encapsulates a Redcar command. Commands wrap the calling of a 
+  # method (that is usually defined as a plugin class method) so that 
+  # that method can be called through a keystroke or a menu option etc.
   class Command
     extend FreeBASE::StandardPlugin
 
@@ -270,6 +273,13 @@ module Redcar
     end
   end
   
+  # The CommandBuilder allows you to create a Redcar::Command around
+  # a class method. See Redcar::Plugin for examples of how to create
+  # commands. This module is automatically included in plugins inheriting
+  # from Redcar::Plugin, but may be added to any class:
+  #   class MyRandomClass
+  #     Redcar::CommandBuilder.enable(self)
+  #   end
   module CommandBuilder
     def self.enable(klass)
       klass.class_eval do

@@ -1,12 +1,16 @@
 
 module Redcar
+  # Application wide configuration. App manages Redcar::Windows (of which
+  # there may only be one currently).
   module App
     extend FreeBASE::StandardPlugin
 
+    # The expanded absolute application directory.
     def self.root_path
       File.expand_path(File.dirname(__FILE__)+"/../..")
     end
     
+    # Quits the application. All plugins are stopped first.
     def self.quit 
       unless @gtk_quit
         bus["/system/shutdown"].call(nil)
@@ -15,6 +19,7 @@ module Redcar
       @gtk_quit = true
     end
     
+    # Creates a new window.
     def self.new_window(focus = true)
       return nil if @window
       @window = Redcar::Window.new
@@ -59,5 +64,4 @@ class Object
   def win
     Redcar::App.focussed_window
   end
-  
 end
