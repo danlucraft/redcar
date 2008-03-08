@@ -7,19 +7,19 @@ module Redcar
     
     def initialize
       super
+      spacing = 5
       @visible = false
     end
     
     def build(&block)
-      hide if visible
-      clear_children
+      close
       collect_definition(block)
       build_widgets
-      show_all
+      open
     end
     
     def clear_children
-      children.each {|child| remove_child(child)}
+      children.each {|child| remove(child)}
     end
     
     def collect_definition(block)
@@ -28,11 +28,34 @@ module Redcar
     end
     
     def build_widgets
-      add_button Gtk::Icon.get(:CLOSE), "Escape" do
-        p :close_pressed
+      add_button nil, :CLOSE, "Escape" do
+        self.close
       end
+      add_key("Escape") { self.close }
       SpeedbarBuilder.items.each do |item|
         send "add_#{item[0]}", *item[1..-1]
+      end
+    end
+    
+    def open
+      Keymap.push_onto(win, "Speedbar")
+      show_all
+    end
+    
+    def close
+      Keymap.remove_from(win, "Speedbar")
+      hide if visible
+      @visible = false
+      bus("/redcar/keymaps/Speedbar").prune
+      clear_children
+    end
+    
+    def add_key(key, &block)
+      com = Redcar::InlineCommand.new
+      com.block = fn { block.call }
+      keys = key.split("|").map(&:strip)
+      keys.each do |key|
+        bus("/redcar/keymaps/Speedbar/#{key}").data = com
       end
     end
     
@@ -42,8 +65,10 @@ module Redcar
       pack_start(label, false)
     end
     
-    def add_toggle(name, key)
-      puts "add toggle to speedbar"
+    def add_toggle(name, text, key)
+      toggle = Gtk::CheckButton.new(text)
+      add_key(key) { toggle.active = !toggle.active? } if key
+      pack_start(toggle, false)
     end
     
     def add_textbox(name)
@@ -53,9 +78,14 @@ module Redcar
       pack_start(e)
     end
     
-    def add_button(text, key, block=nil, &blk)
+    def add_button(text, icon, key, block=nil, &blk)
       raise "Two blocks given to Speedbar#add_button" if block and blk
-      b = Gtk::Button.new(text)
+      label = Gtk::HBox.new
+      label.pack_start(i=Gtk::Icon.get_image(icon, Gtk::IconSize::MENU)) if icon
+      label.pack_start(l=Gtk::Label.new(text)) if text
+      b = Gtk::Button.new
+      b.relief = Gtk::RELIEF_NONE
+      b.child = label
       b.signal_connect("clicked") do
         if block
           block.call
@@ -63,6 +93,7 @@ module Redcar
           blk.call
         end
       end
+      add_key(key) { b.activate } if key
       pack_start(b, false)
     end
     
@@ -79,16 +110,16 @@ module Redcar
         @items << [:label, text]
       end
       
-      def self.toggle(name, key)
-        @items << [:toggle, name, key]
+      def self.toggle(name, text, key)
+        @items << [:toggle, name, text, key]
       end
       
       def self.textbox(name)
         @items << [:textbox, name]
       end
       
-      def self.button(text, key, &block)
-        @items << [:button, text, key, block]
+      def self.button(text, icon, key, &block)
+        @items << [:button, text, icon, key, block]
       end
     end
   end

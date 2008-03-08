@@ -6,9 +6,9 @@ module Redcar
         win.speedbar.build do
           label   "Find:"
           textbox :find_text
-          label   "Match _case"
           toggle  :match_case?, "Alt+C"
-          button  "Find _Next", "Alt+N | Return" do |sb|
+          label   "Match _case"
+          button  "Find _Next", :GO_FORWARD, "Alt+N | Return" do |sb|
             puts "Find next"
           end
         end

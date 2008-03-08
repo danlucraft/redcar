@@ -39,13 +39,13 @@ module Redcar
     end
     
     user_commands do
+      key "Global/Ctrl+X"
       def self.speedbarex
         win.speedbar.build do
           label   "Find:"
           textbox :find_text
-          label   "Match Case"
-          toggle  :match_case?, "Alt+C"
-          button  "Find Next", "Alt+N | Return" do |sb|
+          toggle  :match_case?, "Match Case", "Alt+C"
+          button  "Find Next", :GO_FORWARD, "Alt+N | Return" do |sb|
             puts "Find next"
           end
         end
