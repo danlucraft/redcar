@@ -9,31 +9,19 @@ module Com::RedcarIDE
       end
     end
     
-    UserCommands do
-      icon :PREFERENCES
-      key  "Global/Ctrl+B"
+    user_commands do
       def self.run_startup_script
-        Scripting.run_startup_script
+        if Redcar::Preference.get(self, "Run startup script").to_bool
+          require startup_script_file
+        end
       end
     end
     
-    UserCommands "Scripts/" do
-      menu "Tools/Say Hello"
-      key  "Global/Ctrl+Alt+G"
-      def self.say_hello
-        puts "Hello World!"
-      end
+    main_menu "Tools" do
+      item "Run Startup Script", :run_startup_script, :icon => :PREFERENCES
     end
     
-    MainMenu "Tools" do
-      item "Run Startup Script", "run_startup_script", :icon => :PREFERENCES
-      separator
-      submenu "My First Pony!" do
-        item "Say Hi There Pardner", "Scripts/say_hello"
-      end
-    end
-    
-    Preference "Run startup script" do
+    preference "Run startup script" do
       type    :toggle 
       default true
     end
@@ -43,12 +31,6 @@ module Com::RedcarIDE
         file
       else
         File.dirname(__FILE__) + "/startup.rb"
-      end
-    end
-    
-    def self.run_startup_script
-      unless Redcar::App.ARGV.include? "--nostartup"
-        require startup_script_file
       end
     end
   end

@@ -1,5 +1,6 @@
 
 module Redcar
+  # Redcar::Tab is the base class for all tabs used in Redcar.
   class Tab
     extend FreeBASE::StandardPlugin
     
@@ -19,8 +20,17 @@ module Redcar
       attr_accessor :widget_to_tab
     end
     
-    attr_accessor :gtk_tab_widget, :gtk_nb_widget, :pane, :label
+    attr_accessor :pane, :label
+    attr_reader :gtk_tab_widget, :gtk_nb_widget, :gtk_toolbar
     
+    # Initializes a new Tab object. It must be given a Redcar::Pane 
+    # (it cannot be created without a Pane) and a Gtk widget that it
+    # contains. Options are 
+    #   :toolbar?  => true|false
+    #   :scrolled? => true|false
+    # If :toolbar? is true the Tab will be equipped with a Toolbar and
+    # if :scolled? is true the Gtk widget will be placed in a 
+    # Gtk::ScrolledWindow.
     def initialize(pane, gtk_widget, options={})
       @pane = pane
       @gtk_tab_widget = gtk_widget
@@ -38,7 +48,7 @@ module Redcar
         @gtk_sw.add(gtk_widget)
         @gtk_nb_widget.pack_end(@gtk_sw)
         @gtk_sw.vscrollbar.signal_connect("value_changed") do 
-          if gtk_widget.class == SyntaxSourceView
+          if gtk_widget.class.to_s == "SyntaxSourceView"
             gtk_widget.view_changed
           end
         end

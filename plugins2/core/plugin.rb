@@ -7,7 +7,8 @@ module Redcar
     
     CommandBuilder.enable(self)
     
-    class PluginTransitionException < Exception; end
+    class PluginTransitionException < Exception #:nodoc:
+    end
     
     def self.abort
       raise PluginTransitionException, "Plugin transition aborted"

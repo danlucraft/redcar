@@ -1,5 +1,10 @@
 
 module Redcar
+  # Encapsulates a Redcar command. Commands wrap the calling of a 
+  # method (that is usually defined as a plugin class method) so that 
+  # that method can be called through a keystroke or a menu option etc.
+  #
+  # This class also initializes the CommandHistory on startup.
   class Command
     extend FreeBASE::StandardPlugin
 
@@ -251,33 +256,56 @@ module Redcar
     end
   end
   
+  # A module holding the Redcar command history. The maximum length
+  # defaults to 500.
   module CommandHistory
     class << self
       attr_accessor :max, :recording
     end
     
-    self.max       = 50
+    self.max       = 500
     self.recording = true
     
+    # Add a command to the command history if CommandHistory.recording is
+    # true.
     def self.record(com)
       if recording
         @history << com
       end
     end
     
+    # Clear the command history.
     def self.clear
       @history = []
     end
   end
   
+  # The CommandBuilder allows you to create a Redcar::Command around
+  # a class method. See Redcar::Plugin for examples of how to create
+  # commands. This module is automatically included in plugins inheriting
+  # from Redcar::Plugin, but may be added to any class:
+  #   class MyRandomClass
+  #     Redcar::CommandBuilder.enable(self)
+  #   end
   module CommandBuilder
+    # Add the user_command class method to your class to allow
+    # you to declare class methods as commands. 
     def self.enable(klass)
       klass.class_eval do
         class << self
           attr_accessor :db_scope
         end
 
-        def self.UserCommands(scope="", &block)
+        # Calls this with a block to define a command:
+        # 
+        #   user_commands do
+        #     key       "Ctrl+G"
+        #     sensitive :tab_open
+        #     def self.do_stuff
+        #       ...
+        #     end
+        #   end
+        def self.user_commands(scope="", &block)
           @db_scope = self.to_s+"/" + scope
           self.start_defining_commands
           self.class_eval do 
@@ -286,26 +314,27 @@ module Redcar
           self.stop_defining_commands
         end
 
-        def self.start_defining_commands
+        def self.start_defining_commands #:nodoc:
           @annotations       = nil
           @aliasing          = false
           @defining_commands = true
         end
           
-        def self.stop_defining_commands
+        def self.stop_defining_commands #:nodoc:
           @annotations       = nil
           @aliasing          = false
           @defining_commands = false
         end
         
-        def self.check_defining_commands
+        def self.check_defining_commands #:nodoc:
           unless @defining_commands
-            raise "Attempting to annotate a command outside UserCommands { ... }"
+            raise "Attempting to annotate a command outside user_commands { ... }"
           end
         end
         
-        def self.singleton_method_added(method_name)
-          if @defining_commands and @annotations and !@aliasing
+        def self.singleton_method_added(method_name) #:nodoc:
+          if @defining_commands and !@aliasing
+            @annotations ||= {}
             com           = InlineCommand.new
             com.name      = "#{db_scope}/#{method_name}".gsub("//", "/")
             com.scope     = @annotations[:scope]
@@ -338,47 +367,65 @@ module Redcar
             @annotations = nil
           end
         end
-        
-        def self.annotate(name, val)
-          check_defining_commands
-          @annotations ||= {}
-          @annotations[name] = val
-        end
-        
+                
+        # Call from within a user_command block to give the command
+        # a menuitem. See Redcar::Plugin for examples.
         def self.menu(menu)
           annotate :menu, menu
         end
         
+        # Call from within a user_command block to give the command
+        # an icon. See Redcar::Plugin for examples.
         def self.icon(icon)
           annotate :icon, icon
         end
         
+        # Call from within a user_command block to give the command
+        # a key combination. See Redcar::Plugin for examples.
         def self.key(key)
           annotate :key, key
         end
         
+        # Call from within a user_command block to make the command
+        # sensitive to its scope. See Redcar::Plugin for examples.
         def self.scope(scope)
           annotate :scope, scope
         end
         
+        # Call from within a user_command block to make the command
+        # sensitive to a given Sensitivity. See Redcar::Plugin for examples.
         def self.sensitive(sens)
           annotate :sensitive, sens
         end
         
+        # Call from within a user_command block to declare the command 
+        # primitive. See Redcar::Plugin for examples.
         def self.primitive(prim)
           annotate :primitive, prim
         end
         
+        # Call from within a user_command block to set the command's 
+        # inputs. See Redcar::Plugin for examples.
         def self.inputs(*inputs)
           annotate :inputs, inputs
         end
         
+        # Call from within a user_command block to set the command to have
+        # a single input. See Redcar::Plugin for examples.
         def self.input(input)
           annotate :inputs, [input]
         end
         
+        # Call from within a user_command block to set the strategy for
+        # directing the command's output. See Redcar::Plugin for examples.
         def self.output(output)
           annotate :output, output
+        end
+        
+        def self.annotate(name, val) #:nodoc:
+          check_defining_commands
+          @annotations ||= {}
+          @annotations[name] = val
         end
       end
     end

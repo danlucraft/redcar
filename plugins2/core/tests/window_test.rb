@@ -8,6 +8,10 @@ module Redcar
         Redcar::App.new_window
       end
       
+      def teardown
+        win.tabs.each(&:close)
+      end
+      
       def test_no_tabs_on_startup
         assert_equal 0, win.tabs.length
       end

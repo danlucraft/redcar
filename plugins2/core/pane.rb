@@ -36,11 +36,6 @@ module Redcar
     def active_tab
       Tab.widget_to_tab[@gtk_notebook.get_nth_page(@gtk_notebook.page)]
     end
-
-    def focus_tab(tab)
-      id = @gtk_notebook.page_num(tab.gtk_nb_widget)
-      @gtk_notebook.set_page(id)
-    end
     
     def collect_all(tab_class)
     end

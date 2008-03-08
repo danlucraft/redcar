@@ -2,8 +2,8 @@
 puts "(scripting/startup.rb)"
 
 require 'ruby-prof'
-include Redcar
-def stop
+
+def stop_redcar
   Thread.new {
     Redcar::App.quit
   }
@@ -55,7 +55,7 @@ elsif Redcar::App.ARGV.include? "--test"
   else
     puts "--test: No such plugin."
   end
-  stop
+  stop_redcar
 elsif Redcar::App.ARGV.include? "--test-all"
   bus["/plugins"].children.each do |plugin|
     plugin["actions/test"].call

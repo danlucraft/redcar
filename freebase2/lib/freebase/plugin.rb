@@ -262,19 +262,21 @@ module FreeBASE
     # Logs all files that Ruby loads during the invocation of the block passed in.
     #
     def log_requires(type=:plugin)
-      before = $".dup
+      before = $".dup 
       yield
       after = $".dup
       prev = @base_slot["files/"+type.to_s].data || []
-      @base_slot["files/"+type.to_s].data = (prev + (after-before)).uniq
+      diff = (after-before)
+      @base_slot["files/"+type.to_s].data = (prev + diff).uniq
     end
     
     ##
     # Reloads all files logged as having been loaded by this plugin.
     #
     def reload
-      puts "reloading #{@plugin_configuration.name}"
-      
+      puts "[FB2] reloading #{@plugin_configuration.name}"
+      plugin = @base_slot.manager
+      plugin.stop
       # remove methods from testcase
       if pm = @plugin_configuration.test_module
         begin
@@ -294,6 +296,7 @@ module FreeBASE
           end
         end
       end
+      plugin.start
     end
     
     ##
@@ -310,7 +313,6 @@ module FreeBASE
           log_requires(:test) do
             require test_info["path"]
           end
-          
           case output
           when :console
             require 'test/unit/ui/console/testrunner'

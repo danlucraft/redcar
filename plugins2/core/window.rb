@@ -3,33 +3,25 @@ require 'gtk2'
 
 module Redcar
   class Window < Gtk::Window
-    type_register
-
-    signal_new("tab_opened",        # name
-           GLib::Signal::RUN_FIRST, # flags
-           nil,                     # accumulator (XXX: not supported yet)
-           nil,                     # return type (void == nil)
-           String
-           )
-    
-    signal_new("num_tabs_changed",
-           GLib::Signal::RUN_FIRST,
-           nil, nil,
-           Fixnum
-           )
-    
-
     extend FreeBASE::StandardPlugin
     
     def self.start(plugin)
       App.new_window
       Keymap.push_onto(self, "Global")
+      
+      Hook.register :open_tab
+      Hook.register :close_tab
+      Hook.register :focus_tab
+      
       plugin.transition(FreeBASE::RUNNING)
     end
     
     def self.stop(plugin)
-      App.close_all_windows
+      App.close_all_windows(false)
       Keymap.remove_from(self, "Global")
+      
+      Hook.clear_plugin_hooks(self)
+      
       plugin.transition(FreeBASE::LOADED)
     end
     
@@ -37,7 +29,7 @@ module Redcar
                 :focussed_gtk_widget)
     
     def initialize
-      super#("Redcar")
+      super()#("Redcar")
       title = "Redcar"
       @notebooks_panes = {}
       @focussed_tab = nil
@@ -52,6 +44,10 @@ module Redcar
       panes.each {|pane| pane.tabs.each {|tab| tab.close} }
       Keymap.clear_keymaps_from_object(self)
       App.close_window(self, true)
+    end
+    
+    def speedbar
+      @gtk_speedbar
     end
     
     def panes
@@ -70,21 +66,17 @@ module Redcar
           else
             panes.first.new_tab(tab_class, *args)
           end
-      signal_emit("tab_opened", t.label.text)
-      signal_emit("num_tabs_changed", tabs.length)
       t
-    end
-    
-    def signal_do_tab_opened(tab_name)
-      puts "opened:#{tab_name}"
-    end
-    
-    def signal_do_num_tabs_changed(num)
-      p num
     end
     
     def tabs
       panes.map {|pane| pane.tabs }.flatten
+    end
+    
+    define_method_bracket :tab do |id|
+      if id.is_a? String
+        tabs.find{|t| t.label.text == id}
+      end
     end
     
     def active_tabs
@@ -131,7 +123,6 @@ module Redcar
             end
           end
         end
-        signal_emit("num_tabs_changed", tabs.length)
       else
         raise "trying to close tab with no pane: #{tab.label.text}"
       end      
@@ -239,14 +230,12 @@ module Redcar
         end
         if gtk_widget
           if Tab.widget_to_tab[gtk_widget]
-            @previously_focussed_tab = @focussed_tab
-            @focussed_tab = Tab.widget_to_tab[gtk_widget]
+            update_focussed_tab(Tab.widget_to_tab[gtk_widget])
           elsif @notebooks_panes.keys.include? gtk_widget
-            @previously_focussed_tab = @focussed_tab
             gtk_notebook = @notebooks_panes.keys.find{|nb| nb == gtk_widget}
             pageid = gtk_notebook.page
             gtk_nb_widget = gtk_notebook.get_nth_page(pageid)
-            @focussed_tab = Tab.widget_to_tab[gtk_nb_widget]
+            update_focussed_tab(Tab.widget_to_tab[gtk_nb_widget])
           end
         end
       end
@@ -282,6 +271,13 @@ module Redcar
                    0, 1,                    2, 3,
                    Gtk::EXPAND | Gtk::FILL, Gtk::EXPAND | Gtk::FILL,
                    0,      0)  
+      @gtk_speedbar = Redcar::Speedbar.new
+      bus["/gtk/window/speedbar"].data = @gtk_speedbar
+      gtk_table.attach(@gtk_speedbar,
+                   # X direction            # Y direction
+                   0, 1,                    3, 4,
+                   Gtk::EXPAND | Gtk::FILL, Gtk::FILL,
+                   0,      0)  
       gtk_status_hbox = Gtk::HBox.new
       bus["/gtk/window/statusbar"].data = gtk_status_hbox
       gtk_status1 = Gtk::Statusbar.new
@@ -292,7 +288,7 @@ module Redcar
       gtk_status_hbox.pack_start(gtk_status2)
       gtk_table.attach(gtk_status_hbox,
                    # X direction            # Y direction
-                   0, 1,                    3, 4,
+                   0, 1,                    4, 5,
                    Gtk::EXPAND | Gtk::FILL, Gtk::FILL,
                    0,      0)  
       add(gtk_table)
@@ -331,6 +327,7 @@ module Redcar
     end
     
     def update_focussed_tab(tab)
+      Hook.trigger :focus_tab
       @previously_focussed_tab = @focussed_tab
       @focussed_tab = tab
     end

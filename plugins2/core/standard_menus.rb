@@ -5,7 +5,7 @@ module Redcar
     CommandBuilder.enable(self)
     extend Redcar::MenuBuilder
     
-    UserCommands "File" do
+    user_commands "File" do
       key "Global/Ctrl+N"
       def self.new
         win.new_tab(EditTab).focus
@@ -28,7 +28,7 @@ module Redcar
       end
     end
     
-    UserCommands "Text" do
+    user_commands "Text" do
       key    "Global/Ctrl+U"
       inputs :selection, :line
       output :replace_input
@@ -38,7 +38,21 @@ module Redcar
       end
     end
     
-    UserCommands "Pane" do
+    user_commands do
+      def self.speedbarex
+        win.speedbar.build do
+          label   "Find:"
+          textbox :find_text
+          label   "Match Case"
+          toggle  :match_case?, "Alt+C"
+          button  "Find Next", "Alt+N | Return" do |sb|
+            puts "Find next"
+          end
+        end
+      end
+    end
+    
+    user_commands "Pane" do
       key "Global/Ctrl+1"
       sensitive :multiple_panes
       def self.unify_all
@@ -88,18 +102,22 @@ module Redcar
       end
     end
     
-    ContextMenu "Pane" do
+    context_menu "Pane" do
       item "Split Horizontal",  "Pane/split_horizontal"
       item "Split Vertical",    "Pane/split_vertical"
       item "Unify All",         "Pane/unify_all"
     end
     
-    MainMenu "File" do
+    main_menu "File" do
       item "New",        "File/new",       :icon => :NEW
       item "Close",      "File/close",     :icon => :CLOSE
       item "Close All",  "File/close_all", :icon => :CLOSE
       separator
       item "Quit",       "File/quit",      :icon => :QUIT
+    end
+    
+    main_menu "Debug" do
+      item "Speedbar Example",  "speedbarex",  :icon => :NEW
     end
     
   end
