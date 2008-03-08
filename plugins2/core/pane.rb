@@ -88,7 +88,8 @@ module Redcar
       end
       @gtk_notebook.signal_connect("switch-page") do |nb, _, page_num|
         @window.update_focussed_tab(Tab.widget_to_tab[nb.get_nth_page(page_num)])
-        false
+        puts "switch_page: #{nb.inspect}, #{page_num}"
+        true
       end
     end
     

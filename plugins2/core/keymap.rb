@@ -12,6 +12,10 @@ module Redcar
       plugin.transition(FreeBASE::RUNNING)
     end
     
+    def clean_letter(letter)
+      letter.split(" ").join("_")
+    end
+    
     def self.process(gdk_eventkey)
       kv = gdk_eventkey.keyval
       ks = gdk_eventkey.state - Gdk::Window::MOD2_MASK
@@ -23,6 +27,7 @@ module Redcar
         alt  = (bits.include?("Alt")   ? 1 : 0)
         supr = (bits.include?("Super") ? 1 : 0)
         shift = (bits.include?("Shift") ? 1 : 0)
+        letter = bits.last
         key = "Ctrl+"*ctrl + 
           "Super+"*supr + 
           "Alt+"*alt + 
