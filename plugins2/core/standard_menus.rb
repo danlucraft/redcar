@@ -77,25 +77,29 @@ module Redcar
         end
       end
       
-      key "Global/Ctrl+Page Down"
+      key "Global/Ctrl+Page_Down"
       sensitive :tab
       def self.previous_tab
+        puts "down:#{win.focussed_tab.label.text}"
         tab.pane.gtk_notebook.prev_page
       end
       
-      key "Global/Ctrl+Page Up"
+      key "Global/Ctrl+Page_Up"
       sensitive :tab
       def self.next_tab
+        puts "up:#{win.focussed_tab.label.text}"
+        puts "nb:#{win.focussed_tab.pane.gtk_notebook}"
+        puts "tb:#{tab.label.text}"
         tab.pane.gtk_notebook.next_page
       end
       
-      key "Global/Ctrl+Shift+Page Down"
+      key "Global/Ctrl+Shift+Page_Down"
       sensitive :tab
       def self.move_tab_down
         tab.move_down
       end
       
-      key "Global/Ctrl+Shift+Page Up"
+      key "Global/Ctrl+Shift+Page_Up"
       sensitive :tab
       def self.move_tab_up
         tab.move_up
