@@ -71,7 +71,7 @@ module FreeBASE
           fail_load_dependencies(plugin)
           fail_start_dependencies(plugin)
         else
-#          puts "[FB2] loaded: #{plugin.name}"
+          puts "[FB2] loaded: #{plugin.name}"
           num += 1
         end
       end
@@ -89,7 +89,7 @@ module FreeBASE
           puts "[FB2] failed to start: #{plugin.name}"
           fail_start_dependencies(plugin)
         else
-#          puts "[FB2] started: #{plugin.name}"
+          puts "[FB2] started: #{plugin.name}"
           num += 1
         end
       end
