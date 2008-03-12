@@ -32,7 +32,7 @@ module Redcar
           "Super+"*supr + 
           "Alt+"*alt + 
           "Shift+"*shift + 
-          bits.last
+          bits.last.gsub(" ", "_")
         puts key
         execute_key(key)
       else
