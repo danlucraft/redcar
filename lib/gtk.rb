@@ -11,6 +11,14 @@ module Gtk
         false
       end
     end
+    
+    def hierarchy
+      if parent
+        [self] + parent.hierarchy
+      else
+        [self]
+      end
+    end
   end
   
   class Icon

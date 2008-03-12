@@ -1,4 +1,6 @@
 
+require 'pp'
+
 # GTK dependencies
 require 'gtk2'
 require 'gtksourceview'
