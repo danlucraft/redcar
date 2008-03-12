@@ -11,6 +11,12 @@ module Redcar
       plugin.transition(FreeBASE::RUNNING)
     end
     
+    def self.stop(plugin) # :nodoc:
+      Hook.unregister :open_window
+      Hook.unregister :close_window
+      plugin.transition(FreeBASE::LOADED)
+    end
+    
     # The expanded absolute application directory.
     def self.root_path
       File.expand_path(File.dirname(__FILE__)+"/../..")
