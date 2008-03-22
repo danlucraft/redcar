@@ -4,21 +4,21 @@ module Com::RedcarIDE
     on_load do
       bus["/system/state/all_plugins_loaded"].subscribe do |event, slot|
         if bus["/system/state/all_plugins_loaded"].data.to_bool
-          run_startup_script
+          p RunStartupScript.new
+          RunStartupScript.new.execute
         end
       end
     end
     
-    plugin_commands do
-      def self.run_startup_script
-        if Redcar::Preference.get(self, "Run startup script").to_bool
-          require startup_script_file
+    class RunStartupScript < Redcar::Command
+      menu "Tools/Run Startup Script"
+      icon :PREFERENCES
+      
+      def execute
+        if Redcar::Preference.get(Com::RedcarIDE::Scripting, "Run startup script").to_bool
+          require Com::RedcarIDE::Scripting.startup_script_file
         end
       end
-    end
-    
-    main_menu "Tools" do
-      item "Run Startup Script", :run_startup_script, :icon => :PREFERENCES
     end
     
     preference "Run startup script" do

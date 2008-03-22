@@ -5,8 +5,6 @@ module Redcar
     extend Redcar::PreferenceBuilder
     extend Redcar::MenuBuilder
     
-    CommandBuilder.enable_plugin(self)
-    
     class PluginTransitionException < Exception #:nodoc:
     end
     

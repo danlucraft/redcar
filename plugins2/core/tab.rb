@@ -16,8 +16,6 @@ module Redcar
       plugin.transition(FreeBASE::LOADED)
     end
     
-    CommandBuilder.enable_tab(self)
-    
     class << self
       attr_accessor :widget_to_tab
     end
@@ -70,17 +68,10 @@ module Redcar
       @gtk_nb_widget.show
     end
     
-    tab_command
-    key "Global/Ctrl+W"
     def close
       @pane.window.close_tab(self)
     end
     
-    tab_command
-    def title=(text)
-      @label.text = text
-    end
-
     def label_angle=(angle)
       case angle
       when :bottom_to_top
@@ -99,6 +90,10 @@ module Redcar
       @label.text
     end
     
+    def title=(text)
+      @label.text = text
+    end
+
     def move_to_pane(dest_pane)
       @pane.move_tab(self, dest_pane)
       @pane = dest_pane

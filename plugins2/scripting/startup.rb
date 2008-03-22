@@ -50,7 +50,7 @@ elsif Redcar::App.ARGV.include? "--test-syntax"
 elsif Redcar::App.ARGV.include? "--test"
   ix = Redcar::App.ARGV.index "--test"
   plugin = Redcar::App.ARGV[ix+1]
-  if plugin and bus("/plugins/#{plugin}").has_child?
+  if plugin and bus("/plugins/").has_child?(plugin)
     bus["/plugins/#{plugin}/actions/test"].call
   else
     puts "--test: No such plugin."
