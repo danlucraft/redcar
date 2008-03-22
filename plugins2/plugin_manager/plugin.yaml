@@ -3,7 +3,7 @@ name: plugin-manager
 description: Adds the Plugin Manager option to the Tools menu.
 author: Daniel Lucraft
 version: 1.0
-autoload: (true)
+autoload: false #true
 require_path: plugin_manager/plugin_manager.rb
 startup_module: Com::RedcarIDE::PluginManager
 tests:

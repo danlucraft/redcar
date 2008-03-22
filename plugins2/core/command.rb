@@ -52,7 +52,7 @@ module Redcar
       puts e.backtrace
     end
     
-    attr_accessor(:name, :scope, :key, :inputs, :output)
+    attr_accessor(:name, :scope, :key, :inputs, :output, :record)
 
     def execute
       puts "executing: #{@name}"
@@ -260,7 +260,7 @@ module Redcar
   # defaults to 500.
   module CommandHistory
     class << self
-      attr_accessor :max, :recording
+      attr_accessor :max, :recording, :history
     end
     
     self.max       = 500
@@ -269,9 +269,14 @@ module Redcar
     # Add a command to the command history if CommandHistory.recording is
     # true.
     def self.record(com)
-      if recording
+      if recording and com.record
         @history << com
       end
+      prune
+    end
+    
+    def self.prune #:nodoc:
+      (@history.length-@max).times { @history.delete_at(0) }
     end
     
     # Clear the command history.
@@ -288,31 +293,87 @@ module Redcar
   #     Redcar::CommandBuilder.enable(self)
   #   end
   module CommandBuilder
-    # Add the user_command class method to your class to allow
-    # you to declare class methods as commands. 
-    def self.enable(klass)
+    
+    def self.define_command_annotations(klass) #:nodoc:
+      klass.class_eval do                
+        # Call from within a plugin_commands block to give the command
+        # a menuitem. See Redcar::Plugin for examples.
+        def self.menu(menu)
+          annotate :menu, menu
+        end
+        
+        # Call from within a plugin_commands block to give the command
+        # an icon. See Redcar::Plugin for examples.
+        def self.icon(icon)
+          annotate :icon, icon
+        end
+        
+        # Call from within a plugin_commands block to give the command
+        # a key combination. See Redcar::Plugin for examples.
+        def self.key(key)
+          annotate :key, key
+        end
+        
+        # Call from within a plugin_commands block to make the command
+        # sensitive to its scope. See Redcar::Plugin for examples.
+        def self.scope(scope)
+          annotate :scope, scope
+        end
+        
+        # Call from within a plugin_commands block to make the command
+        # sensitive to a given Sensitivity. See Redcar::Plugin for examples.
+        def self.sensitive(sens)
+          annotate :sensitive, sens
+        end
+        
+        # Call from within a plugin_commands block to declare the command 
+        # primitive. See Redcar::Plugin for examples.
+        def self.primitive(prim)
+          annotate :primitive, prim
+        end
+        
+        # Call from within a plugin_commands block to set the command's 
+        # inputs. See Redcar::Plugin for examples.
+        def self.inputs(*inputs)
+          annotate :inputs, inputs
+        end
+        
+        # Call from within a plugin_commands block to set the command to have
+        # a single input. See Redcar::Plugin for examples.
+        def self.input(input)
+          annotate :inputs, [input]
+        end
+        
+        # Call from within a plugin_commands block to set the strategy for
+        # directing the command's output. See Redcar::Plugin for examples.
+        def self.output(output)
+          annotate :output, output
+        end
+        
+        # Call from within a plugin_commands block to turn off recording for 
+        # command. See Redcar::Plugin for examples.
+        def self.norecord
+          annotate :record, false
+        end
+        
+        def self.annotate(name, val) #:nodoc:
+          check_defining_commands
+          @annotations ||= {}
+          @annotations[name] = val
+        end
+      end
+    end
+    
+    def self.define_scope_accessors(klass) #:nodoc:
       klass.class_eval do
         class << self
-          attr_accessor :db_scope
+          attr_accessor :__db_scope
         end
-
-        # Calls this with a block to define a command:
-        # 
-        #   user_commands do
-        #     key       "Ctrl+G"
-        #     sensitive :tab_open
-        #     def self.do_stuff
-        #       ...
-        #     end
-        #   end
-        def self.user_commands(scope="", &block)
-          @db_scope = self.to_s+"/" + scope
-          self.start_defining_commands
-          self.class_eval do 
-            block.call
-          end
-          self.stop_defining_commands
-        end
+      end
+    end
+    
+    def self.define_command_helpers(klass) #:nodoc:
+      klass.class_eval do
 
         def self.start_defining_commands #:nodoc:
           @annotations       = nil
@@ -328,20 +389,133 @@ module Redcar
         
         def self.check_defining_commands #:nodoc:
           unless @defining_commands
-            raise "Attempting to annotate a command outside user_commands { ... }"
+            raise "Attempting to annotate a command outside (plugin/tab)_commands { ... }"
           end
+        end
+      end
+    end
+    
+    # Add the tab_commands class method to your tab class to 
+    # allow you to wrap instance methods on your tab as 
+    # commands.
+    def self.enable_tab(klass)
+      unless klass.ancestors.include?(Redcar::Tab)
+        raise "trying to enable tab_commands on object that is not a tab"
+      end
+      define_scope_accessors(klass)
+      define_command_helpers(klass)
+      define_command_annotations(klass)
+      klass.class_eval do
+        # Calls this with a block to define a tab command:
+        # 
+        #   tab_commands do
+        #     key       "Ctrl+G"
+        #     sensitive :tab_open
+        #     def self.do_stuff
+        #       ...
+        #     end
+        #   end
+        def self.tab_commands(scope="", &block)
+          @__db_scope = self.to_s+"/" + scope
+          self.start_defining_commands
+          self.class_eval do 
+            block.call
+          end
+          self.stop_defining_commands
+        end
+        
+        def self.tab_command(scope="")
+          @__db_scope = self.to_s+"/" + scope
+          self.start_defining_commands
+          @one_command_only = true
+        end
+
+        def self.method_added(method_name) #:nodoc:
+          if @defining_commands and !@aliasing
+            @annotations ||= {}
+            com           = InlineCommand.new
+            com.name      = "#{__db_scope}/#{method_name}".gsub("//", "/")
+            com.scope     = @annotations[:scope]
+            com.sensitive = @annotations[:sensitive]
+            com.record    = (@annotations[:record] == nil ? true : @annotations[:record])
+            com.block     = Proc.new {
+              Redcar::App.
+              focussed_window.
+              focussed_tab.send(method_name) 
+            }
+            com.inputs    = @annotations[:inputs]
+            com.output    = @annotations[:output]
+            if @annotations[:key]
+              com.key = @annotations[:key].split("/").last
+              Keymap.register_key(@annotations[:key], com)
+            end
+            bus("/redcar/commands/#{com.name}").data = com
+            if @annotations[:menu]
+              MenuBuilder.item "menubar/"+@annotations[:menu], com.name
+            end
+            @aliasing = true
+            if @aliasing
+              newname = ("__defined_"+method_name.to_s).intern
+              @aliasing = true
+              self.send(:alias_method, newname, method_name)
+              self.send(:define_method, method_name) do
+                CommandHistory.record(com)
+                CommandHistory.recording = false
+                Redcar::App.focussed_window.focussed_tab.send(newname)
+                CommandHistory.recording = true
+              end
+              @aliasing = false
+            end
+            @aliasing = false
+            @annotations = nil
+            stop_defining_commands if @one_command_only
+          end
+        end
+      end
+    end
+    
+    # Add the user_command class method to your class to allow
+    # you to declare class methods as commands. 
+    def self.enable_plugin(klass)
+      define_scope_accessors(klass)
+      define_command_helpers(klass)
+      define_command_annotations(klass)
+      klass.class_eval do
+        # Calls this with a block to define a plugin command:
+        # 
+        #   plugin_commands do
+        #     key       "Ctrl+G"
+        #     sensitive :tab_open
+        #     def self.do_stuff
+        #       ...
+        #     end
+        #   end
+        def self.plugin_commands(scope="", &block)
+          @__db_scope = self.to_s+"/" + scope
+          self.start_defining_commands
+          self.class_eval do 
+            block.call
+          end
+          self.stop_defining_commands
+        end
+
+        def self.plugin_command(scope="")
+          @__db_scope = self.to_s+"/" + scope
+          self.start_defining_commands
+          @one_command_only = true
         end
         
         def self.singleton_method_added(method_name) #:nodoc:
           if @defining_commands and !@aliasing
             @annotations ||= {}
             com           = InlineCommand.new
-            com.name      = "#{db_scope}/#{method_name}".gsub("//", "/")
+            com.name      = "#{__db_scope}/#{method_name}".gsub("//", "/")
             com.scope     = @annotations[:scope]
             com.sensitive = @annotations[:sensitive]
             com.block     = Proc.new { self.send(method_name) }
             com.inputs    = @annotations[:inputs]
             com.output    = @annotations[:output]
+            com.record    = (@annotations[:record] == nil ? true : @annotations[:record])
             if @annotations[:key]
               com.key = @annotations[:key].split("/").last
               Keymap.register_key(@annotations[:key], com)
@@ -365,67 +539,8 @@ module Redcar
             end
             @aliasing = false
             @annotations = nil
+            stop_defining_commands if @one_command_only
           end
-        end
-                
-        # Call from within a user_command block to give the command
-        # a menuitem. See Redcar::Plugin for examples.
-        def self.menu(menu)
-          annotate :menu, menu
-        end
-        
-        # Call from within a user_command block to give the command
-        # an icon. See Redcar::Plugin for examples.
-        def self.icon(icon)
-          annotate :icon, icon
-        end
-        
-        # Call from within a user_command block to give the command
-        # a key combination. See Redcar::Plugin for examples.
-        def self.key(key)
-          annotate :key, key
-        end
-        
-        # Call from within a user_command block to make the command
-        # sensitive to its scope. See Redcar::Plugin for examples.
-        def self.scope(scope)
-          annotate :scope, scope
-        end
-        
-        # Call from within a user_command block to make the command
-        # sensitive to a given Sensitivity. See Redcar::Plugin for examples.
-        def self.sensitive(sens)
-          annotate :sensitive, sens
-        end
-        
-        # Call from within a user_command block to declare the command 
-        # primitive. See Redcar::Plugin for examples.
-        def self.primitive(prim)
-          annotate :primitive, prim
-        end
-        
-        # Call from within a user_command block to set the command's 
-        # inputs. See Redcar::Plugin for examples.
-        def self.inputs(*inputs)
-          annotate :inputs, inputs
-        end
-        
-        # Call from within a user_command block to set the command to have
-        # a single input. See Redcar::Plugin for examples.
-        def self.input(input)
-          annotate :inputs, [input]
-        end
-        
-        # Call from within a user_command block to set the strategy for
-        # directing the command's output. See Redcar::Plugin for examples.
-        def self.output(output)
-          annotate :output, output
-        end
-        
-        def self.annotate(name, val) #:nodoc:
-          check_defining_commands
-          @annotations ||= {}
-          @annotations[name] = val
         end
       end
     end

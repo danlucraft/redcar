@@ -2,23 +2,17 @@ module Redcar
   module StandardMenus
     extend FreeBASE::StandardPlugin
     
-    CommandBuilder.enable(self)
+    CommandBuilder.enable_plugin(self)
     extend Redcar::MenuBuilder
     
     class File
-      CommandBuilder.enable(self)
+      CommandBuilder.enable_plugin(self)
       extend Redcar::MenuBuilder
       
-      user_commands do
+      plugin_commands do
         key "Global/Ctrl+N"
         def self.new
           win.new_tab(EditTab).focus
-        end
-        
-        key "Global/Ctrl+W"
-        sensitive :tab
-        def self.close
-          tab.close
         end
         
         key "Global/Ctrl+Super+W"
@@ -34,7 +28,7 @@ module Redcar
       
       main_menu "File" do
         item "New",        "new",       :icon => :NEW
-        item "Close",      "close",     :icon => :CLOSE
+#        item "Close",      "close",     :icon => :CLOSE
         item "Close All",  "close_all", :icon => :CLOSE
         separator
         item "Quit",       "quit",      :icon => :QUIT
@@ -42,9 +36,9 @@ module Redcar
     end
     
     class Text
-      CommandBuilder.enable(self)
+      CommandBuilder.enable_plugin(self)
       extend Redcar::MenuBuilder
-      user_commands do
+      plugin_commands do
         key    "Global/Ctrl+U"
         inputs :selection, :line
         output :replace_input
@@ -55,7 +49,7 @@ module Redcar
       end
     end
     
-    user_commands do
+    plugin_commands do
       key "Global/Ctrl+X"
       def self.speedbarex
         win.speedbar.build do
@@ -70,10 +64,10 @@ module Redcar
     end
     
     class Pane
-      CommandBuilder.enable(self)
+      CommandBuilder.enable_plugin(self)
       extend Redcar::MenuBuilder    
       
-      user_commands do
+      plugin_commands do
         key "Global/Ctrl+1"
         sensitive :multiple_panes
         def self.unify_all

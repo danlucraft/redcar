@@ -3,20 +3,22 @@ module Redcar
   class Keymap
     extend FreeBASE::StandardPlugin
 
-    def self.load(plugin)
+    def self.load(plugin) #:nodoc:
       plugin.transition(FreeBASE::LOADED)
     end
     
-    def self.start(plugin)
+    def self.start(plugin) #:nodoc:
       @obj_keymaps = Hash.new {|obj,key| obj[key] = [] }
       plugin.transition(FreeBASE::RUNNING)
     end
     
-    def clean_letter(letter)
+    # "Page Up" -> "Page_Up"
+    def self.clean_letter(letter)
       letter.split(" ").join("_")
     end
     
-    def self.process(gdk_eventkey)
+    # Process a Gdk::EventKey (which is created on a keypress)
+    def self.process(gdk_eventkey) #:nodoc:
       kv = gdk_eventkey.keyval
       ks = gdk_eventkey.state - Gdk::Window::MOD2_MASK
       ks = ks - Gdk::Window::MOD4_MASK
@@ -32,16 +34,11 @@ module Redcar
           "Super+"*supr + 
           "Alt+"*alt + 
           "Shift+"*shift + 
-          bits.last.gsub(" ", "_")
-        puts key
+          clean_letter(bits.last)
         execute_key(key)
       else
         true # indicates to fall through to Gtk
       end
-    end
-    
-    def self.clear_keymaps_from_object(obj)
-      @obj_keymaps.delete obj
     end
     
     # Use to register a key. key_path should look like "Global/Ctrl+G"
@@ -53,6 +50,11 @@ module Redcar
       bus("/redcar/keymaps/#{key_path}").data = command
     end
     
+    # Removes a key from a keymap. key_path should be as in
+    # register_key.
+    def self.unregister_key(key_path)
+      bus("/redcar/keymaps/#{key_path}").prune
+    end
     
     # Pushes a keymap (with keymap_path eg "Global" or "EditView/Snippet") 
     # onto a particular object. E.g. self.push_onto(Redcar::Window, 
@@ -65,6 +67,11 @@ module Redcar
     #   Keymap.remove_from(Redcar::EditView, "EditView")
     def self.remove_from(obj, keymap_path)
       @obj_keymaps[obj].delete keymap_path
+    end
+    
+    # Removes all keymaps from an object. 
+    def self.clear_keymaps_from_object(obj)
+      @obj_keymaps.delete obj
     end
     
     # Use to execute a key. key_name should be a string like "Ctrl+G".
@@ -94,6 +101,8 @@ module Redcar
       false
     end
     
+    # Given a key_name like "Ctrl+G" and a keymap path like "Snippet"
+    # executes the command at "/redcar/keymaps/Snippet/Ctrl+G"
     def self.execute_key_on_keymap(key_name, keymap_path)
       if com = bus("/redcar/keymaps/#{keymap_path}/#{key_name}").data
         com.execute

@@ -72,3 +72,4 @@ def strip_trailing_whitespace
     end
   end
 end
+

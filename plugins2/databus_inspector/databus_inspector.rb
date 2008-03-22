@@ -1,7 +1,7 @@
 
 module Com::RedcarIDE
   class DatabusInspector < Redcar::Plugin
-    user_commands do
+    plugin_commands do
       def self.open_databus_inspector
         if t = win.tab["Databus Inspector"]
           t.focus

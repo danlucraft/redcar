@@ -30,13 +30,14 @@ plugins:
     load_dependencies:
         core-plugin: "*"
 
-  - !ruby/object:FreeBASE::PluginConfiguration 
-    name:            core-standard_menus
-    autoload:        true
-    require_path:    core/standard_menus
-    startup_module:  Redcar::StandardMenus
-    load_dependencies:
-        core-app: "*"
+#   - !ruby/object:FreeBASE::PluginConfiguration 
+#     name:            core-standard_menus
+#     autoload:        true
+#     require_path:    core/standard_menus
+#     startup_module:  Redcar::StandardMenus
+#     load_dependencies:
+#         core-app: "*"
+#         core-plugin: "*"
 
   - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-gui
@@ -45,16 +46,6 @@ plugins:
     startup_module:  Redcar::Gui
     start_dependencies:
         core-app: "*"
-
-  - !ruby/object:FreeBASE::PluginConfiguration 
-    name:            core-plugin
-    autoload:        true
-    require_path:    core/plugin
-    startup_module:  Redcar::Plugin
-    load_dependencies:
-        core-menu: "*"
-        core-command: "*"
-        core-preference: "*"
 
   - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-app
@@ -79,28 +70,6 @@ plugins:
         testcase: Redcar::PluginTests::WindowTest
 
   - !ruby/object:FreeBASE::PluginConfiguration 
-    name:            core-keymap
-    autoload:        true
-    require_path:    core/keymap
-    startup_module:  Redcar::Keymap
-    start_dependencies:
-        core-command: "*"
-
-  - !ruby/object:FreeBASE::PluginConfiguration 
-    name:            core-menu
-    autoload:        true
-    require_path:    core/menu
-    startup_module:  Redcar::Menu
-    start_dependencies:
-        core-command: "*"
-
-  - !ruby/object:FreeBASE::PluginConfiguration 
-    name:            core-command
-    autoload:        true
-    require_path:    core/command
-    startup_module:  Redcar::Command
-
-  - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-pane
     autoload:        true
     require_path:    core/pane
@@ -116,15 +85,11 @@ plugins:
     autoload:        true
     require_path:    core/tab
     startup_module:  Redcar::Tab
+    load_dependencies:
+        core-plugin: "*"
     tests:
       - path: core/tests/tab_test.rb
         testcase: Redcar::PluginTests::TabTest
-
-  - !ruby/object:FreeBASE::PluginConfiguration 
-    name:            core-preference
-    autoload:        true
-    require_path:    core/preference
-    startup_module:  Redcar::Preference
 
   - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-sensitive
@@ -149,3 +114,49 @@ plugins:
     tests:
       - path: core/tests/speedbar_test.rb
         testcase: Redcar::PluginTests::SpeedbarTest
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-plugin
+    autoload:        true
+    require_path:    core/plugin
+    startup_module:  Redcar::Plugin
+    load_dependencies:
+        core-menu: "*"
+        core-command: "*"
+        core-preference: "*"
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-preference
+    autoload:        true
+    require_path:    core/preference
+    startup_module:  Redcar::Preference
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-menu
+    autoload:        true
+    require_path:    core/menu
+    startup_module:  Redcar::Menu
+    load_dependencies:
+        core-command: "*"
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-command
+    autoload:        true
+    require_path:    core/command
+    startup_module:  Redcar::Command
+    load_dependencies:
+        core-keymap: "*"
+    tests:
+      - path: core/tests/command_test.rb
+        testcase: Redcar::Tests::CommandTest
+      - path: core/tests/command_history_test.rb
+        testcase: Redcar::Tests::CommandHistoryTest
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-keymap
+    autoload:        true
+    require_path:    core/keymap
+    startup_module:  Redcar::Keymap
+    tests:
+      - path: core/tests/keymap_test.rb
+        testcase: Redcar::Tests::KeymapTest

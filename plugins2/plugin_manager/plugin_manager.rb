@@ -6,7 +6,7 @@ module Com::RedcarIDE
       default true
     end
     
-    user_commands do
+    plugin_commands do
       def self.open_plugin_manager
         if t = win.tab["Plugin Manager"]
           t.focus

@@ -17,7 +17,7 @@ if Redcar::App.ARGV.include? "--test-perf-load"
   result = RubyProf.stop
   printer = RubyProf::GraphHtmlPrinter.new(result)
   printer.print(STDOUT)
-  stop
+  stop_redcar
 elsif Redcar::App.ARGV.include? "--test-perf-edit"
   tab = Redcar.new_tab
   tab.filename = "/home/dan/projects/redcar/freebase2/lib/freebase/readers.rb"  
@@ -43,10 +43,10 @@ elsif Redcar::App.ARGV.include? "--test-perf-edit"
   result = RubyProf.stop
   printer = RubyProf::GraphHtmlPrinter.new(result)
   printer.print(STDOUT, 0)
-  stop
+  stop_redcar
 elsif Redcar::App.ARGV.include? "--test-syntax"
   bus['/plugins/syntaxview/actions/test'].call
-  stop
+  stop_redcar
 elsif Redcar::App.ARGV.include? "--test"
   ix = Redcar::App.ARGV.index "--test"
   plugin = Redcar::App.ARGV[ix+1]
@@ -60,7 +60,7 @@ elsif Redcar::App.ARGV.include? "--test-all"
   bus["/plugins"].children.each do |plugin|
     plugin["actions/test"].call
   end
-  stop
+  stop_redcar
 elsif Redcar::App.ARGV.include? "--demo"
   win.panes.first.split_horizontal
   win.panes.last.new_tab(Tab, Gtk::Button.new("foo"))
@@ -68,5 +68,5 @@ elsif Redcar::App.ARGV.include? "--demo"
   win.panes.last.new_tab(Tab, Gtk::Button.new("baz"))
 elsif Redcar::App.ARGV.include? "--current"
   win.new_tab(EditTab)
-  stop
+  stop_redcar
 end

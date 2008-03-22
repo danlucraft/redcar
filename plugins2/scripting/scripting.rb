@@ -9,7 +9,7 @@ module Com::RedcarIDE
       end
     end
     
-    user_commands do
+    plugin_commands do
       def self.run_startup_script
         if Redcar::Preference.get(self, "Run startup script").to_bool
           require startup_script_file

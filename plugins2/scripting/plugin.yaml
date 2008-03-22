@@ -3,7 +3,7 @@ name: scripting
 description: Tools for scripting Redcar.
 author: Daniel Lucraft
 version: 1.0
-autoload: (true)
+autoload: false #(true)
 require_path: scripting/scripting.rb
 startup_module: Com::RedcarIDE::Scripting
 tests:

@@ -214,7 +214,7 @@ module Redcar
       signal_connect("destroy") do
         self.close
       end
-      signal_connect('key-press-event') do |gtk_widget, gdk_eventkey|
+      signal_connect('key-release-event') do |gtk_widget, gdk_eventkey|
         continue = Keymap.process(gdk_eventkey)
         # falls through to Gtk widgets if nothing handles it
         continue
