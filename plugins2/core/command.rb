@@ -36,19 +36,6 @@ module Redcar
               ]
     ACTIVATIONS = ["Key Combination"]
     
-    def self.execute(name)
-      if name.is_a? String
-        command = bus['/redcar/commands/'+name].data
-      else
-        command = name
-      end
-      begin
-        command.execute
-      rescue Object => e
-        process_command_error(command.name, e)
-      end
-    end
-  
     def self.process_command_error(name, e)
       puts "* Error in command: #{name}"
       puts "  trace:"
@@ -58,7 +45,7 @@ module Redcar
     
     def self.menu(menu)
       @menu = menu
-#      MenuBuilder.item "menubar/"+menu, self.class.to_s
+      MenuBuilder.item "menubar/"+menu, self.to_s
     end
     
     def self.icon(icon)
@@ -67,6 +54,11 @@ module Redcar
     
     def self.key(key)
       @key = key
+      Redcar::Keymap.register_key(key, self)
+    end
+    
+    def self.get_key
+      @key
     end
     
     def self.scope(scope)
@@ -94,11 +86,33 @@ module Redcar
       @composite = true
     end
     
+    def self.composite?
+      @composite
+    end
+    
     attr_accessor(:name, :scope, :key, :inputs, :output, :record)
 
-    def execute
-      puts "executing: #{@name}"
-      raise "Abstract Command Error"
+    def do(tab=Redcar::App.focussed_window.focussed_tab)
+      unless self.respond_to? :execute
+        raise "Abstract Command Error"
+      end
+      begin
+        case (a = self.method(:execute).arity)
+        when 0
+          self.execute
+        when 1
+          self.execute(tab)
+        else
+          raise "Unknown command arity error"
+        end
+        CommandHistory.record(self)
+      rescue Object => e
+        Command.process_command_error(self, e)
+      end
+    end
+    
+    def record
+      self.class.composite
     end
     
     # Gets the applicable input type, as a symbol. NOT the 

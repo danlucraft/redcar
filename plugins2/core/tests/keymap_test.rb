@@ -3,6 +3,16 @@ require 'mocha'
 
 module Redcar::Tests
   class KeymapTest < Test::Unit::TestCase
+    class << self
+      attr_accessor :test_var
+    end
+    
+    class KeymapTestCommand < Redcar::Command
+      def execute
+        Redcar::Tests::KeymapTest.test_var *= 2
+      end
+    end
+    
     def test_clean_letter
       assert_equal "Page_Up", Redcar::Keymap.clean_letter("Page Up")
     end
@@ -46,12 +56,11 @@ module Redcar::Tests
     
     def test_execute_key_on_keymap
       Redcar::Keymap.push_onto(win, "KeymapTest")
-      com = Redcar::InlineCommand.new
-      a = false
-      com.block = fn { a = true }
+      self.class.test_var = 2
+      com = KeymapTestCommand.new
       Redcar::Keymap.register_key("KeymapTest/Ctrl+G", com)
       Redcar::Keymap.execute_key_on_keymap("Ctrl+G", "KeymapTest")
-      assert a
+      assert_equal 4, self.class.test_var
       Redcar::Keymap.unregister_key("KeymapTest/Ctrl+G")
       Redcar::Keymap.remove_from(win, "KeymapTest")
     end

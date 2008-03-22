@@ -3,13 +3,8 @@ name: debug-tools
 description: Provides various debugging tools for Redcar.
 author: Daniel Lucraft
 version: 1.0
-autoload: false #true
+autoload: true
 require_path: debug_tools/debug_tools.rb
 startup_module: Com::RedcarIDE::DebugTools
-tests:
-  - path: debug_tools/test.rb
-    testcase: Com::RedcarIDE::DebugTools::Test
 load_dependencies: 
-  core: "*"
-start_dependencies: 
   core: "*"

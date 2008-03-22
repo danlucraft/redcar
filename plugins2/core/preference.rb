@@ -7,12 +7,13 @@ module Redcar
       FreeBASE::Properties.new("Redcar Preferences", 
                                Redcar::VERSION, 
                                bus('/redcar/preferences'), 
-                               File.dirname(__FILE__) + "/../../custom/preferences.yaml")
+                               Redcar::App.root_path + "/custom/preferences.yaml")
       plugin.transition(FreeBASE::LOADED)
     end
     
     def self.get(scope, name)
-      bus("/redcar/preferences/#{scope}/#{name}").data
+      slot = bus("/redcar/preferences/#{scope}/#{name}")
+      slot.data || slot.attr_default
     end
     
     def self.set(scope, name, val)

@@ -4,7 +4,6 @@ module Com::RedcarIDE
     on_load do
       bus["/system/state/all_plugins_loaded"].subscribe do |event, slot|
         if bus["/system/state/all_plugins_loaded"].data.to_bool
-          p RunStartupScript.new
           RunStartupScript.new.execute
         end
       end
@@ -22,7 +21,7 @@ module Com::RedcarIDE
     end
     
     preference "Run startup script" do
-      type    :toggle 
+      type    :toggle
       default true
     end
       

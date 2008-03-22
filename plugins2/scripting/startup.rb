@@ -9,6 +9,20 @@ def stop_redcar
   }
 end
 
+def test_plugin(plugin_name)
+  if plugin_name and bus("/plugins/").has_child?(plugin_name)
+    if bus("/plugins/#{plugin_name}/actions/").has_child? "test"
+      puts "="*75
+      puts "Testing: " + plugin_name
+      puts "-"*75
+      bus["/plugins/#{plugin_name}/actions/test"].call
+      puts "="*75
+    end
+  else
+    puts "--test: No such plugin (#{plugin_name})."
+  end
+end
+
 if Redcar::App.ARGV.include? "--test-perf-load"
   new_tab = Redcar.new_tab
   new_tab.filename = "/home/dan/projects/redcar/freebase2/lib/freebase/readers.rb"  
@@ -50,15 +64,11 @@ elsif Redcar::App.ARGV.include? "--test-syntax"
 elsif Redcar::App.ARGV.include? "--test"
   ix = Redcar::App.ARGV.index "--test"
   plugin = Redcar::App.ARGV[ix+1]
-  if plugin and bus("/plugins/").has_child?(plugin)
-    bus["/plugins/#{plugin}/actions/test"].call
-  else
-    puts "--test: No such plugin."
-  end
+  test_plugin plugin
   stop_redcar
 elsif Redcar::App.ARGV.include? "--test-all"
   bus["/plugins"].children.each do |plugin|
-    plugin["actions/test"].call
+    test_plugin plugin.name
   end
   stop_redcar
 elsif Redcar::App.ARGV.include? "--demo"

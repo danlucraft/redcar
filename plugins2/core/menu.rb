@@ -109,11 +109,12 @@ module Redcar
       attr_accessor :menu_scope, :command_scope
       
       def item(item_name, command_name, options={})
+        puts "/redcar/menus/#{menu_scope}/#{item_name}"
+        puts "/redcar/commands/#{command_scope}/#{command_name}"
         slot = bus("/redcar/menus/#{menu_scope}/#{item_name}")
         slot.data = bus("/redcar/commands/#{command_scope}/#{command_name}").data
         slot.attr_menu_entry = true
         slot.attr_icon = options[:icon]
-        slot.attr_key = slot.data.key
         # sets the menuid of this menuitem and it's ancestors if necessary:
         bits = "#{menu_scope}/#{item_name}".split("/")
         build = ""
@@ -176,10 +177,10 @@ module Redcar
             else
               Gtk::MenuItem.new name
             end
-        keybinding = slot.attr_key
+        keybinding = slot.data.get_key if slot.data
         unless keybinding
           if command = slot.data
-            if command and command.key
+            if command and command.get_key
               keybinding = KeyStroke.parse(command.key).to_s
             end
           end
@@ -227,7 +228,7 @@ module Redcar
       def connect_item_signal(command, gtk_menuitem)
         gtk_menuitem.signal_connect("activate") do
           begin
-            command.execute
+            command.new.do
           rescue Object => e
             puts e
             puts e.message
