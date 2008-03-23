@@ -115,8 +115,4 @@ module Redcar
       nb.reorder_child(@gtk_nb_widget, new_ix)
     end
   end
-  
-  class TabCommand < Redcar::Command
-    sensitive :tab
-  end
 end

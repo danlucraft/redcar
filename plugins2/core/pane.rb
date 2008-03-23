@@ -16,6 +16,7 @@ module Redcar
     def new_tab(type=EditTab, *args)
       tab = type.new(self, *args)
       add_tab(tab)
+      Hook.trigger :new_tab, tab
       tab
     end
     

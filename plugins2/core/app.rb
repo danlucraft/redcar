@@ -5,15 +5,9 @@ module Redcar
   module App
     extend FreeBASE::StandardPlugin
 
-    def self.start(plugin) # :nodoc:
+    def self.load(plugin) # :nodoc:
       Hook.register :open_window
       Hook.register :close_window
-      plugin.transition(FreeBASE::RUNNING)
-    end
-    
-    def self.stop(plugin) # :nodoc:
-      Hook.unregister :open_window
-      Hook.unregister :close_window
       plugin.transition(FreeBASE::LOADED)
     end
     
@@ -34,7 +28,9 @@ module Redcar
     # Creates a new window.
     def self.new_window(focus = true)
       return nil if @window
-      @window = Redcar::Window.new
+      Hook.trigger :open_window do
+        @window = Redcar::Window.new
+      end
     end
     
     # Returns an array of all Redcar windows.
@@ -51,8 +47,12 @@ module Redcar
     # then Redcar will quit if there are no more windows.
     def self.close_window(window, close_if_no_win=true)
       is_win = !windows.empty?
-      @window = nil if window == @window
-      window.hide_all if window
+      Hook.trigger :close_window do
+        window.panes.each {|pane| pane.tabs.each {|tab| tab.close} }
+        Keymap.clear_keymaps_from_object(window)
+        @window = nil if window == @window
+        window.hide_all if window
+      end
       quit if close_if_no_win and is_win
     end
     

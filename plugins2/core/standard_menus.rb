@@ -1,7 +1,12 @@
+
 module Redcar
+  class TabCommand < Redcar::Command
+    sensitive :tab
+  end
+  
   class StandardMenus < Redcar::Plugin
     include Redcar::MenuBuilder
-    
+      
     class NewTab < Redcar::Command
       key "Global/Ctrl+N"
       icon :NEW
@@ -44,7 +49,7 @@ module Redcar
       
     class UnifyAll < Redcar::Command
       key "Global/Ctrl+1"
-      sensitive :multiple_panes
+#      sensitive :multiple_panes
       def execute
         win.unify_all
       end

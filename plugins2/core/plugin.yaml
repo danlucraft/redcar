@@ -38,6 +38,7 @@ plugins:
     load_dependencies:
         core-app: "*"
         core-tab: "*"
+        core-window: "*"
 
   - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-gui
@@ -60,6 +61,8 @@ plugins:
     autoload:        true
     require_path:    core/window
     startup_module:  Redcar::Window
+    load_dependencies:
+        core-sensitive: "*"
     start_dependencies:
         core-keymap: "*"
         core-pane: "*"
@@ -90,21 +93,6 @@ plugins:
     tests:
       - path: core/tests/tab_test.rb
         testcase: Redcar::PluginTests::TabTest
-
-  - !ruby/object:FreeBASE::PluginConfiguration 
-    name:            core-sensitive
-    autoload:        true
-    require_path:    core/sensitive
-    startup_module:  Redcar::Sensitive
-
-  - !ruby/object:FreeBASE::PluginConfiguration 
-    name:            core-hook
-    autoload:        true
-    require_path:    core/hook
-    startup_module:  Redcar::Hook
-    tests:
-      - path: core/tests/hook_test.rb
-        testcase: Redcar::PluginTests::HookTest
 
   - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-speedbar
@@ -148,6 +136,7 @@ plugins:
     startup_module:  Redcar::Command
     load_dependencies:
         core-keymap: "*"
+        core-sensitive: "*"
     tests:
       - path: core/tests/command_test.rb
         testcase: Redcar::Tests::CommandTest
@@ -162,3 +151,23 @@ plugins:
     tests:
       - path: core/tests/keymap_test.rb
         testcase: Redcar::Tests::KeymapTest
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-sensitive
+    autoload:        true
+    require_path:    core/sensitive
+    startup_module:  Redcar::Sensitive
+    load_dependencies:
+        core-hook: "*"
+    tests:
+      - path: core/tests/sensitive_test.rb
+        testcase: Redcar::Tests::SensitiveTest
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-hook
+    autoload:        true
+    require_path:    core/hook
+    startup_module:  Redcar::Hook
+    tests:
+      - path: core/tests/hook_test.rb
+        testcase: Redcar::PluginTests::HookTest

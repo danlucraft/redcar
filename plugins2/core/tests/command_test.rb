@@ -5,6 +5,14 @@ module Redcar::Tests
       attr_accessor :test_var
     end
     
+    Redcar::Sensitive.register(:test_2_tabs, [:new_tab, :close_tab]) do
+      win and win.tabs.length > 1
+    end
+    
+    Redcar::Sensitive.register(:test_1_tab, [:new_tab, :close_tab]) do
+      win and win.tabs.length > 0
+    end
+    
     class TestCommand1 < Redcar::Command
       menu "RedcarTestMenu/TestCommand1"
       key  "Global/Ctrl+Super+Alt+Shift+5"
@@ -15,6 +23,20 @@ module Redcar::Tests
       
       def execute(tab)
         Redcar::Tests::CommandTest.test_var *= @val
+      end
+    end
+    
+    class TestSensitiveCommand < Redcar::Command
+      sensitive :test_2_tabs
+      
+      def execute
+      end
+    end
+    
+    class TestSensitiveCommand2 < TestSensitiveCommand
+      sensitive :test_1_tab
+      
+      def execute
       end
     end
     
@@ -34,6 +56,38 @@ module Redcar::Tests
     
     def test_added_to_keymap
       assert bus("/redcar/keymaps/Global/").has_child?("Ctrl+Super+Alt+Shift+5")
+    end
+    
+    def test_sensitivity
+      win.tabs.each &:close
+      assert !TestSensitiveCommand.active?
+      2.times { win.new_tab(Redcar::Tab, Gtk::Label.new("foo")) }
+      assert TestSensitiveCommand.active?
+    end
+    
+    def test_operative
+      win.tabs.each &:close
+      assert !TestSensitiveCommand.operative?
+      2.times { win.new_tab(Redcar::Tab, Gtk::Label.new("foo")) }
+      assert TestSensitiveCommand.operative?
+    end
+    
+    def test_operative_inherits
+      win.tabs.each &:close
+      assert !TestSensitiveCommand.active?
+      assert !TestSensitiveCommand2.active?
+      assert !TestSensitiveCommand.operative?
+      assert !TestSensitiveCommand2.operative?
+      win.new_tab(Redcar::Tab, Gtk::Label.new("foo"))
+      assert !TestSensitiveCommand.active?
+      assert TestSensitiveCommand2.active?
+      assert !TestSensitiveCommand.operative?
+      assert !TestSensitiveCommand2.operative?
+      win.new_tab(Redcar::Tab, Gtk::Label.new("foo"))
+      assert TestSensitiveCommand.active?
+      assert TestSensitiveCommand2.active?
+      assert TestSensitiveCommand.operative?
+      assert TestSensitiveCommand2.operative?
     end
   end
 end

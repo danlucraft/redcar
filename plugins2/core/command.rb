@@ -7,6 +7,10 @@ module Redcar
   # This class also initializes the CommandHistory on startup.
   class Command
     extend FreeBASE::StandardPlugin
+    
+    class << self
+      include Redcar::Sensitive
+    end
 
     def self.start(plugin)
       CommandHistory.clear
@@ -20,6 +24,12 @@ module Redcar
     
     def self.inherited(klass)
       bus("/redcar/commands/#{klass}").data = klass
+      @child_commands ||= []
+      @child_commands << klass
+    end
+    
+    def self.child_commands
+      @child_commands || []
     end
     
     INPUTS = [
@@ -43,9 +53,17 @@ module Redcar
       puts e.backtrace
     end
     
+    def self.menu=(menu)
+      @menu = menu
+    end
+    
     def self.menu(menu)
       @menu = menu
       MenuBuilder.item "menubar/"+menu, self.to_s
+    end
+    
+    def self.get_menu
+      @menu
     end
     
     def self.icon(icon)
@@ -72,6 +90,7 @@ module Redcar
     def self.sensitive(sens)
       @sensitive ||= []
       @sensitive << sens
+      Redcar::Sensitive.sensitize(self, sens)
     end
     
     def self.inputs(*inputs)
@@ -92,6 +111,32 @@ module Redcar
     
     def self.norecord?
       @norecord
+    end
+    
+    def self.active=(val)
+      @sensitive_active = val
+      update_operative
+    end
+    
+    def self.update_operative
+      old = @operative
+      @operative = if active?
+                     if self.ancestors[1].ancestors.include? Redcar::Command
+                       self.ancestors[1].operative?
+                     else
+                       true
+                     end
+                   else
+                     false
+                   end
+      if old != @operative and @menu
+        Redcar::MenuDrawer.set_active(@menu, @operative)
+      end
+      child_commands.each &:update_operative
+    end
+    
+    def self.operative?
+      @operative == nil ? active? : @operative
     end
     
     attr_accessor(:name, :scope, :key, :inputs, :output)

@@ -133,6 +133,7 @@ module Redcar
     # Trigger a hook. Has an optional object (to pass into the hooked
     # blocks) and an optional block.
     def self.trigger(name, *objects)
+  #    puts "[RC] Hook: #{name}"
       unless exists? name
         raise "Trying to trigger unknown hook: #{name}"
       end
@@ -140,12 +141,13 @@ module Redcar
         call_blocks("before_"+name.to_s, *objects)
       end
       
-      yield if block_given?
+      result = yield if block_given?
       
       call_blocks(name, *objects)
       unless is_before_or_after_hook? name
         call_blocks("after_"+name.to_s, *objects)
       end
+      result
     end
       
     def self.call_blocks(name, *objects) #:nodoc:

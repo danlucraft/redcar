@@ -111,6 +111,7 @@ module Redcar
       def item(item_name, command_name, options={})
         slot = bus("/redcar/menus/#{menu_scope}/#{item_name}")
         slot.data = bus("/redcar/commands/#{command_scope}/#{command_name}").data
+        slot.data.menu = "#{menu_scope}/#{item_name}"
         slot.attr_menu_entry = true
         # sets the menuid of this menuitem and it's ancestors if necessary:
         bits = "#{menu_scope}/#{item_name}".split("/")
@@ -132,6 +133,7 @@ module Redcar
         MenuBuilder.class_eval(&block)
         @menu_scope = old_menu_scope
       end
+      
     end
   end
   
@@ -211,6 +213,8 @@ module Redcar
               gtk_menuitem.submenu = gtk_submenu
               draw_menus1(slot, gtk_submenu)
             end
+            slot.attr_gtk_menuitem = gtk_menuitem
+            gtk_menuitem.sensitive = slot.data.operative?
           end
           gtk_menu.append(gtk_menuitem)
           gtk_menuitem.show
@@ -226,6 +230,12 @@ module Redcar
             puts e.message
             puts e.backtrace
           end
+        end
+      end
+      
+      def set_active(menu_path, val)
+        if gtk_menuitem = bus("/redcar/menus/#{menu_path}").attr_gtk_menuitem
+          gtk_menuitem.sensitive = val
         end
       end
     end

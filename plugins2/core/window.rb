@@ -5,13 +5,21 @@ module Redcar
   class Window < Gtk::Window
     extend FreeBASE::StandardPlugin
     
+    def self.load(plugin)
+      Hook.register :new_tab
+      Hook.register :close_tab
+      Hook.register :focus_tab
+      
+      Sensitive.register(:tab, [:open_window, :new_tab, :close_tab]) do
+        win and win.tabs.length > 0
+      end
+      
+      plugin.transition(FreeBASE::LOADED)
+    end
+    
     def self.start(plugin)
       App.new_window
       Keymap.push_onto(self, "Global")
-      
-      Hook.register :open_tab
-      Hook.register :close_tab
-      Hook.register :focus_tab
       
       plugin.transition(FreeBASE::RUNNING)
     end
@@ -41,8 +49,6 @@ module Redcar
     end
     
     def close
-      panes.each {|pane| pane.tabs.each {|tab| tab.close} }
-      Keymap.clear_keymaps_from_object(self)
       App.close_window(self, true)
     end
     
@@ -119,6 +125,7 @@ module Redcar
             end
           end
         end
+        Hook.trigger :close_tab, tab
       else
         raise "trying to close tab with no pane: #{tab.label.text}"
       end      
