@@ -2,16 +2,17 @@
 module Redcar
   module PluginTests
     class SpeedbarTest < Test::Unit::TestCase
-      def test_build
-        win.speedbar.build do
-          label   "Find:"
-          textbox :find_text
-          toggle  :match_case?, "Alt+C"
-          label   "Match _case"
-          button  "Find _Next", :GO_FORWARD, "Alt+N | Return" do |sb|
-            puts "Find next"
-          end
-        end
+      
+      class SpeedbarTestSpeedbar < Speedbar
+        label "Line:"
+        textbox :line_text
+        button "Go", nil, "Return"
+      end
+  
+      def test_show
+        sp = SpeedbarTestSpeedbar.new
+        sp.show(win)
+        sp.close
       end
     end
   end

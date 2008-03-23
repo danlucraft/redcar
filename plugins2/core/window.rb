@@ -26,7 +26,7 @@ module Redcar
     end
     
     attr_reader(:notebooks_panes, :previous_tab, :gtk_menubar, 
-                :focussed_gtk_widget)
+                :focussed_gtk_widget, :gtk_speedbar)
     
     def initialize
       super()#("Redcar")
@@ -96,10 +96,6 @@ module Redcar
       end
     end
     
-    def focus_tab(tab)
-      tab.pane.focus_tab(tab)
-    end
-
     def split_horizontal(pane)
       split_pane(:horizontal, pane)
     end
@@ -271,7 +267,7 @@ module Redcar
                    0, 1,                    2, 3,
                    Gtk::EXPAND | Gtk::FILL, Gtk::EXPAND | Gtk::FILL,
                    0,      0)  
-      @gtk_speedbar = Redcar::Speedbar.new
+      @gtk_speedbar = Redcar::SpeedbarDisplay.new # is an hbox
       bus["/gtk/window/speedbar"].data = @gtk_speedbar
       gtk_table.attach(@gtk_speedbar,
                    # X direction            # Y direction

@@ -111,6 +111,8 @@ plugins:
     autoload:        true
     require_path:    core/speedbar
     startup_module:  Redcar::Speedbar
+    load_dependencies:
+        core-plugin: "*"
     tests:
       - path: core/tests/speedbar_test.rb
         testcase: Redcar::PluginTests::SpeedbarTest

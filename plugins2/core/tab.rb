@@ -100,9 +100,7 @@ module Redcar
     end
     
     def focus
-      nb = @pane.gtk_notebook
-      nb.set_page(nb.page_num(@gtk_nb_widget))
-      @gtk_nb_widget.grab_focus
+      pane.focus_tab(self)
     end
     
     def move_up

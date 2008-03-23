@@ -75,9 +75,9 @@ module Redcar
       def test_focus_tab
         tab1 = win.new_tab(Tab, Gtk::Label.new("foo"))
         tab2 = win.new_tab(Tab, Gtk::Label.new("bar"))
-        win.focus_tab(tab2)
+        tab2.focus
         assert_equal tab2, win.focussed_tab
-        win.focus_tab(tab1)
+        tab1.focus
         assert_equal tab1, win.focussed_tab
       end
       

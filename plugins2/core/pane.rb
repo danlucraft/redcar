@@ -66,6 +66,15 @@ module Redcar
       tab.pane = self
     end
     
+    def focus_tab(tab)
+      if tab.pane == self
+        @gtk_notebook.set_page(@gtk_notebook.page_num(tab.gtk_nb_widget))
+        tab.gtk_nb_widget.grab_focus
+      else
+        raise "focussing tab in wrong pane"
+      end
+    end
+    
     private
 
     def make_notebook

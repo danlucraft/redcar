@@ -1,30 +1,91 @@
 
 module Redcar
-  class Speedbar < Gtk::HBox
-    extend FreeBASE::StandardPlugin
+  class Speedbar < Redcar::Plugin
+    def self.items
+      @items
+    end
     
+    def self.append_item(item) #:nodoc:
+      @items ||= []
+      @items << item
+    end
+    
+    def self.define_value_finder(name)
+      self.class_eval %Q{
+        def #{name}
+          @speedbar_display.value(:#{name})
+        end
+        }
+    end
+    
+    def self.label(text)
+      append_item [:label, text]
+    end
+    
+    def self.toggle(name, text, key)
+      append_item [:toggle, name, text, key]
+      define_value_finder(name)
+    end
+    
+    def self.textbox(name)
+      append_item [:textbox, name]
+      define_value_finder(name)
+    end
+    
+    def self.button(text, icon, key, &block)
+      append_item [:button, text, icon, key, block]
+    end
+    
+    attr_accessor :visible, :speedbar_display
+    
+    def show(window)
+      window.gtk_speedbar.display(self)
+    end
+    
+    def close
+      if @visible
+        @speedbar_display.close
+      end
+    end
+  end
+  
+  class SpeedbarDisplay < Gtk::HBox
     attr_reader :visible
     
     def initialize
       super
       spacing = 5
       @visible = false
+      @value = {}
     end
     
-    def build(&block)
-      close
-      collect_definition(block)
+    def display(spbar)
+      close if @visible
+      @spbar = spbar
+      @spbar.speedbar_display = self
       build_widgets
       open
     end
     
-    def clear_children
-      children.each {|child| remove(child)}
+    def open
+      Keymap.push_onto(win, "Speedbar")
+      @spbar.visible = true
+      @visible = true
+      show_all
     end
     
-    def collect_definition(block)
-      SpeedbarBuilder.clear
-      SpeedbarBuilder.class_eval &block
+    def close
+      Keymap.remove_from(win, "Speedbar")
+      hide if visible
+      @spbar.visible = false
+      @visible = false
+      bus("/redcar/keymaps/Speedbar").prune
+      clear_children
+      @value = {}
+    end
+    
+    def clear_children
+      children.each {|child| remove(child)}
     end
     
     def build_widgets
@@ -32,27 +93,15 @@ module Redcar
         self.close
       end
       add_key("Escape") { self.close }
-      SpeedbarBuilder.items.each do |item|
+      @spbar.class.items.each do |item|
         send "add_#{item[0]}", *item[1..-1]
       end
     end
     
-    def open
-      Keymap.push_onto(win, "Speedbar")
-      show_all
-    end
-    
-    def close
-      Keymap.remove_from(win, "Speedbar")
-      hide if visible
-      @visible = false
-      bus("/redcar/keymaps/Speedbar").prune
-      clear_children
-    end
-    
     def add_key(key, &block)
-      com = Redcar::InlineCommand.new
-      com.block = fn { block.call }
+      com = ArbitraryCodeCommand.new do
+        block.call
+      end
       keys = key.split("|").map(&:strip)
       keys.each do |key|
         bus("/redcar/keymaps/Speedbar/#{key}").data = com
@@ -68,6 +117,7 @@ module Redcar
     def add_toggle(name, text, key)
       toggle = Gtk::CheckButton.new(text)
       add_key(key) { toggle.active = !toggle.active? } if key
+      @value[name] = fn { toggle.active }
       pack_start(toggle, false)
     end
     
@@ -75,6 +125,7 @@ module Redcar
       e = Gtk::Entry.new
       # TODO: this should be set by preferences
       e.modify_font(Pango::FontDescription.new("Monospace 10"))
+      @value[name] = fn { e.text }
       pack_start(e)
     end
     
@@ -88,39 +139,17 @@ module Redcar
       b.child = label
       b.signal_connect("clicked") do
         if block
-          block.call
+          block.call(@spbar)
         elsif blk
-          blk.call
+          blk.call(@spbar)
         end
       end
       add_key(key) { b.activate } if key
       pack_start(b, false)
     end
     
-    module SpeedbarBuilder
-      def self.clear
-        @items = []
-      end
-
-      def self.items
-        @items
-      end
-      
-      def self.label(text)
-        @items << [:label, text]
-      end
-      
-      def self.toggle(name, text, key)
-        @items << [:toggle, name, text, key]
-      end
-      
-      def self.textbox(name)
-        @items << [:textbox, name]
-      end
-      
-      def self.button(text, icon, key, &block)
-        @items << [:button, text, icon, key, block]
-      end
+    def value(name)
+      @value[name].call
     end
   end
 end

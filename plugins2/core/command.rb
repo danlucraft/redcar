@@ -231,6 +231,18 @@ module Redcar
     
   end
   
+  class ArbitraryCodeCommand < Command
+    composite
+    
+    def initialize(&block)
+      @block = block
+    end
+    
+    def execute
+      @block.call
+    end
+  end
+  
   class InlineCommand < Command
     attr_accessor(:sensitive, :block)
     
