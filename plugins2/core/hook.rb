@@ -133,7 +133,7 @@ module Redcar
     # Trigger a hook. Has an optional object (to pass into the hooked
     # blocks) and an optional block.
     def self.trigger(name, *objects)
-      puts "[RC] Hook: #{name}"
+#      puts "[RC] Hook: #{name}"
       unless exists? name
         raise "Trying to trigger unknown hook: #{name}"
       end

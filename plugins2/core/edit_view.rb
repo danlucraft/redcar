@@ -3,25 +3,26 @@ module Redcar
   class EditView < Gtk::SourceView
     extend FreeBASE::StandardPlugin
     extend Redcar::MenuBuilder
+    extend Redcar::PreferenceBuilder
     
-    def self.load(plugin)
+    def self.load(plugin) #:nodoc:
       Redcar::EditView.init(:bundles_dir => "textmate/Bundles/",
                             :themes_dir  => "textmate/Themes/",
                             :cache_dir   => "cache/")
       plugin.transition(FreeBASE::LOADED)
     end
     
-    def self.start(plugin)
+    def self.start(plugin) #:nodoc:
       Keymap.push_onto(self, "EditView")
       plugin.transition(FreeBASE::RUNNING)
     end
     
-    def self.stop(plugin)
+    def self.stop(plugin) #:nodoc:
       Keymap.remove_from(self, "EditView")
       plugin.transition(FreeBASE::LOADED)
     end
     
-    def self.start(plugin)
+    def self.start(plugin) #:nodoc:
 # When an EditView is created in a window, this needs to go onto it.
 #       gtk_hbox = bus('/gtk/window/statusbar').data
 #       gtk_combo_box = Gtk::ComboBox.new(true)
@@ -42,7 +43,7 @@ module Redcar
     
     def self.init(options)
       @bundles_dir = options[:bundles_dir]
-      @themes_dir = options[:themes_dir]
+      @themes_dir  = options[:themes_dir]
       @cache_dir   = options[:cache_dir]
       load_grammars unless @grammars
       Redcar::Theme.load_themes unless Redcar::Theme.themes
@@ -131,13 +132,22 @@ module Redcar
     
     def initialize(options={})
       super()
-      @parsed_upto = -1
 #       set_theme(Theme.theme(bus("/redcar/preferences/Appearance/Tab Theme").data), false)
-#       modify_font(Pango::FontDescription.new("Monospace 12"))
       self.tabs_width = 2
+      self.left_margin = 5
+      self.show_line_numbers = true
+      @@bookmark_pixbuf ||= Gdk::Pixbuf.new(Redcar::App.root_path+'/plugins/redcar_core/icons/bookmark.png')
+      set_marker_pixbuf("bookmark", @@bookmark_pixbuf)
+    
       connect_signals
+      set_font(Redcar::Preference.get("Redcar::EditTab", "Tab Font"))
       set_grammar(EditView.grammar(:name => 'Ruby'), false)
+      @parsed_upto = -1
       parse_upto(visible_lines.last+50)
+    end
+    
+    def set_font(font)
+      modify_font(Pango::FontDescription.new(font))
     end
     
     def iterize(offset)

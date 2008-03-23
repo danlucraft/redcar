@@ -21,6 +21,9 @@ plugins:
         core-edit_view: "*"
         core-plugin:    "*"
         core-window:    "*"
+    tests:
+      - path: core/tests/document_test.rb
+        testcase: Redcar::Tests::DocumentTest
 
   - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-edit_view
@@ -120,6 +123,8 @@ plugins:
     autoload:        true
     require_path:    core/preference
     startup_module:  Redcar::Preference
+    load_dependencies:
+        core-app: "*"
 
   - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-menu

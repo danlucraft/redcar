@@ -17,6 +17,8 @@ def test_plugin(plugin_name)
       puts "-"*75
       bus["/plugins/#{plugin_name}/actions/test"].call
       puts "="*75
+    else
+      puts "--test: plugin #{plugin_name} has no tests."
     end
   else
     puts "--test: No such plugin (#{plugin_name})."

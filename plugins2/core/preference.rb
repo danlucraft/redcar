@@ -12,12 +12,22 @@ module Redcar
     end
     
     def self.get(scope, name)
-      slot = bus("/redcar/preferences/#{scope}/#{name}")
-      slot.data || slot.attr_default
+      if bus("/redcar/preferences").has_child? scope and
+          bus("/redcar/preferences/#{scope}").has_child? name
+        slot = bus("/redcar/preferences/#{scope}/#{name}")
+        slot.data || slot.attr_default
+      else
+        raise "unknown preference: #{scope}/#{name}"
+      end
     end
     
     def self.set(scope, name, val)
-      bus("/redcar/preferences/#{scope}/#{name}").data = val
+      if bus("/redcar/preferences").has_child? scope and
+          bus("/redcar/preferences/#{scope}").has_child? name
+        bus("/redcar/preferences/#{scope}/#{name}").data = val
+      else
+        raise "unknown preference: #{scope}/#{name}"
+      end
     end
   end
   
@@ -32,7 +42,7 @@ module Redcar
       preferences_slot[name].attr_type = PreferenceBuilder.prefdef[:type]
       preferences_slot[name].attr_widget = PreferenceBuilder.prefdef[:widget]
       preferences_slot[name].attr_values = PreferenceBuilder.prefdef[:values]
-      preferences_slot[name].attr_change = PreferenceBuilder.prefdef[:change_proc]
+      preferences_slot[name].attr_change = PreferenceBuilder.prefdef[:change]
       preferences_slot[name].attr_bounds = PreferenceBuilder.prefdef[:bounds]
       preferences_slot[name].attr_step = PreferenceBuilder.prefdef[:step]
     end
