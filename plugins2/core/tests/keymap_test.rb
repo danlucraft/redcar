@@ -13,14 +13,17 @@ module Redcar::Tests
       end
     end
     
+    def setup
+      Redcar::Keymap.unregister_key("KeymapTest/Ctrl+G")
+    end
+    
     def test_clean_letter
       assert_equal "Page_Up", Redcar::Keymap.clean_letter("Page Up")
     end
     
     def test_register_key
       assert_nil bus("/redcar/keymaps/KeymapTest/Ctrl+G").data
-      com = Redcar::InlineCommand.new
-      Redcar::Keymap.register_key("KeymapTest/Ctrl+G", com)
+      Redcar::Keymap.register_key("KeymapTest/Ctrl+G", Redcar::InlineCommand)
       assert_not_nil bus("/redcar/keymaps/KeymapTest/Ctrl+G").data
     end
     
@@ -57,8 +60,7 @@ module Redcar::Tests
     def test_execute_key_on_keymap
       Redcar::Keymap.push_onto(win, "KeymapTest")
       self.class.test_var = 2
-      com = KeymapTestCommand.new
-      Redcar::Keymap.register_key("KeymapTest/Ctrl+G", com)
+      Redcar::Keymap.register_key("KeymapTest/Ctrl+G", KeymapTestCommand)
       Redcar::Keymap.execute_key_on_keymap("Ctrl+G", "KeymapTest")
       assert_equal 4, self.class.test_var
       Redcar::Keymap.unregister_key("KeymapTest/Ctrl+G")

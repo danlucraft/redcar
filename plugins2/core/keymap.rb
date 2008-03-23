@@ -105,7 +105,11 @@ module Redcar
     # executes the command at "/redcar/keymaps/Snippet/Ctrl+G"
     def self.execute_key_on_keymap(key_name, keymap_path)
       if com = bus("/redcar/keymaps/#{keymap_path}/#{key_name}").data
-        com.new.do
+        if com.ancestors.include? Redcar::Command
+          com.new.do
+        elsif com.is_a? Proc
+          com.call
+        end
         true
       end
     end

@@ -12,7 +12,7 @@ module Redcar
     end
     
     def self.get(scope, name)
-      if bus("/redcar/preferences").has_child? scope and
+      if bus("/redcar/preferences").has_child? scope.to_s and
           bus("/redcar/preferences/#{scope}").has_child? name
         slot = bus("/redcar/preferences/#{scope}/#{name}")
         slot.data || slot.attr_default
@@ -22,7 +22,7 @@ module Redcar
     end
     
     def self.set(scope, name, val)
-      if bus("/redcar/preferences").has_child? scope and
+      if bus("/redcar/preferences").has_child? scope.to_s and
           bus("/redcar/preferences/#{scope}").has_child? name
         bus("/redcar/preferences/#{scope}/#{name}").data = val
       else

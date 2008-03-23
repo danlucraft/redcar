@@ -55,10 +55,15 @@ module Redcar
   class SpeedbarDisplay < Gtk::HBox
     attr_reader :visible
     
+    class << self
+      attr_accessor :blocks
+    end
+    
     def initialize
       super
       spacing = 5
       @visible = false
+      SpeedbarDisplay.blocks ||= {}
       @value = {}
     end
     
@@ -102,12 +107,9 @@ module Redcar
     end
     
     def add_key(key, &block)
-      com = ArbitraryCodeCommand.new do
-        block.call
-      end
       keys = key.split("|").map(&:strip)
       keys.each do |key|
-        bus("/redcar/keymaps/Speedbar/#{key}").data = com
+        bus("/redcar/keymaps/Speedbar/#{key}").data = block
       end
     end
     
