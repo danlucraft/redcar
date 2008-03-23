@@ -1,6 +1,9 @@
 
+require 'singleton'
+
 module Redcar
   class Speedbar < Redcar::Plugin
+    include Singleton
     def self.items
       @items
     end

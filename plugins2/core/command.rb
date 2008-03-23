@@ -52,6 +52,10 @@ module Redcar
       @icon = icon
     end
     
+    def self.get_icon
+      @icon
+    end
+    
     def self.key(key)
       @key = key
       Redcar::Keymap.register_key(key, self)

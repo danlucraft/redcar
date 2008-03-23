@@ -12,6 +12,7 @@ module Com::RedcarIDE
     
     class ShowSpeedbarExample < Redcar::Command
       menu "Debug/SpeedbarExample"
+      icon :PREFERENCES
       
       class ExampleSpeedbar < Redcar::Speedbar
         label "Line: "
@@ -23,7 +24,7 @@ module Com::RedcarIDE
       end
       
       def execute(tab)
-        sp = ExampleSpeedbar.new.show(win)
+        ExampleSpeedbar.instance.show(win)
       end
     end
   end

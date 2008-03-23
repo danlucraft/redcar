@@ -30,14 +30,14 @@ plugins:
     load_dependencies:
         core-plugin: "*"
 
-#   - !ruby/object:FreeBASE::PluginConfiguration 
-#     name:            core-standard_menus
-#     autoload:        true
-#     require_path:    core/standard_menus
-#     startup_module:  Redcar::StandardMenus
-#     load_dependencies:
-#         core-app: "*"
-#         core-plugin: "*"
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-standard_menus
+    autoload:        true
+    require_path:    core/standard_menus
+    startup_module:  Redcar::StandardMenus
+    load_dependencies:
+        core-app: "*"
+        core-tab: "*"
 
   - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-gui

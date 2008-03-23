@@ -90,7 +90,7 @@ module Redcar
     end
     
     def main_menu(menu, &block)
-      MenuBuilder.command_scope = self.to_s
+      MenuBuilder.command_scope = ""
       MenuBuilder.menu_scope    = "menubar/"+menu
       MenuBuilder.class_eval(&block)
       MenuBuilder.command_scope = ""
@@ -109,12 +109,9 @@ module Redcar
       attr_accessor :menu_scope, :command_scope
       
       def item(item_name, command_name, options={})
-        puts "/redcar/menus/#{menu_scope}/#{item_name}"
-        puts "/redcar/commands/#{command_scope}/#{command_name}"
         slot = bus("/redcar/menus/#{menu_scope}/#{item_name}")
         slot.data = bus("/redcar/commands/#{command_scope}/#{command_name}").data
         slot.attr_menu_entry = true
-        slot.attr_icon = options[:icon]
         # sets the menuid of this menuitem and it's ancestors if necessary:
         bits = "#{menu_scope}/#{item_name}".split("/")
         build = ""
@@ -171,19 +168,14 @@ module Redcar
       def make_gtk_menuitem(slot)
         name     = slot.name
         menuitem = slot.data || {}
-        c = if icon = slot.attr_icon and 
+        c = if icon = (slot.data||null).get_icon and 
                 icon != "none"
               Gtk::ImageMenuItem.create icon, name
             else
               Gtk::MenuItem.new name
             end
-        keybinding = slot.data.get_key if slot.data
-        unless keybinding
-          if command = slot.data
-            if command and command.get_key
-              keybinding = KeyStroke.parse(command.key).to_s
-            end
-          end
+        if slot.data and slot.data.get_key
+          keybinding = Keymap.display_key(slot.data.get_key)
         end
         if keybinding
           make_gtk_menuitem_hbox(c, keybinding)

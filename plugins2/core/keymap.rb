@@ -105,9 +105,15 @@ module Redcar
     # executes the command at "/redcar/keymaps/Snippet/Ctrl+G"
     def self.execute_key_on_keymap(key_name, keymap_path)
       if com = bus("/redcar/keymaps/#{keymap_path}/#{key_name}").data
-        com.execute
+        com.new.do
         true
       end
+    end
+    
+    # Turns a key_path like "Global/Ctrl+G" into "Ctrl+G" for display
+    # in the menus.
+    def self.display_key(key_path)
+      key_path.split("/").last
     end
   end
 end
