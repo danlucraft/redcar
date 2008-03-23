@@ -1,10 +1,10 @@
 
 module Redcar
-  class TabCommand < Redcar::Command
+  class TabCommand < Redcar::Command #:nodoc:
     sensitive :tab
   end
   
-  class StandardMenus < Redcar::Plugin
+  class StandardMenus < Redcar::Plugin #:nodoc:all
     include Redcar::MenuBuilder
       
     class NewTab < Redcar::Command

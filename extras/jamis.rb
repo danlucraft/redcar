@@ -1,16 +1,16 @@
 module RDoc
 module Page
 
-FONTS = "\"Bitstream Vera Sans\", Verdana, Arial, Helvetica, sans-serif"
+FONTS = "\"Trebuchet MS\", \"Bitstream Vera Sans\", Verdana, Arial, Helvetica, sans-serif"
 
 STYLE = <<CSS
 a {
-  color: #00F;
+  color: #20435c;
   text-decoration: none;
 }
 
 a:hover {
-  color: #77F;
+  color: #00F;
   text-decoration: underline;
 }
 
@@ -19,7 +19,6 @@ body, td, p {
   background: #FFF;
   color: #000;
   margin: 0px;
-  font-size: small;
 }
 
 #content {
@@ -35,10 +34,12 @@ body, td, p {
   margin-bottom: 1em;
   padding: 0.5em;
   padding-left: 2em;
-  background: #005;
-  color: #FFF;
-  font-weight: bold;
-  border: 1px dotted black;
+  margin-left: -2em;
+  margin-right: -2em;
+  background: #f2f2f2;
+  color: #20435c;   
+  font-weight: normal;
+  border-bottom: 1px solid #ccc;
 }
 
 .attr-rw {
@@ -71,23 +72,24 @@ body, td, p {
 }
 
 .banner {
-  background: #005;
-  color: #FFF;
-  border: 1px solid black;
+  background: #f2f2f2;
+  color: #20435c;   
+  font-weight: normal;
+  border-bottom: 1px solid #ccc;
   padding: 1em;
 }
 
 .banner td {
   background: transparent;
-  color: #FFF;
+  color: #20435c;
 }
 
 h1 a, h2 a, .sectiontitle a, .banner a {
-  color: #FF0;
+  color: #000;
 }
 
 h1 a:hover, h2 a:hover, .sectiontitle a:hover, .banner a:hover {
-  color: #FF7;
+  text-decoration: underline;
 }
 
 .dyn-source {
@@ -150,28 +152,25 @@ h1 a:hover, h2 a:hover, .sectiontitle a:hover, .banner a:hover {
 }
 
 h1 {
-  padding: 1em;
-  border: 1px solid black;
+  padding: 0.5em 1em 0.5em 1em;
   font-size: x-large;
   font-weight: bold;
-  color: #FFF;
-  background: #007;
+  color: #20435c;
+  background: #f2f2f2;
 }
 
 h2 {
   padding: 0.5em 1em 0.5em 1em;
-  border: 1px solid black;
   font-size: large;
   font-weight: bold;
-  color: #FFF;
-  background: #009;
+  color: #20435c;
+  background: #f2f2f2;
 }
 
 h3, h4, h5, h6 {
-  padding: 0.2em 1em 0.2em 1em;
-  border: 1px dashed black;
-  color: #000;
-  background: #AAF;
+  padding: 0.5em 1em 0.5em 1em;
+  color: #20435c;
+  background: #f2f2f2;
 }
 
 .sourcecode > pre {
@@ -516,14 +515,17 @@ FILE_INDEX = XHTML_PREAMBLE + <<HTML
 <style type="text/css">
 <!--
   body {
-    background-color: #EEE;
+    background-color: #11303d;
     font-family: #{FONTS}; 
     color: #000;
     margin: 0px;
   }
   .banner {
-    background: #005;
-    color: #FFF;
+    background: #FFF;
+    color: #20435c;   
+    font-weight: normal;
+    border-bottom: 1px solid #ccc;
+    padding: 1em;
     padding: 0.2em;
     font-size: small;
     font-weight: bold;
@@ -534,12 +536,12 @@ FILE_INDEX = XHTML_PREAMBLE + <<HTML
     font-size: x-small;
   }
   a {
-    color: #00F;
+    color: #FFF;
     text-decoration: none;
     white-space: nowrap;
   }
   a:hover {
-    color: #77F;
+    color: #FFF;
     text-decoration: underline;
   }
 -->

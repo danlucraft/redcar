@@ -82,7 +82,7 @@ module Redcar
       end
       
       def set_menuid(slot)
-        unless slot.attr_id
+         unless slot.attr_id
           slot.attr_id = @menuid
           inc_menuid
         end

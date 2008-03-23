@@ -10,7 +10,7 @@ module Redcar
       end
   
       def test_show
-        sp = SpeedbarTestSpeedbar.new
+        sp = SpeedbarTestSpeedbar.instance
         sp.show(win)
         sp.close
       end

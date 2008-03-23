@@ -4,12 +4,12 @@ module Redcar
   class Tab
     extend FreeBASE::StandardPlugin
     
-    def self.start(plugin)
+    def self.start(plugin) #:nodoc:
       @widget_to_tab = {}
       plugin.transition(FreeBASE::RUNNING)
     end
     
-    def self.stop(plugin)
+    def self.stop(plugin) #:nodoc:
       @widget_to_tab.values.each do |tab|
         tab.close
       end
@@ -68,10 +68,20 @@ module Redcar
       @gtk_nb_widget.show
     end
     
+    # Closes the tab by calling Pane#close_tab method on the tab's 
+    # current pane.
     def close
       @pane.window.close_tab(self)
     end
     
+    # Bring this tab to the forefront of it's pane, and make the tab's
+    # widget grab the Gtk focus.
+    def focus
+      pane.focus_tab(self)
+    end
+    
+    # Adjusts the angle of the label of the tab. angle should be one
+    # of :bottom_to_top, :top_to_bottom, :horizontal
     def label_angle=(angle)
       case angle
       when :bottom_to_top
@@ -86,29 +96,30 @@ module Redcar
       end
     end
     
+    # Returns the tab's title (displayed on the tab's 'tab').
     def title
       @label.text
     end
     
+    # Sets the tab's title (displayed on the tab's 'tab').
     def title=(text)
       @label.text = text
     end
 
+    # Moves this tab to dest_pane.
     def move_to_pane(dest_pane)
       @pane.move_tab(self, dest_pane)
       @pane = dest_pane
     end
     
-    def focus
-      pane.focus_tab(self)
-    end
-    
+    # Move the tab up one.
     def move_up
       nb = @pane.gtk_notebook
       new_ix = nb.page_num(@gtk_nb_widget)+1
       nb.reorder_child(@gtk_nb_widget, new_ix)
     end
     
+    # Move the tab down one.
     def move_down
       nb = @pane.gtk_notebook
       new_ix = [nb.page_num(@gtk_nb_widget)-1, 0].max

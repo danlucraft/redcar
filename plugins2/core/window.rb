@@ -5,7 +5,7 @@ module Redcar
   class Window < Gtk::Window
     extend FreeBASE::StandardPlugin
     
-    def self.load(plugin)
+    def self.load(plugin) #:nodoc:
       Hook.register :new_tab
       Hook.register :close_tab
       Hook.register :focus_tab
@@ -17,14 +17,14 @@ module Redcar
       plugin.transition(FreeBASE::LOADED)
     end
     
-    def self.start(plugin)
+    def self.start(plugin) #:nodoc:
       App.new_window
       Keymap.push_onto(self, "Global")
       
       plugin.transition(FreeBASE::RUNNING)
     end
     
-    def self.stop(plugin)
+    def self.stop(plugin) #:nodoc:
       App.close_all_windows(false)
       Keymap.remove_from(self, "Global")
       
@@ -36,6 +36,8 @@ module Redcar
     attr_reader(:notebooks_panes, :previous_tab, :gtk_menubar, 
                 :focussed_gtk_widget, :gtk_speedbar)
     
+    # Do not call this directly, use App#new_window instead. 
+    # Creates a new Redcar window. 
     def initialize
       super()#("Redcar")
       title = "Redcar"
@@ -48,24 +50,25 @@ module Redcar
       show_initial_widgets
     end
     
+    # Close this Redcar window.
     def close
       App.close_window(self, true)
     end
     
-    def speedbar
-      @gtk_speedbar
-    end
-    
+    # Returns an array of all the Panes in the Window.
     def panes
       @notebooks_panes.values.sort_by {|p| p.object_id }
     end
     
+    # Unifies all the Panes into one.
     def unify_all
       while panes.length > 1
         panes.first.unify
       end
     end
     
+    # Equivalent to calling Pane#new_tab on the currently
+    # focussed Pane.
     def new_tab(tab_class, *args)
       t = if focussed_tab
             focussed_tab.pane.new_tab(tab_class, *args)
@@ -75,6 +78,7 @@ module Redcar
       t
     end
     
+    # Returns an array of all tabs in the Window.
     def tabs
       panes.map {|pane| pane.tabs }.flatten
     end
@@ -85,15 +89,13 @@ module Redcar
       end
     end
     
+    # Returns an array of all active tabs (all tabs at the 
+    # forefront of their Panes).
     def active_tabs
-      panes.map do |pane| 
-        pageid = pane.gtk_notebook.page
-        unless pageid == -1
-          Tab.widget_to_tab[pane.gtk_notebook.get_nth_page(pageid)]
-        end
-      end.compact
+      panes.map {|p| p.active_tab}.compact
     end
     
+    # Returns the currently focussed Tab in the Window.
     def focussed_tab
       if @focussed_tab
         @focussed_tab
@@ -102,15 +104,15 @@ module Redcar
       end
     end
     
-    def split_horizontal(pane)
+    def split_horizontal(pane) #:nodoc:
       split_pane(:horizontal, pane)
     end
     
-    def split_vertical(pane)
+    def split_vertical(pane) #:nodoc:
       split_pane(:vertical, pane)
     end
 
-    def close_tab(tab)
+    def close_tab(tab) #:nodoc:
       if tab.pane
         nb = tab.pane.gtk_notebook
         unless nb.destroyed?
@@ -131,7 +133,7 @@ module Redcar
       end      
     end
     
-    def unify(pane)
+    def unify(pane) #:nodoc:
       panes_container = pane.gtk_notebook.parent
       unless panes_container.class == Gtk::HBox
         other_side = panes_container.children.find do |p|
@@ -163,6 +165,21 @@ module Redcar
           end
         end
       end
+    end
+    
+    def debug_print_widgets(gtk_widget=self, indent=0) #:nodoc:
+      puts " "*indent + gtk_widget.class.to_s
+      if gtk_widget.respond_to? :children
+        gtk_widget.children.each do |gtk_child|
+          debug_print_widgets gtk_child, indent+2
+        end
+      end
+    end
+    
+    def update_focussed_tab(tab) #:nodoc:
+      Hook.trigger :focus_tab
+      @previously_focussed_tab = @focussed_tab
+      @focussed_tab = tab
     end
     
     private
@@ -319,20 +336,5 @@ module Redcar
       show
     end
     
-    public
-    def debug_print_widgets(gtk_widget=self, indent=0)
-      puts " "*indent + gtk_widget.class.to_s
-      if gtk_widget.respond_to? :children
-        gtk_widget.children.each do |gtk_child|
-          debug_print_widgets gtk_child, indent+2
-        end
-      end
-    end
-    
-    def update_focussed_tab(tab)
-      Hook.trigger :focus_tab
-      @previously_focussed_tab = @focussed_tab
-      @focussed_tab = tab
-    end
   end
 end

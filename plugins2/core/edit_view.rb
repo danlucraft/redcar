@@ -2,7 +2,6 @@
 module Redcar
   class EditView < Gtk::SourceView
     extend FreeBASE::StandardPlugin
-    extend Redcar::CommandBuilder
     extend Redcar::MenuBuilder
     
     def self.load(plugin)

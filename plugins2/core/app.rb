@@ -47,11 +47,13 @@ module Redcar
     # then Redcar will quit if there are no more windows.
     def self.close_window(window, close_if_no_win=true)
       is_win = !windows.empty?
-      Hook.trigger :close_window do
-        window.panes.each {|pane| pane.tabs.each {|tab| tab.close} }
-        Keymap.clear_keymaps_from_object(window)
-        @window = nil if window == @window
-        window.hide_all if window
+      if window
+        Hook.trigger :close_window do
+          window.panes.each {|pane| pane.tabs.each {|tab| tab.close} }
+          Keymap.clear_keymaps_from_object(window)
+          @window = nil if window == @window
+          window.hide_all if window
+        end
       end
       quit if close_if_no_win and is_win
     end
