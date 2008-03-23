@@ -12,15 +12,24 @@ module Redcar
     
     class CloseTab < Redcar::TabCommand
       key "Global/Ctrl+W"
+      icon :CLOSE
       def execute(tab)
         tab.close if tab
       end
     end
     
+    class CloseAllTabs < Redcar::TabCommand
+      key "Global/Ctrl+Super+W"
+      icon :CLOSE
+      def execute
+        win.tabs.each &:close
+      end
+    end
+    
     main_menu "File" do
       item "New",        NewTab
-      item "Close",      CloseTab,     :icon => :CLOSE
-#      item "Close All",  "close_all", :icon => :CLOSE
+      item "Close",      CloseTab
+      item "Close All",  CloseAllTabs
 #      separator
 #      item "Quit",       "quit",      :icon => :QUIT
     end
