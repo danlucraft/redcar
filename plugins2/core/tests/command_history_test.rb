@@ -5,6 +5,12 @@ module Redcar::Tests
       end
     end
     
+    class HistoryTestCommand2 < Redcar::Command
+      norecord
+      def execute(tab)
+      end
+    end
+    
     def setup
       Redcar::CommandHistory.clear
     end
@@ -13,6 +19,11 @@ module Redcar::Tests
       HistoryTestCommand.new.do
       assert_equal 1, Redcar::CommandHistory.history.length
       assert_equal HistoryTestCommand, Redcar::CommandHistory.history.first.class
+    end
+    
+    def test_does_not_record_norecord
+      HistoryTestCommand2.new.do
+      assert_equal 0, Redcar::CommandHistory.history.length
     end
     
     def test_max

@@ -86,15 +86,15 @@ module Redcar
       @output_type = output
     end
     
-    def self.composite
-      @composite = true
+    def self.norecord
+      @norecord = true
     end
     
-    def self.composite?
-      @composite
+    def self.norecord?
+      @norecord
     end
     
-    attr_accessor(:name, :scope, :key, :inputs, :output, :record)
+    attr_accessor(:name, :scope, :key, :inputs, :output)
 
     def do(tab=Redcar::App.focussed_window.focussed_tab)
       unless self.respond_to? :execute
@@ -115,8 +115,8 @@ module Redcar
       end
     end
     
-    def record
-      self.class.composite
+    def record?
+      !self.class.norecord?
     end
     
     # Gets the applicable input type, as a symbol. NOT the 
@@ -236,7 +236,7 @@ module Redcar
   end
   
   class ArbitraryCodeCommand < Command
-    composite
+    norecord
     
     def initialize(&block)
       @block = block
@@ -342,7 +342,7 @@ module Redcar
     # Add a command to the command history if CommandHistory.recording is
     # true.
     def self.record(com)
-      if recording and com.record
+      if recording and com.record?
         @history << com
       end
       prune
