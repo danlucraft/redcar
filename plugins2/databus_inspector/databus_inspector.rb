@@ -1,8 +1,11 @@
 
 module Com::RedcarIDE
   class DatabusInspector < Redcar::Plugin
-    plugin_commands do
-      def self.open_databus_inspector
+    class OpenDBI < Redcar::Command
+      menu "Tools/Databus Inspector"
+      icon :PREFERENCES
+      
+      def execute
         if t = win.tab["Databus Inspector"]
           t.focus
         else
@@ -12,10 +15,6 @@ module Com::RedcarIDE
         #Redcar.StatusBar.main = "Opened Databus Inspector"
         end
       end
-    end
-    
-    main_menu "Tools" do
-      item "Databus Inspector", :open_databus_inspector, :icon => :PREFERENCES
     end
   end
 

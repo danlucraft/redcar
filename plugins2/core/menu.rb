@@ -98,7 +98,7 @@ module Redcar
     end
     
     def context_menu(menu, &block)
-      MenuBuilder.command_scope = self.to_s
+      MenuBuilder.command_scope = ""
       MenuBuilder.menu_scope    = "context/"+menu
       MenuBuilder.class_eval(&block)
       MenuBuilder.command_scope = ""
