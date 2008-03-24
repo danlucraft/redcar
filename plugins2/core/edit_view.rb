@@ -141,6 +141,7 @@ module Redcar
     
       connect_signals
       set_font(Redcar::Preference.get("Appearance/Tab Font"))
+      p EditView.grammar(:name => 'Ruby').class
       set_grammar(EditView.grammar(:name => 'Ruby'), false)
       @parsed_upto = -1
       parse_upto(visible_lines.last+50)
