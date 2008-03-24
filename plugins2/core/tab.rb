@@ -26,9 +26,15 @@ module Redcar
     attr_accessor :pane, :label
     attr_reader :gtk_tab_widget, :gtk_nb_widget, :gtk_toolbar
     
-    # Initializes a new Tab object. It must be given a Redcar::Pane 
-    # (it cannot be created without a Pane) and a Gtk widget that it
-    # contains. Options are 
+    # Do not call this directly. Use Window#new_tab or 
+    # Pane#new_tab instead:
+    # 
+    #   win.new_tab(Redcar::Tab, my_gtk_widget)
+    #   pane.new_tab(Redcar::EditTab, my_gtk_widget, :scrolled? => true)
+    #
+    # Subclasses of Tab that override this method should call super and 
+    # pass in the pane the tab is being created in and a Gtk widget that
+    # the tab should contain. Options are 
     #   :toolbar?  => true|false
     #   :scrolled? => true|false
     # If :toolbar? is true the Tab will be equipped with a Toolbar and
@@ -128,6 +134,13 @@ module Redcar
       nb = @pane.gtk_notebook
       new_ix = [nb.page_num(@gtk_nb_widget)-1, 0].max
       nb.reorder_child(@gtk_nb_widget, new_ix)
+    end
+    
+    # This method is called when a Tab is created. The default
+    # behaviour is to grab the focus for the Tab's Gtk widget.
+    # Subclasses should override to replace this behaviour.
+    def on_focus
+      @widget.grab_focus
     end
   end
 end
