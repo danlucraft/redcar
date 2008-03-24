@@ -39,7 +39,8 @@ module Redcar
   #     preference "Editing/Show line numbers" do
   #       default true
   #       type    :toggle
-  #       change do |value|
+  #       change do
+  #         value = Redcar::Preference.get("Editing/Show line numbers").to_bool
   #         win.collect_tabs(EditTab).each do |tab| 
   #           tab.view.show_line_numbers = value.to_bool
   #         end

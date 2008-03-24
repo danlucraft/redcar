@@ -140,7 +140,7 @@ module Redcar
     # behaviour is to grab the focus for the Tab's Gtk widget.
     # Subclasses should override to replace this behaviour.
     def on_focus
-      @widget.grab_focus
+      @gtk_tab_widget.grab_focus
     end
   end
 end

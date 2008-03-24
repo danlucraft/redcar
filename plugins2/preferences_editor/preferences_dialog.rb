@@ -84,7 +84,9 @@ module Com::RedcarIDE
       if @current_path
         save_values
       end
-      @lazy_apply.each {|p| p.call }
+       @lazy_apply.each { |a| 
+         a[1].call
+       }
       @dialog.destroy
 #       PrefLogger.info("PreferencesDialog#on_ok():out")
      end
@@ -99,7 +101,7 @@ module Com::RedcarIDE
 #       PrefLogger.info("PreferencesDialog#save_values():in")
       @widgets.each do |pref_path, widget|
         val = widget.preference_value
-        @lazy_apply << fn { 
+        @lazy_apply << [pref_path, fn { 
           bus[pref_path].data = val  
           if @initial_values[pref_path] and 
               @initial_values[pref_path] != val and
@@ -108,7 +110,7 @@ module Com::RedcarIDE
             @on_change[pref_path].call
 #             PrefLogger.info("Done prefererence:#{pref_path}, value:#{val}")
           end
-        }
+        }]
       end
 #       PrefLogger.info("PreferencesDialog#save_values():out")
     end
