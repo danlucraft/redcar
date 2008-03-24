@@ -1,4 +1,7 @@
 
+# This is the Redcar API documentation for plugin authors and developers.
+# For documentation regarding the day use of Redcar as an editor please 
+# refer to http://www.redcaride.com/doc/user_guide/index.html.
 module Redcar
   # Application wide configuration. App manages Redcar::Windows (of which
   # there may only be one currently).

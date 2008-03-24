@@ -140,7 +140,7 @@ module Redcar
       set_marker_pixbuf("bookmark", @@bookmark_pixbuf)
     
       connect_signals
-      set_font(Redcar::Preference.get("Redcar::EditTab", "Tab Font"))
+      set_font(Redcar::Preference.get("Appearance/Tab Font"))
       set_grammar(EditView.grammar(:name => 'Ruby'), false)
       @parsed_upto = -1
       parse_upto(visible_lines.last+50)

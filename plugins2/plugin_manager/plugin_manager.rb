@@ -1,7 +1,7 @@
 
 module Com::RedcarIDE
   class PluginManager < Redcar::Plugin
-    preference "Warn me about reloading" do
+    preference "Plugins/Warn me about reloading" do
       type    :toggle
       default true
     end
@@ -114,7 +114,7 @@ END
     def reload(plugin)
       return if plugin.blank?
       continue = true
-      if Redcar::Preference.get("Com::RedcarIDE::PluginManager", "Warn me about reloading").to_bool
+      if Redcar::Preference.get("Plugins/Warn me about reloading").to_bool
         message=<<END
 Reloading plugins can have unpredictable effects, including loss of data. 
 Are you sure you would like to reload this plugin?
@@ -137,7 +137,7 @@ END
         when Gtk::Dialog::RESPONSE_CANCEL
           continue = false
         end
-        Redcar::Preference.set("Com::RedcarIDE::PluginManager", "Warn me about reloading", 
+        Redcar::Preference.set("Plugins/Warn me about reloading", 
                        toggle.active?)
         dialog.destroy
       end

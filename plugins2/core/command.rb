@@ -93,16 +93,20 @@ module Redcar
       Redcar::Sensitive.sensitize(self, sens)
     end
     
-    def self.inputs(*inputs)
-      @input_types = inputs
+    def self.input(input)
+      @input = inputs
     end
     
-    def self.input(input)
-      @input_types = [input]
+    def self.get(name)
+      instance_variable_get(name)
+    end
+    
+    def self.fallback_input(input)
+      @fallback_input = input
     end
     
     def self.output(output)
-      @output_type = output
+      @output = output
     end
     
     def self.norecord
@@ -139,18 +143,17 @@ module Redcar
       @operative == nil ? active? : @operative
     end
     
-    attr_accessor(:name, :scope, :key, :inputs, :output)
-
     def do(tab=Redcar::App.focussed_window.focussed_tab)
       unless self.respond_to? :execute
         raise "Abstract Command Error"
       end
+      @output = nil
       begin
         case (a = self.method(:execute).arity)
         when 0
-          self.execute
+          @output = self.execute
         when 1
-          self.execute(tab)
+          @output = self.execute(tab)
         else
           raise "Unknown command arity error"
         end
@@ -158,6 +161,7 @@ module Redcar
       rescue Object => e
         Command.process_command_error(self, e)
       end
+      direct_output(self.class.get(:@output), @output) if @output
     end
     
     def record?
@@ -168,20 +172,20 @@ module Redcar
     # actual input
     def valid_input_type
       if primary_input
-        @input
+        self.class.get(:@input)
       else
-        @fallback_input
+        self.class.get(:@fallback_input)
       end
     end
     
     # Gets the primary input.
     def primary_input
-      input = input_by_type(@input)
+      input = input_by_type(self.class.get(:@input))
       input == "" ? nil : input
     end
     
     def secondary_input
-      input_by_type(@fallback_input)
+      input_by_type(self.class.get(:@fallback_input))
     end
     
     def input_by_type(type)
@@ -209,7 +213,7 @@ module Redcar
       end
     end
     
-    def get_input
+    def input
       primary_input || secondary_input
     end
     
@@ -289,26 +293,6 @@ module Redcar
     
     def execute
       @block.call
-    end
-  end
-  
-  class InlineCommand < Command
-    attr_accessor(:sensitive, :block)
-    
-    def execute
-      super
-      output_str = nil
-      begin
-        output_str = if @block.arity == 1
-                       @block.call(get_input)
-                     else
-                       @block.call
-                     end
-      rescue Object => e
-        puts e.message
-        puts e.backtrace
-      end
-      direct_output(@output, output_str) if output_str
     end
   end
   

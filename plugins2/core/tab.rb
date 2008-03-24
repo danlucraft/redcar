@@ -1,6 +1,9 @@
 
 module Redcar
   # Redcar::Tab is the base class for all tabs used in Redcar.
+  # It may be instantiated itself with an arbitrary Gtk widget
+  # as a child, and has options to include a Gtk::Toolbar and
+  # a scrollbars.
   class Tab
     extend FreeBASE::StandardPlugin
     

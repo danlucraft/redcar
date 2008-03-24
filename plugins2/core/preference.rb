@@ -11,32 +11,33 @@ module Redcar
       plugin.transition(FreeBASE::LOADED)
     end
     
-    def self.get(scope, name)
-      if bus("/redcar/preferences").has_child? scope.to_s and
-          bus("/redcar/preferences/#{scope}").has_child? name
-        slot = bus("/redcar/preferences/#{scope}/#{name}")
+    def self.get(name)
+      if bus("/redcar/preferences/#{name}/", true)
+        slot = bus("/redcar/preferences/#{name}")
         slot.data || slot.attr_default
       else
-        raise "unknown preference: #{scope}/#{name}"
+        raise "unknown preference: #{name}"
       end
     end
     
-    def self.set(scope, name, val)
-      if bus("/redcar/preferences").has_child? scope.to_s and
-          bus("/redcar/preferences/#{scope}").has_child? name
-        bus("/redcar/preferences/#{scope}/#{name}").data = val
+    def self.set(name, val)
+      if bus("/redcar/preferences/#{name}", true)
+        bus("/redcar/preferences/#{name}").data = val
       else
-        raise "unknown preference: #{scope}/#{name}"
+        raise "unknown preference: #{name}"
       end
     end
   end
   
   module PreferenceBuilder
     def preference(name, &block)
-      plugin_scope = self.to_s
+      unless name.include?("/")
+        raise "Trying to set global preference: /redcar/preferences/#{name}"
+      end
       PreferenceBuilder.clear
       PreferenceBuilder.class_eval &block
-      preferences_slot = bus["/redcar/preferences/#{plugin_scope}"]
+      preferences_slot = bus["/redcar/preferences/"]
+      preferences_slot[name].data ||= PreferenceBuilder.prefdef[:default]
       preferences_slot[name].attr_pref = true
       preferences_slot[name].attr_default = PreferenceBuilder.prefdef[:default]
       preferences_slot[name].attr_type = PreferenceBuilder.prefdef[:type]

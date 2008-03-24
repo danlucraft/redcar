@@ -4,44 +4,44 @@ module Redcar
     extend Redcar::PreferenceBuilder
     attr_reader :document, :view
     
-    preference "Tab Font" do
+    preference "Appearance/Tab Font" do
       default "Monospace 12"
-      widget  { EditTab.font_chooser_button("Redcar::EditTab", "Tab Font") }
+      widget  { EditTab.font_chooser_button("Appearance/Tab Font") }
       change do
         win.tabs.each do |tab|
           if tab.is_a? EditTab
-            tab.view.set_font(Redcar::Preference.get("Redcar::EditTab", "Tab Font"))
+            tab.view.set_font(Redcar::Preference.get("Appearance/Tab Font"))
           end
         end
       end
     end
     
-    preference "Entry Font" do
+    preference "Appearance/Entry Font" do
       default "Monospace 12"
-      widget { EditTab.font_chooser_button("Redcar::EditTab", "Entry Font") }
+      widget { EditTab.font_chooser_button("Appearance/Entry Font") }
     end
     
-    preference "Wrap words" do
+    preference "Editing/Wrap words" do
       default true
       type    :toggle
       change do
-#         win.all_tabs.each do |tab|
-#           if tab.respond_to? :textview 
-#             if $BUS['/redcar/preferences/Redcar::EditView/Wrap words']
-#               tab.textview.wrap_mode = Gtk::TextTag::WRAP_WORD
-#             else
-#               tab.textview.wrap_mode = Gtk::TextTag::WRAP_NONE
-#             end
-#           end
-#         end
+        win.tabs.each do |tab|
+          if tab.is_a? EditTab
+            if Redcar::Preference.get("Editing/Wrap words")
+              tab.view.wrap_mode = Gtk::TextTag::WRAP_WORD
+            else
+              tab.view.wrap_mode = Gtk::TextTag::WRAP_NONE
+            end
+          end
+        end
       end
     end
     
-    def self.font_chooser_button(scope, name)
+    def self.font_chooser_button(name)
       gtk_image = Gtk::Image.new(Gtk::Stock::SELECT_FONT, 
                                  Gtk::IconSize::MENU)
       gtk_hbox = Gtk::HBox.new
-      gtk_label = Gtk::Label.new(Redcar::Preference.get(scope, name))
+      gtk_label = Gtk::Label.new(Redcar::Preference.get(name))
       gtk_hbox.pack_start(gtk_image, false)
       gtk_hbox.pack_start(gtk_label)
       widget = Gtk::Button.new
@@ -49,7 +49,7 @@ module Redcar
       class << widget
         attr_accessor :preference_value
       end
-      widget.preference_value = Redcar::Preference.get(scope, name)
+      widget.preference_value = Redcar::Preference.get(name)
       widget.signal_connect('clicked') do
         dialog = Gtk::FontSelectionDialog.new("Select Application Font")
         dialog.font_name = widget.preference_value

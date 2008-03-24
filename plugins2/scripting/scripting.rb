@@ -14,13 +14,13 @@ module Com::RedcarIDE
       icon :PREFERENCES
       
       def execute
-        if Redcar::Preference.get(Com::RedcarIDE::Scripting, "Run startup script").to_bool
+        if Redcar::Preference.get("Scripting/Run startup script").to_bool
           require Com::RedcarIDE::Scripting.startup_script_file
         end
       end
     end
     
-    preference "Run startup script" do
+    preference "Scripting/Run startup script" do
       type    :toggle
       default true
     end
