@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
 
-require 'getoptlong'
-
 HERE = File.dirname(__FILE__)
 
 # See if a code base was passed as an argument. If not
@@ -79,25 +77,25 @@ end
 
 Redcar::App.ARGV = Marshal.load(Marshal.dump(ARGV))
 
-opts = GetoptLong.new(['--codebase', '-b', GetoptLong::REQUIRED_ARGUMENT ],
-                      ['--project', '-p', GetoptLong::REQUIRED_ARGUMENT ],
-                      ['--help', '-h', GetoptLong::NO_ARGUMENT ]
-                     )
+# opts = GetoptLong.new(['--codebase', '-b', GetoptLong::REQUIRED_ARGUMENT ],
+#                       ['--project', '-p', GetoptLong::REQUIRED_ARGUMENT ],
+#                       ['--help', '-h', GetoptLong::NO_ARGUMENT ]
+#                      )
 
-begin
-  opts.each do |opt, arg|
-    case opt
-    when /(-p|--project)/
-      project = arg
-    when /(-h|--help)/
-      usage
-      exit
-    end
-  end
-rescue GetoptLong::InvalidOption
-#   usage
-#   exit 1
-end
+# begin
+#   opts.each do |opt, arg|
+#     case opt
+#     when /(-p|--project)/
+#       project = arg
+#     when /(-h|--help)/
+#       usage
+#       exit
+#     end
+#   end
+# rescue GetoptLong::InvalidOption
+# #   usage
+# #   exit 1
+# end
 
 config_dir = File.join(codebase, "..", "config")
 Redcar.startup(config_dir)

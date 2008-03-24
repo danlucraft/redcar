@@ -114,7 +114,88 @@ class Redcar::EditView
     end
   end
 
-  class Grammar
+  class Grammar    
+    def self.load_grammars
+      raise "called Grammar.load_grammars without a cache_dir" unless Redcar::EditView.cache_dir
+      cache_dir = Redcar::EditView.cache_dir
+      if File.exist?(cache_dir + "grammars.dump")
+        str = File.read(cache_dir + "grammars.dump")
+        @grammars = Marshal.load(str)
+        @grammars_by_extension ||= {}
+        @grammars.each do |name, gr|
+          (gr.file_types||[]).each do |ext|
+            @grammars_by_extension["."+ext] = @grammars[name]
+          end
+        end
+      else
+        @grammars ||= {}
+        @grammars_by_extension ||= {}
+        plists = []
+        if @grammars.keys.empty?
+          Dir.glob(@bundles_dir + "*/Syntaxes/*").each do |file|
+            if %w(.plist .tmLanguage).include? File.extname(file)
+              begin
+                puts "loading #{file}"
+                xml = IO.readlines(file).join
+                plist = Redcar::Plist.plist_from_xml(xml)
+                gr = plist[0]
+                plists << plist
+                @grammars[gr['name']] = Grammar.new(plist[0])
+                (gr['fileTypes'] || []).each do |ext|
+                  @grammars_by_extension["."+ext] = @grammars[gr['name']]
+                end
+              rescue => e
+                puts "failed to load syntax: #{file}"
+                puts e.message
+              end
+            end
+          end
+          self.cache_grammars
+        end
+      end
+    end
+    
+    def self.grammar(options)
+      if options[:name]
+        @grammars[options[:name]]
+      elsif options[:extension]
+        @grammars_by_extension[options[:extension]]
+      elsif options[:first_line]
+        @grammars.each do |name, gr|
+          if gr.first_line_match and options[:first_line] =~ gr.first_line_match
+            return gr 
+          end
+        end
+        nil
+      elsif options[:scope]
+        @grammars.each do |_, gr|
+          if gr.scope_name == options[:scope]
+            return gr
+          end
+        end
+        nil
+      end
+    end
+    
+    def self.grammars
+      load_grammars unless @grammars
+      @grammars
+    end
+    
+    def self.grammar_names
+      load_grammars unless @grammars
+      @grammars.keys
+    end
+    
+    def self.cache_grammars
+      if @grammars
+        str = Marshal.dump(@grammars)
+        File.open(Redcar::EditView.cache_dir + "grammars.dump", "w") do |f|
+          f.puts str
+        end
+      end
+    end
+
     attr_accessor(:name,
                   :comment,
                   :scope_name, 

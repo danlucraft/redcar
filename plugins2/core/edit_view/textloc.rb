@@ -8,5 +8,9 @@ class Redcar::EditView
     def copy
       TextLoc.new(self.line, self.offset)
     end
+    
+    def inspect
+      "#<TextLoc:#{self.object_id} (#{self.line}, #{self.offset})"
+    end
   end 
 end

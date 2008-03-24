@@ -7,6 +7,11 @@ module Redcar
   module Gui
     extend FreeBASE::StandardPlugin
 
+    def self.load(plugin)
+      Hook.register(:redcar_start)
+      plugin.transition(FreeBASE::LOADED)
+    end
+    
     def self.start(plugin)
       set_main_loop(plugin)
       plugin.transition(FreeBASE::RUNNING)
@@ -17,6 +22,7 @@ module Redcar
         begin
           puts "starting Gui.main"
           Gtk.main
+          Hook.trigger(:redcar_start)
         rescue => e
           $stderr.puts str=<<ERR
 

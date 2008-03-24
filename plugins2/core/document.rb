@@ -18,7 +18,7 @@ module Redcar
         get_iter_at_mark(obj)
       when Gtk::TextIter
         obj
-      when TextLoc
+      when Redcar::EditView::TextLoc
         line_start = get_iter_at_line(obj.line)
         iter(line_start.offset+obj.offset)
       end
@@ -27,6 +27,14 @@ module Redcar
     def line_start(num)
       return iter(end_mark) if num == line_count
       get_iter_at_line(num)
+    end
+    
+    def line_end(num)
+      if num >= line_count - 1
+        iter(end_mark)
+      else
+        iter_at_line(num+1)
+      end
     end
     
     def get_line(num=nil)
@@ -47,6 +55,16 @@ module Redcar
         end_iter = line_start(num+1)
       end
       get_slice(line_start(num), end_iter).chars
+    end
+    
+    def start_mark
+      get_mark("start-mark") or
+        create_mark("start-mark", iter(0), true)
+    end
+    
+    def end_mark
+      get_mark("end-mark") or
+        create_mark("end-mark", iter(char_count), false)
     end
     
     def cursor_mark

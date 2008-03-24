@@ -350,6 +350,9 @@ class Redcar::EditView
       
       children.each do |cs|
         cs.shift_after(line, amount)
+        if cs.start >= cs.end
+          delete_child(cs)
+        end
       end
     end
     

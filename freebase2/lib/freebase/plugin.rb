@@ -118,6 +118,11 @@ module FreeBASE
         @base_slot["actions/test"].set_proc do 
           self.test
         end
+        @plugin_configuration.tests.each do |testcase|
+          @base_slot["actions/test/#{testcase["testcase"]}"].set_proc do 
+            self.test(testcase["testcase"])
+          end
+        end
       end
     end
     
@@ -302,7 +307,7 @@ module FreeBASE
     ##
     # Loads and executes the plugin's test path.
     #
-    def test(output=:console)
+    def test(testcase=nil)
       if @plugin_configuration.tests
         require 'test/unit'
         
@@ -310,11 +315,10 @@ module FreeBASE
         Test::Unit.run = false
         
         @plugin_configuration.tests.each do |test_info|
-          log_requires(:test) do
-            require test_info["path"]
-          end
-          case output
-          when :console
+          if testcase == nil or test_info["testcase"] == testcase
+            log_requires(:test) do
+              require test_info["path"]
+            end
             require 'test/unit/ui/console/testrunner'
             begin
               Test::Unit::UI::Console::TestRunner.new(eval(test_info["testcase"]).suite).start

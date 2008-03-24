@@ -81,6 +81,7 @@ module Redcar
     # widget grab the Gtk focus.
     def focus
       pane.focus_tab(self)
+      on_focus
     end
     
     # Adjusts the angle of the label of the tab. angle should be one

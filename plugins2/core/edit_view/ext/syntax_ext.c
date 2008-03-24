@@ -745,15 +745,23 @@ int scope_shift_chars(Scope* scope, int line, int amount, int offset) {
     if (sd->end.offset > offset) {
       sd->end.offset += amount;
       if (textloc_valid(&sd->close_start))
-	sd->close_start.offset += amount;
+        sd->close_start.offset += amount;
     }
   }
 
   Scope *child;
+  Scope *child2;
+  ScopeData *child_data;
   child = g_node_first_child(scope);
   while (child != NULL) {
     scope_shift_chars(child, line, amount, offset);
-    child = g_node_next_sibling(child);
+    child2 = g_node_next_sibling(child);
+    // if the chars have been shifted such that a child has 
+    // a length of zero or less, remove that child.
+    child_data = child->data;
+    if (textloc_gte(&child_data->start, &child_data->end))
+      g_node_unlink(child);
+    child = child2;
   }
   return 1;
 }

@@ -83,6 +83,10 @@ module Redcar
       panes.map {|pane| pane.tabs }.flatten
     end
     
+    def collect_tabs(klass)
+      tabs.select {|t| t.is_a? klass}
+    end
+    
     define_method_bracket :tab do |id|
       if id.is_a? String
         tabs.find{|t| t.label.text == id}

@@ -1,6 +1,4 @@
 
-puts "(scripting/startup.rb)"
-
 require 'ruby-prof'
 
 def stop_redcar
@@ -10,13 +8,20 @@ def stop_redcar
 end
 
 def test_plugin(plugin_name)
+  plugin_name, testcase = plugin_name.split(":")
   if plugin_name and bus("/plugins/").has_child?(plugin_name)
     if bus("/plugins/#{plugin_name}/actions/").has_child? "test"
-      puts "="*75
-      puts "Testing: " + plugin_name
+      puts "\nTesting: " + plugin_name
       puts "-"*75
-      bus["/plugins/#{plugin_name}/actions/test"].call
-      puts "="*75
+      if testcase
+        tcs = bus["/plugins/#{plugin_name}/actions/test"].children.map(&:name)
+        tcs.select {|tc| tc =~ /#{testcase}/}.each do |tc|
+          bus["/plugins/#{plugin_name}/actions/test/#{tc}"].call
+        end
+      else
+        bus["/plugins/#{plugin_name}/actions/test"].call
+      end
+      puts "-"*75
     else
       puts "--test: plugin #{plugin_name} has no tests."
     end

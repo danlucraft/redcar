@@ -71,7 +71,7 @@ module FreeBASE
           fail_load_dependencies(plugin)
           fail_start_dependencies(plugin)
         else
-          puts "[FB2] loaded: #{plugin.name}"
+#          puts "[FB2] loaded: #{plugin.name}"
           num += 1
         end
       end
@@ -89,7 +89,7 @@ module FreeBASE
           puts "[FB2] failed to start: #{plugin.name}"
           fail_start_dependencies(plugin)
         else
-          puts "[FB2] started: #{plugin.name}"
+#          puts "[FB2] started: #{plugin.name}"
           num += 1
         end
       end
@@ -116,13 +116,11 @@ module FreeBASE
     private
     
     def fail_load_dependencies(plugin)
-      puts "Failing to load: #{plugin.name}"
       @load_list.delete(plugin)
       plugin.rev_load_graph.each { |other| fail_load_dependencies(other) }
     end
     
     def fail_start_dependencies(plugin)
-      puts "Failing to start: #{plugin.name}"
       @start_list.delete(plugin)
       plugin.rev_start_graph.each { |other| fail_start_dependencies(other) }
     end
