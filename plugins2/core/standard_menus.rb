@@ -15,6 +15,19 @@ module Redcar
       end
     end
     
+    class OpenTab < Redcar::Command
+      key "Global/Ctrl+O"
+      icon :NEW
+      def execute
+        if filename = Redcar::Dialog.open and File.file?(filename)
+          new_tab = win.new_tab(Redcar::EditTab)
+          new_tab.document.text = File.read(filename)
+          new_tab.label = filename.split(/\//).last
+          new_tab.focus
+        end
+      end
+    end
+    
     class CloseTab < Redcar::TabCommand
       key "Global/Ctrl+W"
       icon :CLOSE
@@ -41,6 +54,7 @@ module Redcar
     
     main_menu "File" do
       item "New",        NewTab
+      item "Open",       OpenTab
       item "Close",      CloseTab
       item "Close All",  CloseAllTabs
       separator

@@ -46,7 +46,7 @@ module Redcar
       @themes_dir  = options[:themes_dir]
       @cache_dir   = options[:cache_dir]
       load_grammars unless @grammars
-      Redcar::Theme.load_themes unless Redcar::Theme.themes
+      Theme.load_themes unless Theme.themes
     end
     
     def self.cache_grammars
@@ -132,7 +132,7 @@ module Redcar
     
     def initialize(options={})
       super()
-#       set_theme(Theme.theme(bus("/redcar/preferences/Appearance/Tab Theme").data), false)
+      set_gtk_cursor_colour
       self.tabs_width = 2
       self.left_margin = 5
       self.show_line_numbers = true
@@ -141,10 +141,19 @@ module Redcar
     
       connect_signals
       set_font(Redcar::Preference.get("Appearance/Tab Font"))
-      p EditView.grammar(:name => 'Ruby').class
       set_grammar(EditView.grammar(:name => 'Ruby'), false)
+      set_theme(Theme.theme(Redcar::Preference.get("Appearance/Tab Theme")), false)
       @parsed_upto = -1
       parse_upto(visible_lines.last+50)
+    end
+    
+    def set_gtk_cursor_colour
+      Gtk::RC.parse_string(<<-EOR)
+    style "green-cursor" {
+      GtkTextView::cursor-color = "grey"
+    }
+    class "GtkWidget" style "green-cursor"
+      EOR
     end
     
     def set_font(font)
@@ -181,6 +190,7 @@ module Redcar
       @insertion = []
       @deletion = []
       self.buffer.signal_connect("insert_text") do |widget, iter, text, length|
+        puts "insert_text: #{length}"
         if iter.line <= @parsed_upto
           store_insertion(iter, text, length)
         end
@@ -222,7 +232,7 @@ module Redcar
     def set_theme(th, should_colour=true)
       if th
         apply_theme(th)
-        @colr = Redcar::Colourer.new(self, th)
+        @colr = Redcar::EditView::Colourer.new(self, th)
         if @parser
           @parser.colourer = @colr
         end
@@ -409,6 +419,26 @@ unless defined? SyntaxLogger
   SyntaxLogger = Logger.new('syntax.log')
   SyntaxLogger.datetime_format = "%H:%M:%S"
   SyntaxLogger.level = Logger::DEBUG
+end
+
+class String
+  def delete_slice(range)
+    s = range.begin
+    e = range.end
+    s = self.length + s if s < 0
+    e = self.length + e if e < 0
+    s, e = e, s if s > e
+    first = self[0..(s-1)]
+    second = self[(e+1)..-1]
+    if s == 0
+      first = ""
+    end
+    if e >= self.length-1
+      second = ""
+    end
+    self.replace(first+second)
+    self
+  end
 end
 
 # C extension

@@ -176,3 +176,9 @@ plugins:
     tests:
       - path: core/tests/hook_test.rb
         testcase: Redcar::PluginTests::HookTest
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-dialog
+    autoload:        true
+    require_path:    core/dialog
+    startup_module:  Redcar::Dialog

@@ -1049,7 +1049,7 @@ void Init_syntax_ext() {
   rb_cEditView = rb_eval_string("Redcar::EditView");
   //rb_define_class_under (rb_mRedcar, "EditView", rb_cObject);
 
-  cTextLoc = rb_define_class_under(rb_mRedcar, "TextLoc", rb_cObject);
+  cTextLoc = rb_define_class_under(rb_cEditView, "TextLoc", rb_cObject);
   rb_define_alloc_func(cTextLoc, rb_textloc_alloc);
   rb_define_method(cTextLoc, "initialize", rb_textloc_init, 2);
   rb_define_method(cTextLoc, "line", rb_textloc_line, 0);

@@ -1,6 +1,6 @@
 
 
-module Redcar
+class Redcar::EditView
   class Theme
     class << self
       attr_reader :themes
@@ -8,21 +8,21 @@ module Redcar
     
     def self.load_themes
       # print "loading themes ["
-      if File.exist?(EditView.cache_dir + "themes.dump")
-        str = File.read(EditView.cache_dir + "themes.dump")
+      if File.exist?(Redcar::EditView.cache_dir + "themes.dump")
+        str = File.read(Redcar::EditView.cache_dir + "themes.dump")
         @themes = Marshal.load(str)
         #puts " ... from cache]"
       else
         @themes = {}        
-        Dir[EditView.themes_dir + "*"].each do |file|
+        Dir[Redcar::EditView.themes_dir + "*"].each do |file|
           print "."
           xml = IO.readlines(file).join
           plist = Redcar::Plist.plist_from_xml(xml)
-          @themes[plist[0]['name']] = Redcar::Theme.new(plist[0])
+          @themes[plist[0]['name']] = Redcar::EditView::Theme.new(plist[0])
         end
         #puts "]"
         str = Marshal.dump(@themes)
-        File.open(EditView.cache_dir + "themes.dump", "w") do |f|
+        File.open(Redcar::EditView.cache_dir + "themes.dump", "w") do |f|
           f.puts str
         end
       end
@@ -49,11 +49,7 @@ module Redcar
     def self.theme_names
       @themes.keys
     end
-  end
-end
-
-module Redcar
-  class Theme
+    
 #    include DebugPrinter
     attr_accessor :name, :uuid, :global_settings
   

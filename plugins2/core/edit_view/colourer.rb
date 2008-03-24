@@ -3,13 +3,13 @@ class Redcar::EditView
   class Colourer
     #include DebugPrinter
     
-    attr_accessor :theme
+    attr_accessor :theme, :sourceview
     
     def initialize(sourceview, theme)
       @sourceview = sourceview
       @buffer = @sourceview.buffer
       @theme = theme
-      raise ArgumentError, "colourer needs a Redcar::Theme" unless theme.is_a? Theme
+      raise ArgumentError, "colourer needs a Redcar::Theme" unless theme.is_a? Redcar::EditView::Theme
     end
     
     def get_start_end_iters(scope,inner)

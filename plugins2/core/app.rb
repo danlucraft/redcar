@@ -1,7 +1,7 @@
 
 # This is the Redcar API documentation for plugin authors and developers.
-# For documentation regarding the day use of Redcar as an editor please 
-# refer to http://www.redcaride.com/doc/user_guide/index.html.
+# For documentation regarding the day to day use of Redcar as an editor 
+# please refer to http://www.redcaride.com/doc/user_guide/index.html.
 module Redcar
   # Application wide configuration. App manages Redcar::Windows (of which
   # there may only be one currently).
@@ -11,7 +11,21 @@ module Redcar
     def self.load(plugin) # :nodoc:
       Hook.register :open_window
       Hook.register :close_window
+      FreeBASE::Properties.new("Redcar Application Data", 
+                               Redcar::VERSION, 
+                               bus('/redcar/appdata'), 
+                               Redcar::App.root_path + "/custom/appdata.yaml")
       plugin.transition(FreeBASE::LOADED)
+    end
+    
+    def self.[]=(name, val)
+      bus("/redcar/appdata/#{name}").data = val
+    end
+    
+    def self.[](name)
+      if slot = bus("/redcar/appdata/#{name}", true)
+        slot.data
+      end
     end
     
     # The expanded absolute application directory.

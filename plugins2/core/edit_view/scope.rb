@@ -398,7 +398,7 @@ class Redcar::EditView
     end
     
     def line_start(line_num)
-      sc = scope_at(Redcar::TextLoc.new(line_num, -1))
+      sc = scope_at(TextLoc.new(line_num, -1))
       while sc.start.line == line_num
         unless sc.parent
           return sc
@@ -409,7 +409,7 @@ class Redcar::EditView
     end
     
     def line_end(line_num)
-      scope_at(Redcar::TextLoc.new(line_num+1, -1))
+      scope_at(TextLoc.new(line_num+1, -1))
     end
     
     def last_scope

@@ -509,6 +509,7 @@ class Redcar::EditView
         end
       end
       
+      
       if @colourer
         #          lp.all_scopes.each {|s| s.name}
         SyntaxExt.colour_line_with_scopes(@colourer, @colourer.theme, line_num, lp.all_scopes)
@@ -532,8 +533,8 @@ class Redcar::EditView
       unless capture == ""
         from = md.begin(num)
         to   = md.end(num)
-        ::Redcar::EditView::Scope.create2(::Redcar::TextLoc.new(line_num, from), 
-                                          ::Redcar::TextLoc.new(line_num, to))
+        ::Redcar::EditView::Scope.create2(::Redcar::EditView::TextLoc.new(line_num, from), 
+                                          ::Redcar::EditView::TextLoc.new(line_num, to))
       end
     end
     

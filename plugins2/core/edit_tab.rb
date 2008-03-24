@@ -2,7 +2,19 @@
 module Redcar
   class EditTab < Tab
     extend Redcar::PreferenceBuilder
-    attr_reader :document, :view
+    attr_reader :view
+    
+    preference "Appearance/Tab Font" do
+      default "Monospace 12"
+      widget  { EditTab.font_chooser_button("Appearance/Tab Font") }
+      change do
+        win.tabs.each do |tab|
+          if tab.is_a? EditTab
+            tab.view.set_font(Redcar::Preference.get("Appearance/Tab Font"))
+          end
+        end
+      end
+    end
     
     preference "Appearance/Tab Font" do
       default "Monospace 12"
@@ -19,6 +31,26 @@ module Redcar
     preference "Appearance/Entry Font" do
       default "Monospace 12"
       widget { EditTab.font_chooser_button("Appearance/Entry Font") }
+    end
+    
+    preference "Appearance/Tab Theme" do |p|
+      type :combo
+      default "Mac Classic"
+      values { EditView::Theme.theme_names }
+      change do 
+        win.tabs.each do |tab|
+          if tab.respond_to? :view
+            theme_name = Redcar::Preference.get("Appearance/Tab Theme")
+            tab.view.set_theme(EditView::Theme.theme(theme_name))
+          end
+        end
+      end
+    end
+    
+    preference "Appearance/Entry Theme" do |p|
+      type :combo
+      default "Mac Classic"
+      values { EditView::Theme.theme_names }
     end
     
     preference "Editing/Wrap words" do
@@ -66,20 +98,12 @@ module Redcar
     end
     
     def initialize(pane)
-      set_gtk_cursor_colour
       @view = Redcar::EditView.new
-      @document = Redcar::Document.new
-      @view.buffer = @document
-      super pane, @view
+      super pane, @view, :scrolled? => true
     end
     
-    def set_gtk_cursor_colour
-      Gtk::RC.parse_string(<<-EOR)
-    style "green-cursor" {
-      GtkTextView::cursor-color = "grey"
-    }
-    class "GtkWidget" style "green-cursor"
-      EOR
+    def document
+      @view.buffer
     end
   end
 end
