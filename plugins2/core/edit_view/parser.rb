@@ -7,7 +7,8 @@ class RedcarSyntaxError < StandardError; end
 class Redcar::EditView
   class Parser
     
-    attr_accessor :grammars, :root, :colourer, :max_view
+    attr_accessor :grammars, :root, :colourer, :parse_all
+    attr_reader   :max_view
     
     def initialize(buffer, root, grammars=[], colourer=nil)
       @buf = buffer
@@ -18,6 +19,7 @@ class Redcar::EditView
       @max_view = 100
       @changes = []
       @scope_last_line = 0
+      @parse_all = false
       connect_buffer_signals
       unless @buf.text == ""
         raise "Parser#initialize called with not empty buffer."
@@ -142,15 +144,7 @@ class Redcar::EditView
       after_scope = scope_at_line_end(loc.line)
       @root.shift_after(loc.line+1, lines-1)
       line_num = loc.line
-      lines.times do |i|
-        line = @buf.get_line(line_num)
-        parse_line(line, line_num)
-        line_num += 1
-      end
-      new_after_scope = scope_at_line_end(loc.line+lines)
-      unless new_after_scope == after_scope
-        lazy_parse_from(line_num)
-      end
+      lazy_parse_from(line_num)
     end
     
     def process_deletion(deletion)
@@ -181,18 +175,17 @@ class Redcar::EditView
       lazy_parse_from(line_num)
     end
     
+    def max_view=(val)
+    end
+    
     def lazy_parse_from(line_num, options=nil)
       count = 0
       ok = true
       until line_num >= @buf.line_count or 
-          count >= 100 or 
           line_num > last_line_of_interest or
           ok = parse_line(@buf.get_line(line_num), line_num)
         line_num += 1
         count += 1
-      end
-      unless ok or line_num >= @buf.line_count
-        lazy_parse_from(line_num, options)
       end
     end
     

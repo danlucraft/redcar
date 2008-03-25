@@ -19,11 +19,18 @@ module Redcar
     class OpenTab < Redcar::Command
       key "Global/Ctrl+O"
       icon :NEW
+      def initialize(filename=nil)
+        @filename = filename
+      end
+      
       def execute
-        if filename = Redcar::Dialog.open and File.file?(filename)
+        if !@filename 
+          @filename = Redcar::Dialog.open 
+        end
+        if @filename and File.file?(@filename)
           new_tab = win.new_tab(Redcar::EditTab)
-          new_tab.document.text = File.read(filename)
-          new_tab.label.text = filename.split(/\//).last
+          new_tab.document.text = File.read(@filename)
+          new_tab.label.text = @filename.split(/\//).last
           new_tab.focus
         end
       end
@@ -220,3 +227,5 @@ module Redcar
         
   end
 end
+
+Coms = Redcar::StandardMenus

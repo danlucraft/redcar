@@ -110,8 +110,8 @@ class Redcar::EditView
       selector.split(/\.|\s/).length
     end
     
-    # Returns false if the selector is not applicable to the scope, and returns the specificity of the
-    # selector if it is applicable.
+    # Returns false if the selector is not applicable to the scope, 
+    # and returns the specificity of the selector if it is applicable.
     def applicable?(selector, scopes)
       selector.split(',').each do |subselector|
         subselector = subselector.strip

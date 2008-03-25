@@ -31,42 +31,34 @@ def test_plugin(plugin_name)
 end
 
 if Redcar::App.ARGV.include? "--test-perf-load"
-  new_tab = Redcar.new_tab
-  new_tab.filename = "/home/dan/projects/redcar/freebase2/lib/freebase/readers.rb"  
   RubyProf.start
-  new_tab.load  
+  Coms::OpenTab.new("/home/dan/projects/redcar/freebase2/lib/freebase/readers.rb").do
   result = RubyProf.stop
   printer = RubyProf::GraphHtmlPrinter.new(result)
   printer.print(STDOUT)
   stop_redcar
 elsif Redcar::App.ARGV.include? "--test-perf-edit"
-  tab = Redcar.new_tab
-  tab.filename = "/home/dan/projects/redcar/freebase2/lib/freebase/readers.rb"  
-  tab.load
-  tab.focus
+  Coms::OpenTab.new("/home/dan/projects/redcar/freebase2/lib/freebase/readers.rb").do
   RubyProf.start
-  tab.cursor = tab.iter(TextLoc(65, 39))
+  doc.cursor = doc.iter(TextLoc(65, 39))
   3.times do
     5.times do 
-      tab.buffer.signal_emit("delete_range", 
-                             tab.iter(tab.cursor_iter.offset-1),
-                             tab.cursor_iter)
+      doc.signal_emit("delete_range", 
+                      doc.iter(doc.cursor_iter.offset-1),
+                      doc.cursor_iter)
       sleep 1
     end
     5.times do 
-      tab.buffer.signal_emit("insert_text",
-                             tab.cursor_iter,
-                             "A",
-                             1)
+      doc.signal_emit("insert_text",
+                      doc.cursor_iter,
+                      "A",
+                      1)
       sleep 1
     end
   end
   result = RubyProf.stop
   printer = RubyProf::GraphHtmlPrinter.new(result)
   printer.print(STDOUT, 0)
-  stop_redcar
-elsif Redcar::App.ARGV.include? "--test-syntax"
-  bus['/plugins/syntaxview/actions/test'].call
   stop_redcar
 elsif Redcar::App.ARGV.include? "--test"
   ix = Redcar::App.ARGV.index "--test"

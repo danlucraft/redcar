@@ -23,6 +23,10 @@ module Redcar
         iter(line_start.offset+obj.offset)
       end
     end
+
+    def cursor=(obj)
+      place_cursor(iter(obj))
+    end
     
     def line_start(num)
       return iter(end_mark) if num == line_count
