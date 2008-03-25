@@ -33,7 +33,7 @@ module Redcar
       if num >= line_count - 1
         iter(end_mark)
       else
-        iter_at_line(num+1)
+        line_start(num+1)
       end
     end
     

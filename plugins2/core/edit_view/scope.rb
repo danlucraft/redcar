@@ -400,6 +400,17 @@ class Redcar::EditView
       end
     end
     
+    def descendants_on_line(line_num)
+      ds = []
+      children.each do |child|
+        if child.on_line?(line_num)
+          ds << child
+          ds += child.descendants_on_line(line_num)
+        end
+      end
+      ds
+    end
+    
     def line_start(line_num)
       sc = scope_at(TextLoc.new(line_num, -1))
       while sc.start.line == line_num

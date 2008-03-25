@@ -61,6 +61,16 @@ class Redcar::EditView
       lazy_parse_from(0, options)
     end
     
+    def recolour
+      raise "no colourer in parser!" unless @colourer
+      scopes = nil
+      @buf.line_count.times do |line_num|
+        scopes = @root.descendants_on_line(line_num)
+        SyntaxExt.colour_line_with_scopes(@colourer, @colourer.theme, 
+                                          line_num, scopes)
+      end
+    end
+    
     def last_line_of_interest
       [@max_view, @scope_last_line].max
     end
@@ -524,7 +534,7 @@ class Redcar::EditView
       shift_after(line_num, 1)
       parse_line(line, line_num)
       if (line_num > 0 and @ending_scopes[line_num] != @ending_scopes[line_num-1]) or
-          (line_num == 0 and @ending_scopes[line_num] != @scope_tree)
+          (line_num == 0 and @ending_scopes[line_num] != @root)
         line_num += 1
         lazy_parse_from(line_num)
       end
@@ -538,11 +548,11 @@ class Redcar::EditView
     end
     
     def scope_at_end_of(num)
-      @scope_tree.scope_at(TextLoc.new(num, @text[num].length))
+      @root.scope_at(TextLoc.new(num, @text[num].length))
     end
     
     def parse_from(num)
-      @scope_tree.clear_after(TextLoc.new(num, 0))
+      @root.clear_after(TextLoc.new(num, 0))
       (num).upto([@text.length-1, @max_parse_line].min) do |i|
         clear_line(line_num)
         parse_line(@text[i], i)
@@ -554,7 +564,7 @@ class Redcar::EditView
     end
     
     def shift_after(line, amount)
-      @scope_tree.shift_after(line, amount)
+      @root.shift_after(line, amount)
     end
     
     

@@ -340,7 +340,7 @@ class Redcar::EditView
             when :scope
               p = pn.grammar.pattern_lookup[pn.value.to_s]
               unless p
-                p = EditView.grammar(:scope => pn.value)
+                p = Redcar::EditView::Grammar.grammar(:scope => pn.value)
               end
               p.patterns if p
             end

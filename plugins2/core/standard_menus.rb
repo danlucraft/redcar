@@ -23,7 +23,7 @@ module Redcar
         if filename = Redcar::Dialog.open and File.file?(filename)
           new_tab = win.new_tab(Redcar::EditTab)
           new_tab.document.text = File.read(filename)
-          new_tab.label = filename.split(/\//).last
+          new_tab.label.text = filename.split(/\//).last
           new_tab.focus
         end
       end
