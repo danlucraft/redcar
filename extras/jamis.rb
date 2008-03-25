@@ -532,6 +532,8 @@ FILE_INDEX = XHTML_PREAMBLE + <<HTML
     text-align: center;
   }
   .entries {
+    background-color: #11303d;
+    color: #000;
     margin: 0.25em 1em 0 1em;
     font-size: x-small;
   }

@@ -116,7 +116,9 @@ class Redcar::EditView
 
   class Grammar    
     def self.load_grammars
-      raise "called Grammar.load_grammars without a cache_dir" unless Redcar::EditView.cache_dir
+      unless Redcar::EditView.cache_dir
+        raise "called Grammar.load_grammars without a cache_dir"
+      end
       cache_dir = Redcar::EditView.cache_dir
       if File.exist?(cache_dir + "grammars.dump")
         str = File.read(cache_dir + "grammars.dump")
@@ -132,7 +134,7 @@ class Redcar::EditView
         @grammars_by_extension ||= {}
         plists = []
         if @grammars.keys.empty?
-          Dir.glob(@bundles_dir + "*/Syntaxes/*").each do |file|
+          Dir.glob(Redcar::EditView.bundles_dir + "*/Syntaxes/*").each do |file|
             if %w(.plist .tmLanguage).include? File.extname(file)
               begin
                 puts "loading #{file}"

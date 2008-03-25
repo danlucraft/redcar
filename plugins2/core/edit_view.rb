@@ -42,9 +42,9 @@ module Redcar
     end
     
     def self.init(options)
-      @bundles_dir     = options[:bundles_dir]
-      @themes_dir      = options[:themes_dir]
-      self.cache_dir   = options[:cache_dir]
+      @bundles_dir = options[:bundles_dir]
+      @themes_dir  = options[:themes_dir]
+      @cache_dir   = options[:cache_dir]
       Grammar.load_grammars
       Theme.load_themes
     end
@@ -87,7 +87,7 @@ module Redcar
       raise "no such grammar: #{name}" unless grammar
       @root = Scope.new(:pattern => grammar,
                         :grammar => grammar,
-                        :start => TextLoc.new(0, 0))
+                        :start => TextLoc(0, 0))
     end
     
     def create_parser
@@ -100,7 +100,7 @@ module Redcar
       raise "trying to change to nil grammar!" unless gr
       @root = Scope.new(:pattern => gr,
                         :grammar => gr,
-                        :start => TextLoc.new(0, 0))
+                        :start => TextLoc(0, 0))
       colour if should_colour
     end
     
