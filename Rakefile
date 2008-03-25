@@ -47,5 +47,5 @@ end
 task :coredoc do
   FileUtils.rm_rf "doc"
   files = Dir["plugins2/core/*"].select{|f| File.file? f}
-  sh "rdoc -T jamis #{files.join(" ")}"
+  sh "rdoc -T jamis #{files.join(" ")} README.txt"
 end

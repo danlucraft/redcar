@@ -12,5 +12,6 @@ cache/tmp.command
 
 custom/arrangements.yaml
 custom/preferences.yaml
+custom/appdata.yaml
 
 textmate/*

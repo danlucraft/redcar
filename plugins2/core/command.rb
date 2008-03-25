@@ -1,10 +1,20 @@
 
 module Redcar
-  # Encapsulates a Redcar command. Commands wrap the calling of a 
-  # method (that is usually defined as a plugin class method) so that 
-  # that method can be called through a keystroke or a menu option etc.
+  # Encapsulates a Redcar command. Commands wrap a block of Ruby code
+  # with additional metadata to deal with command history recording and 
+  # menus and keybindings. Define commands by subclassing the 
+  # Redcar::Command class.
   #
-  # This class also initializes the CommandHistory on startup.
+  # === Examples
+  #
+  #   class CloseTab < Redcar::Command
+  #     menu "File/Close"
+  #     key "Global/Ctrl+W"
+  #
+  #     def execute(tab)
+  #       tab.close if tab
+  #     end
+  #   end
   class Command
     extend FreeBASE::StandardPlugin
     
@@ -12,12 +22,12 @@ module Redcar
       include Redcar::Sensitive
     end
 
-    def self.start(plugin)
+    def self.start(plugin) #:nodoc:
       CommandHistory.clear
       plugin.transition(FreeBASE::RUNNING)
     end
 
-    def self.stop(plugin)
+    def self.stop(plugin) #:nodoc:
       CommandHistory.clear
       plugin.transition(FreeBASE::LOADED)
     end
