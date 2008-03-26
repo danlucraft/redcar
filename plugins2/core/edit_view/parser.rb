@@ -74,7 +74,11 @@ class Redcar::EditView
     end
     
     def last_line_of_interest
-      [@max_view, @scope_last_line].max
+      if @parse_all
+        @buf.line_count
+      else
+        [@max_view, @scope_last_line].max
+      end
     end
     
     def store_insertion(iter, text, length)
@@ -141,10 +145,13 @@ class Redcar::EditView
     end
     
     def insert(loc, length, lines)
-      after_scope = scope_at_line_end(loc.line)
-      @root.shift_after(loc.line+1, lines-1)
-      line_num = loc.line
-      lazy_parse_from(line_num)
+      before_scope = scope_at_line_start(loc.line)
+      end_offset = @buf.iter(loc).offset+length
+      end_iter = @buf.iter(end_offset)
+      end_loc  = TextLoc(end_iter.line, end_iter.line_offset)
+      @root.shift_after1(loc, lines-1)
+      @root.shift_chars(loc.line+lines-1, end_loc.offset-loc.offset, loc.offset)
+      lazy_parse_from(loc.line, lines)
     end
     
     def process_deletion(deletion)
@@ -176,22 +183,41 @@ class Redcar::EditView
     end
     
     def max_view=(val)
+      old_max_view = @max_view
+      @max_view = val
+      if @max_view > old_max_view
+        lazy_parse_from(old_max_view)
+      end
     end
     
-    def lazy_parse_from(line_num, options=nil)
+    def lazy_parse_from(line_num, at_least=1, options=nil)
       count = 0
       ok = true
-      until line_num >= @buf.line_count or 
-          line_num > last_line_of_interest or
-          ok = parse_line(@buf.get_line(line_num), line_num)
-        line_num += 1
-        count += 1
+      if @parse_all
+        until line_num >= @buf.line_count or 
+            (parse_line(@buf.get_line(line_num), line_num) and
+             count >= at_least)
+          line_num += 1
+          count += 1
+        end
+      else
+        until line_num >= @buf.line_count or 
+            line_num > last_line_of_interest or
+            parse_line(@buf.get_line(line_num), line_num)
+          line_num += 1
+          count += 1
+        end
       end
     end
     
     # Parses line_num, using text line.
     def parse_line(line, line_num)
+#       if line_num == 4
+#         p line_num
+#         p line
+#       end
       check_line_exists(line_num)
+      @scope_last_line = line_num if line_num > @scope_last_line
       
       lp = LineParser.new(self, line_num, line)
       
@@ -213,6 +239,7 @@ class Redcar::EditView
       # next line has not yet been parsed.
       same = ((@ending_scopes[line_num] == lp.current_scope) and @ending_scopes[line_num+1] != nil)
       @ending_scopes[line_num] = lp.current_scope
+      $dp = false
       same
     end
     
@@ -381,9 +408,9 @@ class Redcar::EditView
       end
       
       def process_marker
-        if @parser.parsed_before?(@line_num)
+#        if @parser.parsed_before?(@line_num)
           expected_scope = get_expected_scope
-        end
+#        end
         
         new_scope_marker = get_first_scope_marker
         from = new_scope_marker[:from]
@@ -559,7 +586,6 @@ class Redcar::EditView
     def shift_after(line, amount)
       @root.shift_after(line, amount)
     end
-    
     
     def parsed_before?(line_num)
       @ending_scopes[line_num]

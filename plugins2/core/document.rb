@@ -41,6 +41,14 @@ module Redcar
       end
     end
     
+    def line_end1(num)
+      if num >= line_count - 1
+        iter(end_mark)
+      else
+        iter(line_start(num+1).offset-1)
+      end
+    end
+    
     def get_line(num=nil)
       if num == nil
         return get_line(cursor_line)

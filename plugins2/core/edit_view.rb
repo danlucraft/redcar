@@ -60,14 +60,11 @@ module Redcar
       self.show_line_numbers = Redcar::Preference.get("Editing/Show line numbers").to_bool
       set_font(Redcar::Preference.get("Appearance/Tab Font"))
       @theme = Theme.theme(Redcar::Preference.get("Appearance/Tab Theme"))
+      setup_bookmark_assets
+      connect_signals
       apply_theme
       create_root_scope('Ruby')
       create_parser
-    end
-    
-    def setup_bookmark_assets
-      @@bookmark_pixbuf ||= Gdk::Pixbuf.new(Redcar::App.root_path+'/plugins/redcar_core/icons/bookmark.png')
-      set_marker_pixbuf("bookmark", @@bookmark_pixbuf)
     end
     
     def set_gtk_cursor_colour
@@ -77,6 +74,22 @@ module Redcar
     }
     class "GtkWidget" style "green-cursor"
       EOR
+    end
+    
+    def setup_bookmark_assets
+      @@bookmark_pixbuf ||= Gdk::Pixbuf.new(Redcar::App.root_path+
+                                            '/plugins/redcar_core/icons/bookmark.png')
+      set_marker_pixbuf("bookmark", @@bookmark_pixbuf)
+    end
+    
+    def connect_signals
+      signal_connect("parent_set") do
+        if parent.is_a? Gtk::ScrolledWindow
+          parent.vscrollbar.signal_connect("value_changed") do 
+            view_changed
+          end
+        end
+      end
     end
     
     def set_font(font)
@@ -142,6 +155,10 @@ module Redcar
       [visible_rect.y, visible_rect.y+visible_rect.height].map do |bufy|
         get_line_at_y(bufy)[0].line
       end
+    end
+    
+    def view_changed
+      @parser.max_view = visible_lines[1] + 100
     end
   end
 end

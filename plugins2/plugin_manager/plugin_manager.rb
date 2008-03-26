@@ -91,7 +91,7 @@ module Com::RedcarIDE
 
       def info(plugin)
         return if plugin.blank?
-        slot = $BUS['/plugins/'+plugin]
+        slot = bus['/plugins/'+plugin]
         string =<<END
 Name: #{slot.name}
 Version: #{slot['info/version'].data}
@@ -146,7 +146,7 @@ END
       
       def test(plugin)
         return if plugin.blank?
-        plugin_slot = $BUS['/plugins/'+plugin]
+        plugin_slot = bus['/plugins/'+plugin]
         if plugin_slot["actions"].has_child?("test")
           plugin_slot["actions/test"].call
         else
@@ -155,7 +155,7 @@ END
       end
       
       def build_tree
-        plugins_slot = $BUS['/plugins']
+        plugins_slot = bus['/plugins']
         plugins_slot.each_slot do |plugin_slot|
           iter = @ts.append
           @ts.set_value(iter, 0, plugin_slot.name)

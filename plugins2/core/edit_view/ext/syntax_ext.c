@@ -569,7 +569,7 @@ Scope* scope_at(Scope* s, TextLoc* loc) {
       child = g_node_last_child(s);
       child_data = child->data;
       if (textloc_valid(&child_data->end) && 
-	  textloc_lt(&child_data->end, loc))
+	  textloc_lt(&child_data->end, loc)) 
 	return s;
       for (i = 0; i < g_node_n_children(s); i++) {
 	child = g_node_nth_child(s, i);
@@ -759,7 +759,7 @@ int scope_shift_chars(Scope* scope, int line, int amount, int offset) {
     // if the chars have been shifted such that a child has 
     // a length of zero or less, remove that child.
     child_data = child->data;
-    if (textloc_gte(&child_data->start, &child_data->end))
+    if (textloc_valid(&child_data->end) && textloc_gte(&child_data->start, &child_data->end))
       g_node_unlink(child);
     child = child2;
   }

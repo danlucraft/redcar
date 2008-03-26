@@ -72,7 +72,7 @@ module Redcar
     def self.get(name)
       if bus("/redcar/preferences/#{name}/", true)
         slot = bus("/redcar/preferences/#{name}")
-        slot.data || slot.attr_default
+        slot.data == nil ? slot.attr_default : slot.data
       else
         raise "unknown preference: #{name}"
       end
@@ -80,8 +80,8 @@ module Redcar
     
     # Set the value of a preference with the given name.
     def self.set(name, value)
-      if bus("/redcar/preferences/#{name}", true)
-        bus("/redcar/preferences/#{name}").data = value
+      if slot = bus("/redcar/preferences/#{name}", true)
+        slot.data = value
       else
         raise "unknown preference: #{name}"
       end
@@ -97,7 +97,9 @@ module Redcar
       PreferenceBuilder.clear
       PreferenceBuilder.class_eval &block
       preferences_slot = bus["/redcar/preferences/"]
-      preferences_slot[name].data ||= PreferenceBuilder.prefdef[:default]
+      if preferences_slot[name].data == nil
+        preferences_slot[name].data = PreferenceBuilder.prefdef[:default]
+      end
       preferences_slot[name].attr_pref = true
       preferences_slot[name].attr_default = PreferenceBuilder.prefdef[:default]
       preferences_slot[name].attr_type = PreferenceBuilder.prefdef[:type]
