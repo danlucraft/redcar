@@ -6,7 +6,8 @@ module Redcar
   class EditTab < Tab
     # an EditView instance.
     attr_reader :view
-
+    attr_accessor :filename
+    
     # Do not call this directly. Use Window#new_tab or 
     # Pane#new_tab instead:
     # 

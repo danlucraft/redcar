@@ -29,9 +29,22 @@ module Redcar
         end
         if @filename and File.file?(@filename)
           new_tab = win.new_tab(Redcar::EditTab)
+          new_tab.filename = @filename
           new_tab.document.text = File.read(@filename)
           new_tab.label.text = @filename.split(/\//).last
+          new_tab.document.cursor = 0
           new_tab.focus
+        end
+      end
+    end
+    
+    class SaveTab < Redcar::TabCommand
+      key "Global/Ctrl+S"
+      icon :SAVE
+      
+      def execute(tab)
+        if tab.filename
+          File.open(tab.filename, "w") {|f| f.puts tab.document.text}
         end
       end
     end
@@ -63,6 +76,7 @@ module Redcar
     main_menu "File" do
       item "New",        NewTab
       item "Open",       OpenTab
+      item "Save",       SaveTab
       item "Close",      CloseTab
       item "Close All",  CloseAllTabs
       separator

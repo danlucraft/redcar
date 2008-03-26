@@ -917,6 +917,7 @@ void set_tag_properties(GtkTextTag* tag, VALUE rbh_tm_settings) {
   rb_fg = rb_hash_aref(rbh_tm_settings, rb_str_new2("foreground"));
   if (rb_fg != Qnil) {
     clean_colour(RSTRING_PTR(rb_fg), fg);
+    puts(fg);
     g_object_set(G_OBJECT(tag), "foreground", fg, NULL);
   }
 

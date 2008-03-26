@@ -4,11 +4,11 @@ module Redcar
     extend FreeBASE::StandardPlugin
 
     def self.load(plugin) #:nodoc:
+      @obj_keymaps = Hash.new {|obj,key| obj[key] = [] }
       plugin.transition(FreeBASE::LOADED)
     end
     
     def self.start(plugin) #:nodoc:
-      @obj_keymaps = Hash.new {|obj,key| obj[key] = [] }
       plugin.transition(FreeBASE::RUNNING)
     end
     

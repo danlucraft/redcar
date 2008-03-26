@@ -32,6 +32,7 @@ plugins:
     startup_module:  Redcar::EditView
     load_dependencies:
         core-plugin: "*"
+        core-keymap: "*"
     tests:
       - path: core/tests/ev_parser_test.rb
         testcase: Redcar::Tests::ParserTests

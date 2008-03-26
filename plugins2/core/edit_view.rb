@@ -23,21 +23,6 @@ module Redcar
       plugin.transition(FreeBASE::LOADED)
     end
     
-    def self.start(plugin) #:nodoc:
-# When an EditView is created in a window, this needs to go onto it.
-#       gtk_hbox = bus('/gtk/window/statusbar').data
-#       gtk_combo_box = Gtk::ComboBox.new(true)
-#       list = Redcar::EditView.grammar_names.sort
-#       list.each {|item| gtk_combo_box.append_text(item) }
-#       gtk_combo_box.signal_connect("changed") do |gtk_combo_box1|
-#         tab.sourceview.set_grammar(Redcar::EditView.grammar(:name => list[gtk_combo_box1.active]))
-#       end
-#       gtk_hbox.pack_end(gtk_combo_box, false)
-#       gtk_combo_box.show
-      
-      plugin.transition(FreeBASE::RUNNING)
-    end
-    
     class << self
       attr_accessor :bundles_dir, :themes_dir, :cache_dir
     end
@@ -54,6 +39,7 @@ module Redcar
     
     def initialize(options={})
       super()
+      create_grammar_combo
       set_gtk_cursor_colour
       self.tabs_width = 2
       self.left_margin = 5
@@ -65,6 +51,22 @@ module Redcar
       apply_theme
       create_root_scope('Ruby')
       create_parser
+    end
+
+    def create_grammar_combo
+# When an EditView is created in a window, this needs to go onto it.
+      unless slot = bus('/gtk/window/statusbar/grammar_combo', true)
+        gtk_hbox = bus('/gtk/window/statusbar').data
+        gtk_combo_box = Gtk::ComboBox.new(true)
+        bus('/gtk/window/statusbar/grammar_combo').data = gtk_combo_box
+        list = Redcar::EditView::Grammar.names.sort
+        list.each {|item| gtk_combo_box.append_text(item) }
+        gtk_combo_box.signal_connect("changed") do |gtk_combo_box1|
+          tab.view.change_root_scope(list[gtk_combo_box1.active])
+        end
+        gtk_hbox.pack_end(gtk_combo_box, false)
+        gtk_combo_box.show
+      end
     end
     
     def set_gtk_cursor_colour
@@ -110,12 +112,14 @@ module Redcar
       @parser = Parser.new(buffer, @root, [], @colourer)
     end
     
-    def change_root_scope(gr, should_colour=true)
-      raise "trying to change to nil grammar!" unless gr
-      @root = Scope.new(:pattern => gr,
+    def change_root_scope(gr_name, should_colour=true)
+      raise "trying to change to nil grammar!" unless gr_name
+      gr = Grammar.grammar(:name => gr_name)
+      root = Scope.new(:pattern => gr,
                         :grammar => gr,
                         :start => TextLoc(0, 0))
-      colour if should_colour
+      @parser.root = root
+      @parser.reparse
     end
     
     def change_theme(theme_name)

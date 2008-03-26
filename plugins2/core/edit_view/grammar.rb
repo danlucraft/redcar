@@ -184,7 +184,7 @@ class Redcar::EditView
       @grammars
     end
     
-    def self.grammar_names
+    def self.names
       load_grammars unless @grammars
       @grammars.keys
     end

@@ -9,6 +9,15 @@ module Com::RedcarIDE
         puts Redcar::CommandHistory.history.reverse[0..15].map{|com| "  " + com.class.to_s}
       end
     end
+
+    class PrintScopeTree < Redcar::Command
+      menu "Debug/Print Scope Tree"
+      norecord
+      def execute(tab)
+        puts "Scope Tree"
+        puts tab.view.parser.root.pretty2
+      end
+    end
     
     class ShowSpeedbarExample < Redcar::Command
       menu "Debug/SpeedbarExample"

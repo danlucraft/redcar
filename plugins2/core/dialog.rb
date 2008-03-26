@@ -187,8 +187,8 @@ module Redcar
         puts "filename = #{dialog.filename}"
         filename = dialog.filename
         Redcar::App[:last_dir_opened] = "/" + filename.split("/")[0..-2].join("/")
-        dialog.destroy
       end
+      dialog.destroy
       filename
     end
     

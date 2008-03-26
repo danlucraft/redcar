@@ -283,6 +283,15 @@ class Redcar::EditView
       str
     end
     
+    def pretty2(indent=0)
+      str = ""
+      str += " "*indent + "+ " + self.inspect2+"\n"
+      children.each do |cs|
+        str += cs.pretty2(indent+2)
+      end
+      str
+    end
+    
     def captures
       @open_matchdata.captures
     end
@@ -313,6 +322,30 @@ class Redcar::EditView
         cname = ""
       end
       "<scope(#{self.object_id*-1%1000}):"+(self.name||"" rescue "noname")+" "+cname+" #{startstr}#{endstr} #{hanging}>"
+    end
+    
+    def inspect2
+      if self.pattern.is_a? SinglePattern
+        hanging = ""
+      else
+        if self.end and self.end.valid?
+          hanging = " closed"
+        else
+          hanging = " hanging"
+        end
+      end
+      startstr = "(#{start.line},#{start.offset})-"
+      if self.end
+        endstr = "(#{self.end.line},#{self.end.offset})"
+      else
+        endstr = "?"
+      end
+      if self.pattern
+        cname = ""+self.pattern.content_name.to_s
+      else
+        cname = ""
+      end
+      (self.name||"" rescue "noname")+" "+cname+" #{startstr}#{endstr} #{hanging}>"
     end
     
     def assert_does_not_overlap(scope)
@@ -461,6 +494,15 @@ class Redcar::EditView
         else
           children.last
         end
+      end
+    end
+    
+    # Latest scope of tree not including self.
+    def last_scope1
+      if children.empty?
+        nil
+      else
+        children.last
       end
     end
     

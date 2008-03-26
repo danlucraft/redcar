@@ -146,7 +146,7 @@ module Redcar
       if old != @operative and @menu
         Redcar::MenuDrawer.set_active(@menu, @operative)
       end
-      child_commands.each &:update_operative
+      child_commands.each(&:update_operative)
     end
     
     def self.operative?
@@ -388,7 +388,7 @@ module Redcar
     end
     
     def self.prune #:nodoc:
-      (@history.length-@max).times { @history.delete_at(0) }
+      (@history.length - @max).times { @history.delete_at(0) }
     end
     
     # Clear the command history.

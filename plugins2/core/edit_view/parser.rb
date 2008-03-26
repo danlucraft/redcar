@@ -60,7 +60,7 @@ class Redcar::EditView
     
     def reparse(options=nil)
       @root.children.each {|c| @root.delete_child c }
-      lazy_parse_from(0, options)
+      lazy_parse_from(0)
     end
     
     def recolour
@@ -185,12 +185,12 @@ class Redcar::EditView
     def max_view=(val)
       old_max_view = @max_view
       @max_view = val
-      if @max_view > old_max_view
+      if @max_view > old_max_view and @max_view > @root.last_scope1.end.line
         lazy_parse_from(old_max_view)
       end
     end
     
-    def lazy_parse_from(line_num, at_least=1, options=nil)
+    def lazy_parse_from(line_num, at_least=100, options=nil)
       count = 0
       ok = true
       if @parse_all
@@ -203,7 +203,8 @@ class Redcar::EditView
       else
         until line_num >= @buf.line_count or 
             line_num > last_line_of_interest or
-            parse_line(@buf.get_line(line_num), line_num)
+            (parse_line(@buf.get_line(line_num), line_num) and
+             count >= at_least)
           line_num += 1
           count += 1
         end
@@ -212,10 +213,7 @@ class Redcar::EditView
     
     # Parses line_num, using text line.
     def parse_line(line, line_num)
-#       if line_num == 4
-#         p line_num
-#         p line
-#       end
+#      print line_num, " "; $stdout.flush
       check_line_exists(line_num)
       @scope_last_line = line_num if line_num > @scope_last_line
       
