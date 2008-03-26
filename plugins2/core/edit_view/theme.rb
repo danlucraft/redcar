@@ -21,10 +21,14 @@ class Redcar::EditView
           @themes[plist[0]['name']] = Redcar::EditView::Theme.new(plist[0])
         end
         #puts "]"
-        str = Marshal.dump(@themes)
-        File.open(Redcar::EditView.cache_dir + "themes.dump", "w") do |f|
-          f.puts str
-        end
+        cache
+      end
+    end
+    
+    def self.cache
+      str = Marshal.dump(@themes)
+      File.open(Redcar::EditView.cache_dir + "themes.dump", "w") do |f|
+        f.puts str
       end
     end
     

@@ -19,6 +19,7 @@ module Redcar
     
     def self.stop(plugin) #:nodoc:
       Keymap.remove_from(self, "EditView")
+      Redcar::EditView::Theme.cache
       plugin.transition(FreeBASE::LOADED)
     end
     
