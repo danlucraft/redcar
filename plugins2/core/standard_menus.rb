@@ -29,10 +29,7 @@ module Redcar
         end
         if @filename and File.file?(@filename)
           new_tab = win.new_tab(Redcar::EditTab)
-          new_tab.filename = @filename
-          new_tab.document.text = File.read(@filename)
-          new_tab.label.text = @filename.split(/\//).last
-          new_tab.document.cursor = 0
+          new_tab.load(@filename)
           new_tab.focus
         end
       end
@@ -41,11 +38,10 @@ module Redcar
     class SaveTab < Redcar::TabCommand
       key "Global/Ctrl+S"
       icon :SAVE
+      sensitive :modified?
       
       def execute(tab)
-        if tab.filename
-          File.open(tab.filename, "w") {|f| f.puts tab.document.text}
-        end
+        tab.save
       end
     end
     

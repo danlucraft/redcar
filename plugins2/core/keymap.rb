@@ -23,6 +23,7 @@ module Redcar
       ks = gdk_eventkey.state - Gdk::Window::MOD2_MASK
       ks = ks - Gdk::Window::MOD4_MASK
       key = Gtk::Accelerator.get_label(kv, ks)
+      p key
       unless key[-2..-1] == " L" or key[-2..-1] == " R"
         bits = key.split("+")
         ctrl = (bits.include?("Ctrl")  ? 1 : 0)

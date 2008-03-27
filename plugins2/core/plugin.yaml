@@ -47,6 +47,7 @@ plugins:
     load_dependencies:
         core-app: "*"
         core-tab: "*"
+        core-edit_tab: "*"
         core-window: "*"
 
   - !ruby/object:FreeBASE::PluginConfiguration 

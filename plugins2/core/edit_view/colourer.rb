@@ -1,7 +1,6 @@
 
 class Redcar::EditView
   class Colourer
-    #include DebugPrinter
     
     attr_accessor :theme, :sourceview
     
@@ -91,7 +90,6 @@ class Redcar::EditView
     end
     
     def colour_line(scope_tree, line_num, priority=1)
-      #SyntaxLogger.debug "\n"
       buffer = @tab.buffer
       buffer.remove_all_tags(@tab.line_start(line_num),
                              @tab.line_end(line_num))

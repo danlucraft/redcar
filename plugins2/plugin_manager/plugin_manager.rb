@@ -8,6 +8,7 @@ module Com::RedcarIDE
     
     class OpenPluginManager < Redcar::Command
       menu "Tools/Plugin Manager"
+      key  "Global/Ctrl+P"
       icon :PREFERENCES
       
       def execute

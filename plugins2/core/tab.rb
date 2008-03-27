@@ -6,6 +6,13 @@ module Redcar
   # a scrollbars.
   class Tab
     extend FreeBASE::StandardPlugin
+
+    def self.load(plugin) #:nodoc:
+      Sensitive.register(:tab, [:open_window, :new_tab, :close_tab]) do
+        win and win.tabs.length > 0
+      end
+      plugin.transition(FreeBASE::LOADED)
+    end
     
     def self.start(plugin) #:nodoc:
       @widget_to_tab = {}

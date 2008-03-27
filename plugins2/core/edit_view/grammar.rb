@@ -1,4 +1,5 @@
 
+
 $spare_name = "aaaa"
 
 class Redcar::EditView

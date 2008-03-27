@@ -10,10 +10,6 @@ module Redcar
       Hook.register :close_tab
       Hook.register :focus_tab
       
-      Sensitive.register(:tab, [:open_window, :new_tab, :close_tab]) do
-        win and win.tabs.length > 0
-      end
-      
       plugin.transition(FreeBASE::LOADED)
     end
     
@@ -181,9 +177,10 @@ module Redcar
     end
     
     def update_focussed_tab(tab) #:nodoc:
-      Hook.trigger :focus_tab
-      @previously_focussed_tab = @focussed_tab
-      @focussed_tab = tab
+      Hook.trigger :focus_tab do
+        @previously_focussed_tab = @focussed_tab
+        @focussed_tab = tab
+      end
     end
     
     private
@@ -238,7 +235,7 @@ module Redcar
       signal_connect("destroy") do
         self.close
       end
-      signal_connect('key-release-event') do |gtk_widget, gdk_eventkey|
+      signal_connect('key-press-event') do |gtk_widget, gdk_eventkey|
         continue = Keymap.process(gdk_eventkey)
         # falls through to Gtk widgets if nothing handles it
         continue

@@ -195,16 +195,14 @@ class Redcar::EditView
       ok = true
       if @parse_all
         until line_num >= @buf.line_count or 
-            (parse_line(@buf.get_line(line_num), line_num) and
-             count >= at_least)
+            parse_line(@buf.get_line(line_num), line_num)
           line_num += 1
           count += 1
         end
       else
         until line_num >= @buf.line_count or 
             line_num > last_line_of_interest or
-            (parse_line(@buf.get_line(line_num), line_num) and
-             count >= at_least)
+            parse_line(@buf.get_line(line_num), line_num)
           line_num += 1
           count += 1
         end
@@ -213,6 +211,7 @@ class Redcar::EditView
     
     # Parses line_num, using text line.
     def parse_line(line, line_num)
+      print line_num, " "; $stdout.flush
       check_line_exists(line_num)
       @scope_last_line = line_num if line_num > @scope_last_line
       
@@ -230,14 +229,16 @@ class Redcar::EditView
       
       if @colourer
         remove_tags_from_line(line_num)
-        SyntaxExt.colour_line_with_scopes(@colourer, @colourer.theme, line_num, lp.all_scopes)
+        SyntaxExt.colour_line_with_scopes(@colourer, @colourer.theme, 
+                                          line_num, lp.all_scopes)
 #        debug_print_tag_table
         reset_table_priorities
       end
       
       # should we parse the next line? If we've changed the scope or the 
       # next line has not yet been parsed.
-      same = ((@ending_scopes[line_num] == lp.current_scope) and @ending_scopes[line_num+1] != nil)
+      same = ((@ending_scopes[line_num] == lp.current_scope) and 
+              @ending_scopes[line_num+1] != nil)
       @ending_scopes[line_num] = lp.current_scope
       $dp = false
       same
@@ -246,7 +247,8 @@ class Redcar::EditView
     def debug_print_tag_table
       puts "___Tag Table________________"
       @buf.tag_table.each do |tag|
-        puts "  #{tag.name}, #{tag.priority}, #{tag.foreground_gdk.to_a.map{|v| "%X" % (v/256)}.join("")}"
+        puts "  #{tag.name}, #{tag.priority}, "+
+          "#{tag.foreground_gdk.to_a.map{|v| "%X" % (v/256)}.join("")}"
       end
     end
     
