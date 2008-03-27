@@ -42,7 +42,7 @@ module Redcar
       unless @blocks.include? name
         raise "Trying to sensitize to unknown Sensitivity: #{name}."
       end
-      obj.active = @value[name]
+      obj.active = @value[name].to_bool
       @objects[name] ||= []
       @objects[name] << obj
     end

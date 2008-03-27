@@ -38,27 +38,25 @@ if Redcar::App.ARGV.include? "--test-perf-load"
   printer.print(STDOUT)
   stop_redcar
 elsif Redcar::App.ARGV.include? "--test-perf-edit"
-  Coms::OpenTab.new("/home/dan/projects/redcar/freebase2/lib/freebase/readers.rb").do
+  Coms::OpenTab.new("/homes/dbl/projects/redcar/freebase2/lib/freebase/readers.rb").do
   RubyProf.start
-  doc.cursor = doc.iter(TextLoc(65, 39))
-  3.times do
-    5.times do 
-      doc.signal_emit("delete_range", 
-                      doc.iter(doc.cursor_iter.offset-1),
-                      doc.cursor_iter)
-      sleep 1
-    end
+  doc.cursor = doc.char_count
+  10.times do
     5.times do 
       doc.signal_emit("insert_text",
                       doc.cursor_iter,
-                      "A",
-                      1)
-      sleep 1
+                      "File.rm",
+                      7)
+    end
+    5.times do 
+      doc.signal_emit("delete_range", 
+                      doc.iter(doc.char_count-7),
+                      doc.iter(doc.char_count))
     end
   end
   result = RubyProf.stop
   printer = RubyProf::GraphHtmlPrinter.new(result)
-  printer.print(STDOUT, 0)
+  printer.print(STDOUT)
   stop_redcar
 elsif Redcar::App.ARGV.include? "--test"
   ix = Redcar::App.ARGV.index "--test"

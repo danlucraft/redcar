@@ -10,7 +10,7 @@ module Com::RedcarIDE
       end
     end
 
-    class PrintScopeTree < Redcar::Command
+    class PrintScopeTree < Redcar::EditTabCommand
       menu "Debug/Print Scope Tree"
       norecord
       def execute(tab)

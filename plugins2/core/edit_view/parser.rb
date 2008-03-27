@@ -633,13 +633,13 @@ class Redcar::EditView
       @root.scope_at(TextLoc.new(num, @text[num].length))
     end
     
-    def parse_from(num)
-      @root.clear_after(TextLoc.new(num, 0))
-      (num).upto([@text.length-1, @max_parse_line].min) do |i|
-        clear_line(line_num)
-        parse_line(@text[i], i)
-      end
-    end
+#     def parse_from(num)
+#       @root.clear_after(TextLoc.new(num, 0))
+#       (num).upto([@text.length-1, @max_parse_line].min) do |i|
+#         clear_line(line_num)
+#         parse_line(@text[i], i)
+#       end
+#     end
 
     def max_parse_line=(v)
       @max_parse_line = v

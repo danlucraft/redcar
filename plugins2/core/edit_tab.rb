@@ -13,7 +13,7 @@ module Redcar
       Sensitive.register(:edit_tab, 
                          [:open_window, :new_tab, :close_tab, 
                           :after_focus_tab]) do
-        tab and tab.is_a? EditTab
+        win and tab and tab.is_a? EditTab
       end
       
       Sensitive.register(:modified?, 

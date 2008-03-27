@@ -697,6 +697,8 @@ static VALUE rb_scope_delete_any_on_line_not_in(VALUE self, VALUE line_num, VALU
   for (i = 0; i < g_node_n_children(s); i++) {
     c = g_node_nth_child(s, i);
     sdc = c->data;
+    if (sdc->start.line > num)
+      return Qtrue;
     if (sdc->start.line == num) {
       remove = TRUE;
       for (j = 0; j < RARRAY(scopes)->len; j++) {
