@@ -36,6 +36,8 @@ plugins:
     tests:
       - path: core/tests/ev_parser_test.rb
         testcase: Redcar::Tests::ParserTests
+      - path: core/tests/ev_parser_indent_test.rb
+        testcase: Redcar::Tests::ParserIndentTests
       - path: core/tests/ev_grammar_test.rb
         testcase: Redcar::Tests::GrammarTests
 

@@ -85,12 +85,23 @@ module Redcar
     end
     
     def connect_signals
+      # Hook up to scrollbar changes for the parser
       signal_connect("parent_set") do
         if parent.is_a? Gtk::ScrolledWindow
           parent.vscrollbar.signal_connect("value_changed") do 
             view_changed
           end
         end
+      end
+      
+      # Set up indenting on Return
+      buffer.signal_connect_after("insert_text") do |_, iter, text, length|
+        line_num = iter.line
+        if text == "\n"
+          indent_line(line_num-1) if line_num > 1
+          indent_line(line_num)   if line_num > 0
+        end
+        false
       end
     end
     
@@ -163,6 +174,39 @@ module Redcar
     
     def view_changed
       @parser.max_view = visible_lines[1] + 100
+    end
+    
+    def indent_line(line_num)
+      delta = @parser.indent_delta(line_num)
+      next_delta = @parser.indent_delta(line_num+1)
+      preline = buffer.get_line(line_num-1)
+      line = buffer.get_line(line_num)
+      if delta == 1 and next_delta == -1
+        delta = 0
+      elsif next_delta == -1
+        delta = -1
+      elsif delta == -1
+        delta = 0
+      end
+      line.string.chomp =~ /^(\s*)(.*)/
+      curr_indent = $1
+      curr_text   = $2
+      preline.string.chomp =~ /^(\s*)(.*)/
+      pre_indent  = $1
+      pre_text    = $2
+      if pre_indent.include? "\t" and pre_indent.include? " "
+        puts "inconsistent use of tabs and spaces! No indenting."
+      elsif pre_indent.include? "\t" or pre_indent == ""
+        pre_length = pre_indent.length
+        buffer.delete(buffer.line_start(line_num), buffer.line_end1(line_num))
+        buffer.insert(buffer.line_start(line_num), "\t"*([pre_length+delta, 0].max)+curr_text)
+      elsif curr_indent.include? " " or curr_indent == ""
+        insize = Redcar::Preference.get("Editing/Indent size")
+        pre_length = pre_indent.length
+        buffer.delete(buffer.line_start(line_num), buffer.line_end1(line_num))
+        buffer.insert(buffer.line_start(line_num), " "*([pre_length+delta*insize, 0].max)+curr_text)
+      end
+      line = buffer.get_line(line_num)
     end
   end
 end

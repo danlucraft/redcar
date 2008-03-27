@@ -89,12 +89,16 @@ end
 class Object
   # The current or last focussed Document.
   def doc
-    tab.document
+    if tab
+      tab.document
+    end
   end
   
   # The current or last focussed Tab
   def tab
-    win.focussed_tab
+    if win
+      win.focussed_tab
+    end
   end
   
   # The current or last focussed Window

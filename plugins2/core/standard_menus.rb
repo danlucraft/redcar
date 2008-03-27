@@ -4,6 +4,10 @@ module Redcar
     sensitive :tab
   end
   
+  class EditTabCommand < Redcar::Command #:nodoc:
+    sensitive :edit_tab
+  end
+  
   class StandardMenus < Redcar::Plugin #:nodoc:all
     include Redcar::MenuBuilder
     extend Redcar::PreferenceBuilder
@@ -11,6 +15,7 @@ module Redcar
     class NewTab < Redcar::Command
       key "Global/Ctrl+N"
       icon :NEW
+      
       def execute
         win.new_tab(EditTab).focus
       end
@@ -19,6 +24,7 @@ module Redcar
     class OpenTab < Redcar::Command
       key "Global/Ctrl+O"
       icon :NEW
+      
       def initialize(filename=nil)
         @filename = filename
       end
@@ -35,7 +41,7 @@ module Redcar
       end
     end
     
-    class SaveTab < Redcar::TabCommand
+    class SaveTab < Redcar::EditTabCommand
       key "Global/Ctrl+S"
       icon :SAVE
       sensitive :modified?
@@ -48,6 +54,7 @@ module Redcar
     class CloseTab < Redcar::TabCommand
       key "Global/Ctrl+W"
       icon :CLOSE
+      
       def execute(tab)
         tab.close if tab
       end
@@ -56,6 +63,7 @@ module Redcar
     class CloseAllTabs < Redcar::TabCommand
       key "Global/Ctrl+Super+W"
       icon :CLOSE
+      
       def execute
         win.tabs.each &:close
       end
@@ -64,6 +72,7 @@ module Redcar
     class Quit < Redcar::Command
       key "Global/Alt+F4"
       icon :QUIT
+      
       def execute
         Redcar::App.quit
       end
@@ -82,6 +91,7 @@ module Redcar
     class UnifyAll < Redcar::Command
       key "Global/Ctrl+1"
 #      sensitive :multiple_panes
+      
       def execute
         win.unify_all
       end
@@ -89,6 +99,7 @@ module Redcar
     
     class SplitHorizontal < Redcar::Command
       key "Global/Ctrl+2"
+      
       def execute(tab)
         if tab
           tab.pane.split_horizontal
@@ -100,6 +111,7 @@ module Redcar
     
     class SplitVertical < Redcar::Command
       key "Global/Ctrl+3"
+      
       def execute(tab)
         if tab
           tab.pane.split_vertical
@@ -111,6 +123,7 @@ module Redcar
     
     class PreviousTab < Redcar::TabCommand
       key "Global/Ctrl+Page_Down"
+      
       def execute(tab)
         tab.pane.gtk_notebook.prev_page
       end
@@ -118,6 +131,7 @@ module Redcar
     
     class NextTab < Redcar::TabCommand
       key "Global/Ctrl+Page_Up"
+      
       def execute(tab)
         tab.pane.gtk_notebook.next_page
       end
@@ -125,6 +139,7 @@ module Redcar
     
     class MoveTabDown < Redcar::TabCommand
       key "Global/Ctrl+Shift+Page_Down"
+      
       def execute(tab)
         tab.move_down
       end
@@ -132,7 +147,8 @@ module Redcar
     
     class MoveTabUp < Redcar::TabCommand
       key "Global/Ctrl+Shift+Page_Up"
-      def self.move_tab_up
+      
+      def execute(tab)
         tab.move_up
       end
     end
@@ -174,10 +190,31 @@ module Redcar
       end
     end
     
+    preference "Appearance/Tab Theme" do |p|
+      type :combo
+      default "Mac Classic"
+      values { EditView::Theme.theme_names }
+      change do 
+        win.tabs.each do |tab|
+          if tab.respond_to? :view
+            theme_name = Redcar::Preference.get("Appearance/Tab Theme")
+            tab.view.change_theme(theme_name)
+          end
+        end
+      end
+    end
+    
     preference "Appearance/Entry Theme" do |p|
       type :combo
       default "Mac Classic"
       values { EditView::Theme.theme_names }
+    end
+    
+    preference "Editing/Indent size" do |p|
+      type    :integer
+      bounds  [0, 20]
+      step    1
+      default 2 
     end
     
     preference "Editing/Wrap words" do

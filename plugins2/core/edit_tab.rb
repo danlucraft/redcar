@@ -10,11 +10,17 @@ module Redcar
       Hook.register :tab_save
       Hook.register :tab_load
       
+      Sensitive.register(:edit_tab, 
+                         [:open_window, :new_tab, :close_tab, 
+                          :after_focus_tab]) do
+        tab and tab.is_a? EditTab
+      end
+      
       Sensitive.register(:modified?, 
                          [:open_window, :new_tab, :close_tab, 
                           :after_focus_tab, :tab_changed, 
                           :after_tab_save]) do
-        win and tab and tab.is_a? EditTab and tab.modified
+        tab and tab.is_a? EditTab and tab.modified
       end
       
       plugin.transition(FreeBASE::LOADED)
@@ -23,7 +29,6 @@ module Redcar
     # an EditView instance.
     attr_reader :view
     attr_accessor :filename
-
     attr_reader :modified
     
     # Do not call this directly. Use Window#new_tab or 

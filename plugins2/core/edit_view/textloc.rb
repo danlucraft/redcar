@@ -16,5 +16,17 @@ class Redcar::EditView
     def inspect
       "#<TextLoc:#{self.object_id} (#{self.line}, #{self.offset})>"
     end
+    
+    def <=>(other)
+      if self < other
+        -1
+      elsif self > other
+        1
+      elsif self == other
+        0
+      else
+        raise "<=> TextLoc error"
+      end
+    end
   end 
 end

@@ -5,12 +5,15 @@ $spare_name = "aaaa"
 class Redcar::EditView
   class Pattern
     attr_accessor :name, :captures, :grammar, :hint, :match, :scope_name
+    attr_reader :folding_start_marker, :folding_stop_marker
     
     def initialize(hash, grammar)
       @grammar = grammar
       @name = hash["name"]
       @scope_name = @name
       @content_name = hash["content_name"] 
+      @folding_start_marker = hash["foldingStartMarker"]
+      @folding_stop_marker = hash["foldingStopMarker"]
       @captures = hash["captures"] || {}
       @captures.each do |key, value|
         @captures[key] = value['name']
