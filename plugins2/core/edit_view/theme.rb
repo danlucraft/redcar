@@ -66,14 +66,11 @@ class Redcar::EditView
     
     # For a given scopename finds all the settings in the theme which apply to it.
     def settings_for_scope(scope, inner)
-      p :settings_for_scope
       scopes = scope.hierarchy_names(inner)
       scope_join = scopes.join(" ")
-      p scope_join
-#       @settings_for_scope ||= {}
-#       r = @settings_for_scope[scope_join]
-#       p r if r
-#       return r if r
+      @settings_for_scope ||= {}
+      r = @settings_for_scope[scope_join]
+      return r if r
       applicables = []
       @settings.each do |setting|
         if setting['scope']
@@ -109,10 +106,7 @@ class Redcar::EditView
           k||0
         end
       end.map {|a| a[1]}
-#       r = @settings_for_scope[scope_join] = applicables
-      p applicables.map{|ap| [ap["scope"], ap["settings"]["foreground"]]}[0]
-      puts
-      applicables
+      @settings_for_scope[scope_join] = applicables
     end
     
     # Given a scope selector, returns its specificity. E.g keyword.if == 2 and string constant == 2

@@ -213,7 +213,6 @@ class Redcar::EditView
     
     # Parses line_num, using text line.
     def parse_line(line, line_num)
-#      print line_num, " "; $stdout.flush
       check_line_exists(line_num)
       @scope_last_line = line_num if line_num > @scope_last_line
       
@@ -230,7 +229,10 @@ class Redcar::EditView
       end
       
       if @colourer
+        remove_tags_from_line(line_num)
         SyntaxExt.colour_line_with_scopes(@colourer, @colourer.theme, line_num, lp.all_scopes)
+#        debug_print_tag_table
+        reset_table_priorities
       end
       
       # should we parse the next line? If we've changed the scope or the 
@@ -239,6 +241,44 @@ class Redcar::EditView
       @ending_scopes[line_num] = lp.current_scope
       $dp = false
       same
+    end
+    
+    def debug_print_tag_table
+      puts "___Tag Table________________"
+      @buf.tag_table.each do |tag|
+        puts "  #{tag.name}, #{tag.priority}, #{tag.foreground_gdk.to_a.map{|v| "%X" % (v/256)}.join("")}"
+      end
+    end
+    
+    def remove_tags_from_line(line_num)
+      si = @buf.iter(@buf.line_start(line_num))
+      ei = @buf.iter(@buf.line_end(line_num))
+      all_tags.select {|t| t.name =~ /^EditView/ }.each do |tag|
+        @buf.remove_tag(tag, si, ei)
+      end
+    end
+    
+    def all_tags
+      tt = @buf.tag_table
+      tags = []
+      tt.each do |tag|
+        tags << tag
+      end
+      tags
+    end
+    
+    def reset_table_priorities
+      tags = all_tags.sort_by do |tag|
+        if tag.name
+          tag.name =~ /\((\d+)\)/
+          $1.to_i
+        else 
+          -1
+        end
+      end
+      tags.each_with_index do |tag, i|
+        tag.priority = i
+      end
     end
     
     def check_line_exists(line_num)
