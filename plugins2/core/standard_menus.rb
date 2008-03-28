@@ -78,16 +78,6 @@ module Redcar
       end
     end
     
-    main_menu "File" do
-      item "New",        NewTab
-      item "Open",       OpenTab
-      item "Save",       SaveTab
-      item "Close",      CloseTab
-      item "Close All",  CloseAllTabs
-      separator
-      item "Quit",       Quit
-    end
-      
     class UnifyAll < Redcar::Command
       key "Global/Ctrl+1"
 #      sensitive :multiple_panes
@@ -153,6 +143,40 @@ module Redcar
       end
     end
     
+    class ForwardWord < Redcar::EditTabCommand
+      key  "Global/Ctrl+F"
+      icon :GO_FORWARD
+      
+      def execute(tab)
+        tab.doc.forward_word
+      end
+    end
+    
+    class BackwardWord < Redcar::EditTabCommand
+      key  "Global/Ctrl+B"
+      icon :GO_BACK
+      
+      def execute(tab)
+        tab.doc.backward_word
+      end
+    end
+    
+    main_menu "File" do
+      item "New",        NewTab
+      item "Open",       OpenTab
+      item "Save",       SaveTab
+      item "Close",      CloseTab
+      item "Close All",  CloseAllTabs
+      separator
+      item "Quit",       Quit
+    end
+      
+    main_menu "Edit" do
+      item "Forward Word",    ForwardWord
+      item "Backward Word",   BackwardWord
+      separator
+    end
+      
     context_menu "Pane" do
       item "Split Horizontal",  SplitHorizontal
       item "Split Vertical",    SplitVertical

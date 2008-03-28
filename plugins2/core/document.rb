@@ -24,6 +24,14 @@ module Redcar
       end
     end
 
+    def forward_word
+      place_cursor(cursor_iter.forward_word_end!)
+    end
+    
+    def backward_word
+      place_cursor(cursor_iter.backward_word_start!)
+    end
+    
     def cursor=(obj)
       place_cursor(iter(obj))
     end

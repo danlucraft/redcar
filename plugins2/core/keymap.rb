@@ -109,7 +109,11 @@ module Redcar
         if com.is_a? Proc
           com.call
         elsif com.ancestors.include? Redcar::Command
-          com.new.do
+          if com.operative?
+            com.new.do
+          else
+            puts "command inoperative: #{com}"
+          end
         end
         true
       end

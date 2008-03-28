@@ -36,6 +36,8 @@ module Redcar
       bus("/redcar/commands/#{klass}").data = klass
       @child_commands ||= []
       @child_commands << klass
+#      puts ":inherited: #{klass} < #{self}"
+      klass.update_operative
     end
     
     def self.child_commands
@@ -129,6 +131,7 @@ module Redcar
     
     def self.active=(val)
       @sensitive_active = val
+#      puts "#{self}.active = #{val.inspect}"
       update_operative
     end
     
@@ -143,6 +146,7 @@ module Redcar
                    else
                      false
                    end
+#      puts "com: #{self}: #{old.inspect} -> #{@operative.inspect}"
       if old != @operative and @menu
         Redcar::MenuDrawer.set_active(@menu, @operative)
       end

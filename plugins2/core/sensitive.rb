@@ -27,7 +27,8 @@ module Redcar
     def self.check_hook(hook)
       setup_objects
       @hooks[hook].each do |name|
-        val = @blocks[name].call
+        val = @blocks[name].call.to_bool
+#        puts "#{name.inspect}: #{@value[name].inspect} -> #{val.inspect}"
         if val != @value[name]
           @value[name] = val
           @objects[name].each do |obj|

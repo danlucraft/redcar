@@ -24,7 +24,8 @@ module Redcar
           nt.focus
           nt.contents = "# This is Redcar, scriptable editing for Linux.\n" + 
                         "# Copyright Daniel Lucraft 2008\n"+
-                        "# \n# In Redcar, the super key is the 'Windows' key, usually next to Alt.\n"+
+                        "# \n# In Redcar, the super key is the 'Windows' key,"+
+                        "usually next to Alt.\n"+
                         "class Red < Car\n  def foobar\n    puts :foo "
           nt.cursor = 0
           nt.modified = false
@@ -35,8 +36,8 @@ module Redcar
 #         m.command = :startpage
 #         m.icon    = :CUT
 #       end
-      
-      def self.load(plugin)
+
+      def self.load(plugin
         if Redcar.preferences("General/Start Page/Open at start up").to_bool
           Redcar.hook :startup do 
             p :sat
