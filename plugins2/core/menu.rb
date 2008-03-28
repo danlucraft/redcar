@@ -207,6 +207,7 @@ module Redcar
             if slot.attr_menu_entry
               gtk_menuitem = make_gtk_menuitem(slot)
               connect_item_signal(slot.data, gtk_menuitem)
+              gtk_menuitem.sensitive = slot.data.operative?
             else
               gtk_menuitem = make_gtk_menuitem(slot)
               gtk_submenu = Gtk::Menu.new
@@ -214,7 +215,6 @@ module Redcar
               draw_menus1(slot, gtk_submenu)
             end
             slot.attr_gtk_menuitem = gtk_menuitem
-            gtk_menuitem.sensitive = slot.data.operative?
           end
           gtk_menu.append(gtk_menuitem)
           gtk_menuitem.show

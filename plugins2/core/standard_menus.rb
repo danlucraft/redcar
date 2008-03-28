@@ -55,8 +55,13 @@ module Redcar
       key "Global/Ctrl+W"
       icon :CLOSE
       
+      def initialize(tab=nil)
+        @tab = tab
+      end
+      
       def execute(tab)
-        tab.close if tab
+        @tab ||= tab
+        @tab.close if @tab
       end
     end
     
@@ -143,6 +148,48 @@ module Redcar
       end
     end
     
+    class Undo < Redcar::EditTabCommand
+      key  "Ctrl+Z"
+      
+      def execute(tab)
+        tab.doc.undo
+      end
+    end
+    
+    class Redo < Redcar::EditTabCommand
+      key  "Shift+Ctrl+Z"
+      
+      def execute(tab)
+        tab.doc.redo
+      end
+    end
+    
+    class Cut < Redcar::EditTabCommand
+      key       "Ctrl+X"
+#       sensitive :selected_text
+      
+      def execute(tab)
+        tab.doc.cut
+      end
+    end
+    
+    class Copy < Redcar::EditTabCommand
+      key       "Ctrl+C"
+#       sensitive :selected_text
+      
+      def execute(tab)
+        tab.doc.copy
+      end
+    end
+    
+    class Paste < Redcar::EditTabCommand
+      key  "Ctrl+V"
+      
+      def execute(tab)
+        tab.doc.paste
+      end
+    end
+    
     class SelectLine < Redcar::EditTabCommand
       key  "Shift+Super+L"
       
@@ -168,6 +215,64 @@ module Redcar
       end
     end
     
+    class Find < Redcar::EditTabCommand
+      key  "Global/Ctrl+F"
+      icon :FIND
+      norecord
+      
+      class FindSpeedbar < Redcar::Speedbar
+        label "Find:"
+        textbox :query_string
+        button "Go", nil, "Return" do |sb|
+          FindNextRegex.new(Regexp.new(sb.query_string)).do
+        end
+      end
+  
+      def execute(tab)
+        sp = FindSpeedbar.instance
+        sp.show(win)
+      end
+    end
+    
+    class FindNextRegex < Redcar::EditTabCommand
+      def initialize(re)
+        @re = re
+      end
+      
+      def to_s
+        "#{self.class}: @re=#{@re.inspect}"
+      end
+      
+      def execute(tab)
+        # first search the remainder of the current line
+        curr_line = tab.doc.get_line.string
+        curr_line = curr_line[tab.doc.cursor_line_offset..-1]
+        if curr_line =~ @re
+          line_iter = tab.doc.line_start(tab.doc.cursor_line)
+          startoff = line_iter.offset + $`.length+tab.doc.cursor_line_offset
+          endoff   = startoff + $&.length
+          tab.doc.select(startoff, endoff)
+        else
+          # next search the rest of the lines
+          line_num = tab.doc.cursor_line+1
+          curr_line = tab.doc.get_line(line_num)
+          until !curr_line or found = (curr_line.string =~ @re)
+            line_num += 1
+            curr_line = tab.doc.get_line(line_num)
+          end
+          if found
+            line_iter = tab.doc.line_start(line_num)
+            startoff = line_iter.offset + $`.length
+            endoff   = startoff + $&.length
+            tab.doc.select(startoff, endoff)
+            unless tab.view.cursor_onscreen?
+              tab.view.scroll_mark_onscreen(tab.doc.cursor_mark)
+            end
+          end
+        end
+      end
+    end
+    
     main_menu "File" do
       item "New",        NewTab
       item "Open",       OpenTab
@@ -179,11 +284,20 @@ module Redcar
     end
       
     main_menu "Edit" do
-      item "Forward Word",    ForwardWord
-      item "Backward Word",   BackwardWord
+      item "Undo",     Undo
+      item "Redo",     Redo
       separator
+      item "Cut",      Cut
+      item "Copy",     Copy
+      item "Paste",    Paste
+      separator
+      item "Find",     Find
+      submenu "Move" do
+        item "Forward Word",    ForwardWord
+        item "Backward Word",   BackwardWord
+      end
       submenu "Select" do
-        item "Line", SelectLine
+        item "Line",            SelectLine
       end
     end
       

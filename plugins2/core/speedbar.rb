@@ -79,6 +79,7 @@ module Redcar
       Keymap.push_onto(win, "Speedbar")
       @spbar.visible = true
       @visible = true
+      @focus_widget.grab_focus
       show_all
     end
     
@@ -101,6 +102,7 @@ module Redcar
         self.close
       end
       add_key("Escape") { self.close }
+      @focus_widget = nil
       @spbar.class.items.each do |item|
         send "add_#{item[0]}", *item[1..-1]
       end
@@ -124,6 +126,7 @@ module Redcar
       add_key(key) { toggle.active = !toggle.active? } if key
       @value[name] = fn { toggle.active }
       pack_start(toggle, false)
+      @focus_widget ||= toggle
     end
     
     def add_textbox(name)
@@ -132,6 +135,7 @@ module Redcar
       e.modify_font(Pango::FontDescription.new("Monospace 10"))
       @value[name] = fn { e.text }
       pack_start(e)
+      @focus_widget ||= e
     end
     
     def add_button(text, icon, key, block=nil, &blk)
@@ -151,6 +155,7 @@ module Redcar
       end
       add_key(key) { b.activate } if key
       pack_start(b, false)
+      @focus_widget ||= b
     end
     
     def value(name)

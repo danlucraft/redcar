@@ -12,11 +12,8 @@ class Object
   end
   
   def to_bool
-    case self
-    when nil, false, "false"
+    if [nil, false, "false"].include? self
       return false
-    when true, "true"
-      return true
     end
     true
   end
@@ -55,6 +52,24 @@ end
 class String
   def to_title_symbol
     self.downcase.gsub(/ |-/, "_").intern
+  end
+  
+  def delete_slice(range)
+    s = range.begin
+    e = range.end
+    s = self.length + s if s < 0
+    e = self.length + e if e < 0
+    s, e = e, s if s > e
+    first = self[0..(s-1)]
+    second = self[(e+1)..-1]
+    if s == 0
+      first = ""
+    end
+    if e >= self.length-1
+      second = ""
+    end
+    self.replace(first+second)
+    self
   end
 end
 

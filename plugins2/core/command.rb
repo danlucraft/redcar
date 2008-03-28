@@ -296,6 +296,9 @@ module Redcar
       end
     end
     
+    def to_s
+      self.class.to_s
+    end
   end
   
   class ArbitraryCodeCommand < Command #:nodoc:

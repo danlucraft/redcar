@@ -117,7 +117,6 @@ module Redcar
         nb = tab.pane.gtk_notebook
         unless nb.destroyed?
           nb.remove_page(nb.page_num(tab.gtk_nb_widget))
-          p :removed_page
           Tab.widget_to_tab.delete tab.gtk_nb_widget
           if nb.n_pages > 0
             update_focussed_tab(Tab.widget_to_tab[nb.page_child])

@@ -23,6 +23,11 @@ module Redcar
         tab and tab.is_a? EditTab and tab.modified
       end
       
+#       Sensitive.register(:selected_text, 
+#                          [:open_window, :new_tab, :close_tab, 
+#                           :after_focus_tab]) do
+#         win and tab and tab.is_a? EditTab
+#       end
       plugin.transition(FreeBASE::LOADED)
     end
     

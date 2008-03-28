@@ -6,7 +6,7 @@ module Com::RedcarIDE
       norecord
       def execute(tab)
         puts "Command History"
-        puts Redcar::CommandHistory.history.reverse[0..15].map{|com| "  " + com.class.to_s}
+        puts Redcar::CommandHistory.history.reverse[0..15].map{|com| "  " + com.to_s}
       end
     end
 

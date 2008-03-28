@@ -176,7 +176,13 @@ module Redcar
       @parser.max_view = visible_lines[1] + 100
     end
     
+    # Indents line line_num according to the indenting on the previous
+    # line and whether the previous and current line have any
+    # starting or stopping fold markers. Repositions the cursor to
+    # before the text on the line if the cursor was already on the 
+    # line.
     def indent_line(line_num)
+      cursor_on_line = ( buffer.cursor_line == line_num )
       delta = @parser.indent_delta(line_num)
       next_delta = @parser.indent_delta(line_num+1)
       preline = buffer.get_line(line_num-1)
@@ -198,15 +204,26 @@ module Redcar
         puts "inconsistent use of tabs and spaces! No indenting."
       elsif pre_indent.include? "\t" or pre_indent == ""
         pre_length = pre_indent.length
+        post_length = [pre_length+delta, 0].max
         buffer.delete(buffer.line_start(line_num), buffer.line_end1(line_num))
-        buffer.insert(buffer.line_start(line_num), "\t"*([pre_length+delta, 0].max)+curr_text)
+        buffer.insert(buffer.line_start(line_num), "\t"*post_length+curr_text)
       elsif curr_indent.include? " " or curr_indent == ""
         insize = Redcar::Preference.get("Editing/Indent size")
         pre_length = pre_indent.length
+        post_length = [pre_length+delta*insize, 0].max
         buffer.delete(buffer.line_start(line_num), buffer.line_end1(line_num))
-        buffer.insert(buffer.line_start(line_num), " "*([pre_length+delta*insize, 0].max)+curr_text)
+        buffer.insert(buffer.line_start(line_num), " "*post_length+curr_text)
+      end
+      if cursor_on_line
+        cursor_offset = buffer.line_start(line_num).offset+post_length
+        buffer.place_cursor(buffer.iter(cursor_offset))
       end
       line = buffer.get_line(line_num)
+    end
+    
+    def cursor_onscreen?
+      visible_lines[0] < buffer.cursor_line and
+        buffer.cursor_line < visible_lines[1]
     end
   end
 end
@@ -227,26 +244,6 @@ unless defined? SyntaxLogger
   SyntaxLogger = Logger.new('syntax.log')
   SyntaxLogger.datetime_format = "%H:%M:%S"
   SyntaxLogger.level = Logger::DEBUG
-end
-
-class String
-  def delete_slice(range)
-    s = range.begin
-    e = range.end
-    s = self.length + s if s < 0
-    e = self.length + e if e < 0
-    s, e = e, s if s > e
-    first = self[0..(s-1)]
-    second = self[(e+1)..-1]
-    if s == 0
-      first = ""
-    end
-    if e >= self.length-1
-      second = ""
-    end
-    self.replace(first+second)
-    self
-  end
 end
 
 # C extension

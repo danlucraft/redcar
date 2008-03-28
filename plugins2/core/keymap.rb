@@ -23,7 +23,7 @@ module Redcar
       ks = gdk_eventkey.state - Gdk::Window::MOD2_MASK
       ks = ks - Gdk::Window::MOD4_MASK
       key = Gtk::Accelerator.get_label(kv, ks)
-      p key
+#      p key
       unless key[-2..-1] == " L" or key[-2..-1] == " R"
         bits = key.split("+")
         ctrl = (bits.include?("Ctrl")  ? 1 : 0)
@@ -107,12 +107,14 @@ module Redcar
     def self.execute_key_on_keymap(key_name, keymap_path)
       if com = bus("/redcar/keymaps/#{keymap_path}/#{key_name}").data
         if com.is_a? Proc
+#          puts "[Red] executing arbitrary code"
           com.call
         elsif com.ancestors.include? Redcar::Command
           if com.operative?
+#            puts "[Red] executing #{com}"
             com.new.do
           else
-            puts "command inoperative: #{com}"
+#            puts "[Red] command inoperative: #{com}"
           end
         end
         true

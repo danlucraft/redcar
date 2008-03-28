@@ -72,10 +72,10 @@ module Redcar
         @gtk_nb_widget.pack_end(gtk_widget)
       end
       
-      $tabcount ||= 0
-      $tabcount += 1
-      @label = Gtk::NotebookLabel.new(self, "#new#{$tabcount}") do
-        self.close
+      @@tabcount ||= 0
+      @@tabcount += 1
+      @label = Gtk::NotebookLabel.new(self, "#new#{@@tabcount}") do
+        Coms::CloseTab.new(self).do
       end
       @label_angle = :horizontal
       

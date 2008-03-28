@@ -5,7 +5,7 @@ module Com::RedcarIDE
   class PreferencesEditor < Redcar::Plugin
     
     class OpenPreferencesDialog < Redcar::Command
-      menu "Options/Preferences"
+      menu "Edit/Preferences ..."
       icon :PREFERENCES
       def execute
         PreferencesDialog.new.run
