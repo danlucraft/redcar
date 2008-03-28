@@ -54,7 +54,6 @@ class Redcar::EditView
       @themes.keys
     end
     
-#    include DebugPrinter
     attr_accessor :name, :uuid, :global_settings
   
     def initialize(hash)

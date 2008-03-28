@@ -600,10 +600,8 @@ Scope* scope_at(Scope* s, TextLoc* loc) {
       child = g_node_last_child(s);
       child_data = child->data;
       if (textloc_valid(&child_data->end) && 
-          textloc_lt(&child_data->end, loc)) {
-        puts("last");
+          textloc_lt(&child_data->end, loc))
         return s;
-      }
       for (i = 0; i < g_node_n_children(s); i++) {
         child = g_node_nth_child(s, i);
         scope = scope_at(child, loc);

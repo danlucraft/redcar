@@ -78,6 +78,10 @@ module Gtk
     end
   end
   
+  class TextTag
+    attr_accessor :edit_view_depth
+  end
+  
   # A simple notebook "label" (HBox container) with a text label and 
   # a close button.
   class NotebookLabel < HBox

@@ -214,7 +214,7 @@ class Redcar::EditView
       check_line_exists(line_num)
       @scope_last_line = line_num if line_num > @scope_last_line
       
-      lp = LineParser.new(self, line_num, line, @ending_scopes[line_num-1])
+      lp = LineParser.new(self, line_num, line.string, @ending_scopes[line_num-1])
       
       while lp.any_line_left?
         lp.scan_line
@@ -270,12 +270,12 @@ class Redcar::EditView
     
     def reset_table_priorities
       tags = all_tags.sort_by do |tag|
-        if tag.name
-          tag.name =~ /\((\d+)\)/
-          $1.to_i
-        else 
-          -1
-        end
+        tag.edit_view_depth ||= if tag.name
+                                  tag.name =~ /\((\d+)\)/
+                                  $1.to_i
+                                else 
+                                  -1
+                                end
       end
       tags.each_with_index do |tag, i|
         tag.priority = i
