@@ -18,7 +18,7 @@ class Redcar::EditView
       @max_view = 100
       @changes = []
       @scope_last_line = 0
-      @parse_all = true
+      @parse_all = false
       connect_buffer_signals
       unless @buf.text == ""
         raise "Parser#initialize called with not empty buffer."
