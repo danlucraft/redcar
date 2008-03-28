@@ -143,6 +143,13 @@ module Redcar
       end
     end
     
+    class SelectLine < Redcar::EditTabCommand
+      key  "Shift+Super+L"
+      
+      def execute(tab)
+      end
+    end
+    
     class ForwardWord < Redcar::EditTabCommand
       key  "Global/Ctrl+F"
       icon :GO_FORWARD
@@ -175,6 +182,9 @@ module Redcar
       item "Forward Word",    ForwardWord
       item "Backward Word",   BackwardWord
       separator
+      submenu "Select" do
+        item "Line", SelectLine
+      end
     end
       
     context_menu "Pane" do
