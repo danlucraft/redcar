@@ -365,6 +365,11 @@ module Redcar
       default 2 
     end
     
+    preference "Editing/Use spaces instead of tabs" do |p|
+      default true
+      type    :toggle
+    end
+    
     preference "Editing/Wrap words" do
       default true
       type    :toggle

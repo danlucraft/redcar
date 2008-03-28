@@ -34,7 +34,8 @@ class Redcar::EditView
     def initialize(hash, grammar)
       super(hash, grammar)
       
-      @match = Oniguruma::ORegexp.new(hash["match"], :options => Oniguruma::OPTION_CAPTURE_GROUP)
+      @match = Oniguruma::ORegexp.new(hash["match"], 
+                 :options => Oniguruma::OPTION_CAPTURE_GROUP)
     end
     
     def patterns
@@ -56,7 +57,8 @@ class Redcar::EditView
     
     def initialize(hash, grammar)
       super(hash, grammar)
-      @begin = Oniguruma::ORegexp.new(hash["begin"]||"", :options => Oniguruma::OPTION_CAPTURE_GROUP)
+      @begin = Oniguruma::ORegexp.new(hash["begin"]||"", 
+                 :options => Oniguruma::OPTION_CAPTURE_GROUP)
       @end   = hash["end"] || hash["endif"] # FIXME : what is "endif"??
       count = 0
       @patterns = (hash["patterns"]||[]).collect do |this_hash|
@@ -221,7 +223,7 @@ class Redcar::EditView
       @file_types = @grammar["fileTypes"]
       if @grammar["firstLineMatch"]
         @first_line_match = Oniguruma::ORegexp.new(@grammar["firstLineMatch"], 
-                                                   :options => Oniguruma::OPTION_CAPTURE_GROUP)
+                              :options => Oniguruma::OPTION_CAPTURE_GROUP)
       end
       @folding_start_marker = @grammar["foldingStartMarker"]
       @folding_stop_marker = @grammar["foldingStopMarker"]
@@ -249,7 +251,6 @@ class Redcar::EditView
     end
     
     def inspect
-      #        "<grammar:#{@name}, scope:#{@scope_name}, patterns:[#{@patterns.map{|p| (p.respond_to?(:name) ? p.name : "[noname]")}.join(", ")}]>"
       "<grammar:#{@name}, scope:#{@scope_name}>"
     end
     

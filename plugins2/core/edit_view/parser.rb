@@ -580,28 +580,6 @@ class Redcar::EditView
       @root.line_end(num)
     end
     
-    def indent_delta(line_num)
-      if line_num == 0
-        return 0
-      end
-      line = @buf.get_line(line_num-1) 
-      fsm1 = scope_at_line_start(line_num-1).root.grammar.folding_start_marker
-      fsm2 = scope_at_line_start(line_num-1).root.grammar.folding_stop_marker
-      start_re = Oniguruma::ORegexp.new(fsm1)
-      stop_re  = Oniguruma::ORegexp.new(fsm2)
-      starts = start_re.match(line)
-      stops  = stop_re.match(line)
-      if !starts and !stops
-        0
-      elsif starts and !stops
-        1
-      elsif !starts and stops
-        -1
-      elsif starts and stops
-        0
-      end
-    end
-    
     # ..oO0# UNCLEAN #0Oo..
     
     def add_line(line)

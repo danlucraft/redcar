@@ -6,7 +6,9 @@ module Redcar::Tests
   class ParserTests < Test::Unit::TestCase
     def self.clean_parser_and_buffer(grh)
       if grh.is_a? Redcar::EditView::Grammar
-        gr = grh
+        gr = gr
+      elsif grh.is_a? String
+        gr = Redcar::EditView::Grammar.grammar(:name => grh)
       else
         gr = Redcar::EditView::Grammar.new(grh)
       end

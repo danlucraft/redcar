@@ -31,13 +31,16 @@ plugins:
     require_path:    core/edit_view
     startup_module:  Redcar::EditView
     load_dependencies:
-        core-plugin: "*"
-        core-keymap: "*"
+      core-plugin: "*"
+      core-bundle: "*"
+      core-keymap: "*"
+    start_dependencies:
+      core-standard_menus: "*"
     tests:
       - path: core/tests/ev_parser_test.rb
         testcase: Redcar::Tests::ParserTests
-      - path: core/tests/ev_parser_indent_test.rb
-        testcase: Redcar::Tests::ParserIndentTests
+      - path: core/tests/ev_indenter_test.rb
+        testcase: Redcar::Tests::IndenterTests
       - path: core/tests/ev_grammar_test.rb
         testcase: Redcar::Tests::GrammarTests
 
@@ -59,6 +62,14 @@ plugins:
     startup_module:  Redcar::Gui
     start_dependencies:
         core-app: "*"
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-bundle
+    autoload:        true
+    require_path:    core/bundle
+    startup_module:  Redcar::Bundle
+    load_dependencies:
+      core-app: "*"
 
   - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-app

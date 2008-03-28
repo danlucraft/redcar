@@ -74,7 +74,7 @@ class Redcar::EditView
       applicables = []
       @settings.each do |setting|
         if setting['scope']
-          if rating = applicable?(setting['scope'], scopes)
+          if rating = Theme.applicable?(setting['scope'], scopes)
             applicables << [rating, setting]
           end
         end
@@ -110,13 +110,13 @@ class Redcar::EditView
     end
     
     # Given a scope selector, returns its specificity. E.g keyword.if == 2 and string constant == 2
-    def specificity(selector)
+    def self.specificity(selector)
       selector.split(/\.|\s/).length
     end
     
     # Returns false if the selector is not applicable to the scope, 
     # and returns the specificity of the selector if it is applicable.
-    def applicable?(selector, scopes)
+    def self.applicable?(selector, scopes)
       selector.split(',').each do |subselector|
         subselector = subselector.strip
         
@@ -161,7 +161,7 @@ class Redcar::EditView
           end
           if pos_match and not neg_match
             spec = positive_subselector_components.
-              inject(0) {|m, c| m += specificity(c) }
+              inject(0) {|m, c| m += Theme.specificity(c) }
             last_matching_index = 0
             last_num_elements.each_with_index {|e, i| last_matching_index = i if e > 0}
             return [last_matching_index, last_num_elements.reverse]

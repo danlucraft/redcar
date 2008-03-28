@@ -9,6 +9,7 @@ module Redcar
       Redcar::EditView.init(:bundles_dir => "textmate/Bundles/",
                             :themes_dir  => "textmate/Themes/",
                             :cache_dir   => "cache/")
+      Redcar::EditView::Indenter.lookup_indent_rules
       plugin.transition(FreeBASE::LOADED)
     end
     
@@ -51,6 +52,7 @@ module Redcar
       apply_theme
       create_root_scope('Ruby')
       create_parser
+      create_indenter
     end
 
     def create_grammar_combo
@@ -93,16 +95,6 @@ module Redcar
           end
         end
       end
-      
-      # Set up indenting on Return
-      buffer.signal_connect_after("insert_text") do |_, iter, text, length|
-        line_num = iter.line
-        if text == "\n"
-          indent_line(line_num-1) if line_num > 1
-          indent_line(line_num)   if line_num > 0
-        end
-        false
-      end
     end
     
     def set_font(font)
@@ -121,6 +113,10 @@ module Redcar
       raise "trying to create colourer with no theme!" unless @theme
       @colourer = Redcar::EditView::Colourer.new(self, @theme)
       @parser = Parser.new(buffer, @root, [], @colourer)
+    end
+    
+    def create_indenter
+      @indenter = Indenter.new(buffer, @parser)
     end
     
     def change_root_scope(gr_name, should_colour=true)
@@ -160,6 +156,7 @@ module Redcar
       newbuffer.max_undo_levels = 0
       newbuffer.text = text
       @parser.buffer = newbuffer
+      @indenter.buffer = newbuffer
     end
     
     def iterize(offset)
@@ -174,51 +171,6 @@ module Redcar
     
     def view_changed
       @parser.max_view = visible_lines[1] + 100
-    end
-    
-    # Indents line line_num according to the indenting on the previous
-    # line and whether the previous and current line have any
-    # starting or stopping fold markers. Repositions the cursor to
-    # before the text on the line if the cursor was already on the 
-    # line.
-    def indent_line(line_num)
-      cursor_on_line = ( buffer.cursor_line == line_num )
-      delta = @parser.indent_delta(line_num)
-      next_delta = @parser.indent_delta(line_num+1)
-      preline = buffer.get_line(line_num-1)
-      line = buffer.get_line(line_num)
-      if delta == 1 and next_delta == -1
-        delta = 0
-      elsif next_delta == -1
-        delta = -1
-      elsif delta == -1
-        delta = 0
-      end
-      line.string.chomp =~ /^(\s*)(.*)/
-      curr_indent = $1
-      curr_text   = $2
-      preline.string.chomp =~ /^(\s*)(.*)/
-      pre_indent  = $1
-      pre_text    = $2
-      if pre_indent.include? "\t" and pre_indent.include? " "
-        puts "inconsistent use of tabs and spaces! No indenting."
-      elsif pre_indent.include? "\t" or pre_indent == ""
-        pre_length = pre_indent.length
-        post_length = [pre_length+delta, 0].max
-        buffer.delete(buffer.line_start(line_num), buffer.line_end1(line_num))
-        buffer.insert(buffer.line_start(line_num), "\t"*post_length+curr_text)
-      elsif curr_indent.include? " " or curr_indent == ""
-        insize = Redcar::Preference.get("Editing/Indent size")
-        pre_length = pre_indent.length
-        post_length = [pre_length+delta*insize, 0].max
-        buffer.delete(buffer.line_start(line_num), buffer.line_end1(line_num))
-        buffer.insert(buffer.line_start(line_num), " "*post_length+curr_text)
-      end
-      if cursor_on_line
-        cursor_offset = buffer.line_start(line_num).offset+post_length
-        buffer.place_cursor(buffer.iter(cursor_offset))
-      end
-      line = buffer.get_line(line_num)
     end
     
     def cursor_onscreen?
@@ -257,3 +209,4 @@ require File.dirname(__FILE__) + '/edit_view/colourer'
 require File.dirname(__FILE__) + '/edit_view/textloc'
 require File.dirname(__FILE__) + '/edit_view/fast_enum'
 require File.dirname(__FILE__) + '/edit_view/texttab_syntax'
+require File.dirname(__FILE__) + '/edit_view/indenter'

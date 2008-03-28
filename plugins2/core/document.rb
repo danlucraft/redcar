@@ -78,11 +78,7 @@ module Redcar
       elsif num > line_count-1
         return nil
       elsif num < 0
-        if num >= -line_count
-          return get_line(line_count+num).chars
-        else
-          return nil
-        end
+        return nil
       else
         end_iter = line_start(num+1)
       end
