@@ -179,7 +179,7 @@ module Redcar
     end
     
     def update_focussed_tab(tab) #:nodoc:
-      Hook.trigger :focus_tab do
+      Hook.trigger :focus_tab, tab do
         @previously_focussed_tab = @focussed_tab
         @focussed_tab = tab
       end

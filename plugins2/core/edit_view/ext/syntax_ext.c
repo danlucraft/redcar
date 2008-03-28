@@ -254,7 +254,7 @@ int scope_add_child(Scope* sp, Scope* sc) {
     lc = g_node_last_child(sp);
     lcd = lc->data;
     if (textloc_valid(&lcd->end) &&
-	textloc_gte(&sdc->start, &lcd->end)) {
+        textloc_gte(&sdc->start, &lcd->end)) {
       g_node_append(sp, sc);
       return 1;
     }
@@ -557,6 +557,37 @@ static VALUE rb_scope_overlaps(VALUE self, VALUE other) {
 
 // Scope children methods
 
+// old slow version
+/* Scope* scope_at(Scope* s, TextLoc* loc) { */
+/*   Scope *scope, *child; */
+/*   ScopeData *sd, *child_data; */
+/*   int i; */
+/*   sd = s->data; */
+/*   if (textloc_lte(&sd->start, loc) || G_NODE_IS_ROOT(s)) { */
+/*     if (!textloc_valid(&sd->end) || textloc_gt(&sd->end, loc)) { */
+/*       if (g_node_n_children(s) == 0) */
+/*         return s; */
+/*       child = g_node_last_child(s); */
+/*       child_data = child->data; */
+/*       if (textloc_valid(&child_data->end) &&  */
+/*           textloc_lt(&child_data->end, loc))  */
+/*         return s; */
+/*       for (i = 0; i < g_node_n_children(s); i++) { */
+/*         child = g_node_nth_child(s, i); */
+/*         scope = scope_at(child, loc); */
+/*         if (scope != NULL) */
+/*           return scope; */
+/*       } */
+/*       return s; */
+/*     } */
+/*     else */
+/*       return NULL; */
+/*   } */
+/*   else */
+/*     return NULL; */
+/* } */
+
+// new fast version
 Scope* scope_at(Scope* s, TextLoc* loc) {
   Scope *scope, *child;
   ScopeData *sd, *child_data;
@@ -565,17 +596,19 @@ Scope* scope_at(Scope* s, TextLoc* loc) {
   if (textloc_lte(&sd->start, loc) || G_NODE_IS_ROOT(s)) {
     if (!textloc_valid(&sd->end) || textloc_gt(&sd->end, loc)) {
       if (g_node_n_children(s) == 0)
-	return s;
+        return s;
       child = g_node_last_child(s);
       child_data = child->data;
       if (textloc_valid(&child_data->end) && 
-	  textloc_lt(&child_data->end, loc)) 
-	return s;
+          textloc_lt(&child_data->end, loc)) {
+        puts("last");
+        return s;
+      }
       for (i = 0; i < g_node_n_children(s); i++) {
-	child = g_node_nth_child(s, i);
-	scope = scope_at(child, loc);
-	if (scope != NULL)
-	  return scope;
+        child = g_node_nth_child(s, i);
+        scope = scope_at(child, loc);
+        if (scope != NULL)
+          return scope;
       }
       return s;
     }

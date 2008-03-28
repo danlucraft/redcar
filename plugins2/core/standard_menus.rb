@@ -149,7 +149,7 @@ module Redcar
     end
     
     class Undo < Redcar::EditTabCommand
-      key  "Ctrl+Z"
+      key  "Global/Ctrl+Z"
       
       def execute(tab)
         tab.doc.undo
@@ -157,7 +157,7 @@ module Redcar
     end
     
     class Redo < Redcar::EditTabCommand
-      key  "Shift+Ctrl+Z"
+      key  "Global/Shift+Ctrl+Z"
       
       def execute(tab)
         tab.doc.redo
@@ -165,7 +165,7 @@ module Redcar
     end
     
     class Cut < Redcar::EditTabCommand
-      key       "Ctrl+X"
+      key       "Global/Ctrl+X"
 #       sensitive :selected_text
       
       def execute(tab)
@@ -174,7 +174,7 @@ module Redcar
     end
     
     class Copy < Redcar::EditTabCommand
-      key       "Ctrl+C"
+      key       "Global/Ctrl+C"
 #       sensitive :selected_text
       
       def execute(tab)
@@ -183,7 +183,7 @@ module Redcar
     end
     
     class Paste < Redcar::EditTabCommand
-      key  "Ctrl+V"
+      key  "Global/Ctrl+V"
       
       def execute(tab)
         tab.doc.paste
@@ -191,9 +191,12 @@ module Redcar
     end
     
     class SelectLine < Redcar::EditTabCommand
-      key  "Shift+Super+L"
+      key  "Global/Super+Shift+L"
       
       def execute(tab)
+        doc = tab.doc
+        doc.select(doc.line_start(doc.cursor_line), 
+                   doc.line_end(doc.cursor_line))
       end
     end
     

@@ -1,7 +1,6 @@
 
 $spare_name = "aaaa"
 
-
 class RedcarSyntaxError < StandardError; end
 
 class Redcar::EditView
@@ -19,7 +18,7 @@ class Redcar::EditView
       @max_view = 100
       @changes = []
       @scope_last_line = 0
-      @parse_all = false
+      @parse_all = true
       connect_buffer_signals
       unless @buf.text == ""
         raise "Parser#initialize called with not empty buffer."
@@ -185,7 +184,7 @@ class Redcar::EditView
     def max_view=(val)
       old_max_view = @max_view
       @max_view = val
-      if @max_view > old_max_view and @max_view > @root.last_scope1.end.line
+      if @max_view > old_max_view and (!@root.last_scope1 or @max_view > @root.last_scope1.end.line)
         lazy_parse_from(old_max_view)
       end
     end
@@ -215,7 +214,7 @@ class Redcar::EditView
       check_line_exists(line_num)
       @scope_last_line = line_num if line_num > @scope_last_line
       
-      lp = LineParser.new(self, line_num, line)
+      lp = LineParser.new(self, line_num, line, @ending_scopes[line_num-1])
       
       while lp.any_line_left?
         lp.scan_line
@@ -293,11 +292,11 @@ class Redcar::EditView
       attr_accessor(:pos, :start_scope, :current_scope, :active_grammar,
                     :all_scopes, :closed_scopes, :matching_patterns, :rest_line,
                     :need_new_patterns, :new_scope_markers)
-      def initialize(p, line_num, line)
+      def initialize(p, line_num, line, opening_scope=nil)
         @parser = p
         @line = line
         @line_num = line_num
-        @start_scope = @current_scope = p.scope_at_line_start(line_num)
+        @start_scope = @current_scope = (opening_scope || p.scope_at_line_start(line_num))
         @active_grammar = p.grammar_for_scope(@current_scope)
         @pos = 0
         @all_scopes =  [@current_scope]

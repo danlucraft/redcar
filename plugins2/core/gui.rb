@@ -23,7 +23,7 @@ module Redcar
           puts "starting Gui.main"
           Gtk.main
           Hook.trigger(:redcar_start)
-        rescue => e
+        rescue Object => e
           $stderr.puts str=<<ERR
 
 ---------------------------

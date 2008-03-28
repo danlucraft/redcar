@@ -15,6 +15,20 @@ module Redcar
     
     def self.start(plugin) #:nodoc:
       Keymap.push_onto(self, "EditView")
+      Hook.attach :after_open_window do
+        create_grammar_combo
+      end
+      Hook.attach :after_focus_tab do |tab|
+        gtk_combo_box = bus('/gtk/window/statusbar/grammar_combo').data
+        if tab and tab.is_a? EditTab
+          list = Redcar::EditView::Grammar.names.sort
+          gtk_grammar_combo_box.sensitive = true
+          gtk_grammar_combo_box.active = list.index(tab.view.parser.root.grammar.name)
+        else
+          gtk_grammar_combo_box.sensitive = false
+          gtk_grammar_combo_box.active = -1
+        end
+      end
       plugin.transition(FreeBASE::RUNNING)
     end
     
@@ -22,6 +36,29 @@ module Redcar
       Keymap.remove_from(self, "EditView")
       Redcar::EditView::Theme.cache
       plugin.transition(FreeBASE::LOADED)
+    end
+    
+    def self.create_grammar_combo
+# When an EditView is created in a window, this needs to go onto it.
+      unless slot = bus('/gtk/window/statusbar/grammar_combo', true)
+        gtk_hbox = bus('/gtk/window/statusbar').data
+        gtk_combo_box = Gtk::ComboBox.new(true)
+        bus('/gtk/window/statusbar/grammar_combo').data = gtk_combo_box
+        list = Redcar::EditView::Grammar.names.sort
+        list.each {|item| gtk_combo_box.append_text(item) }
+        gtk_combo_box.signal_connect("changed") do |gtk_combo_box1|
+          if tab and tab.is_a? EditTab
+            tab.view.change_root_scope(list[gtk_combo_box1.active])
+          end
+        end
+        gtk_hbox.pack_end(gtk_combo_box, false)
+        gtk_combo_box.sensitive = false
+        gtk_combo_box.show
+      end
+    end
+    
+    def self.gtk_grammar_combo_box
+      bus('/gtk/window/statusbar/grammar_combo', true).data
     end
     
     class << self
@@ -40,7 +77,6 @@ module Redcar
     
     def initialize(options={})
       super()
-      create_grammar_combo
       set_gtk_cursor_colour
       self.tabs_width = 2
       self.left_margin = 5
@@ -55,22 +91,6 @@ module Redcar
       create_indenter
     end
 
-    def create_grammar_combo
-# When an EditView is created in a window, this needs to go onto it.
-      unless slot = bus('/gtk/window/statusbar/grammar_combo', true)
-        gtk_hbox = bus('/gtk/window/statusbar').data
-        gtk_combo_box = Gtk::ComboBox.new(true)
-        bus('/gtk/window/statusbar/grammar_combo').data = gtk_combo_box
-        list = Redcar::EditView::Grammar.names.sort
-        list.each {|item| gtk_combo_box.append_text(item) }
-        gtk_combo_box.signal_connect("changed") do |gtk_combo_box1|
-          tab.view.change_root_scope(list[gtk_combo_box1.active])
-        end
-        gtk_hbox.pack_end(gtk_combo_box, false)
-        gtk_combo_box.show
-      end
-    end
-    
     def set_gtk_cursor_colour
       Gtk::RC.parse_string(<<-EOR)
     style "green-cursor" {

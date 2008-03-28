@@ -32,7 +32,7 @@ end
 
 if Redcar::App.ARGV.include? "--test-perf-load"
   RubyProf.start
-  Coms::OpenTab.new("/home/dan/projects/redcar/freebase2/lib/freebase/readers.rb").do
+  Coms::OpenTab.new("/home/dan/projects/rak/bin/rak").do
   result = RubyProf.stop
   printer = RubyProf::GraphHtmlPrinter.new(result)
   printer.print(STDOUT)
