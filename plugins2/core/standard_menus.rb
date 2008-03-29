@@ -180,7 +180,7 @@ module Redcar
 #       sensitive :selected_text
       
       def execute(tab)
-        tab.doc.cut
+        tab.view.cut_clipboard
       end
     end
     
@@ -189,7 +189,7 @@ module Redcar
 #       sensitive :selected_text
       
       def execute(tab)
-        tab.doc.copy
+        tab.view.copy_clipboard
       end
     end
     
@@ -197,7 +197,7 @@ module Redcar
       key  "Global/Ctrl+V"
       
       def execute(tab)
-        tab.doc.paste
+        tab.view.paste_clipboard
       end
     end
     

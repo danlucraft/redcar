@@ -1086,8 +1086,47 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
   return Qnil;
 }
 
-static VALUE mSyntaxExt, rb_mRedcar, rb_cEditView;
-static VALUE cScope, cTextLoc;
+/// LineParser
+
+typedef struct LineParser_ {
+  int line_length;
+} LineParser;
+
+
+void rb_line_parser_mark(LineParser* lp) {
+  return;
+}
+
+void rb_line_parser_destroy(LineParser* lp) {
+  return;
+}
+
+static VALUE rb_line_parser_alloc(VALUE klass) {
+  LineParser *lp = malloc(sizeof(LineParser));
+  VALUE obj;
+  obj = Data_Wrap_Struct(klass, rb_line_parser_mark, rb_line_parser_destroy, lp);
+  return obj;
+}
+
+static VALUE rb_line_parser_init(VALUE self, VALUE parser,
+                                 VALUE line_num, VALUE line, 
+                                 VALUE opening_scope) {
+  LineParser *lp;
+  Data_Get_Struct(self, LineParser, lp);
+  lp->line_length = RSTRING_LEN(line);
+  rb_funcall(self, rb_intern("initialize2"), 4, 
+             parser, line_num, line, opening_scope);
+  return self;
+}
+
+static VALUE rb_line_parser_line_length(VALUE self) {
+  LineParser *lp;
+  Data_Get_Struct(self, LineParser, lp);
+  return INT2FIX(lp->line_length);
+}
+
+static VALUE mSyntaxExt, rb_mRedcar, rb_cEditView, rb_cParser;
+static VALUE cScope, cTextLoc, cLineParser;
 
 void Init_syntax_ext() {
   // utility functions are in SyntaxExt
@@ -1147,4 +1186,10 @@ void Init_syntax_ext() {
 		rb_scope_delete_any_on_line_not_in, 2);
   rb_define_method(cScope, "clear_not_on_line",  rb_scope_clear_not_on_line, 1);
   rb_define_method(cScope, "remove_children_that_overlap", rb_scope_remove_children_that_overlap, 1);
+
+  rb_cParser = rb_eval_string("Redcar::EditView::Parser");
+  cLineParser = rb_define_class_under(rb_cParser, "LineParser", rb_cObject);
+  rb_define_alloc_func(cLineParser, rb_line_parser_alloc);
+  rb_define_method(cLineParser, "initialize", rb_line_parser_init, 4);
+  rb_define_method(cLineParser, "line_length", rb_line_parser_line_length, 0);
 }

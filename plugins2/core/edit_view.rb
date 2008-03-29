@@ -223,9 +223,6 @@ unless defined? SyntaxLogger
   SyntaxLogger.level = Logger::DEBUG
 end
 
-# C extension
-require File.dirname(__FILE__) + '/edit_view/ext/syntax_ext'
-
 require File.dirname(__FILE__) + '/edit_view/grammar'
 require File.dirname(__FILE__) + '/edit_view/scope'
 require File.dirname(__FILE__) + '/edit_view/parser'
@@ -233,3 +230,4 @@ require File.dirname(__FILE__) + '/edit_view/theme'
 require File.dirname(__FILE__) + '/edit_view/colourer'
 require File.dirname(__FILE__) + '/edit_view/textloc'
 require File.dirname(__FILE__) + '/edit_view/indenter'
+require File.dirname(__FILE__) + '/edit_view/ext/syntax_ext'
