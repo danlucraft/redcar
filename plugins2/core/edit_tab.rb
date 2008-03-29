@@ -87,6 +87,11 @@ module Redcar
         File.open(@filename, "w") {|f| f.puts document.text}
         self.modified = false
       end
+    end    
+
+    # Called by initialize to get the icon for the Tab's 'tab'
+    def tab_icon
+      :FILE
     end
   end
 end

@@ -51,6 +51,17 @@ module Redcar
       end
     end
     
+    class RevertTab < Redcar::EditTabCommand
+      icon :REVERT_TO_SAVED
+      sensitive :modified?
+      
+      def execute(tab)
+        filename = tab.filename
+        tab.close
+        OpenTab.new(filename).do
+      end
+    end
+    
     class CloseTab < Redcar::TabCommand
       key "Global/Ctrl+W"
       icon :CLOSE
@@ -279,10 +290,12 @@ module Redcar
     main_menu "File" do
       item "New",        NewTab
       item "Open",       OpenTab
+      separator
       item "Save",       SaveTab
+      item "Revert",     RevertTab
+      separator
       item "Close",      CloseTab
       item "Close All",  CloseAllTabs
-      separator
       item "Quit",       Quit
     end
       

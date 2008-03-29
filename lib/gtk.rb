@@ -88,12 +88,16 @@ module Gtk
     type_register
     
     # Creates a new notebook label labeled with the text *str*.
-    def initialize(tab, str='', &on_close)
+    def initialize(tab, str='', icon=nil, &on_close)
       super()
       self.homogeneous = false
       self.spacing = 4
       
       @box = Gtk::HBox.new
+      
+      if icon
+        @icon = Icon.get_image(icon, Gtk::IconSize::MENU)
+      end
       
       @label = Gtk::Label.new(str)
       
@@ -108,9 +112,9 @@ module Gtk
       
       pack_start(@box)
       
+      @box.pack_start(@icon, false, false, 5) if @icon
       @box.pack_start(@label, true, false, 0)
       @box.pack_start(@button, false, false, 0)
-      
       @button.signal_connect('clicked') do |widget, event|
         on_close.call if on_close
       end

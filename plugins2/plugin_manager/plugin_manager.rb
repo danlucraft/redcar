@@ -67,6 +67,10 @@ module Com::RedcarIDE
         end
       end
       
+      def tab_icon
+        :PREFERENCES
+      end
+      
       def build_menu
         @menu = Gtk::Menu.new
         item_reload = Gtk::MenuItem.new("Reload")

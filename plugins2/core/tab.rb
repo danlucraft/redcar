@@ -74,7 +74,7 @@ module Redcar
       
       @@tabcount ||= 0
       @@tabcount += 1
-      @label = Gtk::NotebookLabel.new(self, "#new#{@@tabcount}") do
+      @label = Gtk::NotebookLabel.new(self, "#new#{@@tabcount}", self.tab_icon) do
         Coms::CloseTab.new(self).do
       end
       @label_angle = :horizontal
@@ -148,6 +148,11 @@ module Redcar
     # Subclasses should override to replace this behaviour.
     def on_focus
       @gtk_tab_widget.grab_focus
+    end
+    
+    # Called by initialize to get the icon for the Tab's 'tab'.
+    def tab_icon
+      nil
     end
   end
 end
