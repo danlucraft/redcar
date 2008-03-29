@@ -331,7 +331,17 @@ class Redcar::EditView
         @rest_line = line
         @need_new_patterns = true
         @new_scope_markers = []
-        @first_new_scope_marker = nil
+        reset_scope_marker
+      end
+      
+      # use this method to compare ruby and C implementations.
+      def self.c_diff(name, rbv, cv, data=nil)
+        if rbv != cv
+          puts "'#{name}' C version differs. rb: #{rbv.inspect}," +
+            " c:#{cv.inspect}, data:#{data.inspect}"
+          gets
+        end
+        rbv != cv
       end
       
       def dump_info
@@ -472,27 +482,31 @@ class Redcar::EditView
       end
       
       def scan_line
-        @first_new_scope_marker = nil
+        reset_scope_marker
         if close_marker = current_scope_closes?
-          update_first_new_scope_marker(close_marker)
+          update_scope_marker(close_marker)
         end
         possible_patterns.each do |pattern|
           if nsm = match_pattern(pattern)
-            update_first_new_scope_marker(nsm)
+            update_scope_marker(nsm)
             matching_patterns << pattern if need_new_patterns
           end
         end          
       end
       
-      def any_markers?
+      def rbreset_scope_marker
+        @first_new_scope_marker = nil
+      end
+      
+      def rbany_markers?
         @first_new_scope_marker
       end
       
-      def get_first_scope_marker
+      def rbget_scope_marker
         @first_new_scope_marker
       end
       
-      def update_first_new_scope_marker(nsm)
+      def rbupdate_scope_marker(nsm)
         osm = @first_new_scope_marker
         unless osm
           @first_new_scope_marker = nsm
@@ -513,7 +527,7 @@ class Redcar::EditView
           expected_scope = get_expected_scope
         end
         
-        new_scope_marker = get_first_scope_marker
+        new_scope_marker = get_scope_marker
         from = new_scope_marker[:from]
         md   = new_scope_marker[:md]
         to   = new_scope_marker[:to] = md.end(0)

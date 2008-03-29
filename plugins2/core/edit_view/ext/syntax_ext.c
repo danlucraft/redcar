@@ -1138,22 +1138,15 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
 /// LineParser
 
 typedef struct LineParser_ {
-  int line_length;
-  int line_num;
-  int pos;
+  int    line_length;
+  int    line_num;
+  int    pos;
+  int    has_scope_marker;
+  int    sm_from;
+  VALUE  sm_pattern;
+  VALUE  sm_matchdata;
+  int    sm_hint;
 } LineParser;
-
-#define SINGLE       0
-#define OPEN_DOUBLE  1
-#define CLOSE_DOUBLE 2
-
-typedef struct ScopeMarker_ {
-  int   type;
-  VALUE pattern;
-  int   from;
-  int   to;
-  VALUE matchdata;
-} ScopeMarker;
 
 void rb_line_parser_mark(LineParser* lp) {
   return;
@@ -1178,6 +1171,7 @@ static VALUE rb_line_parser_init(VALUE self, VALUE parser,
   lp->line_length = RSTRING_LEN(line);
   lp->line_num    = FIX2INT(line_num);
   lp->pos         = 0;
+  lp->has_scope_marker = 0;
   rb_funcall(self, rb_intern("initialize2"), 3, 
              parser, line, opening_scope);
   return self;
@@ -1206,6 +1200,83 @@ static VALUE rb_line_parser_set_pos(VALUE self, VALUE newpos) {
   Data_Get_Struct(self, LineParser, lp);
   lp->pos = FIX2INT(newpos);
   return newpos;
+}
+
+static VALUE rb_line_parser_reset_scope_marker(VALUE self) {
+  LineParser *lp;
+  Data_Get_Struct(self, LineParser, lp);
+  lp->has_scope_marker = 0;
+  return Qnil;
+}
+
+static VALUE rb_line_parser_any_scope_markers(VALUE self) {
+  LineParser *lp;
+  Data_Get_Struct(self, LineParser, lp);
+  if (lp->has_scope_marker)
+    return Qtrue;
+  return Qfalse;
+}
+
+static VALUE rb_line_parser_get_scope_marker(VALUE self) {
+  LineParser *lp;
+  Data_Get_Struct(self, LineParser, lp);
+  VALUE rb_scope_marker;
+  if (lp->has_scope_marker) {
+    rb_scope_marker = rb_hash_new();
+    rb_hash_aset(rb_scope_marker, ID2SYM(rb_intern("from")), INT2FIX(lp->sm_from));
+    //    rb_hash_aset(rb_scope_marker, rb_intern("to"), INT2FIX(lp->sm_to));
+    rb_hash_aset(rb_scope_marker, ID2SYM(rb_intern("md")), lp->sm_matchdata);
+    rb_hash_aset(rb_scope_marker, ID2SYM(rb_intern("pattern")), lp->sm_pattern);
+    return rb_scope_marker;
+  }
+  return Qnil;
+}
+
+int line_parser_update_scope_marker(LineParser *lp,
+                                    int new_from, VALUE new_pattern, VALUE new_md) {
+  int new_hint;
+  if (rb_funcall(new_pattern, rb_intern("=="), 1, ID2SYM(rb_intern("close_scope"))) == Qtrue)
+    new_hint = 0;
+  else
+    new_hint = FIX2INT(rb_funcall(new_pattern, rb_intern("hint"), 0));
+  if (!lp->has_scope_marker) {
+    lp->has_scope_marker = 1;
+    lp->sm_from = new_from;
+    lp->sm_pattern = new_pattern;
+    lp->sm_matchdata = new_md;
+    lp->sm_hint = new_hint;
+  }
+  else {
+    if (new_from < lp->sm_from) {
+      lp->has_scope_marker = 1;
+      lp->sm_from = new_from;
+      lp->sm_pattern = new_pattern;
+      lp->sm_matchdata = new_md;
+      lp->sm_hint = new_hint;
+    }
+    else {
+      if (new_from == lp->sm_from && new_hint < lp->sm_hint) {
+        lp->has_scope_marker = 1;
+        lp->sm_from = new_from;
+        lp->sm_pattern = new_pattern;
+        lp->sm_matchdata = new_md;
+        lp->sm_hint = new_hint;
+      }
+    }
+  }
+  return 0;
+}
+
+static VALUE rb_line_parser_update_scope_marker(VALUE self, VALUE rb_nsm) {
+  LineParser *lp;
+  Data_Get_Struct(self, LineParser, lp);
+  int new_from;
+  VALUE new_pattern, new_md;
+  new_from = NUM2INT(rb_hash_aref(rb_nsm, ID2SYM(rb_intern("from"))));
+  new_pattern = rb_hash_aref(rb_nsm, ID2SYM(rb_intern("pattern")));
+  new_md      = rb_hash_aref(rb_nsm, ID2SYM(rb_intern("md")));
+  line_parser_update_scope_marker(lp, new_from, new_pattern, new_md);
+  return Qnil;
 }
 
 static VALUE mSyntaxExt, rb_mRedcar, rb_cEditView, rb_cParser;
@@ -1279,4 +1350,8 @@ void Init_syntax_ext() {
   rb_define_method(cLineParser, "line_num", rb_line_parser_line_num, 0);
   rb_define_method(cLineParser, "pos", rb_line_parser_get_pos, 0);
   rb_define_method(cLineParser, "pos=", rb_line_parser_set_pos, 1);
+  rb_define_method(cLineParser, "reset_scope_marker", rb_line_parser_reset_scope_marker, 0);
+  rb_define_method(cLineParser, "any_markers?", rb_line_parser_any_scope_markers, 0);
+  rb_define_method(cLineParser, "get_scope_marker", rb_line_parser_get_scope_marker, 0);
+  rb_define_method(cLineParser, "update_scope_marker", rb_line_parser_update_scope_marker, 1);
 }
