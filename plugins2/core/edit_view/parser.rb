@@ -7,7 +7,7 @@ class Redcar::EditView
   class Parser
     
     attr_accessor :grammars, :root, :colourer, :parse_all
-    attr_reader   :max_view, :buf
+    attr_reader   :max_view, :buf, :ending_scopes
     
     def initialize(buffer, root, grammars=[], colourer=nil)
       @buf = buffer
@@ -18,7 +18,7 @@ class Redcar::EditView
       @max_view = 300
       @changes = []
       @scope_last_line = 0
-      @parse_all = false
+      @parse_all = true
       connect_buffer_signals
       unless @buf.text == ""
         raise "Parser#initialize called with not empty buffer."
@@ -317,19 +317,15 @@ class Redcar::EditView
     end
 
     class LineParser
-      
-      attr_accessor(:pos, :start_scope, :active_grammar,
+      attr_accessor(:start_scope, :active_grammar,
                     :all_scopes, :closed_scopes, :matching_patterns, :rest_line,
                     :need_new_patterns, :new_scope_markers)
       attr_reader :current_scope
       
-      def initialize2(p, line_num, line, opening_scope)
+      def initialize2(p, line, opening_scope)
         @parser = p
-#        @line_length = line.length
-        @line_num = line_num
         @start_scope = @current_scope = (opening_scope || p.scope_at_line_start(line_num))
         @active_grammar = p.grammar_for_scope(@current_scope)
-        @pos = 0
         @all_scopes =  [@current_scope]
         @closed_scopes = []
         @matching_patterns = []
@@ -342,9 +338,9 @@ class Redcar::EditView
       def dump_info
         File.open(Redcar::App.root_path + "/parser_dump.txt", "w") do |f|
           f.puts "--- Parser Dump-------------"
-          f.puts @root.pretty
+          f.puts @parser.root.pretty
           f.puts "___Ending scopes______"
-          @ending_scopes.each do |sc|
+          @parser.ending_scopes.each do |sc|
             f.puts sc.inspect
           end
           f.puts "______________________"
@@ -361,7 +357,7 @@ class Redcar::EditView
       
       def current_scope_closes?
         if current_scope.closing_regexp
-          if current_scope.start.line == @line_num
+          if current_scope.start.line == line_num
             thispos = [pos, current_scope.start.offset+1].max
           else
             thispos = pos
@@ -378,9 +374,9 @@ class Redcar::EditView
       end
       
       def get_expected_scope
-        expected_scope = current_scope.first_child_after(TextLoc.new(@line_num, pos))
+        expected_scope = current_scope.first_child_after(TextLoc.new(line_num, pos))
         if expected_scope
-          expected_scope = nil unless expected_scope.start.line == @line_num
+          expected_scope = nil unless expected_scope.start.line == line_num
         end
         while expected_scope and expected_scope.capture
           expected_scope = expected_scope.parent
@@ -420,7 +416,7 @@ class Redcar::EditView
         if scope.pattern.respond_to? type
           scope.pattern.send(type).each do |num, name|
             md = scope.send(matchdata_name)
-            sc = @parser.scope_from_capture(@line_num, num, md)
+            sc = @parser.scope_from_capture(line_num, num, md)
             if sc
               scope.add_child(sc)
               sc.name = name
@@ -434,17 +430,17 @@ class Redcar::EditView
       end
       
       def close_current_scope(new_scope_marker)
-        current_scope.end         = TextLoc.new(@line_num, new_scope_marker[:to])
-        current_scope.close_start = TextLoc.new(@line_num, new_scope_marker[:from])
+        current_scope.end         = TextLoc.new(line_num, new_scope_marker[:to])
+        current_scope.close_start = TextLoc.new(line_num, new_scope_marker[:from])
         current_scope.close_matchdata = new_scope_marker[:md]
       end
       
       def new_single_scope(new_scope_marker)
         new_scope = new_scope_marker[:pattern].to_scope
         new_scope.grammar   = active_grammar
-        new_scope.start     = TextLoc.new(@line_num, new_scope_marker[:from])
-        new_scope.end       = TextLoc.new(@line_num, new_scope_marker[:to])
-        new_scope.open_end  = TextLoc.new(@line_num, new_scope_marker[:to])
+        new_scope.start     = TextLoc.new(line_num, new_scope_marker[:from])
+        new_scope.end       = TextLoc.new(line_num, new_scope_marker[:to])
+        new_scope.open_end  = TextLoc.new(line_num, new_scope_marker[:to])
         new_scope.open_matchdata = new_scope_marker[:md]
         new_scope
       end
@@ -453,9 +449,9 @@ class Redcar::EditView
         pattern = new_scope_marker[:pattern]
         new_scope = pattern.to_scope
         new_scope.grammar = active_grammar
-        new_scope.start   = TextLoc.new(@line_num, new_scope_marker[:from])
+        new_scope.start   = TextLoc.new(line_num, new_scope_marker[:from])
         new_scope.end     = nil
-        new_scope.open_end   = TextLoc.new(@line_num, new_scope_marker[:to])
+        new_scope.open_end   = TextLoc.new(line_num, new_scope_marker[:to])
         new_scope.open_matchdata = new_scope_marker[:md]
         re = Oniguruma::ORegexp.new(@parser.build_closing_regexp(pattern, 
                                                                  new_scope_marker[:md]
@@ -503,7 +499,7 @@ class Redcar::EditView
       end
       
       def process_marker
-        if @parser.parsed_before?(@line_num)
+        if @parser.parsed_before?(line_num)
           expected_scope = get_expected_scope
         end
         
@@ -515,8 +511,8 @@ class Redcar::EditView
         case new_scope_marker[:pattern]
         when :close_scope
           if current_scope.end and 
-              current_scope.end == TextLoc.new(@line_num, to) and
-              current_scope.close_start == TextLoc.new(@line_num, from) and
+              current_scope.end == TextLoc.new(line_num, to) and
+              current_scope.close_start == TextLoc.new(line_num, from) and
               current_scope.close_matchdata.to_s == md.to_s
             # we have already parsed this line and this scope ends here
             true
@@ -576,10 +572,10 @@ class Redcar::EditView
       end
       
       def clear_line
-        if @parser.parsed_before?(@line_num)
+        if @parser.parsed_before?(line_num)
           # If we are reparsing, we might find that some scopes have disappeared,
           # delete them:
-          current_scope.root.delete_any_on_line_not_in(@line_num, all_scopes)
+          current_scope.root.delete_any_on_line_not_in(line_num, all_scopes)
           
           # any that we expected to close on this line that now don't?
           #  first build list of scopes that close on this line (including ones
@@ -587,7 +583,7 @@ class Redcar::EditView
           scopes_that_closed_on_line = []
           ts = start_scope
           while ts.parent
-            if ts.end and ts.end.line == @line_num
+            if ts.end and ts.end.line == line_num
               scopes_that_closed_on_line << ts
             end
             ts = ts.parent

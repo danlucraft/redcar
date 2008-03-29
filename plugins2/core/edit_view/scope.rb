@@ -220,7 +220,7 @@ class Redcar::EditView
     # Return the names of all scopes in the hierarchy above this scope. Inner 
     # is true or false depending on whether you want to include this scopes
     # 'inner' scope (content_name scope).
-    def hierarchy_names(inner=true)
+    def rb_hierarchy_names(inner=true)
       if parent
         next_inner = (parent.open_end and 
                       self.start >= parent.open_end and 

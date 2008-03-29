@@ -765,6 +765,55 @@ static VALUE rb_scope_clear_not_on_line(VALUE self, VALUE rb_num) {
   }
 }
 
+static VALUE rb_scope_hierarchy_names(VALUE self, VALUE rb_inner) {
+  if (self == Qnil)
+    printf("rb_scope_hierarchy_names(nil)");
+  Scope *scope, *parent;
+  ScopeData *scope_data, *parent_data;
+  VALUE names;
+  VALUE next_inner;
+  TextLoc parent_open_end, parent_close_start,
+    scope_start, scope_end;
+  Data_Get_Struct(self, Scope, scope);
+  scope_data = scope->data;
+  if (!G_NODE_IS_ROOT(scope)) {
+    parent = scope->parent;
+    parent_data = parent->data;
+    scope_get_start(scope, &scope_start);
+    scope_get_end(scope, &scope_end);
+    scope_get_open_end(parent, &parent_open_end);
+    scope_get_close_start(parent, &parent_close_start);
+    if (textloc_valid(&parent_open_end) &&
+        textloc_gte(&scope_start, &parent_open_end) &&
+        ( !textloc_valid(&scope_end) ||
+          textloc_lt(&scope_end, &parent_close_start)))
+      next_inner = Qtrue;
+    else
+      next_inner = Qfalse;
+    names = rb_scope_hierarchy_names(parent_data->rb_scope, next_inner);
+  }
+  else {
+    names = rb_ary_new();
+  } 
+  if (scope_data->name)
+    rb_ary_push(names, rb_str_new2(scope_data->name));
+  VALUE rb_pattern, rb_pattern_content_name;
+  rb_pattern = rb_funcall(scope_data->rb_scope,
+                          rb_intern("pattern"),
+                          0);
+  if (rb_inner == Qtrue) {
+    if (rb_pattern != Qnil) {
+      rb_pattern_content_name = rb_funcall(rb_pattern,
+                                           rb_intern("content_name"),
+                                           0);
+      if (rb_pattern_content_name != Qnil) {
+        rb_ary_push(names, rb_pattern_content_name);
+      }
+    }
+  }
+  return names;
+}
+
 int scope_shift_chars(Scope* scope, int line, int amount, int offset) {
   ScopeData *sd;
   sd = scope->data;
@@ -1090,6 +1139,8 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
 
 typedef struct LineParser_ {
   int line_length;
+  int line_num;
+  int pos;
 } LineParser;
 
 
@@ -1114,8 +1165,10 @@ static VALUE rb_line_parser_init(VALUE self, VALUE parser,
   LineParser *lp;
   Data_Get_Struct(self, LineParser, lp);
   lp->line_length = RSTRING_LEN(line);
-  rb_funcall(self, rb_intern("initialize2"), 4, 
-             parser, line_num, line, opening_scope);
+  lp->line_num    = FIX2INT(line_num);
+  lp->pos         = 0;
+  rb_funcall(self, rb_intern("initialize2"), 3, 
+             parser, line, opening_scope);
   return self;
 }
 
@@ -1123,6 +1176,25 @@ static VALUE rb_line_parser_line_length(VALUE self) {
   LineParser *lp;
   Data_Get_Struct(self, LineParser, lp);
   return INT2FIX(lp->line_length);
+}
+
+static VALUE rb_line_parser_line_num(VALUE self) {
+  LineParser *lp;
+  Data_Get_Struct(self, LineParser, lp);
+  return INT2FIX(lp->line_num);
+}
+
+static VALUE rb_line_parser_get_pos(VALUE self) {
+  LineParser *lp;
+  Data_Get_Struct(self, LineParser, lp);
+  return INT2FIX(lp->pos);
+}
+
+static VALUE rb_line_parser_set_pos(VALUE self, VALUE newpos) {
+  LineParser *lp;
+  Data_Get_Struct(self, LineParser, lp);
+  lp->pos = FIX2INT(newpos);
+  return newpos;
 }
 
 static VALUE mSyntaxExt, rb_mRedcar, rb_cEditView, rb_cParser;
@@ -1186,10 +1258,14 @@ void Init_syntax_ext() {
 		rb_scope_delete_any_on_line_not_in, 2);
   rb_define_method(cScope, "clear_not_on_line",  rb_scope_clear_not_on_line, 1);
   rb_define_method(cScope, "remove_children_that_overlap", rb_scope_remove_children_that_overlap, 1);
+  rb_define_method(cScope, "hierarchy_names",  rb_scope_hierarchy_names, 1);
 
   rb_cParser = rb_eval_string("Redcar::EditView::Parser");
   cLineParser = rb_define_class_under(rb_cParser, "LineParser", rb_cObject);
   rb_define_alloc_func(cLineParser, rb_line_parser_alloc);
   rb_define_method(cLineParser, "initialize", rb_line_parser_init, 4);
   rb_define_method(cLineParser, "line_length", rb_line_parser_line_length, 0);
+  rb_define_method(cLineParser, "line_num", rb_line_parser_line_num, 0);
+  rb_define_method(cLineParser, "pos", rb_line_parser_get_pos, 0);
+  rb_define_method(cLineParser, "pos=", rb_line_parser_set_pos, 1);
 }
