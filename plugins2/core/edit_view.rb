@@ -80,6 +80,7 @@ module Redcar
       set_gtk_cursor_colour
       self.tabs_width = 2
       self.left_margin = 5
+      setup_buffer(buffer)
       self.show_line_numbers = Redcar::Preference.get("Editing/Show line numbers").to_bool
       set_font(Redcar::Preference.get("Appearance/Tab Font"))
       @theme = Theme.theme(Redcar::Preference.get("Appearance/Tab Theme"))
@@ -171,12 +172,16 @@ module Redcar
       text = self.buffer.text
       newbuffer = Gtk::SourceBuffer.new
       self.buffer = newbuffer
-      newbuffer.check_brackets = false
-      newbuffer.highlight = false
-      newbuffer.max_undo_levels = 0
+      setup_buffer(newbuffer)
       newbuffer.text = text
       @parser.buffer = newbuffer
       @indenter.buffer = newbuffer
+    end
+    
+    def setup_buffer(thisbuf)
+      thisbuf.check_brackets = false
+      thisbuf.highlight = false
+      thisbuf.max_undo_levels = 10
     end
     
     def iterize(offset)

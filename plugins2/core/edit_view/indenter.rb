@@ -25,8 +25,8 @@ class Redcar::EditView
     
     def self.indent_rules_for_scope(scope)
       @indent_rules.each do |scope_name, value|
-#       puts "applicable? #{scope_name} to #{scope.hierarchy_names.join(" ")}"
-        v = Theme.applicable?(scope_name, scope.hierarchy_names).to_bool
+        #       puts "applicable? #{scope_name} to #{scope.hierarchy_names}" #.join(" ")}"
+        v = Theme.applicable?(scope_name, scope.hierarchy_names(true)).to_bool
 #       p v
         if v
           return value

@@ -15,10 +15,10 @@ class Redcar::EditView
       @ending_scopes = []
       @grammars = grammars
       @colourer = colourer
-      @max_view = 100
+      @max_view = 300
       @changes = []
       @scope_last_line = 0
-      @parse_all = true
+      @parse_all = false
       connect_buffer_signals
       unless @buf.text == ""
         raise "Parser#initialize called with not empty buffer."
@@ -208,7 +208,7 @@ class Redcar::EditView
       old_max_view = @max_view
       @max_view = val
       if @max_view > old_max_view and (!@root.last_scope1 or @max_view > @root.last_scope1.end.line)
-        lazy_parse_from(old_max_view)
+        lazy_parse_from(old_max_view+1)
       end
     end
     
@@ -246,18 +246,26 @@ class Redcar::EditView
       end
       lp = LineParser.new(self, line_num, line.to_s, opening_scope)
       
-      while lp.any_line_left?
-        lp.scan_line
-        
-        if lp.any_markers?
-          lp.process_marker
-        else
-          lp.clear_line
+      begin
+        while lp.any_line_left?
+          lp.scan_line
+          if lp.any_markers?
+            lp.process_marker
+          else
+            lp.clear_line
+          end
         end
+        
+      rescue Object => e
+        puts "[Red] error parsing line #{line_num}"
+        @ending_scopes[line_num] = lp.current_scope
+        return false
       end
-      
+
       if @colourer
-        remove_tags_from_line(line_num)
+        if parsed_before?(line_num)
+          remove_tags_from_line(line_num)
+        end
         SyntaxExt.colour_line_with_scopes(@colourer, @colourer.theme, 
                                           line_num, lp.all_scopes)
 #        debug_print_tag_table
@@ -329,8 +337,23 @@ class Redcar::EditView
         @first_new_scope_marker = nil
       end
       
+      def dump_info
+        File.open(Redcar::App.root_path + "/parser_dump.txt", "w") do |f|
+          f.puts "--- Parser Dump-------------"
+          f.puts @root.pretty
+          f.puts "___Ending scopes______"
+          @ending_scopes.each do |sc|
+            f.puts sc.inspect
+          end
+          f.puts "______________________"
+        end
+      end
+      
       def current_scope=(scope)
-        raise "trying to set current scope to nil!" unless scope
+        unless scope
+          dump_info
+          raise "trying to set current scope to nil!"
+        end
         @current_scope = scope
       end
       
