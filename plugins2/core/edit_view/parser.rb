@@ -246,7 +246,7 @@ class Redcar::EditView
       end
       lp = LineParser.new(self, line_num, line.to_s, opening_scope)
       
-      begin
+#       begin
         while lp.any_line_left?
           lp.scan_line
           if lp.any_markers?
@@ -255,12 +255,11 @@ class Redcar::EditView
             lp.clear_line
           end
         end
-        
-      rescue Object => e
-        puts "[Red] error parsing line #{line_num}"
-        @ending_scopes[line_num] = lp.current_scope
-        return false
-      end
+#       rescue Object => e
+#         puts "[Red] error parsing line #{line_num}"
+#         @ending_scopes[line_num] = lp.current_scope
+#         return false
+#       end
 
       if @colourer
         if parsed_before?(line_num)
@@ -473,29 +472,40 @@ class Redcar::EditView
       end
       
       def scan_line
-        @new_scope_markers = []
+        @first_new_scope_marker = nil
         if close_marker = current_scope_closes?
-          @new_scope_markers << close_marker
+          update_first_new_scope_marker(close_marker)
         end
         possible_patterns.each do |pattern|
           if nsm = match_pattern(pattern)
-            @new_scope_markers << nsm
+            update_first_new_scope_marker(nsm)
             matching_patterns << pattern if need_new_patterns
           end
         end          
       end
       
       def any_markers?
-       @new_scope_markers.length > 0
+        @first_new_scope_marker
       end
       
       def get_first_scope_marker
-        new_scope_marker = new_scope_markers.sort_by {|sm| sm[:from] }.first
-        new_scope_markers.select do |sm|
-          sm[:from] == new_scope_marker[:from]
-        end.sort_by do |sm|
-          sm[:pattern] == :close_scope ? 0 : sm[:pattern].hint
-        end.first
+        @first_new_scope_marker
+      end
+      
+      def update_first_new_scope_marker(nsm)
+        osm = @first_new_scope_marker
+        unless osm
+          @first_new_scope_marker = nsm
+          return
+        end
+        nval = ((nsm[:pattern] == :close_scope) ? 0 : nsm[:pattern].hint)
+        oval = ((osm[:pattern] == :close_scope) ? 0 : osm[:pattern].hint)
+        if nsm[:from] < osm[:from]
+          @first_new_scope_marker = nsm
+        elsif nsm[:from] == osm[:from] and
+            nval < oval
+          @first_new_scope_marker = nsm
+        end
       end
       
       def process_marker

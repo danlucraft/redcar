@@ -1143,6 +1143,17 @@ typedef struct LineParser_ {
   int pos;
 } LineParser;
 
+#define SINGLE       0
+#define OPEN_DOUBLE  1
+#define CLOSE_DOUBLE 2
+
+typedef struct ScopeMarker_ {
+  int   type;
+  VALUE pattern;
+  int   from;
+  int   to;
+  VALUE matchdata;
+} ScopeMarker;
 
 void rb_line_parser_mark(LineParser* lp) {
   return;
@@ -1204,7 +1215,7 @@ void Init_syntax_ext() {
   // utility functions are in SyntaxExt
   mSyntaxExt = rb_define_module("SyntaxExt");
   rb_define_module_function(mSyntaxExt, "colour_line_with_scopes", 
-		rb_colour_line_with_scopes, 4);
+                            rb_colour_line_with_scopes, 4);
 
   rb_mRedcar = rb_define_module ("Redcar");
   rb_cEditView = rb_eval_string("Redcar::EditView");
@@ -1255,7 +1266,7 @@ void Init_syntax_ext() {
   rb_define_method(cScope, "n_children",  rb_scope_n_children, 0);
   rb_define_method(cScope, "detach",  rb_scope_detach, 0);
   rb_define_method(cScope, "delete_any_on_line_not_in",  
-		rb_scope_delete_any_on_line_not_in, 2);
+                   rb_scope_delete_any_on_line_not_in, 2);
   rb_define_method(cScope, "clear_not_on_line",  rb_scope_clear_not_on_line, 1);
   rb_define_method(cScope, "remove_children_that_overlap", rb_scope_remove_children_that_overlap, 1);
   rb_define_method(cScope, "hierarchy_names",  rb_scope_hierarchy_names, 1);
