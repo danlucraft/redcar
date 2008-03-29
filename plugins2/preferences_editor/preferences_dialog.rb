@@ -122,8 +122,12 @@ module Com::RedcarIDE
       end
       path = iter[1]
       @current_path = path
-      vbox = Gtk::VBox.new
+#      vbox = Gtk::VBox.new
+      num_options = bus(path).children.length
+      gtk_table = Gtk::Table.new(2, num_options, false)
+      puts "num_options: #{num_options}"
       @widgets = {}
+      table_row = 0
       bus[path].each_slot do |slot|
         if slot.attr_pref
           name = slot.name
@@ -181,19 +185,35 @@ module Com::RedcarIDE
               end
             end
           end
-          hbox = Gtk::HBox.new
-          hbox.pack_start(label) if label
-          hbox.pack_start(widget)
-          vbox.pack_start(hbox, false)
-          hbox.show_all
+          if label
+            gtk_table.attach(label,
+                             # X direction            # Y direction
+                             0, 1,                    table_row, table_row+1,
+                             Gtk::EXPAND | Gtk::FILL, Gtk::FILL,
+                             0,      0)  
+            gtk_table.attach(widget,
+                             # X direction            # Y direction
+                             1, 2,                    table_row, table_row+1,
+                             Gtk::EXPAND | Gtk::FILL, Gtk::FILL,
+                             0,      0)  
+          else
+            gtk_table.attach(widget,
+                             # X direction            # Y direction
+                             0, 2,                    table_row, table_row+1,
+                             Gtk::EXPAND | Gtk::FILL, Gtk::FILL,
+                             0,      0)  
+          end
+          table_row += 1
           @widgets[slot.path] = widget
           @initial_values[slot.path] = widget.preference_value
           @on_change[slot.path] = slot.attr_change
         end
       end
       @frame.children.each {|child| @frame.remove(child)}
-      @frame.add(vbox)
-      vbox.show
+#      @frame.add(vbox)
+#      vbox.show
+      @frame.add(gtk_table)
+      gtk_table.show_all
 #       PrefLogger.info("PreferencesDialog#build_widgets(#{iter}):out")
     end
   end

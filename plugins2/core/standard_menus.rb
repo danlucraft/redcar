@@ -335,11 +335,6 @@ module Redcar
       end
     end
     
-    preference "Appearance/Entry Font" do
-      default "Monospace 12"
-      widget { StandardMenus.font_chooser_button("Appearance/Entry Font") }
-    end
-    
     preference "Appearance/Tab Theme" do |p|
       type :combo
       default "Mac Classic"
@@ -352,26 +347,6 @@ module Redcar
           end
         end
       end
-    end
-    
-    preference "Appearance/Tab Theme" do |p|
-      type :combo
-      default "Mac Classic"
-      values { EditView::Theme.theme_names }
-      change do 
-        win.tabs.each do |tab|
-          if tab.respond_to? :view
-            theme_name = Redcar::Preference.get("Appearance/Tab Theme")
-            tab.view.change_theme(theme_name)
-          end
-        end
-      end
-    end
-    
-    preference "Appearance/Entry Theme" do |p|
-      type :combo
-      default "Mac Classic"
-      values { EditView::Theme.theme_names }
     end
     
     preference "Editing/Indent size" do |p|

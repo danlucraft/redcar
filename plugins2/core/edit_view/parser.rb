@@ -233,7 +233,7 @@ class Redcar::EditView
     
     # Parses line_num, using text line.
     def parse_line(line, line_num)
-      print line_num, " "; $stdout.flush
+#      print line_num, " "; $stdout.flush
 #      puts line_num; $stdout.flush
 #      puts line.to_s
       check_line_exists(line_num)
