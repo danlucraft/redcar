@@ -308,10 +308,10 @@ int scope_clear_between(Scope* s, TextLoc* from, TextLoc* to) {
     c = g_node_nth_child(s, i);
     sdc = c->data;
     if ((textloc_gte(&sdc->start, from) && 
-	 textloc_lt(&sdc->start, to)) ||
-	(textloc_valid(&sdc->end) && 
-	 textloc_gte(&sdc->end, from) &&
-	 textloc_lt(&sdc->end, to))) {
+         textloc_lt(&sdc->start, to)) ||
+        (textloc_valid(&sdc->end) && 
+         textloc_gte(&sdc->end, from) &&
+         textloc_lt(&sdc->end, to))) {
       g_node_unlink(c);
       i -= 1;
     } else {
@@ -1061,7 +1061,6 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
   buffer = (GtkTextBuffer *) get_gobject(rb_buffer);
   gtk_text_buffer_get_iter_at_line_offset(buffer, &start_iter, line_num, 0);
   gtk_text_buffer_get_iter_at_line_offset(buffer, &end_iter, line_num+1, 0);
-  gtk_text_buffer_remove_all_tags(buffer, &start_iter, &end_iter);
 
   // colour each scope
   int i;
@@ -1079,7 +1078,7 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
     if (pattern != Qnil)
       content_name = rb_iv_get(pattern, "@content_name");
     if (current_data->name == NULL && pattern != Qnil && 
-	content_name == Qnil)
+        content_name == Qnil)
       continue;
     colour_scope(buffer, current, theme, FALSE, &start_iter, &end_iter);
   }

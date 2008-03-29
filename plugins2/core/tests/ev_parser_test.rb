@@ -646,6 +646,7 @@ CRALL
       buf.insert(buf.line_end1(0), l)
     end
     assert_equal 1, smp.root.children.length
+    assert_equal 1, smp.root.children[0].children.length
     str_scope = smp.root.children[0]
     assert_equal "string.quoted.double.ruby", str_scope.name
     assert_equal 5, str_scope.start.offset
@@ -861,7 +862,7 @@ File.rm(:output => :silent)
 Gtk.main
 STR
     assert_equal newsource, buf.text
-    assert_equal 19, smp.root.children.length
+    assert_equal 16, smp.root.children.length
   end
 
   def test_insert_new_lines

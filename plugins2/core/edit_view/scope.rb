@@ -392,24 +392,25 @@ class Redcar::EditView
     # moves all scopes after TextLoc loc onward 
     # by lines lines.
     def shift_after1(loc, lines)
-      if self.start >= loc
-        self.start = TextLoc(self.start.line + lines, self.start.offset)
-        if self.open_start
-          self.open_end = TextLoc(self.open_end.line + lines,
-                                  self.open_end.offset)
+      if parent
+        if self.start >= loc
+          self.start = TextLoc(self.start.line + lines, self.start.offset)
+          if self.open_start
+            self.open_end = TextLoc(self.open_end.line + lines,
+                                    self.open_end.offset)
+          end
+        end
+        if self.end and self.end >= loc
+          self.end = TextLoc(self.end.line + lines, self.end.offset)
+          if self.close_start
+            self.close_start = TextLoc(self.close_start.line + lines,
+                                       self.close_start.offset)
+          end
         end
       end
-      if self.end and self.end >= loc
-        self.end = TextLoc(self.end.line + lines, self.end.offset)
-        if self.close_start
-          self.close_start = TextLoc(self.close_start.line + lines,
-                                     self.close_start.offset)
-        end
-      end
-      
       children.each do |cs|
         cs.shift_after1(loc, lines)
-        if cs.start >= cs.end
+        if cs.end.valid? and cs.start >= cs.end
           delete_child(cs)
         end
       end

@@ -7,7 +7,7 @@ class Redcar::EditView
   class Parser
     
     attr_accessor :grammars, :root, :colourer, :parse_all
-    attr_reader   :max_view
+    attr_reader   :max_view, :buf
     
     def initialize(buffer, root, grammars=[], colourer=nil)
       @buf = buffer
@@ -18,11 +18,12 @@ class Redcar::EditView
       @max_view = 100
       @changes = []
       @scope_last_line = 0
-      @parse_all = false
+      @parse_all = true
       connect_buffer_signals
       unless @buf.text == ""
         raise "Parser#initialize called with not empty buffer."
       end
+      @tags = []
     end
     
     def buffer=(buf)
@@ -54,6 +55,12 @@ class Redcar::EditView
           process_changes
         end
         false
+      end
+      @buf.tag_table.signal_connect_after("tag_added") do |_, tag|
+        if tag.name =~ /^EditView/
+          @tags << tag
+        end
+        reset_table_priorities
       end
     end
     
@@ -149,6 +156,9 @@ class Redcar::EditView
       end_iter = @buf.iter(end_offset)
       end_loc  = TextLoc(end_iter.line, end_iter.line_offset)
       @root.shift_after1(loc, lines-1)
+      lines-1.times do 
+        @ending_scopes.insert(loc.line, nil)
+      end
       @root.shift_chars(loc.line+lines-1, end_loc.offset-loc.offset, loc.offset)
       lazy_parse_from(loc.line, lines)
     end
@@ -174,9 +184,22 @@ class Redcar::EditView
     end
     
     def delete_between(from, to)
-      @root.clear_between_lines(from.line+1, to.line)
-      @root.shift_after(from.line+1, -(to.line-from.line))
+#       p :delete_between
+     @root.clear_between_lines(from.line+1, to.line)
+#       puts @root.pretty
+#       puts "@root.clear_between(#{from.inspect}, #{to.inspect})"
+#       @root.clear_between(from, to)
+#       puts @root.pretty
+#       puts "@root.shift_after1(#{to.line.inspect}, #{-(from.line-to.line)})"
+#       @root.shift_after1(to, -(from.line-to.line))
+     @root.shift_after(from.line+1, -(to.line-from.line))
+#       puts "@root.shift_chars(#{from.line}, #{-(to.offset-from.offset)}, #{to.offset})"
+#       @root.shift_chars(from.line, -(to.offset-from.offset), to.offset)
+#       puts @root.pretty
       
+      (to.line-from.line-1).times do
+        @ending_scopes.delete_at(from.line)
+      end
       line_num = from.line
       lazy_parse_from(line_num)
     end
@@ -211,10 +234,17 @@ class Redcar::EditView
     # Parses line_num, using text line.
     def parse_line(line, line_num)
       print line_num, " "; $stdout.flush
+#      puts line_num; $stdout.flush
+#      puts line.to_s
       check_line_exists(line_num)
       @scope_last_line = line_num if line_num > @scope_last_line
-      
-      lp = LineParser.new(self, line_num, line.string, @ending_scopes[line_num-1])
+#      puts "@ending_scope[#{line_num-1}] == #{@ending_scopes[line_num-1]}"
+      if line_num == 0
+        opening_scope = @root
+      else
+        opening_scope = (@ending_scopes[line_num-1] || @root)
+      end
+      lp = LineParser.new(self, line_num, line.to_s, opening_scope)
       
       while lp.any_line_left?
         lp.scan_line
@@ -231,7 +261,7 @@ class Redcar::EditView
         SyntaxExt.colour_line_with_scopes(@colourer, @colourer.theme, 
                                           line_num, lp.all_scopes)
 #        debug_print_tag_table
-        reset_table_priorities
+#        reset_table_priorities
       end
       
       # should we parse the next line? If we've changed the scope or the 
@@ -239,7 +269,6 @@ class Redcar::EditView
       same = ((@ending_scopes[line_num] == lp.current_scope) and 
               @ending_scopes[line_num+1] != nil)
       @ending_scopes[line_num] = lp.current_scope
-      $dp = false
       same
     end
     
@@ -254,22 +283,13 @@ class Redcar::EditView
     def remove_tags_from_line(line_num)
       si = @buf.iter(@buf.line_start(line_num))
       ei = @buf.iter(@buf.line_end(line_num))
-      all_tags.select {|t| t.name =~ /^EditView/ }.each do |tag|
+      @tags.each do |tag|
         @buf.remove_tag(tag, si, ei)
       end
     end
     
-    def all_tags
-      tt = @buf.tag_table
-      tags = []
-      tt.each do |tag|
-        tags << tag
-      end
-      tags
-    end
-    
     def reset_table_priorities
-      tags = all_tags.sort_by do |tag|
+      tags = @tags.sort_by do |tag|
         tag.edit_view_depth ||= if tag.name
                                   tag.name =~ /\((\d+)\)/
                                   $1.to_i
@@ -289,9 +309,10 @@ class Redcar::EditView
     end
 
     class LineParser
-      attr_accessor(:pos, :start_scope, :current_scope, :active_grammar,
+      attr_accessor(:pos, :start_scope, :active_grammar,
                     :all_scopes, :closed_scopes, :matching_patterns, :rest_line,
                     :need_new_patterns, :new_scope_markers)
+      attr_reader :current_scope
       def initialize(p, line_num, line, opening_scope=nil)
         @parser = p
         @line = line
@@ -305,11 +326,22 @@ class Redcar::EditView
         @rest_line = line
         @need_new_patterns = true
         @new_scope_markers = []
+        @first_new_scope_marker = nil
+      end
+      
+      def current_scope=(scope)
+        raise "trying to set current scope to nil!" unless scope
+        @current_scope = scope
       end
       
       def current_scope_closes?
         if current_scope.closing_regexp
-          if md = current_scope.closing_regexp.match(rest_line, pos)
+          if current_scope.start.line == @line_num
+            thispos = [pos, current_scope.start.offset+1].max
+          else
+            thispos = pos
+          end
+          if md = current_scope.closing_regexp.match(rest_line, thispos)
             from = md.begin(0)
             { :from => from, :md => md, :pattern => :close_scope }
           end
@@ -322,7 +354,6 @@ class Redcar::EditView
       
       def get_expected_scope
         expected_scope = current_scope.first_child_after(TextLoc.new(@line_num, pos))
-        
         if expected_scope
           expected_scope = nil unless expected_scope.start.line == @line_num
         end
@@ -422,19 +453,23 @@ class Redcar::EditView
       
       def scan_line
         @new_scope_markers = []
+#         @first_new_scope_marker = nil
         if close_marker = current_scope_closes?
+#           update_new_scope_marker(close_marker)
           @new_scope_markers << close_marker
         end
         possible_patterns.each do |pattern|
           if nsm = match_pattern(pattern)
             @new_scope_markers << nsm
+#             update_new_scope_marker(nsm)
             matching_patterns << pattern if need_new_patterns
           end
         end          
       end
       
       def any_markers?
-        @new_scope_markers.length > 0
+       @new_scope_markers.length > 0
+#         @first_new_scope_marker
       end
       
       def get_first_scope_marker
@@ -444,12 +479,28 @@ class Redcar::EditView
         end.sort_by do |sm|
           sm[:pattern] == :close_scope ? 0 : sm[:pattern].hint
         end.first
+#         @first_new_scope_marker
       end
       
+#       def update_new_scope_marker(sm)
+#         unless @first_new_scope_marker
+#           @first_new_scope_marker = sm
+#           return
+#         end
+#         osm = @first_new_scope_marker
+#         if sm[:from] <= osm[:from]
+#           oldv = ((osm[:pattern] == :close_scope) ? 0 : osm[:pattern].hint)
+#           newv = ((sm[:pattern] == :close_scope) ? 0 : sm[:pattern].hint)
+#           if newv < oldv
+#             @first_new_scope_marker = sm
+#           end
+#         end
+#       end
+      
       def process_marker
-#        if @parser.parsed_before?(@line_num)
+        if @parser.parsed_before?(@line_num)
           expected_scope = get_expected_scope
-#        end
+        end
         
         new_scope_marker = get_first_scope_marker
         from = new_scope_marker[:from]
@@ -546,7 +597,7 @@ class Redcar::EditView
             end
           end
         end
-        self.pos = @line.length + 1          
+        self.pos = @line.length + 1  
       end
     end
     
