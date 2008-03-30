@@ -5,6 +5,7 @@ module Redcar
 
     def self.load(plugin) #:nodoc:
       @obj_keymaps = Hash.new {|obj,key| obj[key] = [] }
+      Hook.register(:keystroke)
       plugin.transition(FreeBASE::LOADED)
     end
     
@@ -35,7 +36,9 @@ module Redcar
           "Alt+"*alt + 
           "Shift+"*shift + 
           clean_letter(bits.last)
-        execute_key(key)
+        Hook.trigger :keystroke, key do
+          execute_key(key)
+        end
       else
         true # indicates to fall through to Gtk
       end

@@ -212,6 +212,13 @@ module Redcar
       visible_lines[0] < buffer.cursor_line and
         buffer.cursor_line < visible_lines[1]
     end
+    
+    def tooltip_at_cursor(label)
+      rect = get_iter_location(buffer.iter(buffer.cursor_mark))
+      x1, y1 = buffer_to_window_coords(Gtk::TextView::WINDOW_WIDGET, rect.x, rect.y)
+      x2, y2 = get_window(Gtk::TextView::WINDOW_WIDGET).origin
+      Tooltip.new(x1+x2, y1+y2+20, label)
+    end
   end
 end
 

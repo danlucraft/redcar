@@ -295,6 +295,20 @@ module Redcar
       end
     end
     
+    class ShowScope < Redcar::EditTabCommand
+      key "Global/Super+Shift+P"
+      norecord
+      def execute(tab)
+        if root = tab.view.parser.root
+          scope = root.scope_at(TextLoc(tab.doc.cursor_line, tab.doc.cursor_line_offset))
+        end
+        inner = scope.pattern and scope.pattern.content_name and
+          (tab.doc.cursor_line_offset >= scope.open_end.offset and 
+           (!scope.close_start or tab.doc.cursor_line_offset < scope.close_start.offset))
+        tab.view.tooltip_at_cursor(scope.hierarchy_names(inner).join("\n"))
+      end
+    end
+    
     main_menu "File" do
       item "New",        NewTab
       item "Open",       OpenTab
@@ -322,6 +336,7 @@ module Redcar
       end
       separator
       item "Indent Line",    IndentLine
+      item "Show Scope",     ShowScope
       separator
       submenu "Select" do
         item "Line",            SelectLine

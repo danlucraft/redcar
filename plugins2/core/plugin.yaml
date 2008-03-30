@@ -202,3 +202,9 @@ plugins:
     autoload:        true
     require_path:    core/dialog
     startup_module:  Redcar::Dialog
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-tooltip
+    autoload:        true
+    require_path:    core/tooltip
+    startup_module:  Redcar::Tooltip
