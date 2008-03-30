@@ -18,7 +18,7 @@ class Redcar::EditView
       @max_view = 300
       @changes = []
       @scope_last_line = 0
-      @parse_all = false
+      @parse_all = true
       connect_buffer_signals
       unless @buf.text == ""
         raise "Parser#initialize called with not empty buffer."
@@ -487,16 +487,16 @@ class Redcar::EditView
 #           update_scope_marker(close_marker)
 #         end
 #         possible_patterns.each do |pattern|
-#           if nsm = match_pattern(pattern)
-#             update_scope_marker(nsm)
+#           if nsm = match_pattern_and_update_marker(pattern)
 #             matching_patterns << pattern if need_new_patterns
 #           end
 #         end          
 #       end
       
-#       def match_pattern(pattern)
+#       def match_pattern_and_update_marker(pattern)
 #         if md = pattern.match.match(@line, pos)
 #           from = md.begin(0)
+#           update_scope_marker(nsm)
 #           { :from => from, :md => md, :pattern => pattern }
 #         end
 #       end

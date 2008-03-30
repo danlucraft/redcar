@@ -147,6 +147,11 @@ typedef struct ScopeData_ {
   TextLoc end;
   TextLoc open_end;
   TextLoc close_start;
+  int     has_old;
+  TextLoc old_start;
+  TextLoc old_end;
+  TextLoc old_open_end;
+  TextLoc old_close_start;
   int   modified;
   char* name;
   VALUE rb_scope;
@@ -359,6 +364,7 @@ static VALUE rb_scope_cinit(VALUE self) {
   Scope *scope;
   Data_Get_Struct(self, Scope, scope);
   ScopeData *sd = scope->data;
+  sd->has_old = 0;
   sd->rb_scope = self;
   sd->modified = 1;
   sd->tag = NULL;
@@ -950,8 +956,18 @@ int minify(int offset) {
   return (offset < 200 ? offset : 200);
 }
 
+void scope_update_old_colour_textlocs(Scope* scope) {
+  ScopeData* sd = scope->data;
+  sd->has_old = 1;
+  sd->old_start = sd->start;
+  sd->old_end   = sd->end;
+  sd->old_close_start = sd->close_start;
+  sd->old_open_end    = sd->open_end;
+  return;
+}
+
 void scope_get_start_iter(Scope* scope, GtkTextBuffer* buffer, 
-			  GtkTextIter* start_iter, int inner) {
+                          GtkTextIter* start_iter, int inner) {
   ScopeData* sd = scope->data;
   GtkTextIter sl;
   int offset;
@@ -960,6 +976,20 @@ void scope_get_start_iter(Scope* scope, GtkTextBuffer* buffer,
     offset = (int) gtk_text_iter_get_offset(&sl) + minify(sd->open_end.offset);
   else
     offset = (int) gtk_text_iter_get_offset(&sl) + minify(sd->start.offset);
+  gtk_text_buffer_get_iter_at_offset(buffer, start_iter, offset);
+  return;
+}
+
+void scope_get_old_start_iter(Scope* scope, GtkTextBuffer* buffer, 
+                          GtkTextIter* start_iter, int inner) {
+  ScopeData* sd = scope->data;
+  GtkTextIter sl;
+  int offset;
+  gtk_text_buffer_get_iter_at_line_offset(buffer, &sl, sd->old_start.line, 0);
+  if (inner)
+    offset = (int) gtk_text_iter_get_offset(&sl) + minify(sd->old_open_end.offset);
+  else
+    offset = (int) gtk_text_iter_get_offset(&sl) + minify(sd->old_start.offset);
   gtk_text_buffer_get_iter_at_offset(buffer, start_iter, offset);
   return;
 }
@@ -975,30 +1005,47 @@ void scope_get_end_iter(Scope* scope, GtkTextBuffer* buffer,
       gtk_text_buffer_get_iter_at_line_offset(buffer, &sel, sd->close_start.line, 0);
       offset = (int) gtk_text_iter_get_offset(&sel) + minify(sd->close_start.offset);
     }
-    else {
-      gtk_text_buffer_get_iter_at_line_offset(buffer, &sel, sd->open_end.line+1, 0);
-      offset = gtk_text_iter_get_offset(&sel);
-      so = gtk_text_iter_get_offset(&sl);
-      if (offset == so)
-	offset = gtk_text_buffer_get_char_count(buffer);
-    }
+    else
+      offset = gtk_text_buffer_get_char_count(buffer);
   }
   else {
     if (textloc_valid(&sd->end)) {
       gtk_text_buffer_get_iter_at_line_offset(buffer, &sel, sd->end.line, 0);
       offset = (int) gtk_text_iter_get_offset(&sel) + minify(sd->end.offset);
     }
-    else {
-      gtk_text_buffer_get_iter_at_line_offset(buffer, &sel, sd->start.line+1, 0);
-      offset = gtk_text_iter_get_offset(&sel);
-      so = gtk_text_iter_get_offset(&sl);
-      if (offset == so)
-	offset = gtk_text_buffer_get_char_count(buffer);
-    }
+    else
+      offset = gtk_text_buffer_get_char_count(buffer);
   }
   gtk_text_buffer_get_iter_at_offset(buffer, end_iter, offset);
   return;
 }
+
+void scope_get_old_end_iter(Scope* scope, GtkTextBuffer* buffer, 
+			GtkTextIter* end_iter, int inner) {
+  ScopeData* sd = scope->data;
+  GtkTextIter sl, sel; // start of start line, start of end line
+  int offset, so, eo, len;
+  gtk_text_buffer_get_iter_at_line_offset(buffer, &sl, sd->old_start.line, 0);
+  if (inner) {
+    if (textloc_valid(&sd->old_end)) {
+      gtk_text_buffer_get_iter_at_line_offset(buffer, &sel, sd->old_close_start.line, 0);
+      offset = (int) gtk_text_iter_get_offset(&sel) + minify(sd->old_close_start.offset);
+    }
+    else
+      offset = gtk_text_buffer_get_char_count(buffer);
+  }
+  else {
+    if (textloc_valid(&sd->old_end)) {
+      gtk_text_buffer_get_iter_at_line_offset(buffer, &sel, sd->old_end.line, 0);
+      offset = (int) gtk_text_iter_get_offset(&sel) + minify(sd->old_end.offset);
+    }
+    else
+      offset = gtk_text_buffer_get_char_count(buffer);
+  }
+  gtk_text_buffer_get_iter_at_offset(buffer, end_iter, offset);
+  return;
+}
+
 #define xtod(c) ((c>='0' && c<='9') ? c-'0' : ((c>='A' && c<='F') ? c-'A'+10 : ((c>='a' && c<='f') ? c-'a'+10 : 0)))
 
 void clean_colour(char* in, char* out) {
@@ -1053,6 +1100,7 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner,
 		  GtkTextIter* line_start_iter, GtkTextIter* line_end_iter) {
   ScopeData* sd = scope->data;
   GtkTextIter start_iter, end_iter;
+  GtkTextIter old_start_iter, old_end_iter;
   VALUE rba_settings, rbh_setting, rb_settings, rb_settings_scope, rbh_tag_settings, rbh, rba_tag_settings, rba;
   char tag_name[256] = "nil";
   int priority = FIX2INT(rb_funcall(sd->rb_scope, rb_intern("priority"), 0));
@@ -1063,10 +1111,6 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner,
 
   scope_get_start_iter(scope, buffer, &start_iter, inner);
   scope_get_end_iter(scope, buffer, &end_iter, inner);
-/*   if (gtk_text_iter_compare(&start_iter, line_start_iter) == -1) */
-/*     start_iter = *line_start_iter; */
-/*   if (gtk_text_iter_compare(line_end_iter, &end_iter) == -1) */
-/*     end_iter = *line_end_iter; */
 
   if (sd->tag == NULL) {
     rbh = rb_funcall(theme, rb_intern("global_settings"), 0);
@@ -1091,19 +1135,22 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner,
       tag = gtk_text_buffer_create_tag(buffer, tag_name, NULL);
     }
     
-    // set tag properties
-/*     gtk_text_tag_set_priority(tag, priority-1); */
-
     if (RARRAY(rba_settings)->len > 0)
       set_tag_properties(tag, rb_settings);
     
     sd->tag = tag;
   }
   else {
-    gtk_text_buffer_remove_tag(buffer, sd->tag, &start_iter, &end_iter);
+    if (sd->has_old) {
+      scope_get_old_start_iter(scope, buffer, &old_start_iter, inner);
+      scope_get_old_end_iter(scope, buffer, &old_end_iter, inner);
+      gtk_text_buffer_remove_tag(buffer, sd->tag, &old_start_iter, &old_end_iter);
+    }
   }
+  scope_update_old_colour_textlocs(scope);
+
 /*   // some logging stuff */
-/*   printf("[Col] %s:%d\n  [%s]\n  ", sd->name, priority-1, tag_name); */
+/*   printf("[Col] %s:%d\n\n  ", sd->name, priority-1); */
 /*   print_iter(&start_iter); */
 /*   printf("-"); */
 /*   print_iter(&end_iter); */
@@ -1120,7 +1167,6 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner,
 /*   } */
 
   gtk_text_buffer_apply_tag(buffer, sd->tag, &start_iter, &end_iter);
-
   sd->modified = 0;
   return;
 }
@@ -1166,18 +1212,35 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
   return Qnil;
 }
 
+int uncolour_scope(GtkTextBuffer *buffer, Scope *scope) {
+  ScopeData* scope_data = scope->data;
+  GtkTextIter start_iter, end_iter;
+  if (scope_data->tag != NULL) {
+    scope_get_start_iter(scope, buffer, &start_iter, FALSE);
+    scope_get_end_iter(scope, buffer, &end_iter, FALSE);
+    gtk_text_buffer_remove_tag(buffer, scope_data->tag, &start_iter, &end_iter);
+  }
+
+  Scope *child;
+  child = g_node_first_child(scope);
+  while(child != NULL) {
+    uncolour_scope(buffer, child);
+    child = g_node_next_sibling(child);
+  }
+  return 0;
+}
+
 static VALUE rb_uncolour_scopes(VALUE self, VALUE rb_colourer, VALUE scopes) {
 /*   printf("%d in line.\n", RARRAY(scopes)->len); */
   VALUE rb_buffer;
   GtkTextBuffer* buffer;
-  GtkTextIter start_iter, end_iter;
 
   // remove all tags from line
   rb_buffer = rb_funcall(rb_iv_get(rb_colourer, "@sourceview"), rb_intern("buffer"), 0);
   
   buffer = (GtkTextBuffer *) get_gobject(rb_buffer);
 
-  // un colour each scope
+  // un colour each scope and children
   int i;
   VALUE rb_current;
   Scope* current;
@@ -1185,12 +1248,7 @@ static VALUE rb_uncolour_scopes(VALUE self, VALUE rb_colourer, VALUE scopes) {
   for (i = 0; i < RARRAY(scopes)->len; i++) {
     rb_current = rb_ary_entry(scopes, i);
     Data_Get_Struct(rb_current, Scope, current);
-    current_data = current->data;
-    if (current_data->tag != NULL) {
-      scope_get_start_iter(current, buffer, &start_iter, FALSE);
-      scope_get_end_iter(current, buffer, &end_iter, FALSE);
-      gtk_text_buffer_remove_tag(buffer, current_data->tag, &start_iter, &end_iter);
-    }
+    uncolour_scope(buffer, current);
   }
   return Qnil;
 }
