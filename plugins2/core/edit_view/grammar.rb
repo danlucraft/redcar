@@ -59,6 +59,7 @@ class Redcar::EditView
       super(hash, grammar)
       @begin = Oniguruma::ORegexp.new(hash["begin"]||"", 
                  :options => Oniguruma::OPTION_CAPTURE_GROUP)
+      @match = @begin
       @end   = hash["end"] || hash["endif"] # FIXME : what is "endif"??
       count = 0
       @patterns = (hash["patterns"]||[]).collect do |this_hash|

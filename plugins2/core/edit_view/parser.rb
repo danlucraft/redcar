@@ -18,7 +18,7 @@ class Redcar::EditView
       @max_view = 300
       @changes = []
       @scope_last_line = 0
-      @parse_all = true
+      @parse_all = false
       connect_buffer_signals
       unless @buf.text == ""
         raise "Parser#initialize called with not empty buffer."
@@ -222,6 +222,7 @@ class Redcar::EditView
           count += 1
         end
       else
+        print "lloi(#{last_line_of_interest})"; $stdout.flush
         until line_num >= @buf.line_count or 
             line_num > last_line_of_interest or
             parse_line(@buf.get_line(line_num), line_num)
@@ -233,7 +234,7 @@ class Redcar::EditView
     
     # Parses line_num, using text line.
     def parse_line(line, line_num)
-#      print line_num, " "; $stdout.flush
+      print line_num, " "; $stdout.flush
 #      puts line_num; $stdout.flush
 #      puts line.to_s
       check_line_exists(line_num)
@@ -262,9 +263,12 @@ class Redcar::EditView
 #       end
 
       if @colourer
-        if parsed_before?(line_num)
-          remove_tags_from_line(line_num)
-        end
+#         if parsed_before?(line_num)
+#           remove_tags_from_line(line_num)
+#         end
+#         num = lp.all_scopes.length
+#         nummod = lp.all_scopes.select{|s| s.modified? }.length
+#         puts "#{nummod}/#{num}"
         SyntaxExt.colour_line_with_scopes(@colourer, @colourer.theme, 
                                           line_num, lp.all_scopes)
 #        debug_print_tag_table
@@ -317,7 +321,7 @@ class Redcar::EditView
 
     class LineParser
       attr_accessor(:start_scope, :active_grammar,
-                    :all_scopes, :closed_scopes, :matching_patterns, :rest_line,
+                    :all_scopes, :closed_scopes, :matching_patterns,
                     :need_new_patterns, :new_scope_markers)
       attr_reader :current_scope
       
@@ -328,7 +332,7 @@ class Redcar::EditView
         @all_scopes =  [@current_scope]
         @closed_scopes = []
         @matching_patterns = []
-        @rest_line = line
+        @line = line
         @need_new_patterns = true
         @new_scope_markers = []
         reset_scope_marker
@@ -339,7 +343,6 @@ class Redcar::EditView
         if rbv != cv
           puts "'#{name}' C version differs. rb: #{rbv.inspect}," +
             " c:#{cv.inspect}, data:#{data.inspect}"
-          gets
         end
         rbv != cv
       end
@@ -371,7 +374,7 @@ class Redcar::EditView
           else
             thispos = pos
           end
-          if md = current_scope.closing_regexp.match(rest_line, thispos)
+          if md = current_scope.closing_regexp.match(@line, thispos)
             from = md.begin(0)
             { :from => from, :md => md, :pattern => :close_scope }
           end
@@ -405,13 +408,6 @@ class Redcar::EditView
           current_scope.pattern.possible_patterns
         else
           @matching_patterns
-        end
-      end
-      
-      def match_pattern(pattern)
-        if md = pattern.match.match(@rest_line, pos)
-          from = md.begin(0)
-          { :from => from, :md => md, :pattern => pattern }
         end
       end
       
@@ -481,46 +477,53 @@ class Redcar::EditView
         current_scope.remove_children_that_overlap(new_scope)
       end
       
-      def scan_line
-        reset_scope_marker
-        if close_marker = current_scope_closes?
-          update_scope_marker(close_marker)
-        end
-        possible_patterns.each do |pattern|
-          if nsm = match_pattern(pattern)
-            update_scope_marker(nsm)
-            matching_patterns << pattern if need_new_patterns
-          end
-        end          
-      end
+#       def scan_line
+#         reset_scope_marker
+#         if close_marker = current_scope_closes?
+#           update_scope_marker(close_marker)
+#         end
+#         possible_patterns.each do |pattern|
+#           if nsm = match_pattern(pattern)
+#             update_scope_marker(nsm)
+#             matching_patterns << pattern if need_new_patterns
+#           end
+#         end          
+#       end
       
-      def rbreset_scope_marker
-        @first_new_scope_marker = nil
-      end
+#       def match_pattern(pattern)
+#         if md = pattern.match.match(@line, pos)
+#           from = md.begin(0)
+#           { :from => from, :md => md, :pattern => pattern }
+#         end
+#       end
       
-      def rbany_markers?
-        @first_new_scope_marker
-      end
+#       def rbreset_scope_marker
+#         @first_new_scope_marker = nil
+#       end
       
-      def rbget_scope_marker
-        @first_new_scope_marker
-      end
+#       def rbany_markers?
+#         @first_new_scope_marker
+#       end
       
-      def rbupdate_scope_marker(nsm)
-        osm = @first_new_scope_marker
-        unless osm
-          @first_new_scope_marker = nsm
-          return
-        end
-        nval = ((nsm[:pattern] == :close_scope) ? 0 : nsm[:pattern].hint)
-        oval = ((osm[:pattern] == :close_scope) ? 0 : osm[:pattern].hint)
-        if nsm[:from] < osm[:from]
-          @first_new_scope_marker = nsm
-        elsif nsm[:from] == osm[:from] and
-            nval < oval
-          @first_new_scope_marker = nsm
-        end
-      end
+#       def rbget_scope_marker
+#         @first_new_scope_marker
+#       end
+      
+#       def rbupdate_scope_marker(nsm)
+#         osm = @first_new_scope_marker
+#         unless osm
+#           @first_new_scope_marker = nsm
+#           return
+#         end
+#         nval = ((nsm[:pattern] == :close_scope) ? 0 : nsm[:pattern].hint)
+#         oval = ((osm[:pattern] == :close_scope) ? 0 : osm[:pattern].hint)
+#         if nsm[:from] < osm[:from]
+#           @first_new_scope_marker = nsm
+#         elsif nsm[:from] == osm[:from] and
+#             nval < oval
+#           @first_new_scope_marker = nsm
+#         end
+#       end
       
       def process_marker
         if @parser.parsed_before?(line_num)

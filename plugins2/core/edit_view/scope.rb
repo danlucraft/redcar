@@ -40,6 +40,7 @@ class Redcar::EditView
       obj.grammar = grammar
       obj.open_end = nil
       obj.close_start = nil
+      obj.cinit
       obj
     end
     
@@ -49,6 +50,7 @@ class Redcar::EditView
       obj.end = end_loc
       obj.open_end = nil
       obj.close_start = nil
+      obj.cinit
       obj
     end
     
@@ -66,6 +68,7 @@ class Redcar::EditView
       self.close_start    = close_start
       @open_matchdata     = open_matchdata
       @close_matchdata    = close_matchdata
+      obj.cinit
     end
     
     def initialize2(options)
