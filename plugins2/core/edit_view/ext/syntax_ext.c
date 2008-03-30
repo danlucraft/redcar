@@ -265,16 +265,17 @@ int scope_add_child(Scope* sp, Scope* sc) {
       return 1;
     }
   }
-  int insert_index = 0;
+  Scope *insert_after = NULL;
   int i;
   Scope *current = NULL;
-  for (i = 0; i < g_node_n_children(sp); i++) {
-    current = g_node_nth_child(sp, i);
+  current = g_node_first_child(sp);
+  while(current != NULL) {
     current_data = current->data;
     if (textloc_lte(&current_data->start, &sdc->start))
-      insert_index = i+1;
+      insert_after = current;
+    current = g_node_next_sibling(current);
   }
-  g_node_insert(sp, insert_index, sc);
+  g_node_insert_after(sp, insert_after, sc);
   return 1;
 }
 

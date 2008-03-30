@@ -18,7 +18,7 @@ class Redcar::EditView
       @max_view = 300
       @changes = []
       @scope_last_line = 0
-      @parse_all = false
+      @parse_all = true
       connect_buffer_signals
       unless @buf.text == ""
         raise "Parser#initialize called with not empty buffer."
@@ -234,7 +234,7 @@ class Redcar::EditView
     
     # Parses line_num, using text line.
     def parse_line(line, line_num)
-      print line_num, " "; $stdout.flush
+#      print line_num, " "; $stdout.flush
 #      puts line_num; $stdout.flush
 #      puts line.to_s
       check_line_exists(line_num)
