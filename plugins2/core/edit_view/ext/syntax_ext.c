@@ -726,11 +726,12 @@ static VALUE rb_scope_delete_any_on_line_not_in(VALUE self, VALUE line_num, VALU
   VALUE rs1;
 
   c = g_node_first_child(s);
+  VALUE rb_removed = rb_ary_new();
   while (c != NULL) {
     sdc = c->data;
     cn = g_node_next_sibling(c);
     if (sdc->start.line > num)
-      return Qtrue;
+      return rb_removed;
     if (sdc->start.line == num) {
       remove = TRUE;
       for (j = 0; j < RARRAY(scopes)->len; j++) {
@@ -740,13 +741,14 @@ static VALUE rb_scope_delete_any_on_line_not_in(VALUE self, VALUE line_num, VALU
           remove = FALSE;
       }
       if (remove) {
+        rb_ary_push(rb_removed, sdc->rb_scope);
         g_node_unlink(c);
         i -= 1;
       }
     }
     c = cn;
   }
-  return Qtrue;
+  return rb_removed;
 }
 
 static VALUE rb_scope_clear_not_on_line(VALUE self, VALUE rb_num) {
@@ -866,26 +868,39 @@ static VALUE rb_scope_shift_chars(VALUE self, VALUE rb_line,
   return Qtrue;
 }
 
-int scope_remove_children_that_overlap(Scope* scope, Scope* other) {
-  ScopeData *od = other->data;
-  Scope *child;
-  Scope *child_data;
-  child = g_node_first_child(scope);
-  while (child != NULL) {
-    child_data = child->data;
-    if (scope_overlaps(child, other) && child != other)
-      g_node_unlink(child);
-    child = g_node_next_sibling(child);
-  }
-  return 1;
-}
+/* int scope_remove_children_that_overlap(Scope* scope, Scope* other) { */
+/*   ScopeData *od = other->data; */
+/*   Scope *child; */
+/*   ScopeData *child_data; */
+/*   child = g_node_first_child(scope); */
+/*   while (child != NULL) { */
+/*     child_data = child->data; */
+/*     if (scope_overlaps(child, other) && child != other) */
+/*       g_node_unlink(child); */
+/*     child = g_node_next_sibling(child); */
+/*   } */
+/*   return 1; */
+/* } */
 
 static VALUE rb_scope_remove_children_that_overlap(VALUE self, VALUE rb_other) {
-  Scope *s, *o;
-  Data_Get_Struct(self, Scope, s);
-  Data_Get_Struct(rb_other, Scope, o);
-  scope_remove_children_that_overlap(s, o);
-  return Qtrue;
+  Scope *scope, *other;
+  Data_Get_Struct(self, Scope, scope);
+  Data_Get_Struct(rb_other, Scope, other);
+  //  scope_remove_children_that_overlap(scope, other);
+  ScopeData *od = other->data;
+  Scope *child;
+  ScopeData *child_data;
+  child = g_node_first_child(scope);
+  VALUE rb_removed = rb_ary_new();
+  while (child != NULL) {
+    child_data = child->data;
+    if (scope_overlaps(child, other) && child != other) {
+      rb_ary_push(rb_removed, child_data->rb_scope);
+      g_node_unlink(child);
+    }
+    child = g_node_next_sibling(child);
+  }
+  return rb_removed;
 }
 
 static VALUE rb_scope_delete_child(VALUE self, VALUE rb_scope) {
@@ -1151,6 +1166,35 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
   return Qnil;
 }
 
+static VALUE rb_uncolour_scopes(VALUE self, VALUE rb_colourer, VALUE scopes) {
+/*   printf("%d in line.\n", RARRAY(scopes)->len); */
+  VALUE rb_buffer;
+  GtkTextBuffer* buffer;
+  GtkTextIter start_iter, end_iter;
+
+  // remove all tags from line
+  rb_buffer = rb_funcall(rb_iv_get(rb_colourer, "@sourceview"), rb_intern("buffer"), 0);
+  
+  buffer = (GtkTextBuffer *) get_gobject(rb_buffer);
+
+  // un colour each scope
+  int i;
+  VALUE rb_current;
+  Scope* current;
+  ScopeData* current_data;
+  for (i = 0; i < RARRAY(scopes)->len; i++) {
+    rb_current = rb_ary_entry(scopes, i);
+    Data_Get_Struct(rb_current, Scope, current);
+    current_data = current->data;
+    if (current_data->tag != NULL) {
+      scope_get_start_iter(current, buffer, &start_iter, FALSE);
+      scope_get_end_iter(current, buffer, &end_iter, FALSE);
+      gtk_text_buffer_remove_tag(buffer, current_data->tag, &start_iter, &end_iter);
+    }
+  }
+  return Qnil;
+}
+
 /// LineParser
 
 typedef struct LineParser_ {
@@ -1367,6 +1411,8 @@ void Init_syntax_ext() {
   mSyntaxExt = rb_define_module("SyntaxExt");
   rb_define_module_function(mSyntaxExt, "colour_line_with_scopes", 
                             rb_colour_line_with_scopes, 4);
+  rb_define_module_function(mSyntaxExt, "uncolour_scopes", 
+                            rb_uncolour_scopes, 2);
 
   rb_mRedcar = rb_define_module ("Redcar");
   rb_cEditView = rb_eval_string("Redcar::EditView");

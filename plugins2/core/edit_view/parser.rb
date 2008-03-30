@@ -18,7 +18,7 @@ class Redcar::EditView
       @max_view = 300
       @changes = []
       @scope_last_line = 0
-      @parse_all = true
+      @parse_all = false
       connect_buffer_signals
       unless @buf.text == ""
         raise "Parser#initialize called with not empty buffer."
@@ -269,6 +269,7 @@ class Redcar::EditView
 #         num = lp.all_scopes.length
 #         nummod = lp.all_scopes.select{|s| s.modified? }.length
 #         puts "#{nummod}/#{num}"
+        SyntaxExt.uncolour_scopes(@colourer, lp.removed_scopes)
         SyntaxExt.colour_line_with_scopes(@colourer, @colourer.theme, 
                                           line_num, lp.all_scopes)
 #        debug_print_tag_table
@@ -322,7 +323,7 @@ class Redcar::EditView
     class LineParser
       attr_accessor(:start_scope, :active_grammar,
                     :all_scopes, :closed_scopes, :matching_patterns,
-                    :need_new_patterns, :new_scope_markers)
+                    :need_new_patterns, :new_scope_markers, :removed_scopes)
       attr_reader :current_scope
       
       def initialize2(p, line, opening_scope)
@@ -335,6 +336,7 @@ class Redcar::EditView
         @line = line
         @need_new_patterns = true
         @new_scope_markers = []
+        @removed_scopes = []
         reset_scope_marker
       end
       
@@ -470,11 +472,13 @@ class Redcar::EditView
         if new_scope.overlaps?(expected_scope) or
             new_scope.start > expected_scope.start
           current_scope.delete_child(expected_scope)
+          @removed_scopes << expected_scope
         end
       end
       
       def remove_children_that_overlap_with(new_scope)
-        current_scope.remove_children_that_overlap(new_scope)
+        arr = current_scope.remove_children_that_overlap(new_scope)
+        @removed_scopes += arr
       end
       
 #       def scan_line
@@ -548,6 +552,7 @@ class Redcar::EditView
             collect_captures(current_scope, :end_captures)
             if expected_scope
               current_scope.delete_child(expected_scope)
+              @removed_scopes << expected_scope
             end
           end
           closed_scopes << current_scope
@@ -602,7 +607,8 @@ class Redcar::EditView
         if @parser.parsed_before?(line_num)
           # If we are reparsing, we might find that some scopes have disappeared,
           # delete them:
-          current_scope.root.delete_any_on_line_not_in(line_num, all_scopes)
+          arr = current_scope.root.delete_any_on_line_not_in(line_num, all_scopes)
+          @removed_scopes += arr
           
           # any that we expected to close on this line that now don't?
           #  first build list of scopes that close on this line (including ones
@@ -621,6 +627,7 @@ class Redcar::EditView
               s.close_start = nil
               if s.capture
                 s.detach_from_parent
+                @removed_scopes << s
               end
             end
           end
