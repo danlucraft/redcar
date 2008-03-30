@@ -161,6 +161,7 @@ module Redcar
     
     class Undo < Redcar::EditTabCommand
       key  "Global/Ctrl+Z"
+      icon :UNDO
       
       def execute(tab)
         tab.doc.undo
@@ -169,6 +170,7 @@ module Redcar
     
     class Redo < Redcar::EditTabCommand
       key  "Global/Shift+Ctrl+Z"
+      icon :REDO
       
       def execute(tab)
         tab.doc.redo
@@ -177,6 +179,7 @@ module Redcar
     
     class Cut < Redcar::EditTabCommand
       key       "Global/Ctrl+X"
+      icon :CUT
 #       sensitive :selected_text
       
       def execute(tab)
@@ -186,6 +189,7 @@ module Redcar
     
     class Copy < Redcar::EditTabCommand
       key       "Global/Ctrl+C"
+      icon :COPY
 #       sensitive :selected_text
       
       def execute(tab)
@@ -195,6 +199,7 @@ module Redcar
     
     class Paste < Redcar::EditTabCommand
       key  "Global/Ctrl+V"
+      icon :PASTE
       
       def execute(tab)
         tab.view.paste_clipboard
@@ -297,15 +302,17 @@ module Redcar
     
     class ShowScope < Redcar::EditTabCommand
       key "Global/Super+Shift+P"
-      norecord
+      
       def execute(tab)
         if root = tab.view.parser.root
-          scope = root.scope_at(TextLoc(tab.doc.cursor_line, 
-                                        tab.doc.cursor_line_offset))
+          scope = root.scope_at(TextLoc(tab.doc.cursor_line, tab.doc.cursor_line_offset))
         end
+#         puts "scope_at_cursor: #{scope.inspect}"
+# #         scope.root.display(0)
         inner = scope.pattern and scope.pattern.content_name and
           (tab.doc.cursor_line_offset >= scope.open_end.offset and 
            (!scope.close_start or tab.doc.cursor_line_offset < scope.close_start.offset))
+#         p scope.hierarchy_names(inner).join("\n")
         tab.view.tooltip_at_cursor(scope.hierarchy_names(inner).join("\n"))
       end
     end
@@ -395,7 +402,7 @@ module Redcar
       change do
         win.tabs.each do |tab|
           if tab.is_a? EditTab
-            if Redcar::Preference.get("Editing/Wrap words")
+            if Redcar::Preference.get("Editing/Wrap words").to_bool
               tab.view.wrap_mode = Gtk::TextTag::WRAP_WORD
             else
               tab.view.wrap_mode = Gtk::TextTag::WRAP_NONE

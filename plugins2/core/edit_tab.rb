@@ -73,6 +73,11 @@ module Redcar
     
     def load(filename)
       Hook.trigger :tab_load, self do
+        document.text = ""
+        ext = File.extname(filename)
+        if ext != "" and gr = Redcar::EditView::Grammar.grammar(:extension => ext)
+          view.change_root_scope(gr.name)
+        end
         document.text = File.read(filename)
         label.text = filename.split(/\//).last
         document.cursor = 0

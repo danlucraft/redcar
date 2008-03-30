@@ -163,6 +163,7 @@ typedef struct ScopeData_ {
   char* name;
   VALUE rb_scope;
   GtkTextTag *tag;
+  GtkTextTag *inner_tag;
 } ScopeData;
 
 typedef GNode Scope;
@@ -375,6 +376,7 @@ static VALUE rb_scope_cinit(VALUE self) {
   sd->rb_scope = self;
   sd->modified = 1;
   sd->tag = NULL;
+  sd->inner_tag = NULL;
   return self;
 }
 
@@ -1083,11 +1085,11 @@ void set_tag_properties(GtkTextTag* tag, VALUE rbh_tm_settings) {
     g_object_set(G_OBJECT(tag), "foreground", fg, NULL);
   }
 
-  rb_bg = rb_hash_aref(rbh_tm_settings, rb_str_new2("background"));
-  if (rb_bg != Qnil) {
-    clean_colour(RSTRING_PTR(rb_bg), bg);
-    g_object_set(G_OBJECT(tag), "background", bg, NULL);
-  }
+/*   rb_bg = rb_hash_aref(rbh_tm_settings, rb_str_new2("background")); */
+/*   if (rb_bg != Qnil) { */
+/*     clean_colour(RSTRING_PTR(rb_bg), bg); */
+/*     g_object_set(G_OBJECT(tag), "background", bg, NULL); */
+/*   } */
 
   rb_style = rb_hash_aref(rbh_tm_settings, rb_str_new2("fontStyle"));
 
@@ -1095,8 +1097,8 @@ void set_tag_properties(GtkTextTag* tag, VALUE rbh_tm_settings) {
     g_object_set(G_OBJECT(tag), "style", PANGO_STYLE_ITALIC, NULL);
   if (strstr(RSTRING_PTR(rb_style), "underline"))
     g_object_set(G_OBJECT(tag), "underline", PANGO_UNDERLINE_SINGLE, NULL);
-  if (strstr(RSTRING_PTR(rb_style), "bold"))
-    g_object_set(G_OBJECT(tag), "weight", PANGO_WEIGHT_BOLD, NULL);
+/*   if (strstr(RSTRING_PTR(rb_style), "bold")) */
+/*     g_object_set(G_OBJECT(tag), "weight", PANGO_WEIGHT_BOLD, NULL); */
     
   return;
 }
@@ -1116,8 +1118,8 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner,
 
   scope_get_start_iter(scope, buffer, &start_iter, inner);
   scope_get_end_iter(scope, buffer, &end_iter, inner);
-
-  if (sd->tag == NULL) {
+  
+  if ((!inner && sd->tag == NULL) || (inner && sd->inner_tag == NULL)) {
     rbh = rb_funcall(theme, rb_intern("global_settings"), 0);
     
     // set name
@@ -1143,13 +1145,20 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner,
     if (RARRAY(rba_settings)->len > 0)
       set_tag_properties(tag, rb_settings);
     
-    sd->tag = tag;
+    if (!inner)
+      sd->tag = tag;
+    else
+      sd->inner_tag = tag;
   }
   else {
     if (sd->has_old) {
       scope_get_old_start_iter(scope, buffer, &old_start_iter, inner);
       scope_get_old_end_iter(scope, buffer, &old_end_iter, inner);
-      gtk_text_buffer_remove_tag(buffer, sd->tag, &old_start_iter, &old_end_iter);
+      if (!inner)
+        tag = sd->tag;
+      else
+        tag = sd->inner_tag;
+      gtk_text_buffer_remove_tag(buffer, tag, &old_start_iter, &old_end_iter);
 /*       printf("[Uncolour] %s:%d  ", sd->name, priority-1); */
 /*       print_iter(&old_start_iter); */
 /*       printf("-"); */
@@ -1177,7 +1186,7 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner,
 /*     puts(""); */
 /*   } */
 
-  gtk_text_buffer_apply_tag(buffer, sd->tag, &start_iter, &end_iter);
+  gtk_text_buffer_apply_tag(buffer, tag, &start_iter, &end_iter);
   sd->modified = 0;
   return;
 }
@@ -1217,7 +1226,10 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
     if (current_data->name == NULL && pattern != Qnil && 
         content_name == Qnil)
       continue;
-    colour_scope(buffer, current, theme, FALSE, &start_iter, &end_iter);
+    colour_scope(buffer, current, theme, 0, &start_iter, &end_iter);
+    if (content_name != Qnil) {
+      colour_scope(buffer, current, theme, 1, &start_iter, &end_iter);
+    }
   }
   //  puts("");
   return Qnil;
@@ -1449,34 +1461,6 @@ static VALUE rb_line_parser_update_scope_marker(VALUE self, VALUE rb_nsm) {
 /*           end */
 /*         end */
 /*       end */
-      
-/* static VALUE rb_line_parser_current_scope_closes(VALUE self) { */
-/*   LineParser *lp; */
-/*   Data_Get_Struct(self, LineParser, lp); */
-/*   ScopeData *current_scope_data; */
-/*   VALUE rb_current_scope, rb_closing_regexp, rb_md, rb_line, rb_from, rb_nsm; */
-/*   int thispos; */
-/*   current_scope_data = lp->current_scope->data; */
-/*   rb_current_scope = current_scope_data->rb_scope; */
-/*   rb_closing_regexp = rb_funcall(rb_current_scope, rb_intern("closing_regexp"), 0); */
-/*   if (rb_closing_regexp == Qnil) */
-/*     return Qnil; */
-/*   thispos = current_scope_data->start.offset+1; */
-/*   if (current_scope_data->start.line != lp->line_num || */
-/*       lp->pos > thispos) */
-/*     thispos = lp->pos; */
-/*   rb_line = rb_iv_get(self, "@line"); */
-/*   rb_md = rb_funcall(rb_closing_regexp, rb_intern("match"), 2, rb_line, INT2FIX(thispos)); */
-/*   if (rb_md != Qnil) { */
-/*     rb_from = rb_funcall(rb_md, rb_intern("begin"), 1, INT2FIX(0)); */
-/*     rb_nsm = rb_hash_new(); */
-/*     rb_hash_aset(rb_nsm, ID2SYM(rb_intern("from")), rb_from); */
-/*     rb_hash_aset(rb_nsm, ID2SYM(rb_intern("md")), rb_md); */
-/*     rb_hash_aset(rb_nsm, ID2SYM(rb_intern("pattern")), ID2SYM(rb_intern("close_scope"))); */
-/*     return rb_nsm; */
-/*   } */
-/*   return Qnil; */
-/* } */
 
 static VALUE rb_line_parser_current_scope_closes(VALUE self) {
   LineParser *lp;

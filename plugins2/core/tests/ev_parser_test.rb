@@ -1030,5 +1030,23 @@ STR
     buf.insert(buf.iter(buf.char_count), "\n")
     assert_equal 1, smp.root.children.length
   end
+  
+  def test_incremental_the_same_as_all_at_once
+    gr = Redcar::EditView::Grammar.grammar :name => 'Ruby'
+    buf, smp = ParserTests.clean_parser_and_buffer(gr)
+    source=<<STR
+foo=<<H
+STR
+    source[0..-2].split(//).each do |l|
+      buf.insert(buf.iter(buf.char_count), l)
+    end
+    
+    gr1 = Redcar::EditView::Grammar.grammar :name => 'Ruby'
+    buf1, smp1 = ParserTests.clean_parser_and_buffer(gr1)
+    buf1.text=(source[0..-2])
+    
+    assert_equal smp.root.pretty2, smp1.root.pretty2
+  end
+  
   end
 end

@@ -125,7 +125,7 @@ module Com::RedcarIDE
 #      vbox = Gtk::VBox.new
       num_options = bus(path).children.length
       gtk_table = Gtk::Table.new(2, num_options, false)
-      puts "num_options: #{num_options}"
+#      puts "num_options: #{num_options}"
       @widgets = {}
       table_row = 0
       bus[path].each_slot do |slot|
@@ -154,7 +154,7 @@ module Com::RedcarIDE
               else
                 widget = Gtk::SpinButton.new
               end
-              widget.value = slot.data
+              widget.value = slot.data.to_i
               def widget.preference_value
                 self.value.to_s
               end

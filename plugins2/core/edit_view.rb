@@ -80,6 +80,11 @@ module Redcar
       set_gtk_cursor_colour
       self.tabs_width = 2
       self.left_margin = 5
+      if Redcar::Preference.get("Editing/Wrap words").to_bool
+        self.wrap_mode = Gtk::TextTag::WRAP_WORD
+      else
+        self.wrap_mode = Gtk::TextTag::WRAP_NONE
+      end
       setup_buffer(buffer)
       self.show_line_numbers = Redcar::Preference.get("Editing/Show line numbers").to_bool
       set_font(Redcar::Preference.get("Appearance/Tab Font"))

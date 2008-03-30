@@ -93,6 +93,7 @@ class Redcar::EditView
     
     def store_insertion(iter, text, length)
       num_lines = text.scan("\n").length+1
+#      p text
       @changes.push({ :type    => :insertion, 
                       :from    => TextLoc.new(iter.line, iter.line_offset),
                       :length  => length,
@@ -131,6 +132,7 @@ class Redcar::EditView
     end
     
     def process_insertion(insertion)
+#      p insertion
       if insertion[:lines] == 1
         from_iter = @buf.iter(insertion[:from])
         to_tl     = TextLoc(insertion[:from].line,
@@ -145,6 +147,7 @@ class Redcar::EditView
     end
     
     def insert_in_line(line_num, text, offset)
+#      p :insert_in_line
       if line_num <= @buf.line_count
         @root.shift_chars(line_num, text.length, offset)
         lazy_parse_from(line_num)
@@ -155,6 +158,7 @@ class Redcar::EditView
     end
     
     def insert(loc, length, lines)
+#      p :insert
       before_scope = scope_at_line_start(loc.line)
       end_offset = @buf.iter(loc).offset+length
       end_iter = @buf.iter(end_offset)
@@ -283,7 +287,7 @@ class Redcar::EditView
         SyntaxExt.colour_line_with_scopes(@colourer, @colourer.theme, 
                                           line_num, lp.all_scopes)
 #        debug_print_tag_table
-#        reset_table_priorities
+        reset_table_priorities
       end
       
       # should we parse the next line? If we've changed the scope or the 
@@ -293,6 +297,7 @@ class Redcar::EditView
       @ending_scopes[line_num] = lp.current_scope
 #      p :ending_scopes_after_parse_line
 #      p @ending_scopes
+#       puts @root.pretty2
       same
     end
     
@@ -388,7 +393,7 @@ class Redcar::EditView
 #       end
       
       def any_line_left?
-        pos < line_length
+        pos <= line_length
       end
       
       def get_expected_scope
@@ -486,8 +491,8 @@ class Redcar::EditView
       end
       
       def process_marker
-#        puts
-#        puts @parser.root.pretty
+#       puts
+#       puts @parser.root.pretty
 #        if @parser.parsed_before?(line_num)
           expected_scope = get_expected_scope
 #        else
@@ -500,8 +505,8 @@ class Redcar::EditView
         from = new_scope_marker[:from]
         md   = new_scope_marker[:md]
         to   = new_scope_marker[:to] = md.end(0)
-#        p new_scope_marker
-#        p expected_scope
+#         p new_scope_marker
+#         p expected_scope
         case new_scope_marker[:pattern]
         when :close_scope
           if current_scope.end and 
@@ -568,7 +573,13 @@ class Redcar::EditView
       end
       
       def clear_line
-        if @parser.parsed_before?(line_num)
+#         p :clear_line
+#         p line_num
+#         p @line
+#         puts @parser.root.pretty2
+#         p @parser.ending_scopes
+# #        if @parser.parsed_before?(line_num)
+#           p all_scopes
           # If we are reparsing, we might find that some scopes have disappeared,
           # delete them:
           arr = current_scope.root.delete_any_on_line_not_in(line_num, all_scopes)
@@ -595,8 +606,8 @@ class Redcar::EditView
               end
             end
           end
-        end
-        self.pos = line_length + 1  
+#        end
+        self.pos = line_length + 1
       end
     end
     
