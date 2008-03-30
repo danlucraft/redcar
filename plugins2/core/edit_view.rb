@@ -17,16 +17,20 @@ module Redcar
       Keymap.push_onto(self, "EditView")
       Hook.attach :after_open_window do
         create_grammar_combo
+        create_line_col_status
       end
       Hook.attach :after_focus_tab do |tab|
         gtk_combo_box = bus('/gtk/window/statusbar/grammar_combo').data
+        gtk_line_label = bus('/gtk/window/statusbar/line').data
         if tab and tab.is_a? EditTab
           list = Redcar::EditView::Grammar.names.sort
           gtk_grammar_combo_box.sensitive = true
           gtk_grammar_combo_box.active = list.index(tab.view.parser.root.grammar.name)
+          gtk_line_label.sensitive = true
         else
           gtk_grammar_combo_box.sensitive = false
           gtk_grammar_combo_box.active = -1
+          gtk_line_label.sensitive = false
         end
       end
       plugin.transition(FreeBASE::RUNNING)
@@ -36,6 +40,17 @@ module Redcar
       Keymap.remove_from(self, "EditView")
       Redcar::EditView::Theme.cache
       plugin.transition(FreeBASE::LOADED)
+    end
+    
+    def self.create_line_col_status
+      unless slot = bus('/gtk/window/statusbar/line', true)
+        gtk_hbox = bus('/gtk/window/statusbar').data
+        gtk_label = Gtk::Label.new("")
+        bus('/gtk/window/statusbar/line').data = gtk_label
+        gtk_hbox.pack_end(gtk_label, false)
+        gtk_label.set_padding 10, 0
+        gtk_label.show
+      end
     end
     
     def self.create_grammar_combo
@@ -112,7 +127,27 @@ module Redcar
       set_marker_pixbuf("bookmark", @@bookmark_pixbuf)
     end
     
+    def update_line_and_column(mark)
+      insert_iter = self.buffer.get_iter_at_mark(mark)
+      label = bus('/gtk/window/statusbar/line').data
+      label.text = "Line: "+ (insert_iter.line+1).to_s + 
+        "   Col: "+(insert_iter.line_offset+1).to_s
+    end
+    
     def connect_signals
+      self.buffer.signal_connect("mark_set") do |widget, event, mark|
+        if mark.name == "insert"
+          update_line_and_column(mark)
+        end
+        false
+      end
+      
+      self.buffer.signal_connect("changed") do |widget, event|
+        mark = self.buffer.cursor_mark
+        update_line_and_column(mark)
+        false
+      end
+      
       # Hook up to scrollbar changes for the parser
 #       signal_connect("parent_set") do
 #         if parent.is_a? Gtk::ScrolledWindow

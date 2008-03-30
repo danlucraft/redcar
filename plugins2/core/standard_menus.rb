@@ -373,7 +373,7 @@ module Redcar
     preference "Appearance/Tab Theme" do |p|
       type :combo
       default "Mac Classic"
-      values { EditView::Theme.theme_names }
+      values { EditView::Theme.theme_names.sort_by(&:downcase) }
       change do 
         win.tabs.each do |tab|
           if tab.respond_to? :view
