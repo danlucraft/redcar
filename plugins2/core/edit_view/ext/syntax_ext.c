@@ -717,15 +717,17 @@ static VALUE rb_scope_detach(VALUE self) {
 static VALUE rb_scope_delete_any_on_line_not_in(VALUE self, VALUE line_num, VALUE scopes) {
   if (self == Qnil || line_num == Qnil || scopes == Qnil)
     printf("rb_scope_delete_any_on_line_not_in(nil, or nil, or nil)");
-  Scope *s, *c, *s1;
+  Scope *s, *c, *cn, *s1;
   ScopeData *sdc;
   Data_Get_Struct(self, Scope, s);
   int num = FIX2INT(line_num);
   int i, j, remove;
   VALUE rs1;
-  for (i = 0; i < g_node_n_children(s); i++) {
-    c = g_node_nth_child(s, i);
+
+  c = g_node_first_child(s);
+  while (c != NULL) {
     sdc = c->data;
+    cn = g_node_next_sibling(c);
     if (sdc->start.line > num)
       return Qtrue;
     if (sdc->start.line == num) {
@@ -741,6 +743,7 @@ static VALUE rb_scope_delete_any_on_line_not_in(VALUE self, VALUE line_num, VALU
         i -= 1;
       }
     }
+    c = cn;
   }
   return Qtrue;
 }

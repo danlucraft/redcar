@@ -42,7 +42,7 @@ elsif Redcar::App.ARGV.include? "--test-perf-edit"
   RubyProf.start
   doc.insert(doc.iter(TextLoc(230, 0)), "        when ")
   
-  1.times do
+  2.times do
     1.times do 
       doc.signal_emit("insert_text",
                       doc.iter(TextLoc(230, 13)),
