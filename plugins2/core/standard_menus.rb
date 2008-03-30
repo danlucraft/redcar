@@ -300,7 +300,8 @@ module Redcar
       norecord
       def execute(tab)
         if root = tab.view.parser.root
-          scope = root.scope_at(TextLoc(tab.doc.cursor_line, tab.doc.cursor_line_offset))
+          scope = root.scope_at(TextLoc(tab.doc.cursor_line, 
+                                        tab.doc.cursor_line_offset))
         end
         inner = scope.pattern and scope.pattern.content_name and
           (tab.doc.cursor_line_offset >= scope.open_end.offset and 
