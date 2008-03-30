@@ -109,13 +109,13 @@ module Redcar
     
     def connect_signals
       # Hook up to scrollbar changes for the parser
-      signal_connect("parent_set") do
-        if parent.is_a? Gtk::ScrolledWindow
-          parent.vscrollbar.signal_connect("value_changed") do 
-            view_changed
-          end
-        end
-      end
+#       signal_connect("parent_set") do
+#         if parent.is_a? Gtk::ScrolledWindow
+#           parent.vscrollbar.signal_connect("value_changed") do 
+#             view_changed
+#           end
+#         end
+#       end
     end
     
     def set_font(font)
@@ -146,6 +146,7 @@ module Redcar
       root = Scope.new(:pattern => gr,
                         :grammar => gr,
                         :start => TextLoc(0, 0))
+      @parser.uncolour
       @parser.root = root
       @parser.reparse
     end
@@ -184,6 +185,10 @@ module Redcar
       thisbuf.max_undo_levels = 10
     end
     
+    def indent_line(line_num)
+      @indenter.indent_line(line_num)
+    end
+    
     def iterize(offset)
       self.buffer.get_iter_at_offset(offset)
     end
@@ -194,8 +199,13 @@ module Redcar
       end
     end
     
+    def last_visible_line
+      bufy = visible_rect.y+visible_rect.height
+      get_line_at_y(bufy)[0].line
+    end
+    
     def view_changed
-      @parser.max_view = visible_lines[1] + 100
+      @parser.max_view = last_visible_line + 100
     end
     
     def cursor_onscreen?

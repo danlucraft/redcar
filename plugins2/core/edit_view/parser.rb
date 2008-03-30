@@ -79,6 +79,10 @@ class Redcar::EditView
       end
     end
     
+    def uncolour
+      SyntaxExt.uncolour_scopes(@colourer, [@root])
+    end
+    
     def last_line_of_interest
       if @parse_all
         @buf.line_count
@@ -155,11 +159,17 @@ class Redcar::EditView
       end_offset = @buf.iter(loc).offset+length
       end_iter = @buf.iter(end_offset)
       end_loc  = TextLoc(end_iter.line, end_iter.line_offset)
+      #p :insert
+      #puts @root.pretty
       @root.shift_after1(loc, lines-1)
-      lines-1.times do 
+      #puts "@root.shift_after1(#{loc.inspect}, #{lines-1})"
+      #puts @root.pretty
+      (lines-1).times do 
         @ending_scopes.insert(loc.line, nil)
       end
+      #puts "@root.shift_chars(#{loc.line+lines-1}, #{end_loc.offset-loc.offset}, #{loc.offset})"
       @root.shift_chars(loc.line+lines-1, end_loc.offset-loc.offset, loc.offset)
+      #puts @root.pretty
       lazy_parse_from(loc.line, lines)
     end
     
@@ -207,7 +217,8 @@ class Redcar::EditView
     def max_view=(val)
       old_max_view = @max_view
       @max_view = val
-      if @max_view > old_max_view and (!@root.last_scope1 or @max_view > @root.last_scope1.end.line)
+      if @max_view > old_max_view and 
+          (!@root.last_scope1 or @max_view > @root.last_scope1.end.line)
         lazy_parse_from(old_max_view+1)
       end
     end
@@ -222,7 +233,6 @@ class Redcar::EditView
           count += 1
         end
       else
-        print "lloi(#{last_line_of_interest})"; $stdout.flush
         until line_num >= @buf.line_count or 
             line_num > last_line_of_interest or
             parse_line(@buf.get_line(line_num), line_num)
@@ -281,6 +291,8 @@ class Redcar::EditView
       same = ((@ending_scopes[line_num] == lp.current_scope) and 
               @ending_scopes[line_num+1] != nil)
       @ending_scopes[line_num] = lp.current_scope
+#      p :ending_scopes_after_parse_line
+#      p @ending_scopes
       same
     end
     
@@ -324,13 +336,13 @@ class Redcar::EditView
       attr_accessor(:start_scope, :active_grammar,
                     :all_scopes, :closed_scopes, :matching_patterns,
                     :need_new_patterns, :new_scope_markers, :removed_scopes)
-      attr_reader :current_scope
       
       def initialize2(p, line, opening_scope)
         @parser = p
-        @start_scope = @current_scope = (opening_scope || p.scope_at_line_start(line_num))
-        @active_grammar = p.grammar_for_scope(@current_scope)
-        @all_scopes =  [@current_scope]
+        @start_scope = (opening_scope || p.scope_at_line_start(line_num))
+        self.current_scope = @start_scope
+        @active_grammar = p.grammar_for_scope(current_scope)
+        @all_scopes =  [current_scope]
         @closed_scopes = []
         @matching_patterns = []
         @line = line
@@ -361,27 +373,19 @@ class Redcar::EditView
         end
       end
       
-      def current_scope=(scope)
-        unless scope
-          dump_info
-          raise "trying to set current scope to nil!"
-        end
-        @current_scope = scope
-      end
-      
-      def current_scope_closes?
-        if current_scope.closing_regexp
-          if current_scope.start.line == line_num
-            thispos = [pos, current_scope.start.offset+1].max
-          else
-            thispos = pos
-          end
-          if md = current_scope.closing_regexp.match(@line, thispos)
-            from = md.begin(0)
-            { :from => from, :md => md, :pattern => :close_scope }
-          end
-        end
-      end
+#       def current_scope_closes?
+#         if current_scope.closing_regexp
+#           if current_scope.start.line == line_num
+#             thispos = [pos, current_scope.start.offset+1].max
+#           else
+#             thispos = pos
+#           end
+#           if md = current_scope.closing_regexp.match(@line, thispos)
+#             from = md.begin(0)
+#             { :from => from, :md => md, :pattern => :close_scope }
+#           end
+#         end
+#       end
       
       def any_line_left?
         pos < line_length
@@ -481,64 +485,23 @@ class Redcar::EditView
         @removed_scopes += arr
       end
       
-#       def scan_line
-#         reset_scope_marker
-#         if close_marker = current_scope_closes?
-#           update_scope_marker(close_marker)
-#         end
-#         possible_patterns.each do |pattern|
-#           if nsm = match_pattern_and_update_marker(pattern)
-#             matching_patterns << pattern if need_new_patterns
-#           end
-#         end          
-#       end
-      
-#       def match_pattern_and_update_marker(pattern)
-#         if md = pattern.match.match(@line, pos)
-#           from = md.begin(0)
-#           update_scope_marker(nsm)
-#           { :from => from, :md => md, :pattern => pattern }
-#         end
-#       end
-      
-#       def rbreset_scope_marker
-#         @first_new_scope_marker = nil
-#       end
-      
-#       def rbany_markers?
-#         @first_new_scope_marker
-#       end
-      
-#       def rbget_scope_marker
-#         @first_new_scope_marker
-#       end
-      
-#       def rbupdate_scope_marker(nsm)
-#         osm = @first_new_scope_marker
-#         unless osm
-#           @first_new_scope_marker = nsm
-#           return
-#         end
-#         nval = ((nsm[:pattern] == :close_scope) ? 0 : nsm[:pattern].hint)
-#         oval = ((osm[:pattern] == :close_scope) ? 0 : osm[:pattern].hint)
-#         if nsm[:from] < osm[:from]
-#           @first_new_scope_marker = nsm
-#         elsif nsm[:from] == osm[:from] and
-#             nval < oval
-#           @first_new_scope_marker = nsm
-#         end
-#       end
-      
       def process_marker
-        if @parser.parsed_before?(line_num)
+#        puts
+#        puts @parser.root.pretty
+#        if @parser.parsed_before?(line_num)
           expected_scope = get_expected_scope
-        end
+#        else
+#          p :not_parsed_before
+#          p line_num
+#          p @parser.ending_scopes
+#        end
         
         new_scope_marker = get_scope_marker
         from = new_scope_marker[:from]
         md   = new_scope_marker[:md]
         to   = new_scope_marker[:to] = md.end(0)
-        
+#        p new_scope_marker
+#        p expected_scope
         case new_scope_marker[:pattern]
         when :close_scope
           if current_scope.end and 
@@ -600,7 +563,8 @@ class Redcar::EditView
           all_scopes << new_scope
           closed_scopes << new_scope
         end
-        self.pos = new_scope_marker[:to]          
+        self.pos = new_scope_marker[:to]  
+#        puts @parser.root.pretty        
       end
       
       def clear_line

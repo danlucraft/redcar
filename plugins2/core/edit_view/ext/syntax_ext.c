@@ -4,6 +4,13 @@
 #include <glib.h>
 #include <string.h>
 
+void print_iter(GtkTextIter* iter) {
+  printf("<%d,%d>",
+	 gtk_text_iter_get_line(iter),
+	 gtk_text_iter_get_line_offset(iter));
+  return;
+}
+
 /* ------------- TextLoc */
 
 typedef struct TextLoc_ {
@@ -1017,6 +1024,11 @@ void scope_get_end_iter(Scope* scope, GtkTextBuffer* buffer,
       offset = gtk_text_buffer_get_char_count(buffer);
   }
   gtk_text_buffer_get_iter_at_offset(buffer, end_iter, offset);
+/*   printf("scope_get_end_iter (%d,%d)-(%d,%d) => ",  */
+/*          sd->start.line, sd->start.offset, */
+/*          sd->end.line, sd->end.offset); */
+/*   print_iter(end_iter); */
+/*   puts(""); */
   return;
 }
 
@@ -1089,13 +1101,6 @@ void set_tag_properties(GtkTextTag* tag, VALUE rbh_tm_settings) {
   return;
 }
 
-void print_iter(GtkTextIter* iter) {
-  printf("<%d,%d>",
-	 gtk_text_iter_get_line(iter),
-	 gtk_text_iter_get_line_offset(iter));
-  return;
-}
-
 void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner, 
 		  GtkTextIter* line_start_iter, GtkTextIter* line_end_iter) {
   ScopeData* sd = scope->data;
@@ -1145,15 +1150,21 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner,
       scope_get_old_start_iter(scope, buffer, &old_start_iter, inner);
       scope_get_old_end_iter(scope, buffer, &old_end_iter, inner);
       gtk_text_buffer_remove_tag(buffer, sd->tag, &old_start_iter, &old_end_iter);
+/*       printf("[Uncolour] %s:%d  ", sd->name, priority-1); */
+/*       print_iter(&old_start_iter); */
+/*       printf("-"); */
+/*       print_iter(&old_end_iter); */
+/*       puts(""); */
     }
   }
   scope_update_old_colour_textlocs(scope);
 
 /*   // some logging stuff */
-/*   printf("[Col] %s:%d\n\n  ", sd->name, priority-1); */
+/*   printf("[Colour]   %s:%d  ", sd->name, priority-1); */
 /*   print_iter(&start_iter); */
 /*   printf("-"); */
 /*   print_iter(&end_iter); */
+/*   puts(""); */
 
 /*   char fg[10]; */
 /*   VALUE rb_fg; */
@@ -1195,7 +1206,7 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
     rb_current = rb_ary_entry(scopes, i);
     Data_Get_Struct(rb_current, Scope, current);
     current_data = current->data;
-    if (!current_data->modified)
+    if (!current_data->modified && textloc_valid(&current_data->end))
       continue;
     if (textloc_equal(&current_data->start, &current_data->end))
       continue;
@@ -1215,10 +1226,17 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
 int uncolour_scope(GtkTextBuffer *buffer, Scope *scope) {
   ScopeData* scope_data = scope->data;
   GtkTextIter start_iter, end_iter;
+  int priority;
   if (scope_data->tag != NULL) {
-    scope_get_start_iter(scope, buffer, &start_iter, FALSE);
-    scope_get_end_iter(scope, buffer, &end_iter, FALSE);
+    scope_get_old_start_iter(scope, buffer, &start_iter, FALSE);
+    scope_get_old_end_iter(scope, buffer, &end_iter, FALSE);
     gtk_text_buffer_remove_tag(buffer, scope_data->tag, &start_iter, &end_iter);
+    priority = FIX2INT(rb_funcall(scope_data->rb_scope, rb_intern("priority"), 0));
+/*     printf("[Uncolour] %s:%d  ", scope_data->name, priority-1); */
+/*     print_iter(&start_iter); */
+/*     printf("-"); */
+/*     print_iter(&end_iter); */
+/*     puts(""); */
   }
 
   Scope *child;
@@ -1263,6 +1281,7 @@ typedef struct LineParser_ {
   int    sm_from;
   VALUE  sm_pattern;
   VALUE  sm_matchdata;
+  Scope* current_scope;
   int    sm_hint;
 } LineParser;
 
@@ -1290,6 +1309,7 @@ static VALUE rb_line_parser_init(VALUE self, VALUE parser,
   lp->line_num    = FIX2INT(line_num);
   lp->pos         = 0;
   lp->has_scope_marker = 0;
+  lp->current_scope = NULL;
   rb_funcall(self, rb_intern("initialize2"), 3, 
              parser, line, opening_scope);
   return self;
@@ -1318,6 +1338,25 @@ static VALUE rb_line_parser_set_pos(VALUE self, VALUE newpos) {
   Data_Get_Struct(self, LineParser, lp);
   lp->pos = FIX2INT(newpos);
   return newpos;
+}
+
+static VALUE rb_line_parser_get_current_scope(VALUE self) {
+  LineParser *lp;
+  Data_Get_Struct(self, LineParser, lp);
+  Scope *s;
+  ScopeData *sd;
+  s = lp->current_scope;
+  sd = s->data;
+  return sd->rb_scope;
+}
+
+static VALUE rb_line_parser_set_current_scope(VALUE self, VALUE rb_scope) {
+  LineParser *lp;
+  Data_Get_Struct(self, LineParser, lp);
+  Scope *s;
+  Data_Get_Struct(rb_scope, Scope, s);
+  lp->current_scope = s;
+  return Qtrue;
 }
 
 static VALUE rb_line_parser_reset_scope_marker(VALUE self) {
@@ -1397,6 +1436,74 @@ static VALUE rb_line_parser_update_scope_marker(VALUE self, VALUE rb_nsm) {
   return Qnil;
 }
 
+/*       def current_scope_closes? */
+/*         if current_scope.closing_regexp */
+/*           if current_scope.start.line == line_num */
+/*             thispos = [pos, current_scope.start.offset+1].max */
+/*           else */
+/*             thispos = pos */
+/*           end */
+/*           if md = current_scope.closing_regexp.match(@line, thispos) */
+/*             from = md.begin(0) */
+/*             { :from => from, :md => md, :pattern => :close_scope } */
+/*           end */
+/*         end */
+/*       end */
+      
+/* static VALUE rb_line_parser_current_scope_closes(VALUE self) { */
+/*   LineParser *lp; */
+/*   Data_Get_Struct(self, LineParser, lp); */
+/*   ScopeData *current_scope_data; */
+/*   VALUE rb_current_scope, rb_closing_regexp, rb_md, rb_line, rb_from, rb_nsm; */
+/*   int thispos; */
+/*   current_scope_data = lp->current_scope->data; */
+/*   rb_current_scope = current_scope_data->rb_scope; */
+/*   rb_closing_regexp = rb_funcall(rb_current_scope, rb_intern("closing_regexp"), 0); */
+/*   if (rb_closing_regexp == Qnil) */
+/*     return Qnil; */
+/*   thispos = current_scope_data->start.offset+1; */
+/*   if (current_scope_data->start.line != lp->line_num || */
+/*       lp->pos > thispos) */
+/*     thispos = lp->pos; */
+/*   rb_line = rb_iv_get(self, "@line"); */
+/*   rb_md = rb_funcall(rb_closing_regexp, rb_intern("match"), 2, rb_line, INT2FIX(thispos)); */
+/*   if (rb_md != Qnil) { */
+/*     rb_from = rb_funcall(rb_md, rb_intern("begin"), 1, INT2FIX(0)); */
+/*     rb_nsm = rb_hash_new(); */
+/*     rb_hash_aset(rb_nsm, ID2SYM(rb_intern("from")), rb_from); */
+/*     rb_hash_aset(rb_nsm, ID2SYM(rb_intern("md")), rb_md); */
+/*     rb_hash_aset(rb_nsm, ID2SYM(rb_intern("pattern")), ID2SYM(rb_intern("close_scope"))); */
+/*     return rb_nsm; */
+/*   } */
+/*   return Qnil; */
+/* } */
+
+static VALUE rb_line_parser_current_scope_closes(VALUE self) {
+  LineParser *lp;
+  Data_Get_Struct(self, LineParser, lp);
+  ScopeData *current_scope_data;
+  VALUE rb_current_scope, rb_closing_regexp, rb_md, rb_line, rb_from, rb_nsm;
+  int thispos;
+  current_scope_data = lp->current_scope->data;
+  rb_current_scope = current_scope_data->rb_scope;
+  rb_closing_regexp = rb_funcall(rb_current_scope, rb_intern("closing_regexp"), 0);
+  if (rb_closing_regexp == Qnil)
+    return Qnil;
+  thispos = current_scope_data->start.offset+1;
+  if (current_scope_data->start.line != lp->line_num ||
+      lp->pos > thispos)
+    thispos = lp->pos;
+  rb_line = rb_iv_get(self, "@line");
+  rb_md = rb_funcall(rb_closing_regexp, rb_intern("match"), 2, rb_line, INT2FIX(thispos));
+  if (rb_md != Qnil) {
+    rb_from = rb_funcall(rb_md, rb_intern("begin"), 1, INT2FIX(0));
+    line_parser_update_scope_marker(lp, NUM2INT(rb_from), 
+                                    ID2SYM(rb_intern("close_scope")), rb_md);
+    return Qtrue;
+  }
+  return Qnil;
+}
+
 /*       def match_and_update_pattern(pattern) */
 /*         if md = pattern.match.match(@line, pos) */
 /*           from = md.begin(0) */
@@ -1426,9 +1533,7 @@ static VALUE rb_line_parser_match_pattern(VALUE self, VALUE rb_pattern) {
 
 /*       def scan_line */
 /*         reset_scope_marker */
-/*         if close_marker = current_scope_closes? */
-/*           update_scope_marker(close_marker) */
-/*         end */
+/*         current_scope_closes? */
 /*         possible_patterns.each do |pattern| */
 /*           if match_and_update_pattern(pattern) */
 /*             matching_patterns << pattern if need_new_patterns */
@@ -1445,9 +1550,7 @@ static VALUE rb_line_parser_scan_line(VALUE self) {
   lp->has_scope_marker = 0; // reset_scope_marker
   rb_need_new_patterns = rb_funcall(self, rb_intern("need_new_patterns"), 0);
   rb_matching_patterns = rb_funcall(self, rb_intern("matching_patterns"), 0);
-  rb_close_marker = rb_funcall(self, rb_intern("current_scope_closes?"), 0);
-  if (rb_close_marker != Qnil)
-    rb_line_parser_update_scope_marker(self, rb_close_marker);
+  rb_line_parser_current_scope_closes(self);
   rb_possible_patterns = rb_funcall(self, rb_intern("possible_patterns"), 0);
   length = RARRAY_LEN(rb_possible_patterns);
   for (i = 0; i < length; i++) {
@@ -1536,10 +1639,14 @@ void Init_syntax_ext() {
   rb_define_method(cLineParser, "line_num", rb_line_parser_line_num, 0);
   rb_define_method(cLineParser, "pos", rb_line_parser_get_pos, 0);
   rb_define_method(cLineParser, "pos=", rb_line_parser_set_pos, 1);
+  rb_define_method(cLineParser, "current_scope", rb_line_parser_get_current_scope, 0);
+  rb_define_method(cLineParser, "current_scope=", rb_line_parser_set_current_scope, 1);
   rb_define_method(cLineParser, "reset_scope_marker", rb_line_parser_reset_scope_marker, 0);
   rb_define_method(cLineParser, "any_markers?", rb_line_parser_any_scope_markers, 0);
   rb_define_method(cLineParser, "get_scope_marker", rb_line_parser_get_scope_marker, 0);
   rb_define_method(cLineParser, "update_scope_marker", rb_line_parser_update_scope_marker, 1);
+  rb_define_method(cLineParser, "current_scope_closes?", rb_line_parser_current_scope_closes, 0);
   rb_define_method(cLineParser, "match_pattern", rb_line_parser_match_pattern, 1);
   rb_define_method(cLineParser, "scan_line", rb_line_parser_scan_line, 0);
 }
+

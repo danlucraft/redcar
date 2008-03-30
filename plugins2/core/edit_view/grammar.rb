@@ -86,7 +86,7 @@ class Redcar::EditView
     end
     
     def inspect
-      "<doublepattern:#{self.name}, begin:#{@begin.source}, end:#{@end.inspect}>"
+      "<doublepattern:#{self.name}, begin:#{@begin.inspect}, end:#{@end.inspect}>"
     end
     
     def match

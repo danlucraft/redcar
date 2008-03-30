@@ -862,7 +862,7 @@ File.rm(:output => :silent)
 Gtk.main
 STR
     assert_equal newsource, buf.text
-    assert_equal 16, smp.root.children.length
+    assert_equal 19, smp.root.children.length
   end
 
   def test_insert_new_lines
@@ -1015,6 +1015,20 @@ STR
     buf.delete(buf.iter(TextLoc(2, 2)), buf.iter(TextLoc(2, 4)))
     
     assert_equal 2, smp.root.children.length
+  end
+  
+  def test_duplicate_nonclosing_bug
+    gr = Redcar::EditView::Grammar.grammar :name => 'Ruby'
+    buf, smp = ParserTests.clean_parser_and_buffer(gr)
+    buf.text=("")
+    
+    arr = [] << "p" << " " << "\"" << "a" << "\""
+    arr.each_with_index do |l, i|
+      buf.insert(buf.iter(buf.char_count), l)
+    end
+    assert_equal 1, smp.root.children.length
+    buf.insert(buf.iter(buf.char_count), "\n")
+    assert_equal 1, smp.root.children.length
   end
   end
 end

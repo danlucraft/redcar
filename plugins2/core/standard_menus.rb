@@ -287,6 +287,14 @@ module Redcar
       end
     end
     
+    class IndentLine < Redcar::EditTabCommand
+      key "Global/Ctrl+Alt+["
+      
+      def execute(tab)
+        tab.view.indent_line(tab.doc.cursor_line)
+      end
+    end
+    
     main_menu "File" do
       item "New",        NewTab
       item "Open",       OpenTab
@@ -312,9 +320,13 @@ module Redcar
         item "Forward Word",    ForwardWord
         item "Backward Word",   BackwardWord
       end
+      separator
+      item "Indent Line",    IndentLine
+      separator
       submenu "Select" do
         item "Line",            SelectLine
       end
+      separator
     end
       
     context_menu "Pane" do

@@ -403,7 +403,7 @@ class Redcar::EditView
                                     self.open_end.offset)
           end
         end
-        if self.end and self.end >= loc
+        if self.end and self.end > loc
           self.end = TextLoc(self.end.line + lines, self.end.offset)
           if self.close_start
             self.close_start = TextLoc(self.close_start.line + lines,
