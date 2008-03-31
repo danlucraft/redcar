@@ -95,7 +95,7 @@ class Redcar::EditView
       @buf.line_count.times do |line_num|
         scopes = @root.descendants_on_line(line_num)
         SyntaxExt.colour_line_with_scopes(@colourer, @colourer.theme, 
-                                          line_num, scopes)
+                                          scopes)
       end
     end
     
@@ -316,8 +316,9 @@ class Redcar::EditView
 #           p sc.start_mark
 #           puts sc.inspect3
 #         end
+#       p lp.all_scopes.length
         SyntaxExt.colour_line_with_scopes(@colourer, @colourer.theme, 
-                                          line_num, lp.all_scopes)
+                                          lp.all_scopes)
 #        debug_print_tag_table
         reset_table_priorities
       end

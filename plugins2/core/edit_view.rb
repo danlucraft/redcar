@@ -266,17 +266,6 @@ module Redcar
   end
 end
 
-module Oniguruma #:nodoc:
-  class ORegexp #:nodoc:
-    def _dump(_)
-      self.source
-    end
-    def self._load(str)
-      self.new(str, :options => Oniguruma::OPTION_CAPTURE_GROUP)
-    end
-  end
-end
-
 require 'logger'
 unless defined? SyntaxLogger
   SyntaxLogger = Logger.new('syntax.log')

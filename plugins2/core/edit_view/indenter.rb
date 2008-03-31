@@ -49,7 +49,7 @@ class Redcar::EditView
     
     def connect_buffer_signals
       # Set up indenting on Return
-      @buf.signal_connect_after("insert_text") do |_, iter, text, length|
+      @buf.signal_connect("insert_text") do |_, iter, text, length|
         line_num = iter.line
         if text == "\n"
           indent_line(line_num-1) if line_num > 1

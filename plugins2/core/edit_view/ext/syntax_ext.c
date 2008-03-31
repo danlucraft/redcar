@@ -178,7 +178,14 @@ void mark_to_textloc(GtkTextMark* mark, TextLoc* textloc) {
   return;
 }
 
-void scope_start(Scope* scope, TextLoc* textloc) {
+void mark_to_iter(GtkTextMark* mark, GtkTextIter* iter) {
+  GtkTextBuffer* buffer;
+  buffer = gtk_text_mark_get_buffer(mark);
+  gtk_text_buffer_get_iter_at_mark(buffer, iter, mark);
+  return;
+}
+
+void scope_start_loc(Scope* scope, TextLoc* textloc) {
   ScopeData *sd = scope->data;
   if (sd->start_mark == NULL) {
     printf("scope_start %s: missing mark\n", sd->name);
@@ -187,17 +194,17 @@ void scope_start(Scope* scope, TextLoc* textloc) {
   return;
 }
 
-void scope_inner_start(Scope* scope, TextLoc* textloc) {
+void scope_inner_start_loc(Scope* scope, TextLoc* textloc) {
   ScopeData *sd = scope->data;
   if (sd->inner_start_mark == NULL) {
-    scope_start(scope, textloc);
+    scope_start_loc(scope, textloc);
     return;
   }
   mark_to_textloc(sd->inner_start_mark, textloc);
   return;
 }
 
-void scope_end(Scope* scope, TextLoc* textloc) {
+void scope_end_loc(Scope* scope, TextLoc* textloc) {
   ScopeData *sd = scope->data;
   if (sd->end_mark == NULL) {
     printf("scope_end %s: missing mark\n", sd->name);
@@ -206,10 +213,10 @@ void scope_end(Scope* scope, TextLoc* textloc) {
   return;
 }
 
-void scope_inner_end(Scope* scope, TextLoc* textloc) {
+void scope_inner_end_loc(Scope* scope, TextLoc* textloc) {
   ScopeData *sd = scope->data;
   if (sd->inner_end_mark == NULL) {
-    scope_end(scope, textloc);
+    scope_end_loc(scope, textloc);
     return;
   }
   mark_to_textloc(sd->inner_end_mark, textloc);
@@ -219,8 +226,8 @@ void scope_inner_end(Scope* scope, TextLoc* textloc) {
 int scope_active_on_line(Scope* scope, int line) {
   TextLoc start;
   TextLoc end;
-  scope_start(scope, &start);
-  scope_end(scope, &end);
+  scope_start_loc(scope, &start);
+  scope_end_loc(scope, &end);
   if (start.line <= line)
     if (end.line >= line)
       return 1;
@@ -228,23 +235,26 @@ int scope_active_on_line(Scope* scope, int line) {
 }
 
 int scope_overlaps(Scope* s1, Scope* s2) {
-  TextLoc start1, start2;
-  TextLoc end1, end2;
-  
-  scope_start(s1, &start1);
-  scope_start(s2, &start2);
+  GtkTextIter start1, start2;
+  GtkTextIter end1, end2;
+  ScopeData *sd1 = s1->data;
+  ScopeData *sd2 = s2->data;
+
   // sd1     +---
   // sd2  +---
-  if (textloc_gte(&start1, &start2)) {
-    scope_end(s2, &end2);
-    if (textloc_lt(&start1, &end2))
+  mark_to_iter(sd1->start_mark, &start1);
+  mark_to_iter(sd2->start_mark, &start2);
+  if (gtk_text_iter_compare(&start1, &start2) >= 0) {
+    mark_to_iter(sd2->end_mark, &end2);
+    if (gtk_text_iter_compare(&start1, &end2) < 0)
       return 1;
     return 0;
   }
+
   // sd1 +----
   // sd2   +---
-  scope_end(s1, &end1);
-  if (textloc_gt(&end1, &start2))
+  mark_to_iter(sd1->end_mark, &end1);
+  if (gtk_text_iter_compare(&end1, &start2) > 0)
     return 1;
   return 0;
 }
@@ -254,18 +264,18 @@ int scope_add_child(Scope* parent, Scope* new_child) {
   TextLoc p_start, p_end;
   TextLoc nc_start, nc_end;
   TextLoc c_start, c_end;
-  scope_start(parent, &p_start);
-  scope_end(parent, &p_end);
-  scope_start(new_child, &nc_start);
-  scope_end(new_child, &nc_end);
+  scope_start_loc(parent, &p_start);
+  scope_end_loc(parent, &p_end);
+  scope_start_loc(new_child, &nc_start);
+  scope_end_loc(new_child, &nc_end);
   if (g_node_n_children(parent) == 0) {
     g_node_append(parent, new_child);
     return 1;
   }
   else {
     child = g_node_last_child(parent);
-    scope_start(child, &c_start);
-    scope_end(child, &c_end);
+    scope_start_loc(child, &c_start);
+    scope_end_loc(child, &c_end);
     if (textloc_gte(&nc_start, &c_end)) {
       g_node_append(parent, new_child);
       return 1;
@@ -275,8 +285,8 @@ int scope_add_child(Scope* parent, Scope* new_child) {
   int i;
   child = g_node_first_child(parent);
   while(child != NULL) {
-    scope_start(child, &c_start);
-    scope_end(child, &c_end);
+    scope_start_loc(child, &c_start);
+    scope_end_loc(child, &c_end);
     if (textloc_lte(&c_start, &nc_start))
       insert_after = child;
     child = g_node_next_sibling(child);
@@ -291,7 +301,7 @@ int scope_clear_after(Scope* s, TextLoc* loc) {
   int i;
   for (i = 0; i < g_node_n_children(s); i++) {
     c = g_node_nth_child(s, i);
-    scope_start(c, &c_start);
+    scope_start_loc(c, &c_start);
     if (textloc_gte(&c_start, loc)) {
       g_node_unlink(c);
       i -= 1;
@@ -308,8 +318,8 @@ int scope_clear_between(Scope* s, TextLoc* from, TextLoc* to) {
   int i;
   for (i = 0; i < g_node_n_children(s); i++) {
     c = g_node_nth_child(s, i);
-    scope_start(c, &c_start);
-    scope_end(c, &c_end);
+    scope_start_loc(c, &c_start);
+    scope_end_loc(c, &c_end);
     if ((textloc_gte(&c_start, from) && 
          textloc_lt(&c_start, to)) ||
         (textloc_gte(&c_end, from) &&
@@ -331,7 +341,7 @@ int scope_clear_between_lines(Scope* s, int from, int to) {
   int i;
   for (i = 0; i < g_node_n_children(s); i++) {
     c = g_node_nth_child(s, i);
-    scope_start(c, &c_start);
+    scope_start_loc(c, &c_start);
     if (c_start.line >= from && c_start.line <= to) {
       g_node_unlink(c);
       i -= 1;
@@ -422,8 +432,8 @@ static VALUE rb_scope_print(VALUE self, VALUE indent) {
     printf(" ");
 
   TextLoc start, end;
-  scope_start(s, &start);
-  scope_end(s, &end);
+  scope_start_loc(s, &start);
+  scope_end_loc(s, &end);
   printf("<scope %p %s (%d,%d)-(%d,%d)>\n",
 	 s, name,
   	 start.line, start.offset, end.line,
@@ -609,8 +619,8 @@ Scope* scope_at(Scope* s, TextLoc* loc) {
 
   TextLoc s_start, s_end;
   TextLoc c_start, c_end;
-  scope_start(s, &s_start);
-  scope_end(s, &s_end);
+  scope_start_loc(s, &s_start);
+  scope_end_loc(s, &s_end);
   if (textloc_lte(&s_start, loc) || G_NODE_IS_ROOT(s)) {
     if (textloc_gt(&s_end, loc)) {
       if (g_node_n_children(s) == 0) {	
@@ -618,8 +628,8 @@ Scope* scope_at(Scope* s, TextLoc* loc) {
         return s;
       }
       child = g_node_last_child(s);
-      scope_start(child, &c_start);
-      scope_end(child, &c_end);
+      scope_start_loc(child, &c_start);
+      scope_end_loc(child, &c_end);
       if (textloc_lt(&c_end, loc)) {	
 	printf("scope_at_out\n");
         return s;
@@ -674,7 +684,7 @@ static VALUE rb_scope_first_child_after(VALUE self, VALUE rb_loc) {
   child = g_node_first_child(s);
   while (child != NULL) {
     sd = child->data;
-    scope_start(child, &c_start);
+    scope_start_loc(child, &c_start);
     if (textloc_gte(&c_start, loc))
       return sd->rb_scope;
     child = g_node_next_sibling(child);
@@ -763,7 +773,7 @@ static VALUE rb_scope_delete_any_on_line_not_in(VALUE self, VALUE line_num, VALU
   while (c != NULL) {
     sdc = c->data;
     cn = g_node_next_sibling(c);
-    scope_start(c, &start);
+    scope_start_loc(c, &start);
     if (start.line > num)
       return rb_removed;
     if (start.line == num) {
@@ -817,10 +827,10 @@ static VALUE rb_scope_hierarchy_names(VALUE self, VALUE rb_inner) {
   if (!G_NODE_IS_ROOT(scope)) {
     parent = scope->parent;
     parent_data = parent->data;
-    scope_start(scope, &start);
-    scope_end(scope, &end);
-    scope_inner_start(parent, &parent_open_end);
-    scope_inner_end(parent, &parent_close_start);
+    scope_start_loc(scope, &start);
+    scope_end_loc(scope, &end);
+    scope_inner_start_loc(parent, &parent_open_end);
+    scope_inner_end_loc(parent, &parent_close_start);
     if (textloc_gte(&start, &parent_open_end) &&
         (textloc_lt(&end, &parent_close_start)))
       next_inner = Qtrue;
@@ -1040,20 +1050,12 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
   char *get_tag_name;
   
   if (inner) {
-/*     if (sd->inner_start_mark == NULL) */
-/*       print("missing start_mark"); */
-/*     if (sd->inner_end_mark == NULL) */
-/*       print("missing end_mark"); */
     gtk_text_buffer_get_iter_at_mark(buffer, &start_iter, sd->inner_start_mark);
     gtk_text_buffer_get_iter_at_mark(buffer, &end_iter, sd->inner_end_mark);
     if (sd->inner_tag != NULL)
       tag = sd->inner_tag;
   }
   else {
-    if (sd->start_mark == NULL)
-      print("missing start_mark");
-    if (sd->end_mark == NULL)
-      print("missing end_mark");
     gtk_text_buffer_get_iter_at_mark(buffer, &start_iter, sd->start_mark);
     gtk_text_buffer_get_iter_at_mark(buffer, &end_iter, sd->end_mark);
     if (sd->tag != NULL)
@@ -1093,11 +1095,11 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
   }
 
 /*   // some logging stuff */
-/*   printf("[Colour]   %s:%d  ", sd->name, priority-1); */
-/*   print_iter(&start_iter); */
-/*   printf("-"); */
-/*   print_iter(&end_iter); */
-/*   puts(""); */
+  printf("[Colour]   %s:%d  ", sd->name, priority-1);
+  print_iter(&start_iter);
+  printf("-");
+  print_iter(&end_iter);
+  puts("");
 
 /*   char fg[10]; */
 /*   VALUE rb_fg; */
@@ -1115,9 +1117,7 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
 }
 
 static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE theme,
-				     VALUE rb_line_num, VALUE scopes) {
-/*   printf("%d in line.\n", RARRAY(scopes)->len); */
-  int line_num = FIX2INT(rb_line_num);
+					VALUE scopes) {
   VALUE rb_buffer;
   GtkTextBuffer* buffer;
   GtkTextIter start_iter, end_iter;
@@ -1137,8 +1137,8 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
     rb_current = rb_ary_entry(scopes, i);
     Data_Get_Struct(rb_current, Scope, current);
     current_data = current->data;
-    scope_start(current, &start);
-    scope_end(current, &end);
+    scope_start_loc(current, &start);
+    scope_end_loc(current, &end);
     if (textloc_equal(&start, &end))
       continue;
     pattern = rb_iv_get(rb_current, "@pattern");
@@ -1403,7 +1403,7 @@ static VALUE rb_line_parser_current_scope_closes(VALUE self) {
   rb_closing_regexp = rb_funcall(rb_current_scope, rb_intern("closing_regexp"), 0);
   if (rb_closing_regexp == Qnil)
     return Qnil;
-  scope_start(lp->current_scope, &start);
+  scope_start_loc(lp->current_scope, &start);
   thispos = start.offset+1;
   if (start.line != lp->line_num || lp->pos > thispos)
     thispos = lp->pos;
@@ -1430,7 +1430,7 @@ static VALUE rb_line_parser_match_pattern(VALUE self, VALUE rb_pattern) {
   Data_Get_Struct(self, LineParser, lp);
   VALUE rb_match_re, rb_md, rb_rest_line, rb_from, rb_scope_marker;
   int from;
-  rb_match_re  = rb_iv_get(rb_pattern, "@match");
+  rb_match_re = rb_funcall(rb_pattern, rb_intern("match"), 0);
   if (rb_match_re != Qnil) {
     rb_rest_line = rb_iv_get(self, "@line");
     rb_md        = rb_funcall(rb_match_re, rb_intern("match"), 2, rb_rest_line, INT2FIX(lp->pos));
@@ -1485,7 +1485,7 @@ void Init_syntax_ext() {
   // utility functions are in SyntaxExt
   mSyntaxExt = rb_define_module("SyntaxExt");
   rb_define_module_function(mSyntaxExt, "colour_line_with_scopes", 
-                            rb_colour_line_with_scopes, 4);
+                            rb_colour_line_with_scopes, 3);
   rb_define_module_function(mSyntaxExt, "uncolour_scopes", 
                             rb_uncolour_scopes, 2);
 
