@@ -169,7 +169,7 @@ module Redcar
                         :grammar => grammar,
                         :start => TextLoc(0, 0))
       @root.start_mark = buffer.create_anonymous_mark(buffer.iter(0))
-      @root.end_mark   = buffer.create_anonymous_mark(buffer.iter(buffer.char_count))
+      @root.end_mark   = buffer.create_anonymous_mark(buffer.iter(buffer.char_count), false)
     end
     
     def create_parser
@@ -188,7 +188,7 @@ module Redcar
       @root = Scope.new(:pattern => gr,
                         :grammar => gr)
       @root.start_mark = buffer.create_anonymous_mark(buffer.iter(0))
-      @root.end_mark   = buffer.create_anonymous_mark(buffer.iter(buffer.char_count))
+      @root.end_mark   = buffer.create_anonymous_mark(buffer.iter(buffer.char_count), false)
       @parser.uncolour
       @parser.root = @root
       @parser.reparse

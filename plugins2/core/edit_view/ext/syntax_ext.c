@@ -162,6 +162,7 @@ typedef struct ScopeData_ {
   VALUE rb_end_mark;
   char* name;
   VALUE rb_scope;
+  int coloured;
   GtkTextTag *tag;
   GtkTextTag *inner_tag;
 } ScopeData;
@@ -357,6 +358,7 @@ static VALUE rb_scope_cinit(VALUE self) {
   Data_Get_Struct(self, Scope, scope);
   ScopeData *sd = scope->data;
   sd->name = NULL;
+  sd->coloured = 0;
   sd->rb_scope = self;
   sd->tag = NULL;
   sd->inner_tag = NULL;
@@ -613,7 +615,6 @@ static VALUE rb_scope_overlaps(VALUE self, VALUE other) {
 // Scope children methods
 
 Scope* scope_at(Scope* s, TextLoc* loc) {
-  printf("scope_at_in\n");
   Scope *scope, *child;
   int i;
 
@@ -624,37 +625,30 @@ Scope* scope_at(Scope* s, TextLoc* loc) {
   if (textloc_lte(&s_start, loc) || G_NODE_IS_ROOT(s)) {
     if (textloc_gt(&s_end, loc)) {
       if (g_node_n_children(s) == 0) {	
-	printf("scope_at_out\n");
         return s;
       }
       child = g_node_last_child(s);
       scope_start_loc(child, &c_start);
       scope_end_loc(child, &c_end);
       if (textloc_lt(&c_end, loc)) {	
-	printf("scope_at_out\n");
         return s;
       }
       for (i = 0; i < g_node_n_children(s); i++) {
         child = g_node_nth_child(s, i);
         scope = scope_at(child, loc);
         if (scope != NULL) {	
-	  printf("scope_at_out\n");
           return scope;
 	}
       }	
-      printf("scope_at_out\n");
       return s;
     }
     else {	
-      printf("scope_at_out\n");
       return NULL;
     }
   }
   else {	
-    printf("scope_at_out\n");
     return NULL;
   }
-  printf("scope_at_out\n");
 }
 
 static VALUE rb_scope_at(VALUE self, VALUE rb_loc) {
@@ -1040,26 +1034,40 @@ void set_tag_properties(GtkTextTag* tag, VALUE rbh_tm_settings) {
 void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
   ScopeData* sd = scope->data;
   GtkTextIter start_iter, end_iter;
+  GtkTextIter buff_start_iter, buff_end_iter;
   VALUE rba_settings, rbh_setting, rb_settings, rb_settings_scope;
   VALUE rbh_tag_settings, rbh, rba_tag_settings, rba;
+  VALUE rb_scope_id;
   char tag_name[256] = "nil";
   int priority = FIX2INT(rb_funcall(sd->rb_scope, rb_intern("priority"), 0));
   GtkTextTag* tag = NULL;
   GtkTextTagTable* tag_table;
   int i;
   char *get_tag_name;
-  
+
+  sd->coloured = 1;
+
   if (inner) {
     gtk_text_buffer_get_iter_at_mark(buffer, &start_iter, sd->inner_start_mark);
     gtk_text_buffer_get_iter_at_mark(buffer, &end_iter, sd->inner_end_mark);
-    if (sd->inner_tag != NULL)
+    if (sd->inner_tag != NULL) {
       tag = sd->inner_tag;
+      gtk_text_buffer_get_start_iter(buffer, &buff_start_iter);
+      gtk_text_buffer_get_end_iter(buffer, &buff_end_iter);
+      gtk_text_buffer_remove_tag(buffer, sd->inner_tag, 
+				 &buff_start_iter, &buff_end_iter);
+    }
   }
   else {
     gtk_text_buffer_get_iter_at_mark(buffer, &start_iter, sd->start_mark);
     gtk_text_buffer_get_iter_at_mark(buffer, &end_iter, sd->end_mark);
-    if (sd->tag != NULL)
+    if (sd->tag != NULL) {
       tag = sd->tag;
+      gtk_text_buffer_get_start_iter(buffer, &buff_start_iter);
+      gtk_text_buffer_get_end_iter(buffer, &buff_end_iter);
+      gtk_text_buffer_remove_tag(buffer, sd->tag, 
+				 &buff_start_iter, &buff_end_iter);
+    }
   }
   
   if (tag == NULL) {
@@ -1074,17 +1082,20 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
       rbh_setting = rb_ary_entry(rba_settings, 0);
       rb_settings = rb_hash_aref(rbh_setting, rb_str_new2("settings"));
       rb_settings_scope = rb_hash_aref(rbh_setting, rb_str_new2("scope"));
-      snprintf(tag_name, 250, "EditView:%s (%d)", RSTRING(rb_settings_scope)->ptr, priority-1);
+      rb_scope_id = rb_funcall(sd->rb_scope, rb_intern("scope_id"), 0);
+      snprintf(tag_name, 250, "EditView:%s (%d)", 
+	       RSTRING_PTR(rb_settings_scope), priority-1);
       rbh_tag_settings = rb_funcall(theme, rb_intern("textmate_settings_to_pango_options"), 1, rb_settings);
     }
     
     // lookup or create tag
     tag_table = gtk_text_buffer_get_tag_table(buffer);
+    
     tag = gtk_text_tag_table_lookup(tag_table, tag_name);
     if (tag == NULL) {
       tag = gtk_text_buffer_create_tag(buffer, tag_name, NULL);
     }
-    
+/*     printf("%s\n", tag_name); */
     if (RARRAY(rba_settings)->len > 0)
       set_tag_properties(tag, rb_settings);
 
@@ -1095,22 +1106,11 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
   }
 
 /*   // some logging stuff */
-  printf("[Colour]   %s:%d  ", sd->name, priority-1);
-  print_iter(&start_iter);
-  printf("-");
-  print_iter(&end_iter);
-  puts("");
-
-/*   char fg[10]; */
-/*   VALUE rb_fg; */
-/*   if (RARRAY(rba_settings)->len > 0) { */
-/*     rb_fg = rb_hash_aref(rb_settings, rb_str_new2("foreground")); */
-/*     clean_colour(RSTRING_PTR(rb_fg), fg); */
-/*     printf(" %s\n", fg); */
-/*   } */
-/*   else { */
-/*     puts(""); */
-/*   } */
+/*   printf("[Colour]   %s:%d  ", sd->name, priority-1); */
+/*   print_iter(&start_iter); */
+/*   printf("-"); */
+/*   print_iter(&end_iter); */
+/*   puts(""); */
 
   gtk_text_buffer_apply_tag(buffer, tag, &start_iter, &end_iter);
   return;
@@ -1147,6 +1147,8 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
       content_name = rb_iv_get(pattern, "@content_name");
     if (current_data->name == NULL && pattern != Qnil && 
         content_name == Qnil)
+      continue;
+    if (current_data->coloured)
       continue;
     colour_scope(buffer, current, theme, 0);
     if (content_name != Qnil) {

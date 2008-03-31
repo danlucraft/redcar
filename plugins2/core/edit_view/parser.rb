@@ -310,6 +310,7 @@ class Redcar::EditView
 #         num = lp.all_scopes.length
 #         nummod = lp.all_scopes.select{|s| s.modified? }.length
 #         puts "#{nummod}/#{num}"
+#        p lp.removed_scopes
        SyntaxExt.uncolour_scopes(@colourer, lp.removed_scopes)
 #         puts "colouring_scopes: "
 #         lp.all_scopes.each do |sc|
@@ -317,6 +318,7 @@ class Redcar::EditView
 #           puts sc.inspect3
 #         end
 #       p lp.all_scopes.length
+#        lp.all_scopes.each {|sc| sc.name }
         SyntaxExt.colour_line_with_scopes(@colourer, @colourer.theme, 
                                           lp.all_scopes)
 #        debug_print_tag_table
@@ -353,6 +355,8 @@ class Redcar::EditView
     end
     
     def reset_table_priorities
+#      p @tags.length
+#      puts @tags.map{|t| t.name}
       tags = @tags.sort_by do |tag|
         tag.edit_view_depth ||= if tag.name
                                   tag.name =~ /\((\d+)\)/
@@ -505,6 +509,7 @@ class Redcar::EditView
 #        new_scope.inner_end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(to_loc))
         new_scope.end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(to_loc))
         new_scope.open_matchdata = nsm[:md]
+        new_scope.name = nsm[:pattern].scope_name
         new_scope
       end
       
@@ -530,6 +535,7 @@ class Redcar::EditView
                                                                  ), 
                                     :options => Oniguruma::OPTION_CAPTURE_GROUP)
         new_scope.closing_regexp = re
+        new_scope.name = pattern.scope_name
         new_scope
       end
       

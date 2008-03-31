@@ -25,8 +25,8 @@ module Redcar
       end
     end
     
-    def create_anonymous_mark(iter)
-      create_mark(nil, iter, true)
+    def create_anonymous_mark(iter, left_gravity=true)
+      create_mark(nil, iter, left_gravity)
     end
     
     # Move the cursor forward a word.

@@ -52,7 +52,7 @@ class Redcar::EditView
                close_matchdata)
       allocate
       self.pattern        = pattern
-      self.name           = name || (self.pattern ? self.pattern.scope_name : nil)
+      self.name           = self.pattern ? self.pattern.scope_name : nil
       self.grammar        = grammar
       self.closing_regexp = nil
       @open_matchdata     = open_matchdata
@@ -62,7 +62,7 @@ class Redcar::EditView
     
     def initialize2(options)
       self.pattern        = options[:pattern]
-      self.name           = options[:name] || (self.pattern ? self.pattern.scope_name : nil)
+      self.name           = (self.pattern ? self.pattern.scope_name : nil)
       self.grammar        = options[:grammar]
       self.closing_regexp = options[:closing_regexp]
       @open_matchdata     = options[:open_matchdata]
@@ -89,14 +89,13 @@ class Redcar::EditView
       end
     end
     
-    
     def each_child
       children.each {|c| yield c}
     end
     
     def name
-      if name = get_name
-        name
+      if this_name = get_name
+        this_name
       else
         self.name = self.pattern.scope_name
       end
@@ -104,6 +103,10 @@ class Redcar::EditView
     
     def name=(newname)
       set_name(newname) if newname
+    end
+    
+    def scope_id
+      @scope_id ||= rand(1000000)
     end
     
     def priority
