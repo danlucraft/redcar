@@ -666,16 +666,24 @@ static VALUE rb_scope_at(VALUE self, VALUE rb_loc) {
   }
 }
 
-static VALUE rb_scope_first_child_after(VALUE self, VALUE rb_loc) {
+static VALUE rb_scope_first_child_after(VALUE self, VALUE rb_loc, VALUE rb_starting_child) {
   Scope *s, *child;
+  Scope *starting_child = NULL;
   ScopeData *sd;
   TextLoc *loc;
   TextLoc c_start;
   Data_Get_Struct(self, Scope, s);
   Data_Get_Struct(rb_loc, TextLoc, loc);
+  if (rb_starting_child != Qnil)
+    Data_Get_Struct(rb_starting_child, Scope, starting_child);
   if (g_node_n_children(s) == 0)
     return Qnil;
-  child = g_node_first_child(s);
+  if (starting_child && starting_child->parent == s) {
+    child = starting_child;
+  }
+  else {
+    child = g_node_first_child(s);
+  }
   while (child != NULL) {
     sd = child->data;
     scope_start_loc(child, &c_start);
@@ -752,17 +760,26 @@ static VALUE rb_scope_detach(VALUE self) {
   return Qtrue;
 }
 
-static VALUE rb_scope_delete_any_on_line_not_in(VALUE self, VALUE line_num, VALUE scopes) {
+static VALUE rb_scope_delete_any_on_line_not_in(VALUE self, VALUE line_num, 
+                                                VALUE scopes, VALUE rb_starting_child) {
   if (self == Qnil || line_num == Qnil || scopes == Qnil)
     printf("rb_scope_delete_any_on_line_not_in(nil, or nil, or nil)");
   Scope *s, *c, *cn, *s1;
   ScopeData *sdc;
+  Scope *starting_child = NULL;
+  if (rb_starting_child != Qnil)
+    Data_Get_Struct(rb_starting_child, Scope, starting_child);
   Data_Get_Struct(self, Scope, s);
   int num = FIX2INT(line_num);
   int i, j, remove;
   VALUE rs1;
-  TextLoc start;
-  c = g_node_first_child(s);
+  TextLoc start_iter;
+  if (starting_child && starting_child->parent == s) {
+    c = starting_child;
+  }
+  else {
+    c = g_node_first_child(s);
+  }
   VALUE rb_removed = rb_ary_new();
   while (c != NULL) {
     sdc = c->data;
@@ -918,15 +935,21 @@ static VALUE rb_scope_hierarchy_names(VALUE self, VALUE rb_inner) {
 /*   return 1; */
 /* } */
 
-static VALUE rb_scope_remove_children_that_overlap(VALUE self, VALUE rb_other) {
+static VALUE rb_scope_remove_children_that_overlap(VALUE self, VALUE rb_other, VALUE rb_starting_child) {
   Scope *scope, *other;
+  Scope *starting_child = NULL;
   Data_Get_Struct(self, Scope, scope);
   Data_Get_Struct(rb_other, Scope, other);
+  if (rb_starting_child != Qnil)
+    Data_Get_Struct(rb_starting_child, Scope, starting_child);
   //  scope_remove_children_that_overlap(scope, other);
   ScopeData *od = other->data;
   Scope *child;
   ScopeData *child_data;
-  child = g_node_first_child(scope);
+  if (starting_child && starting_child->parent == scope)
+    child = starting_child;
+  else
+    child = g_node_first_child(scope);
   VALUE rb_removed = rb_ary_new();
   while (child != NULL) {
     child_data = child->data;
@@ -1076,14 +1099,14 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
     // set name
     rba_settings = rb_funcall(theme, rb_intern("settings_for_scope"), 2, sd->rb_scope, (inner ? Qtrue : Qnil));
     if (RARRAY(rba_settings)->len == 0) {
-      snprintf(tag_name, 250, "EditView:default (%d)", priority-1);
+      snprintf(tag_name, 250, "EditView(%d):default", priority-1);
     }
     else {
       rbh_setting = rb_ary_entry(rba_settings, 0);
       rb_settings = rb_hash_aref(rbh_setting, rb_str_new2("settings"));
       rb_settings_scope = rb_hash_aref(rbh_setting, rb_str_new2("scope"));
       rb_scope_id = rb_funcall(sd->rb_scope, rb_intern("scope_id"), 0);
-      snprintf(tag_name, 250, "EditView:%s (%d)", 
+      snprintf(tag_name, 250, "EditView(%d):%s ", 
 	       RSTRING_PTR(rb_settings_scope), priority-1);
       rbh_tag_settings = rb_funcall(theme, rb_intern("textmate_settings_to_pango_options"), 1, rb_settings);
     }
@@ -1116,15 +1139,11 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
   return;
 }
 
-static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE theme,
-					VALUE scopes) {
-  VALUE rb_buffer;
+static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_buffer, 
+                                        VALUE theme, VALUE scopes) {
   GtkTextBuffer* buffer;
   GtkTextIter start_iter, end_iter;
 
-  // remove all tags from line
-  rb_buffer = rb_funcall(rb_iv_get(rb_colourer, "@sourceview"), rb_intern("buffer"), 0);
-  
   buffer = (GtkTextBuffer *) get_gobject(rb_buffer);
 
   // colour each scope
@@ -1226,6 +1245,7 @@ typedef struct LineParser_ {
   VALUE  sm_matchdata;
   Scope* current_scope;
   int    sm_hint;
+  Scope* starting_child;
 } LineParser;
 
 void rb_line_parser_mark(LineParser* lp) {
@@ -1245,7 +1265,8 @@ static VALUE rb_line_parser_alloc(VALUE klass) {
 
 static VALUE rb_line_parser_init(VALUE self, VALUE parser,
                                  VALUE line_num, VALUE line, 
-                                 VALUE opening_scope) {
+                                 VALUE opening_scope,
+                                 VALUE last_child) {
   LineParser *lp;
   Data_Get_Struct(self, LineParser, lp);
   lp->line_length = RSTRING_LEN(line);
@@ -1253,8 +1274,9 @@ static VALUE rb_line_parser_init(VALUE self, VALUE parser,
   lp->pos         = 0;
   lp->has_scope_marker = 0;
   lp->current_scope = NULL;
-  rb_funcall(self, rb_intern("initialize2"), 3, 
-             parser, line, opening_scope);
+  lp->starting_child = NULL;
+  rb_funcall(self, rb_intern("initialize2"), 4, 
+             parser, line, opening_scope, last_child);
   return self;
 }
 
@@ -1299,6 +1321,31 @@ static VALUE rb_line_parser_set_current_scope(VALUE self, VALUE rb_scope) {
   Scope *s;
   Data_Get_Struct(rb_scope, Scope, s);
   lp->current_scope = s;
+  return Qtrue;
+}
+
+static VALUE rb_line_parser_get_starting_child(VALUE self) {
+  LineParser *lp;
+  Data_Get_Struct(self, LineParser, lp);
+  Scope *s;
+  ScopeData *sd;
+  if (lp->starting_child == NULL)
+    return Qnil;
+  s = lp->starting_child;
+  sd = s->data;
+  return sd->rb_scope;
+}
+
+static VALUE rb_line_parser_set_starting_child(VALUE self, VALUE rb_scope) {
+  LineParser *lp;
+  Data_Get_Struct(self, LineParser, lp);
+  if (rb_scope == Qnil) {
+    lp->starting_child = NULL;
+    return;
+  }
+  Scope *s;
+  Data_Get_Struct(rb_scope, Scope, s);
+  lp->starting_child = s;
   return Qtrue;
 }
 
@@ -1480,8 +1527,17 @@ static VALUE rb_line_parser_scan_line(VALUE self) {
   return Qnil;
 }
 
+static VALUE rb_document_create_anonymous_mark(VALUE self, VALUE rb_iter) {
+  GtkTextBuffer *buffer;
+  buffer = (GtkTextBuffer *) get_gobject(self);
+  gtk_text_buffer_create_mark         (buffer,
+                                                         const gchar *mark_name,
+                                                         const GtkTextIter *where,
+                                                         gboolean left_gravity)
+}
+
 static VALUE mSyntaxExt, rb_mRedcar, rb_cEditView, rb_cParser;
-static VALUE cScope, cTextLoc, cLineParser;
+static VALUE cScope, cTextLoc, cLineParser, cDocument;
 
 void Init_syntax_ext() {
   // utility functions are in SyntaxExt
@@ -1544,7 +1600,7 @@ void Init_syntax_ext() {
   rb_define_method(cScope, "children",  rb_scope_get_children, 0);
   rb_define_method(cScope, "parent",  rb_scope_get_parent, 0);
   rb_define_method(cScope, "scope_at",  rb_scope_at, 1);
-  rb_define_method(cScope, "first_child_after",  rb_scope_first_child_after, 1);
+  rb_define_method(cScope, "first_child_after",  rb_scope_first_child_after, 2);
   rb_define_method(cScope, "clear_after",  rb_scope_clear_after, 1);
   rb_define_method(cScope, "clear_between",  rb_scope_clear_between, 2);
   rb_define_method(cScope, "clear_between_lines",  rb_scope_clear_between_lines, 2);
@@ -1552,21 +1608,23 @@ void Init_syntax_ext() {
   rb_define_method(cScope, "n_children",  rb_scope_n_children, 0);
   rb_define_method(cScope, "detach",  rb_scope_detach, 0);
   rb_define_method(cScope, "delete_any_on_line_not_in",  
-                   rb_scope_delete_any_on_line_not_in, 2);
+                   rb_scope_delete_any_on_line_not_in, 3);
   rb_define_method(cScope, "clear_not_on_line",  rb_scope_clear_not_on_line, 1);
-  rb_define_method(cScope, "remove_children_that_overlap", rb_scope_remove_children_that_overlap, 1);
+  rb_define_method(cScope, "remove_children_that_overlap", rb_scope_remove_children_that_overlap, 2);
   rb_define_method(cScope, "hierarchy_names",  rb_scope_hierarchy_names, 1);
 
   rb_cParser = rb_eval_string("Redcar::EditView::Parser");
   cLineParser = rb_define_class_under(rb_cParser, "LineParser", rb_cObject);
   rb_define_alloc_func(cLineParser, rb_line_parser_alloc);
-  rb_define_method(cLineParser, "initialize", rb_line_parser_init, 4);
+  rb_define_method(cLineParser, "initialize", rb_line_parser_init, 5);
   rb_define_method(cLineParser, "line_length", rb_line_parser_line_length, 0);
   rb_define_method(cLineParser, "line_num", rb_line_parser_line_num, 0);
   rb_define_method(cLineParser, "pos", rb_line_parser_get_pos, 0);
   rb_define_method(cLineParser, "pos=", rb_line_parser_set_pos, 1);
   rb_define_method(cLineParser, "current_scope", rb_line_parser_get_current_scope, 0);
   rb_define_method(cLineParser, "current_scope=", rb_line_parser_set_current_scope, 1);
+  rb_define_method(cLineParser, "starting_child", rb_line_parser_get_starting_child, 0);
+  rb_define_method(cLineParser, "starting_child=", rb_line_parser_set_starting_child, 1);
   rb_define_method(cLineParser, "reset_scope_marker", rb_line_parser_reset_scope_marker, 0);
   rb_define_method(cLineParser, "any_markers?", rb_line_parser_any_scope_markers, 0);
   rb_define_method(cLineParser, "get_scope_marker", rb_line_parser_get_scope_marker, 0);
@@ -1574,5 +1632,8 @@ void Init_syntax_ext() {
   rb_define_method(cLineParser, "current_scope_closes?", rb_line_parser_current_scope_closes, 0);
   rb_define_method(cLineParser, "match_pattern", rb_line_parser_match_pattern, 1);
   rb_define_method(cLineParser, "scan_line", rb_line_parser_scan_line, 0);
+
+  rb_cDocument = rb_eval_string("Redcar::Document");
+  rb_define_method(rb_cDocument, "create_anonymous_mark", rb_document_create_anonymous_mark, 1);
 }
 

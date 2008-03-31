@@ -32,7 +32,7 @@ end
 
 if Redcar::App.ARGV.include? "--test-perf-load"
   RubyProf.start
-  Coms::OpenTab.new("/home/dan/projects/redcar/plugins2/core/window.rb").do
+  Coms::OpenTab.new("/home/dan/projects/rak/bin/rak").do
   result = RubyProf.stop
   printer = RubyProf::GraphHtmlPrinter.new(result)
   printer.print(STDOUT, :min_percent => 1)

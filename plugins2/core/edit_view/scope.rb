@@ -166,6 +166,16 @@ class Redcar::EditView
       parent == other or (parent and parent.child_of?(other))
     end
     
+    def ancestral_child_of(other)
+      if self.parent == nil
+        nil
+      elsif self.parent == other
+        self
+      else
+        self.parent.ancestral_child_of(other)
+      end
+    end
+    
     # Return the names of all scopes in the hierarchy above this scope. Inner 
     # is true or false depending on whether you want to include this scopes
     # 'inner' scope (content_name scope).
@@ -509,6 +519,10 @@ class Redcar::EditView
       else
         children.last
       end
+    end
+    
+    def root?
+      !parent.to_bool
     end
     
     def root

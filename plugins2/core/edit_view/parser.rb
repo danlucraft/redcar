@@ -19,6 +19,7 @@ class Redcar::EditView
       @max_view = 200
       @changes = []
       @scope_last_line = 0
+      @last_childs = []
       @parse_all = true
       @cursor_line = 0
       connect_buffer_signals
@@ -59,7 +60,7 @@ class Redcar::EditView
         false
       end
       @buf.tag_table.signal_connect_after("tag_added") do |_, tag|
-        if tag.name =~ /^EditView/
+        if tag.name =~ /^EditView\((\d+)\)/
           @tags << tag
         end
         reset_table_priorities
@@ -94,8 +95,7 @@ class Redcar::EditView
       scopes = nil
       @buf.line_count.times do |line_num|
         scopes = @root.descendants_on_line(line_num)
-        SyntaxExt.colour_line_with_scopes(@colourer, @colourer.theme, 
-                                          scopes)
+        SyntaxExt.colour_line_with_scopes(@buf, @colourer.theme, scopes)
       end
     end
     
@@ -191,6 +191,7 @@ class Redcar::EditView
       (lines-1).times do 
         @ending_scopes.insert(loc.line, nil)
         @starting_scopes.insert(loc.line, nil)
+        @last_childs.insert(loc.line, nil)
       end
       #puts "@root.shift_chars(#{loc.line+lines-1}, #{end_loc.offset-loc.offset}, #{loc.offset})"
 #      @root.shift_chars(loc.line+lines-1, end_loc.offset-loc.offset, loc.offset)
@@ -235,6 +236,7 @@ class Redcar::EditView
       (to.line-from.line-1).times do
         @ending_scopes.delete_at(from.line)
         @starting_scopes.delete_at(from.line)
+        @last_childs.delete_at(from.line)
       end
       line_num = from.line
       lazy_parse_from(line_num)
@@ -285,8 +287,10 @@ class Redcar::EditView
         opening_scope = (@ending_scopes[line_num-1] || @root)
       end
       @starting_scopes[line_num] = opening_scope
-      
-      lp = LineParser.new(self, line_num, line.to_s, opening_scope)
+      last_child = if line_num > 0
+                     @last_childs[line_num-1]
+                   end
+      lp = LineParser.new(self, line_num, line.to_s, opening_scope, last_child)
       
 #       begin
         while lp.any_line_left?
@@ -319,10 +323,17 @@ class Redcar::EditView
 #         end
 #       p lp.all_scopes.length
 #        lp.all_scopes.each {|sc| sc.name }
-        SyntaxExt.colour_line_with_scopes(@colourer, @colourer.theme, 
+        children_of_current = lp.all_scopes.select do |s| 
+          s.parent == lp.current_scope
+        end
+        unless children_of_current.empty?
+          @last_childs[line_num] = children_of_current.last.
+            ancestral_child_of(lp.current_scope)
+        end
+        SyntaxExt.colour_line_with_scopes(@buf, @colourer.theme, 
                                           lp.all_scopes)
 #        debug_print_tag_table
-        reset_table_priorities
+#        reset_table_priorities
       end
       
       # should we parse the next line? If we've changed the scope or the 
@@ -377,11 +388,12 @@ class Redcar::EditView
     end
 
     class LineParser
-      attr_accessor(:start_scope, :active_grammar,
+      attr_accessor(:start_scope, :active_grammar, 
                     :all_scopes, :closed_scopes, :matching_patterns,
                     :need_new_patterns, :new_scope_markers, :removed_scopes)
+      attr_reader :current_child
       
-      def initialize2(p, line, opening_scope)
+      def initialize2(p, line, opening_scope, last_child_prev_line)
         @parser = p
         @start_scope = (opening_scope || p.scope_at_line_start(line_num))
         self.current_scope = @start_scope
@@ -393,6 +405,7 @@ class Redcar::EditView
         @need_new_patterns = true
         @new_scope_markers = []
         @removed_scopes = []
+        self.starting_child = last_child_prev_line
         reset_scope_marker
       end
       
@@ -436,7 +449,7 @@ class Redcar::EditView
       end
       
       def get_expected_scope
-        expected_scope = current_scope.first_child_after(TextLoc.new(line_num, pos))
+        expected_scope = current_scope.first_child_after(TextLoc.new(line_num, pos), starting_child)
         if expected_scope
           expected_scope = nil unless expected_scope.start.line == line_num
         end
@@ -526,8 +539,8 @@ class Redcar::EditView
         from_loc = TextLoc.new(line_num, nsm[:from])
         new_scope.start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(from_loc))
         new_scope.inner_start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(to_loc))
-        new_scope.inner_end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(@parser.buf.char_count))
-        new_scope.end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(@parser.buf.char_count))
+        new_scope.inner_end_mark = @parser.buf.end_mark
+        new_scope.end_mark = @parser.buf.end_mark
         
         new_scope.open_matchdata = nsm[:md]
         re = Oniguruma::ORegexp.new(@parser.build_closing_regexp(pattern, 
@@ -548,7 +561,7 @@ class Redcar::EditView
       end
       
       def remove_children_that_overlap_with(new_scope)
-        arr = current_scope.remove_children_that_overlap(new_scope)
+        arr = current_scope.remove_children_that_overlap(new_scope, starting_child)
         @removed_scopes += arr
       end
       
@@ -644,7 +657,7 @@ class Redcar::EditView
 #           p all_scopes
           # If we are reparsing, we might find that some scopes have disappeared,
           # delete them:
-          arr = current_scope.root.delete_any_on_line_not_in(line_num, all_scopes)
+          arr = current_scope.root.delete_any_on_line_not_in(line_num, all_scopes, starting_child)
           @removed_scopes += arr
           
           # any that we expected to close on this line that now don't?
@@ -676,10 +689,12 @@ class Redcar::EditView
       if line_num == 0
         @ending_scopes = []
         @starting_scopes = []
+        @last_childs = []
         @scope_last_line = -1
       else
         @ending_scopes = @ending_scopes[0..(line_num-1)]
         @starting_scopes = @starting_scopes[0..(line_num-1)]
+        @last_childs = @last_childs[0..(line_num-1)]
         @scope_last_line = line_num-1
       end
     end

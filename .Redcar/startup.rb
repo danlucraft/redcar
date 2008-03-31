@@ -13,7 +13,7 @@ end
 
 if Redcar::App.ARGV.include? "--test-perf-load"
   new_tab = Redcar.new_tab
-  new_tab.filename = "/home/dan/projects/redcar/freebase2/lib/freebase/readers.rb"  
+  new_tab.filename = "/home/dan/projects/rak/bin/rak"  
   RubyProf.start
   new_tab.load  
   result = RubyProf.stop
