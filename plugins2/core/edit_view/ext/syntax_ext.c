@@ -159,6 +159,14 @@ typedef struct ScopeData_ {
   TextLoc old_end;
   TextLoc old_open_end;
   TextLoc old_close_start;
+  GtkTextMark *start_mark;
+  GtkTextMark *inner_start_mark;
+  GtkTextMark *inner_end_mark;
+  GtkTextMark *end_mark;
+  VALUE rb_start_mark;
+  VALUE rb_inner_start_mark;
+  VALUE rb_inner_end_mark;
+  VALUE rb_end_mark;
   int   modified;
   char* name;
   VALUE rb_scope;
@@ -377,6 +385,14 @@ static VALUE rb_scope_cinit(VALUE self) {
   sd->modified = 1;
   sd->tag = NULL;
   sd->inner_tag = NULL;
+  sd->start_mark = NULL;
+  sd->inner_start_mark = NULL;
+  sd->inner_end_mark = NULL;
+  sd->end_mark = NULL;
+  sd->rb_start_mark = Qnil;
+  sd->rb_inner_start_mark = Qnil;
+  sd->rb_inner_end_mark = Qnil;
+  sd->rb_end_mark = Qnil;
   return self;
 }
 
@@ -536,6 +552,119 @@ static VALUE rb_scope_get_close_start(VALUE self) {
     return Qnil;
   return rb_funcall(rb_cObject, rb_intern("TextLoc"),
 		    2, INT2FIX(sd->close_start.line), INT2FIX(sd->close_start.offset));
+}
+
+// mark stuff
+static VALUE rb_scope_get_start_mark(VALUE self) {
+  if (self == Qnil)
+    printf("rb_scope_get_start_mark(nil)");
+  Scope *s;
+  Data_Get_Struct(self, Scope, s);
+  ScopeData *sd = s->data;
+  return sd->rb_start_mark;
+}
+
+static VALUE rb_scope_get_inner_start_mark(VALUE self) {
+  if (self == Qnil)
+    printf("rb_scope_get_start_mark(nil)");
+  Scope *s;
+  Data_Get_Struct(self, Scope, s);
+  ScopeData *sd = s->data;
+  return sd->rb_inner_start_mark;
+}
+
+static VALUE rb_scope_get_inner_end_mark(VALUE self) {
+  if (self == Qnil)
+    printf("rb_scope_get_start_mark(nil)");
+  Scope *s;
+  Data_Get_Struct(self, Scope, s);
+  ScopeData *sd = s->data;
+  return sd->rb_inner_end_mark;
+}
+
+static VALUE rb_scope_get_end_mark(VALUE self) {
+  if (self == Qnil)
+    printf("rb_scope_get_start_mark(nil)");
+  Scope *s;
+  Data_Get_Struct(self, Scope, s);
+  ScopeData *sd = s->data;
+  return sd->rb_end_mark;
+}
+
+static VALUE rb_scope_set_start_mark(VALUE self, VALUE rb_mark) {
+  if (self == Qnil)
+    printf("rb_scope_set_start_mark(nil)");
+  Scope *s;
+  ScopeData *sd;
+  GtkTextMark *mark;
+  Data_Get_Struct(self, Scope, s);
+  if (rb_mark == Qnil) {
+    sd->rb_start_mark = Qnil;
+    sd->start_mark = NULL;
+    return Qnil;
+  }
+  mark = (GtkTextMark *) get_gobject(rb_mark);
+  sd = s->data;
+  sd->rb_start_mark = rb_mark;
+  sd->start_mark = mark;
+  return Qnil;
+}
+
+static VALUE rb_scope_set_inner_start_mark(VALUE self, VALUE rb_mark) {
+  if (self == Qnil)
+    printf("rb_scope_set_inner_start_mark(nil)");
+  Scope *s;
+  ScopeData *sd;
+  GtkTextMark *mark;
+  Data_Get_Struct(self, Scope, s);
+  if (rb_mark == Qnil) {
+    sd->rb_inner_start_mark = Qnil;
+    sd->inner_start_mark = NULL;
+    return Qnil;
+  }
+  mark = (GtkTextMark *) get_gobject(rb_mark);
+  sd = s->data;
+  sd->rb_inner_start_mark = rb_mark;
+  sd->inner_start_mark = mark;
+  return Qnil;
+}
+
+static VALUE rb_scope_set_inner_end_mark(VALUE self, VALUE rb_mark) {
+  if (self == Qnil)
+    printf("rb_scope_set_inner_end_mark(nil)");
+  Scope *s;
+  ScopeData *sd;
+  GtkTextMark *mark;
+  Data_Get_Struct(self, Scope, s);
+  if (rb_mark == Qnil) {
+    sd->rb_inner_end_mark = Qnil;
+    sd->inner_end_mark = NULL;
+    return Qnil;
+  }
+  mark = (GtkTextMark *) get_gobject(rb_mark);
+  sd = s->data;
+  sd->rb_inner_end_mark = rb_mark;
+  sd->inner_end_mark = mark;
+  return Qnil;
+}
+
+static VALUE rb_scope_set_end_mark(VALUE self, VALUE rb_mark) {
+  if (self == Qnil)
+    printf("rb_scope_set_end_mark(nil)");
+  Scope *s;
+  ScopeData *sd;
+  GtkTextMark *mark;
+  Data_Get_Struct(self, Scope, s);
+  if (rb_mark == Qnil) {
+    sd->rb_end_mark = Qnil;
+    sd->end_mark = NULL;
+    return Qnil;
+  }
+  mark = (GtkTextMark *) get_gobject(rb_mark);
+  sd = s->data;
+  sd->rb_end_mark = rb_mark;
+  sd->end_mark = mark;
+  return Qnil;
 }
 
 static VALUE rb_scope_set_name(VALUE self, VALUE name) {
@@ -1103,23 +1232,40 @@ void set_tag_properties(GtkTextTag* tag, VALUE rbh_tm_settings) {
   return;
 }
 
-void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner, 
-		  GtkTextIter* line_start_iter, GtkTextIter* line_end_iter) {
+void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
   ScopeData* sd = scope->data;
   GtkTextIter start_iter, end_iter;
-  GtkTextIter old_start_iter, old_end_iter;
-  VALUE rba_settings, rbh_setting, rb_settings, rb_settings_scope, rbh_tag_settings, rbh, rba_tag_settings, rba;
+  VALUE rba_settings, rbh_setting, rb_settings, rb_settings_scope;
+  VALUE rbh_tag_settings, rbh, rba_tag_settings, rba;
   char tag_name[256] = "nil";
   int priority = FIX2INT(rb_funcall(sd->rb_scope, rb_intern("priority"), 0));
-  GtkTextTag* tag;
+  GtkTextTag* tag = NULL;
   GtkTextTagTable* tag_table;
   int i;
   char *get_tag_name;
-
-  scope_get_start_iter(scope, buffer, &start_iter, inner);
-  scope_get_end_iter(scope, buffer, &end_iter, inner);
   
-  if ((!inner && sd->tag == NULL) || (inner && sd->inner_tag == NULL)) {
+  if (inner) {
+/*     if (sd->inner_start_mark == NULL) */
+/*       print("missing start_mark"); */
+/*     if (sd->inner_end_mark == NULL) */
+/*       print("missing end_mark"); */
+    gtk_text_buffer_get_iter_at_mark(buffer, &start_iter, sd->inner_start_mark);
+    gtk_text_buffer_get_iter_at_mark(buffer, &end_iter, sd->inner_end_mark);
+    if (sd->inner_tag != NULL)
+      tag = sd->inner_tag;
+  }
+  else {
+    if (sd->start_mark == NULL)
+      print("missing start_mark");
+    if (sd->end_mark == NULL)
+      print("missing end_mark");
+    gtk_text_buffer_get_iter_at_mark(buffer, &start_iter, sd->start_mark);
+    gtk_text_buffer_get_iter_at_mark(buffer, &end_iter, sd->end_mark);
+    if (sd->tag != NULL)
+      tag = sd->tag;
+  }
+  
+  if (tag == NULL) {
     rbh = rb_funcall(theme, rb_intern("global_settings"), 0);
     
     // set name
@@ -1144,29 +1290,12 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner,
     
     if (RARRAY(rba_settings)->len > 0)
       set_tag_properties(tag, rb_settings);
-    
-    if (!inner)
-      sd->tag = tag;
-    else
+
+    if (inner)
       sd->inner_tag = tag;
+    else
+      sd->tag = tag;
   }
-  else {
-    if (sd->has_old) {
-      scope_get_old_start_iter(scope, buffer, &old_start_iter, inner);
-      scope_get_old_end_iter(scope, buffer, &old_end_iter, inner);
-      if (!inner)
-        tag = sd->tag;
-      else
-        tag = sd->inner_tag;
-      gtk_text_buffer_remove_tag(buffer, tag, &old_start_iter, &old_end_iter);
-/*       printf("[Uncolour] %s:%d  ", sd->name, priority-1); */
-/*       print_iter(&old_start_iter); */
-/*       printf("-"); */
-/*       print_iter(&old_end_iter); */
-/*       puts(""); */
-    }
-  }
-  scope_update_old_colour_textlocs(scope);
 
 /*   // some logging stuff */
 /*   printf("[Colour]   %s:%d  ", sd->name, priority-1); */
@@ -1203,8 +1332,6 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
   rb_buffer = rb_funcall(rb_iv_get(rb_colourer, "@sourceview"), rb_intern("buffer"), 0);
   
   buffer = (GtkTextBuffer *) get_gobject(rb_buffer);
-  gtk_text_buffer_get_iter_at_line_offset(buffer, &start_iter, line_num, 0);
-  gtk_text_buffer_get_iter_at_line_offset(buffer, &end_iter, line_num+1, 0);
 
   // colour each scope
   int i;
@@ -1226,9 +1353,9 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
     if (current_data->name == NULL && pattern != Qnil && 
         content_name == Qnil)
       continue;
-    colour_scope(buffer, current, theme, 0, &start_iter, &end_iter);
+    colour_scope(buffer, current, theme, 0);
     if (content_name != Qnil) {
-      colour_scope(buffer, current, theme, 1, &start_iter, &end_iter);
+      colour_scope(buffer, current, theme, 1);
     }
   }
   //  puts("");
@@ -1236,20 +1363,32 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
 }
 
 int uncolour_scope(GtkTextBuffer *buffer, Scope *scope) {
-  ScopeData* scope_data = scope->data;
+  ScopeData* sd = scope->data;
   GtkTextIter start_iter, end_iter;
   int priority;
-  if (scope_data->tag != NULL) {
-    scope_get_old_start_iter(scope, buffer, &start_iter, FALSE);
-    scope_get_old_end_iter(scope, buffer, &end_iter, FALSE);
-    gtk_text_buffer_remove_tag(buffer, scope_data->tag, &start_iter, &end_iter);
-    priority = FIX2INT(rb_funcall(scope_data->rb_scope, rb_intern("priority"), 0));
+
+  if (sd->inner_tag) {
+    gtk_text_buffer_get_iter_at_mark(buffer, &start_iter, sd->inner_start_mark);
+    gtk_text_buffer_get_iter_at_mark(buffer, &end_iter, sd->inner_end_mark);
+    gtk_text_buffer_remove_tag(buffer, sd->inner_tag, &start_iter, &end_iter);
+  }
+  if (sd->tag) {
+    gtk_text_buffer_get_iter_at_mark(buffer, &start_iter, sd->start_mark);
+    gtk_text_buffer_get_iter_at_mark(buffer, &end_iter, sd->end_mark);
+    gtk_text_buffer_remove_tag(buffer, sd->tag, &start_iter, &end_iter);
+  }
+  
+/*   if (scope_data->tag != NULL) { */
+/*     scope_get_old_start_iter(scope, buffer, &start_iter, FALSE); */
+/*     scope_get_old_end_iter(scope, buffer, &end_iter, FALSE); */
+/*     gtk_text_buffer_remove_tag(buffer, scope_data->tag, &start_iter, &end_iter); */
+/*     priority = FIX2INT(rb_funcall(scope_data->rb_scope, rb_intern("priority"), 0)); */
 /*     printf("[Uncolour] %s:%d  ", scope_data->name, priority-1); */
 /*     print_iter(&start_iter); */
 /*     printf("-"); */
 /*     print_iter(&end_iter); */
 /*     puts(""); */
-  }
+/*   } */
 
   Scope *child;
   child = g_node_first_child(scope);
@@ -1590,6 +1729,16 @@ void Init_syntax_ext() {
   rb_define_method(cScope, "set_close_start", rb_scope_set_close_start, 2);  
   rb_define_method(cScope, "open_end",    rb_scope_get_open_end, 0);
   rb_define_method(cScope, "close_start", rb_scope_get_close_start, 0);
+
+  rb_define_method(cScope, "start_mark",    rb_scope_get_start_mark, 0);
+  rb_define_method(cScope, "inner_start_mark",    rb_scope_get_inner_start_mark, 0);
+  rb_define_method(cScope, "inner_end_mark",    rb_scope_get_inner_end_mark, 0);
+  rb_define_method(cScope, "end_mark",    rb_scope_get_end_mark, 0);
+
+  rb_define_method(cScope, "start_mark=",    rb_scope_set_start_mark, 1);
+  rb_define_method(cScope, "inner_start_mark=",    rb_scope_set_inner_start_mark, 1);
+  rb_define_method(cScope, "inner_end_mark=",    rb_scope_set_inner_end_mark, 1);
+  rb_define_method(cScope, "end_mark=",    rb_scope_set_end_mark, 1);
 
   rb_define_method(cScope, "set_name",  rb_scope_set_name, 1);
   rb_define_method(cScope, "get_name",  rb_scope_get_name, 0);

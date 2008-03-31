@@ -209,6 +209,12 @@ class Redcar::EditView
       new_self.open_matchdata  = self.open_matchdata
       new_self.close_matchdata = self.close_matchdata
       new_self.closing_regexp  = self.closing_regexp
+      puts "setting_marks"; $stdout.flush
+      new_self.start_mark = self.start_mark
+      new_self.inner_start_mark = self.inner_start_mark
+      new_self.end_mark = self.end_mark
+      new_self.inner_end_mark = self.inner_end_mark
+      puts "setting_marks_done"; $stdout.flush
       self.each_child do |child|
         new_self.add_child child.copy
       end
@@ -295,6 +301,15 @@ class Redcar::EditView
       str
     end
     
+    def pretty3(indent=0)
+      str = ""
+      str += " "*indent + "+ " + self.inspect3+"\n"
+      children.each do |cs|
+        str += cs.pretty3(indent+2)
+      end
+      str
+    end
+    
     def captures
       @open_matchdata.captures
     end
@@ -343,6 +358,52 @@ class Redcar::EditView
       else
         endstr = "?"
       end
+      if self.pattern
+        cname = ""+self.pattern.content_name.to_s
+      else
+        cname = ""
+      end
+      (self.name||"" rescue "noname")+" "+cname+" #{startstr}#{endstr} #{hanging}>"
+    end
+    
+    def get_mark_string(mark)
+      buf = mark.buffer
+      iter = buf.get_iter_at_mark(mark)
+      "#{iter.line},#{iter.line_offset}"
+    end
+    
+    def inspect3
+      if self.pattern.is_a? SinglePattern
+        hanging = ""
+      else
+        if self.end and self.end.valid?
+          hanging = " closed"
+        else
+          hanging = " hanging"
+        end
+      end
+      startstr = "(#{start.line},#{start.offset})["
+      if start_mark
+        startstr += get_mark_string(start_mark)
+      end
+      startstr += "]["
+      if inner_start_mark
+        startstr += get_mark_string(inner_start_mark)
+      end
+      startstr += "]-"
+      if self.end
+        endstr = "(#{self.end.line},#{self.end.offset})["
+      else
+        endstr = "?"
+      end
+      if end_mark
+        endstr += get_mark_string(end_mark)
+      end
+      endstr += "]["
+      if inner_end_mark
+        endstr += get_mark_string(inner_end_mark)
+      end
+      endstr += "]"
       if self.pattern
         cname = ""+self.pattern.content_name.to_s
       else

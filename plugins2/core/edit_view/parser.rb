@@ -310,7 +310,12 @@ class Redcar::EditView
 #         num = lp.all_scopes.length
 #         nummod = lp.all_scopes.select{|s| s.modified? }.length
 #         puts "#{nummod}/#{num}"
-        SyntaxExt.uncolour_scopes(@colourer, lp.removed_scopes)
+       SyntaxExt.uncolour_scopes(@colourer, lp.removed_scopes)
+#         puts "colouring_scopes: "
+#         lp.all_scopes.each do |sc|
+#           p sc.start_mark
+#           puts sc.inspect3
+#         end
         SyntaxExt.colour_line_with_scopes(@colourer, @colourer.theme, 
                                           line_num, lp.all_scopes)
 #        debug_print_tag_table
@@ -477,6 +482,8 @@ class Redcar::EditView
       def close_current_scope(new_scope_marker)
         current_scope.end         = TextLoc.new(line_num, new_scope_marker[:to])
         current_scope.close_start = TextLoc.new(line_num, new_scope_marker[:from])
+        current_scope.end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(current_scope.end))
+        current_scope.inner_end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(current_scope.close_start))
         current_scope.close_matchdata = new_scope_marker[:md]
       end
       
@@ -485,7 +492,13 @@ class Redcar::EditView
         new_scope.grammar   = active_grammar
         new_scope.start     = TextLoc.new(line_num, new_scope_marker[:from])
         new_scope.end       = TextLoc.new(line_num, new_scope_marker[:to])
-        new_scope.open_end  = TextLoc.new(line_num, new_scope_marker[:to])
+        new_scope.open_end  = TextLoc.new(line_num, new_scope_marker[:from])
+        new_scope.close_start = TextLoc.new(line_num, new_scope_marker[:to])
+
+        new_scope.start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(new_scope.start))
+        new_scope.inner_start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(new_scope.open_end))
+        new_scope.inner_end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(new_scope.close_start))
+        new_scope.end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(new_scope.end))
         new_scope.open_matchdata = new_scope_marker[:md]
         new_scope
       end
@@ -494,9 +507,16 @@ class Redcar::EditView
         pattern = new_scope_marker[:pattern]
         new_scope = pattern.to_scope
         new_scope.grammar = active_grammar
+        
         new_scope.start   = TextLoc.new(line_num, new_scope_marker[:from])
         new_scope.end     = nil
         new_scope.open_end   = TextLoc.new(line_num, new_scope_marker[:to])
+        
+        new_scope.start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(new_scope.start))
+        new_scope.inner_start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(new_scope.open_end))
+        new_scope.inner_end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(@parser.buf.char_count))
+        new_scope.end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(@parser.buf.char_count))
+        
         new_scope.open_matchdata = new_scope_marker[:md]
         re = Oniguruma::ORegexp.new(@parser.build_closing_regexp(pattern, 
                                                                  new_scope_marker[:md]
@@ -730,8 +750,14 @@ class Redcar::EditView
       unless capture == ""
         from = md.begin(num)
         to   = md.end(num)
-        ::Redcar::EditView::Scope.create2(::Redcar::EditView::TextLoc.new(line_num, from), 
-                                          ::Redcar::EditView::TextLoc.new(line_num, to))
+        fromloc = ::Redcar::EditView::TextLoc.new(line_num, from)
+        toloc   = ::Redcar::EditView::TextLoc.new(line_num, to)
+        sc = ::Redcar::EditView::Scope.create2(fromloc, toloc)
+        frommark = @buf.create_anonymous_mark(@buf.iter(fromloc))
+        tomark   = @buf.create_anonymous_mark(@buf.iter(toloc))
+        sc.start_mark = frommark
+        sc.end_mark   = tomark
+        sc
       end
     end
     

@@ -24,7 +24,11 @@ module Redcar
         iter(line_start.offset+obj.offset)
       end
     end
-
+    
+    def create_anonymous_mark(iter)
+      create_mark(nil, iter, true)
+    end
+    
     # Move the cursor forward a word.
     def forward_word
       place_cursor(cursor_iter.forward_word_end!)

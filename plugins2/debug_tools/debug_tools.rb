@@ -15,7 +15,7 @@ module Com::RedcarIDE
       norecord
       def execute(tab)
         puts "Scope Tree"
-        puts tab.view.parser.root.pretty2
+        puts tab.view.parser.root.pretty3
       end
     end
     

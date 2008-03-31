@@ -54,7 +54,7 @@ module Redcar
     end
     
     def self.create_grammar_combo
-# When an EditView is created in a window, this needs to go onto it.
+      # When an EditView is created in a window, this needs to go onto it.
       unless slot = bus('/gtk/window/statusbar/grammar_combo', true)
         gtk_hbox = bus('/gtk/window/statusbar').data
         gtk_combo_box = Gtk::ComboBox.new(true)
@@ -168,6 +168,8 @@ module Redcar
       @root = Scope.new(:pattern => grammar,
                         :grammar => grammar,
                         :start => TextLoc(0, 0))
+      @root.start_mark = buffer.create_anonymous_mark(buffer.iter(0))
+      @root.end_mark   = buffer.create_anonymous_mark(buffer.iter(buffer.char_count))
     end
     
     def create_parser
@@ -183,11 +185,13 @@ module Redcar
     def change_root_scope(gr_name, should_colour=true)
       raise "trying to change to nil grammar!" unless gr_name
       gr = Grammar.grammar(:name => gr_name)
-      root = Scope.new(:pattern => gr,
+      @root = Scope.new(:pattern => gr,
                         :grammar => gr,
                         :start => TextLoc(0, 0))
+      @root.start_mark = buffer.create_anonymous_mark(buffer.iter(0))
+      @root.end_mark   = buffer.create_anonymous_mark(buffer.iter(buffer.char_count))
       @parser.uncolour
-      @parser.root = root
+      @parser.root = @root
       @parser.reparse
     end
     
