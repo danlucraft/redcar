@@ -149,13 +149,13 @@ module Redcar
       end
       
       # Hook up to scrollbar changes for the parser
-#       signal_connect("parent_set") do
-#         if parent.is_a? Gtk::ScrolledWindow
-#           parent.vscrollbar.signal_connect("value_changed") do 
-#             view_changed
-#           end
-#         end
-#       end
+      signal_connect("parent_set") do
+        if parent.is_a? Gtk::ScrolledWindow
+          parent.vscrollbar.signal_connect_after("value_changed") do 
+            view_changed
+          end
+        end
+      end
     end
     
     def set_font(font)
@@ -245,6 +245,7 @@ module Redcar
     end
     
     def view_changed
+#      puts "last_visible_line:#{last_visible_line}"
       @parser.max_view = last_visible_line + 100
     end
     
