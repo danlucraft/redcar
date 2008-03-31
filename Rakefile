@@ -49,3 +49,7 @@ task :coredoc do
   files = Dir["plugins2/core/*"].select{|f| File.file? f}
   sh "rdoc -T jamis #{files.join(" ")} README.txt"
 end
+
+task :clean do
+  sh "rm cache/*.dump"
+end

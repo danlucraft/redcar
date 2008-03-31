@@ -7,15 +7,17 @@ class Redcar::EditView
         prefs = Redcar::Bundle.get(name).preferences
         prefs.each do |pref_name, pref_hash|
           scope = pref_hash["scope"]
-          pref_hash["settings"].each do |set_name, set_value|
-            if set_name == "increaseIndentPattern"
-              @indent_rules[scope][:increase] = Oniguruma::ORegexp.new(set_value)
-            elsif set_name == "decreaseIndentPattern"
-              @indent_rules[scope][:decrease] = Oniguruma::ORegexp.new(set_value)
-            elsif set_name == "indentNextLinePattern"
-              @indent_rules[scope][:nextline] = Oniguruma::ORegexp.new(set_value)
-            elsif set_name == "unIndentedLinePattern"
-              @indent_rules[scope][:noindent] = Oniguruma::ORegexp.new(set_value)
+          if scope
+            pref_hash["settings"].each do |set_name, set_value|
+              if set_name == "increaseIndentPattern"
+                @indent_rules[scope][:increase] = Oniguruma::ORegexp.new(set_value)
+              elsif set_name == "decreaseIndentPattern"
+                @indent_rules[scope][:decrease] = Oniguruma::ORegexp.new(set_value)
+              elsif set_name == "indentNextLinePattern"
+                @indent_rules[scope][:nextline] = Oniguruma::ORegexp.new(set_value)
+              elsif set_name == "unIndentedLinePattern"
+                @indent_rules[scope][:noindent] = Oniguruma::ORegexp.new(set_value)
+              end
             end
           end
         end
@@ -25,9 +27,9 @@ class Redcar::EditView
     
     def self.indent_rules_for_scope(scope)
       @indent_rules.each do |scope_name, value|
-        #       puts "applicable? #{scope_name} to #{scope.hierarchy_names}" #.join(" ")}"
+#        puts "applicable? #{scope_name} to #{scope.hierarchy_names(true)}" #.join(" ")}"
         v = Theme.applicable?(scope_name, scope.hierarchy_names(true)).to_bool
-#       p v
+#        p v
         if v
           return value
         end
