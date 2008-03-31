@@ -7,7 +7,7 @@ class Redcar::EditView
   class Parser
     
     attr_accessor :grammars, :root, :colourer, :parse_all
-    attr_reader   :max_view, :buf, :ending_scopes
+    attr_reader   :max_view, :buf, :ending_scopes, :starting_scopes
     
     def initialize(buffer, root, grammars=[], colourer=nil)
       @buf = buffer
@@ -19,7 +19,7 @@ class Redcar::EditView
       @max_view = 200
       @changes = []
       @scope_last_line = 0
-      @parse_all = false
+      @parse_all = true
       @cursor_line = 0
       connect_buffer_signals
       unless @buf.text == ""
@@ -169,7 +169,7 @@ class Redcar::EditView
     def insert_in_line(line_num, text, offset)
 #      p :insert_in_line
       if line_num <= @buf.line_count
-        @root.shift_chars(line_num, text.length, offset)
+#        @root.shift_chars(line_num, text.length, offset)
         lazy_parse_from(line_num)
       else
         raise RedcarSyntaxError, "RedcarSyntaxError: trying to insert text in line that"+
@@ -179,13 +179,13 @@ class Redcar::EditView
     
     def insert(loc, length, lines)
 #      p :insert
-      before_scope = scope_at_line_start(loc.line)
-      end_offset = @buf.iter(loc).offset+length
-      end_iter = @buf.iter(end_offset)
-      end_loc  = TextLoc(end_iter.line, end_iter.line_offset)
+#       before_scope = scope_at_line_start(loc.line)
+#       end_offset = @buf.iter(loc).offset+length
+#       end_iter = @buf.iter(end_offset)
+#       end_loc  = TextLoc(end_iter.line, end_iter.line_offset)
       #p :insert
       #puts @root.pretty
-      @root.shift_after1(loc, lines-1)
+#      @root.shift_after1(loc, lines-1)
       #puts "@root.shift_after1(#{loc.inspect}, #{lines-1})"
       #puts @root.pretty
       (lines-1).times do 
@@ -193,7 +193,7 @@ class Redcar::EditView
         @starting_scopes.insert(loc.line, nil)
       end
       #puts "@root.shift_chars(#{loc.line+lines-1}, #{end_loc.offset-loc.offset}, #{loc.offset})"
-      @root.shift_chars(loc.line+lines-1, end_loc.offset-loc.offset, loc.offset)
+#      @root.shift_chars(loc.line+lines-1, end_loc.offset-loc.offset, loc.offset)
       #puts @root.pretty
       lazy_parse_from(loc.line, lines)
     end
@@ -210,7 +210,7 @@ class Redcar::EditView
     
     def delete_from_line(line_num, length, offset)
       if line_num < @buf.line_count
-        @root.shift_chars(line_num, -length, offset)
+#        @root.shift_chars(line_num, -length, offset)
         lazy_parse_from(line_num)
       else
         raise RedcarSyntaxError, "RedcarSyntaxError: trying to delete text from line that"+
@@ -227,7 +227,7 @@ class Redcar::EditView
 #       puts @root.pretty
 #       puts "@root.shift_after1(#{to.line.inspect}, #{-(from.line-to.line)})"
 #       @root.shift_after1(to, -(from.line-to.line))
-     @root.shift_after(from.line+1, -(to.line-from.line))
+#     @root.shift_after(from.line+1, -(to.line-from.line))
 #       puts "@root.shift_chars(#{from.line}, #{-(to.offset-from.offset)}, #{to.offset})"
 #       @root.shift_chars(from.line, -(to.offset-from.offset), to.offset)
 #       puts @root.pretty
@@ -381,7 +381,7 @@ class Redcar::EditView
         @start_scope = (opening_scope || p.scope_at_line_start(line_num))
         self.current_scope = @start_scope
         @active_grammar = p.grammar_for_scope(current_scope)
-        @all_scopes =  [current_scope]
+        @all_scopes = [current_scope]
         @closed_scopes = []
         @matching_patterns = []
         @line = line
@@ -479,47 +479,53 @@ class Redcar::EditView
         end
       end
       
-      def close_current_scope(new_scope_marker)
-        current_scope.end         = TextLoc.new(line_num, new_scope_marker[:to])
-        current_scope.close_start = TextLoc.new(line_num, new_scope_marker[:from])
-        current_scope.end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(current_scope.end))
-        current_scope.inner_end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(current_scope.close_start))
-        current_scope.close_matchdata = new_scope_marker[:md]
+      def close_current_scope(nsm)
+#         current_scope.end         = TextLoc.new(line_num, nsm[:to])
+#         current_scope.close_start = TextLoc.new(line_num, nsm[:from])
+        to_loc = TextLoc.new(line_num, nsm[:to])
+        from_loc = TextLoc.new(line_num, nsm[:from])
+        current_scope.end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(to_loc))
+        current_scope.inner_end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(from_loc))
+        current_scope.close_matchdata = nsm[:md]
       end
       
-      def new_single_scope(new_scope_marker)
-        new_scope = new_scope_marker[:pattern].to_scope
+      def new_single_scope(nsm)
+        new_scope = nsm[:pattern].to_scope
         new_scope.grammar   = active_grammar
-        new_scope.start     = TextLoc.new(line_num, new_scope_marker[:from])
-        new_scope.end       = TextLoc.new(line_num, new_scope_marker[:to])
-        new_scope.open_end  = TextLoc.new(line_num, new_scope_marker[:from])
-        new_scope.close_start = TextLoc.new(line_num, new_scope_marker[:to])
+#         new_scope.start     = TextLoc.new(line_num, nsm[:from])
+#         new_scope.end       = TextLoc.new(line_num, nsm[:to])
+#         new_scope.open_end  = TextLoc.new(line_num, nsm[:from])
+#         new_scope.close_start = TextLoc.new(line_num, nsm[:to])
 
-        new_scope.start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(new_scope.start))
-        new_scope.inner_start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(new_scope.open_end))
-        new_scope.inner_end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(new_scope.close_start))
-        new_scope.end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(new_scope.end))
-        new_scope.open_matchdata = new_scope_marker[:md]
+        to_loc = TextLoc.new(line_num, nsm[:to])
+        from_loc = TextLoc.new(line_num, nsm[:from])
+        new_scope.start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(from_loc))
+#        new_scope.inner_start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(from_loc))
+#        new_scope.inner_end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(to_loc))
+        new_scope.end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(to_loc))
+        new_scope.open_matchdata = nsm[:md]
         new_scope
       end
       
-      def new_double_scope(new_scope_marker)
-        pattern = new_scope_marker[:pattern]
+      def new_double_scope(nsm)
+        pattern = nsm[:pattern]
         new_scope = pattern.to_scope
         new_scope.grammar = active_grammar
         
-        new_scope.start   = TextLoc.new(line_num, new_scope_marker[:from])
-        new_scope.end     = nil
-        new_scope.open_end   = TextLoc.new(line_num, new_scope_marker[:to])
+#         new_scope.start   = TextLoc.new(line_num, nsm[:from])
+#         new_scope.end     = nil
+#         new_scope.open_end   = TextLoc.new(line_num, nsm[:to])
         
-        new_scope.start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(new_scope.start))
-        new_scope.inner_start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(new_scope.open_end))
+        to_loc = TextLoc.new(line_num, nsm[:to])
+        from_loc = TextLoc.new(line_num, nsm[:from])
+        new_scope.start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(from_loc))
+        new_scope.inner_start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(to_loc))
         new_scope.inner_end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(@parser.buf.char_count))
         new_scope.end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(@parser.buf.char_count))
         
-        new_scope.open_matchdata = new_scope_marker[:md]
+        new_scope.open_matchdata = nsm[:md]
         re = Oniguruma::ORegexp.new(@parser.build_closing_regexp(pattern, 
-                                                                 new_scope_marker[:md]
+                                                                 nsm[:md]
                                                                  ), 
                                     :options => Oniguruma::OPTION_CAPTURE_GROUP)
         new_scope.closing_regexp = re
@@ -647,8 +653,6 @@ class Redcar::EditView
           end
           scopes_that_closed_on_line.each do |s|
             unless closed_scopes.include? s
-              s.end = nil
-              s.close_start = nil
               if s.capture
                 s.detach_from_parent
                 @removed_scopes << s
@@ -736,9 +740,9 @@ class Redcar::EditView
       @max_parse_line = v
     end
     
-    def shift_after(line, amount)
-      @root.shift_after(line, amount)
-    end
+#     def shift_after(line, amount)
+#       @root.shift_after(line, amount)
+#     end
     
     def parsed_before?(line_num)
       @ending_scopes[line_num] and @starting_scopes[line_num]
@@ -752,7 +756,7 @@ class Redcar::EditView
         to   = md.end(num)
         fromloc = ::Redcar::EditView::TextLoc.new(line_num, from)
         toloc   = ::Redcar::EditView::TextLoc.new(line_num, to)
-        sc = ::Redcar::EditView::Scope.create2(fromloc, toloc)
+        sc = ::Redcar::EditView::Scope.create2
         frommark = @buf.create_anonymous_mark(@buf.iter(fromloc))
         tomark   = @buf.create_anonymous_mark(@buf.iter(toloc))
         sc.start_mark = frommark

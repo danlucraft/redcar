@@ -89,7 +89,7 @@ class Redcar::EditView
 #      puts "  prev2line:#{prev2line.inspect}"
 #      puts "  prevline: #{prevline.inspect}"
 #      puts "  currline: #{currline.inspect}"
-      rules = Indenter.indent_rules_for_scope(@parser.scope_at_line_start(line_num-1))
+      rules = Indenter.indent_rules_for_scope(@parser.starting_scopes[line_num-1])
       unless rules
         puts "no rules for indenting line"
         return

@@ -186,8 +186,7 @@ module Redcar
       raise "trying to change to nil grammar!" unless gr_name
       gr = Grammar.grammar(:name => gr_name)
       @root = Scope.new(:pattern => gr,
-                        :grammar => gr,
-                        :start => TextLoc(0, 0))
+                        :grammar => gr)
       @root.start_mark = buffer.create_anonymous_mark(buffer.iter(0))
       @root.end_mark   = buffer.create_anonymous_mark(buffer.iter(buffer.char_count))
       @parser.uncolour

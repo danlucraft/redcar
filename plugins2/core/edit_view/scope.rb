@@ -38,34 +38,23 @@ class Redcar::EditView
       obj.pattern = pattern
       obj.name    = pattern.scope_name
       obj.grammar = grammar
-      obj.open_end = nil
-      obj.close_start = nil
       obj.cinit
       obj
     end
     
-    def self.create2(start_loc, end_loc)
+    def self.create2
       obj = self.allocate
-      obj.start = start_loc
-      obj.end = end_loc
-      obj.open_end = nil
-      obj.close_start = nil
       obj.cinit
       obj
     end
     
-    def create(name, pattern, grammar, start_loc, end_loc, parent, 
-               open_start, open_end, close_start, close_end, open_matchdata,
+    def create(name, pattern, grammar, parent, open_matchdata,
                close_matchdata)
       allocate
       self.pattern        = pattern
       self.name           = name || (self.pattern ? self.pattern.scope_name : nil)
       self.grammar        = grammar
-      self.start          = start
-      self.end            = end_loc
       self.closing_regexp = nil
-      self.open_end       = open_end
-      self.close_start    = close_start
       @open_matchdata     = open_matchdata
       @close_matchdata    = close_matchdata
       obj.cinit
@@ -75,57 +64,34 @@ class Redcar::EditView
       self.pattern        = options[:pattern]
       self.name           = options[:name] || (self.pattern ? self.pattern.scope_name : nil)
       self.grammar        = options[:grammar]
-      self.start          = options[:start]
-      self.end            = options[:end]
       self.closing_regexp = options[:closing_regexp]
-      self.open_end       = options[:open_end]
-      self.close_start    = options[:close_start]
       @open_matchdata     = options[:open_matchdata]
       @close_matchdata    = options[:close_matchdata]
     end
     
+    def start
+      TextLoc.new(self.start_mark.line, self.start_mark.line_offset)
+    end
+    
+    def end
+      TextLoc.new(self.end_mark.line, self.end_mark.line_offset)
+    end
+      
+    def open_end
+      if self.inner_start_mark
+        TextLoc.new(self.inner_start_mark.line, self.inner_start_mark.line_offset)
+      end
+    end
+      
+    def close_start
+      if self.inner_end_mark
+        TextLoc.new(self.inner_end_mark.line, self.inner_end_mark.line_offset)
+      end
+    end
+    
+    
     def each_child
       children.each {|c| yield c}
-    end
-    
-    def start=(loc)
-      if loc
-        set_start(loc.line, loc.offset)
-      else
-        set_start(-1, -1)
-      end
-    end
-    
-    def end=(loc)
-      if loc
-        set_end(loc.line, loc.offset)
-      else
-        set_end(-1, -1)
-      end
-    end
-    
-    def open_start
-      self.start if @open_matchdata
-    end
-    
-    def close_end
-      self.end if @close_matchdata
-    end
-    
-    def open_end=(loc)
-      if loc
-        set_open_end(loc.line, loc.offset)
-      else
-        set_open_end(-1, -1)
-      end
-    end
-    
-    def close_start=(loc)
-      if loc
-        set_close_start(loc.line, loc.offset)
-      else
-        set_close_start(-1, -1)
-      end
     end
     
     def name
@@ -155,7 +121,6 @@ class Redcar::EditView
                    other.grammar == self.grammar and
                    other.pattern == self.pattern and
                    other.start   == self.start and
-                   other.open_start  == self.open_start and
                    other.open_end    == self.open_end and
                    other.open_matchdata.to_s  == self.open_matchdata.to_s)
     end
@@ -166,10 +131,8 @@ class Redcar::EditView
                    other.pattern == self.pattern and
                    other.start   == self.start and
                    other.end     == self.end and
-                   other.open_start  == self.open_start and
                    other.open_end    == self.open_end and
                    other.close_start == self.close_start and
-                   other.close_end   == self.close_end and
                    other.open_matchdata.to_s  == self.open_matchdata.to_s and
                    other.close_matchdata.to_s == self.close_matchdata.to_s and
                    other.closing_regexp.to_s  == self.closing_regexp.to_s)
@@ -181,10 +144,8 @@ class Redcar::EditView
                    other.pattern == self.pattern and
                    other.start   == self.start and
                    other.end     == self.end and
-                   other.open_start  == self.open_start and
                    other.open_end    == self.open_end and
                    other.close_start == self.close_start and
-                   other.close_end   == self.close_end and
                    other.open_matchdata.to_s  == self.open_matchdata.to_s and
                    other.close_matchdata.to_s == self.close_matchdata.to_s and
                    other.closing_regexp.to_s  == self.closing_regexp.to_s)
@@ -197,30 +158,6 @@ class Redcar::EditView
       true
     end
     
-    def copy
-      new_self = Scope.new({})
-      new_self.name    = self.name
-      new_self.grammar = self.grammar
-      new_self.pattern = self.pattern
-      new_self.start   = self.start.copy
-      new_self.end     = self.end.copy
-      new_self.open_end    = self.open_end.copy
-      new_self.close_start = self.close_start.copy
-      new_self.open_matchdata  = self.open_matchdata
-      new_self.close_matchdata = self.close_matchdata
-      new_self.closing_regexp  = self.closing_regexp
-      puts "setting_marks"; $stdout.flush
-      new_self.start_mark = self.start_mark
-      new_self.inner_start_mark = self.inner_start_mark
-      new_self.end_mark = self.end_mark
-      new_self.inner_end_mark = self.inner_end_mark
-      puts "setting_marks_done"; $stdout.flush
-      self.each_child do |child|
-        new_self.add_child child.copy
-      end
-      new_self
-    end
-
     # Is this scope a descendent of scope other?
     def child_of?(other)
       parent == other or (parent and parent.child_of?(other))
@@ -429,56 +366,56 @@ class Redcar::EditView
       self.parent.delete_child(self)
     end
 
-    def shift_after(line, amount)
-      if self.start.line >= line
-        self.start = TextLoc(self.start.line + amount, self.start.offset)
-        if self.open_start
-          self.open_end = TextLoc(self.open_end.line + amount,
-                                  self.open_end.offset)
-        end
-      end
-      if self.end and self.end.line >= line
-        self.end = TextLoc(self.end.line + amount, self.end.offset)
-        if self.close_start
-          self.close_start = TextLoc(self.close_start.line + amount,
-                                     self.close_start.offset)
-        end
-      end
+#     def shift_after(line, amount)
+#       if self.start.line >= line
+#         self.start = TextLoc(self.start.line + amount, self.start.offset)
+#         if self.open_start
+#           self.open_end = TextLoc(self.open_end.line + amount,
+#                                   self.open_end.offset)
+#         end
+#       end
+#       if self.end and self.end.line >= line
+#         self.end = TextLoc(self.end.line + amount, self.end.offset)
+#         if self.close_start
+#           self.close_start = TextLoc(self.close_start.line + amount,
+#                                      self.close_start.offset)
+#         end
+#       end
       
-      children.each do |cs|
-        cs.shift_after(line, amount)
-        if cs.start >= cs.end
-          delete_child(cs)
-        end
-      end
-    end
+#       children.each do |cs|
+#         cs.shift_after(line, amount)
+#         if cs.start >= cs.end
+#           delete_child(cs)
+#         end
+#       end
+#     end
     
-    # moves all scopes after TextLoc loc onward 
-    # by lines lines.
-    def shift_after1(loc, lines)
-      if parent
-        if self.start >= loc
-          self.start = TextLoc(self.start.line + lines, self.start.offset)
-          if self.open_start
-            self.open_end = TextLoc(self.open_end.line + lines,
-                                    self.open_end.offset)
-          end
-        end
-        if self.end and self.end > loc
-          self.end = TextLoc(self.end.line + lines, self.end.offset)
-          if self.close_start
-            self.close_start = TextLoc(self.close_start.line + lines,
-                                       self.close_start.offset)
-          end
-        end
-      end
-      children.each do |cs|
-        cs.shift_after1(loc, lines)
-        if cs.end.valid? and cs.start >= cs.end
-          delete_child(cs)
-        end
-      end
-    end
+#     # moves all scopes after TextLoc loc onward 
+#     # by lines lines.
+#     def shift_after1(loc, lines)
+#       if parent
+#         if self.start >= loc
+#           self.start = TextLoc(self.start.line + lines, self.start.offset)
+#           if self.open_start
+#             self.open_end = TextLoc(self.open_end.line + lines,
+#                                     self.open_end.offset)
+#           end
+#         end
+#         if self.end and self.end > loc
+#           self.end = TextLoc(self.end.line + lines, self.end.offset)
+#           if self.close_start
+#             self.close_start = TextLoc(self.close_start.line + lines,
+#                                        self.close_start.offset)
+#           end
+#         end
+#       end
+#       children.each do |cs|
+#         cs.shift_after1(loc, lines)
+#         if cs.end.valid? and cs.start >= cs.end
+#           delete_child(cs)
+#         end
+#       end
+#     end
     
     def size
       size = 0

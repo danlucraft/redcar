@@ -4,6 +4,8 @@
 #include <glib.h>
 #include <string.h>
 
+static VALUE rb_scope_print(VALUE self, VALUE indent);
+
 void print_iter(GtkTextIter* iter) {
   printf("<%d,%d>",
 	 gtk_text_iter_get_line(iter),
@@ -150,15 +152,6 @@ GObject* get_gobject(VALUE rbgobj) {
 // ----- Scope object
 
 typedef struct ScopeData_ {
-  TextLoc start;
-  TextLoc end;
-  TextLoc open_end;
-  TextLoc close_start;
-  int     has_old;
-  TextLoc old_start;
-  TextLoc old_end;
-  TextLoc old_open_end;
-  TextLoc old_close_start;
   GtkTextMark *start_mark;
   GtkTextMark *inner_start_mark;
   GtkTextMark *inner_end_mark;
@@ -167,7 +160,6 @@ typedef struct ScopeData_ {
   VALUE rb_inner_start_mark;
   VALUE rb_inner_end_mark;
   VALUE rb_end_mark;
-  int   modified;
   char* name;
   VALUE rb_scope;
   GtkTextTag *tag;
@@ -176,144 +168,131 @@ typedef struct ScopeData_ {
 
 typedef GNode Scope;
 
-void scope_set_start(Scope* scope, int line, int off) {
-  ScopeData *sd = scope->data;
-  sd->start.line = line;
-  sd->start.offset = off;
-  sd->modified = 1;
+void mark_to_textloc(GtkTextMark* mark, TextLoc* textloc) {
+  GtkTextBuffer* buffer;
+  GtkTextIter iter;
+  buffer = gtk_text_mark_get_buffer(mark);
+  gtk_text_buffer_get_iter_at_mark(buffer, &iter, mark);
+  textloc->line   = (int) gtk_text_iter_get_line(&iter);
+  textloc->offset = (int) gtk_text_iter_get_line_offset(&iter);
   return;
 }
 
-void scope_set_end(Scope* scope, int line, int off) {
+void scope_start(Scope* scope, TextLoc* textloc) {
   ScopeData *sd = scope->data;
-  sd->end.line = line;
-  sd->end.offset = off;
-  sd->modified = 1;
+  if (sd->start_mark == NULL) {
+    printf("scope_start %s: missing mark\n", sd->name);
+  }
+  mark_to_textloc(sd->start_mark, textloc);
   return;
 }
 
-void scope_get_start(Scope* scope, TextLoc* loc) {
+void scope_inner_start(Scope* scope, TextLoc* textloc) {
   ScopeData *sd = scope->data;
-  loc->line = sd->start.line;
-  loc->offset = sd->start.offset;
+  if (sd->inner_start_mark == NULL) {
+    scope_start(scope, textloc);
+    return;
+  }
+  mark_to_textloc(sd->inner_start_mark, textloc);
   return;
 }
 
-void scope_get_end(Scope* scope, TextLoc* loc) {
+void scope_end(Scope* scope, TextLoc* textloc) {
   ScopeData *sd = scope->data;
-  loc->line = sd->end.line;
-  loc->offset = sd->end.offset;
+  if (sd->end_mark == NULL) {
+    printf("scope_end %s: missing mark\n", sd->name);
+  }
+  mark_to_textloc(sd->end_mark, textloc);
   return;
 }
 
-void scope_set_open_end(Scope* scope, int line, int off) {
+void scope_inner_end(Scope* scope, TextLoc* textloc) {
   ScopeData *sd = scope->data;
-  sd->open_end.line = line;
-  sd->open_end.offset = off;
-  sd->modified = 1;
-  return;
-}
-
-void scope_set_close_start(Scope* scope, int line, int off) {
-  ScopeData *sd = scope->data;
-  sd->close_start.line = line;
-  sd->close_start.offset = off;
-  sd->modified = 1;
-  return;
-}
-
-void scope_get_open_end(Scope* scope, TextLoc* loc) {
-  ScopeData *sd = scope->data;
-  loc->line = sd->open_end.line;
-  loc->offset = sd->open_end.offset;
-  return;
-}
-
-void scope_get_close_start(Scope* scope, TextLoc* loc) {
-  ScopeData *sd = scope->data;
-  loc->line = sd->close_start.line;
-  loc->offset = sd->close_start.offset;
+  if (sd->inner_end_mark == NULL) {
+    scope_end(scope, textloc);
+    return;
+  }
+  mark_to_textloc(sd->inner_end_mark, textloc);
   return;
 }
 
 int scope_active_on_line(Scope* scope, int line) {
-  ScopeData *sd = scope->data;
-  if (sd->start.line <= line)
-    if (!textloc_valid(&sd->end) || sd->end.line >= line)
+  TextLoc start;
+  TextLoc end;
+  scope_start(scope, &start);
+  scope_end(scope, &end);
+  if (start.line <= line)
+    if (end.line >= line)
       return 1;
   return 0;
 }
 
 int scope_overlaps(Scope* s1, Scope* s2) {
-  ScopeData *sd1, *sd2;
-  sd1 = s1->data;
-  sd2 = s2->data;
-
+  TextLoc start1, start2;
+  TextLoc end1, end2;
+  
+  scope_start(s1, &start1);
+  scope_start(s2, &start2);
   // sd1     +---
   // sd2  +---
-  if (textloc_gte(&sd1->start, &sd2->start)) {
-    if (!textloc_valid(&sd2->end))
-      return 1;
-    if (textloc_lt(&sd1->start, &sd2->end))
+  if (textloc_gte(&start1, &start2)) {
+    scope_end(s2, &end2);
+    if (textloc_lt(&start1, &end2))
       return 1;
     return 0;
   }
   // sd1 +----
   // sd2   +---
-  if (!textloc_valid(&sd1->end))
-    return 1;
-  if (textloc_gt(&sd1->end, &sd2->start))
+  scope_end(s1, &end1);
+  if (textloc_gt(&end1, &start2))
     return 1;
   return 0;
 }
 
-int scope_add_child(Scope* sp, Scope* sc) {
-  Scope *lc;
-  ScopeData *sdp, *sdc, *lcd, *current_data;
-  
-  sdp = sp->data;
-  sdc = sc->data;
-  if (g_node_n_children(sp) == 0) {
-    g_node_append(sp, sc);
+int scope_add_child(Scope* parent, Scope* new_child) {
+  Scope *child;
+  TextLoc p_start, p_end;
+  TextLoc nc_start, nc_end;
+  TextLoc c_start, c_end;
+  scope_start(parent, &p_start);
+  scope_end(parent, &p_end);
+  scope_start(new_child, &nc_start);
+  scope_end(new_child, &nc_end);
+  if (g_node_n_children(parent) == 0) {
+    g_node_append(parent, new_child);
     return 1;
   }
   else {
-    lc = g_node_last_child(sp);
-    lcd = lc->data;
-    if (textloc_valid(&lcd->end) &&
-        textloc_gte(&sdc->start, &lcd->end)) {
-      g_node_append(sp, sc);
+    child = g_node_last_child(parent);
+    scope_start(child, &c_start);
+    scope_end(child, &c_end);
+    if (textloc_gte(&nc_start, &c_end)) {
+      g_node_append(parent, new_child);
       return 1;
     }
   }
   Scope *insert_after = NULL;
   int i;
-  Scope *current = NULL;
-  current = g_node_first_child(sp);
-  while(current != NULL) {
-    current_data = current->data;
-    if (textloc_lte(&current_data->start, &sdc->start))
-      insert_after = current;
-    current = g_node_next_sibling(current);
+  child = g_node_first_child(parent);
+  while(child != NULL) {
+    scope_start(child, &c_start);
+    scope_end(child, &c_end);
+    if (textloc_lte(&c_start, &nc_start))
+      insert_after = child;
+    child = g_node_next_sibling(child);
   }
-  g_node_insert_after(sp, insert_after, sc);
+  g_node_insert_after(parent, insert_after, new_child);
   return 1;
 }
 
 int scope_clear_after(Scope* s, TextLoc* loc) {
   Scope *c;
-  ScopeData *sd, *sdc;
-  sd = s->data;
-  if (textloc_valid(&sd->end) && textloc_gt(&sd->end, loc)) {
-    sd->end.line = -1;
-    sd->end.offset = -1;
-    sd->modified = 1;
-  }
+  TextLoc c_start, c_end;
   int i;
   for (i = 0; i < g_node_n_children(s); i++) {
     c = g_node_nth_child(s, i);
-    sdc = c->data;
-    if (textloc_gte(&sdc->start, loc)) {
+    scope_start(c, &c_start);
+    if (textloc_gte(&c_start, loc)) {
       g_node_unlink(c);
       i -= 1;
     } else {
@@ -325,23 +304,16 @@ int scope_clear_after(Scope* s, TextLoc* loc) {
 
 int scope_clear_between(Scope* s, TextLoc* from, TextLoc* to) {
   Scope *c;
-  ScopeData *sd, *sdc;
-  sd = s->data;
-  if (textloc_valid(&sd->end) && textloc_gte(&sd->end, from) &&
-      textloc_lt(&sd->end, to)) {
-    sd->end.line = -1;
-    sd->end.offset = -1;
-    sd->modified = 1;
-  }
+  TextLoc c_start, c_end;
   int i;
   for (i = 0; i < g_node_n_children(s); i++) {
     c = g_node_nth_child(s, i);
-    sdc = c->data;
-    if ((textloc_gte(&sdc->start, from) && 
-         textloc_lt(&sdc->start, to)) ||
-        (textloc_valid(&sdc->end) && 
-         textloc_gte(&sdc->end, from) &&
-         textloc_lt(&sdc->end, to))) {
+    scope_start(c, &c_start);
+    scope_end(c, &c_end);
+    if ((textloc_gte(&c_start, from) && 
+         textloc_lt(&c_start, to)) ||
+        (textloc_gte(&c_end, from) &&
+         textloc_lt(&c_end, to))) {
       g_node_unlink(c);
       i -= 1;
     } else {
@@ -354,19 +326,13 @@ int scope_clear_between(Scope* s, TextLoc* from, TextLoc* to) {
 int scope_clear_between_lines(Scope* s, int from, int to) {
   Scope *c;
   ScopeData *sd, *sdc;
+  TextLoc c_start, c_end;
 
-  sd = s->data;
-  if (textloc_valid(&sd->end) && sd->end.line >= from &&
-      sd->end.line <= to) {
-    sd->end.line = -1;
-    sd->end.offset = -1;
-    sd->modified = 1;
-  }
   int i;
   for (i = 0; i < g_node_n_children(s); i++) {
     c = g_node_nth_child(s, i);
-    sdc = c->data;
-    if (sdc->start.line >= from && sdc->start.line <= to) {
+    scope_start(c, &c_start);
+    if (c_start.line >= from && c_start.line <= to) {
       g_node_unlink(c);
       i -= 1;
     } else {
@@ -380,9 +346,8 @@ static VALUE rb_scope_cinit(VALUE self) {
   Scope *scope;
   Data_Get_Struct(self, Scope, scope);
   ScopeData *sd = scope->data;
-  sd->has_old = 0;
+  sd->name = NULL;
   sd->rb_scope = self;
-  sd->modified = 1;
   sd->tag = NULL;
   sd->inner_tag = NULL;
   sd->start_mark = NULL;
@@ -408,6 +373,8 @@ static VALUE rb_scope_init(VALUE self, VALUE options) {
 int scope_free_data(Scope* scope) {
   //  free(((ScopeData *) scope->data)->name);
   // don't free the name because it's likely an RSTRING
+  // FIXME: Scope's need buffers and we need to free marks when
+  // we free the scope
   free(scope->data);
   return FALSE;
 }
@@ -434,11 +401,6 @@ static VALUE rb_scope_alloc(VALUE klass) {
   Scope *scope;
   VALUE obj;
   ScopeData* scope_data = malloc(sizeof(ScopeData));
-  (scope_data->start).line = -1;
-  (scope_data->start).offset = -1;
-  (scope_data->end).line = -1;
-  (scope_data->end).offset = -1;
-  (scope_data->name) = NULL;
   scope = g_node_new((gpointer) scope_data);
   obj = Data_Wrap_Struct(klass, rb_scope_mark, rb_scope_destroy, scope);
   scope_data->rb_scope = obj;
@@ -458,10 +420,14 @@ static VALUE rb_scope_print(VALUE self, VALUE indent) {
   int i;
   for (i = 0; i < in; i++)
     printf(" ");
-  printf("<scope %p %s (%d,%d)-(%d,%d)>\n", 
+
+  TextLoc start, end;
+  scope_start(s, &start);
+  scope_end(s, &end);
+  printf("<scope %p %s (%d,%d)-(%d,%d)>\n",
 	 s, name,
-  	 sd->start.line, sd->start.offset, sd->end.line,
-  	 sd->end.offset);
+  	 start.line, start.offset, end.line,
+  	 end.offset);
   for (i = 0; i < g_node_n_children(s); i++) {
     child = g_node_nth_child(s, i);
     sd = child->data;
@@ -470,91 +436,6 @@ static VALUE rb_scope_print(VALUE self, VALUE indent) {
   return Qnil;
 }
 
-static VALUE rb_scope_set_start(VALUE self, VALUE line, VALUE off) {
-  if (self == Qnil || line == Qnil || off == Qnil)
-    printf("rb_scope_set_start(nil, or nil, or nil)");
-  Scope *s;
-  Data_Get_Struct(self, Scope, s);
-  scope_set_start(s, FIX2INT(line), FIX2INT(off));
-  return Qnil;
-}
-
-static VALUE rb_scope_set_end(VALUE self, VALUE line, VALUE off) {
-  if (self == Qnil || line == Qnil ||off == Qnil)
-    printf("rb_scope_set_end(nil, or nil, or nil)");
-  Scope *s;
-  Data_Get_Struct(self, Scope, s);
-  scope_set_end(s, FIX2INT(line), FIX2INT(off));
-  return Qnil;
-}
-
-static VALUE rb_scope_get_start(VALUE self) {
-  if (self == Qnil)
-    printf("rb_scope_get_start(nil)");
-  Scope *s;
-  Data_Get_Struct(self, Scope, s);
-  ScopeData *sd = s->data;
-  //  if (!textloc_valid(&sd->start))
-  //    return Qnil;
-  return rb_funcall(rb_cObject, rb_intern("TextLoc"),
-		    2, INT2FIX(sd->start.line), INT2FIX(sd->start.offset));
-}
-
-static VALUE rb_scope_get_end(VALUE self) {
-  if (self == Qnil)
-    printf("rb_scope_get_end(nil)");
-  Scope *s;
-  Data_Get_Struct(self, Scope, s);
-  ScopeData *sd = s->data;
-/*   if (!textloc_valid(&sd->end)) */
-/*     return Qnil; */
-  return rb_funcall(rb_cObject, rb_intern("TextLoc"),
-		    2, INT2FIX(sd->end.line), INT2FIX(sd->end.offset));
-}
-
-static VALUE rb_scope_set_open_end(VALUE self, VALUE line, VALUE off) {
-  if (self == Qnil || line == Qnil || off == Qnil)
-    printf("rb_scope_set_open_end(nil, or nil, or nil)");
-  Scope *s;
-  Data_Get_Struct(self, Scope, s);
-  scope_set_open_end(s, FIX2INT(line), FIX2INT(off));
-  return Qnil;
-}
-
-static VALUE rb_scope_set_close_start(VALUE self, VALUE line, VALUE off) {
-  if (self == Qnil || line == Qnil || off == Qnil)
-    printf("rb_scope_set_close_start(nil, or nil, or nil)");
-  Scope *s;
-  Data_Get_Struct(self, Scope, s);
-  scope_set_close_start(s, FIX2INT(line), FIX2INT(off));
-  return Qnil;
-}
-
-static VALUE rb_scope_get_open_end(VALUE self) {
-  if (self == Qnil)
-    printf("rb_scope_get_open_end(nil)");
-  Scope *s;
-  Data_Get_Struct(self, Scope, s);
-  ScopeData *sd = s->data;
-  if (!textloc_valid(&sd->open_end))
-    return Qnil;
-  return rb_funcall(rb_cObject, rb_intern("TextLoc"),
-		    2, INT2FIX(sd->open_end.line), INT2FIX(sd->open_end.offset));
-}
-
-static VALUE rb_scope_get_close_start(VALUE self) {
-  if (self == Qnil)
-    printf("rb_scope_get_close_start(nil)");
-  Scope *s;
-  Data_Get_Struct(self, Scope, s);
-  ScopeData *sd = s->data;
-  if (!textloc_valid(&sd->close_start))
-    return Qnil;
-  return rb_funcall(rb_cObject, rb_intern("TextLoc"),
-		    2, INT2FIX(sd->close_start.line), INT2FIX(sd->close_start.offset));
-}
-
-// mark stuff
 static VALUE rb_scope_get_start_mark(VALUE self) {
   if (self == Qnil)
     printf("rb_scope_get_start_mark(nil)");
@@ -719,45 +600,51 @@ static VALUE rb_scope_overlaps(VALUE self, VALUE other) {
   return Qfalse;
 }
 
-static VALUE rb_scope_modified(VALUE self) {
-  Scope *s;
-  ScopeData *sd;
-  Data_Get_Struct(self, Scope, s);
-  sd = s->data;
-  if (sd->modified)
-    return Qtrue;
-  return Qfalse;
-}
-
 // Scope children methods
 
 Scope* scope_at(Scope* s, TextLoc* loc) {
+  printf("scope_at_in\n");
   Scope *scope, *child;
-  ScopeData *sd, *child_data;
   int i;
-  sd = s->data;
-  if (textloc_lte(&sd->start, loc) || G_NODE_IS_ROOT(s)) {
-    if (!textloc_valid(&sd->end) || textloc_gt(&sd->end, loc)) {
-      if (g_node_n_children(s) == 0)
+
+  TextLoc s_start, s_end;
+  TextLoc c_start, c_end;
+  scope_start(s, &s_start);
+  scope_end(s, &s_end);
+  if (textloc_lte(&s_start, loc) || G_NODE_IS_ROOT(s)) {
+    if (textloc_gt(&s_end, loc)) {
+      if (g_node_n_children(s) == 0) {	
+	printf("scope_at_out\n");
         return s;
+      }
       child = g_node_last_child(s);
-      child_data = child->data;
-      if (textloc_valid(&child_data->end) && 
-          textloc_lt(&child_data->end, loc))
+      scope_start(child, &c_start);
+      scope_end(child, &c_end);
+      if (textloc_lt(&c_end, loc)) {	
+	printf("scope_at_out\n");
         return s;
+      }
       for (i = 0; i < g_node_n_children(s); i++) {
         child = g_node_nth_child(s, i);
         scope = scope_at(child, loc);
-        if (scope != NULL)
+        if (scope != NULL) {	
+	  printf("scope_at_out\n");
           return scope;
-      }
+	}
+      }	
+      printf("scope_at_out\n");
       return s;
     }
-    else
+    else {	
+      printf("scope_at_out\n");
       return NULL;
+    }
   }
-  else
+  else {	
+    printf("scope_at_out\n");
     return NULL;
+  }
+  printf("scope_at_out\n");
 }
 
 static VALUE rb_scope_at(VALUE self, VALUE rb_loc) {
@@ -779,6 +666,7 @@ static VALUE rb_scope_first_child_after(VALUE self, VALUE rb_loc) {
   Scope *s, *child;
   ScopeData *sd;
   TextLoc *loc;
+  TextLoc c_start;
   Data_Get_Struct(self, Scope, s);
   Data_Get_Struct(rb_loc, TextLoc, loc);
   if (g_node_n_children(s) == 0)
@@ -786,7 +674,8 @@ static VALUE rb_scope_first_child_after(VALUE self, VALUE rb_loc) {
   child = g_node_first_child(s);
   while (child != NULL) {
     sd = child->data;
-    if (textloc_gte(&sd->start, loc))
+    scope_start(child, &c_start);
+    if (textloc_gte(&c_start, loc))
       return sd->rb_scope;
     child = g_node_next_sibling(child);
   }
@@ -868,15 +757,16 @@ static VALUE rb_scope_delete_any_on_line_not_in(VALUE self, VALUE line_num, VALU
   int num = FIX2INT(line_num);
   int i, j, remove;
   VALUE rs1;
-
+  TextLoc start;
   c = g_node_first_child(s);
   VALUE rb_removed = rb_ary_new();
   while (c != NULL) {
     sdc = c->data;
     cn = g_node_next_sibling(c);
-    if (sdc->start.line > num)
+    scope_start(c, &start);
+    if (start.line > num)
       return rb_removed;
-    if (sdc->start.line == num) {
+    if (start.line == num) {
       remove = TRUE;
       for (j = 0; j < RARRAY(scopes)->len; j++) {
         rs1 = rb_ary_entry(scopes, (long) j);
@@ -921,20 +811,18 @@ static VALUE rb_scope_hierarchy_names(VALUE self, VALUE rb_inner) {
   VALUE names;
   VALUE next_inner;
   TextLoc parent_open_end, parent_close_start,
-    scope_start, scope_end;
+    start, end;
   Data_Get_Struct(self, Scope, scope);
   scope_data = scope->data;
   if (!G_NODE_IS_ROOT(scope)) {
     parent = scope->parent;
     parent_data = parent->data;
-    scope_get_start(scope, &scope_start);
-    scope_get_end(scope, &scope_end);
-    scope_get_open_end(parent, &parent_open_end);
-    scope_get_close_start(parent, &parent_close_start);
-    if (textloc_valid(&parent_open_end) &&
-        textloc_gte(&scope_start, &parent_open_end) &&
-        ( !textloc_valid(&scope_end) ||
-          textloc_lt(&scope_end, &parent_close_start)))
+    scope_start(scope, &start);
+    scope_end(scope, &end);
+    scope_inner_start(parent, &parent_open_end);
+    scope_inner_end(parent, &parent_close_start);
+    if (textloc_gte(&start, &parent_open_end) &&
+        (textloc_lt(&end, &parent_close_start)))
       next_inner = Qtrue;
     else
       next_inner = Qfalse;
@@ -962,55 +850,55 @@ static VALUE rb_scope_hierarchy_names(VALUE self, VALUE rb_inner) {
   return names;
 }
 
-int scope_shift_chars(Scope* scope, int line, int amount, int offset) {
-  ScopeData *sd;
-  sd = scope->data;
-  if (sd->start.line == line) {
-    if (sd->start.offset > offset) {
-      sd->start.offset += amount;
-      sd->modified = 1;
-    }
-    if (textloc_valid(&sd->open_end) && sd->open_end.offset > offset) {
-      sd->open_end.offset += amount;
-      sd->modified = 1;
-    }
-  }
-  if (textloc_valid(&sd->end) && sd->end.line == line) {
-    if (sd->end.offset > offset) {
-      sd->end.offset += amount;
-      sd->modified = 1;
-      if (textloc_valid(&sd->close_start))
-        sd->close_start.offset += amount;
-    }
-  }
+/* int scope_shift_chars(Scope* scope, int line, int amount, int offset) { */
+/*   ScopeData *sd; */
+/*   sd = scope->data; */
+/*   if (sd->start.line == line) { */
+/*     if (sd->start.offset > offset) { */
+/*       sd->start.offset += amount; */
+/*       sd->modified = 1; */
+/*     } */
+/*     if (textloc_valid(&sd->open_end) && sd->open_end.offset > offset) { */
+/*       sd->open_end.offset += amount; */
+/*       sd->modified = 1; */
+/*     } */
+/*   } */
+/*   if (textloc_valid(&sd->end) && sd->end.line == line) { */
+/*     if (sd->end.offset > offset) { */
+/*       sd->end.offset += amount; */
+/*       sd->modified = 1; */
+/*       if (textloc_valid(&sd->close_start)) */
+/*         sd->close_start.offset += amount; */
+/*     } */
+/*   } */
 
-  Scope *child;
-  Scope *child2;
-  ScopeData *child_data;
-  child = g_node_first_child(scope);
-  while (child != NULL) {
-    scope_shift_chars(child, line, amount, offset);
-    child2 = g_node_next_sibling(child);
-    // if the chars have been shifted such that a child has 
-    // a length of zero or less, remove that child.
-    child_data = child->data;
-    if (textloc_valid(&child_data->end) && textloc_gte(&child_data->start, &child_data->end))
-      g_node_unlink(child);
-    child = child2;
-  }
-  return 1;
-}
+/*   Scope *child; */
+/*   Scope *child2; */
+/*   ScopeData *child_data; */
+/*   child = g_node_first_child(scope); */
+/*   while (child != NULL) { */
+/*     scope_shift_chars(child, line, amount, offset); */
+/*     child2 = g_node_next_sibling(child); */
+/*     // if the chars have been shifted such that a child has  */
+/*     // a length of zero or less, remove that child. */
+/*     child_data = child->data; */
+/*     if (textloc_valid(&child_data->end) && textloc_gte(&child_data->start, &child_data->end)) */
+/*       g_node_unlink(child); */
+/*     child = child2; */
+/*   } */
+/*   return 1; */
+/* } */
 
-static VALUE rb_scope_shift_chars(VALUE self, VALUE rb_line, 
-				  VALUE rb_amount, VALUE rb_offset) {
-  int line = FIX2INT(rb_line);
-  int amount = FIX2INT(rb_amount);
-  int offset = FIX2INT(rb_offset);
-  Scope *s;
-  Data_Get_Struct(self, Scope, s);
-  scope_shift_chars(s, line, amount, offset);
-  return Qtrue;
-}
+/* static VALUE rb_scope_shift_chars(VALUE self, VALUE rb_line,  */
+/* 				  VALUE rb_amount, VALUE rb_offset) { */
+/*   int line = FIX2INT(rb_line); */
+/*   int amount = FIX2INT(rb_amount); */
+/*   int offset = FIX2INT(rb_offset); */
+/*   Scope *s; */
+/*   Data_Get_Struct(self, Scope, s); */
+/*   scope_shift_chars(s, line, amount, offset); */
+/*   return Qtrue; */
+/* } */
 
 /* int scope_remove_children_that_overlap(Scope* scope, Scope* other) { */
 /*   ScopeData *od = other->data; */
@@ -1081,6 +969,8 @@ static VALUE rb_scope_get_parent(VALUE self) {
   ScopeData *sd, *pd;
   Data_Get_Struct(self, Scope, scope);
   parent = scope->parent;
+  if (parent == scope)
+    printf("!!parent == self  ");
   if (parent) {
     pd = parent->data;
     return pd->rb_scope;
@@ -1092,101 +982,6 @@ static VALUE rb_scope_get_parent(VALUE self) {
 
 int minify(int offset) {
   return (offset < 200 ? offset : 200);
-}
-
-void scope_update_old_colour_textlocs(Scope* scope) {
-  ScopeData* sd = scope->data;
-  sd->has_old = 1;
-  sd->old_start = sd->start;
-  sd->old_end   = sd->end;
-  sd->old_close_start = sd->close_start;
-  sd->old_open_end    = sd->open_end;
-  return;
-}
-
-void scope_get_start_iter(Scope* scope, GtkTextBuffer* buffer, 
-                          GtkTextIter* start_iter, int inner) {
-  ScopeData* sd = scope->data;
-  GtkTextIter sl;
-  int offset;
-  gtk_text_buffer_get_iter_at_line_offset(buffer, &sl, sd->start.line, 0);
-  if (inner)
-    offset = (int) gtk_text_iter_get_offset(&sl) + minify(sd->open_end.offset);
-  else
-    offset = (int) gtk_text_iter_get_offset(&sl) + minify(sd->start.offset);
-  gtk_text_buffer_get_iter_at_offset(buffer, start_iter, offset);
-  return;
-}
-
-void scope_get_old_start_iter(Scope* scope, GtkTextBuffer* buffer, 
-                          GtkTextIter* start_iter, int inner) {
-  ScopeData* sd = scope->data;
-  GtkTextIter sl;
-  int offset;
-  gtk_text_buffer_get_iter_at_line_offset(buffer, &sl, sd->old_start.line, 0);
-  if (inner)
-    offset = (int) gtk_text_iter_get_offset(&sl) + minify(sd->old_open_end.offset);
-  else
-    offset = (int) gtk_text_iter_get_offset(&sl) + minify(sd->old_start.offset);
-  gtk_text_buffer_get_iter_at_offset(buffer, start_iter, offset);
-  return;
-}
-
-void scope_get_end_iter(Scope* scope, GtkTextBuffer* buffer, 
-			GtkTextIter* end_iter, int inner) {
-  ScopeData* sd = scope->data;
-  GtkTextIter sl, sel; // start of start line, start of end line
-  int offset, so, eo, len;
-  gtk_text_buffer_get_iter_at_line_offset(buffer, &sl, sd->start.line, 0);
-  if (inner) {
-    if (textloc_valid(&sd->end)) {
-      gtk_text_buffer_get_iter_at_line_offset(buffer, &sel, sd->close_start.line, 0);
-      offset = (int) gtk_text_iter_get_offset(&sel) + minify(sd->close_start.offset);
-    }
-    else
-      offset = gtk_text_buffer_get_char_count(buffer);
-  }
-  else {
-    if (textloc_valid(&sd->end)) {
-      gtk_text_buffer_get_iter_at_line_offset(buffer, &sel, sd->end.line, 0);
-      offset = (int) gtk_text_iter_get_offset(&sel) + minify(sd->end.offset);
-    }
-    else
-      offset = gtk_text_buffer_get_char_count(buffer);
-  }
-  gtk_text_buffer_get_iter_at_offset(buffer, end_iter, offset);
-/*   printf("scope_get_end_iter (%d,%d)-(%d,%d) => ",  */
-/*          sd->start.line, sd->start.offset, */
-/*          sd->end.line, sd->end.offset); */
-/*   print_iter(end_iter); */
-/*   puts(""); */
-  return;
-}
-
-void scope_get_old_end_iter(Scope* scope, GtkTextBuffer* buffer, 
-			GtkTextIter* end_iter, int inner) {
-  ScopeData* sd = scope->data;
-  GtkTextIter sl, sel; // start of start line, start of end line
-  int offset, so, eo, len;
-  gtk_text_buffer_get_iter_at_line_offset(buffer, &sl, sd->old_start.line, 0);
-  if (inner) {
-    if (textloc_valid(&sd->old_end)) {
-      gtk_text_buffer_get_iter_at_line_offset(buffer, &sel, sd->old_close_start.line, 0);
-      offset = (int) gtk_text_iter_get_offset(&sel) + minify(sd->old_close_start.offset);
-    }
-    else
-      offset = gtk_text_buffer_get_char_count(buffer);
-  }
-  else {
-    if (textloc_valid(&sd->old_end)) {
-      gtk_text_buffer_get_iter_at_line_offset(buffer, &sel, sd->old_end.line, 0);
-      offset = (int) gtk_text_iter_get_offset(&sel) + minify(sd->old_end.offset);
-    }
-    else
-      offset = gtk_text_buffer_get_char_count(buffer);
-  }
-  gtk_text_buffer_get_iter_at_offset(buffer, end_iter, offset);
-  return;
 }
 
 #define xtod(c) ((c>='0' && c<='9') ? c-'0' : ((c>='A' && c<='F') ? c-'A'+10 : ((c>='a' && c<='f') ? c-'a'+10 : 0)))
@@ -1316,7 +1111,6 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
 /*   } */
 
   gtk_text_buffer_apply_tag(buffer, tag, &start_iter, &end_iter);
-  sd->modified = 0;
   return;
 }
 
@@ -1338,13 +1132,14 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
   VALUE rb_current, pattern, content_name;
   Scope* current;
   ScopeData* current_data;
+  TextLoc start, end;
   for (i = 0; i < RARRAY(scopes)->len; i++) {
     rb_current = rb_ary_entry(scopes, i);
     Data_Get_Struct(rb_current, Scope, current);
     current_data = current->data;
-    if (!current_data->modified && textloc_valid(&current_data->end))
-      continue;
-    if (textloc_equal(&current_data->start, &current_data->end))
+    scope_start(current, &start);
+    scope_end(current, &end);
+    if (textloc_equal(&start, &end))
       continue;
     pattern = rb_iv_get(rb_current, "@pattern");
     content_name = Qnil;
@@ -1365,8 +1160,8 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_colourer, VALUE the
 int uncolour_scope(GtkTextBuffer *buffer, Scope *scope) {
   ScopeData* sd = scope->data;
   GtkTextIter start_iter, end_iter;
-  int priority;
-
+  
+/*   printf("[Uncolour] %s  ", sd->name); */
   if (sd->inner_tag) {
     gtk_text_buffer_get_iter_at_mark(buffer, &start_iter, sd->inner_start_mark);
     gtk_text_buffer_get_iter_at_mark(buffer, &end_iter, sd->inner_end_mark);
@@ -1377,13 +1172,8 @@ int uncolour_scope(GtkTextBuffer *buffer, Scope *scope) {
     gtk_text_buffer_get_iter_at_mark(buffer, &end_iter, sd->end_mark);
     gtk_text_buffer_remove_tag(buffer, sd->tag, &start_iter, &end_iter);
   }
-  
-/*   if (scope_data->tag != NULL) { */
-/*     scope_get_old_start_iter(scope, buffer, &start_iter, FALSE); */
-/*     scope_get_old_end_iter(scope, buffer, &end_iter, FALSE); */
-/*     gtk_text_buffer_remove_tag(buffer, scope_data->tag, &start_iter, &end_iter); */
-/*     priority = FIX2INT(rb_funcall(scope_data->rb_scope, rb_intern("priority"), 0)); */
-/*     printf("[Uncolour] %s:%d  ", scope_data->name, priority-1); */
+/*   if (sd->tag || sd->inner_tag) { */
+/*     printf(":"); */
 /*     print_iter(&start_iter); */
 /*     printf("-"); */
 /*     print_iter(&end_iter); */
@@ -1607,14 +1397,15 @@ static VALUE rb_line_parser_current_scope_closes(VALUE self) {
   ScopeData *current_scope_data;
   VALUE rb_current_scope, rb_closing_regexp, rb_md, rb_line, rb_from, rb_nsm;
   int thispos;
+  TextLoc start;
   current_scope_data = lp->current_scope->data;
   rb_current_scope = current_scope_data->rb_scope;
   rb_closing_regexp = rb_funcall(rb_current_scope, rb_intern("closing_regexp"), 0);
   if (rb_closing_regexp == Qnil)
     return Qnil;
-  thispos = current_scope_data->start.offset+1;
-  if (current_scope_data->start.line != lp->line_num ||
-      lp->pos > thispos)
+  scope_start(lp->current_scope, &start);
+  thispos = start.offset+1;
+  if (start.line != lp->line_num || lp->pos > thispos)
     thispos = lp->pos;
   rb_line = rb_iv_get(self, "@line");
   rb_md = rb_funcall(rb_closing_regexp, rb_intern("match"), 2, rb_line, INT2FIX(thispos));
@@ -1720,15 +1511,15 @@ void Init_syntax_ext() {
   rb_define_method(cScope, "cinit", rb_scope_cinit, 0);
   rb_define_method(cScope, "display",   rb_scope_print, 1);
 
-  rb_define_method(cScope, "set_start", rb_scope_set_start, 2);
-  rb_define_method(cScope, "set_end",   rb_scope_set_end, 2);  
-  rb_define_method(cScope, "start", rb_scope_get_start, 0);
-  rb_define_method(cScope, "end",   rb_scope_get_end, 0);
+/*   rb_define_method(cScope, "set_start", rb_scope_set_start, 2); */
+/*   rb_define_method(cScope, "set_end",   rb_scope_set_end, 2);   */
+/*   rb_define_method(cScope, "start", rb_scope_get_start, 0); */
+/*   rb_define_method(cScope, "end",   rb_scope_get_end, 0); */
 
-  rb_define_method(cScope, "set_open_end",    rb_scope_set_open_end, 2);
-  rb_define_method(cScope, "set_close_start", rb_scope_set_close_start, 2);  
-  rb_define_method(cScope, "open_end",    rb_scope_get_open_end, 0);
-  rb_define_method(cScope, "close_start", rb_scope_get_close_start, 0);
+/*   rb_define_method(cScope, "set_open_end",    rb_scope_set_open_end, 2); */
+/*   rb_define_method(cScope, "set_close_start", rb_scope_set_close_start, 2);   */
+/*   rb_define_method(cScope, "open_end",    rb_scope_get_open_end, 0); */
+/*   rb_define_method(cScope, "close_start", rb_scope_get_close_start, 0); */
 
   rb_define_method(cScope, "start_mark",    rb_scope_get_start_mark, 0);
   rb_define_method(cScope, "inner_start_mark",    rb_scope_get_inner_start_mark, 0);
@@ -1742,7 +1533,7 @@ void Init_syntax_ext() {
 
   rb_define_method(cScope, "set_name",  rb_scope_set_name, 1);
   rb_define_method(cScope, "get_name",  rb_scope_get_name, 0);
-  rb_define_method(cScope, "modified?", rb_scope_modified, 0);
+/*   rb_define_method(cScope, "modified?", rb_scope_modified, 0); */
   rb_define_method(cScope, "overlaps?", rb_scope_overlaps, 1);
   rb_define_method(cScope, "on_line?",  rb_scope_active_on_line, 1);
 
@@ -1755,7 +1546,7 @@ void Init_syntax_ext() {
   rb_define_method(cScope, "clear_after",  rb_scope_clear_after, 1);
   rb_define_method(cScope, "clear_between",  rb_scope_clear_between, 2);
   rb_define_method(cScope, "clear_between_lines",  rb_scope_clear_between_lines, 2);
-  rb_define_method(cScope, "shift_chars",  rb_scope_shift_chars, 3);
+/*   rb_define_method(cScope, "shift_chars",  rb_scope_shift_chars, 3); */
   rb_define_method(cScope, "n_children",  rb_scope_n_children, 0);
   rb_define_method(cScope, "detach",  rb_scope_detach, 0);
   rb_define_method(cScope, "delete_any_on_line_not_in",  
