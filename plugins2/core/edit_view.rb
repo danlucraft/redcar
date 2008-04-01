@@ -168,8 +168,12 @@ module Redcar
       @root = Scope.new(:pattern => grammar,
                         :grammar => grammar,
                         :start => TextLoc(0, 0))
-      @root.start_mark = buffer.create_anonymous_mark(buffer.iter(0))
-      @root.end_mark   = buffer.create_anonymous_mark(buffer.iter(buffer.char_count), false)
+      p :create
+      p buffer
+      p buffer.iter(0)
+      @root.set_start_mark buffer, buffer.iter(0).offset, true
+      @root.set_end_mark   buffer, buffer.char_count, false
+      p :createout
     end
     
     def create_parser
@@ -187,8 +191,10 @@ module Redcar
       gr = Grammar.grammar(:name => gr_name)
       @root = Scope.new(:pattern => gr,
                         :grammar => gr)
-      @root.start_mark = buffer.create_anonymous_mark(buffer.iter(0))
-      @root.end_mark   = buffer.create_anonymous_mark(buffer.iter(buffer.char_count), false)
+      p :change
+      @root.set_start_mark buffer, buffer.iter(0).offset, true
+      @root.set_end_mark   buffer, buffer.char_count, false
+      p :change_out
       @parser.uncolour
       @parser.root = @root
       @parser.reparse

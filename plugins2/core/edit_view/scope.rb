@@ -70,22 +70,22 @@ class Redcar::EditView
     end
     
     def start
-      TextLoc.new(self.start_mark.line, self.start_mark.line_offset)
+      TextLoc.new(self.start_line, self.start_line_offset)
     end
     
     def end
-      TextLoc.new(self.end_mark.line, self.end_mark.line_offset)
+      TextLoc.new(self.end_line, self.end_line_offset)
     end
       
     def open_end
-      if self.inner_start_mark
-        TextLoc.new(self.inner_start_mark.line, self.inner_start_mark.line_offset)
+      if self.inner_start_line
+        TextLoc.new(self.inner_start_line, self.inner_start_line_offset)
       end
     end
       
     def close_start
-      if self.inner_end_mark
-        TextLoc.new(self.inner_end_mark.line, self.inner_end_mark.line_offset)
+      if self.inner_end_line
+        TextLoc.new(self.inner_end_line, self.inner_end_line_offset)
       end
     end
     
@@ -332,28 +332,12 @@ class Redcar::EditView
           hanging = " hanging"
         end
       end
-      startstr = "(#{start.line},#{start.offset})["
-      if start_mark
-        startstr += get_mark_string(start_mark)
-      end
-      startstr += "]["
-      if inner_start_mark
-        startstr += get_mark_string(inner_start_mark)
-      end
-      startstr += "]-"
+      startstr = "(#{start.line},#{start.offset})"
       if self.end
-        endstr = "(#{self.end.line},#{self.end.offset})["
+        endstr = "(#{self.end.line},#{self.end.offset})"
       else
         endstr = "?"
       end
-      if end_mark
-        endstr += get_mark_string(end_mark)
-      end
-      endstr += "]["
-      if inner_end_mark
-        endstr += get_mark_string(inner_end_mark)
-      end
-      endstr += "]"
       if self.pattern
         cname = ""+self.pattern.content_name.to_s
       else

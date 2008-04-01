@@ -20,7 +20,7 @@ class Redcar::EditView
       @changes = []
       @scope_last_line = 0
       @last_childs = []
-      @parse_all = true
+      @parse_all = false
       @cursor_line = 0
       connect_buffer_signals
       unless @buf.text == ""
@@ -502,8 +502,8 @@ class Redcar::EditView
 #         current_scope.close_start = TextLoc.new(line_num, nsm[:from])
         to_loc = TextLoc.new(line_num, nsm[:to])
         from_loc = TextLoc.new(line_num, nsm[:from])
-        current_scope.end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(to_loc))
-        current_scope.inner_end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(from_loc))
+        current_scope.set_end_mark       @parser.buf, @parser.buf.iter(to_loc).offset, true
+        current_scope.set_inner_end_mark @parser.buf, @parser.buf.iter(from_loc).offset, true
         current_scope.close_matchdata = nsm[:md]
       end
       
@@ -517,10 +517,10 @@ class Redcar::EditView
 
         to_loc = TextLoc.new(line_num, nsm[:to])
         from_loc = TextLoc.new(line_num, nsm[:from])
-        new_scope.start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(from_loc))
+        new_scope.set_start_mark @parser.buf, @parser.buf.iter(from_loc).offset, true
+        new_scope.set_end_mark   @parser.buf, @parser.buf.iter(to_loc).offset, true
 #        new_scope.inner_start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(from_loc))
 #        new_scope.inner_end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(to_loc))
-        new_scope.end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(to_loc))
         new_scope.open_matchdata = nsm[:md]
         new_scope.name = nsm[:pattern].scope_name
         new_scope
@@ -537,10 +537,10 @@ class Redcar::EditView
         
         to_loc = TextLoc.new(line_num, nsm[:to])
         from_loc = TextLoc.new(line_num, nsm[:from])
-        new_scope.start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(from_loc))
-        new_scope.inner_start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(to_loc))
-        new_scope.inner_end_mark = @parser.buf.end_mark
-        new_scope.end_mark = @parser.buf.end_mark
+        new_scope.set_start_mark       @parser.buf, @parser.buf.iter(from_loc).offset, true
+        new_scope.set_inner_start_mark @parser.buf, @parser.buf.iter(to_loc).offset, true
+        new_scope.set_inner_end_mark   @parser.buf, @parser.buf.char_count, false
+        new_scope.set_end_mark         @parser.buf, @parser.buf.char_count, false
         
         new_scope.open_matchdata = nsm[:md]
         re = Oniguruma::ORegexp.new(@parser.build_closing_regexp(pattern, 
@@ -779,10 +779,10 @@ class Redcar::EditView
         fromloc = ::Redcar::EditView::TextLoc.new(line_num, from)
         toloc   = ::Redcar::EditView::TextLoc.new(line_num, to)
         sc = ::Redcar::EditView::Scope.create2
-        frommark = @buf.create_anonymous_mark(@buf.iter(fromloc))
-        tomark   = @buf.create_anonymous_mark(@buf.iter(toloc))
-        sc.start_mark = frommark
-        sc.end_mark   = tomark
+#        frommark = @buf.create_anonymous_mark(@buf.iter(fromloc))
+#        tomark   = @buf.create_anonymous_mark(@buf.iter(toloc))
+        sc.set_start_mark @buf, @buf.iter(fromloc).offset, true
+        sc.set_end_mark   @buf, @buf.iter(toloc).offset,   true
         sc
       end
     end

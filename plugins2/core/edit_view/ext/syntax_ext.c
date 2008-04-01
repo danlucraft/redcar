@@ -448,114 +448,191 @@ static VALUE rb_scope_print(VALUE self, VALUE indent) {
   return Qnil;
 }
 
-static VALUE rb_scope_get_start_mark(VALUE self) {
-  if (self == Qnil)
-    printf("rb_scope_get_start_mark(nil)");
+static VALUE rb_scope_get_start_line(VALUE self) {
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
-  return sd->rb_start_mark;
+  GtkTextMark* mark = sd->start_mark;
+  if (sd->start_mark == NULL)
+    return Qnil;
+  TextLoc loc;
+  mark_to_textloc(mark, &loc);
+  return INT2FIX(loc.line);
 }
 
-static VALUE rb_scope_get_inner_start_mark(VALUE self) {
-  if (self == Qnil)
-    printf("rb_scope_get_start_mark(nil)");
+static VALUE rb_scope_get_start_line_offset(VALUE self) {
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
-  return sd->rb_inner_start_mark;
+  GtkTextMark* mark = sd->start_mark;
+  if (sd->start_mark == NULL)
+    return Qnil;
+  TextLoc loc;
+  mark_to_textloc(mark, &loc);
+  return INT2FIX(loc.offset);
 }
 
-static VALUE rb_scope_get_inner_end_mark(VALUE self) {
-  if (self == Qnil)
-    printf("rb_scope_get_start_mark(nil)");
+static VALUE rb_scope_get_inner_start_line(VALUE self) {
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
-  return sd->rb_inner_end_mark;
+  GtkTextMark* mark = sd->inner_start_mark;
+  if (sd->inner_start_mark == NULL)
+    return Qnil;
+  TextLoc loc;
+  mark_to_textloc(mark, &loc);
+  return INT2FIX(loc.line);
 }
 
-static VALUE rb_scope_get_end_mark(VALUE self) {
-  if (self == Qnil)
-    printf("rb_scope_get_start_mark(nil)");
+static VALUE rb_scope_get_inner_start_line_offset(VALUE self) {
   Scope *s;
   Data_Get_Struct(self, Scope, s);
   ScopeData *sd = s->data;
-  return sd->rb_end_mark;
+  GtkTextMark* mark = sd->inner_start_mark;
+  if (sd->inner_start_mark == NULL)
+    return Qnil;
+  TextLoc loc;
+  mark_to_textloc(mark, &loc);
+  return INT2FIX(loc.offset);
 }
 
-static VALUE rb_scope_set_start_mark(VALUE self, VALUE rb_mark) {
+static VALUE rb_scope_get_inner_end_line(VALUE self) {
+  Scope *s;
+  Data_Get_Struct(self, Scope, s);
+  ScopeData *sd = s->data;
+  GtkTextMark* mark = sd->inner_end_mark;
+  if (sd->inner_end_mark == NULL)
+    return Qnil;
+  TextLoc loc;
+  mark_to_textloc(mark, &loc);
+  return INT2FIX(loc.line);
+}
+
+static VALUE rb_scope_get_inner_end_line_offset(VALUE self) {
+  Scope *s;
+  Data_Get_Struct(self, Scope, s);
+  ScopeData *sd = s->data;
+  GtkTextMark* mark = sd->inner_end_mark;
+  if (sd->inner_end_mark == NULL)
+    return Qnil;
+  TextLoc loc;
+  mark_to_textloc(mark, &loc);
+  return INT2FIX(loc.offset);
+}
+
+static VALUE rb_scope_get_end_line(VALUE self) {
+  Scope *s;
+  Data_Get_Struct(self, Scope, s);
+  ScopeData *sd = s->data;
+  GtkTextMark* mark = sd->end_mark;
+  if (sd->end_mark == NULL)
+    return Qnil;
+  TextLoc loc;
+  mark_to_textloc(mark, &loc);
+  return INT2FIX(loc.line);
+}
+
+static VALUE rb_scope_get_end_line_offset(VALUE self) {
+  Scope *s;
+  Data_Get_Struct(self, Scope, s);
+  ScopeData *sd = s->data;
+  GtkTextMark* mark = sd->end_mark;
+  if (sd->end_mark == NULL)
+    return Qnil;
+  TextLoc loc;
+  mark_to_textloc(mark, &loc);
+  return INT2FIX(loc.offset);
+}
+
+static VALUE rb_scope_set_start_mark(VALUE self, VALUE rb_buffer, 
+                                     VALUE rb_offset, VALUE rb_left_grav) {
   if (self == Qnil)
     printf("rb_scope_set_start_mark(nil)");
   Scope *s;
   ScopeData *sd;
+  GtkTextBuffer *buffer;
+  GtkTextIter iter;
   GtkTextMark *mark;
+  int left_grav = 1;
   Data_Get_Struct(self, Scope, s);
-  if (rb_mark == Qnil) {
-    sd->rb_start_mark = Qnil;
-    sd->start_mark = NULL;
-    return Qnil;
-  }
-  mark = (GtkTextMark *) get_gobject(rb_mark);
   sd = s->data;
-  sd->rb_start_mark = rb_mark;
+  buffer = (GtkTextBuffer *) get_gobject(rb_buffer);
+  gtk_text_buffer_get_iter_at_offset(buffer, &iter, NUM2INT(rb_offset));
+  if (rb_left_grav == Qtrue || rb_left_grav == Qnil)
+    left_grav = 1;
+  else
+    left_grav = 0;
+  mark = gtk_text_buffer_create_mark(buffer, NULL, &iter, (gboolean) left_grav);
+  //  sd->rb_start_mark = rb_mark;
   sd->start_mark = mark;
   return Qnil;
 }
 
-static VALUE rb_scope_set_inner_start_mark(VALUE self, VALUE rb_mark) {
+static VALUE rb_scope_set_inner_start_mark(VALUE self, VALUE rb_buffer, 
+                                           VALUE rb_offset, VALUE rb_left_grav) {
   if (self == Qnil)
     printf("rb_scope_set_inner_start_mark(nil)");
   Scope *s;
   ScopeData *sd;
+  GtkTextBuffer *buffer;
+  GtkTextIter iter;
   GtkTextMark *mark;
+  int left_grav;
   Data_Get_Struct(self, Scope, s);
-  if (rb_mark == Qnil) {
-    sd->rb_inner_start_mark = Qnil;
-    sd->inner_start_mark = NULL;
-    return Qnil;
-  }
-  mark = (GtkTextMark *) get_gobject(rb_mark);
   sd = s->data;
-  sd->rb_inner_start_mark = rb_mark;
+  buffer = (GtkTextBuffer *) get_gobject(rb_buffer);
+  gtk_text_buffer_get_iter_at_offset(buffer, &iter, NUM2INT(rb_offset));
+  if (rb_left_grav == Qtrue || rb_left_grav == Qnil)
+    left_grav = 1;
+  else
+    left_grav = 0;
+  mark = gtk_text_buffer_create_mark(buffer, NULL, &iter, left_grav);
   sd->inner_start_mark = mark;
   return Qnil;
 }
 
-static VALUE rb_scope_set_inner_end_mark(VALUE self, VALUE rb_mark) {
+static VALUE rb_scope_set_inner_end_mark(VALUE self, VALUE rb_buffer, 
+                                         VALUE rb_offset, VALUE rb_left_grav) {
   if (self == Qnil)
     printf("rb_scope_set_inner_end_mark(nil)");
   Scope *s;
   ScopeData *sd;
+  GtkTextBuffer *buffer;
+  GtkTextIter iter;
   GtkTextMark *mark;
+  int left_grav;
   Data_Get_Struct(self, Scope, s);
-  if (rb_mark == Qnil) {
-    sd->rb_inner_end_mark = Qnil;
-    sd->inner_end_mark = NULL;
-    return Qnil;
-  }
-  mark = (GtkTextMark *) get_gobject(rb_mark);
   sd = s->data;
-  sd->rb_inner_end_mark = rb_mark;
+  buffer = (GtkTextBuffer *) get_gobject(rb_buffer);
+  gtk_text_buffer_get_iter_at_offset(buffer, &iter, NUM2INT(rb_offset));
+  if (rb_left_grav == Qtrue || rb_left_grav == Qnil)
+    left_grav = 1;
+  else
+    left_grav = 0;
+  mark = gtk_text_buffer_create_mark(buffer, NULL, &iter, left_grav);
   sd->inner_end_mark = mark;
   return Qnil;
 }
 
-static VALUE rb_scope_set_end_mark(VALUE self, VALUE rb_mark) {
+static VALUE rb_scope_set_end_mark(VALUE self, VALUE rb_buffer, 
+                                   VALUE rb_offset, VALUE rb_left_grav) {
   if (self == Qnil)
     printf("rb_scope_set_end_mark(nil)");
   Scope *s;
   ScopeData *sd;
+  GtkTextBuffer *buffer;
+  GtkTextIter iter;
   GtkTextMark *mark;
+  int left_grav;
   Data_Get_Struct(self, Scope, s);
-  if (rb_mark == Qnil) {
-    sd->rb_end_mark = Qnil;
-    sd->end_mark = NULL;
-    return Qnil;
-  }
-  mark = (GtkTextMark *) get_gobject(rb_mark);
   sd = s->data;
-  sd->rb_end_mark = rb_mark;
+  buffer = (GtkTextBuffer *) get_gobject(rb_buffer);
+  gtk_text_buffer_get_iter_at_offset(buffer, &iter, NUM2INT(rb_offset));
+  if (rb_left_grav == Qtrue || rb_left_grav == Qnil)
+    left_grav = 1;
+  else
+    left_grav = 0;
+  mark = gtk_text_buffer_create_mark(buffer, NULL, &iter, left_grav);
   sd->end_mark = mark;
   return Qnil;
 }
@@ -773,7 +850,7 @@ static VALUE rb_scope_delete_any_on_line_not_in(VALUE self, VALUE line_num,
   int num = FIX2INT(line_num);
   int i, j, remove;
   VALUE rs1;
-  TextLoc start_iter;
+  TextLoc start;
   if (starting_child && starting_child->parent == s) {
     c = starting_child;
   }
@@ -1106,8 +1183,10 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
       rb_settings = rb_hash_aref(rbh_setting, rb_str_new2("settings"));
       rb_settings_scope = rb_hash_aref(rbh_setting, rb_str_new2("scope"));
       rb_scope_id = rb_funcall(sd->rb_scope, rb_intern("scope_id"), 0);
-      snprintf(tag_name, 250, "EditView(%d):%s ", 
-	       RSTRING_PTR(rb_settings_scope), priority-1);
+      if (rb_settings_scope != Qnil) {
+        snprintf(tag_name, 250, "EditView(%d):%s ", 
+                 priority-1, RSTRING_PTR(rb_settings_scope));
+      }
       rbh_tag_settings = rb_funcall(theme, rb_intern("textmate_settings_to_pango_options"), 1, rb_settings);
     }
     
@@ -1527,17 +1606,8 @@ static VALUE rb_line_parser_scan_line(VALUE self) {
   return Qnil;
 }
 
-static VALUE rb_document_create_anonymous_mark(VALUE self, VALUE rb_iter) {
-  GtkTextBuffer *buffer;
-  buffer = (GtkTextBuffer *) get_gobject(self);
-  gtk_text_buffer_create_mark         (buffer,
-                                                         const gchar *mark_name,
-                                                         const GtkTextIter *where,
-                                                         gboolean left_gravity)
-}
-
 static VALUE mSyntaxExt, rb_mRedcar, rb_cEditView, rb_cParser;
-static VALUE cScope, cTextLoc, cLineParser, cDocument;
+static VALUE cScope, cTextLoc, cLineParser;
 
 void Init_syntax_ext() {
   // utility functions are in SyntaxExt
@@ -1579,15 +1649,19 @@ void Init_syntax_ext() {
 /*   rb_define_method(cScope, "open_end",    rb_scope_get_open_end, 0); */
 /*   rb_define_method(cScope, "close_start", rb_scope_get_close_start, 0); */
 
-  rb_define_method(cScope, "start_mark",    rb_scope_get_start_mark, 0);
-  rb_define_method(cScope, "inner_start_mark",    rb_scope_get_inner_start_mark, 0);
-  rb_define_method(cScope, "inner_end_mark",    rb_scope_get_inner_end_mark, 0);
-  rb_define_method(cScope, "end_mark",    rb_scope_get_end_mark, 0);
+  rb_define_method(cScope, "start_line",    rb_scope_get_start_line, 0);
+  rb_define_method(cScope, "inner_start_line",    rb_scope_get_inner_start_line, 0);
+  rb_define_method(cScope, "inner_end_line",    rb_scope_get_inner_end_line, 0);
+  rb_define_method(cScope, "end_line",    rb_scope_get_end_line, 0);
+  rb_define_method(cScope, "start_line_offset",    rb_scope_get_start_line_offset, 0);
+  rb_define_method(cScope, "inner_start_line_offset",    rb_scope_get_inner_start_line_offset, 0);
+  rb_define_method(cScope, "inner_end_line_offset",    rb_scope_get_inner_end_line_offset, 0);
+  rb_define_method(cScope, "end_line_offset",    rb_scope_get_end_line_offset, 0);
 
-  rb_define_method(cScope, "start_mark=",    rb_scope_set_start_mark, 1);
-  rb_define_method(cScope, "inner_start_mark=",    rb_scope_set_inner_start_mark, 1);
-  rb_define_method(cScope, "inner_end_mark=",    rb_scope_set_inner_end_mark, 1);
-  rb_define_method(cScope, "end_mark=",    rb_scope_set_end_mark, 1);
+  rb_define_method(cScope, "set_start_mark",    rb_scope_set_start_mark, 3);
+  rb_define_method(cScope, "set_inner_start_mark",    rb_scope_set_inner_start_mark, 3);
+  rb_define_method(cScope, "set_inner_end_mark",    rb_scope_set_inner_end_mark, 3);
+  rb_define_method(cScope, "set_end_mark",    rb_scope_set_end_mark, 3);
 
   rb_define_method(cScope, "set_name",  rb_scope_set_name, 1);
   rb_define_method(cScope, "get_name",  rb_scope_get_name, 0);
@@ -1633,7 +1707,5 @@ void Init_syntax_ext() {
   rb_define_method(cLineParser, "match_pattern", rb_line_parser_match_pattern, 1);
   rb_define_method(cLineParser, "scan_line", rb_line_parser_scan_line, 0);
 
-  rb_cDocument = rb_eval_string("Redcar::Document");
-  rb_define_method(rb_cDocument, "create_anonymous_mark", rb_document_create_anonymous_mark, 1);
 }
 
