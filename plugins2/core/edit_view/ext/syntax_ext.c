@@ -605,9 +605,9 @@ static VALUE rb_scope_set_inner_end_mark(VALUE self, VALUE rb_buffer,
   Data_Get_Struct(self, Scope, s);
   sd = s->data;
   buffer = (GtkTextBuffer *) get_gobject(rb_buffer);
-  if (sd->inner_end_mark) {
+  if (sd->inner_end_mark && sd->coloured) {
     sd->coloured = 0;
-    uncolour_scope(buffer, s);
+    uncolour_scope(buffer, s, 0);
   }
   gtk_text_buffer_get_iter_at_offset(buffer, &iter, NUM2INT(rb_offset));
   if (rb_left_grav == Qtrue || rb_left_grav == Qnil)
@@ -632,9 +632,9 @@ static VALUE rb_scope_set_end_mark(VALUE self, VALUE rb_buffer,
   Data_Get_Struct(self, Scope, s);
   sd = s->data;
   buffer = (GtkTextBuffer *) get_gobject(rb_buffer);
-  if (sd->end_mark) {
+  if (sd->end_mark && sd->coloured) {
     sd->coloured = 0;
-    uncolour_scope(buffer, s);
+    uncolour_scope(buffer, s, 0);
   }
   gtk_text_buffer_get_iter_at_offset(buffer, &iter, NUM2INT(rb_offset));
   if (rb_left_grav == Qtrue || rb_left_grav == Qnil)
@@ -931,7 +931,7 @@ static VALUE rb_scope_hierarchy_names(VALUE self, VALUE rb_inner) {
     scope_inner_start_loc(parent, &parent_open_end);
     scope_inner_end_loc(parent, &parent_close_start);
     if (textloc_gte(&start, &parent_open_end) &&
-        (textloc_lt(&end, &parent_close_start)))
+        (textloc_lte(&end, &parent_close_start)))
       next_inner = Qtrue;
     else
       next_inner = Qfalse;
@@ -1303,7 +1303,7 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_buffer,
   return Qnil;
 }
 
-int uncolour_scope(GtkTextBuffer *buffer, Scope *scope) {
+int uncolour_scope(GtkTextBuffer *buffer, Scope *scope, int uncolour_children) {
   ScopeData* sd = scope->data;
   GtkTextIter start_iter, end_iter;
   
@@ -1325,12 +1325,13 @@ int uncolour_scope(GtkTextBuffer *buffer, Scope *scope) {
 /*     print_iter(&end_iter); */
 /*     puts(""); */
 /*   } */
-
-  Scope *child;
-  child = g_node_first_child(scope);
-  while(child != NULL) {
-    uncolour_scope(buffer, child);
-    child = g_node_next_sibling(child);
+  if (uncolour_children) {
+    Scope *child;
+    child = g_node_first_child(scope);
+    while(child != NULL) {
+      uncolour_scope(buffer, child, 1);
+      child = g_node_next_sibling(child);
+    }
   }
   return 0;
 }
@@ -1353,7 +1354,7 @@ static VALUE rb_uncolour_scopes(VALUE self, VALUE rb_colourer, VALUE scopes) {
   for (i = 0; i < RARRAY(scopes)->len; i++) {
     rb_current = rb_ary_entry(scopes, i);
     Data_Get_Struct(rb_current, Scope, current);
-    uncolour_scope(buffer, current);
+    uncolour_scope(buffer, current, 1);
   }
   return Qnil;
 }

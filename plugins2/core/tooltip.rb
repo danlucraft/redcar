@@ -49,10 +49,10 @@ module Redcar
       end
       Tooltip.tooltip_handlers << h1
       Tooltip.tooltip_handlers << h2
-      Thread.new do 
-        sleep 3
-        Tooltip.clear_tooltips
-      end
+#       Thread.new do 
+#         sleep 3
+#         Tooltip.clear_tooltips
+#       end
     end
     
   end
