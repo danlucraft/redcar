@@ -65,29 +65,11 @@ class Redcar::EditView
         end
         reset_table_priorities
       end
-      @buf.signal_connect("mark_set") do |widget, event, mark|
-        if mark.name == "insert"
-          update_line(mark)
-        end
-        false
-      end
-    end
-    
-    def update_line(mark)
-      insert_iter = @buf.get_iter_at_mark(mark)
-      old = @cursor_line
-      @cursor_line = insert_iter.line
-      if old != @cursor_line
-        line_changed
-      end
-    end
-    
-    def line_changed
     end
     
     def reparse(options=nil)
       @root.children.each {|c| @root.delete_child c }
-      lazy_parse_from(0)
+      parse_from(0)
     end
     
     def recolour
@@ -113,7 +95,6 @@ class Redcar::EditView
     
     def store_insertion(iter, text, length)
       num_lines = text.scan("\n").length+1
-#      p text
       @changes.push({ :type    => :insertion, 
                       :from    => TextLoc.new(iter.line, iter.line_offset),
                       :length  => length,
@@ -137,111 +118,36 @@ class Redcar::EditView
       sorted_changes = @changes.sort_by{|h| h[:from]}
       until sorted_changes.empty?
         c = sorted_changes.shift
-        process_change c
+        case c[:type]
+        when :insertion
+          process_insertion(c)
+        when :deletion
+          process_deletion(c)
+        end
         @changes.delete c
       end
     end
     
-    def process_change(change)
-      case change[:type]
-      when :insertion
-        process_insertion(change)
-      when :deletion
-        process_deletion(change)
-      end
-    end
     
     def process_insertion(insertion)
-#      p insertion
-      if insertion[:lines] == 1
-        from_iter = @buf.iter(insertion[:from])
-        to_tl     = TextLoc(insertion[:from].line,
-                            insertion[:from].offset+insertion[:length])
-        to_iter   = @buf.iter(to_tl)
-        insert_in_line(insertion[:from].line, 
-                       @buf.get_text(from_iter, to_iter), 
-                       insertion[:from].offset)
-      else
-        insert(insertion[:from], insertion[:length], insertion[:lines])
-      end
-    end
-    
-    def insert_in_line(line_num, text, offset)
-#      p :insert_in_line
-      if line_num <= @buf.line_count
-#        @root.shift_chars(line_num, text.length, offset)
-        lazy_parse_from(line_num)
-      else
-        raise RedcarSyntaxError, "RedcarSyntaxError: trying to insert text in line that"+
-          "doesn't exist (#{line_num})"
-      end
-    end
-    
-    def insert(loc, length, lines)
-#      p :insert
-#       before_scope = scope_at_line_start(loc.line)
-#       end_offset = @buf.iter(loc).offset+length
-#       end_iter = @buf.iter(end_offset)
-#       end_loc  = TextLoc(end_iter.line, end_iter.line_offset)
-      #p :insert
-      #puts @root.pretty
-#      @root.shift_after1(loc, lines-1)
-      #puts "@root.shift_after1(#{loc.inspect}, #{lines-1})"
-      #puts @root.pretty
+      loc, lines = insertion[:from], insertion[:lines]
       (lines-1).times do 
         @ending_scopes.insert(loc.line, nil)
         @starting_scopes.insert(loc.line, nil)
         @last_childs.insert(loc.line, nil)
       end
-      #puts "@root.shift_chars(#{loc.line+lines-1}, #{end_loc.offset-loc.offset}, #{loc.offset})"
-#      @root.shift_chars(loc.line+lines-1, end_loc.offset-loc.offset, loc.offset)
-      #puts @root.pretty
-      lazy_parse_from(loc.line, lines)
+      parse_from(loc.line, lines)
     end
     
     def process_deletion(deletion)
-      if deletion[:lines] == 1
-        delete_from_line(deletion[:from].line, 
-                         deletion[:length],
-                         deletion[:from].offset)
-      else
-        delete_between(deletion[:from], deletion[:to])
-      end
-    end
-    
-    def delete_from_line(line_num, length, offset)
-      if line_num < @buf.line_count
-#        @root.shift_chars(line_num, -length, offset)
-        lazy_parse_from(line_num)
-      else
-        raise RedcarSyntaxError, "RedcarSyntaxError: trying to delete text from line that"+
-          "doesn't exist (#{line_num})"
-      end
-    end
-    
-    def delete_between(from, to)
-#       p :delete_between
-#     @root.clear_between_lines(from.line+1, to.line)
-#       @root.delete_children_with_zero_length(@buf.line_start(from.line), 
-#                                              @buf.line_end(to.line))
-#       puts @root.pretty
-#       puts "@root.clear_between(#{from.inspect}, #{to.inspect})"
-#       @root.clear_between(from, to)
-#       puts @root.pretty
-#       puts "@root.shift_after1(#{to.line.inspect}, #{-(from.line-to.line)})"
-#       @root.shift_after1(to, -(from.line-to.line))
-#     @root.shift_after(from.line+1, -(to.line-from.line))
-#       puts "@root.shift_chars(#{from.line}, #{-(to.offset-from.offset)}, #{to.offset})"
-#       @root.shift_chars(from.line, -(to.offset-from.offset), to.offset)
-#       puts @root.pretty
-      
+      from, to = deletion[:from], deletion[:to]
       (to.line-from.line-1).times do
         @ending_scopes.delete_at(from.line)
         @starting_scopes.delete_at(from.line)
         @last_childs.delete_at(from.line)
       end
       line_num = from.line
-      lazy_parse_from(line_num)
+      parse_from(line_num)
     end
     
     def max_view=(val)
@@ -249,11 +155,11 @@ class Redcar::EditView
       @max_view = val
       if @max_view > old_max_view and 
           (@max_view > @scope_last_line)
-        lazy_parse_from(old_max_view+1)
+        parse_from(old_max_view+1)
       end
     end
     
-    def lazy_parse_from(line_num, at_least=100, options=nil)
+    def parse_from(line_num, at_least=0, options=nil)
       count = 0
       ok = true
       if @parse_all
@@ -280,12 +186,8 @@ class Redcar::EditView
     # Parses line_num, using text line.
     def parse_line(line, line_num)
       print line_num, " "; $stdout.flush
-#       puts line_num; $stdout.flush
-#       puts line.to_s
-#       puts @root.pretty
       check_line_exists(line_num)
       @scope_last_line = line_num if line_num > @scope_last_line
-#      puts "@ending_scope[#{line_num-1}] == #{@ending_scopes[line_num-1]}"
       if line_num == 0
         opening_scope = @root
       else
@@ -313,14 +215,15 @@ class Redcar::EditView
 #       end
 
       if @colourer
-#         if parsed_before?(line_num)
-#           remove_tags_from_line(line_num)
-#         end
        SyntaxExt.uncolour_scopes(@colourer, lp.removed_scopes)
         children_of_current = lp.all_scopes.select do |s| 
           s.parent == lp.current_scope
         end
-        unless children_of_current.empty?
+        if children_of_current.empty?
+          if line_num > 0
+            @last_childs[line_num] = @last_childs[line_num-1]
+          end
+        else
           @last_childs[line_num] = children_of_current.last.
             ancestral_child_of(lp.current_scope)
         end
@@ -333,9 +236,6 @@ class Redcar::EditView
       @ending_scopes[line_num] = lp.current_scope
       same = (@ending_scopes[line_num] == @starting_scopes[line_num+1] and
               @ending_scopes[line_num+1] != nil)
-#      p :ending_scopes_after_parse_line
-#      p @ending_scopes
-#       puts @root.pretty2
       same
     end
     
@@ -380,7 +280,7 @@ class Redcar::EditView
     class LineParser
       attr_accessor(:start_scope, :active_grammar, 
                     :all_scopes, :closed_scopes, :matching_patterns,
-                    :need_new_patterns, :new_scope_markers, :removed_scopes)
+                    :need_new_patterns, :new_scope_markers, :removed_scopes  )
       attr_reader :current_child
       
       def initialize2(p, line, opening_scope, last_child_prev_line)
@@ -395,6 +295,7 @@ class Redcar::EditView
         @need_new_patterns = true
         @new_scope_markers = []
         @removed_scopes = []
+        @line_start_offset = @parser.buf.line_start(line_num).offset
         self.starting_child = last_child_prev_line
         reset_scope_marker
       end
@@ -419,20 +320,6 @@ class Redcar::EditView
           f.puts "______________________"
         end
       end
-      
-#       def current_scope_closes?
-#         if current_scope.closing_regexp
-#           if current_scope.start.line == line_num
-#             thispos = [pos, current_scope.start.offset+1].max
-#           else
-#             thispos = pos
-#           end
-#           if md = current_scope.closing_regexp.match(@line, thispos)
-#             from = md.begin(0)
-#             { :from => from, :md => md, :pattern => :close_scope }
-#           end
-#         end
-#       end
       
       def any_line_left?
         pos <= line_length
@@ -689,14 +576,6 @@ class Redcar::EditView
       end
     end
     
-    def clear_line(line)
-      @root.clear_between_lines(line, line)
-    end
-    
-    def clear_between_lines(line_from, line_to)
-      @root.clear_between_lines(line_from, line_to)
-    end
-    
     def scope_at(loc)
       @root.scope_at(loc)
     end
@@ -708,53 +587,6 @@ class Redcar::EditView
     def scope_at_line_end(num)
       @root.line_end(num)
     end
-    
-    # ..oO0# UNCLEAN #0Oo..
-    
-#     def add_line(line)
-#       add_line_info(line)
-#       parse_line(line, @text.length-1)
-#     end
-    
-#     def insert_line(line, line_num)
-#       @text.insert(line_num, line)
-#       @fold_counts.insert(line_num, 0)
-#       @ending_scopes.insert(line_num, nil)
-#       shift_after(line_num, 1)
-#       parse_line(line, line_num)
-#       if (line_num > 0 and @ending_scopes[line_num] != @ending_scopes[line_num-1]) or
-#           (line_num == 0 and @ending_scopes[line_num] != @root)
-#         line_num += 1
-#         lazy_parse_from(line_num)
-#       end
-#     end
-    
-#     def string_to_lines(text)
-#       lines = text.split("\n")
-#       lines << "" if text[-1..-1] == "\n"
-#       lines << "" if text == "\n"
-#       lines
-#     end
-    
-    def scope_at_end_of(num)
-      @root.scope_at(TextLoc.new(num, @text[num].length))
-    end
-    
-#     def parse_from(num)
-#       @root.clear_after(TextLoc.new(num, 0))
-#       (num).upto([@text.length-1, @max_parse_line].min) do |i|
-#         clear_line(line_num)
-#         parse_line(@text[i], i)
-#       end
-#     end
-
-    def max_parse_line=(v)
-      @max_parse_line = v
-    end
-    
-#     def shift_after(line, amount)
-#       @root.shift_after(line, amount)
-#     end
     
     def parsed_before?(line_num)
       @ending_scopes[line_num] and @starting_scopes[line_num]
@@ -769,8 +601,6 @@ class Redcar::EditView
         fromloc = ::Redcar::EditView::TextLoc.new(line_num, from)
         toloc   = ::Redcar::EditView::TextLoc.new(line_num, to)
         sc = ::Redcar::EditView::Scope.create2
-#        frommark = @buf.create_anonymous_mark(@buf.iter(fromloc))
-#        tomark   = @buf.create_anonymous_mark(@buf.iter(toloc))
         sc.set_start_mark @buf, @buf.iter(fromloc).offset, true
         sc.set_end_mark   @buf, @buf.iter(toloc).offset,   true
         sc
@@ -800,5 +630,6 @@ class Redcar::EditView
         md.captures[capture_index-1] || ""
       end
     end
+    
   end
 end

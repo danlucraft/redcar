@@ -3,6 +3,7 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <string.h>
+#include <oniguruma.h>
 
 static VALUE rb_scope_print(VALUE self, VALUE indent);
 
@@ -764,9 +765,11 @@ static VALUE rb_scope_first_child_after(VALUE self, VALUE rb_loc, VALUE rb_start
   if (g_node_n_children(s) == 0)
     return Qnil;
   if (starting_child && starting_child->parent == s) {
+    //    printf(":");
     child = starting_child;
   }
   else {
+    //    printf(".");
     child = g_node_first_child(s);
   }
   while (child != NULL) {
@@ -1160,10 +1163,10 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
     gtk_text_buffer_get_iter_at_mark(buffer, &end_iter, sd->inner_end_mark);
     if (sd->inner_tag != NULL) {
       tag = sd->inner_tag;
-      gtk_text_buffer_get_start_iter(buffer, &buff_start_iter);
-      gtk_text_buffer_get_end_iter(buffer, &buff_end_iter);
-      gtk_text_buffer_remove_tag(buffer, sd->inner_tag, 
-				 &buff_start_iter, &buff_end_iter);
+/*       gtk_text_buffer_get_start_iter(buffer, &buff_start_iter); */
+/*       gtk_text_buffer_get_end_iter(buffer, &buff_end_iter); */
+/*       gtk_text_buffer_remove_tag(buffer, sd->inner_tag, */
+/* 				 &buff_start_iter, &buff_end_iter); */
     }
   }
   else {
@@ -1171,10 +1174,10 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
     gtk_text_buffer_get_iter_at_mark(buffer, &end_iter, sd->end_mark);
     if (sd->tag != NULL) {
       tag = sd->tag;
-      gtk_text_buffer_get_start_iter(buffer, &buff_start_iter);
-      gtk_text_buffer_get_end_iter(buffer, &buff_end_iter);
-      gtk_text_buffer_remove_tag(buffer, sd->tag, 
-				 &buff_start_iter, &buff_end_iter);
+/*       gtk_text_buffer_get_start_iter(buffer, &buff_start_iter); */
+/*       gtk_text_buffer_get_end_iter(buffer, &buff_end_iter); */
+/*       gtk_text_buffer_remove_tag(buffer, sd->tag, */
+/* 				 &buff_start_iter, &buff_end_iter); */
     }
   }
   

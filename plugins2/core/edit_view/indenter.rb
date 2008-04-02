@@ -152,15 +152,15 @@ class Redcar::EditView
       currline.string.chomp =~ /^(\s*)(.*)/
       currline_indent = $1
       currline_indent_length = get_indent_size(currline_indent, indent_type)
-      unless new_length == currline_indent_length
-        set_line_indent(line_num, new_length, indent_type)
-        if indent_type == :spaces
-          stops = Redcar::Preference.get("Editing/Indent size").to_i
-          @buf.cursor = TextLoc(line_num, cursor_offset+(new_length-currline_indent_length)*stops)
-        else
-          @buf.cursor = TextLoc(line_num, cursor_offset+new_length-currline_indent_length)
-        end
-      end
+      #unless new_length == currline_indent_length
+      set_line_indent(line_num, new_length, indent_type)
+      #  if indent_type == :spaces
+      #    stops = Redcar::Preference.get("Editing/Indent size").to_i
+      #    @buf.cursor = TextLoc(line_num, cursor_offset+(new_length-currline_indent_length)*stops)
+      #  else
+      #    @buf.cursor = TextLoc(line_num, cursor_offset+new_length-currline_indent_length)
+      #  end
+      #end
     end
     
     def set_line_indent(line_num, indent_size, indent_type)

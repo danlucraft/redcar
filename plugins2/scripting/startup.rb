@@ -30,6 +30,24 @@ def test_plugin(plugin_name)
   end
 end
 
+def do_edit
+  doc.insert(doc.iter(TextLoc(230, 0)), "        when ")
+  
+  2.times do
+    1.times do 
+      doc.signal_emit("insert_text",
+                      doc.iter(TextLoc(230, 13)),
+                      "'",
+                      1)
+    end
+    1.times do 
+      doc.signal_emit("delete_range", 
+                      doc.iter(TextLoc(230, 13)),
+                      doc.iter(TextLoc(230, 14)))
+    end
+  end
+end
+
 if Redcar::App.ARGV.include? "--test-perf-load"
   RubyProf.start
   Coms::OpenTab.new("/home/dan/projects/rak/bin/rak").do
@@ -46,24 +64,17 @@ elsif Redcar::App.ARGV.include? "--test-time-load"
 elsif Redcar::App.ARGV.include? "--test-perf-edit"
   Coms::OpenTab.new("/home/dan/projects/rak/bin/rak").do
   RubyProf.start
-  doc.insert(doc.iter(TextLoc(230, 0)), "        when ")
-  
-  2.times do
-    1.times do 
-      doc.signal_emit("insert_text",
-                      doc.iter(TextLoc(230, 13)),
-                      "'",
-                      1)
-    end
-    1.times do 
-      doc.signal_emit("delete_range", 
-                      doc.iter(TextLoc(230, 13)),
-                      doc.iter(TextLoc(230, 14)))
-    end
-  end
+  do_edit
   result = RubyProf.stop
   printer = RubyProf::GraphHtmlPrinter.new(result)
   printer.print(STDOUT, :min_percent => 1)
+  stop_redcar
+elsif Redcar::App.ARGV.include? "--test-time-edit"
+  Coms::OpenTab.new("/home/dan/projects/rak/bin/rak").do
+  st = Time.now
+  do_edit
+  et = Time.now
+  puts "time to edit #{et-st}"
   stop_redcar
 elsif Redcar::App.ARGV.include? "--test"
   ix = Redcar::App.ARGV.index "--test"
