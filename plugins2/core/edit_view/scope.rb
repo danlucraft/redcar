@@ -399,57 +399,6 @@ class Redcar::EditView
       self.parent.delete_child(self)
     end
 
-#     def shift_after(line, amount)
-#       if self.start.line >= line
-#         self.start = TextLoc(self.start.line + amount, self.start.offset)
-#         if self.open_start
-#           self.open_end = TextLoc(self.open_end.line + amount,
-#                                   self.open_end.offset)
-#         end
-#       end
-#       if self.end and self.end.line >= line
-#         self.end = TextLoc(self.end.line + amount, self.end.offset)
-#         if self.close_start
-#           self.close_start = TextLoc(self.close_start.line + amount,
-#                                      self.close_start.offset)
-#         end
-#       end
-      
-#       children.each do |cs|
-#         cs.shift_after(line, amount)
-#         if cs.start >= cs.end
-#           delete_child(cs)
-#         end
-#       end
-#     end
-    
-#     # moves all scopes after TextLoc loc onward 
-#     # by lines lines.
-#     def shift_after1(loc, lines)
-#       if parent
-#         if self.start >= loc
-#           self.start = TextLoc(self.start.line + lines, self.start.offset)
-#           if self.open_start
-#             self.open_end = TextLoc(self.open_end.line + lines,
-#                                     self.open_end.offset)
-#           end
-#         end
-#         if self.end and self.end > loc
-#           self.end = TextLoc(self.end.line + lines, self.end.offset)
-#           if self.close_start
-#             self.close_start = TextLoc(self.close_start.line + lines,
-#                                        self.close_start.offset)
-#           end
-#         end
-#       end
-#       children.each do |cs|
-#         cs.shift_after1(loc, lines)
-#         if cs.end.valid? and cs.start >= cs.end
-#           delete_child(cs)
-#         end
-#       end
-#     end
-    
     def size
       size = 0
       children.each do |cs|
@@ -465,34 +414,34 @@ class Redcar::EditView
       end
     end
     
-    def scopes_closed_on_line(line_num, &block)
-      # this is the obvious way:
-      # self.each { |s| yield(s) if s.end and s.end.line == line_num }
+#     def scopes_closed_on_line(line_num, &block)
+#       # this is the obvious way:
+#       # self.each { |s| yield(s) if s.end and s.end.line == line_num }
       
-      #         # this is a faster way:
-      #         if self.end and self.end.line == line_num
-      #           yield self
-      #         end
-      #         self.children.each do |cs|
-      #           unless cs.start.line > line_num or
-      #               (cs.end and cs.end.line < line_num)
-      #             cs.scopes_closed_on_line(line_num, &block)
-      #           end
-      #         end
+#       #         # this is a faster way:
+#       #         if self.end and self.end.line == line_num
+#       #           yield self
+#       #         end
+#       #         self.children.each do |cs|
+#       #           unless cs.start.line > line_num or
+#       #               (cs.end and cs.end.line < line_num)
+#       #             cs.scopes_closed_on_line(line_num, &block)
+#       #           end
+#       #         end
       
-      # this is another faster way
-      if self.end and self.end.line == line_num
-        yield self
-      end
-      first_ix = self.children.find_flip_index {|cs| cs.end and cs.end.line >= line_num }
-      if first_ix
-        second_ix = self.children.find_flip_index {|cs| cs.start.line > line_num }
-        second_ix = self.children.length-1 unless second_ix
-        self.children[first_ix..second_ix].each do |cs|
-          cs.scopes_closed_on_line(line_num, &block)
-        end
-      end
-    end
+#       # this is another faster way
+#       if self.end and self.end.line == line_num
+#         yield self
+#       end
+#       first_ix = self.children.find_flip_index {|cs| cs.end and cs.end.line >= line_num }
+#       if first_ix
+#         second_ix = self.children.find_flip_index {|cs| cs.start.line > line_num }
+#         second_ix = self.children.length-1 unless second_ix
+#         self.children[first_ix..second_ix].each do |cs|
+#           cs.scopes_closed_on_line(line_num, &block)
+#         end
+#       end
+#     end
     
     def descendants_on_line(line_num)
       ds = []
@@ -505,20 +454,20 @@ class Redcar::EditView
       ds
     end
     
-    def line_start(line_num)
-      sc = scope_at(TextLoc.new(line_num, -1))
-      while sc.start.line == line_num
-        unless sc.parent
-          return sc
-        end
-        sc = sc.parent
-      end
-      sc
-    end
+#     def line_start(line_num)
+#       sc = scope_at(TextLoc.new(line_num, -1))
+#       while sc.start.line == line_num
+#         unless sc.parent
+#           return sc
+#         end
+#         sc = sc.parent
+#       end
+#       sc
+#     end
     
-    def line_end(line_num)
-      scope_at(TextLoc.new(line_num+1, -1))
-    end
+#     def line_end(line_num)
+#       scope_at(TextLoc.new(line_num+1, -1))
+#     end
     
     def last_scope
       if children.empty?

@@ -218,7 +218,17 @@ module Redcar
       icon :PASTE
       
       def execute(tab)
-        tab.view.paste_clipboard
+        if (cl = Redcar::App.clipboard).wait_is_text_available?
+          str = cl.wait_for_text
+          n = str.scan("\n").length+1
+          l = tab.doc.cursor_line
+          tab.doc.insert_at_cursor(str)
+          if n > 1
+            n.times do |i|
+              tab.view.indent_line(l+i)
+            end
+          end
+        end
       end
     end
     
@@ -408,6 +418,11 @@ module Redcar
     end
     
     preference "Editing/Use spaces instead of tabs" do |p|
+      default true
+      type    :toggle
+    end
+    
+    preference "Editing/Indent pasted text" do |p|
       default true
       type    :toggle
     end

@@ -82,6 +82,10 @@ module Redcar
       close_window(@window, close_if_no_win)
       quit if close_if_no_win and is_win
     end
+    
+    def self.clipboard
+      Gtk::Clipboard.get(Gdk::Atom.intern("CLIPBOARD"))
+    end
   end
 end
 
