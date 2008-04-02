@@ -44,16 +44,17 @@ class Redcar::EditView
     
     def buffer=(buf)
       @buf = buf
-#      connect_buffer_signals
+      connect_buffer_signals
     end
     
     def connect_buffer_signals
       # Set up indenting on Return
-      @buf.signal_connect("insert_text") do |_, iter, text, length|
+      @buf.signal_connect_after("insert_text") do |_, iter, text, length|
         line_num = iter.line
         if text == "\n"
-          indent_line(line_num-1) if line_num > 1
-          indent_line(line_num)   if line_num > 0
+          puts "inserted \\n in line:#{line_num}"
+          indent_line(line_num-1) if line_num > 0
+          indent_line(line_num)
         end
         false
       end
@@ -80,15 +81,15 @@ class Redcar::EditView
     end
     
     def indent_line(line_num)
-      puts "indent_line: #{line_num}"
+#       puts "indent_line: #{line_num}"
       cursor_offset = @buf.cursor_line_offset
-      puts "cursor_line_offset: #{cursor_offset}"
+#       puts "cursor_line_offset: #{cursor_offset}"
       prev2line = @buf.get_line(line_num-2)
       prevline  = @buf.get_line(line_num-1)
       currline  = @buf.get_line(line_num)
-      puts "  prev2line:#{prev2line.inspect}"
-      puts "  prevline: #{prevline.inspect}"
-      puts "  currline: #{currline.inspect}"
+#       puts "  prev2line:#{prev2line.inspect}"
+#       puts "  prevline: #{prevline.inspect}"
+#       puts "  currline: #{currline.inspect}"
       rules = Indenter.indent_rules_for_scope(@parser.starting_scopes[line_num-1])
       unless rules
         puts "no rules for indenting line"
@@ -148,7 +149,7 @@ class Redcar::EditView
         new_length -= 1
       end
       new_length = [new_length, 0].max
-      puts "  new_length:#{new_length}"
+#       puts "  new_length:#{new_length}"
       currline.string.chomp =~ /^(\s*)(.*)/
       currline_indent = $1
       currline_indent_length = get_indent_size(currline_indent, indent_type)
@@ -164,8 +165,8 @@ class Redcar::EditView
     end
     
     def set_line_indent(line_num, indent_size, indent_type)
-#      puts "  set_line_indent(#{line_num}, #{indent_size})"
-      cursor_on_line = ( @buf.cursor_line == line_num )
+#       puts "  set_line_indent(#{line_num}, #{indent_size})"
+#      cursor_on_line = ( @buf.cursor_line == line_num )
       currline  = @buf.get_line(line_num)
       currline.string.chomp =~ /^(\s*)(.*)/
       text = $2
@@ -177,12 +178,13 @@ class Redcar::EditView
         new_indent = "\t"*indent_size
       end
       new_indent
-      @buf.delete(@buf.line_start(line_num), @buf.line_end1(line_num))
-      @buf.insert(@buf.line_start(line_num), new_indent + text)
-      if cursor_on_line
-        new_cursor_offset = @buf.line_start(line_num).offset + new_indent.length
-        @buf.place_cursor(@buf.iter(new_cursor_offset))
-      end
+      line_off = @buf.line_start(line_num).offset
+      @buf.delete(@buf.iter(line_off), @buf.iter(line_off+$1.length))
+      @buf.insert(@buf.line_start(line_num), new_indent)
+#      if cursor_on_line
+#        new_cursor_offset = @buf.line_start(line_num).offset + new_indent.length
+#        @buf.place_cursor(@buf.iter(new_cursor_offset))
+#      end
     end
     
     def get_indent_size(indent, type)
