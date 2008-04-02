@@ -16,8 +16,8 @@ module Redcar::Tests
       sc = Redcar::EditView::Scope.new(:pattern => gr,
                                        :grammar => gr,
                                        :start => TextLoc(0, 0))
-      sc.start_mark = buf.create_anonymous_mark(buf.iter(0))
-      sc.end_mark   = buf.create_anonymous_mark(buf.iter(buf.char_count))
+      sc.set_start_mark buf, 0, true
+      sc.set_end_mark   buf, buf.char_count, false
       smp = Redcar::EditView::Parser.new(buf, sc, [gr])
       smp.parse_all = true
       return buf, smp
@@ -29,8 +29,8 @@ module Redcar::Tests
       @root = Redcar::EditView::Scope.new(:pattern => @gr,
                                           :grammar => @gr,
                                           :start => Redcar::EditView::TextLoc.new(0, 0))
-      @root.start_mark = @buf.create_anonymous_mark(@buf.iter(0))
-      @root.end_mark   = @buf.create_anonymous_mark(@buf.iter(@buf.char_count))
+      @root.set_start_mark @buf, 0, true
+      @root.set_end_mark   @buf, @buf.char_count, false
       @parser = Redcar::EditView::Parser.new(@buf, @root)
       
       # stuff for old tests
@@ -890,7 +890,7 @@ Redcar.startup(:output => :silent)
 Gtk.main
 STR
     buf.text=(source)
-    
+    puts smp.root.pretty2
     buf.delete(buf.iter(TextLoc(0, 7)), buf.iter(TextLoc(3, 9)))
     
     new_source=<<BSTR
