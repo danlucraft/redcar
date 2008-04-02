@@ -311,18 +311,7 @@ class Redcar::EditView
 #         if parsed_before?(line_num)
 #           remove_tags_from_line(line_num)
 #         end
-#         num = lp.all_scopes.length
-#         nummod = lp.all_scopes.select{|s| s.modified? }.length
-#         puts "#{nummod}/#{num}"
-#        p lp.removed_scopes
        SyntaxExt.uncolour_scopes(@colourer, lp.removed_scopes)
-#         puts "colouring_scopes: "
-#         lp.all_scopes.each do |sc|
-#           p sc.start_mark
-#           puts sc.inspect3
-#         end
-#       p lp.all_scopes.length
-#        lp.all_scopes.each {|sc| sc.name }
         children_of_current = lp.all_scopes.select do |s| 
           s.parent == lp.current_scope
         end
@@ -332,14 +321,10 @@ class Redcar::EditView
         end
         SyntaxExt.colour_line_with_scopes(@buf, @colourer.theme, 
                                           lp.all_scopes)
-#        debug_print_tag_table
-#        reset_table_priorities
       end
       
       # should we parse the next line? If we've changed the scope or the 
       # next line has not yet been parsed.
-#       same = ((@ending_scopes[line_num] == lp.current_scope) and 
-#               @ending_scopes[line_num+1] != nil)
       @ending_scopes[line_num] = lp.current_scope
       same = (@ending_scopes[line_num] == @starting_scopes[line_num+1] and
               @ending_scopes[line_num+1] != nil)

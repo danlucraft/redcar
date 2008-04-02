@@ -604,6 +604,10 @@ static VALUE rb_scope_set_inner_end_mark(VALUE self, VALUE rb_buffer,
   Data_Get_Struct(self, Scope, s);
   sd = s->data;
   buffer = (GtkTextBuffer *) get_gobject(rb_buffer);
+  if (sd->inner_end_mark) {
+    sd->coloured = 0;
+    uncolour_scope(buffer, s);
+  }
   gtk_text_buffer_get_iter_at_offset(buffer, &iter, NUM2INT(rb_offset));
   if (rb_left_grav == Qtrue || rb_left_grav == Qnil)
     left_grav = 1;
@@ -627,6 +631,10 @@ static VALUE rb_scope_set_end_mark(VALUE self, VALUE rb_buffer,
   Data_Get_Struct(self, Scope, s);
   sd = s->data;
   buffer = (GtkTextBuffer *) get_gobject(rb_buffer);
+  if (sd->end_mark) {
+    sd->coloured = 0;
+    uncolour_scope(buffer, s);
+  }
   gtk_text_buffer_get_iter_at_offset(buffer, &iter, NUM2INT(rb_offset));
   if (rb_left_grav == Qtrue || rb_left_grav == Qnil)
     left_grav = 1;
@@ -1113,11 +1121,11 @@ void set_tag_properties(GtkTextTag* tag, VALUE rbh_tm_settings) {
     g_object_set(G_OBJECT(tag), "foreground", fg, NULL);
   }
 
-/*   rb_bg = rb_hash_aref(rbh_tm_settings, rb_str_new2("background")); */
-/*   if (rb_bg != Qnil) { */
-/*     clean_colour(RSTRING_PTR(rb_bg), bg); */
-/*     g_object_set(G_OBJECT(tag), "background", bg, NULL); */
-/*   } */
+  rb_bg = rb_hash_aref(rbh_tm_settings, rb_str_new2("background"));
+  if (rb_bg != Qnil) {
+    clean_colour(RSTRING_PTR(rb_bg), bg);
+    g_object_set(G_OBJECT(tag), "background", bg, NULL);
+  }
 
   rb_style = rb_hash_aref(rbh_tm_settings, rb_str_new2("fontStyle"));
 
@@ -1246,8 +1254,8 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_buffer,
     if (current_data->name == NULL && pattern != Qnil && 
         content_name == Qnil)
       continue;
-    if (current_data->coloured)
-      continue;
+/*     if (current_data->coloured) */
+/*       continue; */
     colour_scope(buffer, current, theme, 0);
     if (content_name != Qnil) {
       colour_scope(buffer, current, theme, 1);
