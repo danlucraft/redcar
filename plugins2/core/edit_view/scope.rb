@@ -32,7 +32,8 @@ class Redcar::EditView
                   :close_matchdata,
                   :closing_regexp,
                   :capture, 
-                  :bg_color)
+                  :bg_color,
+                  :capture_num)
     
     def self.create3(pattern, grammar)
       obj = self.allocate

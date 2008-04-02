@@ -363,7 +363,7 @@ class Redcar::EditView
         end
         if scope.pattern.respond_to? type
           sub_scopes = []
-          scope.pattern.send(type).each do |num, name|
+          scope.pattern.send(type).to_a.sort_by {|num, _| num}.each do |num, name|
             md = scope.send(matchdata_name)
             sc = @parser.scope_from_capture(line_num, num, md)
             if sc
@@ -374,6 +374,7 @@ class Redcar::EditView
               sc.capture = true
               closed_scopes << sc
               all_scopes << sc
+              sc.capture_num = num
               sub_scopes << sc
             end
           end
@@ -386,9 +387,7 @@ class Redcar::EditView
         scopes.select do |sc|
           sc.start_line_offset <= start_line_offset and 
             sc.end_line_offset >= end_line_offset
-        end.sort_by do |sc|
-          sc.end_line_offset - sc.start_line_offset 
-        end.first
+        end.last
       end
       
       def close_current_scope(nsm)
