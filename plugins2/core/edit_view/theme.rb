@@ -171,35 +171,47 @@ class Redcar::EditView
     end
     
     def self.parse_colour(str_colour)
-      Gdk::Color.parse(clean_colour(str_colour))
+      Gdk::Color.parse(str_colour)
     end
     
-    def self.clean_colour(str_colour)
-      return nil unless str_colour
-      if str_colour.length == 7
-        str_colour
-      elsif str_colour.length == 9
-        # FIXME: what are the extra two hex values for? 
-        # (possibly they are an opacity)
-        # #12345678
+    # Here str_colour1 is like '#FFFFFF' and
+    # str_colour2 is like '#000000DD'.
+    def self.merge_colour(str_colour1, str_colour2)
+#       p :merge, str_colour1, str_colour2
+      return nil unless str_colour1
+      v =if str_colour2.length == 7 
+        str_colour2
+      elsif str_colour2.length == 9
+        #FIXME: what are the extra two hex values for? 
+        #(possibly they are an opacity)
+        #12345678
         #'#'+str_colour[3..-1]
-        r = str_colour[1..2].hex
-        g = str_colour[3..4].hex
-        b = str_colour[5..6].hex
-        t = str_colour[7..8].hex
-        r = (r*t)/255
-        g = (g*t)/255
-        b = (b*t)/255
-        '#'+("%02x"%r)+("%02x"%g)+("%02x"%b)
+        pre_r   = str_colour1[1..2].hex
+        pre_g   = str_colour1[3..4].hex
+        pre_b   = str_colour1[5..6].hex
+        post_r   = str_colour2[1..2].hex
+        post_g   = str_colour2[3..4].hex
+        post_b   = str_colour2[5..6].hex
+        opacity  = str_colour2[7..8].hex.to_f
+#         puts "pre_red: #{pre_r}"
+#         puts "post_red: #{post_r}"
+#         puts "opacity: #{opacity}"
+        new_r   = (pre_r*(255-opacity) + post_r*opacity)/255
+#         puts "new_red: #{new_r}"
+        new_g = (pre_g*(255-opacity) + post_g*opacity)/255
+        new_b  = (pre_b*(255-opacity) + post_b*opacity)/255
+        '#'+("%02x"%new_r)+("%02x"%new_r)+("%02x"%new_b)
 #        str_colour[0..6]
       end
+#       p v
+#       v
     end
     
     def textmate_settings_to_pango_options(settings)
       v = settings["pango"]
       return v if v
-      options = { :foreground => Theme.clean_colour(settings["foreground"]),
-                  :background => Theme.clean_colour(settings["background"]) }
+      options = { :foreground => settings["foreground"],
+                  :background => settings["background"] }
       options = options.delete_if{|k, v| !v}
       settings["fontStyle"] ||= ""
       if settings["fontStyle"].include? "italic"

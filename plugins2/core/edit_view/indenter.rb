@@ -44,7 +44,7 @@ class Redcar::EditView
     
     def buffer=(buf)
       @buf = buf
-      connect_buffer_signals
+#      connect_buffer_signals
     end
     
     def connect_buffer_signals
@@ -80,15 +80,15 @@ class Redcar::EditView
     end
     
     def indent_line(line_num)
-#      puts "indent_line: #{line_num}"
+      puts "indent_line: #{line_num}"
       cursor_offset = @buf.cursor_line_offset
-#      puts "cursor_line_offset: #{cursor_offset}"
+      puts "cursor_line_offset: #{cursor_offset}"
       prev2line = @buf.get_line(line_num-2)
       prevline  = @buf.get_line(line_num-1)
       currline  = @buf.get_line(line_num)
-#      puts "  prev2line:#{prev2line.inspect}"
-#      puts "  prevline: #{prevline.inspect}"
-#      puts "  currline: #{currline.inspect}"
+      puts "  prev2line:#{prev2line.inspect}"
+      puts "  prevline: #{prevline.inspect}"
+      puts "  currline: #{currline.inspect}"
       rules = Indenter.indent_rules_for_scope(@parser.starting_scopes[line_num-1])
       unless rules
         puts "no rules for indenting line"
@@ -148,7 +148,7 @@ class Redcar::EditView
         new_length -= 1
       end
       new_length = [new_length, 0].max
-#      puts "  new_length:#{new_length}"
+      puts "  new_length:#{new_length}"
       currline.string.chomp =~ /^(\s*)(.*)/
       currline_indent = $1
       currline_indent_length = get_indent_size(currline_indent, indent_type)

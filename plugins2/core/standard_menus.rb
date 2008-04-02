@@ -374,14 +374,14 @@ module Redcar
       type :combo
       default "Mac Classic"
       values { EditView::Theme.theme_names.sort_by(&:downcase) }
-      change do 
-        win.tabs.each do |tab|
-          if tab.respond_to? :view
-            theme_name = Redcar::Preference.get("Appearance/Tab Theme")
-            tab.view.change_theme(theme_name)
-          end
-        end
-      end
+#       change do 
+#         win.tabs.each do |tab|
+#           if tab.respond_to? :view
+#             theme_name = Redcar::Preference.get("Appearance/Tab Theme")
+#             tab.view.change_theme(theme_name)
+#           end
+#         end
+#       end
     end
     
     preference "Editing/Indent size" do |p|

@@ -168,6 +168,7 @@ module Redcar
       @root = Scope.new(:pattern => grammar,
                         :grammar => grammar,
                         :start => TextLoc(0, 0))
+      @root.bg_color = @theme.global_settings['background']
       @root.set_start_mark buffer, buffer.iter(0).offset, false
       @root.set_end_mark   buffer, buffer.char_count, false
     end
@@ -187,6 +188,7 @@ module Redcar
       gr = Grammar.grammar(:name => gr_name)
       @root = Scope.new(:pattern => gr,
                         :grammar => gr)
+      @root.bg_color = @theme.global_settings['background']
       @root.set_start_mark buffer, buffer.iter(0).offset, false
       @root.set_end_mark   buffer, buffer.char_count, false
       @parser.uncolour
@@ -204,12 +206,16 @@ module Redcar
     end
     
     def apply_theme
-      background_colour = Theme.parse_colour(@theme.global_settings['background'])
+      bg_colour = Theme.merge_colour("#FFFFFF", @theme.global_settings['background'])
+      background_colour = Theme.parse_colour(bg_colour)
       modify_base(Gtk::STATE_NORMAL, background_colour)
-      foreground_colour = Theme.parse_colour(@theme.global_settings['foreground'])
+      
+      fg_colour = Theme.merge_colour("#FFFFFF", @theme.global_settings['foreground'])
+      foreground_colour = Theme.parse_colour(fg_colour)
       modify_text(Gtk::STATE_NORMAL, foreground_colour)
-      selection_colour  = Theme.parse_colour(@theme.global_settings['selection'])
-      modify_base(Gtk::STATE_SELECTED, selection_colour)
+#       sel_colour = Theme.merge_colour("#FFFFFF", @theme.global_settings['selection'])
+#       selection_colour  = Theme.parse_colour(sel_colour)
+#       modify_base(Gtk::STATE_SELECTED, selection_colour)
     end
     
     def new_buffer

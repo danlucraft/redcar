@@ -31,7 +31,8 @@ class Redcar::EditView
                   :open_matchdata,
                   :close_matchdata,
                   :closing_regexp,
-                  :capture)
+                  :capture, 
+                  :bg_color)
     
     def self.create3(pattern, grammar)
       obj = self.allocate
@@ -67,6 +68,16 @@ class Redcar::EditView
       self.closing_regexp = options[:closing_regexp]
       @open_matchdata     = options[:open_matchdata]
       @close_matchdata    = options[:close_matchdata]
+    end
+    
+    def nearest_bg_color
+      if self.bg_color
+        self.bg_color
+      elsif self.parent
+        self.parent.nearest_bg_color
+      else
+        nil
+      end
     end
     
     def start
@@ -300,6 +311,30 @@ class Redcar::EditView
           hanging = " closed"
         else
           hanging = " hanging"
+        end
+      end
+      startstr = "(#{start.line},#{start.offset})-"
+      if self.end
+        endstr = "(#{self.end.line},#{self.end.offset})"
+      else
+        endstr = "?"
+      end
+      if self.pattern
+        cname = ""+self.pattern.content_name.to_s
+      else
+        cname = ""
+      end
+      (self.name||"" rescue "noname")+" "+cname+" #{startstr}#{endstr} #{hanging}>"
+    end
+    
+    def inspectwithbg
+      if self.pattern.is_a? SinglePattern
+        hanging = " #{self.bg_color.inspect}, #{self.nearest_bg_color.inspect}"
+      else
+        if self.end and self.end.valid?
+          hanging = " closed #{self.bg_color.inspect}, #{self.nearest_bg_color.inspect}"
+        else
+          hanging = " hanging #{self.bg_color.inspect}, #{self.nearest_bg_color.inspect}"
         end
       end
       startstr = "(#{start.line},#{start.offset})-"

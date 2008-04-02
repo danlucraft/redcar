@@ -1101,33 +1101,62 @@ int minify(int offset) {
 
 #define xtod(c) ((c>='0' && c<='9') ? c-'0' : ((c>='A' && c<='F') ? c-'A'+10 : ((c>='a' && c<='f') ? c-'a'+10 : 0)))
 
-void clean_colour(char* in, char* out) {
-  int r, g, b, t;
-  if (strlen(in) == 7)
-    strcpy(out, in);
-  else {
-    in[7] = '\0';
-    strcpy(out, in);
-  }
-/*     r = xtod(in[1])*16+xtod(in[2]); */
-/*     g = xtod(in[3])*16+xtod(in[4]); */
-/*     b = xtod(in[5])*16+xtod(in[6]); */
-/*     t = xtod(in[7])*16+xtod(in[8]); */
-}
+/*     def self.merge_colour(str_colour1, str_colour2) */
+/*       return nil unless str_colour1 */
+/*       if str_colour2.length == 7  */
+/*         str_colour2 */
+/*       elsif str_colour2.length == 9 */
+/*         #FIXME: what are the extra two hex values for?  */
+/*         #(possibly they are an opacity) */
+/*         #12345678 */
+/*         #'#'+str_colour[3..-1] */
+/*         pre_r   = str_colour1[1..2].hex */
+/*         pre_g   = str_colour1[3..4].hex */
+/*         pre_b   = str_colour1[5..6].hex */
+/*         post_r   = str_colour2[1..2].hex */
+/*         post_g   = str_colour2[3..4].hex */
+/*         post_b   = str_colour2[5..6].hex */
+/*         opacity  = str_colour2[7..8].hex.to_f */
+/*         new_r   = (pre_r*opacity + post_r*(255-opacity))/255 */
+/*         new_g = (pre_g*opacity + post_g*(255-opacity))/255 */
+/*         new_b  = (pre_b*opacity + post_b*(255-opacity))/255 */
+/*         '#'+("%02x"%new_r)+("%02x"%new_r)+("%02x"%new_b) */
+/*       end */
 
-void set_tag_properties(GtkTextTag* tag, VALUE rbh_tm_settings) {
-  VALUE rb_fg, rb_bg, rb_style;
+/* void clean_colour(char* in_bg, char* parent_bg, char* out_bg) { */
+/*   int r, g, b, t; */
+/*   printf("clean_colour: in %s\n", in_bg); */
+/*   printf("clean_colour: pa %s\n", parent_bg); */
+/*   if (strlen(in_bg) == 7) */
+/*     strcpy(out_bg, in_bg); */
+/*   else { */
+/*     in_bg[7] = '\0'; */
+/*     strcpy(out_bg, in_bg); */
+/*   } */
+/* /\*     r = xtod(in[1])*16+xtod(in[2]); *\/ */
+/* /\*     g = xtod(in[3])*16+xtod(in[4]); *\/ */
+/* /\*     b = xtod(in[5])*16+xtod(in[6]); *\/ */
+/* /\*     t = xtod(in[7])*16+xtod(in[8]); *\/ */
+/* } */
+
+void set_tag_properties(Scope* scope, GtkTextTag* tag, VALUE rbh_tm_settings) {
+  ScopeData* sd = scope->data;
+  VALUE rb_fg, rb_bg, rb_style, rb_parent_bg;
   char fg[10], bg[10];
+  VALUE rb_cTheme = rb_eval_string("Redcar::EditView::Theme");
   rb_fg = rb_hash_aref(rbh_tm_settings, rb_str_new2("foreground"));
   if (rb_fg != Qnil) {
-    clean_colour(RSTRING_PTR(rb_fg), fg);
-    g_object_set(G_OBJECT(tag), "foreground", fg, NULL);
+/*     clean_colour(RSTRING_PTR(rb_fg), NULL, fg); */
+    g_object_set(G_OBJECT(tag), "foreground", RSTRING_PTR(rb_fg), NULL);
   }
 
   rb_bg = rb_hash_aref(rbh_tm_settings, rb_str_new2("background"));
   if (rb_bg != Qnil) {
-    clean_colour(RSTRING_PTR(rb_bg), bg);
-    g_object_set(G_OBJECT(tag), "background", bg, NULL);
+    rb_parent_bg = rb_funcall(sd->rb_scope, rb_intern("nearest_bg_color"), 0);
+/*     clean_colour(RSTRING_PTR(rb_bg), RSTRING_PTR(rb_parent_bg), bg); */
+    rb_bg = rb_funcall(rb_cTheme, rb_intern("merge_colour"), 2, rb_parent_bg, rb_bg);
+    g_object_set(G_OBJECT(tag), "background", RSTRING_PTR(rb_bg), NULL);
+    rb_funcall(sd->rb_scope, rb_intern("bg_color="), 1, rb_bg);
   }
 
   rb_style = rb_hash_aref(rbh_tm_settings, rb_str_new2("fontStyle"));
@@ -1210,7 +1239,7 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
     }
 /*     printf("%s\n", tag_name); */
     if (RARRAY(rba_settings)->len > 0)
-      set_tag_properties(tag, rb_settings);
+      set_tag_properties(scope, tag, rb_settings);
 
     if (inner)
       sd->inner_tag = tag;

@@ -630,6 +630,5 @@ class Redcar::EditView
         md.captures[capture_index-1] || ""
       end
     end
-    
   end
 end
