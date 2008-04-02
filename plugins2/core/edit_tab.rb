@@ -85,7 +85,9 @@ module Redcar
         if ext != "" and gr = Redcar::EditView::Grammar.grammar(:extension => ext)
           view.change_root_scope(gr.name)
         end
+        document.begin_not_undoable_action
         document.text = File.read(filename)
+        document.end_not_undoable_action
         label.text = filename.split(/\//).last
         document.cursor = 0
         @filename = filename
