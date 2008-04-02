@@ -97,7 +97,7 @@ module Redcar
       stack_objects.each do |stack_object|
         if stack_object
           @obj_keymaps[stack_object].reverse.each do |keymap_path|
-            return if execute_key_on_keymap(key_name, keymap_path)
+            return true if execute_key_on_keymap(key_name, keymap_path)
           end
         end
       end

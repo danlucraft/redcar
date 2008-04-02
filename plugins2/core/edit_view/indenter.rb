@@ -52,7 +52,6 @@ class Redcar::EditView
       @buf.signal_connect_after("insert_text") do |_, iter, text, length|
         line_num = iter.line
         if text == "\n"
-          puts "inserted \\n in line:#{line_num}"
           indent_line(line_num-1) if line_num > 0
           indent_line(line_num)
         end
@@ -149,24 +148,13 @@ class Redcar::EditView
         new_length -= 1
       end
       new_length = [new_length, 0].max
-#       puts "  new_length:#{new_length}"
       currline.string.chomp =~ /^(\s*)(.*)/
       currline_indent = $1
       currline_indent_length = get_indent_size(currline_indent, indent_type)
-      #unless new_length == currline_indent_length
       set_line_indent(line_num, new_length, indent_type)
-      #  if indent_type == :spaces
-      #    stops = Redcar::Preference.get("Editing/Indent size").to_i
-      #    @buf.cursor = TextLoc(line_num, cursor_offset+(new_length-currline_indent_length)*stops)
-      #  else
-      #    @buf.cursor = TextLoc(line_num, cursor_offset+new_length-currline_indent_length)
-      #  end
-      #end
     end
     
     def set_line_indent(line_num, indent_size, indent_type)
-#       puts "  set_line_indent(#{line_num}, #{indent_size})"
-#      cursor_on_line = ( @buf.cursor_line == line_num )
       currline  = @buf.get_line(line_num)
       currline.string.chomp =~ /^(\s*)(.*)/
       text = $2
@@ -181,10 +169,6 @@ class Redcar::EditView
       line_off = @buf.line_start(line_num).offset
       @buf.delete(@buf.iter(line_off), @buf.iter(line_off+$1.length))
       @buf.insert(@buf.line_start(line_num), new_indent)
-#      if cursor_on_line
-#        new_cursor_offset = @buf.line_start(line_num).offset + new_indent.length
-#        @buf.place_cursor(@buf.iter(new_cursor_offset))
-#      end
     end
     
     def get_indent_size(indent, type)
@@ -215,51 +199,5 @@ class Redcar::EditView
         end
       end
     end
-    
-    # Indents line line_num according to the indenting on the previous
-    # line and whether the previous and current line have any
-    # starting or stopping fold markers. Repositions the cursor to
-    # before the text on the line if the cursor was already on the 
-    # line.
-    def indent_line1(line_num)
-      cursor_on_line = ( @buf.cursor_line == line_num )
-      delta = indent_delta(line_num)
-      next_delta = indent_delta(line_num+1)
-      preline = @buf.get_line(line_num-1)
-      line = @buf.get_line(line_num)
-      if delta == 1 and next_delta == -1
-        delta = 0
-      elsif next_delta == -1
-        delta = -1
-      elsif delta == -1
-        delta = 0
-      end
-      line.string.chomp =~ /^(\s*)(.*)/
-      curr_indent = $1
-      curr_text   = $2
-      preline.string.chomp =~ /^(\s*)(.*)/
-      pre_indent  = $1
-      pre_text    = $2
-      if pre_indent.include? "\t" and pre_indent.include? " "
-        puts "inconsistent use of tabs and spaces! No indenting."
-      elsif pre_indent.include? "\t" or pre_indent == ""
-        pre_length = pre_indent.length
-        post_length = [pre_length+delta, 0].max
-        @buf.delete(@buf.line_start(line_num), @buf.line_end1(line_num))
-        @buf.insert(@buf.line_start(line_num), "\t"*post_length+curr_text)
-      elsif curr_indent.include? " " or curr_indent == ""
-        insize = Redcar::Preference.get("Editing/Indent size")
-        pre_length = pre_indent.length
-        post_length = [pre_length+delta*insize, 0].max
-        @buf.delete(@buf.line_start(line_num), @buf.line_end1(line_num))
-        @buf.insert(@buf.line_start(line_num), " "*post_length+curr_text)
-      end
-      if cursor_on_line
-        cursor_offset = @buf.line_start(line_num).offset+post_length
-        @buf.place_cursor(@buf.iter(cursor_offset))
-      end
-      line = @buf.get_line(line_num)
-    end
-    
   end
 end

@@ -23,6 +23,13 @@ module Redcar
         tab and tab.is_a? EditTab and tab.modified
       end
       
+      Sensitive.register(:modified_and_filename?, 
+                         [:open_window, :new_tab, :close_tab, 
+                          :after_focus_tab, :tab_changed, 
+                          :after_tab_save]) do
+        tab and tab.is_a? EditTab and tab.modified and tab.filename
+      end
+      
 #       Sensitive.register(:selected_text, 
 #                          [:open_window, :new_tab, :close_tab, 
 #                           :after_focus_tab]) do

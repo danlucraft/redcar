@@ -53,7 +53,7 @@ module Redcar
     
     class RevertTab < Redcar::EditTabCommand
       icon :REVERT_TO_SAVED
-      sensitive :modified?
+      sensitive :modified_and_filename?
       
       def execute(tab)
         filename = tab.filename
@@ -164,7 +164,7 @@ module Redcar
       icon :UNDO
       
       def execute(tab)
-        tab.doc.undo
+        tab.view.undo
       end
     end
     
@@ -173,27 +173,43 @@ module Redcar
       icon :REDO
       
       def execute(tab)
-        tab.doc.redo
+        tab.view.redo
       end
     end
     
     class Cut < Redcar::EditTabCommand
       key       "Global/Ctrl+X"
       icon :CUT
-#       sensitive :selected_text
       
       def execute(tab)
-        tab.view.cut_clipboard
+        doc = tab.doc
+        if doc.selection?
+          tab.view.cut_clipboard
+        else
+          n = doc.cursor_line
+          doc.select(doc.iter(doc.line_start(n)),
+                     doc.iter(doc.line_end(n)))
+          tab.view.cut_clipboard
+        end
       end
     end
     
     class Copy < Redcar::EditTabCommand
       key       "Global/Ctrl+C"
       icon :COPY
-#       sensitive :selected_text
       
       def execute(tab)
-        tab.view.copy_clipboard
+        doc = tab.doc
+        if doc.selection?
+          tab.view.copy_clipboard
+        else
+          n = doc.cursor_line
+          c = doc.cursor_offset
+          doc.select(doc.iter(doc.line_start(n)),
+                     doc.iter(doc.line_end(n)))
+          tab.view.copy_clipboard
+          doc.cursor = c
+        end
       end
     end
     
