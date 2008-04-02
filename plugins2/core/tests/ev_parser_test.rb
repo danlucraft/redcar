@@ -86,6 +86,13 @@ module Redcar::Tests
       assert_equal 4, @root.children.length
     end
     
+    def test_pattern_captures_form_a_tree
+      @buf.insert(@buf.iter(0), "class Red < \n")
+      assert_equal 2, @root.children.length
+      @buf.insert(@buf.line_end1(0), "C")
+      assert_equal 2, @root.children[0].children.length
+    end
+    
     # --- old tests ----
     
     def test_parser

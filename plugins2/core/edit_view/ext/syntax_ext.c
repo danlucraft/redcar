@@ -1163,8 +1163,14 @@ void set_tag_properties(Scope* scope, GtkTextTag* tag, VALUE rbh_tm_settings) {
 
   if (strstr(RSTRING_PTR(rb_style), "italic"))
     g_object_set(G_OBJECT(tag), "style", PANGO_STYLE_ITALIC, NULL);
+  else
+    g_object_set(G_OBJECT(tag), "style", PANGO_STYLE_NORMAL, NULL);
+    
   if (strstr(RSTRING_PTR(rb_style), "underline"))
     g_object_set(G_OBJECT(tag), "underline", PANGO_UNDERLINE_SINGLE, NULL);
+  else
+    g_object_set(G_OBJECT(tag), "underline", PANGO_UNDERLINE_NONE, NULL);
+    
 /*   if (strstr(RSTRING_PTR(rb_style), "bold")) */
 /*     g_object_set(G_OBJECT(tag), "weight", PANGO_WEIGHT_BOLD, NULL); */
     

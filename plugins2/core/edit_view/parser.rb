@@ -186,6 +186,9 @@ class Redcar::EditView
     # Parses line_num, using text line.
     def parse_line(line, line_num)
       print line_num, " "; $stdout.flush
+#      puts line_num
+#       p line.string
+#       puts @root.pretty
       check_line_exists(line_num)
       @scope_last_line = line_num if line_num > @scope_last_line
       if line_num == 0
@@ -359,19 +362,33 @@ class Redcar::EditView
           matchdata_name = :open_matchdata
         end
         if scope.pattern.respond_to? type
+          sub_scopes = []
           scope.pattern.send(type).each do |num, name|
             md = scope.send(matchdata_name)
             sc = @parser.scope_from_capture(line_num, num, md)
             if sc
-              scope.add_child(sc)
+              parent = find_enclosing_scope(sc, sub_scopes) || scope
+              parent.add_child(sc)
               sc.name = name
               sc.grammar = active_grammar
               sc.capture = true
               closed_scopes << sc
               all_scopes << sc
+              sub_scopes << sc
             end
           end
         end
+      end
+      
+      def find_enclosing_scope(scope, scopes)
+        start_line_offset = scope.start_line_offset
+        end_line_offset = scope.end_line_offset
+        scopes.select do |sc|
+          sc.start_line_offset <= start_line_offset and 
+            sc.end_line_offset >= end_line_offset
+        end.sort_by do |sc|
+          sc.end_line_offset - sc.start_line_offset 
+        end.first
       end
       
       def close_current_scope(nsm)
@@ -502,7 +519,6 @@ class Redcar::EditView
           need_new_patterns = true
         when SinglePattern
           new_scope = new_single_scope(new_scope_marker)
-          collect_captures(new_scope, :captures)
           
           if expected_scope
             if new_scope.surface_identical?(expected_scope)
@@ -510,10 +526,12 @@ class Redcar::EditView
               new_scope = expected_scope
               expected_scope.each_child {|c| closed_scopes << c}
             else  
+              collect_captures(new_scope, :captures)
               remove_if_overlaps_with(expected_scope, new_scope)
               current_scope.add_child(new_scope)
             end
           else
+            collect_captures(new_scope, :captures)
             current_scope.add_child(new_scope)
           end
           remove_children_that_overlap_with(new_scope)
@@ -601,7 +619,7 @@ class Redcar::EditView
         fromloc = ::Redcar::EditView::TextLoc.new(line_num, from)
         toloc   = ::Redcar::EditView::TextLoc.new(line_num, to)
         sc = ::Redcar::EditView::Scope.create2
-        sc.set_start_mark @buf, @buf.iter(fromloc).offset, true
+        sc.set_start_mark @buf, @buf.iter(fromloc).offset, false
         sc.set_end_mark   @buf, @buf.iter(toloc).offset,   true
         sc
       end
