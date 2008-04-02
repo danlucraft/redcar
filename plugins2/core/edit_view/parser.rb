@@ -221,7 +221,9 @@ class Redcar::EditView
     
     def delete_between(from, to)
 #       p :delete_between
-     @root.clear_between_lines(from.line+1, to.line)
+#     @root.clear_between_lines(from.line+1, to.line)
+#       @root.delete_children_with_zero_length(@buf.line_start(from.line), 
+#                                              @buf.line_end(to.line))
 #       puts @root.pretty
 #       puts "@root.clear_between(#{from.inspect}, #{to.inspect})"
 #       @root.clear_between(from, to)
@@ -256,14 +258,16 @@ class Redcar::EditView
       ok = true
       if @parse_all
         until line_num >= @buf.line_count or 
-            parse_line(@buf.get_line(line_num), line_num)
+            (parse_line(@buf.get_line(line_num), line_num) and
+             count >= at_least)
           line_num += 1
           count += 1
         end
       else
         until line_num >= @buf.line_count or 
             line_num > last_line_of_interest or
-            parse_line(@buf.get_line(line_num), line_num)
+            (parse_line(@buf.get_line(line_num), line_num) and
+             count >= at_least)
           line_num += 1
           count += 1
         end
@@ -276,8 +280,9 @@ class Redcar::EditView
     # Parses line_num, using text line.
     def parse_line(line, line_num)
       print line_num, " "; $stdout.flush
-#      puts line_num; $stdout.flush
-#      puts line.to_s
+#       puts line_num; $stdout.flush
+#       puts line.to_s
+#       puts @root.pretty
       check_line_exists(line_num)
       @scope_last_line = line_num if line_num > @scope_last_line
 #      puts "@ending_scope[#{line_num-1}] == #{@ending_scopes[line_num-1]}"
@@ -502,7 +507,7 @@ class Redcar::EditView
 
         to_loc = TextLoc.new(line_num, nsm[:to])
         from_loc = TextLoc.new(line_num, nsm[:from])
-        new_scope.set_start_mark @parser.buf, @parser.buf.iter(from_loc).offset, true
+        new_scope.set_start_mark @parser.buf, @parser.buf.iter(from_loc).offset, false
         new_scope.set_end_mark   @parser.buf, @parser.buf.iter(to_loc).offset, true
 #        new_scope.inner_start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(from_loc))
 #        new_scope.inner_end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(to_loc))
@@ -522,8 +527,8 @@ class Redcar::EditView
         
         to_loc = TextLoc.new(line_num, nsm[:to])
         from_loc = TextLoc.new(line_num, nsm[:from])
-        new_scope.set_start_mark       @parser.buf, @parser.buf.iter(from_loc).offset, true
-        new_scope.set_inner_start_mark @parser.buf, @parser.buf.iter(to_loc).offset, true
+        new_scope.set_start_mark       @parser.buf, @parser.buf.iter(from_loc).offset, false
+        new_scope.set_inner_start_mark @parser.buf, @parser.buf.iter(to_loc).offset, false
         new_scope.set_inner_end_mark   @parser.buf, @parser.buf.char_count, false
         new_scope.set_end_mark         @parser.buf, @parser.buf.char_count, false
         

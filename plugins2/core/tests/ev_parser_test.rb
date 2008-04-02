@@ -51,19 +51,20 @@ module Redcar::Tests
     end
     
     def test_inserts_a_line_from_nothing
-      @buf.insert(@buf.iter(0), "class < Red")
-      assert_equal 3, @root.children.length
+      @buf.insert(@buf.iter(0), "class Red")
+      assert_equal 1, @root.children.length
     end
     
     def test_inserts_a_couple_of_lines_from_nothing
-      @buf.insert(@buf.iter(0), "class < Red\nend")
-      assert_equal 4, @root.children.length
+      @buf.insert(@buf.iter(0), "class Red\nend")
+      assert_equal 2, @root.children.length
     end
     
     def test_inserts_a_line_between_two_lines
-      @buf.insert(@buf.iter(0), "class < Red\nend")
-      @buf.insert(@buf.iter(12), "def foo\n")
-      assert_equal 5, @root.children.length
+      @buf.insert(@buf.iter(0), "class Red\nend")
+      assert_equal 2, @root.children.length
+      @buf.insert(@buf.line_start(1), "def foo\n")
+      assert_equal 3, @root.children.length
     end
     
     def test_inserts_a_symbol_into_a_line
@@ -320,7 +321,8 @@ puts "hello"
 P2END
       buf.text=(rubycode)
       assert_equal 3, smp.root.children.length
-      assert smp.parse_line("puts \"hello\", @hello", 0)
+      buf.cursor = TextLoc(0, 0)
+      buf.replace_line("puts \"hello\", @hello")
       assert_equal 5, smp.root.children.length
     end
     
@@ -335,27 +337,6 @@ P2END
       assert_equal 10, smp.root.children.length
       assert !smp.parse_line("    @filename.split(\"asdf asdf\").last=\<\<HI", 2)
       assert_equal 11, smp.root.children.length # <- this is not up to date for the entire text.
-    end
-    
-    # ... and the same for new closing scopes. 
-    def test_re_parse_line_with_extra_closing_scopes
-      gr = @ruby_grammar
-      buf, smp = ParserTests.clean_parser_and_buffer(gr)
-      rubycode=<<APE
-puts "hello"
-foo=\<\<HI
-  Here.foo
-  Here.foo
-
-puts "hello"
-APE
-      buf.text=(rubycode)
-      
-      assert_equal 2, smp.root.children.length
-      assert_equal "string.unquoted.heredoc.ruby", smp.root.line_end(4).name
-      assert !smp.parse_line("HI", 4)
-      assert_equal 2, smp.root.children.length # <- this is not up to date for the entire text.
-      assert_equal "source.ruby", smp.root.line_end(4).name
     end
     
     def test_captures_are_children_for_single_scope
@@ -638,19 +619,6 @@ CRALL
     assert_equal 2, smp.root.children.length
   end
   
-  def test_delete_text_from_line
-    gr = @ruby_grammar
-    buf, smp = ParserTests.clean_parser_and_buffer(gr)
-    rubycode="class Redcar::File\n  def nice_name\n    @filename.split(\"/\").last\n  end\nend\n"
-    buf.text=(rubycode)
-    
-    old = smp.root.pretty2
-    
-    # no changes to scopes:
-    buf.delete(buf.line_start(2), buf.iter(buf.line_start(2).offset+2))
-    assert_equal old, smp.root.pretty2
-  end
-  
   def test_delete_text_that_opens_scope_from_line
     gr = @ruby_grammar
     buf, smp = ParserTests.clean_parser_and_buffer(gr)
@@ -890,7 +858,6 @@ Redcar.startup(:output => :silent)
 Gtk.main
 STR
     buf.text=(source)
-    puts smp.root.pretty2
     buf.delete(buf.iter(TextLoc(0, 7)), buf.iter(TextLoc(3, 9)))
     
     new_source=<<BSTR
@@ -898,7 +865,6 @@ STR
 Gtk.main
 BSTR
     assert_equal new_source, buf.text
-    puts smp.root.pretty2
     assert_equal 3, smp.root.children.length
   end
   
