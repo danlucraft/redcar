@@ -20,7 +20,7 @@ class Redcar::EditView
       @changes = []
       @scope_last_line = 0
       @last_childs = []
-      @parse_all = false
+      @parse_all = true
       @cursor_line = 0
       connect_buffer_signals
       unless @buf.text == ""
@@ -365,7 +365,7 @@ class Redcar::EditView
           sub_scopes = []
           scope.pattern.send(type).to_a.sort_by {|num, _| num}.each do |num, name|
             md = scope.send(matchdata_name)
-            sc = @parser.scope_from_capture(line_num, num, md)
+            sc = scope_from_capture(line_num, num, md)
             if sc
               parent = find_enclosing_scope(sc, sub_scopes) || scope
               parent.add_child(sc)
@@ -380,7 +380,7 @@ class Redcar::EditView
           end
         end
       end
-      
+    
       def find_enclosing_scope(scope, scopes)
         start_line_offset = scope.start_line_offset
         end_line_offset = scope.end_line_offset
@@ -390,30 +390,46 @@ class Redcar::EditView
         end.last
       end
       
+      def scope_from_capture(line_num, num, md)
+        num = num.to_i
+        capture = get_capture(num, md)
+        unless capture == ""
+          from = md.begin(num)
+          to   = md.end(num)
+#           fromloc = ::Redcar::EditView::TextLoc.new(line_num, from)
+#           toloc   = ::Redcar::EditView::TextLoc.new(line_num, to)
+          fromoff = @line_start_offset + from
+          tooff   = @line_start_offset + to
+          sc = ::Redcar::EditView::Scope.create2
+          sc.set_start_mark @parser.buf, fromoff, false
+          sc.set_end_mark   @parser.buf, tooff,   true
+          sc
+        end
+      end
+      
+      def get_capture(capture_index, md)
+        if capture_index == 0
+          md.to_s
+        else
+          md.captures[capture_index-1] || ""
+        end
+      end
+      
       def close_current_scope(nsm)
-#         current_scope.end         = TextLoc.new(line_num, nsm[:to])
-#         current_scope.close_start = TextLoc.new(line_num, nsm[:from])
-        to_loc = TextLoc.new(line_num, nsm[:to])
-        from_loc = TextLoc.new(line_num, nsm[:from])
-        current_scope.set_end_mark       @parser.buf, @parser.buf.iter(to_loc).offset, true
-        current_scope.set_inner_end_mark @parser.buf, @parser.buf.iter(from_loc).offset, true
+        fromoff = @line_start_offset + nsm[:from]
+        tooff   = @line_start_offset + nsm[:to]
+        current_scope.set_end_mark       @parser.buf, tooff, true
+        current_scope.set_inner_end_mark @parser.buf, fromoff, true
         current_scope.close_matchdata = nsm[:md]
       end
       
       def new_single_scope(nsm)
         new_scope = nsm[:pattern].to_scope
         new_scope.grammar   = active_grammar
-#         new_scope.start     = TextLoc.new(line_num, nsm[:from])
-#         new_scope.end       = TextLoc.new(line_num, nsm[:to])
-#         new_scope.open_end  = TextLoc.new(line_num, nsm[:from])
-#         new_scope.close_start = TextLoc.new(line_num, nsm[:to])
-
-        to_loc = TextLoc.new(line_num, nsm[:to])
-        from_loc = TextLoc.new(line_num, nsm[:from])
-        new_scope.set_start_mark @parser.buf, @parser.buf.iter(from_loc).offset, false
-        new_scope.set_end_mark   @parser.buf, @parser.buf.iter(to_loc).offset, true
-#        new_scope.inner_start_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(from_loc))
-#        new_scope.inner_end_mark = @parser.buf.create_anonymous_mark(@parser.buf.iter(to_loc))
+        fromoff = @line_start_offset + nsm[:from]
+        tooff   = @line_start_offset + nsm[:to]
+        new_scope.set_start_mark @parser.buf, fromoff, false
+        new_scope.set_end_mark   @parser.buf, tooff, true
         new_scope.open_matchdata = nsm[:md]
         new_scope.name = nsm[:pattern].scope_name
         new_scope
@@ -424,14 +440,10 @@ class Redcar::EditView
         new_scope = pattern.to_scope
         new_scope.grammar = active_grammar
         
-#         new_scope.start   = TextLoc.new(line_num, nsm[:from])
-#         new_scope.end     = nil
-#         new_scope.open_end   = TextLoc.new(line_num, nsm[:to])
-        
-        to_loc = TextLoc.new(line_num, nsm[:to])
-        from_loc = TextLoc.new(line_num, nsm[:from])
-        new_scope.set_start_mark       @parser.buf, @parser.buf.iter(from_loc).offset, false
-        new_scope.set_inner_start_mark @parser.buf, @parser.buf.iter(to_loc).offset, false
+        fromoff = @line_start_offset + nsm[:from]
+        tooff   = @line_start_offset + nsm[:to]
+        new_scope.set_start_mark       @parser.buf, fromoff, false
+        new_scope.set_inner_start_mark @parser.buf, tooff, false
         new_scope.set_inner_end_mark   @parser.buf, @parser.buf.char_count, false
         new_scope.set_end_mark         @parser.buf, @parser.buf.char_count, false
         
@@ -533,7 +545,7 @@ class Redcar::EditView
             collect_captures(new_scope, :captures)
             current_scope.add_child(new_scope)
           end
-          remove_children_that_overlap_with(new_scope)
+#          remove_children_that_overlap_with(new_scope)
           all_scopes << new_scope
           closed_scopes << new_scope
         end
@@ -609,21 +621,6 @@ class Redcar::EditView
       @ending_scopes[line_num] and @starting_scopes[line_num]
     end
     
-    def scope_from_capture(line_num, num, md)
-      num = num.to_i
-      capture = get_capture(num, md)
-      unless capture == ""
-        from = md.begin(num)
-        to   = md.end(num)
-        fromloc = ::Redcar::EditView::TextLoc.new(line_num, from)
-        toloc   = ::Redcar::EditView::TextLoc.new(line_num, to)
-        sc = ::Redcar::EditView::Scope.create2
-        sc.set_start_mark @buf, @buf.iter(fromloc).offset, false
-        sc.set_end_mark   @buf, @buf.iter(toloc).offset,   true
-        sc
-      end
-    end
-    
     def grammar_for_scope(scope_name)
       if scope_name.respond_to? :grammar
         scope_name.grammar
@@ -640,12 +637,5 @@ class Redcar::EditView
       end
     end
 
-    def get_capture(capture_index, md)
-      if capture_index == 0
-        md.to_s
-      else
-        md.captures[capture_index-1] || ""
-      end
-    end
   end
 end

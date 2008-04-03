@@ -608,6 +608,7 @@ static VALUE rb_scope_set_inner_end_mark(VALUE self, VALUE rb_buffer,
   if (sd->inner_end_mark && sd->coloured) {
     sd->coloured = 0;
     uncolour_scope(buffer, s, 0);
+    gtk_text_buffer_delete_mark(buffer, sd->inner_end_mark);
   }
   gtk_text_buffer_get_iter_at_offset(buffer, &iter, NUM2INT(rb_offset));
   if (rb_left_grav == Qtrue || rb_left_grav == Qnil)
@@ -635,6 +636,7 @@ static VALUE rb_scope_set_end_mark(VALUE self, VALUE rb_buffer,
   if (sd->end_mark && sd->coloured) {
     sd->coloured = 0;
     uncolour_scope(buffer, s, 0);
+    gtk_text_buffer_delete_mark(buffer, sd->end_mark);
   }
   gtk_text_buffer_get_iter_at_offset(buffer, &iter, NUM2INT(rb_offset));
   if (rb_left_grav == Qtrue || rb_left_grav == Qnil)
