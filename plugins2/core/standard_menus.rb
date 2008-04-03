@@ -384,6 +384,16 @@ module Redcar
       item "Unify All",         UnifyAll
     end
     
+    class EndLineReturn < Redcar::EditTabCommand
+      key "Global/Ctrl+Return"
+      
+      def execute(tab)
+        doc = tab.doc
+        doc.place_cursor(doc.line_end1(doc.cursor_line))
+        doc.insert_at_cursor("\n")
+      end
+    end
+          
     preference "Appearance/Tab Font" do
       default "Monospace 12"
       widget  { StandardMenus.font_chooser_button("Appearance/Tab Font") }
