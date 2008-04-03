@@ -43,6 +43,8 @@ plugins:
         testcase: Redcar::Tests::IndenterTests
       - path: core/tests/ev_grammar_test.rb
         testcase: Redcar::Tests::GrammarTests
+      - path: core/tests/ev_autopairer_test.rb
+        testcase: Redcar::Tests::AutoPairerTests
 
   - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-standard_menus

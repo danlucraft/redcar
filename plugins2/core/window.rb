@@ -327,7 +327,7 @@ module Redcar
          gtk_status1,
          gtk_status2,
          gtk_panes_box,
-         gtk_toolbar,
+         #gtk_toolbar,
          gtk_edit_view,
          @gtk_menubar,
          pane.gtk_notebook
