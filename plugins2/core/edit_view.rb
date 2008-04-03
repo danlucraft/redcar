@@ -10,6 +10,7 @@ module Redcar
                             :themes_dir  => "textmate/Themes/",
                             :cache_dir   => "cache/")
       Redcar::EditView::Indenter.lookup_indent_rules
+      Redcar::EditView::AutoPairer.lookup_autopair_rules
       plugin.transition(FreeBASE::LOADED)
     end
     
@@ -110,6 +111,7 @@ module Redcar
       create_root_scope('Ruby')
       create_parser
       create_indenter
+      create_autopairer
     end
 
     def set_gtk_cursor_colour
@@ -183,6 +185,10 @@ module Redcar
       @indenter = Indenter.new(buffer, @parser)
     end
     
+    def create_autopairer
+      @autopairer = AutoPairer.new(buffer, @parser)
+    end
+    
     def change_root_scope(gr_name, should_colour=true)
       raise "trying to change to nil grammar!" unless gr_name
       gr = Grammar.grammar(:name => gr_name)
@@ -226,6 +232,7 @@ module Redcar
       newbuffer.text = text
       @parser.buffer = newbuffer
       @indenter.buffer = newbuffer
+      @autopairer.buffer = newbuffer
     end
     
     def setup_buffer(thisbuf)
@@ -286,4 +293,5 @@ require File.dirname(__FILE__) + '/edit_view/theme'
 require File.dirname(__FILE__) + '/edit_view/colourer'
 require File.dirname(__FILE__) + '/edit_view/textloc'
 require File.dirname(__FILE__) + '/edit_view/indenter'
+require File.dirname(__FILE__) + '/edit_view/autopairer'
 require File.dirname(__FILE__) + '/edit_view/ext/syntax_ext'
