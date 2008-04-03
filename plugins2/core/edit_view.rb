@@ -6,9 +6,9 @@ module Redcar
     extend Redcar::PreferenceBuilder
     
     def self.load(plugin) #:nodoc:
-      Redcar::EditView.init(:bundles_dir => "textmate/Bundles/",
-                            :themes_dir  => "textmate/Themes/",
-                            :cache_dir   => "cache/")
+      Redcar::EditView.init(:bundles_dir => Redcar::App.root_path + "/textmate/Bundles/",
+                            :themes_dir  => Redcar::App.root_path + "/textmate/Themes/",
+                            :cache_dir   => Redcar::App.root_path + "/cache/")
       Redcar::EditView::Indenter.lookup_indent_rules
       Redcar::EditView::AutoPairer.lookup_autopair_rules
       plugin.transition(FreeBASE::LOADED)
