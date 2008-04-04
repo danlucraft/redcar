@@ -52,16 +52,14 @@ class Redcar::EditView
       end
     end
     
+    # Forget about pairs if the cursor moves from within them
     def invalidate_pairs(mark)
       i = @buf.get_iter_at_mark(mark)
-#       puts "cursor_off: #{i.offset}"
-#       l = @mark_pairs.length
       @mark_pairs.reject! do |m1, m2|
         i1 = @buf.get_iter_at_mark(m1)
         i2 = @buf.get_iter_at_mark(m2)
         i < i1 or i > i2
       end
-#       puts "mark_pairs: #{l} -> #{@mark_pairs.length}"
     end
     
     def inspect_pairs
@@ -84,9 +82,11 @@ class Redcar::EditView
       # Set up indenting on Return
       @buf.signal_connect_after("insert_text") do |_, iter, text, length|
         @done = nil
+        
+        # Type over ends
         if AutoPairer.autopair_default1.include? text and !@ignore_insert
           end_mark_pair = find_mark_pair_by_end(iter)
-          if end_mark_pair
+          if end_mark_pair and end_mark_pair[3] == text
             @buf.delete(@buf.iter(@buf.cursor_offset-1),
                         @buf.cursor_iter)
             @buf.place_cursor(@buf.iter(@buf.cursor_offset+1))
@@ -94,13 +94,15 @@ class Redcar::EditView
           end
         end
         
+        # Insert matching ends
         if AutoPairer.autopair_default.include? text and !@ignore_insert and !@done
           @ignore_insert = true
-          @buf.insert_at_cursor(AutoPairer.autopair_default[text])
+          endtext = AutoPairer.autopair_default[text]
+          @buf.insert_at_cursor(endtext)
           @buf.place_cursor(@buf.iter(@buf.cursor_offset-1))
           mark1 = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset-1), false)
           mark2 = @buf.create_mark(nil, @buf.cursor_iter, false)
-          add_mark_pair [mark1, mark2]
+          add_mark_pair [mark1, mark2, text, endtext]
           @ignore_insert = false
         end
         false
@@ -113,6 +115,7 @@ class Redcar::EditView
       end
       
       @buf.signal_connect_after("delete_range") do |_, _, _|
+        # Delete end if start deleted
         if @deletion and !@ignore_delete
           mark_pair = find_mark_pair_by_start(@buf.iter(@deletion))
           if mark_pair

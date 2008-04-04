@@ -55,6 +55,18 @@ module Redcar::Tests
       assert_equal 0, @autopairer.mark_pairs.length
     end
     
+    def test_typover_only_correct_end
+      @buf.text = "pikon"
+      @buf.place_cursor(@buf.line_end1(0))
+      @buf.insert_at_cursor("(")
+      @buf.insert_at_cursor("h")
+      @buf.insert_at_cursor("i")
+      @buf.insert_at_cursor("\"")
+      assert_equal "pikon(hi\"\")", @buf.text
+      assert_equal 9, @buf.cursor_offset
+      assert_equal 2, @autopairer.mark_pairs.length
+    end
+    
     def test_navigate_outside_brackets
       @buf.text = "pikon"
       @buf.place_cursor(@buf.line_end1(0))
