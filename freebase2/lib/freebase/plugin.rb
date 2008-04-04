@@ -314,20 +314,24 @@ module FreeBASE
         # we do not want the tests to run on exit:
         Test::Unit.run = false
         
+        suite = Test::Unit::TestSuite.new(testcase)
+        
         @plugin_configuration.tests.each do |test_info|
           if testcase == nil or test_info["testcase"] == testcase
             log_requires(:test) do
               require test_info["path"]
             end
-            require 'test/unit/ui/console/testrunner'
-            begin
-              Test::Unit::UI::Console::TestRunner.new(eval(test_info["testcase"]).suite).start
-            rescue Object => e
-              puts e
-              puts e.message
-              puts e.backtrace
-            end
+            suite << eval(test_info["testcase"]).suite
           end
+        end
+        
+        require 'test/unit/ui/console/testrunner'
+        begin
+          Test::Unit::UI::Console::TestRunner.new(suite).start
+        rescue Object => e
+          puts e
+          puts e.message
+          puts e.backtrace
         end
       end
     end
