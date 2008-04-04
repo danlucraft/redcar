@@ -103,6 +103,13 @@ module Redcar::Tests
       assert_equal "f=<<-HTML\n<>", @buf.text
     end
     
+    def test_sees_ruby_scope_pairs
+      @buf.text = "foo do "
+      @buf.insert_at_cursor("|")
+      assert_equal "foo do ||", @buf.text
+      assert_equal 8, @buf.cursor_offset
+    end
+    
     def type(text, buffer)
       text.split(//).each do |char|
         buffer.insert_at_cursor(char)

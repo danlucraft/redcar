@@ -32,9 +32,9 @@ class Redcar::EditView
     def self.autopair_rules_for_scope(scope)
       if scope
         @autopair_rules.each do |scope_name, value|
-      #            puts "applicable? #{scope_name} to #{scope.hierarchy_names(true)}" #.join(" ")}"
+        #          puts "applicable? #{scope_name} to #{scope.hierarchy_names(true).join(" ")}"
           v = Theme.applicable?(scope_name, scope.hierarchy_names(true)).to_bool
-      #            p v
+       #           p v
           if v
             return value
           end
@@ -99,7 +99,7 @@ class Redcar::EditView
         
         # Type over ends
         sc = @buf.scope_at(@buf.cursor_line, 
-                           @buf.cursor_line_offset-1)
+                           @buf.cursor_line_offset-2)
         rules = AutoPairer.autopair_rules_for_scope(sc)
         inverse_rules = rules.invert
         if inverse_rules.include? text and !@ignore_insert
