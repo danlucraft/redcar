@@ -20,13 +20,21 @@ class Redcar::EditView
       @changes = []
       @scope_last_line = 0
       @last_childs = []
-      @parse_all = true
+      @parse_all = false
       @cursor_line = 0
+      @parsing_on = true
       connect_buffer_signals
       unless @buf.text == ""
         raise "Parser#initialize called with not empty buffer."
       end
       @tags = []
+    end
+    
+    def delay_parsing
+      @parsing_on = false
+      yield
+      @parsing_on = true
+      process_changes
     end
     
     def buffer=(buf)
@@ -48,13 +56,13 @@ class Redcar::EditView
         false
       end
       @buf.signal_connect_after("insert_text") do |_, iter, text, length|
-        unless @changes.empty?
+        if !@changes.empty? and @parsing_on
           process_changes
         end
         false
       end
       @buf.signal_connect_after("delete_range") do |_, iter1, iter2|
-        unless @changes.empty?
+        if !@changes.empty? and @parsing_on
           process_changes
         end
         false
@@ -114,48 +122,54 @@ class Redcar::EditView
     end
     
     def process_changes
-#      raise "Queued up changes: oops!" unless @changes.length < 2
-      sorted_changes = @changes.sort_by{|h| h[:from]}
-      until sorted_changes.empty?
-        c = sorted_changes.shift
-        case c[:type]
-        when :insertion
-          process_insertion(c)
-        when :deletion
-          process_deletion(c)
-        end
-        @changes.delete c
+      changed_lines = []
+      while change = @changes.shift
+        changed_lines << update_line_scope_trackers(change)
+      end
+      changed_lines.sort!
+      while pair = changed_lines.shift
+        from_line = pair[0]
+        num_lines = pair[1]
+        parse_from(from_line, num_lines)
       end
     end
     
+    def update_line_scope_trackers(change)
+      case change[:type]
+      when :insertion
+        loc, lines = change[:from], change[:lines]
+        (lines-1).times do 
+          @ending_scopes.insert(loc.line, nil)
+          @starting_scopes.insert(loc.line, nil)
+          @last_childs.insert(loc.line, nil)
+        end
+        [loc.line, lines]
+      when :deletion
+        from, to = change[:from], change[:to]
+        (to.line-from.line-1).times do
+          @ending_scopes.delete_at(from.line)
+          @starting_scopes.delete_at(from.line)
+          @last_childs.delete_at(from.line)
+        end
+        [from.line, 1]
+      end
+    end
     
     def process_insertion(insertion)
-      loc, lines = insertion[:from], insertion[:lines]
-      (lines-1).times do 
-        @ending_scopes.insert(loc.line, nil)
-        @starting_scopes.insert(loc.line, nil)
-        @last_childs.insert(loc.line, nil)
-      end
       parse_from(loc.line, lines)
     end
     
     def process_deletion(deletion)
-      from, to = deletion[:from], deletion[:to]
-      (to.line-from.line-1).times do
-        @ending_scopes.delete_at(from.line)
-        @starting_scopes.delete_at(from.line)
-        @last_childs.delete_at(from.line)
-      end
-      line_num = from.line
       parse_from(line_num)
     end
     
     def max_view=(val)
       old_max_view = @max_view
       @max_view = val
+#      puts "max_view=(#{val}) [old: #{old_max_view}, scope_last_line:#{@scope_last_line}]"
       if @max_view > old_max_view and 
           (@max_view > @scope_last_line)
-        parse_from(old_max_view+1)
+        parse_from(@scope_last_line+1)
       end
     end
     
@@ -164,7 +178,7 @@ class Redcar::EditView
       ok = true
       if @parse_all
         until line_num >= @buf.line_count or 
-            (parse_line(@buf.get_line(line_num), line_num) and
+            (parse_line(line_num) and
              count >= at_least)
           line_num += 1
           count += 1
@@ -172,7 +186,7 @@ class Redcar::EditView
       else
         until line_num >= @buf.line_count or 
             line_num > last_line_of_interest or
-            (parse_line(@buf.get_line(line_num), line_num) and
+            (parse_line(line_num) and
              count >= at_least)
           line_num += 1
           count += 1
@@ -181,13 +195,16 @@ class Redcar::EditView
           clear_after(line_num)
         end
       end
+      $stdout.flush
     end
     
     # Parses line_num, using text line.
-    def parse_line(line, line_num)
+    def parse_line(line_num)
+#      line = @buf.get_line(line_num)
+      line = @buf.get_slice(@buf.line_start(line_num), @buf.line_end(line_num))
       print line_num, " "; $stdout.flush
 #      puts line_num
-#       p line.string
+#       p line
 #       puts @root.pretty
       check_line_exists(line_num)
       @scope_last_line = line_num if line_num > @scope_last_line
@@ -330,6 +347,7 @@ class Redcar::EditView
       
       def get_expected_scope
         expected_scope = current_scope.first_child_after(TextLoc.new(line_num, pos), starting_child)
+        return nil if expected_scope == current_scope
         if expected_scope
           expected_scope = nil unless expected_scope.start.line == line_num
         end
@@ -368,13 +386,20 @@ class Redcar::EditView
             sc = scope_from_capture(line_num, num, md)
             if sc
               parent = find_enclosing_scope(sc, sub_scopes) || scope
-              parent.add_child(sc)
+              parent.add_child(sc, nil)
+              already_child =  parent.children.find do |ac| 
+                ac.capture_num == num and ac.capture_end == type
+              end
+              if already_child
+                parent.delete_child(already_child)
+              end
               sc.name = name
               sc.grammar = active_grammar
               sc.capture = true
               closed_scopes << sc
               all_scopes << sc
               sc.capture_num = num
+              sc.capture_end = type
               sub_scopes << sc
             end
           end
@@ -485,8 +510,10 @@ class Redcar::EditView
         from = new_scope_marker[:from]
         md   = new_scope_marker[:md]
         to   = new_scope_marker[:to] = md.end(0)
-#         p new_scope_marker
-#         p expected_scope
+#        puts "  current_scope:    #{current_scope.inspect} "
+#        puts "  new_scope_marker: #{new_scope_marker.inspect}"
+        expected_scope = nil if expected_scope == current_scope
+#        puts "  expected_scope:   #{expected_scope.inspect}"
         case new_scope_marker[:pattern]
         when :close_scope
           if current_scope.end and 
@@ -520,10 +547,10 @@ class Redcar::EditView
               expected_scope.each_child {|c| closed_scopes << c}
             else
               remove_if_overlaps_with(expected_scope, new_scope)
-              current_scope.add_child(new_scope)
+              current_scope.add_child(new_scope, starting_child)
             end
           else
-            current_scope.add_child(new_scope)
+            current_scope.add_child(new_scope, starting_child)
           end
           all_scopes << new_scope
           self.current_scope = new_scope
@@ -539,11 +566,11 @@ class Redcar::EditView
             else  
               collect_captures(new_scope, :captures)
               remove_if_overlaps_with(expected_scope, new_scope)
-              current_scope.add_child(new_scope)
+              current_scope.add_child(new_scope, starting_child)
             end
           else
             collect_captures(new_scope, :captures)
-            current_scope.add_child(new_scope)
+            current_scope.add_child(new_scope, starting_child)
           end
 #          remove_children_that_overlap_with(new_scope)
           all_scopes << new_scope
@@ -559,11 +586,14 @@ class Redcar::EditView
 #         p @line
 #         puts @parser.root.pretty2
 #         p @parser.ending_scopes
-# #        if @parser.parsed_before?(line_num)
+        if @parser.parsed_before?(line_num)
 #           p all_scopes
           # If we are reparsing, we might find that some scopes have disappeared,
           # delete them:
-          arr = current_scope.root.delete_any_on_line_not_in(line_num, all_scopes, starting_child)
+#          arr = current_scope.root.delete_any_on_line_not_in(line_num, all_scopes, starting_child)
+          arr = current_scope.root.delete_any_on_line_not_in(line_num, 
+                                                             all_scopes, 
+                                                             starting_child)
           @removed_scopes += arr
           
           # any that we expected to close on this line that now don't?
@@ -585,7 +615,7 @@ class Redcar::EditView
               end
             end
           end
-#        end
+        end
         self.pos = line_length + 1
       end
     end

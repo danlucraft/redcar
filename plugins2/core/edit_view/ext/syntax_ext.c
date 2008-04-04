@@ -164,6 +164,7 @@ typedef struct ScopeData_ {
   char* name;
   VALUE rb_scope;
   int coloured;
+  int numcolourings;
   GtkTextTag *tag;
   GtkTextTag *inner_tag;
 } ScopeData;
@@ -261,31 +262,24 @@ int scope_overlaps(Scope* s1, Scope* s2) {
   return 0;
 }
 
-int scope_add_child(Scope* parent, Scope* new_child) {
+int scope_add_child(Scope* parent, Scope* new_child, Scope* starting_child) {
   Scope *child;
-  TextLoc p_start, p_end;
   TextLoc nc_start, nc_end;
   TextLoc c_start, c_end;
-  scope_start_loc(parent, &p_start);
-  scope_end_loc(parent, &p_end);
   scope_start_loc(new_child, &nc_start);
   scope_end_loc(new_child, &nc_end);
   if (g_node_n_children(parent) == 0) {
     g_node_append(parent, new_child);
     return 1;
   }
-  else {
-    child = g_node_last_child(parent);
-    scope_start_loc(child, &c_start);
-    scope_end_loc(child, &c_end);
-    if (textloc_gte(&nc_start, &c_end)) {
-      g_node_append(parent, new_child);
-      return 1;
-    }
-  }
   Scope *insert_after = NULL;
   int i;
-  child = g_node_first_child(parent);
+  if (starting_child && starting_child->parent == parent) {
+    child = starting_child;
+  }
+  else {
+    child = g_node_first_child(parent);
+  }
   while(child != NULL) {
     scope_start_loc(child, &c_start);
     scope_end_loc(child, &c_end);
@@ -371,6 +365,7 @@ static VALUE rb_scope_cinit(VALUE self) {
   sd->rb_inner_start_mark = Qnil;
   sd->rb_inner_end_mark = Qnil;
   sd->rb_end_mark = Qnil;
+  sd->numcolourings = 0;
   return self;
 }
 
@@ -767,11 +762,11 @@ static VALUE rb_scope_first_child_after(VALUE self, VALUE rb_loc, VALUE rb_start
   if (g_node_n_children(s) == 0)
     return Qnil;
   if (starting_child && starting_child->parent == s) {
-    //    printf(":");
+    //        printf(":");
     child = starting_child;
   }
   else {
-    //    printf(".");
+    //        printf(".");
     child = g_node_first_child(s);
   }
   while (child != NULL) {
@@ -784,15 +779,16 @@ static VALUE rb_scope_first_child_after(VALUE self, VALUE rb_loc, VALUE rb_start
   return Qnil;
 }
 
-static VALUE rb_scope_add_child(VALUE self, VALUE c_scope) {
+static VALUE rb_scope_add_child(VALUE self, VALUE c_scope, VALUE rb_starting_child) {
   if (self == Qnil || c_scope == Qnil)
     printf("rb_scope_add_child(nil, or nil)");
-  Scope *sp, *sc, *lc;
+  Scope *sp, *sc, *lc, *s_start;
   ScopeData *sdp, *sdc, *lcd, *current_data;
   Data_Get_Struct(self, Scope, sp);
   Data_Get_Struct(c_scope, Scope, sc);
-
-  if (scope_add_child(sp, sc))
+  if (rb_starting_child != Qnil)
+    Data_Get_Struct(rb_starting_child, Scope, s_start);
+  if (scope_add_child(sp, sc, s_start))
     return Qtrue;
   return Qfalse;
 }
@@ -1095,6 +1091,19 @@ static VALUE rb_scope_get_parent(VALUE self) {
   return Qnil;
 }
 
+int scope_get_priority(Scope* scope) {
+  if (scope->parent)
+    return scope_get_priority(scope->parent)+1;
+  else
+    return 1;
+}
+
+static VALUE rb_scope_get_priority(VALUE self) {
+  Scope *scope;
+  Data_Get_Struct(self, Scope, scope);
+  return INT2FIX(scope_get_priority(scope));
+}
+
 // -------- Colouring stuff
 
 int minify(int offset) {
@@ -1194,28 +1203,19 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
   char *get_tag_name;
 
   sd->coloured = 1;
-
+/*   sd->numcolourings++; */
+/*   printf("(%d) ", sd->numcolourings); */
   if (inner) {
     gtk_text_buffer_get_iter_at_mark(buffer, &start_iter, sd->inner_start_mark);
     gtk_text_buffer_get_iter_at_mark(buffer, &end_iter, sd->inner_end_mark);
-    if (sd->inner_tag != NULL) {
+    if (sd->inner_tag != NULL)
       tag = sd->inner_tag;
-/*       gtk_text_buffer_get_start_iter(buffer, &buff_start_iter); */
-/*       gtk_text_buffer_get_end_iter(buffer, &buff_end_iter); */
-/*       gtk_text_buffer_remove_tag(buffer, sd->inner_tag, */
-/* 				 &buff_start_iter, &buff_end_iter); */
-    }
   }
   else {
     gtk_text_buffer_get_iter_at_mark(buffer, &start_iter, sd->start_mark);
     gtk_text_buffer_get_iter_at_mark(buffer, &end_iter, sd->end_mark);
-    if (sd->tag != NULL) {
+    if (sd->tag != NULL)
       tag = sd->tag;
-/*       gtk_text_buffer_get_start_iter(buffer, &buff_start_iter); */
-/*       gtk_text_buffer_get_end_iter(buffer, &buff_end_iter); */
-/*       gtk_text_buffer_remove_tag(buffer, sd->tag, */
-/* 				 &buff_start_iter, &buff_end_iter); */
-    }
   }
   
   if (tag == NULL) {
@@ -1269,8 +1269,6 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
 static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_buffer, 
                                         VALUE theme, VALUE scopes) {
   GtkTextBuffer* buffer;
-  GtkTextIter start_iter, end_iter;
-
   buffer = (GtkTextBuffer *) get_gobject(rb_buffer);
 
   // colour each scope
@@ -1278,15 +1276,12 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_buffer,
   VALUE rb_current, pattern, content_name;
   Scope* current;
   ScopeData* current_data;
-  TextLoc start, end;
   for (i = 0; i < RARRAY(scopes)->len; i++) {
     rb_current = rb_ary_entry(scopes, i);
     Data_Get_Struct(rb_current, Scope, current);
-    current_data = current->data;
-    scope_start_loc(current, &start);
-    scope_end_loc(current, &end);
-    if (textloc_equal(&start, &end))
+    if (G_NODE_IS_ROOT(current))
       continue;
+    current_data = current->data;
     pattern = rb_iv_get(rb_current, "@pattern");
     content_name = Qnil;
     if (pattern != Qnil)
@@ -1294,8 +1289,8 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_buffer,
     if (current_data->name == NULL && pattern != Qnil && 
         content_name == Qnil)
       continue;
-/*     if (current_data->coloured) */
-/*       continue; */
+    if (current_data->coloured)
+      continue;
     colour_scope(buffer, current, theme, 0);
     if (content_name != Qnil) {
       colour_scope(buffer, current, theme, 1);
@@ -1303,6 +1298,26 @@ static VALUE rb_colour_line_with_scopes(VALUE self, VALUE rb_buffer,
   }
   //  puts("");
   return Qnil;
+}
+
+int delete_marks(GtkTextBuffer *buffer, Scope *scope) {
+  ScopeData* sd = scope->data;
+  if(sd->start_mark)
+    gtk_text_buffer_delete_mark(buffer, sd->start_mark);
+  if(sd->inner_start_mark)
+    gtk_text_buffer_delete_mark(buffer, sd->inner_start_mark);
+  if(sd->end_mark)
+    gtk_text_buffer_delete_mark(buffer, sd->end_mark);
+  if(sd->inner_end_mark)
+    gtk_text_buffer_delete_mark(buffer, sd->inner_end_mark);
+    
+  Scope *child;
+  child = g_node_first_child(scope);
+  while(child != NULL) {
+    delete_marks(buffer, child);
+    child = g_node_next_sibling(child);
+  }
+  return 0;
 }
 
 int uncolour_scope(GtkTextBuffer *buffer, Scope *scope, int uncolour_children) {
@@ -1327,6 +1342,7 @@ int uncolour_scope(GtkTextBuffer *buffer, Scope *scope, int uncolour_children) {
 /*     print_iter(&end_iter); */
 /*     puts(""); */
 /*   } */
+  sd->coloured = 0;
   if (uncolour_children) {
     Scope *child;
     child = g_node_first_child(scope);
@@ -1357,6 +1373,7 @@ static VALUE rb_uncolour_scopes(VALUE self, VALUE rb_colourer, VALUE scopes) {
     rb_current = rb_ary_entry(scopes, i);
     Data_Get_Struct(rb_current, Scope, current);
     uncolour_scope(buffer, current, 1);
+/*     delete_marks(buffer, current); */
   }
   return Qnil;
 }
@@ -1364,6 +1381,7 @@ static VALUE rb_uncolour_scopes(VALUE self, VALUE rb_colourer, VALUE scopes) {
 /// LineParser
 
 typedef struct LineParser_ {
+  VALUE  line;
   int    line_length;
   int    line_num;
   int    pos;
@@ -1397,6 +1415,7 @@ static VALUE rb_line_parser_init(VALUE self, VALUE parser,
                                  VALUE last_child) {
   LineParser *lp;
   Data_Get_Struct(self, LineParser, lp);
+  lp->line        = line;
   lp->line_length = RSTRING_LEN(line);
   lp->line_num    = FIX2INT(line_num);
   lp->pos         = 0;
@@ -1584,8 +1603,7 @@ static VALUE rb_line_parser_current_scope_closes(VALUE self) {
   thispos = start.offset+1;
   if (start.line != lp->line_num || lp->pos > thispos)
     thispos = lp->pos;
-  rb_line = rb_iv_get(self, "@line");
-  rb_md = rb_funcall(rb_closing_regexp, rb_intern("match"), 2, rb_line, INT2FIX(thispos));
+  rb_md = rb_funcall(rb_closing_regexp, rb_intern("match"), 2, lp->line, INT2FIX(thispos));
   if (rb_md != Qnil) {
     rb_from = rb_funcall(rb_md, rb_intern("begin"), 1, INT2FIX(0));
     line_parser_update_scope_marker(lp, NUM2INT(rb_from), 
@@ -1608,9 +1626,9 @@ static VALUE rb_line_parser_match_pattern(VALUE self, VALUE rb_pattern) {
   VALUE rb_match_re, rb_md, rb_rest_line, rb_from, rb_scope_marker;
   int from;
   rb_match_re = rb_funcall(rb_pattern, rb_intern("match"), 0);
+/*   rb_match_re = rb_iv_get(rb_pattern, "@match_re"); */
   if (rb_match_re != Qnil) {
-    rb_rest_line = rb_iv_get(self, "@line");
-    rb_md        = rb_funcall(rb_match_re, rb_intern("match"), 2, rb_rest_line, INT2FIX(lp->pos));
+    rb_md        = rb_funcall(rb_match_re, rb_intern("match"), 2, lp->line, INT2FIX(lp->pos));
     if (rb_md != Qnil) {
       rb_from = rb_funcall(rb_md, rb_intern("begin"), 1, INT2FIX(0));
       rb_scope_marker = rb_hash_new();
@@ -1718,10 +1736,11 @@ void Init_syntax_ext() {
   rb_define_method(cScope, "overlaps?", rb_scope_overlaps, 1);
   rb_define_method(cScope, "on_line?",  rb_scope_active_on_line, 1);
 
-  rb_define_method(cScope, "add_child",  rb_scope_add_child, 1);
+  rb_define_method(cScope, "add_child",  rb_scope_add_child, 2);
   rb_define_method(cScope, "delete_child",  rb_scope_delete_child, 1);
   rb_define_method(cScope, "children",  rb_scope_get_children, 0);
   rb_define_method(cScope, "parent",  rb_scope_get_parent, 0);
+  rb_define_method(cScope, "priority",  rb_scope_get_priority, 0);
   rb_define_method(cScope, "scope_at",  rb_scope_at, 1);
   rb_define_method(cScope, "first_child_after",  rb_scope_first_child_after, 2);
   rb_define_method(cScope, "clear_after",  rb_scope_clear_after, 1);

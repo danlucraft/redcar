@@ -50,14 +50,14 @@ end
 
 if Redcar::App.ARGV.include? "--test-perf-load"
   RubyProf.start
-  Coms::OpenTab.new("/home/dan/projects/rak/bin/rak").do
+  Coms::OpenTab.new("/home/dan/projects/redcar/rak").do
   result = RubyProf.stop
   printer = RubyProf::GraphHtmlPrinter.new(result)
   printer.print(STDOUT, :min_percent => 1)
   stop_redcar
 elsif Redcar::App.ARGV.include? "--test-time-load"
   st = Time.now
-  Coms::OpenTab.new("/home/dan/projects/rak/bin/rak").do
+  Coms::OpenTab.new("/home/dan/projects/redcar/rak").do
   et = Time.now
   puts "time to load: #{et-st}"
   stop_redcar

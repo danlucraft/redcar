@@ -286,6 +286,7 @@ unless defined? SyntaxLogger
   SyntaxLogger.level = Logger::DEBUG
 end
 
+#require File.dirname(__FILE__) + '/edit_view/ext/pattern'
 require File.dirname(__FILE__) + '/edit_view/grammar'
 require File.dirname(__FILE__) + '/edit_view/scope'
 require File.dirname(__FILE__) + '/edit_view/parser'

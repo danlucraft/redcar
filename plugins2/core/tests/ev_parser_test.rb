@@ -93,6 +93,14 @@ module Redcar::Tests
       assert_equal 2, @root.children[0].children.length
     end
     
+    def test_bug_with_multiple_endings
+      @buf.insert(@buf.iter(0), "def foo()")
+      @buf.place_cursor(@buf.iter(8))
+      @buf.insert_at_cursor("a")
+      @buf.insert_at_cursor("s")
+      assert_equal 4, @root.children[0].children.length
+    end
+    
     # --- old tests ----
     
     def test_parser
@@ -271,7 +279,7 @@ HI
       buf.text=(rubycode)
       
       copy = smp.root.pretty2
-      10.times { assert smp.parse_line("class Redcar::File\n", 0) }
+      10.times { assert smp.parse_line(0) }
       assert_equal copy, smp.root.pretty2
     end
     
@@ -289,7 +297,7 @@ puts "hello"
 P1END
       buf.text=(rubycode)
       copy = smp.root.pretty2
-      1.times { assert smp.parse_line("foo=\<\<HI", 1) }
+      1.times { assert smp.parse_line(1) }
       assert_equal copy, smp.root.pretty2
     end
     
@@ -308,7 +316,7 @@ P2END
       buf.text=(rubycode)
       
       copy = smp.root.pretty2
-      10.times { assert smp.parse_line("HI", 4) }
+      10.times { assert smp.parse_line(4) }
       assert_equal copy, smp.root.pretty2
     end
     
@@ -331,19 +339,6 @@ P2END
       buf.cursor = TextLoc(0, 0)
       buf.replace_line("puts \"hello\", @hello")
       assert_equal 5, smp.root.children.length
-    end
-    
-    # ... and new opening scopes. Here parse_line should return 
-    # false to indicate the scope at the end of the line has changed ...
-    def test_re_parse_line_with_extra_opening_scopes
-      gr = @ruby_grammar
-      buf, smp = ParserTests.clean_parser_and_buffer(gr)
-      rubycode="class Redcar::File\n  def nice_name\n    @filename.split(\"asdf asdf\").last\n  end\nend\n"
-      buf.text=(rubycode)
-      
-      assert_equal 10, smp.root.children.length
-      assert !smp.parse_line("    @filename.split(\"asdf asdf\").last=\<\<HI", 2)
-      assert_equal 11, smp.root.children.length # <- this is not up to date for the entire text.
     end
     
     def test_captures_are_children_for_single_scope

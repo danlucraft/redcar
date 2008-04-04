@@ -62,7 +62,10 @@ class Redcar::EditView
         i < i1 or i > i2
       end
 #       puts "mark_pairs: #{l} -> #{@mark_pairs.length}"
-#       p @mark_pairs.map{|mp| mp.map{|m|@buf.get_iter_at_mark(m).offset}}
+    end
+    
+    def inspect_pairs
+      @mark_pairs.map{|mp| mp.map{|m|@buf.get_iter_at_mark(m).offset}}
     end
     
     def find_mark_pair_by_start(iter)
@@ -108,6 +111,7 @@ class Redcar::EditView
           @deletion = iter1.offset
         end
       end
+      
       @buf.signal_connect_after("delete_range") do |_, _, _|
         if @deletion and !@ignore_delete
           mark_pair = find_mark_pair_by_start(@buf.iter(@deletion))
@@ -116,6 +120,7 @@ class Redcar::EditView
             i = @buf.get_iter_at_mark(mark_pair[1])
             @buf.delete(i, @buf.iter(i.offset+1))
             @ignore_delete = false
+            @mark_pairs.delete(mark_pair)
             @deletion = nil
           end
         end

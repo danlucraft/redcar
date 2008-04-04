@@ -53,18 +53,20 @@ class Redcar::EditView
         line_num = iter.line
         if text == "\n" and !@ignore
           rules = Indenter.indent_rules_for_scope(@parser.starting_scopes[line_num-1])
-          indent_line(line_num-1, rules) if line_num > 0
-          indent_line(line_num, rules)
-          line = @buf.get_line(line_num).to_s
-          if contains_decrease_indent(line, rules) and
-              !contains_increase_indent(line, rules) and
-              !contains_nonindented(line, rules) and 
-              !contains_indent_next(line, rules)
-            @ignore = true
-            @buf.insert(@buf.line_start(line_num), "\n")
-            @buf.place_cursor(@buf.line_start(line_num))
-            @ignore = false
+          @parser.delay_parsing do
+            indent_line(line_num-1, rules) if line_num > 0
             indent_line(line_num, rules)
+            line = @buf.get_line(line_num).to_s
+            if contains_decrease_indent(line, rules) and
+                !contains_increase_indent(line, rules) and
+                !contains_nonindented(line, rules) and 
+                !contains_indent_next(line, rules)
+              @ignore = true
+              @buf.insert(@buf.line_start(line_num), "\n")
+              @buf.place_cursor(@buf.line_start(line_num))
+              @ignore = false
+              indent_line(line_num, rules)
+            end
           end
         end
         false
