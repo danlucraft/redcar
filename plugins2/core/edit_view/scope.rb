@@ -285,10 +285,10 @@ class Redcar::EditView
       if self.pattern.is_a? SinglePattern
         hanging = ""
       else
-        if self.end and self.end.valid?
-          hanging = " closed"
+        if self.get_open
+          hanging = " open"
         else
-          hanging = " hanging"
+          hanging = " closed"
         end
       end
       startstr = "(#{start.line},#{start.offset})-"
@@ -309,10 +309,10 @@ class Redcar::EditView
       if self.pattern.is_a? SinglePattern
         hanging = ""
       else
-        if self.end and self.end.valid?
-          hanging = " closed"
+        if self.get_open
+          hanging = " open"
         else
-          hanging = " hanging"
+          hanging = " closed"
         end
       end
       startstr = "(#{start.line},#{start.offset})-"

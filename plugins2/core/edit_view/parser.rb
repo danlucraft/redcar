@@ -10,24 +10,28 @@ class Redcar::EditView
     attr_reader   :max_view, :buf, :ending_scopes, :starting_scopes
     
     def initialize(buffer, root, grammars=[], colourer=nil)
+      buffer.parser = self
       @buf = buffer
       @root = root
-      @ending_scopes = []
-      @starting_scopes = []
       @grammars = grammars
       @colourer = colourer
       @max_view = 200
       @changes = []
       @scope_last_line = 0
-      @last_childs = []
       @parse_all = false
       @cursor_line = 0
       @parsing_on = true
+      @tags = []
+      
+      # line scope trackers
+      @ending_scopes = []
+      @starting_scopes = []
+      @last_childs = []
+      
       connect_buffer_signals
       unless @buf.text == ""
         raise "Parser#initialize called with not empty buffer."
       end
-      @tags = []
     end
     
     def delay_parsing
@@ -445,6 +449,7 @@ class Redcar::EditView
         tooff   = @line_start_offset + nsm[:to]
         current_scope.set_end_mark       @parser.buf, tooff, true
         current_scope.set_inner_end_mark @parser.buf, fromoff, true
+        current_scope.set_open(false)
         current_scope.close_matchdata = nsm[:md]
       end
       
@@ -457,6 +462,7 @@ class Redcar::EditView
         new_scope.set_end_mark   @parser.buf, tooff, true
         new_scope.open_matchdata = nsm[:md]
         new_scope.name = nsm[:pattern].scope_name
+        new_scope.set_open(false)
         new_scope
       end
       
@@ -471,6 +477,7 @@ class Redcar::EditView
         new_scope.set_inner_start_mark @parser.buf, tooff, false
         new_scope.set_inner_end_mark   @parser.buf, @parser.buf.char_count, false
         new_scope.set_end_mark         @parser.buf, @parser.buf.char_count, false
+        new_scope.set_open(true)
         
         new_scope.open_matchdata = nsm[:md]
         re = Oniguruma::ORegexp.new(@parser.build_closing_regexp(pattern, 

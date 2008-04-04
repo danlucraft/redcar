@@ -179,6 +179,7 @@ module Redcar
       raise "trying to create colourer with no theme!" unless @theme
       @colourer = Redcar::EditView::Colourer.new(self, @theme)
       @parser = Parser.new(buffer, @root, [], @colourer)
+      buffer.parser = @parser
     end
     
     def create_indenter
@@ -230,6 +231,7 @@ module Redcar
       self.buffer = newbuffer
       setup_buffer(newbuffer)
       newbuffer.text = text
+      newbuffer.parser = @parser
       @parser.buffer = newbuffer
       @indenter.buffer = newbuffer
       @autopairer.buffer = newbuffer

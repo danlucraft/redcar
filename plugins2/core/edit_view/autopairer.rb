@@ -29,6 +29,20 @@ class Redcar::EditView
       @autopair_rules.default = nil
     end
 
+    def self.autopair_rules_for_scope(scope)
+      if scope
+        @autopair_rules.each do |scope_name, value|
+      #            puts "applicable? #{scope_name} to #{scope.hierarchy_names(true)}" #.join(" ")}"
+          v = Theme.applicable?(scope_name, scope.hierarchy_names(true)).to_bool
+      #            p v
+          if v
+            return value
+          end
+        end
+      end
+      @autopair_default
+    end
+    
     cattr_reader :autopair_rules, :autopair_default, :autopair_default1
     attr_reader  :mark_pairs
     
@@ -84,7 +98,11 @@ class Redcar::EditView
         @done = nil
         
         # Type over ends
-        if AutoPairer.autopair_default1.include? text and !@ignore_insert
+        sc = @buf.scope_at(@buf.cursor_line, 
+                           @buf.cursor_line_offset-1)
+        rules = AutoPairer.autopair_rules_for_scope(sc)
+        inverse_rules = rules.invert
+        if inverse_rules.include? text and !@ignore_insert
           end_mark_pair = find_mark_pair_by_end(iter)
           if end_mark_pair and end_mark_pair[3] == text
             @buf.delete(@buf.iter(@buf.cursor_offset-1),
@@ -95,9 +113,9 @@ class Redcar::EditView
         end
         
         # Insert matching ends
-        if AutoPairer.autopair_default.include? text and !@ignore_insert and !@done
+        if rules.include? text and !@ignore_insert and !@done
           @ignore_insert = true
-          endtext = AutoPairer.autopair_default[text]
+          endtext = rules[text]
           @buf.insert_at_cursor(endtext)
           @buf.place_cursor(@buf.iter(@buf.cursor_offset-1))
           mark1 = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset-1), false)

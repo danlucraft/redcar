@@ -9,6 +9,8 @@ module Redcar::Tests
                                        :grammar => @grammar,
                                        :start => TextLoc(0, 0))
       @buf = Gtk::SourceBuffer.new
+      sc.set_start_mark @buf, 0, true
+      sc.set_end_mark   @buf, @buf.char_count, false
       @parser = Redcar::EditView::Parser.new(@buf, sc, [@grammar])
       @parser.parse_all = true
       @autopairer = Redcar::EditView::AutoPairer.new(@buf, @parser)
@@ -78,6 +80,27 @@ module Redcar::Tests
       assert_equal "pikon(h))", @buf.text
       assert_equal 8, @buf.cursor_offset
       assert_equal 0, @autopairer.mark_pairs.length
+    end
+    
+    def test_sees_scopes_pairs
+      @grammar = Redcar::EditView::Grammar.grammar(:name => 'HTML')
+      sc = Redcar::EditView::Scope.new(:pattern => @grammar,
+                                       :grammar => @grammar,
+                                       :start => TextLoc(0, 0))
+      @buf = Gtk::SourceBuffer.new
+      sc.set_start_mark @buf, 0, true
+      sc.set_end_mark   @buf, @buf.char_count, false
+      @parser = Redcar::EditView::Parser.new(@buf, sc, [@grammar])
+      @parser.parse_all = true
+      @autopairer = Redcar::EditView::AutoPairer.new(@buf, @parser)
+      @buf.insert_at_cursor("<")
+      assert_equal "<>", @buf.text
+    end
+    
+    def test_sees_scopes_pairs_in_embedded
+      @buf.text = "f=<<-HTML\n"
+      @buf.insert_at_cursor("<")
+      assert_equal "f=<<-HTML\n<>", @buf.text
     end
     
     def type(text, buffer)

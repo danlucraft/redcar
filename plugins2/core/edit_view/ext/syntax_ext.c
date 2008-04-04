@@ -165,6 +165,7 @@ typedef struct ScopeData_ {
   VALUE rb_scope;
   int coloured;
   int numcolourings;
+  int open;
   GtkTextTag *tag;
   GtkTextTag *inner_tag;
 } ScopeData;
@@ -366,6 +367,7 @@ static VALUE rb_scope_cinit(VALUE self) {
   sd->rb_inner_end_mark = Qnil;
   sd->rb_end_mark = Qnil;
   sd->numcolourings = 0;
+  sd->open = 0;
   return self;
 }
 
@@ -670,6 +672,27 @@ static VALUE rb_scope_get_name(VALUE self) {
     return Qnil;
 }
 
+static VALUE rb_scope_set_open(VALUE self, VALUE rb_open) {
+  Scope *s;
+  Data_Get_Struct(self, Scope, s);
+  ScopeData *sd = s->data;
+  if (rb_open == Qtrue)
+    sd->open = 1;
+  else
+    sd->open = 0;
+  return Qnil;
+}
+
+static VALUE rb_scope_get_open(VALUE self) {
+  Scope *s;
+  Data_Get_Struct(self, Scope, s);
+  ScopeData *sd = s->data;
+  if (sd->open)
+    return Qtrue;
+  else
+    return Qnil;
+}
+
 // Boolean scope methods
 
 static VALUE rb_scope_active_on_line(VALUE self, VALUE line_num) {
@@ -697,8 +720,10 @@ static VALUE rb_scope_overlaps(VALUE self, VALUE other) {
 
 // Scope children methods
 
+/* Find the scope at text location.  */
 Scope* scope_at(Scope* s, TextLoc* loc) {
   Scope *scope, *child;
+  ScopeData *sd = s->data;
   int i;
 
   TextLoc s_start, s_end;
@@ -706,24 +731,31 @@ Scope* scope_at(Scope* s, TextLoc* loc) {
   scope_start_loc(s, &s_start);
   scope_end_loc(s, &s_end);
   if (textloc_lte(&s_start, loc) || G_NODE_IS_ROOT(s)) {
-    if (textloc_gt(&s_end, loc)) {
-      if (g_node_n_children(s) == 0) {	
+    if (textloc_gte(&s_end, loc)) {
+      if (textloc_gt(&s_end, loc)) {
+        if (g_node_n_children(s) == 0) {	
+          return s;
+        }
+        child = g_node_last_child(s);
+        scope_start_loc(child, &c_start);
+        scope_end_loc(child, &c_end);
+        if (textloc_lt(&c_end, loc)) {	
+          return s;
+        }
+        for (i = 0; i < g_node_n_children(s); i++) {
+          child = g_node_nth_child(s, i);
+          scope = scope_at(child, loc);
+          if (scope != NULL) {	
+            return scope;
+          }
+        }	
         return s;
       }
-      child = g_node_last_child(s);
-      scope_start_loc(child, &c_start);
-      scope_end_loc(child, &c_end);
-      if (textloc_lt(&c_end, loc)) {	
-        return s;
+      else {
+        if (textloc_equal(&s_end, loc) && sd->open) {
+          return s;
+        }
       }
-      for (i = 0; i < g_node_n_children(s); i++) {
-        child = g_node_nth_child(s, i);
-        scope = scope_at(child, loc);
-        if (scope != NULL) {	
-          return scope;
-	}
-      }	
-      return s;
     }
     else {	
       return NULL;
@@ -1732,6 +1764,8 @@ void Init_syntax_ext() {
 
   rb_define_method(cScope, "set_name",  rb_scope_set_name, 1);
   rb_define_method(cScope, "get_name",  rb_scope_get_name, 0);
+  rb_define_method(cScope, "set_open",  rb_scope_set_open, 1);
+  rb_define_method(cScope, "get_open",  rb_scope_get_open, 0);
 /*   rb_define_method(cScope, "modified?", rb_scope_modified, 0); */
   rb_define_method(cScope, "overlaps?", rb_scope_overlaps, 1);
   rb_define_method(cScope, "on_line?",  rb_scope_active_on_line, 1);

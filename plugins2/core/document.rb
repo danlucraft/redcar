@@ -4,6 +4,8 @@ module Redcar
   class Document
     extend FreeBASE::StandardPlugin
     
+    attr_accessor :parser
+    
     # The length of the document in characters.
     def length
       char_count
@@ -111,6 +113,18 @@ module Redcar
     
     def cursor_offset
       iter(cursor_mark).offset
+    end
+    
+    def cursor_scope
+      if @parser
+        @parser.scope_at(TextLoc(cursor_line, cursor_line_offset))
+      end
+    end
+    
+    def scope_at(line, line_offset)
+      if @parser
+        @parser.scope_at(TextLoc(line, line_offset))
+      end
     end
     
     def cursor_line_offset
