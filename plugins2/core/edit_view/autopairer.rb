@@ -29,12 +29,12 @@ class Redcar::EditView
       @autopair_rules.default = nil
     end
 
-    def self.autopair_rules_for_scope(scope)
-      if scope
+    def self.autopair_rules_for_scope(hierarchy_names)
+      if hierarchy_names
         @autopair_rules.each do |scope_name, value|
-        #          puts "applicable? #{scope_name} to #{scope.hierarchy_names(true).join(" ")}"
-          v = Theme.applicable?(scope_name, scope.hierarchy_names(true)).to_bool
-       #           p v
+         #         puts "applicable? #{scope_name.inspect} to #{hierarchy_names.join(" ").inspect}"
+          v = Theme.applicable?(scope_name, hierarchy_names).to_bool
+        #          p v
           if v
             return value
           end
@@ -93,14 +93,25 @@ class Redcar::EditView
     end
     
     def connect_buffer_signals
-      # Set up indenting on Return
+      # record the scope details BEFORE the new text is inserted
+      # as the new text could change them. (ex: HTML incomplete.illegal.
+      # tag)
+      @buf.signal_connect("insert_text") do |_, iter, text, length|
+        cursor_scope = @buf.scope_at(@buf.cursor_line, 
+                                      @buf.cursor_line_offset)
+        if cursor_scope
+          @hierarchy_names = cursor_scope.hierarchy_names(true)
+        else
+          @hierarchy_names = nil
+        end
+        false
+      end
+      
       @buf.signal_connect_after("insert_text") do |_, iter, text, length|
         @done = nil
         
         # Type over ends
-        sc = @buf.scope_at(@buf.cursor_line, 
-                           @buf.cursor_line_offset-2)
-        rules = AutoPairer.autopair_rules_for_scope(sc)
+        rules = AutoPairer.autopair_rules_for_scope(@hierarchy_names)
         inverse_rules = rules.invert
         if inverse_rules.include? text and !@ignore_insert
           end_mark_pair = find_mark_pair_by_end(iter)

@@ -173,6 +173,7 @@ module Redcar
       @root.bg_color = @theme.global_settings['background']
       @root.set_start_mark buffer, buffer.iter(0).offset, false
       @root.set_end_mark   buffer, buffer.char_count, false
+      @root.set_open(true)
     end
     
     def create_parser
@@ -196,8 +197,9 @@ module Redcar
       @root = Scope.new(:pattern => gr,
                         :grammar => gr)
       @root.bg_color = @theme.global_settings['background']
-      @root.set_start_mark buffer, buffer.iter(0).offset, false
+      @root.set_start_mark buffer, buffer.iter(0).offset, true
       @root.set_end_mark   buffer, buffer.char_count, false
+      @root.set_open(true)
       @parser.uncolour
       @parser.root = @root
       @parser.reparse

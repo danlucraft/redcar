@@ -19,6 +19,15 @@ module Com::RedcarIDE
       end
     end
     
+    class PrintScopeAtCursor < Redcar::EditTabCommand
+     menu "Debug/Print Scope at Cursor"
+     norecord
+     def execute(tab)
+      puts "Scope at cursor"
+      puts tab.doc.cursor_scope.inspect
+     end
+    end
+    
     class ShowSpeedbarExample < Redcar::Command
       menu "Debug/SpeedbarExample"
       icon :PREFERENCES

@@ -11,6 +11,7 @@ module Redcar::Tests
       @buf = Gtk::SourceBuffer.new
       sc.set_start_mark @buf, 0, true
       sc.set_end_mark   @buf, @buf.char_count, false
+      sc.set_open(true)
       @parser = Redcar::EditView::Parser.new(@buf, sc, [@grammar])
       @parser.parse_all = true
       @autopairer = Redcar::EditView::AutoPairer.new(@buf, @parser)
@@ -90,6 +91,7 @@ module Redcar::Tests
       @buf = Gtk::SourceBuffer.new
       sc.set_start_mark @buf, 0, true
       sc.set_end_mark   @buf, @buf.char_count, false
+      sc.set_open(true)
       @parser = Redcar::EditView::Parser.new(@buf, sc, [@grammar])
       @parser.parse_all = true
       @autopairer = Redcar::EditView::AutoPairer.new(@buf, @parser)

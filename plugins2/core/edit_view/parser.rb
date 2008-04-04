@@ -462,7 +462,6 @@ class Redcar::EditView
         new_scope.set_end_mark   @parser.buf, tooff, true
         new_scope.open_matchdata = nsm[:md]
         new_scope.name = nsm[:pattern].scope_name
-        new_scope.set_open(false)
         new_scope
       end
       

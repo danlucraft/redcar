@@ -732,30 +732,23 @@ Scope* scope_at(Scope* s, TextLoc* loc) {
   scope_end_loc(s, &s_end);
   if (textloc_lte(&s_start, loc) || G_NODE_IS_ROOT(s)) {
     if (textloc_gte(&s_end, loc)) {
-      if (textloc_gt(&s_end, loc)) {
-        if (g_node_n_children(s) == 0) {	
-          return s;
-        }
-        child = g_node_last_child(s);
-        scope_start_loc(child, &c_start);
-        scope_end_loc(child, &c_end);
-        if (textloc_lt(&c_end, loc)) {	
-          return s;
-        }
-        for (i = 0; i < g_node_n_children(s); i++) {
-          child = g_node_nth_child(s, i);
-          scope = scope_at(child, loc);
-          if (scope != NULL) {	
-            return scope;
-          }
-        }	
+      if (g_node_n_children(s) == 0) {	
         return s;
       }
-      else {
-        if (textloc_equal(&s_end, loc) && sd->open) {
-          return s;
+      child = g_node_last_child(s);
+      scope_start_loc(child, &c_start);
+      scope_end_loc(child, &c_end);
+      if (textloc_lt(&c_end, loc)) {	
+        return s;
+      }
+      for (i = 0; i < g_node_n_children(s); i++) {
+        child = g_node_nth_child(s, i);
+        scope = scope_at(child, loc);
+        if (scope != NULL) {	
+          return scope;
         }
       }
+      return s;
     }
     else {	
       return NULL;

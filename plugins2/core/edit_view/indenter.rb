@@ -51,10 +51,11 @@ class Redcar::EditView
       # Set up indenting on Return
       @buf.signal_connect_after("insert_text") do |_, iter, text, length|
         line_num = iter.line
+        # indent the next line automatically
+        rules = Indenter.indent_rules_for_scope(@parser.starting_scopes[line_num-1])
         if text == "\n" and !@ignore
-          rules = Indenter.indent_rules_for_scope(@parser.starting_scopes[line_num-1])
           @parser.delay_parsing do
-            indent_line(line_num-1, rules) if line_num > 0
+#            indent_line(line_num-1, rules) if line_num > 0
             indent_line(line_num, rules)
             line = @buf.get_line(line_num).to_s
             if contains_decrease_indent(line, rules) and
@@ -67,6 +68,16 @@ class Redcar::EditView
               @ignore = false
               indent_line(line_num, rules)
             end
+          end
+        end
+        
+        # watch for lines that begin with decrease indent
+        if !text.include? "\n" and !@ignore
+          line = @buf.get_line(line_num).to_s
+          if contains_decrease_indent(line, rules)
+            @ignore = true
+            indent_line(line_num, rules)
+            @ignore = false
           end
         end
         false
