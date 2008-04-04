@@ -26,12 +26,14 @@ class Redcar::EditView
     end
     
     def self.indent_rules_for_scope(scope)
-      @indent_rules.each do |scope_name, value|
-#        puts "applicable? #{scope_name} to #{scope.hierarchy_names(true).join(" ")}"
-        v = Theme.applicable?(scope_name, scope.hierarchy_names(true)).to_bool
-#        p v
-        if v
-          return value
+      if scope
+        @indent_rules.each do |scope_name, value|
+          #        puts "applicable? #{scope_name} to #{scope.hierarchy_names(true).join(" ")}"
+          v = Theme.applicable?(scope_name, scope.hierarchy_names(true)).to_bool
+          #        p v
+          if v
+            return value
+          end
         end
       end
       nil
@@ -53,7 +55,7 @@ class Redcar::EditView
         line_num = iter.line
         # indent the next line automatically
         rules = Indenter.indent_rules_for_scope(@parser.starting_scopes[line_num-1])
-        if text == "\n" and !@ignore
+        if rules and text == "\n" and !@ignore
           @parser.delay_parsing do
 #            indent_line(line_num-1, rules) if line_num > 0
             indent_line(line_num, rules)
@@ -72,7 +74,7 @@ class Redcar::EditView
         end
         
         # watch for lines that begin with decrease indent
-        if !text.include? "\n" and !@ignore
+        if !@ignore and rules and !text.include? "\n" and text !~ /\s/
           line = @buf.get_line(line_num).to_s
           if contains_decrease_indent(line, rules)
             @ignore = true

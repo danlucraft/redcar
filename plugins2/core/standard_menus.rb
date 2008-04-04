@@ -260,6 +260,37 @@ module Redcar
       end
     end
     
+    class LineStart < Redcar::EditTabCommand
+      key  "Global/Ctrl+A"
+      icon :GO_BACK
+      
+      def execute(tab)
+        doc = tab.doc
+        doc.place_cursor(doc.line_start(doc.cursor_line))
+      end
+    end
+    
+    class LineEnd < Redcar::EditTabCommand
+      key  "Global/Ctrl+E"
+      icon :GO_FORWARD
+      
+      def execute(tab)
+        doc = tab.doc
+        doc.place_cursor(doc.line_end1(doc.cursor_line))
+      end
+    end
+    
+    class KillLine < Redcar::EditTabCommand
+      key  "Global/Ctrl+K"
+      icon :DELETE
+      
+      def execute(tab)
+        doc = tab.doc
+        doc.delete(doc.cursor_iter, 
+                   doc.line_end1(doc.cursor_line))
+      end
+    end
+    
     class Find < Redcar::EditTabCommand
       key  "Global/Ctrl+F"
       icon :FIND
@@ -367,7 +398,10 @@ module Redcar
       submenu "Move" do
         item "Forward Word",    ForwardWord
         item "Backward Word",   BackwardWord
+        item "Line Start",    LineStart
+        item "Line End",   LineEnd
       end
+      item "Kill Line", KillLine
       separator
       item "Indent Line",    IndentLine
       item "Show Scope",     ShowScope
