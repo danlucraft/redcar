@@ -4,7 +4,7 @@ module Redcar
   class Document
     extend FreeBASE::StandardPlugin
     
-    attr_accessor :parser
+    attr_accessor :parser, :indenter
     
     # The length of the document in characters.
     def length
@@ -213,6 +213,10 @@ module Redcar
       insert(line_start(cursor_line), new_text)
       place_cursor(iter(current_cursor))
       select(startsel, endsel)
+    end
+    
+    def indent_line(line_num)
+      @indenter.indent_line(line_num) if @indenter
     end
   end
 end

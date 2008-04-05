@@ -4,7 +4,7 @@ module Com::RedcarIDE
     class PrintCommandHistory < Redcar::Command
       menu "Debug/Print Command History"
       norecord
-      def execute(tab)
+      def execute
         puts "Command History"
         puts Redcar::CommandHistory.history.reverse[0..15].map{|com| "  " + com.to_s}
       end
@@ -13,7 +13,7 @@ module Com::RedcarIDE
     class PrintScopeTree < Redcar::EditTabCommand
       menu "Debug/Print Scope Tree"
       norecord
-      def execute(tab)
+      def execute
         puts "Scope Tree"
         puts tab.view.parser.root.pretty2
       end
@@ -22,7 +22,7 @@ module Com::RedcarIDE
     class PrintScopeAtCursor < Redcar::EditTabCommand
      menu "Debug/Print Scope at Cursor"
      norecord
-     def execute(tab)
+     def execute
       puts "Scope at cursor"
       puts tab.doc.cursor_scope.inspect
      end
@@ -41,7 +41,7 @@ module Com::RedcarIDE
         end
       end
       
-      def execute(tab)
+      def execute
         ExampleSpeedbar.instance.show(win)
       end
     end

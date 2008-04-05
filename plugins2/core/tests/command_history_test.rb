@@ -1,13 +1,13 @@
 module Redcar::Tests
   class CommandHistoryTest < Test::Unit::TestCase
     class HistoryTestCommand < Redcar::Command
-      def execute(tab)
+      def execute
       end
     end
     
     class HistoryTestCommand2 < Redcar::Command
       norecord
-      def execute(tab)
+      def execute
       end
     end
     

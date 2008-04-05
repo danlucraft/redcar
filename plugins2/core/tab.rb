@@ -9,7 +9,7 @@ module Redcar
 
     def self.load(plugin) #:nodoc:
       Sensitive.register(:tab, [:open_window, :new_tab, :close_tab]) do
-        win and win.tabs.length > 0
+        Redcar.win and Redcar.win.tabs.length > 0
       end
       plugin.transition(FreeBASE::LOADED)
     end

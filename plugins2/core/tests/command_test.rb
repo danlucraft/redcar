@@ -6,11 +6,11 @@ module Redcar::Tests
     end
     
     Redcar::Sensitive.register(:test_2_tabs, [:new_tab, :close_tab]) do
-      win and win.tabs.length > 1
+      Redcar.win and Redcar.win.tabs.length > 1
     end
     
     Redcar::Sensitive.register(:test_1_tab, [:new_tab, :close_tab]) do
-      win and win.tabs.length > 0
+      Redcar.win and Redcar.win.tabs.length > 0
     end
     
     class TestCommand1 < Redcar::Command
@@ -21,7 +21,7 @@ module Redcar::Tests
         @val = val
       end
       
-      def execute(tab)
+      def execute
         Redcar::Tests::CommandTest.test_var *= @val
       end
     end
@@ -42,7 +42,7 @@ module Redcar::Tests
     
     def test_execute
       CommandTest.test_var = 2
-      TestCommand1.new(10).do(nil)
+      TestCommand1.new(10).do
       assert_equal 20, CommandTest.test_var
     end
     
@@ -59,31 +59,31 @@ module Redcar::Tests
     end
     
     def test_sensitivity
-      win.tabs.each &:close
+      Redcar.win.tabs.each &:close
       assert !TestSensitiveCommand.active?
-      2.times { win.new_tab(Redcar::Tab, Gtk::Label.new("foo")) }
+      2.times { Redcar.win.new_tab(Redcar::Tab, Gtk::Label.new("foo")) }
       assert TestSensitiveCommand.active?
     end
     
     def test_operative
-      win.tabs.each &:close
+      Redcar.win.tabs.each &:close
       assert !TestSensitiveCommand.operative?
-      2.times { win.new_tab(Redcar::Tab, Gtk::Label.new("foo")) }
+      2.times { Redcar.win.new_tab(Redcar::Tab, Gtk::Label.new("foo")) }
       assert TestSensitiveCommand.operative?
     end
     
     def test_operative_inherits
-      win.tabs.each &:close
+      Redcar.win.tabs.each &:close
       assert !TestSensitiveCommand.active?
       assert !TestSensitiveCommand2.active?
       assert !TestSensitiveCommand.operative?
       assert !TestSensitiveCommand2.operative?
-      win.new_tab(Redcar::Tab, Gtk::Label.new("foo"))
+      Redcar.win.new_tab(Redcar::Tab, Gtk::Label.new("foo"))
       assert !TestSensitiveCommand.active?
       assert TestSensitiveCommand2.active?
       assert !TestSensitiveCommand.operative?
       assert !TestSensitiveCommand2.operative?
-      win.new_tab(Redcar::Tab, Gtk::Label.new("foo"))
+      Redcar.win.new_tab(Redcar::Tab, Gtk::Label.new("foo"))
       assert TestSensitiveCommand.active?
       assert TestSensitiveCommand2.active?
       assert TestSensitiveCommand.operative?

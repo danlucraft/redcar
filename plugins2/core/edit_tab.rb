@@ -13,21 +13,21 @@ module Redcar
       Sensitive.register(:edit_tab, 
                          [:open_window, :new_tab, :close_tab, 
                           :after_focus_tab]) do
-        win and tab and tab.is_a? EditTab
+        Redcar.win and Redcar.tab and Redcar.tab.is_a? EditTab
       end
       
       Sensitive.register(:modified?, 
                          [:open_window, :new_tab, :close_tab, 
                           :after_focus_tab, :tab_changed, 
                           :after_tab_save]) do
-        tab and tab.is_a? EditTab and tab.modified
+        Redcar.tab and Redcar.tab.is_a? EditTab and Redcar.tab.modified
       end
       
       Sensitive.register(:modified_and_filename?, 
                          [:open_window, :new_tab, :close_tab, 
                           :after_focus_tab, :tab_changed, 
                           :after_tab_save]) do
-        tab and tab.is_a? EditTab and tab.modified and tab.filename
+        Redcar.tab and Redcar.tab.is_a? EditTab and Redcar.tab.modified and Redcar.tab.filename
       end
       
 #       Sensitive.register(:selected_text, 

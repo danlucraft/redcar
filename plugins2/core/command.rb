@@ -11,7 +11,7 @@ module Redcar
   #     menu "File/Close"
   #     key "Global/Ctrl+W"
   #
-  #     def execute(tab)
+  #     def execute
   #       tab.close if tab
   #     end
   #   end
@@ -157,20 +157,30 @@ module Redcar
       @operative == nil ? active? : @operative
     end
     
+    attr :tab,  true
+    attr :doc,  true
+    attr :view, true
+    
+    def set_tab(tab)
+      @tab = tab
+      if @tab.is_a? EditTab
+        @doc = tab.document
+        @view = tab.view
+      end
+    end
+    
+    def win
+      Redcar::App.focussed_window
+    end
+    
     def do(tab=Redcar::App.focussed_window.focussed_tab)
       unless self.respond_to? :execute
         raise "Abstract Command Error"
       end
+      set_tab(tab) if tab
       @output = nil
       begin
-        case (a = self.method(:execute).arity)
-        when 0
-          @output = self.execute
-        when 1
-          @output = self.execute(tab)
-        else
-          raise "Unknown command arity error"
-        end
+        @output = self.execute
         CommandHistory.record(self)
       rescue Object => e
         Command.process_command_error(self, e)

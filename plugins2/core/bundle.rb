@@ -56,5 +56,20 @@ module Redcar
       end
       prefs
     end
+    
+    # A array of this bundle's snippets.
+    def snippets
+      @snippets ||= load_snippets
+    end
+    
+    def load_snippets #:nodoc:
+      snippets = []
+      Dir.glob(@dir+"/Snippets/*").each do |snipfile|
+        xml = IO.readlines(snipfile).join
+        snip = Redcar::Plist.plist_from_xml(xml)[0]
+        snippets << snip
+      end
+      snippets
+    end
   end
 end

@@ -46,7 +46,7 @@ module Redcar
       icon :SAVE
       sensitive :modified?
       
-      def execute(tab)
+      def execute
         tab.save
       end
     end
@@ -55,7 +55,7 @@ module Redcar
       icon :REVERT_TO_SAVED
       sensitive :modified_and_filename?
       
-      def execute(tab)
+      def execute
         filename = tab.filename
         tab.close
         OpenTab.new(filename).do
@@ -70,7 +70,7 @@ module Redcar
         @tab = tab
       end
       
-      def execute(tab)
+      def execute
         @tab ||= tab
         @tab.close if @tab
       end
@@ -106,7 +106,7 @@ module Redcar
     class SplitHorizontal < Redcar::Command
       key "Global/Ctrl+2"
       
-      def execute(tab)
+      def execute
         if tab
           tab.pane.split_horizontal
         else
@@ -118,7 +118,7 @@ module Redcar
     class SplitVertical < Redcar::Command
       key "Global/Ctrl+3"
       
-      def execute(tab)
+      def execute
         if tab
           tab.pane.split_vertical
         else
@@ -130,7 +130,7 @@ module Redcar
     class PreviousTab < Redcar::TabCommand
       key "Global/Ctrl+Page_Down"
       
-      def execute(tab)
+      def execute
         tab.pane.gtk_notebook.prev_page
       end
     end
@@ -138,7 +138,7 @@ module Redcar
     class NextTab < Redcar::TabCommand
       key "Global/Ctrl+Page_Up"
       
-      def execute(tab)
+      def execute
         tab.pane.gtk_notebook.next_page
       end
     end
@@ -146,7 +146,7 @@ module Redcar
     class MoveTabDown < Redcar::TabCommand
       key "Global/Ctrl+Shift+Page_Down"
       
-      def execute(tab)
+      def execute
         tab.move_down
       end
     end
@@ -154,7 +154,7 @@ module Redcar
     class MoveTabUp < Redcar::TabCommand
       key "Global/Ctrl+Shift+Page_Up"
       
-      def execute(tab)
+      def execute
         tab.move_up
       end
     end
@@ -163,7 +163,7 @@ module Redcar
       key  "Global/Ctrl+Z"
       icon :UNDO
       
-      def execute(tab)
+      def execute
         tab.view.undo
       end
     end
@@ -172,7 +172,7 @@ module Redcar
       key  "Global/Shift+Ctrl+Z"
       icon :REDO
       
-      def execute(tab)
+      def execute
         tab.view.redo
       end
     end
@@ -181,8 +181,7 @@ module Redcar
       key       "Global/Ctrl+X"
       icon :CUT
       
-      def execute(tab)
-        doc = tab.doc
+      def execute
         if doc.selection?
           tab.view.cut_clipboard
         else
@@ -198,8 +197,7 @@ module Redcar
       key       "Global/Ctrl+C"
       icon :COPY
       
-      def execute(tab)
-        doc = tab.doc
+      def execute
         if doc.selection?
           tab.view.copy_clipboard
         else
@@ -217,12 +215,12 @@ module Redcar
       key  "Global/Ctrl+V"
       icon :PASTE
       
-      def execute(tab)
+      def execute
         if (cl = Redcar::App.clipboard).wait_is_text_available?
           str = cl.wait_for_text
           n = str.scan("\n").length+1
-          l = tab.doc.cursor_line
-          tab.doc.insert_at_cursor(str)
+          l = doc.cursor_line
+          doc.insert_at_cursor(str)
           if n > 1 and Redcar::Preference.get("Editing/Indent pasted text").to_bool
             n.times do |i|
               tab.view.indent_line(l+i)
@@ -235,8 +233,7 @@ module Redcar
     class SelectLine < Redcar::EditTabCommand
       key  "Global/Super+Shift+L"
       
-      def execute(tab)
-        doc = tab.doc
+      def execute
         doc.select(doc.line_start(doc.cursor_line), 
                    doc.line_end(doc.cursor_line))
       end
@@ -246,8 +243,8 @@ module Redcar
       key  "Global/Ctrl+F"
       icon :GO_FORWARD
       
-      def execute(tab)
-        tab.doc.forward_word
+      def execute
+        doc.forward_word
       end
     end
     
@@ -255,8 +252,8 @@ module Redcar
       key  "Global/Ctrl+B"
       icon :GO_BACK
       
-      def execute(tab)
-        tab.doc.backward_word
+      def execute
+        doc.backward_word
       end
     end
     
@@ -264,8 +261,7 @@ module Redcar
       key  "Global/Ctrl+A"
       icon :GO_BACK
       
-      def execute(tab)
-        doc = tab.doc
+      def execute
         doc.place_cursor(doc.line_start(doc.cursor_line))
       end
     end
@@ -274,8 +270,7 @@ module Redcar
       key  "Global/Ctrl+E"
       icon :GO_FORWARD
       
-      def execute(tab)
-        doc = tab.doc
+      def execute
         doc.place_cursor(doc.line_end1(doc.cursor_line))
       end
     end
@@ -284,8 +279,7 @@ module Redcar
       key  "Global/Ctrl+K"
       icon :DELETE
       
-      def execute(tab)
-        doc = tab.doc
+      def execute
         doc.delete(doc.cursor_iter, 
                    doc.line_end1(doc.cursor_line))
       end
@@ -304,7 +298,7 @@ module Redcar
         end
       end
   
-      def execute(tab)
+      def execute
         sp = FindSpeedbar.instance
         sp.show(win)
       end
@@ -319,30 +313,30 @@ module Redcar
         "#{self.class}: @re=#{@re.inspect}"
       end
       
-      def execute(tab)
+      def execute
         # first search the remainder of the current line
-        curr_line = tab.doc.get_line.string
-        curr_line = curr_line[tab.doc.cursor_line_offset..-1]
+        curr_line = doc.get_line.string
+        curr_line = curr_line[doc.cursor_line_offset..-1]
         if curr_line =~ @re
-          line_iter = tab.doc.line_start(tab.doc.cursor_line)
-          startoff = line_iter.offset + $`.length+tab.doc.cursor_line_offset
+          line_iter = doc.line_start(doc.cursor_line)
+          startoff = line_iter.offset + $`.length+doc.cursor_line_offset
           endoff   = startoff + $&.length
-          tab.doc.select(startoff, endoff)
+          doc.select(startoff, endoff)
         else
           # next search the rest of the lines
-          line_num = tab.doc.cursor_line+1
-          curr_line = tab.doc.get_line(line_num)
+          line_num = doc.cursor_line+1
+          curr_line = doc.get_line(line_num)
           until !curr_line or found = (curr_line.string =~ @re)
             line_num += 1
-            curr_line = tab.doc.get_line(line_num)
+            curr_line = doc.get_line(line_num)
           end
           if found
-            line_iter = tab.doc.line_start(line_num)
+            line_iter = doc.line_start(line_num)
             startoff = line_iter.offset + $`.length
             endoff   = startoff + $&.length
-            tab.doc.select(startoff, endoff)
+            doc.select(startoff, endoff)
             unless tab.view.cursor_onscreen?
-              tab.view.scroll_mark_onscreen(tab.doc.cursor_mark)
+              tab.view.scroll_mark_onscreen(doc.cursor_mark)
             end
           end
         end
@@ -352,23 +346,23 @@ module Redcar
     class IndentLine < Redcar::EditTabCommand
       key "Global/Ctrl+Alt+["
       
-      def execute(tab)
-        tab.view.indent_line(tab.doc.cursor_line)
+      def execute
+        tab.view.indent_line(doc.cursor_line)
       end
     end
     
     class ShowScope < Redcar::EditTabCommand
       key "Global/Super+Shift+P"
       
-      def execute(tab)
+      def execute
         if root = tab.view.parser.root
-          scope = root.scope_at(TextLoc(tab.doc.cursor_line, tab.doc.cursor_line_offset))
+          scope = root.scope_at(TextLoc(doc.cursor_line, doc.cursor_line_offset))
         end
 #         puts "scope_at_cursor: #{scope.inspect}"
 # #         scope.root.display(0)
         inner = scope.pattern and scope.pattern.content_name and
-          (tab.doc.cursor_line_offset >= scope.open_end.offset and 
-           (!scope.close_start or tab.doc.cursor_line_offset < scope.close_start.offset))
+          (doc.cursor_line_offset >= scope.open_end.offset and 
+           (!scope.close_start or doc.cursor_line_offset < scope.close_start.offset))
 #         p scope.hierarchy_names(inner).join("\n")
         tab.view.tooltip_at_cursor(scope.hierarchy_names(inner).join("\n"))
       end
@@ -421,13 +415,50 @@ module Redcar
     class EndLineReturn < Redcar::EditTabCommand
       key "Global/Ctrl+Return"
       
-      def execute(tab)
-        doc = tab.doc
+      def execute
         doc.place_cursor(doc.line_end1(doc.cursor_line))
         doc.insert_at_cursor("\n")
       end
     end
           
+    class Tab < Redcar::EditTabCommand
+      key "Global/Tab"
+      
+      def initialize(si=nil, buf=nil)
+        @si = si
+        @buf = buf
+      end
+      
+      def execute
+        @si ||= view.snippet_inserter
+        @buf ||= doc
+        if @si.tab_pressed
+          # inserted a snippet
+        else
+          @buf.insert_at_cursor("\t")
+        end
+      end
+    end
+    
+    class ShiftTab < Redcar::EditTabCommand
+      key "Global/Shift+Tab"
+      
+      def initialize(si=nil, buf=nil)
+        @si = si
+        @buf = buf
+      end
+      
+      def execute
+        @si ||= view.snippet_inserter
+        @buf ||= doc
+        if @si.shift_tab_pressed
+          # within a snippet
+        else
+          @buf.insert_at_cursor("\t")
+        end
+      end
+    end
+    
     preference "Appearance/Tab Font" do
       default "Monospace 12"
       widget  { StandardMenus.font_chooser_button("Appearance/Tab Font") }

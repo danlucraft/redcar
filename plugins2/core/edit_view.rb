@@ -11,6 +11,7 @@ module Redcar
                             :cache_dir   => Redcar::App.root_path + "/cache/")
       Redcar::EditView::Indenter.lookup_indent_rules
       Redcar::EditView::AutoPairer.lookup_autopair_rules
+      Redcar::EditView::SnippetInserter.load_snippets
       plugin.transition(FreeBASE::LOADED)
     end
     
@@ -63,8 +64,8 @@ module Redcar
         list = Redcar::EditView::Grammar.names.sort
         list.each {|item| gtk_combo_box.append_text(item) }
         gtk_combo_box.signal_connect("changed") do |gtk_combo_box1|
-          if tab and tab.is_a? EditTab
-            tab.view.change_root_scope(list[gtk_combo_box1.active])
+          if Redcar.tab and Redcar.tab.is_a? EditTab
+            Redcar.tab.view.change_root_scope(list[gtk_combo_box1.active])
           end
         end
         gtk_hbox.pack_end(gtk_combo_box, false)
@@ -89,7 +90,7 @@ module Redcar
       Theme.load_themes
     end
     
-    attr_reader :parser
+    attr_reader(:parser, :snippet_inserter)
     
     def initialize(options={})
       super()
@@ -112,6 +113,7 @@ module Redcar
       create_parser
       create_indenter
       create_autopairer
+      create_snippet_inserter
     end
 
     def set_gtk_cursor_colour
@@ -189,6 +191,10 @@ module Redcar
     
     def create_autopairer
       @autopairer = AutoPairer.new(buffer, @parser)
+    end
+    
+    def create_snippet_inserter
+      @snippet_inserter = SnippetInserter.new(buffer)
     end
     
     def change_root_scope(gr_name, should_colour=true)
@@ -297,6 +303,7 @@ require File.dirname(__FILE__) + '/edit_view/parser'
 require File.dirname(__FILE__) + '/edit_view/theme'
 require File.dirname(__FILE__) + '/edit_view/colourer'
 require File.dirname(__FILE__) + '/edit_view/textloc'
+require File.dirname(__FILE__) + '/edit_view/ext/syntax_ext'
 require File.dirname(__FILE__) + '/edit_view/indenter'
 require File.dirname(__FILE__) + '/edit_view/autopairer'
-require File.dirname(__FILE__) + '/edit_view/ext/syntax_ext'
+require File.dirname(__FILE__) + '/edit_view/snippet_inserter'

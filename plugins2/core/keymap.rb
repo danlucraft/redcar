@@ -15,11 +15,14 @@ module Redcar
     
     # "Page Up" -> "Page_Up"
     def self.clean_letter(letter)
-      letter.split(" ").join("_")
+      if letter.include? "Tab"
+        "Tab"
+      else
+        letter.split(" ").join("_")
+      end
     end
     
-    # Process a Gdk::EventKey (which is created on a keypress)
-    def self.process(gdk_eventkey) #:nodoc:
+    def self.clean_gdk_eventkey(gdk_eventkey)
       kv = gdk_eventkey.keyval
       ks = gdk_eventkey.state - Gdk::Window::MOD2_MASK
       ks = ks - Gdk::Window::MOD4_MASK
@@ -36,6 +39,13 @@ module Redcar
           "Alt+"*alt + 
           "Shift+"*shift + 
           clean_letter(bits.last)
+        key
+      end
+    end
+    
+    # Process a Gdk::EventKey (which is created on a keypress)
+    def self.process(gdk_eventkey) #:nodoc:
+      if key = clean_gdk_eventkey(gdk_eventkey)
         Hook.trigger :keystroke, key do
           execute_key(key)
         end
@@ -88,12 +98,12 @@ module Redcar
     #    current window instance
     #    current window class
     def self.execute_key(key_name)
-      stack_objects = [win.focussed_gtk_widget,
-                       win.focussed_gtk_widget.class,
-                       win.focussed_tab, 
-                       win.focussed_tab.class, 
-                       win,
-                       win.class]
+      stack_objects = [Redcar.win.focussed_gtk_widget,
+                       Redcar.win.focussed_gtk_widget.class,
+                       Redcar.win.focussed_tab, 
+                       Redcar.win.focussed_tab.class, 
+                       Redcar.win,
+                       Redcar.win.class]
       stack_objects.each do |stack_object|
         if stack_object
           @obj_keymaps[stack_object].reverse.each do |keymap_path|

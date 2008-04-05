@@ -22,7 +22,6 @@ class Class # :nodoc:
   end
 
   def cattr_writer(*syms)
-    options = syms.extract_options!
     syms.flatten.each do |sym|
       class_eval(<<-EOS, __FILE__, __LINE__)
         def self.#{sym}=(obj)
@@ -103,6 +102,18 @@ class String
     end
     self.replace(first+second)
     self
+  end
+  
+  def each_match(re)
+    if re.is_a? Regexp
+      re = Oniguruma::ORegexp.new(re.source)
+    end
+    pos = 0
+    while pos < self.length and 
+        md = re.match(self, pos)
+      yield md
+      pos = md.end
+    end
   end
 end
 

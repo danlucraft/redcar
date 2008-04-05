@@ -46,6 +46,7 @@ class Redcar::EditView
     
     def buffer=(buf)
       @buf = buf
+      @buf.indenter = self
       connect_buffer_signals
     end
     
@@ -184,18 +185,33 @@ class Redcar::EditView
     def set_line_indent(line_num, indent_size, indent_type)
       currline  = @buf.get_line(line_num)
       currline.string.chomp =~ /^(\s*)(.*)/
+      indent_text = $1
       text = $2
+      stops = Redcar::Preference.get("Editing/Indent size").to_i
       case indent_type
       when :spaces
-        stops = Redcar::Preference.get("Editing/Indent size").to_i
-        new_indent = " "*stops*indent_size
+        if stops*indent_size-indent_text.length > 0
+          extra_indent = " "*(stops*indent_size-indent_text.length)
+          delete_length = nil
+        else
+          delete_length = indent_text.length-stops*indent_size
+          extra_indent = nil
+        end
       when :tabs
-        new_indent = "\t"*indent_size
+        if indent_size-indent_text.length > 0
+          extra_indent = "\t"*(indent_size-indent_text.length)
+          delete_length = nil
+        else
+          delete_length = indent_text.length-indent_size
+          extra_indent = nil
+        end
       end
-      new_indent
-      line_off = @buf.line_start(line_num).offset
-      @buf.delete(@buf.iter(line_off), @buf.iter(line_off+$1.length))
-      @buf.insert(@buf.line_start(line_num), new_indent)
+      if delete_length
+        line_off = @buf.line_start(line_num).offset
+        @buf.delete(@buf.iter(line_off), @buf.iter(line_off+delete_length))
+      elsif extra_indent
+        @buf.insert(@buf.line_start(line_num), extra_indent)
+      end
     end
     
     def get_indent_size(indent, type)

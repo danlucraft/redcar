@@ -90,23 +90,23 @@ module Redcar
 end
 
 # Some useful methods for finding the currently focussed objects.
-class Object
+module Redcar
   # The current or last focussed Document.
-  def doc
+  def self.doc
     if tab
       tab.document
     end
   end
   
   # The current or last focussed Tab
-  def tab
+  def self.tab
     if win
       win.focussed_tab
     end
   end
   
   # The current or last focussed Window
-  def win
+  def self.win
     Redcar::App.focussed_window
   end
 end
