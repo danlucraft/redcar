@@ -240,8 +240,10 @@ class Redcar::EditView
 
       if @colourer
        SyntaxExt.uncolour_scopes(@colourer, lp.removed_scopes)
-        children_of_current = lp.all_scopes.select do |s| 
-          s.parent == lp.current_scope
+        children_of_current = lp.all_scopes.select do |s|
+#          print ":"; $stdout.flush
+          v = (s.parent == lp.current_scope)
+#          print ";"; $stdout.flush
         end
         if children_of_current.empty?
           if line_num > 0

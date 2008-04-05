@@ -1111,6 +1111,8 @@ static VALUE rb_scope_get_parent(VALUE self) {
     printf("!!parent == self  ");
   if (parent) {
     pd = parent->data;
+    if (!pd->rb_scope)
+      printf("parent lacking rb_scope!!");
     return pd->rb_scope;
   }
   return Qnil;

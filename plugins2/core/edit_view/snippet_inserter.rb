@@ -136,44 +136,65 @@ class Redcar::EditView
       end
     end
 
+    def substitute_environment_variables(text)
+      text.gsub("$TM_SELECTED_TEXT", "")
+    end
+    
     def insert_snippet(snippet)
       @in_snippet = true
-      content = snippet["content"]
-      p content
+      @content = snippet["content"]
+      p @content
       @insert_line_num = @buf.cursor_line
-      @line = ""
       @tab_stops = {}
       @mirrors = {}
       @transformations = {}
-      parse_text_for_tab_stops(content)
+      @inserted_space = nil
+      @content = substitute_environment_variables(@content)
       @ignore = true
-      @buf.insert_at_cursor(@line)
-      create_tab_stop_marks
+      parse_text_for_tab_stops(@content)
+      if @inserted_space
+        @buf.delete(@buf.iter(@buf.cursor_offset-1),
+                    @buf.cursor_iter)
+        @inserted_space = nil
+      end
+      unless @tab_stops.include? 0
+        @snippet_end_mark = @buf.create_mark(nil, @buf.cursor_iter, false)   
+      end
       fix_indent
       @ignore = false
-      insert_contents
+      insert_duplicate_contents
       select_tab_stop(1) unless @tab_stops.empty?
     end
-        
+
     def parse_text_for_tab_stops(text)
+#      puts "parse_text_for_tab_stops(#{text.inspect})"
       remaining_content = text
       i = 0
       while remaining_content.length > 0
         i += 1
         raise "Snippet failed to parse: #{content.inspect}" if i > 100
         
-        if  md = remaining_content.match(/\$/)
-          @line += md.pre_match
+        if md = remaining_content.match(/\$/)
+          # we add and delete the space so that the marks line up
+          pre_offset = @buf.cursor_offset
+          @buf.insert_at_cursor(md.pre_match + " ")
+          if @inserted_space
+            @buf.delete(@buf.iter(pre_offset-1),
+                        @buf.iter(pre_offset))
+          end
+          @inserted_space = true
           
           if md1 = md.post_match.match(/^(\d+)/)
             remaining_content = md1.post_match
             # Simple tab stop "... $1 ... "
             if !@tab_stops.include? $1.to_i
-              @tab_stops[$1.to_i] = {:offset => @line.length}
+              left, right = create_marks_at_offset(@buf.cursor_offset-1)
+              @tab_stops[$1.to_i] = {:leftmark => left, :rightmark => right}
             else
               # it's a mirror
+              left, right = create_marks_at_offset(@buf.cursor_offset-1)
               @mirrors[$1.to_i] ||= []
-              @mirrors[$1.to_i] << {:offset => @line.length}
+              @mirrors[$1.to_i] << {:leftmark => left, :rightmark => right}
             end
             
           elsif md1 = md.post_match.match(/^\{/)
@@ -181,26 +202,39 @@ class Redcar::EditView
             defn = get_balanced_braces(md.post_match)[1..-2]
             
             if md2 = defn.match(/^(\d+):/)
-              # content is a string
-              @tab_stops[$1.to_i] = {
-                :offset  => @line.length,
-                :content => md2.post_match
-              }
+              # placeholder is a string
+              left = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset-1), true)
+#              @buf.insert(@buf.iter(@buf.cursor_offset-1), md2.post_match)
+              parse_text_for_tab_stops(md2.post_match)
+              right = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset-1), false)
+              @tab_stops[$1.to_i] = {:leftmark => left, :rightmark => right}
               remaining_content = md1.post_match[(defn.length+1)..-1]
             elsif md2 = defn.match(/^(\d+)\//)
-              # it is a transformation
+              # placeholder is a transformation
               bits = defn.split("/")
+              left, right = create_marks_at_offset(@buf.cursor_offset-1)
               @transformations[md2[1].to_i] ||= []
               @transformations[md2[1].to_i] << {
-                :offset => @line.length,
+                :leftmark => left,
+                :rightmark => right,
                 :replace => RegexReplace.new(bits[1], bits[2]),
                 :global => bits[3] == "g" ? true : false
               }
               remaining_content = md1.post_match[(defn.length+1)..-1]
+            else
+              puts "unknown type of tab stop: #{defn.inspect}"
+              remaining_content = md1.post_match[(defn.length+1)..-1]
             end
           end
         else
-          @line += remaining_content
+          pre_offset = @buf.cursor_offset
+          @buf.insert_at_cursor(remaining_content + " ")
+          if @inserted_space
+            @buf.delete(@buf.iter(pre_offset-1),
+                        @buf.iter(pre_offset))
+            @inserted_space = nil
+          end
+          @inserted_space = true
           remaining_content = ""
         end
       end
@@ -214,7 +248,7 @@ class Redcar::EditView
         else
           indent = ""
         end
-        lines = @line.scan("\n").length
+        lines = @content.scan("\n").length
         lines.times do |i|
           @buf.insert(@buf.line_start(@insert_line_num+i+1), indent)
         end
@@ -224,13 +258,11 @@ class Redcar::EditView
     def create_marks_at_offset(offset)
       left = @buf.create_mark(
                               nil, 
-                              @buf.iter(@buf.cursor_offset - @line.length +
-                                        offset),
+                              @buf.iter(offset),
                               true)
       right = @buf.create_mark(
                                nil, 
-                               @buf.iter(@buf.cursor_offset - @line.length +
-                                         offset),
+                               @buf.iter(offset),
                                false)
       return left, right
     end
@@ -260,24 +292,51 @@ class Redcar::EditView
       end
     end
     
-    def insert_contents
-      @tab_stops.each do |num, hash|
-        if hash[:content]
-          @buf.insert(@buf.iter(hash[:leftmark]), hash[:content])
+    def insert_duplicate_contents
+      @mirrors.each do |num, mirrors|
+        text = get_tab_stop_text(num)
+        mirrors.each do |mirror|
+          i1 = @buf.iter(mirror[:leftmark])
+          i2 = @buf.iter(mirror[:rightmark])
+          @ignore = true
+          @buf.delete(i1, i2)
+          @buf.insert(@buf.iter(mirror[:leftmark]), text)
+          @ignore = false
+        end
+      end
+      @transformations.each do |num, transformations|
+        text = get_tab_stop_text(num)
+        transformations.each do |trans|
+          i1 = @buf.iter(trans[:leftmark])
+          i2 = @buf.iter(trans[:rightmark])
+          @ignore = true
+          @buf.delete(i1, i2)
+          if trans[:global]
+            rtext = trans[:replace].grep(text)
+          else
+            rtext = trans[:replace].rep(text)
+          end
+          @buf.insert(@buf.iter(trans[:leftmark]), rtext)
+          @ignore = false
         end
       end
     end
     
     def find_current_tab_stop
+      candidates = []
       @tab_stops.each do |num, hash|
         leftoff = @buf.iter(hash[:leftmark]).offset
         rightoff = @buf.iter(hash[:rightmark]).offset
         if @buf.cursor_offset <= rightoff and 
-            @buf.cursor_offset >= leftoff
-          return num
+            @buf.selection_offset >= leftoff
+          candidates << [(@buf.cursor_offset-rightoff).abs+
+                         (@buf.selection_offset-leftoff).abs,
+                         num]
         end
       end
-      nil
+      unless candidates.empty?
+        candidates.sort.first[1]
+      end
     end
     
     def print_tab_stop_info

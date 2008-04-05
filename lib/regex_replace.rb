@@ -4,6 +4,29 @@ require 'oniguruma'
 require 'lib/ruby_extensions'
 
 class RegexReplace
+  COND_RE = /\(
+                \?(\d+):
+                (
+                  (
+                    \\\(|
+                    \\\)|
+                    \\:|
+                    [^():]
+                  )*
+                )
+                (
+                  :
+                  (
+                    (
+                      \\\(|
+                      \\\)|
+                      [^()]
+                    )*
+                  )
+                )?
+              \)
+             /x
+  
   def initialize(re, replace)
     @re = Oniguruma::ORegexp.new(re)
     @replace = replace
@@ -26,31 +49,24 @@ class RegexReplace
   private 
   
   def parse_replace_string(md, replace)
-    condre = /\(
-                \?(\d+):
-                (
-                  (
-                    \\\(|
-                    \\\)|
-                    [^()]
-                  )*
-                )
-              \)
-             /x
-    replace.gsub!(condre) do |match|
+    replace.gsub!(COND_RE) do |match|
       if md[$1.to_i]
         $2.gsub("\\(", "(").gsub("\\)", ")")
       else
-        ""
+        if $4
+          $5.gsub("\\(", "(").gsub("\\)", ")")
+        else
+          ""
+        end
       end
     end
     replace.gsub!(/\$(\d+)/) do |match|
       md[$1.to_i]
     end
-    replace.gsub!(/\\U(.*?)\\E/) do |match|
+    replace.gsub!(/\\U(.*?)(\\E|$)/) do |match|
       $1.upcase
     end
-    replace.gsub!(/\\L(.*?)\\E/) do |match|
+    replace.gsub!(/\\L(.*?)(\\E|$)/) do |match|
       $1.downcase
     end
     replace.gsub!(/\\u(.)/) do |match|
@@ -82,6 +98,12 @@ if $0 == __FILE__
       rr = RegexReplace.new("blackbird", 
                             "laura")
       assert_equal "foo laura bar blackbird bar", rr.rep("foo blackbird bar blackbird bar")
+    end
+    
+    def test_full_match
+      rr = RegexReplace.new("bl(ackb)ird", 
+                            "laura$0")
+      assert_equal "foo laurablackbird bar", rr.rep("foo blackbird bar")
     end
     
     def test_capture1
@@ -118,6 +140,12 @@ if $0 == __FILE__
       rr = RegexReplace.new("(\\w+)|(\\W+)", 
                             "(?1:\\L$1\\E)(?2:\\(_)")
       assert_equal "textmate(_power(_editing", rr.grep("TextMate: Power Editing")
+    end
+    
+    def test_conditional_with_alternative
+      rr = RegexReplace.new("[[:alpha:]]+|( )", 
+                            "(?1:_:\\L$0)")
+      assert_equal "textmate:_power_editing", rr.grep("TextMate: Power Editing")
     end
   end
 end

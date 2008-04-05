@@ -245,6 +245,29 @@ module Redcar::Tests
       assert_equal 1..4, @buf.selection_range
       press_tab
       assert_equal 8..15, @buf.selection_range
+      press_tab
+      assert_equal 9..14, @buf.selection_range
+      type("virgon", @buf)
+      assert_equal ":key => \"virgon\", ", @buf.text
+      assert_equal 15..15, @buf.selection_range
+      press_shift_tab
+      assert_equal 8..16, @buf.selection_range
+    end
+    
+    def test_super_nested_tab_stops
+      SnippetInserter.register("source.ruby - string - comment",
+                               "testsnip",
+                               ':${1:key} => ${2:"${3:value ${4:is} 3}"}${5:, }')
+      @buf.text=("testsnip")
+      press_tab
+      assert_equal ":key => \"value is 3\", ", @buf.text
+      assert_equal 1..4, @buf.selection_range
+      press_tab
+      assert_equal 8..20, @buf.selection_range
+      press_tab
+      assert_equal 9..19, @buf.selection_range
+      press_tab
+      assert_equal 15..17, @buf.selection_range
     end
   end
 end

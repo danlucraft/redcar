@@ -139,6 +139,10 @@ module Redcar
       iter(selection_mark)
     end
     
+    def selection_offset
+      iter(selection_mark).offset
+    end
+    
     def selection?
       start_iter, end_iter, bool = selection_bounds
       bool
