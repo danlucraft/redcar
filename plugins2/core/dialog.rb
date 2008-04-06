@@ -172,7 +172,7 @@ module Redcar
 #       dirname
 #     end
     
-    def self.open
+    def self.open(win)
       dialog = Gtk::FileChooserDialog.new("Open",
                                           win,
                                           Gtk::FileChooser::ACTION_OPEN,

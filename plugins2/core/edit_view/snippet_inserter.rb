@@ -59,9 +59,21 @@ class Redcar::EditView
         false
       end
       
-      @buf.signal_connect_after("insert_text") do |_, iter, text, length|
+      @buf.signal_connect("insert_text") do |_, iter, text, length|
+        @insert_offset = nil
         if @in_snippet and !@ignore
-          update_after_insert(iter.offset, length)
+          @buf.parser.parsing_on = false
+          @insert_offset = iter.offset
+        end
+        false
+      end
+      
+      @buf.signal_connect_after("insert_text") do |_, iter, text, length|
+        if @in_snippet and !@ignore and @insert_offset
+          update_after_insert(@insert_offset, length)
+          @buf.parser.parsing_on = true
+          @buf.parser.process_changes
+          @insert_offset = nil
         end
         false
       end
@@ -136,6 +148,10 @@ class Redcar::EditView
       end
     end
 
+    def unescape_dollars(text)
+      text.gsub("\\$", "$").gsub("\\\\", "\\")
+    end
+    
     def substitute_environment_variables(text)
       text.gsub("$TM_SELECTED_TEXT", "")
     end
@@ -151,18 +167,20 @@ class Redcar::EditView
       @inserted_space = nil
       @content = substitute_environment_variables(@content)
       @ignore = true
-      parse_text_for_tab_stops(@content)
-      if @inserted_space
-        @buf.delete(@buf.iter(@buf.cursor_offset-1),
-                    @buf.cursor_iter)
-        @inserted_space = nil
+      @buf.parser.delay_parsing do
+        parse_text_for_tab_stops(@content)
+        if @inserted_space
+          @buf.delete(@buf.iter(@buf.cursor_offset-1),
+                      @buf.cursor_iter)
+          @inserted_space = nil
+        end
+        unless @tab_stops.include? 0
+          @snippet_end_mark = @buf.create_mark(nil, @buf.cursor_iter, false)   
+        end
+        fix_indent
+        insert_duplicate_contents
       end
-      unless @tab_stops.include? 0
-        @snippet_end_mark = @buf.create_mark(nil, @buf.cursor_iter, false)   
-      end
-      fix_indent
       @ignore = false
-      insert_duplicate_contents
       select_tab_stop(1) unless @tab_stops.empty?
     end
 
@@ -174,10 +192,10 @@ class Redcar::EditView
         i += 1
         raise "Snippet failed to parse: #{content.inspect}" if i > 100
         
-        if md = remaining_content.match(/\$/)
+        if md = Oniguruma::ORegexp.new("(?<!\\\\)\\$").match(remaining_content)
           # we add and delete the space so that the marks line up
           pre_offset = @buf.cursor_offset
-          @buf.insert_at_cursor(md.pre_match + " ")
+          @buf.insert_at_cursor(unescape_dollars(md.pre_match) + " ")
           if @inserted_space
             @buf.delete(@buf.iter(pre_offset-1),
                         @buf.iter(pre_offset))
@@ -207,7 +225,13 @@ class Redcar::EditView
 #              @buf.insert(@buf.iter(@buf.cursor_offset-1), md2.post_match)
               parse_text_for_tab_stops(md2.post_match)
               right = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset-1), false)
-              @tab_stops[$1.to_i] = {:leftmark => left, :rightmark => right}
+              if !@tab_stops.include? md2[1].to_i
+                @tab_stops[md2[1].to_i] = {:leftmark => left, :rightmark => right}
+              else
+                # it's a mirror
+                @mirrors[md2[1].to_i] ||= []
+                @mirrors[md2[1].to_i] << {:leftmark => left, :rightmark => right}
+              end
               remaining_content = md1.post_match[(defn.length+1)..-1]
             elsif md2 = defn.match(/^(\d+)\//)
               # placeholder is a transformation
@@ -228,7 +252,7 @@ class Redcar::EditView
           end
         else
           pre_offset = @buf.cursor_offset
-          @buf.insert_at_cursor(remaining_content + " ")
+          @buf.insert_at_cursor(unescape_dollars(remaining_content) + " ")
           if @inserted_space
             @buf.delete(@buf.iter(pre_offset-1),
                         @buf.iter(pre_offset))
@@ -399,8 +423,13 @@ class Redcar::EditView
     end
     
     def select_tab_stop(n)
-      @buf.select(@buf.iter(@tab_stops[n][:leftmark]),
-                  @buf.iter(@tab_stops[n][:rightmark]))
+      if n == 0
+        @buf.select(@buf.iter(@tab_stops[n][:rightmark]),
+                    @buf.iter(@tab_stops[n][:rightmark]))
+      else
+        @buf.select(@buf.iter(@tab_stops[n][:leftmark]),
+                    @buf.iter(@tab_stops[n][:rightmark]))
+      end
     end
     
     def check_in_snippet
@@ -472,13 +501,17 @@ class Redcar::EditView
     end
     
     def update_after_insert(offset, length)
-      update_mirrors(offset, offset+length)
-      update_transformations(offset, offset+length)
+      @buf.parser.delay_parsing do
+        update_mirrors(offset, offset+length)
+        update_transformations(offset, offset+length)
+      end
     end
     
     def update_after_delete(offset1, offset2)
-      update_mirrors(offset1, offset2)
-      update_transformations(offset1, offset2)
+      @buf.parser.delay_parsing do
+        update_mirrors(offset1, offset2)
+        update_transformations(offset1, offset2)
+      end
     end
   end
 end

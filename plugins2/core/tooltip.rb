@@ -23,8 +23,8 @@ module Redcar
       @visible_tooltips.each {|tt| tt.hide }
       @visible_tooltips.clear
       @tooltip_handlers.each do |th|
-        if win.signal_handler_is_connected?(th)
-          win.signal_handler_disconnect(th)
+        if Redcar.win.signal_handler_is_connected?(th)
+          Redcar.win.signal_handler_disconnect(th)
         end
       end
     end
@@ -40,10 +40,10 @@ module Redcar
       show_all
       Tooltip.visible_tooltips << self
       Tooltip.tooltip_handlers ||= []
-      h1 = win.signal_connect("button_press_event") do 
+      h1 = Redcar.win.signal_connect("button_press_event") do 
         Tooltip.clear_tooltips
       end
-      h2 = win.signal_connect("key_press_event") do 
+      h2 = Redcar.win.signal_connect("key_press_event") do 
         Tooltip.clear_tooltips
         false
       end

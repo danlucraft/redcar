@@ -6,7 +6,7 @@ class RedcarSyntaxError < StandardError; end
 class Redcar::EditView
   class Parser
     
-    attr_accessor :grammars, :root, :colourer, :parse_all
+    attr_accessor :grammars, :root, :colourer, :parse_all, :parsing_on
     attr_reader   :max_view, :buf, :ending_scopes, :starting_scopes
     
     def initialize(buffer, root, grammars=[], colourer=nil)
@@ -21,6 +21,7 @@ class Redcar::EditView
       @parse_all = false
       @cursor_line = 0
       @parsing_on = true
+      @delay_count = 0
       @tags = []
       
       # line scope trackers
@@ -38,7 +39,21 @@ class Redcar::EditView
       @parsing_on = false
       yield
       @parsing_on = true
-      process_changes
+      process_changes if @delay_count == 0
+    end
+    
+    def stop_parsing
+      @delay_count += 1
+      @parsing_on = false
+    end
+    
+    def start_parsing
+      @delay_count -= 1
+      @delay_count = 0 if @delay_count < 0
+      if @delay_count == 0      
+        @parsing_on = true
+        process_changes
+      end
     end
     
     def buffer=(buf)
@@ -134,7 +149,11 @@ class Redcar::EditView
       while pair = changed_lines.shift
         from_line = pair[0]
         num_lines = pair[1]
-        parse_from(from_line, num_lines)
+        parse_from(from_line, num_lines-1)
+        changed_lines.reject! do |from, n|
+          from <= from_line+num_lines and
+            from+n <= from_line+num_lines
+        end
       end
     end
     
@@ -241,9 +260,7 @@ class Redcar::EditView
       if @colourer
        SyntaxExt.uncolour_scopes(@colourer, lp.removed_scopes)
         children_of_current = lp.all_scopes.select do |s|
-#          print ":"; $stdout.flush
           v = (s.parent == lp.current_scope)
-#          print ";"; $stdout.flush
         end
         if children_of_current.empty?
           if line_num > 0

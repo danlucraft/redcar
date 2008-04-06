@@ -55,6 +55,16 @@ module Redcar::Tests
       assert_equal 23, @buf.cursor_offset
     end
 
+    def test_escapes_dollars
+      SnippetInserter.register("source.ruby - string - comment",
+                               "DBL",
+                               "Daniel \\$1 Benjamin Lucraft")
+      @buf.text=("DBL")
+      press_tab
+      assert_equal "Daniel $1 Benjamin Lucraft", @buf.text
+      assert_equal 26, @buf.cursor_offset
+    end
+
     def test_inserts_one_tab_stop
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
@@ -202,6 +212,22 @@ module Redcar::Tests
       assert_equal 6..12, @buf.selection_range
     end
     
+    def test_mirrors_mirror_both_with_content
+      SnippetInserter.register("source.ruby - string - comment",
+                               "testsnip",
+                               "name: ${1:leoban}\nname: ${1:leoban}")
+      @buf.text=("testsnip")
+      press_tab
+      assert_equal "name: leoban\nname: leoban", @buf.text
+      assert_equal 6..12, @buf.selection_range
+      type("adama", @buf)
+      assert_equal "name: adama\nname: adama", @buf.text
+      assert_equal 11..11, @buf.selection_range
+      3.times { backspace(@buf) }
+      assert_equal "name: ad\nname: ad", @buf.text
+      assert_equal 8..8, @buf.selection_range
+    end
+    
     def test_transformations
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
@@ -268,6 +294,21 @@ module Redcar::Tests
       assert_equal 9..19, @buf.selection_range
       press_tab
       assert_equal 15..17, @buf.selection_range
+    end
+    
+    def test_latex_snippet
+    SnippetInserter.register("source.ruby - string - comment",
+                             "testsnip",
+                             "\\\\begin{${1:env}}\n\t${1/(enumerate|itemize|list)|(description)|.*/(?1:\\item )(?2:\\item)/}$0\n\\\\end{${1:env}}")
+      @buf.text=("testsnip")
+      press_tab
+      assert_equal "\\begin{env}\n\t\n\\end{env}", @buf.text
+      assert_equal 7..10, @buf.selection_range
+      type("list", @buf)
+      assert_equal "\\begin{list}\n\t\\item \n\\end{list}", @buf.text
+      assert_equal 11..11, @buf.selection_range
+      press_tab
+      assert_equal 20..20, @buf.selection_range
     end
   end
 end

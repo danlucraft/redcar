@@ -31,7 +31,7 @@ module Redcar
       
       def execute
         if !@filename 
-          @filename = Redcar::Dialog.open 
+          @filename = Redcar::Dialog.open(win)
         end
         if @filename and File.file?(@filename)
           new_tab = win.new_tab(Redcar::EditTab)

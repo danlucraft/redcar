@@ -100,9 +100,24 @@ class Redcar::EditView
         cursor_scope = @buf.scope_at(@buf.cursor_line, 
                                       @buf.cursor_line_offset)
         if cursor_scope
-          @hierarchy_names = cursor_scope.hierarchy_names(true)
-        else
-          @hierarchy_names = nil
+          hierarchy_names = cursor_scope.hierarchy_names(true)
+          
+          # Type over ends
+          @rules = AutoPairer.autopair_rules_for_scope(hierarchy_names)
+          inverse_rules = @rules.invert
+          if inverse_rules.include? text and !@ignore_insert
+            end_mark_pair = find_mark_pair_by_end(iter)
+            if end_mark_pair and end_mark_pair[3] == text
+              @type_over_end = true
+              @buf.parser.stop_parsing
+            end
+          end
+          
+          # Insert matching ends
+          if @rules.include? text and !@ignore_insert and !@done
+            @insert_end = true
+            @buf.parser.stop_parsing
+          end
         end
         false
       end
@@ -111,28 +126,27 @@ class Redcar::EditView
         @done = nil
         
         # Type over ends
-        rules = AutoPairer.autopair_rules_for_scope(@hierarchy_names)
-        inverse_rules = rules.invert
-        if inverse_rules.include? text and !@ignore_insert
-          end_mark_pair = find_mark_pair_by_end(iter)
-          if end_mark_pair and end_mark_pair[3] == text
-            @buf.delete(@buf.iter(@buf.cursor_offset-1),
-                        @buf.cursor_iter)
-            @buf.place_cursor(@buf.iter(@buf.cursor_offset+1))
-            @done = true
-          end
+        if @type_over_end
+          @buf.delete(@buf.iter(@buf.cursor_offset-1),
+                      @buf.cursor_iter)
+          @buf.place_cursor(@buf.iter(@buf.cursor_offset+1))
+          @type_over_end = false
+          @buf.parser.start_parsing
+          @done = true
         end
         
         # Insert matching ends
-        if rules.include? text and !@ignore_insert and !@done
+        if @insert_end and !@ignore_insert
           @ignore_insert = true
-          endtext = rules[text]
+          endtext = @rules[text]
           @buf.insert_at_cursor(endtext)
           @buf.place_cursor(@buf.iter(@buf.cursor_offset-1))
           mark1 = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset-1), false)
           mark2 = @buf.create_mark(nil, @buf.cursor_iter, false)
           add_mark_pair [mark1, mark2, text, endtext]
           @ignore_insert = false
+          @buf.parser.start_parsing
+          @insert_end = false
         end
         false
       end

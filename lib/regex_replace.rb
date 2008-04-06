@@ -147,5 +147,16 @@ if $0 == __FILE__
                             "(?1:_:\\L$0)")
       assert_equal "textmate:_power_editing", rr.grep("TextMate: Power Editing")
     end
+    
+    def test_performance
+      st = Time.now
+      1000.times do
+        rr = RegexReplace.new("(\\w+)|(\\W+)", 
+                              "(?1:\\L$1\\E)(?2:\\(_)")
+        assert_equal "textmate(_power(_editing", rr.grep("TextMate: Power Editing")
+      end
+      te = Time.now
+      assert (te-st) < 1.0
+    end
   end
 end
