@@ -86,6 +86,44 @@ module Redcar
     def self.clipboard
       Gtk::Clipboard.get(Gdk::Atom.intern("CLIPBOARD"))
     end
+    
+    ENV_VARS =  %w(RUBYLIB TM_RUBY TM_BUNDLE_SUPPORT TM_CURRENT_LINE)+
+      %w(TM_CURRENT_LINE TM_LINE_INDEX TM_LINE_NUMBER TM_SELECTED_TEXT)+
+      %w(TM_DIRECTORY TM_FILEPATH TM_SCOPE TM_SOFT_TABS TM_SUPPORT_PATH)+
+      %w(TM_TAB_SIZE TM_FILENAME)
+    
+    def self.set_environment_variables
+      ENV_VARS.each do |var|
+        ENV[var] = nil
+      end
+      
+      ENV['RUBYLIB'] = (ENV['RUBYLIB']||"")+":textmate/Support/lib"
+      
+      ENV['TM_RUBY'] = "/usr/bin/ruby"
+      if @bundle_uuid
+        ENV['TM_BUNDLE_SUPPORT'] = Redcar.image[@bundle_uuid][:directory]+"Support"
+      end
+      if Redcar.tab and Redcar.tab.class.to_s == "Redcar::EditTab"
+        ENV['TM_CURRENT_LINE'] = Redcar.doc.get_line
+        ENV['TM_LINE_INDEX'] = Redcar.doc.cursor_line_offset.to_s
+        ENV['TM_LINE_NUMBER'] = (Redcar.doc.cursor_line+1).to_s
+        if Redcar.doc.selection?
+          ENV['TM_SELECTED_TEXT'] = Redcar.doc.selection
+        end
+        if Redcar.tab.filename
+          ENV['TM_DIRECTORY'] = File.dirname(Redcar.tab.filename)
+          ENV['TM_FILEPATH'] = Redcar.tab.filename
+          ENV['TM_FILENAME'] = File.basename(Redcar.tab.filename)
+        end
+        if Redcar.doc.cursor_scope
+          ENV['TM_SCOPE'] = Redcar.doc.cursor_scope.hierarchy_names(true).join("\n")
+        end
+      end
+      ENV['TM_SOFT_TABS'] = "YES"
+      ENV['TM_SUPPORT_PATH'] = "textmate/Support"
+      ENV['TM_TAB_SIZE'] = "2"
+    end
+    
   end
 end
 

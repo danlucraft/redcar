@@ -349,33 +349,6 @@ module Redcar
       direct_output(@output, output) if output
     end
     
-    def set_environment_variables
-      ENV['RUBYLIB'] = (ENV['RUBYLIB']||"")+":textmate/Support/lib"
-      
-      ENV['TM_RUBY'] = "/usr/bin/ruby"
-      if @bundle_uuid
-        ENV['TM_BUNDLE_SUPPORT'] = Redcar.image[@bundle_uuid][:directory]+"Support"
-      end
-      if tab and tab.class.to_s == "Redcar::TextTab"
-        ENV['TM_CURRENT_LINE'] = tab.get_line
-        ENV['TM_LINE_INDEX'] = tab.cursor_line_offset.to_s
-        ENV['TM_LINE_NUMBER'] = (tab.cursor_line+1).to_s
-        if tab.selected?
-          ENV['TM_SELECTED_TEXT'] = tab.selection
-        end
-        if tab.filename
-          ENV['TM_DIRECTORY'] = File.dirname(tab.filename)
-          ENV['TM_FILEPATH'] = tab.filename
-        end
-        if tab.sourceview.grammar
-          ENV['TM_SCOPE'] = tab.scope_at_cursor.to_s
-        end
-        ENV['TM_SOFT_TABS'] = "YES"
-        ENV['TM_SUPPORT_PATH'] = "textmate/Support"
-        ENV['TM_TAB_SIZE'] = "2"
-      end
-    end
-    
     def shell_command
       if @block[0..1] == "#!"
         "./cache/tmp.command"

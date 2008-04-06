@@ -104,6 +104,18 @@ class String
     self
   end
   
+  def onig_split(re)
+    line = self.dup
+    bits = []
+    while line.length > 0 and 
+        md = re.match(line)
+      line = md.post_match
+      bits << md.pre_match
+    end
+    bits << line
+    bits
+  end
+  
   def each_match(re)
     if re.is_a? Regexp
       re = Oniguruma::ORegexp.new(re.source)

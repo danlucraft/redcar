@@ -10,6 +10,9 @@ class Redcar::EditView
         snippets.each do |snip|
           if snip["tabTrigger"]
             @snippets[snip["scope"]||""][snip["tabTrigger"]] = snip
+#           elsif snip["keyEquivalent"]
+#             p snip["name"]
+#             p snip["keyEquivalent"]
           else
             i += 1
           end          
@@ -152,10 +155,6 @@ class Redcar::EditView
       text.gsub("\\$", "$").gsub("\\\\", "\\")
     end
     
-    def substitute_environment_variables(text)
-      text.gsub("$TM_SELECTED_TEXT", "")
-    end
-    
     def insert_snippet(snippet)
       @in_snippet = true
       @content = snippet["content"]
@@ -165,8 +164,8 @@ class Redcar::EditView
       @mirrors = {}
       @transformations = {}
       @inserted_space = nil
-      @content = substitute_environment_variables(@content)
       @ignore = true
+      Redcar::App.set_environment_variables
       @buf.parser.delay_parsing do
         parse_text_for_tab_stops(@content)
         if @inserted_space
@@ -190,7 +189,7 @@ class Redcar::EditView
       i = 0
       while remaining_content.length > 0
         i += 1
-        raise "Snippet failed to parse: #{content.inspect}" if i > 100
+        raise "Snippet failed to parse: #{text.inspect}" if i > 100
         
         if md = Oniguruma::ORegexp.new("(?<!\\\\)\\$").match(remaining_content)
           # we add and delete the space so that the marks line up
@@ -201,8 +200,8 @@ class Redcar::EditView
                         @buf.iter(pre_offset))
           end
           @inserted_space = true
-          
-          if md1 = md.post_match.match(/^(\d+)/)
+
+          if md1 = md.post_match.match(/\A(\d+)/)
             remaining_content = md1.post_match
             # Simple tab stop "... $1 ... "
             if !@tab_stops.include? $1.to_i
@@ -214,12 +213,15 @@ class Redcar::EditView
               @mirrors[$1.to_i] ||= []
               @mirrors[$1.to_i] << {:leftmark => left, :rightmark => right}
             end
-            
-          elsif md1 = md.post_match.match(/^\{/)
+          elsif md1 = md.post_match.match(/\A((\w+|_)+)\b/)
+            @buf.insert(@buf.iter(@buf.cursor_offset-1), ENV[$1]||"")
+            # it is an environment variable " ... $TM_LINE_NUMBER ... "
+            remaining_content = md1.post_match
+          elsif md1 = md.post_match.match(/\A\{/)
             # tab stop with placeholder string "... ${1:condition ... "
             defn = get_balanced_braces(md.post_match)[1..-2]
             
-            if md2 = defn.match(/^(\d+):/)
+            if md2 = defn.match(/\A(\d+):/)
               # placeholder is a string
               left = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset-1), true)
 #              @buf.insert(@buf.iter(@buf.cursor_offset-1), md2.post_match)
@@ -233,9 +235,10 @@ class Redcar::EditView
                 @mirrors[md2[1].to_i] << {:leftmark => left, :rightmark => right}
               end
               remaining_content = md1.post_match[(defn.length+1)..-1]
-            elsif md2 = defn.match(/^(\d+)\//)
+            elsif md2 = defn.match(/\A(\d+)\//)
               # placeholder is a transformation
-              bits = defn.split("/")
+              bits = defn.onig_split(ORegexp.new("(?<!\\\\)/"))
+              bits[2] = bits[2].gsub("\\/", "/")
               left, right = create_marks_at_offset(@buf.cursor_offset-1)
               @transformations[md2[1].to_i] ||= []
               @transformations[md2[1].to_i] << {
@@ -244,6 +247,23 @@ class Redcar::EditView
                 :replace => RegexReplace.new(bits[1], bits[2]),
                 :global => bits[3] == "g" ? true : false
               }
+              remaining_content = md1.post_match[(defn.length+1)..-1]
+            elsif md2 = defn.match(/\A((\w+|_)+)$/)
+              # naked environment variable
+              @buf.insert(@buf.iter(@buf.cursor_offset-1), ENV[$1]||"")
+              remaining_content = md1.post_match[(defn.length+1)..-1]
+            elsif md2 = defn.match(/\A((\w+|_)+)\//)
+              # transformed env variable
+              env = ENV[$1]||""
+              bits = md2.post_match.onig_split(ORegexp.new("(?<!\\\\)/"))
+              bits[1] = bits[1].gsub("\\/", "/")
+              rr = RegexReplace.new(bits[0], bits[1])
+              if bits[2] == "g"
+                tenv = rr.grep(env)
+              else
+                tenv = rr.rep(env)
+              end
+              @buf.insert(@buf.iter(@buf.cursor_offset-1), tenv)
               remaining_content = md1.post_match[(defn.length+1)..-1]
             else
               puts "unknown type of tab stop: #{defn.inspect}"

@@ -19,6 +19,7 @@ module Redcar::Tests
     end
     
     def teardown
+      Redcar.win.tabs.each &:close
     end
 
     def type(text, buffer)
@@ -37,12 +38,12 @@ module Redcar::Tests
                     buffer.cursor_iter)
     end
     
-    def press_tab
-      Redcar::StandardMenus::Tab.new(@snippet_inserter, @buf).do
+    def press_tab(si=@snippet_inserter, buf=@buf)
+      Redcar::StandardMenus::Tab.new(si, buf).do
     end
     
-    def press_shift_tab
-      Redcar::StandardMenus::ShiftTab.new(@snippet_inserter, @buf).do
+    def press_shift_tab(si=@snippet_inserter, buf=@buf)
+      Redcar::StandardMenus::ShiftTab.new(si, buf).do
     end
     
     def test_inserts_plain_content
@@ -63,6 +64,59 @@ module Redcar::Tests
       press_tab
       assert_equal "Daniel $1 Benjamin Lucraft", @buf.text
       assert_equal 26, @buf.cursor_offset
+    end
+
+    def test_inserts_environment_variable
+      tab = Redcar.win.new_tab(Redcar::EditTab)
+      SnippetInserter.register("source.ruby - string - comment",
+                               "testsnip",
+                               "Felix ${TM_LINE_INDEX} Gaeta")
+      doc = tab.document
+      doc.text=("CoS testsnip")
+      press_tab(tab.view.snippet_inserter, doc)
+      assert_equal "CoS Felix 4 Gaeta", doc.text
+      assert_equal 17, doc.cursor_offset
+      tab.close
+    end
+
+    def test_inserts_environment_variable2
+      tab = Redcar.win.new_tab(Redcar::EditTab)
+      SnippetInserter.register("source.ruby - string - comment",
+                               "testsnip",
+                               "Felix $TM_LINE_INDEX Gaeta")
+      doc = tab.document
+      doc.text=("CoS testsnip")
+      press_tab(tab.view.snippet_inserter, doc)
+      assert_equal "CoS Felix 4 Gaeta", doc.text
+      assert_equal 17, doc.cursor_offset
+      tab.close
+    end
+
+    def test_transforms_environment_variable
+      tab = Redcar.win.new_tab(Redcar::EditTab)
+      SnippetInserter.register("source.ruby - string - comment",
+                               "testsnip",
+                               "Felix ${TM_CURRENT_LINE/Co/ChiefOfStaff/} Gaeta")
+      doc = tab.document
+      doc.text=("CoS testsnip")
+      press_tab(tab.view.snippet_inserter, doc)
+      assert_equal "CoS Felix ChiefOfStaffS  Gaeta", doc.text
+      assert_equal 30, doc.cursor_offset
+      tab.close
+    end
+
+    def test_transforms_environment_variable_global
+      # also tests escaping of slashes in transform
+      tab = Redcar.win.new_tab(Redcar::EditTab)
+      SnippetInserter.register("source.ruby - string - comment",
+                               "testsnip",
+                               "Felix ${TM_CURRENT_LINE/\\w/C\\/S/g} Gaeta")
+      doc = tab.document
+      doc.text=("CoS testsnip")
+      press_tab(tab.view.snippet_inserter, doc)
+      assert_equal "CoS Felix C/SC/SC/S  Gaeta", doc.text
+      assert_equal 26, doc.cursor_offset
+      tab.close
     end
 
     def test_inserts_one_tab_stop
@@ -154,6 +208,19 @@ module Redcar::Tests
       source1="if condition\n\t\nend"
       assert_equal source1, @buf.text
       assert_equal 3..12, @buf.selection_range
+    end
+
+    def test_inserts_environment_variable_as_placeholder
+      tab = Redcar.win.new_tab(Redcar::EditTab)
+      SnippetInserter.register("source.ruby - string - comment",
+                               "testsnip",
+                               "Felix ${1:$TM_LINE_INDEX} Gaeta")
+      doc = tab.document
+      doc.text=("CoS testsnip")
+      press_tab(tab.view.snippet_inserter, doc)
+      assert_equal "CoS Felix 4 Gaeta", doc.text
+      assert_equal 11, doc.cursor_offset
+      tab.close
     end
 
     def test_leaves_snippet_on_cursor_move
@@ -310,5 +377,6 @@ module Redcar::Tests
       press_tab
       assert_equal 20..20, @buf.selection_range
     end
+    
   end
 end
