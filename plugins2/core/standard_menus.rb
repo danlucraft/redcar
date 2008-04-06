@@ -8,6 +8,10 @@ module Redcar
     sensitive :edit_tab
   end
   
+  class RubyCommand < Redcar::EditTabCommand
+    scope "source.ruby"
+  end
+
   class StandardMenus < Redcar::Plugin #:nodoc:all
     include Redcar::MenuBuilder
     extend Redcar::PreferenceBuilder
@@ -456,6 +460,15 @@ module Redcar
         else
           @buf.insert_at_cursor("\t")
         end
+      end
+    end
+    
+    class RubyEnd < Redcar::RubyCommand
+      key   "Global/Ctrl+Alt+E"
+      
+      def execute
+        doc.insert_at_cursor("en")
+        doc.type("d\n")
       end
     end
     

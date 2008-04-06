@@ -40,6 +40,17 @@ module Redcar::Tests
       end
     end
     
+    class TestPythonCommand < Redcar::EditTabCommand
+      scope "source.python"
+    end
+    
+    class TestPythonStringCommand < TestPythonCommand
+      scope "source.python string"
+    end
+    
+    class TestPythonScopeInheritsCommand < TestPythonCommand
+    end
+    
     def test_execute
       CommandTest.test_var = 2
       TestCommand1.new(10).do
@@ -88,6 +99,26 @@ module Redcar::Tests
       assert TestSensitiveCommand2.active?
       assert TestSensitiveCommand.operative?
       assert TestSensitiveCommand2.operative?
+    end
+    
+    def test_scope_sensitivity
+      Redcar.win.tabs.each &:close
+      assert !TestPythonCommand.executable?
+      assert !TestPythonScopeInheritsCommand.executable?
+      assert !TestPythonStringCommand.executable?
+      Redcar.win.new_tab(Redcar::EditTab)
+      assert !TestPythonCommand.executable?(Redcar.doc.cursor_scope)
+      assert !TestPythonScopeInheritsCommand.executable?(Redcar.doc.cursor_scope)
+      assert !TestPythonStringCommand.executable?(Redcar.doc.cursor_scope)
+      Redcar.tab.syntax = 'Python'
+      assert TestPythonCommand.executable?(Redcar.doc.cursor_scope)
+      assert TestPythonScopeInheritsCommand.executable?(Redcar.doc.cursor_scope)
+      assert !TestPythonStringCommand.executable?(Redcar.doc.cursor_scope)
+      Redcar.doc.text = "  \"Tigh me up, Tigh me down\"  "
+      Redcar.doc.place_cursor(Redcar.doc.iter(6))
+      assert TestPythonCommand.executable?(Redcar.doc.cursor_scope)
+      assert TestPythonScopeInheritsCommand.executable?(Redcar.doc.cursor_scope)
+      assert TestPythonStringCommand.executable?(Redcar.doc.cursor_scope)
     end
   end
 end

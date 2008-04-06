@@ -222,5 +222,9 @@ module Redcar
     def indent_line(line_num)
       @indenter.indent_line(line_num) if @indenter
     end
+    
+    def type(text)
+      text.split(//).each {|l| insert_at_cursor(l)}
+    end
   end
 end

@@ -107,5 +107,9 @@ module Redcar
     def tab_icon
       :FILE
     end
+    
+    def syntax=(grammar_name)
+      @view.change_root_scope(grammar_name)
+    end
   end
 end

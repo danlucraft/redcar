@@ -96,7 +96,11 @@ module Redcar
     end
     
     def self.scope(scope)
-      @scope = scope
+      if self.ancestors.include? Redcar::EditTabCommand
+        @scope = scope
+      else
+        raise "only Redcar::EditTabCommands can have scope sensitivity"
+      end
     end
     
     def self.sensitive(sens)
@@ -155,6 +159,37 @@ module Redcar
     
     def self.operative?
       @operative == nil ? active? : @operative
+    end
+    
+    def self.correct_scope?(scope=nil)
+      if @scope
+        if !scope
+          false
+        else
+          app = Redcar::EditView::Theme.applicable?(@scope, scope.hierarchy_names(true))
+          if self.ancestors[1].ancestors.include? Redcar::EditTabCommand
+            app and self.ancestors[1].correct_scope?(scope)
+          else
+            app
+          end
+        end
+      else
+        if self.ancestors[1].ancestors.include? Redcar::EditTabCommand
+          self.ancestors[1].correct_scope?(scope)
+        else
+          true
+        end
+      end
+    end
+    
+    def self.executable?(scope=nil)
+#       puts
+#       p self
+#       p scope
+#       p @scope
+#       p correct_scope?(scope)
+#       p operative?
+      operative? and correct_scope?(scope)
     end
     
     attr :tab,  true

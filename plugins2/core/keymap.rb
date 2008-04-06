@@ -122,7 +122,8 @@ module Redcar
 #          puts "[Red] executing arbitrary code"
           com.call
         elsif com.ancestors.include? Redcar::Command
-          if com.operative?
+          scope = (Redcar.doc.cursor_scope rescue nil)
+          if com.executable?(scope)
 #            puts "[Red] executing #{com}"
             com.new.do
           else

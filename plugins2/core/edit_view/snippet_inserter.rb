@@ -158,7 +158,6 @@ class Redcar::EditView
     def insert_snippet(snippet)
       @in_snippet = true
       @content = snippet["content"]
-      p @content
       @insert_line_num = @buf.cursor_line
       @tab_stops = {}
       @mirrors = {}
