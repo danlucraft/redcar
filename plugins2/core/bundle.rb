@@ -20,6 +20,42 @@ module Redcar
       end
     end
     
+    # Translates a Textmate key equivalent into a Redcar
+    # keybinding. 
+    def self.translate_key_equivalent(keyeq)
+      if keyeq
+        key_str      = keyeq.at(-1)
+#        p key_str
+        case key_str
+        when "\n"
+          letter = "Return"
+        else
+          letter = key_str.gsub("\e", "Escape")
+        end
+        modifier_str = keyeq.strip[0..-2]
+        modifiers = modifier_str.split("").map do |modchar|
+          case modchar
+          when "^" # TM: Control
+            [2, "Super"]
+          when "~" # TM: Option
+            [3, "Alt"]
+          when "@" # TM: Command
+            [1, "Ctrl"]
+          when "$"
+            [4, "Shift"]
+          else
+            puts "unknown key_equivalent: #{keyeq}"
+            return nil
+          end
+        end.sort_by {|a| a[0]}.map{|a| a[1]}
+        if modifiers.empty?
+          letter
+        else
+          modifiers.join("+") + "+" + letter
+        end
+      end
+    end
+    
     # Return an array of the names of all bundles loaded.
     def self.names
       bus("/redcar/bundles/").children.map &:name

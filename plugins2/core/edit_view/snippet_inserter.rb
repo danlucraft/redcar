@@ -8,11 +8,29 @@ class Redcar::EditView
       Redcar::Bundle.names.each do |name|
         snippets = Redcar::Bundle.get(name).snippets
         snippets.each do |snip|
+          safename = snip["name"].gsub("/", "SLA").gsub("\"", "\\\"").gsub("#", "\\\#")
+          slot = bus("/textmate/bundles/#{name}/#{safename}")
+          slot.data = snip
           if snip["tabTrigger"]
             @snippets[snip["scope"]||""][snip["tabTrigger"]] = snip
-#           elsif snip["keyEquivalent"]
-#             p snip["name"]
-#             p snip["keyEquivalent"]
+          elsif snip["keyEquivalent"]
+            keyb = Redcar::Bundle.translate_key_equivalent(snip["keyEquivalent"])
+            if keyb
+              command_class = Class.new(Redcar::Command)
+              if snip["scope"]
+                command_class.class_eval %Q{
+                  scope "#{snip["scope"]}"
+                }
+              end
+              t= %Q{
+                key "Global/#{keyb.gsub("\"", "\\\"").gsub("#", "\\\#")}"
+#                sensitive :edit_tab?
+                def execute
+                  tab.view.snippet_inserter.insert_snippet_from_path("#{slot.path}")
+                end
+              }
+              command_class.class_eval t
+            end
           else
             i += 1
           end          
@@ -155,7 +173,12 @@ class Redcar::EditView
       text.gsub("\\$", "$").gsub("\\\\", "\\")
     end
     
+    def insert_snippet_from_path(path)
+      insert_snippet(bus(path).data)
+    end
+    
     def insert_snippet(snippet)
+      p snippet
       @in_snippet = true
       @content = snippet["content"]
       @insert_line_num = @buf.cursor_line

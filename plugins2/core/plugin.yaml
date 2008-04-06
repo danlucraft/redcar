@@ -34,6 +34,7 @@ plugins:
       core-plugin: "*"
       core-bundle: "*"
       core-keymap: "*"
+      core-command: "*"
     start_dependencies:
       core-standard_menus: "*"
     tests:
@@ -74,6 +75,9 @@ plugins:
     startup_module:  Redcar::Bundle
     load_dependencies:
       core-app: "*"
+    tests:
+      - path: core/tests/bundle_test.rb
+        testcase: Redcar::Tests::BundleTest
 
   - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-app

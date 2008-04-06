@@ -96,11 +96,7 @@ module Redcar
     end
     
     def self.scope(scope)
-      if self.ancestors.include? Redcar::EditTabCommand
-        @scope = scope
-      else
-        raise "only Redcar::EditTabCommands can have scope sensitivity"
-      end
+      @scope = scope
     end
     
     def self.sensitive(sens)
