@@ -1,7 +1,7 @@
 
 require 'rubygems'
 require 'oniguruma'
-require 'lib/ruby_extensions'
+require File.dirname(__FILE__) + '/ruby_extensions'
 
 class RegexReplace
   COND_RE = /\(
