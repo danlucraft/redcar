@@ -1,3 +1,16 @@
+=====================IMPORTANT NOTE=========================
+
+Redcar is pre-Release, pre-Beta, pre-Alpha. If you try and
+use it it will:
+  a. Crash. Guaranteed.
+  b. Lose your data, if you didn't save.
+  c. Almost certainly not work on your machine anyway,
+    because the dependencies are incredible and 
+    undocumented and there are undocumented extensions that 
+    need compiling.
+
+=============================================================
+
 Redcar
     by Daniel Lucraft
     http://www.RedcarEditor.com/
@@ -22,6 +35,8 @@ snippets, macros and is highly extensible.
 
 == REQUIREMENTS:
 
+THESE ARE INCOMPLETE
+
 * GTK 2.10 toolkit
 * Ruby-Gnome 0.16.0
 * Ruby-Gnome 0.15.0 (in Ubuntu <=Fiesty repository) works with
@@ -34,6 +49,7 @@ Ubuntu dependencies:
 
 == INSTALL:
 
+NOT YET YOU CAN'T
 * sudo gem install redcar
 
 == LICENSE:
