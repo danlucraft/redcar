@@ -15,14 +15,12 @@ module Redcar
     
     def self.start(plugin) #:nodoc:
       App.new_window
-      Keymap.push_onto(self, "Global")
       
       plugin.transition(FreeBASE::RUNNING)
     end
     
     def self.stop(plugin) #:nodoc:
       App.close_all_windows(false)
-      Keymap.remove_from(self, "Global")
       
       Hook.clear_plugin_hooks(self)
       

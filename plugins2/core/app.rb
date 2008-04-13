@@ -67,7 +67,6 @@ module Redcar
       if window
         Hook.trigger :close_window do
           window.panes.each {|pane| pane.tabs.each {|tab| tab.close} }
-          Keymap.clear_keymaps_from_object(window)
           @window = nil if window == @window
           window.hide_all if window
         end

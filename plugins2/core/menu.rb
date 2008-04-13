@@ -170,14 +170,14 @@ module Redcar
       def make_gtk_menuitem(slot)
         name     = slot.name
         menuitem = slot.data || {}
-        c = if icon = (slot.data||null).get_icon and 
+        c = if icon = (slot.data||null).get(:icon) and 
                 icon != "none"
               Gtk::ImageMenuItem.create icon, name
             else
               Gtk::MenuItem.new name
             end
-        if slot.data and slot.data.get_key
-          keybinding = Keymap.display_key(slot.data.get_key)
+        if slot.data and slot.data.get(:key)
+          keybinding = Keymap.display_key(slot.data.get(:key))
         end
         if keybinding
           make_gtk_menuitem_hbox(c, keybinding)

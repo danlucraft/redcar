@@ -21,6 +21,7 @@ module Redcar
         @hooks[hook] ||= []
         @hooks[hook] << name unless @hooks[hook].include? name
       end
+      @objects[name] = []
       @value[name] = block.call
     end
     

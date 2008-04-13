@@ -5,39 +5,38 @@ class Redcar::EditView
     def self.load_snippets
       @snippets = Hash.new {|h, k| h[k] = {}}
       i = 0
+      st = Time.now
       Redcar::Bundle.names.each do |name|
         snippets = Redcar::Bundle.get(name).snippets
         snippets.each do |snip|
           safename = snip["name"].gsub("/", "SLA").gsub("\"", "\\\"").gsub("#", "\\\#")
-          slot = bus("/textmate/bundles/#{name}/#{safename}")
+          slot = bus("/textmate/bundles/#{name}/snippets/#{safename}")
           slot.data = snip
           if snip["tabTrigger"]
             @snippets[snip["scope"]||""][snip["tabTrigger"]] = snip
-#          elsif snip["keyEquivalent"]
-#            keyb = Redcar::Bundle.translate_key_equivalent(snip["keyEquivalent"])
-#            if keyb
-#              command_class = Class.new(Redcar::Command)
-#              if snip["scope"]
-#                command_class.class_eval %Q{
-#                  scope "#{snip["scope"]}"
-#                }
-#              end
-#              t= %Q{
-#                key "Global/#{keyb.gsub("\"", "\\\"").gsub("#", "\\\#")}"
-##                sensitive :edit_tab?
-#                def execute
-#                  tab.view.snippet_inserter.insert_snippet_from_path("#{slot.path}")
-#                end
-#              }
-#              command_class.class_eval t
-#            end
+            #          elsif snip["keyEquivalent"]
+            #            keyb = Redcar::Bundle.translate_key_equivalent(snip["keyEquivalent"])
+            #            if keyb
+            #              command_class = Class.new(Redcar::Command)
+            #              if snip["scope"]
+            #                command_class.class_eval %Q{
+            #                  scope "#{snip["scope"]}"
+            #                }
+            #              end
+            #              t= %Q{
+            #                key "Global/#{keyb.gsub("\"", "\\\"").gsub("#", "\\\#")}"
+            #                sensitive :edit_tab?
+            #                def execute
+            #                  tab.view.snippet_inserter.insert_snippet_from_path("#{slot.path}")
+            #                end
+            #              }
+            #              command_class.class_eval t
+            #            end
           else
             i += 1
           end          
         end
       end
-      puts "#{i} snippets not loaded because they didn't have tabTriggers"  
-      @snippets.default = nil
     end
     
     def self.default_snippets

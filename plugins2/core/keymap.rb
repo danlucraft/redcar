@@ -54,70 +54,26 @@ module Redcar
       end
     end
     
-    # Use to register a key. key_path should look like "Global/Ctrl+G"
-    # which represents adding the key Ctrl+G to the Global keymap. 
+    # Use to register a key. key_name should look like "Ctrl+G".
     # Other examples:
-    #   "EditTab/Ctrl+Super+R"
-    #   "Snippet/Ctrl+H"
-    def self.register_key(key_path, command)
-      bus("/redcar/keymaps/#{key_path}").data = command
+    #   "Ctrl+Super+R"
+    #   "Ctrl+H"
+    def self.register_key_command(key_name, command)
+      slot = bus("/redcar/keymaps/#{key_name}")
+      slot.data ||= []
+      slot.data << command
     end
     
-    # Removes a key from a keymap. key_path should be as in
-    # register_key.
-    def self.unregister_key(key_path)
-      bus("/redcar/keymaps/#{key_path}").prune
-    end
-    
-    # Pushes a keymap (with keymap_path eg "Global" or "EditView/Snippet") 
-    # onto a particular object. E.g. self.push_onto(Redcar::Window, 
-    # "MyKeyMap")
-    def self.push_onto(obj, keymap_path)
-      @obj_keymaps[obj] << keymap_path
-    end
-    
-    # Removes a keymap from an obj eg.
-    #   Keymap.remove_from(Redcar::EditView, "EditView")
-    def self.remove_from(obj, keymap_path)
-      @obj_keymaps[obj].delete keymap_path
-    end
-    
-    # Removes all keymaps from an object. 
-    def self.clear_keymaps_from_object(obj)
-      @obj_keymaps.delete obj
+    # Removes a key from a keymap. key_name should be as in
+    # register_key_command.
+    def self.unregister_key(key_name)
+      bus("/redcar/keymaps/#{key_name}").prune
     end
     
     # Use to execute a key. key_name should be a string like "Ctrl+G".
-    # Execute key will scan the keymap stacks for the first instance of
-    # this key then execute the appropriate command.
-    # The keymap stacks are processed in this order:
-    #    current gtk widget instance
-    #    current gtk widget class
-    #    current tab instance
-    #    current tab class
-    #    current window instance
-    #    current window class
     def self.execute_key(key_name)
-      stack_objects = [Redcar.win.focussed_gtk_widget,
-                       Redcar.win.focussed_gtk_widget.class,
-                       Redcar.win.focussed_tab, 
-                       Redcar.win.focussed_tab.class, 
-                       Redcar.win,
-                       Redcar.win.class]
-      stack_objects.each do |stack_object|
-        if stack_object
-          @obj_keymaps[stack_object].reverse.each do |keymap_path|
-            return true if execute_key_on_keymap(key_name, keymap_path)
-          end
-        end
-      end
-      false
-    end
-    
-    # Given a key_name like "Ctrl+G" and a keymap path like "Snippet"
-    # executes the command at "/redcar/keymaps/Snippet/Ctrl+G"
-    def self.execute_key_on_keymap(key_name, keymap_path)
-      if com = bus("/redcar/keymaps/#{keymap_path}/#{key_name}").data
+      if coms = bus("/redcar/keymap/#{key_name}").data
+        com = coms.first
         if com.is_a? Proc
 #          puts "[Red] executing arbitrary code"
           com.call
@@ -132,6 +88,7 @@ module Redcar
         end
         true
       end
+      false
     end
     
     # Turns a key_path like "Global/Ctrl+G" into "Ctrl+G" for display

@@ -93,17 +93,29 @@ module Redcar
       prefs
     end
     
-    # A array of this bundle's snippets.
+    # A array of this bundle's snippets. Snippets are cached 
     def snippets
       @snippets ||= load_snippets
     end
     
     def load_snippets #:nodoc:
-      snippets = []
-      Dir.glob(@dir+"/Snippets/*").each do |snipfile|
-        xml = IO.readlines(snipfile).join
-        snip = Redcar::Plist.plist_from_xml(xml)[0]
-        snippets << snip
+      unless Redcar::EditView.cache_dir
+        raise "called SnippetInserter.load_snippets without a cache_dir"
+      end
+      cache_dir = Redcar::EditView.cache_dir
+      if File.exist?(cache_dir + "snippets/#{@name}.dump")
+        str = File.read(cache_dir + "snippets/#{@name}.dump")
+        snippets = Marshal.load(str)
+      else
+        snippets = []
+        Dir.glob(@dir+"/Snippets/*").each do |snipfile|
+          xml = IO.readlines(snipfile).join
+          snip = Redcar::Plist.plist_from_xml(xml)[0]
+          snippets << snip
+        end
+        File.open(cache_dir + "snippets/#{@name}.dump", "w") do |fout|
+          fout.puts Marshal.dump(snippets)
+        end
       end
       snippets
     end

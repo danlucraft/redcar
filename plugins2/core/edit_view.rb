@@ -16,7 +16,6 @@ module Redcar
     end
     
     def self.start(plugin) #:nodoc:
-      Keymap.push_onto(self, "EditView")
       Hook.attach :after_open_window do
         create_grammar_combo
         create_line_col_status
@@ -39,7 +38,6 @@ module Redcar
     end
     
     def self.stop(plugin) #:nodoc:
-      Keymap.remove_from(self, "EditView")
       Redcar::EditView::Theme.cache
       plugin.transition(FreeBASE::LOADED)
     end

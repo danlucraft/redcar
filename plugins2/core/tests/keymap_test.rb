@@ -17,13 +17,17 @@ module Redcar::Tests
       Redcar::Keymap.unregister_key("KeymapTest/Ctrl+G")
     end
     
+    def win
+      Redcar::App.focussed_window
+    end
+    
     def test_clean_letter
       assert_equal "Page_Up", Redcar::Keymap.clean_letter("Page Up")
     end
     
     def test_register_key
       assert_nil bus("/redcar/keymaps/KeymapTest/Ctrl+G").data
-      Redcar::Keymap.register_key("KeymapTest/Ctrl+G", Redcar::InlineCommand)
+      Redcar::Keymap.register_key_command("KeymapTest/Ctrl+G", KeymapTestCommand)
       assert_not_nil bus("/redcar/keymaps/KeymapTest/Ctrl+G").data
     end
     
@@ -43,28 +47,12 @@ module Redcar::Tests
       Redcar::Keymap.execute_key("Ctrl+G")
     end
     
-    def test_execute_key_multiple_keymaps
-      Redcar::Keymap.push_onto(win, "KeymapTest")
-      Redcar::Keymap.push_onto(win, "KeymapTest2")
-      Redcar::Keymap.expects(:execute_key_on_keymap).
-        with("Ctrl+G", "KeymapTest2")
-      Redcar::Keymap.expects(:execute_key_on_keymap).
-        with("Ctrl+G", "KeymapTest")
-      Redcar::Keymap.expects(:execute_key_on_keymap).
-        with("Ctrl+G", "Global")
-      Redcar::Keymap.execute_key("Ctrl+G")
-      Redcar::Keymap.remove_from(win, "KeymapTest")
-      Redcar::Keymap.remove_from(win, "KeymapTest2")
-    end
-    
-    def test_execute_key_on_keymap
-      Redcar::Keymap.push_onto(win, "KeymapTest")
+    def test_execute_key
       self.class.test_var = 2
-      Redcar::Keymap.register_key("KeymapTest/Ctrl+G", KeymapTestCommand)
-      Redcar::Keymap.execute_key_on_keymap("Ctrl+G", "KeymapTest")
+      Redcar::Keymap.register_key_command("KeymapTest/Ctrl+G", KeymapTestCommand)
+      Redcar::Keymap.execute_key("Ctrl+G")
       assert_equal 4, self.class.test_var
       Redcar::Keymap.unregister_key("KeymapTest/Ctrl+G")
-      Redcar::Keymap.remove_from(win, "KeymapTest")
     end
   end
 end

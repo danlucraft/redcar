@@ -37,6 +37,34 @@ class Class # :nodoc:
   end
 end
 
+class Module # :nodoc:
+  def mattr_reader(*syms)
+    syms.flatten.each do |sym|
+      next if sym.is_a?(Hash)
+      class_eval(<<-EOS, __FILE__, __LINE__)
+        def self.#{sym}
+          @#{sym}
+        end
+      EOS
+    end
+  end
+
+  def mattr_writer(*syms)
+    syms.flatten.each do |sym|
+      class_eval(<<-EOS, __FILE__, __LINE__)
+        def self.#{sym}=(obj)
+          @#{sym} = obj
+        end
+      EOS
+    end
+  end
+
+  def mattr_accessor(*syms)
+    mattr_reader(*syms)
+    mattr_writer(*syms)
+  end
+end
+
 class Object
   def tap
     yield self
@@ -237,33 +265,33 @@ end
 
 # Methodphitamine
 
-module Kernel
-  protected
-  def it() It.new end
-  alias its it
-end
+# module Kernel
+#   protected
+#   def it() It.new end
+#   alias its it
+# end
 
-class It
+# class It
 
-  undef_method(*(instance_methods - %w*__id__ __send__*))
+#   undef_method(*(instance_methods - %w*__id__ __send__*))
 
-  def initialize
-    @methods = []
-  end
+#   def initialize
+#     @methods = []
+#   end
 
-  def method_missing(*args, &block)
-    @methods << [args, block] unless args == [:respond_to?, :to_proc]
-    self
-  end
+#   def method_missing(*args, &block)
+#     @methods << [args, block] unless args == [:respond_to?, :to_proc]
+#     self
+#   end
 
-  def to_proc
-    lambda do |obj|
-      @methods.inject(obj) do |current,(args,block)|
-        current.send(*args, &block)
-      end
-    end
-  end
-end
+#   def to_proc
+#     lambda do |obj|
+#       @methods.inject(obj) do |current,(args,block)|
+#         current.send(*args, &block)
+#       end
+#     end
+#   end
+# end
 
 # if $0.include? "spec"
 #   describe "Methodphitamine" do

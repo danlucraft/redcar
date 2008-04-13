@@ -22,6 +22,11 @@ module Redcar
       include Redcar::Sensitive
     end
 
+    def self.load(plugin)
+      Range.active ||= []
+      plugin.transition(FreeBASE::LOADED)
+    end
+    
     def self.start(plugin) #:nodoc:
       CommandHistory.clear
       plugin.transition(FreeBASE::RUNNING)
@@ -74,25 +79,23 @@ module Redcar
       MenuBuilder.item "menubar/"+menu, self.to_s
     end
     
-    def self.get_menu
-      @menu
-    end
-    
     def self.icon(icon)
       @icon = icon
     end
     
-    def self.get_icon
-      @icon
-    end
-    
     def self.key(key)
       @key = key
-      Redcar::Keymap.register_key(key, self)
+      Redcar::Keymap.register_key_command(key, self)
     end
     
-    def self.get_key
-      @key
+    # Set the documentation string for this Command.
+    def self.doc(val)
+      @doc = val
+    end
+    
+    # Set the range for this Command.
+    def self.range(val)
+      @range = val
     end
     
     def self.scope(scope)
@@ -110,7 +113,11 @@ module Redcar
     end
     
     def self.get(name)
-      instance_variable_get(name)
+      instance_variable_get("@#{name}")
+    end
+    
+    def self.set(name, val)
+      instance_variable_set("@#{name}", val)
     end
     
     def self.fallback_input(input)
@@ -148,9 +155,40 @@ module Redcar
                    end
 #      puts "com: #{self}: #{old.inspect} -> #{@operative.inspect}"
       if old != @operative and @menu
-        Redcar::MenuDrawer.set_active(@menu, @operative)
+        update_menu_sensitivity
       end
       child_commands.each(&:update_operative)
+    end
+    
+    def self.update_menu_sensitivity
+      Redcar::MenuDrawer.set_active(@menu, @operative)
+    end
+    
+    def in_range=(val)
+      old = @in_range
+      @in_range = val
+      if old != @in_range
+        update_menu_sensitivity
+      end
+    end
+    
+    def self.nearest_range_ancestor
+      if @range
+        self
+      elsif self.ancestors[1..-1].include? Redcar::Command
+        self.ancestors[1].nearest_range_ancestor
+      else
+        nil
+      end
+    end
+    
+    def self.in_range?
+      if nearest_range_ancestor
+        nearest_range_ancestor.in_range?
+      else
+        true # a command with no ranges set anywhere 
+             # in the hierarchy is a global command
+      end
     end
     
     def self.operative?
@@ -178,13 +216,15 @@ module Redcar
       end
     end
     
-    def self.executable?(scope=nil)
+    def self.executable?(tab=nil)
 #       puts
 #       p self
 #       p scope
 #       p @scope
 #       p correct_scope?(scope)
 #       p operative?
+      scope = nil
+      scope = tab.document.cursor_scope if tab
       operative? and correct_scope?(scope)
     end
     
@@ -216,7 +256,7 @@ module Redcar
       rescue Object => e
         Command.process_command_error(self, e)
       end
-      direct_output(self.class.get(:@output), @output) if @output
+      direct_output(self.class.get(:output), @output) if @output
     end
     
     def record?
@@ -386,6 +426,54 @@ module Redcar
       else
         "/bin/sh cache/tmp.command"
       end
+    end
+  end
+  
+  # A module that deals with the 'range's that commands can be in.
+  module Range
+    mattr_accessor :active
+    
+    def self.activate(range)
+      if @active.include? range
+        true
+      else
+        @active << range 
+        activate_commands(@commands[range])
+      end
+    end
+    
+    def self.deactivate(range)
+      if @active.include? range
+        @active.delete range
+        deactivate_commands(@commands[range])
+      else
+        true
+      end
+    end
+    
+    def self.activate_commands(commands)
+      commands.in_range = true
+    end
+    
+    def self.deactivate_commands(commands)
+      commands.in_range = false
+    end
+    
+    def self.register_command(range, command)
+      if valid?(range)
+        @commands[range] ||= []
+        @commands[range] << command
+      else
+        raise "cannot register a command with an invalid "+
+          "range: #{range}"
+      end
+    end
+    
+    def self.valid?(range)
+       range.is_a? Class and 
+        (range == Redcar::Window or 
+         range.ancestors.include? Redcar::Command or
+         range.ancestors.include? Redcar::Speedbar)
     end
   end
   

@@ -1,11 +1,11 @@
 
 module Redcar
   class TabCommand < Redcar::Command #:nodoc:
-    sensitive :tab
+    range Redcar::Tab
   end
   
   class EditTabCommand < Redcar::Command #:nodoc:
-    sensitive :edit_tab
+    range Redcar::EditTab
   end
   
   class RubyCommand < Redcar::EditTabCommand
@@ -17,8 +17,8 @@ module Redcar
     extend Redcar::PreferenceBuilder
     
     class NewTab < Redcar::Command
-      key "Global/Ctrl+N"
-      icon :NEW
+      key   "Ctrl+N"
+      icon  :NEW
       
       def execute
         win.new_tab(EditTab).focus
@@ -301,7 +301,7 @@ module Redcar
           FindNextRegex.new(Regexp.new(sb.query_string)).do
         end
       end
-  
+
       def execute
         sp = FindSpeedbar.instance
         sp.show(win)

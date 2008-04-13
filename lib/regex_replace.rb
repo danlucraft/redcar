@@ -1,6 +1,14 @@
 
 require 'rubygems'
-require 'oniguruma'
+if RUBY_VERSION == "1.9.0"
+  module Oniguruma
+    ORegexp = Regexp
+  end
+  ORegexp = Regexp
+else
+  require 'oniguruma'
+  ORegexp = Oniguruma::ORegexp
+end
 require File.dirname(__FILE__) + '/ruby_extensions'
 
 class RegexReplace

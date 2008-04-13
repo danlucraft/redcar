@@ -51,6 +51,19 @@ module Redcar::Tests
     class TestPythonScopeInheritsCommand < TestPythonCommand
     end
     
+    class TestRangeTab < Redcar::Tab
+      def initialize(pane)
+        super pane, Gtk::Label.new("foo")
+      end
+    end
+    
+    class TestRangeCommand < Redcar::Command
+      range TestRangeTab
+    end
+    
+    class TestRangeInheritsCommand < TestRangeCommand
+    end
+    
     def test_execute
       CommandTest.test_var = 2
       TestCommand1.new(10).do
@@ -107,18 +120,31 @@ module Redcar::Tests
       assert !TestPythonScopeInheritsCommand.executable?
       assert !TestPythonStringCommand.executable?
       Redcar.win.new_tab(Redcar::EditTab)
-      assert !TestPythonCommand.executable?(Redcar.doc.cursor_scope)
-      assert !TestPythonScopeInheritsCommand.executable?(Redcar.doc.cursor_scope)
-      assert !TestPythonStringCommand.executable?(Redcar.doc.cursor_scope)
+      assert !TestPythonCommand.executable?(Redcar.tab)
+      assert !TestPythonScopeInheritsCommand.executable?(Redcar.tab)
+      assert !TestPythonStringCommand.executable?(Redcar.tab)
       Redcar.tab.syntax = 'Python'
-      assert TestPythonCommand.executable?(Redcar.doc.cursor_scope)
-      assert TestPythonScopeInheritsCommand.executable?(Redcar.doc.cursor_scope)
-      assert !TestPythonStringCommand.executable?(Redcar.doc.cursor_scope)
+      assert TestPythonCommand.executable?(Redcar.tab)
+      assert TestPythonScopeInheritsCommand.executable?(Redcar.tab)
+      assert !TestPythonStringCommand.executable?(Redcar.tab)
       Redcar.doc.text = "  \"Tigh me up, Tigh me down\"  "
       Redcar.doc.place_cursor(Redcar.doc.iter(6))
-      assert TestPythonCommand.executable?(Redcar.doc.cursor_scope)
-      assert TestPythonScopeInheritsCommand.executable?(Redcar.doc.cursor_scope)
-      assert TestPythonStringCommand.executable?(Redcar.doc.cursor_scope)
+      assert TestPythonCommand.executable?(Redcar.tab)
+      assert TestPythonScopeInheritsCommand.executable?(Redcar.tab)
+      assert TestPythonStringCommand.executable?(Redcar.tab)
+    end
+    
+    def test_range
+      Redcar.win.tabs.each &:close
+      assert !TestRangeCommand.executable?
+      assert !TestRangeInheritsCommand.executable?
+      Redcar.win.new_tab(Redcar::EditTab)
+      assert !TestRangeCommand.executable?(Redcar.tab)
+      assert !TestRangeInheritsCommand.executable?(Redcar.tab)
+      Redcar.win.tabs.each &:close
+      Redcar.win.new_tab(TestRangeTab)
+      assert TestRangeCommand.executable?(Redcar.tab)
+      assert TestRangeInheritsCommand.executable?(Redcar.tab)
     end
   end
 end

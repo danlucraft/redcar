@@ -175,6 +175,8 @@ plugins:
         testcase: Redcar::Tests::CommandTest
       - path: core/tests/command_history_test.rb
         testcase: Redcar::Tests::CommandHistoryTest
+      - path: core/tests/command_range_test.rb
+        testcase: Redcar::Tests::CommandRangeTest
 
   - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-keymap
