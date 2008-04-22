@@ -9,6 +9,7 @@ cache/cache.img
 cache/grammars.dump
 cache/themes.dump
 cache/tmp.command
+cache/snippets/*.dump
 
 custom/arrangements.yaml
 custom/preferences.yaml
