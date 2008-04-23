@@ -4,34 +4,34 @@ require 'gtk2'
 module Redcar
   class Window < Gtk::Window
     extend FreeBASE::StandardPlugin
-    
+
     def self.load(plugin) #:nodoc:
       Hook.register :new_tab
       Hook.register :close_tab
       Hook.register :focus_tab
-      
+
       plugin.transition(FreeBASE::LOADED)
     end
-    
+
     def self.start(plugin) #:nodoc:
       App.new_window
-      
+
       plugin.transition(FreeBASE::RUNNING)
     end
-    
+
     def self.stop(plugin) #:nodoc:
       App.close_all_windows(false)
-      
+
       Hook.clear_plugin_hooks(self)
-      
+
       plugin.transition(FreeBASE::LOADED)
     end
-    
-    attr_reader(:notebooks_panes, :previous_tab, :gtk_menubar, 
+
+    attr_reader(:notebooks_panes, :previous_tab, :gtk_menubar,
                 :focussed_gtk_widget, :gtk_speedbar)
-    
-    # Do not call this directly, use App#new_window instead. 
-    # Creates a new Redcar window. 
+
+    # Do not call this directly, use App#new_window instead.
+    # Creates a new Redcar window.
     def initialize
       super()#("Redcar")
       title = "Redcar"
@@ -40,27 +40,28 @@ module Redcar
       @focussed_gtk_widget = nil
       build_widgets
       MenuDrawer.draw_menus(self)
+      Range.activate(Redcar::Window)
       connect_signals
       show_initial_widgets
     end
-    
+
     # Close this Redcar window.
     def close
       App.close_window(self, true)
     end
-    
+
     # Returns an array of all the Panes in the Window.
     def panes
       @notebooks_panes.values.sort_by {|p| p.object_id }
     end
-    
+
     # Unifies all the Panes into one.
     def unify_all
       while panes.length > 1
         panes.first.unify
       end
     end
-    
+
     # Equivalent to calling Pane#new_tab on the currently
     # focussed Pane.
     def new_tab(tab_class, *args)
@@ -71,28 +72,28 @@ module Redcar
           end
       t
     end
-    
+
     # Returns an array of all tabs in the Window.
     def tabs
       panes.map {|pane| pane.tabs }.flatten
     end
-    
+
     def collect_tabs(klass)
       tabs.select {|t| t.is_a? klass}
     end
-    
+
     define_method_bracket :tab do |id|
       if id.is_a? String
         tabs.find{|t| t.label.text == id}
       end
     end
-    
-    # Returns an array of all active tabs (all tabs at the 
+
+    # Returns an array of all active tabs (all tabs at the
     # forefront of their Panes).
     def active_tabs
       panes.map {|p| p.active_tab}.compact
     end
-    
+
     # Returns the currently focussed Tab in the Window.
     def focussed_tab
       if @focussed_tab
@@ -101,11 +102,11 @@ module Redcar
         active_tabs.first
       end
     end
-    
+
     def split_horizontal(pane) #:nodoc:
       split_pane(:horizontal, pane)
     end
-    
+
     def split_vertical(pane) #:nodoc:
       split_pane(:vertical, pane)
     end
@@ -128,11 +129,12 @@ module Redcar
           end
         end
         Hook.trigger :close_tab, tab
+        update_tab_range(focussed_tab)
       else
         raise "trying to close tab with no pane: #{tab.label.text}"
-      end      
+      end
     end
-    
+
     def unify(pane) #:nodoc:
       panes_container = pane.gtk_notebook.parent
       unless panes_container.class == Gtk::HBox
@@ -166,7 +168,7 @@ module Redcar
         end
       end
     end
-    
+
     def debug_print_widgets(gtk_widget=self, indent=0) #:nodoc:
       puts " "*indent + gtk_widget.class.to_s
       if gtk_widget.respond_to? :children
@@ -175,14 +177,15 @@ module Redcar
         end
       end
     end
-    
+
     def update_focussed_tab(tab) #:nodoc:
       Hook.trigger :focus_tab, tab do
         @previously_focussed_tab = @focussed_tab
         @focussed_tab = tab
       end
+      update_tab_range(tab)
     end
-    
+
     private
 
     def collect_tabs_from_dual(dual)
@@ -194,7 +197,7 @@ module Redcar
         end
       end.flatten
     end
-    
+
     def split_pane(whichway, pane)
       case whichway
       when :vertical
@@ -226,26 +229,26 @@ module Redcar
       dual.show
       dual.position = 200
     end
-    
+
     def notebook_to_pane(nb)
       @notebooks_panes[nb]
     end
-    
+
     def connect_signals
       signal_connect("destroy") do
         self.close
       end
-      
+
       signal_connect('key-press-event') do |gtk_widget, gdk_eventkey|
         continue = Keymap.process(gdk_eventkey)
         # falls through to Gtk widgets if nothing handles it
         continue
       end
-      
+
       # Everytime the focus changes, check to see if we have changed tabs.
       signal_connect('set-focus') do |_, gtk_widget, _|
         @focussed_gtk_widget = gtk_widget
-        until gtk_widget == nil or 
+        until gtk_widget == nil or
             Tab.widget_to_tab.keys.include? gtk_widget or
             @notebooks_panes.keys.include? gtk_widget
           gtk_widget = gtk_widget.parent
@@ -262,10 +265,10 @@ module Redcar
         end
       end
     end
-    
+
     def build_widgets
       set_size_request(800, 600)
-      @gtk_menubar = Gtk::MenuBar.new 
+      @gtk_menubar = Gtk::MenuBar.new
       gtk_table = Gtk::Table.new(1, 4, false)
       bus["/gtk/window/table"].data = gtk_table
       bus["/gtk/window/menubar"].data = @gtk_menubar
@@ -292,18 +295,18 @@ module Redcar
                    # X direction            # Y direction
                    0, 1,                    2, 3,
                    Gtk::EXPAND | Gtk::FILL, Gtk::EXPAND | Gtk::FILL,
-                   0,      0)  
+                   0,      0)
       @gtk_speedbar = Redcar::SpeedbarDisplay.new # is an hbox
       bus["/gtk/window/speedbar"].data = @gtk_speedbar
       gtk_table.attach(@gtk_speedbar,
                    # X direction            # Y direction
                    0, 1,                    3, 4,
                    Gtk::EXPAND | Gtk::FILL, Gtk::FILL,
-                   0,      0)  
+                   0,      0)
       gtk_status_hbox = Gtk::HBox.new
       bus["/gtk/window/statusbar"].data = gtk_status_hbox
       gtk_status1 = Gtk::Statusbar.new
-      gtk_status2 = Gtk::Statusbar.new  
+      gtk_status2 = Gtk::Statusbar.new
       bus["/gtk/window/statusbar/status1"].data = gtk_status1
       bus["/gtk/window/statusbar/status2"].data = gtk_status2
       gtk_status_hbox.pack_start(gtk_status1)
@@ -312,14 +315,14 @@ module Redcar
                    # X direction            # Y direction
                    0, 1,                    4, 5,
                    Gtk::EXPAND | Gtk::FILL, Gtk::FILL,
-                   0,      0)  
+                   0,      0)
       add(gtk_table)
-      
+
       pane = Redcar::Pane.new self
       @notebooks_panes[pane.gtk_notebook] = pane
       gtk_panes_box.add(pane.gtk_notebook)
-      
-      @initial_show_widgets = 
+
+      @initial_show_widgets =
         [
          gtk_table,
          gtk_status_hbox,
@@ -332,11 +335,22 @@ module Redcar
          pane.gtk_notebook
         ]
     end
-    
+
     def show_initial_widgets
       @initial_show_widgets.each {|w| w.show }
       show
     end
-    
+
+    # Sets the only active tab range to tab.class
+    def update_tab_range(tab) #:nodoc:
+      Range.active.each do |range|
+        if range < Redcar::Tab
+          Range.deactivate(range)
+        end
+      end
+      if tab
+        Range.activate(tab.class)
+      end
+    end
   end
 end

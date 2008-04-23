@@ -3,11 +3,11 @@ module Redcar
   class TabCommand < Redcar::Command #:nodoc:
     range Redcar::Tab
   end
-  
+
   class EditTabCommand < Redcar::Command #:nodoc:
     range Redcar::EditTab
   end
-  
+
   class RubyCommand < Redcar::EditTabCommand
     scope "source.ruby"
   end
@@ -15,26 +15,26 @@ module Redcar
   class StandardMenus < Redcar::Plugin #:nodoc:all
     include Redcar::MenuBuilder
     extend Redcar::PreferenceBuilder
-    
+
     class NewTab < Redcar::Command
       key   "Ctrl+N"
       icon  :NEW
-      
+
       def execute
         win.new_tab(EditTab).focus
       end
     end
-    
+
     class OpenTab < Redcar::Command
-      key "Global/Ctrl+O"
+      key "Ctrl+O"
       icon :NEW
-      
+
       def initialize(filename=nil)
         @filename = filename
       end
-      
+
       def execute
-        if !@filename 
+        if !@filename
           @filename = Redcar::Dialog.open(win)
         end
         if @filename and File.file?(@filename)
@@ -44,72 +44,72 @@ module Redcar
         end
       end
     end
-    
+
     class SaveTab < Redcar::EditTabCommand
-      key "Global/Ctrl+S"
+      key "Ctrl+S"
       icon :SAVE
       sensitive :modified?
-      
+
       def execute
         tab.save
       end
     end
-    
+
     class RevertTab < Redcar::EditTabCommand
       icon :REVERT_TO_SAVED
       sensitive :modified_and_filename?
-      
+
       def execute
         filename = tab.filename
         tab.close
         OpenTab.new(filename).do
       end
     end
-    
+
     class CloseTab < Redcar::TabCommand
-      key "Global/Ctrl+W"
+      key "Ctrl+W"
       icon :CLOSE
-      
+
       def initialize(tab=nil)
         @tab = tab
       end
-      
+
       def execute
         @tab ||= tab
         @tab.close if @tab
       end
     end
-    
+
     class CloseAllTabs < Redcar::TabCommand
-      key "Global/Ctrl+Super+W"
+      key "Ctrl+Super+W"
       icon :CLOSE
-      
+
       def execute
         win.tabs.each &:close
       end
     end
-    
+
     class Quit < Redcar::Command
-      key "Global/Alt+F4"
+      key "Alt+F4"
       icon :QUIT
-      
+
       def execute
         Redcar::App.quit
       end
     end
-    
+
     class UnifyAll < Redcar::Command
-      key "Global/Ctrl+1"
+      key "Ctrl+1"
 #      sensitive :multiple_panes
-      
+
       def execute
         win.unify_all
       end
     end
-    
+
     class SplitHorizontal < Redcar::Command
-      key "Global/Ctrl+2"
-      
+      key "Ctrl+2"
+
       def execute
         if tab
           tab.pane.split_horizontal
@@ -118,10 +118,10 @@ module Redcar
         end
       end
     end
-    
+
     class SplitVertical < Redcar::Command
-      key "Global/Ctrl+3"
-      
+      key "Ctrl+3"
+
       def execute
         if tab
           tab.pane.split_vertical
@@ -130,61 +130,61 @@ module Redcar
         end
       end
     end
-    
+
     class PreviousTab < Redcar::TabCommand
-      key "Global/Ctrl+Page_Down"
-      
+      key "Ctrl+Page_Down"
+
       def execute
         tab.pane.gtk_notebook.prev_page
       end
     end
-    
+
     class NextTab < Redcar::TabCommand
-      key "Global/Ctrl+Page_Up"
-      
+      key "Ctrl+Page_Up"
+
       def execute
         tab.pane.gtk_notebook.next_page
       end
     end
-    
+
     class MoveTabDown < Redcar::TabCommand
-      key "Global/Ctrl+Shift+Page_Down"
-      
+      key "Ctrl+Shift+Page_Down"
+
       def execute
         tab.move_down
       end
     end
-    
+
     class MoveTabUp < Redcar::TabCommand
-      key "Global/Ctrl+Shift+Page_Up"
-      
+      key "Ctrl+Shift+Page_Up"
+
       def execute
         tab.move_up
       end
     end
-    
+
     class Undo < Redcar::EditTabCommand
-      key  "Global/Ctrl+Z"
+      key  "Ctrl+Z"
       icon :UNDO
-      
+
       def execute
         tab.view.undo
       end
     end
-    
+
     class Redo < Redcar::EditTabCommand
-      key  "Global/Shift+Ctrl+Z"
+      key  "Shift+Ctrl+Z"
       icon :REDO
-      
+
       def execute
         tab.view.redo
       end
     end
-    
+
     class Cut < Redcar::EditTabCommand
-      key       "Global/Ctrl+X"
+      key  "Ctrl+X"
       icon :CUT
-      
+
       def execute
         if doc.selection?
           tab.view.cut_clipboard
@@ -196,11 +196,11 @@ module Redcar
         end
       end
     end
-    
+
     class Copy < Redcar::EditTabCommand
-      key       "Global/Ctrl+C"
+      key  "Ctrl+C"
       icon :COPY
-      
+
       def execute
         if doc.selection?
           tab.view.copy_clipboard
@@ -214,11 +214,11 @@ module Redcar
         end
       end
     end
-    
+
     class Paste < Redcar::EditTabCommand
-      key  "Global/Ctrl+V"
+      key  "Ctrl+V"
       icon :PASTE
-      
+
       def execute
         if (cl = Redcar::App.clipboard).wait_is_text_available?
           str = cl.wait_for_text
@@ -233,67 +233,67 @@ module Redcar
         end
       end
     end
-    
+
     class SelectLine < Redcar::EditTabCommand
-      key  "Global/Super+Shift+L"
-      
+      key  "Super+Shift+L"
+
       def execute
-        doc.select(doc.line_start(doc.cursor_line), 
+        doc.select(doc.line_start(doc.cursor_line),
                    doc.line_end(doc.cursor_line))
       end
     end
-    
+
     class ForwardWord < Redcar::EditTabCommand
-      key  "Global/Ctrl+F"
+      key  "Ctrl+F"
       icon :GO_FORWARD
-      
+
       def execute
         doc.forward_word
       end
     end
-    
+
     class BackwardWord < Redcar::EditTabCommand
-      key  "Global/Ctrl+B"
+      key  "Ctrl+B"
       icon :GO_BACK
-      
+
       def execute
         doc.backward_word
       end
     end
-    
+
     class LineStart < Redcar::EditTabCommand
-      key  "Global/Ctrl+A"
+      key  "Ctrl+A"
       icon :GO_BACK
-      
+
       def execute
         doc.place_cursor(doc.line_start(doc.cursor_line))
       end
     end
-    
+
     class LineEnd < Redcar::EditTabCommand
-      key  "Global/Ctrl+E"
+      key  "Ctrl+E"
       icon :GO_FORWARD
-      
+
       def execute
         doc.place_cursor(doc.line_end1(doc.cursor_line))
       end
     end
-    
+
     class KillLine < Redcar::EditTabCommand
-      key  "Global/Ctrl+K"
+      key  "Ctrl+K"
       icon :DELETE
-      
+
       def execute
-        doc.delete(doc.cursor_iter, 
+        doc.delete(doc.cursor_iter,
                    doc.line_end1(doc.cursor_line))
       end
     end
-    
+
     class Find < Redcar::EditTabCommand
-      key  "Global/Ctrl+F"
+      key  "Ctrl+F"
       icon :FIND
       norecord
-      
+
       class FindSpeedbar < Redcar::Speedbar
         label "Find:"
         textbox :query_string
@@ -307,16 +307,16 @@ module Redcar
         sp.show(win)
       end
     end
-    
+
     class FindNextRegex < Redcar::EditTabCommand
       def initialize(re)
         @re = re
       end
-      
+
       def to_s
         "#{self.class}: @re=#{@re.inspect}"
       end
-      
+
       def execute
         # first search the remainder of the current line
         curr_line = doc.get_line.string
@@ -346,18 +346,18 @@ module Redcar
         end
       end
     end
-    
+
     class IndentLine < Redcar::EditTabCommand
-      key "Global/Ctrl+Alt+["
-      
+      key "Ctrl+Alt+["
+
       def execute
         tab.view.indent_line(doc.cursor_line)
       end
     end
-    
+
     class ShowScope < Redcar::EditTabCommand
-      key "Global/Super+Shift+P"
-      
+      key "Super+Shift+P"
+
       def execute
         if root = tab.view.parser.root
           scope = root.scope_at(TextLoc(doc.cursor_line, doc.cursor_line_offset))
@@ -365,13 +365,13 @@ module Redcar
 #         puts "scope_at_cursor: #{scope.inspect}"
 # #         scope.root.display(0)
         inner = scope.pattern and scope.pattern.content_name and
-          (doc.cursor_line_offset >= scope.open_end.offset and 
+          (doc.cursor_line_offset >= scope.open_end.offset and
            (!scope.close_start or doc.cursor_line_offset < scope.close_start.offset))
 #         p scope.hierarchy_names(inner).join("\n")
         tab.view.tooltip_at_cursor(scope.hierarchy_names(inner).join("\n"))
       end
     end
-    
+
     main_menu "File" do
       item "New",        NewTab
       item "Open",       OpenTab
@@ -383,7 +383,7 @@ module Redcar
       item "Close All",  CloseAllTabs
       item "Quit",       Quit
     end
-      
+
     main_menu "Edit" do
       item "Undo",     Undo
       item "Redo",     Redo
@@ -409,30 +409,30 @@ module Redcar
       end
       separator
     end
-      
+
     context_menu "Pane" do
       item "Split Horizontal",  SplitHorizontal
       item "Split Vertical",    SplitVertical
       item "Unify All",         UnifyAll
     end
-    
+
     class EndLineReturn < Redcar::EditTabCommand
-      key "Global/Ctrl+Return"
-      
+      key "Ctrl+Return"
+
       def execute
         doc.place_cursor(doc.line_end1(doc.cursor_line))
-        doc.insert_at_cursor("\n")
+#        doc.insert_at_cursor("\n")
       end
     end
-          
+
     class Tab < Redcar::EditTabCommand
       key "Global/Tab"
-      
+
       def initialize(si=nil, buf=nil)
         @si = si
         @buf = buf
       end
-      
+
       def execute
         @si ||= view.snippet_inserter
         @buf ||= doc
@@ -443,15 +443,15 @@ module Redcar
         end
       end
     end
-    
+
     class ShiftTab < Redcar::EditTabCommand
-      key "Global/Shift+Tab"
-      
+      key "Shift+Tab"
+
       def initialize(si=nil, buf=nil)
         @si = si
         @buf = buf
       end
-      
+
       def execute
         @si ||= view.snippet_inserter
         @buf ||= doc
@@ -462,16 +462,16 @@ module Redcar
         end
       end
     end
-    
+
     class RubyEnd < Redcar::RubyCommand
-      key   "Global/Ctrl+Alt+E"
-      
+      key   "Ctrl+Alt+E"
+
       def execute
         doc.insert_at_cursor("en")
         doc.type("d\n")
       end
     end
-    
+
     preference "Appearance/Tab Font" do
       default "Monospace 12"
       widget  { StandardMenus.font_chooser_button("Appearance/Tab Font") }
@@ -483,12 +483,12 @@ module Redcar
         end
       end
     end
-    
+
     preference "Appearance/Tab Theme" do |p|
       type :combo
       default "Mac Classic"
       values { EditView::Theme.theme_names.sort_by(&:downcase) }
-#       change do 
+#       change do
 #         win.tabs.each do |tab|
 #           if tab.respond_to? :view
 #             theme_name = Redcar::Preference.get("Appearance/Tab Theme")
@@ -497,24 +497,24 @@ module Redcar
 #         end
 #       end
     end
-    
+
     preference "Editing/Indent size" do |p|
       type    :integer
       bounds  [0, 20]
       step    1
-      default 2 
+      default 2
     end
-    
+
     preference "Editing/Use spaces instead of tabs" do |p|
       default true
       type    :toggle
     end
-    
+
     preference "Editing/Indent pasted text" do |p|
       default true
       type    :toggle
     end
-    
+
     preference "Editing/Wrap words" do
       default true
       type    :toggle
@@ -530,20 +530,20 @@ module Redcar
         end
       end
     end
-    
+
     preference "Editing/Show line numbers" do
       default true
       type    :toggle
       change do
         value = Redcar::Preference.get("Editing/Show line numbers").to_bool
-        win.collect_tabs(EditTab).each do |tab| 
+        win.collect_tabs(EditTab).each do |tab|
           tab.view.show_line_numbers = value
         end
       end
     end
-    
+
     def self.font_chooser_button(name)
-      gtk_image = Gtk::Image.new(Gtk::Stock::SELECT_FONT, 
+      gtk_image = Gtk::Image.new(Gtk::Stock::SELECT_FONT,
                                  Gtk::IconSize::MENU)
       gtk_hbox = Gtk::HBox.new
       gtk_label = Gtk::Label.new(Redcar::Preference.get(name))
@@ -569,7 +569,7 @@ module Redcar
       end
       widget
     end
-        
+
   end
 end
 

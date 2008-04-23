@@ -1,17 +1,17 @@
 
 module Redcar
   # A Pane is a container for Tabs. A Redcar window may
-  # have multiple Panes. Panes can be split 
+  # have multiple Panes. Panes can be split
   # horizontally and vertically to allow the user to lay out their
-  # workspace as they see fit. Tabs can be dragged from one Pane to 
-  # another. 
+  # workspace as they see fit. Tabs can be dragged from one Pane to
+  # another.
   #
   # Plugin authors should not create Panes by hand, rather they should
-  # use Pane#split_horizontal and Window#panes to create and locate 
+  # use Pane#split_horizontal and Window#panes to create and locate
   # panes.
   class Pane
     extend FreeBASE::StandardPlugin
-    
+
     # The Pane's Gtk::Notebook.
     attr_accessor :gtk_notebook
     # The Window the Pane is in.
@@ -20,9 +20,9 @@ module Redcar
     attr_reader   :label_angle
     # The label_position of the tabs in the Pane.
     attr_reader   :label_position
-    
+
     # Do not call this directly. Creates a new pane
-    # attached to the given window. Redcar::Window manages 
+    # attached to the given window. Redcar::Window manages
     # the creation of panes.
     def initialize(window)
       @window = window
@@ -30,8 +30,8 @@ module Redcar
       connect_notebook_signals
       show_notebook
     end
-    
-    # Creates a new Tab in the Pane. tab_type should be 
+
+    # Creates a new Tab in the Pane. tab_type should be
     # Redcar::Tab or child class. args are passed
     # on to tab_type#initialize.
     def new_tab(tab_type=EditTab, *args)
@@ -40,7 +40,7 @@ module Redcar
       Hook.trigger :new_tab, tab
       tab
     end
-    
+
     # Return an array of all Tabs in this Pane.
     def tabs
       (0...@gtk_notebook.n_pages).map do |i|
@@ -53,29 +53,29 @@ module Redcar
     def active_tab
       Tab.widget_to_tab[@gtk_notebook.get_nth_page(@gtk_notebook.page)]
     end
-    
+
     # Return all Tabs in this Pane with class tab_class.
     def collect_all(tab_class)
     end
-    
+
     # Replace this Pane in the Window with two new Panes, on
     # the left and right.
     def split_horizontal
       @window.split_horizontal(self)
     end
-    
+
     # Replace this Pane in the Window with two new Panes, on
     # the top and bottom.
     def split_vertical
       @window.split_vertical(self)
     end
-    
-    # Undo the split_horizontal or split_vertical that created 
+
+    # Undo the split_horizontal or split_vertical that created
     # this tab.
     def unify
       @window.unify(self)
     end
-    
+
     # Move Tab tab to Pane dest_pane.
     def move_tab(tab, dest_pane)
       remove_tab(tab)
@@ -90,7 +90,7 @@ module Redcar
       @gtk_notebook.show_all
       tab.pane = self
     end
-    
+
     def focus_tab(tab) #:nodoc:
       if tab.pane == self
         @gtk_notebook.set_page(@gtk_notebook.page_num(tab.gtk_nb_widget))
@@ -99,7 +99,7 @@ module Redcar
         raise "focussing tab in wrong pane"
       end
     end
-    
+
     private
 
     def make_notebook
@@ -107,7 +107,7 @@ module Redcar
       @gtk_notebook.set_group_id 0
       @gtk_notebook.homogeneous = true
     end
-    
+
     def connect_notebook_signals
       @gtk_notebook.signal_connect("button_press_event") do |gtk_widget, gtk_event|
         gtk_widget.grab_focus
@@ -127,23 +127,23 @@ module Redcar
         true
       end
     end
-    
+
     def show_notebook
       @gtk_notebook.show
     end
-    
+
     def remove_tab(tab)
       @gtk_notebook.remove(tab.gtk_nb_widget)
       tab.pane = nil
     end
-    
+
     def label_angle=(angle)
       @label_angle = angle
       tabs.each do |tab|
         tab.label_angle = angle
       end
     end
-    
+
     def label_position=(position)
       @label_position = position
       case position

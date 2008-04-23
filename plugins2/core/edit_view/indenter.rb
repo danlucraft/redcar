@@ -24,7 +24,7 @@ class Redcar::EditView
       end
       @indent_rules.default = nil
     end
-    
+
     def self.indent_rules_for_scope(scope)
       if scope
         @indent_rules.each do |scope_name, value|
@@ -38,18 +38,18 @@ class Redcar::EditView
       end
       nil
     end
-    
+
     def initialize(buffer, parser)
       self.buffer = buffer
       @parser = parser
     end
-    
+
     def buffer=(buf)
       @buf = buf
       @buf.indenter = self
       connect_buffer_signals
     end
-    
+
     def connect_buffer_signals
       # Set up indenting on Return
       @buf.signal_connect_after("insert_text") do |_, iter, text, length|
@@ -63,7 +63,7 @@ class Redcar::EditView
             line = @buf.get_line(line_num).to_s
             if contains_decrease_indent(line, rules) and
                 !contains_increase_indent(line, rules) and
-                !contains_nonindented(line, rules) and 
+                !contains_nonindented(line, rules) and
                 !contains_indent_next(line, rules)
               @ignore = true
               @buf.insert(@buf.line_start(line_num), "\n")
@@ -73,7 +73,7 @@ class Redcar::EditView
             end
           end
         end
-        
+
         # watch for lines that begin with decrease indent
         if !@ignore and rules and !text.include? "\n" and text !~ /\s/
           line = @buf.get_line(line_num).to_s
@@ -86,27 +86,27 @@ class Redcar::EditView
         false
       end
     end
-    
+
     def contains_increase_indent(line, rules)
       re = rules[:increase]
       re.match(line) if re
     end
-    
+
     def contains_decrease_indent(line, rules)
       re = rules[:decrease]
       re.match(line) if re
     end
-    
+
     def contains_nonindented(line, rules)
       re = rules[:noindent]
       re.match(line) if re
     end
-    
+
     def contains_indent_next(line, rules)
       re = rules[:nextline]
       re.match(line) if re
     end
-    
+
     def indent_line(line_num, rules=nil)
       rules ||= Indenter.indent_rules_for_scope(@parser.starting_scopes[line_num-1])
 #       puts "indent_line: #{line_num}"
@@ -137,16 +137,16 @@ class Redcar::EditView
 #       puts "  #{bool_increase.inspect}, #{bool_decrease.inspect}, #{bool_indent_next.inspect},"+
 #         " #{bool_indent_next2.inspect}, #{bool_unindented.inspect}, #{bool_unindented1.inspect}, "+
 #         "#{bool_unindented2.inspect}"
-      if bool_unindented and currline.string.chomp != ""
+      if bool_unindented and currline.to_s.chomp != ""
 #        puts "  :unindented line"
         set_line_indent(line_num, 0, :spaces)
         return
       end
       if prevline
-        prevline.string.chomp =~ /^(\s*)(.*)/
+        prevline.to_s.chomp =~ /^(\s*)(.*)/
         previous_indent = $1
         if prev2line
-          prev2line.string.chomp =~ /^(\s*)(.*)/
+          prev2line.to_s.chomp =~ /^(\s*)(.*)/
           previous_indent2 = $1
           indent_type = get_indent_type(previous_indent, previous_indent2)
           previous_length2 = get_indent_size(previous_indent2, indent_type)
@@ -176,15 +176,15 @@ class Redcar::EditView
         new_length -= 1
       end
       new_length = [new_length, 0].max
-      currline.string.chomp =~ /^(\s*)(.*)/
+      currline.to_s.chomp =~ /^(\s*)(.*)/
       currline_indent = $1
       currline_indent_length = get_indent_size(currline_indent, indent_type)
       set_line_indent(line_num, new_length, indent_type)
     end
-    
+
     def set_line_indent(line_num, indent_size, indent_type)
       currline  = @buf.get_line(line_num)
-      currline.string.chomp =~ /^(\s*)(.*)/
+      currline.to_s.chomp =~ /^(\s*)(.*)/
       indent_text = $1
       text = $2
       stops = Redcar::Preference.get("Editing/Indent size").to_i
@@ -213,7 +213,7 @@ class Redcar::EditView
         @buf.insert(@buf.line_start(line_num), extra_indent)
       end
     end
-    
+
     def get_indent_size(indent, type)
       stops = Redcar::Preference.get("Editing/Indent size").to_i
       case type
@@ -223,10 +223,10 @@ class Redcar::EditView
         indent.length
       end
     end
-      
+
     def get_indent_type(indent1, indent2="")
       pref = Redcar::Preference.get("Editing/Use spaces instead of tabs").to_bool
-      if indent1.include? "\t" 
+      if indent1.include? "\t"
         :tabs
       elsif indent1.include? " "
         :spaces

@@ -1,8 +1,8 @@
 
 module Redcar
   # Encapsulates a Redcar command. Commands wrap a block of Ruby code
-  # with additional metadata to deal with command history recording and 
-  # menus and keybindings. Define commands by subclassing the 
+  # with additional metadata to deal with command history recording and
+  # menus and keybindings. Define commands by subclassing the
   # Redcar::Command class.
   #
   # === Examples
@@ -17,7 +17,7 @@ module Redcar
   #   end
   class Command
     extend FreeBASE::StandardPlugin
-    
+
     class << self
       include Redcar::Sensitive
     end
@@ -26,7 +26,7 @@ module Redcar
       Range.active ||= []
       plugin.transition(FreeBASE::LOADED)
     end
-    
+
     def self.start(plugin) #:nodoc:
       CommandHistory.clear
       plugin.transition(FreeBASE::RUNNING)
@@ -36,7 +36,7 @@ module Redcar
       CommandHistory.clear
       plugin.transition(FreeBASE::LOADED)
     end
-    
+
     def self.inherited(klass)
       bus("/redcar/commands/#{klass}").data = klass
       @child_commands ||= []
@@ -44,107 +44,112 @@ module Redcar
 #      puts ":inherited: #{klass} < #{self}"
       klass.update_operative
     end
-    
+
     def self.child_commands
       @child_commands || []
     end
-    
+
     INPUTS = [
-              "None", "Document", "Line", "Word", 
-              "Character", "Scope", "Nothing", 
+              "None", "Document", "Line", "Word",
+              "Character", "Scope", "Nothing",
               "Selected Text"
              ]
     OUTPUTS = [
-               "Discard", "Replace Selected Text", 
-               "Replace Document", "Replace Line", "Insert As Text", 
+               "Discard", "Replace Selected Text",
+               "Replace Document", "Replace Line", "Insert As Text",
                "Insert As Snippet", "Show As Html",
                "Show As Tool Tip", "Create New Document",
                "Replace Input", "Insert After Input"
               ]
     ACTIVATIONS = ["Key Combination"]
-    
+
     def self.process_command_error(name, e)
       puts "* Error in command: #{name}"
       puts "  trace:"
       puts e.to_s
       puts e.backtrace
     end
-    
+
     def self.menu=(menu)
       @menu = menu
     end
-    
+
     def self.menu(menu)
       @menu = menu
       MenuBuilder.item "menubar/"+menu, self.to_s
     end
-    
+
     def self.icon(icon)
       @icon = icon
     end
-    
+
     def self.key(key)
       @key = key
       Redcar::Keymap.register_key_command(key, self)
     end
-    
+
     # Set the documentation string for this Command.
     def self.doc(val)
       @doc = val
     end
-    
+
     # Set the range for this Command.
     def self.range(val)
       @range = val
+      Range.register_command(val, self)
+      update_operative
     end
-    
+
     def self.scope(scope)
       @scope = scope
     end
-    
+
     def self.sensitive(sens)
       @sensitive ||= []
       @sensitive << sens
       Redcar::Sensitive.sensitize(self, sens)
     end
-    
+
     def self.input(input)
       @input = inputs
     end
-    
+
     def self.get(name)
       instance_variable_get("@#{name}")
     end
-    
+
     def self.set(name, val)
       instance_variable_set("@#{name}", val)
     end
-    
+
     def self.fallback_input(input)
       @fallback_input = input
     end
-    
+
     def self.output(output)
       @output = output
     end
-    
+
     def self.norecord
       @norecord = true
     end
-    
+
     def self.norecord?
       @norecord
     end
-    
+
     def self.active=(val)
       @sensitive_active = val
-#      puts "#{self}.active = #{val.inspect}"
+#       puts "#{self}.active = #{val.inspect}"
       update_operative
     end
-    
+
     def self.update_operative
       old = @operative
-      @operative = if active?
+#       puts "update_operative: #{self.inspect}"
+#       puts "  #{!!active?}"
+#       puts "  #{!!in_range?}"
+      @operative = if active? and in_range?
                      if self.ancestors[1].ancestors.include? Redcar::Command
                        self.ancestors[1].operative?
                      else
@@ -153,48 +158,58 @@ module Redcar
                    else
                      false
                    end
-#      puts "com: #{self}: #{old.inspect} -> #{@operative.inspect}"
+#       puts "com: #{self}: #{old.inspect} -> #{@operative.inspect}"
       if old != @operative and @menu
         update_menu_sensitivity
       end
       child_commands.each(&:update_operative)
     end
-    
+
     def self.update_menu_sensitivity
       Redcar::MenuDrawer.set_active(@menu, @operative)
     end
-    
-    def in_range=(val)
+
+    def self.in_range=(val)
       old = @in_range
+#       p :in_range=
+#         p self
+#         p val
       @in_range = val
-      if old != @in_range
-        update_menu_sensitivity
-      end
+      update_operative
     end
-    
+
     def self.nearest_range_ancestor
-      if @range
+#       puts "nearest_range_ancestor: #{self.to_s.split("::").last}, #{@range.to_s.split("::").last}"
+     r = if @range
         self
       elsif self.ancestors[1..-1].include? Redcar::Command
         self.ancestors[1].nearest_range_ancestor
       else
         nil
       end
+#       if r
+#         p r
+#       else
+#         p "nil range"
+#       end
+      r
     end
-    
+
     def self.in_range?
-      if nearest_range_ancestor
-        nearest_range_ancestor.in_range?
+      if nra = nearest_range_ancestor
+        nra.get(:in_range)
       else
-        true # a command with no ranges set anywhere 
-             # in the hierarchy is a global command
+#         p self
+#         p :global
+        true # a command with no ranges set anywhere
+             # in the hierarchy is a Window command
       end
     end
-    
+
     def self.operative?
       @operative == nil ? active? : @operative
     end
-    
+
     def self.correct_scope?(scope=nil)
       if @scope
         if !scope
@@ -215,23 +230,21 @@ module Redcar
         end
       end
     end
-    
+
     def self.executable?(tab=nil)
-#       puts
-#       p self
-#       p scope
-#       p @scope
-#       p correct_scope?(scope)
-#       p operative?
       scope = nil
-      scope = tab.document.cursor_scope if tab
-      operative? and correct_scope?(scope)
+      scope = tab.document.cursor_scope if tab and tab.class <= EditTab
+      o = operative?
+      s = correct_scope?(scope)
+#      e = (operative? and correct_scope?(scope))
+      e = (o and s)
+      e
     end
-    
+
     attr :tab,  true
     attr :doc,  true
     attr :view, true
-    
+
     def set_tab(tab)
       @tab = tab
       if @tab.is_a? EditTab
@@ -239,11 +252,11 @@ module Redcar
         @view = tab.view
       end
     end
-    
+
     def win
       Redcar::App.focussed_window
     end
-    
+
     def do(tab=Redcar::App.focussed_window.focussed_tab)
       unless self.respond_to? :execute
         raise "Abstract Command Error"
@@ -258,12 +271,12 @@ module Redcar
       end
       direct_output(self.class.get(:output), @output) if @output
     end
-    
+
     def record?
       !self.class.norecord?
     end
-    
-    # Gets the applicable input type, as a symbol. NOT the 
+
+    # Gets the applicable input type, as a symbol. NOT the
     # actual input
     def valid_input_type
       if primary_input
@@ -272,17 +285,17 @@ module Redcar
         self.class.get(:@fallback_input)
       end
     end
-    
+
     # Gets the primary input.
     def primary_input
       input = input_by_type(self.class.get(:@input))
       input == "" ? nil : input
     end
-    
+
     def secondary_input
       input_by_type(self.class.get(:@fallback_input))
     end
-    
+
     def input_by_type(type)
       case type
       when :selected_text, :selection, :selectedText
@@ -307,11 +320,11 @@ module Redcar
         nil
       end
     end
-    
+
     def input
       primary_input || secondary_input
     end
-    
+
     def direct_output(type, output_contents)
       case type
       when :replace_document, :replaceDocument
@@ -376,29 +389,29 @@ module Redcar
         end
       end
     end
-    
+
     def to_s
       self.class.to_s
     end
   end
-  
+
   class ArbitraryCodeCommand < Command #:nodoc:
     norecord
-    
+
     def initialize(&block)
       @block = block
     end
-    
+
     def execute
       @block.call
     end
   end
-  
+
   class ShellCommand < Command
     attr_accessor(:fallback_input,
                   :tm_uuid, :bundle_uuid)
-    
-    
+
+
     def execute
       super
       set_environment_variables
@@ -419,7 +432,7 @@ module Redcar
       end
       direct_output(@output, output) if output
     end
-    
+
     def shell_command
       if @block[0..1] == "#!"
         "./cache/tmp.command"
@@ -428,39 +441,49 @@ module Redcar
       end
     end
   end
-  
+
   # A module that deals with the 'range's that commands can be in.
   module Range
     mattr_accessor :active
-    
+
     def self.activate(range)
+      puts "activating range #{range}"
+      @commands ||= { }
       if @active.include? range
+        puts "  already active"
         true
       else
-        @active << range 
-        activate_commands(@commands[range])
+        puts "  not already active"
+        @active << range
+        activate_commands(@commands[range]||[])
       end
     end
-    
+
     def self.deactivate(range)
+      puts "deactivating range #{range}"
+      @commands ||= { }
       if @active.include? range
+        puts "  was active"
         @active.delete range
-        deactivate_commands(@commands[range])
+        deactivate_commands(@commands[range]||[])
       else
+        puts "  was not active"
         true
       end
     end
-    
+
     def self.activate_commands(commands)
-      commands.in_range = true
+      commands.each{ |c| c.in_range = true }
     end
-    
+
     def self.deactivate_commands(commands)
-      commands.in_range = false
+      commands.each{ |c| c.in_range = false }
     end
-    
+
     def self.register_command(range, command)
+#       puts "registering command range: #{command}, #{range}"
       if valid?(range)
+        @commands ||= { }
         @commands[range] ||= []
         @commands[range] << command
       else
@@ -468,25 +491,25 @@ module Redcar
           "range: #{range}"
       end
     end
-    
+
     def self.valid?(range)
-       range.is_a? Class and 
-        (range == Redcar::Window or 
-         range.ancestors.include? Redcar::Command or
-         range.ancestors.include? Redcar::Speedbar)
+       range.is_a? Class and
+        (range == Redcar::Window or
+         range <= Redcar::Tab or
+         range <= Redcar::Speedbar)
     end
   end
-  
+
   # A module holding the Redcar command history. The maximum length
   # defaults to 500.
   module CommandHistory
     class << self
       attr_accessor :max, :recording, :history
     end
-    
+
     self.max       = 500
     self.recording = true
-    
+
     # Add a command to the command history if CommandHistory.recording is
     # true.
     def self.record(com)
@@ -495,15 +518,15 @@ module Redcar
       end
       prune
     end
-    
+
     def self.prune #:nodoc:
       (@history.length - @max).times { @history.delete_at(0) }
     end
-    
+
     # Clear the command history.
     def self.clear
       @history = []
     end
   end
-  
+
 end

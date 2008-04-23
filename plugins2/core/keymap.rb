@@ -8,11 +8,11 @@ module Redcar
       Hook.register(:keystroke)
       plugin.transition(FreeBASE::LOADED)
     end
-    
+
     def self.start(plugin) #:nodoc:
       plugin.transition(FreeBASE::RUNNING)
     end
-    
+
     # "Page Up" -> "Page_Up"
     def self.clean_letter(letter)
       if letter.include? "Tab"
@@ -21,7 +21,7 @@ module Redcar
         letter.split(" ").join("_")
       end
     end
-    
+
     def self.clean_gdk_eventkey(gdk_eventkey)
       kv = gdk_eventkey.keyval
       ks = gdk_eventkey.state - Gdk::Window::MOD2_MASK
@@ -34,26 +34,27 @@ module Redcar
         supr = (bits.include?("Super") ? 1 : 0)
         shift = (bits.include?("Shift") ? 1 : 0)
         letter = bits.last
-        key = "Ctrl+"*ctrl + 
-          "Super+"*supr + 
-          "Alt+"*alt + 
-          "Shift+"*shift + 
+        key = "Ctrl+"*ctrl +
+          "Super+"*supr +
+          "Alt+"*alt +
+          "Shift+"*shift +
           clean_letter(bits.last)
         key
       end
     end
-    
+
     # Process a Gdk::EventKey (which is created on a keypress)
     def self.process(gdk_eventkey) #:nodoc:
       if key = clean_gdk_eventkey(gdk_eventkey)
         Hook.trigger :keystroke, key do
+          p key
           execute_key(key)
         end
       else
         true # indicates to fall through to Gtk
       end
     end
-    
+
     # Use to register a key. key_name should look like "Ctrl+G".
     # Other examples:
     #   "Ctrl+Super+R"
@@ -63,22 +64,23 @@ module Redcar
       slot.data ||= []
       slot.data << command
     end
-    
+
     # Removes a key from a keymap. key_name should be as in
     # register_key_command.
     def self.unregister_key(key_name)
       bus("/redcar/keymaps/#{key_name}").prune
     end
-    
+
     # Use to execute a key. key_name should be a string like "Ctrl+G".
     def self.execute_key(key_name)
-      if coms = bus("/redcar/keymap/#{key_name}").data
+      if coms = bus("/redcar/keymaps/#{key_name}").data
         com = coms.first
         if com.is_a? Proc
 #          puts "[Red] executing arbitrary code"
           com.call
         elsif com.ancestors.include? Redcar::Command
           scope = (Redcar.doc.cursor_scope rescue nil)
+          p com
           if com.executable?(scope)
 #            puts "[Red] executing #{com}"
             com.new.do
@@ -90,7 +92,7 @@ module Redcar
       end
       false
     end
-    
+
     # Turns a key_path like "Global/Ctrl+G" into "Ctrl+G" for display
     # in the menus.
     def self.display_key(key_path)
