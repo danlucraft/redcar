@@ -157,10 +157,10 @@ typedef struct ScopeData_ {
   GtkTextMark *inner_start_mark;
   GtkTextMark *inner_end_mark;
   GtkTextMark *end_mark;
-  VALUE rb_start_mark;
-  VALUE rb_inner_start_mark;
-  VALUE rb_inner_end_mark;
-  VALUE rb_end_mark;
+/*   VALUE rb_start_mark; */
+/*   VALUE rb_inner_start_mark; */
+/*   VALUE rb_inner_end_mark; */
+/*   VALUE rb_end_mark; */
   char* name;
   VALUE rb_scope;
   int coloured;
@@ -362,10 +362,10 @@ static VALUE rb_scope_cinit(VALUE self) {
   sd->inner_start_mark = NULL;
   sd->inner_end_mark = NULL;
   sd->end_mark = NULL;
-  sd->rb_start_mark = Qnil;
-  sd->rb_inner_start_mark = Qnil;
-  sd->rb_inner_end_mark = Qnil;
-  sd->rb_end_mark = Qnil;
+/*   sd->rb_start_mark = Qnil; */
+/*   sd->rb_inner_start_mark = Qnil; */
+/*   sd->rb_inner_end_mark = Qnil; */
+/*   sd->rb_end_mark = Qnil; */
   sd->numcolourings = 0;
   sd->open = 0;
   return self;
@@ -400,6 +400,7 @@ void rb_scope_mark(Scope* scope) {
   ScopeData *sd = scope->data;
   ScopeData *sdc = NULL;
   int i;
+
   for (i = 0; i < g_node_n_children(scope); i++) {
     child = g_node_nth_child(scope, i);
     sdc = child->data;

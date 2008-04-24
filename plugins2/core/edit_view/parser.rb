@@ -221,11 +221,29 @@ class Redcar::EditView
       $stdout.flush
     end
 
+    def num_marks
+      i = 0
+      ObjectSpace.each_object(Gtk::TextMark) do |obj|
+        puts "mark<#{obj.object_id}>: #{obj.name.inspect}"
+        i += 1
+      end
+      i
+    end
+    
+    def num_scopes
+      i = 0
+      ObjectSpace.each_object(Redcar::EditView::Scope) do |obj|
+        i += 1
+      end
+      i
+    end
+    
     # Parses line_num, using text line.
     def parse_line(line_num)
 #      line = @buf.get_line(line_num)
       line = @buf.get_slice(@buf.line_start(line_num), @buf.line_end(line_num))
-      print line_num, " "; $stdout.flush
+#      GC.start
+      print line_num, " "; $stdout.flush#":#{num_marks}:#{num_scopes} "; $stdout.flush
 #      puts line_num
 #       p line
 #       puts @root.pretty
