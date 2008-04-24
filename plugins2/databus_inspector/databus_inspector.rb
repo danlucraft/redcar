@@ -53,7 +53,11 @@ module Com::RedcarIDE
       @ts.set_value(iter, 0, node.name)
       if node.is_data_slot?
         @ts.set_value(iter, 2, "Data")
-        @ts.set_value(iter, 1, node.data.inspect[0..50])
+        if [Numeric, String, Array].include? node.data.class
+          @ts.set_value(iter, 1, node.data.inspect[0..50])
+        else
+          @ts.set_value(iter, 1, node.data.class.to_s)
+        end
       elsif node.is_queue_slot?
         @ts.set_value(iter, 2, "Queue")
       elsif node.is_stack_slot?

@@ -82,9 +82,10 @@ elsif Redcar::App.ARGV.include? "--test"
   test_plugin plugin
   stop_redcar
 elsif Redcar::App.ARGV.include? "--test-all"
-  bus["/plugins"].children.each do |plugin|
-    test_plugin plugin.name
-  end
+  bus("system/test").call
+#   bus["/plugins"].children.each do |plugin|
+#     test_plugin plugin.name
+#   end
   stop_redcar
 elsif Redcar::App.ARGV.include? "--demo"
   win.panes.first.split_horizontal
