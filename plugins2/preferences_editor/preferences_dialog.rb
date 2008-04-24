@@ -3,7 +3,7 @@ module Com::RedcarIDE
   PrefLogger = Object.new
   def PrefLogger.info(str)
   end
-  
+
   class PreferencesDialog < Gtk::Dialog
     def build_dialog
       self.set_size_request(600, 500)
@@ -22,10 +22,10 @@ module Com::RedcarIDE
       fr1.add(@sw)
       vb.show_all
     end
-    
+
     def initialize
       PrefLogger.info("PreferencesDialog#initialize():in")
-      super("Preferences", Redcar::App.focussed_window, 
+      super("Preferences", Redcar::App.focussed_window,
             Gtk::Dialog::DESTROY_WITH_PARENT,
             [Gtk::Stock::OK,  Gtk::Dialog::RESPONSE_OK],
             [Gtk::Stock::CANCEL, Gtk::Dialog::RESPONSE_CANCEL])
@@ -42,16 +42,18 @@ module Com::RedcarIDE
       @tv.headers_visible = false
       populate_list(@preferences_slot, nil)
       @tv.show
-      
+
       @sw.add(@tv)
-      
+
       @initial_values = {}
       @on_change = {}
-      
+
       @tv.signal_connect('cursor-changed') do |iter|
-        build_widgets(@tv.selection.selected)
+        if @tv.selection.selected
+          build_widgets(@tv.selection.selected)
+        end
       end
-      
+
       @dialog.signal_connect("response") do |_, resp_id|
         case resp_id
         when Gtk::Dialog::RESPONSE_CANCEL
@@ -60,13 +62,13 @@ module Com::RedcarIDE
           on_ok
         end
       end
-      
+
       @lazy_apply = []
-      
+
       @properties.save
       PrefLogger.info("PreferencesDialog#initialize():out")
     end
-    
+
     def populate_list(parent_slot, parent_iter)
       PrefLogger.info("PreferencesDialog#populate_list(#{parent_slot.path}, #{parent_iter.inspect}):in")
       parent_slot.each_slot do |slot|
@@ -79,32 +81,32 @@ module Com::RedcarIDE
       end
 #       PrefLogger.info("PreferencesDialog#populate_list(#{parent_slot.path}, #{parent_iter.inspect}):out")
     end
-    
+
      def on_ok
 #       PrefLogger.info("PreferencesDialog#on_ok():in")
       if @current_path
         save_values
       end
-       @lazy_apply.each { |a| 
+       @lazy_apply.each { |a|
          a[1].call
        }
       @dialog.destroy
 #       PrefLogger.info("PreferencesDialog#on_ok():out")
      end
-    
+
     def on_cancel
 #       PrefLogger.info("PreferencesDialog#on_cancel():in")
       @dialog.destroy
 #       PrefLogger.info("PreferencesDialog#on_cancel():out")
     end
-    
+
     def save_values
 #       PrefLogger.info("PreferencesDialog#save_values():in")
       @widgets.each do |pref_path, widget|
         val = widget.preference_value
-        @lazy_apply << [pref_path, fn { 
-          bus[pref_path].data = val  
-          if @initial_values[pref_path] and 
+        @lazy_apply << [pref_path, fn {
+          bus[pref_path].data = val
+          if @initial_values[pref_path] and
               @initial_values[pref_path] != val and
               @on_change[pref_path] != nil
 #             PrefLogger.info("Applying prefererence:#{pref_path}, value:#{val}")
@@ -115,7 +117,7 @@ module Com::RedcarIDE
       end
 #       PrefLogger.info("PreferencesDialog#save_values():out")
     end
-    
+
     def build_widgets(iter)
 #       PrefLogger.info("PreferencesDialog#build_widgets(#{iter}):in")
       if @current_path
@@ -149,7 +151,7 @@ module Com::RedcarIDE
             when :integer
               label = Gtk::Label.new(name)
               if bounds = slot.attr_bounds
-                widget = Gtk::SpinButton.new(bounds[0].to_f, 
+                widget = Gtk::SpinButton.new(bounds[0].to_f,
                                              bounds[1].to_f,
                                              (slot.attr_step||1).to_f)
               else
@@ -191,18 +193,18 @@ module Com::RedcarIDE
                              # X direction            # Y direction
                              0, 1,                    table_row, table_row+1,
                              Gtk::EXPAND | Gtk::FILL, Gtk::FILL,
-                             0,      0)  
+                             0,      0)
             gtk_table.attach(widget,
                              # X direction            # Y direction
                              1, 2,                    table_row, table_row+1,
                              Gtk::EXPAND | Gtk::FILL, Gtk::FILL,
-                             0,      0)  
+                             0,      0)
           else
             gtk_table.attach(widget,
                              # X direction            # Y direction
                              0, 2,                    table_row, table_row+1,
                              Gtk::EXPAND | Gtk::FILL, Gtk::FILL,
-                             0,      0)  
+                             0,      0)
           end
           table_row += 1
           @widgets[slot.path] = widget

@@ -60,7 +60,7 @@ module Redcar
       @view.buffer
     end
     
-    def modified=(val)
+    def modified=(val) #:nodoc:
       old = @modified
       @modified = val
       if val and !old
@@ -70,7 +70,7 @@ module Redcar
       end
     end
     
-    def connect_signals
+    def connect_signals #:nodoc:
       @view.buffer.signal_connect_after("changed") do |widget, event|
         self.modified = true
         Hook.trigger :tab_changed, self
@@ -78,6 +78,7 @@ module Redcar
       end
     end
     
+    # Load a document into the tab from the filename given.
     def load(filename)
       Hook.trigger :tab_load, self do
         document.text = ""
@@ -95,6 +96,8 @@ module Redcar
       end
     end
     
+    # Save the document in the tab to the filename that the 
+    # file was loaded from.
     def save
       return unless @filename
       Hook.trigger :tab_save, self do
@@ -107,7 +110,8 @@ module Redcar
     def tab_icon
       :FILE
     end
-    
+
+    # Change the syntax of the tab. Takes a name like "Ruby"
     def syntax=(grammar_name)
       @view.change_root_scope(grammar_name)
     end

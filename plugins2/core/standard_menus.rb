@@ -421,12 +421,12 @@ module Redcar
 
       def execute
         doc.place_cursor(doc.line_end1(doc.cursor_line))
-#        doc.insert_at_cursor("\n")
+        doc.insert_at_cursor("\n")
       end
     end
 
     class Tab < Redcar::EditTabCommand
-      key "Global/Tab"
+      key "Tab"
 
       def initialize(si=nil, buf=nil)
         @si = si
@@ -437,6 +437,7 @@ module Redcar
         @si ||= view.snippet_inserter
         @buf ||= doc
         if @si.tab_pressed
+          p :inserted_a_snippet
           # inserted a snippet
         else
           @buf.insert_at_cursor("\t")
@@ -476,7 +477,7 @@ module Redcar
       default "Monospace 12"
       widget  { StandardMenus.font_chooser_button("Appearance/Tab Font") }
       change do
-        win.tabs.each do |tab|
+        Redcar.win.tabs.each do |tab|
           if tab.is_a? EditTab
             tab.view.set_font(Redcar::Preference.get("Appearance/Tab Font"))
           end
@@ -519,7 +520,7 @@ module Redcar
       default true
       type    :toggle
       change do
-        win.tabs.each do |tab|
+        Redcar.win.tabs.each do |tab|
           if tab.is_a? EditTab
             if Redcar::Preference.get("Editing/Wrap words").to_bool
               tab.view.wrap_mode = Gtk::TextTag::WRAP_WORD
@@ -536,7 +537,7 @@ module Redcar
       type    :toggle
       change do
         value = Redcar::Preference.get("Editing/Show line numbers").to_bool
-        win.collect_tabs(EditTab).each do |tab|
+        Redcar.win.collect_tabs(EditTab).each do |tab|
           tab.view.show_line_numbers = value
         end
       end

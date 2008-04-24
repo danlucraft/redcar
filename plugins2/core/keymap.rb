@@ -78,6 +78,7 @@ module Redcar
         if com.is_a? Proc
 #          puts "[Red] executing arbitrary code"
           com.call
+          true
         elsif com.ancestors.include? Redcar::Command
 
           if com.executable?(Redcar.tab)
@@ -92,10 +93,11 @@ module Redcar
             puts "      scope:      #{com.correct_scope?(scope)}"
             puts "      executable: #{com.executable?(Redcar.tab)}"
           end
+          true
+        else
+          false
         end
-        true
       end
-      false
     end
 
     # Turns a key_path like "Global/Ctrl+G" into "Ctrl+G" for display

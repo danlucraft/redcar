@@ -76,7 +76,6 @@ module Redcar
     end
     
     def open
-      Keymap.push_onto(win, "Speedbar")
       @spbar.visible = true
       @visible = true
       @focus_widget.grab_focus
@@ -84,7 +83,6 @@ module Redcar
     end
     
     def close
-      Keymap.remove_from(win, "Speedbar")
       hide if visible
       @spbar.visible = false
       @visible = false
