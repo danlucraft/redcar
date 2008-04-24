@@ -447,27 +447,27 @@ module Redcar
     mattr_accessor :active
 
     def self.activate(range)
-      puts "activating range #{range}"
+#      puts "activating range #{range}"
       @commands ||= { }
       if @active.include? range
-        puts "  already active"
+#        puts "  already active"
         true
       else
-        puts "  not already active"
+#        puts "  not already active"
         @active << range
         activate_commands(@commands[range]||[])
       end
     end
 
     def self.deactivate(range)
-      puts "deactivating range #{range}"
+#      puts "deactivating range #{range}"
       @commands ||= { }
       if @active.include? range
-        puts "  was active"
+#        puts "  was active"
         @active.delete range
         deactivate_commands(@commands[range]||[])
       else
-        puts "  was not active"
+#        puts "  was not active"
         true
       end
     end

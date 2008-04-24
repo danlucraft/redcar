@@ -82,10 +82,11 @@ module Redcar
           scope = (Redcar.doc.cursor_scope rescue nil)
           p com
           if com.executable?(scope)
-#            puts "[Red] executing #{com}"
+            puts "[Red] executing #{com}"
             com.new.do
           else
-#            puts "[Red] command inoperative: #{com}"
+            puts "[Red] command inoperative: #{com}"
+            puts "      in_range:#{com.in_range?.inspect}"
           end
         end
         true

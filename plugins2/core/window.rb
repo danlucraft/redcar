@@ -343,13 +343,26 @@ module Redcar
 
     # Sets the only active tab range to tab.class
     def update_tab_range(tab) #:nodoc:
-      Range.active.each do |range|
-        if range < Redcar::Tab
-          Range.deactivate(range)
-        end
-      end
       if tab
-        Range.activate(tab.class)
+        Range.active.each do |range|
+          if range < Redcar::Tab and
+              range != tab.class
+            Range.deactivate(range)
+          end
+        end
+        unless Range.active.include? tab.class
+          Range.activate(tab.class)
+        end
+        unless Range.active.include? Redcar::Tab
+          Range.activate(Redcar::Tab)
+        end
+      else
+        # there are no tabs
+        Range.active.each do |range|
+          if range <= Redcar::Tab and
+            Range.deactivate(range)
+          end
+        end
       end
     end
   end

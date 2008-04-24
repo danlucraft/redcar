@@ -83,8 +83,6 @@ module Redcar::Tests
     end
 
     def test_sensitivity
-      puts
-      p :test_sensitiviy
       Redcar.win.tabs.each &:close
       assert !TestSensitiveCommand.active?
       2.times { Redcar.win.new_tab(Redcar::Tab, Gtk::Label.new("foo")) }
@@ -126,16 +124,9 @@ module Redcar::Tests
       assert !TestPythonScopeInheritsCommand.executable?(Redcar.tab)
       assert !TestPythonStringCommand.executable?(Redcar.tab)
       puts
-      p :set_syntax_python
       (t1 = Redcar.tab).syntax = 'Python'
-      p Redcar::Range.active
       t2 = Redcar.tab
-      p :got_tab
-      p t1
-      p t2
       assert TestPythonCommand.executable?(t2)
-      p :test_portion_over
-      puts
       assert TestPythonScopeInheritsCommand.executable?(Redcar.tab)
       assert !TestPythonStringCommand.executable?(Redcar.tab)
       Redcar.doc.text = "  \"Tigh me up, Tigh me down\"  "
@@ -156,6 +147,15 @@ module Redcar::Tests
       Redcar.win.new_tab(TestRangeTab)
       assert TestRangeCommand.executable?(Redcar.tab)
       assert TestRangeInheritsCommand.executable?(Redcar.tab)
+    end
+
+    def test_range2
+      Redcar.win.tabs.each &:close
+      assert !Redcar::StandardMenus::CloseTab.in_range?
+      assert !Redcar::StandardMenus::CloseTab.executable?
+      Redcar.win.new_tab(Redcar::EditTab)
+      assert Redcar::StandardMenus::CloseTab.in_range?
+      assert Redcar::StandardMenus::CloseTab.executable?
     end
   end
 end
