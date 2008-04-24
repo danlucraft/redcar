@@ -47,7 +47,7 @@ module Redcar
     def self.process(gdk_eventkey) #:nodoc:
       if key = clean_gdk_eventkey(gdk_eventkey)
         Hook.trigger :keystroke, key do
-          p key
+          puts "[Red] received key #{key.inspect}"
           execute_key(key)
         end
       else
@@ -79,14 +79,18 @@ module Redcar
 #          puts "[Red] executing arbitrary code"
           com.call
         elsif com.ancestors.include? Redcar::Command
-          scope = (Redcar.doc.cursor_scope rescue nil)
-          p com
-          if com.executable?(scope)
+
+          if com.executable?(Redcar.tab)
             puts "[Red] executing #{com}"
             com.new.do
           else
             puts "[Red] command inoperative: #{com}"
-            puts "      in_range:#{com.in_range?.inspect}"
+            puts "      operative:  #{com.operative?.inspect}"
+            puts "      in_range:   #{com.in_range?.inspect}"
+            puts "      active:     #{com.active?.inspect}"
+            scope = (Redcar.doc.cursor_scope rescue nil)
+            puts "      scope:      #{com.correct_scope?(scope)}"
+            puts "      executable: #{com.executable?(Redcar.tab)}"
           end
         end
         true
