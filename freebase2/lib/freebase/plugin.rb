@@ -96,6 +96,7 @@ module FreeBASE
       @plugin_configuration = plugin_configuration
       # configure base slot
       @base_slot = @core.bus["/plugins/#{@plugin_configuration.name}"]
+      @base_slot.data = self
       @base_slot.propagate_notifications = false
       @base_slot.manager = self
       # create properties manager
@@ -302,6 +303,12 @@ module FreeBASE
         end
       end
       plugin.start
+    end
+    
+    def require_testcase(testcase_path)
+      log_requires(:test) do
+        require testcase_path
+      end
     end
     
     ##

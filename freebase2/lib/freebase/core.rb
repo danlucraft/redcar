@@ -84,6 +84,7 @@ module FreeBASE
       @core_thread.wakeup if @core_thread.stop?
     end
     
+    
     private
     
     def init_bus
@@ -99,6 +100,35 @@ module FreeBASE
           shutdown
         end
         true
+      end
+      
+      @bus["/system/test"].set_proc do
+        require 'test/unit'
+        
+        # we do not want the tests to run on exit:
+        Test::Unit.run = false
+        
+        suite = Test::Unit::TestSuite.new()
+        
+        @bus["/plugins/"].children.each do |plugin_slot|
+          if plugin_slot["actions"].children.map{|c| c.name}.include? "test"
+            plugin = plugin_slot.data
+            plugin.plugin_configuration.tests.each do |test_info|
+              plugin.require_testcase(test_info["path"])
+              suite << eval(test_info["testcase"]).suite
+            end
+          end
+        end
+        
+        require 'test/unit/ui/console/testrunner'
+        
+        begin
+          Test::Unit::UI::Console::TestRunner.new(suite).start
+        rescue Object => e
+          puts e
+          puts e.message
+          puts e.backtrace
+        end
       end
       
       # Set up logger
