@@ -76,7 +76,7 @@ class Redcar::EditView
     
     def connect_buffer_signals
       @buf.signal_connect_after("mark_set") do |widget, event, mark|
-        if @in_snippet and mark == @buf.cursor_mark
+        if @in_snippet and !@ignore and mark == @buf.cursor_mark
           check_in_snippet
         end
         false
@@ -223,9 +223,10 @@ class Redcar::EditView
             else
               # it's a mirror
               left = create_mark_at_offset(@buf.cursor_offset)
-              @buf.insert_at_cursor("LR")
+              @buf.insert_at_cursor("MR")
+              right = create_mark_at_offset(@buf.cursor_offset)
               @mirrors[$1.to_i] ||= []
-              @mirrors[$1.to_i] << {:leftmark => left}
+              @mirrors[$1.to_i] << {:leftmark => left, :rightmark => right}
             end
           elsif md1 = md.post_match.match(/\A((\w+|_)+)\b/)
             @buf.insert_at_cursor(ENV[$1]||"")
@@ -238,14 +239,15 @@ class Redcar::EditView
             if md2 = defn.match(/\A(\d+):/)
               # placeholder is a string
               left = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset), true)
-#              @buf.insert(@buf.iter(@buf.cursor_offset-1), md2.post_match)
               parse_text_for_tab_stops(md2.post_match)
-              right = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset), true)
               if !@tab_stops.include? md2[1].to_i
+                right = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset), true)
                 @tab_stops[md2[1].to_i] = {:leftmark => left, :rightmark => right}
               else
                 # it's a mirror
                 @mirrors[md2[1].to_i] ||= []
+                @buf.insert_at_cursor("MR")
+                right = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset), true)
                 @mirrors[md2[1].to_i] << {:leftmark => left, :rightmark => right}
               end
               remaining_content = md1.post_match[(defn.length+1)..-1]
@@ -254,9 +256,12 @@ class Redcar::EditView
               bits = defn.onig_split(ORegexp.new("(?<!\\\\)/"))
               bits[2] = bits[2].gsub("\\/", "/")
               left = create_mark_at_offset(@buf.cursor_offset)
+              @buf.insert_at_cursor("TR")
+              right = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset), true)
               @transformations[md2[1].to_i] ||= []
               @transformations[md2[1].to_i] << {
                 :leftmark => left,
+                :rightmark => right,
                 :replace => RegexReplace.new(bits[1], bits[2]),
                 :global => bits[3] == "g" ? true : false
               }
@@ -358,16 +363,14 @@ class Redcar::EditView
       set_names
       @mirrors.each do |num, mirrors|
         text = get_tab_stop_text(num)
-        puts "mirror: #{num}" 
-        puts "  before: #{debug_text.inspect}"
         mirrors.each do |mirror|
           i1 = @buf.iter(mirror[:leftmark])
-          i2 = @buf.iter(mirror[:rightmark])
           @ignore = true
-          @buf.delete(i1, i2)
           puts "  text: #{text}" 
-          @buf.insert(@buf.iter(mirror[:leftmark]), text)
-          puts "  after: #{debug_text.inspect}"
+          @buf.insert(i1, text)
+          i1 = @buf.iter(@buf.iter(mirror[:leftmark]).offset+text.length)
+          i2 = @buf.iter(mirror[:rightmark])
+          @buf.delete(i1, i2)
           @ignore = false
         end
       end
@@ -375,15 +378,16 @@ class Redcar::EditView
         text = get_tab_stop_text(num)
         transformations.each do |trans|
           i1 = @buf.iter(trans[:leftmark])
-          i2 = @buf.iter(trans[:rightmark])
           @ignore = true
-          @buf.delete(i1, i2)
           if trans[:global]
             rtext = trans[:replace].grep(text)
           else
             rtext = trans[:replace].rep(text)
           end
           @buf.insert(@buf.iter(trans[:leftmark]), rtext)
+          i1 = @buf.iter(@buf.iter(trans[:leftmark]).offset+rtext.length)
+          i2 = @buf.iter(trans[:rightmark])
+          @buf.delete(i1, i2)
           @ignore = false
         end
       end
@@ -510,10 +514,11 @@ class Redcar::EditView
           text = get_tab_stop_text(num)
           mirrors.each do |mirror|
             i1 = @buf.iter(mirror[:leftmark])
-            i2 = @buf.iter(mirror[:rightmark])
             @ignore = true
-            @buf.delete(i1, i2)
             @buf.insert(@buf.iter(mirror[:leftmark]), text)
+            i1 = @buf.iter(@buf.iter(mirror[:leftmark]).offset+text.length)
+            i2 = @buf.iter(mirror[:rightmark])
+            @buf.delete(i1, i2)
             @ignore = false
           end
         end
@@ -528,15 +533,16 @@ class Redcar::EditView
           text = get_tab_stop_text(num)
           transformations.each do |trans|
             i1 = @buf.iter(trans[:leftmark])
-            i2 = @buf.iter(trans[:rightmark])
             @ignore = true
-            @buf.delete(i1, i2)
             if trans[:global]
               rtext = trans[:replace].grep(text)
             else
               rtext = trans[:replace].rep(text)
             end
             @buf.insert(@buf.iter(trans[:leftmark]), rtext)
+            i1 = @buf.iter(@buf.iter(trans[:leftmark]).offset + rtext.length)
+            i2 = @buf.iter(trans[:rightmark])
+            @buf.delete(i1, i2)
             @ignore = false
           end
         end
