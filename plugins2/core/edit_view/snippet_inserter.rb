@@ -1,5 +1,8 @@
 class Gtk::SourceMarker
   attr_accessor :name
+  attr_accessor :after_marks, :before_marks
+  attr_accessor :snippet_mark
+  attr_accessor :order
 end
 
 class Redcar::EditView
@@ -87,6 +90,13 @@ class Redcar::EditView
         if @in_snippet and !@ignore
           @buf.parser.parsing_on = false
           @insert_offset = iter.offset
+          if marks = marks_at_offset(iter.offset)
+            p :marks_at_insert_offset
+            marks.each {|m| p m.name}
+            marks.select {|m| m.name =~ /\A\$/ }.sort_by(&:order).each do |mark|
+
+            end
+          end
         end
         false
       end
@@ -188,6 +198,8 @@ class Redcar::EditView
       @mirrors = {}
       @transformations = {}
       @ignore = true
+      @marks = []
+      @order_id = 1
       Redcar::App.set_environment_variables
       @content = execute_backticks(@content)
       @buf.parser.delay_parsing do
@@ -197,12 +209,17 @@ class Redcar::EditView
         end
         fix_indent
         create_right_marks
+      set_names
+      p debug_text
+#        print_mark_afters
         insert_duplicate_contents
       end
+      p debug_text
       @ignore = false
       select_tab_stop(1) unless @tab_stops.empty?
     end
 
+    
     def parse_text_for_tab_stops(text)
 #      puts "parse_text_for_tab_stops(#{text.inspect})"
       remaining_content = text
@@ -218,15 +235,19 @@ class Redcar::EditView
             remaining_content = md1.post_match
             # Simple tab stop "... $1 ... "
             if !@tab_stops.include? $1.to_i
+              prev_marks = marks_at_cursor
               left = create_mark_at_offset(@buf.cursor_offset)
-              @tab_stops[$1.to_i] = {:leftmark => left}
+              mark_chain(prev_marks, left)
+              @tab_stops[$1.to_i] = {:leftmark => left, :befores => prev_marks}
             else
               # it's a mirror
+              prev_marks = marks_at_cursor
               left = create_mark_at_offset(@buf.cursor_offset)
-              @buf.insert_at_cursor("MR")
+#              @buf.insert_at_cursor("MR")
               right = create_mark_at_offset(@buf.cursor_offset)
+              mark_chain(prev_marks, left, right)
               @mirrors[$1.to_i] ||= []
-              @mirrors[$1.to_i] << {:leftmark => left, :rightmark => right}
+              @mirrors[$1.to_i] << {:leftmark => left, :rightmark => right, :befores => prev_marks}
             end
           elsif md1 = md.post_match.match(/\A((\w+|_)+)\b/)
             @buf.insert_at_cursor(ENV[$1]||"")
@@ -238,32 +259,37 @@ class Redcar::EditView
             
             if md2 = defn.match(/\A(\d+):/)
               # placeholder is a string
-              left = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset), true)
+              prev_marks = marks_at_cursor
+              left = create_mark_at_offset(@buf.cursor_offset)
               parse_text_for_tab_stops(md2.post_match)
               if !@tab_stops.include? md2[1].to_i
-                right = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset), true)
-                @tab_stops[md2[1].to_i] = {:leftmark => left, :rightmark => right}
+                right = create_mark_at_offset(@buf.cursor_offset)
+                @tab_stops[md2[1].to_i] = {:leftmark => left, :rightmark => right, :befores => prev_marks}
               else
                 # it's a mirror
                 @mirrors[md2[1].to_i] ||= []
-                @buf.insert_at_cursor("MR")
-                right = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset), true)
-                @mirrors[md2[1].to_i] << {:leftmark => left, :rightmark => right}
+#                @buf.insert_at_cursor("MR")
+                right = create_mark_at_offset(@buf.cursor_offset)
+                @mirrors[md2[1].to_i] << {:leftmark => left, :rightmark => right, :befores => prev_marks}
               end
+              mark_chain(prev_marks, left, right)
               remaining_content = md1.post_match[(defn.length+1)..-1]
             elsif md2 = defn.match(/\A(\d+)\//)
               # placeholder is a transformation
               bits = defn.onig_split(ORegexp.new("(?<!\\\\)/"))
               bits[2] = bits[2].gsub("\\/", "/")
+              prev_marks = marks_at_cursor
               left = create_mark_at_offset(@buf.cursor_offset)
-              @buf.insert_at_cursor("TR")
-              right = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset), true)
+#              @buf.insert_at_cursor("TR")
+              right = create_mark_at_offset(@buf.cursor_offset)
+              mark_chain(prev_marks, left, right)
               @transformations[md2[1].to_i] ||= []
               @transformations[md2[1].to_i] << {
                 :leftmark => left,
                 :rightmark => right,
                 :replace => RegexReplace.new(bits[1], bits[2]),
-                :global => bits[3] == "g" ? true : false
+                :global => bits[3] == "g" ? true : false, 
+                :befores => prev_marks
               }
               remaining_content = md1.post_match[(defn.length+1)..-1]
             elsif md2 = defn.match(/\A((\w+|_)+)$/)
@@ -295,6 +321,14 @@ class Redcar::EditView
       end
     end
     
+    def marks_at_cursor
+      @buf.cursor_iter.marks.select {|m| m.snippet_mark}
+    end
+    
+    def marks_at_offset(offset)
+      iter(offset).marks.select {|m| m.snippet_mark}
+    end
+    
     def execute_backticks(text)
       text.gsub!(/`(.*)`/m) do |sh|
         %x{#{sh[1..-2]}}.chomp
@@ -318,9 +352,15 @@ class Redcar::EditView
     end
     
     def create_mark_at_offset(offset)
-      @buf.create_mark(nil, 
-                       @buf.iter(offset),
-                       true)
+      mark = @buf.create_mark(nil, 
+                              @buf.iter(offset),
+                              true)
+      @marks << mark
+      mark.snippet_mark = true
+      mark.before_marks = []
+      mark.after_marks = []
+      mark.order = (@order_id += 1)
+      mark
     end
     
     def create_right_marks
@@ -333,9 +373,37 @@ class Redcar::EditView
           new_right = @buf.create_mark(nil, @buf.iter(right), false)
           hash[:rightmark] = new_right
           @buf.delete_mark(right)
+          new_right.after_marks = right.after_marks
+          new_right.before_marks = right.before_marks
+          right.before_marks.each do |bm|
+            bm.after_marks.delete(right)
+            bm.after_marks << new_right
+          end
+          right.after_marks.each do |am|
+            am.before_marks.delete(right)
+            am.before_marks << new_right
+          end
+          new_right.order = right.order
+          @marks.delete right
         else
           new_right = @buf.create_mark(nil, @buf.iter(hash[:leftmark]), false)
+          new_right.after_marks = hash[:leftmark].after_marks
+          new_right.before_marks = hash[:leftmark].before_marks
+          hash[:leftmark].before_marks.each do |bm|
+            bm.after_marks.delete(right)
+            bm.after_marks << new_right
+          end
+          hash[:leftmark].after_marks.each do |am|
+            am.before_marks.delete(right)
+            am.before_marks << new_right
+          end
+          new_right.order = hash[:leftmark].order
           hash[:rightmark] = new_right
+        end
+        @marks << new_right
+        new_right.snippet_mark = true
+        hash[:befores].each do |before_mark|
+          before_mark.after_marks << new_right
         end
       end
     end
@@ -358,39 +426,14 @@ class Redcar::EditView
         end
       end
     end
-    
+
+    def iter(obj)
+      @buf.iter(obj)
+    end
+        
     def insert_duplicate_contents
-      set_names
-      @mirrors.each do |num, mirrors|
-        text = get_tab_stop_text(num)
-        mirrors.each do |mirror|
-          i1 = @buf.iter(mirror[:leftmark])
-          @ignore = true
-          puts "  text: #{text}" 
-          @buf.insert(i1, text)
-          i1 = @buf.iter(@buf.iter(mirror[:leftmark]).offset+text.length)
-          i2 = @buf.iter(mirror[:rightmark])
-          @buf.delete(i1, i2)
-          @ignore = false
-        end
-      end
-      @transformations.each do |num, transformations|
-        text = get_tab_stop_text(num)
-        transformations.each do |trans|
-          i1 = @buf.iter(trans[:leftmark])
-          @ignore = true
-          if trans[:global]
-            rtext = trans[:replace].grep(text)
-          else
-            rtext = trans[:replace].rep(text)
-          end
-          @buf.insert(@buf.iter(trans[:leftmark]), rtext)
-          i1 = @buf.iter(@buf.iter(trans[:leftmark]).offset+rtext.length)
-          i2 = @buf.iter(trans[:rightmark])
-          @buf.delete(i1, i2)
-          @ignore = false
-        end
-      end
+      update_mirrors
+      update_transformations
     end
     
     def find_current_tab_stop
@@ -456,7 +499,17 @@ class Redcar::EditView
         end
         clear_snippet
       else
-        select_tab_stop(current+1)
+        ix = @tab_stops.keys.sort.index(current)
+        new_ts = @tab_stops.keys.sort[ix+1]
+        if new_ts
+          select_tab_stop(new_ts)
+        else
+          if @tab_stops.include? 0
+            select_tab_stop(0)
+          else
+            @buf.place_cursor(@buf.iter(@snippet_end_mark))
+          end
+        end
       end
     end
     
@@ -506,50 +559,88 @@ class Redcar::EditView
       @buf.get_slice(i1, i2)
     end
     
-    def update_mirrors(start, stop)
+    def update_mirrors(start=nil, stop=nil)
+      p debug_text
       @mirrors.each do |num, mirrors|
+        next unless mirrors
         r = get_tab_stop_range(num)
-        if (start >= r.first and start <= r.last) or
+        if (!start and !stop) or
+            (start >= r.first and start <= r.last) or
             (stop >= r.first and stop <= r.last)
+          puts "mirror: #{num}"
           text = get_tab_stop_text(num)
           mirrors.each do |mirror|
-            i1 = @buf.iter(mirror[:leftmark])
+            i1 = iter(mirror[:leftmark])
+            i2 = iter(mirror[:rightmark])
             @ignore = true
-            @buf.insert(@buf.iter(mirror[:leftmark]), text)
-            i1 = @buf.iter(@buf.iter(mirror[:leftmark]).offset+text.length)
-            i2 = @buf.iter(mirror[:rightmark])
             @buf.delete(i1, i2)
+            i1 = iter(mirror[:leftmark])
+            @buf.insert(i1, text)
+        p debug_text
+            p :enforce
+            mark_chain_enforce(mirror[:leftmark], mirror[:rightmark])
+        p debug_text
             @ignore = false
           end
+        end
+        p debug_text
+      end
+    end
+    
+    def delete_any_mirrors(offset1, offset2)
+      @mirrors.each do |num, mirrors|
+        mirrors.reject! do |mirror|
+          if iter(mirror[:leftmark]).offset == iter(mirror[:rightmark]).offset
+            puts "deleteing mirror for #{num}"
+            @buf.delete_mark(mirror[:leftmark])
+            @buf.delete_mark(mirror[:rightmark])
+            true
+          else
+            false
+          end
+        end
+      end
+      @mirrors.each do |num, ms|
+        if ms.empty?
+          @mirrors[num] = nil
         end
       end
     end
     
-    def update_transformations(start, stop)
+    def update_transformations(start=nil, stop=nil)
+      p debug_text
       @transformations.each do |num, transformations|
         r = get_tab_stop_range(num)
-        if (start >= r.first and start <= r.last) or
+        if (!start and !stop) or
+            (start >= r.first and start <= r.last) or
             (stop >= r.first and stop <= r.last)
           text = get_tab_stop_text(num)
+          puts "trans: #{num}"
           transformations.each do |trans|
-            i1 = @buf.iter(trans[:leftmark])
             @ignore = true
             if trans[:global]
               rtext = trans[:replace].grep(text)
             else
               rtext = trans[:replace].rep(text)
             end
-            @buf.insert(@buf.iter(trans[:leftmark]), rtext)
-            i1 = @buf.iter(@buf.iter(trans[:leftmark]).offset + rtext.length)
-            i2 = @buf.iter(trans[:rightmark])
+            i1 = iter(trans[:leftmark])
+            i2 = iter(trans[:rightmark])
             @buf.delete(i1, i2)
+            i1 = iter(trans[:leftmark])
+            @buf.insert(i1, rtext)
+        p debug_text
+            p :enforce
+            mark_chain_enforce(trans[:leftmark], trans[:rightmark])
+            p debug_text
             @ignore = false
           end
         end
+        p debug_text
       end
     end
     
     def update_after_insert(offset, length)
+      mark_chain_enforce(*(iter(offset).marks + iter(offset+length).marks))
       @buf.parser.delay_parsing do
         update_mirrors(offset, offset+length)
         update_transformations(offset, offset+length)
@@ -558,8 +649,62 @@ class Redcar::EditView
     
     def update_after_delete(offset1, offset2)
       @buf.parser.delay_parsing do
+        delete_any_mirrors(offset1, offset2)
         update_mirrors(offset1, offset2)
         update_transformations(offset1, offset2)
+      end
+    end
+    
+    def mark_chain(prev_marks, *marks)
+      prev_marks.each do |pm|
+        if pm.snippet_mark
+          pm.after_marks ||= []
+          pm.after_marks += marks
+          marks.each do |m|
+            m.before_marks ||= []
+            m.before_marks << pm
+          end
+        end
+      end
+    end
+    
+    def mark_chain_enforce(*marks)
+      marks.each do |mark|
+        unless mark.deleted?
+          (mark.after_marks||[]).each do |after_mark|
+            unless after_mark.deleted?
+              if iter(after_mark).offset < iter(mark).offset
+                puts "enforcing: #{mark.name} < #{after_mark.name}"
+                @buf.move_mark(after_mark, iter(mark))
+              end
+            end
+          end
+          (mark.before_marks||[]).each do |before_mark|
+            unless before_mark.deleted?
+              if iter(before_mark).offset > iter(mark).offset
+                puts "enforcing: #{before_mark.name} < #{mark.name}"
+                @buf.move_mark(before_mark, iter(mark))
+              end
+            end
+          end
+        end
+      end
+    end
+    
+    def print_mark_afters
+      @marks.each do |mark|
+        unless mark.deleted?
+          (mark.after_marks||[]).each do |after_mark|
+            unless after_mark.deleted?
+              puts "A, #{mark.name} then #{after_mark.name}"
+            end
+          end
+          (mark.before_marks||[]).each do |before_mark|
+            unless before_mark.deleted?
+              puts "B, #{before_mark.name} then #{mark.name}"
+            end
+          end
+        end
       end
     end
     
@@ -569,7 +714,7 @@ class Redcar::EditView
       i = 0
       p = 0
       while i < length+1
-        marks = @buf.get_iter_at_offset(i).marks
+        marks = @buf.get_iter_at_offset(i).marks.select(&:name)
         marks.each do |mark|
           marktext = "<#{mark.name}>"
           text.insert(p, marktext)
