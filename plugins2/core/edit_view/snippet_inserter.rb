@@ -223,6 +223,7 @@ class Redcar::EditView
             else
               # it's a mirror
               left = create_mark_at_offset(@buf.cursor_offset)
+              @buf.insert_at_cursor("LR")
               @mirrors[$1.to_i] ||= []
               @mirrors[$1.to_i] << {:leftmark => left}
             end
