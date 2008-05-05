@@ -83,6 +83,9 @@ class RegexReplace
     replace.gsub!(/\\l(.)/) do |match|
       $1.downcase
     end
+    replace.gsub!(/\\[abefnrstv]/) do |match|
+      eval("\"\\#{match[-1..-1]}\"")
+    end
     replace
   end
 end
@@ -106,6 +109,13 @@ if $0 == __FILE__
       rr = RegexReplace.new("blackbird", 
                             "laura")
       assert_equal "foo laura bar blackbird bar", rr.rep("foo blackbird bar blackbird bar")
+    end
+    
+    def test_escape_characters
+      rr = RegexReplace.new("blackbird", 
+                            "lau\\nr\\ta")
+      assert_equal "foo lau\nr\ta bar blackbird bar", rr.rep("foo blackbird bar blackbird bar")
+      
     end
     
     def test_full_match

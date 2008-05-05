@@ -138,7 +138,7 @@ module Redcar
 
     def connect_signals
       self.buffer.signal_connect("mark_set") do |widget, event, mark|
-        if mark.name == "insert"
+        if mark == buffer.cursor_mark
           update_line_and_column(mark)
         end
         false

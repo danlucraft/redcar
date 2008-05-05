@@ -1,42 +1,45 @@
-
+class Gtk::SourceMarker
+  attr_accessor :name
+end
 
 class Redcar::EditView
   class SnippetInserter
     def self.load_snippets
       @snippets = Hash.new {|h, k| h[k] = {}}
       i = 0
-      st = Time.now
       Redcar::Bundle.names.each do |name|
         snippets = Redcar::Bundle.get(name).snippets
         snippets.each do |snip|
           safename = snip["name"].gsub("/", "SLA").gsub("\"", "\\\"").gsub("#", "\\\#")
-          slot = bus("/textmate/bundles/#{name}/snippets/#{safename}")
+          slot = bus("/textmate/bundles/#{name}/#{safename}")
           slot.data = snip
           if snip["tabTrigger"]
             @snippets[snip["scope"]||""][snip["tabTrigger"]] = snip
-            #          elsif snip["keyEquivalent"]
-            #            keyb = Redcar::Bundle.translate_key_equivalent(snip["keyEquivalent"])
-            #            if keyb
-            #              command_class = Class.new(Redcar::Command)
-            #              if snip["scope"]
-            #                command_class.class_eval %Q{
-            #                  scope "#{snip["scope"]}"
-            #                }
-            #              end
-            #              t= %Q{
-            #                key "Global/#{keyb.gsub("\"", "\\\"").gsub("#", "\\\#")}"
-            #                sensitive :edit_tab?
-            #                def execute
-            #                  tab.view.snippet_inserter.insert_snippet_from_path("#{slot.path}")
-            #                end
-            #              }
-            #              command_class.class_eval t
-            #            end
+#          elsif snip["keyEquivalent"]
+#            keyb = Redcar::Bundle.translate_key_equivalent(snip["keyEquivalent"])
+#            if keyb
+#              command_class = Class.new(Redcar::Command)
+#              if snip["scope"]
+#                command_class.class_eval %Q{
+#                  scope "#{snip["scope"]}"
+#                }
+#              end
+#              t= %Q{
+#                key "Global/#{keyb.gsub("\"", "\\\"").gsub("#", "\\\#")}"
+##                sensitive :edit_tab?
+#                def execute
+#                  tab.view.snippet_inserter.insert_snippet_from_path("#{slot.path}")
+#                end
+#              }
+#              command_class.class_eval t
+#            end
           else
             i += 1
           end          
         end
       end
+      puts "#{i} snippets not loaded because they didn't have tabTriggers"  
+      @snippets.default = nil
     end
     
     def self.default_snippets
@@ -73,7 +76,7 @@ class Redcar::EditView
     
     def connect_buffer_signals
       @buf.signal_connect_after("mark_set") do |widget, event, mark|
-        if @in_snippet and mark.name == "insert"
+        if @in_snippet and mark == @buf.cursor_mark
           check_in_snippet
         end
         false
@@ -184,20 +187,16 @@ class Redcar::EditView
       @tab_stops = {}
       @mirrors = {}
       @transformations = {}
-      @inserted_space = nil
       @ignore = true
       Redcar::App.set_environment_variables
+      @content = execute_backticks(@content)
       @buf.parser.delay_parsing do
         parse_text_for_tab_stops(@content)
-        if @inserted_space
-          @buf.delete(@buf.iter(@buf.cursor_offset-1),
-                      @buf.cursor_iter)
-          @inserted_space = nil
-        end
         unless @tab_stops.include? 0
           @snippet_end_mark = @buf.create_mark(nil, @buf.cursor_iter, false)   
         end
         fix_indent
+        create_right_marks
         insert_duplicate_contents
       end
       @ignore = false
@@ -213,29 +212,22 @@ class Redcar::EditView
         raise "Snippet failed to parse: #{text.inspect}" if i > 100
         
         if md = Oniguruma::ORegexp.new("(?<!\\\\)\\$").match(remaining_content)
-          # we add and delete the space so that the marks line up
-          pre_offset = @buf.cursor_offset
-          @buf.insert_at_cursor(unescape_dollars(md.pre_match) + " ")
-          if @inserted_space
-            @buf.delete(@buf.iter(pre_offset-1),
-                        @buf.iter(pre_offset))
-          end
-          @inserted_space = true
+          @buf.insert_at_cursor(unescape_dollars(md.pre_match))
 
           if md1 = md.post_match.match(/\A(\d+)/)
             remaining_content = md1.post_match
             # Simple tab stop "... $1 ... "
             if !@tab_stops.include? $1.to_i
-              left, right = create_marks_at_offset(@buf.cursor_offset-1)
-              @tab_stops[$1.to_i] = {:leftmark => left, :rightmark => right}
+              left = create_mark_at_offset(@buf.cursor_offset)
+              @tab_stops[$1.to_i] = {:leftmark => left}
             else
               # it's a mirror
-              left, right = create_marks_at_offset(@buf.cursor_offset-1)
+              left = create_mark_at_offset(@buf.cursor_offset)
               @mirrors[$1.to_i] ||= []
-              @mirrors[$1.to_i] << {:leftmark => left, :rightmark => right}
+              @mirrors[$1.to_i] << {:leftmark => left}
             end
           elsif md1 = md.post_match.match(/\A((\w+|_)+)\b/)
-            @buf.insert(@buf.iter(@buf.cursor_offset-1), ENV[$1]||"")
+            @buf.insert_at_cursor(ENV[$1]||"")
             # it is an environment variable " ... $TM_LINE_NUMBER ... "
             remaining_content = md1.post_match
           elsif md1 = md.post_match.match(/\A\{/)
@@ -244,10 +236,10 @@ class Redcar::EditView
             
             if md2 = defn.match(/\A(\d+):/)
               # placeholder is a string
-              left = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset-1), true)
+              left = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset), true)
 #              @buf.insert(@buf.iter(@buf.cursor_offset-1), md2.post_match)
               parse_text_for_tab_stops(md2.post_match)
-              right = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset-1), false)
+              right = @buf.create_mark(nil, @buf.iter(@buf.cursor_offset), true)
               if !@tab_stops.include? md2[1].to_i
                 @tab_stops[md2[1].to_i] = {:leftmark => left, :rightmark => right}
               else
@@ -260,18 +252,17 @@ class Redcar::EditView
               # placeholder is a transformation
               bits = defn.onig_split(ORegexp.new("(?<!\\\\)/"))
               bits[2] = bits[2].gsub("\\/", "/")
-              left, right = create_marks_at_offset(@buf.cursor_offset-1)
+              left = create_mark_at_offset(@buf.cursor_offset)
               @transformations[md2[1].to_i] ||= []
               @transformations[md2[1].to_i] << {
                 :leftmark => left,
-                :rightmark => right,
                 :replace => RegexReplace.new(bits[1], bits[2]),
                 :global => bits[3] == "g" ? true : false
               }
               remaining_content = md1.post_match[(defn.length+1)..-1]
             elsif md2 = defn.match(/\A((\w+|_)+)$/)
               # naked environment variable
-              @buf.insert(@buf.iter(@buf.cursor_offset-1), ENV[$1]||"")
+              @buf.insert_at_cursor(ENV[$1]||"")
               remaining_content = md1.post_match[(defn.length+1)..-1]
             elsif md2 = defn.match(/\A((\w+|_)+)\//)
               # transformed env variable
@@ -284,7 +275,7 @@ class Redcar::EditView
               else
                 tenv = rr.rep(env)
               end
-              @buf.insert(@buf.iter(@buf.cursor_offset-1), tenv)
+              @buf.insert_at_cursor(tenv)
               remaining_content = md1.post_match[(defn.length+1)..-1]
             else
               puts "unknown type of tab stop: #{defn.inspect}"
@@ -292,17 +283,17 @@ class Redcar::EditView
             end
           end
         else
-          pre_offset = @buf.cursor_offset
-          @buf.insert_at_cursor(unescape_dollars(remaining_content) + " ")
-          if @inserted_space
-            @buf.delete(@buf.iter(pre_offset-1),
-                        @buf.iter(pre_offset))
-            @inserted_space = nil
-          end
-          @inserted_space = true
+          @buf.insert_at_cursor(unescape_dollars(remaining_content))
           remaining_content = ""
         end
       end
+    end
+    
+    def execute_backticks(text)
+      text.gsub!(/`(.*)`/m) do |sh|
+        %x{#{sh[1..-2]}}.chomp
+      end
+      text
     end
     
     def fix_indent
@@ -320,52 +311,62 @@ class Redcar::EditView
       end
     end
     
-    def create_marks_at_offset(offset)
-      left = @buf.create_mark(
-                              nil, 
-                              @buf.iter(offset),
-                              true)
-      right = @buf.create_mark(
-                               nil, 
-                               @buf.iter(offset),
-                               false)
-      return left, right
+    def create_mark_at_offset(offset)
+      @buf.create_mark(nil, 
+                       @buf.iter(offset),
+                       true)
     end
     
-    def create_tab_stop_marks
-      @tab_stops.each do |num, hash|
-        left, right = create_marks_at_offset(hash[:offset])
-        hash[:leftmark] = left
-        hash[:rightmark] = right
-      end
-      @mirrors.each do |num, hashes|
-        hashes.each do |hash|
-          left, right = create_marks_at_offset(hash[:offset])
-          hash[:leftmark] = left
-          hash[:rightmark] = right
+    def create_right_marks
+      hashes = []
+      @tab_stops.each {|_, h| hashes << h}
+      @mirrors.each {|_, hs| hs.each {|h| hashes << h}}
+      @transformations.each {|_, hs| hs.each {|h| hashes << h}}
+      hashes.each do |hash|
+        if right = hash[:rightmark]
+          new_right = @buf.create_mark(nil, @buf.iter(right), false)
+          hash[:rightmark] = new_right
+          @buf.delete_mark(right)
+        else
+          new_right = @buf.create_mark(nil, @buf.iter(hash[:leftmark]), false)
+          hash[:rightmark] = new_right
         end
       end
-      @transformations.each do |num, hashes|
-        hashes.each do |hash|
-          left, right = create_marks_at_offset(hash[:offset])
-          hash[:leftmark] = left
-          hash[:rightmark] = right
+    end
+    
+    def set_names
+      @tab_stops.each do |i, h|
+        h[:leftmark].name = "$#{i}l"
+        h[:rightmark].name = "$#{i}r"
+      end
+      @mirrors.each do |i, ms|
+        ms.each do |m|
+          m[:leftmark].name = "m#{i}l"
+          m[:rightmark].name = "m#{i}r"
         end
       end
-      unless @tab_stops.include? 0
-        @snippet_end_mark = @buf.create_mark(nil, @buf.cursor_iter, false)   
+      @transformations.each do |i, ms|
+        ms.each do |m|
+          m[:leftmark].name = "t#{i}l"
+          m[:rightmark].name = "t#{i}r"
+        end
       end
     end
     
     def insert_duplicate_contents
+      set_names
       @mirrors.each do |num, mirrors|
         text = get_tab_stop_text(num)
+        puts "mirror: #{num}" 
+        puts "  before: #{debug_text.inspect}"
         mirrors.each do |mirror|
           i1 = @buf.iter(mirror[:leftmark])
           i2 = @buf.iter(mirror[:rightmark])
           @ignore = true
           @buf.delete(i1, i2)
+          puts "  text: #{text}" 
           @buf.insert(@buf.iter(mirror[:leftmark]), text)
+          puts "  after: #{debug_text.inspect}"
           @ignore = false
         end
       end
@@ -553,6 +554,24 @@ class Redcar::EditView
         update_mirrors(offset1, offset2)
         update_transformations(offset1, offset2)
       end
+    end
+    
+    def debug_text
+      text = @buf.text
+      length = text.length
+      i = 0
+      p = 0
+      while i < length+1
+        marks = @buf.get_iter_at_offset(i).marks
+        marks.each do |mark|
+          marktext = "<#{mark.name}>"
+          text.insert(p, marktext)
+          p += marktext.length
+        end
+        i += 1
+        p += 1
+      end
+      text
     end
   end
 end
