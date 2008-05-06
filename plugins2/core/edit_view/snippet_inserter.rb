@@ -85,23 +85,22 @@ class Redcar::EditView
       end
 
       @buf.signal_connect("insert_text") do |_, iter, text, length|
-        @insert_offset = nil
+        @insert_offset = iter.offset
         if @in_snippet and !@ignore
           @buf.parser.parsing_on = false
-          @insert_offset = iter.offset
-          if marks = marks_at_offset(iter.offset)
-            p :marks_at_insert_offset
-            marks.each {|m| p m.name}
-            marks.select {|m| m.name =~ /\A\$/ }.sort_by(&:order_id).each do |mark|
-
-            end
-          end
         end
         false
       end
 
       @buf.signal_connect_after("insert_text") do |_, iter, text, length|
-        if @in_snippet and !@ignore and @insert_offset
+        if @in_snippet
+          p :enforce
+          left_marks = marks_at_offset(@insert_offset)
+          right_marks = marks_at_offset(@insert_offset+length)
+          p left_marks.map {|m| [m.name, m.order_id]}
+          p right_marks.map {|m| [m.name, m.order_id]}
+        end
+        if @in_snippet and !@ignore
           update_after_insert(@insert_offset, length)
           @buf.parser.parsing_on = true
           @buf.parser.process_changes
@@ -226,22 +225,21 @@ class Redcar::EditView
 
         if md = Oniguruma::ORegexp.new("(?<!\\\\)\\$").match(remaining_content)
           @buf.insert_at_cursor(unescape_dollars(md.pre_match))
-          @order_id += 1
           if md1 = md.post_match.match(/\A(\d+)/)
             remaining_content = md1.post_match
             # Simple tab stop "... $1 ... "
             if !@tab_stops.include? $1.to_i
-              left = create_mark_at_offset(@order_id, @buf.cursor_offset)
               @tab_stops[$1.to_i] = {
-                :leftmark => left,
+                :leftmark => create_mark_at_offset(@order_id+=1, @buf.cursor_offset),
+                :rightmark => create_mark_at_offset(@order_id+=1, @buf.cursor_offset),
                 :order_id => @order_id
               }
             else
               # it's a mirror
               @mirrors[$1.to_i] ||= []
               @mirrors[$1.to_i] << {
-                :leftmark => create_mark_at_offset(@order_id, @buf.cursor_offset),
-                :rightmark => create_mark_at_offset(@order_id, @buf.cursor_offset),
+                :leftmark => create_mark_at_offset(@order_id+=1, @buf.cursor_offset),
+                :rightmark => create_mark_at_offset(@order_id+=1, @buf.cursor_offset),
                 :order_id => @order_id
               }
             end
@@ -255,22 +253,21 @@ class Redcar::EditView
 
             if md2 = defn.match(/\A(\d+):/)
               # placeholder is a string
-              o_id = @order_id
-              left = create_mark_at_offset(o_id, @buf.cursor_offset)
+              left = create_mark_at_offset(@order_id+=1, @buf.cursor_offset)
               parse_text_for_tab_stops(md2.post_match)
               if !@tab_stops.include? md2[1].to_i
                 @tab_stops[md2[1].to_i] = {
                   :leftmark => left,
-                  :rightmark => create_mark_at_offset(o_id, @buf.cursor_offset),
-                  :order_id => o_id
+                  :rightmark => create_mark_at_offset(@order_id+=1, @buf.cursor_offset),
+                  :order_id => @order_id
                 }
               else
                 # it's a mirror
                 @mirrors[md2[1].to_i] ||= []
                 @mirrors[md2[1].to_i] << {
                   :leftmark => left,
-                  :rightmark => create_mark_at_offset(o_id, @buf.cursor_offset),
-                  :order_id => o_id
+                  :rightmark => create_mark_at_offset(@order_id+=1, @buf.cursor_offset),
+                  :order_id => @order_id
                 }
               end
               remaining_content = md1.post_match[(defn.length+1)..-1]
@@ -280,8 +277,8 @@ class Redcar::EditView
               bits[2] = bits[2].gsub("\\/", "/")
               @transformations[md2[1].to_i] ||= []
               @transformations[md2[1].to_i] << {
-                :leftmark => create_mark_at_offset(@order_id, @buf.cursor_offset),
-                :rightmark => create_mark_at_offset(@order_id, @buf.cursor_offset),
+                :leftmark => create_mark_at_offset(@order_id+=1, @buf.cursor_offset),
+                :rightmark => create_mark_at_offset(@order_id+=1, @buf.cursor_offset),
                 :replace => RegexReplace.new(bits[1], bits[2]),
                 :global => bits[3] == "g" ? true : false,
                 :order_id => @order_id
@@ -369,9 +366,7 @@ class Redcar::EditView
           new_right.order_id = right.order_id
           @marks.delete right
         else
-          new_right = @buf.create_mark(nil, @buf.iter(hash[:leftmark]), false)
-          new_right.order_id = hash[:leftmark].order_id
-          hash[:rightmark] = new_right
+          raise "error: no rightmark already here"
         end
         @marks << new_right
         new_right.snippet_mark = true
