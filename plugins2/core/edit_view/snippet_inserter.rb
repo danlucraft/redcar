@@ -1,8 +1,7 @@
 class Gtk::SourceMarker
   attr_accessor :name
-  attr_accessor :after_marks, :before_marks
   attr_accessor :snippet_mark
-  attr_accessor :order
+  attr_accessor :order_id
 end
 
 class Redcar::EditView
@@ -38,21 +37,21 @@ class Redcar::EditView
 #            end
           else
             i += 1
-          end          
+          end
         end
       end
-      puts "#{i} snippets not loaded because they didn't have tabTriggers"  
+      puts "#{i} snippets not loaded because they didn't have tabTriggers"
       @snippets.default = nil
     end
-    
+
     def self.default_snippets
       @snippets[""]
     end
-    
+
     def self.register(scope, tab_trigger, content)
       @snippets[scope][tab_trigger] = {"content" => content}
     end
-    
+
     def self.snippets_for_scope(scope)
       all_snippets_for_scope = {}
       if scope
@@ -68,15 +67,15 @@ class Redcar::EditView
       end
       all_snippets_for_scope
     end
-    
+
     attr_reader(:tab_stops)
-    
+
     def initialize(buffer)
       self.buffer = buffer
       @parser = buffer.parser
       connect_buffer_signals
     end
-    
+
     def connect_buffer_signals
       @buf.signal_connect_after("mark_set") do |widget, event, mark|
         if @in_snippet and !@ignore and mark == @buf.cursor_mark
@@ -84,7 +83,7 @@ class Redcar::EditView
         end
         false
       end
-      
+
       @buf.signal_connect("insert_text") do |_, iter, text, length|
         @insert_offset = nil
         if @in_snippet and !@ignore
@@ -93,14 +92,14 @@ class Redcar::EditView
           if marks = marks_at_offset(iter.offset)
             p :marks_at_insert_offset
             marks.each {|m| p m.name}
-            marks.select {|m| m.name =~ /\A\$/ }.sort_by(&:order).each do |mark|
+            marks.select {|m| m.name =~ /\A\$/ }.sort_by(&:order_id).each do |mark|
 
             end
           end
         end
         false
       end
-      
+
       @buf.signal_connect_after("insert_text") do |_, iter, text, length|
         if @in_snippet and !@ignore and @insert_offset
           update_after_insert(@insert_offset, length)
@@ -110,7 +109,7 @@ class Redcar::EditView
         end
         false
       end
-      
+
       @buf.signal_connect("delete_range") do |_, iter1, iter2|
         if @in_snippet and !@ignore
           @delete_offset1 = iter1.offset
@@ -132,22 +131,22 @@ class Redcar::EditView
         false
       end
     end
-    
+
     def buffer=(buf)
       @buf = buf
     end
-    
+
     def in_snippet?
       @in_snippet
     end
-    
+
     def tab_pressed
       if @in_snippet
         move_forward_tab_stop
         true
       else
         @word = nil
-        @offset = nil        
+        @offset = nil
         line = @buf.get_slice(@buf.line_start(@buf.cursor_line),
                               @buf.cursor_iter).reverse
         if line =~ /([^\s]+)(\s|$)/
@@ -157,13 +156,13 @@ class Redcar::EditView
         if @word
           if default_snippets = SnippetInserter.default_snippets and
               snippet = default_snippets[@word]
-            @buf.delete(@buf.iter(@offset-@word.length), 
+            @buf.delete(@buf.iter(@offset-@word.length),
                         @buf.iter(@offset))
             insert_snippet(snippet)
             true
-          elsif snippets_for_scope = SnippetInserter.snippets_for_scope(@buf.cursor_scope) and 
+          elsif snippets_for_scope = SnippetInserter.snippets_for_scope(@buf.cursor_scope) and
               snippet = snippets_for_scope[@word]
-            @buf.delete(@buf.iter(@offset-@word.length), 
+            @buf.delete(@buf.iter(@offset-@word.length),
                         @buf.iter(@offset))
             insert_snippet(snippet)
             true
@@ -173,7 +172,7 @@ class Redcar::EditView
         end
       end
     end
-    
+
     def shift_tab_pressed
       if @in_snippet
         move_backward_tab_stop
@@ -184,11 +183,11 @@ class Redcar::EditView
     def unescape_dollars(text)
       text.gsub("\\$", "$").gsub("\\\\", "\\")
     end
-    
+
     def insert_snippet_from_path(path)
       insert_snippet(bus(path).data)
     end
-    
+
     def insert_snippet(snippet)
       p snippet
       @in_snippet = true
@@ -205,21 +204,18 @@ class Redcar::EditView
       @buf.parser.delay_parsing do
         parse_text_for_tab_stops(@content)
         unless @tab_stops.include? 0
-          @snippet_end_mark = @buf.create_mark(nil, @buf.cursor_iter, false)   
+          @snippet_end_mark = @buf.create_mark(nil, @buf.cursor_iter, false)
         end
         fix_indent
         create_right_marks
-      set_names
-      p debug_text
-#        print_mark_afters
+        set_names
         insert_duplicate_contents
       end
-      p debug_text
       @ignore = false
       select_tab_stop(1) unless @tab_stops.empty?
     end
 
-    
+
     def parse_text_for_tab_stops(text)
 #      puts "parse_text_for_tab_stops(#{text.inspect})"
       remaining_content = text
@@ -227,27 +223,27 @@ class Redcar::EditView
       while remaining_content.length > 0
         i += 1
         raise "Snippet failed to parse: #{text.inspect}" if i > 100
-        
+
         if md = Oniguruma::ORegexp.new("(?<!\\\\)\\$").match(remaining_content)
           @buf.insert_at_cursor(unescape_dollars(md.pre_match))
-
+          @order_id += 1
           if md1 = md.post_match.match(/\A(\d+)/)
             remaining_content = md1.post_match
             # Simple tab stop "... $1 ... "
             if !@tab_stops.include? $1.to_i
-              prev_marks = marks_at_cursor
-              left = create_mark_at_offset(@buf.cursor_offset)
-              mark_chain(prev_marks, left)
-              @tab_stops[$1.to_i] = {:leftmark => left, :befores => prev_marks}
+              left = create_mark_at_offset(@order_id, @buf.cursor_offset)
+              @tab_stops[$1.to_i] = {
+                :leftmark => left,
+                :order_id => @order_id
+              }
             else
               # it's a mirror
-              prev_marks = marks_at_cursor
-              left = create_mark_at_offset(@buf.cursor_offset)
-#              @buf.insert_at_cursor("MR")
-              right = create_mark_at_offset(@buf.cursor_offset)
-              mark_chain(prev_marks, left, right)
               @mirrors[$1.to_i] ||= []
-              @mirrors[$1.to_i] << {:leftmark => left, :rightmark => right, :befores => prev_marks}
+              @mirrors[$1.to_i] << {
+                :leftmark => create_mark_at_offset(@order_id, @buf.cursor_offset),
+                :rightmark => create_mark_at_offset(@order_id, @buf.cursor_offset),
+                :order_id => @order_id
+              }
             end
           elsif md1 = md.post_match.match(/\A((\w+|_)+)\b/)
             @buf.insert_at_cursor(ENV[$1]||"")
@@ -256,40 +252,39 @@ class Redcar::EditView
           elsif md1 = md.post_match.match(/\A\{/)
             # tab stop with placeholder string "... ${1:condition ... "
             defn = get_balanced_braces(md.post_match)[1..-2]
-            
+
             if md2 = defn.match(/\A(\d+):/)
               # placeholder is a string
-              prev_marks = marks_at_cursor
-              left = create_mark_at_offset(@buf.cursor_offset)
+              o_id = @order_id
+              left = create_mark_at_offset(o_id, @buf.cursor_offset)
               parse_text_for_tab_stops(md2.post_match)
               if !@tab_stops.include? md2[1].to_i
-                right = create_mark_at_offset(@buf.cursor_offset)
-                @tab_stops[md2[1].to_i] = {:leftmark => left, :rightmark => right, :befores => prev_marks}
+                @tab_stops[md2[1].to_i] = {
+                  :leftmark => left,
+                  :rightmark => create_mark_at_offset(o_id, @buf.cursor_offset),
+                  :order_id => o_id
+                }
               else
                 # it's a mirror
                 @mirrors[md2[1].to_i] ||= []
-#                @buf.insert_at_cursor("MR")
-                right = create_mark_at_offset(@buf.cursor_offset)
-                @mirrors[md2[1].to_i] << {:leftmark => left, :rightmark => right, :befores => prev_marks}
+                @mirrors[md2[1].to_i] << {
+                  :leftmark => left,
+                  :rightmark => create_mark_at_offset(o_id, @buf.cursor_offset),
+                  :order_id => o_id
+                }
               end
-              mark_chain(prev_marks, left, right)
               remaining_content = md1.post_match[(defn.length+1)..-1]
             elsif md2 = defn.match(/\A(\d+)\//)
               # placeholder is a transformation
               bits = defn.onig_split(ORegexp.new("(?<!\\\\)/"))
               bits[2] = bits[2].gsub("\\/", "/")
-              prev_marks = marks_at_cursor
-              left = create_mark_at_offset(@buf.cursor_offset)
-#              @buf.insert_at_cursor("TR")
-              right = create_mark_at_offset(@buf.cursor_offset)
-              mark_chain(prev_marks, left, right)
               @transformations[md2[1].to_i] ||= []
               @transformations[md2[1].to_i] << {
-                :leftmark => left,
-                :rightmark => right,
+                :leftmark => create_mark_at_offset(@order_id, @buf.cursor_offset),
+                :rightmark => create_mark_at_offset(@order_id, @buf.cursor_offset),
                 :replace => RegexReplace.new(bits[1], bits[2]),
-                :global => bits[3] == "g" ? true : false, 
-                :befores => prev_marks
+                :global => bits[3] == "g" ? true : false,
+                :order_id => @order_id
               }
               remaining_content = md1.post_match[(defn.length+1)..-1]
             elsif md2 = defn.match(/\A((\w+|_)+)$/)
@@ -320,22 +315,22 @@ class Redcar::EditView
         end
       end
     end
-    
+
     def marks_at_cursor
       @buf.cursor_iter.marks.select {|m| m.snippet_mark}
     end
-    
+
     def marks_at_offset(offset)
       iter(offset).marks.select {|m| m.snippet_mark}
     end
-    
+
     def execute_backticks(text)
       text.gsub!(/`(.*)`/m) do |sh|
         %x{#{sh[1..-2]}}.chomp
       end
       text
     end
-    
+
     def fix_indent
       firstline = @buf.get_line(@insert_line_num).to_s.chomp
       if firstline
@@ -350,19 +345,17 @@ class Redcar::EditView
         end
       end
     end
-    
-    def create_mark_at_offset(offset)
-      mark = @buf.create_mark(nil, 
+
+    def create_mark_at_offset(order_id, offset)
+      mark = @buf.create_mark(nil,
                               @buf.iter(offset),
                               true)
       @marks << mark
       mark.snippet_mark = true
-      mark.before_marks = []
-      mark.after_marks = []
-      mark.order = (@order_id += 1)
+      mark.order_id = order_id
       mark
     end
-    
+
     def create_right_marks
       hashes = []
       @tab_stops.each {|_, h| hashes << h}
@@ -373,41 +366,18 @@ class Redcar::EditView
           new_right = @buf.create_mark(nil, @buf.iter(right), false)
           hash[:rightmark] = new_right
           @buf.delete_mark(right)
-          new_right.after_marks = right.after_marks
-          new_right.before_marks = right.before_marks
-          right.before_marks.each do |bm|
-            bm.after_marks.delete(right)
-            bm.after_marks << new_right
-          end
-          right.after_marks.each do |am|
-            am.before_marks.delete(right)
-            am.before_marks << new_right
-          end
-          new_right.order = right.order
+          new_right.order_id = right.order_id
           @marks.delete right
         else
           new_right = @buf.create_mark(nil, @buf.iter(hash[:leftmark]), false)
-          new_right.after_marks = hash[:leftmark].after_marks
-          new_right.before_marks = hash[:leftmark].before_marks
-          hash[:leftmark].before_marks.each do |bm|
-            bm.after_marks.delete(right)
-            bm.after_marks << new_right
-          end
-          hash[:leftmark].after_marks.each do |am|
-            am.before_marks.delete(right)
-            am.before_marks << new_right
-          end
-          new_right.order = hash[:leftmark].order
+          new_right.order_id = hash[:leftmark].order_id
           hash[:rightmark] = new_right
         end
         @marks << new_right
         new_right.snippet_mark = true
-        hash[:befores].each do |before_mark|
-          before_mark.after_marks << new_right
-        end
       end
     end
-    
+
     def set_names
       @tab_stops.each do |i, h|
         h[:leftmark].name = "$#{i}l"
@@ -430,18 +400,18 @@ class Redcar::EditView
     def iter(obj)
       @buf.iter(obj)
     end
-        
+
     def insert_duplicate_contents
       update_mirrors
       update_transformations
     end
-    
+
     def find_current_tab_stop
       candidates = []
       @tab_stops.each do |num, hash|
         leftoff = @buf.iter(hash[:leftmark]).offset
         rightoff = @buf.iter(hash[:rightmark]).offset
-        if @buf.cursor_offset <= rightoff and 
+        if @buf.cursor_offset <= rightoff and
             @buf.selection_offset >= leftoff
           candidates << [(@buf.cursor_offset-rightoff).abs+
                          (@buf.selection_offset-leftoff).abs,
@@ -452,20 +422,20 @@ class Redcar::EditView
         candidates.sort.first[1]
       end
     end
-    
+
     def print_tab_stop_info
       @tab_stops.each do |num, hash|
         puts "tab #{num}: #{@buf.iter(hash[:leftmark]).offset} #{@buf.iter(hash[:rightmark]).offset}"
       end
     end
-    
+
     def get_balanced_braces(string)
       defn = []
       line = string
       finished = false
       depth = 0
       while line.length > 0 and !finished
-        if line[0..1] == "\\{" or 
+        if line[0..1] == "\\{" or
             line[0..1] == "\\}"
           defn << line.at(0)
           defn << line.at(1)
@@ -512,7 +482,7 @@ class Redcar::EditView
         end
       end
     end
-    
+
     def move_backward_tab_stop
       current = find_current_tab_stop
       raise "unexpectedly outside snippet" unless current
@@ -521,7 +491,7 @@ class Redcar::EditView
         select_tab_stop(current-1)
       end
     end
-    
+
     def select_tab_stop(n)
       if n == 0
         @buf.select(@buf.iter(@tab_stops[n][:rightmark]),
@@ -531,11 +501,11 @@ class Redcar::EditView
                     @buf.iter(@tab_stops[n][:rightmark]))
       end
     end
-    
+
     def check_in_snippet
       clear_snippet unless find_current_tab_stop
     end
-    
+
     def clear_snippet
       @in_snippet = false
       @word = nil
@@ -546,19 +516,19 @@ class Redcar::EditView
       @mirrors = nil
       @ignore = true
     end
-    
+
     def get_tab_stop_range(num)
       off1 = @buf.iter(@tab_stops[num][:leftmark]).offset
       off2 = @buf.iter(@tab_stops[num][:rightmark]).offset
       off1..off2
     end
-    
+
     def get_tab_stop_text(num)
       i1 = @buf.iter(@tab_stops[num][:leftmark])
       i2 = @buf.iter(@tab_stops[num][:rightmark])
       @buf.get_slice(i1, i2)
     end
-    
+
     def update_mirrors(start=nil, stop=nil)
       p debug_text
       @mirrors.each do |num, mirrors|
@@ -576,17 +546,13 @@ class Redcar::EditView
             @buf.delete(i1, i2)
             i1 = iter(mirror[:leftmark])
             @buf.insert(i1, text)
-        p debug_text
-            p :enforce
-            mark_chain_enforce(mirror[:leftmark], mirror[:rightmark])
-        p debug_text
             @ignore = false
           end
         end
         p debug_text
       end
     end
-    
+
     def delete_any_mirrors(offset1, offset2)
       @mirrors.each do |num, mirrors|
         mirrors.reject! do |mirror|
@@ -606,7 +572,7 @@ class Redcar::EditView
         end
       end
     end
-    
+
     def update_transformations(start=nil, stop=nil)
       p debug_text
       @transformations.each do |num, transformations|
@@ -628,25 +594,20 @@ class Redcar::EditView
             @buf.delete(i1, i2)
             i1 = iter(trans[:leftmark])
             @buf.insert(i1, rtext)
-        p debug_text
-            p :enforce
-            mark_chain_enforce(trans[:leftmark], trans[:rightmark])
-            p debug_text
             @ignore = false
           end
         end
         p debug_text
       end
     end
-    
+
     def update_after_insert(offset, length)
-      mark_chain_enforce(*(iter(offset).marks + iter(offset+length).marks))
       @buf.parser.delay_parsing do
         update_mirrors(offset, offset+length)
         update_transformations(offset, offset+length)
       end
     end
-    
+
     def update_after_delete(offset1, offset2)
       @buf.parser.delay_parsing do
         delete_any_mirrors(offset1, offset2)
@@ -654,60 +615,7 @@ class Redcar::EditView
         update_transformations(offset1, offset2)
       end
     end
-    
-    def mark_chain(prev_marks, *marks)
-      prev_marks.each do |pm|
-        if pm.snippet_mark
-          pm.after_marks ||= []
-          pm.after_marks += marks
-          marks.each do |m|
-            m.before_marks ||= []
-            m.before_marks << pm
-          end
-        end
-      end
-    end
-    
-    def mark_chain_enforce(*marks)
-      marks.each do |mark|
-        unless mark.deleted?
-          (mark.after_marks||[]).each do |after_mark|
-            unless after_mark.deleted?
-              if iter(after_mark).offset < iter(mark).offset
-                puts "enforcing: #{mark.name} < #{after_mark.name}"
-                @buf.move_mark(after_mark, iter(mark))
-              end
-            end
-          end
-          (mark.before_marks||[]).each do |before_mark|
-            unless before_mark.deleted?
-              if iter(before_mark).offset > iter(mark).offset
-                puts "enforcing: #{before_mark.name} < #{mark.name}"
-                @buf.move_mark(before_mark, iter(mark))
-              end
-            end
-          end
-        end
-      end
-    end
-    
-    def print_mark_afters
-      @marks.each do |mark|
-        unless mark.deleted?
-          (mark.after_marks||[]).each do |after_mark|
-            unless after_mark.deleted?
-              puts "A, #{mark.name} then #{after_mark.name}"
-            end
-          end
-          (mark.before_marks||[]).each do |before_mark|
-            unless before_mark.deleted?
-              puts "B, #{before_mark.name} then #{mark.name}"
-            end
-          end
-        end
-      end
-    end
-    
+
     def debug_text
       text = @buf.text
       length = text.length

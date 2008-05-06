@@ -17,7 +17,7 @@ module Redcar::Tests
       @parser.parse_all = true
       @snippet_inserter = SnippetInserter.new(@buf)
     end
-    
+
     def teardown
       Redcar.win.tabs.each &:close
     end
@@ -32,21 +32,21 @@ module Redcar::Tests
         buffer.insert_at_cursor(char)
       end
     end
-    
+
     def backspace(buffer)
       buffer.delete(buffer.iter(buffer.cursor_offset-1),
                     buffer.cursor_iter)
     end
-    
+
     def press_tab(si=@snippet_inserter, buf=@buf)
       Redcar::StandardMenus::Tab.new(si, buf).do
     end
-    
+
     def press_shift_tab(si=@snippet_inserter, buf=@buf)
       Redcar::StandardMenus::ShiftTab.new(si, buf).do
     end
-    
-    def atest_inserts_plain_content
+
+    def test_inserts_plain_content
       SnippetInserter.register("source.ruby - string - comment",
                                "DBL",
                                "Daniel Benjamin Lucraft")
@@ -56,7 +56,7 @@ module Redcar::Tests
       assert_equal 23, @buf.cursor_offset
     end
 
-    def atest_escapes_dollars
+    def test_escapes_dollars
       SnippetInserter.register("source.ruby - string - comment",
                                "DBL",
                                "Daniel \\$1 Benjamin Lucraft")
@@ -66,7 +66,7 @@ module Redcar::Tests
       assert_equal 26, @buf.cursor_offset
     end
 
-    def atest_inserts_environment_variable
+    def test_inserts_environment_variable
       tab = Redcar.win.new_tab(Redcar::EditTab)
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
@@ -79,7 +79,7 @@ module Redcar::Tests
       tab.close
     end
 
-    def atest_inserts_environment_variable2
+    def test_inserts_environment_variable2
       tab = Redcar.win.new_tab(Redcar::EditTab)
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
@@ -92,7 +92,7 @@ module Redcar::Tests
       tab.close
     end
 
-    def atest_transforms_environment_variable
+    def test_transforms_environment_variable
       tab = Redcar.win.new_tab(Redcar::EditTab)
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
@@ -105,7 +105,7 @@ module Redcar::Tests
       tab.close
     end
 
-    def atest_transforms_environment_variable_global
+    def test_transforms_environment_variable_global
       # also tests escaping of slashes in transform
       tab = Redcar.win.new_tab(Redcar::EditTab)
       SnippetInserter.register("source.ruby - string - comment",
@@ -119,18 +119,17 @@ module Redcar::Tests
       tab.close
     end
 
-    def atest_inserts_one_tab_stop
+    def test_inserts_one_tab_stop
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
                                "if $1\n\t\nend")
       @buf.text=("testsnip")
       press_tab
-      source1="if \n\t\nend"
-      assert_equal source1, @buf.text
+      assert_equal "if \n\t\nend", @buf.text
       assert_equal 3, @buf.cursor_offset
     end
 
-    def atest_allows_tabbing_past_snippet
+    def test_allows_tabbing_past_snippet
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
                                "if $1\n\t\nend")
@@ -159,7 +158,7 @@ module Redcar::Tests
       assert !@snippet_inserter.in_snippet?
     end
 
-    def atest_allows_tabbing_between_nonconsecutive_tab_stops
+    def test_allows_tabbing_between_nonconsecutive_tab_stops
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
                                "if $1\n\t$3\nend")
@@ -175,7 +174,7 @@ module Redcar::Tests
       assert !@snippet_inserter.in_snippet?
     end
 
-    def atest_allows_typing_and_tabbing
+    def test_allows_typing_and_tabbing
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
                                "if $1\n\t$2\nend")
@@ -194,7 +193,7 @@ module Redcar::Tests
       assert !@snippet_inserter.in_snippet?
     end
 
-    def atest_allows_shift_tabbing
+    def test_allows_shift_tabbing
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
                                "if $1\n\t$2\nend")
@@ -214,8 +213,8 @@ module Redcar::Tests
       assert_equal 8, @buf.cursor_offset
       assert @snippet_inserter.in_snippet?
     end
-    
-    def atest_inserts_tab_stop_content
+
+    def test_inserts_tab_stop_content
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
                                "if ${1:condition}\n\t$0\nend")
@@ -226,7 +225,7 @@ module Redcar::Tests
       assert_equal 3..12, @buf.selection_range
     end
 
-    def atest_inserts_environment_variable_as_placeholder
+    def test_inserts_environment_variable_as_placeholder
       tab = Redcar.win.new_tab(Redcar::EditTab)
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
@@ -239,7 +238,7 @@ module Redcar::Tests
       tab.close
     end
 
-    def atest_leaves_snippet_on_cursor_move
+    def test_leaves_snippet_on_cursor_move
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
                                "if ${1:condition}\n\t$0\nend")
@@ -249,8 +248,8 @@ module Redcar::Tests
       @buf.place_cursor(@buf.line_start(0))
       assert !@snippet_inserter.in_snippet?
     end
-    
-    def atest_multiple_stops_with_content
+
+    def test_multiple_stops_with_content
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
                                "if ${1:condition}\n\t${2:code}\nend")
@@ -269,7 +268,7 @@ module Redcar::Tests
       assert !@snippet_inserter.in_snippet?
     end
 
-    def atest_mirrors_mirror_text
+    def test_mirrors_mirror_text
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
                                "name: $1\nname: $1")
@@ -284,8 +283,8 @@ module Redcar::Tests
       assert_equal "name: rai\nname: rai", @buf.text
       assert_equal 9..9, @buf.selection_range
     end
-    
-    def atest_mirrors_mirror_stop_with_content
+
+    def test_mirrors_mirror_stop_with_content
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
                                "name: ${1:leoban}\nname: $1")
@@ -294,8 +293,8 @@ module Redcar::Tests
       assert_equal "name: leoban\nname: leoban", @buf.text
       assert_equal 6..12, @buf.selection_range
     end
-    
-    def atest_mirrors_mirror_both_with_content
+
+    def test_mirrors_mirror_both_with_content
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
                                "name: ${1:leoban}\nname: ${1:leoban}")
@@ -310,8 +309,8 @@ module Redcar::Tests
       assert_equal "name: ad\nname: ad", @buf.text
       assert_equal 8..8, @buf.selection_range
     end
-    
-    def atest_transformations
+
+    def test_transformations
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
                                "name: $1\nupper: ${1/(\\w+)/\\U$1\\E/}")
@@ -330,8 +329,8 @@ module Redcar::Tests
       assert_equal "name: rap blackbird\nupper: RAP blackbird", @buf.text
       assert_equal 19..19, @buf.selection_range
     end
-    
-    def atest_global_transformations
+
+    def test_global_transformations
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
                                "name: $1\nupper: ${1/(\\w+)/\\U$1\\E/g}")
@@ -343,8 +342,8 @@ module Redcar::Tests
       assert_equal "name: raptor blackbird\nupper: RAPTOR BLACKBIRD", @buf.text
       assert_equal 22..22, @buf.selection_range
     end
-    
-    def atest_nested_tab_stops
+
+    def test_nested_tab_stops
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
                                ':${1:key} => ${2:"${3:value}"}${4:, }')
@@ -362,8 +361,8 @@ module Redcar::Tests
       press_shift_tab
       assert_equal 8..16, @buf.selection_range
     end
-    
-    def atest_super_nested_tab_stops
+
+    def test_super_nested_tab_stops
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
                                ':${1:key} => ${2:"${3:value ${4:is} 3}"}${5:, }')
@@ -378,8 +377,8 @@ module Redcar::Tests
       press_tab
       assert_equal 15..17, @buf.selection_range
     end
-    
-    def atest_latex_snippet
+
+    def test_latex_snippet
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
                              "\\\\begin{${1:env}}\n\t${1/(enumerate|itemize|list)|(description)|.*/(?1:\\item )(?2:\\item)/}$0\n\\\\end{${1:env}}")
@@ -393,8 +392,8 @@ module Redcar::Tests
       press_tab
       assert_equal 20..20, @buf.selection_range
     end
-    
-    def atest_executes_shell_commands
+
+    def test_executes_shell_commands
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
                                'Date:`date +%Y-%m-%d`')
@@ -404,8 +403,8 @@ module Redcar::Tests
       assert_equal "Date:#{Time.now.strftime("%Y-%m-%d")}", @buf.text
       assert_equal 15..15, @buf.selection_range
     end
-    
-    def atest_abutting_dollars
+
+    def test_abutting_dollars
       SnippetInserter.register("source.ruby - string - comment",
         "testsnip",
         "def ${1:fname} ${3:docstring for $1}${3/.+/\"\"\"\\n/}")
@@ -440,8 +439,8 @@ module Redcar::Tests
       type("a")
       assert_equal "def m a\"\"\"\n\tpass", @buf.text
     end
-    
-#     def atest_executes_shell_commands_with_support
+
+#     def test_executes_shell_commands_with_support
 #       SnippetInserter.register("source.ruby - string - comment",
 #                                "testsnip",
 #                                'Date:``')
