@@ -459,7 +459,15 @@ module Redcar::Tests
       assert_equal "def m abc\"\"\"\n\tpass", @buf.text
     end
 
-#     def test_executes_shell_commands_with_support
+    def test_bug
+      SnippetInserter.register("source.ruby - string - comment",
+        "testsnip",
+        "def ${1:fname}(${2:}):\n\t")
+      @buf.text=("testsnip")
+      press_tab
+      assert_equal "def fname():\n\t", @buf.text
+    end
+    #     def test_executes_shell_commands_with_support
 #       SnippetInserter.register("source.ruby - string - comment",
 #                                "testsnip",
 #                                'Date:``')

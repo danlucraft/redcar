@@ -93,21 +93,21 @@ class Redcar::EditView
       end
 
       @buf.signal_connect_after("insert_text") do |_, iter, text, length|
-        if @in_snippet
-          p :enforce
-          p debug_text
+        if @in_snippet and @insert_offset and !@constructing
+#           p :enforce
+#           p debug_text
           left_marks = marks_at_offset(@insert_offset)
           right_marks = marks_at_offset(@insert_offset+length)
-          p left_marks.map {|m| [m.name, m.stop_id, m.order_id]}
-          p right_marks.map {|m| [m.name, m.stop_id, m.order_id]}
+#           p left_marks.map {|m| [m.name, m.stop_id, m.order_id]}
+#           p right_marks.map {|m| [m.name, m.stop_id, m.order_id]}
           if @editing_stop_id
-            puts "editing stop: #{@editing_stop_id}"
+#             puts "editing stop: #{@editing_stop_id}"
             current_stop_id = @editing_stop_id
           else
             left_tab_stops = left_marks.select{|m| m.name =~ /^\$/ }.map(&:stop_id)
             right_tab_stops = right_marks.select{|m| m.name =~ /^\$/ }.map(&:stop_id)
             current_stop_id = (left_tab_stops + right_tab_stops).sort.first
-            puts "(implicit) editing stop: #{current_stop_id}"
+#             puts "(implicit) editing stop: #{current_stop_id}"
           end
           current_left_mark = left_marks.find {|m| m.stop_id == current_stop_id }
           current_right_mark = right_marks.find {|m| m.stop_id == current_stop_id }
@@ -118,7 +118,7 @@ class Redcar::EditView
                 if mark.order_id < current_left_mark.order_id and
                     iter(mark).offset > current_left_offset
                   @buf.move_mark(mark, iter(current_left_mark))
-                  puts "enforcing: #{mark.name}"
+#                   puts "enforcing: #{mark.name}"
                 end
               end
             end
@@ -130,14 +130,14 @@ class Redcar::EditView
                 if mark.order_id > current_right_mark.order_id and
                     iter(mark).offset < current_right_offset
                   @buf.move_mark(mark, iter(current_right_mark))
-                  puts "enforcing: #{mark.name}"
+#                   puts "enforcing: #{mark.name}"
                 end
               end
             end
           end
-          p debug_text
+#           p debug_text
         end
-        if @in_snippet and !@ignore
+        if @in_snippet and !@ignore and @insert_offset
           update_after_insert(@insert_offset, length)
           @buf.parser.parsing_on = true
           @buf.parser.process_changes
@@ -227,42 +227,52 @@ class Redcar::EditView
     def insert_snippet(snippet)
       p snippet
       @in_snippet = true
-      @content = snippet["content"]
+      @content = snippet["content"].dup
       @insert_line_num = @buf.cursor_line
       @tab_stops = {}
       @mirrors = {}
       @transformations = {}
       @ignore = true
+      @constructing = true
       @marks = []
       @order_id = 0
       @stop_id = 0
       Redcar::App.set_environment_variables
       @content = execute_backticks(@content)
+      p @content
       @buf.parser.delay_parsing do
-        parse_text_for_tab_stops(@content)
-        unless @tab_stops.include? 0
-          @snippet_end_mark = @buf.create_mark(nil, @buf.cursor_iter, false)
+        @buf.autopairer.ignore do
+          parse_text_for_tab_stops(@content)
+          unless @tab_stops.include? 0
+            @snippet_end_mark = @buf.create_mark(nil, @buf.cursor_iter, false)
+          end
+          fix_indent
+          create_right_marks
+          p :findi
+          p debug_text
+          @constructing = false
+          set_names
+          insert_duplicate_contents
         end
-        fix_indent
-        create_right_marks
-        set_names
-        insert_duplicate_contents
       end
       @ignore = false
       select_tab_stop(1) unless @tab_stops.empty?
     end
-
 
     def parse_text_for_tab_stops(text)
 #      puts "parse_text_for_tab_stops(#{text.inspect})"
       remaining_content = text
       i = 0
       while remaining_content.length > 0
+        p debug_text
         i += 1
         raise "Snippet failed to parse: #{text.inspect}" if i > 100
 
         if md = Oniguruma::ORegexp.new("(?<!\\\\)\\$").match(remaining_content)
+          puts "inserting: #{unescape_dollars(md.pre_match).inspect}"
+          p @buf.text
           @buf.insert_at_cursor(unescape_dollars(md.pre_match))
+          p @buf.text
           @stop_id += 1
           if md1 = md.post_match.match(/\A(\d+)/)
             remaining_content = md1.post_match
@@ -286,12 +296,12 @@ class Redcar::EditView
             end
           elsif md1 = md.post_match.match(/\A((\w+|_)+)\b/)
             @buf.insert_at_cursor(ENV[$1]||"")
+              p :envins1
             # it is an environment variable " ... $TM_LINE_NUMBER ... "
             remaining_content = md1.post_match
           elsif md1 = md.post_match.match(/\A\{/)
             # tab stop with placeholder string "... ${1:condition ... "
             defn = get_balanced_braces(md.post_match)[1..-2]
-
             if md2 = defn.match(/\A(\d+):/)
               # placeholder is a string
               stop_id = @stop_id
@@ -332,6 +342,7 @@ class Redcar::EditView
             elsif md2 = defn.match(/\A((\w+|_)+)$/)
               # naked environment variable
               @buf.insert_at_cursor(ENV[$1]||"")
+              p :envins2
               remaining_content = md1.post_match[(defn.length+1)..-1]
             elsif md2 = defn.match(/\A((\w+|_)+)\//)
               # transformed env variable
@@ -345,6 +356,7 @@ class Redcar::EditView
                 tenv = rr.rep(env)
               end
               @buf.insert_at_cursor(tenv)
+              puts "inserting: #{tenv.inspect}"
               remaining_content = md1.post_match[(defn.length+1)..-1]
             else
               puts "unknown type of tab stop: #{defn.inspect}"
@@ -353,6 +365,7 @@ class Redcar::EditView
           end
         else
           @buf.insert_at_cursor(unescape_dollars(remaining_content))
+          puts "inserting2: #{unescape_dollars(remaining_content).inspect}"
           remaining_content = ""
         end
       end
@@ -557,6 +570,9 @@ class Redcar::EditView
       @line = nil
       @mirrors = nil
       @ignore = true
+      @marks.each do |mark|
+        @buf.delete_mark mark
+      end
     end
 
     def get_tab_stop_range(num)

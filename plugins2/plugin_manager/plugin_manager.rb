@@ -5,12 +5,12 @@ module Com::RedcarIDE
       type    :toggle
       default true
     end
-    
+
     class OpenPluginManager < Redcar::Command
       menu "Tools/Plugin Manager"
       key  "Global/Ctrl+P"
       icon :PREFERENCES
-      
+
       def execute
         if t = win.tab["Plugin Manager"]
           t.focus
@@ -22,7 +22,7 @@ module Com::RedcarIDE
         end
       end
     end
-    
+
     class PluginManagerTab < Redcar::Tab
       def initialize(pane)
         @ts = Gtk::ListStore.new(String, String, String)
@@ -43,22 +43,22 @@ module Com::RedcarIDE
             @menu.popup(nil, nil, event.button, event.time)
           end
         end
-        
+
         self.gtk_toolbar.append("Info", "", "", Gtk::Icon.get_image(:INFO)) do
           info((@tv.selection.selected||[])[0])
         end
-        
+
         self.gtk_toolbar.append("Reload", "", "", Gtk::Icon.get_image(:REFRESH)) do
           reload((@tv.selection.selected||[])[0])
           OpenPluginManager.new.do
         end
-        
-        self.gtk_toolbar.append("Test", "", "", Gtk::Icon.get_image(:EXECUTE)) do 
+
+        self.gtk_toolbar.append("Test", "", "", Gtk::Icon.get_image(:EXECUTE)) do
           test((@tv.selection.selected||[])[0])
           OpenPluginManager.new.do
         end
-        
-        self.gtk_toolbar.append("Test All", "", "", Gtk::Icon.get_image(:EXECUTE)) do 
+
+        self.gtk_toolbar.append("Test All", "", "", Gtk::Icon.get_image(:EXECUTE)) do
           puts "\nTesting all plugins:"
           @ts.each do |_, _, iter|
             test(iter[0])
@@ -66,11 +66,11 @@ module Com::RedcarIDE
           OpenPluginManager.new.do
         end
       end
-      
+
       def tab_icon
         :PREFERENCES
       end
-      
+
       def build_menu
         @menu = Gtk::Menu.new
         item_reload = Gtk::MenuItem.new("Reload")
@@ -80,15 +80,15 @@ module Com::RedcarIDE
         @menu.append(item_info)
         @menu.append(item_test)
         @menu.show_all
-        
+
         item_info.signal_connect("activate") do
           info((@tv.selection.selected||[])[0])
         end
-        
+
         item_reload.signal_connect("activate") do
           reload((@tv.selection.selected||[])[0])
         end
-        
+
         item_test.signal_connect("activate") do
           test((@tv.selection.selected||[])[0])
         end
@@ -104,7 +104,7 @@ Author: #{slot['info/author'].data}
 Description: #{slot['info/description'].data}
 Files: #{((slot['files/plugin'].data||[])+(slot['files/test'].data||[])).length}
 END
-        dialog = Gtk::MessageDialog.new(win, 
+        dialog = Gtk::MessageDialog.new(win,
                                         Gtk::Dialog::DESTROY_WITH_PARENT,
                                         Gtk::MessageDialog::INFO,
                                         Gtk::MessageDialog::BUTTONS_CLOSE,
@@ -113,17 +113,17 @@ END
         dialog.run
         dialog.destroy
       end
-      
+
       def reload(plugin)
         return if plugin.blank?
         continue = true
         if Redcar::Preference.get("Plugins/Warn me about reloading").to_bool
           message=<<END
-Reloading plugins can have unpredictable effects, including loss of data. 
+Reloading plugins can have unpredictable effects, including loss of data.
 Are you sure you would like to reload this plugin?
 END
           dialog = Gtk::Dialog.new("Are you sure?",
-                                   win, 
+                                   Redcar.win,
                                    Gtk::Dialog::DESTROY_WITH_PARENT,
                                    [ Gtk::Stock::OK, Gtk::Dialog::RESPONSE_OK ],
                                    [ Gtk::Stock::CANCEL, Gtk::Dialog::RESPONSE_CANCEL]
@@ -134,13 +134,13 @@ END
           dialog.vbox.add(toggle)
           dialog.show_all
           dialog.title = "Are you sure?"
-          case dialog.run 
+          case dialog.run
           when Gtk::Dialog::RESPONSE_OK
             continue = true
           when Gtk::Dialog::RESPONSE_CANCEL
             continue = false
           end
-          Redcar::Preference.set("Plugins/Warn me about reloading", 
+          Redcar::Preference.set("Plugins/Warn me about reloading",
                                  toggle.active?)
           dialog.destroy
         end
@@ -148,7 +148,7 @@ END
           bus("/plugins/#{plugin}/actions/reload").call
         end
       end
-      
+
       def test(plugin)
         return if plugin.blank?
         plugin_slot = bus['/plugins/'+plugin]
@@ -158,7 +158,7 @@ END
           puts "No tests for #{plugin}"
         end
       end
-      
+
       def build_tree
         plugins_slot = bus['/plugins']
         plugins_slot.each_slot do |plugin_slot|

@@ -42,21 +42,22 @@ class Redcar::EditView
       end
       @autopair_default
     end
-    
+
     cattr_reader :autopair_rules, :autopair_default, :autopair_default1
     attr_reader  :mark_pairs
-    
+
     def initialize(buffer, parser)
       self.buffer = buffer
       @parser = parser
       @mark_pairs = []
+      buffer.autopairer = self
     end
-    
+
     def buffer=(buf)
       @buf = buf
       connect_buffer_signals
     end
-    
+
     def add_mark_pair(pair)
       @mark_pairs << pair
 #       p :registered_pair
@@ -65,7 +66,7 @@ class Redcar::EditView
         p :Whoah_many_pairs
       end
     end
-    
+
     # Forget about pairs if the cursor moves from within them
     def invalidate_pairs(mark)
       i = @buf.get_iter_at_mark(mark)
@@ -75,33 +76,41 @@ class Redcar::EditView
         i < i1 or i > i2
       end
     end
-    
+
     def inspect_pairs
       @mark_pairs.map{|mp| mp.map{|m|@buf.get_iter_at_mark(m).offset}}
     end
-    
+
     def find_mark_pair_by_start(iter)
-      @mark_pairs.find do |m1, m2| 
+      @mark_pairs.find do |m1, m2|
         @buf.get_iter_at_mark(m1) == iter
       end
     end
-    
+
     def find_mark_pair_by_end(iter)
-      @mark_pairs.find do |m1, m2| 
+      @mark_pairs.find do |m1, m2|
         @buf.get_iter_at_mark(m2) == iter
       end
     end
-    
+
+    def ignore
+      @ignore_insert = true
+      @ignore_delete = true
+      yield
+      @ignore_insert = false
+      @ignore_delete = false
+    end
+
     def connect_buffer_signals
       # record the scope details BEFORE the new text is inserted
       # as the new text could change them. (ex: HTML incomplete.illegal.
       # tag)
       @buf.signal_connect("insert_text") do |_, iter, text, length|
-        cursor_scope = @buf.scope_at(@buf.cursor_line, 
+        cursor_scope = @buf.scope_at(@buf.cursor_line,
                                       @buf.cursor_line_offset)
         if cursor_scope
           hierarchy_names = cursor_scope.hierarchy_names(true)
-          
+
           # Type over ends
           @rules = AutoPairer.autopair_rules_for_scope(hierarchy_names)
           inverse_rules = @rules.invert
@@ -112,7 +121,7 @@ class Redcar::EditView
               @buf.parser.stop_parsing
             end
           end
-          
+
           # Insert matching ends
           if @rules.include? text and !@ignore_insert and !@done
             @insert_end = true
@@ -121,10 +130,10 @@ class Redcar::EditView
         end
         false
       end
-      
+
       @buf.signal_connect_after("insert_text") do |_, iter, text, length|
         @done = nil
-        
+
         # Type over ends
         if @type_over_end
           @buf.delete(@buf.iter(@buf.cursor_offset-1),
@@ -134,7 +143,7 @@ class Redcar::EditView
           @buf.parser.start_parsing
           @done = true
         end
-        
+
         # Insert matching ends
         if @insert_end and !@ignore_insert
           @ignore_insert = true
@@ -150,13 +159,13 @@ class Redcar::EditView
         end
         false
       end
-      
+
       @buf.signal_connect("delete_range") do |_, iter1, iter2|
         if iter1.offset == iter2.offset-1 and !@ignore_delete
           @deletion = iter1.offset
         end
       end
-      
+
       @buf.signal_connect_after("delete_range") do |_, _, _|
         # Delete end if start deleted
         if @deletion and !@ignore_delete
@@ -171,13 +180,13 @@ class Redcar::EditView
           end
         end
       end
-      
+
       @buf.signal_connect_after("mark_set") do |widget, event, mark|
         if mark.name == "insert"
           invalidate_pairs(mark)
         end
       end
     end
-    
+
   end
 end

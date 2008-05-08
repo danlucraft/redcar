@@ -88,7 +88,7 @@ module Redcar
       Theme.load_themes
     end
 
-    attr_reader(:parser, :snippet_inserter)
+    attr_reader(:parser, :snippet_inserter, :autopairer)
 
     def initialize(options={})
       super()

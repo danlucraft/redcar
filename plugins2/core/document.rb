@@ -4,7 +4,7 @@ module Redcar
   class Document
     extend FreeBASE::StandardPlugin
 
-    attr_accessor :parser, :indenter
+    attr_accessor :parser, :indenter, :autopairer
 
     # The length of the document in characters.
     def length
