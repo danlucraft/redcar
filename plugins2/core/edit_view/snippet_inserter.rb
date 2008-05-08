@@ -380,8 +380,8 @@ class Redcar::EditView
     end
 
     def execute_backticks(text)
-      text.gsub!(/`(.*)`/m) do |sh|
-        %x{#{sh[1..-2]}}.chomp
+      text.gsub!(/`(.*?)`/m) do |sh|
+        %x{export PATH=#{Redcar::App.root_path}/textmate/Bundles/Ruby.tmbundle/Support/bin:$PATH; #{sh[1..-2]}}.chomp
       end
       text
     end

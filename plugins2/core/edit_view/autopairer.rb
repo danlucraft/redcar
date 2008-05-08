@@ -73,7 +73,11 @@ class Redcar::EditView
       @mark_pairs.reject! do |m1, m2|
         i1 = @buf.get_iter_at_mark(m1)
         i2 = @buf.get_iter_at_mark(m2)
-        i < i1 or i > i2
+        if i < i1 or i > i2
+          @buf.delete_mark(m1)
+          @buf.delete_mark(m2)
+          true
+        end
       end
     end
 

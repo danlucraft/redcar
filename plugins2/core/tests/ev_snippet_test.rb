@@ -16,6 +16,7 @@ module Redcar::Tests
       @parser = Redcar::EditView::Parser.new(@buf, sc, [@grammar])
       @parser.parse_all = true
       @snippet_inserter = SnippetInserter.new(@buf)
+      @ap = Redcar::EditView::AutoPairer.new(@buf, @parser)
     end
 
     def teardown
@@ -393,17 +394,6 @@ module Redcar::Tests
       assert_equal 20..20, @buf.selection_range
     end
 
-    def test_executes_shell_commands
-      SnippetInserter.register("source.ruby - string - comment",
-                               "testsnip",
-                               'Date:`date +%Y-%m-%d`')
-      @buf.text=("testsnip")
-      press_tab
-
-      assert_equal "Date:#{Time.now.strftime("%Y-%m-%d")}", @buf.text
-      assert_equal 15..15, @buf.selection_range
-    end
-
     def test_transformations_do_not_move_cursor
       SnippetInserter.register("source.ruby - string - comment",
         "testsnip",
@@ -467,15 +457,27 @@ module Redcar::Tests
       press_tab
       assert_equal "def fname():\n\t", @buf.text
     end
-    #     def test_executes_shell_commands_with_support
-#       SnippetInserter.register("source.ruby - string - comment",
-#                                "testsnip",
-#                                'Date:``')
-#       @buf.text=("testsnip")
-#       press_tab
 
-#       assert_equal "Date:foof", @buf.text
-#       assert_equal 9..9, @buf.selection_range
-#     end
+    def test_executes_shell_commands
+      SnippetInserter.register("source.ruby - string - comment",
+                               "testsnip",
+                               'Date:`date +%Y-%m-%d`')
+      @buf.text=("testsnip")
+      press_tab
+
+      assert_equal "Date:#{Time.now.strftime("%Y-%m-%d")}", @buf.text
+      assert_equal 15..15, @buf.selection_range
+    end
+
+    def test_executes_shell_commands_with_support
+      SnippetInserter.register("source.ruby - string - comment",
+                               "testsnip",
+      "assert_equal`snippet_paren.rb`${1:expected}, ${0:actual}`snippet_paren.rb end`")
+      @buf.text=("testsnip")
+      press_tab
+
+      assert_equal "assert_equal(expected, actual)", @buf.text
+      assert_equal 13..21, @buf.selection_range
+    end
   end
 end
