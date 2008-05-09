@@ -1,6 +1,4 @@
 
-require 'ruby-prof'
-
 def stop_redcar
   Thread.new {
     Redcar::App.quit
@@ -49,6 +47,7 @@ def do_edit
 end
 
 if Redcar::App.ARGV.include? "--test-perf-load"
+  require 'ruby-prof'
   RubyProf.start
   Coms::OpenTab.new("/home/dan/projects/redcar/rak").do
   result = RubyProf.stop
@@ -62,6 +61,7 @@ elsif Redcar::App.ARGV.include? "--test-time-load"
   puts "time to load: #{et-st}"
   stop_redcar
 elsif Redcar::App.ARGV.include? "--test-perf-edit"
+  require 'ruby-prof'
   Coms::OpenTab.new("/home/dan/projects/rak/bin/rak").do
   RubyProf.start
   do_edit
