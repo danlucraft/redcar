@@ -1,15 +1,11 @@
 
-require 'rubygems'
-if RUBY_VERSION == "1.9.0"
-  module Oniguruma
-    ORegexp = Regexp
-  end
-  ORegexp = Regexp
-else
+begin
+  require 'rubygems'
   require 'oniguruma'
   ORegexp = Oniguruma::ORegexp
+rescue LoadError
+  
 end
-require File.dirname(__FILE__) + '/ruby_extensions'
 
 class RegexReplace
   COND_RE = /\(
@@ -36,20 +32,61 @@ class RegexReplace
              /x
   
   def initialize(re, replace)
-    @re = Oniguruma::ORegexp.new(re)
+    if re.class.to_s.include? "Regexp"
+      @re = re
+    else
+      if defined? Oniguruma
+        @re = Oniguruma::ORegexp.new(re)
+      else
+        @re = Regexp.new(re)
+      end
+    end
     @replace = replace
+  end
+  
+  def regexp_gsub(re, string, &blk)
+    if re.class.to_s == "Oniguruma::ORegexp"
+      re.gsub(string, &blk)
+    else
+      left = string.dup
+      newstr = ""
+      while left.length > 0
+        md = re.match(left)
+        if md
+          newstr += md.pre_match
+          r  = yield md
+          newstr += r
+          left = md.post_match
+        else
+          newstr += left
+          left = ""
+        end
+      end
+      newstr
+    end
+  end
+  
+  def regexp_sub(re, string, &blk)
+    if re.class.to_s == "Oniguruma::ORegexp"
+      re.sub(string, &blk)
+    else
+      md = re.match(string)
+      r  = yield md
+      string[md.begin(0)..(md.end(0)-1)] = r
+      string
+    end
   end
   
   def grep(string)
     string = string.dup
-    @re.gsub(string) do |md|
+    regexp_gsub(@re, string) do |md|
       parse_replace_string md, @replace.dup
     end
   end
   
   def rep(string)
     string = string.dup
-    @re.sub(string) do |md|
+    regexp_sub(@re, string) do |md|
       parse_replace_string md, @replace.dup
     end
   end
@@ -181,15 +218,5 @@ if $0 == __FILE__
       assert_equal "textmate:_power_editing", rr.grep("TextMate: Power Editing")
     end
     
-    def test_performance
-      st = Time.now
-      1000.times do
-        rr = RegexReplace.new("(\\w+)|(\\W+)", 
-                              "(?1:\\L$1\\E)(?2:\\(_)")
-        assert_equal "textmate(_power(_editing", rr.grep("TextMate: Power Editing")
-      end
-      te = Time.now
-      assert (te-st) < 1.0
-    end
   end
 end
