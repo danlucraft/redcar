@@ -40,7 +40,7 @@ class Redcar::EditView
           end
         end
       end
-      puts "#{i} snippets not loaded because they didn't have tabTriggers"
+#      puts "#{i} snippets not loaded because they didn't have tabTriggers"
       @snippets.default = nil
     end
 
@@ -225,7 +225,7 @@ class Redcar::EditView
     end
 
     def insert_snippet(snippet)
-      p snippet
+#      p snippet
       @in_snippet = true
       @content = snippet["content"].dup
       @insert_line_num = @buf.cursor_line
@@ -374,7 +374,7 @@ class Redcar::EditView
 
     def execute_backticks(text)
       text.gsub!(/`(.*?)`/m) do |sh|
-        %x{export PATH=#{Redcar::App.root_path}/textmate/Bundles/Ruby.tmbundle/Support/bin:$PATH; #{sh[1..-2]}}.chomp
+        %x{export PATH=#{Redcar::ROOT}/textmate/Bundles/Ruby.tmbundle/Support/bin:$PATH; #{sh[1..-2]}}.chomp
       end
       text
     end
@@ -587,7 +587,6 @@ class Redcar::EditView
         if (!start and !stop) or
             (start >= r.first and start <= r.last) or
             (stop >= r.first and stop <= r.last)
-          puts "mirror: #{num}"
           text = get_tab_stop_text(num)
           mirrors.each do |mirror|
             if @buf.cursor_offset == iter(mirror[:leftmark]).offset

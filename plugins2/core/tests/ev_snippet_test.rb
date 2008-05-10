@@ -441,20 +441,16 @@ module Redcar::Tests
       @buf.delete_selection
       assert_equal 4..4, @buf.selection_range
       assert_equal "def  docstring for \"\"\"\n\tpass", @buf.text
-      puts "TYPING M"
       type "m"
       assert_equal 5..5, @buf.selection_range
       assert_equal "def m docstring for m\"\"\"\n\tpass", @buf.text
       press_tab
       assert_equal 6..21, @buf.selection_range
-      puts "TYPING A"
       type("a")
       assert_equal "def m a\"\"\"\n\tpass", @buf.text
       assert_equal 7, @buf.cursor_offset
-      puts "TYPING B"
       type("b")
       assert_equal "def m ab\"\"\"\n\tpass", @buf.text
-      puts "TYPING C"
       type("c")
       assert_equal "def m abc\"\"\"\n\tpass", @buf.text
     end

@@ -88,7 +88,6 @@ module Redcar::Tests
 
     # This is a tough test to pass, but you should come back to it
     def test_returns_to_normal_after_unindented_and_next
-      p :please_implement_indent_returns_to_normal_after_unindented_and_next
 #       buf, parser = ParserTests.clean_parser_and_buffer('C')
 #       indenter = Redcar::EditView::Indenter.new(buf, parser)
 #       buf.text = "\tint i;\n\tif (fo)\n\t\tputs(\"\");\n#define FOO 1\nint i;"

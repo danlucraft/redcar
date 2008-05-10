@@ -14,7 +14,9 @@ module Redcar
       FreeBASE::Properties.new("Redcar Application Data",
                                Redcar::VERSION,
                                bus('/redcar/appdata'),
-                               Redcar::App.root_path + "/custom/appdata.yaml")
+                               Redcar::ROOT + "/custom/appdata.yaml")
+      self[:execution] = (self[:execution]||0) + 1
+      create_logger
       plugin.transition(FreeBASE::LOADED)
     end
 
@@ -28,16 +30,11 @@ module Redcar
       end
     end
 
-    # The expanded absolute application directory.
-    def self.root_path
-      File.expand_path(File.dirname(__FILE__)+"/../..")
-    end
-
     # Quits the application. All plugins are stopped first.
     def self.quit
       unless @gtk_quit
+        @logger.info "system shutdown"
         bus["/system/shutdown"].call(nil)
-        p :quit
         Gtk.main_quit
       end
       @gtk_quit = true
@@ -46,6 +43,7 @@ module Redcar
     # Creates a new window.
     def self.new_window(focus = true)
       return nil if @window
+      @logger.info "new window"
       Hook.trigger :open_window do
         @window = Redcar::Window.new
       end

@@ -16,7 +16,7 @@ module Redcar
       plugin.transition(FreeBASE::LOADED)
     end
     
-    def self.insert_template(template, doc)
+    def self.execute_template(template, doc)
       doc.insert_at_cursor(template)
     end
   end

@@ -6,6 +6,7 @@ module Redcar
     def self.load(plugin) #:nodoc:
       @obj_keymaps = Hash.new {|obj,key| obj[key] = [] }
       Hook.register(:keystroke)
+      create_logger
       plugin.transition(FreeBASE::LOADED)
     end
 
@@ -47,7 +48,7 @@ module Redcar
     def self.process(gdk_eventkey) #:nodoc:
       if key = clean_gdk_eventkey(gdk_eventkey)
         Hook.trigger :keystroke, key do
-          puts "[Red] received key #{key.inspect}"
+          @logger.debug { "[Red] received key #{key.inspect}" }
           execute_key(key)
         end
       else
@@ -76,22 +77,22 @@ module Redcar
       if coms = bus("/redcar/keymaps/#{key_name}").data
         com = coms.first
         if com.is_a? Proc
-#          puts "[Red] executing arbitrary code"
+          @logger.debug { "[Red] executing arbitrary code" }
           com.call
           true
         elsif com.ancestors.include? Redcar::Command
 
           if com.executable?(Redcar.tab)
-            puts "[Red] executing #{com}"
+            @logger.debug "[Red] executing #{com}"
             com.new.do
           else
-            puts "[Red] command inoperative: #{com}"
-            puts "      operative:  #{com.operative?.inspect}"
-            puts "      in_range:   #{com.in_range?.inspect}"
-            puts "      active:     #{com.active?.inspect}"
+            @logger.debug { "[Red] command inoperative: #{com}" } 
+            @logger.debug { "      operative:  #{com.operative?.inspect}" }
+            @logger.debug { "      in_range:   #{com.in_range?.inspect}" }
+            @logger.debug { "      active:     #{com.active?.inspect}" }
             scope = (Redcar.doc.cursor_scope rescue nil)
-            puts "      scope:      #{com.correct_scope?(scope)}"
-            puts "      executable: #{com.executable?(Redcar.tab)}"
+            @logger.debug { "      scope:      #{com.correct_scope?(scope)}" }
+            @logger.debug { "      executable: #{com.executable?(Redcar.tab)}" }
           end
           true
         else

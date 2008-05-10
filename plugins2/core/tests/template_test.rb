@@ -10,7 +10,7 @@ module Redcar::Tests
     end
     
     def test_insert_simple_template
-      Redcar::Template.insert_template("Demetrius", @buf)
+      Redcar::Template.execute_template("Demetrius", @buf)
       assert_equal "Demetrius", @buf.text
     end
   end

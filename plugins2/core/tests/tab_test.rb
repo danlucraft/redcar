@@ -8,7 +8,6 @@ module Redcar
       end
 
       def test_true
-        p :no_tests
       end
     end
   end

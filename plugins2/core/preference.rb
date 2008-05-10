@@ -63,7 +63,7 @@ module Redcar
       FreeBASE::Properties.new("Redcar Preferences", 
                                Redcar::VERSION, 
                                bus('/redcar/preferences'), 
-                               Redcar::App.root_path + "/custom/preferences.yaml")
+                               Redcar::ROOT + "/custom/preferences.yaml")
       plugin.transition(FreeBASE::LOADED)
     end
     

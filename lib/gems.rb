@@ -1,5 +1,7 @@
 
 require 'pp'
+require 'log4r'
+require 'fileutils'
 
 # GTK dependencies
 require 'gtk2'

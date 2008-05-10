@@ -243,7 +243,7 @@ class Redcar::EditView
 #      line = @buf.get_line(line_num)
       line = @buf.get_slice(@buf.line_start(line_num), @buf.line_end(line_num))
 #      GC.start
-      print line_num, " "; $stdout.flush#":#{num_marks}:#{num_scopes} "; $stdout.flush
+#      print line_num, " "; $stdout.flush#":#{num_marks}:#{num_scopes} "; $stdout.flush
 #      puts line_num
 #       p line
 #       puts @root.pretty
@@ -371,7 +371,7 @@ class Redcar::EditView
       end
 
       def dump_info
-        File.open(Redcar::App.root_path + "/parser_dump.txt", "w") do |f|
+        File.open(Redcar::ROOT + "/parser_dump.txt", "w") do |f|
           f.puts "--- Parser Dump-------------"
           f.puts @parser.root.pretty
           f.puts "___Ending scopes______"

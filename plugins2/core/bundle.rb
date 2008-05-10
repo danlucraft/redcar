@@ -3,11 +3,11 @@ module Redcar
   class Bundle
     # This class manages Textmate bundles. On Redcar startup
     # it will scan for and load bundle information for all bundles
-    # in Redcar::App.root_path + "/textmate/Bundles".
+    # in Redcar::ROOT + "/textmate/Bundles".
     extend FreeBASE::StandardPlugin
     
     def self.load(plugin) #:nodoc:
-      load_bundles(Redcar::App.root_path + "/textmate/Bundles/")
+      load_bundles(Redcar::ROOT + "/textmate/Bundles/")
       plugin.transition(FreeBASE::LOADED)
     end
     

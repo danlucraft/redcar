@@ -22,7 +22,8 @@ module Redcar
   VERSION_MAJOR = 0
   VERSION_MINOR = 0
   VERSION_RELEASE = 1
-  
+  ROOT = File.expand_path(File.dirname(__FILE__) + "/../")
+
   module App
     def self.ARGV=(v)
       @argv = v

@@ -6,9 +6,9 @@ module Redcar
     extend Redcar::PreferenceBuilder
 
     def self.load(plugin) #:nodoc:
-      Redcar::EditView.init(:bundles_dir => Redcar::App.root_path + "/textmate/Bundles/",
-                            :themes_dir  => Redcar::App.root_path + "/textmate/Themes/",
-                            :cache_dir   => Redcar::App.root_path + "/cache/")
+      Redcar::EditView.init(:bundles_dir => Redcar::ROOT + "/textmate/Bundles/",
+                            :themes_dir  => Redcar::ROOT + "/textmate/Themes/",
+                            :cache_dir   => Redcar::ROOT + "/cache/")
       Redcar::EditView::Indenter.lookup_indent_rules
       Redcar::EditView::AutoPairer.lookup_autopair_rules
       Redcar::EditView::SnippetInserter.load_snippets
@@ -124,7 +124,7 @@ module Redcar
     end
 
     def setup_bookmark_assets
-      @@bookmark_pixbuf ||= Gdk::Pixbuf.new(Redcar::App.root_path+
+      @@bookmark_pixbuf ||= Gdk::Pixbuf.new(Redcar::ROOT+
                                             '/plugins/redcar_core/icons/bookmark.png')
       set_marker_pixbuf("bookmark", @@bookmark_pixbuf)
     end
