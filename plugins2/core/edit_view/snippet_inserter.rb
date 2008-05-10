@@ -253,7 +253,11 @@ class Redcar::EditView
         end
       end
       @ignore = false
-      select_tab_stop(1) unless @tab_stops.empty?
+      if @tab_stops.keys.include? 1
+        select_tab_stop(1)
+      elsif !@tab_stops.empty?
+        select_tab_stop(@tab_stops.keys.sort.first)
+      end
     end
 
     def parse_text_for_tab_stops(text)
@@ -610,7 +614,6 @@ class Redcar::EditView
       @mirrors.each do |num, mirrors|
         mirrors.reject! do |mirror|
           if iter(mirror[:leftmark]).offset == iter(mirror[:rightmark]).offset
-            puts "deleteing mirror for #{num}"
             @buf.delete_mark(mirror[:leftmark])
             @buf.delete_mark(mirror[:rightmark])
             true
@@ -633,7 +636,6 @@ class Redcar::EditView
             (start >= r.first and start <= r.last) or
             (stop >= r.first and stop <= r.last)
           text = get_tab_stop_text(num)
-          puts "trans: #{num}"
           transformations.each do |trans|
             reset_cursor = false
             @editing_stop_id = trans[:stop_id]

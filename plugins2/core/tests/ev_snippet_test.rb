@@ -130,6 +130,16 @@ module Redcar::Tests
       assert_equal 3, @buf.cursor_offset
     end
 
+    def test_selects_tab_stop_zero
+      SnippetInserter.register("source.ruby - string - comment",
+                               "testsnip",
+                               "if ${0:instance}")
+      @buf.text=("testsnip")
+      press_tab
+      assert_equal "if instance", @buf.text
+      assert_equal 3..11, @buf.selection_range
+    end
+
     def test_allows_tabbing_past_snippet
       SnippetInserter.register("source.ruby - string - comment",
                                "testsnip",
