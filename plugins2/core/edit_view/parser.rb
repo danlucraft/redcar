@@ -539,24 +539,12 @@ class Redcar::EditView
       end
 
       def process_marker
-#       puts
-#       puts @parser.root.pretty
-#        if @parser.parsed_before?(line_num)
-          expected_scope = get_expected_scope
-#        else
-#          p :not_parsed_before
-#          p line_num
-#          p @parser.ending_scopes
-#        end
-
+        expected_scope = get_expected_scope
         new_scope_marker = get_scope_marker
         from = new_scope_marker[:from]
         md   = new_scope_marker[:md]
         to   = new_scope_marker[:to] = md.end(0)
-#        puts "  current_scope:    #{current_scope.inspect} "
-#        puts "  new_scope_marker: #{new_scope_marker.inspect}"
         expected_scope = nil if expected_scope == current_scope
-#        puts "  expected_scope:   #{expected_scope.inspect}"
         case new_scope_marker[:pattern]
         when :close_scope
           if current_scope.end and

@@ -8,7 +8,7 @@ module Com::RedcarIDE
 
     class OpenPluginManager < Redcar::Command
       menu "Tools/Plugin Manager"
-      key  "Global/Ctrl+P"
+      key  "Ctrl+P"
       icon :PREFERENCES
 
       def execute
@@ -60,9 +60,7 @@ module Com::RedcarIDE
 
         self.gtk_toolbar.append("Test All", "", "", Gtk::Icon.get_image(:EXECUTE)) do
           puts "\nTesting all plugins:"
-          @ts.each do |_, _, iter|
-            test(iter[0])
-          end
+          bus("system/test").call
           OpenPluginManager.new.do
         end
       end

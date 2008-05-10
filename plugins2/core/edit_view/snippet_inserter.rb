@@ -239,7 +239,6 @@ class Redcar::EditView
       @stop_id = 0
       Redcar::App.set_environment_variables
       @content = execute_backticks(@content)
-      p @content
       @buf.parser.delay_parsing do
         @buf.autopairer.ignore do
           parse_text_for_tab_stops(@content)
@@ -248,8 +247,6 @@ class Redcar::EditView
           end
           fix_indent
           create_right_marks
-          p :findi
-          p debug_text
           @constructing = false
           set_names
           insert_duplicate_contents
@@ -264,15 +261,11 @@ class Redcar::EditView
       remaining_content = text
       i = 0
       while remaining_content.length > 0
-        p debug_text
         i += 1
         raise "Snippet failed to parse: #{text.inspect}" if i > 100
 
         if md = Oniguruma::ORegexp.new("(?<!\\\\)\\$").match(remaining_content)
-          puts "inserting: #{unescape_dollars(md.pre_match).inspect}"
-          p @buf.text
           @buf.insert_at_cursor(unescape_dollars(md.pre_match))
-          p @buf.text
           @stop_id += 1
           if md1 = md.post_match.match(/\A(\d+)/)
             remaining_content = md1.post_match
@@ -296,7 +289,6 @@ class Redcar::EditView
             end
           elsif md1 = md.post_match.match(/\A((\w+|_)+)\b/)
             @buf.insert_at_cursor(ENV[$1]||"")
-              p :envins1
             # it is an environment variable " ... $TM_LINE_NUMBER ... "
             remaining_content = md1.post_match
           elsif md1 = md.post_match.match(/\A\{/)
@@ -342,7 +334,6 @@ class Redcar::EditView
             elsif md2 = defn.match(/\A((\w+|_)+)$/)
               # naked environment variable
               @buf.insert_at_cursor(ENV[$1]||"")
-              p :envins2
               remaining_content = md1.post_match[(defn.length+1)..-1]
             elsif md2 = defn.match(/\A((\w+|_)+)\//)
               # transformed env variable
@@ -356,7 +347,6 @@ class Redcar::EditView
                 tenv = rr.rep(env)
               end
               @buf.insert_at_cursor(tenv)
-              puts "inserting: #{tenv.inspect}"
               remaining_content = md1.post_match[(defn.length+1)..-1]
             else
               puts "unknown type of tab stop: #{defn.inspect}"
@@ -365,7 +355,6 @@ class Redcar::EditView
           end
         else
           @buf.insert_at_cursor(unescape_dollars(remaining_content))
-          puts "inserting2: #{unescape_dollars(remaining_content).inspect}"
           remaining_content = ""
         end
       end
@@ -549,7 +538,7 @@ class Redcar::EditView
 
     def select_tab_stop(n)
       if n == 0
-        @buf.select(@buf.iter(@tab_stops[n][:rightmark]),
+        @buf.select(@buf.iter(@tab_stops[n][:leftmark]),
                     @buf.iter(@tab_stops[n][:rightmark]))
       else
         @buf.select(@buf.iter(@tab_stops[n][:leftmark]),
@@ -571,7 +560,7 @@ class Redcar::EditView
       @mirrors = nil
       @ignore = true
       @marks.each do |mark|
-        @buf.delete_mark mark
+        @buf.delete_mark mark unless mark.deleted?
       end
     end
 
@@ -588,7 +577,6 @@ class Redcar::EditView
     end
 
     def update_mirrors(start=nil, stop=nil)
-      p debug_text
       @mirrors.each do |num, mirrors|
         next unless mirrors
         r = get_tab_stop_range(num)
@@ -614,7 +602,6 @@ class Redcar::EditView
             @ignore = false
           end
         end
-        p debug_text
       end
       @editing_stop_id = nil
     end
@@ -640,7 +627,6 @@ class Redcar::EditView
     end
 
     def update_transformations(start=nil, stop=nil)
-      p debug_text
       @transformations.each do |num, transformations|
         r = get_tab_stop_range(num)
         if (!start and !stop) or
@@ -671,7 +657,6 @@ class Redcar::EditView
             @ignore = false
           end
         end
-        p debug_text
       end
       @editing_stop_id = nil
     end

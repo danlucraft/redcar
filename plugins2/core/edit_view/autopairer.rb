@@ -111,7 +111,7 @@ class Redcar::EditView
       # tag)
       @buf.signal_connect("insert_text") do |_, iter, text, length|
         cursor_scope = @buf.scope_at(@buf.cursor_line,
-                                      @buf.cursor_line_offset)
+                                     @buf.cursor_line_offset)
         if cursor_scope
           hierarchy_names = cursor_scope.hierarchy_names(true)
 
@@ -186,7 +186,7 @@ class Redcar::EditView
       end
 
       @buf.signal_connect_after("mark_set") do |widget, event, mark|
-        if mark.name == "insert"
+        if mark == @buf.cursor_mark
           invalidate_pairs(mark)
         end
       end
