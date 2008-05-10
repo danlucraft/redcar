@@ -1,9 +1,9 @@
 
 module Redcar
-  # This class manages Textmate bundles. On Redcar startup
-  # it will scan for and load bundle information for all bundles
-  # in Redcar::App.root_path + "/textmate/Bundles".
   class Bundle
+    # This class manages Textmate bundles. On Redcar startup
+    # it will scan for and load bundle information for all bundles
+    # in Redcar::App.root_path + "/textmate/Bundles".
     extend FreeBASE::StandardPlugin
     
     def self.load(plugin) #:nodoc:
@@ -15,7 +15,7 @@ module Redcar
       Dir.glob(dir+"*").each do |bdir|
         if bdir =~ /\/([^\/]*)\.tmbundle/
           name = $1
-          Bundle.new name, bdir
+          Redcar::Bundle.new name, bdir
         end
       end
     end
@@ -25,7 +25,7 @@ module Redcar
     def self.translate_key_equivalent(keyeq)
       if keyeq
         key_str      = keyeq.at(-1)
-#        p key_str
+        #        p key_str
         case key_str
         when "\n"
           letter = "Return"
@@ -68,6 +68,13 @@ module Redcar
       end
     end
     
+    # Yields the given block on each bundle
+    def self.each
+      bus("/redcar/bundles/").children.each do |slot|
+        yield slot.data
+      end
+    end
+    
     # Do not call this directly. Retrieve a loaded bundle
     # with:
     #
@@ -99,25 +106,32 @@ module Redcar
     end
     
     def load_snippets #:nodoc:
-      unless Redcar::EditView.cache_dir
-        raise "called SnippetInserter.load_snippets without a cache_dir"
-      end
-      cache_dir = Redcar::EditView.cache_dir
-      if File.exist?(cache_dir + "snippets/#{@name}.dump")
-        str = File.read(cache_dir + "snippets/#{@name}.dump")
-        snippets = Marshal.load(str)
-      else
+      App.with_cache("snippets", @name) do
         snippets = []
         Dir.glob(@dir+"/Snippets/*").each do |snipfile|
           xml = IO.readlines(snipfile).join
           snip = Redcar::Plist.plist_from_xml(xml)[0]
           snippets << snip
         end
-        File.open(cache_dir + "snippets/#{@name}.dump", "w") do |fout|
-          fout.puts Marshal.dump(snippets)
-        end
+        snippets
       end
-      snippets
+    end
+    
+    # An array of this bundle's templates. Cached.
+    def templates
+      @templates ||= load_templates
+    end
+    
+    def load_templates
+      App.with_cache("templates", @name) do
+        temps = []
+        Dir.glob(@dir+"/Templates/*").each do |tempdir|
+          xml = IO.readlines(tempdir + "/info.plist").join
+          tempinfo = Redcar::Plist.plist_from_xml(xml)[0]
+          temps << tempinfo
+        end
+        temps
+      end
     end
   end
 end
