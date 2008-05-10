@@ -437,7 +437,6 @@ module Redcar
         @si ||= view.snippet_inserter
         @buf ||= doc
         if @si.tab_pressed
-          p :inserted_a_snippet
           # inserted a snippet
         else
           @buf.insert_at_cursor("\t")

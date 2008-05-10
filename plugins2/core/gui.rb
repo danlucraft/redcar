@@ -21,8 +21,8 @@ module Redcar
       bus["/system/ui/messagepump"].set_proc do
         begin
           puts "starting Gui.main"
-          Gtk.main
           Hook.trigger(:redcar_start)
+          Gtk.main
         rescue Object => e
           $stderr.puts str=<<ERR
 

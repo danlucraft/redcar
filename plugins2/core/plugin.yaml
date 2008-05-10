@@ -3,6 +3,21 @@ name: core
 version: 1.0
 plugins: 
   - !ruby/object:FreeBASE::PluginConfiguration 
+    name:            core-template
+    autoload:        true
+    require_path:    core/template
+    startup_module:  Redcar::Template
+    load_dependencies:
+        core-edit_tab: "*"
+        core-bundle: "*"
+    start_dependencies:
+        core-edit_tab: "*"
+        core-bundle: "*"
+    tests:
+      - path: core/tests/template_test.rb
+        testcase: Redcar::Tests::TemplateTest
+
+  - !ruby/object:FreeBASE::PluginConfiguration 
     name:            core-edit_tab
     autoload:        true
     require_path:    core/edit_tab

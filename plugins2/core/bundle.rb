@@ -75,6 +75,8 @@ module Redcar
       end
     end
     
+    attr_accessor :name
+    
     # Do not call this directly. Retrieve a loaded bundle
     # with:
     #
@@ -124,11 +126,12 @@ module Redcar
     
     def load_templates
       App.with_cache("templates", @name) do
-        temps = []
+        temps = {}
         Dir.glob(@dir+"/Templates/*").each do |tempdir|
           xml = IO.readlines(tempdir + "/info.plist").join
           tempinfo = Redcar::Plist.plist_from_xml(xml)[0]
-          temps << tempinfo
+          tempinfo["dir"] = tempdir
+          temps[tempinfo["name"]] = tempinfo
         end
         temps
       end
