@@ -54,6 +54,10 @@ class RegexReplace
     end
   end
   
+  def inspect
+    "<RegexReplace: #{@re.inspect} -> #{@replace.inspect}>"
+  end
+  
   private 
   
   def parse_replace_string(md, replace)
@@ -86,6 +90,11 @@ class RegexReplace
     replace.gsub!(/\\[abefnrstv]/) do |match|
       eval("\"\\#{match[-1..-1]}\"")
     end
+    replace.gsub!("\\u", "")
+    replace.gsub!("\\l", "")
+    replace.gsub!("\\U", "")
+    replace.gsub!("\\L", "")
+    replace.gsub!("\\E", "")
     replace
   end
 end
@@ -122,6 +131,12 @@ if $0 == __FILE__
       rr = RegexReplace.new("bl(ackb)ird", 
                             "laura$0")
       assert_equal "foo laurablackbird bar", rr.rep("foo blackbird bar")
+    end
+    
+    def test_lonely_upcase
+      rr = RegexReplace.new("bl(ackb)ird", 
+                            "\\u")
+      assert_equal "foo  bar", rr.rep("foo blackbird bar")
     end
     
     def test_capture1
