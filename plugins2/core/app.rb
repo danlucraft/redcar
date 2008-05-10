@@ -83,6 +83,26 @@ module Redcar
       quit if close_if_no_win and is_win
     end
 
+    # Load a Marhshalled object from the cache.
+    def self.with_cache(dir, name)
+      unless cache_dir = Redcar::EditView.cache_dir
+        raise "called App.with_cache without a cache_dir"
+      end
+      unless File.exist?(cache_dir + "#{dir}/")
+        FileUtils.mkdir cache_dir + "#{dir}/"
+      end
+      if File.exist?(cache_dir + "#{dir}/#{name}.dump")
+        str = File.read(cache_dir + "#{dir}/#{name}.dump")
+        obj = Marshal.load(str)
+      else
+        obj = yield
+        File.open(cache_dir + "#{dir}/#{name}.dump", "w") do |fout|
+          fout.puts Marshal.dump(obj)
+        end
+        obj
+      end      
+    end
+    
     def self.clipboard
       Gtk::Clipboard.get(Gdk::Atom.intern("CLIPBOARD"))
     end
