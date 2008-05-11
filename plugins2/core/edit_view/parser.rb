@@ -244,7 +244,7 @@ class Redcar::EditView
     
     # Parses line_num, using text line.
     def parse_line(line_num)
-      Parser.logger.info "parsing line: #{line_num} (in thread: #{Thread.current})"
+#      Parser.logger.info "parsing line: #{line_num} (in thread: #{Thread.current})"
 #      line = @buf.get_line(line_num)
       line = @buf.get_slice(@buf.line_start(line_num), @buf.line_end(line_num))
 #      GC.start
