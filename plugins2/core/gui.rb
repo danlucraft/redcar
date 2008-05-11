@@ -9,6 +9,7 @@ module Redcar
 
     def self.load(plugin)
       Hook.register(:redcar_start)
+      create_logger
       plugin.transition(FreeBASE::LOADED)
     end
     
@@ -20,7 +21,7 @@ module Redcar
     def self.set_main_loop(plugin)
       bus["/system/ui/messagepump"].set_proc do
         begin
-          puts "starting Gui.main"
+          @logger.info "starting Gui.main (in thread #{Thread.current})"
           Hook.trigger(:redcar_start)
           Gtk.main
         rescue Object => e

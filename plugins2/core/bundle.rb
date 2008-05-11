@@ -51,11 +51,15 @@ module Redcar
             puts "unknown key_equivalent: #{keyeq}"
             return nil
           end
-        end.sort_by {|a| a[0]}.map{|a| a[1]}
+        end
+        if letter.upcase == letter
+          modifiers << [4, "Shift"]
+        end
+        modifiers = modifiers.sort_by {|a| a[0]}.map{|a| a[1]}.uniq
         if modifiers.empty?
           letter
         else
-          modifiers.join("+") + "+" + letter
+          modifiers.join("+") + "+" + letter.upcase
         end
       end
     end

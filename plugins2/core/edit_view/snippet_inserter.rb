@@ -31,7 +31,6 @@ class Redcar::EditView
                  tab.view.snippet_inserter.insert_snippet_from_path("#{slot.path}")
                end
              }
-               
              def command_class.inspect
                "#<SnippetCommand: #{@name}>"
              end
@@ -223,11 +222,7 @@ class Redcar::EditView
     end
 
     def insert_snippet_from_path(path)
-      p path
-      p bus(path).data
       parent = path.split("/")[0..-2].join("/")
-      p parent
-      p bus(parent).children.map(&:name)
       insert_snippet(bus(path).data)
     end
 
@@ -246,6 +241,7 @@ class Redcar::EditView
       @stop_id = 0
       Redcar::App.set_environment_variables
       @content = execute_backticks(@content)
+      @buf.delete_selection
       @buf.parser.delay_parsing do
         @buf.autopairer.ignore do
           parse_text_for_tab_stops(@content)

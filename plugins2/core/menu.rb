@@ -71,9 +71,10 @@ module Redcar
         x = gdk_rect.x+gdk_rect.width
         y = gdk_rect.y+gdk_rect.height
         win = tv.get_window Gtk::TextView::WINDOW_WIDGET
-        winx, winy = win.position
+        winx, winy = Redcar.win.position
+#        puts "win.position
         _, mh = gtk_menu.size_request
-        tv.buffer_to_window_coords(Gtk::TextView::WINDOW_WIDGET, x+winx, y+winy+mh)
+        tv.buffer_to_window_coords(Gtk::TextView::WINDOW_WIDGET, x+winx, y+winy+mh+30)
       end
     end
   end

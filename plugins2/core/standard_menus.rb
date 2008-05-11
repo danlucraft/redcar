@@ -235,7 +235,7 @@ module Redcar
     end
 
     class SelectLine < Redcar::EditTabCommand
-      key  "Super+Shift+L"
+      key  "Ctrl+Shift+L"
 
       def execute
         doc.select(doc.line_start(doc.cursor_line),
