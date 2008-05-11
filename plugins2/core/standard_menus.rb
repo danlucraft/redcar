@@ -381,6 +381,7 @@ module Redcar
       separator
       item "Close",      CloseTab
       item "Close All",  CloseAllTabs
+      separator
       item "Quit",       Quit
     end
 
@@ -425,9 +426,33 @@ module Redcar
       end
     end
 
+#     class InsertSnippet < Redcar::EditTabCommand
+#       norecord
+      
+#       def initialize(snippet)
+#         @snippet = snippet
+#       end
+      
+#       def execute
+#         @si ||= view.snippet_inserter
+#         @si.insert_snippet(@snippet)
+#       end
+#     end
+    
+#     class InsertTab < Redcar::EditTabCommand
+#       def initialize(buf=nil)
+#         @buf = buf || doc
+#       end
+      
+#       def execute
+#         @buf.insert_at_cursor("\t")
+#       end
+#     end
+    
     class Tab < Redcar::EditTabCommand
       key "Tab"
-
+      norecord
+      
       def initialize(si=nil, buf=nil)
         @si = si
         @buf = buf
@@ -436,10 +461,11 @@ module Redcar
       def execute
         @si ||= view.snippet_inserter
         @buf ||= doc
-        if @si.tab_pressed
-          # inserted a snippet
+        if snippet = @si.tab_pressed
+#          InsertSnippet.new(snippet).do
         else
-          @buf.insert_at_cursor("\t")
+         @buf.insert_at_cursor("\t")
+#          InsertTab.new(@buf).do
         end
       end
     end

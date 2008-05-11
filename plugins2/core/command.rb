@@ -260,8 +260,10 @@ module Redcar
     def do(tab=Redcar::App.focussed_window.focussed_tab)
       unless self.respond_to? :execute
         raise "Abstract Command Error"
+      end 
+      if tab
+        set_tab(tab)
       end
-      set_tab(tab) if tab
       @output = nil
       begin
         @output = self.execute
@@ -410,7 +412,6 @@ module Redcar
   class ShellCommand < Command
     attr_accessor(:fallback_input,
                   :tm_uuid, :bundle_uuid)
-
 
     def execute
       super

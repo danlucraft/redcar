@@ -5,6 +5,10 @@ module Redcar
   # one instance of EditView.
   class EditTab < Tab
     
+    class SnippetCommand < Redcar::Command
+      range Redcar::EditTab
+    end
+    
     def self.load(plugin) #:nodoc:
       Hook.register :tab_changed
       Hook.register :tab_save

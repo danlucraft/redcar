@@ -11,11 +11,11 @@ module Redcar
                             :cache_dir   => Redcar::ROOT + "/cache/")
       Redcar::EditView::Indenter.lookup_indent_rules
       Redcar::EditView::AutoPairer.lookup_autopair_rules
-      Redcar::EditView::SnippetInserter.load_snippets
       plugin.transition(FreeBASE::LOADED)
     end
 
     def self.start(plugin) #:nodoc:
+      Redcar::EditView::SnippetInserter.load_snippets
       Hook.attach :after_open_window do
         create_grammar_combo
         create_line_col_status

@@ -27,45 +27,53 @@ module Redcar
     
     def self.register_context_menu_services
       bus['/redcar/services/context_menu_popup/'].set_proc do |name, button, time|
-        slot = bus['/redcar/menus/context/'+name]
-        unless slot.attr_gtk_menu
-          gtk_menu = Gtk::Menu.new
-          MenuDrawer.draw_menus1(slot, gtk_menu)
-          slot.attr_gtk_menu = gtk_menu
-          gtk_menu.show
-        end
-        slot.attr_gtk_menu.popup(nil, nil, button, time)
+        context_menu_popup(name, button, time)
       end
       
-      # entries :: [Maybe String, String, String]
       bus['/redcar/services/context_menu_options_popup/'].set_proc do |entries|
+        context_menu_options_popup(entries)
+      end
+    end
+    
+    def self.context_menu_popup(name, button, time)
+      slot = bus['/redcar/menus/context/'+name]
+      unless slot.attr_gtk_menu
         gtk_menu = Gtk::Menu.new
-        i = 1
-        gtk_menu_items = entries.map do |icon, name, command|
-          c = if icon
-                Gtk::ImageMenuItem.create icon, name
-              else
-                Gtk::MenuItem.new name
-              end
-          gtk_menuitem = Menu.make_gtk_menuitem_hbox(c, i.to_s)
-          i += 1
-          Menu.connect_item_signal(command, gtk_menuitem)
-          gtk_menu.append(gtk_menuitem)
-        end
-        gtk_menu.show_all
-        eb = Gdk::EventButton.new(Gdk::Event::BUTTON_PRESS)
-        gtk_menu
-        gtk_menu.popup(nil, nil, eb.button, eb.time) do |_, x, y, _| [x, y]
-          tab = Redcar.current_tab
-          tv = tab.textview
-          gdk_rect = tv.get_iter_location(tab.cursor_iter)
-          x = gdk_rect.x+gdk_rect.width
-          y = gdk_rect.y+gdk_rect.height
-          win = tv.get_window Gtk::TextView::WINDOW_WIDGET
-          winx, winy = win.position
-          _, mh = gtk_menu.size_request
-          tv.buffer_to_window_coords(Gtk::TextView::WINDOW_WIDGET, x+winx, y+winy+mh)
-        end
+        MenuDrawer.draw_menus1(slot, gtk_menu)
+        slot.attr_gtk_menu = gtk_menu
+        gtk_menu.show
+      end
+      slot.attr_gtk_menu.popup(nil, nil, button, time)
+    end
+      
+    # entries :: [Maybe String, String, String]
+    def self.context_menu_options_popup(entries)
+      gtk_menu = Gtk::Menu.new
+      i = 1
+      gtk_menu_items = entries.map do |icon, name, command|
+        c = if icon
+              Gtk::ImageMenuItem.create icon, name
+            else
+              Gtk::MenuItem.new name
+            end
+        gtk_menuitem = MenuDrawer.make_gtk_menuitem_hbox(c, i.to_s)
+        i += 1
+        MenuDrawer.connect_item_signal(command, gtk_menuitem)
+        gtk_menu.append(gtk_menuitem)
+      end
+      gtk_menu.show_all
+      eb = Gdk::EventButton.new(Gdk::Event::BUTTON_PRESS)
+      gtk_menu
+      gtk_menu.popup(nil, nil, eb.button, eb.time) do |_, x, y, _| [x, y]
+        tab = Redcar.tab
+        tv = tab.view
+        gdk_rect = tv.get_iter_location(tab.document.cursor_iter)
+        x = gdk_rect.x+gdk_rect.width
+        y = gdk_rect.y+gdk_rect.height
+        win = tv.get_window Gtk::TextView::WINDOW_WIDGET
+        winx, winy = win.position
+        _, mh = gtk_menu.size_request
+        tv.buffer_to_window_coords(Gtk::TextView::WINDOW_WIDGET, x+winx, y+winy+mh)
       end
     end
   end
@@ -154,7 +162,7 @@ module Redcar
         child = c.child
         c.remove(child)
         hbox = Gtk::HBox.new
-        child.set_size_request(140, 0)
+        child.set_size_request(200, 0)
         hbox.pack_start(child, false)
         accel = keybinding.to_s
         l = Gtk::Label.new(accel)
@@ -207,7 +215,7 @@ module Redcar
             if slot.attr_menu_entry
               gtk_menuitem = make_gtk_menuitem(slot)
               connect_item_signal(slot.data, gtk_menuitem)
-              gtk_menuitem.sensitive = slot.data.operative?
+              gtk_menuitem.sensitive = slot.data.executable?(Redcar.tab)
             else
               gtk_menuitem = make_gtk_menuitem(slot)
               gtk_submenu = Gtk::Menu.new

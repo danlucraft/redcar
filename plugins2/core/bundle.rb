@@ -5,6 +5,7 @@ module Redcar
     # it will scan for and load bundle information for all bundles
     # in Redcar::ROOT + "/textmate/Bundles".
     extend FreeBASE::StandardPlugin
+    extend Redcar::MenuBuilder
     
     def self.load(plugin) #:nodoc:
       load_bundles(Redcar::ROOT + "/textmate/Bundles/")
@@ -12,10 +13,13 @@ module Redcar
     end
     
     def self.load_bundles(dir) #:nodoc:
-      Dir.glob(dir+"*").each do |bdir|
-        if bdir =~ /\/([^\/]*)\.tmbundle/
-          name = $1
-          Redcar::Bundle.new name, bdir
+      main_menu "Bundles" do
+        Dir.glob(dir+"*").each do |bdir|
+          if bdir =~ /\/([^\/]*)\.tmbundle/
+            submenu(name) { }
+            name = $1
+            Redcar::Bundle.new name, bdir
+          end
         end
       end
     end

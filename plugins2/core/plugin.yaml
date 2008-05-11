@@ -52,6 +52,7 @@ plugins:
       core-command: "*"
     start_dependencies:
       core-standard_menus: "*"
+      core-edit_tab: "*"
     tests:
       - path: core/tests/ev_parser_test.rb
         testcase: Redcar::Tests::ParserTests
@@ -90,6 +91,7 @@ plugins:
     startup_module:  Redcar::Bundle
     load_dependencies:
       core-app: "*"
+      core-menu: "*"
     tests:
       - path: core/tests/bundle_test.rb
         testcase: Redcar::Tests::BundleTest

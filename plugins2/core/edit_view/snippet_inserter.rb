@@ -12,35 +12,35 @@ class Redcar::EditView
       Redcar::Bundle.names.each do |name|
         snippets = Redcar::Bundle.get(name).snippets
         snippets.each do |snip|
-          safename = snip["name"].gsub("/", "SLA").gsub("\"", "\\\"").gsub("#", "\\\#")
+          safename = snip["name"].gsub("/", "SLA").gsub(/[^\w]/, "")
           slot = bus("/textmate/bundles/#{name}/#{safename}")
           slot.data = snip
           if snip["tabTrigger"]
             @snippets[snip["scope"]||""][snip["tabTrigger"]] = snip
-#          elsif snip["keyEquivalent"]
-#            keyb = Redcar::Bundle.translate_key_equivalent(snip["keyEquivalent"])
-#            if keyb
-#              command_class = Class.new(Redcar::Command)
-#              if snip["scope"]
-#                command_class.class_eval %Q{
-#                  scope "#{snip["scope"]}"
-#                }
-#              end
-#              t= %Q{
-#                key "Global/#{keyb.gsub("\"", "\\\"").gsub("#", "\\\#")}"
-##                sensitive :edit_tab?
-#                def execute
-#                  tab.view.snippet_inserter.insert_snippet_from_path("#{slot.path}")
-#                end
-#              }
-#              command_class.class_eval t
-#            end
+         elsif snip["keyEquivalent"]
+           keyb = Redcar::Bundle.translate_key_equivalent(snip["keyEquivalent"])
+           if keyb
+             command_class = Class.new(Redcar::EditTab::SnippetCommand)
+             command_class.instance_variable_set(:@name, snip["name"])
+             if snip["scope"]
+               command_class.scope(snip["scope"])
+             end
+             command_class.key(keyb)
+             command_class.class_eval %Q{
+               def execute
+                 tab.view.snippet_inserter.insert_snippet_from_path("#{slot.path}")
+               end
+             }
+               
+             def command_class.inspect
+               "#<SnippetCommand: #{@name}>"
+             end
+           end
           else
             i += 1
           end
         end
       end
-#      puts "#{i} snippets not loaded because they didn't have tabTriggers"
       @snippets.default = nil
     end
 
@@ -176,6 +176,8 @@ class Redcar::EditView
       @in_snippet
     end
 
+    # Decides whether a snippet can be inserted at this location. If so
+    # returns the snippet hash, if not returns false.
     def tab_pressed
       if @in_snippet
         move_forward_tab_stop
@@ -195,13 +197,13 @@ class Redcar::EditView
             @buf.delete(@buf.iter(@offset-@word.length),
                         @buf.iter(@offset))
             insert_snippet(snippet)
-            true
+            snippet
           elsif snippets_for_scope = SnippetInserter.snippets_for_scope(@buf.cursor_scope) and
               snippet = snippets_for_scope[@word]
             @buf.delete(@buf.iter(@offset-@word.length),
                         @buf.iter(@offset))
             insert_snippet(snippet)
-            true
+            snippet
           end
         else
           false
@@ -221,6 +223,11 @@ class Redcar::EditView
     end
 
     def insert_snippet_from_path(path)
+      p path
+      p bus(path).data
+      parent = path.split("/")[0..-2].join("/")
+      p parent
+      p bus(parent).children.map(&:name)
       insert_snippet(bus(path).data)
     end
 

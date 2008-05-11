@@ -75,28 +75,45 @@ module Redcar
     # Use to execute a key. key_name should be a string like "Ctrl+G".
     def self.execute_key(key_name)
       if coms = bus("/redcar/keymaps/#{key_name}").data
-        com = coms.first
-        if com.is_a? Proc
-          @logger.debug { "[Red] executing arbitrary code" }
-          com.call
-          true
-        elsif com.ancestors.include? Redcar::Command
-
-          if com.executable?(Redcar.tab)
-            @logger.debug "[Red] executing #{com}"
-            com.new.do
-          else
-            @logger.debug { "[Red] command inoperative: #{com}" } 
-            @logger.debug { "      operative:  #{com.operative?.inspect}" }
-            @logger.debug { "      in_range:   #{com.in_range?.inspect}" }
-            @logger.debug { "      active:     #{com.active?.inspect}" }
-            scope = (Redcar.doc.cursor_scope rescue nil)
-            @logger.debug { "      scope:      #{com.correct_scope?(scope)}" }
-            @logger.debug { "      executable: #{com.executable?(Redcar.tab)}" }
+        @logger.debug "[Red] #{coms.length} candidate commands"
+        coms = coms.select do |com| 
+          if com.is_a? Proc 
+            true
+          elsif com.ancestors.include? Redcar::Command 
+            if com.executable?(Redcar.tab) 
+              true
+            else
+              @logger.debug { "[Red] command inoperative: #{com.inspect}" } 
+              @logger.debug { "      operative:  #{com.operative?.inspect}" }
+              @logger.debug { "      in_range:   #{com.in_range?.inspect}" }
+              @logger.debug { "      active:     #{com.active?.inspect}" }
+              scope = (Redcar.doc.cursor_scope rescue nil)
+              @logger.debug { "      scope:      #{com.correct_scope?(scope)}" }
+              @logger.debug { "      executable: #{com.executable?(Redcar.tab)}" }
+              false
+            end
           end
-          true
-        else
-          false
+        end
+        if coms.length > 1
+          options = coms.map do |com|
+            name = (com.get(:name) || com.to_s.split("::").last)
+            [com.get(:icon), name, com]
+          end
+          bus("/redcar/services/context_menu_options_popup/").call(options)
+          return
+        elsif coms.length == 1
+          com = coms.first
+          if com.is_a? Proc
+            @logger.debug { "[Red] executing arbitrary code" }
+            com.call
+            true
+          elsif com.ancestors.include? Redcar::Command
+            @logger.debug "[Red] executing #{com.inspect}"
+            com.new.do
+            true
+          else
+            false
+          end
         end
       end
     end

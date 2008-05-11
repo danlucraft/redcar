@@ -13,8 +13,14 @@ module Redcar::Tests
       end
     end
 
+    class KeymapTestCommand2 < Redcar::Command
+      def execute
+        Redcar::Tests::KeymapTest.test_var *= 10
+      end
+    end
+
     def setup
-      Redcar::Keymap.unregister_key("KeymapTest/Ctrl+G")
+      Redcar::Keymap.unregister_key("Ctrl+G")
     end
 
     def win
@@ -47,6 +53,15 @@ module Redcar::Tests
       Redcar::Keymap.execute_key("Ctrl+G")
       assert_equal 4, self.class.test_var
       Redcar::Keymap.unregister_key("Ctrl+G")
+    end
+    
+    def test_multiple_commands_for_keymap
+      Redcar.win.new_tab(Redcar::EditTab)
+      Redcar::Keymap.register_key_command("Ctrl+G", KeymapTestCommand)
+      Redcar::Keymap.register_key_command("Ctrl+G", KeymapTestCommand2)
+      Redcar::Menu.expects(:context_menu_options_popup).with([[nil, "KeymapTestCommand", KeymapTestCommand],
+                                                              [nil, "KeymapTestCommand2", KeymapTestCommand2]])
+      Redcar::Keymap.execute_key("Ctrl+G")
     end
   end
 end
