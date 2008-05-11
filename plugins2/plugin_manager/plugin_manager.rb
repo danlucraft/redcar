@@ -102,7 +102,7 @@ Author: #{slot['info/author'].data}
 Description: #{slot['info/description'].data}
 Files: #{((slot['files/plugin'].data||[])+(slot['files/test'].data||[])).length}
 END
-        dialog = Gtk::MessageDialog.new(win,
+        dialog = Gtk::MessageDialog.new(Redcar.win,
                                         Gtk::Dialog::DESTROY_WITH_PARENT,
                                         Gtk::MessageDialog::INFO,
                                         Gtk::MessageDialog::BUTTONS_CLOSE,
