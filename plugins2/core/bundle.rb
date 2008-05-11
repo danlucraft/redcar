@@ -9,7 +9,12 @@ module Redcar
     
     def self.load(plugin) #:nodoc:
       load_bundles(Redcar::ROOT + "/textmate/Bundles/")
+      create_logger
       plugin.transition(FreeBASE::LOADED)
+    end
+    
+    class << self
+      attr_accessor :logger
     end
     
     def self.load_bundles(dir) #:nodoc:
@@ -48,7 +53,7 @@ module Redcar
           when "$"
             [4, "Shift"]
           else
-            puts "unknown key_equivalent: #{keyeq}"
+            Bundle.logger.info "unknown key_equivalent: #{keyeq}"
             return nil
           end
         end

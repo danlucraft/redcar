@@ -2,7 +2,6 @@
 begin
   require 'rubygems'
   require 'oniguruma'
-  ORegexp = Oniguruma::ORegexp
 rescue LoadError
   
 end

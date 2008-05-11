@@ -1,9 +1,5 @@
 
 module Com::RedcarIDE
-  PrefLogger = Object.new
-  def PrefLogger.info(str)
-  end
-
   class PreferencesDialog < Gtk::Dialog
     def build_dialog
       self.set_size_request(600, 500)
@@ -24,7 +20,6 @@ module Com::RedcarIDE
     end
 
     def initialize
-      PrefLogger.info("PreferencesDialog#initialize():in")
       super("Preferences", Redcar::App.focussed_window,
             Gtk::Dialog::DESTROY_WITH_PARENT,
             [Gtk::Stock::OK,  Gtk::Dialog::RESPONSE_OK],
@@ -66,11 +61,9 @@ module Com::RedcarIDE
       @lazy_apply = []
 
       @properties.save
-      PrefLogger.info("PreferencesDialog#initialize():out")
     end
 
     def populate_list(parent_slot, parent_iter)
-      PrefLogger.info("PreferencesDialog#populate_list(#{parent_slot.path}, #{parent_iter.inspect}):in")
       parent_slot.each_slot do |slot|
         unless slot.attr_pref
           iter = @ts.append(parent_iter)
@@ -79,11 +72,9 @@ module Com::RedcarIDE
           populate_list(slot, iter)
         end
       end
-#       PrefLogger.info("PreferencesDialog#populate_list(#{parent_slot.path}, #{parent_iter.inspect}):out")
     end
 
      def on_ok
-#       PrefLogger.info("PreferencesDialog#on_ok():in")
       if @current_path
         save_values
       end
@@ -91,17 +82,13 @@ module Com::RedcarIDE
          a[1].call
        }
       @dialog.destroy
-#       PrefLogger.info("PreferencesDialog#on_ok():out")
      end
 
     def on_cancel
-#       PrefLogger.info("PreferencesDialog#on_cancel():in")
       @dialog.destroy
-#       PrefLogger.info("PreferencesDialog#on_cancel():out")
     end
 
     def save_values
-#       PrefLogger.info("PreferencesDialog#save_values():in")
       @widgets.each do |pref_path, widget|
         val = widget.preference_value
         @lazy_apply << [pref_path, fn {
@@ -109,26 +96,20 @@ module Com::RedcarIDE
           if @initial_values[pref_path] and
               @initial_values[pref_path] != val and
               @on_change[pref_path] != nil
-#             PrefLogger.info("Applying prefererence:#{pref_path}, value:#{val}")
             @on_change[pref_path].call
-#             PrefLogger.info("Done prefererence:#{pref_path}, value:#{val}")
           end
         }]
       end
-#       PrefLogger.info("PreferencesDialog#save_values():out")
     end
 
     def build_widgets(iter)
-#       PrefLogger.info("PreferencesDialog#build_widgets(#{iter}):in")
       if @current_path
         save_values
       end
       path = iter[1]
       @current_path = path
-#      vbox = Gtk::VBox.new
       num_options = bus(path).children.length
       gtk_table = Gtk::Table.new(2, num_options, false)
-#      puts "num_options: #{num_options}"
       @widgets = {}
       table_row = 0
       bus[path].each_slot do |slot|
@@ -213,11 +194,8 @@ module Com::RedcarIDE
         end
       end
       @frame.children.each {|child| @frame.remove(child)}
-#      @frame.add(vbox)
-#      vbox.show
       @frame.add(gtk_table)
       gtk_table.show_all
-#       PrefLogger.info("PreferencesDialog#build_widgets(#{iter}):out")
     end
   end
 end
