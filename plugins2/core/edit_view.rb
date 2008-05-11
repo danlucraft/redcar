@@ -287,21 +287,17 @@ module Redcar
   end
 end
 
-require 'logger'
-unless defined? SyntaxLogger
-  SyntaxLogger = Logger.new('syntax.log')
-  SyntaxLogger.datetime_format = "%H:%M:%S"
-  SyntaxLogger.level = Logger::DEBUG
-end
-
 #require File.dirname(__FILE__) + '/edit_view/ext/pattern'
 require File.dirname(__FILE__) + '/edit_view/grammar'
 require File.dirname(__FILE__) + '/edit_view/scope'
+require File.dirname(__FILE__) + '/edit_view/ext/scope'
 require File.dirname(__FILE__) + '/edit_view/parser'
 require File.dirname(__FILE__) + '/edit_view/theme'
 require File.dirname(__FILE__) + '/edit_view/colourer'
 require File.dirname(__FILE__) + '/edit_view/textloc'
-require File.dirname(__FILE__) + '/edit_view/ext/syntax_ext'
+require File.dirname(__FILE__) + '/edit_view/ext/textloc'
+require File.dirname(__FILE__) + '/edit_view/ext/line_parser'
+
 require File.dirname(__FILE__) + '/edit_view/indenter'
 require File.dirname(__FILE__) + '/edit_view/autopairer'
 require File.dirname(__FILE__) + '/edit_view/snippet_inserter'

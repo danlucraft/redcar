@@ -103,6 +103,7 @@ module Redcar
           return
         elsif coms.length == 1
           com = coms.first
+          p Thread.list
           if com.is_a? Proc
             @logger.debug { "[Red] executing arbitrary code" }
             com.call

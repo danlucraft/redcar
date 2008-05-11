@@ -6,6 +6,7 @@ class RedcarSyntaxError < StandardError; end
 class Redcar::EditView
   class Parser
     create_logger
+    
     class << self
       attr_accessor :logger
     end

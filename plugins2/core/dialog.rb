@@ -184,7 +184,6 @@ module Redcar
       end
       filename = nil
       if dialog.run == Gtk::Dialog::RESPONSE_ACCEPT
-        puts "filename = #{dialog.filename}"
         filename = dialog.filename
         Redcar::App[:last_dir_opened] = "/" + filename.split("/")[0..-2].join("/")
       end

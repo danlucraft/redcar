@@ -284,8 +284,12 @@ module Redcar
       icon :DELETE
 
       def execute
-        doc.delete(doc.cursor_iter,
-                   doc.line_end1(doc.cursor_line))
+        if doc.get_line(doc.cursor_line) == "\n"
+          doc.delete(doc.cursor_iter, doc.line_end(doc.cursor_line))
+        else
+        	doc.delete(doc.cursor_iter,
+                     doc.line_end1(doc.cursor_line))
+        end          
       end
     end
 
@@ -319,7 +323,7 @@ module Redcar
 
       def execute
         # first search the remainder of the current line
-        curr_line = doc.get_line.string
+        curr_line = doc.get_line.to_s
         curr_line = curr_line[doc.cursor_line_offset..-1]
         if curr_line =~ @re
           line_iter = doc.line_start(doc.cursor_line)
@@ -330,7 +334,7 @@ module Redcar
           # next search the rest of the lines
           line_num = doc.cursor_line+1
           curr_line = doc.get_line(line_num)
-          until !curr_line or found = (curr_line.string =~ @re)
+          until !curr_line or found = (curr_line.to_s =~ @re)
             line_num += 1
             curr_line = doc.get_line(line_num)
           end
