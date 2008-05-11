@@ -34,26 +34,68 @@ int minify(int offset) {
   return (offset < 200 ? offset : 200);
 }
 
+int char_to_hex(int ch) {
+  if (ch >= 48 && ch <= 57)
+    return ch-48;
+  else {
+    if (ch >= 65 && ch <= 70)
+      return ch-55;
+  }
+  return 0;
+}
+
+// Here parent_colour is like '#FFFFFF' and
+// colour is like '#000000DD'.
+char* merge_colour(char* parent_colour, char* colour) {
+  int pre_r, pre_g, pre_b;
+  int post_r, post_g, post_b;
+  int opacity;
+  int new_r, new_g, new_b;
+  char* new_colour = NULL;
+  if (parent_colour == NULL)
+    return NULL;
+  if (strlen(colour) == 7)
+    return colour;
+  if (strlen(colour) == 9) {
+    pre_r = char_to_hex(parent_colour[1])*16+char_to_hex(parent_colour[2]);
+    pre_g = char_to_hex(parent_colour[3])*16+char_to_hex(parent_colour[4]);
+    pre_b = char_to_hex(parent_colour[5])*16+char_to_hex(parent_colour[6]);
+
+    post_r = char_to_hex(colour[1])*16+char_to_hex(colour[2]);
+    post_g = char_to_hex(colour[3])*16+char_to_hex(colour[4]);
+    post_b = char_to_hex(colour[5])*16+char_to_hex(colour[6]);
+    opacity = char_to_hex(colour[7])*16+char_to_hex(colour[8]);
+
+    new_r = (pre_r*(255-opacity) + post_r*opacity)/255;
+    new_g = (pre_g*(255-opacity) + post_g*opacity)/255;
+    new_b = (pre_b*(255-opacity) + post_b*opacity)/255;
+    new_colour = malloc(7); // FIXME: memory leak
+    sprintf(new_colour, "#%2x%2x%2x", new_r, new_g, new_b);
+    return new_colour;
+  }
+  return "#000000";
+}
+
 #define xtod(c) ((c>='0' && c<='9') ? c-'0' : ((c>='A' && c<='F') ? c-'A'+10 : ((c>='a' && c<='f') ? c-'a'+10 : 0)))
 
 void set_tag_properties(Scope* scope, GtkTextTag* tag, VALUE rbh_tm_settings) {
   ScopeData* sd = scope->data;
   VALUE rb_fg, rb_bg, rb_style, rb_parent_bg;
   char fg[10], bg[10];
+  char* parent_bg = NULL;
+  char* merged_colour = NULL;
   VALUE rb_cTheme = rb_eval_string("Redcar::EditView::Theme");
   rb_fg = rb_hash_aref(rbh_tm_settings, rb_str_new2("foreground"));
   if (rb_fg != Qnil) {
-/*     clean_colour(RSTRING_PTR(rb_fg), NULL, fg); */
     g_object_set(G_OBJECT(tag), "foreground", RSTRING_PTR(rb_fg), NULL);
   }
-
   rb_bg = rb_hash_aref(rbh_tm_settings, rb_str_new2("background"));
   if (rb_bg != Qnil) {
-    rb_parent_bg = rb_funcall(sd->rb_scope, rb_intern("nearest_bg_color"), 0);
-/*     clean_colour(RSTRING_PTR(rb_bg), RSTRING_PTR(rb_parent_bg), bg); */
-    rb_bg = rb_funcall(rb_cTheme, rb_intern("merge_colour"), 2, rb_parent_bg, rb_bg);
-    g_object_set(G_OBJECT(tag), "background", RSTRING_PTR(rb_bg), NULL);
-    rb_funcall(sd->rb_scope, rb_intern("bg_color="), 1, rb_bg);
+    parent_bg = scope_nearest_bg_color(scope);
+    //    rb_bg = rb_funcall(rb_cTheme, rb_intern("merge_colour"), 2, rb_str_new2(parent_bg), rb_bg);
+    merged_colour = merge_colour(parent_bg, RSTRING_PTR(rb_bg));
+    g_object_set(G_OBJECT(tag), "background", merged_colour, NULL);
+    sd->bg_color = merged_colour;
   }
 
   rb_style = rb_hash_aref(rbh_tm_settings, rb_str_new2("fontStyle"));

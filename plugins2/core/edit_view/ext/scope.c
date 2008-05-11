@@ -218,12 +218,9 @@ static VALUE rb_scope_cinit(VALUE self) {
   sd->inner_start_mark = NULL;
   sd->inner_end_mark = NULL;
   sd->end_mark = NULL;
-/*   sd->rb_start_mark = Qnil; */
-/*   sd->rb_inner_start_mark = Qnil; */
-/*   sd->rb_inner_end_mark = Qnil; */
-/*   sd->rb_end_mark = Qnil; */
   sd->numcolourings = 0;
   sd->open = 0;
+  sd->bg_color = NULL;
   return self;
 }
 
@@ -909,6 +906,45 @@ int delete_marks(GtkTextBuffer *buffer, Scope *scope) {
   return 0;
 }
 
+char* scope_nearest_bg_color(Scope *scope) {
+  ScopeData* sd = scope->data;
+  if (sd->bg_color == NULL) {
+    if (G_NODE_IS_ROOT(scope))
+      return NULL;
+    else
+      return scope_nearest_bg_color(scope->parent);
+  }
+  return sd->bg_color;
+}
+
+static VALUE rb_scope_nearest_bg_color(VALUE self) {
+  Scope* scope;
+  Data_Get_Struct(self, Scope, scope);
+  char* bg_color = scope_nearest_bg_color(scope);
+  if(bg_color == NULL)
+    return Qnil;
+  else
+    return rb_str_new2(bg_color);
+}
+
+static VALUE rb_scope_get_bg_color(VALUE self) {
+  Scope* scope;
+  Data_Get_Struct(self, Scope, scope);
+  ScopeData* sd = scope->data;
+  if (sd->bg_color != NULL)
+    return rb_str_new2(sd->bg_color);
+  else
+    return Qnil;
+}
+
+static VALUE rb_scope_set_bg_color(VALUE self, VALUE rb_bg_color) {
+  Scope *scope;
+  Data_Get_Struct(self, Scope, scope);
+  ScopeData * sd = scope->data;
+  sd->bg_color = RSTRING_PTR(rb_bg_color);
+  return rb_bg_color;
+}
+
 static VALUE cScope, rb_cEditView;
 
 void Init_scope() {
@@ -961,4 +997,8 @@ void Init_scope() {
   rb_define_method(cScope, "clear_not_on_line",  rb_scope_clear_not_on_line, 1);
   rb_define_method(cScope, "remove_children_that_overlap", rb_scope_remove_children_that_overlap, 2);
   rb_define_method(cScope, "hierarchy_names",  rb_scope_hierarchy_names, 1);
+
+  rb_define_method(cScope, "bg_color",  rb_scope_get_bg_color, 0);
+  rb_define_method(cScope, "bg_color=",  rb_scope_set_bg_color, 1);
+  rb_define_method(cScope, "nearest_bg_color",  rb_scope_nearest_bg_color, 0);
 }

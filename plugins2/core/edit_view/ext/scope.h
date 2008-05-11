@@ -11,17 +11,14 @@ typedef struct ScopeData_ {
   GtkTextMark *inner_start_mark;
   GtkTextMark *inner_end_mark;
   GtkTextMark *end_mark;
-/*   VALUE rb_start_mark; */
-/*   VALUE rb_inner_start_mark; */
-/*   VALUE rb_inner_end_mark; */
-/*   VALUE rb_end_mark; */
+  GtkTextTag *tag;
+  GtkTextTag *inner_tag;
   char* name;
-  VALUE rb_scope;
+  char* bg_color;
   int coloured;
   int numcolourings;
   int open;
-  GtkTextTag *tag;
-  GtkTextTag *inner_tag;
+  VALUE rb_scope;
 } ScopeData;
 
 typedef GNode Scope;
@@ -41,3 +38,4 @@ int scope_free_data(Scope* scope);
 Scope* scope_at(Scope* s, TextLoc* loc);
 int scope_get_priority(Scope* scope);
 int delete_marks(GtkTextBuffer *buffer, Scope *scope);
+char* scope_nearest_bg_color(Scope* scope);

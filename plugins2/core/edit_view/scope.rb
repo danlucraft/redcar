@@ -32,7 +32,6 @@ class Redcar::EditView
                   :close_matchdata,
                   :closing_regexp,
                   :capture, 
-                  :bg_color,
                   :capture_num,
                   :capture_end)
     
@@ -70,16 +69,6 @@ class Redcar::EditView
       self.closing_regexp = options[:closing_regexp]
       @open_matchdata     = options[:open_matchdata]
       @close_matchdata    = options[:close_matchdata]
-    end
-    
-    def nearest_bg_color
-      if self.bg_color
-        self.bg_color
-      elsif self.parent
-        self.parent.nearest_bg_color
-      else
-        nil
-      end
     end
     
     def start

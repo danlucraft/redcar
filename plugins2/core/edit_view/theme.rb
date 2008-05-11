@@ -175,17 +175,12 @@ class Redcar::EditView
     end
     
     # Here str_colour1 is like '#FFFFFF' and
-    # str_colour2 is like '#000000DD'.
+    # str_colour2 is like '#000000DD'.w
     def self.merge_colour(str_colour1, str_colour2)
-#       p :merge, str_colour1, str_colour2
       return nil unless str_colour1
       v =if str_colour2.length == 7 
         str_colour2
       elsif str_colour2.length == 9
-        #FIXME: what are the extra two hex values for? 
-        #(possibly they are an opacity)
-        #12345678
-        #'#'+str_colour[3..-1]
         pre_r   = str_colour1[1..2].hex
         pre_g   = str_colour1[3..4].hex
         pre_b   = str_colour1[5..6].hex
@@ -193,18 +188,11 @@ class Redcar::EditView
         post_g   = str_colour2[3..4].hex
         post_b   = str_colour2[5..6].hex
         opacity  = str_colour2[7..8].hex.to_f
-#         puts "pre_red: #{pre_r}"
-#         puts "post_red: #{post_r}"
-#         puts "opacity: #{opacity}"
         new_r   = (pre_r*(255-opacity) + post_r*opacity)/255
-#         puts "new_red: #{new_r}"
         new_g = (pre_g*(255-opacity) + post_g*opacity)/255
         new_b  = (pre_b*(255-opacity) + post_b*opacity)/255
         '#'+("%02x"%new_r)+("%02x"%new_r)+("%02x"%new_b)
-#        str_colour[0..6]
       end
-#       p v
-#       v
     end
     
     def textmate_settings_to_pango_options(settings)
