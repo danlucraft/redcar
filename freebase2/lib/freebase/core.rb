@@ -65,11 +65,11 @@ module FreeBASE
       @plugin_config.start_plugins
       @bus["/system/state/all_plugins_loaded"].data = true;
       @core_thread = Thread.current
-      # not sure why this thread was created - dan
-#      tui = Thread.new {
+
+      tui = Thread.new {
         @bus["/system/ui/messagepump"].call()
-#      }
-#      tui.join
+      }
+      tui.join
     end
     
     ##

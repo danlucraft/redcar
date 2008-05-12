@@ -37,10 +37,10 @@ int minify(int offset) {
 int char_to_hex(int ch) {
   if (ch >= 48 && ch <= 57)
     return ch-48;
-  else {
-    if (ch >= 65 && ch <= 70)
-      return ch-55;
-  }
+	if (ch >= 65 && ch <= 70)
+		return ch-55;
+	if (ch >= 97 && ch <= 102)
+		return ch-87;
   return 0;
 }
 
@@ -70,7 +70,8 @@ char* merge_colour(char* parent_colour, char* colour) {
     new_g = (pre_g*(255-opacity) + post_g*opacity)/255;
     new_b = (pre_b*(255-opacity) + post_b*opacity)/255;
     new_colour = malloc(7); // FIXME: memory leak
-    sprintf(new_colour, "#%2x%2x%2x", new_r, new_g, new_b);
+    sprintf(new_colour, "#%.2x%.2x%.2x", new_r, new_g, new_b);
+		printf("%s/%s/%s - %d,%d,%d\n", parent_colour, colour, new_colour, new_r, new_g, new_b);
     return new_colour;
   }
   return "#000000";
