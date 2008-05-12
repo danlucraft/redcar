@@ -198,13 +198,6 @@ void rb_scope_mark(Scope* scope) {
   }
 }
 
-int scope_get_priority(Scope* scope) {
-  if (scope->parent)
-    return scope_get_priority(scope->parent)+1;
-  else
-    return 1;
-}
-
 static VALUE rb_scope_cinit(VALUE self) {
   Scope *scope;
   Data_Get_Struct(self, Scope, scope);
@@ -884,6 +877,13 @@ static VALUE rb_scope_get_priority(VALUE self) {
   Scope *scope;
   Data_Get_Struct(self, Scope, scope);
   return INT2FIX(scope_get_priority(scope));
+}
+
+int scope_get_priority(Scope* scope) {
+  if (scope->parent)
+    return scope_get_priority(scope->parent)+1;
+  else
+    return 1;
 }
 
 int delete_marks(GtkTextBuffer *buffer, Scope *scope) {

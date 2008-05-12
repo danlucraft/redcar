@@ -93,7 +93,6 @@ void set_tag_properties(Scope* scope, GtkTextTag* tag, VALUE rbh_tm_settings) {
   rb_bg = rb_hash_aref(rbh_tm_settings, rb_str_new2("background"));
   if (rb_bg != Qnil) {
     parent_bg = scope_nearest_bg_color(scope);
-    //    rb_bg = rb_funcall(rb_cTheme, rb_intern("merge_colour"), 2, rb_str_new2(parent_bg), rb_bg);
     merged_colour = merge_colour(parent_bg, RSTRING_PTR(rb_bg));
     g_object_set(G_OBJECT(tag), "background", merged_colour, NULL);
     sd->bg_color = merged_colour;
@@ -125,15 +124,13 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
   VALUE rbh_tag_settings, rbh, rba_tag_settings, rba;
   VALUE rb_scope_id;
   char tag_name[256] = "nil";
-  int priority = FIX2INT(rb_funcall(sd->rb_scope, rb_intern("priority"), 0));
+  int priority = scope_get_priority(scope);
   GtkTextTag* tag = NULL;
   GtkTextTagTable* tag_table;
   int i;
   char *get_tag_name;
 
   sd->coloured = 1;
-/*   sd->numcolourings++; */
-/*   printf("(%d) ", sd->numcolourings); */
   if (inner) {
     gtk_text_buffer_get_iter_at_mark(buffer, &start_iter, sd->inner_start_mark);
     gtk_text_buffer_get_iter_at_mark(buffer, &end_iter, sd->inner_end_mark);

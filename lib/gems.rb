@@ -20,6 +20,17 @@ else
   ORegexp = Oniguruma::ORegexp
 end
 
+module Oniguruma #:nodoc:
+  class ORegexp #:nodoc:
+    def _dump(_)
+      self.source
+    end
+    def self._load(str)
+      self.new(str, :options => Oniguruma::OPTION_CAPTURE_GROUP)
+    end
+  end
+end
+
 require 'active_support/core_ext/blank'
 require 'active_support/multibyte'
 require 'active_support/core_ext/string'

@@ -184,14 +184,3 @@ module Gtk
     end
   end
 end
-
-module Oniguruma #:nodoc:
-  class ORegexp #:nodoc:
-    def _dump(_)
-      self.source
-    end
-    def self._load(str)
-      self.new(str, :options => Oniguruma::OPTION_CAPTURE_GROUP)
-    end
-  end
-end

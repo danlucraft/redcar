@@ -289,10 +289,11 @@ end
 
 #require File.dirname(__FILE__) + '/edit_view/ext/pattern'
 require File.dirname(__FILE__) + '/edit_view/grammar'
-require File.dirname(__FILE__) + '/edit_view/scope'
 require File.dirname(__FILE__) + '/edit_view/ext/scope'
+require File.dirname(__FILE__) + '/edit_view/scope'
 require File.dirname(__FILE__) + '/edit_view/parser'
 require File.dirname(__FILE__) + '/edit_view/theme'
+require File.dirname(__FILE__) + '/edit_view/ext/theme'
 require File.dirname(__FILE__) + '/edit_view/colourer'
 require File.dirname(__FILE__) + '/edit_view/textloc'
 require File.dirname(__FILE__) + '/edit_view/ext/textloc'

@@ -111,14 +111,6 @@ class Redcar::EditView
       @scope_id ||= rand(1000000)
     end
     
-#     def priority
-#       @priority ||= if parent
-#                       parent.priority + 1
-#                     else
-#                       1
-#                     end
-#     end
-    
     # Sees if the the scope is the same as the other scope, modulo their children
     # and THEIR CLOSING MARKERS.
     def surface_identical_modulo_ending?(other)

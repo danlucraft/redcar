@@ -56,11 +56,27 @@ class Redcar::EditView
     
     attr_accessor :name, :uuid, :global_settings
   
-    def initialize(hash)
-      @name = hash['name']
-      @uuid = hash['uuid']
-      @global_settings = hash["settings"].find {|h| h.keys == ["settings"]}["settings"]
-      @settings = hash["settings"].reject{|h| h.keys == ["settings"]}
+    def initialize(hash=nil)
+      if hash
+        @name = hash['name']
+        @uuid = hash['uuid']
+        @global_settings = hash["settings"].find {|h| h.keys == ["settings"]}["settings"]
+        p @global_settings.keys
+        p @global_settings.values
+        @settings = hash["settings"].reject{|h| h.keys == ["settings"]}
+      end
+    end
+    
+    def _dump(_)
+      Marshal.dump([@name, @uuid, @global_settings, @settings, @settings_for_scope])
+    end
+    
+    def self._load(arr)
+      t = Theme.new
+      t.instance_eval { 
+        @name, @uuid, @global_settings, @settings, @settings_for_scope = Marshal.load(arr)
+      }
+      t
     end
     
     # For a given scopename finds all the settings in the theme which apply to it.
