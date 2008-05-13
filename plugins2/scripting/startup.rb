@@ -29,13 +29,14 @@ def test_plugin(plugin_name)
 end
 
 def do_edit
+  doc = Redcar.tab.document
   doc.insert(doc.iter(TextLoc(230, 0)), "        when ")
   
   2.times do
     1.times do 
       doc.signal_emit("insert_text",
                       doc.iter(TextLoc(230, 13)),
-                      "'",
+                      "1",
                       1)
     end
     1.times do 

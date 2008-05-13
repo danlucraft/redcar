@@ -91,23 +91,30 @@ int scope_add_child(Scope* parent, Scope* new_child, Scope* starting_child) {
   scope_start_loc(new_child, &nc_start);
   scope_end_loc(new_child, &nc_end);
   if (g_node_n_children(parent) == 0) {
+		//		printf(".");
     g_node_append(parent, new_child);
     return 1;
   }
   Scope *insert_after = NULL;
   int i;
   if (starting_child && starting_child->parent == parent) {
+		//		printf(",");
     child = starting_child;
   }
   else {
+		//		printf(":");
     child = g_node_first_child(parent);
   }
-  while(child != NULL) {
+  while(child != NULL) {	
     scope_start_loc(child, &c_start);
     scope_end_loc(child, &c_end);
+		//		printf("-");
     if (textloc_lte(&c_start, &nc_start))
       insert_after = child;
-    child = g_node_next_sibling(child);
+		if (textloc_gte(&c_start, &nc_end))
+			child = NULL;
+		else
+			child = g_node_next_sibling(child);
   }
   g_node_insert_after(parent, insert_after, new_child);
   return 1;
@@ -593,6 +600,26 @@ static VALUE rb_scope_at(VALUE self, VALUE rb_loc) {
   }
 }
 
+Scope* scope_first_child_after(Scope* scope, TextLoc *loc, Scope* starting_child) {
+  Scope *child;
+  TextLoc c_start;
+  if (g_node_n_children(scope) == 0)
+    return NULL;
+  if (starting_child && starting_child->parent == scope) {
+    child = starting_child;
+  }
+  else {
+    child = g_node_first_child(scope);
+  }
+  while (child != NULL) {
+    scope_start_loc(child, &c_start);
+    if (textloc_gte(&c_start, loc))
+      return child;
+    child = g_node_next_sibling(child);
+  }
+  return NULL;
+}
+
 static VALUE rb_scope_first_child_after(VALUE self, VALUE rb_loc, VALUE rb_starting_child) {
   Scope *s, *child;
   Scope *starting_child = NULL;
@@ -603,24 +630,13 @@ static VALUE rb_scope_first_child_after(VALUE self, VALUE rb_loc, VALUE rb_start
   Data_Get_Struct(rb_loc, TextLoc, loc);
   if (rb_starting_child != Qnil)
     Data_Get_Struct(rb_starting_child, Scope, starting_child);
-  if (g_node_n_children(s) == 0)
-    return Qnil;
-  if (starting_child && starting_child->parent == s) {
-    //        printf(":");
-    child = starting_child;
-  }
-  else {
-    //        printf(".");
-    child = g_node_first_child(s);
-  }
-  while (child != NULL) {
-    sd = child->data;
-    scope_start_loc(child, &c_start);
-    if (textloc_gte(&c_start, loc))
-      return sd->rb_scope;
-    child = g_node_next_sibling(child);
-  }
-  return Qnil;
+	child = scope_first_child_after(s, loc, starting_child);
+	if (child == NULL)
+		return Qnil;
+	else {
+		sd = child->data;
+		return sd->rb_scope;
+	}
 }
 
 static VALUE rb_scope_add_child(VALUE self, VALUE c_scope, VALUE rb_starting_child) {

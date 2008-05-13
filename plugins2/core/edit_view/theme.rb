@@ -61,9 +61,8 @@ class Redcar::EditView
         @name = hash['name']
         @uuid = hash['uuid']
         @global_settings = hash["settings"].find {|h| h.keys == ["settings"]}["settings"]
-        p @global_settings.keys
-        p @global_settings.values
         @settings = hash["settings"].reject{|h| h.keys == ["settings"]}
+        set_settings
       end
     end
     
@@ -75,8 +74,19 @@ class Redcar::EditView
       t = Theme.new
       t.instance_eval { 
         @name, @uuid, @global_settings, @settings, @settings_for_scope = Marshal.load(arr)
+        set_settings
       }
       t
+    end
+    
+    def set_settings
+      @settings.each do |setting|
+        create_setting(setting["name"], 
+                       setting["scope"], 
+                       setting["settings"]["foreground"], 
+                       setting["settings"]["background"], 
+                       setting["settings"]["fontStyle"])
+      end
     end
     
     # For a given scopename finds all the settings in the theme which apply to it.

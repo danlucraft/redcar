@@ -145,8 +145,6 @@ void colour_scope(GtkTextBuffer* buffer, Scope* scope, VALUE theme, int inner) {
   }
   
   if (tag == NULL) {
-    rbh = rb_funcall(theme, rb_intern("global_settings"), 0);
-    
     // set name
     rba_settings = rb_funcall(theme, rb_intern("settings_for_scope"), 2, sd->rb_scope, (inner ? Qtrue : Qnil));
     if (RARRAY(rba_settings)->len == 0) {
@@ -577,6 +575,24 @@ static VALUE rb_line_parser_scan_line(VALUE self) {
     }
   }
   return Qnil;
+}
+
+/* def get_expected_scope */
+/*   expected_scope = current_scope.first_child_after(TextLoc.new(line_num, pos), starting_child) */
+/*   return nil if expected_scope == current_scope */
+/*   if expected_scope */
+/*     expected_scope = nil unless expected_scope.start.line == line_num */
+/*   end */
+/*   while expected_scope and expected_scope.capture */
+/*     expected_scope = expected_scope.parent */
+/*   end */
+/*   expected_scope */
+/* end */
+
+static VALUE rb_line_parser_get_expected_scope(VALUE self) {
+  LineParser *lp;
+  Data_Get_Struct(self, LineParser, lp);
+	scope_first_child_after(lp->current_scope);
 }
 
 static VALUE mSyntaxExt, rb_mRedcar, rb_cEditView, rb_cParser;

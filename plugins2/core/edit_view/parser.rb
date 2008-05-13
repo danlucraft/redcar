@@ -264,6 +264,7 @@ class Redcar::EditView
       last_child = if line_num > 0
                      @last_childs[line_num-1]
                    end
+#      puts "line_parser: #{line_num}, #{last_child.inspect}"
       lp = LineParser.new(self, line_num, line.to_s, opening_scope, last_child)
 
 #       begin
@@ -404,6 +405,7 @@ class Redcar::EditView
         expected_scope
       end
 
+      
       def need_new_patterns=(v)
         if v
           @matching_patterns = []
