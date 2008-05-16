@@ -19,6 +19,7 @@ typedef struct ScopeData_ {
   int numcolourings;
   int open;
   VALUE rb_scope;
+	int is_capture;
 } ScopeData;
 
 typedef GNode Scope;
@@ -31,6 +32,7 @@ void scope_inner_end_loc(Scope* scope, TextLoc* textloc);
 int scope_active_on_line(Scope* scope, int line);
 int scope_overlaps(Scope* s1, Scope* s2);
 int scope_add_child(Scope* parent, Scope* new_child, Scope* starting_child);
+Scope* scope_first_child_after(Scope* scope, TextLoc* loc, Scope* starting_child);
 int scope_clear_after(Scope* s, TextLoc* loc);
 int scope_clear_between(Scope* s, TextLoc* from, TextLoc* to);
 int scope_clear_between_lines(Scope* s, int from, int to);

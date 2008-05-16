@@ -287,7 +287,7 @@ module Redcar
   end
 end
 
-#require File.dirname(__FILE__) + '/edit_view/ext/pattern'
+require File.dirname(__FILE__) + '/edit_view/ext/pattern'
 require File.dirname(__FILE__) + '/edit_view/grammar'
 require File.dirname(__FILE__) + '/edit_view/ext/scope'
 require File.dirname(__FILE__) + '/edit_view/scope'

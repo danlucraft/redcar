@@ -4,6 +4,7 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <string.h>
+#include <oniguruma.h>
 
 static VALUE rb_scope_print(VALUE self, VALUE indent);
 
@@ -589,10 +590,41 @@ static VALUE rb_line_parser_scan_line(VALUE self) {
 /*   expected_scope */
 /* end */
 
+Scope* line_parser_get_expected_scope(LineParser* lp) {
+	TextLoc loc;
+	Scope *expected_scope = NULL;
+	ScopeData *sd;
+	loc.line   = lp->line_num;
+	loc.offset = lp->pos;
+	expected_scope = scope_first_child_after(lp->current_scope, &loc, lp->starting_child);
+	if (expected_scope == lp->current_scope)
+		return NULL;
+	if (expected_scope != NULL) {
+		sd = expected_scope->data;
+		scope_start_loc(expected_scope, &loc);
+		if (loc.line != lp->line_num)
+			expected_scope = NULL;
+		while (expected_scope != NULL && sd->is_capture == 1) {
+			expected_scope = expected_scope->parent;
+			sd = expected_scope->data;
+		}
+	}
+	if (expected_scope == NULL)
+		return NULL;
+	return expected_scope;
+}
+
 static VALUE rb_line_parser_get_expected_scope(VALUE self) {
   LineParser *lp;
   Data_Get_Struct(self, LineParser, lp);
-	scope_first_child_after(lp->current_scope);
+	Scope* es = line_parser_get_expected_scope(lp);
+	ScopeData* sd;
+	if (es == NULL)
+		return Qnil;
+	else {
+		sd = es->data;
+		return sd->rb_scope;
+	}
 }
 
 static VALUE mSyntaxExt, rb_mRedcar, rb_cEditView, rb_cParser;
@@ -627,6 +659,50 @@ void Init_line_parser() {
   rb_define_method(cLineParser, "current_scope_closes?", rb_line_parser_current_scope_closes, 0);
   rb_define_method(cLineParser, "match_pattern", rb_line_parser_match_pattern, 1);
   rb_define_method(cLineParser, "scan_line", rb_line_parser_scan_line, 0);
+  rb_define_method(cLineParser, "get_expected_scope", rb_line_parser_get_expected_scope, 0);
 
+	printf("onig_test...\n");
+	regex_t * reg;
+	int r;
+	OnigErrorInfo einfo;
+	UChar* pat_ptr = (UChar* ) "(f(oo))(\\s+)(bar)";
+	int pat_len = strlen(pat_ptr);
+	int iOptions = 0;
+	OnigEncodingType * iEncoding = ONIG_ENCODING_UTF8;
+	OnigSyntaxType * iSyntax = ONIG_SYNTAX_DEFAULT;
+	r = onig_new(&reg, pat_ptr, pat_ptr + pat_len, iOptions, iEncoding, iSyntax, &einfo);
+	if (r != ONIG_NORMAL) {
+		char s[ONIG_MAX_ERROR_MESSAGE_LEN];
+		onig_error_code_to_str(s, r, &einfo);
+		rb_raise(rb_eArgError, "Oniguruma Error: %s", s);
+	}
+
+	UChar* str_ptr = (UChar* ) "foo  bar";
+	int str_len = strlen(str_ptr);
+	
+	int begin = 0;
+	int end = str_len;
+	OnigRegion *region = onig_region_new();
+	printf("match: %s against %s\n", pat_ptr, str_ptr);
+  r = onig_search(reg, str_ptr, str_ptr + str_len, str_ptr + begin, str_ptr + end, region, ONIG_OPTION_NONE);
+	if (r >= 0) {
+		printf("match.\n");
+    int i , count = region->num_regs;
+
+    for ( i = 0; i < count; i++){
+			printf("region: %d - %d\n", region->beg[i], region->end[i]);
+    }
+
+		onig_region_free(region, 1 );
+	} else if (r == ONIG_MISMATCH) {
+		printf("mismatch %d.\n", r);
+		onig_region_free(region, 1 );
+	} else {
+		printf("error.\n");
+		onig_region_free(region, 1 );
+		char s[ONIG_MAX_ERROR_MESSAGE_LEN];
+		onig_error_code_to_str(s, r);
+		rb_raise(rb_eArgError, "Oniguruma Error: %s", s);
+	}
 }
 

@@ -4,21 +4,53 @@ $spare_name = "aaaa"
 
 class Redcar::EditView
   class Pattern
-    attr_accessor :name, :captures, :grammar, :hint, :match, :scope_name
+    attr_accessor :name, :captures, :hint, :match, :scope_name
     attr_reader :folding_start_marker, :folding_stop_marker
     
-    def initialize(hash, grammar)
-      @grammar = grammar
-      @name = hash["name"]
-      @scope_name = @name
-      @content_name = hash["content_name"] 
-      @folding_start_marker = hash["foldingStartMarker"]
-      @folding_stop_marker = hash["foldingStopMarker"]
-      @captures = hash["captures"] || {}
-      @captures.each do |key, value|
-        @captures[key] = value['name']
+    def _dump(_)
+      hash = { }
+      instance_variables.each do |varname|
+        if varname =~ /@grammar/
+          hash["@grammar_name"] = instance_variable_get(varname).name
+        elsif varname =~ /@patterns/
+          hash["@pattern_names"] = instance_variable_get(varname).map{|p| p.name }
+        else
+          hash[varname] = instance_variable_get(varname)
+        end
       end
-      @hint = 0
+      Marshal.dump(hash)
+    end
+    
+    def self._load(s)
+      p :_load
+      t = self.new
+      t.instance_eval { 
+        hash = Marshal.load(s)
+        hash.each do |varname, value|
+          instance_variable_set(varname, value)
+        end
+      }
+      t
+    end
+    
+    def initialize(hash=nil, grammar=nil)
+      if hash and grammar
+        @grammar = grammar
+        @name = hash["name"]
+        @scope_name = @name
+        @content_name = hash["content_name"] 
+        @folding_start_marker = hash["foldingStartMarker"]
+        @folding_stop_marker = hash["foldingStopMarker"]
+        @captures = hash["captures"] || {}
+        @captures.each do |key, value|
+          @captures[key] = value['name']
+        end
+        @hint = 0
+      end
+    end
+    
+    def grammar
+      @grammars[@grammar_name]
     end
     
     def to_scope
@@ -31,11 +63,12 @@ class Redcar::EditView
   end
   
   class SinglePattern < Pattern
-    def initialize(hash, grammar)
+    def initialize(hash=nil, grammar=nil)
       super(hash, grammar)
-      
-      @match = Oniguruma::ORegexp.new(hash["match"], 
-                 :options => Oniguruma::OPTION_CAPTURE_GROUP)
+      if hash and grammar
+        @match = Oniguruma::ORegexp.new(hash["match"], 
+                                        :options => Oniguruma::OPTION_CAPTURE_GROUP)
+      end
     end
     
     def patterns
@@ -55,32 +88,34 @@ class Redcar::EditView
     attr_accessor(:begin, :end, :patterns, :content_name, :begin_captures, 
                   :end_captures, :captures)
     
-    def initialize(hash, grammar)
+    def initialize(hash=nil, grammar=nil)
       super(hash, grammar)
-      @begin = Oniguruma::ORegexp.new(hash["begin"]||"", 
-                 :options => Oniguruma::OPTION_CAPTURE_GROUP)
-      @end   = hash["end"] || hash["endif"] # FIXME : what is "endif"??
-      count = 0
-      @patterns = (hash["patterns"]||[]).collect do |this_hash|
-        pn = self.grammar.pattern_from_hash(this_hash)
-        unless pn.is_a? IncludePattern
-          pn.hint = count
-          count += 1
+      if hash and grammar
+        @begin = Oniguruma::ORegexp.new(hash["begin"]||"", 
+                                        :options => Oniguruma::OPTION_CAPTURE_GROUP)
+        @end   = hash["end"] || hash["endif"] # FIXME : what is "endif"??
+        count = 0
+        @patterns = (hash["patterns"]||[]).collect do |this_hash|
+          pn = self.grammar.pattern_from_hash(this_hash)
+          unless pn.is_a? IncludePattern
+            pn.hint = count
+            count += 1
+          end
+          pn
         end
-        pn
-      end
-      @content_name = hash["contentName"]
-      @begin_captures = hash["beginCaptures"] || {}
-      @begin_captures.each do |key, value|
-        @begin_captures[key] = value['name']
-      end
-      @end_captures = hash["endCaptures"] || {}
-      @end_captures.each do |key, value|
-        @end_captures[key] = value['name']
-      end
-      @captures.each do |key, value|
-        @begin_captures[key] = value
-        @end_captures[key] = value
+        @content_name = hash["contentName"]
+        @begin_captures = hash["beginCaptures"] || {}
+        @begin_captures.each do |key, value|
+          @begin_captures[key] = value['name']
+        end
+        @end_captures = hash["endCaptures"] || {}
+        @end_captures.each do |key, value|
+          @end_captures[key] = value['name']
+        end
+        @captures.each do |key, value|
+          @begin_captures[key] = value
+          @end_captures[key] = value
+        end
       end
     end
     
@@ -90,6 +125,12 @@ class Redcar::EditView
     
     def match
       @begin
+    end
+    
+    def patterns
+      @patterns ||= @pattern_names.map do |pn|
+        @grammar.pattern_lookup[pn]
+      end
     end
   end
   

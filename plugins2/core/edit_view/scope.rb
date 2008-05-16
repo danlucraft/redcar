@@ -31,7 +31,7 @@ class Redcar::EditView
                   :open_matchdata,
                   :close_matchdata,
                   :closing_regexp,
-                  :capture, 
+#                  :capture, 
                   :capture_num,
                   :capture_end)
     

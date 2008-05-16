@@ -221,6 +221,7 @@ static VALUE rb_scope_cinit(VALUE self) {
   sd->numcolourings = 0;
   sd->open = 0;
   sd->bg_color = NULL;
+	sd->is_capture = 0;
   return self;
 }
 
@@ -961,6 +962,27 @@ static VALUE rb_scope_set_bg_color(VALUE self, VALUE rb_bg_color) {
   return rb_bg_color;
 }
 
+static VALUE rb_scope_get_is_capture(VALUE self) {
+  Scope* scope;
+  Data_Get_Struct(self, Scope, scope);
+  ScopeData* sd = scope->data;
+  if (sd->is_capture == 0)
+    return Qfalse;
+  else
+    return Qtrue;
+}
+
+static VALUE rb_scope_set_is_capture(VALUE self, VALUE rb_capture) {
+  Scope *scope;
+  Data_Get_Struct(self, Scope, scope);
+  ScopeData * sd = scope->data;
+	if (rb_capture == Qtrue)
+		sd->is_capture = 1;
+	else
+		sd->is_capture = 0;
+  return rb_capture;
+}
+
 static VALUE cScope, rb_cEditView;
 
 void Init_scope() {
@@ -1017,4 +1039,6 @@ void Init_scope() {
   rb_define_method(cScope, "bg_color",  rb_scope_get_bg_color, 0);
   rb_define_method(cScope, "bg_color=",  rb_scope_set_bg_color, 1);
   rb_define_method(cScope, "nearest_bg_color",  rb_scope_nearest_bg_color, 0);
+  rb_define_method(cScope, "capture",  rb_scope_get_is_capture, 0);
+  rb_define_method(cScope, "capture=",  rb_scope_set_is_capture, 1);
 }

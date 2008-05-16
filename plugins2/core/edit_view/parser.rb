@@ -373,6 +373,7 @@ class Redcar::EditView
         if rbv != cv
           puts "'#{name}' C version differs. rb: #{rbv.inspect}," +
             " c:#{cv.inspect}, data:#{data.inspect}"
+          raise "cdiff"
         end
         rbv != cv
       end
@@ -393,19 +394,6 @@ class Redcar::EditView
         pos <= line_length
       end
 
-      def get_expected_scope
-        expected_scope = current_scope.first_child_after(TextLoc.new(line_num, pos), starting_child)
-        return nil if expected_scope == current_scope
-        if expected_scope
-          expected_scope = nil unless expected_scope.start.line == line_num
-        end
-        while expected_scope and expected_scope.capture
-          expected_scope = expected_scope.parent
-        end
-        expected_scope
-      end
-
-      
       def need_new_patterns=(v)
         if v
           @matching_patterns = []
