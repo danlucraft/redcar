@@ -614,7 +614,7 @@ class Redcar::EditView
 
     def delete_any_mirrors(offset1, offset2)
       @mirrors.each do |num, mirrors|
-        mirrors.reject! do |mirror|
+        (mirrors||[]).reject! do |mirror|
           if iter(mirror[:leftmark]).offset == iter(mirror[:rightmark]).offset
             @buf.delete_mark(mirror[:leftmark])
             @buf.delete_mark(mirror[:rightmark])
@@ -626,7 +626,7 @@ class Redcar::EditView
       end
       @mirrors.each do |num, ms|
         if ms.empty?
-          @mirrors[num] = nil
+          @mirrors.delete num
         end
       end
     end

@@ -34,7 +34,7 @@ module Redcar::Tests
       end
     end
 
-    def backspace(buffer)
+    def backspace(buffer=@buf)
       buffer.delete(buffer.iter(buffer.cursor_offset-1),
                     buffer.cursor_iter)
     end
@@ -475,6 +475,21 @@ module Redcar::Tests
 
       assert_equal "assert_equal(expected, actual)", @buf.text
       assert_equal 13..21, @buf.selection_range
+    end
+    
+    def test_backspace
+      SnippetInserter.register("source.ruby - string - comment",
+        "testsnip",
+        "def ${1:fname} ${3:docstring for $1}${3/.+/\"\"\"\\n/}${3/.+/\\t/}${0:pass}")
+      @buf.text=("testsnip")
+      press_tab
+      
+      assert_equal "def fname docstring for fname\"\"\"\n\tpass", @buf.text
+      press_tab
+      type "foo"
+      assert_equal "def fname foo\"\"\"\n\tpass", @buf.text
+      backspace
+      assert_equal "def fname fo\"\"\"\n\tpass", @buf.text
     end
   end
 end
