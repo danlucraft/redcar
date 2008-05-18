@@ -30,19 +30,21 @@ end
 
 def do_edit
   doc = Redcar.tab.document
-  doc.insert(doc.iter(TextLoc(230, 0)), "        when ")
   
-  2.times do
-    1.times do 
+  10.times do
+    "+:name.to_s".scan(/./).each_with_index do |l, i|
       doc.signal_emit("insert_text",
-                      doc.iter(TextLoc(230, 13)),
-                      "1",
-                      1)
+                      doc.iter(TextLoc(1913, 31+i)),
+                      l, 1)
+#       p doc.get_line(1913)
+#       sleep 0.5
     end
-    1.times do 
+    11.times do |i|
       doc.signal_emit("delete_range", 
-                      doc.iter(TextLoc(230, 13)),
-                      doc.iter(TextLoc(230, 14)))
+                      doc.iter(TextLoc(1913, 31+11-i-1)),
+                      doc.iter(TextLoc(1913, 31+11-i)))
+#       p doc.get_line(1913)
+#       sleep 0.5
     end
   end
 end
@@ -50,20 +52,20 @@ end
 if Redcar::App.ARGV.include? "--test-perf-load"
   require 'ruby-prof'
   RubyProf.start
-  Coms::OpenTab.new("/home/dan/projects/redcar/rak").do
+  Coms::OpenTab.new("/home/dan/projects/redcar/rak2000").do
   result = RubyProf.stop
   printer = RubyProf::GraphHtmlPrinter.new(result)
   printer.print(STDOUT, :min_percent => 1)
   stop_redcar
 elsif Redcar::App.ARGV.include? "--test-time-load"
   st = Time.now
-  Coms::OpenTab.new("/home/dan/projects/redcar/rak").do
+  Coms::OpenTab.new("/home/dan/projects/redcar/rak3000").do
   et = Time.now
   puts "time to load: #{et-st}"
   stop_redcar
 elsif Redcar::App.ARGV.include? "--test-perf-edit"
   require 'ruby-prof'
-  Coms::OpenTab.new("/home/dan/projects/rak/bin/rak").do
+  Coms::OpenTab.new("/home/dan/projects/redcar/rak2000").do
   RubyProf.start
   do_edit
   result = RubyProf.stop
@@ -71,7 +73,7 @@ elsif Redcar::App.ARGV.include? "--test-perf-edit"
   printer.print(STDOUT, :min_percent => 1)
   stop_redcar
 elsif Redcar::App.ARGV.include? "--test-time-edit"
-  Coms::OpenTab.new("/home/dan/projects/rak/bin/rak").do
+  Coms::OpenTab.new("/home/dan/projects/rak/bin/rak2000").do
   st = Time.now
   do_edit
   et = Time.now

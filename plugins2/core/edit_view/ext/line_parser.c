@@ -72,7 +72,7 @@ char* merge_colour(char* parent_colour, char* colour) {
     new_b = (pre_b*(255-opacity) + post_b*opacity)/255;
     new_colour = malloc(7); // FIXME: memory leak
     sprintf(new_colour, "#%.2x%.2x%.2x", new_r, new_g, new_b);
-		printf("%s/%s/%s - %d,%d,%d\n", parent_colour, colour, new_colour, new_r, new_g, new_b);
+/* 		printf("%s/%s/%s - %d,%d,%d\n", parent_colour, colour, new_colour, new_r, new_g, new_b); */
     return new_colour;
   }
   return "#000000";
@@ -531,7 +531,6 @@ static VALUE rb_line_parser_match_pattern(VALUE self, VALUE rb_pattern) {
   VALUE rb_match_re, rb_md, rb_rest_line, rb_from, rb_scope_marker;
   int from;
   rb_match_re = rb_funcall(rb_pattern, rb_intern("match"), 0);
-/*   rb_match_re = rb_iv_get(rb_pattern, "@match_re"); */
   if (rb_match_re != Qnil) {
     rb_md        = rb_funcall(rb_match_re, rb_intern("match"), 2, lp->line, INT2FIX(lp->pos));
     if (rb_md != Qnil) {
@@ -542,6 +541,43 @@ static VALUE rb_line_parser_match_pattern(VALUE self, VALUE rb_pattern) {
       return rb_scope_marker;
     }
   }
+	regex_t * reg;
+	int r;
+	OnigErrorInfo einfo;
+	UChar* pat_ptr = (UChar* ) RSTRING_PTR(rb_funcall(rb_match_re, rb_intern("source"), 0));
+	int pat_len = strlen(pat_ptr);
+	int iOptions = 256;
+	OnigEncodingType * iEncoding = ONIG_ENCODING_UTF8;
+	OnigSyntaxType * iSyntax = ONIG_SYNTAX_DEFAULT;
+	r = onig_new(&reg, pat_ptr, pat_ptr + pat_len, iOptions, iEncoding, iSyntax, &einfo);
+	if (r != ONIG_NORMAL) {
+		char s[ONIG_MAX_ERROR_MESSAGE_LEN];
+		onig_error_code_to_str(s, r, &einfo);
+		rb_raise(rb_eArgError, "Oniguruma Error: %s", s);
+	}
+
+	UChar* str_ptr = (UChar* ) lp->line;
+	int str_len = strlen(str_ptr);
+	
+	int begin = lp->pos;
+	int end = str_len;
+	OnigRegion *region = onig_region_new();
+  r = onig_search(reg, str_ptr, str_ptr + str_len, str_ptr + begin, str_ptr + end, region, ONIG_OPTION_NONE);
+	if (r >= 0) {
+    int i , count = region->num_regs;
+
+    for ( i = 0; i < count; i++){
+    }
+
+		onig_region_free(region, 1 );
+	} else if (r == ONIG_MISMATCH) {
+		onig_region_free(region, 1 );
+	} else {
+		onig_region_free(region, 1 );
+		char s[ONIG_MAX_ERROR_MESSAGE_LEN];
+		onig_error_code_to_str(s, r);
+		rb_raise(rb_eArgError, "Oniguruma Error: %s", s);
+	}
   return Qnil;
 }
 

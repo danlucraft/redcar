@@ -23,6 +23,7 @@ class Redcar::EditView
       @max_view = 200
       @changes = []
       @scope_last_line = 0
+      @look_ahead_line = 0
       @parse_all = true
       @cursor_line = 0
       @parsing_on = true
@@ -121,7 +122,7 @@ class Redcar::EditView
       if @parse_all
         @buf.line_count
       else
-        @max_view
+        [@max_view, @look_ahead_line].max
       end
     end
 
@@ -199,30 +200,52 @@ class Redcar::EditView
           (@max_view > @scope_last_line)
         parse_from(@scope_last_line+1)
       end
+#       if @scope_last_line < @buf.line_count - 3
+#         Gtk.idle_add_priority(GLib::PRIORITY_LOW) do
+#           p :foo
+#           p @scope_last_line
+#           p @buf.line_count
+#           if @scope_last_line < @buf.line_count - 3
+#             p :bar
+#             @look_ahead_line = @scope_last_line + 3
+#             parse_from(@scope_last_line+1)
+#             true
+#           else
+#             p :baz
+#             false
+#           end
+#         end
+#       end
     end
 
     def parse_from(line_num, at_least=0, options=nil)
       count = 0
       ok = true
-      if @parse_all
-        until line_num >= @buf.line_count or
-            (parse_line(line_num) and
-             count >= at_least)
-          line_num += 1
-          count += 1
-        end
-      else
-        until line_num >= @buf.line_count or
-            line_num > last_line_of_interest or
-            (parse_line(line_num) and
-             count >= at_least)
-          line_num += 1
-          count += 1
-        end
-        if @ending_scopes[line_num-1] != @starting_scopes[line_num]
-          clear_after(line_num)
+      @buf.ignore_marks = true
+      @buf.snippet_inserter.ignore do
+        @buf.autopairer.ignore do
+          if @parse_all
+            until line_num >= @buf.line_count or
+                (parse_line(line_num) and
+                 count >= at_least)
+              line_num += 1
+              count += 1
+            end
+          else
+            until line_num >= @buf.line_count or
+                line_num > last_line_of_interest or
+                (parse_line(line_num) and
+                 count >= at_least)
+              line_num += 1
+              count += 1
+            end
+            if @ending_scopes[line_num-1] != @starting_scopes[line_num]
+              clear_after(line_num)
+            end
+          end
         end
       end
+      @buf.ignore_marks = false
       $stdout.flush
     end
 

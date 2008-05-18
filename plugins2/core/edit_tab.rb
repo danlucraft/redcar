@@ -77,7 +77,7 @@ module Redcar
     def connect_signals #:nodoc:
       @view.buffer.signal_connect_after("changed") do |widget, event|
         self.modified = true
-        Hook.trigger :tab_changed, self
+#        Hook.trigger :tab_changed, self
         false
       end
     end

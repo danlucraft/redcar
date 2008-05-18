@@ -4,7 +4,8 @@ module Redcar
   class Document
     extend FreeBASE::StandardPlugin
 
-    attr_accessor :parser, :indenter, :autopairer
+    attr_writer :parser, :indenter, :autopairer, :snippet_inserter
+    attr_accessor :ignore_marks
 
     # The length of the document in characters.
     def length
@@ -225,6 +226,28 @@ module Redcar
 
     def type(text)
       text.split(//).each {|l| insert_at_cursor(l)}
+    end
+    
+    class IgnoreObject
+      def ignore
+        yield
+      end
+    end
+    
+    def parser
+      @parser || IgnoreObject.new
+    end
+    
+    def indenter
+      @indenter || IgnoreObject.new
+    end
+
+    def autopairer
+      @autopairer || IgnoreObject.new
+    end
+    
+    def snippet_inserter
+      @snippet_inserter || IgnoreObject.new
     end
   end
 end

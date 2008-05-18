@@ -41,6 +41,8 @@ module Redcar
           new_tab = win.new_tab(Redcar::EditTab)
           new_tab.load(@filename)
           new_tab.focus
+        else
+          puts "no file: #{@filename}"
         end
       end
     end

@@ -41,9 +41,9 @@ static VALUE rb_double_pattern_alloc(VALUE klass) {
 static VALUE cEditView, cPattern, cSinglePattern, cDoublePattern;
 void Init_pattern() {
   cEditView = rb_eval_string("Redcar::EditView");
-  cPattern = rb_define_class_under(cEditView, "Pattern", rb_cObject);
-  cSinglePattern = rb_define_class_under(cEditView, "SinglePattern", cPattern);
-	cDoublePattern = rb_define_class_under(cEditView, "DoublePattern", cPattern);
+  cPattern = rb_define_class_under(cEditView, "CPattern", rb_cObject);
+  cSinglePattern = rb_define_class_under(cEditView, "CSinglePattern", cPattern);
+	cDoublePattern = rb_define_class_under(cEditView, "CDoublePattern", cPattern);
   rb_define_alloc_func(cSinglePattern, rb_single_pattern_alloc);
   rb_define_alloc_func(cDoublePattern, rb_double_pattern_alloc);
 }

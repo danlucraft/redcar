@@ -72,9 +72,16 @@ class Redcar::EditView
     def initialize(buffer)
       self.buffer = buffer
       @parser = buffer.parser
+      buffer.snippet_inserter = self
       connect_buffer_signals
     end
 
+    def ignore
+      @ignore = true
+      yield
+      @ignore = false
+    end
+    
     def connect_buffer_signals
       @buf.signal_connect_after("mark_set") do |widget, event, mark|
         if @in_snippet and !@ignore and mark == @buf.cursor_mark

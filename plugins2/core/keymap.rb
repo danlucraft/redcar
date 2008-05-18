@@ -47,10 +47,10 @@ module Redcar
     # Process a Gdk::EventKey (which is created on a keypress)
     def self.process(gdk_eventkey) #:nodoc:
       if key = clean_gdk_eventkey(gdk_eventkey)
-        Hook.trigger :keystroke, key do
+#        Hook.trigger :keystroke, key do
           @logger.debug { "[Red] received key #{key.inspect}" }
           execute_key(key)
-        end
+#        end
       else
         true # indicates to fall through to Gtk
       end

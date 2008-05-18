@@ -4,53 +4,21 @@ $spare_name = "aaaa"
 
 class Redcar::EditView
   class Pattern
-    attr_accessor :name, :captures, :hint, :match, :scope_name
+    attr_accessor :name, :captures, :hint, :match, :scope_name, :grammar
     attr_reader :folding_start_marker, :folding_stop_marker
     
-    def _dump(_)
-      hash = { }
-      instance_variables.each do |varname|
-        if varname =~ /@grammar/
-          hash["@grammar_name"] = instance_variable_get(varname).name
-        elsif varname =~ /@patterns/
-          hash["@pattern_names"] = instance_variable_get(varname).map{|p| p.name }
-        else
-          hash[varname] = instance_variable_get(varname)
-        end
+    def initialize(hash, grammar)
+      @grammar = grammar
+      @name = hash["name"]
+      @scope_name = @name
+      @content_name = hash["content_name"] 
+      @folding_start_marker = hash["foldingStartMarker"]
+      @folding_stop_marker = hash["foldingStopMarker"]
+      @captures = hash["captures"] || {}
+      @captures.each do |key, value|
+        @captures[key] = value['name']
       end
-      Marshal.dump(hash)
-    end
-    
-    def self._load(s)
-      p :_load
-      t = self.new
-      t.instance_eval { 
-        hash = Marshal.load(s)
-        hash.each do |varname, value|
-          instance_variable_set(varname, value)
-        end
-      }
-      t
-    end
-    
-    def initialize(hash=nil, grammar=nil)
-      if hash and grammar
-        @grammar = grammar
-        @name = hash["name"]
-        @scope_name = @name
-        @content_name = hash["content_name"] 
-        @folding_start_marker = hash["foldingStartMarker"]
-        @folding_stop_marker = hash["foldingStopMarker"]
-        @captures = hash["captures"] || {}
-        @captures.each do |key, value|
-          @captures[key] = value['name']
-        end
-        @hint = 0
-      end
-    end
-    
-    def grammar
-      @grammars[@grammar_name]
+      @hint = 0
     end
     
     def to_scope
@@ -129,7 +97,7 @@ class Redcar::EditView
     
     def patterns
       @patterns ||= @pattern_names.map do |pn|
-        @grammar.pattern_lookup[pn]
+        grammar.pattern_lookup[pn]
       end
     end
   end
@@ -162,6 +130,12 @@ class Redcar::EditView
   end
 
   class Grammar    
+    class << self
+      def grammars
+        @grammars ||= {}
+      end
+    end      
+    
     def self.load_grammars
       unless Redcar::EditView.cache_dir
         raise "called Grammar.load_grammars without a cache_dir"
@@ -189,13 +163,14 @@ class Redcar::EditView
                 plist = Redcar::Plist.plist_from_xml(xml)
                 gr = plist[0]
                 plists << plist
-                @grammars[gr['name']] = Grammar.new(plist[0])
+                @grammars[gr["name"]] = Grammar.new(plist[0])
                 (gr['fileTypes'] || []).each do |ext|
                   @grammars_by_extension["."+ext] = @grammars[gr['name']]
                 end
               rescue => e
                 puts "failed to load syntax: #{file}"
                 puts e.message
+                puts e.backtrace.join("\n")
               end
             end
           end
@@ -268,12 +243,12 @@ class Redcar::EditView
       end
       @folding_start_marker = @grammar["foldingStartMarker"]
       @folding_stop_marker = @grammar["foldingStopMarker"]
-      @patterns = (grammar["patterns"]||[]).collect do |hash|
+      @patterns = (@grammar["patterns"]||[]).collect do |hash|
         pn = pattern_from_hash(hash)
         pn
       end
       @repository = {}
-      (grammar["repository"]||[]).each do |name, pattern_hash|
+      (@grammar["repository"]||[]).each do |name, pattern_hash|
         if pattern_hash.keys.include? "begin" or
             pattern_hash.keys.include? "match"
           @repository[name] = pattern_from_hash(pattern_hash)
@@ -286,7 +261,7 @@ class Redcar::EditView
       collate_patterns
       @pattern_lookup.each_value {|p| p.grammar = self if p.is_a? Pattern}
     end
-    
+  
     def content_name
       nil
     end

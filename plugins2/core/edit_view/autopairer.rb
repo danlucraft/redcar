@@ -30,17 +30,22 @@ class Redcar::EditView
     end
 
     def self.autopair_rules_for_scope(hierarchy_names)
+      @cache ||= {}
+      if rules = @cache[hierarchy_names.join(" ")]
+        return rules
+      end
+      rules = nil
       if hierarchy_names
         @autopair_rules.each do |scope_name, value|
-         #         puts "applicable? #{scope_name.inspect} to #{hierarchy_names.join(" ").inspect}"
           v = Theme.applicable?(scope_name, hierarchy_names).to_bool
-        #          p v
           if v
-            return value
+            rules = value
           end
         end
       end
-      @autopair_default
+      rules = @autopair_default unless rules
+      @cache[hierarchy_names.join(" ")] = rules
+      rules
     end
 
     cattr_reader :autopair_rules, :autopair_default, :autopair_default1
@@ -98,9 +103,11 @@ class Redcar::EditView
     end
 
     def ignore
+      @ignore_mark = true
       @ignore_insert = true
       @ignore_delete = true
       yield
+      @ignore_mark = false
       @ignore_insert = false
       @ignore_delete = false
     end
@@ -186,8 +193,10 @@ class Redcar::EditView
       end
 
       @buf.signal_connect_after("mark_set") do |widget, event, mark|
-        if mark == @buf.cursor_mark
-          invalidate_pairs(mark)
+        if !@ignore_mark 
+          if mark == @buf.cursor_mark
+            invalidate_pairs(mark)
+          end
         end
       end
     end
