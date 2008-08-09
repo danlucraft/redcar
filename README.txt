@@ -49,12 +49,15 @@ oniguruma is installed correctly open irb and check you get this:
   >> require 'rubygems'; require 'oniguruma'; Oniguruma::ORegexp.new("(?<=foo)bar")
   => /(?<=foo)bar/
 
-4. Download the Textmate bundles:
+4. Install other required gems
+  $ sudo gem install log4r rails
+
+5. Download the Textmate bundles:
   $ export LC_CTYPE=en_US.UTF-8
   $ cd REDCAR_PATH
   $ svn co http://macromates.com/svn/Bundles/trunk textmate
 
-5. Compile the Redcar native extension:
+6. Compile the Redcar native extension:
   $ cd REDCAR_PATH
   $ cd plugins2/core/edit_view/ext
   $ ruby extconf.rb
@@ -62,7 +65,7 @@ oniguruma is installed correctly open irb and check you get this:
 
 This should complete without errors. Though there will be a ton of warnings.
 
-6. Now try running Redcar
+7. Now try running Redcar
   $ ./bin/redcar
 
 The first time Redcar runs it will spend time loading the Textmate Bundles and Themes. 
