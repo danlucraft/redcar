@@ -20,7 +20,7 @@ Redcar
 A pure Ruby text editor for Gnome. Has syntax highlighting,
 snippets, macros and is highly extensible.
 
-== FEATURES/PROBLEMS:
+== FEATURES
   
 * Syntax Highlighting.
 * Snippets.
@@ -29,28 +29,43 @@ snippets, macros and is highly extensible.
 * Can edit menu layout and definitions on the fly.
 * Can script new Ruby commands on the fly.
 
-== SYNOPSIS:
-
-  FIX (code sample of usage)
-
-== REQUIREMENTS:
-
-THESE ARE INCOMPLETE
-
-* GTK 2.10 toolkit
-* Ruby-Gnome 0.16.0
-* Ruby-Gnome 0.15.0 (in Ubuntu <=Fiesty repository) works with
-  apparently harmless errors, but no guarantees.
-
-Ubuntu dependencies:
-
-* libxul-dev
-
-
 == INSTALL:
 
-NOT YET YOU CAN'T
-* sudo gem install redcar
+For now, installation is still a pain. 
+
+1. Please make sure you have an up-to-date version of Ruby-Gnome2 
+installed. This can be downloaded from http://ruby-gnome2.sourceforge.jp/, 
+or may be packaged for your distribution.
+
+2. Install Oniguruma. 5.9.0 seems to work. It can be downloaded here:
+http://www.geocities.jp/kosako3/oniguruma/
+
+3. Install the Ruby gem 'oniguruma'
+  $ sudo gem install oniguruma
+
+This must build native extensions correctly for Redcar to function. To test whether
+oniguruma is installed correctly open irb and check you get this:
+
+  >> require 'rubygems'; require 'oniguruma'; Oniguruma::ORegexp.new("(?<=foo)bar")
+  => /(?<=foo)bar/
+
+4. Download the Textmate bundles:
+  $ export LC_CTYPE=en_US.UTF-8
+  $ cd REDCAR_PATH
+  $ sudo svn co http://macromates.com/svn/Bundles/trunk textmate
+
+5. Compile the Redcar native extension:
+  $ cd REDCAR_PATH
+  $ cd plugins2/core/edit_view/ext
+  $ ./compile.sh
+
+This should complete without errors.
+
+6. Now try running Redcar
+  $ ./bin/redcar
+
+The first time Redcar runs it will spend time loading the Textmate Bundles and Themes. 
+This only happens once.
 
 == LICENSE:
 

@@ -9,14 +9,18 @@ class Redcar::EditView
           scope = pref_hash["scope"]
           if scope
             pref_hash["settings"].each do |set_name, set_value|
-              if set_name == "increaseIndentPattern"
-                @indent_rules[scope][:increase] = Oniguruma::ORegexp.new(set_value)
-              elsif set_name == "decreaseIndentPattern"
-                @indent_rules[scope][:decrease] = Oniguruma::ORegexp.new(set_value)
-              elsif set_name == "indentNextLinePattern"
-                @indent_rules[scope][:nextline] = Oniguruma::ORegexp.new(set_value)
-              elsif set_name == "unIndentedLinePattern"
-                @indent_rules[scope][:noindent] = Oniguruma::ORegexp.new(set_value)
+              begin
+                if set_name == "increaseIndentPattern"
+                  @indent_rules[scope][:increase] = Oniguruma::ORegexp.new(set_value)
+                elsif set_name == "decreaseIndentPattern"
+                  @indent_rules[scope][:decrease] = Oniguruma::ORegexp.new(set_value)
+                elsif set_name == "indentNextLinePattern"
+                  @indent_rules[scope][:nextline] = Oniguruma::ORegexp.new(set_value)
+                elsif set_name == "unIndentedLinePattern"
+                  @indent_rules[scope][:noindent] = Oniguruma::ORegexp.new(set_value)
+                end
+              rescue ArgumentError
+                puts "there was an Oniguruma::Error in the preferences for #{name}"
               end
             end
           end

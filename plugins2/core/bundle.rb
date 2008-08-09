@@ -108,9 +108,15 @@ module Redcar
     def load_preferences #:nodoc:
       prefs = {}
       Dir.glob(@dir+"/Preferences/*").each do |preffile|
-        xml = IO.readlines(preffile).join
-        pref = Redcar::Plist.plist_from_xml(xml)[0]
-        prefs[pref["name"]] = pref
+        begin
+          xml = IO.readlines(preffile).join
+          pref = Redcar::Plist.plist_from_xml(xml)[0]
+          prefs[pref["name"]] = pref
+        rescue Object => e
+          puts "There was an error loading #{preffile}"
+#          puts e.message
+#          puts e.backtrace[0..10]
+        end
       end
       prefs
     end
@@ -124,9 +130,13 @@ module Redcar
       App.with_cache("snippets", @name) do
         snippets = []
         Dir.glob(@dir+"/Snippets/*").each do |snipfile|
-          xml = IO.readlines(snipfile).join
-          snip = Redcar::Plist.plist_from_xml(xml)[0]
-          snippets << snip
+          begin
+            xml = IO.readlines(snipfile).join
+            snip = Redcar::Plist.plist_from_xml(xml)[0]
+            snippets << snip
+          rescue Object
+            puts "There was an error loading #{snipfile}"
+          end
         end
         snippets
       end
@@ -141,10 +151,14 @@ module Redcar
       App.with_cache("templates", @name) do
         temps = {}
         Dir.glob(@dir+"/Templates/*").each do |tempdir|
-          xml = IO.readlines(tempdir + "/info.plist").join
-          tempinfo = Redcar::Plist.plist_from_xml(xml)[0]
-          tempinfo["dir"] = tempdir
-          temps[tempinfo["name"]] = tempinfo
+          begin
+            xml = IO.readlines(tempdir + "/info.plist").join
+            tempinfo = Redcar::Plist.plist_from_xml(xml)[0]
+            tempinfo["dir"] = tempdir
+            temps[tempinfo["name"]] = tempinfo
+          rescue Object
+            puts "There was an error loading #{tempdir} templates"
+          end
         end
         temps
       end
