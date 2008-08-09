@@ -57,9 +57,10 @@ oniguruma is installed correctly open irb and check you get this:
 5. Compile the Redcar native extension:
   $ cd REDCAR_PATH
   $ cd plugins2/core/edit_view/ext
-  $ ./compile.sh
+  $ ruby extconf.rb
+  $ make
 
-This should complete without errors.
+This should complete without errors. Though there will be a ton of warnings.
 
 6. Now try running Redcar
   $ ./bin/redcar
