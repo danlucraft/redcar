@@ -37,15 +37,16 @@ libexecdir = $(exec_prefix)/libexec
 CC = gcc
 LIBRUBY = $(LIBRUBY_A)
 LIBRUBY_A = lib$(RUBY_SO_NAME)-static.a
-LIBRUBYARG_SHARED = -Wl,-R -Wl,$(libdir) -L$(libdir) -L. 
+LIBRUBYARG_SHARED = -Wl,-R -Wl,$(libdir) -L$(libdir) 
 LIBRUBYARG_STATIC = -l$(RUBY_SO_NAME)-static
 
 RUBY_EXTCONF_H = 
-CFLAGS   =  -fPIC -g -O2 
-INCFLAGS = -I. -I$(topdir) -I$(hdrdir) -I$(srcdir)
-CPPFLAGS =  
+CFLAGS   =  -fPIC -g -O2 -Wall -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include   -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12 -I/usr/include/pixman-1   -I/usr/include/gtksourceview-1.0 -I/usr/include/gtk-2.0 -I/usr/include/libxml2 -I/usr/include/libgnomeprint-2.2 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/freetype2 -I/usr/include/libpng12 -I/usr/include/pixman-1 -I/usr/include/libart-2.0   
+INCFLAGS = -I. -I. -I/usr/local/lib/ruby/1.8/i686-linux -I.
+DEFS     = -D_FILE_OFFSET_BITS=64
+CPPFLAGS = -DHAVE_RB_DEFINE_ALLOC_FUNC -DHAVE_RB_BLOCK_PROC -DHAVE_OBJECT_ALLOCATE -DHAVE_NODE_ATTRASGN  -D_FILE_OFFSET_BITS=64 -I/usr/local/lib/ruby/site_ruby/1.8/i686-linux 
 CXXFLAGS = $(CFLAGS) 
-DLDFLAGS =  -rdynamic -Wl,-export-dynamic  
+DLDFLAGS = -L.  -rdynamic -Wl,-export-dynamic     
 LDSHARED = $(CC) -shared
 AR = ar
 EXEEXT = 
@@ -68,21 +69,21 @@ COPY = cp
 
 preload = 
 
-libpath = $(libdir)
-LIBPATH =  -L'$(libdir)' -Wl,-R'$(libdir)'
+libpath = . $(libdir)
+LIBPATH =  -L. -L$(libdir) -Wl,-R$(libdir)
 DEFFILE = 
 
-CLEANFILES = 
+CLEANFILES = mkmf.log
 DISTCLEANFILES = 
 
 extout = 
 extout_prefix = 
 target_prefix = 
 LOCAL_LIBS = 
-LIBS =   -ldl -lcrypt -lm   -lc
-SRCS = ruby_thing.c
-OBJS = ruby_thing.o
-TARGET = ruby_thing
+LIBS =  -lonig  -lglib-2.0   -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangocairo-1.0 -lpango-1.0 -lcairo -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0   -lgtksourceview-1.0 -lgtk-x11-2.0 -lgnomeprint-2-2 -lz -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangocairo-1.0 -lcairo -lart_lgpl_2 -lxml2 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0   -ldl -lcrypt -lm   -lc
+SRCS = redcar_ext.c theme.c textloc.c pattern.c scope.c line_parser.c
+OBJS = redcar_ext.o theme.o textloc.o pattern.o scope.o line_parser.o
+TARGET = redcar_ext
 DLLIB = $(TARGET).so
 EXTSTATIC = 
 STATIC_LIB = 
@@ -142,7 +143,7 @@ site-install-rb: install-rb
 
 $(DLLIB): $(OBJS)
 	@-$(RM) $@
-	$(LDSHARED) $(DLDFLAGS) $(LIBPATH) -o $@ $(OBJS) $(LOCAL_LIBS) $(LIBS)
+	$(LDSHARED) -o $@ $(OBJS) $(LIBPATH) $(DLDFLAGS) $(LOCAL_LIBS) $(LIBS)
 
 
 

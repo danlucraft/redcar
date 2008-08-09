@@ -1,4 +1,5 @@
 
+#include "textloc.h"
 #include "scope.h"
 #include <glib.h>
 #include <string.h>

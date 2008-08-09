@@ -1,5 +1,6 @@
 
 #include "ruby.h"
+#include "textloc.h"
 #include "scope.h"
 #include <gtk/gtk.h>
 #include <glib.h>

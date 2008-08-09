@@ -2,7 +2,6 @@
 // ----- Scope object
 
 #include "ruby.h"
-#include "textloc.h"
 #include <gtk/gtk.h>
 #include <glib.h>
 
@@ -19,7 +18,7 @@ typedef struct ScopeData_ {
   int numcolourings;
   int open;
   VALUE rb_scope;
-	int is_capture;
+  int is_capture;
 } ScopeData;
 
 typedef GNode Scope;
@@ -41,3 +40,6 @@ Scope* scope_at(Scope* s, TextLoc* loc);
 int scope_get_priority(Scope* scope);
 int delete_marks(GtkTextBuffer *buffer, Scope *scope);
 char* scope_nearest_bg_color(Scope* scope);
+
+void Init_scope();
+

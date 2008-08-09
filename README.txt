@@ -52,7 +52,7 @@ oniguruma is installed correctly open irb and check you get this:
 4. Download the Textmate bundles:
   $ export LC_CTYPE=en_US.UTF-8
   $ cd REDCAR_PATH
-  $ sudo svn co http://macromates.com/svn/Bundles/trunk textmate
+  $ svn co http://macromates.com/svn/Bundles/trunk textmate
 
 5. Compile the Redcar native extension:
   $ cd REDCAR_PATH

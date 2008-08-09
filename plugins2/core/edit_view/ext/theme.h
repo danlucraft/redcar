@@ -13,3 +13,5 @@ typedef struct ThemeSetting_ {
 	char *background;
   char *font_style;
 } ThemeSetting;
+
+void Init_theme();
