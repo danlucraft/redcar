@@ -53,10 +53,20 @@ module Redcar
     #   win.new_tab(EditTab)
     #   pane.new_tab(EditTab)
     def initialize(pane)
-      @view = Redcar::EditView.new
+      @view = Gtk::Mate::View.new
+      @view.buffer = Gtk::Mate::Buffer.new
+      @view.modify_font(Pango::FontDescription.new("Consolas 14"))
+      @view.buffer.set_grammar_by_name("Ruby")
+      h = @view.signal_connect_after("expose-event") do |_, ev|
+        if ev.window == @view.window
+          @view.set_theme_by_name("Twilight")
+          @view.signal_handler_disconnect(h)
+        end
+      end
       @modified = false
       connect_signals
-      super pane, @view, :scrolled? => true
+      create_indenter
+      super pane, @view, :scrolled? => false
     end
     
     # Returns the Redcar::Document for this EditTab.
@@ -117,7 +127,15 @@ module Redcar
 
     # Change the syntax of the tab. Takes a name like "Ruby"
     def syntax=(grammar_name)
-      @view.change_root_scope(grammar_name)
+      @view.buffer.set_grammar_by_name(grammar_name)
+    end
+
+    def create_indenter
+      @indenter = Indenter.new(@view.buffer, @parser)
     end
   end
 end
+
+require File.dirname(__FILE__) + '/indenter'
+require File.dirname(__FILE__) + '/autopairer'
+require File.dirname(__FILE__) + '/snippet_inserter'

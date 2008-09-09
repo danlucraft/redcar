@@ -1,5 +1,5 @@
 
-class Redcar::EditView
+class Redcar::EditTab
   class Indenter
     def self.lookup_indent_rules
       @indent_rules = Hash.new {|h, k| h[k] = {}}

@@ -1,6 +1,6 @@
 
 module Redcar
-  Document = Gtk::SourceBuffer
+  Document = Gtk::Mate::Buffer
   class Document
     extend FreeBASE::StandardPlugin
 

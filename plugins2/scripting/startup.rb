@@ -59,7 +59,8 @@ if Redcar::App.ARGV.include? "--test-perf-load"
   stop_redcar
 elsif Redcar::App.ARGV.include? "--test-time-load"
   st = Time.now
-  Coms::OpenTab.new("/home/dan/projects/redcar/rak3000").do
+#  Coms::OpenTab.new("/home/dan/projects/redcar/rak3000").do
+  Coms::OpenTab.new("/home/dan/projects/gtkmateview/samples/rak").do
   et = Time.now
   puts "time to load: #{et-st}"
   stop_redcar

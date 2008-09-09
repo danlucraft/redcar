@@ -16,6 +16,36 @@ module Redcar
     include Redcar::MenuBuilder
     extend Redcar::PreferenceBuilder
 
+    class ShowViews < Redcar::Command
+      icon  :NEW
+      menu "Debug/Show Views"
+
+      def execute
+        win.tabs.each {|t| p t}
+      end
+    end
+
+    class ShowViews < Redcar::Command
+      icon  :NEW
+      menu "Debug/Show Views"
+
+      def execute
+        newwin = Gtk::Window.new("testwin")
+        newwin.set_size_request(300, 200)
+        mv = Gtk::Mate::View.new
+        mv.buffer = Gtk::Mate::Buffer.new
+        mv.modify_font(Pango::FontDescription.new("Consolas 14"))
+        gtk_sw = Gtk::ScrolledWindow.new
+        gtk_sw.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC)
+        gtk_sw.add(mv)
+        newwin.add(gtk_sw)
+        newwin.show_all
+#        sleep 1
+        mv.buffer.set_grammar_by_name("Ruby")
+        mv.set_theme_by_name("Twilight")
+      end
+    end
+
     class NewTab < Redcar::Command
       key   "Ctrl+N"
       icon  :NEW

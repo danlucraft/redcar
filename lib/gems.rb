@@ -5,7 +5,8 @@ require 'fileutils'
 
 # GTK dependencies
 require 'gtk2'
-require 'gtksourceview'
+require 'gtksourceview2'
+require File.dirname(__FILE__) + '/../../gtkmateview/dist/gtkmateview_rb'
 
 # RubyGem dependencies
 require 'rubygems'

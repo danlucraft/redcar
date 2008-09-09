@@ -1,99 +1,99 @@
 
 module Redcar
-  class EditView < Gtk::SourceView
+  class EditView < Gtk::Mate::View
     extend FreeBASE::StandardPlugin
     extend Redcar::MenuBuilder
     extend Redcar::PreferenceBuilder
 
     def self.load(plugin) #:nodoc:
-      Redcar::EditView.init(:bundles_dir => Redcar::ROOT + "/textmate/Bundles/",
-                            :themes_dir  => Redcar::ROOT + "/textmate/Themes/",
-                            :cache_dir   => Redcar::ROOT + "/cache/")
-      Redcar::EditView::Indenter.lookup_indent_rules
-      Redcar::EditView::AutoPairer.lookup_autopair_rules
+#       Redcar::EditView.init(:bundles_dir => Redcar::ROOT + "/textmate/Bundles/",
+#                             :themes_dir  => Redcar::ROOT + "/textmate/Themes/",
+#                             :cache_dir   => Redcar::ROOT + "/cache/")
+#       Redcar::EditView::Indenter.lookup_indent_rules
+#       Redcar::EditView::AutoPairer.lookup_autopair_rules
       plugin.transition(FreeBASE::LOADED)
     end
 
     def self.start(plugin) #:nodoc:
-      Redcar::EditView::SnippetInserter.load_snippets
+#       Redcar::EditView::SnippetInserter.load_snippets
       Hook.attach :after_open_window do
-        create_grammar_combo
-        create_line_col_status
+#         create_grammar_combo
+#         create_line_col_status
       end
       Hook.attach :after_focus_tab do |tab|
-        gtk_combo_box = bus('/gtk/window/statusbar/grammar_combo').data
-        gtk_line_label = bus('/gtk/window/statusbar/line').data
-        if tab and tab.is_a? EditTab
-          list = Redcar::EditView::Grammar.names.sort
-          gtk_grammar_combo_box.sensitive = true
-          gtk_grammar_combo_box.active = list.index(tab.view.parser.root.grammar.name)
-          gtk_line_label.sensitive = true
-        else
-          gtk_grammar_combo_box.sensitive = false
-          gtk_grammar_combo_box.active = -1
-          gtk_line_label.sensitive = false
-        end
+#         gtk_combo_box = bus('/gtk/window/statusbar/grammar_combo').data
+#         gtk_line_label = bus('/gtk/window/statusbar/line').data
+#         if tab and tab.is_a? EditTab
+#           list = Redcar::EditView::Grammar.names.sort
+#           gtk_grammar_combo_box.sensitive = true
+#           gtk_grammar_combo_box.active = list.index(tab.view.parser.root.grammar.name)
+#           gtk_line_label.sensitive = true
+#         else
+#           gtk_grammar_combo_box.sensitive = false
+#           gtk_grammar_combo_box.active = -1
+#           gtk_line_label.sensitive = false
+#         end
       end
       plugin.transition(FreeBASE::RUNNING)
     end
 
     def self.stop(plugin) #:nodoc:
-      Redcar::EditView::Theme.cache
+#       Redcar::EditView::Theme.cache
       plugin.transition(FreeBASE::LOADED)
     end
 
-    def self.create_line_col_status
-      unless slot = bus('/gtk/window/statusbar/line', true)
-        gtk_hbox = bus('/gtk/window/statusbar').data
-        gtk_label = Gtk::Label.new("")
-        bus('/gtk/window/statusbar/line').data = gtk_label
-        gtk_hbox.pack_end(gtk_label, false)
-        gtk_label.set_padding 10, 0
-        gtk_label.show
-      end
-    end
+#     def self.create_line_col_status
+#       unless slot = bus('/gtk/window/statusbar/line', true)
+#         gtk_hbox = bus('/gtk/window/statusbar').data
+#         gtk_label = Gtk::Label.new("")
+#         bus('/gtk/window/statusbar/line').data = gtk_label
+#         gtk_hbox.pack_end(gtk_label, false)
+#         gtk_label.set_padding 10, 0
+#         gtk_label.show
+#       end
+#     end
 
-    def self.create_grammar_combo
-      # When an EditView is created in a window, this needs to go onto it.
-      unless slot = bus('/gtk/window/statusbar/grammar_combo', true)
-        gtk_hbox = bus('/gtk/window/statusbar').data
-        gtk_combo_box = Gtk::ComboBox.new(true)
-        bus('/gtk/window/statusbar/grammar_combo').data = gtk_combo_box
-        list = Redcar::EditView::Grammar.names.sort
-        list.each {|item| gtk_combo_box.append_text(item) }
-        gtk_combo_box.signal_connect("changed") do |gtk_combo_box1|
-          if Redcar.tab and Redcar.tab.is_a? EditTab
-            Redcar.tab.view.change_root_scope(list[gtk_combo_box1.active])
-          end
-        end
-        gtk_hbox.pack_end(gtk_combo_box, false)
-        gtk_combo_box.sensitive = false
-        gtk_combo_box.show
-      end
-    end
+#     def self.create_grammar_combo
+#       # When an EditView is created in a window, this needs to go onto it.
+#       unless slot = bus('/gtk/window/statusbar/grammar_combo', true)
+#         gtk_hbox = bus('/gtk/window/statusbar').data
+#         gtk_combo_box = Gtk::ComboBox.new(true)
+#         bus('/gtk/window/statusbar/grammar_combo').data = gtk_combo_box
+#         list = Redcar::EditView::Grammar.names.sort
+#         list.each {|item| gtk_combo_box.append_text(item) }
+#         gtk_combo_box.signal_connect("changed") do |gtk_combo_box1|
+#           if Redcar.tab and Redcar.tab.is_a? EditTab
+#             Redcar.tab.view.change_root_scope(list[gtk_combo_box1.active])
+#           end
+#         end
+#         gtk_hbox.pack_end(gtk_combo_box, false)
+#         gtk_combo_box.sensitive = false
+#         gtk_combo_box.show
+#       end
+#     end
 
-    def self.gtk_grammar_combo_box
-      bus('/gtk/window/statusbar/grammar_combo', true).data
-    end
+#     def self.gtk_grammar_combo_box
+#       bus('/gtk/window/statusbar/grammar_combo', true).data
+#     end
 
-    class << self
-      attr_accessor :bundles_dir, :themes_dir, :cache_dir
-    end
+#     class << self
+#       attr_accessor :bundles_dir, :themes_dir, :cache_dir
+#     end
 
-    def self.init(options)
-      @bundles_dir = options[:bundles_dir]
-      @themes_dir  = options[:themes_dir]
-      @cache_dir   = options[:cache_dir]
-      Grammar.load_grammars
-      Theme.load_themes
-    end
+#     def self.init(options)
+#       @bundles_dir = options[:bundles_dir]
+#       @themes_dir  = options[:themes_dir]
+#       @cache_dir   = options[:cache_dir]
+#       Grammar.load_grammars
+#       Theme.load_themes
+#     end
 
-    attr_reader(:parser, :snippet_inserter, :autopairer)
+#     attr_reader(:parser, :snippet_inserter, :autopairer)
 
     def initialize(options={})
       super()
       set_gtk_cursor_colour
-      self.tabs_width = 2
+#       self.tabs_width = 2
       self.left_margin = 5
       if Redcar::Preference.get("Editing/Wrap words").to_bool
         self.wrap_mode = Gtk::TextTag::WRAP_WORD
@@ -244,9 +244,9 @@ module Redcar
     end
 
     def setup_buffer(thisbuf)
-      thisbuf.check_brackets = false
-      thisbuf.highlight = false
-      thisbuf.max_undo_levels = 10
+#       thisbuf.check_brackets = false
+#       thisbuf.highlight = false
+#       thisbuf.max_undo_levels = 10
     end
 
     def indent_line(line_num)
@@ -287,15 +287,11 @@ module Redcar
   end
 end
 
-require File.dirname(__FILE__) + '/edit_view/grammar'
-require File.dirname(__FILE__) + '/edit_view/scope'
-require File.dirname(__FILE__) + '/edit_view/parser'
-require File.dirname(__FILE__) + '/edit_view/theme'
-require File.dirname(__FILE__) + '/edit_view/colourer'
-require File.dirname(__FILE__) + '/edit_view/textloc'
+# require File.dirname(__FILE__) + '/edit_view/grammar'
+# require File.dirname(__FILE__) + '/edit_view/scope'
+# require File.dirname(__FILE__) + '/edit_view/parser'
+# require File.dirname(__FILE__) + '/edit_view/theme'
+# require File.dirname(__FILE__) + '/edit_view/colourer'
+# require File.dirname(__FILE__) + '/edit_view/textloc'
 
-require File.dirname(__FILE__) + '/edit_view/ext/redcar_ext'
-
-require File.dirname(__FILE__) + '/edit_view/indenter'
-require File.dirname(__FILE__) + '/edit_view/autopairer'
-require File.dirname(__FILE__) + '/edit_view/snippet_inserter'
+# require File.dirname(__FILE__) + '/edit_view/ext/redcar_ext'

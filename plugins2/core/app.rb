@@ -83,7 +83,7 @@ module Redcar
 
     # Load a Marhshalled object from the cache.
     def self.with_cache(dir, name)
-      unless cache_dir = Redcar::EditView.cache_dir
+      unless cache_dir = File.dirname(__FILE__) + "/../../cache/"
         raise "called App.with_cache without a cache_dir"
       end
       unless File.exist?(cache_dir + "#{dir}/")

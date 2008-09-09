@@ -306,7 +306,7 @@ class Redcar::EditView
 #       end
 
       if @colourer
-       SyntaxExt.uncolour_scopes(@colourer, lp.removed_scopes)
+        SyntaxExt.uncolour_scopes(@colourer, lp.removed_scopes)
         children_of_current = lp.all_scopes.select do |s|
           v = (s.parent == lp.current_scope)
         end
