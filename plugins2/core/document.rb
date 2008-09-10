@@ -234,10 +234,6 @@ module Redcar
       end
     end
     
-    def parser
-      @parser || IgnoreObject.new
-    end
-    
     def indenter
       @indenter || IgnoreObject.new
     end
