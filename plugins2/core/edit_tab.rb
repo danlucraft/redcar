@@ -14,6 +14,7 @@ module Redcar
       Hook.register :tab_save
       Hook.register :tab_load
       
+      Redcar::EditTab::Indenter.lookup_indent_rules
       Sensitive.register(:edit_tab, 
                          [:open_window, :new_tab, :close_tab, 
                           :after_focus_tab]) do
@@ -139,7 +140,7 @@ module Redcar
     end
 
     def create_indenter
-      @indenter = Indenter.new(@view.buffer, @parser)
+      @indenter = Indenter.new(@view.buffer)
     end
 
     def create_autopairer

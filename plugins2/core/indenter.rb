@@ -31,11 +31,13 @@ class Redcar::EditTab
 
     def self.indent_rules_for_scope(scope)
       if scope
+        hnames = scope.hierarchy_names(true)
+        @indent_rules_cache ||= {}
+        if rules = @indent_rules_cache[hnames]
+          return rules
+        end
         @indent_rules.each do |scope_name, value|
-          #        puts "applicable? #{scope_name} to #{scope.hierarchy_names(true).join(" ")}"
-          v = Theme.applicable?(scope_name, scope.hierarchy_names(true)).to_bool
-          #        p v
-          if v
+          if Gtk::Mate::Matcher.test_match(scope_name, hnames)
             return value
           end
         end
@@ -43,44 +45,43 @@ class Redcar::EditTab
       nil
     end
 
-    def initialize(buffer, parser)
+    def initialize(buffer)
       self.buffer = buffer
-      @parser = parser
     end
 
     def buffer=(buf)
-      @buf = buf
-      @buf.indenter = self
+      @buffer = buf
+      @buffer.indenter = self
       connect_buffer_signals
     end
 
     def connect_buffer_signals
       # Set up indenting on Return
-      @buf.signal_connect_after("insert_text") do |_, iter, text, length|
+      @buffer.signal_connect_after("insert_text") do |_, iter, text, length|
         line_num = iter.line
         # indent the next line automatically
-        rules = Indenter.indent_rules_for_scope(@parser.starting_scopes[line_num-1])
+        rules = Indenter.indent_rules_for_scope(@buffer.parser.root.scope_at(line_num, -1))
         if rules and text == "\n" and !@ignore
-          @parser.delay_parsing do
-#            indent_line(line_num-1, rules) if line_num > 0
+          @buffer.parser.stop_parsing
+          #            indent_line(line_num-1, rules) if line_num > 0
+          indent_line(line_num, rules)
+          line = @buffer.get_line(line_num).to_s
+          if contains_decrease_indent(line, rules) and
+              !contains_increase_indent(line, rules) and
+              !contains_nonindented(line, rules) and
+              !contains_indent_next(line, rules)
+            @ignore = true
+            @buffer.insert(@buffer.line_start(line_num), "\n")
+            @buffer.place_cursor(@buffer.line_start(line_num))
+            @ignore = false
             indent_line(line_num, rules)
-            line = @buf.get_line(line_num).to_s
-            if contains_decrease_indent(line, rules) and
-                !contains_increase_indent(line, rules) and
-                !contains_nonindented(line, rules) and
-                !contains_indent_next(line, rules)
-              @ignore = true
-              @buf.insert(@buf.line_start(line_num), "\n")
-              @buf.place_cursor(@buf.line_start(line_num))
-              @ignore = false
-              indent_line(line_num, rules)
-            end
           end
+          @buffer.parser.start_parsing
         end
 
         # watch for lines that begin with decrease indent
         if !@ignore and rules and !text.include? "\n" and text !~ /\s/
-          line = @buf.get_line(line_num).to_s
+          line = @buffer.get_line(line_num).to_s
           if contains_decrease_indent(line, rules)
             @ignore = true
             indent_line(line_num, rules)
@@ -114,11 +115,11 @@ class Redcar::EditTab
     def indent_line(line_num, rules=nil)
       rules ||= Indenter.indent_rules_for_scope(@parser.starting_scopes[line_num-1])
 #       puts "indent_line: #{line_num}"
-      cursor_offset = @buf.cursor_line_offset
+      cursor_offset = @buffer.cursor_line_offset
 #       puts "cursor_line_offset: #{cursor_offset}"
-      prev2line = @buf.get_line(line_num-2)
-      prevline  = @buf.get_line(line_num-1)
-      currline  = @buf.get_line(line_num)
+      prev2line = @buffer.get_line(line_num-2)
+      prevline  = @buffer.get_line(line_num-1)
+      currline  = @buffer.get_line(line_num)
 #       puts "  prev2line:#{prev2line.inspect}"
 #       puts "  prevline: #{prevline.inspect}"
 #       puts "  currline: #{currline.inspect}"
@@ -187,7 +188,7 @@ class Redcar::EditTab
     end
 
     def set_line_indent(line_num, indent_size, indent_type)
-      currline  = @buf.get_line(line_num)
+      currline  = @buffer.get_line(line_num)
       currline.to_s.chomp =~ /^(\s*)(.*)/
       indent_text = $1
       text = $2
@@ -211,10 +212,10 @@ class Redcar::EditTab
         end
       end
       if delete_length
-        line_off = @buf.line_start(line_num).offset
-        @buf.delete(@buf.iter(line_off), @buf.iter(line_off+delete_length))
+        line_off = @buffer.line_start(line_num).offset
+        @buffer.delete(@buffer.iter(line_off), @buffer.iter(line_off+delete_length))
       elsif extra_indent
-        @buf.insert(@buf.line_start(line_num), extra_indent)
+        @buffer.insert(@buffer.line_start(line_num), extra_indent)
       end
     end
 
