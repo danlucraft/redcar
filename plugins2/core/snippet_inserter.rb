@@ -1,10 +1,10 @@
-class Gtk::SourceMarker
+class Gtk::TextMark
   attr_accessor :name
   attr_accessor :snippet_mark
   attr_accessor :order_id, :stop_id
 end
 
-class Redcar::EditView
+class Redcar::EditTab
   class SnippetInserter
     def self.load_snippets
       @snippets = Hash.new {|h, k| h[k] = {}}
@@ -55,8 +55,8 @@ class Redcar::EditView
       all_snippets_for_scope = {}
       if scope
         @snippets.each do |scope_selector, snippets_for_scope|
-           #       puts "applicable? #{scope_selector} to #{scope.hierarchy_names(true).join(" ")}"
-          v = Theme.applicable?(scope_selector, scope.hierarchy_names(true)).to_bool
+           #       puts "applicable? #{scope_selector} to #{scope.hierarchy_names(true)}"
+          v = Gtk::Mate::Matcher.test_match(scope_selector, scope.hierarchy_names(true))
            #       p v
           if v
        #     p snippets_for_scope
@@ -93,7 +93,7 @@ class Redcar::EditView
       @buf.signal_connect("insert_text") do |_, iter, text, length|
         @insert_offset = iter.offset
         if @in_snippet and !@ignore
-          @buf.parser.parsing_on = false
+          @buf.parser.start_parsing
         end
         false
       end
@@ -145,8 +145,7 @@ class Redcar::EditView
         end
         if @in_snippet and !@ignore and @insert_offset
           update_after_insert(@insert_offset, length)
-          @buf.parser.parsing_on = true
-          @buf.parser.process_changes
+          @buf.parser.start_parsing
           @insert_offset = nil
         end
         false
@@ -249,19 +248,19 @@ class Redcar::EditView
       Redcar::App.set_environment_variables
       @content = execute_backticks(@content)
       @buf.delete_selection
-      @buf.parser.delay_parsing do
-        @buf.autopairer.ignore do
-          parse_text_for_tab_stops(@content)
-          unless @tab_stops.include? 0
-            @snippet_end_mark = @buf.create_mark(nil, @buf.cursor_iter, false)
-          end
-          fix_indent
-          create_right_marks
-          @constructing = false
-          set_names
-          insert_duplicate_contents
+      @buf.parser.stop_parsing
+      @buf.autopairer.ignore do
+        parse_text_for_tab_stops(@content)
+        unless @tab_stops.include? 0
+          @snippet_end_mark = @buf.create_mark(nil, @buf.cursor_iter, false)
         end
+        fix_indent
+        create_right_marks
+        @constructing = false
+        set_names
+        insert_duplicate_contents
       end
+      @buf.parser.start_parsing
       @ignore = false
       if @tab_stops.keys.include? 1
         select_tab_stop(1)
@@ -673,18 +672,18 @@ class Redcar::EditView
     end
 
     def update_after_insert(offset, length)
-      @buf.parser.delay_parsing do
-        update_mirrors(offset, offset+length)
-        update_transformations(offset, offset+length)
-      end
+      @buf.parser.stop_parsing
+      update_mirrors(offset, offset+length)
+      update_transformations(offset, offset+length)
+      @buf.parser.start_parsing
     end
 
     def update_after_delete(offset1, offset2)
-      @buf.parser.delay_parsing do
-        delete_any_mirrors(offset1, offset2)
-        update_mirrors(offset1, offset2)
-        update_transformations(offset1, offset2)
-      end
+      @buf.parser.stop_parsing
+      delete_any_mirrors(offset1, offset2)
+      update_mirrors(offset1, offset2)
+      update_transformations(offset1, offset2)
+      @buf.parser.start_parsing
     end
 
     def debug_text

@@ -215,7 +215,7 @@ module Redcar
         if !scope
           false
         else
-          app = Redcar::EditView::Theme.applicable?(@scope, scope.hierarchy_names(true))
+          app = Gtk::Mate::Matcher.test_match(@scope, scope.hierarchy_names(true))
           if self.ancestors[1].ancestors.include? Redcar::EditTabCommand
             app and self.ancestors[1].correct_scope?(scope)
           else

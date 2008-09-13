@@ -134,7 +134,7 @@ module Redcar
           ENV['TM_FILENAME'] = File.basename(Redcar.tab.filename)
         end
         if Redcar.doc.cursor_scope
-          ENV['TM_SCOPE'] = Redcar.doc.cursor_scope.hierarchy_names(true).join("\n")
+          ENV['TM_SCOPE'] = Redcar.doc.cursor_scope.hierarchy_names(true)
         end
       end
       ENV['TM_SOFT_TABS'] = "YES"

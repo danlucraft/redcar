@@ -60,6 +60,8 @@ module Com::RedcarIDE
 
       @lazy_apply = []
 
+      @tv.selection.select_iter(@tv.model.iter_first)
+
       @properties.save
     end
 

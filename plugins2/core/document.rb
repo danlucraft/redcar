@@ -117,14 +117,14 @@ module Redcar
     end
 
     def cursor_scope
-      if @parser
-        @parser.scope_at(TextLoc(cursor_line, cursor_line_offset))
+      if parser
+        parser.root.scope_at(cursor_line, cursor_line_offset)
       end
     end
 
     def scope_at(line, line_offset)
-      if @parser
-        @parser.scope_at(TextLoc(line, line_offset))
+      if parser
+        parser.root.scope_at(line, line_offset)
       end
     end
 

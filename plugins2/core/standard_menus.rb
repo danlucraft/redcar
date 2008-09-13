@@ -16,36 +16,6 @@ module Redcar
     include Redcar::MenuBuilder
     extend Redcar::PreferenceBuilder
 
-    class ShowViews < Redcar::Command
-      icon  :NEW
-      menu "Debug/Show Views"
-
-      def execute
-        win.tabs.each {|t| p t}
-      end
-    end
-
-    class ShowViews < Redcar::Command
-      icon  :NEW
-      menu "Debug/Show Views"
-
-      def execute
-        newwin = Gtk::Window.new("testwin")
-        newwin.set_size_request(300, 200)
-        mv = Gtk::Mate::View.new
-        mv.buffer = Gtk::Mate::Buffer.new
-        mv.modify_font(Pango::FontDescription.new("Consolas 14"))
-        gtk_sw = Gtk::ScrolledWindow.new
-        gtk_sw.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC)
-        gtk_sw.add(mv)
-        newwin.add(gtk_sw)
-        newwin.show_all
-#        sleep 1
-        mv.buffer.set_grammar_by_name("Ruby")
-        mv.set_theme_by_name("Twilight")
-      end
-    end
-
     class NewTab < Redcar::Command
       key   "Ctrl+N"
       icon  :NEW
@@ -495,7 +465,7 @@ module Redcar
       end
 
       def execute
-        @si ||= view.snippet_inserter
+        @si ||= tab.snippet_inserter
         @buf ||= doc
         if snippet = @si.tab_pressed
 #          InsertSnippet.new(snippet).do
@@ -515,7 +485,7 @@ module Redcar
       end
 
       def execute
-        @si ||= view.snippet_inserter
+        @si ||= tab.snippet_inserter
         @buf ||= doc
         if @si.shift_tab_pressed
           # within a snippet
@@ -540,7 +510,7 @@ module Redcar
       change do
         Redcar.win.tabs.each do |tab|
           if tab.is_a? EditTab
-            tab.view.set_font(Redcar::Preference.get("Appearance/Tab Font"))
+            tab.view.modify_font(Pango::FontDescription.new(Redcar::Preference.get("Appearance/Tab Font")))
           end
         end
       end
@@ -549,15 +519,15 @@ module Redcar
     preference "Appearance/Tab Theme" do |p|
       type :combo
       default "Mac Classic"
-      values { EditView::Theme.theme_names.sort_by(&:downcase) }
-#       change do
-#         win.tabs.each do |tab|
-#           if tab.respond_to? :view
-#             theme_name = Redcar::Preference.get("Appearance/Tab Theme")
-#             tab.view.change_theme(theme_name)
-#           end
-#         end
-#       end
+      values { Gtk::Mate::Theme.themes.map(&:name).sort_by(&:downcase) }
+      change do
+        Redcar.win.tabs.each do |tab|
+          if tab.is_a? EditTab
+            theme_name = Redcar::Preference.get("Appearance/Tab Theme")
+            tab.view.set_theme_by_name(theme_name)
+          end
+        end
+      end
     end
 
     preference "Editing/Indent size" do |p|
