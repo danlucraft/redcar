@@ -1,0 +1,20 @@
+--- !ruby/object:FreeBASE::PluginConfiguration
+name: redcar
+description: Redcar standard libraries
+version: 1.0
+author: Daniel Lucraft
+autoload: true
+require_path: redcar/redcar.rb
+startup_module: Redcar::RedcarPlugin
+load_dependencies: 
+  core: "*"
+  bundles: "*"
+  edit_view: "*"
+  edit_tab: "*"
+  scripting: "*"
+start_dependencies: 
+  core: "*"
+  bundles: "*"
+  edit_view: "*"
+  edit_tab: "*"
+  scripting: "*"

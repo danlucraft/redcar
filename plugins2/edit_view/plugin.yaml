@@ -1,0 +1,14 @@
+--- !ruby/object:FreeBASE::PluginConfiguration 
+name: edit_view
+description: The source editing widget.
+author: Daniel Lucraft
+version: 1.0
+autoload: true
+require_path: edit_view/edit_view.rb
+startup_module: Com::RedcarIDE::EditViewPlugin
+load_dependencies: 
+  core: "*"
+  bundles: "*"
+start_dependencies: 
+  core: "*"
+  bundles: "*"

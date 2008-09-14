@@ -1,0 +1,12 @@
+--- !ruby/object:FreeBASE::PluginConfiguration
+name: bundles
+description: Textmate compatibility layer
+version: 1.0
+author: Daniel Lucraft
+autoload: true
+require_path: bundles/bundles.rb
+startup_module: Redcar::BundlesPlugin
+load_dependencies: 
+  core: "*"
+start_dependencies: 
+  core: "*"

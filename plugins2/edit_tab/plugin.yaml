@@ -1,0 +1,16 @@
+--- !ruby/object:FreeBASE::PluginConfiguration 
+name: edit_tab
+description: The source editing tab.
+author: Daniel Lucraft
+version: 1.0
+autoload: true
+require_path: edit_tab/edit_tab.rb
+startup_module: Com::RedcarIDE::EditTabPlugin
+load_dependencies: 
+  core: "*"
+  bundles: "*"
+  edit_view: "*"
+start_dependencies: 
+  core: "*"
+  bundles: "*"
+  edit_view: "*"
