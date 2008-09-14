@@ -113,7 +113,7 @@ class Redcar::EditTab
     end
 
     def indent_line(line_num, rules=nil)
-      rules ||= Indenter.indent_rules_for_scope(@parser.starting_scopes[line_num-1])
+      rules ||= Indenter.indent_rules_for_scope(@buffer.parser.root.scope_at(line_num-1, -1))
 #       puts "indent_line: #{line_num}"
       cursor_offset = @buffer.cursor_line_offset
 #       puts "cursor_line_offset: #{cursor_offset}"

@@ -15,6 +15,7 @@ module Redcar
       Hook.register :tab_load
       
       Redcar::EditTab::Indenter.lookup_indent_rules
+      Redcar::EditTab::AutoPairer.lookup_autopair_rules
       Sensitive.register(:edit_tab, 
                          [:open_window, :new_tab, :close_tab, 
                           :after_focus_tab]) do
@@ -42,7 +43,12 @@ module Redcar
 #       end
       plugin.transition(FreeBASE::LOADED)
     end
-    
+
+    def self.start(plugin) #:nodoc:
+      Redcar::EditTab::SnippetInserter.load_snippets
+      plugin.transition(FreeBASE::RUNNING)
+    end
+
     # an EditView instance.
     attr_reader :view
     attr_accessor :filename
@@ -97,7 +103,7 @@ module Redcar
     def connect_signals #:nodoc:
       @view.buffer.signal_connect_after("changed") do |widget, event|
         self.modified = true
-#        Hook.trigger :tab_changed, self
+        Hook.trigger :tab_changed, self
         false
       end
     end
@@ -154,6 +160,11 @@ module Redcar
     def snippet_inserter
       @snippet_inserter
     end
+
+    def indent_line(line_num)
+      @indenter.indent_line(line_num)
+    end
+
   end
 end
 

@@ -47,3 +47,5 @@ module Com::RedcarIDE
     end
   end
 end
+
+#require File.dirname(__FILE__) + "/spec/spec.rb"
