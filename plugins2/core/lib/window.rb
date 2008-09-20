@@ -3,28 +3,20 @@ require 'gtk2'
 
 module Redcar
   class Window < Gtk::Window
-    extend FreeBASE::StandardPlugin
-
-    def self.load(plugin) #:nodoc:
+    def self.load #:nodoc:
       Hook.register :new_tab
       Hook.register :close_tab
       Hook.register :focus_tab
-
-      plugin.transition(FreeBASE::LOADED)
     end
 
-    def self.start(plugin) #:nodoc:
+    def self.start #:nodoc:
       App.new_window
-
-      plugin.transition(FreeBASE::RUNNING)
     end
 
-    def self.stop(plugin) #:nodoc:
+    def self.stop #:nodoc:
       App.close_all_windows(false)
 
       Hook.clear_plugin_hooks(self)
-
-      plugin.transition(FreeBASE::LOADED)
     end
 
     attr_reader(:notebooks_panes, :previous_tab, :gtk_menubar,

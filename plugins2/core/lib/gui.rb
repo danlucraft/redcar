@@ -5,20 +5,16 @@ module Redcar
   # Redcar::Gui sets up the Gtk main thread to begin when FreeBASE 2.0 
   # has loaded all the plugins.
   module Gui
-    extend FreeBASE::StandardPlugin
-
-    def self.load(plugin)
+    def self.load
       Hook.register(:redcar_start)
       create_logger
-      plugin.transition(FreeBASE::LOADED)
     end
     
-    def self.start(plugin)
-      set_main_loop(plugin)
-      plugin.transition(FreeBASE::RUNNING)
+    def self.start
+      set_main_loop
     end
     
-    def self.set_main_loop(plugin)
+    def self.set_main_loop
       bus["/system/ui/messagepump"].set_proc do
         begin
           @logger.info "starting Gui.main (in thread #{Thread.current})"

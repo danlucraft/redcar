@@ -5,6 +5,6 @@ autoload: true
 require_path: databus_inspector/databus_inspector.rb
 startup_module: Com::RedcarIDE::DatabusInspector
 load_dependencies:
-  core: "*"
+  redcar: "*"
 start_dependencies: 
-  core: "*"
+  redcar: "*"

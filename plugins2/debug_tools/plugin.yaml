@@ -7,4 +7,4 @@ autoload: true
 require_path: debug_tools/debug_tools.rb
 startup_module: Com::RedcarIDE::DebugTools
 load_dependencies: 
-  core: "*"
+  redcar: "*"

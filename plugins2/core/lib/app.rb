@@ -6,20 +6,6 @@ module Redcar
   # Application wide configuration. App manages Redcar::Windows (of which
   # there may only be one currently).
   module App
-    extend FreeBASE::StandardPlugin
-
-    def self.load(plugin) # :nodoc:
-      Hook.register :open_window
-      Hook.register :close_window
-      FreeBASE::Properties.new("Redcar Application Data",
-                               Redcar::VERSION,
-                               bus('/redcar/appdata'),
-                               Redcar::ROOT + "/custom/appdata.yaml")
-      self[:execution] = (self[:execution]||0) + 1
-      create_logger
-      plugin.transition(FreeBASE::LOADED)
-    end
-
     def self.[]=(name, val)
       bus("/redcar/appdata/#{name}").data = val
     end
@@ -28,6 +14,17 @@ module Redcar
       if slot = bus("/redcar/appdata/#{name}", true)
         slot.data
       end
+    end
+
+    def self.load
+      Hook.register :open_window
+      Hook.register :close_window
+      FreeBASE::Properties.new("Redcar Application Data",
+                               Redcar::VERSION,
+                               bus('/redcar/appdata'),
+                               Redcar::ROOT + "/custom/appdata.yaml")
+      Redcar::App[:execution] = (Redcar::App[:execution]||0) + 1
+      create_logger
     end
 
     # Quits the application. All plugins are stopped first.

@@ -57,14 +57,11 @@ module Redcar
   # See the Redcar::PreferenceBuilder for all methods that are valid
   # within the preference definition block.
   module Preference
-    extend FreeBASE::StandardPlugin
-    
-    def self.load(plugin) #:nodoc:
+    def self.load #:nodoc:
       FreeBASE::Properties.new("Redcar Preferences", 
                                Redcar::VERSION, 
                                bus('/redcar/preferences'), 
                                Redcar::ROOT + "/custom/preferences.yaml")
-      plugin.transition(FreeBASE::LOADED)
     end
     
     # Get the value of the preference with the given name. Always 

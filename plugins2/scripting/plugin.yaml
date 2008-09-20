@@ -10,6 +10,6 @@ tests:
   - path: scripting/test.rb
     testcase: Com::RedcarIDE::Scripting::Test
 load_dependencies: 
-  core: "*"
+  redcar: "*"
 start_dependencies: 
-  core: "*"
+  redcar: "*"

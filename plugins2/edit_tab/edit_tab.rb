@@ -1,13 +1,13 @@
 
 module Redcar
-  module EditTabPlugin < Redcar::Plugin
+  class EditTabPlugin < Redcar::Plugin
     def self.load(plugin) #:nodoc:
+      puts "loading EditTabPlugin"
+      puts caller
       Hook.register :tab_changed
       Hook.register :tab_save
       Hook.register :tab_load
       
-      Redcar::EditTab::Indenter.lookup_indent_rules
-      Redcar::EditTab::AutoPairer.lookup_autopair_rules
       Sensitive.register(:edit_tab, 
                          [:open_window, :new_tab, :close_tab, 
                           :after_focus_tab]) do
@@ -33,6 +33,15 @@ module Redcar
 #                           :after_focus_tab]) do
 #         win and tab and tab.is_a? EditTab
 #       end
+
+      Dir[File.dirname(__FILE__) + "/lib/*"].each {|f| Kernel.load f}
+      Dir[File.dirname(__FILE__) + "/tabs/*"].each {|f| load f}
+      require File.dirname(__FILE__) + "/commands/edit_tab"
+      Dir[File.dirname(__FILE__) + "/commands/*"].each {|f| load f}
+
+      Redcar::EditTab::Indenter.lookup_indent_rules
+      Redcar::EditTab::AutoPairer.lookup_autopair_rules
+
       plugin.transition(FreeBASE::LOADED)
     end
 
@@ -42,6 +51,3 @@ module Redcar
     end
   end
 end
-
-Dir[File.dirname(__FILE__) + "/commands/*"].each {|f| load f}
-Dir[File.dirname(__FILE__) + "/lib/*"].each {|f| load f}

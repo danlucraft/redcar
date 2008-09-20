@@ -16,25 +16,20 @@ module Redcar
   #     end
   #   end
   class Command
-    extend FreeBASE::StandardPlugin
-
     class << self
       include Redcar::Sensitive
     end
 
-    def self.load(plugin)
+    def self.load
       Range.active ||= []
-      plugin.transition(FreeBASE::LOADED)
     end
 
-    def self.start(plugin) #:nodoc:
+    def self.start #:nodoc:
       CommandHistory.clear
-      plugin.transition(FreeBASE::RUNNING)
     end
 
-    def self.stop(plugin) #:nodoc:
+    def self.stop #:nodoc:
       CommandHistory.clear
-      plugin.transition(FreeBASE::LOADED)
     end
 
     def self.inherited(klass)
@@ -494,10 +489,13 @@ module Redcar
     end
 
     def self.valid?(range)
-       range.is_a? Class and
+      range_ancestors = range.ancestors.map(&:to_s)
+      # TODO: fix this to not hardcode references to plugins
+      range.is_a? Class and
         (range == Redcar::Window or
          range <= Redcar::Tab or
-         range <= Redcar::Speedbar)
+         range_ancestors.include? "Redcar::EditView" or
+         range_ancestors.include? "Redcar::Speedbar")
     end
   end
 

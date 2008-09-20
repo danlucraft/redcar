@@ -123,6 +123,3 @@ module Redcar
   end
 end
 
-require File.dirname(__FILE__) + '/indenter'
-require File.dirname(__FILE__) + '/autopairer'
-require File.dirname(__FILE__) + '/snippet_inserter'

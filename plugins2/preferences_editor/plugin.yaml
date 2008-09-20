@@ -7,6 +7,6 @@ autoload: true
 require_path: preferences_editor/preferences_editor.rb
 startup_module: Com::RedcarIDE::PreferencesEditor
 load_dependencies: 
-  core: "*"
+  redcar: "*"
 start_dependencies: 
-  core: "*"
+  redcar: "*"

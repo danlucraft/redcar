@@ -1,6 +1,6 @@
 
 module Redcar    
   class SnippetCommand < Redcar::Command
-    range Redcar::EditTab
+    range Redcar::EditView
   end
 end

@@ -37,5 +37,5 @@ module Redcar
   end  
 end
 
-Dir[File.dirname(__FILE__) + "/commands/*"].each {|f| load f}
 Dir[File.dirname(__FILE__) + "/lib/*"].each {|f| load f}
+Dir[File.dirname(__FILE__) + "/commands/*"].each {|f| load f}

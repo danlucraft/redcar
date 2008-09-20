@@ -3,21 +3,16 @@ module Redcar
   # The Redcar::Menu module registers the context menu services
   # on startup and initializes the MenuBuilder.
   module Menu
-    extend FreeBASE::StandardPlugin
-    
-    def self.load(plugin)
+    def self.load
       MenuBuilder.init_menuid
-      plugin.transition(FreeBASE::LOADED)
     end
     
-    def self.start(plugin)
+    def self.start
       register_context_menu_services
-      plugin.transition(FreeBASE::RUNNING)
     end
     
-    def self.stop(plugin)
+    def self.stop
       remove_context_menu_services
-      plugin.transition(FreeBASE::LOADED)
     end
     
     def self.remove_context_menu_services

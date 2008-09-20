@@ -1,17 +1,15 @@
 
 module Redcar
   class Tooltip < Gtk::Window
-    extend FreeBASE::StandardPlugin
     
     class << Tooltip
       attr_accessor :visible_tooltips
       attr_accessor :tooltip_handlers
     end
     
-    def self.load(plugin)
+    def self.load
       @visible_tooltips = []
       @tooltip_handlers = []
-      plugin.transition(FreeBASE::LOADED)
     end
     
     def self.hide_all

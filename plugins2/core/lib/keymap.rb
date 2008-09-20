@@ -1,17 +1,10 @@
 
 module Redcar
   class Keymap
-    extend FreeBASE::StandardPlugin
-
-    def self.load(plugin) #:nodoc:
+    def self.load #:nodoc:
       @obj_keymaps = Hash.new {|obj,key| obj[key] = [] }
       Hook.register(:keystroke)
       create_logger
-      plugin.transition(FreeBASE::LOADED)
-    end
-
-    def self.start(plugin) #:nodoc:
-      plugin.transition(FreeBASE::RUNNING)
     end
 
     # "Page Up" -> "Page_Up"

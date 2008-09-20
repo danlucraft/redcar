@@ -5,18 +5,14 @@ module Redcar
   # as a child, and has options to include a Gtk::Toolbar and
   # a scrollbars.
   class Tab
-    extend FreeBASE::StandardPlugin
-
-    def self.load(plugin) #:nodoc:
+    def self.load #:nodoc:
       Sensitive.register(:tab, [:open_window, :new_tab, :close_tab]) do
         Redcar.win and Redcar.win.tabs.length > 0
       end
-      plugin.transition(FreeBASE::LOADED)
     end
     
-    def self.start(plugin) #:nodoc:
+    def self.start #:nodoc:
       @widget_to_tab = {}
-      plugin.transition(FreeBASE::RUNNING)
     end
     
     def self.stop(plugin) #:nodoc:

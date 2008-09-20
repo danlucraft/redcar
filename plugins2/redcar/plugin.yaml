@@ -11,10 +11,8 @@ load_dependencies:
   bundles: "*"
   edit_view: "*"
   edit_tab: "*"
-  scripting: "*"
 start_dependencies: 
   core: "*"
   bundles: "*"
   edit_view: "*"
   edit_tab: "*"
-  scripting: "*"

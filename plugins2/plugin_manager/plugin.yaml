@@ -10,6 +10,6 @@ tests:
   - path: plugin_manager/test.rb
     testcase: Com::RedcarIDE::PluginManager::Test
 load_dependencies: 
-  core: "*"
+  redcar: "*"
 start_dependencies: 
-  core: "*"
+  redcar: "*"

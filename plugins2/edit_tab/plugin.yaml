@@ -5,7 +5,7 @@ author: Daniel Lucraft
 version: 1.0
 autoload: true
 require_path: edit_tab/edit_tab.rb
-startup_module: Com::RedcarIDE::EditTabPlugin
+startup_module: Redcar::EditTabPlugin
 load_dependencies: 
   core: "*"
   bundles: "*"
