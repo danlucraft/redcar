@@ -1,9 +1,9 @@
 
 module Redcar
-  module EditTabPlugin
+  class EditTabPlugin
     preference "Appearance/Tab Font" do
       default "Monospace 12"
-      widget  { StandardMenus.font_chooser_button("Appearance/Tab Font") }
+      widget  { EditTabPlugin.font_chooser_button("Appearance/Tab Font") }
       change do
         Redcar.win.tabs.each do |tab|
           if tab.is_a? EditTab

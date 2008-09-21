@@ -28,7 +28,6 @@ module Redcar
       Gui.start
       Command.start
       Window.start
-      Keymap.start
       plugin.transition(FreeBASE::RUNNING)
     end
 
@@ -37,8 +36,10 @@ module Redcar
       Tab.stop
       Command.stop
       Window.stop
-      Keymap.stop
       plugin.transition(FreeBASE::LOADED)
     end
   end
 end
+
+load File.dirname(__FILE__) + '/commands/tab_command.rb'
+Dir[File.dirname(__FILE__) + "/commands/*"].each {|fn| load fn}

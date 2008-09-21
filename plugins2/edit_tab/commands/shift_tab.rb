@@ -1,5 +1,5 @@
 module Redcar
-  class ShiftTab < Redcar::EditTabCommand
+  class ShiftTabPressed < Redcar::EditTabCommand
     key "Shift+Tab"
 
     def initialize(si=nil, buf=nil)

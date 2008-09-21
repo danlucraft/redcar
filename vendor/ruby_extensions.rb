@@ -93,7 +93,22 @@ end
 # f = Foo.new([1, 2, 3])
 # f.logins[1] # => 2
 
-class Module
+class Module  
+  def create_logger
+    @logger = Log4r::Logger.new self.to_s
+    unless File.exist? Redcar::ROOT + "/logs/"
+      FileUtils.mkdir Redcar::ROOT + "/logs/"
+    end
+    if ARGV.include? "--debug"
+      @logger.outputters = Log4r::Outputter.stdout
+    end
+    f = Log4r::FileOutputter.new(self.to_s,
+                                 :filename => Redcar::ROOT + "/logs/#{self}.log".gsub("::", "_"),
+                                 :trunc => false,
+                                 :formatter => Redcar::LogFormatter)
+    @logger.add(f)
+  end
+
   def define_method_bracket(name, &code)
     define_method("#{name}_bracketed", &code)
     m = instance_method("#{name}_bracketed")

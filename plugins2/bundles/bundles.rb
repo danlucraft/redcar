@@ -53,7 +53,7 @@ module Redcar
           when "$"
             [4, "Shift"]
           else
-            Bundle.logger.info "unknown key_equivalent: #{keyeq}"
+            BundlesPlugin.logger.info "unknown key_equivalent: #{keyeq}"
             return nil
           end
         end

@@ -15,28 +15,8 @@ module Redcar
     #   win.new_tab(EditTab)
     #   pane.new_tab(EditTab)
     def initialize(pane)
-      @view = Gtk::Mate::View.new
-      @view.buffer = Gtk::Mate::Buffer.new
-      @view.modify_font(Pango::FontDescription.new(Redcar::Preference.get("Appearance/Tab Font")))
-      @view.buffer.set_grammar_by_name("Ruby")
-      h = @view.signal_connect_after("expose-event") do |_, ev|
-        if ev.window == @view.window
-          @view.set_theme_by_name(Redcar::Preference.get("Appearance/Tab Theme"))
-          @view.signal_handler_disconnect(h)
-        end
-      end
-      @modified = false
-      if Redcar::Preference.get("Editing/Wrap words").to_bool
-        @view.wrap_mode = Gtk::TextTag::WRAP_WORD
-      else
-        @view.wrap_mode = Gtk::TextTag::WRAP_NONE
-      end
-      @view.left_margin = 5
-      @view.show_line_numbers = Redcar::Preference.get("Editing/Show line numbers").to_bool
+      @view = EditView.new
       connect_signals
-      create_indenter
-      create_autopairer
-      create_snippet_inserter
       super pane, @view, :scrolled? => true
     end
     

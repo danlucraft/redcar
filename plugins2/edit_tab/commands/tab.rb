@@ -1,5 +1,5 @@
 module Redcar
-  class Tab < Redcar::EditTabCommand
+  class TabPressed < Redcar::EditTabCommand
     key "Tab"
     norecord
     

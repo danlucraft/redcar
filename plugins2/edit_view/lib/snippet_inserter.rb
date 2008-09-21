@@ -20,7 +20,7 @@ class Redcar::EditView
          elsif snip["keyEquivalent"]
            keyb = Redcar::Bundle.translate_key_equivalent(snip["keyEquivalent"])
            if keyb
-             command_class = Class.new(Redcar::EditView::SnippetCommand)
+             command_class = Class.new(Redcar::SnippetCommand)
              command_class.instance_variable_set(:@name, snip["name"])
              if snip["scope"]
                command_class.scope(snip["scope"])

@@ -2,8 +2,6 @@
 module Redcar
   class EditTabPlugin < Redcar::Plugin
     def self.load(plugin) #:nodoc:
-      puts "loading EditTabPlugin"
-      puts caller
       Hook.register :tab_changed
       Hook.register :tab_save
       Hook.register :tab_load
@@ -35,18 +33,16 @@ module Redcar
 #       end
 
       Dir[File.dirname(__FILE__) + "/lib/*"].each {|f| Kernel.load f}
-      Dir[File.dirname(__FILE__) + "/tabs/*"].each {|f| load f}
-      require File.dirname(__FILE__) + "/commands/edit_tab"
-      Dir[File.dirname(__FILE__) + "/commands/*"].each {|f| load f}
-
-      Redcar::EditTab::Indenter.lookup_indent_rules
-      Redcar::EditTab::AutoPairer.lookup_autopair_rules
+      Dir[File.dirname(__FILE__) + "/tabs/*"].each {|f| Kernel.load f}
+      Kernel.load File.dirname(__FILE__) + "/commands/edit_tab.rb"
+      Dir[File.dirname(__FILE__) + "/commands/*"].each {|f| Kernel.load f}
+      Kernel.load File.dirname(__FILE__) + "/widgets/font_chooser_button.rb"
+      Kernel.load File.dirname(__FILE__) + "/preferences.rb"
 
       plugin.transition(FreeBASE::LOADED)
     end
 
     def self.start(plugin) #:nodoc:
-      Redcar::EditTab::SnippetInserter.load_snippets
       plugin.transition(FreeBASE::RUNNING)
     end
   end

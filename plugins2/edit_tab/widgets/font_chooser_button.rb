@@ -1,6 +1,6 @@
 
 
-module Redcar::EditTabPlugin
+class Redcar::EditTabPlugin
   def self.font_chooser_button(name)
     gtk_image = Gtk::Image.new(Gtk::Stock::SELECT_FONT,
                                Gtk::IconSize::MENU)

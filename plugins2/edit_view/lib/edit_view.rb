@@ -1,58 +1,63 @@
 
 module Redcar
   class EditView < Gtk::Mate::View
-#     def self.create_line_col_status
-#       unless slot = bus('/gtk/window/statusbar/line', true)
-#         gtk_hbox = bus('/gtk/window/statusbar').data
-#         gtk_label = Gtk::Label.new("")
-#         bus('/gtk/window/statusbar/line').data = gtk_label
-#         gtk_hbox.pack_end(gtk_label, false)
-#         gtk_label.set_padding 10, 0
-#         gtk_label.show
-#       end
-#     end
+    def self.create_line_col_status
+      unless slot = bus('/gtk/window/statusbar/line', true)
+        gtk_hbox = bus('/gtk/window/statusbar').data
+        gtk_label = Gtk::Label.new("")
+        bus('/gtk/window/statusbar/line').data = gtk_label
+        gtk_hbox.pack_end(gtk_label, false)
+        gtk_label.set_padding 10, 0
+        gtk_label.show
+      end
+    end
 
-#     def self.create_grammar_combo
-#       # When an EditView is created in a window, this needs to go onto it.
-#       unless slot = bus('/gtk/window/statusbar/grammar_combo', true)
-#         gtk_hbox = bus('/gtk/window/statusbar').data
-#         gtk_combo_box = Gtk::ComboBox.new(true)
-#         bus('/gtk/window/statusbar/grammar_combo').data = gtk_combo_box
-#         list = Redcar::EditView::Grammar.names.sort
-#         list.each {|item| gtk_combo_box.append_text(item) }
-#         gtk_combo_box.signal_connect("changed") do |gtk_combo_box1|
-#           if Redcar.tab and Redcar.tab.is_a? EditTab
-#             Redcar.tab.view.change_root_scope(list[gtk_combo_box1.active])
-#           end
-#         end
-#         gtk_hbox.pack_end(gtk_combo_box, false)
-#         gtk_combo_box.sensitive = false
-#         gtk_combo_box.show
-#       end
-#     end
+    def self.create_grammar_combo
+      # When an EditView is created in a window, this needs to go onto it.
+      unless slot = bus('/gtk/window/statusbar/grammar_combo', true)
+        gtk_hbox = bus('/gtk/window/statusbar').data
+        gtk_combo_box = Gtk::ComboBox.new(true)
+        bus('/gtk/window/statusbar/grammar_combo').data = gtk_combo_box
+        Gtk::Mate.load_bundles
+        list = Gtk::Mate::Buffer.bundles.map{|b| b.grammars }.flatten.map(&:name).sort
+        list.each {|item| gtk_combo_box.append_text(item) }
+        gtk_combo_box.signal_connect("changed") do |gtk_combo_box1|
+          if Redcar.tab and Redcar.tab.class.to_s == "EditTab"
+            Redcar.tab.view.change_root_scope(list[gtk_combo_box1.active])
+          end
+        end
+        gtk_hbox.pack_end(gtk_combo_box, false)
+        gtk_combo_box.sensitive = false
+        gtk_combo_box.show
+      end
+    end
 
-#     def self.gtk_grammar_combo_box
-#       bus('/gtk/window/statusbar/grammar_combo', true).data
-#     end
-
-#     class << self
-#       attr_accessor :bundles_dir, :themes_dir, :cache_dir
-#     end
-
-#     def self.init(options)
-#       @bundles_dir = options[:bundles_dir]
-#       @themes_dir  = options[:themes_dir]
-#       @cache_dir   = options[:cache_dir]
-#       Grammar.load_grammars
-#       Theme.load_themes
-#     end
-
-#     attr_reader(:parser, :snippet_inserter, :autopairer)
+    def self.gtk_grammar_combo_box
+      bus('/gtk/window/statusbar/grammar_combo', true).data
+    end
 
     def initialize(options={})
       super()
       set_gtk_cursor_colour
-#       self.tabs_width = 2
+      self.buffer = Gtk::Mate::Buffer.new
+      self.modify_font(Pango::FontDescription.new(Redcar::Preference.get("Appearance/Tab Font")))
+      self.buffer.set_grammar_by_name("Ruby")
+      h = self.signal_connect_after("expose-event") do |_, ev|
+        if ev.window == self.window
+          self.set_theme_by_name(Redcar::Preference.get("Appearance/Tab Theme"))
+          self.signal_handler_disconnect(h)
+        end
+      end
+      @modified = false
+      if Redcar::Preference.get("Editing/Wrap words").to_bool
+        self.wrap_mode = Gtk::TextTag::WRAP_WORD
+      else
+        self.wrap_mode = Gtk::TextTag::WRAP_NONE
+      end
+      self.left_margin = 5
+      self.show_line_numbers = Redcar::Preference.get("Editing/Show line numbers").to_bool
+
+#      self.tabs_width = 2
       self.left_margin = 5
       if Redcar::Preference.get("Editing/Wrap words").to_bool
         self.wrap_mode = Gtk::TextTag::WRAP_WORD
@@ -60,14 +65,8 @@ module Redcar
         self.wrap_mode = Gtk::TextTag::WRAP_NONE
       end
       setup_buffer(buffer)
-      self.show_line_numbers = Redcar::Preference.get("Editing/Show line numbers").to_bool
-      set_font(Redcar::Preference.get("Appearance/Tab Font"))
-      @theme = Theme.theme(Redcar::Preference.get("Appearance/Tab Theme"))
       setup_bookmark_assets
       connect_signals
-      apply_theme
-      create_root_scope('Ruby')
-      create_parser
       create_indenter
       create_autopairer
       create_snippet_inserter
@@ -85,7 +84,7 @@ module Redcar
     def setup_bookmark_assets
       @@bookmark_pixbuf ||= Gdk::Pixbuf.new(Redcar::ROOT+
                                             '/plugins/redcar_core/icons/bookmark.png')
-      set_marker_pixbuf("bookmark", @@bookmark_pixbuf)
+#      set_marker_pixbuf("bookmark", @@bookmark_pixbuf)
     end
 
     def update_line_and_column(mark)
@@ -113,7 +112,7 @@ module Redcar
       signal_connect("parent_set") do
         if parent.is_a? Gtk::ScrolledWindow
           parent.vscrollbar.signal_connect_after("value_changed") do
-            view_changed
+#            view_changed
           end
         end
       end
@@ -135,72 +134,29 @@ module Redcar
       @root.set_open(true)
     end
 
-    def create_parser
-      raise "trying to create colourer with no theme!" unless @theme
-      @colourer = Redcar::EditView::Colourer.new(self, @theme)
-      @parser = Parser.new(buffer, @root, [], @colourer)
-      buffer.parser = @parser
-    end
-
     def create_indenter
-      @indenter = Indenter.new(buffer, @parser)
+      @indenter = Indenter.new(buffer)
     end
 
     def create_autopairer
-      @autopairer = AutoPairer.new(buffer, @parser)
+      @autopairer = AutoPairer.new(buffer)
     end
 
     def create_snippet_inserter
       @snippet_inserter = SnippetInserter.new(buffer)
     end
 
-    def change_root_scope(gr_name, should_colour=true)
-      raise "trying to change to nil grammar!" unless gr_name
-      gr = Grammar.grammar(:name => gr_name)
-      @root = Scope.new(:pattern => gr,
-                        :grammar => gr)
-      @root.bg_color = @theme.global_settings['background']
-      @root.set_start_mark buffer, buffer.iter(0).offset, true
-      @root.set_end_mark   buffer, buffer.char_count, false
-      @root.set_open(true)
-      @parser.uncolour
-      @parser.root = @root
-      @parser.reparse
-    end
-
-    def change_theme(theme_name)
-      @theme = Theme.theme(theme_name)
-      apply_theme
-      new_buffer
-      @colourer = Redcar::EditView::Colourer.new(self, @theme)
-      @parser.colourer = @colourer
-      @parser.recolour
-    end
-
-    def apply_theme
-      bg_colour = Theme.merge_colour("#FFFFFF", @theme.global_settings['background'])
-      background_colour = Theme.parse_colour(bg_colour)
-      modify_base(Gtk::STATE_NORMAL, background_colour)
-
-      fg_colour = Theme.merge_colour("#FFFFFF", @theme.global_settings['foreground'])
-      foreground_colour = Theme.parse_colour(fg_colour)
-      modify_text(Gtk::STATE_NORMAL, foreground_colour)
-#       sel_colour = Theme.merge_colour("#FFFFFF", @theme.global_settings['selection'])
-#       selection_colour  = Theme.parse_colour(sel_colour)
-#       modify_base(Gtk::STATE_SELECTED, selection_colour)
-    end
-
-    def new_buffer
-      text = self.buffer.text
-      newbuffer = Gtk::SourceBuffer.new
-      self.buffer = newbuffer
-      setup_buffer(newbuffer)
-      newbuffer.text = text
-      newbuffer.parser = @parser
-      @parser.buffer = newbuffer
-      @indenter.buffer = newbuffer
-      @autopairer.buffer = newbuffer
-    end
+#     def new_buffer
+#       text = self.buffer.text
+#       newbuffer = Gtk::SourceBuffer.new
+#       self.buffer = newbuffer
+#       setup_buffer(newbuffer)
+#       newbuffer.text = text
+#       newbuffer.parser = @parser
+#       @parser.buffer = newbuffer
+#       @indenter.buffer = newbuffer
+#       @autopairer.buffer = newbuffer
+#     end
 
     def setup_buffer(thisbuf)
 #       thisbuf.check_brackets = false
