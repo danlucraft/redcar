@@ -42,6 +42,7 @@ module Redcar
   end  
 end
 
+load File.dirname(__FILE__) + "/lib/edit_view.rb"
 Dir[File.dirname(__FILE__) + "/lib/*"].each {|f| load f}
 load File.dirname(__FILE__) + "/commands/snippet_command.rb"
 Dir[File.dirname(__FILE__) + "/commands/*"].each {|f| load f}

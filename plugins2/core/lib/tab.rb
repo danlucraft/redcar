@@ -15,11 +15,10 @@ module Redcar
       @widget_to_tab = {}
     end
     
-    def self.stop(plugin) #:nodoc:
+    def self.stop #:nodoc:
       @widget_to_tab.values.each do |tab|
         tab.close
       end
-      plugin.transition(FreeBASE::LOADED)
     end
     
     class << self
@@ -71,7 +70,8 @@ module Redcar
       @@tabcount ||= 0
       @@tabcount += 1
       @label = Gtk::NotebookLabel.new(self, "#new#{@@tabcount}", self.tab_icon) do
-        Coms::CloseTab.new(self).do
+        # TODO: figure out this hardcoded reference
+        CloseTab.new(self).do
       end
       @label_angle = :horizontal
       

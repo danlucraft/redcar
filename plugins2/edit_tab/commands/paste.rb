@@ -11,7 +11,7 @@ module Redcar
         doc.insert_at_cursor(str)
         if n > 1 and Redcar::Preference.get("Editing/Indent pasted text").to_bool
           n.times do |i|
-            tab.indent_line(l+i)
+            tab.view.indent_line(l+i)
           end
         end
       end

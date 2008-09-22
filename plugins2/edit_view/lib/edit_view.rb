@@ -36,6 +36,8 @@ module Redcar
       bus('/gtk/window/statusbar/grammar_combo', true).data
     end
 
+    attr_accessor :snippet_inserter
+
     def initialize(options={})
       super()
       set_gtk_cursor_colour
@@ -57,13 +59,8 @@ module Redcar
       self.left_margin = 5
       self.show_line_numbers = Redcar::Preference.get("Editing/Show line numbers").to_bool
 
-#      self.tabs_width = 2
+      self.set_tab_width(2)
       self.left_margin = 5
-      if Redcar::Preference.get("Editing/Wrap words").to_bool
-        self.wrap_mode = Gtk::TextTag::WRAP_WORD
-      else
-        self.wrap_mode = Gtk::TextTag::WRAP_NONE
-      end
       setup_buffer(buffer)
       setup_bookmark_assets
       connect_signals

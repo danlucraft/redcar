@@ -123,19 +123,20 @@ class Redcar::EditView
           hierarchy_names = cursor_scope.hierarchy_names(true)
 
           # Type over ends
-          @rules = AutoPairer.autopair_rules_for_scope(hierarchy_names)
-          inverse_rules = @rules.invert
-          if inverse_rules.include? text and !@ignore_insert
-            end_mark_pair = find_mark_pair_by_end(iter)
-            if end_mark_pair and end_mark_pair[3] == text
-              @type_over_end = true
+          if @rules = AutoPairer.autopair_rules_for_scope(hierarchy_names)
+            inverse_rules = @rules.invert
+            if inverse_rules.include? text and !@ignore_insert
+              end_mark_pair = find_mark_pair_by_end(iter)
+              if end_mark_pair and end_mark_pair[3] == text
+                @type_over_end = true
+                @buffer.parser.stop_parsing
+              end
+            end
+            # Insert matching ends
+            if @rules.include? text and !@ignore_insert and !@done
+              @insert_end = true
               @buffer.parser.stop_parsing
             end
-          end
-          # Insert matching ends
-          if @rules.include? text and !@ignore_insert and !@done
-            @insert_end = true
-            @buffer.parser.stop_parsing
           end
         end
         false

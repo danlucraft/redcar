@@ -40,6 +40,10 @@ module Redcar
       separator
     end
 
+    main_menu "Dans" do
+      item "RubyEnd", RubyEnd
+    end
+
     context_menu "Pane" do
       item "Split Horizontal",  SplitHorizontal
       item "Split Vertical",    SplitVertical

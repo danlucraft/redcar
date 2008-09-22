@@ -79,27 +79,6 @@ module Redcar
     def syntax=(grammar_name)
       @view.buffer.set_grammar_by_name(grammar_name)
     end
-
-    def create_indenter
-      @indenter = Indenter.new(@view.buffer)
-    end
-
-    def create_autopairer
-      @autopairer = AutoPairer.new(@view.buffer)
-    end
-
-    def create_snippet_inserter
-      @snippet_inserter = SnippetInserter.new(@view.buffer)
-    end
-
-    def snippet_inserter
-      @snippet_inserter
-    end
-
-    def indent_line(line_num)
-      @indenter.indent_line(line_num)
-    end
-
   end
 end
 

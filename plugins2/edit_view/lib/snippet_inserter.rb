@@ -17,24 +17,24 @@ class Redcar::EditView
           slot.data = snip
           if snip["tabTrigger"]
             @snippets[snip["scope"]||""][snip["tabTrigger"]] = snip
-         elsif snip["keyEquivalent"]
-           keyb = Redcar::Bundle.translate_key_equivalent(snip["keyEquivalent"])
-           if keyb
-             command_class = Class.new(Redcar::SnippetCommand)
-             command_class.instance_variable_set(:@name, snip["name"])
-             if snip["scope"]
-               command_class.scope(snip["scope"])
-             end
-             command_class.key(keyb)
-             command_class.class_eval %Q{
-               def execute
-                 tab.view.snippet_inserter.insert_snippet_from_path("#{slot.path}")
-               end
-             }
-             def command_class.inspect
-               "#<SnippetCommand: #{@name}>"
-             end
-           end
+          elsif snip["keyEquivalent"]
+            keyb = Redcar::Bundle.translate_key_equivalent(snip["keyEquivalent"])
+            if keyb
+              command_class = Class.new(Redcar::SnippetCommand)
+              command_class.instance_variable_set(:@name, snip["name"])
+              if snip["scope"]
+                command_class.scope(snip["scope"])
+              end
+              command_class.key(keyb)
+              command_class.class_eval %Q{
+                def execute
+                  tab.view.snippet_inserter.insert_snippet_from_path("#{slot.path}")
+                end
+              }
+              def command_class.inspect
+                "#<SnippetCommand: #{@name}>"
+              end
+            end
           else
             i += 1
           end
