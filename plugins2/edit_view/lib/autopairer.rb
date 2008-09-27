@@ -165,7 +165,7 @@ class Redcar::EditView
           mark2 = @buffer.create_mark(nil, @buffer.cursor_iter, false)
           add_mark_pair [mark1, mark2, text, endtext]
           @ignore_insert = false
-          @buffer.parser.start_parsing
+           @buffer.parser.start_parsing
           @insert_end = false
         end
         false
@@ -200,6 +200,5 @@ class Redcar::EditView
         end
       end
     end
-
   end
 end

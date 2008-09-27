@@ -60,35 +60,37 @@ class Redcar::EditView
       @buffer.signal_connect_after("insert_text") do |_, iter, text, length|
         line_num = iter.line
         # indent the next line automatically
-        rules = Indenter.indent_rules_for_scope(@buffer.parser.root.scope_at(line_num, -1))
-        if rules and text == "\n" and !@ignore
-          @buffer.parser.stop_parsing
-          #            indent_line(line_num-1, rules) if line_num > 0
-          indent_line(line_num, rules)
-          line = @buffer.get_line(line_num).to_s
-          if contains_decrease_indent(line, rules) and
-              !contains_increase_indent(line, rules) and
-              !contains_nonindented(line, rules) and
-              !contains_indent_next(line, rules)
-            @ignore = true
-            @buffer.insert(@buffer.line_start(line_num), "\n")
-            @buffer.place_cursor(@buffer.line_start(line_num))
-            @ignore = false
+        if @buffer.parser
+          rules = Indenter.indent_rules_for_scope(@buffer.parser.root.scope_at(line_num, -1))
+          if rules and text == "\n" and !@ignore
+            @buffer.parser.stop_parsing
+            #            indent_line(line_num-1, rules) if line_num > 0
             indent_line(line_num, rules)
+            line = @buffer.get_line(line_num).to_s
+            if contains_decrease_indent(line, rules) and
+                !contains_increase_indent(line, rules) and
+                !contains_nonindented(line, rules) and
+                !contains_indent_next(line, rules)
+              @ignore = true
+              @buffer.insert(@buffer.line_start(line_num), "\n")
+              @buffer.place_cursor(@buffer.line_start(line_num))
+              @ignore = false
+              indent_line(line_num, rules)
+            end
+            @buffer.parser.start_parsing
           end
-          @buffer.parser.start_parsing
-        end
 
-        # watch for lines that begin with decrease indent
-        if !@ignore and rules and !text.include? "\n" and text !~ /\s/
-          line = @buffer.get_line(line_num).to_s
-          if contains_decrease_indent(line, rules)
-            @ignore = true
-            indent_line(line_num, rules)
-            @ignore = false
+          # watch for lines that begin with decrease indent
+          if !@ignore and rules and !text.include? "\n" and text !~ /\s/
+            line = @buffer.get_line(line_num).to_s
+            if contains_decrease_indent(line, rules)
+              @ignore = true
+              indent_line(line_num, rules)
+              @ignore = false
+            end
           end
+          false
         end
-        false
       end
     end
 

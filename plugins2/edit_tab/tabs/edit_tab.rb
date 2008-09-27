@@ -4,6 +4,48 @@ module Redcar
   # editing in Redcar. EditTab is a subclass of Tab that contains
   # one instance of EditView.
   class EditTab < Tab
+    # Creates a label on the statusbar that can contain
+    # the current line and column 
+    def self.create_line_col_status
+      unless slot = bus('/gtk/window/statusbar/line', true)
+        gtk_hbox = bus('/gtk/window/statusbar').data
+        gtk_label = Gtk::Label.new("")
+        bus('/gtk/window/statusbar/line').data = gtk_label
+        gtk_hbox.pack_end(gtk_label, false)
+        gtk_label.set_padding 10, 0
+        gtk_label.show
+      end
+    end
+
+    # Creates a grammar combo on the status bar that
+    # reflects the current tab's view's current grammar,
+    # and can be used to change it.
+    def self.create_grammar_combo
+      # When an EditView is created in a window, this needs to go onto it.
+      unless slot = bus('/gtk/window/statusbar/grammar_combo', true)
+        gtk_hbox = bus('/gtk/window/statusbar').data
+        gtk_combo_box = Gtk::ComboBox.new(true)
+        bus('/gtk/window/statusbar/grammar_combo').data = gtk_combo_box
+        Gtk::Mate.load_bundles
+        list = Gtk::Mate::Buffer.bundles.map{|b| b.grammars }.flatten.map(&:name).sort
+        list.each {|item| gtk_combo_box.append_text(item) }
+        gtk_combo_box.signal_connect("changed") do |gtk_combo_box1|
+          if Redcar.tab and Redcar.tab.is_a? EditTab
+            Redcar.tab.view.buffer.set_grammar_by_name(list[gtk_combo_box1.active])
+            Redcar.tab.view.set_theme_by_name(Redcar::Preference.get("Appearance/Tab Theme"))
+          end
+        end
+        gtk_hbox.pack_end(gtk_combo_box, false)
+        gtk_combo_box.sensitive = false
+        gtk_combo_box.show
+      end
+    end
+
+    # Gets the grammar combo box
+    def self.gtk_grammar_combo_box
+      bus('/gtk/window/statusbar/grammar_combo', true).data
+    end
+
     # an EditView instance.
     attr_reader :view
     attr_accessor :filename
@@ -25,6 +67,10 @@ module Redcar
       @view.buffer
     end
     
+    def buffer
+      @view.buffer
+    end
+
     def modified=(val) #:nodoc:
       old = @modified
       @modified = val
@@ -41,14 +87,30 @@ module Redcar
         Hook.trigger :tab_changed, self
         false
       end
+      connect_view_signals
     end
     
+    def connect_view_signals
+      self.buffer.signal_connect("mark_set") do |widget, event, mark|
+        if !buffer.ignore_marks and mark == buffer.cursor_mark
+          update_line_and_column(mark)
+        end
+        false
+      end
+
+      self.buffer.signal_connect("changed") do |widget, event|
+        mark = self.buffer.cursor_mark
+        update_line_and_column(mark)
+        false
+      end
+    end
+
     # Load a document into the tab from the filename given.
     def load(filename)
       Hook.trigger :tab_load, self do
         document.text = ""
-        ext = File.extname(filename)
-        view.buffer.set_grammar_by_extension(ext)
+        puts "trying to set grammar by filename: #{filename}"
+        p view.buffer.set_grammar_by_filename(filename)
         view.set_theme_by_name(Redcar::Preference.get("Appearance/Tab Theme"))
         document.begin_not_undoable_action
         document.text = File.read(filename)
@@ -78,6 +140,13 @@ module Redcar
     # Change the syntax of the tab. Takes a name like "Ruby"
     def syntax=(grammar_name)
       @view.buffer.set_grammar_by_name(grammar_name)
+    end
+
+    def update_line_and_column(mark)
+      insert_iter = self.buffer.get_iter_at_mark(mark)
+      label = bus('/gtk/window/statusbar/line').data
+      label.text = "Line: "+ (insert_iter.line+1).to_s +
+        "   Col: "+(insert_iter.line_offset+1).to_s
     end
   end
 end

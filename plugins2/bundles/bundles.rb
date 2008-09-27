@@ -106,19 +106,21 @@ module Redcar
     end
     
     def load_preferences #:nodoc:
-      prefs = {}
-      Dir.glob(@dir+"/Preferences/*").each do |preffile|
-        begin
-          xml = IO.readlines(preffile).join
-          pref = Redcar::Plist.plist_from_xml(xml)[0]
-          prefs[pref["name"]] = pref
-        rescue Object => e
-          puts "There was an error loading #{preffile}"
-#          puts e.message
-#          puts e.backtrace[0..10]
+      App.with_cache("preferences", @name) do
+        prefs = {}
+        Dir.glob(@dir+"/Preferences/*").each do |preffile|
+          begin
+            xml = IO.readlines(preffile).join
+            pref = Redcar::Plist.plist_from_xml(xml)[0]
+            prefs[pref["name"]] = pref
+          rescue Object => e
+            puts "There was an error loading #{preffile}"
+            #          puts e.message
+            #          puts e.backtrace[0..10]
+          end
         end
+        prefs
       end
-      prefs
     end
     
     # A array of this bundle's snippets. Snippets are cached 

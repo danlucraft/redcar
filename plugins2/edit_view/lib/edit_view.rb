@@ -1,41 +1,6 @@
 
 module Redcar
   class EditView < Gtk::Mate::View
-    def self.create_line_col_status
-      unless slot = bus('/gtk/window/statusbar/line', true)
-        gtk_hbox = bus('/gtk/window/statusbar').data
-        gtk_label = Gtk::Label.new("")
-        bus('/gtk/window/statusbar/line').data = gtk_label
-        gtk_hbox.pack_end(gtk_label, false)
-        gtk_label.set_padding 10, 0
-        gtk_label.show
-      end
-    end
-
-    def self.create_grammar_combo
-      # When an EditView is created in a window, this needs to go onto it.
-      unless slot = bus('/gtk/window/statusbar/grammar_combo', true)
-        gtk_hbox = bus('/gtk/window/statusbar').data
-        gtk_combo_box = Gtk::ComboBox.new(true)
-        bus('/gtk/window/statusbar/grammar_combo').data = gtk_combo_box
-        Gtk::Mate.load_bundles
-        list = Gtk::Mate::Buffer.bundles.map{|b| b.grammars }.flatten.map(&:name).sort
-        list.each {|item| gtk_combo_box.append_text(item) }
-        gtk_combo_box.signal_connect("changed") do |gtk_combo_box1|
-          if Redcar.tab and Redcar.tab.class.to_s == "EditTab"
-            Redcar.tab.view.change_root_scope(list[gtk_combo_box1.active])
-          end
-        end
-        gtk_hbox.pack_end(gtk_combo_box, false)
-        gtk_combo_box.sensitive = false
-        gtk_combo_box.show
-      end
-    end
-
-    def self.gtk_grammar_combo_box
-      bus('/gtk/window/statusbar/grammar_combo', true).data
-    end
-
     attr_accessor :snippet_inserter
 
     def initialize(options={})
@@ -43,11 +8,12 @@ module Redcar
       set_gtk_cursor_colour
       self.buffer = Gtk::Mate::Buffer.new
       self.modify_font(Pango::FontDescription.new(Redcar::Preference.get("Appearance/Tab Font")))
-      self.buffer.set_grammar_by_name("Ruby")
       h = self.signal_connect_after("expose-event") do |_, ev|
         if ev.window == self.window
-          self.set_theme_by_name(Redcar::Preference.get("Appearance/Tab Theme"))
-          self.signal_handler_disconnect(h)
+          if self.buffer.parser
+            self.set_theme_by_name(Redcar::Preference.get("Appearance/Tab Theme"))
+            self.signal_handler_disconnect(h)
+          end
         end
       end
       @modified = false
@@ -67,6 +33,10 @@ module Redcar
       create_indenter
       create_autopairer
       create_snippet_inserter
+      
+      # fix weird GTK crash
+#       buffer.text = "[][](){}def foo"
+#       buffer.text = ""
     end
 
     def set_gtk_cursor_colour
@@ -84,27 +54,7 @@ module Redcar
 #      set_marker_pixbuf("bookmark", @@bookmark_pixbuf)
     end
 
-    def update_line_and_column(mark)
-      insert_iter = self.buffer.get_iter_at_mark(mark)
-      label = bus('/gtk/window/statusbar/line').data
-      label.text = "Line: "+ (insert_iter.line+1).to_s +
-        "   Col: "+(insert_iter.line_offset+1).to_s
-    end
-
     def connect_signals
-      self.buffer.signal_connect("mark_set") do |widget, event, mark|
-        if !buffer.ignore_marks and mark == buffer.cursor_mark
-          update_line_and_column(mark)
-        end
-        false
-      end
-
-      self.buffer.signal_connect("changed") do |widget, event|
-        mark = self.buffer.cursor_mark
-        update_line_and_column(mark)
-        false
-      end
-
       # Hook up to scrollbar changes for the parser
       signal_connect("parent_set") do
         if parent.is_a? Gtk::ScrolledWindow
@@ -117,18 +67,6 @@ module Redcar
 
     def set_font(font)
       modify_font(Pango::FontDescription.new(font))
-    end
-
-    def create_root_scope(name)
-      grammar = Grammar.grammar(:name => name)
-      raise "no such grammar: #{name}" unless grammar
-      @root = Scope.new(:pattern => grammar,
-                        :grammar => grammar,
-                        :start => TextLoc(0, 0))
-      @root.bg_color = @theme.global_settings['background']
-      @root.set_start_mark buffer, buffer.iter(0).offset, false
-      @root.set_end_mark   buffer, buffer.char_count, false
-      @root.set_open(true)
     end
 
     def create_indenter
