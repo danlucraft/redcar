@@ -1,0 +1,4 @@
+
+module Redcar::Testing
+
+end

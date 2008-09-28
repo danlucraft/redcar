@@ -24,7 +24,7 @@ module Redcar
   VERSION_MINOR = 0
   VERSION_RELEASE = 1
   ROOT = File.expand_path(File.dirname(__FILE__) + "/../")
-
+  
   module App
     def self.ARGV=(v)
       @argv = v
@@ -64,6 +64,10 @@ module Redcar
     $core = FreeBASE::Core.startup("properties.yaml","#{dir}/default.yaml")
   end
 
+  def self.PLUGINS_PATH
+    bus("/system/properties/config/codebase").data + "/" + 
+      bus("/system/properties/config/plugin_path").data
+  end
 end
 
 def usage

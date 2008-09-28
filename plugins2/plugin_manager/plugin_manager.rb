@@ -58,6 +58,10 @@ module Com::RedcarIDE
           OpenPluginManager.new.do
         end
 
+        self.gtk_toolbar.append("Spec", "", "", Gtk::Icon.get_image(:EXECUTE)) do
+          spec((@tv.selection.selected||[])[0])
+        end
+
         self.gtk_toolbar.append("Test All", "", "", Gtk::Icon.get_image(:EXECUTE)) do
           puts "\nTesting all plugins:"
           bus("system/test").call
@@ -154,6 +158,17 @@ END
           plugin_slot["actions/test"].call
         else
           puts "No tests for #{plugin}"
+        end
+      end
+
+      def spec(plugin)
+        begin
+          return if plugin.blank?
+          Redcar::Testing::InternalRSpecRunner.spec_plugin(plugin)
+        rescue => e
+          puts "error in Redcar:::Testing.spec_plugin"
+          puts e.message
+          puts e.backtrace
         end
       end
 

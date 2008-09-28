@@ -275,7 +275,7 @@ module FreeBASE
       end
     end
     
-    attr_accessor(:name, :version, :require_path, 
+    attr_accessor(:name, :version, :require_path, :dependencies_path,
                   :properties_path, :startup_module, 
                   :resource_path, :base_path, 
                   :full_base_path, 

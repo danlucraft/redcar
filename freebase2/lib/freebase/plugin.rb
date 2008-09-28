@@ -205,6 +205,7 @@ module FreeBASE
       transition(LOADING)
       begin
         raise Exception.new("unment dependencies") unless @plugin_configuration.dependencies_met?
+        require @plugin_configuration.dependencies_path if @plugin_configuration.dependencies_path
         log_requires do
           require @plugin_configuration.require_path if @plugin_configuration.require_path
           eval(@plugin_configuration.startup_module).load(self)
@@ -273,6 +274,8 @@ module FreeBASE
       after = $".dup
       prev = @base_slot["files/"+type.to_s].data || []
       diff = (after-before)
+      diff = diff.reject do
+      end
       @base_slot["files/"+type.to_s].data = (prev + diff).uniq
     end
     
@@ -280,7 +283,7 @@ module FreeBASE
     # Reloads all files logged as having been loaded by this plugin.
     #
     def reload
-      puts "[FB2] reloading #{@plugin_configuration.name}"
+      print "[FB2] reloading #{@plugin_configuration.name} ["
       plugin = @base_slot.manager
       plugin.stop
       # remove methods from testcase
@@ -299,9 +302,11 @@ module FreeBASE
         (s.data||[]).each do |f|
           if File.extname(f) == ".rb"
             Kernel.load f
+            print "'#{f}', "
           end
         end
       end
+      puts "]"
       plugin.start
     end
     
@@ -341,6 +346,11 @@ module FreeBASE
           puts e.backtrace
         end
       end
+    end
+
+    # Load and run specs for the plugin
+    def spec
+      puts "running specs"
     end
   end
 end

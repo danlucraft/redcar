@@ -109,11 +109,13 @@ module Redcar
     def load(filename)
       Hook.trigger :tab_load, self do
         document.text = ""
-        puts "trying to set grammar by filename: #{filename}"
-        p view.buffer.set_grammar_by_filename(filename)
-        view.set_theme_by_name(Redcar::Preference.get("Appearance/Tab Theme"))
+        newtext = File.read(filename)
+        grammar_name = view.buffer.set_grammar_by_filename(filename) || view.buffer.set_grammar_by_first_line(newtext.split("\n").first)
+        if grammar_name
+          view.set_theme_by_name(Redcar::Preference.get("Appearance/Tab Theme"))
+        end
         document.begin_not_undoable_action
-        document.text = File.read(filename)
+        document.text = newtext
         document.end_not_undoable_action
         label.text = filename.split(/\//).last
         document.cursor = 0
