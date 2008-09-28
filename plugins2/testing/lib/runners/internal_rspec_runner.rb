@@ -29,7 +29,7 @@ module Redcar::Testing
 
     def self.spec_files(plugin_name)
       spec_path = "#{Redcar.PLUGINS_PATH}/#{plugin_dir(plugin_name)}/spec"
-      Dir["#{spec_path}/*_spec.rb"] + Dir["#{spec_path}/**/*_spec.rb"]
+      Dir["#{spec_path}/**/*_spec.rb"]
     end
 
     def self.lookup_example_groups

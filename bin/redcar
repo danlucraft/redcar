@@ -17,6 +17,7 @@ require HERE + '/../freebase2/lib/freebase/freebase'
 
 require 'gems'
 Dir[HERE + "/../lib/*"].each {|f| require f unless f =~ /gems\.rb/ }
+require HERE + "/../vendor/glitter"
 
 module Redcar
   VERSION = '0.0.1'

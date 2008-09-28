@@ -9,9 +9,8 @@ describe Redcar::Testing::InternalRSpecRunner do
   describe ".spec_files" do
     it "should find the spec files for the plugin" do
       a = Redcar::Testing::InternalRSpecRunner.spec_files("testing").map{|f| File.expand_path(f) }
-      b = Dir[File.dirname(__FILE__) + "/../../spec/*_spec.rb"].map {|f| File.expand_path(f)}
-      c = Dir[File.dirname(__FILE__) + "/../../spec/**/*_spec.rb"].map {|f| File.expand_path(f)}
-      a.should == (b + c)
+      b = Dir[File.dirname(__FILE__) + "/../../spec/**/*_spec.rb"].map {|f| File.expand_path(f)}
+      a.should == b
     end
   end
 

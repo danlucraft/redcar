@@ -56,54 +56,6 @@ module Gtk
     end
   end
   
-  class TextMark
-    def line
-      buf = self.buffer
-      iter = buf.get_iter_at_mark(self)
-      iter.line
-    end
-    
-    def line_offset
-      buf = self.buffer
-      iter = buf.get_iter_at_mark(self)
-      iter.line_offset
-    end
-    
-    def offset
-      buf = self.buffer
-      iter = buf.get_iter_at_mark(self)
-      iter.offset
-    end
-    
-    def to_s
-      buf = self.buffer
-      iter = buf.get_iter_at_mark(self)
-      "<#{iter.line},#{iter.line_offset}>"
-    end
-  end
-  
-  class TextIter
-    def forward_cursor_position!
-      self.forward_cursor_position
-      self
-    end
-    
-    def backward_cursor_position!
-      self.backward_cursor_position
-      self
-    end
-    
-    def forward_word_end!
-      self.forward_word_end
-      self
-    end
-    
-    def backward_word_start!
-      self.backward_word_start
-      self
-    end
-  end
-  
   class TextTag
     attr_accessor :edit_view_depth
   end
