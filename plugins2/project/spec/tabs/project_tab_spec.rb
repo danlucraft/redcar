@@ -34,6 +34,10 @@ describe Redcar::ProjectTab do
       @tab.store.contents(1).should include("[dummy row]")
       @tab.store.contents(2).should include(Redcar.PLUGINS_PATH + "/project/spec/[dummy row]")
     end
+
+    it "should have the directory" do
+      @tab.directories.should include(Redcar.PLUGINS_PATH + "/project")
+    end
   end
 
   describe "opening a directory by activating the row" do

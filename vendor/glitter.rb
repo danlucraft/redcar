@@ -35,6 +35,12 @@ class Gtk::TreeStore
   end
 end
 
+class Gtk::ListStore
+  def empty?
+    !iter_first
+  end
+end
+
 class Gtk::TreeIter
   def find_iter(col, value)
     iter = first_child
@@ -95,3 +101,8 @@ class Gtk::TextIter
   end
 end
   
+class Gtk::Window
+  def quit_on_destroy
+    signal_connect(:destroy) { Gtk.main_quit }
+  end
+end

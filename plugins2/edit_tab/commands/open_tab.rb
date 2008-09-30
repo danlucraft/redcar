@@ -3,8 +3,9 @@ module Redcar
     key "Ctrl+O"
     icon :NEW
 
-    def initialize(filename=nil)
+    def initialize(filename=nil, pane=nil)
       @filename = filename
+      @pane = pane
     end
 
     def execute
@@ -12,7 +13,7 @@ module Redcar
         @filename = Redcar::Dialog.open(win)
       end
       if @filename and File.file?(@filename)
-        new_tab = win.new_tab(Redcar::EditTab)
+        new_tab = (@pane||win).new_tab(Redcar::EditTab)
         new_tab.load(@filename)
         new_tab.focus
       else

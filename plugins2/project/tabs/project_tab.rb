@@ -1,7 +1,12 @@
 
 module Redcar
   class ProjectTab < Tab
-    attr_accessor :store, :view
+    TITLE = "Project"
+    attr_accessor :store, :view, :directories
+
+    class << self
+      attr_accessor :project_tab
+    end
 
     def initialize(pane)
       @store = Gtk::TreeStore.new(Gdk::Pixbuf, String, String, String)
@@ -18,25 +23,31 @@ module Redcar
       @view.append_column(col1)
       @view.headers_visible = false
       @view.show
+
       super(pane, @view, :scrolled? => true, :toolbar? => true)
-        @gtk_sw.set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_AUTOMATIC)
-      self.title = "Project"
+
+      @gtk_sw.set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_AUTOMATIC)
+      self.title = TITLE
       @slot = bus('/redcar/project')
       path = "/home/dan/projects/redcar"
-      root_dir = Redcar.PLUGINS_PATH + '/project/icons/'
-      p root_dir
-      @file_pic = Gdk::Pixbuf.new(root_dir+"text-x-generic.png")
-      @dir_pic = Gdk::Pixbuf.new(root_dir+"folder.png")
-      @image_pic = Gdk::Pixbuf.new(root_dir+"gnome-mime-image.png")
-      @ruby_pic = Gdk::Pixbuf.new(root_dir+"ruby.png")
+      icons_dir = Redcar.PLUGINS_PATH + '/project/icons/'
+      @file_pic = Gdk::Pixbuf.new(icons_dir+"text-x-generic.png")
+      @dir_pic = Gdk::Pixbuf.new(icons_dir+"folder.png")
+      @image_pic = Gdk::Pixbuf.new(icons_dir+"gnome-mime-image.png")
+      @ruby_pic = Gdk::Pixbuf.new(icons_dir+"ruby.png")
       GnomeVFS.init
       add_directory("Redcar", path)
       connect_signals
+      ProjectTab.project_tab = self
     end
     
     def connect_signals
       @view.signal_connect(:row_activated) do |_, path, _|
-        open_row(path)
+        if @view.row_expanded?(path)
+          @view.collapse_row(path)
+        else
+          open_row(path)
+        end
       end
       @view.signal_connect(:row_expanded) do |_, iter, path|
         open_row(path)
@@ -49,10 +60,9 @@ module Redcar
         dir_tree_get(iter[2], iter)
         @view.expand_row(iter.path, false)
       else
-        new_tab = Redcar.win.new_tab(Redcar::EditTab)
-        new_tab.load(iter[2])
-        puts "loading file #{new_tab.filename}"
-        new_tab.focus
+        # TODO: make this use arrangements once they're working again
+        pane = Redcar.win.panes.find {|pn| !pn.tabs.map(&:title).include?(TITLE)}
+        OpenTab.new(iter[2], pane).do
       end
     end
     
@@ -106,11 +116,14 @@ module Redcar
       iter[0] = @dir_pic
       iter[1] = name
       iter[2] = path
+      @directories ||= []
+      @directories << path
       self.dir_tree_get(path, iter, &block)
     end
     
     def clear
       @store.clear
+      @directories.clear
     end
   end
 end
