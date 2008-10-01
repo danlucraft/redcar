@@ -35,18 +35,18 @@ module Redcar
     end
 
     preference "Editing/Use spaces instead of tabs" do |p|
-      default true
       type    :toggle
+      default true
     end
 
     preference "Editing/Indent pasted text" do |p|
-      default true
       type    :toggle
+      default true
     end
 
     preference "Editing/Wrap words" do
-      default true
       type    :toggle
+      default true
       change do
         Redcar.win.tabs.each do |tab|
           if tab.is_a? EditTab

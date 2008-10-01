@@ -71,6 +71,7 @@ module Redcar
 
     def self.make_regex(text)
       re_src = "(" + text.split(//).join(").*?(") + ")"
+      p re_src
       Regexp.new(re_src)
     end
   end

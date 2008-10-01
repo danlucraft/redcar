@@ -6,6 +6,7 @@ module Redcar
       item "Open",       OpenTab
       separator
       item "Save",       SaveTab
+      item "Save As",    SaveTabAs
 #      item "Revert",     RevertTab
       separator
       item "Close",      CloseTab

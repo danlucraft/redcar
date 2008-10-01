@@ -11,6 +11,7 @@ module Redcar
     def execute
       @tab ||= tab
       @tab.close if @tab
+      @tab = nil # want the Tabs to be collected
     end
   end
 end

@@ -191,20 +191,20 @@ module Redcar
       filename
     end
     
-#     def self.save
-#       dialog = Gtk::FileChooserDialog.new("Save",
-#                                           win,
-#                                           Gtk::FileChooser::ACTION_SAVE,
-#                                           nil,
-#                                           [Gtk::Stock::CANCEL, Gtk::Dialog::RESPONSE_CANCEL],
-#                                           [Gtk::Stock::SAVE, Gtk::Dialog::RESPONSE_ACCEPT])
-#       if dialog.run == Gtk::Dialog::RESPONSE_ACCEPT
-#         puts "filename = #{dialog.filename}"
-#       end
-#       filename = dialog.filename
-#       dialog.destroy
-#       filename
-#     end
+    def self.save
+      dialog = Gtk::FileChooserDialog.new("Save",
+                                          Redcar.win,
+                                          Gtk::FileChooser::ACTION_SAVE,
+                                          nil,
+                                          [Gtk::Stock::CANCEL, Gtk::Dialog::RESPONSE_CANCEL],
+                                          [Gtk::Stock::SAVE, Gtk::Dialog::RESPONSE_ACCEPT])
+      if dialog.run == Gtk::Dialog::RESPONSE_ACCEPT
+        puts "filename = #{dialog.filename}"
+      end
+      filename = dialog.filename
+      dialog.destroy
+      filename
+    end
   end
 end
 
