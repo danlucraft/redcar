@@ -155,22 +155,21 @@ module Redcar
       DialogWrapper.new(options)
     end
     
-#     def self.open_folder
-#       dialog = Gtk::FileChooserDialog.new("Open Folder",
-#                                           win,
-#                                           Gtk::FileChooser::ACTION_SELECT_FOLDER,
-#                                           nil,
-#                                           [Gtk::Stock::CANCEL, Gtk::Dialog::RESPONSE_CANCEL],
-#                                           [Gtk::Stock::OPEN, Gtk::Dialog::RESPONSE_ACCEPT])
-#       if dialog.run == Gtk::Dialog::RESPONSE_ACCEPT
-#         puts "dirname = #{dialog.filename}"
-#         dirname = dialog.filename
-#       else
-#         dirname = nil
-#       end
-#       dialog.destroy
-#       dirname
-#     end
+    def self.open_folder
+      dialog = Gtk::FileChooserDialog.new("Open Folder",
+                                          Redcar.win,
+                                          Gtk::FileChooser::ACTION_SELECT_FOLDER,
+                                          nil,
+                                          [Gtk::Stock::CANCEL, Gtk::Dialog::RESPONSE_CANCEL],
+                                          [Gtk::Stock::OPEN, Gtk::Dialog::RESPONSE_ACCEPT])
+      if dialog.run == Gtk::Dialog::RESPONSE_ACCEPT
+        dirname = dialog.filename
+      else
+        dirname = nil
+      end
+      dialog.destroy
+      dirname
+    end
     
     def self.open(win)
       dialog = Gtk::FileChooserDialog.new("Open",

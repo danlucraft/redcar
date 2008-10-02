@@ -10,6 +10,7 @@ module Redcar
 
       Kernel.load File.dirname(__FILE__) + "/commands/open_project.rb"
       Kernel.load File.dirname(__FILE__) + "/commands/find_file_command.rb"
+      Kernel.load File.dirname(__FILE__) + "/commands/add_project_command.rb"
       Kernel.load File.dirname(__FILE__) + "/tabs/project_tab.rb"
       Kernel.load File.dirname(__FILE__) + "/dialogs/find_file_dialog.rb"
     end
