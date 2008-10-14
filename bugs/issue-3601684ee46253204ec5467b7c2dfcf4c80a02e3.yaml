@@ -2,7 +2,7 @@
 title: Create an installation script
 desc: ""
 type: :feature
-component: Release packaging
+component: release-packaging
 release: "0.1"
 reporter: Daniel Lucraft <dan@fluentradical.com>
 status: :unstarted

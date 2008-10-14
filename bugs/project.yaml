@@ -5,7 +5,11 @@ components:
 - !ditz.rubyforge.org,2008-03-06/component 
   name: redcar
 - !ditz.rubyforge.org,2008-03-06/component 
-  name: Release packaging
+  name: release-packaging
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: core
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: project-plugin
 releases: 
 - !ditz.rubyforge.org,2008-03-06/release 
   name: "0.1"

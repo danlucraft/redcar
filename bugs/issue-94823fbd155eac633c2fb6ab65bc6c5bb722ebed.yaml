@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Ctrl+F crashes Redcar
+desc: Seems to be a bug in the code that pops up a context menu if there are multiple options for a keypress.
+type: :bugfix
+component: core
+release: "0.1"
+reporter: Daniel Lucraft <dan@fluentradical.com>
+status: :unstarted
+disposition: 
+creation_time: 2008-10-14 21:18:44.198652 Z
+references: []
+
+id: 94823fbd155eac633c2fb6ab65bc6c5bb722ebed
+log_events: 
+- - 2008-10-14 21:18:45.063631 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - created
+  - ""

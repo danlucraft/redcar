@@ -2,7 +2,7 @@
 title: Compile gem dependencies list
 desc: ""
 type: :task
-component: Release packaging
+component: release-packaging
 release: "0.1"
 reporter: Daniel Lucraft <dan@fluentradical.com>
 status: :unstarted
