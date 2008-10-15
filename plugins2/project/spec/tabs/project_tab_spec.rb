@@ -40,51 +40,57 @@ describe Redcar::ProjectTab do
     end
   end
 
-  describe "opening a directory by activating the row" do
+  describe "opening a directory", :shared => true do
     before(:each) do
       @tab.add_directory("project", Redcar.PLUGINS_PATH + "/project")
-      i = @tab.store.find_iter(1, "spec")
-      @tab.view.selection.select_iter(i)
-      @tab.view.signal_emit(:row_activated, i.path, @tab.view.columns[1])
     end
-
+    
     it "should add subdirectories" do
+      open_dir
       @tab.store.contents(2).should include(Redcar.PLUGINS_PATH + "/project/spec/tabs")
     end
-
+    
     it "should only add directories once" do
-      i = @tab.store.find_iter(1, "spec")
-      @tab.view.selection.select_iter(i)
-      @tab.view.signal_emit(:row_activated, i.path, @tab.view.columns[1])
+      open_dir
+      open_dir
       @tab.store.contents(2).scan("/project/spec/tabs\n").length.should == 1
     end
-
+    
     it "should remove the dummy row" do
+      open_dir
       @tab.store.contents(2).should_not include(Redcar.PLUGINS_PATH + "/project/spec/[dummy row]")
+    end
+    
+    it "should reload directories" do
+      new_file = Redcar.PLUGINS_PATH + "/project/spec/test.tmp"
+      FileUtils.rm_f(new_file)
+      open_dir
+      @tab.store.contents(2).should_not include(new_file)
+      File.open(new_file, "w") do |f|
+        f.puts "foo"
+      end
+      open_dir
+      @tab.store.contents(2).should include(new_file)
     end
   end
-
+  
+  describe "opening a directory by activating the row" do
+    it_should_behave_like "opening a directory"
+    
+    def open_dir
+      i = @tab.store.find_iter(1, "spec")
+      @tab.view.selection.select_iter(i)
+      @tab.view.signal_emit(:row_activated, i.path, @tab.view.columns[1])
+    end
+  end
+  
   describe "opening a directory by expanding the row" do
-    before(:each) do
-      @tab.add_directory("project", Redcar.PLUGINS_PATH + "/project")
+		it_should_behave_like "opening a directory"
+		
+    def open_dir
       i = @tab.store.find_iter(1, "spec")
       @tab.view.selection.select_iter(i)
       @tab.view.signal_emit(:row_expanded, i, i.path)
-    end
-
-    it "should add subdirectories" do
-      @tab.store.contents(2).should include(Redcar.PLUGINS_PATH + "/project/spec/tabs")
-    end
-
-    it "should only add directories once" do
-      i = @tab.store.find_iter(1, "spec")
-      @tab.view.selection.select_iter(i)
-      @tab.view.signal_emit(:row_expanded, i, i.path)
-      @tab.store.contents(2).scan("/project/spec/tabs\n").length.should == 1
-    end
-
-    it "should remove the dummy row" do
-      @tab.store.contents(2).should_not include(Redcar.PLUGINS_PATH + "/project/spec/[dummy row]")
     end
   end
 end

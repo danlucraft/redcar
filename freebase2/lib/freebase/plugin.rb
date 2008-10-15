@@ -286,6 +286,7 @@ module FreeBASE
       print "[FB2] reloading #{@plugin_configuration.name} ["
       plugin = @base_slot.manager
       plugin.stop
+      plugin.unload
       # remove methods from testcase
       if pm = @plugin_configuration.test_module
         begin
@@ -307,6 +308,7 @@ module FreeBASE
         end
       end
       puts "]"
+      plugin.load
       plugin.start
     end
     

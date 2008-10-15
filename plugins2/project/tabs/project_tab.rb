@@ -50,15 +50,18 @@ module Redcar
         end
       end
       @view.signal_connect(:row_expanded) do |_, iter, path|
-        open_row(path)
+        open_row(path) unless @ignore_row_expanded
       end
     end
 
     def open_row(path)
       iter = @store.get_iter(path)
       if File.directory? iter[2]
+        puts "open_row(#{iter[2]})"
         dir_tree_get(iter[2], iter)
+        @ignore_row_expanded = true
         @view.expand_row(iter.path, false)
+        @ignore_row_expanded = false
       else
         # TODO: make this use arrangements once they're working again
         pane = Redcar.win.panes.find {|pn| !pn.tabs.map(&:title).include?(TITLE)}
@@ -67,13 +70,9 @@ module Redcar
     end
     
     def dir_tree_get(path, parent_iter, &block)
-      if parent_iter[3]
-        return
-      else
-        parent_iter[3] = Time.now.to_s
+      parent_iter.n_children.times do
+        @store.remove parent_iter.first_child
       end
-      dummy_iter = parent_iter.find_iter(1, "[dummy row]")
-      @store.remove(dummy_iter) if dummy_iter
       files = Dir.glob(path+"/*")
       files.sort_by{ |f| ((File.directory? f) ? "a" : "z")+f }.each do |file|
         if block
@@ -127,3 +126,4 @@ module Redcar
     end
   end
 end
+

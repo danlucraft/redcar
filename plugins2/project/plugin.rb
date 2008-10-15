@@ -7,7 +7,6 @@ module Redcar
                           :after_focus_tab]) do
         Redcar.win and Redcar.win.tabs.map(&:class).include?(ProjectTab)
       end
-
       Kernel.load File.dirname(__FILE__) + "/commands/open_project.rb"
       Kernel.load File.dirname(__FILE__) + "/commands/find_file_command.rb"
       Kernel.load File.dirname(__FILE__) + "/commands/add_project_command.rb"
