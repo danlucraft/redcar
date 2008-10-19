@@ -5,8 +5,8 @@ type: :bugfix
 component: core
 release: "0.1"
 reporter: Daniel Lucraft <dan@fluentradical.com>
-status: :unstarted
-disposition: 
+status: :closed
+disposition: :fixed
 creation_time: 2008-10-14 21:18:44.198652 Z
 references: []
 
@@ -16,3 +16,7 @@ log_events:
   - Daniel Lucraft <dan@fluentradical.com>
   - created
   - ""
+- - 2008-10-19 08:15:14.024494 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - closed with disposition fixed
+  - Was bug in Menu::MenuDrawer

@@ -43,15 +43,16 @@ module Redcar
       
     # entries :: [Maybe String, String, String]
     def self.context_menu_options_popup(entries)
+      p entries
       gtk_menu = Gtk::Menu.new
       i = 1
       gtk_menu_items = entries.map do |icon, name, command|
-        c = if icon
+        gtk_menuitem = if icon
               Gtk::ImageMenuItem.create icon, name
             else
               Gtk::MenuItem.new name
             end
-        gtk_menuitem = MenuDrawer.make_gtk_menuitem_hbox(c, i.to_s)
+        MenuDrawer.make_gtk_menuitem_hbox(gtk_menuitem, i.to_s)
         i += 1
         MenuDrawer.connect_item_signal(command, gtk_menuitem)
         gtk_menu.append(gtk_menuitem)
