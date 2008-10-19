@@ -4,10 +4,6 @@ module Redcar
     TITLE = "Project"
     attr_accessor :store, :view, :directories
 
-    class << self
-      attr_accessor :project_tab
-    end
-
     def initialize(pane)
       @store = Gtk::TreeStore.new(Gdk::Pixbuf, String, String, String)
       @view = Gtk::TreeView.new(@store)
@@ -38,7 +34,12 @@ module Redcar
       GnomeVFS.init
       add_directory("Redcar", path)
       connect_signals
-      ProjectTab.project_tab = self
+      ProjectPlugin.tab = self
+    end
+    
+    def close
+      super
+      ProjectPlugin.tab = nil
     end
     
     def connect_signals

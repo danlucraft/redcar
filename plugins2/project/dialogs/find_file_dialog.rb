@@ -28,14 +28,18 @@ module Redcar
       end
       
       @entry.signal_connect("changed") do 
-        @entry_changed ||= 0
-        @entry_changed += 1
-        Gtk.idle_add_priority(GLib::PRIORITY_LOW) do
-          @entry_changed -= 1
-          if @entry_changed == 0
-            entry_changed
+        @entry_changed_time = Time.now
+        unless @entry_changed
+          @entry_changed = true
+          Gtk.idle_add_priority(GLib::PRIORITY_LOW) do
+            if Time.now > @entry_changed_time + 0.2
+              @entry_changed = false
+              entry_changed
+              false
+            else
+              true
+            end
           end
-          false
         end
       end
     end
@@ -62,19 +66,27 @@ module Redcar
     def entry_changed
       @list.clear
       if @entry.text.length > 0
-        fs = FindFileDialog.find_files(@entry.text, ProjectTab.project_tab.directories)
+        fs = FindFileDialog.find_files(@entry.text, ProjectPlugin.tab.directories)
         i = 0
-        fs.each do |path, name, _|
+        fs.each do |fn|
+          bits = fn.split("/")
+          name = bits.last
+          updir = bits[-2]
           if i < 10
             iter = @list.append
-            iter[0] = name
-            iter[1] = path
+            iter[0] = name + "     (#{updir})"
+            iter[1] = fn
           end
           i += 1
         end
       end
       if iter = @treeview.model.iter_first
         @treeview.selection.select_iter(@treeview.model.iter_first)
+      end
+      # if the user hit enter before this, open the top file
+      if @activated_by_user
+        treeview_activated
+        @activated_by_user = false
       end
     end
 
@@ -94,49 +106,56 @@ module Redcar
       end
     end
     
+    # opens the selected file
     def treeview_activated
-      OpenTab.new(@treeview.selection.selected[1]).do
-      destroy
+      if si = @treeview.selection.selected
+        OpenTab.new(si[1]).do
+        destroy
+      else
+        # the user hit return before the list was populated
+        @activated_by_user = true
+      end
     end
 
     def self.find_files(text, directories)
-      files = []
-      p directories
-      directories.each do |dir|
-        files += Dir[File.expand_path(dir + "/**/*")]
+      if @last_directories == directories
+        files = @last_files
+      else
+        @last_directories = directories
+        files = []
+        directories.each do |dir|
+          files += Dir[File.expand_path(dir + "/**/*")]
+        end
+        @last_files = files
       end
-      p files.length
+      
       re = make_regex(text)
 
-      results = files.map do |fn| 
-        unless File.directory?(fn)
+      results = files.sort_by do |fn| 
+        if File.directory?(fn)
+          10000000
+        else
           bit = fn.split("/")
           if m = bit.last.match(re)
-            [fn, bit, m]
-          end
-        end
-      end
-
-      results = results.compact
-
-      results = results.map do |fn, bit, m|
-        cs = []
-        diffs = 0
-        m.captures.each_with_index do |_, i|
-          cs << m.begin(i + 1)
-          if i > 0
-            diffs += cs[i] - cs[i-1]
-          end
-        end
-        score = (cs[0] + diffs)*100 + bit.last.length
-        [fn, bit.last, score]
-      end
-      results.sort_by{|_, _, s| s}
+		        cs = []
+		        diffs = 0
+		        m.captures.each_with_index do |_, i|
+	  	        cs << m.begin(i + 1)
+		          if i > 0
+		            diffs += cs[i] - cs[i-1]
+		          end
+		        end
+        		score = (cs[0] + diffs)*100 + bit.last.length
+        		score
+          else
+          	10000000  				
+      		end
+				end
+			end
     end
 
     def self.make_regex(text)
       re_src = "(" + text.split(//).join(").*?(") + ")"
-      p re_src
       Regexp.new(re_src)
     end
   end

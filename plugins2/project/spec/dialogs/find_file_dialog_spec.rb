@@ -24,16 +24,16 @@ describe Redcar::FindFileDialog do
   describe ".find_files" do
     before(:each) do
       @fs = Redcar::FindFileDialog.find_files("spc", Redcar::ROOT + "/plugins2/project/")
-      @bits = @fs.map {|_, bit, _| bit }
+      @names = @fs.map {|fn| fn.split("/").last }
     end
 
     it "should find files" do
-      @bits.should include("find_file_dialog_spec.rb")
+      @names.should include("find_file_dialog_spec.rb")
     end
 
     it "should return them in the right order" do
-      i1 = @bits.index("find_file_dialog_spec.rb")
-      i2 = @bits.index("project_tab_spec.rb")
+      i1 = @names.index("find_file_dialog_spec.rb")
+      i2 = @names.index("project_tab_spec.rb")
       i1.should > i2
     end
   end

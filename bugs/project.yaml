@@ -10,6 +10,8 @@ components:
   name: core
 - !ditz.rubyforge.org,2008-03-06/component 
   name: project-plugin
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: edit-view
 releases: 
 - !ditz.rubyforge.org,2008-03-06/release 
   name: "0.1"

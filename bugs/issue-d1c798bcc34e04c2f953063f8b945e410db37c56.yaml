@@ -5,8 +5,8 @@ type: :feature
 component: project-plugin
 release: "0.1"
 reporter: Daniel Lucraft <dan@fluentradical.com>
-status: :in_progress
-disposition: 
+status: :closed
+disposition: :fixed
 creation_time: 2008-10-14 21:20:34.305147 Z
 references: []
 
@@ -24,3 +24,7 @@ log_events:
   - Daniel Lucraft <dan@fluentradical.com>
   - changed status from unstarted to in_progress
   - Search works.
+- - 2008-10-19 07:00:19.718822 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - closed with disposition fixed
+  - ""
