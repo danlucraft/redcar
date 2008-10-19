@@ -240,11 +240,23 @@ module Redcar
     attr :doc,  true
     attr :view, true
 
+    def tab
+      @__tab
+    end
+    
+    def doc
+      @__doc
+    end
+    
+    def view
+      @__view
+    end
+
     def set_tab(tab)
-      @tab = tab
-      if @tab.is_a? EditTab
-        @doc = tab.document
-        @view = tab.view
+      @__tab = tab
+      if @__tab.is_a? EditTab
+        @__doc = tab.document
+        @__view = tab.view
       end
     end
 

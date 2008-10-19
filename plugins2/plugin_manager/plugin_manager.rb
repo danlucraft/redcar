@@ -60,6 +60,7 @@ module Com::RedcarIDE
 
         self.gtk_toolbar.append("Spec", "", "", Gtk::Icon.get_image(:EXECUTE)) do
           spec((@tv.selection.selected||[])[0])
+          OpenPluginManager.new.do
         end
 
         self.gtk_toolbar.append("Test All", "", "", Gtk::Icon.get_image(:EXECUTE)) do

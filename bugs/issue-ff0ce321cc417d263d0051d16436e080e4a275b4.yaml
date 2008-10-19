@@ -5,8 +5,8 @@ type: :bugfix
 component: core
 release: "0.1"
 reporter: Daniel Lucraft <dan@fluentradical.com>
-status: :unstarted
-disposition: 
+status: :closed
+disposition: :fixed
 creation_time: 2008-10-14 21:12:46.917366 Z
 references: []
 
@@ -19,4 +19,8 @@ log_events:
 - - 2008-10-14 21:13:24.672833 Z
   - Daniel Lucraft <dan@fluentradical.com>
   - assigned to component Core from redcar
+  - ""
+- - 2008-10-19 07:34:14.493145 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - closed with disposition fixed
   - ""

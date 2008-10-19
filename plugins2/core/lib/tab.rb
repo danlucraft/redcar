@@ -70,7 +70,6 @@ module Redcar
       @@tabcount ||= 0
       @@tabcount += 1
       @label = Gtk::NotebookLabel.new(self, "#new#{@@tabcount}", self.tab_icon) do
-        # TODO: figure out this hardcoded reference
         CloseTab.new(self).do
       end
       @label_angle = :horizontal
