@@ -10,9 +10,11 @@ cache/grammars.dump
 cache/themes.dump
 cache/tmp.command
 cache/snippets/*.dump
+cache/preferences/*.dump
 
 custom/arrangements.yaml
 custom/preferences.yaml
 custom/appdata.yaml
 
 textmate/*
+plugins2/edit_view/gtkmateview

@@ -3,10 +3,16 @@ module Redcar
   class BundlesPlugin < Redcar::Plugin
     # This class manages Textmate bundles. On Redcar startup
     # it will scan for and load bundle information for all bundles
-    # in Redcar::ROOT + "/textmate/Bundles".
+    # in "/usr/local/share/textmate/Bundles" or "/usr/share/textmate/Bundles"
     
     def self.load(plugin) #:nodoc:
-      load_bundles(Redcar::ROOT + "/textmate/Bundles/")
+      if File.exist?("/usr/local/share/textmate/")
+        load_bundles("/usr/local/share/textmate/Bundles/")
+      elsif File.exist?("/usr/share/textmate/")
+        load_bundles("/usr/share/textmate/Bundles/")
+      else
+        puts "couldn't find textmate Bundles. Looked in /usr/local/share/textmate/Bundles"
+      end
       create_logger
       plugin.transition(FreeBASE::LOADED)
     end

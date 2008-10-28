@@ -48,21 +48,23 @@ oniguruma is installed correctly open irb and check you get this:
 
 5. Download the Textmate bundles:
   $ export LC_CTYPE=en_US.UTF-8
-  $ cd REDCAR_PATH
-  $ svn co http://macromates.com/svn/Bundles/trunk textmate
+  $ cd /usr/local/share/
+  $ sudo svn co http://macromates.com/svn/Bundles/trunk textmate
 
-6. Compile the Redcar native extension:
+6. Checkout the GtkMateView extension:
   $ cd REDCAR_PATH
-  $ cd plugins2/core/edit_view/ext
+  $ git clone git://github.com/danlucraft/gtkmateview.git plugins2/edit_view/gtkmateview
+  $ cd plugins2/edit_view/gtkmateview/dist
   $ ruby extconf.rb
   $ make
 
 This should complete without errors. Though there will be a ton of warnings.
 
 7. Now try running Redcar
+  $ cd REDCAR_PATH
   $ ./bin/redcar
 
-The first time Redcar runs it will spend time loading the Textmate Bundles and Themes. 
+The first time Redcar runs it will spend time loading the Textmate Bundles. 
 This only happens once.
 
 == LICENSE:

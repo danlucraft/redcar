@@ -21,6 +21,10 @@ module Redcar
   end  
 end
 
+require 'gtksourceview2'
+require File.dirname(__FILE__) + '/gtkmateview/dist/gtkmateview_rb'
+
+load File.dirname(__FILE__) + "/lib/document.rb"
 load File.dirname(__FILE__) + "/lib/edit_view.rb"
 Dir[File.dirname(__FILE__) + "/lib/*"].each {|f| load f}
 load File.dirname(__FILE__) + "/commands/snippet_command.rb"
