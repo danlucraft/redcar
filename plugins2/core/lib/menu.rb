@@ -59,7 +59,25 @@ module Redcar
       end
       gtk_menu.show_all
       eb = Gdk::EventButton.new(Gdk::Event::BUTTON_PRESS)
-      gtk_menu
+      gtk_menu.signal_connect("key-press-event") do |_, gdk_eventkey|
+        kv = gdk_eventkey.keyval
+        ks = gdk_eventkey.state - Gdk::Window::MOD2_MASK
+        ks = ks - Gdk::Window::MOD4_MASK
+        key = Gtk::Accelerator.get_label(kv, ks)
+        if entry = entries[key.to_i-1]
+          command = entry[2]
+          gtk_menu.hide_all
+          begin
+            command.new.do
+          rescue Object => e
+            puts e
+            puts e.message
+            puts e.backtrace
+          end
+        end
+        false
+      end
+      
       gtk_menu.popup(nil, nil, eb.button, eb.time) do |_, x, y, _| [x, y]
         tab = Redcar.tab
         tv = tab.view
