@@ -26,7 +26,7 @@ module Redcar
     end
     
     attr_accessor :pane, :label
-    attr_reader :gtk_tab_widget, :gtk_nb_widget, :gtk_toolbar
+    attr_reader :gtk_tab_widget, :gtk_nb_widget, :gtk_toolbar, :gtk_speedbar
     
     # Do not call this directly. Use Window#new_tab or 
     # Pane#new_tab instead:
@@ -52,6 +52,9 @@ module Redcar
         @gtk_nb_widget.pack_start(@gtk_toolbar, false)
         @gtk_toolbar.show_all
       end
+      
+      @gtk_speedbar = Redcar::SpeedbarDisplay.new # is an hbox
+      @gtk_nb_widget.pack_end(@gtk_speedbar, false)
       
       if options[:scrolled?]
         @gtk_sw = Gtk::ScrolledWindow.new

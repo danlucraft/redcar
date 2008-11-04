@@ -9,13 +9,16 @@ module Redcar::Testing
       spec_files(plugin_name).each do |spec_file|
         load spec_file
       end
+      
       lookup_example_groups.each do |eg|
         eg.run
       end
       
       tab = Redcar.win.new_tab(Redcar::TestViewTab)
       tab.title = "RSpec Results"
-      tab.document.text = prepare_results
+      results = prepare_results
+      puts results
+      tab.document.text = results
       tab.modified = false
       tab.focus
       cleanup_rspec

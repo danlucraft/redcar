@@ -1,5 +1,6 @@
 
 def stop_redcar
+  puts "stopping redcar..."
   Thread.new {
     Redcar::App.quit
   }
@@ -102,4 +103,19 @@ elsif Redcar::App.ARGV.include? "--demo"
 elsif Redcar::App.ARGV.include? "--current"
   win.new_tab(EditTab)
   stop_redcar
+elsif ix = Redcar::App.ARGV.index("--spec")
+  plugin = Redcar::App.ARGV[ix+1]
+  Redcar::Hook.attach(:redcar_start) do
+    begin
+      Redcar::Testing::InternalRSpecRunner.spec_plugin(plugin)
+    rescue => e
+      puts "error in Redcar::Testing.spec_plugin"
+      puts e.message
+      puts e.backtrace
+    end
+    stop_redcar
+  end
 end
+
+
+

@@ -216,6 +216,5 @@ if $0 == __FILE__
                             "(?1:_:\\L$0)")
       assert_equal "textmate:_power_editing", rr.grep("TextMate: Power Editing")
     end
-    
   end
 end

@@ -11,5 +11,7 @@ tests:
     testcase: Com::RedcarIDE::Scripting::Test
 load_dependencies: 
   redcar: "*"
+  testing: "*"
 start_dependencies: 
   redcar: "*"
+  testing: "*"

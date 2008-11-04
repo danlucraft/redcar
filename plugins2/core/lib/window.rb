@@ -20,7 +20,7 @@ module Redcar
     end
 
     attr_reader(:notebooks_panes, :previous_tab, :gtk_menubar,
-                :focussed_gtk_widget, :gtk_speedbar)
+                :focussed_gtk_widget)
 
     # Do not call this directly, use App#new_window instead.
     # Creates a new Redcar window.
@@ -261,7 +261,7 @@ module Redcar
     def build_widgets
       set_size_request(800, 600)
       @gtk_menubar = Gtk::MenuBar.new
-      gtk_table = Gtk::Table.new(1, 4, false)
+      gtk_table = Gtk::Table.new(1, 3, false)
       bus["/gtk/window/table"].data = gtk_table
       bus["/gtk/window/menubar"].data = @gtk_menubar
       gtk_table.attach(@gtk_menubar,
@@ -288,13 +288,6 @@ module Redcar
                    0, 1,                    2, 3,
                    Gtk::EXPAND | Gtk::FILL, Gtk::EXPAND | Gtk::FILL,
                    0,      0)
-      @gtk_speedbar = Redcar::SpeedbarDisplay.new # is an hbox
-      bus["/gtk/window/speedbar"].data = @gtk_speedbar
-      gtk_table.attach(@gtk_speedbar,
-                   # X direction            # Y direction
-                   0, 1,                    3, 4,
-                   Gtk::EXPAND | Gtk::FILL, Gtk::FILL,
-                   0,      0)
       gtk_status_hbox = Gtk::HBox.new
       bus["/gtk/window/statusbar"].data = gtk_status_hbox
       gtk_status1 = Gtk::Statusbar.new
@@ -305,7 +298,7 @@ module Redcar
       gtk_status_hbox.pack_start(gtk_status2)
       gtk_table.attach(gtk_status_hbox,
                    # X direction            # Y direction
-                   0, 1,                    4, 5,
+                   0, 1,                    3, 4,
                    Gtk::EXPAND | Gtk::FILL, Gtk::FILL,
                    0,      0)
       add(gtk_table)
