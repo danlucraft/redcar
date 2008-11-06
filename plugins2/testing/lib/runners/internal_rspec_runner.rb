@@ -55,6 +55,7 @@ module Redcar::Testing
     end
     
     def self.set_redcar_formatter
+      rspec_options = Spec::Runner.options
       def rspec_options.formatters
         @redcar_formatter ||= Redcar::Testing::TabFormatter.new
         [@redcar_formatter]
@@ -62,8 +63,8 @@ module Redcar::Testing
     end
 
     def self.prepare_results
-      rspec_options.reporter.dump
-      results = rspec_options.formatters.first.results
+      Spec::Runner.options.reporter.dump
+      results = Spec::Runner.options.formatters.first.results
       text=<<-END
      
 #{results[3]}
@@ -78,8 +79,8 @@ END
 
     def self.cleanup_rspec
       clean_example_groups(lookup_example_groups)
-      rspec_options.reporter.send(:clear)
-      rspec_options.instance_variable_set(:@redcar_formatter, nil)
+      Spec::Runner.options.reporter.send(:clear)
+      Spec::Runner.options.instance_variable_set(:@redcar_formatter, nil)
     end
   end
 end

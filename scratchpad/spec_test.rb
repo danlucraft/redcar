@@ -1,6 +1,6 @@
 
 require 'rubygems'
-require 'ruby-debug'
+#require 'ruby-debug'
 
 $spec_runner_at_exit_hook_registered = true
 require 'spec'
@@ -33,7 +33,7 @@ end
 
 class RubyFormatter < Spec::Runner::Formatter::BaseFormatter
   def initialize
-    super(rspec_options, StringIO.new)
+    super(Spec::Runner.options, StringIO.new)
     @pass_count = 0
     @fail_count = 0
   end
@@ -54,6 +54,8 @@ class RubyFormatter < Spec::Runner::Formatter::BaseFormatter
     "<RubyFormatter total:#{@example_count}, passed:#{@pass_count}, failed:#{@fail_count}>"
   end
 end
+
+rspec_options = Spec::Runner.options
 
 def rspec_options.formatters
   @o ||= RubyFormatter.new

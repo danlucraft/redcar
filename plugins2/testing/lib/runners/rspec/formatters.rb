@@ -3,7 +3,7 @@ module Redcar::Testing
   class TabFormatter < Spec::Runner::Formatter::ProgressBarFormatter
     def initialize
       @tab_output = StringIO.new
-      super(rspec_options, @tab_output)
+      super(Spec::Runner.options, @tab_output)
       @pass_count = 0
       @fail_count = 0
     end
