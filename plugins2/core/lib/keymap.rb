@@ -23,6 +23,7 @@ module Redcar
       key = Gtk::Accelerator.get_label(kv, ks)
       unless key[-2..-1] == " L" or key[-2..-1] == " R"
         bits = key.split("+")
+        p bits
         ctrl = (bits.include?("Ctrl")  ? 1 : 0)
         alt  = (bits.include?("Alt")   ? 1 : 0)
         supr = (bits.include?("Super") ? 1 : 0)
@@ -39,13 +40,14 @@ module Redcar
 
     # Process a Gdk::EventKey (which is created on a keypress)
     def self.process(gdk_eventkey) #:nodoc:
+#      puts "keypress: #{gdk_eventkey}"
       if key = clean_gdk_eventkey(gdk_eventkey)
 #        Hook.trigger :keystroke, key do
           @logger.debug { "[Red] received key #{key.inspect}" }
           execute_key(key)
 #        end
       else
-        true # indicates to fall through to Gtk
+        true 
       end
     end
 
@@ -99,7 +101,6 @@ module Redcar
           return
         elsif coms.length == 1
           com = coms.first
-          p Thread.list
           if com.is_a? Proc
             @logger.debug { "[Red] executing arbitrary code" }
             com.call

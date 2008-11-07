@@ -58,7 +58,6 @@ module Redcar
     def open_row(path)
       iter = @store.get_iter(path)
       if File.directory? iter[2]
-        puts "open_row(#{iter[2]})"
         dir_tree_get(iter[2], iter)
         @ignore_row_expanded = true
         @view.expand_row(iter.path, false)

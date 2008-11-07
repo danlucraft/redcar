@@ -13,7 +13,7 @@ module Redcar
     end
 
     def execute
-      sp = FindSpeedbar.instance
+      sp = FindSpeedbar.new
       sp.show(tab)
     end
   end

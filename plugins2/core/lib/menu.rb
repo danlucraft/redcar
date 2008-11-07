@@ -43,8 +43,10 @@ module Redcar
       
     # entries :: [Maybe String, String, String]
     def self.context_menu_options_popup(entries)
+      slot = bus['/redcar/gtk/context_options_menu/']
       p entries
       gtk_menu = Gtk::Menu.new
+      slot.data = gtk_menu
       i = 1
       gtk_menu_items = entries.map do |icon, name, command|
         gtk_menuitem = if icon
@@ -66,7 +68,7 @@ module Redcar
         key = Gtk::Accelerator.get_label(kv, ks)
         if entry = entries[key.to_i-1]
           command = entry[2]
-          gtk_menu.hide_all
+          gtk_menu.popdown
           begin
             command.new.do
           rescue Object => e
@@ -86,7 +88,6 @@ module Redcar
         y = gdk_rect.y+gdk_rect.height
         win = tv.get_window Gtk::TextView::WINDOW_WIDGET
         winx, winy = Redcar.win.position
-#        puts "win.position
         _, mh = gtk_menu.size_request
         tv.buffer_to_window_coords(Gtk::TextView::WINDOW_WIDGET, x+winx, y+winy+mh+30)
       end

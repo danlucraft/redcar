@@ -3,8 +3,6 @@ require 'singleton'
 
 module Redcar
   class Speedbar
-    include Singleton
-    
     def self.items
       @items
     end
