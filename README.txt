@@ -44,7 +44,7 @@ oniguruma is installed correctly open irb and check you get this:
   => /(?<=foo)bar/
 
 4. Install other required gems
-  $ sudo gem install log4r rails
+  $ sudo gem install log4r rails rspec hoe
 
 5. Download the Textmate bundles:
   $ export LC_CTYPE=en_US.UTF-8

@@ -106,3 +106,17 @@ class Gtk::Window
     signal_connect(:destroy) { Gtk.main_quit }
   end
 end
+
+class Gtk::Widget
+  def on_key_press(key, &block)
+    @__gltr_key_presses ||= {}
+    @__gltr_key_presses[key] = block
+    return if @__gltr_key_press_handler
+    @__gltr_key_press_handler = self.signal_connect("key-press-event") do |_, gdk_eventkey|
+      thiskey = Redcar::Keymap.clean_gdk_eventkey(gdk_eventkey)
+      if @__gltr_key_presses.include? thiskey
+        @__gltr_key_presses[thiskey].call
+      end
+    end
+  end
+end

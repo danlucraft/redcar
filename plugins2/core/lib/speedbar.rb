@@ -40,8 +40,8 @@ module Redcar
     
     attr_accessor :visible, :speedbar_display
     
-    def show(window)
-      window.gtk_speedbar.display(self)
+    def show(tab)
+      tab.gtk_speedbar.display(self)
     end
     
     def close
@@ -52,7 +52,7 @@ module Redcar
   end
   
   class SpeedbarDisplay < Gtk::HBox
-    attr_reader :visible
+    attr_reader :visible, :spbar
     
     class << self
       attr_accessor :blocks
@@ -78,6 +78,7 @@ module Redcar
       @spbar.visible = true
       @visible = true
       @focus_widget.grab_focus
+      Range.activate(@spbar.class)
       show_all
     end
     
@@ -87,6 +88,7 @@ module Redcar
       @visible = false
       bus("/redcar/keymaps/Speedbar").prune
       clear_children
+      Range.deactivate(@spbar.class)
       @value = {}
     end
     
@@ -106,10 +108,22 @@ module Redcar
     end
     
     def add_key(key, &block)
-      keys = key.split("|").map(&:strip)
-      keys.each do |key|
-        bus("/redcar/keymaps/Speedbar/#{key}").data = block
-      end
+      @blocks ||= {}
+      @blocks[key] = block
+      com = Class.new(Redcar::Command)
+      t = %Q{
+        range #{@spbar.class.to_s}
+        key "#{key}"
+
+        def execute
+          tab.gtk_speedbar.execute_key("#{key}")
+        end
+      }
+      com.class_eval t
+    end
+
+    def execute_key(key)
+      @blocks[key].call(@spbar) if @blocks[key]
     end
     
     def add_label(text)

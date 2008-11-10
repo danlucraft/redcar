@@ -68,9 +68,9 @@ module Redcar
 
     # Use to execute a key. key_name should be a string like "Ctrl+G".
     def self.execute_key(key_name)
-      if key_name == "Return" # FIXME!
-        return false
-      end
+#       if key_name == "Return" # FIXME!
+#         return false
+#       end
       if coms = bus("/redcar/keymaps/#{key_name}").data
         @logger.debug "[Red] #{coms.length} candidate commands"
         coms = coms.select do |com| 
@@ -112,6 +112,9 @@ module Redcar
             false
           end
         end
+      else
+        @logger.debug "[Red] no candidate commands"
+        false
       end
     end
 

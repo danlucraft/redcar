@@ -27,24 +27,6 @@ module Com::RedcarIDE
       puts tab.doc.cursor_scope.inspect
      end
     end
-    
-    class ShowSpeedbarExample < Redcar::Command
-      menu "Debug/SpeedbarExample"
-      icon :PREFERENCES
-      
-      class ExampleSpeedbar < Redcar::Speedbar
-        label "Line: "
-        textbox :line
-        button "Go", nil, "Return" do |sp|
-          puts sp.line
-          sp.close
-        end
-      end
-      
-      def execute
-        ExampleSpeedbar.instance.show(win)
-      end
-    end
   end
 end
 

@@ -17,7 +17,7 @@ describe Redcar::Speedbar do
   end
   
   it "should attach a speedbar to a tab" do
-    sp = TestSpeedbarFind.instance
+    sp = TestSpeedbarFind.new
     Redcar.win.new_tab(Redcar::Tab, Gtk::Button.new("foo"))
     sp.show(Redcar.tab)
   end
