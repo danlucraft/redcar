@@ -121,8 +121,8 @@ module Redcar
             prefs[pref["name"]] = pref
           rescue Object => e
             puts "There was an error loading #{preffile}"
-            #          puts e.message
-            #          puts e.backtrace[0..10]
+            puts e.message
+            puts e.backtrace[0..10]
           end
         end
         prefs
@@ -142,8 +142,10 @@ module Redcar
             xml = IO.readlines(snipfile).join
             snip = Redcar::Plist.plist_from_xml(xml)[0]
             snippets << snip
-          rescue Object
+          rescue Object => e
             puts "There was an error loading #{snipfile}"
+            puts e.message
+            puts e.backtrace[0..10]
           end
         end
         snippets

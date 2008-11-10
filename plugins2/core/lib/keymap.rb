@@ -23,7 +23,6 @@ module Redcar
       key = Gtk::Accelerator.get_label(kv, ks)
       unless key[-2..-1] == " L" or key[-2..-1] == " R"
         bits = key.split("+")
-        p bits
         ctrl = (bits.include?("Ctrl")  ? 1 : 0)
         alt  = (bits.include?("Alt")   ? 1 : 0)
         supr = (bits.include?("Super") ? 1 : 0)
