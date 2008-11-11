@@ -144,11 +144,16 @@ module Redcar
       @view.buffer.set_grammar_by_name(grammar_name)
     end
 
-    def update_line_and_column(mark)
+    def update_line_and_column(mark) #:nodoc:
       insert_iter = self.buffer.get_iter_at_mark(mark)
       label = bus('/gtk/window/statusbar/line').data
       label.text = "Line: "+ (insert_iter.line+1).to_s +
         "   Col: "+(insert_iter.line_offset+1).to_s
+    end
+
+    def close #:nodoc:
+      super
+      buffer.parser.close if buffer.parser
     end
   end
 end
