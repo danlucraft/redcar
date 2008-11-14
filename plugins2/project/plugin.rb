@@ -4,7 +4,7 @@ module Redcar
     class << self
       attr_accessor :tab
     end
-    
+        
     on_load do
       Sensitive.register(:open_project, 
                          [:open_window, :new_tab, :close_tab, 

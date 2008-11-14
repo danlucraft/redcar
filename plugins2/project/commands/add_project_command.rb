@@ -4,7 +4,7 @@ module Redcar
     menu "Project/Add Directory"
     
     def execute
-      unless pt = ProjectTab.project_tab
+      unless pt = ProjectPlugin.tab
 	      new_tab = win.new_tab(ProjectTab)
 	      new_tab.focus
 			end
