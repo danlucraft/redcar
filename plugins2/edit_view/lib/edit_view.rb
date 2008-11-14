@@ -33,10 +33,6 @@ module Redcar
       create_indenter
       create_autopairer
       create_snippet_inserter
-      
-      # fix weird GTK crash
-#       buffer.text = "[][](){}def foo"
-#       buffer.text = ""
     end
 
     def set_gtk_cursor_colour
@@ -63,7 +59,7 @@ module Redcar
           end
         end
       end
-      signal_connect_after("expose_event") do
+      signal_connect("expose_event") do
         if @scroll_changed
           @scroll_changed = false
           value_changed_handler
