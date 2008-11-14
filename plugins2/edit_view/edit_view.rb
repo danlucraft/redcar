@@ -22,7 +22,7 @@ module Redcar
 end
 
 require 'gtksourceview2'
-require File.dirname(__FILE__) + '/gtkmateview/dist/gtkmateview_rb'
+require File.dirname(__FILE__) + '/gtkmateview/dist/gtkmateview'
 
 load File.dirname(__FILE__) + "/lib/document.rb"
 load File.dirname(__FILE__) + "/lib/edit_view.rb"

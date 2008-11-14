@@ -59,8 +59,14 @@ module Redcar
       signal_connect("parent_set") do
         if parent.is_a? Gtk::ScrolledWindow
           parent.vscrollbar.signal_connect_after("value_changed") do
-#            view_changed
+            @scroll_changed = true
           end
+        end
+      end
+      signal_connect_after("expose_event") do
+        if @scroll_changed
+          @scroll_changed = false
+          value_changed_handler
         end
       end
     end
@@ -118,10 +124,10 @@ module Redcar
       get_line_at_y(bufy)[0].line
     end
 
-    def view_changed
-#      puts "last_visible_line:#{last_visible_line}"
-      @parser.max_view = last_visible_line + 100
-    end
+#     def view_changed
+# #      puts "last_visible_line:#{last_visible_line}"
+#       @parser.max_view = last_visible_line + 100
+#     end
 
     def cursor_onscreen?
       visible_lines[0] < buffer.cursor_line and
