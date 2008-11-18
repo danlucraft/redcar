@@ -56,7 +56,7 @@ If you are not using Debian/Ubuntu, or have installed Ruby yourself from source,
   $ sudo make install
 
 5. Checkout the GtkMateView extension:
-  $ cd REDCAR_SRC_PATH/plugins2/edit_view/
+  $ cd REDCAR_PATH/plugins2/edit_view/
   $ git clone git://github.com/danlucraft/gtkmateview.git
   $ cd gtkmateview/dist
   $ ruby extconf.rb
@@ -72,46 +72,7 @@ There will be quite a lot of warnings during this compilation, but there shouldn
 7. Now try running Redcar
   $ cd REDCAR_PATH
   $ ./bin/redcar
-
-=== Installing from source
-
-1. Please make sure you have an up-to-date version of Ruby-Gnome2 
-installed. This can be downloaded from http://ruby-gnome2.sourceforge.jp/, 
-or may be packaged for your distribution.
-
-2. Install Oniguruma. 5.9.0 seems to work. It can be downloaded here:
-http://www.geocities.jp/kosako3/oniguruma/
-
-3. Install the Ruby gem 'oniguruma'
-  $ sudo gem install oniguruma
-
-This must build native extensions correctly for Redcar to function. To test whether
-oniguruma is installed correctly open irb and check you get this:
-
-  >> require 'rubygems'; require 'oniguruma'; Oniguruma::ORegexp.new("(?<=foo)bar")
-  => /(?<=foo)bar/
-
-4. Install other required gems
-  $ sudo gem install log4r rails rspec hoe
-
-5. Download the Textmate bundles. You will need Subversion installed to get them:
-  $ export LC_CTYPE=en_US.UTF-8
-  $ cd /usr/local/share/
-  $ sudo svn co http://macromates.com/svn/Bundles/trunk textmate
-
-6. Checkout the GtkMateView extension:
-  $ cd REDCAR_PATH
-  $ git clone git://github.com/danlucraft/gtkmateview.git plugins2/edit_view/gtkmateview
-  $ cd plugins2/edit_view/gtkmateview/dist
-  $ ruby extconf.rb
-  $ make
-
-This should complete without errors. Though there will be a ton of warnings.
-
-7. Now try running Redcar
-  $ cd REDCAR_PATH
-  $ ./bin/redcar
-
+ 
 The first time Redcar runs it will spend time loading the Textmate Bundles. 
 This only happens once.
 

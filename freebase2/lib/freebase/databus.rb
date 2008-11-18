@@ -273,7 +273,7 @@ module FreeBASE
           return true if @slots.size > 0
           return false
         end
-	return @slots.has_key?(name)
+        return @slots.has_key?(name)
       end
       
       ##

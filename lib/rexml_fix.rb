@@ -6,7 +6,7 @@ require 'rexml/document'
 require 'rexml/entity'
 
 begin
-  REXML::Document.new(File.read("lib/rexml_fix_test_data.xml")).root.each_element_with_text{ |e| p e.name }
+  REXML::Document.new(File.read("lib/rexml_fix_test_data.xml")).root.each_element_with_text{ |e| e.name }
 rescue NoMethodError => e
   if e.message.include? "record_entity_expansion"
     module REXML
@@ -35,7 +35,6 @@ rescue NoMethodError => e
         end
       end
     end
-    REXML::Document.new(File.read("lib/rexml_fix_test_data.xml")).root.each_element_with_text{ |e| p e.name }
   end
 end
 

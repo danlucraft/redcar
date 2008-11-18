@@ -25,14 +25,12 @@ module Redcar
       @gtk_sw.set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_AUTOMATIC)
       self.title = TITLE
       @slot = bus('/redcar/project')
-      path = "/home/dan/projects/redcar"
       icons_dir = Redcar.PLUGINS_PATH + '/project/icons/'
       @file_pic = Gdk::Pixbuf.new(icons_dir+"text-x-generic.png")
       @dir_pic = Gdk::Pixbuf.new(icons_dir+"folder.png")
       @image_pic = Gdk::Pixbuf.new(icons_dir+"gnome-mime-image.png")
       @ruby_pic = Gdk::Pixbuf.new(icons_dir+"ruby.png")
       GnomeVFS.init
-      add_directory("Redcar", path)
       connect_signals
       ProjectPlugin.tab = self
     end
