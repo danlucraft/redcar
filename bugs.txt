@@ -1,3 +1,0 @@
-
-select char / select word both come up as Super+W, but they are
-different in the definition.
