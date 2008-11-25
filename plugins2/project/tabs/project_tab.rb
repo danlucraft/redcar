@@ -51,6 +51,38 @@ module Redcar
       @view.signal_connect(:row_expanded) do |_, iter, path|
         open_row(path) unless @ignore_row_expanded
       end
+      @view.on_right_button_press do |_, gdk_event|
+        # get the row and column
+        path_array = @view.get_path_at_pos(gdk_event.x, gdk_event.y)
+        popup_menu((path_array||[]).first, gdk_event)
+      end
+    end
+    
+    def popup_menu(path, button_event)
+      p path
+      ProjectTab.show_popup_menu(button_event, 
+        [
+          ["", fn { p :foo }]
+        ])
+    end
+    
+    # expects an array like:
+    # [["Copy", fn { p :copy_activated}], ...]
+    #
+    # if name is "<hr />" then a separator is inserted
+    def self.show_popup_menu(button_event, item_definitions)
+      menu = Gtk::Menu.new
+      for item_definition in item_definitions
+        if item_definition[0] == "<hr />"
+          menu.append(Gtk::SeparatorItem.new)
+        else
+          menu_item = Gtk::MenuItem.new(item_definition[0])
+          menu_item.signal_connect("activate") { item_definition[1].call }
+          menu.append(menu_item)
+        end
+      end
+      menu.show_all
+      menu.popup(nil, nil, button_event.button, button_event.time)
     end
 
     def open_row(path)

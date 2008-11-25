@@ -22,6 +22,5 @@ module Oniguruma #:nodoc:
   end
 end
 
-require 'active_support/core_ext/blank'
-require 'active_support/multibyte'
-require 'active_support/core_ext/string'
+
+require 'active_support'
