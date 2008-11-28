@@ -40,14 +40,20 @@ describe Redcar::ProjectTab do
     end
   end
   
-  describe ".remove_directory" do
+  describe ".remove_project" do
     before(:each) do
       @tab.add_directory("project", Redcar.PLUGINS_PATH + "/project")
     end
     
-    it "should remove the directory" do
+    it "should remove the project" do
       @tab.store.contents(1).should include("project")
-      @tab.remove_directory(Redcar.PLUGINS_PATH + "/project")
+      @tab.remove_project(Redcar.PLUGINS_PATH + "/project")
+      @tab.store.contents(1).should_not include("project")
+    end
+    
+    it "should remove the project even if given a sub-directory" do
+      @tab.store.contents(1).should include("project")
+      @tab.remove_project(Redcar.PLUGINS_PATH + "/project/commands")
       @tab.store.contents(1).should_not include("project")
     end
   end

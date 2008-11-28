@@ -64,15 +64,15 @@ module Redcar
     
     def popup_menu(tree_path, button_event)
       menu_def = [
-        ["Add Directory", fn { AddProjectCommand.new.do }]
+        ["Add Project", fn { AddProjectCommand.new.do }],
+        ["<hr />"]
       ]
       
-      if tree_path and tree_path.depth == 1
+      if tree_path
         iter = @store.get_iter(tree_path)
         path = iter[2]
-        menu_def << ["Remove Directory", fn { RemoveProjectCommand.new(path).do }]
+        menu_def << ["Remove Project", fn { RemoveProjectCommand.new(path).do }]
       end
-      
       ProjectTab.show_popup_menu(button_event, menu_def)
     end
     
@@ -82,9 +82,9 @@ module Redcar
     # if name is "<hr />" then a separator is inserted
     def self.show_popup_menu(button_event, item_definitions)
       menu = Gtk::Menu.new
-      for item_definition in item_definitions
+      item_definitions.each do |item_definition|
         if item_definition[0] == "<hr />"
-          menu.append(Gtk::SeparatorItem.new)
+          menu.append(Gtk::SeparatorMenuItem.new)
         else
           menu_item = Gtk::MenuItem.new(item_definition[0])
           menu_item.signal_connect("activate") { item_definition[1].call }
@@ -157,6 +157,12 @@ module Redcar
       iter[2] = path
       @directories << path
       self.dir_tree_get(path, iter, &block)
+    end
+    
+    def remove_project(path)
+      iter = @store.find_iter(2, path)
+      iter = @store.get_iter(iter.path.to_s.split(":").first)
+      remove_directory(iter[2])
     end
     
     def remove_directory(path)

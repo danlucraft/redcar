@@ -27,9 +27,18 @@ class Gtk::TreeStore
     s.join("\n")
   end
 
-  def find_iter(col, value)
+  # If given col and value, finds the first TreeIter with the 
+  # matching column. If given a block, passes each iter to the
+  # block and returns the iter for which the block returns true.
+  def find_iter(col=nil, value=nil, &block)
     each do |_, _, iter|
-      return iter if iter[col] == value
+      if block
+        if block.call[iter]
+          return iter
+        end
+      else
+        return iter if iter[col] == value
+      end
     end
     nil
   end

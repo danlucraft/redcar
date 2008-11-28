@@ -4,6 +4,11 @@ module Redcar::Testing
     def self.spec_plugin(plugin_name)
       puts "speccing plugin name: #{plugin_name}"
       
+      unless File.exists?(Redcar.PLUGINS_PATH + "/#{plugin_name}/spec")
+        puts "   no specs"
+        return
+      end
+      
       set_redcar_formatter
 
       spec_files(plugin_name).each do |spec_file|

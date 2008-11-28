@@ -7,7 +7,7 @@ module Redcar
   
     def execute
       if pt = ProjectPlugin.tab
-        pt.remove_directory(@path)
+        pt.remove_project(@path)
      end
     end
   end
