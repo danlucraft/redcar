@@ -1,8 +1,10 @@
 
 Redcar Annoyances Top 10:
-  ** Colouring gets it wrong in minor ways ALL THE TIME.
-   * The autopairer seems to get it wrong a lot.
+ *** Editing gets slower the longer you have a tab open.
   ** Long lines are slow to edit.
-  ** Is it parsing the whole tab when you switch to it!?! Why does it get slower?
+  ** Colouring gets it wrong in minor ways ALL THE TIME.
+  ** Is it parsing the whole tab when you switch to it!?!
+   * The autopairer seems to get it wrong a lot.
    * open recent projects
    * bulk commenting
+   * HTML indenting doesn't work

@@ -19,7 +19,9 @@ module Redcar
       @view.append_column(col1)
       @view.headers_visible = false
       @view.show
-
+      
+      @directories ||= []
+      
       super(pane, @view, :scrolled? => true, :toolbar? => true)
 
       @gtk_sw.set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_AUTOMATIC)
@@ -48,9 +50,11 @@ module Redcar
           open_row(path)
         end
       end
+      
       @view.signal_connect(:row_expanded) do |_, iter, path|
         open_row(path) unless @ignore_row_expanded
       end
+      
       @view.on_right_button_press do |_, gdk_event|
         # get the row and column
         path_array = @view.get_path_at_pos(gdk_event.x, gdk_event.y)
@@ -58,12 +62,18 @@ module Redcar
       end
     end
     
-    def popup_menu(path, button_event)
-      p path
-      ProjectTab.show_popup_menu(button_event, 
-        [
-          ["", fn { p :foo }]
-        ])
+    def popup_menu(tree_path, button_event)
+      menu_def = [
+        ["Add Directory", fn { AddProjectCommand.new.do }]
+      ]
+      
+      if tree_path and tree_path.depth == 1
+        iter = @store.get_iter(tree_path)
+        path = iter[2]
+        menu_def << ["Remove Directory", fn { RemoveProjectCommand.new(path).do }]
+      end
+      
+      ProjectTab.show_popup_menu(button_event, menu_def)
     end
     
     # expects an array like:
@@ -145,9 +155,14 @@ module Redcar
       iter[0] = @dir_pic
       iter[1] = name
       iter[2] = path
-      @directories ||= []
       @directories << path
       self.dir_tree_get(path, iter, &block)
+    end
+    
+    def remove_directory(path)
+      iter = @store.find_iter(2, path)
+      @directories.delete(path)
+      @store.remove(iter)
     end
     
     def clear

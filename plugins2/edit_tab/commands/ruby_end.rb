@@ -4,7 +4,7 @@ module Redcar
 
     def execute
       doc.insert_at_cursor("en")
-      doc.type("d\n")
+      doc.type("d")
     end
   end
 end

@@ -39,6 +39,18 @@ describe Redcar::ProjectTab do
       @tab.directories.should include(Redcar.PLUGINS_PATH + "/project")
     end
   end
+  
+  describe ".remove_directory" do
+    before(:each) do
+      @tab.add_directory("project", Redcar.PLUGINS_PATH + "/project")
+    end
+    
+    it "should remove the directory" do
+      @tab.store.contents(1).should include("project")
+      @tab.remove_directory(Redcar.PLUGINS_PATH + "/project")
+      @tab.store.contents(1).should_not include("project")
+    end
+  end
 
   describe "opening a directory", :shared => true do
     before(:each) do

@@ -28,8 +28,8 @@ describe Redcar::Testing::InternalRSpecRunner do
   describe ".lookup_example_groups" do
     it "should find the example groups" do
       egs = Redcar::Testing::InternalRSpecRunner.lookup_example_groups.map(&:to_s)
-      egs.any? {|c| c =~ /Spec::Example::ExampleGroup::Subclass_\d+/}.should be_true
-      egs.any? {|c| c =~ /Spec::Example::ExampleGroup::Subclass_\d+::Subclass_\d+/}.should be_true
+      egs.any? {|c| c =~ /Test::Unit::TestCase::Subclass_\d+/}.should be_true
+      egs.any? {|c| c =~ /Test::Unit::TestCase::Subclass_\d+::Subclass_\d+/}.should be_true
     end
   end
 end

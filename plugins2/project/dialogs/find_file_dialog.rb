@@ -121,7 +121,7 @@ module Redcar
       if @last_directories == directories
         files = @last_files
       else
-        @last_directories = directories
+        @last_directories = directories.clone
         files = []
         directories.each do |dir|
           files += Dir[File.expand_path(dir + "/**/*")]

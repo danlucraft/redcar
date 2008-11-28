@@ -7,6 +7,7 @@ module Redcar::Testing
       set_redcar_formatter
 
       spec_files(plugin_name).each do |spec_file|
+        p spec_file
         load spec_file
       end
       
@@ -38,6 +39,7 @@ module Redcar::Testing
     def self.lookup_example_groups
       cs = []
       lookup_example_groups1(Spec::Example::ExampleGroup, cs)
+      lookup_example_groups1(Test::Unit::TestCase, cs)
       cs
     end
 
@@ -73,7 +75,11 @@ END
 
     def self.clean_example_groups(groups)
       groups.sort_by{|c| c.to_s.length}.reverse.each do |c|
-        Spec::Example::ExampleGroup.send(:remove_const, c.to_s.split("::").last.intern) rescue nil
+        if c.to_s =~ /Spec::Example::ExampleGroup/
+          Spec::Example::ExampleGroup.send(:remove_const, c.to_s.split("::").last.intern) rescue nil
+        elsif c.to_s =~ /Test::Unit::TestCase/
+          Test::Unit::TestCase.send(:remove_const, c.to_s.split("::").last.intern) rescue nil
+        end
       end
     end
 
