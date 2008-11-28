@@ -1,7 +1,7 @@
 
 module Redcar
   class NewTab < Redcar::Command
-    key   "Ctrl+N"
+    key   "Super+N"
     icon  :NEW
     
     def execute
