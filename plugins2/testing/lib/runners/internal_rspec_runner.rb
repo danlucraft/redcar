@@ -58,6 +58,8 @@ module Redcar::Testing
     
     def self.set_redcar_formatter
       rspec_options = Spec::Runner.options
+      rspec_options.instance_variable_set(:"@examples", [])
+      rspec_options.instance_variable_set(:"@argv", [])
       def rspec_options.formatters
         @redcar_formatter ||= Redcar::Testing::TabFormatter.new
         [@redcar_formatter]

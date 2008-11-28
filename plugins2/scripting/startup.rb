@@ -105,6 +105,7 @@ elsif Redcar::App.ARGV.include? "--current"
   stop_redcar
 elsif ix = Redcar::App.ARGV.index("--spec")
   plugin = Redcar::App.ARGV[ix+1]
+  2.times { Redcar::App.ARGV.delete_at(ix) }
   Redcar::Hook.attach(:redcar_start) do
     begin
       Redcar::Testing::InternalRSpecRunner.spec_plugin(plugin)
