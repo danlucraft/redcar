@@ -77,7 +77,8 @@ module Redcar
           ["Remove Project", fn { RemoveProjectCommand.new(path).do }],
           ["<hr />"],
           ["New File", fn { NewFileInProjectCommand.new(path).do }],
-          ["Rename", fn { RenamePathInProjectCommand.new(path).do }]
+          ["Rename", fn { RenamePathInProjectCommand.new(path).do }],
+          ["Delete", fn { DeletePathInProjectCommand.new(path).do }]
         ]
       end
       
@@ -169,6 +170,7 @@ module Redcar
       iter[2] = path
       @directories << path
       self.dir_tree_get(path, iter, &block)
+      open_row(iter.path.to_s)
     end
     
     def remove_project(path)
@@ -183,11 +185,16 @@ module Redcar
       @store.remove(iter)
     end
     
-    def new_file_at(path)
-      iter = @store.find_iter(2, path)
+    def iter_to_directory(iter)
       unless iter.has_child?
         iter = iter.parent
-      end # iter now a directory
+      end
+      iter
+    end
+    
+    def new_file_at(path)
+      iter = @store.find_iter(2, path)
+      iter = iter_to_directory(iter)
       open_row(iter.path)
       new_iter = @store.append(iter)
       new_iter[0] = @file_pic
@@ -233,7 +240,7 @@ module Redcar
         end
         @block_buttons = false
         @renderer2.editable = false
-        @renderer2.signal_handler_disconnect(@edit_cancel_hander)
+        @renderer2.signal_handler_disconnect(@edit_cancel_handler)
       end
       @button_blocker_handler = @view.on_button_press { false }
       @block_buttons = true
@@ -245,6 +252,26 @@ module Redcar
         @block_buttons = false
         @renderer2.editable = false
         @renderer2.signal_handler_disconnect(@edit_cancel_handler)
+      end
+    end
+    
+    def delete_path(path)
+      iter = @store.find_iter(2, path)
+      short_name = File.expand_path(path).split("/")[-2..-1].join("/")
+      dialog = Gtk::MessageDialog.new(Redcar.win, 
+        Gtk::Dialog::DESTROY_WITH_PARENT,
+        Gtk::MessageDialog::QUESTION,
+        Gtk::MessageDialog::BUTTONS_OK_CANCEL,
+        "Are you sure you want to delete '#{short_name}'?"
+      )
+      response_id = dialog.run
+      should_delete = !!(response_id == -5)
+      dialog.destroy
+      if should_delete
+        puts "deleting #{iter[2]}"
+        FileUtils.rm_rf(iter[2])
+        dir_iter = iter_to_directory(iter)
+        open_row(dir_iter.path.to_s)
       end
     end
     

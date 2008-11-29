@@ -97,8 +97,7 @@ describe Redcar::ProjectTab do
     
     def open_dir
       i = @tab.store.find_iter(1, "spec")
-      @tab.view.selection.select_iter(i)
-      @tab.view.signal_emit(:row_activated, i.path, @tab.view.columns[1])
+      @tab.open_row(i.path.to_s)
     end
   end
   
@@ -163,5 +162,5 @@ describe Redcar::ProjectTab do
       end
     end
   end
-  
 end
+
