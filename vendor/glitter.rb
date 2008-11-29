@@ -129,6 +129,17 @@ class Gtk::Widget
     end
   end
   
+  def on_button_press(&block)
+    signal_connect("button-press-event") do |_, gdk_event|
+      if gdk_event.is_a? Gdk::EventButton
+        block.call(self, gdk_event)
+        true
+      else
+        false
+      end
+    end
+  end
+  
   def on_right_button_press(&block)
     signal_connect("button-press-event") do |_, gdk_event|
       if gdk_event.is_a? Gdk::EventButton and gdk_event.button == 3
