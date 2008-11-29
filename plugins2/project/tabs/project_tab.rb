@@ -77,6 +77,8 @@ module Redcar
           ["Remove Project", fn { RemoveProjectCommand.new(path).do }],
           ["<hr />"],
           ["New File", fn { NewFileInProjectCommand.new(path).do }],
+          ["New Directory", fn { NewDirectoryInProjectCommand.new(path).do }],
+          ["<hr />"],
           ["Rename", fn { RenamePathInProjectCommand.new(path).do }],
           ["Delete", fn { DeletePathInProjectCommand.new(path).do }]
         ]
@@ -105,6 +107,7 @@ module Redcar
     end
 
     def open_row(tree_path)
+      puts "open_row(#{tree_path})"
       iter = @store.get_iter(tree_path)
       if File.directory? iter[2]
         dir_tree_get(iter[2], iter)
@@ -186,23 +189,46 @@ module Redcar
     end
     
     def iter_to_directory(iter)
-      unless iter.has_child?
-        iter = iter.parent
+      if File.directory?(iter[2])
+        return iter
+      else
+        iter_to_directory(iter.parent)
       end
-      iter
     end
     
     def new_file_at(path)
+      puts "new_file_at(#{path})"
       iter = @store.find_iter(2, path)
       iter = iter_to_directory(iter)
-      open_row(iter.path)
       new_iter = @store.append(iter)
       new_iter[0] = @file_pic
       new_iter[1] = "unknown"
       new_iter[2] = iter[2] + "/unknown"
       FileUtils.touch(new_iter[2])
-      @view.scroll_to_cell(new_iter.path, @col1, false, 0.5, 0.5)
-      rename_path(new_iter[2])
+      new_tree_path = new_iter.path.to_s
+      new_path = new_iter[2]
+      open_row(iter.path.to_s)
+      @view.scroll_to_cell(@store.get_iter(new_tree_path).path, @col1, false, 0.5, 0.5)
+      rename_path(new_path)
+    end
+    
+    def new_dir_at(path)
+      puts "new_dir_at(#{path})"
+      iter = @store.find_iter(2, path)
+      iter = iter_to_directory(iter)
+      new_iter = @store.append(iter)
+      new_iter[0] = @dir_pic
+      new_iter[1] = "unknown"
+      new_iter[2] = iter[2] + "/unknown"
+      dummy_iter = @store.append(new_iter)
+      dummy_iter[1] = "[dummy row]"
+      dummy_iter[2] = iter[2] + "/[dummy row]"
+      FileUtils.mkdir(new_iter[2])
+      new_tree_path = new_iter.path.to_s
+      new_path = new_iter[2]
+      open_row(iter.path.to_s)
+      @view.scroll_to_cell(@store.get_iter(new_tree_path).path, @col1, false, 0.5, 0.5)
+      rename_path(new_path)
     end
     
     def rename_path(path)
@@ -270,8 +296,10 @@ module Redcar
       if should_delete
         puts "deleting #{iter[2]}"
         FileUtils.rm_rf(iter[2])
-        dir_iter = iter_to_directory(iter)
-        open_row(dir_iter.path.to_s)
+        dir_path = iter_to_directory(iter)[2]
+        @store.remove(iter)
+        dir_iter = @store.find_iter(2, dir_path)
+        open_row(dir_iter.path.to_s) # [2], dir_iter)
       end
     end
     
