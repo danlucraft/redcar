@@ -212,6 +212,9 @@ module Redcar
           if old_filename != new_filename
             FileUtils.mv(old_filename, new_filename)
             initialize_iter_from_file(iter, dir, new_filename)
+            if iter.has_child?
+              dir_tree_get(iter[2], iter)
+            end
           end
         rescue => e
           dialog = Gtk::MessageDialog.new(Redcar.win, 
@@ -230,9 +233,19 @@ module Redcar
         end
         @block_buttons = false
         @renderer2.editable = false
+        @renderer2.signal_handler_disconnect(@edit_cancel_hander)
       end
       @button_blocker_handler = @view.on_button_press { false }
       @block_buttons = true
+      @edit_cancel_handler = @renderer2.signal_connect("editing-canceled") do 
+        @renderer2.signal_handler_disconnect(@edit_handler)
+        if @button_blocker_handler
+          @view.signal_handler_disconnect(@button_blocker_handler)
+        end
+        @block_buttons = false
+        @renderer2.editable = false
+        @renderer2.signal_handler_disconnect(@edit_cancel_handler)
+      end
     end
     
     def clear

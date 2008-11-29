@@ -151,3 +151,19 @@ class Gtk::Widget
     end
   end
 end
+
+class GLib::Instantiatable
+  # Attaches debug output handlers to every signal
+  # that this object has.
+  # This does not include the "notify" signal, which is
+  # emitted so often that it overwhelms the output.
+  def debug_signals
+    self.class.signals.each do |v|
+      unless v == "notify"
+        self.signal_connect(v) do |args|
+          puts "#{v} occurred with args #{args.inspect}"
+        end
+      end
+    end
+  end
+end
