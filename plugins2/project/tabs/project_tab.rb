@@ -66,21 +66,28 @@ module Redcar
     end
     
     def popup_menu(tree_path, button_event)
-      menu_def = [
-        ["Add Project", fn { AddProjectCommand.new.do }]
-      ]
+      menu_def = []
       
       if tree_path
         iter = @store.get_iter(tree_path)
         path = iter[2]
         menu_def += [
-          ["Remove Project", fn { RemoveProjectCommand.new(path).do }],
-          ["<hr />"],
           ["New File", fn { NewFileInProjectCommand.new(path).do }],
           ["New Directory", fn { NewDirectoryInProjectCommand.new(path).do }],
           ["<hr />"],
           ["Rename", fn { RenamePathInProjectCommand.new(path).do }],
-          ["Delete", fn { DeletePathInProjectCommand.new(path).do }]
+          ["Delete", fn { DeletePathInProjectCommand.new(path).do }],
+          ["<hr />"],
+        ]
+      end
+      
+      menu_def += [
+        ["Add Project", fn { AddProjectCommand.new.do }]
+      ]
+      
+      if tree_path
+        menu_def += [
+          ["Remove Project", fn { RemoveProjectCommand.new(path).do }],
         ]
       end
       
