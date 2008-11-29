@@ -63,6 +63,10 @@ describe Redcar::ProjectTab do
       @tab.add_directory("project", Redcar.PLUGINS_PATH + "/project")
     end
     
+    after(:each) do
+      FileUtils.rm_f(Redcar.PLUGINS_PATH + "/project/spec/test.tmp")
+    end
+    
     it "should add subdirectories" do
       open_dir
       @tab.store.contents(2).should include(Redcar.PLUGINS_PATH + "/project/spec/tabs")
@@ -135,6 +139,10 @@ describe Redcar::ProjectTab do
         iter = @tab.store.find_iter(1, "deps.rb")
         @tab.new_file_at(iter[2])
       end
+      
+      after(:each) do
+        FileUtils.rm_f(Redcar.PLUGINS_PATH + "/project/unknown")
+      end
     end
     
     describe "to an open directory by clicking on the directory" do
@@ -145,6 +153,10 @@ describe Redcar::ProjectTab do
         @tab.open_row(iter.path)
         iter = @tab.store.find_iter(1, "spec")
         @tab.new_file_at(iter[2])
+      end
+      
+      after(:each) do
+        FileUtils.rm_f(Redcar.PLUGINS_PATH + "/project/spec/unknown")
       end
     end
     
@@ -159,6 +171,10 @@ describe Redcar::ProjectTab do
       def add_file
         iter = @tab.store.find_iter(1, "spec")
         @tab.new_file_at(iter[2])
+      end
+      
+      after(:each) do
+        FileUtils.rm_f(Redcar.PLUGINS_PATH + "/project/spec/unknown")
       end
     end
   end

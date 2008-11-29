@@ -114,7 +114,7 @@ module Redcar
     end
 
     def open_row(tree_path)
-      puts "open_row(#{tree_path})"
+#      puts "open_row(#{tree_path})"
       iter = @store.get_iter(tree_path)
       if File.directory? iter[2]
         dir_tree_get(iter[2], iter)
@@ -204,7 +204,7 @@ module Redcar
     end
     
     def new_file_at(path)
-      puts "new_file_at(#{path})"
+#      puts "new_file_at(#{path})"
       iter = @store.find_iter(2, path)
       iter = iter_to_directory(iter)
       new_iter = @store.append(iter)
@@ -212,15 +212,14 @@ module Redcar
       new_iter[1] = "unknown"
       new_iter[2] = iter[2] + "/unknown"
       FileUtils.touch(new_iter[2])
-      new_tree_path = new_iter.path.to_s
       new_path = new_iter[2]
       open_row(iter.path.to_s)
-      @view.scroll_to_cell(@store.get_iter(new_tree_path).path, @col1, false, 0.5, 0.5)
+      @view.scroll_to_cell(@store.find_iter(2, new_path).path, @col1, false, 0.5, 0.5)
       rename_path(new_path)
     end
     
     def new_dir_at(path)
-      puts "new_dir_at(#{path})"
+#      puts "new_dir_at(#{path})"
       iter = @store.find_iter(2, path)
       iter = iter_to_directory(iter)
       new_iter = @store.append(iter)
@@ -231,10 +230,9 @@ module Redcar
       dummy_iter[1] = "[dummy row]"
       dummy_iter[2] = iter[2] + "/[dummy row]"
       FileUtils.mkdir(new_iter[2])
-      new_tree_path = new_iter.path.to_s
       new_path = new_iter[2]
       open_row(iter.path.to_s)
-      @view.scroll_to_cell(@store.get_iter(new_tree_path).path, @col1, false, 0.5, 0.5)
+      @view.scroll_to_cell(@store.find_iter(2, new_path).path, @col1, false, 0.5, 0.5)
       rename_path(new_path)
     end
     
