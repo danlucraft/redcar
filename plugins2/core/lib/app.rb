@@ -135,10 +135,19 @@ module Redcar
         end
       end
       ENV['TM_SOFT_TABS'] = "YES"
-      ENV['TM_SUPPORT_PATH'] = "textmate/Support"
+      ENV['TM_SUPPORT_PATH'] = textmate_share_dir + "Support"
       ENV['TM_TAB_SIZE'] = "2"
     end
-
+    
+    def self.textmate_share_dir
+      if File.exist?("/usr/local/share/textmate")
+        "/usr/local/share/textmate/"
+      elsif File.exist?("/usr/share/textmate/")
+        "/usr/share/textmate/"
+      else
+        raise "Can't find the textmate share directory in /usr/local/share/textmate.'"
+      end
+    end
   end
 end
 

@@ -54,7 +54,7 @@ module Com::RedcarIDE
       if node.is_data_slot?
         @ts.set_value(iter, 2, "Data")
         if [Numeric, String, Array].include? node.data.class
-          @ts.set_value(iter, 1, node.data.inspect[0..50])
+          @ts.set_value(iter, 1, node.data.inspect[0..150])
         else
           @ts.set_value(iter, 1, node.data.class.to_s)
         end

@@ -106,7 +106,7 @@ module Redcar
     end
 
     def self.input(input)
-      @input = inputs
+      @input = input
     end
 
     def self.get(name)
@@ -283,7 +283,8 @@ module Redcar
       rescue Object => e
         Command.process_command_error(self, e)
       end
-      direct_output(self.class.get(:output), @output) if @output
+      output_type = self.class.get(:output)
+      direct_output(output_type, @output) if @output and output_type
     end
 
     def record?
@@ -294,44 +295,47 @@ module Redcar
     # actual input
     def valid_input_type
       if primary_input
-        self.class.get(:@input)
+        self.class.get(:input)
       else
-        self.class.get(:@fallback_input)
+        self.class.get(:fallback_input)
       end
     end
 
     # Gets the primary input.
     def primary_input
-      input = input_by_type(self.class.get(:@input))
+      input = input_by_type(self.class.get(:input))
       input == "" ? nil : input
     end
 
     def secondary_input
-      input_by_type(self.class.get(:@fallback_input))
+      input_by_type(self.class.get(:fallback_input))
     end
 
     def input_by_type(type)
+      puts "input_by_type(#{type})"
       case type
       when :selected_text, :selection, :selectedText
-        tab.selection
+        doc.selection
       when :document
-        tab.buffer.text
+        doc.buffer.text
       when :line
-        tab.get_line
+        doc.get_line
       when :word
-        if tab.cursor_iter.inside_word?
-          s = tab.cursor_iter.backward_word_start!.offset
-          e = tab.cursor_iter.forward_word_end!.offset
-          tab.text[s..e].rstrip.lstrip
+        if doc.cursor_iter.inside_word?
+          s = doc.cursor_iter.backward_word_start!.offset
+          e = doc.cursor_iter.forward_word_end!.offset
+          doc.text[s..e].rstrip.lstrip
         end
       when :character
-        tab.text[tab.cursor_iter.offset]
+        doc.text[doc.cursor_iter.offset]
       when :scope
         if tab.respond_to? :current_scope_text
           tab.current_scope_text
         end
       when :nothing
         nil
+      else
+        raise "Unknown input type: #{type.inspect}"
       end
     end
 
@@ -340,47 +344,49 @@ module Redcar
     end
 
     def direct_output(type, output_contents)
+      puts "direct_output(#{type.inspect})"
       case type
       when :replace_document, :replaceDocument
-        tab.replace output_contents
+        doc.replace output_contents
       when :replace_line, :replaceLine
-        tab.replace_line(output_contents)
+        doc.replace_line(output_contents)
       when :replace_selected_text, :replaceSelectedText
-        tab.replace_selection(output_contents)
+        doc.replace_selection(output_contents)
       when :insert_as_text, :insertAsText
-        tab.insert_at_cursor(output_contents)
+        doc.insert_at_cursor(output_contents)
       when :insert_as_snippet, :insertAsSnippet
-        tab.insert_as_snippet(output_contents)
+        doc.insert_as_snippet(output_contents)
       when :show_as_tool_tip, :show_as_tooltip, :showAsTooltip
-        tab.tooltip_at_cursor(output_contents)
+        doc.tooltip_at_cursor(output_contents)
       when :after_selected_text, :afterSelectedText
-        if tab.selected?
-          s, e = tab.selection_bounds
+        if doc.selected?
+          s, e = doc.selection_bounds
         else
-          e = tab.cursor_offset
+          e = doc.cursor_offset
         end
-        tab.insert(e, output_contents)
+        doc.insert(e, output_contents)
       when :create_new_document, :createNewDocument
-        new_tab = Redcar.current_pane.new_tab
+        # TODO: fix this hardcoded reference
+        new_tab = Redcar.current_pane.new_tab(Redcar::EditTab)
         new_tab.name = "output: " + @name
-        new_tab.replace output_contents
+        new_tab.doc.replace output_contents
         new_tab.focus
       when :replace_input, :replaceInput
         case valid_input_type
         when :selected_text, :selectedText
-          tab.replace_selection(output_contents)
+          doc.replace_selection(output_contents)
         when :line
-          tab.replace_line(output_contents)
+          doc.replace_line(output_contents)
         when :document
-          tab.replace output_contents
+          doc.replace output_contents
         when :word
-          Redcar.tab.text[@s..@e] = output_contents
+          Redcar.doc.text[@s..@e] = output_contents
         when :scope
-          if tab.respond_to? :current_scope
-            s = tab.iter(tab.current_scope.start).offset
-            e = tab.iter(tab.current_scope.end).offset
-            tab.delete(s, e)
-            tab.insert(s, output_contents)
+          if doc.respond_to? :current_scope
+            s = doc.iter(doc.current_scope.start).offset
+            e = doc.iter(doc.current_scope.end).offset
+            doc.delete(s, e)
+            doc.insert(s, output_contents)
           end
         end
       when :show_as_html, :showAsHTML
@@ -390,17 +396,19 @@ module Redcar
       when :insert_after_input, :insertAfterInput
         case valid_input_type
         when :selected_text, :selectedText
-          s, e = tab.selection_bounds
+          s, e = doc.selection_bounds
           offset = [s, e].sort[1]
-          tab.insert(offset, output_contents)
-          tab.select(s+output_contents.length, e+output_contents.length)
+          doc.insert(offset, output_contents)
+          doc.select(s+output_contents.length, e+output_contents.length)
         when :line
-          if tab.cursor_line == tab.line_count-1
-            tab.insert(tab.line_end(tab.cursor_line), "\n"+output_contents)
+          if doc.cursor_line == doc.line_count-1
+            doc.insert(doc.line_end(doc.cursor_line), "\n"+output_contents)
           else
-            tab.insert(tab.line_start(tab.cursor_line+1), output_contents)
+            doc.insert(doc.line_start(doc.cursor_line+1), output_contents)
           end
         end
+      else
+        raise "Unknown output type: #{type.inspect}"
       end
     end
 
@@ -426,18 +434,18 @@ module Redcar
   end
 
   class ShellCommand < Command
-    attr_accessor(:fallback_input,
-                  :tm_uuid, :bundle_uuid)
+    class << self
+      attr_accessor(:tm_uuid, :bundle, :shell_script, :name)
+    end
 
     def execute
-      super
-      set_environment_variables
-      File.open("cache/tmp.command", "w") {|f| f.puts @block}
+      App.set_environment_variables
+      File.open("cache/tmp.command", "w") {|f| f.puts shell_script}
       File.chmod(0770, "cache/tmp.command")
       output, error = nil, nil
       Open3.popen3(shell_command) do |stdin, stdout, stderr|
-        stdin.write(input = get_input)
-        puts "input: #{input}"
+        stdin.write(this_input = input)
+        puts "input: #{this_input}"
         stdin.close
         output = stdout.read
         puts "output: #{output}"
@@ -447,76 +455,27 @@ module Redcar
         puts "shell command failed with error:"
         puts error
       end
-      direct_output(@output, output) if output
+      output
+    end
+
+    def shell_script
+      self.class.shell_script
     end
 
     def shell_command
-      if @block[0..1] == "#!"
+      if shell_script[0..1] == "#!"
         "./cache/tmp.command"
       else
         "/bin/sh cache/tmp.command"
       end
     end
-  end
-
-  # A module that deals with the 'range's that commands can be in.
-  module Range
-    mattr_accessor :active
-
-    def self.activate(range)
-#      puts "activating range #{range}"
-      @commands ||= { }
-      if @active.include? range
-#        puts "  already active"
-        true
-      else
-#        puts "  not already active"
-        @active << range
-        activate_commands(@commands[range]||[])
-      end
+    
+    def self.inspect
+      "<# ShellCommand(#{get(:scope)}) #{name}>"
     end
-
-    def self.deactivate(range)
-#      puts "deactivating range #{range}"
-      @commands ||= { }
-      if @active.include? range
-#        puts "  was active"
-        @active.delete range
-        deactivate_commands(@commands[range]||[])
-      else
-#        puts "  was not active"
-        true
-      end
-    end
-
-    def self.activate_commands(commands)
-      commands.each{ |c| c.in_range = true }
-    end
-
-    def self.deactivate_commands(commands)
-      commands.each{ |c| c.in_range = false }
-    end
-
-    def self.register_command(range, command)
-#       puts "registering command range: #{command}, #{range}"
-      if valid?(range)
-        @commands ||= { }
-        @commands[range] ||= []
-        @commands[range] << command
-      else
-        raise "cannot register a command with an invalid "+
-          "range: #{range}"
-      end
-    end
-
-    def self.valid?(range)
-      range_ancestors = range.ancestors.map(&:to_s)
-      # TODO: fix this to not hardcode references to plugins
-      range.is_a? Class and
-        (range == Redcar::Window or
-         range <= Redcar::Tab or
-         range_ancestors.include? "Redcar::EditView" or
-         range_ancestors.include? "Redcar::Speedbar")
-    end
+    
+#    def self.to_s
+#      inspect
+#    end
   end
 end

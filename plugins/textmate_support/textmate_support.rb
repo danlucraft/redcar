@@ -85,46 +85,6 @@ module Redcar::Plugins
       end
     end
     
-    def self.add_commands_to_menus(bundles, commands)
-      root = $BUS['/redcar/menus/menubar/Bundles']
-      Redcar::Menu.set_node_id(root)
-      bundles.each do |name, b|
-        if b['mainMenu']
-          menu_name = 'Bundles/'+b['name']
-          menu_hash = b['mainMenu']['items']
-          root = $BUS['/redcar/menus/menubar/'+menu_name]
-          Redcar::Menu.set_node_id(root)
-          build_bundle_menu(b, menu_name, menu_hash, commands)
-        end
-      end
-      Redcar::Menu.draw_menus
-    end
-    
-    def self.build_bundle_menu(binfo, menu_name, menu_hash, commands)
-      menu_hash.each do |uuid|
-        if uuid =~ /---------/
-          menu_separator(menu_name)
-        elsif command = commands[uuid]
-          menu(menu_name+"/"+command['name']) do |mb|
-            mb.command = "Bundles/#{binfo['name']}/#{command['name']}"
-            mb.icon = :EXECUTE
-            mb.keybinding = ""
-          end
-        else
-          submenu_hash = binfo['mainMenu']['submenus'][uuid]
-          if submenu_hash
-            root = $BUS['/redcar/menus/menubar/'+menu_name+'/'+
-                        submenu_hash['name'].gsub("/", " or ")
-                       ]
-            Redcar::Menu.set_node_id(root)
-            build_bundle_menu(binfo, 
-                              menu_name+"/"+submenu_hash['name'].gsub("/", " or "),
-                              submenu_hash['items'],
-                              commands)
-          end
-        end
-      end
-    end
     
     def self.load_bundle_commands(bundle_names)
       p :loading_bundle_commands

@@ -186,7 +186,7 @@ module Redcar
       startsel = startiter.offset
       endsel   = enditer.offset
       delete_selection
-      if text==nil
+      if text == nil
         if block_given?
           new_text = yield(current_text.chars)
         end
