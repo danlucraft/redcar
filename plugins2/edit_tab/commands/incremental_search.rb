@@ -14,7 +14,7 @@ module Redcar
           @start_offset = tab.document.cursor_iter.offset
         end
         
-        FindForward.new(text).do
+        FindForward.new(text).do(:replace_previous => true)
       end
 
       button "Prev", nil, "Super+Shift+S" do |sb|

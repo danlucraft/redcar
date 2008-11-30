@@ -106,6 +106,7 @@ module Redcar
       @gtk_notebook = Gtk::Notebook.new
       @gtk_notebook.set_group_id 0
       @gtk_notebook.homogeneous = false
+#      @gtk_notebook.enable_popup = true
     end
 
     def connect_notebook_signals

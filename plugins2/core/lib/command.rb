@@ -9,7 +9,7 @@ module Redcar
   #
   #   class CloseTab < Redcar::Command
   #     menu "File/Close"
-  #     key "Global/Ctrl+W"
+  #     key "Ctrl+W"
   #
   #     def execute
   #       tab.close if tab
@@ -264,7 +264,8 @@ module Redcar
       Redcar::App.focussed_window
     end
 
-    def do(tab=Redcar::App.focussed_window.focussed_tab)
+    def do(opts={})
+      tab = opts[:tab] || Redcar::App.focussed_window.focussed_tab
       unless self.respond_to? :execute
         raise "Abstract Command Error"
       end 
@@ -274,7 +275,11 @@ module Redcar
       @output = nil
       begin
         @output = self.execute
-        CommandHistory.record(self)
+        if opts[:replace_previous]
+          CommandHistory.record_and_replace(self)
+        else
+          CommandHistory.record(self)
+        end
       rescue Object => e
         Command.process_command_error(self, e)
       end
