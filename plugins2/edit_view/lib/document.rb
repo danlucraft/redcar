@@ -22,9 +22,6 @@ module Redcar
         get_iter_at_mark(obj)
       when Gtk::TextIter
         obj
-      when Redcar::EditView::TextLoc
-        line_start = get_iter_at_line(obj.line)
-        iter(line_start.offset+obj.offset)
       end
     end
 

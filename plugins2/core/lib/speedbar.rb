@@ -1,6 +1,4 @@
 
-require 'singleton'
-
 module Redcar
   class Speedbar
     def self.items
@@ -29,8 +27,8 @@ module Redcar
       define_value_finder(name)
     end
     
-    def self.textbox(name)
-      append_item [:textbox, name]
+    def self.textbox(name, &block)
+      append_item [:textbox, name, block]
       define_value_finder(name)
     end
     
@@ -120,7 +118,10 @@ module Redcar
     end
 
     def execute_key(key)
-      @blocks[key].call(@spbar) if @blocks[key]
+      if block = @blocks[key]
+        @blocks[key].call(@spbar)
+        true
+      end
     end
     
     def add_label(text)
@@ -137,10 +138,15 @@ module Redcar
       @focus_widget ||= toggle
     end
     
-    def add_textbox(name)
+    def add_textbox(name, block)
       e = Gtk::Entry.new
       # TODO: this should be set by preferences
       e.modify_font(Pango::FontDescription.new("Monospace 10"))
+      if block
+        e.signal_connect("changed") do
+          block.call(@spbar.tab, e.text)
+        end
+      end
       @value[name] = fn { e.text }
       pack_start(e)
       @focus_widget ||= e

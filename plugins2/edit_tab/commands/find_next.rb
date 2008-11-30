@@ -1,3 +1,4 @@
+
 module Redcar
   class Find < Redcar::EditTabCommand
     key  "Super+F"
