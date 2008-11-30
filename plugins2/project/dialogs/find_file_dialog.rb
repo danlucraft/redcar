@@ -91,18 +91,22 @@ module Redcar
     end
 
     def treeview_select_down
-      ni = @treeview.selection.selected.path
-      if ni.next! and iter = @treeview.model.get_iter(ni)
-        @treeview.selection.select_iter(iter)
-        @treeview.scroll_to_cell(ni, nil, false, 0.0, 0.0)
+      if sel = @treeview.selection.selected
+        ni = sel.path
+        if ni.next! and iter = @treeview.model.get_iter(ni)
+          @treeview.selection.select_iter(iter)
+          @treeview.scroll_to_cell(ni, nil, false, 0.0, 0.0)
+        end
       end
     end
     
     def treeview_select_up
-      pi = @treeview.selection.selected.path
-      if pi.prev! and iter = @treeview.model.get_iter(pi)
-        @treeview.selection.select_iter(iter)
-        @treeview.scroll_to_cell(pi, nil, false, 0.0, 0.0)
+      if sel = @treeview.selection.selected
+        pi = sel.path
+        if pi.prev! and iter = @treeview.model.get_iter(pi)
+          @treeview.selection.select_iter(iter)
+          @treeview.scroll_to_cell(pi, nil, false, 0.0, 0.0)
+        end
       end
     end
     

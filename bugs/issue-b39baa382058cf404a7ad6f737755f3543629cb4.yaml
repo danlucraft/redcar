@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: "Syntax: Perl-HTML Template causes segfault when used on the notes/notes.txt file"
+desc: ""
+type: :bugfix
+component: edit-view
+release: "0.1"
+reporter: Daniel Lucraft <dan@fluentradical.com>
+status: :unstarted
+disposition: 
+creation_time: 2008-11-30 08:21:37.527815 Z
+references: []
+
+id: b39baa382058cf404a7ad6f737755f3543629cb4
+log_events: 
+- - 2008-11-30 08:21:38.769355 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - created
+  - ""

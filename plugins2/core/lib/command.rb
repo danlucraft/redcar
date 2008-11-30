@@ -400,7 +400,11 @@ module Redcar
     end
 
     def to_s
-      self.class.to_s
+      interesting_variables = instance_variables - %w(@__tab @__view @__doc @output)
+      bits = interesting_variables.map do |iv|
+        "#{iv}=" + instance_variable_get(iv.intern).inspect
+      end
+      self.class.to_s + " " + bits.join(", ")
     end
   end
 

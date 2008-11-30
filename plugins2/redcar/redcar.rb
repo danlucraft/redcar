@@ -33,6 +33,8 @@ module Redcar
         separator
         item "Line Start",    LineStart
         item "Line End",   LineEnd
+        separator
+        item "Goto Line",  AskGotoLineCommand
       end
       item "Kill Line", KillLine
       separator

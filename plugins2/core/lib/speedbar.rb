@@ -38,9 +38,10 @@ module Redcar
       append_item [:button, text, icon, key, block]
     end
     
-    attr_accessor :visible, :speedbar_display
+    attr_accessor :visible, :speedbar_display, :tab
     
     def show(tab)
+      @tab = tab
       tab.gtk_speedbar.display(self)
     end
     
@@ -89,6 +90,7 @@ module Redcar
       bus("/redcar/keymaps/Speedbar").prune
       clear_children
       Range.deactivate(@spbar.class)
+      @spbar.tab.focus
       @value = {}
     end
     
@@ -110,16 +112,11 @@ module Redcar
     def add_key(key, &block)
       @blocks ||= {}
       @blocks[key] = block
-      com = Class.new(Redcar::Command)
-      t = %Q{
-        range #{@spbar.class.to_s}
-        key "#{key}"
+    end
 
-        def execute
-          tab.gtk_speedbar.execute_key("#{key}")
-        end
-      }
-      com.class_eval t
+    def process_keypress(gdk_eventkey)
+      key = Keymap.clean_gdk_eventkey(gdk_eventkey)
+      execute_key(key)
     end
 
     def execute_key(key)

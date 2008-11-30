@@ -233,9 +233,17 @@ module Redcar
 
       signal_connect('key-press-event') do |gtk_widget, gdk_eventkey|
         begin
-          continue = Keymap.process(gdk_eventkey)
-          # falls through to Gtk widgets if nothing handles it
-          continue
+          done = false
+          if speedbar_display = speedbar_focussed?
+            done = speedbar_display.process_keypress(gdk_eventkey)
+          end
+          if done
+            false
+          else
+            continue = Keymap.process(gdk_eventkey)
+            # falls through to Gtk widgets if nothing handles it
+            continue
+          end
         rescue
           true
         end
@@ -260,6 +268,18 @@ module Redcar
           end
         end
       end
+    end
+
+    def focussed_speedbar
+      w = @focussed_gtk_widget
+      while w and !w.is_a? Redcar::SpeedbarDisplay
+        w = w.parent
+      end
+      w
+    end
+
+    def speedbar_focussed?
+      focussed_speedbar
     end
 
     def build_widgets

@@ -1,7 +1,7 @@
 
 module Redcar
   class FindFileCommand < Command
-    key "Super+F"
+    key "Super+T"
     menu "Project/Find File in Project..."
     sensitive :open_project
 

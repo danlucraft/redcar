@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Keymap strings are order-dependent
+desc: Super+Shift+L is valid, but Shift+Super+L will fail silently.
+type: :bugfix
+component: core
+release: "0.1"
+reporter: Daniel Lucraft <dan@fluentradical.com>
+status: :unstarted
+disposition: 
+creation_time: 2008-11-30 08:49:37.723232 Z
+references: []
+
+id: 059058aa1d2819188973fb9390abe82965dde716
+log_events: 
+- - 2008-11-30 08:49:39.199940 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - created
+  - ""
