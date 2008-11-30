@@ -25,8 +25,12 @@ module Redcar
       separator
       item "Find",     Find
       submenu "Move" do
-        item "Forward Word",    ForwardWord
-        item "Backward Word",   BackwardWord
+        item "Forward Character",    ForwardCharacterCommand
+        item "Backward Character",   BackwardCharacterCommand
+        separator
+        item "Forward Word",    ForwardWordCommand
+        item "Backward Word",   BackwardWordCommand
+        separator
         item "Line Start",    LineStart
         item "Line End",   LineEnd
       end

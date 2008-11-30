@@ -1,6 +1,6 @@
 module Redcar
   class Find < Redcar::EditTabCommand
-    key  "Ctrl+F"
+    key  "Super+F"
     icon :FIND
     norecord
 
