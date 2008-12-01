@@ -7,6 +7,8 @@ cache/bundle_commands.yml
 cache/bundles.yml
 cache/cache.img
 cache/grammars.dump
+cache/info/*.dump
+cache/commands/*.dump
 cache/themes.dump
 cache/tmp.command
 cache/snippets/*.dump

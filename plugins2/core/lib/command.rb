@@ -303,17 +303,18 @@ module Redcar
 
     # Gets the primary input.
     def primary_input
-      @got_primary_input = false
       input = input_by_type(self.class.get(:input))
       input == "" ? nil : input
     end
 
     def secondary_input
-      input_by_type(self.class.get(:fallback_input))
+      type = self.class.get(:fallback_input)
+      return nil unless type
+      input_by_type(type)
     end
 
     def input_by_type(type)
-      puts "input_by_type(#{type})"
+      puts "input_by_type(#{type.inspect})"
       case type
       when :selected_text, :selection, :selectedText
         doc.selection

@@ -72,7 +72,7 @@ module Redcar
           #          p Bundle.translate_key_equivalent(hash["keyEquivalent"])
           new_command = Class.new(Redcar::ShellCommand)
           new_command.range Redcar::EditTab
-          if key = Bundle.translate_key_equivalent(hash["keyEquivalent"])
+          if key = Bundle.translate_key_equivalent(hash["keyEquivalent"], bundle.name + " | " + hash["name"])
             new_command.key key
           end
 #          new_command.scope hash["scope"]

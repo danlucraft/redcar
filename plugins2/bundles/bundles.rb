@@ -36,7 +36,7 @@ module Redcar
     
     # Translates a Textmate key equivalent into a Redcar
     # keybinding. 
-    def self.translate_key_equivalent(keyeq)
+    def self.translate_key_equivalent(keyeq, name=nil)
       if keyeq
         key_str      = keyeq.at(-1)
 #        p keyeq if keyeq == "$\n"
@@ -50,11 +50,11 @@ module Redcar
         modifiers = modifier_str.split("").map do |modchar|
           case modchar
           when "^" # TM: Control
-            [2, "Super"]
+            [2, "Ctrl"]
           when "~" # TM: Option
             [3, "Alt"]
           when "@" # TM: Command
-            [1, "Ctrl"]
+            [1, "Super"]
           when "$"
             [4, "Shift"]
           else
@@ -62,13 +62,18 @@ module Redcar
             return nil
           end
         end
+        if letter =~ /^[[:alpha:]]$/ and letter == letter.upcase
+          modifiers << [4, "Shift"]
+        end
         modifiers = modifiers.sort_by {|a| a[0]}.map{|a| a[1]}.uniq
         res = if modifiers.empty?
           letter
         else
           modifiers.join("+") + "+" + letter.upcase
         end
-#         puts "#{keyeq.inspect.ljust(10)} -> #{res.inspect}" if keyeq == "$\n"
+        if name
+#          puts "#{(name||"").ljust(55)} | #{keyeq.inspect[1..-2].ljust(5)} -> #{res.inspect}"
+        end
         res
       end
     end
