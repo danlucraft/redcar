@@ -129,6 +129,7 @@ module Redcar
         files = []
         directories.each do |dir|
           files += Dir[File.expand_path(dir + "/**/*")]
+          files = files.reject { |fn| fn.include? "vendor" or fn.ends_with?(".jpg")}
         end
         @last_files = files
       end

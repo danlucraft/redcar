@@ -303,6 +303,7 @@ module Redcar
 
     # Gets the primary input.
     def primary_input
+      @got_primary_input = false
       input = input_by_type(self.class.get(:input))
       input == "" ? nil : input
     end
@@ -329,18 +330,18 @@ module Redcar
       when :character
         doc.text[doc.cursor_iter.offset]
       when :scope
-        if tab.respond_to? :current_scope_text
-          tab.current_scope_text
-        end
-      when :nothing
-        nil
+        doc.current_scope_text
       else
         raise "Unknown input type: #{type.inspect}"
       end
     end
 
     def input
-      primary_input || secondary_input
+      if [:nothing, :none].include?(self.class.get(:input))
+        secondary_input
+      else
+        primary_input || secondary_input
+      end
     end
 
     def direct_output(type, output_contents)
@@ -357,7 +358,7 @@ module Redcar
       when :insert_as_snippet, :insertAsSnippet
         doc.insert_as_snippet(output_contents)
       when :show_as_tool_tip, :show_as_tooltip, :showAsTooltip
-        doc.tooltip_at_cursor(output_contents)
+        view.tooltip_at_cursor(output_contents)
       when :after_selected_text, :afterSelectedText
         if doc.selected?
           s, e = doc.selection_bounds
@@ -466,7 +467,7 @@ module Redcar
       if shell_script[0..1] == "#!"
         "./cache/tmp.command"
       else
-        "/bin/sh cache/tmp.command"
+        "/bin/bash cache/tmp.command"
       end
     end
     

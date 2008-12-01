@@ -62,9 +62,6 @@ module Redcar
             return nil
           end
         end
-        if letter.upcase == letter
-          modifiers << [4, "Shift"]
-        end
         modifiers = modifiers.sort_by {|a| a[0]}.map{|a| a[1]}.uniq
         res = if modifiers.empty?
           letter

@@ -134,7 +134,7 @@ module Redcar
       rect = get_iter_location(buffer.iter(buffer.cursor_mark))
       x1, y1 = buffer_to_window_coords(Gtk::TextView::WINDOW_WIDGET, rect.x, rect.y)
       x2, y2 = get_window(Gtk::TextView::WINDOW_WIDGET).origin
-      Tooltip.new(x1+x2, y1+y2+20, label)
+      Tooltip.new(x1+x2, y1+y2+20, label.strip)
     end
   end
 end

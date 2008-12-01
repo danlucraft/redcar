@@ -231,7 +231,7 @@ module Redcar
             if slot.attr_menu_entry
               gtk_menuitem = make_gtk_menuitem(slot)
               connect_item_signal(slot.data, gtk_menuitem)
-              gtk_menuitem.sensitive = slot.data.executable?(Redcar.tab))
+              gtk_menuitem.sensitive = slot.data.executable?(Redcar.tab)
             else
               gtk_menuitem = make_gtk_menuitem(slot)
               gtk_submenu = Gtk::Menu.new

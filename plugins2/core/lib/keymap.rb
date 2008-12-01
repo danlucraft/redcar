@@ -26,13 +26,13 @@ module Redcar
         ctrl = (bits.include?("Ctrl")  ? 1 : 0)
         alt  = (bits.include?("Alt")   ? 1 : 0)
         supr = (bits.include?("Super") ? 1 : 0)
-        shift = (bits.include?("Shift") ? 1 : 0)
-        letter = bits.last
+        letter = clean_letter(bits.last)
+        shift = (bits.include?("Shift") && letter =~ /^[[:alpha:]]$/ ? 1 : 0)
         key = "Ctrl+"*ctrl +
           "Super+"*supr +
           "Alt+"*alt +
           "Shift+"*shift +
-          clean_letter(bits.last)
+          letter
         key
       end
     end
@@ -78,6 +78,13 @@ module Redcar
             true
           elsif com.ancestors.include? Redcar::Command 
             if com.executable?(Redcar.tab) 
+              @logger.debug { "[Red] command inoperative: #{com.inspect}" } 
+              @logger.debug { "      operative:  #{com.operative?.inspect}" }
+              @logger.debug { "      in_range:   #{com.in_range?.inspect}" }
+              @logger.debug { "      active:     #{com.active?.inspect}" }
+              scope = (Redcar.doc.cursor_scope rescue nil)
+              @logger.debug { "      scope:      #{com.correct_scope?(scope)}" }
+              @logger.debug { "      executable: #{com.executable?(Redcar.tab)}" }
               true
             else
               @logger.debug { "[Red] command inoperative: #{com.inspect}" } 

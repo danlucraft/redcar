@@ -39,7 +39,6 @@ module Redcar
       item "Kill Line", KillLine
       separator
       item "Indent Line",    IndentLine
-      item "Show Scope",     ShowScope
       separator
       submenu "Select" do
         item "Line",            SelectLine
