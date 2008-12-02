@@ -331,7 +331,11 @@ module Redcar
       when :character
         doc.text[doc.cursor_iter.offset]
       when :scope
-        doc.current_scope_text
+        start_offset, end_offset = *doc.current_scope_range
+        puts "scope_range: #{start_offset}, #{end_offset}"
+        if start_offset
+          doc.text[start_offset...end_offset]
+        end
       else
         raise "Unknown input type: #{type.inspect}"
       end
@@ -353,7 +357,20 @@ module Redcar
       when :replace_line, :replaceLine
         doc.replace_line(output_contents)
       when :replace_selected_text, :replaceSelectedText
-        doc.replace_selection(output_contents)
+        case valid_input_type
+        when :selected_text, :selectedText
+          doc.replace_selection(output_contents)
+        when :line
+          doc.replace_line(output_contents)
+        when :document
+          doc.replace output_contents
+        when :word
+          doc.text[@s..@e] = output_contents
+        when :scope
+          start_offset, end_offset = *doc.current_scope_range
+          doc.select(start_offset, end_offset)
+          doc.replace_selection(output_contents)
+        end
       when :insert_as_text, :insertAsText
         doc.insert_at_cursor(output_contents)
       when :insert_as_snippet, :insertAsSnippet
@@ -382,14 +399,10 @@ module Redcar
         when :document
           doc.replace output_contents
         when :word
-          Redcar.doc.text[@s..@e] = output_contents
+          doc.text[@s..@e] = output_contents
         when :scope
-          if doc.respond_to? :current_scope
-            s = doc.iter(doc.current_scope.start).offset
-            e = doc.iter(doc.current_scope.end).offset
-            doc.delete(s, e)
-            doc.insert(s, output_contents)
-          end
+          start_offset, end_offset = *doc.current_scope_range
+          doc.text[start_offset..end_offset] = output_contents
         end
       when :show_as_html, :showAsHTML
         new_tab = Redcar.new_tab(HtmlTab, output_contents.to_s)
