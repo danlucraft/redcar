@@ -78,7 +78,7 @@ module Redcar
             true
           elsif com.ancestors.include? Redcar::Command 
             if com.executable?(Redcar.tab) 
-              @logger.debug { "[Red] command inoperative: #{com.inspect}" } 
+              @logger.debug { "[Red] command operative: #{com.inspect}" } 
               @logger.debug { "      operative:  #{com.operative?.inspect}" }
               @logger.debug { "      in_range:   #{com.in_range?.inspect}" }
               @logger.debug { "      active:     #{com.active?.inspect}" }
@@ -104,7 +104,7 @@ module Redcar
             [com.get(:icon), name, com]
           end
           bus("/redcar/services/context_menu_options_popup/").call(options)
-          return
+          return true
         elsif coms.length == 1
           com = coms.first
           if com.is_a? Proc

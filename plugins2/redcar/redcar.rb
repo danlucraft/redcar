@@ -42,6 +42,7 @@ module Redcar
       separator
       submenu "Select" do
         item "Line",            SelectLine
+        item "Current Scope",    SelectScopeCommand
       end
       separator
     end

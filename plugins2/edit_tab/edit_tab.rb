@@ -75,7 +75,7 @@ module Redcar
           if key = Bundle.translate_key_equivalent(hash["keyEquivalent"], bundle.name + " | " + hash["name"])
             new_command.key key
           end
-#          new_command.scope hash["scope"]
+          new_command.scope hash["scope"]
           if hash["input"]
             new_command.input hash["input"].underscore.intern
           end
