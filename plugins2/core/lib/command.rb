@@ -135,15 +135,16 @@ module Redcar
 
     def self.active=(val)
       @sensitive_active = val
-#       puts "#{self}.active = #{val.inspect}"
+#      p @name
+#      puts "#{self}.active = #{val.inspect}" if @name == "Help"
       update_operative
     end
 
     def self.update_operative
       old = @operative
-#       puts "update_operative: #{self.inspect}"
-#       puts "  #{!!active?}"
-#       puts "  #{!!in_range?}"
+#      puts "update_operative: #{self.inspect}" if @name == "Help"
+#      puts "  #{!!active?}" if @name == "Help"
+#      puts "  #{!!in_range?}" if @name == "Help"
       @operative = if active? and in_range?
                      if self.ancestors[1].ancestors.include? Redcar::Command
                        self.ancestors[1].operative?
@@ -153,9 +154,11 @@ module Redcar
                    else
                      false
                    end
-#       puts "com: #{self}: #{old.inspect} -> #{@operative.inspect}"
+#      puts "  com: #{self.inspect}: #{old.inspect} -> #{@operative.inspect}" if @name == "Help"
+#      p self.inspect if @name == "Help"
       if old != @operative and @menu
-        update_menu_sensitivity
+#        p :updating_menu_sensitivity if @name == "Help"
+        Redcar::MenuDrawer.set_active(@menu, @operative)
       end
       child_commands.each(&:update_operative)
     end
@@ -405,8 +408,9 @@ module Redcar
           doc.text[start_offset..end_offset] = output_contents
         end
       when :show_as_html, :showAsHTML
-        new_tab = Redcar.new_tab(HtmlTab, output_contents.to_s)
-        new_tab.name = "output: " + @name
+        # TODO: fix hardcoded reference to later plugin
+        new_tab = Redcar.win.new_tab(Redcar::HtmlTab, output_contents.to_s)
+        new_tab.title = "output: " + self.class.name
         new_tab.focus
       when :insert_after_input, :insertAfterInput
         case valid_input_type

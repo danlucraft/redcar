@@ -114,7 +114,7 @@ module Redcar
 
       ENV['RUBYLIB'] = (ENV['RUBYLIB']||"")+":textmate/Support/lib"
 
-      ENV['TM_RUBY'] = "/usr/bin/ruby"
+      ENV['TM_RUBY'] = "/usr/local/bin/ruby"
       if @bundle_uuid
         ENV['TM_BUNDLE_SUPPORT'] = Redcar.image[@bundle_uuid][:directory]+"Support"
       end

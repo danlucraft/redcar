@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Html tab links don't work
+desc: ""
+type: :bugfix
+component: redcar
+release: "0.1"
+reporter: Daniel Lucraft <dan@fluentradical.com>
+status: :unstarted
+disposition: 
+creation_time: 2008-12-02 22:05:58.157745 Z
+references: []
+
+id: 86b861bba49846d19bd9de408202fc1c45b3fadf
+log_events: 
+- - 2008-12-02 22:05:59.278566 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - created
+  - ""

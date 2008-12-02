@@ -1,0 +1,12 @@
+--- !ruby/object:FreeBASE::PluginConfiguration
+name: html_tab
+description: A tab containing an HTML widget (GtkMozembed or Webkit)
+version: 1.0
+author: Daniel Lucraft
+autoload: true
+require_path: html_tab/plugin.rb
+startup_module: Redcar::HtmlTabPlugin
+load_dependencies: 
+  core: "*"
+start_dependencies: 
+  core: "*"

@@ -11,8 +11,10 @@ load_dependencies:
   bundles: "*"
   edit_view: "*"
   edit_tab: "*"
+  html_tab: "*"
 start_dependencies: 
   core: "*"
   bundles: "*"
   edit_view: "*"
   edit_tab: "*"
+  html_tab: "*"

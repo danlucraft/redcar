@@ -255,6 +255,7 @@ module Redcar
         if command_slot = bus("/redcar/bundles/#{bundle.name}/commands/#{uuid}", true)
           command = command_slot.data
           item_slot = menu_slot[command.name.gsub("/", "\\")]
+          command.menu item_slot.path.gsub("/redcar/menus/menubar/", "")
           MenuBuilder.set_menuid(item_slot)
           item_slot.data = command
           item_slot.attr_menu_entry = true

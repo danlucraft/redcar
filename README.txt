@@ -31,7 +31,7 @@ For now, installation is still pretty long-winded. It's a bit easier if you live
 
 1. First you will need to install Ruby-GNOME2, the build tools and some other necessary libraries. On Ubuntu/Debian you may simply do:
 
-  $ sudo apt-get install ruby ruby1.8-dev ruby-gnome2 build-essential libonig2 libonig-dev subversion libgtk2.0-dev libglib2.0-dev libgee0 libgee-dev libgtksourceview2.0-dev 
+  $ sudo apt-get install ruby ruby1.8-dev ruby-gnome2 build-essential libonig2 libonig-dev subversion libgtk2.0-dev libglib2.0-dev libgee0 libgee-dev libgtksourceview2.0-dev libxul-dev
 
 If you are not using Debian/Ubuntu, or have installed Ruby yourself from source, then you should make sure that you have these libraries installed:
   1. Ruby Rubygems, Glib, Gtk, GtkSourceView 2
