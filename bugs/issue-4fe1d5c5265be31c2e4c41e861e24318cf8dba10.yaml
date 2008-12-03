@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: ShellCommands are greyed out until a tab is opened
+desc: ""
+type: :bugfix
+component: core
+release: "0.1"
+reporter: Daniel Lucraft <dan@fluentradical.com>
+status: :unstarted
+disposition: 
+creation_time: 2008-12-03 08:16:00.008788 Z
+references: []
+
+id: 4fe1d5c5265be31c2e4c41e861e24318cf8dba10
+log_events: 
+- - 2008-12-03 08:16:03.023716 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - created
+  - ""

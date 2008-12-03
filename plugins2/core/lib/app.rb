@@ -107,17 +107,18 @@ module Redcar
       %w(TM_DIRECTORY TM_FILEPATH TM_SCOPE TM_SOFT_TABS TM_SUPPORT_PATH)+
       %w(TM_TAB_SIZE TM_FILENAME)
 
-    def self.set_environment_variables
+    def self.set_environment_variables(bundle=nil)
       ENV_VARS.each do |var|
         ENV[var] = nil
       end
 
       ENV['RUBYLIB'] = (ENV['RUBYLIB']||"")+":textmate/Support/lib"
-
       ENV['TM_RUBY'] = "/usr/local/bin/ruby"
-      if @bundle_uuid
-        ENV['TM_BUNDLE_SUPPORT'] = Redcar.image[@bundle_uuid][:directory]+"Support"
+      
+      if bundle
+        ENV['TM_BUNDLE_SUPPORT'] = bundle.dir+"/Support"
       end
+      
       if Redcar.tab and Redcar.tab.class.to_s == "Redcar::EditTab"
         ENV['TM_CURRENT_LINE'] = Redcar.doc.get_line
         ENV['TM_LINE_INDEX'] = Redcar.doc.cursor_line_offset.to_s

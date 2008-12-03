@@ -10,7 +10,7 @@ module Redcar
     def execute
       puts @bundle.name
       puts @bundle.info["contactName"]
-      puts @bundle.info["contactEmailRot13"].tr!("A-Za-z", "N-ZA-Mn-za-m")
+      puts (@bundle.info["contactEmailRot13"]||"").tr!("A-Za-z", "N-ZA-Mn-za-m")
       puts @bundle.info["description"]
       puts
     end

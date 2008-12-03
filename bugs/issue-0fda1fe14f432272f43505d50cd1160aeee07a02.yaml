@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Arrangements should work with the new core
+desc: ""
+type: :feature
+component: redcar
+release: "0.1"
+reporter: Daniel Lucraft <dan@fluentradical.com>
+status: :unstarted
+disposition: 
+creation_time: 2008-12-03 08:45:25.986741 Z
+references: []
+
+id: 0fda1fe14f432272f43505d50cd1160aeee07a02
+log_events: 
+- - 2008-12-03 08:45:27.236074 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - created
+  - ""

@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Project should update list of files
+desc: ""
+type: :feature
+component: project-plugin
+release: "0.1"
+reporter: Daniel Lucraft <dan@fluentradical.com>
+status: :unstarted
+disposition: 
+creation_time: 2008-12-03 08:42:08.376989 Z
+references: []
+
+id: 4ca818f714acfca174317af3238b621a17e0fc25
+log_events: 
+- - 2008-12-03 08:42:09.390516 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - created
+  - ""

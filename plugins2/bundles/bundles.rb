@@ -97,7 +97,7 @@ module Redcar
       end
     end
     
-    attr_accessor :name
+    attr_accessor :name, :dir
     
     # Do not call this directly. Retrieve a loaded bundle
     # with:

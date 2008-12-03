@@ -458,7 +458,7 @@ module Redcar
     end
 
     def execute
-      App.set_environment_variables
+      App.set_environment_variables(self.class.bundle)
       File.open("cache/tmp.command", "w") {|f| f.puts shell_script}
       File.chmod(0770, "cache/tmp.command")
       output, error = nil, nil
