@@ -29,22 +29,31 @@ class Redcar::EditView
       @autopair_rules.default = nil
     end
 
-    def self.autopair_rules_for_scope(hierarchy_names)
+    def self.autopair_rules_for_scope(current_scope)
       @cache ||= {}
-      if rules = @cache[hierarchy_names]
+      if rules = @cache[current_scope]
+#        p :cached
         return rules
       end
       rules = nil
-      if hierarchy_names
-        @autopair_rules.each do |scope_name, value|
-          v = Gtk::Mate::Matcher.test_match(scope_name, hierarchy_names)
-          if v
-            rules = value
+      if current_scope
+        matches = @autopair_rules.map do |scope_name, value|
+          if match = Gtk::Mate::Matcher.get_match(scope_name, current_scope)
+            [scope_name, match, value]
           end
+        end.compact
+        best_match = matches.sort do |a, b|
+          Gtk::Mate::Matcher.compare_match(current_scope, a[1], b[1])
+        end.last
+        if best_match
+          rules = best_match[2]
         end
       end
+#      p :end
+#      p rules
       rules = @autopair_default unless rules
-      @cache[hierarchy_names] = rules
+      @cache[current_scope] = rules
+#      p rules
       rules
     end
 
@@ -117,13 +126,12 @@ class Redcar::EditView
       # as the new text could change them. (ex: HTML incomplete.illegal.
       # tag)
       @buffer.signal_connect("insert_text") do |_, iter, text, length|
-        cursor_scope = @buffer.scope_at(@buffer.cursor_line,
-                                        @buffer.cursor_line_offset)
-        if cursor_scope
-          hierarchy_names = cursor_scope.hierarchy_names(true)
-
+        if cursor_scope = @buffer.cursor_scope
+          current_scope = cursor_scope.hierarchy_names(true)
+#          puts "current_scope: #{current_scope}"
           # Type over ends
-          if @rules = AutoPairer.autopair_rules_for_scope(hierarchy_names)
+          if @rules = AutoPairer.autopair_rules_for_scope(current_scope)
+#            puts "result: #{@rules.inspect}"
             inverse_rules = @rules.invert
             if inverse_rules.include? text and !@ignore_insert
               end_mark_pair = find_mark_pair_by_end(iter)

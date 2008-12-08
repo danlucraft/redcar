@@ -1,122 +1,97 @@
-# describe Redcar::EditView::AutoPairer do
-#   before() do
-#       @grammar = Redcar::EditView::Grammar.grammar(:name => 'Ruby')
-#       sc = Redcar::EditView::Scope.new(:pattern => @grammar,
-#       :grammar => @grammar,
-#       :start => TextLoc(0, 0))
-#       @buf = Gtk::SourceBuffer.new
-#       sc.set_start_mark @buf, 0, true
-#       sc.set_end_mark   @buf, @buf.char_count, false
-#       sc.set_open(true)
-#       @parser = Redcar::EditView::Parser.new(@buf, sc, [@grammar])
-#       @parser.parse_all = true
-#       @autopairer = Redcar::EditView::AutoPairer.new(@buf, @parser)
-#       @old_pref1 = Redcar::Preference.get("Editing/Indent size")
-#       @old_pref2 = Redcar::Preference.get("Editing/Use spaces instead of tabs")
-#       Redcar::Preference.set("Editing/Indent size", 1)
-#       Redcar::Preference.set("Editing/Use spaces instead of tabs", false)
-#     end
+
+
+describe Redcar::EditView::AutoPairer do
+  before(:each) do
+    @buf = Redcar::Document.new
+    @buf.set_grammar_by_name("Ruby")
+	  @autopairer = Redcar::EditView::AutoPairer.new(@buf)
+    @old_pref1 = Redcar::Preference.get("Editing/Indent size")
+    @old_pref2 = Redcar::Preference.get("Editing/Use spaces instead of tabs")
+    Redcar::Preference.set("Editing/Indent size", 1)
+    Redcar::Preference.set("Editing/Use spaces instead of tabs", false)
+  end
+
+  it "should insert pair end" do
+    @buf.text = "pikon"
+    @buf.place_cursor(@buf.line_end1(0))
+    @buf.insert_at_cursor("(")
+    @buf.text.should == "pikon()"
+    @buf.cursor_offset.should == 6
+    @autopairer.mark_pairs.length.should == 1
+  end
+  
+  it "should delete pair end when pair start deleted" do
+    @buf.text = "pikon"
+    @buf.place_cursor(@buf.line_end1(0))
+    @buf.insert_at_cursor("(")
+    @buf.text.should == "pikon()"
+    @buf.delete(@buf.iter(5), @buf.iter(6))
+    @buf.text.should == "pikon"
+    @buf.cursor_offset.should == 5
+    @autopairer.mark_pairs.length.should == 0
+  end
+  
+  it "should allow for typeover of end" do
+    @buf.text = "pikon"
+    @buf.place_cursor(@buf.line_end1(0))
+    @buf.insert_at_cursor("(")
+    @buf.insert_at_cursor("h")
+    @buf.insert_at_cursor("i")
+    @buf.insert_at_cursor(")")
+    @buf.text.should == "pikon(hi)"
+    @buf.cursor_offset.should == 9
+    @autopairer.mark_pairs.length.should == 0
+  end
+  
+  it "should only allow typeover of the correct end" do
+    @buf.text = "pikon"
+    @buf.place_cursor(@buf.line_end1(0))
+    @buf.insert_at_cursor("(")
+    @buf.insert_at_cursor("h")
+    @buf.insert_at_cursor("i")
+    @buf.insert_at_cursor("\"")
+    @buf.text.should == "pikon(hi\"\")"
+    @buf.cursor_offset.should == 9
+    @autopairer.mark_pairs.length.should == 2
+  end
+  
+  it "should forget about pairs if the user navigates outside of the pair width" do
+    @buf.text = "pikon"
+    @buf.place_cursor(@buf.line_end1(0))
+    @buf.insert_at_cursor("(")
+    @buf.insert_at_cursor("h")
+    @buf.place_cursor(@buf.line_start(0))
+    @buf.place_cursor(@buf.iter(7))
+    @buf.insert_at_cursor(")")
+    @buf.text.should == "pikon(h))"
+    @buf.cursor_offset.should == 8
+    @autopairer.mark_pairs.should be_empty
+  end
     
-#     def teardown
-#       Redcar::Preference.set("Editing/Indent size", @old_pref1)
-#       Redcar::Preference.set("Editing/Use spaces instead of tabs", @old_pref2)
-#     end
+  it "should see scope pairs" do
+    @buf = Redcar::Document.new
+    @buf.set_grammar_by_name("HTML")
+    @autopairer = Redcar::EditView::AutoPairer.new(@buf)
+    @buf.insert_at_cursor("<")
+    @buf.text.should == "<>"
+  end
     
-#     def test_inserts_pair_end
-#       @buf.text = "pikon"
-#       @buf.place_cursor(@buf.line_end1(0))
-#       @buf.insert_at_cursor("(")
-#       assert_equal "pikon()", @buf.text
-#       assert_equal 6, @buf.cursor_offset
-#       assert_equal 1, @autopairer.mark_pairs.length
-#     end
+  it "should see scope pairs in embedded" do
+    @buf.text = "f=<<-HTML\n"
+    @buf.insert_at_cursor("<")
+    @buf.text.should == "f=<<-HTML\n<>"
+  end
     
-#     def test_delete_pair_start
-#       @buf.text = "pikon"
-#       @buf.place_cursor(@buf.line_end1(0))
-#       @buf.insert_at_cursor("(")
-#       assert_equal "pikon()", @buf.text
-#       @buf.delete(@buf.iter(5), @buf.iter(6))
-#       assert_equal "pikon", @buf.text
-#       assert_equal 5, @buf.cursor_offset
-#       assert_equal 0, @autopairer.mark_pairs.length
-#     end
+  it "should see Ruby scope pairs" do
+    @buf.text = "foo do \n"
+    @buf.place_cursor(@buf.iter(7))
+    @buf.insert_at_cursor("|")
+    @buf.text.should == "foo do ||\n"
+    @buf.cursor_offset.should == 8
+  end
     
-#     def test_typover_end
-#       @buf.text = "pikon"
-#       @buf.place_cursor(@buf.line_end1(0))
-#       @buf.insert_at_cursor("(")
-#       @buf.insert_at_cursor("h")
-#       @buf.insert_at_cursor("i")
-#       @buf.insert_at_cursor(")")
-#       assert_equal "pikon(hi)", @buf.text
-#       assert_equal 9, @buf.cursor_offset
-#       assert_equal 0, @autopairer.mark_pairs.length
-#     end
-    
-#     def test_typover_only_correct_end
-#       @buf.text = "pikon"
-#       @buf.place_cursor(@buf.line_end1(0))
-#       @buf.insert_at_cursor("(")
-#       @buf.insert_at_cursor("h")
-#       @buf.insert_at_cursor("i")
-#       @buf.insert_at_cursor("\"")
-#       assert_equal "pikon(hi\"\")", @buf.text
-#       assert_equal 9, @buf.cursor_offset
-#       assert_equal 2, @autopairer.mark_pairs.length
-#     end
-    
-#     def test_navigate_outside_brackets
-#       @buf.text = "pikon"
-#       @buf.place_cursor(@buf.line_end1(0))
-#       @buf.insert_at_cursor("(")
-#       @buf.insert_at_cursor("h")
-#       @buf.place_cursor(@buf.line_start(0))
-#       @buf.place_cursor(@buf.iter(7))
-#       @buf.insert_at_cursor(")")
-#       assert_equal "pikon(h))", @buf.text
-#       assert_equal 8, @buf.cursor_offset
-#       assert_equal 0, @autopairer.mark_pairs.length
-#     end
-    
-#     def test_sees_scopes_pairs
-#       @grammar = Redcar::EditView::Grammar.grammar(:name => 'HTML')
-#       sc = Redcar::EditView::Scope.new(:pattern => @grammar,
-#       :grammar => @grammar,
-#       :start => TextLoc(0, 0))
-#       @buf = Gtk::SourceBuffer.new
-#       sc.set_start_mark @buf, 0, true
-#       sc.set_end_mark   @buf, @buf.char_count, false
-#       sc.set_open(true)
-#       @parser = Redcar::EditView::Parser.new(@buf, sc, [@grammar])
-#       @parser.parse_all = true
-#       @autopairer = Redcar::EditView::AutoPairer.new(@buf, @parser)
-#       @buf.insert_at_cursor("<")
-#       assert_equal "<>", @buf.text
-#     end
-    
-#     def test_sees_scopes_pairs_in_embedded
-#       @buf.text = "f=<<-HTML\n"
-#       @buf.insert_at_cursor("<")
-#       assert_equal "f=<<-HTML\n<>", @buf.text
-#     end
-    
-#     def test_sees_ruby_scope_pairs
-#       @buf.text = "foo do "
-#       @buf.insert_at_cursor("|")
-#       assert_equal "foo do ||", @buf.text
-#       assert_equal 8, @buf.cursor_offset
-#     end
-    
-#     def type(text, buffer)
-#       text.split(//).each do |char|
-#         buffer.insert_at_cursor(char)
-#       end
-#     end
-    
-#     def backspace(buffer)
-#       buffer.delete(buffer.iter(buffer.cursor_offset-1),
-#       buffer.cursor_iter)
-#     end
-#   end
-# end
+  after(:each) do
+    Redcar::Preference.set("Editing/Indent size", @old_pref1)
+    Redcar::Preference.set("Editing/Use spaces instead of tabs", @old_pref2)
+  end
+end
