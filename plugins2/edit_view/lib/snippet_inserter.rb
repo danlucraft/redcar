@@ -9,12 +9,13 @@ class Redcar::EditView
     def self.load_snippets
       @snippets = Hash.new {|h, k| h[k] = {}}
       i = 0
-      Redcar::Bundle.names.each do |name|
-        snippets = Redcar::Bundle.get(name).snippets
+      Redcar::Bundle.bundles.each do |bundle|
+        snippets = bundle.snippets
         snippets.each do |snip|
           safename = snip["name"].gsub("/", "SLA").gsub(/[^\w]/, "")
           slot = bus("/textmate/bundles/#{name}/#{safename}")
           slot.data = snip
+          snip["bundle"] = bundle
           if snip["tabTrigger"]
             @snippets[snip["scope"]||""][snip["tabTrigger"]] = snip
           elsif snip["keyEquivalent"]
@@ -47,8 +48,8 @@ class Redcar::EditView
       @snippets[""]
     end
 
-    def self.register(scope, tab_trigger, content)
-      @snippets[scope][tab_trigger] = {"content" => content}
+    def self.register(scope, tab_trigger, content, bundle="Ruby")
+      @snippets[scope][tab_trigger] = {"content" => content, "bundle" => Redcar::Bundle.get(bundle)}
     end
 
     def self.snippets_for_scope(scope)
@@ -232,8 +233,7 @@ class Redcar::EditView
       insert_snippet(bus(path).data)
     end
 
-    def insert_snippet(snippet)
-#      p snippet
+    def insert_snippet(snippet, opts={})
       @in_snippet = true
       @content = snippet["content"].dup
       @insert_line_num = @buf.cursor_line
@@ -246,7 +246,7 @@ class Redcar::EditView
       @order_id = 0
       @stop_id = 0
       Redcar::App.set_environment_variables
-      @content = execute_backticks(@content)
+      @content = execute_backticks(@content, snippet["bundle"] ? snippet["bundle"].dir : nil)
       @buf.delete_selection
       @buf.parser.stop_parsing
       @buf.autopairer.ignore do
@@ -254,7 +254,7 @@ class Redcar::EditView
         unless @tab_stops.include? 0
           @snippet_end_mark = @buf.create_mark(nil, @buf.cursor_iter, false)
         end
-        fix_indent
+        fix_indent unless opts.include?(:indent) and !opts[:indent]
         create_right_marks
         @constructing = false
         set_names
@@ -381,9 +381,9 @@ class Redcar::EditView
       iter(offset).marks.select {|m| m.snippet_mark }
     end
 
-    def execute_backticks(text)
+    def execute_backticks(text, bundle_dir)
       text.gsub!(/`(.*?)`/m) do |sh|
-        %x{export PATH=#{Redcar::ROOT}/textmate/Bundles/Ruby.tmbundle/Support/bin:$PATH; #{sh[1..-2]}}.chomp
+        %x{export PATH=#{bundle_dir}/Support/bin:$PATH; #{sh[1..-2]}}.chomp
       end
       text
     end

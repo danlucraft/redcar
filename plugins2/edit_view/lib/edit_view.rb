@@ -6,7 +6,7 @@ module Redcar
     def initialize(options={})
       super()
       set_gtk_cursor_colour
-      self.buffer = Gtk::Mate::Buffer.new
+      self.buffer = Document.new
       self.modify_font(Pango::FontDescription.new(Redcar::Preference.get("Appearance/Tab Font")))
       h = self.signal_connect_after("expose-event") do |_, ev|
         if ev.window == self.window

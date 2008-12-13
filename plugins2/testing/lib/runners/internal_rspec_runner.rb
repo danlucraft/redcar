@@ -10,11 +10,12 @@ module Redcar::Testing
       end
       
       set_redcar_formatter
-
+      i = 0
       spec_files(plugin_name).each do |spec_file|
-        p spec_file
+        i += 1
         load spec_file
       end
+      puts "#{i} files"
       
       lookup_example_groups.each do |eg|
         eg.run

@@ -136,18 +136,22 @@ module Redcar
         end
       end
       ENV['TM_SOFT_TABS'] = "YES"
-      ENV['TM_SUPPORT_PATH'] = textmate_share_dir + "Support"
+      ENV['TM_SUPPORT_PATH'] = textmate_share_dir + "/Support"
       ENV['TM_TAB_SIZE'] = "2"
-    end
+     end
     
     def self.textmate_share_dir
-      if File.exist?("/usr/local/share/textmate")
-        "/usr/local/share/textmate/"
-      elsif File.exist?("/usr/share/textmate/")
-        "/usr/share/textmate/"
-      else
-        raise "Can't find the textmate share directory in /usr/local/share/textmate.'"
+      locations = [
+                   "/usr/local/share/textmate",
+                   "/usr/share/textmate/",
+                   File.expand_path(File.dirname(__FILE__) + "/../../../textmate/")
+                  ]
+      locations.each do |location|
+        if File.exist?(location)
+          return location
+        end
       end
+      raise "Can't find the textmate share directory in any of these places: #{locations.inspect}."
     end
   end
 end

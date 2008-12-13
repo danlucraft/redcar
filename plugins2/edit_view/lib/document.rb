@@ -1,7 +1,6 @@
 
 module Redcar
-  Document = Gtk::Mate::Buffer
-  class Document
+  class Document < Gtk::Mate::Buffer
     extend FreeBASE::StandardPlugin
 
     attr_writer :parser, :indenter, :autopairer, :snippet_inserter
@@ -241,6 +240,10 @@ module Redcar
     
     def snippet_inserter
       @snippet_inserter || IgnoreObject.new
+    end
+
+    def insert_as_snippet(text, opts={})
+      snippet_inserter.insert_snippet({"content" => text}, opts) if snippet_inserter
     end
   end
 end

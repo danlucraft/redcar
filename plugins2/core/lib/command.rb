@@ -268,26 +268,32 @@ module Redcar
     end
 
     def do(opts={})
-      tab = opts[:tab] || Redcar::App.focussed_window.focussed_tab
-      unless self.respond_to? :execute
-        raise "Abstract Command Error"
-      end 
-      if tab
-        set_tab(tab)
-      end
-      @output = nil
       begin
-        @output = self.execute
-        if opts[:replace_previous]
-          CommandHistory.record_and_replace(self)
-        else
-          CommandHistory.record(self)
+        tab = opts[:tab] || (Redcar::App.focussed_window.focussed_tab rescue nil)
+        unless self.respond_to? :execute
+          raise "Abstract Command Error"
+        end 
+        if tab
+          set_tab(tab)
         end
-      rescue Object => e
-        Command.process_command_error(self, e)
+        @output = nil
+        begin
+          @output = self.execute
+          if opts[:replace_previous]
+            CommandHistory.record_and_replace(self)
+          else
+            CommandHistory.record(self)
+          end
+        rescue Object => e
+          Command.process_command_error(self, e)
+        end
+        output_type = self.class.get(:output)
+        direct_output(output_type, @output) if @output and output_type
+      rescue => e
+        puts "[Redcar] error in command"
+        puts e.message
+        puts e.backtrace
       end
-      output_type = self.class.get(:output)
-      direct_output(output_type, @output) if @output and output_type
     end
 
     def record?
@@ -377,7 +383,8 @@ module Redcar
       when :insert_as_text, :insertAsText
         doc.insert_at_cursor(output_contents)
       when :insert_as_snippet, :insertAsSnippet
-        doc.insert_as_snippet(output_contents)
+        delete_input
+        doc.insert_as_snippet(output_contents, :indent => false)
       when :show_as_tool_tip, :show_as_tooltip, :showAsTooltip
         view.tooltip_at_cursor(output_contents)
       when :after_selected_text, :afterSelectedText
@@ -431,6 +438,22 @@ module Redcar
       end
     end
 
+    def delete_input
+      case valid_input_type
+      when :selected_text, :selectedText
+        doc.replace_selection("")
+      when :line
+        doc.replace_line("")
+      when :document
+        doc.replace ""
+      when :word
+        doc.text[@s..@e] = ""
+      when :scope
+        start_offset, end_offset = *doc.current_scope_range
+        doc.text[start_offset..end_offset] = ""
+      end
+    end
+
     def to_s
       interesting_variables = instance_variables - %w(@__tab @__view @__doc @output)
       bits = interesting_variables.map do |iv|
@@ -462,8 +485,14 @@ module Redcar
       File.open("cache/tmp.command", "w") {|f| f.puts shell_script}
       File.chmod(0770, "cache/tmp.command")
       output, error = nil, nil
+      p shell_command
       Open3.popen3(shell_command) do |stdin, stdout, stderr|
+        # p stdin
+        # p stdout
+        # p stderr
+        # p :fooo
         stdin.write(this_input = input)
+        p :bar
         puts "input: #{this_input}"
         stdin.close
         output = stdout.read

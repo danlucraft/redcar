@@ -62,7 +62,6 @@ module Redcar
       Kernel.load File.dirname(__FILE__) + "/widgets/font_chooser_button.rb"
       Kernel.load File.dirname(__FILE__) + "/preferences.rb"
 
-      puts "create textmate commands"
       bus("/redcar/bundles/").children.each do |child_slot|
 #        p child_slot.name
         bundle = child_slot.data
