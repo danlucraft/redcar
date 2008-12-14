@@ -22,6 +22,7 @@ module Redcar
       Gui.load
       Command.load
       Keymap.load
+      Bundle.load
       plugin.transition(FreeBASE::LOADED)
     end
 

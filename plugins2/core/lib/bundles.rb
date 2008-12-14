@@ -3,13 +3,10 @@ module Redcar
   # This class manages Textmate bundles. On Redcar startup
   # it will scan for and load bundle information for all bundles
   # in "/usr/local/share/textmate/Bundles" or "/usr/share/textmate/Bundles"
-  class BundlesPlugin < Redcar::Plugin
-
-    def self.load(plugin) #:nodoc:
-      Kernel.load File.dirname(__FILE__) + "/commands/bundle_info_command.rb"
+  class Bundle
+    def self.load #:nodoc:
       load_bundles(App.textmate_share_dir+"/Bundles/")
       create_logger
-      plugin.transition(FreeBASE::LOADED)
     end
     
     class << self
@@ -17,19 +14,14 @@ module Redcar
     end
     
     def self.load_bundles(dir) #:nodoc:
-      main_menu "Bundles" do
-        Dir.glob(dir+"*").each do |bdir|
-          if bdir =~ /\/([^\/]*)\.tmbundle/
-            submenu(name) { }
-            name = $1
-            Redcar::Bundle.new name, bdir
-          end
+      Dir.glob(dir+"*").each do |bdir|
+        if bdir =~ /\/([^\/]*)\.tmbundle/
+          name = $1
+          Redcar::Bundle.new name, bdir
         end
       end
     end
-  end    
 
-  class Bundle
     class << self
       attr_accessor :bundles
     end
@@ -58,7 +50,7 @@ module Redcar
           when "$"
             [4, "Shift"]
           else
-            BundlesPlugin.logger.info "unknown key_equivalent: #{keyeq}"
+            Bundle.logger.info "unknown key_equivalent: #{keyeq}"
             return nil
           end
         end

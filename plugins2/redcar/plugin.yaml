@@ -8,13 +8,11 @@ require_path: redcar/redcar.rb
 startup_module: Redcar::RedcarPlugin
 load_dependencies: 
   core: "*"
-  bundles: "*"
   edit_view: "*"
   edit_tab: "*"
   html_tab: "*"
 start_dependencies: 
   core: "*"
-  bundles: "*"
   edit_view: "*"
   edit_tab: "*"
   html_tab: "*"

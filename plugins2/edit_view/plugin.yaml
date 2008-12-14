@@ -8,7 +8,5 @@ require_path: edit_view/edit_view.rb
 startup_module: Redcar::EditViewPlugin
 load_dependencies: 
   core: "*"
-  bundles: "*"
 start_dependencies: 
   core: "*"
-  bundles: "*"

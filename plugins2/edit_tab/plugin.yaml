@@ -8,9 +8,7 @@ require_path: edit_tab/edit_tab.rb
 startup_module: Redcar::EditTabPlugin
 load_dependencies: 
   core: "*"
-  bundles: "*"
   edit_view: "*"
 start_dependencies: 
   core: "*"
-  bundles: "*"
   edit_view: "*"
