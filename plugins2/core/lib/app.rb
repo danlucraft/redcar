@@ -107,10 +107,19 @@ module Redcar
       %w(TM_DIRECTORY TM_FILEPATH TM_SCOPE TM_SOFT_TABS TM_SUPPORT_PATH)+
       %w(TM_TAB_SIZE TM_FILENAME)
 
+    def self.blank_comment_env_vars
+      ENV.each do |key, value|
+        if key =~ /TM_COMMENT_/
+          ENV[key] = nil
+        end
+      end
+    end
+
     def self.set_environment_variables(bundle=nil)
       ENV_VARS.each do |var|
         ENV[var] = nil
       end
+      blank_comment_env_vars
 
       ENV['RUBYLIB'] = (ENV['RUBYLIB']||"")+":textmate/Support/lib"
       ENV['TM_RUBY'] = "/usr/local/bin/ruby"

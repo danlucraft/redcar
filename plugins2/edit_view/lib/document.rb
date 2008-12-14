@@ -216,6 +216,11 @@ module Redcar
       select(startsel, endsel)
     end
 
+    def delete_line(line_num=cursor_line)
+     delete(line_start(cursor_line),
+       line_end(cursor_line))
+    end
+
     def indent_line(line_num)
       @indenter.indent_line(line_num) if @indenter
     end

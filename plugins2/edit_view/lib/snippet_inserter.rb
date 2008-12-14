@@ -224,8 +224,8 @@ class Redcar::EditView
       end
     end
 
-    def unescape_dollars(text)
-      text.gsub("\\$", "$").gsub("\\\\", "\\")
+    def unescape(text)
+      text.gsub("\\$", "$").gsub("\\\\", "\\").gsub("\\}", "}").gsub("\\`", "`")
     end
 
     def insert_snippet_from_path(path)
@@ -270,7 +270,7 @@ class Redcar::EditView
     end
 
     def parse_text_for_tab_stops(text)
-#      puts "parse_text_for_tab_stops(#{text.inspect})"
+#       puts "parse_text_for_tab_stops(#{text.inspect})"
       remaining_content = text
       i = 0
       while remaining_content.length > 0
@@ -278,7 +278,7 @@ class Redcar::EditView
         raise "Snippet failed to parse: #{text.inspect}" if i > 100
 
         if md = Oniguruma::ORegexp.new("(?<!\\\\)\\$").match(remaining_content)
-          @buf.insert_at_cursor(unescape_dollars(md.pre_match))
+          @buf.insert_at_cursor(unescape(md.pre_match))
           @stop_id += 1
           if md1 = md.post_match.match(/\A(\d+)/)
             remaining_content = md1.post_match
@@ -306,7 +306,10 @@ class Redcar::EditView
             remaining_content = md1.post_match
           elsif md1 = md.post_match.match(/\A\{/)
             # tab stop with placeholder string "... ${1:condition ... "
-            defn = get_balanced_braces(md.post_match)[1..-2]
+            # puts "md.post_match = #{md.post_match.inspect}"
+            balanced_braces = get_balanced_braces(md.post_match)
+            # puts "balanced_braces: #{balanced_braces.inspect}"
+            defn = balanced_braces[2..-2]
             if md2 = defn.match(/\A(\d+):/)
               # placeholder is a string
               stop_id = @stop_id
@@ -367,7 +370,7 @@ class Redcar::EditView
             end
           end
         else
-          @buf.insert_at_cursor(unescape_dollars(remaining_content))
+          @buf.insert_at_cursor(unescape(remaining_content))
           remaining_content = ""
         end
       end
@@ -382,10 +385,17 @@ class Redcar::EditView
     end
 
     def execute_backticks(text, bundle_dir)
-      text.gsub!(/`(.*?)`/m) do |sh|
-        %x{export PATH=#{bundle_dir}/Support/bin:$PATH; #{sh[1..-2]}}.chomp
+      text.gsub!(/([^\\])`(.*?)`/) do |sh|
+        sh[0..0] + execute_backtick(sh[1..-1], bundle_dir)
+      end
+      text.gsub!(/^`(.*?)`/) do |sh|
+        execute_backtick(sh[0..-1], bundle_dir)
       end
       text
+    end
+
+    def execute_backtick(backtick, bundle_dir)
+      %x{export PATH=#{bundle_dir}/Support/bin:$PATH; #{backtick[1..-2]}}.chomp
     end
 
     def fix_indent
@@ -488,19 +498,20 @@ class Redcar::EditView
 
     def get_balanced_braces(string)
       defn = []
-      line = string
+      line = "$" + string
       finished = false
       depth = 0
       while line.length > 0 and !finished
-        if line[0..1] == "\\{" or
-            line[0..1] == "\\}"
-          defn << line.at(0)
-          defn << line.at(1)
+        if line[0..1] == "\\}"
+          defn << line[0..1]
           line = line[2..-1]
-        elsif line.at(0) == "{"
+         elsif line[0..1] == "\\$"
+          defn << line[0..1]
+          line = line[2..-1]
+        elsif line[0..1] == "${"
           depth += 1
-          defn << line.at(0)
-          line = line[1..-1]
+          defn << line[0..1]
+          line = line[2..-1]
         elsif line.at(0) == "}"
           depth -= 1
           defn << line.at(0)

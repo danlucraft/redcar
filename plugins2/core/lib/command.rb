@@ -443,7 +443,7 @@ module Redcar
       when :selected_text, :selectedText
         doc.replace_selection("")
       when :line
-        doc.replace_line("")
+        doc.delete_line
       when :document
         doc.replace ""
       when :word
@@ -485,18 +485,12 @@ module Redcar
       File.open("cache/tmp.command", "w") {|f| f.puts shell_script}
       File.chmod(0770, "cache/tmp.command")
       output, error = nil, nil
-      p shell_command
       Open3.popen3(shell_command) do |stdin, stdout, stderr|
-        # p stdin
-        # p stdout
-        # p stderr
-        # p :fooo
         stdin.write(this_input = input)
-        p :bar
-        puts "input: #{this_input}"
+        puts "input: #{this_input.inspect}"
         stdin.close
         output = stdout.read
-        puts "output: #{output}"
+        puts "output: #{output.inspect}"
         error = stderr.read
       end
       unless error.blank?

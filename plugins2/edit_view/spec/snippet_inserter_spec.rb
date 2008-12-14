@@ -37,26 +37,26 @@ describe Redcar::EditView::SnippetInserter do
     Redcar::ShiftTabPressed.new(si, buf).do
   end
 
-#   def test_inserts_plain_content
-#     SnippetInserter.register("source.ruby - string - comment",
-#                              "DBL",
-#                              "Daniel Benjamin Lucraft")
-#     @buf.text=("DBL")
-#     press_tab
-#     assert_equal "Daniel Benjamin Lucraft", @buf.text
-#     assert_equal 23, @buf.cursor_offset
-#   end
-
-#   def test_escapes_dollars
-#     SnippetInserter.register("source.ruby - string - comment",
-#                              "DBL",
-#                              "Daniel \\$1 Benjamin Lucraft")
-#     @buf.text=("DBL")
-#     press_tab
-#     assert_equal "Daniel $1 Benjamin Lucraft", @buf.text
-#     assert_equal 26, @buf.cursor_offset
-#   end
-
+  def test_inserts_plain_content
+    SnippetInserter.register("source.ruby - string - comment",
+                             "DBL",
+                             "Daniel Benjamin Lucraft")
+    @buf.text=("DBL")
+    press_tab
+    assert_equal "Daniel Benjamin Lucraft", @buf.text
+    assert_equal 23, @buf.cursor_offset
+  end
+  
+  def test_escapes_dollars
+    SnippetInserter.register("source.ruby - string - comment",
+                             "DBL",
+                             "Daniel \\$1 Benjamin Lucraft")
+    @buf.text=("DBL")
+    press_tab
+    assert_equal "Daniel $1 Benjamin Lucraft", @buf.text
+    assert_equal 26, @buf.cursor_offset
+  end
+  
   def test_inserts_environment_variable
     tab = Redcar.win.new_tab(Redcar::EditTab)
     tab.document.set_grammar_by_name("Ruby")
@@ -70,7 +70,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal 17, doc.cursor_offset
     tab.close
   end
-
+  
   def test_inserts_environment_variable2
     tab = Redcar.win.new_tab(Redcar::EditTab)
     tab.document.set_grammar_by_name("Ruby")
@@ -84,7 +84,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal 17, doc.cursor_offset
     tab.close
   end
-
+  
   def test_transforms_environment_variable
     tab = Redcar.win.new_tab(Redcar::EditTab)
     tab.document.set_grammar_by_name("Ruby")
@@ -98,7 +98,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal 30, doc.cursor_offset
     tab.close
   end
-
+  
   def test_transforms_environment_variable_global
     # also tests escaping of slashes in transform
     tab = Redcar.win.new_tab(Redcar::EditTab)
@@ -113,7 +113,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal 26, doc.cursor_offset
     tab.close
   end
-
+  
   def test_inserts_one_tab_stop
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -123,7 +123,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal "if \n\t\nend", @buf.text
     assert_equal 3, @buf.cursor_offset
   end
-
+  
   def test_selects_tab_stop_zero
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -133,7 +133,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal "if instance", @buf.text
     assert_equal 3..11, @buf.selection_range
   end
-
+  
   def test_allows_tabbing_past_snippet
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -146,7 +146,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal 9, @buf.cursor_offset
     assert !@snippet_inserter.in_snippet?
   end
-
+  
   def test_allows_tabbing_between_tab_stops
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -162,7 +162,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal 9, @buf.cursor_offset
     assert !@snippet_inserter.in_snippet?
   end
-
+  
   def test_allows_tabbing_between_nonconsecutive_tab_stops
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -178,7 +178,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal 9, @buf.cursor_offset
     assert !@snippet_inserter.in_snippet?
   end
-
+  
   def test_allows_typing_and_tabbing
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -197,7 +197,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal 20, @buf.cursor_offset
     assert !@snippet_inserter.in_snippet?
   end
-
+  
   def test_allows_shift_tabbing
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -218,7 +218,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal 8, @buf.cursor_offset
     assert @snippet_inserter.in_snippet?
   end
-
+  
   def test_inserts_tab_stop_content
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -229,7 +229,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal source1, @buf.text
     assert_equal 3..12, @buf.selection_range
   end
-
+  
   def test_inserts_environment_variable_as_placeholder
     tab = Redcar.win.new_tab(Redcar::EditTab)
     tab.document.set_grammar_by_name("Ruby")
@@ -243,7 +243,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal 11, doc.cursor_offset
     tab.close
   end
-
+  
   def test_leaves_snippet_on_cursor_move
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -254,7 +254,7 @@ describe Redcar::EditView::SnippetInserter do
     @buf.place_cursor(@buf.line_start(0))
     assert !@snippet_inserter.in_snippet?
   end
-
+  
   def test_multiple_stops_with_content
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -273,7 +273,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal 22, @buf.cursor_offset
     assert !@snippet_inserter.in_snippet?
   end
-
+  
   def test_mirrors_mirror_text
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -289,7 +289,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal "name: rai\nname: rai", @buf.text
     assert_equal 9..9, @buf.selection_range
   end
-
+  
   def test_mirrors_mirror_stop_with_content
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -299,7 +299,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal "name: leoban\nname: leoban", @buf.text
     assert_equal 6..12, @buf.selection_range
   end
-
+  
   def test_mirrors_mirror_both_with_content
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -315,7 +315,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal "name: ad\nname: ad", @buf.text
     assert_equal 8..8, @buf.selection_range
   end
-
+  
   def test_transformations
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -335,7 +335,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal "name: rap blackbird\nupper: RAP blackbird", @buf.text
     assert_equal 19..19, @buf.selection_range
   end
-
+  
   def test_global_transformations
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -348,7 +348,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal "name: raptor blackbird\nupper: RAPTOR BLACKBIRD", @buf.text
     assert_equal 22..22, @buf.selection_range
   end
-
+  
   def test_nested_tab_stops
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -383,7 +383,7 @@ describe Redcar::EditView::SnippetInserter do
     press_tab
     assert_equal 15..17, @buf.selection_range
   end
-
+  
   def test_latex_snippet
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -398,7 +398,7 @@ describe Redcar::EditView::SnippetInserter do
     press_tab
     assert_equal 20..20, @buf.selection_range
   end
-
+  
   def test_transformations_do_not_move_cursor
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -411,7 +411,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal "def a\"\"\"", @buf.text
     assert_equal 5, @buf.cursor_offset
   end
-
+  
   def test_abutting_dollars
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -424,7 +424,7 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal 4..4, @buf.selection_range
     assert_equal "def  docstring for \"\"\"\n", @buf.text
   end
-
+  
   def test_abutting_dollars2
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -449,7 +449,7 @@ describe Redcar::EditView::SnippetInserter do
     type("c")
     assert_equal "def m abc\"\"\"\n\tpass", @buf.text
   end
-
+  
   def test_executes_shell_commands
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -457,19 +457,19 @@ describe Redcar::EditView::SnippetInserter do
                              "Ruby")
     @buf.text=("testsnip")
     press_tab
-
+  
     assert_equal "Date:#{Time.now.strftime("%Y-%m-%d")}", @buf.text
     assert_equal 15..15, @buf.selection_range
   end
-
+  
   def test_executes_shell_commands_with_support
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
                              "assert_equal`snippet_paren.rb`${1:expected}, ${0:actual}`snippet_paren.rb end`",
                              "Ruby")
-    @buf.text=("testsnip")
+    @buf.text=("testsnip") 
     press_tab
-
+  
     assert_equal "assert_equal(expected, actual)", @buf.text
     assert_equal 13..21, @buf.selection_range
   end
@@ -489,4 +489,39 @@ describe Redcar::EditView::SnippetInserter do
     backspace
     assert_equal "def fname fo\"\"\"\n\tpass", @buf.text
   end
+  # 
+  def test_snippet_with_escaped_curlies
+    SnippetInserter.register("source.ruby - string - comment",
+                             "testsnip",
+                             "${0:    # def self.[]=(name, val)\n    #   bus(\"/redcar/appdata/\#{name\\}\").data = val\n    # end\n}",
+                             "Ruby")
+    @buf.text=("testsnip")
+    press_tab
+    assert_equal "    # def self.[]=(name, val)\n        #   bus(\"/redcar/appdata/\#{name}\").data = val\n        # end\n    ", @buf.text
+  end
+   
+  def test_snippet_with_escaped_curlies
+    SnippetInserter.register("source.ruby - string - comment",
+       "testsnip",
+       "\\`snippet_paren.rb\\`",
+       "Ruby")
+    @buf.text=("testsnip")
+    press_tab
+    assert_equal "`snippet_paren.rb`", @buf.text
+  end
+  
+  def test_backticks_at_start_of_string
+    SnippetInserter.register("source.ruby - string - comment",
+      "testsnip",
+      "`snippet_paren.rb`",
+      "Ruby")
+    @buf.text=("testsnip") 
+    press_tab 
+    assert_equal "(", @buf.text
+  end
 end
+
+
+
+
+
