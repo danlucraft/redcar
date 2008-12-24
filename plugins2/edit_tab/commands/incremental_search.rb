@@ -1,7 +1,7 @@
 
 module Redcar
   class AskIncrementalSearch < Redcar::EditTabCommand
-    key "Super+S"
+    key "Ctrl+S"
     norecord
     
     class Speedbar < Redcar::Speedbar
@@ -25,7 +25,10 @@ module Redcar
       button "Next", nil, "Super+S" do |sb|
         FindForward.new(sb.query).do
       end
-    end
+      
+      key("Up") { |sb| sb.close }
+      key("Down") { |sb| sb.close }
+     end
     
     class FindForward < Redcar::EditTabCommand
       def initialize(text)

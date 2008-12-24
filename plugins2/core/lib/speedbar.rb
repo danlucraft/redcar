@@ -36,6 +36,10 @@ module Redcar
       append_item [:button, text, icon, key, block]
     end
     
+    def self.key(key, &block)
+     append_item [:key2, key, block]
+    end
+    
     attr_accessor :visible, :speedbar_display, :tab
     
     def show(tab)
@@ -170,6 +174,10 @@ module Redcar
       add_key(key) { b.activate } if key
       pack_start(b, false)
       @focus_widget ||= b
+    end
+    
+    def add_key2(key, block)
+      add_key(key, &block)
     end
     
     def value(name)

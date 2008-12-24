@@ -1,7 +1,7 @@
 
 module Redcar
   class SaveTab < Redcar::EditTabCommand
-    key "Ctrl+S"
+    key "Super+S"
     icon :SAVE
     sensitive :modified?
 
