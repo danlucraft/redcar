@@ -10,7 +10,7 @@ describe Redcar::EditView::AutoPairer do
     Redcar::Preference.set("Editing/Indent size", 1)
     Redcar::Preference.set("Editing/Use spaces instead of tabs", false)
   end
-
+  
   it "should insert pair end" do
     @buf.text = "pikon"
     @buf.place_cursor(@buf.line_end1(0))
@@ -41,6 +41,18 @@ describe Redcar::EditView::AutoPairer do
     @buf.text.should == "pikon(hi)"
     @buf.cursor_offset.should == 9
     @autopairer.mark_pairs.length.should == 0
+  end
+  
+  it "should allow for typeover of end for strings" do
+   @buf.text = "pikon"
+   @buf.place_cursor(@buf.line_end1(0))
+   @buf.insert_at_cursor("\"")
+   @buf.insert_at_cursor("h")
+   @buf.insert_at_cursor("i")
+   @buf.insert_at_cursor("\"")
+   @buf.text.should == "pikon\"hi\""
+   @buf.cursor_offset.should == 9
+   @autopairer.mark_pairs.length.should == 0
   end
   
   it "should only allow typeover of the correct end" do

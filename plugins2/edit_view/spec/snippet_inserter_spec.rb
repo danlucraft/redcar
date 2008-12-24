@@ -36,7 +36,7 @@ describe Redcar::EditView::SnippetInserter do
   def press_shift_tab(si=@snippet_inserter, buf=@buf)
     Redcar::ShiftTabPressed.new(si, buf).do
   end
-
+  
   def test_inserts_plain_content
     SnippetInserter.register("source.ruby - string - comment",
                              "DBL",
@@ -367,7 +367,7 @@ describe Redcar::EditView::SnippetInserter do
     press_shift_tab
     assert_equal 8..16, @buf.selection_range
   end
-
+  
   def test_super_nested_tab_stops
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",
@@ -489,7 +489,7 @@ describe Redcar::EditView::SnippetInserter do
     backspace
     assert_equal "def fname fo\"\"\"\n\tpass", @buf.text
   end
-  # 
+ 
   def test_snippet_with_escaped_curlies
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",

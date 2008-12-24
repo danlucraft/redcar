@@ -5,8 +5,8 @@ type: :bugfix
 component: edit-view
 release: "0.1"
 reporter: Daniel Lucraft <dan@fluentradical.com>
-status: :unstarted
-disposition: 
+status: :closed
+disposition: :fixed
 creation_time: 2008-10-19 06:32:44.323750 Z
 references: []
 
@@ -15,4 +15,8 @@ log_events:
 - - 2008-10-19 06:32:45.629168 Z
   - Daniel Lucraft <dan@fluentradical.com>
   - created
+  - ""
+- - 2008-12-24 16:39:42.658699 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - closed with disposition fixed
   - ""

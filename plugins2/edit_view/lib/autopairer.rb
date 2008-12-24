@@ -128,10 +128,8 @@ class Redcar::EditView
       @buffer.signal_connect("insert_text") do |_, iter, text, length|
         if cursor_scope = @buffer.cursor_scope
           current_scope = cursor_scope.hierarchy_names(true)
-#          puts "current_scope: #{current_scope}"
           # Type over ends
           if @rules = AutoPairer.autopair_rules_for_scope(current_scope)
-#            puts "result: #{@rules.inspect}"
             inverse_rules = @rules.invert
             if inverse_rules.include? text and !@ignore_insert
               end_mark_pair = find_mark_pair_by_end(iter)
@@ -141,7 +139,7 @@ class Redcar::EditView
               end
             end
             # Insert matching ends
-            if @rules.include? text and !@ignore_insert and !@done
+            if !@type_over_end and @rules.include? text and !@ignore_insert and !@done
               @insert_end = true
               @buffer.parser.stop_parsing
             end
@@ -152,11 +150,11 @@ class Redcar::EditView
 
       @buffer.signal_connect_after("insert_text") do |_, iter, text, length|
         @done = nil
-
+        
         # Type over ends
         if @type_over_end
           @buffer.delete(@buffer.iter(@buffer.cursor_offset-1),
-                      @buffer.cursor_iter)
+                         @buffer.cursor_iter)
           @buffer.place_cursor(@buffer.iter(@buffer.cursor_offset+1))
           @type_over_end = false
           @buffer.parser.start_parsing
@@ -173,7 +171,7 @@ class Redcar::EditView
           mark2 = @buffer.create_mark(nil, @buffer.cursor_iter, false)
           add_mark_pair [mark1, mark2, text, endtext]
           @ignore_insert = false
-           @buffer.parser.start_parsing
+          @buffer.parser.start_parsing
           @insert_end = false
         end
         false
