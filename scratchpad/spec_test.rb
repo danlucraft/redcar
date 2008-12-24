@@ -2,7 +2,6 @@
 require 'rubygems'
 #require 'ruby-debug'
 
-$spec_runner_at_exit_hook_registered = true
 require 'spec'
 require 'spec/runner/formatter/base_formatter'
 

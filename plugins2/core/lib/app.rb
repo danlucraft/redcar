@@ -9,13 +9,13 @@ module Redcar
     def self.[]=(name, val)
       bus("/redcar/appdata/#{name}").data = val
     end
-
+    
     def self.[](name)
       if slot = bus("/redcar/appdata/#{name}", true)
         slot.data
       end
     end
-
+    
     def self.load
       Hook.register :open_window
       Hook.register :close_window
@@ -26,7 +26,7 @@ module Redcar
       Redcar::App[:execution] = (Redcar::App[:execution]||0) + 1
       create_logger
     end
-
+    
     # Quits the application. All plugins are stopped first.
     def self.quit
       unless @gtk_quit
