@@ -107,19 +107,12 @@ module Redcar
       %w(TM_DIRECTORY TM_FILEPATH TM_SCOPE TM_SOFT_TABS TM_SUPPORT_PATH)+
       %w(TM_TAB_SIZE TM_FILENAME)
 
-    def self.blank_comment_env_vars
-      ENV.each do |key, value|
-        if key =~ /TM_COMMENT_/
-          ENV[key] = nil
-        end
-      end
-    end
-
     def self.set_environment_variables(bundle=nil)
       ENV_VARS.each do |var|
         ENV[var] = nil
       end
-      blank_comment_env_vars
+      @env_variables ||= []
+      @env_variables.each {|name| ENV[name] = nil}
 
       ENV['RUBYLIB'] = (ENV['RUBYLIB']||"")+":textmate/Support/lib"
       ENV['TM_RUBY'] = "/usr/local/bin/ruby"
@@ -147,7 +140,19 @@ module Redcar
       ENV['TM_SOFT_TABS'] = "YES"
       ENV['TM_SUPPORT_PATH'] = textmate_share_dir + "/Support"
       ENV['TM_TAB_SIZE'] = "2"
-     end
+      if bundle
+        bundle.preferences.each do |name, prefs|
+          settings = prefs["settings"]
+          if shell_variables = settings["shellVariables"]
+            shell_variables.each do |variable_hash|
+              name = variable_hash["name"]
+              @env_variables << name unless @env_variables.include?(name)
+              ENV[name] = variable_hash["value"]
+            end
+          end
+        end
+      end
+    end
     
     def self.textmate_share_dir
       locations = [

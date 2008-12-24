@@ -481,7 +481,11 @@ module Redcar
     end
 
     def execute
-      App.set_environment_variables(self.class.bundle)
+      if current_scope = Redcar.doc.cursor_scope
+        puts "current_scope #{current_scope.name}"
+        puts "current_pattern #{current_scope.pattern.name}"
+        App.set_environment_variables(Bundle.find_bundle_with_grammar(current_scope.pattern.grammar))
+      end
       File.open("cache/tmp.command", "w") {|f| f.puts shell_script}
       File.chmod(0770, "cache/tmp.command")
       output, error = nil, nil

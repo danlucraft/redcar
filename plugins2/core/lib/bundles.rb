@@ -89,6 +89,15 @@ module Redcar
       end
     end
     
+    def self.find_bundle_with_grammar(grammar)
+      bundles.each do |bundle|
+        if Dir[bundle.dir+"/Syntaxes/*"].map{|dir| dir.split("/").last}.include?(grammar.filename)
+          return bundle
+        end
+      end
+      nil
+    end
+    
     attr_accessor :name, :dir
     
     # Do not call this directly. Retrieve a loaded bundle
