@@ -17,12 +17,12 @@ module Redcar
         FindForward.new(text).do(:replace_previous => true)
       end
 
-      button "Prev", nil, "Super+Shift+S" do |sb|
+      button "Prev", nil, "Super+Ctrl+S" do |sb|
         sb.tab.document.cursor = [sb.tab.document.cursor_offset, sb.tab.document.selection_offset].min
         FindBack.new(sb.query).do
       end
       
-      button "Next", nil, "Super+S" do |sb|
+      button "Next", nil, "Ctrl+S" do |sb|
         FindForward.new(sb.query).do
       end
       
