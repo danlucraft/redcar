@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Menu bar items are in the wrong order
+desc: ""
+type: :bugfix
+component: redcar
+release: "0.1"
+reporter: Daniel Lucraft <dan@fluentradical.com>
+status: :unstarted
+disposition: 
+creation_time: 2008-12-30 08:39:33.457860 Z
+references: []
+
+id: 66ab8770a2b7ba3e3c2c2319d70f973a58ac732c
+log_events: 
+- - 2008-12-30 08:39:35.158863 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - created
+  - ""
