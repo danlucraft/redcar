@@ -31,7 +31,6 @@ module Redcar
       Tab.start
       Gui.start
       Command.start
-      Window.start
       plugin.transition(FreeBASE::RUNNING)
     end
 

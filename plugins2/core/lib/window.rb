@@ -9,10 +9,6 @@ module Redcar
       Hook.register :focus_tab
     end
 
-    def self.start #:nodoc:
-      App.new_window
-    end
-
     def self.stop #:nodoc:
       App.close_all_windows(false)
 

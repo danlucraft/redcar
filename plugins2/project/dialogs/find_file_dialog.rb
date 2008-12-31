@@ -71,7 +71,7 @@ module Redcar
         fs.each do |fn|
           bits = fn.split("/")
           name = bits.last
-          updir = bits[-2]
+          updir = bits[-4..-2].join("/")
           if i < 10
             iter = @list.append
             iter[0] = name + "     (#{updir})"

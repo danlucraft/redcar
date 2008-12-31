@@ -1,0 +1,24 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Crashing with 'off end of line message'
+desc: |-
+  Error message is:
+    Gtk-ERROR **: Char offset 13 is off the end of the line
+  aborting...
+  Aborted
+  
+  Happens at odd intervals. Try and track it down please.
+type: :bugfix
+component: edit-view
+release: "0.1"
+reporter: Daniel Lucraft <dan@fluentradical.com>
+status: :unstarted
+disposition: 
+creation_time: 2008-12-31 16:59:52.548873 Z
+references: []
+
+id: 35b57473ea14238383711aefc8114bf8154129c8
+log_events: 
+- - 2008-12-31 16:59:53.587207 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - created
+  - ""
