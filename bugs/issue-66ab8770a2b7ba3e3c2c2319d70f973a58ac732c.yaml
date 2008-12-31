@@ -5,8 +5,8 @@ type: :bugfix
 component: redcar
 release: "0.1"
 reporter: Daniel Lucraft <dan@fluentradical.com>
-status: :unstarted
-disposition: 
+status: :closed
+disposition: :fixed
 creation_time: 2008-12-30 08:39:33.457860 Z
 references: []
 
@@ -15,4 +15,8 @@ log_events:
 - - 2008-12-30 08:39:35.158863 Z
   - Daniel Lucraft <dan@fluentradical.com>
   - created
+  - ""
+- - 2008-12-31 18:27:52.907359 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - closed with disposition fixed
   - ""

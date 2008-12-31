@@ -2,7 +2,6 @@
 module Redcar
   class RedcarPlugin < Redcar::Plugin
     def self.load(plugin)
-      p :bar
       main_menu "File" do
         item "New",        NewTab
         item "Open",       OpenTab

@@ -5,8 +5,8 @@ type: :bugfix
 component: edit-view
 release: "0.1"
 reporter: Daniel Lucraft <dan@fluentradical.com>
-status: :unstarted
-disposition: 
+status: :closed
+disposition: :fixed
 creation_time: 2008-12-24 16:18:56.276321 Z
 references: []
 
@@ -16,3 +16,7 @@ log_events:
   - Daniel Lucraft <dan@fluentradical.com>
   - created
   - ""
+- - 2008-12-31 18:28:25.774183 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - closed with disposition fixed
+  - Not a bug. I actually changed the identation depth in preferences.

@@ -29,7 +29,6 @@ module Com::RedcarIDE
     end
     
     on_start do
-      p :foo
       main_menu "Debug" do
         item "Print Command History", PrintCommandHistory
         item "Print Scope Tree", PrintScopeTree
