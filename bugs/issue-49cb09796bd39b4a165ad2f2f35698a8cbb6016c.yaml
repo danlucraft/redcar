@@ -5,8 +5,8 @@ type: :feature
 component: redcar
 release: "0.1"
 reporter: Daniel Lucraft <dan@fluentradical.com>
-status: :unstarted
-disposition: 
+status: :closed
+disposition: :fixed
 creation_time: 2008-12-30 08:38:40.303184 Z
 references: []
 
@@ -16,3 +16,7 @@ log_events:
   - Daniel Lucraft <dan@fluentradical.com>
   - created
   - Can be improved by changing the caches to not store each bundles stuff in separate marshalled files?
+- - 2008-12-31 16:39:56.576346 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - closed with disposition fixed
+  - ""

@@ -276,6 +276,7 @@ module Redcar
               def command_class.inspect
                 "#<SnippetCommand: #{@name}>"
               end
+              Bundle.uuid_map[uuid] = command_class
             end
           end
         end
@@ -284,9 +285,12 @@ module Redcar
     end
     
     def self.make_redcar_commands_with_range(range)
+      i = 0
+      start = Time.now
       bundles.each do |bundle|
         bundle.commands = {}
         bundle.command_hashes.each do |uuid, hash|
+          i += 1
           new_command = Class.new(Redcar::ShellCommand)
           new_command.range Redcar::EditTab
           if key = Bundle.translate_key_equivalent(hash["keyEquivalent"], bundle.name + " | " + hash["name"])
@@ -308,12 +312,16 @@ module Redcar
           new_command.shell_script = hash["command"]
           new_command.name = hash["name"]
           bundle.commands[uuid] = new_command
+          Bundle.uuid_map[uuid] = new_command
         end
       end
-    end      
+      puts "made #{i} Commands in #{Time.now - start}s"
+    end
     
     def self.build_bundle_menus
+      # require 'ruby-prof'
       start = Time.now
+      # RubyProf.start
       root_menu_slot = bus['/redcar/menus/menubar/Bundles']
       MenuBuilder.set_menuid(root_menu_slot)
       bundles.sort_by(&:name).each do |bundle|
@@ -331,16 +339,20 @@ module Redcar
         about_command.icon :ABOUT
         about_slot.data = about_command
         about_slot.attr_menu_entry = true
-        ((bundle.info["mainMenu"]||{})["items"]||[]).each do |uuid|
-          build_bundle_menu(bundle_menu_slot, (bundle.info["mainMenu"]||{})["items"]||[], bundle) 
-        end
+        build_bundle_menu(bundle_menu_slot, (bundle.info["mainMenu"]||{})["items"]||[], bundle) 
       end
+      # result = RubyProf.stop
+ #      printer = RubyProf::GraphHtmlPrinter.new(result)
+ #      printer.print(STDOUT, :min_percent => 1)
       puts "built bundle menus in #{Time.now - start}s"
     end
     
     def self.build_bundle_menu(menu_slot, uuids, bundle)
       uuids.each do |uuid|
-        if item = item_by_uuid(uuid)
+        if item = uuid_map[uuid]
+          unless item.name and item.name != ""
+            next
+          end
           item_slot = menu_slot[item.name.gsub("/", "\\")]
           item.menu item_slot.path.gsub("/redcar/menus/menubar/", "")
           MenuBuilder.set_menuid(item_slot)
@@ -377,12 +389,8 @@ module Redcar
       end
     end
     
-    def self.item_by_uuid(uuid)
-      bundles.each do |bundle|
-        val = bundle.commands[uuid] || bundle.snippets[uuid]
-        return val if val
-      end
-      nil
+    def self.uuid_map
+      @uuid_map ||= {}
     end
   end
 end

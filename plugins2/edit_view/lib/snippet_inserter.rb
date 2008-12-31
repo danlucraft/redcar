@@ -8,17 +8,17 @@ end
 class Redcar::EditView
   class SnippetInserter
     def self.default_snippets
-      Bundle.snippet_lookup[""]
+      Redcar::Bundle.snippet_lookup[""]
     end
 
     def self.register(scope, tab_trigger, content, bundle="Ruby")
-      Bundle.snippet_lookup[scope][tab_trigger] = {"content" => content, "bundle" => Redcar::Bundle.get(bundle)}
+      Redcar::Bundle.snippet_lookup[scope][tab_trigger] = {"content" => content, "bundle" => Redcar::Bundle.get(bundle)}
     end
 
     def self.snippets_for_scope(scope)
       all_snippets_for_scope = {}
       if scope
-        Bundle.snippet_lookup.each do |scope_selector, snippets_for_scope|
+        Redcar::Bundle.snippet_lookup.each do |scope_selector, snippets_for_scope|
           v = Gtk::Mate::Matcher.test_match(scope_selector, scope.hierarchy_names(true))
           if v
             all_snippets_for_scope.merge!(snippets_for_scope)
@@ -189,7 +189,7 @@ class Redcar::EditView
     end
 
     def insert_snippet_with_uuid(uuid)
-      insert_snippet(Bundle.item_by_uuid(uuid))
+      insert_snippet(Redcar::Bundle.item_by_uuid(uuid))
     end
 
     def insert_snippet(snippet, opts={})
