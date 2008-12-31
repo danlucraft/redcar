@@ -1,3 +1,4 @@
+
 module Redcar
   class MoveTabDown < Redcar::TabCommand
     key "Ctrl+Shift+Page_Down"

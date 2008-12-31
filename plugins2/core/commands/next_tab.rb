@@ -1,3 +1,4 @@
+
 module Redcar
   class NextTab < Redcar::TabCommand
     key "Ctrl+Page_Down"

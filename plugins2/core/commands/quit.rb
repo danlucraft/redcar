@@ -1,3 +1,4 @@
+
 module Redcar
   class Quit < Redcar::Command
     key "Alt+F4"
