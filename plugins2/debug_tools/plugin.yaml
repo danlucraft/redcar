@@ -8,3 +8,5 @@ require_path: debug_tools/debug_tools.rb
 startup_module: Com::RedcarIDE::DebugTools
 load_dependencies: 
   redcar: "*"
+start_dependencies: 
+  redcar: "*"

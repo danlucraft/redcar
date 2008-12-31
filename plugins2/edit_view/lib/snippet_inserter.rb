@@ -1,3 +1,4 @@
+
 class Gtk::TextMark
   attr_accessor :name
   attr_accessor :snippet_mark
@@ -6,62 +7,21 @@ end
 
 class Redcar::EditView
   class SnippetInserter
-    def self.load_snippets
-      @snippets = Hash.new {|h, k| h[k] = {}}
-      i = 0
-      Redcar::Bundle.bundles.each do |bundle|
-        snippets = bundle.snippets
-        snippets.each do |snip|
-          safename = snip["name"].gsub("/", "SLA").gsub(/[^\w]/, "")
-          slot = bus("/textmate/bundles/#{name}/#{safename}")
-          slot.data = snip
-          snip["bundle"] = bundle
-          if snip["tabTrigger"]
-            @snippets[snip["scope"]||""][snip["tabTrigger"]] = snip
-          elsif snip["keyEquivalent"]
-            keyb = Redcar::Bundle.translate_key_equivalent(snip["keyEquivalent"])
-            if keyb
-              command_class = Class.new(Redcar::SnippetCommand)
-              command_class.instance_variable_set(:@name, snip["name"])
-              if snip["scope"]
-                command_class.scope(snip["scope"])
-              end
-              command_class.key(keyb)
-              command_class.class_eval %Q{
-                def execute
-                  tab.view.snippet_inserter.insert_snippet_from_path("#{slot.path}")
-                end
-              }
-              def command_class.inspect
-                "#<SnippetCommand: #{@name}>"
-              end
-            end
-          else
-            i += 1
-          end
-        end
-      end
-      @snippets.default = nil
-    end
-
     def self.default_snippets
-      @snippets[""]
+      Bundle.snippet_lookup[""]
     end
 
     def self.register(scope, tab_trigger, content, bundle="Ruby")
-      @snippets[scope][tab_trigger] = {"content" => content, "bundle" => Redcar::Bundle.get(bundle)}
+      Bundle.snippet_lookup[scope][tab_trigger] = {"content" => content, "bundle" => Redcar::Bundle.get(bundle)}
     end
 
     def self.snippets_for_scope(scope)
       all_snippets_for_scope = {}
       if scope
-        @snippets.each do |scope_selector, snippets_for_scope|
-           #       puts "applicable? #{scope_selector} to #{scope.hierarchy_names(true)}"
+        Bundle.snippet_lookup.each do |scope_selector, snippets_for_scope|
           v = Gtk::Mate::Matcher.test_match(scope_selector, scope.hierarchy_names(true))
-           #       p v
           if v
-       #     p snippets_for_scope
-            all_snippets_for_scope.merge! snippets_for_scope
+            all_snippets_for_scope.merge!(snippets_for_scope)
           end
         end
       end
@@ -228,9 +188,8 @@ class Redcar::EditView
       text.gsub("\\$", "$").gsub("\\\\", "\\").gsub("\\}", "}").gsub("\\`", "`")
     end
 
-    def insert_snippet_from_path(path)
-      parent = path.split("/")[0..-2].join("/")
-      insert_snippet(bus(path).data)
+    def insert_snippet_with_uuid(uuid)
+      insert_snippet(Bundle.item_by_uuid(uuid))
     end
 
     def insert_snippet(snippet, opts={})

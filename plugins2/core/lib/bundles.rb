@@ -109,7 +109,7 @@ module Redcar
       @dir  = dir
       bus("/redcar/bundles/#{name}").data = self
       load_info
-      load_commands
+      load_command_hashes
       
       Bundle.bundles ||= []
       Bundle.bundles << self
@@ -156,26 +156,43 @@ module Redcar
       end
     end
     
-    # A array of this bundle's snippets. Snippets are cached 
+    attr_writer :snippets
+    
     def snippets
-      @snippets ||= load_snippets
+      return @snippets if @snippets
+      raise "Asked for bundle snippets, but they have not been generated. " +
+        "Use Bundle.make_redcar_snippets_with_range(range)."
     end
     
-    def load_snippets #:nodoc:
+    class << self
+      attr_reader :snippet_lookup
+    end
+    
+    def self.register_snippet_for_lookup(snippet_hash)
+      @snippet_lookup ||= Hash.new {|h, k| h[k] = {}}
+      @snippet_lookup[snippet_hash["scope"]||""][snippet_hash["tabTrigger"]] = snippet_hash
+    end
+    
+    # A array of this bundle's snippets. Snippets are cached 
+    def snippet_hashes
+      @snippet_hashes ||= load_snippet_hashes
+    end
+    
+    def load_snippet_hashes #:nodoc:
       App.with_cache("snippets", @name) do
-        snippets = []
+        hashes = {}
         Dir.glob(@dir+"/Snippets/*").each do |snipfile|
           begin
             xml = IO.readlines(snipfile).join
             snip = Redcar::Plist.plist_from_xml(xml)[0]
-            snippets << snip
+            hashes[snip["uuid"]] = snip
           rescue Object => e
             puts "There was an error loading #{snipfile}"
             puts e.message
             puts e.backtrace[0..10]
           end
         end
-        snippets
+        hashes
       end
     end
     
@@ -201,20 +218,28 @@ module Redcar
       end
     end
     
-    # An array of this bundle's commands. Cached.
+    attr_writer :commands
+    
     def commands
-      @commands ||= load_commands
+      return @commands if @commands
+      raise "Asked for bundle commands, but they have not been generated. " +
+        "Use Bundle.make_redcar_commands_with_range(range)."
     end
     
-    def load_commands
+    # An array of this bundle's commands. Cached.
+    def command_hashes
+      @command_hashes ||= load_command_hashes
+    end
+    
+    def load_command_hashes
       App.with_cache("commands", @name) do
-        temps = {}
+        hashes = {}
         Dir.glob(@dir+"/Commands/*").each do |command_filename|
           begin
             xml = IO.read(command_filename)
-            tempinfo = Redcar::Plist.plist_from_xml(xml)[0]
-            tempinfo["file"] = command_filename
-            temps[tempinfo["uuid"]] = tempinfo
+            hash_info = Redcar::Plist.plist_from_xml(xml)[0]
+            hash_info["file"] = command_filename
+            hashes[hash_info["uuid"]] = hash_info
           rescue Object => e
             puts "There was an error loading #{command_filename}"
             puts e.message
@@ -222,11 +247,73 @@ module Redcar
             exit
           end
         end
-        temps
+        hashes
       end
     end
     
+    def self.make_redcar_snippets_from_class(klass)
+      start = Time.now
+      bundles.each do |bundle|
+        bundle.snippets = {}
+        bundle.snippet_hashes.each do |uuid, snip|
+          snip["bundle"] = bundle
+          if snip["tabTrigger"]
+            register_snippet_for_lookup(snip)
+          elsif snip["keyEquivalent"]
+            keyb = Redcar::Bundle.translate_key_equivalent(snip["keyEquivalent"])
+            if keyb
+              command_class = Class.new(Redcar::SnippetCommand)
+              command_class.instance_variable_set(:@name, snip["name"])
+              if snip["scope"]
+                command_class.scope(snip["scope"])
+              end
+              command_class.key(keyb)
+              command_class.class_eval %Q{
+                def execute
+                  tab.view.snippet_inserter.insert_snippet_with_uuid("#{uuid}")
+                end
+              }
+              def command_class.inspect
+                "#<SnippetCommand: #{@name}>"
+              end
+            end
+          end
+        end
+      end
+      puts "loaded snippet objects in #{Time.now - start}s"
+    end
+    
+    def self.make_redcar_commands_with_range(range)
+      bundles.each do |bundle|
+        bundle.commands = {}
+        bundle.command_hashes.each do |uuid, hash|
+          new_command = Class.new(Redcar::ShellCommand)
+          new_command.range Redcar::EditTab
+          if key = Bundle.translate_key_equivalent(hash["keyEquivalent"], bundle.name + " | " + hash["name"])
+            new_command.key key
+          end
+          new_command.scope hash["scope"]
+          if hash["input"]
+            new_command.input hash["input"].underscore.intern
+          end
+          if hash["fallbackInput"]
+            new_command.fallback_input hash["fallbackInput"].underscore.intern
+          end
+          if hash["output"]
+            new_command.output hash["output"].underscore.intern
+          end
+          
+          new_command.tm_uuid = uuid
+          new_command.bundle = bundle
+          new_command.shell_script = hash["command"]
+          new_command.name = hash["name"]
+          bundle.commands[uuid] = new_command
+        end
+      end
+    end      
+    
     def self.build_bundle_menus
+      start = Time.now
       root_menu_slot = bus['/redcar/menus/menubar/Bundles']
       MenuBuilder.set_menuid(root_menu_slot)
       bundles.sort_by(&:name).each do |bundle|
@@ -248,17 +335,16 @@ module Redcar
           build_bundle_menu(bundle_menu_slot, (bundle.info["mainMenu"]||{})["items"]||[], bundle) 
         end
       end
+      puts "built bundle menus in #{Time.now - start}s"
     end
     
     def self.build_bundle_menu(menu_slot, uuids, bundle)
       uuids.each do |uuid|
-        command_slot = nil
-        if command_slot = bus("/redcar/bundles/#{bundle.name}/commands/#{uuid}", true)
-          command = command_slot.data
-          item_slot = menu_slot[command.name.gsub("/", "\\")]
-          command.menu item_slot.path.gsub("/redcar/menus/menubar/", "")
+        if item = item_by_uuid(uuid)
+          item_slot = menu_slot[item.name.gsub("/", "\\")]
+          item.menu item_slot.path.gsub("/redcar/menus/menubar/", "")
           MenuBuilder.set_menuid(item_slot)
-          item_slot.data = command
+          item_slot.data = item
           item_slot.attr_menu_entry = true
         end
       end
@@ -289,6 +375,14 @@ module Redcar
           end
         end
       end
+    end
+    
+    def self.item_by_uuid(uuid)
+      bundles.each do |bundle|
+        val = bundle.commands[uuid] || bundle.snippets[uuid]
+        return val if val
+      end
+      nil
     end
   end
 end

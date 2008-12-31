@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: "Missing sensitivity: selected text"
+desc: ""
+type: :feature
+component: edit-view
+release: "0.1"
+reporter: Daniel Lucraft <dan@fluentradical.com>
+status: :unstarted
+disposition: 
+creation_time: 2008-12-30 11:53:19.507627 Z
+references: []
+
+id: 3c96fdc80ef25e9f744fabeee6cc0aec1f07f657
+log_events: 
+- - 2008-12-30 11:53:20.177410 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - created
+  - ""

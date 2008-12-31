@@ -4,6 +4,7 @@ class Redcar::EditView
     def self.lookup_autopair_rules
       @autopair_rules = Hash.new {|h, k| h[k] = {}}
       @autopair_default = nil
+      start = Time.now
       Redcar::Bundle.names.each do |name|
         prefs = Redcar::Bundle.get(name).preferences
         prefs.each do |pref_name, pref_hash|
@@ -26,6 +27,7 @@ class Redcar::EditView
       if @autopair_default
         @autopair_default1 = @autopair_default.invert
       end
+      puts "loaded bundle preferences in #{Time.now - start}s"
       @autopair_rules.default = nil
     end
 

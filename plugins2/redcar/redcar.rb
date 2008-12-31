@@ -1,6 +1,7 @@
 
 module Redcar
   class RedcarPlugin < Redcar::Plugin
+    
     main_menu "File" do
       item "New",        NewTab
       item "Open",       OpenTab
@@ -51,10 +52,17 @@ module Redcar
       item "RubyEnd", RubyEnd
     end
 
-    context_menu "Pane" do
+    main_menu "View" do
       item "Split Horizontal",  SplitHorizontal
       item "Split Vertical",    SplitVertical
       item "Unify All",         UnifyAll
     end
+    
+    def self.load(plugin)
+      Bundle.build_bundle_menus
+      
+      plugin.transition(FreeBASE::LOADED)
+    end
+    
   end
 end

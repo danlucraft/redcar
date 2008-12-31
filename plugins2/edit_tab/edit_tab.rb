@@ -61,42 +61,9 @@ module Redcar
       Dir[File.dirname(__FILE__) + "/commands/*"].each {|f| Kernel.load f}
       Kernel.load File.dirname(__FILE__) + "/widgets/font_chooser_button.rb"
       Kernel.load File.dirname(__FILE__) + "/preferences.rb"
-
-      bus("/redcar/bundles/").children.each do |child_slot|
-#        p child_slot.name
-        bundle = child_slot.data
-        commands_slot = child_slot["commands"]
-        bundle.commands.each do |uuid, hash|
-#          p hash["name"] if hash["name"] == "New Method"
-          #          p Bundle.translate_key_equivalent(hash["keyEquivalent"])
-          new_command = Class.new(Redcar::ShellCommand)
-          new_command.range Redcar::EditTab
-          if key = Bundle.translate_key_equivalent(hash["keyEquivalent"], bundle.name + " | " + hash["name"])
-            new_command.key key
-          end
-          new_command.scope hash["scope"]
-          if hash["input"]
-            new_command.input hash["input"].underscore.intern
-          end
-          if hash["fallbackInput"]
-            new_command.fallback_input hash["fallbackInput"].underscore.intern
-          end
-          if hash["output"]
-            new_command.output hash["output"].underscore.intern
-          end
-          
-          new_command.tm_uuid = uuid
-          new_command.bundle = bundle
-          new_command.shell_script = hash["command"]
-          new_command.name = hash["name"]
-
-          command_slot = commands_slot[uuid]
-          command_slot.data = new_command
-        end
-      end
-
-      Bundle.build_bundle_menus
-
+      
+      Redcar::Bundle.make_redcar_commands_with_range(Redcar::EditTab)
+      
       plugin.transition(FreeBASE::LOADED)
     end
 

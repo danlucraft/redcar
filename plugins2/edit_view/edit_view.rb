@@ -2,6 +2,7 @@
 module Redcar
   class EditViewPlugin < Redcar::Plugin
     def self.load(plugin) #:nodoc:
+      Redcar::Bundle.make_redcar_snippets_from_class(Redcar::SnippetCommand)
       Redcar::EditView::Indenter.lookup_indent_rules
       Redcar::EditView::AutoPairer.lookup_autopair_rules
 
@@ -9,8 +10,6 @@ module Redcar
     end
 
     def self.start(plugin) #:nodoc:
-      Redcar::EditView::SnippetInserter.load_snippets
-
       plugin.transition(FreeBASE::RUNNING)
     end
 
