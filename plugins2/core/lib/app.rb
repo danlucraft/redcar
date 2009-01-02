@@ -29,6 +29,9 @@ module Redcar
     
     # Quits the application. All plugins are stopped first.
     def self.quit
+      windows.each do |w|
+        close_window(w, false)
+      end
       unless @gtk_quit
         @logger.info "system shutdown"
         bus["/system/shutdown"].call(nil)
@@ -48,7 +51,7 @@ module Redcar
 
     # Returns an array of all Redcar windows.
     def self.windows
-      [@window]
+      [@window].compact
     end
 
     # Returns the currently focussed window.
@@ -64,7 +67,6 @@ module Redcar
         Hook.trigger :close_window do
           window.panes.each {|pane| pane.tabs.each {|tab| tab.close} }
           @window = nil if window == @window
-          window.hide_all if window
         end
       end
       quit if close_if_no_win and is_win

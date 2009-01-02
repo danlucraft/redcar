@@ -10,9 +10,7 @@ module Redcar
     end
 
     def self.stop #:nodoc:
-      App.close_all_windows(false)
-
-      Hook.clear_plugin_hooks(self)
+      # App.close_all_windows(false)
     end
 
     attr_reader(:notebooks_panes, :previous_tab, :gtk_menubar,
@@ -227,6 +225,10 @@ module Redcar
         self.close
       end
 
+      signal_connect("size-request") do 
+        Redcar::App[:window_size] = self.size
+      end
+
       signal_connect('key-press-event') do |gtk_widget, gdk_eventkey|
         begin
           done = false
@@ -279,7 +281,9 @@ module Redcar
     end
 
     def build_widgets
-      set_size_request(900, 600)
+      window_size = Redcar::App[:window_size] || [800, 600]
+      p window_size
+      set_default_size(*window_size)
       @gtk_menubar = Gtk::MenuBar.new
       gtk_table = Gtk::Table.new(1, 3, false)
       bus["/gtk/window/table"].data = gtk_table
