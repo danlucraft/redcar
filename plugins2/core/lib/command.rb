@@ -294,6 +294,7 @@ module Redcar
         puts e.message
         puts e.backtrace
       end
+      @output
     end
 
     def record?

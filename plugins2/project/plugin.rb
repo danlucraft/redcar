@@ -22,5 +22,28 @@ module Redcar
       Kernel.load File.dirname(__FILE__) + "/tabs/project_tab.rb"
       Kernel.load File.dirname(__FILE__) + "/dialogs/find_file_dialog.rb"
     end
+    
+    on_start do
+      Hook.attach(:redcar_start) do
+        files, directories = [], []
+        Redcar::App.ARGV.each do |arg|
+          if File.exist?(arg)
+            if File.file?(arg)
+              files << File.expand_path(arg)
+            elsif File.directory?(arg)
+              directories << File.expand_path(arg)
+            end
+          end
+        end
+        if files.any? or directories.any?
+          Redcar::SplitHorizontal.new.do
+          tab = Redcar::OpenProject.new.do
+          directories.each do |dir|
+            tab.add_directory(dir.split("/").last, dir)
+          end
+          puts "don't know how to put files in projects yet! (#{files.inspect}) FIXME" if files.any?
+        end
+      end
+    end
   end
 end

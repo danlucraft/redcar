@@ -8,6 +8,7 @@ module Redcar
       new_tab = win.new_tab(ProjectTab)
       new_tab.focus
 #      Redcar.StatusBar.main = "Opened Project tab"
+      new_tab
     end
   end
 end

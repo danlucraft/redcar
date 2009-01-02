@@ -215,7 +215,7 @@ module Redcar
         end
       end
       dual.show
-      dual.position = 200
+      dual.position = 250
     end
 
     def notebook_to_pane(nb)
@@ -279,7 +279,7 @@ module Redcar
     end
 
     def build_widgets
-      set_size_request(800, 600)
+      set_size_request(900, 600)
       @gtk_menubar = Gtk::MenuBar.new
       gtk_table = Gtk::Table.new(1, 3, false)
       bus["/gtk/window/table"].data = gtk_table
