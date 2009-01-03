@@ -48,15 +48,18 @@ module Redcar
       end
     end
 
+    def pane_for_tab_class(tab_class)
+      panes.reverse.sort_by do |pane|
+        num_same_class = pane.tabs.select {|t| t.is_a? tab_class}.length
+        num = pane.tabs.length
+        num_same_class*100 - (num - num_same_class)
+      end.last
+    end
+
     # Equivalent to calling Pane#new_tab on the currently
     # focussed Pane.
     def new_tab(tab_class, *args)
-      t = if focussed_tab
-            focussed_tab.pane.new_tab(tab_class, *args)
-          else
-            panes.first.new_tab(tab_class, *args)
-          end
-      t
+      pane_for_tab_class(tab_class).new_tab(tab_class, *args)
     end
 
     # Returns an array of all tabs in the Window.
