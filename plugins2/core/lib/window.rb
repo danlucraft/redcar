@@ -282,7 +282,6 @@ module Redcar
 
     def build_widgets
       window_size = Redcar::App[:window_size] || [800, 600]
-      p window_size
       set_default_size(*window_size)
       @gtk_menubar = Gtk::MenuBar.new
       gtk_table = Gtk::Table.new(1, 3, false)
@@ -376,3 +375,4 @@ module Redcar
     end
   end
 end
+

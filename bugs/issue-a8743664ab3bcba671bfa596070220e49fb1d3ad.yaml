@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: New text tabs are opening in the same pane as the project tab
+desc: ""
+type: :bugfix
+component: project-plugin
+release: "0.1"
+reporter: Daniel Lucraft <dan@fluentradical.com>
+status: :unstarted
+disposition: 
+creation_time: 2009-01-03 09:45:06.808781 Z
+references: []
+
+id: a8743664ab3bcba671bfa596070220e49fb1d3ad
+log_events: 
+- - 2009-01-03 09:45:07.796160 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - created
+  - ""
