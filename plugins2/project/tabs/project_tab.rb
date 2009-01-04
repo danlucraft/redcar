@@ -82,12 +82,12 @@ module Redcar
       end
       
       menu_def += [
-        ["Add Project", fn { AddProjectCommand.new.do }]
+        ["Add Project Directory", fn { AddDirectoryToProjectCommand.new.do }]
       ]
       
       if tree_path
         menu_def += [
-          ["Remove Project", fn { RemoveProjectCommand.new(path).do }],
+          ["Remove Project Directory", fn { RemoveDirectoryFromProjectCommand.new(path).do }],
         ]
       end
       

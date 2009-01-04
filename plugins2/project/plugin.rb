@@ -13,8 +13,8 @@ module Redcar
       end
       Kernel.load File.dirname(__FILE__) + "/commands/open_project.rb"
       Kernel.load File.dirname(__FILE__) + "/commands/find_file_command.rb"
-      Kernel.load File.dirname(__FILE__) + "/commands/add_project_command.rb"
-      Kernel.load File.dirname(__FILE__) + "/commands/remove_project_command.rb"
+      Kernel.load File.dirname(__FILE__) + "/commands/add_directory_to_project_command.rb"
+      Kernel.load File.dirname(__FILE__) + "/commands/remove_directory_from_project_command.rb"
       Kernel.load File.dirname(__FILE__) + "/commands/new_file_in_project_command.rb"
       Kernel.load File.dirname(__FILE__) + "/commands/rename_path_in_project_command.rb"
       Kernel.load File.dirname(__FILE__) + "/commands/delete_path_in_project_command.rb"
@@ -41,7 +41,9 @@ module Redcar
           directories.each do |dir|
             tab.add_directory(dir.split("/").last, dir)
           end
-          puts "don't know how to put files in projects yet! (#{files.inspect}) FIXME" if files.any?
+          files.each do |fn|
+            Redcar::OpenTab.new(fn).do
+          end
         end
       end
     end

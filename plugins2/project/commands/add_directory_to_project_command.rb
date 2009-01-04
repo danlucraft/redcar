@@ -1,6 +1,6 @@
 
 module Redcar
-  class AddProjectCommand < Command
+  class AddDirectoryToProjectCommand < Command
     menu "Project/Add Directory"
     
     def execute

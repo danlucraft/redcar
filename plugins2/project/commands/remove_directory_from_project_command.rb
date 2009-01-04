@@ -1,6 +1,6 @@
 
 module Redcar
-  class RemoveProjectCommand < Command
+  class RemoveDirectoryFromProjectCommand < Command
     def initialize(path)
       @path = path
     end
