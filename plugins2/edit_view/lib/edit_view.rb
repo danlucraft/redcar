@@ -25,9 +25,9 @@ module Redcar
       self.left_margin = 5
       self.show_line_numbers = Redcar::Preference.get("Editing/Show line numbers").to_bool
 
-      self.set_tab_width(2)
+      self.set_tab_width(Redcar::Preference.get("Editing/Indent size").to_i)
+      self.set_insert_spaces_instead_of_tabs(Redcar::Preference.get("Editing/Use spaces instead of tabs").to_bool)
       self.left_margin = 5
-      setup_buffer(buffer)
       setup_bookmark_assets
       connect_signals
       create_indenter
@@ -65,6 +65,17 @@ module Redcar
           value_changed_handler
         end
       end
+      buffer.signal_connect("grammar_changed") do |_, grammar_name|
+        update_tab_settings_from_grammar(grammar_name)
+      end
+    end
+
+    def update_tab_settings_from_grammar(grammar_name)
+      tab_settings = (Redcar::App["tab_settings"] || {})
+      if grammar_tab_settings = tab_settings[grammar_name]
+        self.tab_width = grammar_tab_settings["tab_width"]
+        self.set_spaces_instead_of_tabs(grammar_tab_settings["spaces_instead_of_tabs"])
+      end
     end
 
     def set_font(font)
@@ -81,24 +92,6 @@ module Redcar
 
     def create_snippet_inserter
       @snippet_inserter = SnippetInserter.new(buffer)
-    end
-
-#     def new_buffer
-#       text = self.buffer.text
-#       newbuffer = Gtk::SourceBuffer.new
-#       self.buffer = newbuffer
-#       setup_buffer(newbuffer)
-#       newbuffer.text = text
-#       newbuffer.parser = @parser
-#       @parser.buffer = newbuffer
-#       @indenter.buffer = newbuffer
-#       @autopairer.buffer = newbuffer
-#     end
-
-    def setup_buffer(thisbuf)
-#       thisbuf.check_brackets = false
-#       thisbuf.highlight = false
-#       thisbuf.max_undo_levels = 10
     end
 
     def indent_line(line_num)
@@ -120,11 +113,6 @@ module Redcar
       get_line_at_y(bufy)[0].line
     end
 
-#     def view_changed
-# #      puts "last_visible_line:#{last_visible_line}"
-#       @parser.max_view = last_visible_line + 100
-#     end
-
     def cursor_onscreen?
       visible_lines[0] < buffer.cursor_line and
         buffer.cursor_line < visible_lines[1]
@@ -138,12 +126,3 @@ module Redcar
     end
   end
 end
-
-# require File.dirname(__FILE__) + '/edit_view/grammar'
-# require File.dirname(__FILE__) + '/edit_view/scope'
-# require File.dirname(__FILE__) + '/edit_view/parser'
-# require File.dirname(__FILE__) + '/edit_view/theme'
-# require File.dirname(__FILE__) + '/edit_view/colourer'
-# require File.dirname(__FILE__) + '/edit_view/textloc'
-
-# require File.dirname(__FILE__) + '/edit_view/ext/redcar_ext'

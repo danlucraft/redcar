@@ -18,11 +18,9 @@ module Redcar
       default "Mac Classic"
       values { Gtk::Mate::Theme.themes.map(&:name).sort_by(&:downcase) }
       change do
-        Redcar.win.tabs.each do |tab|
-          if tab.is_a? EditTab
-            theme_name = Redcar::Preference.get("Appearance/Tab Theme")
-            tab.view.set_theme_by_name(theme_name)
-          end
+        Redcar.win.collect_tabs(Redcar::EditTab).each do |tab|
+          theme_name = Redcar::Preference.get("Appearance/Tab Theme")
+          tab.view.set_theme_by_name(theme_name)
         end
       end
     end
@@ -32,11 +30,21 @@ module Redcar
       bounds  [0, 20]
       step    1
       default 2
+      change do
+        Redcar.win.collect_tabs(Redcar::EditTab).each do |tab|
+          tab.view.set_tab_width(Redcar::Preference.get("Editing/Indent size").to_i)
+        end
+      end
     end
 
     preference "Editing/Use spaces instead of tabs" do |p|
       type    :toggle
       default true
+      change do
+        Redcar.win.collect_tabs(Redcar::EditTab).each do |tab|
+          tab.view.set_tab_width(Redcar::Preference.get("Editing/Use spaces instead of tabs").to_bool)
+        end
+      end
     end
 
     preference "Editing/Indent pasted text" do |p|
@@ -48,13 +56,11 @@ module Redcar
       type    :toggle
       default true
       change do
-        Redcar.win.tabs.each do |tab|
-          if tab.is_a? EditTab
-            if Redcar::Preference.get("Editing/Wrap words").to_bool
-              tab.view.wrap_mode = Gtk::TextTag::WRAP_WORD
-            else
-              tab.view.wrap_mode = Gtk::TextTag::WRAP_NONE
-            end
+        Redcar.win.collect_tabs(Redcar::EditTab).each do |tab|
+          if Redcar::Preference.get("Editing/Wrap words").to_bool
+            tab.view.wrap_mode = Gtk::TextTag::WRAP_WORD
+          else
+            tab.view.wrap_mode = Gtk::TextTag::WRAP_NONE
           end
         end
       end

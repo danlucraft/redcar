@@ -1,8 +1,15 @@
 
 module Redcar
   class Document < Gtk::Mate::Buffer
-    extend FreeBASE::StandardPlugin
-
+    # type_register
+    # 
+    # signal_new("grammar_changed",
+    #   GLib::Signal::RUN_FIRST,
+    #   nil,
+    #   nil,
+    #   String
+    # )
+    
     attr_writer :parser, :indenter, :autopairer, :snippet_inserter
     attr_accessor :ignore_marks
 
@@ -170,7 +177,6 @@ module Redcar
       end
       move_mark(selection_mark, iter(minoff))
       move_mark(cursor_mark, iter(maxoff))
-#      @textview.scroll_mark_onscreen(cursor_mark)
     end
 
     def delete_selection
@@ -217,8 +223,8 @@ module Redcar
     end
 
     def delete_line(line_num=cursor_line)
-     delete(line_start(cursor_line),
-       line_end(cursor_line))
+      delete(line_start(cursor_line),
+        line_end(cursor_line))
     end
 
     def indent_line(line_num)
@@ -249,6 +255,24 @@ module Redcar
 
     def insert_as_snippet(text, opts={})
       snippet_inserter.insert_snippet({"content" => text}, opts) if snippet_inserter
+    end
+        
+    def set_grammar_by_name(grammar_name)
+      if super
+        signal_emit("grammar_changed", grammar_name)
+      end
+    end
+    
+    def set_grammar_by_filename(filename)
+      if grammar_name = super
+        signal_emit("grammar_changed", grammar_name)
+      end
+    end
+    
+    def set_grammar_by_first_line(line)
+      if grammar_name = super
+        signal_emit("grammar_changed", grammar_name)
+      end
     end
   end
 end
