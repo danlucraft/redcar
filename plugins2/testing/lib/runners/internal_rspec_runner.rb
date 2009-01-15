@@ -1,26 +1,35 @@
 
 module Redcar::Testing
   class InternalRSpecRunner
-    def self.spec_plugin(plugin_name)
-      puts "speccing plugin name: #{plugin_name}"
-      
-      unless File.exists?(Redcar.PLUGINS_PATH + "/#{plugin_name}/spec")
-        puts "   no specs"
-        return
-      end
-      
+    def self.spec_all_plugins
+      ARGV.clear
       set_redcar_formatter
-      i = 0
-      spec_files(plugin_name).each do |spec_file|
-        i += 1
-        load spec_file
+      puts "speccing all plugins"
+      bus("/plugins").children.each do |slot|
+        load_plugin_files(slot.name)
       end
-      puts "#{i} files"
+      lookup_example_groups.each do |eg|
+        eg.run(Spec::Runner.options)
+      end
+      output_results
+      cleanup_rspec
+    end
+    
+    def self.spec_plugin(plugin_name)
+      set_redcar_formatter
+      puts "speccing plugin name: #{plugin_name}"
+      load_plugin_files(plugin_name)
       
       lookup_example_groups.each do |eg|
-        eg.run
+        eg.run(Spec::Runner.options)
       end
       
+      output_results
+      
+      cleanup_rspec
+    end
+    
+    def self.output_results
       tab = Redcar.win.new_tab(Redcar::TestViewTab)
       tab.title = "RSpec Results"
       results = prepare_results
@@ -28,7 +37,21 @@ module Redcar::Testing
       tab.document.text = results
       tab.modified = false
       tab.focus
-      cleanup_rspec
+    end
+    
+    def self.load_plugin_files(plugin_name)
+      puts "loading files for #{plugin_name}"
+      unless File.exists?(Redcar.PLUGINS_PATH + "/#{plugin_name}/spec")
+        puts "   no specs"
+        return
+      end
+      
+      i = 0
+      spec_files(plugin_name).each do |spec_file|
+        i += 1
+        load spec_file
+      end
+      puts "#{i} files"
     end
 
     def self.plugin_dir(plugin_name)

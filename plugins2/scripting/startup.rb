@@ -121,6 +121,13 @@ elsif ix = Redcar::App.ARGV.index("--spec")
     end
     stop_redcar
   end
+elsif Redcar::App.ARGV.include?("--spec-all")
+  Redcar::Hook.attach(:redcar_start) do
+    begin
+      Redcar::Testing::InternalRSpecRunner.spec_all_plugins
+    end
+    stop_redcar
+  end
 end
 
 

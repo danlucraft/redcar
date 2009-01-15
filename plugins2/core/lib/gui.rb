@@ -17,17 +17,15 @@ module Redcar
     def self.set_main_loop
       bus["/system/ui/messagepump"].set_proc do
         begin
-          @logger.info "starting Gui.main (in thread #{Thread.current})"
+          puts "starting Gui.main (in thread #{Thread.current})"
           Hook.trigger(:redcar_start)
-          Gtk.main
+          Gtk.main_with_queue(100)
         rescue Object => e
           $stderr.puts str=<<ERR
 
 ---------------------------
 Redcar has crashed.
 ---------------------------
-Check #filename for backups of your documents. Redcar will 
-notice these backups and prompt for recovery if you restart.
 
 Please report this error message to the Redcar mailing list, along
 with the actions you were taking at the time:
