@@ -58,6 +58,7 @@ module Redcar
       Dir[File.dirname(__FILE__) + "/lib/*"].each {|f| Kernel.load f}
       Dir[File.dirname(__FILE__) + "/tabs/*"].each {|f| Kernel.load f}
       Kernel.load File.dirname(__FILE__) + "/commands/edit_tab.rb"
+      Kernel.load File.dirname(__FILE__) + "/commands/ruby.rb"
       Dir[File.dirname(__FILE__) + "/commands/*"].each {|f| Kernel.load f}
       Kernel.load File.dirname(__FILE__) + "/widgets/font_chooser_button.rb"
       Kernel.load File.dirname(__FILE__) + "/preferences.rb"

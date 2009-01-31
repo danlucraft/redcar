@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Changing the grammar should reparse the tab
+desc: ""
+type: :bugfix
+component: edit-view
+release: "0.1"
+reporter: Daniel Lucraft <dan@fluentradical.com>
+status: :unstarted
+disposition: 
+creation_time: 2009-01-31 11:15:08.754989 Z
+references: []
+
+id: bde608a89da6b3781362a5e42907de233e347c9a
+log_events: 
+- - 2009-01-31 11:15:09.837748 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - created
+  - ""
