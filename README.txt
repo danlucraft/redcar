@@ -27,7 +27,7 @@ snippets, macros and is highly extensible.
 
 For now, installation is still pretty long-winded. It's a bit easier if you live within Ubuntu's packages.
 
-=== Installing
+=== Installing on Ubuntu 8.04 (Hardy) and 8.10 (Intrepid)
 
 1. First you will need to install Ruby-GNOME2, the build tools and some other necessary libraries. On Ubuntu/Debian you may simply do:
 
@@ -41,7 +41,7 @@ If you are not using Debian/Ubuntu, or have installed Ruby yourself from source,
 
 2. Install the required Ruby gems:
 
-  $ sudo gem install oniguruma activesupport log4r rspec
+  $ sudo gem install oniguruma activesupport log4r rspec cucumber
 
 3. Get the Redcar source.
 
