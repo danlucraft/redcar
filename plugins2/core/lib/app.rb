@@ -24,7 +24,6 @@ module Redcar
                                bus('/redcar/appdata'),
                                Redcar::ROOT + "/custom/appdata.yaml")
       Redcar::App[:execution] = (Redcar::App[:execution]||0) + 1
-      create_logger
     end
     
     # Quits the application. All plugins are stopped first.
@@ -33,17 +32,27 @@ module Redcar
         close_window(w, false)
       end
       unless @gtk_quit
-        @logger.info "system shutdown"
+        log.info "[App] system shutdown"
         bus["/system/shutdown"].call(nil)
         Gtk.main_quit
       end
       @gtk_quit = true
     end
 
+    # Application-wide logger. Plugins may use this for
+    # logging.
+    def self.log
+      if ARGV.include?("--log")
+        @logger ||= Logger.new(Redcar::ROOT + "/redcar.log")
+      else
+        @logger ||= Logger.new(nil)
+      end
+    end
+
     # Creates a new window.
     def self.new_window(focus = true)
       return nil if @window
-      @logger.info "new window"
+      log.info "[App] new window"
       Hook.trigger :open_window do
         @window = Redcar::Window.new
       end

@@ -1,6 +1,5 @@
 
 require 'pp'
-require 'log4r'
 require 'fileutils'
 require 'open3'
 

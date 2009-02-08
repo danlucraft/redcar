@@ -4,7 +4,6 @@ module Redcar
     def self.load #:nodoc:
       @obj_keymaps = Hash.new {|obj,key| obj[key] = [] }
       Hook.register(:keystroke)
-      create_logger
     end
 
     # "Page Up" -> "Page_Up"
@@ -43,7 +42,7 @@ module Redcar
 #      puts "keypress: #{gdk_eventkey}"
       if key = clean_gdk_eventkey(gdk_eventkey)
 #        Hook.trigger :keystroke, key do
-          @logger.debug { "[Red] received key #{key.inspect}" }
+          App.log.debug { "[Keymap] received key #{key.inspect}" }
           execute_key(key, gdk_eventkey)
 #        end
       else
@@ -73,28 +72,28 @@ module Redcar
 #         return false
 #       end
       if coms = bus("/redcar/keymaps/#{key_name}").data
-        @logger.debug "[Red] #{coms.length} candidate commands"
+        App.log.debug "[Keymap] #{coms.length} candidate commands"
         coms = coms.select do |com| 
           if com.is_a? Proc 
             true
           elsif com.ancestors.include? Redcar::Command 
             if com.executable?(Redcar.tab) 
-              @logger.debug { "[Red] command operative: #{com.inspect}" } 
-              @logger.debug { "      operative:  #{com.operative?.inspect}" }
-              @logger.debug { "      in_range:   #{com.in_range?.inspect}" }
-              @logger.debug { "      active:     #{com.active?.inspect}" }
+              App.log.debug { "[Keymap] command operative: #{com.inspect}" } 
+              App.log.debug { "         operative:  #{com.operative?.inspect}" }
+              App.log.debug { "         in_range:   #{com.in_range?.inspect}" }
+              App.log.debug { "         active:     #{com.active?.inspect}" }
               scope = (Redcar.doc.cursor_scope rescue nil)
-              @logger.debug { "      scope:      #{com.correct_scope?(scope)}" }
-              @logger.debug { "      executable: #{com.executable?(Redcar.tab)}" }
+              App.log.debug { "      scope:      #{com.correct_scope?(scope)}" }
+              App.log.debug { "      executable: #{com.executable?(Redcar.tab)}" }
               true
             else
-              @logger.debug { "[Red] command inoperative: #{com.inspect}" } 
-              @logger.debug { "      operative:  #{com.operative?.inspect}" }
-              @logger.debug { "      in_range:   #{com.in_range?.inspect}" }
-              @logger.debug { "      active:     #{com.active?.inspect}" }
+              App.log.debug { "[Keymap] command inoperative: #{com.inspect}" } 
+              App.log.debug { "         operative:  #{com.operative?.inspect}" }
+              App.log.debug { "         in_range:   #{com.in_range?.inspect}" }
+              App.log.debug { "         active:     #{com.active?.inspect}" }
               scope = (Redcar.doc.cursor_scope rescue nil)
-              @logger.debug { "      scope:      #{com.correct_scope?(scope)}" }
-              @logger.debug { "      executable: #{com.executable?(Redcar.tab)}" }
+              App.log.debug { "         scope:      #{com.correct_scope?(scope)}" }
+              App.log.debug { "         executable: #{com.executable?(Redcar.tab)}" }
               false
             end
           end
@@ -109,11 +108,11 @@ module Redcar
         elsif coms.length == 1
           com = coms.first
           if com.is_a? Proc
-            @logger.debug { "[Red] executing arbitrary code" }
+            App.log.debug { "[Keymap] executing arbitrary code" }
             com.call
             true
           elsif com.ancestors.include? Redcar::Command
-            puts "[Red] executing #{com.inspect}"
+            App.log.debug "[Keymap] executing #{com.inspect}"
             if com.pass?
               command_instance = com.new
               command_instance.gdk_event_key = gdk_eventkey
@@ -128,7 +127,7 @@ module Redcar
           end
         end
       else
-        @logger.debug "[Red] no candidate commands"
+        App.log.debug "[Keymap] no candidate commands"
         false
       end
     end

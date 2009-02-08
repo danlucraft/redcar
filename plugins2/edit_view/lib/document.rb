@@ -20,23 +20,6 @@ module Redcar
           CommandHistory.record(InsertTextCommand.new(text))
         end
       end
-            # 
-      # signal_connect("delete_range") do |_, iter1, iter2|
-      #   puts "#{iter1.offset} - #{iter2.offset}"
-      #   unless Document.running_edit_tab_command?
-      #     if [selection_offset, cursor_offset].sort == [iter1.offset, iter2.offset].sort
-      #       CommandHistory.record(DeleteCommand.new)
-      #     elsif (iter1.offset - iter2.offset).abs == 1
-      #       if iter1.offset == cursor_offset
-      #         CommandHistory.record(DeleteCommand.new)
-      #       end
-      #     elsif
-      #       puts "oddly, I just deleted a range that was not the selection:"
-      #       puts "deleted range: #{iter1.offset} - #{iter2.offset}"
-      #       puts "selection:     #{selection_offset} - #{cursor_offset}"
-      #     end
-      #   end
-      # end
     end
 
     # The length of the document in characters.

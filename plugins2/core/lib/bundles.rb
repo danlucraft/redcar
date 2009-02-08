@@ -6,13 +6,8 @@ module Redcar
   class Bundle
     def self.load #:nodoc:
       load_bundles(App.textmate_share_dir+"/Bundles/")
-      create_logger
     end
-    
-    class << self
-      attr_accessor :logger
-    end
-    
+        
     def self.load_bundles(dir) #:nodoc:
       Dir.glob(dir+"*").each do |bdir|
         if bdir =~ /\/([^\/]*)\.tmbundle/
@@ -50,7 +45,7 @@ module Redcar
           when "$"
             [4, "Shift"]
           else
-            Bundle.logger.info "unknown key_equivalent: #{keyeq}"
+            App.log.info "unknown key_equivalent: #{keyeq}"
             return nil
           end
         end

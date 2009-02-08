@@ -7,7 +7,6 @@ module Redcar
   module Gui
     def self.load
       Hook.register(:redcar_start)
-      create_logger
     end
     
     def self.start
