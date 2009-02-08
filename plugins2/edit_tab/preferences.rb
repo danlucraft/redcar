@@ -40,11 +40,6 @@ module Redcar
     preference "Editing/Use spaces instead of tabs" do |p|
       type    :toggle
       default true
-      change do
-        Redcar.win.collect_tabs(Redcar::EditTab).each do |tab|
-          tab.view.set_tab_width(Redcar::Preference.get("Editing/Use spaces instead of tabs").to_bool)
-        end
-      end
     end
 
     preference "Editing/Indent pasted text" do |p|

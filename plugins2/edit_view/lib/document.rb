@@ -17,28 +17,26 @@ module Redcar
     def connect_signals
       signal_connect("insert_text") do |_, iter, text, length|
         unless Document.running_edit_tab_command?
-          puts "unmapped insertion: cursor: #{cursor_offset}, #{iter.offset}, #{text.inspect}, #{length.inspect}"
+          CommandHistory.record(InsertTextCommand.new(text))
         end
       end
-      
-      signal_connect("delete_range") do |_, iter1, iter2|
-        unless Document.running_edit_tab_command?
-          puts "unmapped deletion cursor: #{cursor_offset} selection: #{selection_offset} delete_range: #{iter1.offset} - #{iter2.offset}"
-        end
-      end
-      
-      signal_connect("mark_set") do |_, iter, mark|
-        if mark == cursor_mark
-          unless Document.running_edit_tab_command?
-            puts "missed cursor move: #{iter(mark).offset}, #{iter.offset}"
-          end
-        end
-        if mark == selection_mark
-          unless Document.running_edit_tab_command?
-            puts "missed selection move: #{iter(mark).offset}, #{iter.offset}"
-          end
-        end
-      end
+            # 
+      # signal_connect("delete_range") do |_, iter1, iter2|
+      #   puts "#{iter1.offset} - #{iter2.offset}"
+      #   unless Document.running_edit_tab_command?
+      #     if [selection_offset, cursor_offset].sort == [iter1.offset, iter2.offset].sort
+      #       CommandHistory.record(DeleteCommand.new)
+      #     elsif (iter1.offset - iter2.offset).abs == 1
+      #       if iter1.offset == cursor_offset
+      #         CommandHistory.record(DeleteCommand.new)
+      #       end
+      #     elsif
+      #       puts "oddly, I just deleted a range that was not the selection:"
+      #       puts "deleted range: #{iter1.offset} - #{iter2.offset}"
+      #       puts "selection:     #{selection_offset} - #{cursor_offset}"
+      #     end
+      #   end
+      # end
     end
 
     # The length of the document in characters.

@@ -18,7 +18,12 @@ module Redcar
           begun = true
         end
       end
-      macro.reverse.each(&:do)
+      puts "Running Macro:"
+      macro.reverse.each_with_index do |command_instance, i|
+          puts "  #{i}. #{command_instance}"
+          command_instance.do
+      end
+      puts "  Done"
     end
   end
 end	

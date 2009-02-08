@@ -303,8 +303,11 @@ module Redcar
         @output = nil
         begin
           if self.class.pass?
-            # doc.signal_emit("key-press-event", gdk_event_key)
+            # TODO: think this needs more work. E.g., what happens during 
+            # a macro if someone tries to execute a command? Won't their
+            # event go on top of the event queue and bolsch up the macro?
             gdk_event_key.put
+            Gtk.main_iteration
           else
             @output = self.execute
           end
