@@ -413,6 +413,7 @@ module Redcar
           start_offset, end_offset = *doc.current_scope_range
           doc.select(start_offset, end_offset)
           doc.replace_selection(output_contents)
+          doc.cursor = (start_offset + end_offset)/2
         end
       when :insert_as_text, :insertAsText
         doc.insert_at_cursor(output_contents)
