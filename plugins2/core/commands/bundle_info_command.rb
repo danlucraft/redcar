@@ -8,11 +8,20 @@ module Redcar
     end
     
     def execute
-      puts @bundle.name
-      puts @bundle.info["contactName"]
-      puts (@bundle.info["contactEmailRot13"]||"").tr!("A-Za-z", "N-ZA-Mn-za-m")
-      puts @bundle.info["description"]
-      puts
+      string =<<END
+      Name: #{@bundle.name}
+      Author: #{@bundle.info["contactName"]}
+      Email: #{(@bundle.info["contactEmailRot13"]||"").tr!("A-Za-z", "N-ZA-Mn-za-m")}
+      Description: #{@bundle.info["description"]}
+END
+      dialog = Gtk::MessageDialog.new(Redcar.win,
+        Gtk::Dialog::DESTROY_WITH_PARENT,
+        Gtk::MessageDialog::INFO,
+        Gtk::MessageDialog::BUTTONS_CLOSE,
+        string)
+      dialog.title = "Plugin Information"
+      dialog.run
+      dialog.destroy
     end
   end
 end
