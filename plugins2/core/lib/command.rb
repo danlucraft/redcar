@@ -294,7 +294,7 @@ module Redcar
       Redcar::Command.set_command_running(self)
       begin
         tab = opts[:tab] || (Redcar::App.focussed_window.focussed_tab rescue nil)
-        unless self.respond_to? :execute
+        unless self.respond_to? :execute or self.class.pass?
           raise "Abstract Command Error"
         end 
         if tab
@@ -302,7 +302,12 @@ module Redcar
         end
         @output = nil
         begin
-          @output = self.execute
+          if self.class.pass?
+            # doc.signal_emit("key-press-event", gdk_event_key)
+            gdk_event_key.put
+          else
+            @output = self.execute
+          end
           if opts[:replace_previous]
             CommandHistory.record_and_replace(self)
           else
