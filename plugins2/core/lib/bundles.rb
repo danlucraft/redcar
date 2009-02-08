@@ -163,9 +163,9 @@ module Redcar
       attr_reader :snippet_lookup
     end
     
-    def self.register_snippet_for_lookup(snippet_hash)
+    def self.register_snippet_for_lookup(snippet_hash, snippet_command)
       @snippet_lookup ||= Hash.new {|h, k| h[k] = {}}
-      @snippet_lookup[snippet_hash["scope"]||""][snippet_hash["tabTrigger"]] = snippet_hash
+      @snippet_lookup[snippet_hash["scope"]||""][snippet_hash["tabTrigger"]] = snippet_command
     end
     
     # A array of this bundle's snippets. Snippets are cached 
@@ -246,32 +246,35 @@ module Redcar
       end
     end
     
-    def self.make_redcar_snippets_from_class(klass)
+    def self.make_redcar_snippets_from_class(klass, range)
       start = Time.now
       bundles.each do |bundle|
         bundle.snippets = {}
         bundle.snippet_hashes.each do |uuid, snip|
-          snip["bundle"] = bundle
+          command_class = Class.new(Redcar::SnippetCommand)
+          command_class.range Redcar::Window
+          command_class.name = snip["name"]
+          command_class.content = snip["content"]
+          command_class.bundle = bundle
+          if snip["scope"]
+            command_class.scope(snip["scope"])
+          end
+          command_class.class_eval %Q{
+            def execute
+              tab.view.snippet_inserter.insert_snippet(self.class)
+            end
+          }
+          def command_class.inspect
+            "#<SnippetCommand: #{@name}>"
+          end
+          Bundle.uuid_map[uuid] = command_class
           if snip["tabTrigger"]
-            register_snippet_for_lookup(snip)
-          elsif snip["keyEquivalent"]
+            register_snippet_for_lookup(snip, command_class)
+          end
+          if snip["keyEquivalent"]
             keyb = Redcar::Bundle.translate_key_equivalent(snip["keyEquivalent"])
             if keyb
-              command_class = Class.new(Redcar::SnippetCommand)
-              command_class.instance_variable_set(:@name, snip["name"])
-              if snip["scope"]
-                command_class.scope(snip["scope"])
-              end
               command_class.key(keyb)
-              command_class.class_eval %Q{
-                def execute
-                  tab.view.snippet_inserter.insert_snippet_with_uuid("#{uuid}")
-                end
-              }
-              def command_class.inspect
-                "#<SnippetCommand: #{@name}>"
-              end
-              Bundle.uuid_map[uuid] = command_class
             end
           end
         end
@@ -313,10 +316,21 @@ module Redcar
       puts "made #{i} Commands in #{Time.now - start}s"
     end
     
+    def about_command
+      return @about_command if @about_command
+      @about_command = Class.new(Redcar::Command)
+      @about_command.class_eval %Q{
+        def execute
+          bundle = bus("/redcar/bundles/#{name}/").data 
+          BundleInfoCommand.new(bundle).do
+        end
+      }
+      @about_command.icon :ABOUT
+      @about_command
+    end
+    
     def self.build_bundle_menus
-      # require 'ruby-prof'
       start = Time.now
-      # RubyProf.start
       root_menu_slot = bus['/redcar/menus/menubar/Bundles']
       MenuBuilder.set_menuid(root_menu_slot)
       bundles.sort_by(&:name).each do |bundle|
@@ -324,27 +338,19 @@ module Redcar
         MenuBuilder.set_menuid(bundle_menu_slot)
         about_slot = bundle_menu_slot["About"]
         MenuBuilder.set_menuid(about_slot)
-        about_command = Class.new(Redcar::Command)
-        about_command.class_eval %Q{
-          def execute
-            bundle = bus("/redcar/bundles/#{bundle.name}/").data 
-            BundleInfoCommand.new(bundle).do
-          end
-        }
-        about_command.icon :ABOUT
-        about_slot.data = about_command
+        about_slot.data = bundle.about_command
         about_slot.attr_menu_entry = true
-        build_bundle_menu(bundle_menu_slot, (bundle.info["mainMenu"]||{})["items"]||[], bundle) 
+        build_bundle_menu(bundle_menu_slot, (bundle.info["mainMenu"]||{})["items"]||[], bundle)
       end
-      # result = RubyProf.stop
- #      printer = RubyProf::GraphHtmlPrinter.new(result)
- #      printer.print(STDOUT, :min_percent => 1)
       puts "built bundle menus in #{Time.now - start}s"
     end
-    
+
     def self.build_bundle_menu(menu_slot, uuids, bundle)
       uuids.each do |uuid|
-        if item = uuid_map[uuid]
+        if uuid =~ /^-+$/
+          slot = menu_slot["separator_#{MenuBuilder.menuid}"]
+          MenuBuilder.set_menuid(slot)
+        elsif item = uuid_map[uuid]
           unless item.name and item.name != ""
             next
           end
@@ -353,37 +359,14 @@ module Redcar
           MenuBuilder.set_menuid(item_slot)
           item_slot.data = item
           item_slot.attr_menu_entry = true
+        elsif sub_menu = (bundle.info["mainMenu"]["submenus"]||[])[uuid]
+          item_slot = menu_slot[sub_menu["name"].gsub("/", "\\")]
+          MenuBuilder.set_menuid(item_slot)
+          build_bundle_menu(item_slot, sub_menu["items"], bundle)
         end
       end
     end
       
-    def self.build_bundle_menu_old(binfo, menu_name, menu_hash, commands)
-      menu_hash.each do |uuid|
-        if uuid =~ /---------/
-          menu_separator(menu_name)
-        elsif command = commands[uuid]
-          menu(menu_name+"/"+command['name']) do |mb|
-            mb.command = "Bundles/#{binfo['name']}/#{command['name']}"
-            mb.icon = :EXECUTE
-            mb.keybinding = ""
-          end
-        else
-          submenu_hash = binfo['mainMenu']['submenus'][uuid]
-          if submenu_hash
-            root = bus['/redcar/menus/menubar/'+menu_name+'/'+
-              submenu_hash['name'].gsub("/", " or ")
-            ]
-            Redcar::Menu.set_node_id(root)
-            build_bundle_menu(binfo, 
-                menu_name+"/"+submenu_hash['name'].gsub("/", " or "),
-                submenu_hash['items'],
-                commands
-              )
-          end
-        end
-      end
-    end
-    
     def self.uuid_map
       @uuid_map ||= {}
     end
