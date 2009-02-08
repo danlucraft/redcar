@@ -2,7 +2,6 @@
 
 module Redcar
   class TestingPlugin < Redcar::Plugin
-    
   end
 end
 

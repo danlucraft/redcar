@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Hover over tab should show file path
+desc: ""
+type: :feature
+component: core
+release: "0.1"
+reporter: Daniel Lucraft <dan@fluentradical.com>
+status: :unstarted
+disposition: 
+creation_time: 2009-02-08 10:31:27.892756 Z
+references: []
+
+id: d789aa81bdcaf724098bbe4dc55cd4c3b1aa5d8b
+log_events: 
+- - 2009-02-08 10:31:29.300535 Z
+  - Daniel Lucraft <dan@fluentradical.com>
+  - created
+  - ""

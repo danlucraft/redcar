@@ -1,0 +1,14 @@
+--- !ruby/object:FreeBASE::PluginConfiguration 
+name: macros
+description: Record and play back command macros.
+author: Daniel Lucraft
+version: 1.0
+autoload: true
+require_path: macros/plugin.rb
+startup_module: Redcar::MacrosPlugin
+load_dependencies: 
+  core: "*"
+  edit_tab: "*"
+start_dependencies: 
+  core: "*"
+  edit_tab: "*"

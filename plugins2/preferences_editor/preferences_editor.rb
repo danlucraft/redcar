@@ -7,6 +7,8 @@ module Com::RedcarIDE
     class OpenPreferencesDialog < Redcar::Command
       menu "Edit/Preferences ..."
       icon :PREFERENCES
+      norecord
+      
       def execute
         PreferencesDialog.new.run
       end

@@ -43,7 +43,7 @@ module Redcar
       if key = clean_gdk_eventkey(gdk_eventkey)
 #        Hook.trigger :keystroke, key do
           @logger.debug { "[Red] received key #{key.inspect}" }
-          execute_key(key)
+          execute_key(key, gdk_eventkey)
 #        end
       else
         true 
@@ -67,7 +67,7 @@ module Redcar
     end
 
     # Use to execute a key. key_name should be a string like "Ctrl+G".
-    def self.execute_key(key_name)
+    def self.execute_key(key_name, gdk_eventkey)
 #       if key_name == "Return" # FIXME!
 #         return false
 #       end
@@ -112,9 +112,16 @@ module Redcar
             com.call
             true
           elsif com.ancestors.include? Redcar::Command
-            @logger.debug "[Red] executing #{com.inspect}"
-            com.new.do
-            true
+            puts "[Red] executing #{com.inspect}"
+            if com.pass?
+              command_instance = com.new
+              command_instance.gdk_event_key = gdk_eventkey
+              CommandHistory.record(command_instance)
+              false
+            else
+              com.new.do
+              true
+            end
           else
             false
           end

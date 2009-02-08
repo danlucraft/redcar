@@ -9,6 +9,7 @@ module Redcar
       delegate :[], :to => :history
       delegate :first, :to => :history
       delegate :last, :to => :history
+      delegate :each, :to => :history
     end
     
     self.max       = 500

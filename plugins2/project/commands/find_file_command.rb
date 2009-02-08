@@ -4,6 +4,7 @@ module Redcar
     key "Super+T"
     menu "Project/Find File in Project..."
     sensitive :open_project
+    norecord
 
     def execute
       dialog = FindFileDialog.new

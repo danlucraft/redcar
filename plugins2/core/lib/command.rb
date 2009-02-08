@@ -18,6 +18,16 @@ module Redcar
   class Command
     class << self
       include Redcar::Sensitive
+      attr_reader :running
+    end
+    
+    def self.set_command_running(command)
+      @running ||= []
+      @running << command
+    end
+    
+    def self.set_command_stopped(command)
+      @running.delete(command)
     end
 
     def self.load
@@ -133,6 +143,18 @@ module Redcar
       @norecord
     end
 
+    # If a command 'passes' it does nothing except allow the GTK+ event 
+    # to continue propagating. This is useful when you do not want to reimplement
+    # GTK+ functions (e.g. page up in a TextView) but you do want to record
+    # the functions in the command history.
+    def self.pass
+      @pass = true
+    end
+    
+    def self.pass?
+      @pass
+    end
+
     def self.active=(val)
       @sensitive_active = val
 #      p @name
@@ -242,6 +264,7 @@ module Redcar
     attr :tab,  true
     attr :doc,  true
     attr :view, true
+    attr_accessor :gdk_event_key
 
     def tab
       @__tab
@@ -268,6 +291,7 @@ module Redcar
     end
 
     def do(opts={})
+      Redcar::Command.set_command_running(self)
       begin
         tab = opts[:tab] || (Redcar::App.focussed_window.focussed_tab rescue nil)
         unless self.respond_to? :execute
@@ -294,6 +318,7 @@ module Redcar
         puts e.message
         puts e.backtrace
       end
+      Redcar::Command.set_command_stopped(self)
       @output
     end
 

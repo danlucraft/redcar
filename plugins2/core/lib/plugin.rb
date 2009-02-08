@@ -12,6 +12,18 @@ module Redcar
       raise PluginTransitionException, "Plugin transition aborted"
     end
     
+    def self.lib(fn)
+      Kernel.load File.dirname(caller.first.split(":").first) + "/lib/"+fn+".rb"
+    end
+    
+    def self.command(fn)
+      Kernel.load File.dirname(caller.first.split(":").first) + "/commands/"+fn+".rb"
+    end
+    
+    def self.tab(fn)
+      Kernel.load File.dirname(caller.first.split(":").first) + "/tabs/"+fn+".rb"
+    end
+    
     def self.on_load(&block); @on_load = block; end
     def self.on_start(&block); @on_start = block; end
     def self.on_stop(&block); @on_stop = block; end

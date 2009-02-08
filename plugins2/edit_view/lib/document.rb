@@ -1,17 +1,45 @@
 
 module Redcar
   class Document < Gtk::Mate::Buffer
-    # type_register
-    # 
-    # signal_new("grammar_changed",
-    #   GLib::Signal::RUN_FIRST,
-    #   nil,
-    #   nil,
-    #   String
-    # )
     
     attr_writer :parser, :indenter, :autopairer, :snippet_inserter
     attr_accessor :ignore_marks
+    
+    def initialize
+      super
+      connect_signals
+    end
+
+    def self.running_edit_tab_command?
+      Command.running.find{|c| c.is_a? Redcar::EditTabCommand}
+    end
+
+    def connect_signals
+      signal_connect("insert_text") do |_, iter, text, length|
+        unless Document.running_edit_tab_command?
+          puts "unmapped insertion: cursor: #{cursor_offset}, #{iter.offset}, #{text.inspect}, #{length.inspect}"
+        end
+      end
+      
+      signal_connect("delete_range") do |_, iter1, iter2|
+        unless Document.running_edit_tab_command?
+          puts "unmapped deletion cursor: #{cursor_offset} selection: #{selection_offset} delete_range: #{iter1.offset} - #{iter2.offset}"
+        end
+      end
+      
+      signal_connect("mark_set") do |_, iter, mark|
+        if mark == cursor_mark
+          unless Document.running_edit_tab_command?
+            puts "missed cursor move: #{iter(mark).offset}, #{iter.offset}"
+          end
+        end
+        if mark == selection_mark
+          unless Document.running_edit_tab_command?
+            puts "missed selection move: #{iter(mark).offset}, #{iter.offset}"
+          end
+        end
+      end
+    end
 
     # The length of the document in characters.
     def length
@@ -270,7 +298,7 @@ module Redcar
     end
     
     def set_grammar_by_first_line(line)
-      if grammar_name = super
+      if line and grammar_name = super
         signal_emit("grammar_changed", grammar_name)
       end
     end
