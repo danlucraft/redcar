@@ -43,7 +43,7 @@ module Redcar
     # logging.
     def self.log
       if ARGV.include?("--log")
-        @logger ||= Logger.new(Redcar::ROOT + "/redcar.log")
+        @logger ||= Logger.new(Redcar::ROOT + "/redcar.log.#{$$}")
       else
         @logger ||= Logger.new(nil)
       end

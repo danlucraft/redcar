@@ -20,19 +20,20 @@ module Redcar
       ks = gdk_eventkey.state - Gdk::Window::MOD2_MASK
       ks = ks - Gdk::Window::MOD4_MASK
       key = Gtk::Accelerator.get_label(kv, ks)
+      App.log.debug "[Keymap] received key: #{key.inspect}"
       unless key[-2..-1] == " L" or key[-2..-1] == " R"
         bits = key.split("+")
         ctrl = (bits.include?("Ctrl")  ? 1 : 0)
         alt  = (bits.include?("Alt")   ? 1 : 0)
         supr = (bits.include?("Super") ? 1 : 0)
         letter = clean_letter(bits.last)
-        # shift = (bits.include?("Shift") && letter =~ /^[[:alpha:]]$/ ? 1 : 0)
-        shift = bits.include?("Shift") ? 1 : 0
+        shift = (bits.include?("Shift") && (letter =~ /^[[:alpha:]]$/ or letter.length > 1)? 1 : 0)
         key = "Ctrl+"*ctrl +
           "Super+"*supr +
           "Alt+"*alt +
           "Shift+"*shift +
           letter
+        App.log.debug "[Keymap] clean key: #{key.inspect}"
         key
       end
     end
