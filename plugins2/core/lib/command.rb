@@ -372,11 +372,9 @@ module Redcar
       when :line
         doc.get_line
       when :word
-        if doc.cursor_iter.inside_word?
-          s = doc.cursor_iter.backward_word_start!.offset
-          e = doc.cursor_iter.forward_word_end!.offset
-          doc.text[s..e].rstrip.lstrip
-        end
+        s = doc.cursor_iter.backward_symbol_start!.offset
+        e = doc.cursor_iter.forward_symbol_end!.offset
+        doc.text[s..e].rstrip.lstrip
       when :character
         doc.text[doc.cursor_iter.offset]
       when :scope
@@ -414,7 +412,9 @@ module Redcar
         when :document
           doc.replace output_contents
         when :word
-          doc.text[@s..@e] = output_contents
+          s = doc.cursor_iter.backward_symbol_start!.offset + 1
+          e = doc.cursor_iter.forward_symbol_end!.offset + 1
+          doc.replace_range(s, e, output_contents)
         when :scope
           start_offset, end_offset = *doc.current_scope_range
           doc.select(start_offset, end_offset)

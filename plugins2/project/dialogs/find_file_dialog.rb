@@ -65,6 +65,7 @@ module Redcar
     
     def entry_changed
       @list.clear
+      puts "trying to access destroyed TextEntry from FindFileDialog#68" if @entry.destroyed?
       if @entry.text.length > 0
         fs = FindFileDialog.find_files(@entry.text, ProjectPlugin.tab.directories)
         i = 0

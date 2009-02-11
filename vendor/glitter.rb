@@ -100,12 +100,31 @@ class Gtk::TextIter
   end
   
   def forward_word_end!
-      self.forward_word_end
+    self.forward_word_end
     self
   end
   
   def backward_word_start!
     self.backward_word_start
+    self
+  end
+  
+  def forward_symbol_end!
+    forward_find_char do |ch|
+      s = " "
+      s[0] = ch
+      s !~ /[[:alpha:]]|_/
+    end
+    backward_cursor_position
+    self
+  end
+  
+  def backward_symbol_start!
+    backward_find_char do |ch|
+      s = " "
+      s[0] = ch
+      s !~ /[[:alpha:]]|_/
+    end
     self
   end
 end

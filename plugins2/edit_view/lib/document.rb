@@ -231,6 +231,13 @@ module Redcar
       select(startsel, endsel)
     end
 
+    def replace_range(start, finish, text)
+      pre_cursor_offset = cursor_offset
+      delete(iter(start), iter(finish))
+      insert(iter(start), text)
+      place_cursor(iter(pre_cursor_offset))
+    end
+
     def delete_line(line_num=cursor_line)
       delete(line_start(cursor_line),
         line_end(cursor_line))
