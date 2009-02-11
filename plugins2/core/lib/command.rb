@@ -407,7 +407,7 @@ module Redcar
         doc.replace_line(output_contents)
       when :replace_selected_text, :replaceSelectedText
         case valid_input_type
-        when :selected_text, :selectedText
+        when :selected_text, :selectedText, :selection
           doc.replace_selection(output_contents)
         when :line
           doc.replace_line(output_contents)
