@@ -193,8 +193,12 @@ class Redcar::EditView
     end
 
     def insert_snippet(snippet, opts={})
+      insert_snippet1(snippet.content.dup, snippet.bundle, opts)
+    end
+    
+    def insert_snippet1(content, bundle, opts={})
       @in_snippet = true
-      @content = snippet.content.dup
+      @content = content
       @insert_line_num = @buf.cursor_line
       @tab_stops = {}
       @mirrors = {}
@@ -205,7 +209,7 @@ class Redcar::EditView
       @order_id = 0
       @stop_id = 0
       Redcar::App.set_environment_variables
-      @content = execute_backticks(@content, snippet.bundle ? snippet.bundle.dir : nil)
+      @content = execute_backticks(@content, bundle ? bundle.dir : nil)
       @buf.delete_selection
       @buf.parser.stop_parsing
       @buf.autopairer.ignore do

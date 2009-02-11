@@ -40,6 +40,25 @@ module Redcar
         gtk_combo_box.show
       end
     end
+    
+    # Creates all the keybindings for changing grammars. E.g Ctrl+Alt+R for Ruby
+    def self.create_grammar_key_bindings
+      grammars = Gtk::Mate::Buffer.bundles.map{|b| b.grammars}.flatten
+      grammars.each do |grammar|
+        redcar_key = Bundle.translate_key_equivalent(grammar.key_equivalent)
+        command_class = Class.new(Redcar::EditTabCommand)
+        command_class.range Redcar::EditTab
+        command_class.key   redcar_key
+        command_class.name = grammar.name
+        command_class.class_eval %Q{
+          def execute
+            puts "setting grammar #{grammar.name}"
+            tab.view.buffer.set_grammar_by_name(#{grammar.name.inspect})
+            tab.view.set_theme_by_name(Redcar::Preference.get("Appearance/Tab Theme"))
+          end
+        }
+      end
+    end
 
     # Gets the grammar combo box
     def self.gtk_grammar_combo_box

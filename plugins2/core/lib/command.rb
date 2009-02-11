@@ -19,6 +19,7 @@ module Redcar
     class << self
       include Redcar::Sensitive
       attr_reader :running
+      attr_writer :name
     end
     
     def self.set_command_running(command)
@@ -52,6 +53,11 @@ module Redcar
 
     def self.child_commands
       @child_commands || []
+    end
+    
+    def self.name
+      return @name if @name
+      to_s
     end
 
     INPUTS = [

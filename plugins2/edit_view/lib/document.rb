@@ -263,7 +263,7 @@ module Redcar
     end
 
     def insert_as_snippet(text, opts={})
-      snippet_inserter.insert_snippet({"content" => text}, opts) if snippet_inserter
+      snippet_inserter.insert_snippet1(text, nil, opts) if snippet_inserter
     end
         
     def set_grammar_by_name(grammar_name)

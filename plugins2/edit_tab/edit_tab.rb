@@ -28,6 +28,7 @@ module Redcar
       
       Hook.attach :after_open_window do
         Redcar::EditTab.create_grammar_combo
+        Redcar::EditTab.create_grammar_key_bindings
         Redcar::EditTab.create_line_col_status
       end
 

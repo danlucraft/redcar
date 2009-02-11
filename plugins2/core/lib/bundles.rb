@@ -330,7 +330,9 @@ module Redcar
     end
     
     def self.build_bundle_menus
+      # require 'ruby-prof'
       start = Time.now
+      # RubyProf.start
       root_menu_slot = bus['/redcar/menus/menubar/Bundles']
       MenuBuilder.set_menuid(root_menu_slot)
       bundles.sort_by(&:name).each do |bundle|
@@ -342,6 +344,9 @@ module Redcar
         about_slot.attr_menu_entry = true
         build_bundle_menu(bundle_menu_slot, (bundle.info["mainMenu"]||{})["items"]||[], bundle)
       end
+      # result = RubyProf.stop
+      # printer = RubyProf::GraphHtmlPrinter.new(result)
+      # printer.print(STDOUT, :min_percent => 1)
       puts "built bundle menus in #{Time.now - start}s"
     end
 
