@@ -41,7 +41,7 @@ If you are not using Debian/Ubuntu, or have installed Ruby yourself from source,
 
 2. Install the required Ruby gems:
 
-  $ sudo gem install oniguruma activesupport rspec cucumber hoe
+  $ sudo gem install oniguruma activesupport rspec cucumber hoe open4
 
 3. Get the Redcar source.
 

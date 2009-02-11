@@ -383,6 +383,8 @@ module Redcar
         if start_offset
           doc.text[start_offset...end_offset]
         end
+      when :none
+        nil
       else
         raise "Unknown input type: #{type.inspect}"
       end
@@ -397,6 +399,19 @@ module Redcar
     end
 
     def direct_output(type, output_contents)
+      if @status and @status >= 200 and @status <= 207
+        type_map = {
+          200 => :discard,
+          201 => :replace_selected_text,
+          202 => :replace_document,
+          203 => :insert_as_text,
+          204 => :insert_as_snippet,
+          205 => :show_as_html,
+          206 => :show_as_tool_tip,
+          207 => :create_new_document
+        }
+        type = type_map[@status]
+      end
       puts "direct_output(#{type.inspect})"
       case type
       when :replace_document, :replaceDocument
@@ -429,7 +444,7 @@ module Redcar
       when :show_as_tool_tip, :show_as_tooltip, :showAsTooltip
         view.tooltip_at_cursor(output_contents)
       when :after_selected_text, :afterSelectedText
-        if doc.selected?
+        if doc.selection?
           s, e = doc.selection_bounds
         else
           e = doc.cursor_offset
@@ -474,6 +489,7 @@ module Redcar
             doc.insert(doc.line_start(doc.cursor_line+1), output_contents)
           end
         end
+      when :discard
       else
         raise "Unknown output type: #{type.inspect}"
       end
@@ -521,16 +537,20 @@ module Redcar
       attr_accessor(:tm_uuid, :bundle, :shell_script, :name)
     end
 
+    def clean_script(shell_script)
+      shell_script.gsub("#!/usr/bin/env ruby -wKU", "#!/usr/bin/env ruby")
+    end
+
     def execute
       if current_scope = Redcar.doc.cursor_scope
         puts "current_scope #{current_scope.name}"
         puts "current_pattern #{current_scope.pattern.name}"
         App.set_environment_variables(Bundle.find_bundle_with_grammar(current_scope.pattern.grammar))
       end
-      File.open("cache/tmp.command", "w") {|f| f.puts shell_script}
+      File.open("cache/tmp.command", "w") {|f| f.puts clean_script(shell_script)}
       File.chmod(0770, "cache/tmp.command")
       output, error = nil, nil
-      Open3.popen3(shell_command) do |stdin, stdout, stderr|
+      status = Open4.popen4(shell_command) do |pid, stdin, stdout, stderr|
         stdin.write(this_input = input)
         puts "input: #{this_input.inspect}"
         stdin.close
@@ -538,6 +558,8 @@ module Redcar
         puts "output: #{output.inspect}"
         error = stderr.read
       end
+      @status = status.exitstatus
+      puts "command status: #{status.exitstatus}"
       unless error.blank?
         puts "shell command failed with error:"
         puts error
