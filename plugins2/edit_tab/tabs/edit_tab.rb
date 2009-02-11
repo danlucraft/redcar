@@ -46,6 +46,7 @@ module Redcar
       grammars = Gtk::Mate::Buffer.bundles.map{|b| b.grammars}.flatten
       grammars.each do |grammar|
         redcar_key = Bundle.translate_key_equivalent(grammar.key_equivalent)
+        next unless redcar_key
         command_class = Class.new(Redcar::EditTabCommand)
         command_class.range Redcar::EditTab
         command_class.key   redcar_key
