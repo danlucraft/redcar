@@ -66,15 +66,17 @@ module Redcar
         ks = gdk_eventkey.state - Gdk::Window::MOD2_MASK
         ks = ks - Gdk::Window::MOD4_MASK
         key = Gtk::Accelerator.get_label(kv, ks)
-        if entry = entries[key.to_i-1]
-          command = entry[2]
-          gtk_menu.popdown
-          begin
-            command.new.do
-          rescue Object => e
-            puts e
-            puts e.message
-            puts e.backtrace
+        if key =~ /^\d$/
+          if entry = entries[key.to_i-1]
+            command = entry[2]
+            gtk_menu.popdown
+            begin
+              command.new.do
+            rescue Object => e
+              puts e
+              puts e.message
+              puts e.backtrace
+            end
           end
         end
         false
