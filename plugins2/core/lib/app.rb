@@ -125,7 +125,7 @@ module Redcar
       @env_variables ||= []
       @env_variables.each {|name| ENV[name] = nil}
 
-      ENV['RUBYLIB'] = (ENV['RUBYLIB']||"")+":textmate/Support/lib"
+      ENV['RUBYLIB'] = (ENV['RUBYLIB']||"")+":#{textmate_share_dir}/Support/lib"
       ENV['TM_RUBY'] = "/usr/local/bin/ruby"
       
       if bundle
