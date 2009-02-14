@@ -450,11 +450,11 @@ module Redcar
           e = doc.cursor_offset
         end
         doc.insert(e, output_contents)
-      when :create_new_document, :createNewDocument
+      when :create_new_document, :createNewDocument, :open_as_new_document
         # TODO: fix this hardcoded reference
-        new_tab = Redcar.current_pane.new_tab(Redcar::EditTab)
-        new_tab.name = "output: " + @name
-        new_tab.doc.replace output_contents
+        new_tab = Redcar.win.new_tab(Redcar::EditTab)
+        new_tab.document.set_grammar_by_name(doc.parser.grammar.name)
+        new_tab.document.text = output_contents
         new_tab.focus
       when :replace_input, :replaceInput
         case valid_input_type

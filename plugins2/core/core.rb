@@ -8,6 +8,7 @@ load File.dirname(__FILE__) + '/lib/preference.rb'
 load File.dirname(__FILE__) + '/lib/menu.rb'
 load File.dirname(__FILE__) + '/lib/sensitive.rb'
 load File.dirname(__FILE__) + '/lib/keymap.rb'
+load File.dirname(__FILE__) + '/lib/command.rb'
 
 Dir[File.dirname(__FILE__) + "/lib/*"].each {|fn| load fn}
 
