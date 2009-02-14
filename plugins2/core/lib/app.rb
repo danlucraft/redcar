@@ -150,6 +150,7 @@ module Redcar
       end
       ENV['TM_SOFT_TABS'] = "YES"
       ENV['TM_SUPPORT_PATH'] = textmate_share_dir + "/Support"
+      ENV['BASH_ENV'] = "#{App.textmate_share_dir}/Support/lib/bash_init.sh"
       ENV['TM_TAB_SIZE'] = "2"
       if bundle
         bundle.preferences.each do |name, prefs|
