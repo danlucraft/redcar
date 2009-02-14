@@ -46,7 +46,7 @@ module Redcar
 
     def setup_bookmark_assets
       @@bookmark_pixbuf ||= Gdk::Pixbuf.new(Redcar::ROOT+
-                                            '/plugins/redcar_core/icons/bookmark.png')
+                                            '/plugins/edit_view/icons/bookmark.png')
 #      set_marker_pixbuf("bookmark", @@bookmark_pixbuf)
     end
 

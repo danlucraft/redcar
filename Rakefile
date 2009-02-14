@@ -35,7 +35,7 @@ end
 task :coredoc2 do
   FileUtils.rm_rf "doc"
   FileUtils.mkdir "tmpfordoc"
-  Dir["plugins2/core/*"].each do |fn|
+  Dir["plugins/core/*"].each do |fn|
     if File.file? fn
       FileUtils.cp fn, "tmpfordoc/"+fn.split("/").last
     end
@@ -46,7 +46,7 @@ end
 
 task :coredoc do
   FileUtils.rm_rf "doc"
-  files = Dir["plugins2/core/lib/*"].select{|f| File.file? f}
+  files = Dir["plugins/core/lib/*"].select{|f| File.file? f}
   sh "rdoc -T jamis #{files.join(" ")} README.txt"
 end
 

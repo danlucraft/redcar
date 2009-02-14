@@ -56,7 +56,7 @@ If you are not using Debian/Ubuntu, or have installed Ruby yourself from source,
   $ sudo make install
 
 5. Checkout the GtkMateView extension:
-  $ cd REDCAR_PATH/plugins2/edit_view/
+  $ cd REDCAR_PATH/plugins/edit_view/
   $ git clone git://github.com/danlucraft/gtkmateview.git
   $ cd gtkmateview/dist
   $ ruby extconf.rb

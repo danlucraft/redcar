@@ -23,7 +23,7 @@ describe Redcar::FindFileDialog do
 
   describe ".find_files" do
     before(:each) do
-      @fs = Redcar::FindFileDialog.find_files("spc", Redcar::ROOT + "/plugins2/project/")
+      @fs = Redcar::FindFileDialog.find_files("spc", Redcar::ROOT + "/plugins/project/")
       @names = @fs.map {|fn| fn.split("/").last }
     end
 
