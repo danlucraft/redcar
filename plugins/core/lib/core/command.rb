@@ -418,7 +418,7 @@ module Redcar
       puts "direct_output(#{type.inspect})"
       case type
       when :replace_document, :replaceDocument
-        doc.replace output_contents
+        doc.text = output_contents
       when :replace_line, :replaceLine
         doc.replace_line(output_contents)
       when :replace_selected_text, :replaceSelectedText
@@ -428,7 +428,7 @@ module Redcar
         when :line
           doc.replace_line(output_contents)
         when :document
-          doc.replace output_contents
+          doc.text = output_contents
         when :word
           s = doc.cursor_iter.backward_symbol_start!.offset + 1
           e = doc.cursor_iter.forward_symbol_end!.offset + 1
@@ -466,7 +466,7 @@ module Redcar
         when :line
           doc.replace_line(output_contents)
         when :document
-          doc.replace output_contents
+          doc.text = output_contents
         when :word
           doc.text[@s..@e] = output_contents
         when :scope
@@ -505,9 +505,11 @@ module Redcar
       when :line
         doc.delete_line
       when :document
-        doc.replace ""
+        doc.text = ""
       when :word
-        doc.text[@s..@e] = ""
+        s = doc.cursor_iter.backward_symbol_start!.offset + 1
+        e = doc.cursor_iter.forward_symbol_end!.offset + 1
+        doc.replace_range(s, e, "")
       when :scope
         start_offset, end_offset = *doc.current_scope_range
         doc.text[start_offset..end_offset] = ""
