@@ -246,37 +246,41 @@ module Redcar
       end
     end
     
+    def self.create_snippet_command(snip, bundle)
+      command_class = Class.new(Redcar::SnippetCommand)
+      command_class.range Redcar::Window
+      command_class.name = snip["name"]
+      command_class.content = snip["content"]
+      command_class.bundle = bundle
+      if snip["scope"]
+        command_class.scope(snip["scope"])
+      end
+      command_class.class_eval %Q{
+        def execute
+          tab.view.snippet_inserter.insert_snippet(self.class)
+        end
+      }
+      def command_class.inspect
+        "#<SnippetCommand: #{@name}>"
+      end
+      if snip["tabTrigger"]
+        register_snippet_for_lookup(snip, command_class)
+      end
+      if snip["keyEquivalent"]
+        keyb = Redcar::Bundle.translate_key_equivalent(snip["keyEquivalent"])
+        if keyb
+          command_class.key(keyb)
+        end
+      end
+      command_class
+    end
+    
     def self.make_redcar_snippets_from_class(klass, range)
       start = Time.now
       bundles.each do |bundle|
         bundle.snippets = {}
         bundle.snippet_hashes.each do |uuid, snip|
-          command_class = Class.new(Redcar::SnippetCommand)
-          command_class.range Redcar::Window
-          command_class.name = snip["name"]
-          command_class.content = snip["content"]
-          command_class.bundle = bundle
-          if snip["scope"]
-            command_class.scope(snip["scope"])
-          end
-          command_class.class_eval %Q{
-            def execute
-              tab.view.snippet_inserter.insert_snippet(self.class)
-            end
-          }
-          def command_class.inspect
-            "#<SnippetCommand: #{@name}>"
-          end
-          Bundle.uuid_map[uuid] = command_class
-          if snip["tabTrigger"]
-            register_snippet_for_lookup(snip, command_class)
-          end
-          if snip["keyEquivalent"]
-            keyb = Redcar::Bundle.translate_key_equivalent(snip["keyEquivalent"])
-            if keyb
-              command_class.key(keyb)
-            end
-          end
+          Bundle.uuid_map[uuid] = create_snippet_command(snip, bundle)
         end
       end
       puts "loaded snippet objects in #{Time.now - start}s"

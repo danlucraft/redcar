@@ -18,8 +18,11 @@ module Redcar
   class Command
     class << self
       include Redcar::Sensitive
-      attr_reader :running
       attr_writer :name
+    end
+    
+    def self.running
+      @running ||= []
     end
     
     def self.set_command_running(command)

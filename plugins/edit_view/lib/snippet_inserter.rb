@@ -12,7 +12,8 @@ class Redcar::EditView
     end
 
     def self.register(scope, tab_trigger, content, bundle="Ruby")
-      Redcar::Bundle.snippet_lookup[scope][tab_trigger] = {"content" => content, "bundle" => Redcar::Bundle.get(bundle)}
+      snippet = Redcar::Bundle.create_snippet_command({"content" => content}, Redcar::Bundle.get(bundle))
+      Redcar::Bundle.snippet_lookup[scope][tab_trigger] = snippet
     end
 
     def self.snippets_for_scope(scope)
