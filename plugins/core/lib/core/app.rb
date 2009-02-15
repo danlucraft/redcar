@@ -133,7 +133,9 @@ module Redcar
       end
       
       if Redcar.tab and Redcar.tab.class.to_s == "Redcar::EditTab"
-        ENV['TM_CURRENT_LINE'] = Redcar.doc.get_line
+        line = Redcar.doc.get_line
+        line = line[0..-2] if line[-1..-1] == "\n"
+        ENV['TM_CURRENT_LINE'] = line
         ENV['TM_LINE_INDEX'] = Redcar.doc.cursor_line_offset.to_s
         ENV['TM_LINE_NUMBER'] = (Redcar.doc.cursor_line+1).to_s
         if Redcar.doc.selection?
