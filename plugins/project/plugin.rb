@@ -35,12 +35,14 @@ module Redcar
             end
           end
         end
-        if files.any? or directories.any?
+        if directories.any?
           Redcar::SplitHorizontal.new.do
           tab = Redcar::OpenProject.new.do
           directories.each do |dir|
             tab.add_directory(dir.split("/").last, dir)
           end
+        end
+        if files.any?
           files.each do |fn|
             Redcar::OpenTab.new(fn).do
           end
