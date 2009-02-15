@@ -5,7 +5,9 @@ module Redcar
     icon  :NEW
     
     def execute
-      win.new_tab(EditTab).focus
+      tab = win.new_tab(EditTab)
+      tab.focus
+      tab
     end
   end
 end

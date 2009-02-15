@@ -23,30 +23,46 @@ module Redcar
       Kernel.load File.dirname(__FILE__) + "/dialogs/find_file_dialog.rb"
     end
     
+    def self.open_files_and_projects
+      files, directories = [], []
+      Redcar::App.ARGV.each do |arg|
+        if File.exist?(arg)
+          if File.file?(arg)
+            files << File.expand_path(arg)
+          elsif File.directory?(arg)
+            directories << File.expand_path(arg)
+          end
+        end
+      end
+      if directories.any?
+        Redcar::SplitHorizontal.new.do
+        tab = Redcar::OpenProject.new.do
+        directories.each do |dir|
+          tab.add_directory(dir.split("/").last, dir)
+        end
+      end
+      if files.any?
+        files.each do |fn|
+          Redcar::OpenTab.new(fn).do
+        end
+      end
+    end
+    
+    def self.open_stdin
+      puts "isatty: #{STDIN.isatty}"
+      if STDIN.isatty == false
+        tab = Redcar::NewTab.new.do
+        tab.title = "Input"
+        tab.document.text = STDIN.read
+        tab.modified = false
+        tab.focus
+      end
+    end
+    
     on_start do
       Hook.attach(:redcar_start) do
-        files, directories = [], []
-        Redcar::App.ARGV.each do |arg|
-          if File.exist?(arg)
-            if File.file?(arg)
-              files << File.expand_path(arg)
-            elsif File.directory?(arg)
-              directories << File.expand_path(arg)
-            end
-          end
-        end
-        if directories.any?
-          Redcar::SplitHorizontal.new.do
-          tab = Redcar::OpenProject.new.do
-          directories.each do |dir|
-            tab.add_directory(dir.split("/").last, dir)
-          end
-        end
-        if files.any?
-          files.each do |fn|
-            Redcar::OpenTab.new(fn).do
-          end
-        end
+        open_files_and_projects
+        open_stdin
       end
     end
   end
