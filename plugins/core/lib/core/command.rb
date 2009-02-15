@@ -379,7 +379,7 @@ module Redcar
         e = doc.cursor_iter.forward_symbol_end!.offset
         doc.text[s..e].rstrip.lstrip
       when :character
-        doc.text[doc.cursor_iter.offset]
+        doc.text[doc.cursor_iter.offset..doc.cursor_iter.offset]
       when :scope
         start_offset, end_offset = *doc.current_scope_range
         puts "scope_range: #{start_offset}, #{end_offset}"
@@ -438,6 +438,8 @@ module Redcar
           doc.select(start_offset, end_offset)
           doc.replace_selection(output_contents)
           doc.cursor = (start_offset + end_offset)/2
+        when :character
+          doc.replace_range(doc.cursor_iter.offset, doc.cursor_iter.offset+1, output_contents)
         end
       when :insert_as_text, :insertAsText
         doc.insert_at_cursor(output_contents)
