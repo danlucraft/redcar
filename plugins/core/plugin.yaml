@@ -4,5 +4,5 @@ description: Redcar core libraries
 version: 1.0
 author: Daniel Lucraft
 autoload: true
-require_path: core/core.rb
+require_path: core/lib/core.rb
 startup_module: Redcar::CorePlugin
