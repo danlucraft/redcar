@@ -88,6 +88,7 @@ module Redcar
       @gtk_notebook.set_tab_reorderable(tab.gtk_nb_widget, true)
       @gtk_notebook.set_tab_detachable(tab.gtk_nb_widget, true)
       @gtk_notebook.show_all
+      @gtk_notebook.set_menu_label(tab.gtk_nb_widget, tab.menu_label)
       tab.pane = self
     end
 
@@ -106,16 +107,17 @@ module Redcar
       @gtk_notebook = Gtk::Notebook.new
       @gtk_notebook.set_group_id 0
       @gtk_notebook.homogeneous = false
-#      @gtk_notebook.enable_popup = true
+      @gtk_notebook.scrollable = true
+      @gtk_notebook.enable_popup = true
     end
 
     def connect_notebook_signals
-      @gtk_notebook.signal_connect("button_press_event") do |gtk_widget, gtk_event|
-        gtk_widget.grab_focus
-        if gtk_event.kind_of? Gdk::EventButton and gtk_event.button == 3
-          bus('/redcar/services/context_menu_popup').call("Pane", gtk_event.button, gtk_event.time)
-        end
-      end
+      # @gtk_notebook.signal_connect("button_press_event") do |gtk_widget, gtk_event|
+      #   gtk_widget.grab_focus
+      #   if gtk_event.kind_of? Gdk::EventButton and gtk_event.button == 3
+      #     bus('/redcar/services/context_menu_popup').call("Pane", gtk_event.button, gtk_event.time)
+      #   end
+      # end
       @gtk_notebook.signal_connect("page-added") do |nb, gtk_widget, _, _|
         tab = Tab.widget_to_tab[gtk_widget]
         tab.label_angle = @label_angle

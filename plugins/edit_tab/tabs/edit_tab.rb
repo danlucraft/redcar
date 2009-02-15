@@ -95,9 +95,9 @@ module Redcar
       old = @modified
       @modified = val
       if val and !old
-        self.label.text += "*"
+        self.title += "*"
       elsif !val and old
-        self.label.text = self.label.text.gsub(/\*$/, "")
+        self.title = self.label.text.gsub(/\*$/, "")
       end
     end
     
@@ -137,7 +137,7 @@ module Redcar
         document.begin_not_undoable_action
         document.text = newtext
         document.end_not_undoable_action
-        label.text = filename.split(/\//).last
+        self.title = filename.split(/\//).last
         document.cursor = 0
         @filename = filename
         @modified = false
