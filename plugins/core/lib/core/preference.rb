@@ -61,8 +61,8 @@ module Redcar
       FreeBASE::Properties.new("Redcar Preferences", 
                                Redcar::VERSION, 
                                bus('/redcar/preferences'), 
-                               Redcar::ROOT + "/custom/preferences.yaml")
-    end
+                               App.home_dot_dir + "/preferences.yaml")
+                            end
     
     # Get the value of the preference with the given name. Always 
     # returns a String.

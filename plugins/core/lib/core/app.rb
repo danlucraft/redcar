@@ -16,13 +16,19 @@ module Redcar
       end
     end
     
+    def self.home_dot_dir
+      dir = File.expand_path("~/.redcar/")
+      FileUtils.mkdir(dir) unless File.exist?(dir)
+      dir
+    end
+    
     def self.load
       Hook.register :open_window
       Hook.register :close_window
       FreeBASE::Properties.new("Redcar Application Data",
                                Redcar::VERSION,
                                bus('/redcar/appdata'),
-                               Redcar::ROOT + "/custom/appdata.yaml")
+                               home_dot_dir + "/appdata.yaml")
       Redcar::App[:execution] = (Redcar::App[:execution]||0) + 1
     end
     

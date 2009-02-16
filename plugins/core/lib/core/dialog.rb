@@ -175,7 +175,7 @@ module Redcar
       App.log.debug "[Core/Dialog] FileChooserDialog:"
       App.log.debug "[Core/Dialog]  " + Thread.current.inspect
       App.log.debug "[Core/Dialog]  " + win.inspect
-      App.log.debug "[Core/Dialog]  " + Redcar::App[:last_dir_opened]
+      App.log.debug "[Core/Dialog]  " + Redcar::App[:last_dir_opened].to_s
       dialog = Gtk::FileChooserDialog.new("Open",
                                           win,
                                           Gtk::FileChooser::ACTION_OPEN,
