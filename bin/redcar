@@ -1,5 +1,19 @@
 #!/usr/bin/env ruby
 
+puts "isatty: #{STDIN.isatty}"
+if STDIN.isatty == false
+  $stdin_contents = ""
+  until STDIN.eof?
+    $stdin_contents << STDIN.read
+  end
+  p $stdin_contents
+  if pid = fork
+    puts "detaching child"
+    Process.detach(pid)
+    exit!(0)
+  end
+end
+
 HERE = File.dirname(__FILE__)
 
 # See if a code base was passed as an argument. If not

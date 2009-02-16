@@ -49,11 +49,10 @@ module Redcar
     end
     
     def self.open_stdin
-      puts "isatty: #{STDIN.isatty}"
-      if STDIN.isatty == false
+      if $stdin_contents
         tab = Redcar::NewTab.new.do
         tab.title = "Input"
-        tab.document.text = STDIN.read
+        tab.document.text = $stdin_contents
         tab.modified = false
         tab.focus
       end
