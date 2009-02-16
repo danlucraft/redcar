@@ -24,23 +24,27 @@ module Redcar
     
     def connect_signals
       @entry.signal_connect("key-press-event") do |_, gdk_eventkey|
-        entry_key_press(gdk_eventkey)
+        entry_key_press(gdk_eventkey) unless @entry.destroyed?
+        false
       end
       
       @entry.signal_connect("changed") do 
-        @entry_changed_time = Time.now
-        unless @entry_changed
-          @entry_changed = true
-          Gtk.idle_add_priority(GLib::PRIORITY_LOW) do
-            if Time.now > @entry_changed_time + 0.2
-              @entry_changed = false
-              entry_changed
-              false
-            else
-              true
+        unless @entry.destroyed?
+          @entry_changed_time = Time.now
+          unless @entry_changed
+            @entry_changed = true
+            Gtk.idle_add_priority(GLib::PRIORITY_LOW) do
+              if Time.now > @entry_changed_time + 0.2
+                @entry_changed = false
+                entry_changed
+                false
+              else
+                true
+              end
             end
           end
         end
+        false
       end
     end
     
@@ -65,7 +69,6 @@ module Redcar
     
     def entry_changed
       @list.clear
-      puts "trying to access destroyed TextEntry from FindFileDialog#68" if @entry.destroyed?
       if @entry.text.length > 0
         fs = FindFileDialog.find_files(@entry.text, ProjectPlugin.tab.directories)
         i = 0
