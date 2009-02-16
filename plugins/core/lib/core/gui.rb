@@ -16,7 +16,7 @@ module Redcar
     def self.set_main_loop
       bus["/system/ui/messagepump"].set_proc do
         begin
-          puts "starting Gui.main (in thread #{Thread.current})"
+          App.log.info "starting Gui.main (in thread #{Thread.current})"
           Hook.trigger(:redcar_start)
           Gtk.main_with_queue(100)
         rescue Object => e

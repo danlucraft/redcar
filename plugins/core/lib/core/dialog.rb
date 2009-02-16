@@ -172,6 +172,10 @@ module Redcar
     end
     
     def self.open(win)
+      App.log.debug "[Core/Dialog] FileChooserDialog:"
+      App.log.debug "[Core/Dialog]  " + Thread.current.inspect
+      App.log.debug "[Core/Dialog]  " + win.inspect
+      App.log.debug "[Core/Dialog]  " + Redcar::App[:last_dir_opened]
       dialog = Gtk::FileChooserDialog.new("Open",
                                           win,
                                           Gtk::FileChooser::ACTION_OPEN,
@@ -181,10 +185,12 @@ module Redcar
       if Redcar::App[:last_dir_opened]
         dialog.current_folder = Redcar::App[:last_dir_opened]
       end
+      App.log.debug "[Core/Dialog]  " + dialog.inspect
+      App.log.debug "[Core/Dialog]  " + dialog.destroyed?.to_s
       filename = nil
       if dialog.run == Gtk::Dialog::RESPONSE_ACCEPT
         filename = dialog.filename
-        Redcar::App[:last_dir_opened] = "/" + filename.split("/")[0..-2].join("/")
+        Redcar::App[:last_dir_opened] = filename.split("/")[0..-2].join("/")
       end
       dialog.destroy
       filename
