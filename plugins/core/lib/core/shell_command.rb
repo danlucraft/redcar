@@ -24,9 +24,11 @@ module Redcar
         stdin.write(this_input = input)
         puts "input: #{this_input.inspect}"
         stdin.close
-        output = stdout.read
+        until stdout.eof?
+          output = stdout.read
+        end
         puts "output: #{output.inspect}"
-        error = stderr.read
+        # error = stderr.read
       end
       @status = status.exitstatus
       puts "command status: #{status.exitstatus}"

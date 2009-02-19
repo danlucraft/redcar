@@ -349,7 +349,7 @@ module Redcar
       if primary_input
         self.class.get(:input)
       else
-        self.class.get(:fallback_input)
+        self.class.get(:fallback_input) || :document
       end
     end
 
@@ -359,9 +359,9 @@ module Redcar
       input == "" ? nil : input
     end
 
+    # Gets the fallback input. Default is :document
     def secondary_input
-      type = self.class.get(:fallback_input)
-      return nil unless type
+      type = self.class.get(:fallback_input) || :document
       input_by_type(type)
     end
 

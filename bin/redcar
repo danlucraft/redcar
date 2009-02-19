@@ -1,16 +1,18 @@
 #!/usr/bin/env ruby
 
-puts "isatty: #{STDIN.isatty}"
-if STDIN.isatty == false
+if STDIN.isatty == false and ARGV.include?("-d")
   $stdin_contents = ""
   until STDIN.eof?
     $stdin_contents << STDIN.read
   end
-  p $stdin_contents
+  STDIN.close
+  STDOUT.close
+  STDERR.close
+  $stdout = File.open("/dev/null", "w")
+  $stderr = $stdout
   if pid = fork
-    puts "detaching child"
     Process.detach(pid)
-    exit!(0)
+    exit(0)
   end
 end
 

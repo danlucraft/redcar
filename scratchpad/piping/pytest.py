@@ -1,6 +1,6 @@
 import sys, os, re, traceback
 pattern = re.compile("and")
-mate = "/home/dan/Projects/redcar/bin/redcar"
+mate = "/home/dan/projects/redcar/bin/redcar -d --log"
 pb = os.popen(mate, "w")
 for line in sys.stdin:
   if pattern.search(line):
