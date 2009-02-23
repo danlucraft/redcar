@@ -124,6 +124,16 @@ describe Redcar::EditView::SnippetInserter do
     assert_equal 3, @buf.cursor_offset
   end
   
+  def test_inserts_one_tab_stop_with_braces
+    SnippetInserter.register("source.ruby - string - comment",
+    "testsnip",
+    "if ${1}\n\t\nend")
+    @buf.text=("testsnip")
+    press_tab
+    assert_equal "if \n\t\nend", @buf.text
+    assert_equal 3, @buf.cursor_offset
+  end
+  
   def test_selects_tab_stop_zero
     SnippetInserter.register("source.ruby - string - comment",
                              "testsnip",

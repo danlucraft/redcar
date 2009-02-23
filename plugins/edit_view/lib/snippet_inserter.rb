@@ -244,9 +244,9 @@ class Redcar::EditView
         if md = Oniguruma::ORegexp.new("(?<!\\\\)\\$").match(remaining_content)
           @buf.insert_at_cursor(unescape(md.pre_match))
           @stop_id += 1
-          if md1 = md.post_match.match(/\A(\d+)/)
+          if md1 = md.post_match.match(/\A(\d+)/) or md1 = md.post_match.match(/\A\{(\d+)\}/)
             remaining_content = md1.post_match
-            # Simple tab stop "... $1 ... "
+            # Simple tab stop "... $1 ... " or " ... ${1} ..."
             if !@tab_stops.include? $1.to_i
               @tab_stops[$1.to_i] = {
                 :leftmark => create_mark_at_offset(@stop_id, @order_id+=1, @buf.cursor_offset),
