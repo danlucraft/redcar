@@ -46,7 +46,7 @@ If you are not using Debian/Ubuntu, or have installed Ruby yourself from source,
 3. Get the Redcar source.
 
   $ git clone git://github.com/danlucraft/redcar.git
-
+  
 4. Install the GtkSourceView 2.0 bindings for Ruby-GNOME2:
   $ wget http://www.ruby-forum.com/attachment/2323/ruby-gtksourceview2.tar.bz2
   $ tar xjvf ruby-gtksourceview2.tar.bz2
@@ -65,9 +65,12 @@ If you are not using Debian/Ubuntu, or have installed Ruby yourself from source,
 There will be quite a lot of warnings during this compilation, but there shouldn't be any errors.
 
 6. Download the Textmate bundles:
-  $ export LC_CTYPE=en_US.UTF-8
   $ cd /usr/local/share/
-  $ sudo svn co http://macromates.com/svn/Bundles/trunk textmate
+  $ sudo git clone git://github.com/danlucraft/redcar-bundles.git textmate
+  
+7. Download Zerenity:
+  $ cd /usr/local/share/textmate/Support/lib
+  $ sudo git clone git://github.com/danlucraft/zerenity.git zerenity
 
 7. Now try running Redcar
   $ cd REDCAR_PATH
