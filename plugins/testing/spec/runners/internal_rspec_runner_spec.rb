@@ -2,7 +2,8 @@
 describe Redcar::Testing::InternalRSpecRunner do
   describe ".plugin_dir" do
     it "should find the plugin directory" do
-      Redcar::Testing::InternalRSpecRunner.plugin_dir("testing").should == "testing"
+      Redcar::Testing::InternalRSpecRunner.plugin_dir("testing").should == 
+      	File.expand_path(File.dirname(__FILE__) + "/../../") + "/"
     end
   end
 

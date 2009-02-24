@@ -8,7 +8,7 @@ module Redcar
     end
 
     def execute
-      @si ||= tab.snippet_inserter
+      @si ||= tab.view.snippet_inserter
       @buf ||= doc
       if @si.shift_tab_pressed
         # within a snippet
