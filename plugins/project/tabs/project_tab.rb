@@ -33,7 +33,6 @@ module Redcar
       @dir_pic = Gdk::Pixbuf.new(icons_dir+"folder.png")
       @image_pic = Gdk::Pixbuf.new(icons_dir+"gnome-mime-image.png")
       @ruby_pic = Gdk::Pixbuf.new(icons_dir+"ruby.png")
-      GnomeVFS.init
       connect_signals
       ProjectPlugin.tab = self
     end
@@ -156,16 +155,13 @@ module Redcar
         dummy_iter[1] = "[dummy row]"
         dummy_iter[2] = iter[2] + "/[dummy row]"
       else
-        mime_type = GnomeVFS.get_mime_type(file)
-        if mime_type
-          case mime_type
-          when /image/
-            pic = @image_pic
-          when /ruby/
-            pic = @ruby_pic
-          else
-            pic = @file_pic
-          end
+        file =~ /.*\.([^.]+)$/
+        ext = $1
+        case ext
+        when *%w{png jpg jpeg git}
+          pic = @image_pic
+        when *%w{rb}
+          pic = @ruby_pic
         else
           pic = @file_pic
         end
