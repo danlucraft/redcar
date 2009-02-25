@@ -37,6 +37,10 @@ module FreeBASE
       sleep
     end
     
+    def self.load_plugins(propertiesFile, defaultPropertiesFile)
+      Core.new(propertiesFile, defaultPropertiesFile, :load_only => true)
+    end
+    
     # The master bus FreeBASE::DataBus
     attr_reader :bus
     
@@ -46,7 +50,7 @@ module FreeBASE
     ##
     # Constructs a new Core, loads the setup.rb, and loads the plugins
     #
-    def initialize(propertiesFile, defaultPropertiesFile)
+    def initialize(propertiesFile, defaultPropertiesFile, options = {})
       @propertiesFile = propertiesFile
       @defaultPropertiesFile = defaultPropertiesFile
       init_bus
@@ -59,17 +63,18 @@ module FreeBASE
         $:.push path
       end
       @bus["/log/info"] << "--- #{@properties['config/product_name']} Started on #{Time.now.to_s}"
-      @bus["/system/state/all_plugins_loaded"].data = false;
+      @bus["/system/state/all_plugins_loaded"].data = false
       @plugin_config = Configuration.new(self, @properties["config/plugin_path"])
       @plugin_config.load_plugins
-      @plugin_config.start_plugins
-      @bus["/system/state/all_plugins_loaded"].data = true;
+      @plugin_config.start_plugins unless options[:load_only]
+      @bus["/system/state/all_plugins_loaded"].data = true
       @core_thread = Thread.current
-
-      tui = Thread.new {
-        @bus["/system/ui/messagepump"].call()
-      }
-      tui.join
+      unless options[:load_only]
+        tui = Thread.new {
+          @bus["/system/ui/messagepump"].call()
+        }
+        tui.join
+      end
     end
     
     ##
