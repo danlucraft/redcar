@@ -34,12 +34,16 @@ module Redcar
           unless @entry_changed
             @entry_changed = true
             Gtk.idle_add_priority(GLib::PRIORITY_LOW) do
-              if Time.now > @entry_changed_time + 0.2
-                @entry_changed = false
-                entry_changed
+              if @entry.destroyed?
                 false
               else
-                true
+                if Time.now > @entry_changed_time + 0.2
+                  @entry_changed = false
+                  entry_changed
+                  false
+                else
+                  true
+                end
               end
             end
           end
