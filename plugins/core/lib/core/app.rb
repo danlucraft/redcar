@@ -34,6 +34,7 @@ module Redcar
     
     # Quits the application. All plugins are stopped first.
     def self.quit
+      puts "quit"
       windows.each do |w|
         close_window(w, false)
       end

@@ -36,6 +36,7 @@ Uname -a: #{`uname -a`.chomp}
 ERR
         ensure
           bus["/system/shutdown"].call(1)
+          exit(0)
         end
       end
     end
