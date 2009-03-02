@@ -11,15 +11,14 @@ Files given are opened in tabs, directories are opened as projects.
                --help, -h   This information
              --detach, -d   Detach Redcar if there is standard input
                    --test   Test Redcar
-USAGE
 
-# elsif ARGV.include?("-h")
-#                --features   Run all Redcar integration tests
-#                    --spec   Run all Redcar specs
-#      --spec-plugin PLUGIN   Run specs for plugin PLUGIN (e.g. project)
-#  --features-plugin PLUGIN   Run integration tests for plugin PLUGIN
-#         
-# USAGE
+Testing Options
+               --features   Run all Redcar integration tests
+                   --spec   Run all Redcar specs
+     --spec-plugin PLUGIN   Run specs for plugin PLUGIN (e.g. project)
+ --features-plugin PLUGIN   Run integration tests for plugin PLUGIN
+        
+USAGE
   exit
 end
 
