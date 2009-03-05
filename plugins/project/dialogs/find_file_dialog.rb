@@ -168,7 +168,7 @@ module Redcar
     end
 
     def self.make_regex(text)
-      re_src = "(" + text.split(//).join(").*?(") + ")"
+      re_src = "(" + text.split(//).map{|l| Regexp.escape(l) }.join(").*?(") + ")"
       Regexp.new(re_src)
     end
   end
