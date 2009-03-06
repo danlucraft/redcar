@@ -39,7 +39,11 @@ module Redcar
         end
         item "Kill Line", KillLine
         separator
-        item "Indent Line",    IndentLine
+        submenu "Indent" do
+          item "Auto",  IndentLine
+          item "Left",  IndentLeftCommand
+          item "Right", IndentRightCommand
+        end
         separator
         submenu "Select" do
           item "Line",            SelectLine

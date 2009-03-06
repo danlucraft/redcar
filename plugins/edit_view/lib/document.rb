@@ -202,7 +202,7 @@ module Redcar
       delete_selection
       if text == nil
         if block_given?
-          new_text = yield(current_text.chars)
+          new_text = yield(current_text.to_s)
         end
       else
         new_text = text
@@ -219,9 +219,9 @@ module Redcar
       endsel   = enditer.offset
       delete(line_start(cursor_line),
              line_end(cursor_line))
-      if text==nil
+      unless text
         if block_given?
-          new_text = yield(current_text.chars)
+          new_text = yield(current_text.to_s)
         end
       else
         new_text = text
@@ -231,10 +231,19 @@ module Redcar
       select(startsel, endsel)
     end
 
-    def replace_range(start, finish, text)
+    def replace_range(start, finish, text=nil)
       pre_cursor_offset = cursor_offset
-      delete(iter(start), iter(finish))
-      insert(iter(start), text)
+      start, finish = iter(start), iter(finish)
+      current_text = get_text(start, finish)
+      delete(start, finish)
+      unless text
+        if block_given?
+          new_text = yield(current_text.to_s)
+        end
+      else
+        new_text = text
+      end
+      insert(start, new_text)
       place_cursor(iter(pre_cursor_offset))
     end
 
