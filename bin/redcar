@@ -15,10 +15,7 @@ Files given are opened in tabs, directories are opened as projects.
                    --test   Test Redcar
 
 Testing Options
-               --features   Run all Redcar integration tests
-                   --spec   Run all Redcar specs
-     --spec-plugin PLUGIN   Run specs for plugin PLUGIN (e.g. project)
- --features-plugin PLUGIN   Run integration tests for plugin PLUGIN
+            --spec PLUGIN   Run specs for plugin PLUGIN (e.g. project)
         
 USAGE
   exit
@@ -121,9 +118,9 @@ Redcar::App.ARGV ||= Marshal.load(Marshal.dump(ARGV))
 
 config_dir = File.join(codebase, "..", "config")
 
-if ix = Redcar::App.ARGV.index("--spec-plugin")
+if ix = Redcar::App.ARGV.index("--spec")
   Redcar.spec(config_dir, Redcar::App.ARGV[ix+1])
-elsif Redcar::App.ARGV.index("--spec")
+elsif Redcar::App.ARGV.index("--test")
   Redcar.spec(config_dir)
 end
 
