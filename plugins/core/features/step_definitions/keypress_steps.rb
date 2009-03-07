@@ -44,15 +44,6 @@ def inspect_event_key(gdk_event_key)
   return kv, ks, key
 end
 
-When /^I wait for all GUI events to be processed$/ do
-  while Gtk.events_pending?
-    while Gtk.events_pending?
-      Gtk.main_iteration
-    end
-    sleep 0.1
-  end
-end
-
 When /^I press "(.*)"$/ do |key|
   make_event_key(key, :press).put
   make_event_key(key, :release).put

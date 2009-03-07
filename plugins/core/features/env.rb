@@ -2,6 +2,8 @@
 puts "loading redcar for cucumber"
 
 require File.dirname(__FILE__) + "/formatters/gtk_formatter.rb"
+require File.dirname(__FILE__) + "/formatters/gtk_progress_formatter.rb"
+
 Dir[File.dirname(__FILE__) + "/../../*/features/step_definitions/*_steps.rb"].each {|fn| require fn}
 
 Thread.new do
@@ -32,3 +34,8 @@ loop do
   break if Redcar::Testing::InternalCucumberRunner.ready_for_cucumber
 end
 
+After do
+  Redcar::CloseAllTabs.new.do
+  Redcar::UnifyAll.new.do
+  Redcar::CommandHistory.clear
+end

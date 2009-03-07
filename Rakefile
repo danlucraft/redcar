@@ -54,8 +54,17 @@ task :clean do
   sh "rm cache/*.dump"
 end
 
-task :features do
-  sh %{./vendor/cucumber/bin/cucumber -p default -r plugins/core/features/env.rb plugins/*/features/}
+namespace :features do
+  task :all do
+    sh %{./vendor/cucumber/bin/cucumber -p progress -r plugins/core/features/env.rb plugins/*/features/}
+  end
+
+  Dir["plugins/*"].each do |fn|
+    name = fn.split("/").last
+    task name.intern do
+      sh %{./vendor/cucumber/bin/cucumber -p default -r plugins/core/features/env.rb plugins/#{name}/features/}
+    end
+  end
 end
 
 
