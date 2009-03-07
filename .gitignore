@@ -2,7 +2,7 @@
 *.o
 *.so
 *.log
-
+*log*
 cache/bundle_commands.yml
 cache/bundles.yml
 cache/cache.img

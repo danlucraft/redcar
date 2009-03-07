@@ -2,7 +2,7 @@
 puts "loading redcar for cucumber"
 
 require File.dirname(__FILE__) + "/formatters/gtk_formatter.rb"
-Dir[File.dirname(__FILE__) + "/step_definitions/*_steps.rb"].each {|fn| require fn}
+Dir[File.dirname(__FILE__) + "/../../*/features/step_definitions/*_steps.rb"].each {|fn| require fn}
 
 Thread.new do
   module Redcar

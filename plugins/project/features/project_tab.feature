@@ -4,6 +4,7 @@ Feature: The Project Tab
 
   Scenario: Should set open the tab and set the title
     When I press "Ctrl+Shift+P"
+    And I press "2"
     Then there should be one ProjectTab open
     And the title of the ProjectTab should be "Project"
 

@@ -53,3 +53,9 @@ end
 task :clean do
   sh "rm cache/*.dump"
 end
+
+task :features do
+  sh %{./vendor/cucumber/bin/cucumber -p default -r plugins/core/features/env.rb plugins/*/features/}
+end
+
+
