@@ -1,0 +1,2 @@
+default: --format Cucumber::Formatter::GtkFormatter
+
