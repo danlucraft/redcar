@@ -56,13 +56,13 @@ end
 
 namespace :features do
   task :all do
-    sh %{./vendor/cucumber/bin/cucumber -p progress -r plugins/core/features/env.rb plugins/*/features/}
+    sh %{./vendor/cucumber/bin/cucumber -p progress -r plugins/redcar/features/env.rb plugins/*/features/}
   end
 
   Dir["plugins/*"].each do |fn|
     name = fn.split("/").last
     task name.intern do
-      sh %{./vendor/cucumber/bin/cucumber -p default -r plugins/core/features/env.rb plugins/#{name}/features/}
+      sh %{./vendor/cucumber/bin/cucumber -p default -r plugins/redcar/features/env.rb plugins/#{name}/features/}
     end
   end
 end
