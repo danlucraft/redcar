@@ -310,7 +310,11 @@ module Redcar
     end
     
     def contents_as_text
-      @store.contents(1)
+      @store.contents
+    end
+    
+    def visible_contents_as_text
+      @view.visible_contents
     end
   end
 end

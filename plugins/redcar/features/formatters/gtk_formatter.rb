@@ -5,9 +5,7 @@ module Cucumber
       
       def visit_step(step)
         super
-        while Gtk.events_pending?
-          Gtk.main_iteration
-        end
+        Gtk.main_iteration while Gtk.events_pending?
       end
     end
   end

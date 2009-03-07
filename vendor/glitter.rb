@@ -18,15 +18,43 @@ class Gtk::Box
   end
 end
 
-class Gtk::TreeStore
-  def contents(col)
+class Gtk::TreeView
+  def visible_contents(col=nil)
     s = []
-    each do |_, path, iter|
-      s << iter[col].to_s
+    model.each do |_, path, iter|
+      if not iter.parent or row_expanded?(iter.parent.path)
+        if col
+          s << iter[col].to_s
+        else
+          r = []
+          model.n_columns.times do |i|
+            r << iter[i].to_s
+          end
+          s << r.join(",")
+        end
+      end
     end
     s.join("\n")
   end
+end
 
+class Gtk::TreeStore
+  def contents(col=nil)
+    s = []
+    each do |_, path, iter|
+      if col
+        s << iter[col].to_s
+      else
+        r = []
+        n_columns.times do |i|
+          r << iter[i].to_s
+        end
+        s << r.join(",")
+      end
+    end
+    s.join("\n")
+  end
+  
   # If given col and value, finds the first TreeIter with the 
   # matching column. If given a block, passes each iter to the
   # block and returns the iter for which the block returns true.

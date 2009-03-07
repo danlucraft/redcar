@@ -46,6 +46,7 @@ After do
   Redcar::CommandHistory.clear
   make_event_key("Escape", :press).put
   make_event_key("Escape", :release).put
+  Gtk.main_iteration while Gtk.events_pending?
 end  
 
 

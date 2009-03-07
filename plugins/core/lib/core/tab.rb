@@ -163,5 +163,11 @@ module Redcar
     def contents_as_text
       @gtk_nb_widget.inspect
     end
+    
+    # Useful in testing. Subclasses should override with something 
+    # more meaningful
+    def visible_contents_as_text
+      @gtk_nb_widget.inspect
+    end
   end
 end
