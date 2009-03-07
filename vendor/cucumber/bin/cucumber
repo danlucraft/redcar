@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+# Add '.rb' to work around a bug in IronRuby's File#dirname
+$:.unshift(File.dirname(__FILE__ + '.rb') + '/../lib') unless $:.include?(File.dirname(__FILE__ + '.rb') + '/../lib')
+
+require 'cucumber/cli/main'
+Cucumber::Cli::Main.execute(ARGV.dup)

@@ -55,7 +55,7 @@ module Redcar
         open_row(path) unless @ignore_row_expanded
       end
       
-      @view.on_right_button_press do |_, gdk_event|
+      @view.on_right_click do |_, gdk_event|
         # get the row and column
         unless @block_buttons
           path_array = @view.get_path_at_pos(gdk_event.x, gdk_event.y)
@@ -307,6 +307,14 @@ module Redcar
     def clear
       @store.clear
       @directories.clear
+    end
+    
+    def contents_as_text
+      @store.contents
+    end
+    
+    def visible_contents_as_text
+      @view.visible_contents
     end
   end
 end

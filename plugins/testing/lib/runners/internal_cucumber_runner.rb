@@ -1,12 +1,9 @@
 
 module Redcar::Testing
   class InternalCucumberRunner
-    def self.run_all_features
-      
-    end
-    
-    def self.run_feature(feature)
-      
+    class << self
+      attr_accessor :in_cucumber_process
+      attr_accessor :ready_for_cucumber
     end
   end
 end

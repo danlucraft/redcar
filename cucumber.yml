@@ -1,0 +1,3 @@
+default: --format Cucumber::Formatter::GtkFormatter
+progress: --format Cucumber::Formatter::GtkProgressFormatter
+

@@ -44,7 +44,6 @@ module Redcar
     # entries :: [Maybe String, String, String]
     def self.context_menu_options_popup(entries)
       slot = bus['/redcar/gtk/context_options_menu/']
-      p entries
       gtk_menu = Gtk::Menu.new
       slot.data = gtk_menu
       i = 1

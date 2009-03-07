@@ -2,6 +2,12 @@
 
 module Redcar
   class TestingPlugin < Redcar::Plugin
+    # on_load do
+    #   Gtk.idle_add do
+    #     Redcar::Testing.run_features
+    #     false
+    #   end
+    # end
   end
 end
 
