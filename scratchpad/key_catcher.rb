@@ -62,10 +62,33 @@ end
 entry.signal_connect("key-press-event") do |_, gdk_event_key|
   puts
   test_event_key(gdk_event_key)
-  
+end
+
+entry.signal_connect("button-press-event") do |_, event_button|
+  p :button_in_entry
+  p event_button
+  p event_button.button
+  p event_button.state
+  p event_button.x
+  p event_button.y
+  puts
+end
+
+win.signal_connect("button-press-event") do |_, event_button|
+  p :button_in_win
+  p event_button
+  p event_button.button
+  p event_button.state
+  p event_button.x
+  p event_button.y
+  puts
 end
 
 win.signal_connect("destroy") { Gtk.main_quit }
 
 win.show_all
 Gtk.main
+
+
+
+

@@ -157,5 +157,11 @@ module Redcar
     def tab_icon
       nil
     end
+    
+    # Useful in testing. Subclasses should override with something 
+    # more meaningful
+    def contents_as_text
+      @gtk_nb_widget.inspect
+    end
   end
 end

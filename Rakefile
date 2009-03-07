@@ -13,25 +13,6 @@ require 'fileutils'
 #   p.changes = p.paragraphs_of('History.txt', 0..1).join("\n\n")
 # end
 
-namespace :test do
-  task :all => [:syntax]
-  
-  task :syntax do
-    sh "testrb test/syntax_texttab_test.rb"
-    sh "rg test/syntax_grammar_test.rb"
-    sh "rg test/syntax_scope_test.rb"
-    sh "rg test/syntax_parser_test.rb"
-    sh "rg test/syntax_theme_test.rb"
-  end
-
-  task :syntax_quick do
-    sh "rg test/syntax_grammar_test.rb"
-    sh "rg test/syntax_scope_test.rb"
-    sh "rg test/syntax_parser_test.rb"
-    sh "rg test/syntax_theme_test.rb"
-  end
-end
-
 task :coredoc2 do
   FileUtils.rm_rf "doc"
   FileUtils.mkdir "tmpfordoc"
@@ -50,8 +31,8 @@ task :coredoc do
   sh "rdoc -T jamis #{files.join(" ")} README.txt"
 end
 
-task :clean do
-  sh "rm cache/*.dump"
+task :clear_cache do
+  sh "rm cache/*/*.dump"
 end
 
 namespace :features do

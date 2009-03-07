@@ -16,7 +16,6 @@ Then /^there should be #{NUMBER_RE} (?:(\w+)s?|tabs?) open$/ do |number, tab_typ
 end
 
 Then /^the title of the (\w+) should be "([^"]+)"$/ do |tab_type, title| # "
-  tabs = Redcar.win.collect_tabs(Redcar.const_get(tab_type))
-  tabs.length.should == 1
-  tabs.first.title.should == title
+  tab = only(Redcar.win.collect_tabs(Redcar.const_get(tab_type)))
+  tab.title.should == title
 end
