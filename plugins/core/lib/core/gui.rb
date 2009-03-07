@@ -18,7 +18,13 @@ module Redcar
         begin
           App.log.info "starting Gui.main (in thread #{Thread.current})"
           Hook.trigger(:redcar_start)
-          Gtk.main_with_queue(100)
+          if Redcar::Testing::InternalCucumberRunner.in_cucumber_process
+            Redcar::Testing::InternalCucumberRunner.ready_for_cucumber = true
+          else
+            Gtk.main_with_queue(100)
+            bus["/system/shutdown"].call(1)
+            exit(0)
+          end
         rescue Object => e
           $stderr.puts str=<<ERR
 
@@ -34,9 +40,6 @@ Message: #{e.message}
 Backtrace: \n#{e.backtrace.map{|l| "    "+l}.join("\n")}
 Uname -a: #{`uname -a`.chomp}
 ERR
-        ensure
-          bus["/system/shutdown"].call(1)
-          exit(0)
         end
       end
     end

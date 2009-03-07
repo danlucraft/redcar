@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+puts "starting redcar"
+
 if ARGV.include?("-h") or ARGV.include?("--help")
   puts s=<<USAGE
 Redcar (c) Daniel Lucraft 2007-#{Time.now.year}
@@ -65,12 +67,8 @@ module Redcar
   ROOT = File.expand_path(File.dirname(__FILE__) + "/../")
   
   module App
-    def self.ARGV=(v)
-      @argv = v
-    end
-    
-    def self.ARGV
-      @argv
+    class << self
+      attr_accessor :ARGV
     end
   end
   
@@ -119,7 +117,7 @@ module Redcar
   end
 end
 
-Redcar::App.ARGV = Marshal.load(Marshal.dump(ARGV))
+Redcar::App.ARGV ||= Marshal.load(Marshal.dump(ARGV))
 
 config_dir = File.join(codebase, "..", "config")
 

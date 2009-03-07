@@ -12,12 +12,16 @@
 #
 module Redcar::Testing
   def self.run_features
-    if ix = Redcar::App.ARGV.index("--features-plugin")
-      Redcar::Testing::InternalCucumberRunner.run_feature_for_plugin(Redcar::App.ARGV[ix+1])
-      Redcar::App.quit
-    elsif Redcar::App.ARGV.index("--features")
-      Redcar::Testing::InternalCucumberRunner.run_all_features
-      Redcar::App.quit
+    if InternalCucumberRunner.in_cucumber_process
+      InternalCucumberRunner.run_features
     end
+    
+    # if ix = Redcar::App.ARGV.index("--features-plugin")
+    #   Redcar::Testing::InternalCucumberRunner.run_feature_for_plugin(Redcar::App.ARGV[ix+1])
+    #   Redcar::App.quit
+    # elsif Redcar::App.ARGV.index("--features")
+    #   Redcar::Testing::InternalCucumberRunner.run_all_features
+    #   Redcar::App.quit
+    # end
   end
 end
