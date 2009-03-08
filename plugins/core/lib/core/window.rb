@@ -26,6 +26,7 @@ module Redcar
       @focussed_gtk_widget = nil
       build_widgets
       MenuDrawer.draw_menus(self)
+      pp Menu.main
       Range.activate(Redcar::Window)
       connect_signals
       show_initial_widgets

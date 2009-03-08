@@ -90,7 +90,13 @@ module Redcar
 
     def self.menu(menu)
       @menu = menu
-      MenuBuilder.item "menubar/"+menu, self.to_s
+      menu_path = menu.split("/").reverse
+      top = menu_path.pop
+      menu = Menu.get_main(top)
+      while portion = menu_path.pop and menu_path.any?
+        menu = menu.get_submenu(portion)
+      end
+      menu.add_item(portion, self)
     end
 
     def self.icon(icon)

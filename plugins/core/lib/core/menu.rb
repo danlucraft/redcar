@@ -2,9 +2,103 @@
 module Redcar
   # The Redcar::Menu module registers the context menu services
   # on startup and initializes the MenuBuilder.
-  module Menu
+  class Menu
+    class << self
+      def main
+        @main_menus ||= []
+      end
+      
+      def get_main(name)
+        menu = main.find{|m| m.name == name}
+        unless menu
+          menu = new(name)
+          @main_menus << menu
+        end
+        menu
+      end
+      
+      def context
+        @context_menus ||= {}
+      end
+      
+      def get_context(name)
+        @context_menus[name] ||= new(name)
+      end
+    end
+    
+    def initialize(name)
+      @name = name
+    end
+    
+    def get_submenu(submenu_name)
+      submenu = items.find {|item| item.is_a?(Menu) and item.name == submenu_name}
+      unless submenu
+        submenu = Menu.new(submenu_name)
+        items << submenu
+      end
+      submenu
+    end
+    
+    def add_item(item_name, command)
+      items << Item.new(item_name, command)
+    end
+    
+    def make_gtk_menuitem
+      Gtk::MenuItem.new(name)
+    end
+    
+    class Item
+      attr_accessor :name, :command
+      
+      def initialize(name, command)
+        @name, @command = name, command
+      end
+      
+      def make_gtk_menuitem
+        if icon = command.get(:icon) and
+           icon != "none"
+          gtk_menu_item = Gtk::ImageMenuItem.create(icon, name)
+        else
+          gtk_menu_item = Gtk::MenuItem.new(name)
+        end
+        if key = command.get(:key)
+          if keybinding = Keymap.display_key(key)
+            Item.make_gtk_menuitem_hbox(gtk_menu_item, keybinding)
+          end
+        end
+        gtk_menu_item
+      end
+      
+      private
+      
+      def self.make_gtk_menuitem_hbox(c, keybinding)
+        child = c.child
+        c.remove(child)
+        hbox = Gtk::HBox.new
+        child.set_size_request(200, 0)
+        hbox.pack_start(child, false)
+        accel = keybinding.to_s
+        l = Gtk::Label.new(accel)
+        l.justify = Gtk::JUSTIFY_RIGHT
+        l.set_padding(10, 0)
+        l.xalign = 1
+        hbox.pack_end(l, true)
+        l.show
+        hbox.show
+        c.add(hbox)
+      end
+    end
+    
+    class SeparatorItem
+    end
+    
+    attr_accessor :name
+    
+    def items
+      @items ||= []
+    end
+    
     def self.load
-      MenuBuilder.init_menuid
     end
     
     def self.start
@@ -97,68 +191,45 @@ module Redcar
   
   module MenuBuilder
     class << self
-      attr_reader :menuid
-      def init_menuid
-        @menuid = 0
-      end
-      
-      def inc_menuid
-        @menuid += 1
-      end
-      
-      def set_menuid(slot)
-         unless slot.attr_id
-          slot.attr_id = @menuid
-          inc_menuid
-        end
-      end
+      attr_reader :menu
     end
     
-    def main_menu(menu, &block)
+    def main_menu(menu_name, &block)
+      puts "main_menu(#{menu_name.inspect})"
+      MenuBuilder.menu = Menu.get_main(menu_name)
       MenuBuilder.command_scope = ""
-      MenuBuilder.menu_scope    = "menubar/"+menu
       MenuBuilder.class_eval(&block)
       MenuBuilder.command_scope = ""
-      MenuBuilder.menu_scope    = ""
     end
     
-    def context_menu(menu, &block)
+    def context_menu(menu_name, &block)
+      puts "context_menu(#{menu_name.inspect})"
+      MenuBuilder.menu = Menu.get_context(menu_name)
       MenuBuilder.command_scope = ""
-      MenuBuilder.menu_scope    = "context/"+menu
       MenuBuilder.class_eval(&block)
       MenuBuilder.command_scope = ""
-      MenuBuilder.menu_scope    = ""
     end
     
     class << self
-      attr_accessor :menu_scope, :command_scope
+      attr_accessor :menu_scope, :command_scope, :menu
       
       def item(item_name, command_name, options={})
-        slot = bus("/redcar/menus/#{menu_scope}/#{item_name}")
-        slot.data = bus("/redcar/commands/#{command_scope}/#{command_name}").data
-        slot.data.menu = "#{menu_scope}/#{item_name}"
-        slot.attr_menu_entry = true
-        # sets the menuid of this menuitem and it's ancestors if necessary:
-        bits = "#{menu_scope}/#{item_name}".split("/")
-        build = ""
-        bits.each do |bit|
-          build += "/" + bit
-          set_menuid(bus['/redcar/menus/'+build])
-        end
+        puts "item(#{item_name.inspect}, #{command_name.inspect}, #{options.inspect})"
+        command = bus("/redcar/commands/#{command_scope}/#{command_name}").data
+        MenuBuilder.menu.add_item(item_name, command)
       end
       
       def separator
-        slot = bus("/redcar/menus/#{menu_scope}/separator_#{MenuBuilder.menuid}")
-        set_menuid(slot)
+        MenuBuilder.menu.items << Menu::SeparatorItem.new
       end
       
       def submenu(name, &block)
-        old_menu_scope = @menu_scope
-        @menu_scope += "/#{name}"
+        puts "submenu(#{name.inspect})"
+        old_menu = MenuBuilder.menu
+        MenuBuilder.menu = menu.get_submenu(name)
         MenuBuilder.class_eval(&block)
-        @menu_scope = old_menu_scope
+        MenuBuilder.menu = old_menu
       end
-      
     end
   end
   
@@ -175,71 +246,36 @@ module Redcar
         @gtk_menuitems = {}
       end
       
-      def make_gtk_menuitem_hbox(c, keybinding)
-        child = c.child
-        c.remove(child)
-        hbox = Gtk::HBox.new
-        child.set_size_request(200, 0)
-        hbox.pack_start(child, false)
-        accel = keybinding.to_s
-        l = Gtk::Label.new(accel)
-        l.justify = Gtk::JUSTIFY_RIGHT
-        l.set_padding(10, 0)
-        l.xalign = 1
-        hbox.pack_end(l, true)
-        l.show
-        hbox.show
-        c.add(hbox)
-      end
-      
-      def make_gtk_menuitem(slot)
-        name     = slot.name
-        menuitem = slot.data || {}
-        c = if icon = (slot.data||null).get(:icon) and 
-                icon != "none"
-              Gtk::ImageMenuItem.create icon, name
-            else
-              Gtk::MenuItem.new name
-            end
-        if slot.data and slot.data.get(:key)
-          keybinding = Keymap.display_key(slot.data.get(:key))
-        end
-        if keybinding
-          make_gtk_menuitem_hbox(c, keybinding)
-        end
-        c
-      end
-
       def draw_menus(window)
         clear_menus        
-        bus['/redcar/menus/menubar/'].children.
-          sort_by(&:attr_id).each do |slot|
+        Menu.main.each do |main_menu|
           gtk_menu = Gtk::Menu.new
-          gtk_menuitem = make_gtk_menuitem(slot)
-          @toplevel_gtk_menuitems[slot.name] = gtk_menuitem
+          gtk_menuitem = main_menu.make_gtk_menuitem
+          @toplevel_gtk_menuitems[main_menu.name] = gtk_menuitem
           gtk_menuitem.submenu = gtk_menu
           gtk_menuitem.show
           window.gtk_menubar.append(gtk_menuitem)
-          draw_menus1(slot, gtk_menu)
+          draw_menus1(main_menu, gtk_menu)
         end
       end
       
-      def draw_menus1(parent, gtk_menu)
-        parent.children.sort_by(&:attr_id).each do |slot|
-          if slot.name =~ /separator/
+      def draw_menus1(parent_menu, gtk_menu)
+        parent_menu.items.each do |menu_item|
+          if menu_item.is_a?(Menu::SeparatorItem)
             gtk_menuitem = Gtk::SeparatorMenuItem.new
           else
-            if slot.attr_menu_entry
-              gtk_menuitem = make_gtk_menuitem(slot)
-              connect_item_signal(slot.data, gtk_menuitem)
-              gtk_menuitem.sensitive = slot.data.executable?(Redcar.tab)
-            else
-              gtk_menuitem = make_gtk_menuitem(slot)
+            if menu_item.is_a?(Menu::Item)
+              gtk_menuitem = menu_item.make_gtk_menuitem
+              connect_item_signal(menu_item.command, gtk_menuitem)
+              gtk_menuitem.sensitive = menu_item.command.executable?(Redcar.tab)
+            elsif menu_item.is_a?(Menu)
+              gtk_menuitem = menu_item.make_gtk_menuitem
               gtk_submenu = Gtk::Menu.new
               gtk_menuitem.submenu = gtk_submenu
-              draw_menus1(slot, gtk_submenu)
+              draw_menus1(menu_item, gtk_submenu)
+            else
+              raise "found a #{menu_item.class} inside a Redcar::Menu's items"
             end
-            slot.attr_gtk_menuitem = gtk_menuitem
           end
           gtk_menu.append(gtk_menuitem)
           gtk_menuitem.show
@@ -259,6 +295,7 @@ module Redcar
       end
       
       def set_active(menu_path, val)
+        puts "set_active(#{menu_path.inspect}, #{val.inspect})"
         if gtk_menuitem = bus("/redcar/menus/#{menu_path}").attr_gtk_menuitem
           gtk_menuitem.sensitive = val
         end
