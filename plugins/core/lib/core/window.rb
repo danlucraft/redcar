@@ -1,6 +1,4 @@
 
-require 'gtk2'
-
 module Redcar
   class Window < Gtk::Window
     def self.load #:nodoc:
@@ -8,7 +6,7 @@ module Redcar
       Hook.register :close_tab
       Hook.register :focus_tab
     end
-
+    
     def self.stop #:nodoc:
       # App.close_all_windows(false)
     end
