@@ -14,7 +14,15 @@ end
 Then /^I should see a menu with "([^"]+)"$/ do |option| # "
   options = []
   only(open_menus).children.each do |child|
-    options << child.child.text
+    if child.child.respond_to?(:text)
+      options << child.child.text
+    else
+      child.child.children.each do |child2|
+        if child2.respond_to?(:text)
+          options << child2.text
+        end
+      end
+    end
   end
   options.include?(option).should be_true
 end

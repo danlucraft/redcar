@@ -160,8 +160,8 @@ module Redcar
     end
     
     def self.register_snippet_for_lookup(snippet_hash, snippet_command)
-      @snippet_lookup ||= Hash.new {|h, k| h[k] = {}}
-      @snippet_lookup[snippet_hash["scope"]||""][snippet_hash["tabTrigger"]] = snippet_command
+      @snippet_lookup ||= Hash.new {|h, k| h[k] = Hash.new {|h, k| h[k] = [] } }
+      @snippet_lookup[snippet_hash["scope"]||""][snippet_hash["tabTrigger"]] << snippet_command
     end
     
     # A array of this bundle's snippets. Snippets are cached 

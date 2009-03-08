@@ -22,7 +22,9 @@ class Redcar::EditView
         Redcar::Bundle.snippet_lookup.each do |scope_selector, snippets_for_scope|
           v = Gtk::Mate::Matcher.test_match(scope_selector, scope.hierarchy_names(true))
           if v
-            all_snippets_for_scope.merge!(snippets_for_scope)
+            all_snippets_for_scope.merge!(snippets_for_scope) do |_, a, b|
+              a + b
+            end
           end
         end
       end
@@ -143,6 +145,20 @@ class Redcar::EditView
       @in_snippet
     end
 
+    def choose_snippet(snippets)
+      if snippets.length == 0
+        nil
+      elsif snippets.length == 1
+        snippets.first
+      else
+        entries = snippets.map do |snippet_command|
+          [nil, snippet_command.name, snippet_command]
+        end
+        Redcar::Menu.context_menu_options_popup(entries)
+        nil
+      end
+    end
+
     # Decides whether a snippet can be inserted at this location. If so
     # returns the snippet hash, if not returns false.
     def tab_pressed
@@ -160,13 +176,13 @@ class Redcar::EditView
         end
         if @word
           if default_snippets = SnippetInserter.default_snippets and
-              snippet = default_snippets[@word]
+              snippet = choose_snippet(default_snippets[@word])
             @buf.delete(@buf.iter(@offset-@word.length),
                         @buf.iter(@offset))
             insert_snippet(snippet)
             snippet
           elsif snippets_for_scope = SnippetInserter.snippets_for_scope(@buf.cursor_scope) and
-              snippet = snippets_for_scope[@word]
+              snippet = choose_snippet(snippets_for_scope[@word])
             @buf.delete(@buf.iter(@offset-@word.length),
                         @buf.iter(@offset))
             insert_snippet(snippet)
