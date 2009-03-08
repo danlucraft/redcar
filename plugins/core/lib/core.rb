@@ -44,6 +44,9 @@ module Redcar
       Tab.start
       Gui.start
       Command.start
+      Hook.attach(:redcar_start) do
+        puts "redcar_start: #{Time.now - Redcar::PROCESS_START_TIME} seconds"
+      end
       plugin.transition(FreeBASE::RUNNING)
     end
 
