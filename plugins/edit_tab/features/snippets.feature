@@ -14,3 +14,8 @@ Feature: Snippets
     When I type "cla"
     And I press "Tab"
     Then I should see a menu with "class .. end"
+
+  Scenario: Inserts snippet from menu
+    When I type "cla"
+    And I press "Tab" then "1"
+    Then I should see "class" in the EditTab

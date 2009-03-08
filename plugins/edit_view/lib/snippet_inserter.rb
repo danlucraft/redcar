@@ -152,7 +152,10 @@ class Redcar::EditView
         snippets.first
       else
         entries = snippets.map do |snippet_command|
-          [nil, snippet_command.name, snippet_command]
+          [nil, snippet_command.name, fn { 
+            @buf.delete(@buf.iter(@start_word_offset), @buf.cursor_iter)
+            snippet_command.new.do
+          }]
         end
         Redcar::Menu.context_menu_options_popup(entries)
         nil
@@ -166,13 +169,13 @@ class Redcar::EditView
         move_forward_tab_stop
         true
       else
-        @word = nil
-        @offset = nil
+        @word, @offset, @start_word_iter = nil, nil, nil
         line = @buf.get_slice(@buf.line_start(@buf.cursor_line),
                               @buf.cursor_iter).reverse
         if line =~ /([^\s]+)(\s|$)/
           @word = $1.reverse
           @offset = @buf.cursor_offset
+          @start_word_offset = @buf.iter(@buf.cursor_iter.offset - @word.length).offset
         end
         if @word
           if default_snippets = SnippetInserter.default_snippets and

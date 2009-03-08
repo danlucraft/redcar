@@ -163,12 +163,16 @@ module Redcar
           if entry = entries[key.to_i-1]
             command = entry[2]
             gtk_menu.popdown
-            begin
-              command.new.do
-            rescue Object => e
-              puts e
-              puts e.message
-              puts e.backtrace
+            if command.is_a?(Proc)
+              command.call
+            else              
+              begin
+                command.new.do
+              rescue Object => e
+                puts e
+                puts e.message
+                puts e.backtrace
+              end
             end
           end
         end
