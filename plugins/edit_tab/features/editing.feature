@@ -15,7 +15,7 @@ Feature: Edit Text
     Then I should see "def fo<c>o" in the EditTab
   
   Scenario: Up
-    When I type "def foo\np :foo\nend"
+    When I type "def foo\n  p :foo\nend"
     And I press "Up"
     Then I should see "p<c> :foo" in the EditTab
   
