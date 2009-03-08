@@ -158,6 +158,13 @@ class Gtk::TextIter
 end
   
 class Gtk::Window
+  alias :old_initialize :initialize
+  
+  def initialize(*args, &block)
+    old_initialize(*args)
+    instance_eval(&block) if block
+  end
+  
   def quit_on_destroy
     signal_connect(:destroy) { Gtk.main_quit }
   end
