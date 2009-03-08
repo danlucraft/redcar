@@ -241,9 +241,9 @@ module Redcar
           if done
             false
           else
-            continue = Keymap.process(gdk_eventkey)
+            stop_propogating = Keymap.process(gdk_eventkey)
             # falls through to Gtk widgets if nothing handles it
-            continue
+            stop_propogating
           end
         rescue
           true

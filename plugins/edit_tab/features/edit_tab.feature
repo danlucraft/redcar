@@ -6,11 +6,16 @@ Scenario: Open an EditTab
 
 Scenario: Choose Ruby syntax
   Given there is an EditTab open
-  When I press "Ctrl+Alt+Shift+R"
-  And I press "1"
+  When I press "Ctrl+Alt+Shift+R" then "1"
   Then the current syntax should be "Ruby"
 
 Scenario: Type some text
   Given there is an EditTab open with syntax "Ruby"
   When I type "def foo"
-  Then I should see "def foo" in the EditTab
+  Then I should see "def foo<c>" in the EditTab
+
+Scenario: Move cursor left
+  Given there is an EditTab open with syntax "Ruby"
+  When I type "def foo"
+  And I press "Left"
+  Then I should see "def fo<c>o" in the EditTab

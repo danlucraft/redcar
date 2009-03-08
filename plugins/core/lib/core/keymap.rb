@@ -40,12 +40,8 @@ module Redcar
 
     # Process a Gdk::EventKey (which is created on a keypress)
     def self.process(gdk_eventkey) #:nodoc:
-#      puts "keypress: #{gdk_eventkey}"
       if key = clean_gdk_eventkey(gdk_eventkey)
-#        Hook.trigger :keystroke, key do
-          App.log.debug { "[Keymap] received key #{key.inspect}" }
-          execute_key(key, gdk_eventkey)
-#        end
+        execute_key(key, gdk_eventkey)
       else
         true 
       end
@@ -111,20 +107,21 @@ module Redcar
           if com.is_a? Proc
             App.log.debug { "[Keymap] executing arbitrary code" }
             com.call
-            true
+            return true
           elsif com.ancestors.include? Redcar::Command
-            App.log.debug "[Keymap] executing #{com.inspect}"
-            if com.pass?
+            if com.pass?            
+              App.log.debug "[Keymap] passing on #{com.inspect}"
               command_instance = com.new
               command_instance.gdk_event_key = gdk_eventkey
               CommandHistory.record(command_instance)
-              false
+              return false
             else
+              App.log.debug "[Keymap] executing #{com.inspect}"
               com.new.do
-              true
+              return true
             end
           else
-            false
+            return false
           end
         end
       else

@@ -111,6 +111,10 @@ module Redcar
       get_mark("end-mark") or
         create_mark("end-mark", iter(char_count), false)
     end
+    
+    def end_iter
+      iter(char_count)
+    end
 
     def cursor_mark
       get_mark("insert")

@@ -11,6 +11,7 @@ def inspect_event_key(gdk_event_key)
   puts "state:  #{gdk_event_key.state.inspect}"
   puts "keyval: #{gdk_event_key.keyval.inspect}"
   puts "group:  #{gdk_event_key.group.inspect}"
+  puts "hardwa: #{gdk_event_key.hardware_keycode.inspect}"
   kv = gdk_event_key.keyval
   ks = gdk_event_key.state - Gdk::Window::MOD2_MASK
   ks = ks - Gdk::Window::MOD4_MASK

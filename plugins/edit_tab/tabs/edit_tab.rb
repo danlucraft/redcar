@@ -177,12 +177,21 @@ module Redcar
     end
     
     def contents_as_string
-      buffer.text
+      result = buffer.text
+      result.insert(buffser.cursor_offset, "<c>")
     end
     
     def visible_contents_as_string
-      buffer.get_slice(buffer.line_start(view.first_visible_line),
-                       buffer.line_end(view.last_visible_line))
+      start = buffer.line_start(view.first_visible_line)
+      _end =  buffer.line_end(view.last_visible_line)
+      result = buffer.get_slice(start, _end)
+      if buffer.cursor_iter >= start and 
+          (buffer.cursor_iter < _end or 
+            (_end == buffer.end_iter and buffer.cursor_iter == buffer.end_iter))
+        result.insert(buffer.cursor_offset - start.offset, "<c>")
+      else
+        result
+      end
     end
   end
 end

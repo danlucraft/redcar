@@ -30,8 +30,12 @@ def make_event_key(key, type)
   new_mod_mask |= Gdk::Window::ModifierType::SUPER_MASK if supr
   new_mod_mask = Gdk::Window::ModifierType.new(new_mod_mask)
   new_event_key.state = new_mod_mask
-  new_event_key.keyval = Gdk::Keyval.from_name(letter.downcase)
-  
+  keyval = Gdk::Keyval.from_name(letter)
+  if keyval == 0
+    keyval = Gdk::Keyval.from_name(letter.downcase)
+  end
+  new_event_key.keyval = keyval
+  new_event_key.hardware_keycode = Gdk::Keymap.default.get_entries_for_keyval(keyval).first.first
   new_event_key.window = Redcar.win.window
   new_event_key
 end
@@ -50,8 +54,9 @@ def press_key(key)
   make_event_key(key, :release).put
 end
 
-When /^I press "(.*)"$/ do |key|
-  press_key(key)
+When /^I press #{FeatureHelpers::STRING_RE}(?: then #{FeatureHelpers::STRING_RE})?$/ do |key1, key2|
+  press_key(key1)
+  press_key(key2) if key2
 end
 
 
