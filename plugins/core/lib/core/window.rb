@@ -232,7 +232,7 @@ module Redcar
         Redcar::App[:window_size] = self.size
       end
 
-      signal_connect('key-release-event') do |gtk_widget, gdk_eventkey|
+      signal_connect('key-press-event') do |gtk_widget, gdk_eventkey|
         begin
           done = false
           if speedbar_display = speedbar_focussed?
