@@ -50,7 +50,9 @@ def do_edit
   end
 end
 
-if Redcar::App.ARGV.include? "--test-perf-load"
+if Redcar::App.ARGV.include?("--shutdown")
+  stop_redcar
+elsif Redcar::App.ARGV.include? "--test-perf-load"
   require 'ruby-prof'
   RubyProf.start
   OpenTab.new("/home/dan/projects/redcar/rak2000").do
