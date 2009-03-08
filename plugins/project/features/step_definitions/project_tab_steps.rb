@@ -1,6 +1,6 @@
 
-Given /^I have opened the ProjectTab$/ do
-  Redcar::OpenProject.new.do
+Given /^the ProjectTab is open$/ do
+  When 'I press "Ctrl+Shift+P"'
 end
 
 When /^I (?:add|have added) the directory "([^"]+)" to the ProjectTab$/ do |dir| # "

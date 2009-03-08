@@ -1,8 +1,6 @@
 
-Given /^there is an? EditTab open with syntax "([^"]+)"$/ do |syntax|
+Given /^there is an? EditTab open$/ do
   When 'I press "Super+N"'
-  When 'I press "Ctrl+Alt+Shift+R"'
-  When 'I press "1"'
 end
 
 When /^I type "([^"]+)"$/ do |text|
