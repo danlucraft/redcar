@@ -58,7 +58,7 @@ module Redcar
     #   "Ctrl+Super+R"
     #   "Ctrl+H"
     def self.register_key_command(key_name, command)
-      slot = bus("/redcar/keymaps/#{key_name}")
+      slot = bus("/redcar/keymaps/#{normalize(key_name)}")
       slot.data ||= []
       slot.data << command
     end
@@ -66,7 +66,7 @@ module Redcar
     # Removes a key from a keymap. key_name should be as in
     # register_key_command.
     def self.unregister_key(key_name)
-      bus("/redcar/keymaps/#{key_name}").prune
+      bus("/redcar/keymaps/#{normalize(key_name)}").prune
     end
 
     # Use to execute a key. key_name should be a string like "Ctrl+G".
@@ -74,7 +74,7 @@ module Redcar
 #       if key_name == "Return" # FIXME!
 #         return false
 #       end
-      if coms = bus("/redcar/keymaps/#{key_name}").data
+      if coms = bus("/redcar/keymaps/#{normalize(key_name)}").data
         App.log.debug "[Keymap] #{coms.length} candidate commands"
         coms = coms.select do |com| 
           if com.is_a? Proc 

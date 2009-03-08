@@ -27,7 +27,14 @@ module Redcar
         gtk_combo_box = Gtk::ComboBox.new(true)
         bus('/gtk/window/statusbar/grammar_combo').data = gtk_combo_box
         Gtk::Mate.load_bundles
-        list = Gtk::Mate::Buffer.bundles.map{|b| b.grammars }.flatten.map(&:name).sort
+        list = Gtk::Mate::Buffer.bundles.map{|b| b.grammars }.flatten.map do |grammar|
+          if keq = grammar.key_equivalent
+            grammar.name + " (" + Bundle.translate_key_equivalent(grammar.key_equivalent) + ")"
+          else
+            grammar.name
+          end          
+        end
+        list = list.sort
         list.each {|item| gtk_combo_box.append_text(item) }
         gtk_combo_box.signal_connect("changed") do |gtk_combo_box1|
           if Redcar.tab and Redcar.tab.is_a? EditTab
