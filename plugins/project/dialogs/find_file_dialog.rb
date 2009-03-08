@@ -24,17 +24,14 @@ module Redcar
     
     def connect_signals
       @entry.signal_connect("key-press-event") do |_, gdk_eventkey|
-        p :key_press_event
         entry_key_press(gdk_eventkey)
       end
       
       @entry.signal_connect("changed") do 
-        p :changed
         @entry_changed_time = Time.now
         unless @entry_changed
           @entry_changed = true
           Gtk.idle_add_priority(GLib::PRIORITY_LOW) do
-            p Time.now
             if @entry.destroyed?
               false
             else
