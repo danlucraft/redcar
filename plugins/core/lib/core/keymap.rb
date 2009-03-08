@@ -15,6 +15,12 @@ module Redcar
       end
     end
 
+    def self.normalize(redcar_key)
+      bits = redcar_key.split("+")
+      bits = bits[0..-2].sort << bits.last
+      bits.join("+")
+    end
+
     def self.clean_gdk_eventkey(gdk_eventkey)
       kv = gdk_eventkey.keyval
       ks = gdk_eventkey.state - Gdk::Window::MOD2_MASK
@@ -34,7 +40,7 @@ module Redcar
           "Shift+"*shift +
           letter
         App.log.debug "[Keymap] clean key: #{key.inspect}"
-        key
+        normalize(key)
       end
     end
 

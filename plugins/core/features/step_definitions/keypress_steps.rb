@@ -49,7 +49,7 @@ def press_key(key)
   make_event_key(key, :release).put
 end
 
-When /^I press #{FeatureHelpers::STRING_RE}(?: then #{FeatureHelpers::STRING_RE})?$/ do |key1, key2|
+When /^I (?:have pressed|press) #{FeatureHelpers::STRING_RE}(?: then #{FeatureHelpers::STRING_RE})?$/ do |key1, key2|
   press_key(key1)
   press_key(key2) if key2
 end

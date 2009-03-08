@@ -3,7 +3,7 @@ Given /^there is an? EditTab open$/ do
   When 'I press "Super+N"'
 end
 
-When /^I type "([^"]+)"$/ do |text|
+When /^I (?:type|have typed) "([^"]+)"$/ do |text|
   bits = text.split(//).reverse
   while letter = bits.pop
     case letter

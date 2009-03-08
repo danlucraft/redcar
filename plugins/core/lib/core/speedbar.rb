@@ -171,7 +171,7 @@ module Redcar
           blk.call(@spbar)
         end
       end
-      add_key(key) { b.activate } if key
+      add_key(Keymap.normalize(key)) { b.activate } if key
       pack_start(b, false)
       @focus_widget ||= b
     end

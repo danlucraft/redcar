@@ -178,7 +178,11 @@ module Redcar
     
     def contents_as_string
       result = buffer.text
-      result.insert(buffser.cursor_offset, "<c>")
+      result = result.insert(buffer.cursor_offset, "<c>")
+      if buffer.selection_iter != buffer.cursor_iter
+        result = result.insert(buffer.selection_offset, "<s>")
+      end
+      result
     end
     
     def visible_contents_as_string
@@ -188,10 +192,15 @@ module Redcar
       if buffer.cursor_iter >= start and 
           (buffer.cursor_iter < _end or 
             (_end == buffer.end_iter and buffer.cursor_iter == buffer.end_iter))
-        result.insert(buffer.cursor_offset - start.offset, "<c>")
-      else
-        result
+        result = result.insert(buffer.cursor_offset - start.offset, "<c>")
       end
+      if buffer.selection_iter != buffer.cursor_iter and
+           buffer.selection_iter >= start and 
+            (buffer.selection_iter < _end or 
+              (_end == buffer.end_iter and buffer.selection_iter == buffer.end_iter))
+        result = result.insert(buffer.selection_offset - start.offset, "<s>")
+      end
+      result
     end
   end
 end
