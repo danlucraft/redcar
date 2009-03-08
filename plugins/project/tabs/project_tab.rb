@@ -309,11 +309,11 @@ module Redcar
       @directories.clear
     end
     
-    def contents_as_text
+    def contents_as_string
       @store.contents
     end
     
-    def visible_contents_as_text
+    def visible_contents_as_string
       @view.visible_contents
     end
   end

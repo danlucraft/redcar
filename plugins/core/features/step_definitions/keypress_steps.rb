@@ -14,6 +14,7 @@ def make_event_key(key, type)
   alt  = (bits.include?("Alt")   ? true : false)
   supr = (bits.include?("Super") ? true : false)
   letter = clean_letter(bits.last)
+
   shift = (bits.include?("Shift") && (letter =~ /^[[:alpha:]]$/ or letter.length > 1)? true : false)
   case type
   when :release
@@ -29,7 +30,7 @@ def make_event_key(key, type)
   new_mod_mask |= Gdk::Window::ModifierType::SUPER_MASK if supr
   new_mod_mask = Gdk::Window::ModifierType.new(new_mod_mask)
   new_event_key.state = new_mod_mask
-  new_event_key.keyval = Gdk::Keyval.from_name(letter)
+  new_event_key.keyval = Gdk::Keyval.from_name(letter.downcase)
   
   new_event_key.window = Redcar.win.window
   new_event_key
@@ -44,9 +45,13 @@ def inspect_event_key(gdk_event_key)
   return kv, ks, key
 end
 
-When /^I press "(.*)"$/ do |key|
+def press_key(key)
   make_event_key(key, :press).put
   make_event_key(key, :release).put
+end
+
+When /^I press "(.*)"$/ do |key|
+  press_key(key)
 end
 
 

@@ -1,5 +1,4 @@
 
-puts "loading redcar for cucumber"
 
 require File.dirname(__FILE__) + "/formatters/gtk_formatter.rb"
 require File.dirname(__FILE__) + "/formatters/gtk_progress_formatter.rb"

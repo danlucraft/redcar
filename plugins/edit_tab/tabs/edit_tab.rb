@@ -53,7 +53,7 @@ module Redcar
         command_class.name = grammar.name
         command_class.class_eval %Q{
           def execute
-            puts "setting grammar #{grammar.name}"
+            App.log.info "[EditTab] setting grammar #{grammar.name}"
             tab.view.buffer.set_grammar_by_name(#{grammar.name.inspect})
             tab.view.set_theme_by_name(Redcar::Preference.get("Appearance/Tab Theme"))
           end
@@ -174,6 +174,15 @@ module Redcar
     def close #:nodoc:
       super
       buffer.parser.close if buffer.parser
+    end
+    
+    def contents_as_string
+      buffer.text
+    end
+    
+    def visible_contents_as_string
+      buffer.get_slice(buffer.line_start(view.first_visible_line),
+                       buffer.line_end(view.last_visible_line))
     end
   end
 end
