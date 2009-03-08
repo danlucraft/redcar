@@ -49,7 +49,6 @@ module Redcar
           item "Line",            SelectLine
           item "Current Scope",    SelectScopeCommand
         end
-        separator
       end
       
       main_menu "Dans" do

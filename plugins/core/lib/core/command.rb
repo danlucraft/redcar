@@ -89,8 +89,18 @@ module Redcar
     end
 
     def self.menu(menu)
-      @menu = menu
-      MenuBuilder.item "menubar/"+menu, self.to_s
+      menu_path = menu.split("/").reverse
+      top = menu_path.pop
+      _menu = Menu.get_main(top)
+      while portion = menu_path.pop and menu_path.any?
+        _menu = _menu.get_submenu(portion)
+      end
+      _menu.add_item(portion, self)
+      @menu = _menu
+    end
+    
+    class << self
+      attr_accessor :menu_item
     end
 
     def self.icon(icon)
@@ -173,7 +183,7 @@ module Redcar
 
     def self.update_operative
       old = @operative
-#      puts "update_operative: #{self.inspect}" if @name == "Help"
+      # puts "update_operative: #{self.inspect}" if to_s == "Redcar::Undo"
 #      puts "  #{!!active?}" if @name == "Help"
 #      puts "  #{!!in_range?}" if @name == "Help"
       @operative = if active? and in_range?
@@ -187,15 +197,16 @@ module Redcar
                    end
 #      puts "  com: #{self.inspect}: #{old.inspect} -> #{@operative.inspect}" if @name == "Help"
 #      p self.inspect if @name == "Help"
-      if old != @operative and @menu
+# p @menu if to_s == "Redcar::Undo"
+      if old != @operative and @menu_item
 #        p :updating_menu_sensitivity if @name == "Help"
-        Redcar::MenuDrawer.set_active(@menu, @operative)
+        Redcar::MenuDrawer.set_active(@menu_item, @operative)
       end
       child_commands.each(&:update_operative)
     end
 
     def self.update_menu_sensitivity
-      Redcar::MenuDrawer.set_active(@menu, @operative)
+      Redcar::MenuDrawer.set_active(@menu_item, @operative)
     end
 
     def self.in_range=(val)
