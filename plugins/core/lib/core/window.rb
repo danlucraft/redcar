@@ -26,7 +26,6 @@ module Redcar
       @focussed_gtk_widget = nil
       build_widgets
       MenuDrawer.draw_menus(self)
-      pp Menu.main
       Range.activate(Redcar::Window)
       connect_signals
       show_initial_widgets
@@ -234,20 +233,23 @@ module Redcar
       end
 
       signal_connect('key-press-event') do |gtk_widget, gdk_eventkey|
-        begin
-          done = false
-          if speedbar_display = speedbar_focussed?
-            done = speedbar_display.process_keypress(gdk_eventkey)
-          end
-          if done
-            false
-          else
+        done = false
+        if speedbar_display = speedbar_focussed?
+          done = speedbar_display.process_keypress(gdk_eventkey)
+        end
+        if done
+          false
+        else
+          stop_propogating = nil
+          begin
             stop_propogating = Keymap.process(gdk_eventkey)
-            # falls through to Gtk widgets if nothing handles it
-            stop_propogating
+          rescue Object => e
+            App.log.error e
+            App.log.error e.backtrace
           end
-        rescue
-          true
+          
+          # falls through to Gtk widgets if nothing handles it
+          stop_propogating
         end
       end
 

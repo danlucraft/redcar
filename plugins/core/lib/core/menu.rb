@@ -73,8 +73,6 @@ module Redcar
         @gtk_menu_item = gtk_menu_item
       end
       
-      private
-      
       def self.make_gtk_menuitem_hbox(c, keybinding)
         child = c.child
         c.remove(child)
@@ -151,7 +149,7 @@ module Redcar
             else
               Gtk::MenuItem.new name
             end
-        MenuDrawer.make_gtk_menuitem_hbox(gtk_menuitem, i.to_s)
+        Item.make_gtk_menuitem_hbox(gtk_menuitem, i.to_s)
         i += 1
         MenuDrawer.connect_item_signal(command, gtk_menuitem)
         gtk_menu.append(gtk_menuitem)
@@ -199,7 +197,7 @@ module Redcar
     end
     
     def main_menu(menu_name, &block)
-      puts "main_menu(#{menu_name.inspect})"
+      # puts "main_menu(#{menu_name.inspect})"
       MenuBuilder.menu = Menu.get_main(menu_name)
       MenuBuilder.command_scope = ""
       MenuBuilder.class_eval(&block)
@@ -207,7 +205,7 @@ module Redcar
     end
     
     def context_menu(menu_name, &block)
-      puts "context_menu(#{menu_name.inspect})"
+      # puts "context_menu(#{menu_name.inspect})"
       MenuBuilder.menu = Menu.get_context(menu_name)
       MenuBuilder.command_scope = ""
       MenuBuilder.class_eval(&block)
@@ -218,7 +216,7 @@ module Redcar
       attr_accessor :menu_scope, :command_scope, :menu
       
       def item(item_name, command_name, options={})
-        puts "item(#{item_name.inspect}, #{command_name.inspect}, #{options.inspect})"
+        # puts "item(#{item_name.inspect}, #{command_name.inspect}, #{options.inspect})"
         command = bus("/redcar/commands/#{command_scope}/#{command_name}").data
         MenuBuilder.menu.add_item(item_name, command)
       end
@@ -228,7 +226,7 @@ module Redcar
       end
       
       def submenu(name, &block)
-        puts "submenu(#{name.inspect})"
+        # puts "submenu(#{name.inspect})"
         old_menu = MenuBuilder.menu
         MenuBuilder.menu = menu.get_submenu(name)
         MenuBuilder.class_eval(&block)
@@ -299,7 +297,6 @@ module Redcar
       end
       
       def set_active(menu_item, val)
-        puts "set_active(#{menu_item.inspect}, #{val.inspect})"
         menu_item.gtk_menu_item.sensitive = val
       end
     end

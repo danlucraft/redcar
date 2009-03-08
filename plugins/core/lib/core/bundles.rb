@@ -337,16 +337,11 @@ module Redcar
       # require 'ruby-prof'
       start = Time.now
       # RubyProf.start
-      root_menu_slot = bus['/redcar/menus/menubar/Bundles']
-      MenuBuilder.set_menuid(root_menu_slot)
+      main_bundle_menu = Menu.get_main("Bundles")
       bundles.sort_by(&:name).each do |bundle|
-        bundle_menu_slot = root_menu_slot[bundle.name]
-        MenuBuilder.set_menuid(bundle_menu_slot)
-        about_slot = bundle_menu_slot["About"]
-        MenuBuilder.set_menuid(about_slot)
-        about_slot.data = bundle.about_command
-        about_slot.attr_menu_entry = true
-        build_bundle_menu(bundle_menu_slot, (bundle.info["mainMenu"]||{})["items"]||[], bundle)
+        bundle_menu = main_bundle_menu.get_submenu(bundle.name)
+        about_item = bundle_menu.add_item("About", bundle.about_command)
+        build_bundle_menu(bundle_menu, (bundle.info["mainMenu"]||{})["items"]||[], bundle)
       end
       # result = RubyProf.stop
       # printer = RubyProf::GraphHtmlPrinter.new(result)
@@ -354,24 +349,18 @@ module Redcar
       puts "built bundle menus in #{Time.now - start}s"
     end
 
-    def self.build_bundle_menu(menu_slot, uuids, bundle)
+    def self.build_bundle_menu(bundle_menu, uuids, bundle)
       uuids.each do |uuid|
         if uuid =~ /^-+$/
-          slot = menu_slot["separator_#{MenuBuilder.menuid}"]
-          MenuBuilder.set_menuid(slot)
+          bundle_menu.items << Menu::SeparatorItem.new
         elsif item = uuid_map[uuid]
           unless item.name and item.name != ""
             next
           end
-          item_slot = menu_slot[item.name.gsub("/", "\\")]
-          item.menu item_slot.path.gsub("/redcar/menus/menubar/", "")
-          MenuBuilder.set_menuid(item_slot)
-          item_slot.data = item
-          item_slot.attr_menu_entry = true
+          bundle_menu.add_item(item.name, item)
         elsif sub_menu = (bundle.info["mainMenu"]["submenus"]||[])[uuid]
-          item_slot = menu_slot[sub_menu["name"].gsub("/", "\\")]
-          MenuBuilder.set_menuid(item_slot)
-          build_bundle_menu(item_slot, sub_menu["items"], bundle)
+          bundle_submenu = bundle_menu.get_submenu(sub_menu["name"])
+          build_bundle_menu(bundle_submenu, sub_menu["items"], bundle)
         end
       end
     end

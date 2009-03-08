@@ -61,7 +61,7 @@ module Redcar
         item "Unify All",         UnifyAll
       end
 
-      # Bundle.build_bundle_menus
+      Bundle.build_bundle_menus
       
       plugin.transition(FreeBASE::LOADED)
     end

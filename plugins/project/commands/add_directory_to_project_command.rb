@@ -1,7 +1,7 @@
 
 module Redcar
   class AddDirectoryToProjectCommand < Command
-    menu "Project/Foo/Add Directory"
+    menu "Project/Add Directory"
     
     def initialize(dir=nil)
       @dirname = dir
