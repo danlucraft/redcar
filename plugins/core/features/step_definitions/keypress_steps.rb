@@ -1,19 +1,10 @@
 
-def clean_letter(letter)
-  if letter.include? "Tab"
-    "Tab"
-  else
-    letter.split(" ").join("_")
-  end
-end
-
 def make_event_key(key, type)
-  # puts "pressing: #{key}"
   bits = key.split("+")
   ctrl = (bits.include?("Ctrl")  ? true : false)
   alt  = (bits.include?("Alt")   ? true : false)
   supr = (bits.include?("Super") ? true : false)
-  letter = clean_letter(bits.last)
+  letter = bits.last
 
   shift = (bits.include?("Shift") && (letter =~ /^[[:alpha:]]$/ or letter.length > 1)? true : false)
   case type
@@ -30,9 +21,13 @@ def make_event_key(key, type)
   new_mod_mask |= Gdk::Window::ModifierType::SUPER_MASK if supr
   new_mod_mask = Gdk::Window::ModifierType.new(new_mod_mask)
   new_event_key.state = new_mod_mask
-  keyval = Gdk::Keyval.from_name(letter)
-  if keyval == 0
-    keyval = Gdk::Keyval.from_name(letter.downcase)
+  if letter.length > 1
+    keyval = Gdk::Keyval.from_name(letter)
+    if keyval == 0
+      keyval = Gdk::Keyval.from_name(letter.downcase)
+    end
+  else
+    keyval = letter[0]
   end
   new_event_key.keyval = keyval
   new_event_key.hardware_keycode = Gdk::Keymap.default.get_entries_for_keyval(keyval).first.first

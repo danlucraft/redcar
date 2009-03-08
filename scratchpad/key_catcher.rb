@@ -55,6 +55,9 @@ def test_event_key(gdk_event_key)
     p new_mod_mask
     new_event_key.state = new_mod_mask
     new_event_key.keyval = Gdk::Keyval.from_name(letter)
+    if new_event_key.keyval == 0
+      new_event_key.keyval = Gdk::Keyval.from_name(letter.downcase)
+    end
   end
   inspect_event_key(new_event_key)  
   

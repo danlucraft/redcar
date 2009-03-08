@@ -6,12 +6,14 @@ Given /^there is an? EditTab open with syntax "([^"]+)"$/ do |syntax|
 end
 
 When /^I type "([^"]+)"$/ do |text|
-  text.split(//).each do |letter|
+  bits = text.split(//).reverse
+  while letter = bits.pop
     case letter
-    when " "
-      press_key("Space")
-    when "\n"
-      press_key("Return")
+    when "\\"
+      case bits.pop
+      when "n"
+        press_key("Return")
+      end
     else
       press_key(letter)
     end

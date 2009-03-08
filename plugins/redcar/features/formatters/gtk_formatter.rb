@@ -4,8 +4,8 @@ module Cucumber
     class GtkFormatter < Pretty
       
       def visit_step(step)
-        super
         Gtk.main_iteration while Gtk.events_pending?
+        super
       end
     end
   end
