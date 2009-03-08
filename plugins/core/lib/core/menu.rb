@@ -40,11 +40,14 @@ module Redcar
     end
     
     def add_item(item_name, command)
-      items << Item.new(item_name, command)
+      command.menu = self
+      new_item = Item.new(item_name, command)
+      command.menu_item = new_item
+      items << new_item
     end
     
-    def make_gtk_menuitem
-      Gtk::MenuItem.new(name)
+    def gtk_menu_item
+      @gtk_menu_item ||= Gtk::MenuItem.new(name)
     end
     
     class Item
@@ -54,7 +57,8 @@ module Redcar
         @name, @command = name, command
       end
       
-      def make_gtk_menuitem
+      def gtk_menu_item
+        return @gtk_menu_item if @gtk_menu_item
         if icon = command.get(:icon) and
            icon != "none"
           gtk_menu_item = Gtk::ImageMenuItem.create(icon, name)
@@ -66,7 +70,7 @@ module Redcar
             Item.make_gtk_menuitem_hbox(gtk_menu_item, keybinding)
           end
         end
-        gtk_menu_item
+        @gtk_menu_item = gtk_menu_item
       end
       
       private
@@ -250,7 +254,7 @@ module Redcar
         clear_menus        
         Menu.main.each do |main_menu|
           gtk_menu = Gtk::Menu.new
-          gtk_menuitem = main_menu.make_gtk_menuitem
+          gtk_menuitem = main_menu.gtk_menu_item
           @toplevel_gtk_menuitems[main_menu.name] = gtk_menuitem
           gtk_menuitem.submenu = gtk_menu
           gtk_menuitem.show
@@ -265,11 +269,11 @@ module Redcar
             gtk_menuitem = Gtk::SeparatorMenuItem.new
           else
             if menu_item.is_a?(Menu::Item)
-              gtk_menuitem = menu_item.make_gtk_menuitem
+              gtk_menuitem = menu_item.gtk_menu_item
               connect_item_signal(menu_item.command, gtk_menuitem)
               gtk_menuitem.sensitive = menu_item.command.executable?(Redcar.tab)
             elsif menu_item.is_a?(Menu)
-              gtk_menuitem = menu_item.make_gtk_menuitem
+              gtk_menuitem = menu_item.gtk_menu_item
               gtk_submenu = Gtk::Menu.new
               gtk_menuitem.submenu = gtk_submenu
               draw_menus1(menu_item, gtk_submenu)
@@ -294,11 +298,9 @@ module Redcar
         end
       end
       
-      def set_active(menu_path, val)
-        puts "set_active(#{menu_path.inspect}, #{val.inspect})"
-        if gtk_menuitem = bus("/redcar/menus/#{menu_path}").attr_gtk_menuitem
-          gtk_menuitem.sensitive = val
-        end
+      def set_active(menu_item, val)
+        puts "set_active(#{menu_item.inspect}, #{val.inspect})"
+        menu_item.gtk_menu_item.sensitive = val
       end
     end
   end
