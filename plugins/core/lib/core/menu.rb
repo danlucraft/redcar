@@ -56,7 +56,7 @@ module Redcar
       def initialize(name, command)
         @name, @command = name, command
       end
-      
+            
       def gtk_menu_item
         return @gtk_menu_item if @gtk_menu_item
         if icon = command.get(:icon) and
@@ -66,9 +66,7 @@ module Redcar
           gtk_menu_item = Gtk::MenuItem.new(name)
         end
         if key = command.get(:key)
-          if keybinding = Keymap.display_key(key)
-            Item.make_gtk_menuitem_hbox(gtk_menu_item, keybinding)
-          end
+          Item.make_gtk_menuitem_hbox(gtk_menu_item, key)
         end
         @gtk_menu_item = gtk_menu_item
       end

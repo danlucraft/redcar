@@ -129,12 +129,6 @@ module Redcar
         false
       end
     end
-
-    # Turns a key_path like "Global/Ctrl+G" into "Ctrl+G" for display
-    # in the menus.
-    def self.display_key(key_path)
-      key_path.split("/").last
-    end
   end
 end
 

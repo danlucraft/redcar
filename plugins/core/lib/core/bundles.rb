@@ -26,7 +26,6 @@ module Redcar
     def self.translate_key_equivalent(keyeq, name=nil)
       if keyeq
         key_str      = keyeq.at(-1)
-#        p keyeq if keyeq == "$\n"
         case key_str
         when "\n"
           letter = "Return"
@@ -57,9 +56,6 @@ module Redcar
           letter
         else
           modifiers.join("+") + "+" + letter.upcase
-        end
-        if name
-#          puts "#{(name||"").ljust(55)} | #{keyeq.inspect[1..-2].ljust(5)} -> #{res.inspect}"
         end
         res
       end
