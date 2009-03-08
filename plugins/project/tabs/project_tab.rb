@@ -269,7 +269,7 @@ module Redcar
         @renderer2.editable = false
         @renderer2.signal_handler_disconnect(@edit_cancel_handler)
       end
-      @button_blocker_handler = @view.on_button_press { false }
+      @button_blocker_handler = @view.on_click { false }
       @block_buttons = true
       @edit_cancel_handler = @renderer2.signal_connect("editing-canceled") do 
         @renderer2.signal_handler_disconnect(@edit_handler)
