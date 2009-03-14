@@ -38,7 +38,7 @@ module Redcar
         list.each {|item| gtk_combo_box.append_text(item) }
         gtk_combo_box.signal_connect("changed") do |gtk_combo_box1|
           if Redcar.tab and Redcar.tab.is_a? EditTab
-            Redcar.tab.view.buffer.set_grammar_by_name(list[gtk_combo_box1.active])
+            Redcar.tab.view.buffer.set_grammar_by_name(list[gtk_combo_box1.active].split("(").first.strip)
             Redcar.tab.view.set_theme_by_name(Redcar::Preference.get("Appearance/Tab Theme"))
           end
         end
