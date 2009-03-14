@@ -171,6 +171,24 @@ class Gtk::Window
 end
 
 class Gtk::Widget
+  alias :old_signal_connect :signal_connect
+  
+  def signal_connect(*args, &block)
+    signal_name = args.first
+    block_with_rescue = lambda do |*args|
+      begin
+        block.call(*args)
+      rescue Object => e
+        puts "--- Error in #{args.first.class} #{signal_name.inspect} signal handler:"
+        puts "    " + e.class.to_s + ": "+ e.message
+        puts e.backtrace .map{|line| "    " + line}
+        $stdout.flush
+        true
+      end
+    end
+    old_signal_connect(*args, &block_with_rescue)
+  end
+  
   def on_key_press(key, &block)
     @__gltr_key_presses ||= {}
     @__gltr_key_presses[key] = block

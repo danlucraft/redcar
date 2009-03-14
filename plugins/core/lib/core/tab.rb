@@ -169,5 +169,10 @@ module Redcar
     def visible_contents_as_string
       @gtk_nb_widget.inspect
     end
+    
+    # For some reason the standard inspect hangs, so we override.
+    def inspect # :nodoc:
+      "#<#{self.class}>"
+    end
   end
 end
