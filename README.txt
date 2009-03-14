@@ -68,11 +68,16 @@ There will be quite a lot of warnings during this compilation, but there shouldn
   $ cd /usr/local/share/
   $ sudo git clone git://github.com/danlucraft/redcar-bundles.git textmate
   
-7. Download Zerenity:
-  $ cd /usr/local/share/textmate/Support/lib
-  $ sudo git clone git://github.com/danlucraft/zerenity.git zerenity
+7. Download and install Zerenity:
+  $ git clone git://github.com/danlucraft/zerenity.git
+  $ cd zerenity
+  $ rake gem
+  $ sudo gem install pkg/zerenity-1.3.gem --local
+  
+  (I am in waiting for Rubyforge to create a zerenity project, then this will be
+  available to install through gems.)
 
-7. Now try running Redcar
+8. Now try running Redcar
   $ cd REDCAR_PATH
   $ ./bin/redcar
  
