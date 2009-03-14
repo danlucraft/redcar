@@ -109,20 +109,13 @@ module Redcar
 
     def filename=(fn)
       self.title = fn.split(/\//).last
-      if @modified
-        self.title += "*"
-      end
+      update_tab_label
       @filename = fn
     end
-
+    
     def modified=(val) #:nodoc:
-      old = @modified
       @modified = val
-      if val and !old
-        self.title += "*"
-      elsif !val and old
-        self.title = self.label.text.gsub(/\*$/, "")
-      end
+      update_tab_label
     end
     
     def connect_signals #:nodoc:
@@ -168,10 +161,10 @@ module Redcar
         newtext = File.read(filename)
         document.begin_not_undoable_action
         document.text = newtext
+        self.modified = false
         document.end_not_undoable_action
         detect_and_set_grammar
         document.cursor = 0
-        @modified = false
       end
     end
     
@@ -232,6 +225,16 @@ module Redcar
         result = result.insert(buffer.selection_offset - start.offset, "<s>")
       end
       result
+    end
+    
+    private
+    
+    def update_tab_label
+      if @modified and self.title[-1..-1] != "*"
+        self.title += "*"
+      elsif not @modified and self.title[-1..-1] == "*"
+        self.title = self.label.text.gsub(/\*$/, "")
+      end
     end
   end
 end
