@@ -60,7 +60,9 @@ Feature: The Project Tab
     Then I should see "astoria.txt" in the ProjectTab
     And I cleanup the file "astoria.txt" in the project plugin's features directory
 
-
-
+  Scenario: Opens a ProjectTab is one is required
+    When I add the directory "plugins/project" to the ProjectTab
+    Then there should be one ProjectTab open
+    And I should see "project" in the ProjectTab
 
 
