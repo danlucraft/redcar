@@ -95,6 +95,8 @@ module Redcar
     def initialize(pane)
       @view = EditView.new
       connect_signals
+      @view.buffer.set_grammar_by_name("Plain Text")
+      @view.set_theme_by_name(Redcar::Preference.get("Appearance/Tab Theme"))
       super pane, @view, :scrolled? => true
     end
     
