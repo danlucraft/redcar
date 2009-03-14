@@ -28,7 +28,7 @@ module Redcar
           output = stdout.read
         end
         puts "output: #{output.inspect}"
-        # error = stderr.read
+        error = stderr.read
       end
       @status = status.exitstatus
       puts "command status: #{status.exitstatus}"
@@ -44,7 +44,7 @@ module Redcar
     end
     
     def shell_command
-      if shell_script[0..1] == "#!"
+      if shell_script[0..1] == "#!" and shell_script.split("\n").first !~ /#!\/bin\/sh/
         "./cache/tmp.command"
       else
         "/bin/bash cache/tmp.command"
