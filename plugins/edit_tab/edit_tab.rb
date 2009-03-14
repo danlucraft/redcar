@@ -35,7 +35,6 @@ module Redcar
       Hook.attach :after_focus_tab do |tab|
         gtk_combo_box = bus('/gtk/window/statusbar/grammar_combo').data
         gtk_line_label = bus('/gtk/window/statusbar/line').data
-        # TODO remove this hardcoded reference
         if tab and tab.is_a? EditTab
           list = Gtk::Mate::Buffer.bundles.map{|b| b.grammars }.flatten.map(&:name).sort
           gtk_combo_box.sensitive = true

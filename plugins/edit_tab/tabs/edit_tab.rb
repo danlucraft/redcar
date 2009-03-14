@@ -17,6 +17,25 @@ module Redcar
       end
     end
 
+    def self.grammar_combo_list(keys=true)
+      list = Gtk::Mate::Buffer.bundles.map{|b| b.grammars }.flatten.map do |grammar|
+        if keq = grammar.key_equivalent
+          grammar.name + (keys ? " (" + Bundle.translate_key_equivalent(grammar.key_equivalent) + ")" : "")
+        else
+          grammar.name
+        end          
+      end
+      list = list.sort
+    end
+    
+    def self.grammar_combo_grammar_name(item)
+      grammar_combo_list[item].split("(").first.strip
+    end
+    
+    def self.grammar_combo_item_index(grammar_name)
+      grammar_combo_list(false).index(grammar_name)
+    end
+
     # Creates a grammar combo on the status bar that
     # reflects the current tab's view's current grammar,
     # and can be used to change it.
@@ -27,19 +46,10 @@ module Redcar
         gtk_combo_box = Gtk::ComboBox.new(true)
         bus('/gtk/window/statusbar/grammar_combo').data = gtk_combo_box
         Gtk::Mate.load_bundles
-        list = Gtk::Mate::Buffer.bundles.map{|b| b.grammars }.flatten.map do |grammar|
-          if keq = grammar.key_equivalent
-            grammar.name + " (" + Bundle.translate_key_equivalent(grammar.key_equivalent) + ")"
-          else
-            grammar.name
-          end          
-        end
-        list = list.sort
-        list.each {|item| gtk_combo_box.append_text(item) }
+        grammar_combo_list.each {|item| gtk_combo_box.append_text(item) }
         gtk_combo_box.signal_connect("changed") do |gtk_combo_box1|
           if Redcar.tab and Redcar.tab.is_a? EditTab
-            Redcar.tab.view.buffer.set_grammar_by_name(list[gtk_combo_box1.active].split("(").first.strip)
-            Redcar.tab.view.set_theme_by_name(Redcar::Preference.get("Appearance/Tab Theme"))
+            Redcar.tab.view.buffer.set_grammar_by_name(grammar_combo_grammar_name(gtk_combo_box1.active))
           end
         end
         gtk_hbox.pack_end(gtk_combo_box, false)
@@ -62,7 +72,6 @@ module Redcar
           def execute
             App.log.info "[EditTab] setting grammar #{grammar.name}"
             tab.view.buffer.set_grammar_by_name(#{grammar.name.inspect})
-            tab.view.set_theme_by_name(Redcar::Preference.get("Appearance/Tab Theme"))
           end
         }
       end
@@ -75,7 +84,7 @@ module Redcar
 
     # an EditView instance.
     attr_reader :view
-    attr_accessor :filename
+    attr_reader :filename
     attr_reader :modified
     
     # Do not call this directly. Use Window#new_tab or 
@@ -98,6 +107,14 @@ module Redcar
       @view.buffer
     end
 
+    def filename=(fn)
+      self.title = fn.split(/\//).last
+      if @modified
+        self.title += "*"
+      end
+      @filename = fn
+    end
+
     def modified=(val) #:nodoc:
       old = @modified
       @modified = val
@@ -113,6 +130,12 @@ module Redcar
         self.modified = true
         Hook.trigger :tab_changed, self
         false
+      end
+      @view.buffer.signal_connect_after("grammar-changed") do |buffer, grammar_name|
+        if self == Redcar.win.focussed_tab
+          gtk_combo_box = bus('/gtk/window/statusbar/grammar_combo').data
+          gtk_combo_box.active = EditTab.grammar_combo_item_index(grammar_name)
+        end
       end
       connect_view_signals
     end
@@ -132,21 +155,22 @@ module Redcar
       end
     end
 
+    def detect_and_set_grammar
+      grammar_name = view.buffer.set_grammar_by_filename(filename) 
+      grammar_name ||= view.buffer.set_grammar_by_first_line(view.buffer.text.split("\n").first)
+    end
+
     # Load a document into the tab from the filename given.
     def load(filename)
       Hook.trigger :tab_load, self do
         document.text = ""
+        self.filename = filename
         newtext = File.read(filename)
-        grammar_name = view.buffer.set_grammar_by_filename(filename) || view.buffer.set_grammar_by_first_line(newtext.split("\n").first)
-        if grammar_name
-          view.set_theme_by_name(Redcar::Preference.get("Appearance/Tab Theme"))
-        end
         document.begin_not_undoable_action
         document.text = newtext
         document.end_not_undoable_action
-        self.title = filename.split(/\//).last
+        detect_and_set_grammar
         document.cursor = 0
-        @filename = filename
         @modified = false
       end
     end

@@ -7,6 +7,7 @@ module Redcar
     def execute
       if filename = Redcar::Dialog.save
         tab.filename = filename
+        tab.detect_and_set_grammar
         tab.save
       end
     end
