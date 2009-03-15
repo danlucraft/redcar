@@ -136,7 +136,7 @@ module Redcar
 
       ENV['REDCAR_BIN'] = Redcar::ROOT + "/bin/redcar"
       ENV['RUBYLIB'] = (ENV['RUBYLIB']||"")+":#{textmate_share_dir}/Support/lib"
-      ENV['TM_RUBY'] = "/usr/local/bin/ruby"
+      ENV['TM_RUBY'] = File.join(Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name'])
       
       if bundle
         ENV['TM_BUNDLE_SUPPORT'] = bundle.dir+"/Support"
