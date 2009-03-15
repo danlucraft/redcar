@@ -10,3 +10,4 @@ Feature: EditTab
     Given there is an EditTab open
     When I press "Ctrl+Alt+Shift+R" then "1"
     Then the current syntax should be "Ruby"
+

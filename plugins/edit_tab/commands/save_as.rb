@@ -4,17 +4,22 @@ module Redcar
     key "Ctrl+Shift+S"
     icon :SAVE
 
+    def initialize(filename)
+      @filename = filename
+    end
+
     def execute
-      if filename = Redcar::Dialog.save
-        if File.exist?(filename) and filename != tab.filename
-          unless Zerenity::Question(:text => "File #{filename} already exists. Overwrite?")
+      unless @filename
+        @filename ||= Redcar::Dialog.save
+        if File.exist?(@filename) and @filename != tab.filename
+          unless Zerenity::Question(:text => "File #{@filename} already exists. Overwrite?")
             return
           end
         end
-        tab.filename = filename
-        tab.detect_and_set_grammar
-        tab.save
       end
+      tab.filename = @filename
+      tab.detect_and_set_grammar
+      tab.save
     end
   end
 end
