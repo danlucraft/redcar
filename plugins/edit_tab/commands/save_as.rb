@@ -4,7 +4,7 @@ module Redcar
     key "Ctrl+Shift+S"
     icon :SAVE
 
-    def initialize(filename)
+    def initialize(filename=nil)
       @filename = filename
     end
 
