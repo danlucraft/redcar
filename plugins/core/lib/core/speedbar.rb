@@ -1,6 +1,8 @@
 
 module Redcar
   class Speedbar
+    include FreeBASE::DataBusHelper
+
     def self.items
       @items
     end

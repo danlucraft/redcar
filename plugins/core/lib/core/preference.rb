@@ -57,6 +57,8 @@ module Redcar
   # See the Redcar::PreferenceBuilder for all methods that are valid
   # within the preference definition block.
   module Preference
+    include FreeBASE::DataBusHelper
+
     def self.load #:nodoc:
       FreeBASE::Properties.new("Redcar Preferences", 
                                Redcar::VERSION, 

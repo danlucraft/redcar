@@ -4,6 +4,7 @@ module Redcar
     extend FreeBASE::StandardPlugin
     extend Redcar::PreferenceBuilder
     extend Redcar::MenuBuilder
+    include FreeBASE::DataBusHelper
     
     class PluginTransitionException < Exception #:nodoc:
     end

@@ -11,6 +11,7 @@ module Redcar
   # panes.
   class Pane
     extend FreeBASE::StandardPlugin
+    include FreeBASE::DataBusHelper
 
     # The Pane's Gtk::Notebook.
     attr_accessor :gtk_notebook

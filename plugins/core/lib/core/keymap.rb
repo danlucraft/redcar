@@ -1,6 +1,8 @@
 
 module Redcar
   class Keymap
+    include FreeBASE::DataBusHelper
+
     def self.load #:nodoc:
       @obj_keymaps = Hash.new {|obj,key| obj[key] = [] }
       Hook.register(:keystroke)

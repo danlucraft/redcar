@@ -16,6 +16,8 @@ module Redcar
   #     end
   #   end
   class Command
+    include FreeBASE::DataBusHelper
+
     class << self
       include Redcar::Sensitive
       attr_writer :name

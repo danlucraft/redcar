@@ -5,6 +5,8 @@ module Redcar
   # Redcar::Gui sets up the Gtk main thread to begin when FreeBASE 2.0 
   # has loaded all the plugins.
   module Gui
+    include FreeBASE::DataBusHelper
+
     def self.load
       Hook.register(:redcar_start)
     end

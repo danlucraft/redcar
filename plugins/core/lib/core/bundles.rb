@@ -4,6 +4,8 @@ module Redcar
   # it will scan for and load bundle information for all bundles
   # in "/usr/local/share/textmate/Bundles" or "/usr/share/textmate/Bundles"
   class Bundle
+    include FreeBASE::DataBusHelper
+
     def self.load #:nodoc:
       load_bundles(App.textmate_share_dir+"/Bundles/")
     end

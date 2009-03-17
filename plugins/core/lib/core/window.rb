@@ -1,6 +1,8 @@
 
 module Redcar
   class Window < Gtk::Window
+    include FreeBASE::DataBusHelper
+
     def self.load #:nodoc:
       Hook.register :new_tab
       Hook.register :close_tab

@@ -39,6 +39,13 @@ end
 
 HERE = File.dirname(__FILE__)
 
+require HERE + '/../lib/dbus'
+
+unless ARGV.include?("--multiple-instance")
+  Redcar::DBus.try_export_service
+end
+
+
 # See if a code base was passed as an argument. If not
 # default the codebase to the path of the freeride.rb script
 codebase = File.expand_path(File.dirname(__FILE__))
@@ -62,6 +69,8 @@ module Redcar
   VERSION_MINOR = 0
   VERSION_RELEASE = 1
   ROOT = File.expand_path(File.dirname(__FILE__) + "/../")
+
+  include FreeBASE::DataBusHelper
 
   module App
     class << self
