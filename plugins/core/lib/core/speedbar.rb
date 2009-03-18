@@ -57,6 +57,8 @@ module Redcar
   end
   
   class SpeedbarDisplay < Gtk::HBox
+    include FreeBASE::DataBusHelper
+    
     attr_reader :visible, :spbar
     
     class << self
