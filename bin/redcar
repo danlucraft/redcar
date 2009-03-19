@@ -23,7 +23,7 @@ end
 
 HERE = File.dirname(__FILE__)
 
-if STDIN.isatty == false and ARGV.include?("-d")
+if STDIN.isatty == false
   $stdin_contents = ""
   until STDIN.eof?
     $stdin_contents << STDIN.read
@@ -33,9 +33,11 @@ if STDIN.isatty == false and ARGV.include?("-d")
   STDERR.close
   $stdout = File.open("/dev/null", "w")
   $stderr = $stdout
-  if pid = fork
-    Process.detach(pid)
-    exit(0)
+  if ARGV.include?("-d")
+    if pid = fork
+      Process.detach(pid)
+      exit(0)
+    end
   end
 end
   
