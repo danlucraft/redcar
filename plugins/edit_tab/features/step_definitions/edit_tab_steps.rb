@@ -4,7 +4,7 @@ Given /^there is an? EditTab open(?: with syntax #{FeatureHelpers::STRING_RE})?$
   if syntax
     case syntax
     when "Ruby"
-      When 'I press "Ctrl+Alt+Shift+R" then "1"'
+      When 'I press "Ctrl+Alt+Shift+R" then "5"'
     else
       raise "features don't know how to activate #{syntax} syntax"
     end

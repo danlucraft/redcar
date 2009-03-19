@@ -61,6 +61,7 @@ module Redcar
   #   Hook.trigger(:MyHook, this, that, the_other_thing)
   module Hook
     extend FreeBASE::StandardPlugin
+    include FreeBASE::DataBusHelper
     
     # Returns an array of all hook names in the system (as Strings)
     def self.names

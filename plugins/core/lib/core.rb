@@ -22,6 +22,7 @@ load 'core/standard_menus.rb'
 load 'core/template.rb'
 load 'core/command_history.rb'
 load 'core/dialog.rb'
+load 'core/dbus.rb'
 
 module Redcar
   class CorePlugin < Redcar::Plugin
@@ -46,6 +47,9 @@ module Redcar
       Command.start
       Hook.attach(:redcar_start) do
         puts "redcar_start: #{Time.now - Redcar::PROCESS_START_TIME} seconds"
+      end
+      unless Redcar::App.ARGV.include?("--multiple-instance") or in_features_process
+        Redcar::DBus.start_listener
       end
       plugin.transition(FreeBASE::RUNNING)
     end

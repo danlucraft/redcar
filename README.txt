@@ -31,17 +31,18 @@ For now, installation is still pretty long-winded. It's a bit easier if you live
 
 1. First you will need to install Ruby-GNOME2, the build tools and some other necessary libraries. On Ubuntu/Debian you may simply do:
 
-  $ sudo apt-get install ruby ruby1.8-dev ruby-gnome2 build-essential libonig2 libonig-dev subversion libgtk2.0-dev libglib2.0-dev libgee0 libgee-dev libgtksourceview2.0-dev libxul-dev xvfb
+  $ sudo apt-get install ruby ruby1.8-dev ruby-gnome2 build-essential libonig2 libonig-dev subversion libgtk2.0-dev libglib2.0-dev libgee0 libgee-dev libgtksourceview2.0-dev libxul-dev xvfb libdbus-ruby
 
 If you are not using Debian/Ubuntu, or have installed Ruby yourself from source, then you should make sure that you have these libraries installed:
   1. Ruby Rubygems, Glib, Gtk, GtkSourceView 2
-  1. Ruby-GNOME2 http://ruby-gnome2.sourceforge.jp/
-  2. Oniguruma (any version will probably work, tested with 5.9.0) http://www.geocities.jp/kosako3/oniguruma/
-  3. Libgee http://live.gnome.org/Libgee
+  2. Ruby-GNOME2 http://ruby-gnome2.sourceforge.jp/
+  3. Oniguruma (any version will probably work, tested with 5.9.0) http://www.geocities.jp/kosako3/oniguruma/
+  4. Libgee http://live.gnome.org/Libgee
+  5. Ruby DBus git://github.com/sdague/ruby-dbus.git
 
 2. Install the required Ruby gems:
 
-  $ sudo gem install oniguruma activesupport rspec cucumber hoe open4
+  $ sudo gem install oniguruma activesupport rspec cucumber hoe open4 zerenity
 
 3. Get the Redcar source.
 
@@ -68,21 +69,17 @@ There will be quite a lot of warnings during this compilation, but there shouldn
   $ cd /usr/local/share/
   $ sudo git clone git://github.com/danlucraft/redcar-bundles.git textmate
   
-7. Download and install Zerenity:
-  $ git clone git://github.com/danlucraft/zerenity.git
-  $ cd zerenity
-  $ rake gem
-  $ sudo gem install pkg/zerenity-1.3.gem --local
-  
-  (I am in waiting for Rubyforge to create a zerenity project, then this will be
-  available to install through gems.)
-
-8. Now try running Redcar
+7. Now try running Redcar
   $ cd REDCAR_PATH
   $ ./bin/redcar
  
 The first time Redcar runs it will spend time loading the Textmate Bundles. 
 This only happens once.
+
+== Running Features
+
+rake features:all
+rake features:[plugin_name]
 
 == LICENSE:
 

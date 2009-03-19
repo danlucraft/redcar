@@ -3,6 +3,8 @@ module Redcar
   # The Redcar::Menu module registers the context menu services
   # on startup and initializes the MenuBuilder.
   class Menu
+    include FreeBASE::DataBusHelper
+
     class << self
       def main
         @main_menus ||= []
@@ -194,6 +196,8 @@ module Redcar
   end
   
   module MenuBuilder
+    include FreeBASE::DataBusHelper
+
     class << self
       attr_reader :menu
     end
@@ -238,6 +242,8 @@ module Redcar
   end
   
   module MenuDrawer #:nodoc:
+    include FreeBASE::DataBusHelper
+
     class << self
       def clear_menus
         (@toplevel_gtk_menuitems||={}).each do |uuid, gtk_menuitem|

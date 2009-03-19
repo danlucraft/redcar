@@ -16,6 +16,8 @@ module Redcar
   #     end
   #   end
   class Command
+    include FreeBASE::DataBusHelper
+
     class << self
       include Redcar::Sensitive
       attr_writer :name
@@ -138,12 +140,12 @@ module Redcar
       @input = input
     end
 
-    def self.get(name)
-      instance_variable_get("@#{name}")
+    def self.get(var)
+      instance_variable_get("@#{var}")
     end
 
-    def self.set(name, val)
-      instance_variable_set("@#{name}", val)
+    def self.set(var, val)
+      instance_variable_set("@#{var}", val)
     end
 
     def self.fallback_input(input)
@@ -487,10 +489,7 @@ module Redcar
           doc.text[start_offset..end_offset] = output_contents
         end
       when :show_as_html, :showAsHTML
-        # TODO: fix hardcoded reference to later plugin
-        new_tab = Redcar.win.new_tab(Redcar::HtmlTab, output_contents.to_s)
-        new_tab.title = "output: " + self.class.name
-        new_tab.focus
+        show_as_html(output_contents.to_s)
       when :insert_after_input, :insertAfterInput
         case valid_input_type
         when :selected_text, :selectedText
@@ -509,6 +508,14 @@ module Redcar
       else
         raise "Unknown output type: #{type.inspect}"
       end
+    end
+    
+    def show_as_html(html)
+      html = html.gsub("tm-file:", "file:")
+      # TODO: fix hardcoded reference to later plugin
+      new_tab = Redcar.win.new_tab(Redcar::HtmlTab, html)
+      new_tab.title = "output: " + self.class.name
+      new_tab.focus
     end
 
     def delete_input

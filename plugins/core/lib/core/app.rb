@@ -6,6 +6,8 @@ module Redcar
   # Application wide configuration. App manages Redcar::Windows (of which
   # there may only be one currently).
   module App
+    include FreeBASE::DataBusHelper
+
     def self.[]=(name, val)
       bus("/redcar/appdata/#{name}").data = val
     end

@@ -8,6 +8,6 @@ Feature: EditTab
   
   Scenario: Choose Ruby syntax
     Given there is an EditTab open
-    When I press "Ctrl+Alt+Shift+R" then "1"
+    When I press "Ctrl+Alt+Shift+R" then "5"
     Then the current syntax should be "Ruby"
 
