@@ -76,6 +76,11 @@ There will be quite a lot of warnings during this compilation, but there shouldn
 The first time Redcar runs it will spend time loading the Textmate Bundles. 
 This only happens once.
 
+== Running Features
+
+rake features:all
+rake features:[plugin_name]
+
 == LICENSE:
 
 Redcar is copyright 2008 Daniel B. Lucraft and contributors. It is licensed under the GPL2. 
