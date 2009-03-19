@@ -20,3 +20,4 @@ custom/appdata.yaml
 
 textmate/*
 plugins/edit_view/gtkmateview
+plugins/edit_view/valar
