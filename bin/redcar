@@ -12,14 +12,16 @@ Files given are opened in tabs, directories are opened as projects.
 
                --help, -h   This information
              --detach, -d   Detach Redcar if there is standard input
-                   --test   Test Redcar
-
-Testing Options
-            --spec PLUGIN   Run specs for plugin PLUGIN (e.g. project)
-        
+      --multiple-instance   Launch a new instance of Redcar, whether there is one already running or not
 USAGE
+#Testing Options
+#            --spec PLUGIN   Run specs for plugin PLUGIN (e.g. project)
+#        
+#USAGE
   exit
 end
+
+HERE = File.dirname(__FILE__)
 
 if STDIN.isatty == false and ARGV.include?("-d")
   $stdin_contents = ""
@@ -36,15 +38,18 @@ if STDIN.isatty == false and ARGV.include?("-d")
     exit(0)
   end
 end
-
-HERE = File.dirname(__FILE__)
-
+  
 require HERE + '/../lib/dbus'
 
-unless ARGV.include?("--multiple-instance")
-  Redcar::DBus.try_export_service
+def in_features_process
+  defined?(Redcar::Testing::InternalCucumberRunner) and Redcar::Testing::InternalCucumberRunner.in_cucumber_process
 end
 
+unless in_features_process
+  unless ARGV.include?("--multiple-instance")
+    Redcar::DBus.try_export_service
+  end
+end
 
 # See if a code base was passed as an argument. If not
 # default the codebase to the path of the freeride.rb script

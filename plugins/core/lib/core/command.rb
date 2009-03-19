@@ -140,12 +140,12 @@ module Redcar
       @input = input
     end
 
-    def self.get(name)
-      instance_variable_get("@#{name}")
+    def self.get(var)
+      instance_variable_get("@#{var}")
     end
 
-    def self.set(name, val)
-      instance_variable_set("@#{name}", val)
+    def self.set(var, val)
+      instance_variable_set("@#{var}", val)
     end
 
     def self.fallback_input(input)

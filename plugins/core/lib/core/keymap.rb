@@ -104,10 +104,10 @@ module Redcar
           end
         end
         if coms.length > 1
-          options = coms.map do |com|
+          options = coms.map { |com|
             name = (com.get(:name) || com.to_s.split("::").last)
             [com.get(:icon), name, com]
-          end
+          }.sort_by(&:second)
           bus("/redcar/services/context_menu_options_popup/").call(options)
           return true
         elsif coms.length == 1
