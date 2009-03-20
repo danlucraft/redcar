@@ -6,6 +6,7 @@ require 'open4'
 
 # GTK dependencies
 require 'gtk2'
+require 'gconf2'
 
 # RubyGem dependencies
 require 'rubygems'

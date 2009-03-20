@@ -39,6 +39,7 @@ If you are not using Debian/Ubuntu, or have installed Ruby yourself from source,
   3. Oniguruma (any version will probably work, tested with 5.9.0) http://www.geocities.jp/kosako3/oniguruma/
   4. Libgee http://live.gnome.org/Libgee
   5. Ruby DBus git://github.com/sdague/ruby-dbus.git
+  6. GtkSourceView 2.0
 
 2. Install the required Ruby gems:
 

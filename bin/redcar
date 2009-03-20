@@ -40,7 +40,7 @@ if STDIN.isatty == false
     end
   end
 end
-  
+
 require HERE + '/../lib/dbus'
 
 def in_features_process
@@ -67,7 +67,7 @@ $:.unshift(File.join(codebase, "..", "lib"))
 require HERE + '/../freebase2/lib/freebase/freebase'
 
 require 'gems'
-Dir[HERE + "/../lib/*.rb"].each {|f| require f unless f =~ /gems\.rb/ }
+Dir[HERE + "/../lib/*.rb"].each {|f| require f unless f =~ /(gems|dbus)\.rb/ }
 require HERE + "/../vendor/glitter"
 
 module Redcar

@@ -229,6 +229,19 @@ module Redcar
       result
     end
     
+    def goto(line, column)
+      if line > buffer.line_count
+        line = buffer.line_count-1
+      end
+      text = buffer.get_line(line)
+      column = [0, [text.length-1, column].min].max
+      buffer.cursor = buffer.get_iter_at_line_offset(line, column)
+      Gtk.idle_add do
+        view.scroll_mark_onscreen(buffer.cursor_mark)
+        false
+      end
+    end
+
     private
     
     def update_tab_label

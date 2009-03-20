@@ -20,14 +20,29 @@ module Redcar
         Redcar.win.window.focus Gdk::Event::CURRENT_TIME
       end
       
-      dbus_method :open, "in path:s" do |path|
+      dbus_method :open, "in path:s, in line:s, in column:s" do |path, line, column|
         # TODO: fix this hardcoded reference
-        OpenTab.new(path).do
+        puts "open(#{path.inspect})"
+        tab = OpenTab.new(path).do
+        if tab
+          line ||= 1
+          column ||= 1
+          line = line.to_i
+          column = column.to_i
+          line -= 1
+          column -= 1
+          tab.goto(line, column) 
+        end
       end
       
       dbus_method :new_tab, "in contents:s" do |contents|
+        puts "new_tab(#{contents.inspect})"
         tab = NewTab.new.do
         tab.buffer.text = contents
+      end
+      
+      dbus_method :debug, "in contents:s" do |contents|
+        puts "debug(#{contents.inspect})"
       end
     end
     
@@ -41,11 +56,16 @@ module Redcar
       object.introspect
       object.default_iface = DBUS_REDCAR_INTERFACE
       ARGV.each do |arg|
-        if File.exist?(arg)
-          object.open(File.expand_path(arg))
+        if arg =~ /^redcar:\/\/open\/\?url=file:\/\/([^&]*)(?:\&line=(\d+))?(?:\&column=(\d+))?/
+          object.open(File.expand_path($1), $2, $3)
         end
       end
-      if $stdin_contents
+      ARGV.each do |arg|
+        if File.exist?(arg)
+          object.open(File.expand_path(arg), "1", "1")
+        end
+      end
+      if $stdin_contents and $stdin_contents.length > 0
         object.new_tab($stdin_contents)
       end
       object.focus
