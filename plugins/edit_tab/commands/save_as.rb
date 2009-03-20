@@ -2,7 +2,7 @@
 module Redcar
   class SaveTabAs < Redcar::EditTabCommand
     key "Ctrl+Shift+S"
-    icon :SAVE
+    icon :SAVE_AS
 
     def initialize(filename=nil)
       @filename = filename
