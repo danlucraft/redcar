@@ -1,6 +1,7 @@
 
 module Com::RedcarIDE
   class PreferencesDialog < Gtk::Dialog
+    include FreeBASE::DataBusHelper
     def build_dialog
       self.set_size_request(600, 500)
       vb = self.vbox
