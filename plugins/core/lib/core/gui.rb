@@ -20,7 +20,7 @@ module Redcar
         begin
           App.log.info "starting Gui.main (in thread #{Thread.current})"
           Hook.trigger(:redcar_start)
-          if Redcar::Testing::InternalCucumberRunner.in_cucumber_process
+          if defined?(Redcar::Testing) and Redcar::Testing::InternalCucumberRunner.in_cucumber_process
             Redcar::Testing::InternalCucumberRunner.ready_for_cucumber = true
           else
             Gtk.main_with_queue(100)
