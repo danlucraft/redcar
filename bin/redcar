@@ -21,7 +21,7 @@ USAGE
   exit
 end
 
-HERE = File.dirname(__FILE__)
+HERE = File.expand_path(File.dirname(__FILE__))
 
 if STDIN.isatty == false
   $stdin_contents = ""

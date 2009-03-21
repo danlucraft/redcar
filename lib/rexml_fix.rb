@@ -5,8 +5,10 @@
 require 'rexml/document'
 require 'rexml/entity'
 
+file_path = File.expand_path(File.dirname(__FILE__))
+
 begin
-  REXML::Document.new(File.read("lib/rexml_fix_test_data.xml")).root.each_element_with_text{ |e| e.name }
+  REXML::Document.new(File.read("#{file_path}/rexml_fix_test_data.xml")).root.each_element_with_text{ |e| e.name }
 rescue NoMethodError => e
   if e.message.include? "record_entity_expansion"
     module REXML
