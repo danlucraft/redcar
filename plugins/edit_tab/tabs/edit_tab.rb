@@ -20,7 +20,7 @@ module Redcar
     def self.grammar_combo_list(keys=true)
       list = Gtk::Mate::Buffer.bundles.map{|b| b.grammars }.flatten.map do |grammar|
         if keq = grammar.key_equivalent
-          grammar.name + (keys ? " (" + Bundle.translate_key_equivalent(grammar.key_equivalent) + ")" : "")
+          grammar.name + (keys ? "     " + Bundle.translate_key_equivalent(grammar.key_equivalent) : "")
         else
           grammar.name
         end          
@@ -29,7 +29,7 @@ module Redcar
     end
     
     def self.grammar_combo_grammar_name(item)
-      grammar_combo_list[item].split("(").first.strip
+      grammar_combo_list[item].split("    ").first.strip
     end
     
     def self.grammar_combo_item_index(grammar_name)
@@ -126,6 +126,7 @@ module Redcar
         Hook.trigger :tab_changed, self
         false
       end
+
       @view.buffer.signal_connect_after("grammar-changed") do |buffer, grammar_name|
         if self == Redcar.win.focussed_tab
           gtk_combo_box = bus('/gtk/window/statusbar/grammar_combo').data
