@@ -67,7 +67,7 @@ module Redcar
         else
           gtk_menu_item = Gtk::MenuItem.new(name)
         end
-        if key = command.get(:key)
+        if key = command.get(:key) || command.get(:tab_trigger)
           Item.make_gtk_menuitem_hbox(gtk_menu_item, key)
         end
         @gtk_menu_item = gtk_menu_item

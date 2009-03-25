@@ -261,7 +261,8 @@ module Redcar
       def command_class.inspect
         "#<SnippetCommand: #{@name}>"
       end
-      if snip["tabTrigger"]
+      if tab_trigger = snip["tabTrigger"]
+        command_class.tab_trigger = tab_trigger
         register_snippet_for_lookup(snip, command_class)
       end
       if snip["keyEquivalent"]
