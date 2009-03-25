@@ -16,8 +16,8 @@ module Redcar
         bundle = Bundle.find_bundle_with_grammar(current_scope.pattern.grammar)
       end
       App.set_environment_variables(bundle)
-      File.open("cache/tmp.command", "w") {|f| f.puts clean_script(shell_script)}
-      File.chmod(0770, "cache/tmp.command")
+      File.open("#{REDCAR_PATH}/cache/tmp.command", "w") {|f| f.puts clean_script(shell_script)}
+      File.chmod(0770, "#{REDCAR_PATH}/cache/tmp.command")
       output, error = nil, nil
       puts shell_command
       status = Open4.popen4(shell_command) do |pid, stdin, stdout, stderr|
@@ -45,9 +45,9 @@ module Redcar
     
     def shell_command
       if shell_script[0..1] == "#!" and shell_script.split("\n").first !~ /#!\/bin\/sh/
-        "./cache/tmp.command"
+        "ruby #{REDCAR_PATH}/cache/tmp.command"
       else
-        "/bin/bash cache/tmp.command"
+        "/bin/bash #{REDCAR_PATH}/cache/tmp.command"
       end
     end
     

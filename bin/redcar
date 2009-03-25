@@ -22,6 +22,8 @@ USAGE
 end
 
 HERE = File.expand_path(File.dirname(__FILE__))
+#REDCAR_PATH = File.expand_path(File.dirname(__FILE__)) + "/.."
+REDCAR_PATH = '/home/jus/caironoleto/redcar'
 
 if STDIN.isatty == false
   $stdin_contents = ""
