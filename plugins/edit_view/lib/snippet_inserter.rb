@@ -146,7 +146,7 @@ class Redcar::EditView
     end
 
     def choose_snippet(snippets)
-      if snippets.length == 0
+      if not snippets or snippets.length == 0
         nil
       elsif snippets.length == 1
         snippets.first

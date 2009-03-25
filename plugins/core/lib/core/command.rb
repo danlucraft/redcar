@@ -467,7 +467,7 @@ module Redcar
         else
           e = doc.cursor_offset
         end
-        doc.insert(e, output_contents)
+        doc.insert(doc.iter(e), output_contents)
       when :create_new_document, :createNewDocument, :open_as_new_document
         # TODO: fix this hardcoded reference
         new_tab = Redcar.win.new_tab(Redcar::EditTab)

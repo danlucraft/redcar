@@ -11,3 +11,7 @@ Feature: EditTab
     When I press "Ctrl+Alt+Shift+R" then "5"
     Then the current syntax should be "Ruby"
 
+  Scenario: Choose HTML (Rails) syntax
+    Given there is an EditTab open
+    When I press "Ctrl+Alt+Shift+R" then "1"
+    Then the current syntax should be "HTML (Rails)"

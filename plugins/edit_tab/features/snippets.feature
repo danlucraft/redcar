@@ -19,3 +19,8 @@ Feature: Snippets
     When I type "cla"
     And I press "Tab" then "1"
     Then I should see "class" in the EditTab
+
+  Scenario: Inserts tab if no snippets
+    When I type "asdf"
+    And I press "Tab" then "x"
+    Then I should see "asdf  x" in the EditTab

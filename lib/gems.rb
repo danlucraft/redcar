@@ -24,7 +24,7 @@ module Oniguruma #:nodoc:
   end
 end
 
-require 'test/unit'
+# require 'test/unit'
 
 require 'active_support/vendor'
 require 'active_support/basic_object'

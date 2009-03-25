@@ -6,7 +6,7 @@ module Redcar
     end
     
     def clean_script(shell_script)
-      shell_script.gsub("#!/usr/bin/env ruby -wKU", "#!/usr/bin/env ruby")
+      shell_script.gsub(/^#!\/usr\/bin\/env ruby (.*)$/, "#!/usr/bin/env ruby")
     end
     
     def execute

@@ -34,6 +34,8 @@ loop do
   break if Redcar::Testing::InternalCucumberRunner.ready_for_cucumber
 end
 
+Redcar::Preference.return_defaults = true
+
 World do |world|
   world.extend(FeatureHelpers)
   world

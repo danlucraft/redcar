@@ -58,6 +58,9 @@ module Redcar
   # within the preference definition block.
   module Preference
     include FreeBASE::DataBusHelper
+    class << self
+      attr_accessor :return_defaults
+    end
 
     def self.load #:nodoc:
       FreeBASE::Properties.new("Redcar Preferences", 
@@ -71,7 +74,11 @@ module Redcar
     def self.get(name)
       if bus("/redcar/preferences/#{name}/", true)
         slot = bus("/redcar/preferences/#{name}")
-        slot.data == nil ? slot.attr_default : slot.data
+        if Preference.return_defaults
+          slot.attr_default
+        else
+          slot.data == nil ? slot.attr_default : slot.data
+        end
       else
         raise "unknown preference: #{name}"
       end
