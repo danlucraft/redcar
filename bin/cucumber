@@ -1,2 +1,2 @@
   
-./vendor/cucumber/bin/cucumber -p default -r plugins/redcar/features/env.rb $1 $2 $3 $4 $5 $6 $7 $8 $9
+cucumber -p default -r plugins/redcar/features/env.rb $1 $2 $3 $4 $5 $6 $7 $8 $9

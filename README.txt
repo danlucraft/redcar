@@ -9,7 +9,7 @@ use it it will:
 
 Redcar
     by Daniel Lucraft
-    http://www.RedcarIDE.com/
+    http://RedcarEditor.com/
 
 == DESCRIPTION:
   

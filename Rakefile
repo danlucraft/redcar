@@ -1,17 +1,28 @@
 
+# To create Rake tasks for your plugin, put them in plugins/my_plugin/Rakefile or
+# plugins/my_plugin/tasks/my_tasks.rake.
+
 require 'rubygems'
-require 'hoe'
 require 'fileutils'
 
-# Hoe.new('Redcar', Redcar::VERSION) do |p|
-#   p.rubyforge_name = 'redcar'
-#   p.author = 'Daniel Lucraft'
-#   p.email = 'dan@fluentradical.com'
-#   p.summary = 'Pure Ruby text editor.'
-#   p.description = p.paragraphs_of('README.txt', 2..5).join("\n\n")
-#   p.url = p.paragraphs_of('README.txt', 0).first.split(/\n/)[1..-1]
-#   p.changes = p.paragraphs_of('History.txt', 0..1).join("\n\n")
-# end
+include FileUtils
+
+cd(File.dirname(__FILE__))
+
+def execute_and_check(command)
+  puts %x{#{command}}
+  $?.to_i == 0 ? true : raise
+end
+
+Dir[File.join(File.dirname(__FILE__), *%w[plugins *])].each do |plugin_dir|
+  rakefiles = [File.join(plugin_dir, "Rakefile")] + 
+    Dir[File.join(plugin_dir, "tasks", "*.rake")]
+  rakefiles.each do |rakefile|
+    if File.exist?(rakefile)
+      load rakefile
+    end
+  end
+end
 
 task :coredoc2 do
   FileUtils.rm_rf "doc"
@@ -35,17 +46,10 @@ task :clear_cache do
   sh "rm cache/*/*.dump"
 end
 
-namespace :features do
-  task :all do
-    sh %{xvfb-run ./vendor/cucumber/bin/cucumber -p progress -r plugins/redcar/features/env.rb plugins/*/features/}
-  end
-
-  Dir["plugins/*"].each do |fn|
-    name = fn.split("/").last
-    task name.intern do
-      sh %{xvfb-run ./vendor/cucumber/bin/cucumber -p default -r plugins/redcar/features/env.rb plugins/#{name}/features/}
-    end
+desc "list all tasks"
+task :list do
+  Rake::Task.tasks.each do |task|
+    puts "rake #{task.name}"
   end
 end
-
 
