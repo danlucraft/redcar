@@ -100,7 +100,7 @@ module Redcar
       quit if close_if_no_win and is_win
     end
 
-    # Load a Marhshalled object from the cache.
+    # Load a Marshalled object from the cache.
     def self.with_cache(dir, name)
       unless cache_dir = Redcar::ROOT + "/cache/"
         raise "called App.with_cache without a cache_dir"
@@ -143,7 +143,7 @@ module Redcar
       if bundle
         ENV['TM_BUNDLE_SUPPORT'] = bundle.dir+"/Support"
       end
-      
+      current_scope = nil
       if Redcar.tab and Redcar.tab.class.to_s == "Redcar::EditTab"
         line = Redcar.doc.get_line
         line = line[0..-2] if line[-1..-1] == "\n"
@@ -159,24 +159,44 @@ module Redcar
           ENV['TM_FILENAME'] = File.basename(Redcar.tab.filename)
         end
         if Redcar.doc.cursor_scope
-          ENV['TM_SCOPE'] = Redcar.doc.cursor_scope.hierarchy_names(true)
+          current_scope = Redcar.doc.cursor_scope.hierarchy_names(true)
+          ENV['TM_SCOPE'] = current_scope
         end
       end
       ENV['TM_SOFT_TABS'] = "YES"
       ENV['TM_SUPPORT_PATH'] = textmate_share_dir + "/Support"
       ENV['BASH_ENV'] = "#{App.textmate_share_dir}/Support/lib/bash_init.sh"
       ENV['TM_TAB_SIZE'] = "2"
-      if bundle
-        bundle.preferences.each do |name, prefs|
+
+      preferences = {}
+      Bundle.bundles.each do |this_bundle|
+        this_bundle.preferences.each do |name, prefs|
+          scope = prefs["scope"]
+          if scope
+            next unless current_scope
+            next unless match = Gtk::Mate::Matcher.get_match(scope, current_scope)
+          end
           settings = prefs["settings"]
           if shell_variables = settings["shellVariables"]
-            shell_variables.each do |variable_hash|
-              name = variable_hash["name"]
-              @env_variables << name unless @env_variables.include?(name)
-              ENV[name] = variable_hash["value"]
+            if preferences[name]
+              prev_match, _ = preferences[name]
+              if Gtk::Mate::Matcher.compare_match(current_scope, prev_match, match) < 0
+                preferences[name] = [match, shell_variables]
+              end
+            else
+              preferences[name] = [match, shell_variables]
             end
           end
         end
+      end
+      
+      preferences.each do |name, pair|
+        shell_variables = pair.last
+        shell_variables.each do |variable_hash|
+          name = variable_hash["name"]
+          @env_variables << name unless @env_variables.include?(name)
+          ENV[name] = variable_hash["value"]
+        end        
       end
     end
     

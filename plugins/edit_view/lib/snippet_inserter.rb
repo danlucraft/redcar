@@ -20,8 +20,7 @@ class Redcar::EditView
       all_snippets_for_scope = {}
       if scope
         Redcar::Bundle.snippet_lookup.each do |scope_selector, snippets_for_scope|
-          v = Gtk::Mate::Matcher.test_match(scope_selector, scope.hierarchy_names(true))
-          if v
+          if v = Gtk::Mate::Matcher.test_match(scope_selector, scope.hierarchy_names(true))
             all_snippets_for_scope.merge!(snippets_for_scope) do |_, a, b|
               a + b
             end
@@ -346,6 +345,12 @@ class Redcar::EditView
                 tenv = rr.rep(env)
               end
               @buf.insert_at_cursor(tenv)
+              remaining_content = md1.post_match[(defn.length+1)..-1]
+            elsif md2 = defn.match(/\A((\w+|_)+):/)
+              # env variable with default e.g. ${TM_SELECTED_TEXT:Banner}
+              default = md2.post_match
+              env = ENV[$1] || default
+              @buf.insert_at_cursor(env)
               remaining_content = md1.post_match[(defn.length+1)..-1]
             else
               puts "unknown type of tab stop: #{defn.inspect}"
