@@ -1,21 +1,34 @@
 
 desc "Package a Redcar release (NOT WORKING YET)"
-task :package => ["package:gtkmateview", "package:rubygtksourceview2"]
+task :package => ["package:gtkmateview", "package:rubygtksourceview2", "package:oniguruma"]
+
+RUBYGTKSOURCEVIEW2_TARBALL = "vendor/ruby-gtksourceview2.tar.bz2"
+GTKMATEVIEW_TARBALL = "vendor/gtkmateview.tar.gz"
+ONIGURUMA_TARBALL = "vendor/onig-5.9.1.tar.gz"
 
 namespace :package do
+  task :clean do
+    rm_f RUBYGTKSOURCEVIEW2_TARBALL
+    rm_f GTKMATEVIEW_TARBALL
+    rm_f ONIGURUMA_TARBALL
+  end
+  
   task :rubygtksourceview2 do
-    rm_f "vendor/ruby-gtksourceview2.tar.bz2"
-    execute_and_check "wget http://redcareditor.com/packages/ruby-gtksourceview2.tar.bz2 -O vendor/ruby-gtksourceview2.tar.bz2"
+    unless File.exist?(RUBYGTKSOURCEVIEW2_TARBALL)
+      execute_and_check "wget http://redcareditor.com/packages/ruby-gtksourceview2.tar.bz2 -O #{RUBYGTKSOURCEVIEW2_TARBALL}"
+    end
   end
   
   task :gtkmateview do
-    rm_f "vendor/ruby-gtkmateview.tar.gz"
-    execute_and_check "wget http://github.com/danlucraft/gtkmateview/tarball/master -O vendor/gtkmateview.tar.gz"
+    unless File.exist?(GTKMATEVIEW_TARBALL)
+      execute_and_check "wget http://github.com/danlucraft/gtkmateview/tarball/master -O #{GTKMATEVIEW_TARBALL}"
+    end
   end
   
   task :oniguruma do
-    rm_f "vendor/onig-5.9.1.tar.gz"
-    execute_and_check "wget http://www.geocities.jp/kosako3/oniguruma/archive/onig-5.9.1.tar.gz -O vendor/onig-5.9.1.tar.gz"
+    unless File.exist?(ONIGURUMA_TARBALL)
+      execute_and_check "wget http://www.geocities.jp/kosako3/oniguruma/archive/onig-5.9.1.tar.gz -O #{ONIGURUMA_TARBALL}"
+    end
   end
   
   def clean_git_dir(dir)

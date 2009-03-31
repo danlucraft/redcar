@@ -5,6 +5,30 @@
 require 'rubygems'
 require 'fileutils'
 
+if RUBY_PLATFORM =~ /mswin/
+  begin
+    require 'win32console'
+  rescue LoadError
+    ARGV << "--nocolour"
+  end
+end
+
+GREEN_FG = "\033[1;32m"
+RED_FG = "\033[1;31m"
+RED_BG = "\033[1;37m\033[41m"
+GREY_BG = "\033[40m"
+CLEAR_COLOURS = "\033[0m"
+
+def cputs(text, colours, opts={})
+  colours.each {|colour| print colour }
+  print text
+  if opts[:no_newline]
+    print CLEAR_COLOURS
+  else
+    puts CLEAR_COLOURS
+  end
+end
+
 include FileUtils
 
 cd(File.dirname(__FILE__))
@@ -12,6 +36,11 @@ cd(File.dirname(__FILE__))
 def execute_and_check(command)
   puts %x{#{command}}
   $?.to_i == 0 ? true : raise
+end
+
+def execute(command)
+  puts %x{#{command}}
+  $?.to_i == 0 ? true : false
 end
 
 Dir[File.join(File.dirname(__FILE__), *%w[plugins *])].each do |plugin_dir|
