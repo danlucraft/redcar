@@ -61,14 +61,14 @@ module Redcar
 
     # Replace this Pane in the Window with two new Panes, on
     # the left and right.
-    def split_horizontal
-      @window.split_horizontal(self)
+    def split_vertical
+      @window.split_vertical(self)
     end
 
     # Replace this Pane in the Window with two new Panes, on
     # the top and bottom.
-    def split_vertical
-      @window.split_vertical(self)
+    def split_horizontal
+      @window.split_horizontal(self)
     end
 
     # Undo the split_horizontal or split_vertical that created

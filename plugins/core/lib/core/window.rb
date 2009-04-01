@@ -189,9 +189,9 @@ module Redcar
 
     def split_pane(whichway, pane)
       case whichway
-      when :vertical
-        dual = Gtk::VPaned.new
       when :horizontal
+        dual = Gtk::VPaned.new
+      when :vertical
         dual = Gtk::HPaned.new
       end
       new_pane = Pane.new self
