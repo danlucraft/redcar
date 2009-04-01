@@ -48,3 +48,10 @@ Feature: Multiple panes
     When I press "Ctrl+3"
     And I press "Ctrl+1"
     Then there should be 1 pane
+
+  Scenario: Unify collects tabs
+    When I press "Super+N"
+    When I press "Ctrl+3"
+    And I press "Ctrl+1"
+    Then there should be 1 pane
+    And there should be 1 EditTab

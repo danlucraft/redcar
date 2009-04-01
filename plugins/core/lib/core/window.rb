@@ -36,9 +36,12 @@ module Redcar
       App.close_window(self, true)
     end
 
-    # Returns an array of all the Panes in the Window.
+    # Returns an array of all the Panes in the Window in a well-defined
+    # order.
     def panes
-      @notebooks_panes.values.sort_by {|p| p.object_id }
+      result = []
+      traverse_panes {|pane| result << pane}
+      result
     end
 
     # Unifies all the Panes into one.
@@ -127,9 +130,7 @@ module Redcar
     def unify(pane) #:nodoc:
       panes_container = pane.gtk_notebook.parent
       unless panes_container.class == Gtk::HBox
-        other_side = panes_container.children.find do |p|
-          p != pane.gtk_notebook
-        end
+        other_side = panes_container.children.find {|c| c != pane.gtk_notebook }
         panes_container.remove(pane.gtk_notebook)
         panes_container.remove(other_side)
         if [Gtk::HPaned, Gtk::VPaned].include? other_side.class
@@ -139,7 +140,7 @@ module Redcar
           @notebooks_panes.delete other_side
         end
         container_of_container = panes_container.parent
-        other_panes = other_tabs.map{|t| t.pane}.uniq
+        other_panes = other_tabs.map {|t| t.pane }.uniq
         other_tabs.each do |tab|
           tab.pane.move_tab(tab, pane)
         end
@@ -165,9 +166,24 @@ module Redcar
       end
       update_tab_range(tab)
     end
-
+    
     private
-
+    
+    # Iterates over the panes in the window in a well-defined order.
+    def traverse_panes(&block)
+      traverse_panes_inner(bus["/gtk/window/panes_container"].data, &block)
+    end
+    
+    def traverse_panes_inner(gtk_widget, &block)
+      if gtk_widget.is_a?(Gtk::Notebook)
+        yield @notebooks_panes[gtk_widget]
+      else
+        gtk_widget.children.each do |child|
+          traverse_panes_inner(child, &block)
+        end
+      end
+    end
+    
     def collect_tabs_from_dual(dual)
       [dual.child1, dual.child2].map do |child|
         if child.class == Gtk::Notebook

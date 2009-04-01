@@ -27,3 +27,6 @@ Then /^the label of the (\w+) should say "([^"]+)"$/ do |tab_type, label|
   tab.title.should == label
 end
 
+Then /^there should be #{FeaturesHelper::NUMBER_RE} ([A-Z]\w+)$/ do |num, tab_type|
+  Redcar.win.collect_tabs(Redcar.const_get(tab_type)).length.should == parse_number(num)
+end
