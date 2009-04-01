@@ -12,3 +12,7 @@ Given /^the file #{FeaturesHelper::STRING_RE} contains #{FeaturesHelper::STRING_
     f.puts contents
   end
 end
+
+Then /^the file #{FeaturesHelper::STRING_RE} should contain #{FeaturesHelper::STRING_RE}$/ do |filename, contents|
+  IO.read(filename).chomp.should == contents
+end

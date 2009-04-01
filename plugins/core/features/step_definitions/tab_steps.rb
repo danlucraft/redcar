@@ -22,6 +22,10 @@ When /^I close the tab$/ do
   Redcar::CloseTab.new.do
 end
 
+When /^I save all the open tabs$/ do
+  Redcar::SaveAllTabsCommand.new.do
+end
+
 Then /^the label of the (\w+) should say "([^"]+)"$/ do |tab_type, label|
   tab = only_tab(tab_type)
   tab.title.should == label
