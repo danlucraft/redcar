@@ -158,15 +158,6 @@ module Redcar
       end
     end
 
-    def debug_print_widgets(gtk_widget=self, indent=0) #:nodoc:
-      puts " "*indent + gtk_widget.class.to_s
-      if gtk_widget.respond_to? :children
-        gtk_widget.children.each do |gtk_child|
-          debug_print_widgets gtk_child, indent+2
-        end
-      end
-    end
-
     def update_focussed_tab(tab) #:nodoc:
       Hook.trigger :focus_tab, tab do
         @previously_focussed_tab = @focussed_tab

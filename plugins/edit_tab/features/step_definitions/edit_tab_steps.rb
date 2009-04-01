@@ -1,5 +1,5 @@
 
-Given /^there is an? EditTab open(?: with syntax #{FeatureHelpers::STRING_RE})?$/ do |syntax|
+Given /^there is an? EditTab open(?: with syntax #{FeaturesHelper::STRING_RE})?$/ do |syntax|
   When 'I press "Super+N"'
   if syntax
     case syntax

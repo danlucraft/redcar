@@ -37,7 +37,8 @@ end
 Redcar::Preference.return_defaults = true
 
 World do |world|
-  world.extend(FeatureHelpers)
+  world.extend(FreeBASE::DataBusHelper)
+  world.extend(FeaturesHelper)
   world
 end
 

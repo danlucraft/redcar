@@ -7,6 +7,6 @@ When /^I save the EditTab$/ do
   Redcar::SaveTab.new.do
 end
 
-When /^I save the EditTab as #{FeatureHelpers::STRING_RE}$/ do |filename|
+When /^I save the EditTab as #{FeaturesHelper::STRING_RE}$/ do |filename|
   Redcar::SaveTabAs.new(filename).do
 end
