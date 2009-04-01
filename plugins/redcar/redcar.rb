@@ -8,6 +8,7 @@ module Redcar
         separator
         item "Save",       SaveTab
         item "Save As",    SaveTabAs
+        item "Save All",   SaveAllTabsCommand
         #      item "Revert",     RevertTab
         separator
         item "Close",      CloseTab
