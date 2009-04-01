@@ -11,7 +11,7 @@ namespace :features do
     name = fn.split("/").last
     desc "Run features for #{name}"
     task name.intern do
-      sh %{xvfb-run ./vendor/cucumber/bin/cucumber -p default -r plugins/redcar/features/env.rb plugins/#{name}/features/}
+      sh %{xvfb-run cucumber -p default -r plugins/redcar/features/env.rb plugins/#{name}/features/}
     end
   end
 end
