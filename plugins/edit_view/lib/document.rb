@@ -253,7 +253,7 @@ module Redcar
 
     def delete_line(line_num=cursor_line)
       delete(line_start(cursor_line),
-        line_end1(cursor_line))
+        line_end(cursor_line))
     end
 
     def indent_line(line_num)

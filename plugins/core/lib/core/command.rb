@@ -379,7 +379,7 @@ module Redcar
     end
 
     def input_by_type(type)
-      puts "input_by_type(#{type.inspect})"
+      # puts "input_by_type(#{type.inspect})"
       case type
       when :selected_text, :selection, :selectedText
         doc.selection
@@ -395,7 +395,7 @@ module Redcar
         doc.text[doc.cursor_iter.offset..doc.cursor_iter.offset]
       when :scope
         start_offset, end_offset = *doc.current_scope_range
-        puts "scope_range: #{start_offset}, #{end_offset}"
+        # puts "scope_range: #{start_offset}, #{end_offset}"
         if start_offset
           doc.text[start_offset...end_offset]
         end
@@ -428,7 +428,7 @@ module Redcar
         }
         type = type_map[@status]
       end
-      puts "direct_output(#{type.inspect})"
+      # puts "direct_output(#{type.inspect})"
       case type
       when :replace_document, :replaceDocument
         doc.text = output_contents
