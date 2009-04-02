@@ -173,6 +173,16 @@ end
 class Gtk::Widget
   alias :old_signal_connect :signal_connect
   
+  def debug_widget_tree(indent=0, str="") #:nodoc:
+    str << " "*indent + self.class.to_s + "\n"
+    if self.respond_to?(:children)
+      self.children.each do |gtk_child|
+        gtk_child.debug_widget_tree(indent+2, str)
+      end
+    end
+    str
+  end
+  
   def signal_connect(*args, &block)
     signal_name = args.first
     block_with_rescue = lambda do |*args|

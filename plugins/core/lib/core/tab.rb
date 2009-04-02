@@ -27,7 +27,7 @@ module Redcar
       attr_accessor :widget_to_tab
     end
     
-    attr_accessor :pane, :label, :menu_label
+    attr_accessor :pane, :label
     attr_reader :gtk_tab_widget, :gtk_nb_widget, :gtk_toolbar, :gtk_speedbar
     
     # Do not call this directly. Use Window#new_tab or 
@@ -78,14 +78,20 @@ module Redcar
         CloseTab.new(self).do
       end
       @label_angle = :horizontal
-      
-      @menu_label = Gtk::Label.new("#new#{@@tabcount}")
-      @menu_label.set_alignment(0, 0)
-      @menu_label.show
-      
+
       Tab.widget_to_tab[@gtk_nb_widget] = self
       
       @gtk_nb_widget.show
+    end
+    
+    def menu_label
+      # menu labels get destroyed when tabs are removed from Gtk::Notebooks,
+      # so create new ones on demand
+      return @menu_label if @menu_label and not @menu_label.destroyed?
+      @menu_label = Gtk::Label.new(@label.text)
+      @menu_label.set_alignment(0, 0)
+      @menu_label.show
+      @menu_label
     end
     
     # Closes the tab by calling Pane#close_tab method on the tab's 
@@ -125,7 +131,7 @@ module Redcar
     # Sets the tab's title (displayed on the tab's 'tab').
     def title=(text)
       @label.text = text
-      @menu_label.text = text
+      menu_label.text = text
     end
 
     # Moves this tab to dest_pane.

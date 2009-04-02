@@ -24,3 +24,7 @@ Feature: Snippets
     When I type "asdf"
     And I press "Tab" then "x"
     Then I should see "asdf  x" in the EditTab
+
+  Scenario: Sets correct environment variables based on scope
+    When I press "Ctrl+Shift+B"
+    Then I should see "# ==========\n# = <s>Banner<c> =\n# ==========" in the EditTab

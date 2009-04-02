@@ -1,51 +1,73 @@
 
+# To create Rake tasks for your plugin, put them in plugins/my_plugin/Rakefile or
+# plugins/my_plugin/tasks/my_tasks.rake.
+
 require 'rubygems'
-require 'hoe'
 require 'fileutils'
 
-# Hoe.new('Redcar', Redcar::VERSION) do |p|
-#   p.rubyforge_name = 'redcar'
-#   p.author = 'Daniel Lucraft'
-#   p.email = 'dan@fluentradical.com'
-#   p.summary = 'Pure Ruby text editor.'
-#   p.description = p.paragraphs_of('README.txt', 2..5).join("\n\n")
-#   p.url = p.paragraphs_of('README.txt', 0).first.split(/\n/)[1..-1]
-#   p.changes = p.paragraphs_of('History.txt', 0..1).join("\n\n")
-# end
-
-task :coredoc2 do
-  FileUtils.rm_rf "doc"
-  FileUtils.mkdir "tmpfordoc"
-  Dir["plugins/core/*"].each do |fn|
-    if File.file? fn
-      FileUtils.cp fn, "tmpfordoc/"+fn.split("/").last
-    end
+if RUBY_PLATFORM =~ /mswin/
+  begin
+    require 'win32console'
+  rescue LoadError
+    ARGV << "--nocolour"
   end
-  sh "rdoc -T jamis tmpfordoc/"
-  FileUtils.rm_rf "tmpfordoc"
 end
 
+GREEN_FG = "\033[1;32m"
+RED_FG = "\033[1;31m"
+RED_BG = "\033[1;37m\033[41m"
+GREY_BG = "\033[40m"
+CLEAR_COLOURS = "\033[0m"
+
+def cputs(text, colours, opts={})
+  colours.each {|colour| print colour }
+  print text
+  if opts[:no_newline]
+    print CLEAR_COLOURS
+  else
+    puts CLEAR_COLOURS
+  end
+end
+
+include FileUtils
+
+cd(File.dirname(__FILE__))
+
+def execute_and_check(command)
+  puts %x{#{command}}
+  $?.to_i == 0 ? true : raise
+end
+
+def execute(command)
+  puts %x{#{command}}
+  $?.to_i == 0 ? true : false
+end
+
+Dir[File.join(File.dirname(__FILE__), *%w[plugins *])].each do |plugin_dir|
+  rakefiles = [File.join(plugin_dir, "Rakefile")] + 
+    Dir[File.join(plugin_dir, "tasks", "*.rake")]
+  rakefiles.each do |rakefile|
+    if File.exist?(rakefile)
+      load rakefile
+    end
+  end
+end
+
+desc "Build core documentation (requires mislav-hanna gem)"
 task :coredoc do
   FileUtils.rm_rf "doc"
-  files = Dir["plugins/core/lib/*"].select{|f| File.file? f}
-  sh "rdoc -T jamis #{files.join(" ")} README.txt"
+  files = Dir["plugins/core/lib/core/*"].select{|f| File.file? f}
+  sh "rdoc -o doc --inline-source --format=html -T hanna #{files.join(" ")} README.txt"
 end
 
 task :clear_cache do
   sh "rm cache/*/*.dump"
 end
 
-namespace :features do
-  task :all do
-    sh %{xvfb-run ./vendor/cucumber/bin/cucumber -p progress -r plugins/redcar/features/env.rb plugins/*/features/}
-  end
-
-  Dir["plugins/*"].each do |fn|
-    name = fn.split("/").last
-    task name.intern do
-      sh %{xvfb-run ./vendor/cucumber/bin/cucumber -p default -r plugins/redcar/features/env.rb plugins/#{name}/features/}
-    end
+desc "list all tasks"
+task :list do
+  Rake::Task.tasks.each do |task|
+    puts "rake #{task.name}"
   end
 end
-
 

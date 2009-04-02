@@ -57,7 +57,7 @@ module Redcar
         res = if modifiers.empty?
           letter
         else
-          modifiers.join("+") + "+" + letter.upcase
+          modifiers.join("+") + "+" + (letter.length == 1 ? letter.upcase : letter)
         end
         res
       end

@@ -55,22 +55,24 @@ module Redcar
       object  = service.object(DBUS_REDCAR_PATH)
       object.introspect
       object.default_iface = DBUS_REDCAR_INTERFACE
-      ARGV.each do |arg|
-        if arg =~ /^redcar:\/\/open\/\?url=file:\/\/([^&]*)(?:\&line=(\d+))?(?:\&column=(\d+))?/
-          object.open(File.expand_path($1), $2, $3)
+      any_directories = ARGV.any? {|arg| File.exist?(arg) and File.directory?(arg)}
+      unless any_directories
+        ARGV.each do |arg|
+          if arg =~ /^redcar:\/\/open\/\?url=file:\/\/([^&]*)(?:\&line=(\d+))?(?:\&column=(\d+))?/
+            object.open(File.expand_path($1), $2, $3)
+          end
         end
-      end
-      ARGV.each do |arg|
-        if File.exist?(arg)
-          object.open(File.expand_path(arg), "1", "1")
+        ARGV.each do |arg|
+          if File.exist?(arg)
+            object.open(File.expand_path(arg), "1", "1")
+          end
         end
+        if $stdin_contents and $stdin_contents.length > 0
+          object.new_tab($stdin_contents)
+        end
+        object.focus
+        exit(0)
       end
-      if $stdin_contents and $stdin_contents.length > 0
-        object.new_tab($stdin_contents)
-      end
-      object.focus
-      exit(0)
-      # there is already a Redcar instance running
     end
   end
 end

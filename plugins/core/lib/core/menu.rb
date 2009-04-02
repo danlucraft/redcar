@@ -5,53 +5,6 @@ module Redcar
   class Menu
     include FreeBASE::DataBusHelper
 
-    class << self
-      def main
-        @main_menus ||= []
-      end
-      
-      def get_main(name)
-        menu = main.find{|m| m.name == name}
-        unless menu
-          menu = new(name)
-          @main_menus << menu
-        end
-        menu
-      end
-      
-      def context
-        @context_menus ||= {}
-      end
-      
-      def get_context(name)
-        @context_menus[name] ||= new(name)
-      end
-    end
-    
-    def initialize(name)
-      @name = name
-    end
-    
-    def get_submenu(submenu_name)
-      submenu = items.find {|item| item.is_a?(Menu) and item.name == submenu_name}
-      unless submenu
-        submenu = Menu.new(submenu_name)
-        items << submenu
-      end
-      submenu
-    end
-    
-    def add_item(item_name, command)
-      command.menu = self
-      new_item = Item.new(item_name, command)
-      command.menu_item = new_item
-      items << new_item
-    end
-    
-    def gtk_menu_item
-      @gtk_menu_item ||= Gtk::MenuItem.new(name)
-    end
-    
     class Item
       attr_accessor :name, :command
       
@@ -92,9 +45,81 @@ module Redcar
     end
     
     class SeparatorItem
+      def gtk_menu_item
+        nil
+      end
+    end
+    
+    class << self
+      def main
+        @main_menus ||= []
+      end
+      
+      def get_main(name)
+        menu = main.find{|m| m.name == name}
+        unless menu
+          menu = new(name)
+          @main_menus << menu
+        end
+        menu
+      end
+      
+      def context
+        @context_menus ||= {}
+      end
+      
+      def get_context(name)
+        @context_menus[name] ||= new(name)
+      end
     end
     
     attr_accessor :name
+    
+    def initialize(name)
+      @name = name
+    end
+    
+    def get_submenu(submenu_name)
+      submenu = items.find {|item| item.is_a?(Menu) and item.name == submenu_name}
+      unless submenu
+        submenu = Menu.new(submenu_name)
+        items << submenu
+      end
+      submenu
+    end
+    
+    def add_item(item_name, command)
+      command.menu = self
+      new_item = Item.new(item_name, command)
+      command.menu_item = new_item
+      items << new_item
+      # normalize_item_widths
+    end
+    
+    def gtk_menu_item
+      @gtk_menu_item ||= Gtk::MenuItem.new(name)
+    end
+     
+    # Doesn't work
+    def normalize_item_widths
+      left_widths, right_widths = [], []
+      @items.each do |item|
+        if item.gtk_menu_item and item.gtk_menu_item.child.is_a?(Gtk::HBox)
+          child = gtk_menu_item.children[0]
+          # puts "child: #{child.inspect}, text: #{child.text.inspect}, sr: #{child.size_request.inspect}"
+          left_widths << gtk_menu_item.children[0].size_request.first
+        end
+      end
+      max = left_widths.max
+      puts "menu: #{name}, width: #{max}"
+      # @items.each do |item|
+      #   if item.gtk_menu_item and item.gtk_menu_item.child.is_a?(Gtk::HBox)
+      #     child = gtk_menu_item.child
+      #     puts "child: #{child.inspect}, sr: #{child.size_request.inspect}"
+      #     gtk_menu_item.child.set_size_request(max + 50, child.size_request.last)
+      #   end
+      # end
+    end
     
     def items
       @items ||= []
