@@ -8,21 +8,21 @@ Feature: Search through a document
     And I have pressed "Page_Up"
   
   Scenario: Search forward
-    When I press "Ctrl+S"
+    When I press "Super+S"
     And I type "queen"
     Then I should see "<s>queen<c>1" in the EditTab
     
   Scenario: Search forward again
-    When I press "Ctrl+S"
+    When I press "Super+S"
     And I type "queen"
-    And I press "Ctrl+S"
+    And I press "Super+S"
     Then I should see "<s>queen<c>2" in the EditTab
     
   Scenario: Search backward
-    When I press "Ctrl+S"
+    When I press "Super+S"
     And I type "queen"
-    And I press "Ctrl+S"
-    And I press "Super+Ctrl+S"
+    And I press "Super+S"
+    And I press "Super+Shift+S"
     Then I should see "<s>queen<c>1" in the EditTab
 
     

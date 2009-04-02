@@ -1,6 +1,6 @@
 module Redcar
   class OpenTab < Redcar::Command
-    key "Super+O"
+    key "Ctrl+O"
     icon :NEW
 
     def initialize(filename=nil, pane=nil)

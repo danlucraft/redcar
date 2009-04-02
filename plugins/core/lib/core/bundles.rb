@@ -38,11 +38,11 @@ module Redcar
         modifiers = modifier_str.split("").map do |modchar|
           case modchar
           when "^" # TM: Control
-            [2, "Ctrl"]
+            [2, "Super"]
           when "~" # TM: Option
             [3, "Alt"]
           when "@" # TM: Command
-            [1, "Super"]
+            [1, "Ctrl"]
           when "$"
             [4, "Shift"]
           else

@@ -1,7 +1,7 @@
 
 module Redcar
   class CloseAllTabs < Redcar::TabCommand
-    key "Ctrl+Super+W"
+    key "Ctrl+Shift+W"
     icon :CLOSE
     
     def execute
