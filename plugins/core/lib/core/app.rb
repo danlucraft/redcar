@@ -1,5 +1,6 @@
 
-# This is the Redcar API documentation for plugin authors and developers.
+# This is the Redcar API documentation for Redcar developers and plugin 
+# authors.
 # For documentation regarding the day to day use of Redcar as an editor
 # please refer to http://www.redcaride.com/doc/user_guide/index.html.
 module Redcar
@@ -8,10 +9,14 @@ module Redcar
   module App
     include FreeBASE::DataBusHelper
 
-    def self.[]=(name, val)
-      bus("/redcar/appdata/#{name}").data = val
+    # Set key-value pair to be stored in the databus. This
+    # is persistent across application instances.
+    def self.[]=(key, val)
+      bus("/redcar/appdata/#{key}").data = val
     end
     
+    # Retrieve a value associated with this key. This
+    # may have been set in a previous instance of the application.
     def self.[](name)
       if slot = bus("/redcar/appdata/#{name}", true)
         slot.data

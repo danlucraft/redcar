@@ -1,5 +1,8 @@
 
 module Redcar
+  # A Redcar Window contains a menu bar, a collection of Panes and a status bar.
+  # At the moment, there may only be one Window open in an instance of the Redcar
+  # application. This should change, hopefully soon.
   class Window < Gtk::Window
     include FreeBASE::DataBusHelper
 
@@ -51,14 +54,6 @@ module Redcar
       end
     end
 
-    def pane_for_tab_class(tab_class)
-      panes.reverse.sort_by do |pane|
-        num_same_class = pane.tabs.select {|t| t.is_a? tab_class}.length
-        num = pane.tabs.length
-        num_same_class*100 - (num - num_same_class)
-      end.last
-    end
-
     # Equivalent to calling Pane#new_tab on the currently
     # focussed Pane.
     def new_tab(tab_class, *args)
@@ -70,6 +65,7 @@ module Redcar
       panes.map {|pane| pane.tabs }.flatten
     end
 
+    # Returns an array of all open tabs that are instances of klass.
     def collect_tabs(klass)
       tabs.select {|t| t.is_a? klass}
     end
@@ -182,6 +178,14 @@ module Redcar
           traverse_panes_inner(child, &block)
         end
       end
+    end
+    
+    def pane_for_tab_class(tab_class)
+      panes.reverse.sort_by do |pane|
+        num_same_class = pane.tabs.select {|t| t.is_a? tab_class}.length
+        num = pane.tabs.length
+        num_same_class*100 - (num - num_same_class)
+      end.last
     end
     
     def collect_tabs_from_dual(dual)

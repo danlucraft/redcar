@@ -1,5 +1,8 @@
 
 module Redcar
+  # This class is responsible for interpreting key press events
+  # and dispatching the appropriate Redcar::Commands. It should 
+  # be split up into Keymap and Dispatcher classes.
   class Keymap
     include FreeBASE::DataBusHelper
 
@@ -17,12 +20,15 @@ module Redcar
       end
     end
 
+    # Normalizes a Redcar style keymap string like "Ctrl+G".
     def self.normalize(redcar_key)
       bits = redcar_key.split("+")
       bits = bits[0..-2].sort << bits.last
       bits.join("+")
     end
 
+    # Given a Gdk::EventKey returns a Redcar style keymap
+    # like "Ctrl+G"
     def self.clean_gdk_eventkey(gdk_eventkey)
       kv = gdk_eventkey.keyval
       ks = gdk_eventkey.state - Gdk::Window::MOD2_MASK
@@ -46,8 +52,9 @@ module Redcar
       end
     end
 
-    # Process a Gdk::EventKey (which is created on a keypress)
-    def self.process(gdk_eventkey) #:nodoc:
+    # Process a Gdk::EventKey (which is created on a keypress). This is the
+    # entry point for Command dispatch from Window.
+    def self.process(gdk_eventkey)
       if key = clean_gdk_eventkey(gdk_eventkey)
         execute_key(key, gdk_eventkey)
       else
@@ -73,9 +80,6 @@ module Redcar
 
     # Use to execute a key. key_name should be a string like "Ctrl+G".
     def self.execute_key(key_name, gdk_eventkey)
-#       if key_name == "Return" # FIXME!
-#         return false
-#       end
       if coms = bus("/redcar/keymaps/#{normalize(key_name)}").data
         App.log.debug "[Keymap] #{coms.length} candidate commands"
         coms = coms.select do |com| 

@@ -44,6 +44,12 @@ def execute(command)
   $?.to_i == 0 ? true : false
 end
 
+def plugin_names
+  Dir["plugins/*"].map do |fn|
+    name = fn.split("/").last
+  end
+end
+
 Dir[File.join(File.dirname(__FILE__), *%w[plugins *])].each do |plugin_dir|
   rakefiles = [File.join(plugin_dir, "Rakefile")] + 
     Dir[File.join(plugin_dir, "tasks", "*.rake")]
@@ -52,13 +58,6 @@ Dir[File.join(File.dirname(__FILE__), *%w[plugins *])].each do |plugin_dir|
       load rakefile
     end
   end
-end
-
-desc "Build core documentation (requires mislav-hanna gem)"
-task :coredoc do
-  FileUtils.rm_rf "doc"
-  files = Dir["plugins/core/lib/core/*"].select{|f| File.file? f}
-  sh "rdoc -o doc --inline-source --format=html -T hanna #{files.join(" ")} README.txt"
 end
 
 task :clear_cache do

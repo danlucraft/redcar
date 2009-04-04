@@ -1,5 +1,6 @@
 
 module Redcar
+  # A simple DBus listener thread that watches for method calls across DBus.
   class DBus
     def self.start_listener
       Thread.new do
