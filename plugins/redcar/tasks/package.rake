@@ -7,14 +7,18 @@ task :package => [
     "package:valar"
   ] do
   mkdir("pkg") rescue nil
-  excludes = %w[redcar/.git redcar/cache redcar/pkg]
-  
-  t = "tar czf pkg/redcar-#{ENV["REDCAR_VERSION"]}.tar.gz ../redcar "
-  excludes.each do |exclude|
-    t += "--exclude=\"#{exclude}\" "
+  FileUtils.rm_rf(File.join("pkg", "redcar"))
+  mkdir(File.join("pkg", "redcar")) rescue nil
+  excludes = %w[.git cache pkg]
+  contents = Dir["*"] - excludes
+  contents.each do |fn|
+    cp_r(fn, File.join("pkg", "redcar"))
   end
-  p t
-  execute_and_check t
+  cd "pkg" do
+    t = "tar czf redcar-#{ENV["REDCAR_VERSION"]}.tar.gz redcar "
+    puts t
+    execute_and_check t
+  end
 end
 
 RUBY_SOURCEVIEW = {
