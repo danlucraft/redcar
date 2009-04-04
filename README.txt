@@ -17,7 +17,7 @@ snippets, macros and is highly extensible.
 
 For now, installation is still pretty long-winded. It's a bit easier if you live within Ubuntu's packages.
 
-=== Installing on Ubuntu 8.04 (Hardy) and 8.10 (Intrepid)
+=== Installing on Ubuntu 8.04 - 9.04
 
 1. First you will need to install Ruby-GNOME2, the build tools and some other necessary libraries. On Ubuntu/Debian you may simply do:
 
@@ -54,6 +54,9 @@ If you are not using Debian/Ubuntu, or have installed Ruby yourself from source,
  
 The first time Redcar runs it will spend time loading the Textmate Bundles. 
 This only happens once.
+
+NB. Ubuntu 9.10 users should start Redcar with the --multiple-instance flag, as
+there appears to be a bug in the Jaunty ruby dbus package.
 
 == Running Features
 
