@@ -17,6 +17,7 @@ GREEN_FG = "\033[1;32m"
 RED_FG = "\033[1;31m"
 RED_BG = "\033[1;37m\033[41m"
 GREY_BG = "\033[40m"
+BLUE_FG = "\033[1;34m"
 CLEAR_COLOURS = "\033[0m"
 
 def cputs(text, colours, opts={})

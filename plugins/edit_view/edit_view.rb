@@ -19,8 +19,9 @@ module Redcar
   end  
 end
 
-require 'gtksourceview2'
-require File.dirname(__FILE__) + '/gtkmateview/dist/gtkmateview'
+require Redcar::ROOT + '/vendor/gtksourceview2/src/gtksourceview2'
+require Redcar::ROOT + '/vendor/gtkmateview/dist/gtkmateview'
+Gtk::Mate.textmate_dir = Redcar::ROOT + "/textmate"
 
 load File.dirname(__FILE__) + "/lib/document.rb"
 load File.dirname(__FILE__) + "/lib/edit_view.rb"

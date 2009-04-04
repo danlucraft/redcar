@@ -1,12 +1,9 @@
 
-desc "Build bundled dependencies (NOT WORKING YET)"
+desc "build redcar"
 task :build => [
-  # "build:gtksourceview2", 
-  # "build:gtkmateview", 
-  "build:gtk",
-  "build:libs",
-  "build:rubygnome2",
-  "build:check_gems"
+  "build:dependencies",
+  "build:gtksourceview2", 
+  "build:gtkmateview"
 ]
 
 def check_header(name)
@@ -18,34 +15,104 @@ def check_so(name)
 end
 
 def found(name, opts={})
-  cputs("#{name.ljust(30, ".")} found", [GREEN_FG, GREY_BG], opts)
+  cputs("#{name.ljust(30, ".")} found", [GREEN_FG], opts)
 end
 
-def missing(name, opts={})
-  cputs("#{name.ljust(30, ".")} not found", [RED_FG, GREY_BG], opts)
+def missing(name, suggestion=nil, opts={})
+  cputs("#{name.ljust(30, ".")} not found", [RED_FG], opts)
+  puts
+  if suggestion
+    suggestion.split("\n").each do |line|
+      line = line.ljust(60)
+      if line =~ /\s*\$/
+        cputs(line, [BLUE_FG], opts)
+      else
+        cputs(line, [], opts)
+      end
+    end
+  end
+  exit(1)
 end
 
 namespace :build do
-  task :rubygnome2 do
+  desc "check for necessary dependencies"
+  task :dependencies do
+    cputs("Libraries", [GREEN_FG], :no_newline => true)
+    [["glib-2.0", <<TXT],
+  Can't find glib development headers.
+  On Ubuntu you can install them like this:
+  
+    $ sudo apt-get install libglib2.0-dev
+TXT
+     ["gtksourceview-2.0", <<TXT],
+  Can't find gtksourceview2 or gtksourceview2 development
+  headers. On Ubuntu install them like this:
+  
+    $ sudo apt-get install libgtksourceview2.0-0 libgtksourceview2.0-dev
+TXT
+   ].each do |pkg, suggestion|
+      if execute("pkg-config --exists #{pkg}")
+        found(pkg, :no_newline => true)
+      else
+        missing(pkg, suggestion)
+      end
+    end
+    puts
+    [
+      ["onig*", "*libonig*", "Oniguruma", <<TXT
+  On Ubuntu you can install Oniguruma like this:              
+                                                              
+     $ sudo aptitude install libonig2 libonig-dev             
+                                                              
+TXT
+      ],
+      ["gee*", "libgee*", "Libgee", <<TXT
+  On Ubuntu you can install Libgee like this:
+  
+     $ sudo apt-get install libgee0 libgee-dev
+TXT
+      ]
+    ].each do |header, so, name, suggestion|
+      if (!header or check_header(header)) and 
+        (!so or check_so(so))
+        found(name)
+      else
+        missing(name, suggestion)
+      end
+    end
+      
     begin
       require 'gtk2'
       found("Ruby-GNOME2")
     rescue LoadError
       missing("Ruby-GNOME2")
     end
+
     begin
-      require 'gtksourceview2'
-      found("ruby-gtksourceview2")
+      require 'dbus'
+      found("ruby-dbus")
     rescue LoadError
-      missing("ruby-gtksourceview2")
+      missing("ruby-dbus")
+    end
+
+    gems = %w(oniguruma cucumber zerenity)
+    cputs("\nRubyGems", GREEN_FG)
+    gems.each do |gem|
+      begin
+        require gem
+        found(gem)
+      rescue LoadError
+        missing(gem)
+        puts
+        cputs "Can't find the RubyGem #{gem}. Try installing:", [GREY_BG]
+        cputs "   sudo gem install #{gems.join(" ")}", [GREY_BG, BLUE_FG]
+        puts
+      end
     end
   end
   
   task :gtkmateview do
     puts "Building gtkmateview"
-    execute_and_check "tar xzvf vendor/gtkmateview.tar.gz -C vendor/"
-    dir = Dir[File.join(%w[vendor danlucraft-gtkmateview*])].first
-    mv(dir, File.join(%w[vendor gtkmateview]))
     cd(File.join(*%w[vendor gtkmateview dist])) do
       execute_and_check "ruby extconf.rb"
       execute_and_check "make"
@@ -57,46 +124,6 @@ namespace :build do
     cd(File.join(*%w[vendor gtksourceview2])) do
       execute_and_check "ruby extconf.rb"
       execute_and_check "make"
-    end
-  end
-  
-  task :libs do
-    cputs("Libraries", GREEN_FG)
-    [
-      ["onig*", "*libonig*", "Oniguruma"],
-      ["gtkmateview*", "libgtkmateview*", "gtkmateview"]
-    ].each do |header, so, name|
-      if (!header or check_header(header)) and 
-          (!so or check_so(so))
-        found(name)
-      else
-        missing(name)
-      end
-    end
-  end
-  
-  task :gtk do
-    cputs("GTK", [GREEN_FG], :no_newline => true)
-    %w[glib gtk+-2.0 gtksourceview-2.0 xulrunner-gtkmozembed].each do |pkg|
-      if execute("pkg-config --exists #{pkg}")
-        found(pkg, :no_newline => true)
-      else
-        missing(pkg, :no_newline => true)
-      end
-    end
-    puts
-    puts
-  end
-  
-  task :check_gems do
-    cputs("\nRubygems", GREEN_FG)
-    %w(oniguruma cucumber zerenity).each do |gem|
-      begin
-        require gem
-        found(gem)
-      rescue LoadError
-        missing(gem)
-      end
     end
   end
 end

@@ -18,6 +18,7 @@ custom/arrangements.yaml
 custom/preferences.yaml
 custom/appdata.yaml
 
-textmate/*
-plugins/edit_view/gtkmateview
-plugins/edit_view/valar
+textmate
+vendor/gtksourceview2
+vendor/gtkmateview
+vendor/valar

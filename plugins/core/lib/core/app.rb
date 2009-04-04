@@ -102,8 +102,9 @@ module Redcar
 
     # Load a Marshalled object from the cache.
     def self.with_cache(dir, name)
-      unless cache_dir = Redcar::ROOT + "/cache/"
-        raise "called App.with_cache without a cache_dir"
+      cache_dir = Redcar::ROOT + "/cache/"
+      unless File.exist? cache_dir
+        FileUtils.mkdir cache_dir
       end
       unless File.exist?(cache_dir + "#{dir}/")
         FileUtils.mkdir cache_dir + "#{dir}/"
@@ -201,17 +202,7 @@ module Redcar
     end
     
     def self.textmate_share_dir
-      locations = [
-                   "/usr/local/share/textmate",
-                   "/usr/share/textmate/",
-                   File.expand_path(File.dirname(__FILE__) + "/../../../textmate/")
-                  ]
-      locations.each do |location|
-        if File.exist?(location)
-          return location
-        end
-      end
-      raise "Can't find the textmate share directory in any of these places: #{locations.inspect}."
+      File.join(Redcar::ROOT, "textmate")
     end
   end
 end

@@ -1,12 +1,3 @@
-=====================IMPORTANT NOTE=========================
-
-Redcar is pre-Release, pre-Beta, pre-Alpha. If you try and
-use it it will:
-  a. Crash. Guaranteed.
-  b. Lose your data, if you didn't save.
-
-=============================================================
-
 Redcar
     by Daniel Lucraft
     http://RedcarEditor.com/
@@ -18,10 +9,9 @@ snippets, macros and is highly extensible.
 
 == FEATURES
   
-* Syntax Highlighting for many languages.
+* Syntax highlighting for many languages.
 * Extensive snippets.
-* Ruby plugins
-* _Dynamic_ macros.
+* Ruby plugins.
 
 == INSTALL:
 
@@ -31,10 +21,10 @@ For now, installation is still pretty long-winded. It's a bit easier if you live
 
 1. First you will need to install Ruby-GNOME2, the build tools and some other necessary libraries. On Ubuntu/Debian you may simply do:
 
-  $ sudo apt-get install ruby ruby1.8-dev ruby-gnome2 build-essential libonig2 libonig-dev subversion libgtk2.0-dev libglib2.0-dev libgee0 libgee-dev libgtksourceview2.0-dev libxul-dev xvfb libdbus-ruby
+  $ sudo apt-get install ruby ruby1.8-dev rubygems1.8 libhttp-access2-ruby1.8 rubygems1.8 ruby-gnome2 build-essential libonig2 libonig-dev libgtk2.0-dev libglib2.0-dev libgee0 libgee-dev libgtksourceview2.0-dev libxul-dev xvfb libdbus-ruby
 
 If you are not using Debian/Ubuntu, or have installed Ruby yourself from source, then you should make sure that you have these libraries installed:
-  1. Ruby Rubygems, Glib, Gtk, GtkSourceView 2
+  1. Ruby, Rubygems, Glib, Gtk, GtkSourceView 2 with development headers
   2. Ruby-GNOME2 http://ruby-gnome2.sourceforge.jp/
   3. Oniguruma (any version will probably work, tested with 5.9.0) http://www.geocities.jp/kosako3/oniguruma/
   4. Libgee http://live.gnome.org/Libgee
@@ -45,32 +35,20 @@ If you are not using Debian/Ubuntu, or have installed Ruby yourself from source,
 
   $ sudo gem install oniguruma activesupport rspec cucumber hoe open4 zerenity
 
-3. Get the Redcar source.
+3. Download Redcar:
 
-  $ git clone git://github.com/danlucraft/redcar.git
-  
-4. Install the GtkSourceView 2.0 bindings for Ruby-GNOME2:
-  $ wget http://www.ruby-forum.com/attachment/2323/ruby-gtksourceview2.tar.bz2
-  $ tar xjvf ruby-gtksourceview2.tar.bz2
-  $ cd gtksourceview2
-  $ ruby extconf.rb
-  $ make
-  $ sudo make install
+  $ wget http://redcareditor.com/releases/redcar-latest.tar.gz
 
-5. Checkout the GtkMateView extension:
-  $ cd REDCAR_PATH/plugins/edit_view/
-  $ git clone git://github.com/danlucraft/gtkmateview.git
-  $ cd gtkmateview/dist
-  $ ruby extconf.rb
-  $ make
+4. Unzip the source:
 
-There will be quite a lot of warnings during this compilation, but there shouldn't be any errors.
+  $ tar xzvf redcar-latest.tar.gz
 
-6. Download the Textmate bundles:
-  $ cd /usr/local/share/
-  $ sudo git clone git://github.com/danlucraft/redcar-bundles.git textmate
-  
-7. Now try running Redcar
+5. Build Redcar
+
+  $ cd redcar/
+  $ rake build
+
+6. Now try running Redcar
   $ cd REDCAR_PATH
   $ ./bin/redcar
  
@@ -79,7 +57,7 @@ This only happens once.
 
 == Running Features
 
-rake features:all
+rake features
 rake features:[plugin_name]
 
 == LICENSE:
