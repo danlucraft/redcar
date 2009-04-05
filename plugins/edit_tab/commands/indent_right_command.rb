@@ -1,7 +1,7 @@
 
 module Redcar
   class IndentRightCommand < ChangeIndentCommand
-    key "Ctrl+]"
+    key "Super+]"
     
     def indent_line(line_ix)
       if Redcar::Preference.get("Editing/Use spaces instead of tabs").to_bool

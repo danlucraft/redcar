@@ -379,7 +379,7 @@ module Redcar
     end
 
     def input_by_type(type)
-      # puts "input_by_type(#{type.inspect})"
+      App.log.info "input_by_type(#{type.inspect})"
       case type
       when :selected_text, :selection, :selectedText
         doc.selection
@@ -428,7 +428,7 @@ module Redcar
         }
         type = type_map[@status]
       end
-      # puts "direct_output(#{type.inspect})"
+      App.log.info "direct_output(#{type.inspect})"
       case type
       when :replace_document, :replaceDocument
         doc.text = output_contents

@@ -1,14 +1,18 @@
 
 desc "Build documentation (requires mislav-hanna gem)"
-task :doc => plugin_names.map {|name| "rdoc:#{name}"}
+task :doc => plugin_names.map {|name| "rdoc:#{name}"} + ["doc:html"]
 
-# task :doc do
-#   FileUtils.rm_rf "doc"
-#   files = Dir["plugins/**/*"].
-#     select{|f| File.file? f}.
-#     reject{|fn| fn.include?("commands/") or fn.include?("spec/") or fn.include?("tests/")}
-#   sh "rdoc -o doc --inline-source --format=html -T hanna #{files.join(" ")} README.txt INSTALL.txt"
-# end
+namespace :doc do
+  desc "Build HTML documentation (needs python-sphinx and python-jinja2)"
+  task :html do
+  	execute_and_check "sphinx-build -b html doc/source doc/html"
+  end
+  
+  desc "Build Latex documentation (needs python-sphinx, python-jinja2, texlive-latex-base and texlive-latex-extras)"
+  task :latex do
+   	execute_and_check "sphinx-build -b latex doc/source doc/latex"
+  end
+end
 
 namespace :rdoc do
   # Generate feature tasks for each plugin.

@@ -17,28 +17,34 @@ module Redcar
     
     dbus_interface DBUS_REDCAR_INTERFACE do
       dbus_method :focus do
-        Redcar.win.window.focus Gdk::Event::CURRENT_TIME
+        Gtk.queue do
+          Redcar.win.window.focus Gdk::Event::CURRENT_TIME
+        end
       end
       
       dbus_method :open, "in path:s, in line:s, in column:s" do |path, line, column|
-        # TODO: fix this hardcoded reference
-        puts "open(#{path.inspect})"
-        tab = OpenTab.new(path).do
-        if tab
-          line ||= 1
-          column ||= 1
-          line = line.to_i
-          column = column.to_i
-          line -= 1
-          column -= 1
-          tab.goto(line, column) 
+        Gtk.queue do
+          # TODO: fix this hardcoded reference
+          puts "open(#{path.inspect})"
+          tab = OpenTab.new(path).do
+          if tab
+            line = 1 if line.blank?
+            column = 1 if column.blank?
+            line = line.to_i
+            column = column.to_i
+            line -= 1
+            column -= 1
+            tab.goto(line, column) 
+          end
         end
       end
       
       dbus_method :new_tab, "in contents:s" do |contents|
-        puts "new_tab(#{contents.inspect})"
-        tab = NewTab.new.do
-        tab.buffer.text = contents
+        Gtk.queue do
+          puts "new_tab(#{contents.inspect})"
+          tab = NewTab.new.do
+          tab.buffer.text = contents
+        end
       end
       
       dbus_method :debug, "in contents:s" do |contents|
@@ -56,10 +62,13 @@ module Redcar
       object.introspect
       object.default_iface = DBUS_REDCAR_INTERFACE
       any_directories = ARGV.any? {|arg| File.exist?(arg) and File.directory?(arg)}
+      object.debug(ARGV.inspect)
+      object.debug(any_directories.inspect)
       unless any_directories
         ARGV.each do |arg|
+          object.debug(arg)
           if arg =~ /^redcar:\/\/open\/\?url=file:\/\/([^&]*)(?:\&line=(\d+))?(?:\&column=(\d+))?/
-            object.open(File.expand_path($1), $2, $3)
+            object.open(File.expand_path($1), $2.to_s, $3.to_s)
           end
         end
         ARGV.each do |arg|
@@ -68,7 +77,7 @@ module Redcar
           end
         end
         if $stdin_contents and $stdin_contents.length > 0
-          object.new_tab($stdin_contents)
+          object.new_tab($stdin_contents.to_s)
         end
         object.focus
         exit(0)

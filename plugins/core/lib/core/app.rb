@@ -59,7 +59,7 @@ module Redcar
       if ARGV.include?("--log") or 
           (defined?(Redcar::Testing::InternalCucumberRunner) and
           Redcar::Testing::InternalCucumberRunner.in_cucumber_process)
-        @logger ||= Logger.new(Redcar::ROOT + "/redcar.log.#{$$}")
+        @logger ||= Logger.new(Redcar::ROOT + "/redcar.log")
       else
         @logger ||= Logger.new(nil)
       end

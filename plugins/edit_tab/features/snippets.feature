@@ -28,12 +28,12 @@ Feature: Snippets
 
   Scenario: Sets correct environment variables based on scope
     Given there is an EditTab open with syntax "Ruby"
-    When I press "Super+Shift+B"
+    When I press "Ctrl+Shift+B"
     Then I should see "# ==========\n# = <s>Banner<c> =\n# ==========" in the EditTab
 
   Scenario: Comment snippet is inserted correct
     Given there is an EditTab open with syntax "Ruby"
     When I type "foo\nbar\nbaz"
     And I press "Up"
-    When I press "Ctrl+/"
+    When I press "Super+/"
     Then I should see "foo\n# bar<c>\nbaz" in the EditTab

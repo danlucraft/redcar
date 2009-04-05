@@ -1,6 +1,6 @@
 module Redcar
   class IndentLine < Redcar::EditTabCommand
-    key "Ctrl+Alt+["
+    key "Super+Alt+["
 
     def execute
       tab.view.indent_line(doc.cursor_line)

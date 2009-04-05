@@ -11,7 +11,7 @@ module Redcar
     
     def execute
       if current_scope = Redcar.doc.cursor_scope
-        # puts "current_scope #{current_scope.name}"
+        App.log.info "current_scope #{current_scope.name}"
         # puts "current_pattern #{current_scope.pattern.name}"
         bundle = Bundle.find_bundle_with_grammar(current_scope.pattern.grammar)
       end
@@ -19,22 +19,22 @@ module Redcar
       File.open("#{Redcar::ROOT}/cache/tmp.command", "w") {|f| f.puts clean_script(shell_script)}
       File.chmod(0770, "#{Redcar::ROOT}/cache/tmp.command")
       output, error = nil, nil
-      # puts shell_command
+      App.log.info shell_command
       status = Open4.popen4(shell_command) do |pid, stdin, stdout, stderr|
         stdin.write(this_input = input)
-        # puts "input: #{this_input.inspect}"
+        App.log.info "input: #{this_input[0..300].inspect}"
         stdin.close
         until stdout.eof?
           output = stdout.read
         end
-        # puts "output: #{output.inspect}"
+        App.log.info "output: #{output.inspect}"
         error = stderr.read
       end
       @status = status.exitstatus
-      # puts "command status: #{status.exitstatus}"
+      App.log.info "command status: #{status.exitstatus}"
       unless error.blank?
-        # puts "shell command failed with error:"
-        puts error
+        App.log.info "shell command failed with error:"
+        App.log.info error
       end
       output
     end

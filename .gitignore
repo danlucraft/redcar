@@ -18,6 +18,10 @@ custom/arrangements.yaml
 custom/preferences.yaml
 custom/appdata.yaml
 
+rdoc
+doc/html
+doc/latex
+
 textmate
 vendor/gtksourceview2
 vendor/gtkmateview
