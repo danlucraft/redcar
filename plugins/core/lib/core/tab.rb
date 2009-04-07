@@ -122,7 +122,7 @@ module Redcar
         @label.label.angle = 0
       end
     end
-    
+
     # Returns the tab's title (displayed on the tab's 'tab').
     def title
       @label.text

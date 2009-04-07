@@ -123,7 +123,7 @@ module Redcar
       else
         # TODO: make this use arrangements once they're working again
         pane = Redcar.win.panes.find {|pn| !pn.tabs.map(&:title).include?(TITLE)}
-        OpenTab.new(iter[2], pane).do
+        OpenTabCommand.new(iter[2], pane).do
       end
     end
     

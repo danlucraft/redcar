@@ -12,6 +12,11 @@ Feature: Create, Open and Save files
     And I should see "test files file" in the EditTab
     And the label of the EditTab should say "files.rb"
 
+  Scenario: Opening a file more than once should not open more than one tab
+    When I open the file "plugins/edit_tab/features/fixtures/files.rb"
+    And I open the file "plugins/edit_tab/features/fixtures/files.rb"
+    Then there should be one EditTab open
+
   Scenario: Change a file changes the label
     When I open the file "plugins/edit_tab/features/fixtures/files.rb"
     And I type "a"

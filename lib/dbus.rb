@@ -26,7 +26,7 @@ module Redcar
         Gtk.queue do
           # TODO: fix this hardcoded reference
           puts "open(#{path.inspect})"
-          tab = OpenTab.new(path).do
+          tab = OpenTabCommand.new(path).do
           if tab
             line = 1 if line.blank?
             column = 1 if column.blank?

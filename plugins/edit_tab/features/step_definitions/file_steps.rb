@@ -1,6 +1,6 @@
 
 When /^I (?:open|have opened) the file "([^"]+)"$/ do |filename|
-  Redcar::OpenTab.new(filename).do
+  Redcar::OpenTabCommand.new(filename).do
 end
 
 When /^I save the EditTab$/ do

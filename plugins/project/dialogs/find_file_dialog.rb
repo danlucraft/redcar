@@ -118,7 +118,7 @@ module Redcar
     # opens the selected file
     def treeview_activated
       if si = @treeview.selection.selected
-        OpenTab.new(si[1]).do
+        OpenTabCommand.new(si[1]).do
         destroy
       else
         # the user hit return before the list was populated

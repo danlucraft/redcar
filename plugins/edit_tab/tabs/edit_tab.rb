@@ -81,7 +81,22 @@ module Redcar
     def self.gtk_grammar_combo_box
       bus('/gtk/window/statusbar/grammar_combo', true).data
     end
-
+    
+    # Returns all open EditTabs
+    def self.all_open
+      Redcar.win.collect_tabs(Redcar::EditTab)
+    end
+    
+    # Find the tab that contains a named file, or nil.
+    def self.find_tab_for_file(path)
+      all_open.each do |tab|
+        if tab.filename == path
+          return tab
+        end
+      end
+      nil
+    end
+    
     # an EditView instance.
     attr_reader :view
     attr_reader :filename
@@ -119,7 +134,7 @@ module Redcar
       @modified = val
       update_tab_label
     end
-    
+
     def connect_signals #:nodoc:
       @view.buffer.signal_connect_after("changed") do |widget, event|
         self.modified = true

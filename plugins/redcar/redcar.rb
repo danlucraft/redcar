@@ -4,7 +4,7 @@ module Redcar
     def self.load(plugin)
       main_menu "File" do
         item "New",        NewTab
-        item "Open",       OpenTab
+        item "Open",       OpenTabCommand
         separator
         item "Save",       SaveTab
         item "Save As",    SaveTabAs

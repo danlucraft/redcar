@@ -43,7 +43,7 @@ module Redcar
       end
       if files.any?
         files.each do |fn|
-          Redcar::OpenTab.new(fn).do
+          Redcar::OpenTabCommand.new(fn).do
         end
       end
     end

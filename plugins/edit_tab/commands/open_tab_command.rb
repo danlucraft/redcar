@@ -1,5 +1,5 @@
 module Redcar
-  class OpenTab < Redcar::Command
+  class OpenTabCommand < Redcar::Command
     key "Ctrl+O"
     icon :NEW
 
@@ -12,7 +12,9 @@ module Redcar
       if !@filename
         @filename = Redcar::Dialog.open(win)
       end
-      if @filename and File.file?(@filename)
+      if tab = EditTab.find_tab_for_file(@filename)
+        tab.focus
+      elsif @filename and File.file?(@filename)
         new_tab = (@pane||win).new_tab(Redcar::EditTab)
         new_tab.load(@filename)
         new_tab.focus
