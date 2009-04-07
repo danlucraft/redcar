@@ -23,8 +23,22 @@ module Redcar
       end
     end
     
+    # Declares that only one of this type of Tab can be opened
+    # at any given time per window. Trying to open one will simply 
+    # return the current instance instead.
+    def self.singleton
+      @singleton = true
+      self.class.send(:define_method, :instance) do
+        Redcar.win.collect_tabs(self).first
+      end
+    end
+    
     class << self
       attr_accessor :widget_to_tab
+      
+      def singleton?
+        @singleton
+      end
     end
     
     attr_accessor :pane, :label

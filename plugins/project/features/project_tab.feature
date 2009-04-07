@@ -4,7 +4,12 @@ Feature: The Project Tab
 
   Scenario: Open the project tab
     When I press "Ctrl+Shift+P"
-    And I press "2"
+    Then there should be one ProjectTab open
+    And the title of the ProjectTab should be "Project"
+
+  Scenario: Only open one project tab
+    When I press "Ctrl+Shift+P"
+    When I press "Ctrl+Shift+P"
     Then there should be one ProjectTab open
     And the title of the ProjectTab should be "Project"
 

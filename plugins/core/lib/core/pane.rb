@@ -36,6 +36,9 @@ module Redcar
     # Redcar::Tab or child class. args are passed
     # on to tab_type#initialize.
     def new_tab(tab_type=EditTab, *args)
+      if tab_type.singleton? and existing_instance = tab_type.instance
+        return existing_instance
+      end
       tab = tab_type.new(self, *args)
       add_tab(tab)
       Hook.trigger :new_tab, tab

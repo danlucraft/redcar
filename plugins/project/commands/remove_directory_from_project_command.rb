@@ -6,7 +6,7 @@ module Redcar
     end
   
     def execute
-      if pt = ProjectPlugin.tab
+      if pt = ProjectTab.instance
         pt.remove_project(@path)
      end
     end

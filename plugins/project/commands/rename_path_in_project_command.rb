@@ -6,7 +6,7 @@ module Redcar
     end
     
     def execute
-      if pt = ProjectPlugin.tab
+      if pt = ProjectTab.instance
         pt.rename_path(@path)
       end
     end

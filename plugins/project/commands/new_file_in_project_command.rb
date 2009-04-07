@@ -6,7 +6,7 @@ module Redcar
     end
     
     def execute
-      if pt = ProjectPlugin.tab
+      if pt = ProjectTab.instance
         pt.new_file_at(@path)
       end
     end

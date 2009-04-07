@@ -1,6 +1,8 @@
 
 module Redcar
   class ProjectTab < Tab
+    singleton
+    
     TITLE = "Project"
     attr_accessor :store, :view, :directories
 
@@ -34,12 +36,10 @@ module Redcar
       @image_pic = Gdk::Pixbuf.new(icons_dir+"gnome-mime-image.png")
       @ruby_pic = Gdk::Pixbuf.new(icons_dir+"ruby.png")
       connect_signals
-      ProjectPlugin.tab = self
     end
     
     def close
       super
-      ProjectPlugin.tab = nil
     end
     
     def connect_signals

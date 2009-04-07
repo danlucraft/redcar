@@ -8,7 +8,7 @@ module Redcar
     end
     
     def execute
-      unless project_tab = ProjectPlugin.tab
+      unless project_tab = ProjectTab.instance
 	      project_tab = win.new_tab(ProjectTab)
 	      project_tab.focus
 			end
