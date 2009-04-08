@@ -41,3 +41,12 @@ Feature: Edit Text
     And I press "Ctrl+K"
     Then I should see "def f<c>" in the EditTab
     And I should not see "oo" in the EditTab
+
+  Scenario: Paste over
+    When I type "aaxx"
+    And I press "Shift+Left" then "Shift+Left"
+    And I press "Ctrl+X"
+    And I press "Shift+Left" then "Shift+Left"
+    And I press "Ctrl+V"
+    Then I should see "<s>xx<c>" in the EditTab
+    And I should not see "aa" in the EditTab

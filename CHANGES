@@ -7,6 +7,11 @@ New features, enhancements:
 
   * 
 
+Bug fixes:
+  
+  * Fixed paste-over bug (#74)
+  * Fixed bug that allows multiple project tabs (#69)
+  * Fixed so only one copy of a file can be open (#62)
 
 Version 0.1 (6 April 2009)
 ==========================
