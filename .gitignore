@@ -13,6 +13,7 @@ cache/themes.dump
 cache/tmp.command
 cache/snippets/*.dump
 cache/preferences/*.dump
+cache/cache.dump
 
 custom/arrangements.yaml
 custom/preferences.yaml

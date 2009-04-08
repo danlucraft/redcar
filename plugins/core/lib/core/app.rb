@@ -108,22 +108,26 @@ module Redcar
     # Load a Marshalled object from the cache.
     def self.with_cache(dir, name)
       cache_dir = Redcar::ROOT + "/cache/"
-      unless File.exist? cache_dir
-        FileUtils.mkdir cache_dir
+      unless File.exist?(cache_dir)
+        FileUtils.mkdir(cache_dir)
       end
-      unless File.exist?(cache_dir + "#{dir}/")
-        FileUtils.mkdir cache_dir + "#{dir}/"
-      end
-      if File.exist?(cache_dir + "#{dir}/#{name}.dump")
-        str = File.read(cache_dir + "#{dir}/#{name}.dump")
-        obj = Marshal.load(str)
+      cache_file = cache_dir + "/cache.dump"
+      if @cache.nil? and File.exist?(cache_file)
+        @cache = Marshal.load(File.read(cache_file))
       else
-        obj = yield
-        File.open(cache_dir + "#{dir}/#{name}.dump", "w") do |fout|
-          fout.puts Marshal.dump(obj)
+        @cache ||= {}
+      end
+      
+      if @cache[dir] and @cache[dir][name]
+        @cache[dir][name]
+      else
+        @cache[dir] ||= {}
+        @cache[dir][name] = yield
+        File.open(cache_file, "w") do |fout|
+          fout.puts Marshal.dump(@cache)
         end
-        obj
-      end      
+      end
+      @cache[dir][name]
     end
     
     def self.clipboard
