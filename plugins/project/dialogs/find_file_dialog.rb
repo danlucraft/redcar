@@ -1,6 +1,7 @@
 
 module Redcar
   class FindFileDialog < Gtk::Dialog
+    MAX_ENTRIES = 30
     attr_accessor :entry, :treeview, :list
 
     def initialize
@@ -77,7 +78,7 @@ module Redcar
           bits = fn.split("/")
           name = bits.last
           updir = bits[-4..-2].join("/")
-          if i < 10
+          if i < MAX_ENTRIES
             iter = @list.append
             iter[0] = name + "     (#{updir})"
             iter[1] = fn
@@ -153,7 +154,7 @@ module Redcar
             if score < max
               score_match_pairs << [score, fn]
               score_match_pairs.sort!
-              if score_match_pairs.length == 10
+              if score_match_pairs.length == MAX_ENTRIES
                 max = score_match_pairs.last.first
               end
             end
