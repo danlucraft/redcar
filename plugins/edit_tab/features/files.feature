@@ -4,7 +4,23 @@ Feature: Create, Open and Save files
 
   Background:
     Given the file "plugins/edit_tab/features/fixtures/files.rb" contains "test files file"
+    And the file "plugins/core/features/fixtures/file1.rb" contains "# First Ruby test file"
+    And the file "plugins/core/features/fixtures/file2.rb" contains "# Second Ruby test file"
     And the file "plugins/edit_tab/features/fixtures/files2.html" does not exist
+
+  Scenario: Open more then one file
+    When I open the file "plugins/core/features/fixtures/file1.rb"
+    And I open the file "plugins/core/features/fixtures/file2.rb"
+    Then there should be two EditTabs open
+
+  Scenario: Save all open tabs
+    When I open the file "plugins/core/features/fixtures/file1.rb"
+    And I type "changed "
+    And I open the file "plugins/core/features/fixtures/file2.rb"
+    And I type "changed "
+    And I save all the open tabs
+    Then the file "plugins/core/features/fixtures/file1.rb" should contain "changed # First Ruby test file"
+    And the file "plugins/core/features/fixtures/file2.rb" should contain "changed # Second Ruby test file"
 
   Scenario: Open a file
     When I open the file "plugins/edit_tab/features/fixtures/files.rb"

@@ -34,3 +34,20 @@ end
 Then /^there should be #{FeaturesHelper::NUMBER_RE} ([A-Z]\w+)$/ do |num, tab_type|
   Redcar.win.collect_tabs(Redcar.const_get(tab_type)).length.should == parse_number(num)
 end
+
+Given /^there are TestTabs open "([^\"]*)"$/ do |tabnames|
+  tabnames.split(",").map(&:strip).each {|name| Redcar.win.new_tab(Redcar::TestTab, name)}
+end
+
+Given /^I am looking at TestTab "([^\"]*)"$/ do |name|
+  Redcar.win.tabs.find{|tab| tab.name == name}.focus
+end
+
+Then /^I should be looking at the #{FeaturesHelper::ORDINAL_RE} EditTab$/ do |ordinal|
+  num = parse_ordinal(ordinal) - 1
+  Redcar.win.tabs[num].should == Redcar.tab
+end
+
+Then /^I should be looking at TestTab "([^\"]*)"$/ do |name|
+  Redcar.tab.name.should == name
+end
