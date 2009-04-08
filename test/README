@@ -1,7 +1,0 @@
-
-These are integration tests for Redcar. They use Cucumber and load a set of test bundles from within the fixtures directory. The Cucumber integration is defined in plugins/testing.
-
-To run these tests:
-
-    redcar --test
-
