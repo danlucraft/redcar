@@ -2,7 +2,7 @@
 module Redcar
   # This class manages Textmate bundles. On Redcar startup
   # it will scan for and load bundle information for all bundles
-  # in "/usr/local/share/textmate/Bundles" or "/usr/share/textmate/Bundles"
+  # from "redcar/textmate/".
   class Bundle
     include FreeBASE::DataBusHelper
 

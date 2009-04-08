@@ -42,7 +42,15 @@ Feature: Edit Text
     Then I should see "def f<c>" in the EditTab
     And I should not see "oo" in the EditTab
 
-  Scenario: Paste over
+  Scenario: Paste 
+    When I type "aaxx"
+    And I press "Shift+Left" then "Shift+Left"
+    And I press "Ctrl+X"
+    And I press "Left" then "Left"
+    And I press "Ctrl+V"
+    Then I should see "xx<c>aa" in the EditTab
+
+  Scenario: Paste over a selection
     When I type "aaxx"
     And I press "Shift+Left" then "Shift+Left"
     And I press "Ctrl+X"
