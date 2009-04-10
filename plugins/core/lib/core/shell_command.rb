@@ -9,7 +9,7 @@ module Redcar
       shell_script.gsub(/^#!\/usr\/bin\/env ruby (.*)$/, "#!/usr/bin/env ruby")
     end
     
-    def execute
+    def execute(input)
       if current_scope = Redcar.doc.cursor_scope
         App.log.info "current_scope #{current_scope.name}"
         # puts "current_pattern #{current_scope.pattern.name}"
@@ -21,8 +21,8 @@ module Redcar
       output, error = nil, nil
       App.log.info shell_command
       status = Open4.popen4(shell_command) do |pid, stdin, stdout, stderr|
-        stdin.write(this_input = input)
-        App.log.info "input: #{this_input[0..300].inspect}"
+        stdin.write(input)
+        App.log.info "input: #{input[0..300].inspect}"
         stdin.close
         until stdout.eof?
           output = stdout.read
