@@ -253,11 +253,6 @@ module Redcar
       if snip["scope"]
         command_class.scope(snip["scope"])
       end
-      command_class.class_eval %Q{
-        def execute
-          tab.view.snippet_inserter.insert_snippet(self.class)
-        end
-      }
       def command_class.inspect
         "#<SnippetCommand: #{@name}>"
       end

@@ -6,5 +6,9 @@ module Redcar
     class << self
       attr_accessor :name, :content, :bundle, :tab_trigger
     end
+    
+    def execute
+      tab.view.snippet_inserter.insert_snippet(self.class)
+    end
   end
 end
