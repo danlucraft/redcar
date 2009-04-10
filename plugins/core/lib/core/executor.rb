@@ -1,5 +1,13 @@
 module Redcar
-  # This class executes Redcar commands. 
+  # This class executes Redcar commands. The command_instance
+  # passed in should respond to:
+  #
+  #   * execute or execute(input)
+  #   * pass?
+  #   * gdk_event_key (if pass? is true)
+  #   * input_type
+  #   * fallback_input_type
+  #   * output_type
   class Executor
     def tab
       @tab
@@ -25,7 +33,7 @@ module Redcar
       Redcar::App.focussed_window
     end
     
-    def initialize(command_instance, opts)
+    def initialize(command_instance, opts={})
       @command_instance = command_instance
       @opts = opts
     end
@@ -50,7 +58,7 @@ module Redcar
       Redcar::Command.set_command_running(command_instance)
       begin
         tab = opts[:tab] || (Redcar::App.focussed_window.focussed_tab rescue nil)
-        unless command_instance.respond_to? :execute or command_instance.class.pass?
+        unless command_instance.respond_to? :execute or command_instance.pass?
           raise "Abstract Command Error"
         end 
         if tab
@@ -58,7 +66,7 @@ module Redcar
         end
         @output = nil
         begin
-          if command_instance.class.pass?
+          if command_instance.pass?
             # TODO: think this needs more work. E.g., what happens during 
             # a macro if someone tries to execute a command? Won't their
             # event go on top of the event queue and bolsch up the macro?
@@ -79,7 +87,7 @@ module Redcar
         rescue Object => e
           Command.process_command_error(command_instance, e)
         end
-        output_type = command_instance.class.get(:output)
+        output_type = command_instance.output_type
         direct_output(output_type, @output) if @output and output_type
       rescue => e
         puts "[Redcar] error in command"
@@ -94,21 +102,21 @@ module Redcar
     # actual input
     def valid_input_type
       if primary_input
-        command_instance.class.get(:input)
+        command_instance.input_type
       else
-        command_instance.class.get(:fallback_input) || :document
+        command_instance.fallback_input_type || :document
       end
     end
     
     # Gets the primary input.
     def primary_input
-      input = input_by_type(command_instance.class.get(:input))
+      input = input_by_type(command_instance.input_type)
       input == "" ? nil : input
     end
     
     # Gets the fallback input. Default is :document
     def secondary_input
-      type = command_instance.class.get(:fallback_input) || :document
+      type = command_instance.fallback_input_type || :document
       input_by_type(type)
     end
     
@@ -142,7 +150,7 @@ module Redcar
     
     def input
       return nil unless tab
-      if [:nothing, :none].include?(command_instance.class.get(:input))
+      if [:nothing, :none].include?(command_instance.input_type)
         secondary_input
       else
         primary_input || secondary_input
@@ -249,7 +257,10 @@ module Redcar
       html = html.gsub("tm-file:", "file:")
       # TODO: fix hardcoded reference to later plugin
       new_tab = Redcar.win.new_tab(Redcar::HtmlTab, html)
-      new_tab.title = "output: " + command_instance.class.name
+      new_tab.title = "output"
+      if command_instance.respond_to?(:name)
+        new_tab.title += ": " + command_instance.name
+      end
       new_tab.focus
     end
     

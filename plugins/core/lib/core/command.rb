@@ -189,6 +189,26 @@ module Redcar
       end
       self.class.to_s + " " + bits.join(", ")
     end
+    
+    def pass?
+      self.class.pass?
+    end
+    
+    def input_type
+      self.class.get(:input)
+    end
+    
+    def fallback_input_type
+      self.class.get(:fallback_input)
+    end
+    
+    def output_type
+      self.class.get(:output)
+    end
+    
+    def name
+      self.class.name
+    end
   end
 
   class ArbitraryCodeCommand < Command #:nodoc:

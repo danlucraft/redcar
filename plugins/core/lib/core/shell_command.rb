@@ -1,12 +1,24 @@
 
 module Redcar
-  class ShellCommand < Command
-    class << self
-      attr_accessor(:tm_uuid, :bundle, :shell_script, :name)
+  class ShellMetaCommand
+    attr_accessor :tm_uuid, :bundle, :shell_script, :name
+    
+    def new
+      ShellCommandInstance.new(self)
+    end
+  end
+
+  class ShellCommandInstance
+    def initialize(shell_meta_command)
+      @shell_meta_command = shell_meta_command
     end
     
     def clean_script(shell_script)
       shell_script.gsub(/^#!\/usr\/bin\/env ruby (.*)$/, "#!/usr/bin/env ruby")
+    end
+    
+    def do(opts={})
+      Executer.new(self, opts).execute
     end
     
     def execute(input)
@@ -40,7 +52,7 @@ module Redcar
     end
     
     def shell_script
-      self.class.shell_script
+      @shell_meta_command.shell_script
     end
     
     def shell_command
