@@ -1,4 +1,5 @@
 module Redcar
+  # This class executes Redcar commands. 
   class Executor
     def tab
       @tab

@@ -39,10 +39,10 @@ module FreeBASE
           @@userdir = "C:/My Documents/.redcar/"
           Dir.mkdir(@@userdir) unless File.directory?(@@userdir)
         else
-          @@userdir = File.join(ENV['USERPROFILE'], $FREEBASE_APPLICATION)
+          @@userdir = File.join(ENV['USERPROFILE'], $FREEBASE_APPLICATION.downcase)
         end
       else
-        @@userdir = File.join(ENV['HOME'],".#{$FREEBASE_APPLICATION}") unless ENV['HOME'].nil?
+        @@userdir = File.join(ENV['HOME'],".#{$FREEBASE_APPLICATION.downcase}") unless ENV['HOME'].nil?
       end
     end
 
