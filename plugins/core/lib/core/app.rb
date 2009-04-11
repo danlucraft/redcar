@@ -59,7 +59,11 @@ module Redcar
       if ARGV.include?("--log") or 
           (defined?(Redcar::Testing::InternalCucumberRunner) and
           Redcar::Testing::InternalCucumberRunner.in_cucumber_process)
-        @logger ||= Logger.new(Redcar::ROOT + "/redcar.log")
+        if ENV["REDCAR_DEBUG"]
+          @logger ||= Logger.new(STDOUT)
+        else
+          @logger ||= Logger.new(Redcar::ROOT + "/redcar.log")
+        end
       else
         @logger ||= Logger.new(nil)
       end
@@ -111,23 +115,24 @@ module Redcar
       unless File.exist?(cache_dir)
         FileUtils.mkdir(cache_dir)
       end
-      cache_file = cache_dir + "/cache.dump"
-      if @cache.nil? and File.exist?(cache_file)
-        @cache = Marshal.load(File.read(cache_file))
-      else
-        @cache ||= {}
+      cache_dir = cache_dir + "0_2/"
+      unless File.exist?(cache_dir)
+        FileUtils.mkdir(cache_dir)
       end
       
-      if @cache[dir] and @cache[dir][name]
-        @cache[dir][name]
+      unless File.exist?(cache_dir + "#{dir}/")
+        FileUtils.mkdir cache_dir + "#{dir}/"
+      end
+      cache_file = cache_dir + "/#{dir}/#{name}.dump"
+      if File.exist?(cache_file)
+        obj = Marshal.load(File.read(cache_file))
       else
-        @cache[dir] ||= {}
-        @cache[dir][name] = yield
+        obj = yield
         File.open(cache_file, "w") do |fout|
-          fout.puts Marshal.dump(@cache)
+          fout.puts Marshal.dump(obj)
         end
       end
-      @cache[dir][name]
+      obj
     end
     
     def self.clipboard

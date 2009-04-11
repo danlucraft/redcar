@@ -22,7 +22,7 @@ module Redcar
 #       puts "  #{!!active?}" if @key == "Ctrl+S"
 #       puts "  #{!!in_range?}" if @key == "Ctrl+S"
       @operative = if active? and in_range?
-        if self.ancestors[1].ancestors.include? Redcar::Command
+        if self.is_a?(Class) and self.ancestors[1].ancestors.include? Redcar::Command
           self.ancestors[1].operative?
         else
           true
@@ -89,14 +89,16 @@ module Redcar
           false
         else
           app = Gtk::Mate::Matcher.test_match(@scope, scope.hierarchy_names(true))
-          if self.ancestors[1].ancestors.include? Redcar::EditTabCommand
+          if self.is_a?(Class) and
+              self.ancestors[1].ancestors.include? Redcar::EditTabCommand
             app and self.ancestors[1].correct_scope?(scope)
           else
             app
           end
         end
       else
-        if self.ancestors[1].ancestors.include? Redcar::EditTabCommand
+        if self.is_a?(Class) and
+            self.ancestors[1].ancestors.include? Redcar::EditTabCommand
           self.ancestors[1].correct_scope?(scope)
         else
           true

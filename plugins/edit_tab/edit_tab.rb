@@ -64,8 +64,10 @@ module Redcar
       Kernel.load File.dirname(__FILE__) + "/widgets/font_chooser_button.rb"
       Kernel.load File.dirname(__FILE__) + "/preferences.rb"
       
-      Redcar::Bundle.make_redcar_snippets_from_class(Redcar::SnippetCommand, Redcar::EditTab)
-      Redcar::Bundle.make_redcar_commands_with_range(Redcar::EditTab)
+      Redcar::Bundle.bundles.each do |bundle|
+        bundle.load_snippets_with_class_and_range(Redcar::SnippetCommand, Redcar::EditTab)
+        bundle.load_shell_commands_with_range(Redcar::EditTab)
+      end
       
       plugin.transition(FreeBASE::LOADED)
     end

@@ -1,6 +1,6 @@
 module Redcar
   class SaveAllTabsCommand < Redcar::TabCommand
-    key "Alt+Super+S"
+    key "Ctrl+Super+S"
     icon :SAVE
 
     def execute

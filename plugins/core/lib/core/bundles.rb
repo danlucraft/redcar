@@ -102,7 +102,6 @@ module Redcar
       @dir  = dir
       bus("/redcar/bundles/#{name}").data = self
       load_info
-      load_command_hashes
       
       Bundle.bundles ||= []
       Bundle.bundles << self
@@ -149,44 +148,69 @@ module Redcar
       end
     end
     
-    attr_writer :snippets
-    
+    # A array of this bundle's snippets. Snippets are cached 
     def snippets
       return @snippets if @snippets
       raise "Asked for bundle snippets, but they have not been generated. " +
-        "Use Bundle.make_redcar_snippets_with_range(range)."
+        "Use bundle.load_snippets_with_range(range)."
     end
     
     class << self
       attr_reader :snippet_lookup
     end
     
-    def self.register_snippet_for_lookup(snippet_hash, snippet_command)
+    def self.register_snippet_for_lookup(snippet_command)
       @snippet_lookup ||= Hash.new {|h, k| h[k] = Hash.new {|h, k| h[k] = [] } }
-      @snippet_lookup[snippet_hash["scope"]||""][snippet_hash["tabTrigger"]] << snippet_command
+      @snippet_lookup[snippet_command.scope||""][snippet_command.tab_trigger] << snippet_command
     end
     
-    # A array of this bundle's snippets. Snippets are cached 
-    def snippet_hashes
-      @snippet_hashes ||= load_snippet_hashes
-    end
-    
-    def load_snippet_hashes #:nodoc:
-      App.with_cache("snippets", @name) do
-        hashes = {}
+    def load_snippets_with_class_and_range(klass, range)
+      start = Time.now
+      snippets = App.with_cache("snippets", @name) do
+        cache = []
         Dir.glob(@dir+"/Snippets/*").each do |snipfile|
           begin
             xml = IO.readlines(snipfile).join
             snip = Redcar::Plist.plist_from_xml(xml)[0]
-            hashes[snip["uuid"]] = snip
+            cache << Bundle.create_snippet_command(klass, snip, self)
           rescue Object => e
             puts "There was an error loading #{snipfile}"
             puts e.message
             puts e.backtrace[0..10]
           end
         end
-        hashes
+        cache
       end
+      snippets.each do |snippet|
+        Bundle.uuid_map[snippet.tm_uuid] = snippet
+        Bundle.register_snippet_for_lookup(snippet)
+        snippet.range = range
+        if snippet.key
+          Redcar::Keymap.register_key_command(snippet.key, snippet)
+        end
+      end
+      snippets
+    end
+    
+    def self.create_snippet_command(klass, snip, bundle)
+      snippet_command = klass.new
+      snippet_command.name = snip["name"]
+      snippet_command.content = snip["content"]
+      snippet_command.bundle = bundle
+      snippet_command.tm_uuid = snip["uuid"]
+      if snip["scope"]
+        snippet_command.scope = snip["scope"].split(",").join(",")
+      end
+      if tab_trigger = snip["tabTrigger"]
+        snippet_command.tab_trigger = tab_trigger
+      end
+      if snip["keyEquivalent"]
+        keyb = Redcar::Bundle.translate_key_equivalent(snip["keyEquivalent"])
+        if keyb
+          snippet_command.key = keyb
+        end
+      end
+      snippet_command
     end
     
     # An array of this bundle's templates. Cached.
@@ -211,28 +235,23 @@ module Redcar
       end
     end
     
-    attr_writer :commands
-    
+    # An array of this bundle's commands. Cached.
     def commands
       return @commands if @commands
       raise "Asked for bundle commands, but they have not been generated. " +
-        "Use Bundle.make_redcar_commands_with_range(range)."
+        "Use bundle.load_shell_commands_with_range(range)."
     end
     
-    # An array of this bundle's commands. Cached.
-    def command_hashes
-      @command_hashes ||= load_command_hashes
-    end
-    
-    def load_command_hashes
-      App.with_cache("commands", @name) do
-        hashes = {}
+    def load_shell_commands_with_range(range)
+      start = Time
+      commands = App.with_cache("commands", @name) do
+        cache = []
         Dir.glob(@dir+"/Commands/*").each do |command_filename|
           begin
             xml = IO.read(command_filename)
             hash_info = Redcar::Plist.plist_from_xml(xml)[0]
             hash_info["file"] = command_filename
-            hashes[hash_info["uuid"]] = hash_info
+            cache << Bundle.create_shell_command(self, hash_info)
           rescue Object => e
             puts "There was an error loading #{command_filename}"
             puts e.message
@@ -240,78 +259,38 @@ module Redcar
             exit
           end
         end
-        hashes
+        cache
+      end
+      commands.each do |command|
+        Bundle.uuid_map[command.tm_uuid] = command
+        command.range = range
+        if command.key
+          Redcar::Keymap.register_key_command(command.key, command)
+        end
       end
     end
     
-    def self.create_snippet_command(snip, bundle)
-      command_class = Class.new(Redcar::SnippetCommand)
-      command_class.range Redcar::Window
-      command_class.name = snip["name"]
-      command_class.content = snip["content"]
-      command_class.bundle = bundle
-      if snip["scope"]
-        command_class.scope(snip["scope"])
+    def self.create_shell_command(bundle, hash)
+      new_command = Redcar::ShellCommand.new
+      if key = Bundle.translate_key_equivalent(hash["keyEquivalent"], bundle.name + " | " + hash["name"])
+        new_command.key = key
       end
-      def command_class.inspect
-        "#<SnippetCommand: #{@name}>"
+      new_command.scope = hash["scope"]
+      if hash["input"]
+        new_command.input_type = hash["input"].underscore.intern
       end
-      if tab_trigger = snip["tabTrigger"]
-        command_class.tab_trigger = tab_trigger
-        register_snippet_for_lookup(snip, command_class)
+      if hash["fallbackInput"]
+        new_command.fallback_input_type = hash["fallbackInput"].underscore.intern
       end
-      if snip["keyEquivalent"]
-        keyb = Redcar::Bundle.translate_key_equivalent(snip["keyEquivalent"])
-        if keyb
-          command_class.key(keyb)
-        end
+      if hash["output"]
+        new_command.output_type = hash["output"].underscore.intern
       end
-      command_class
-    end
-    
-    def self.make_redcar_snippets_from_class(klass, range)
-      start = Time.now
-      bundles.each do |bundle|
-        bundle.snippets = {}
-        bundle.snippet_hashes.each do |uuid, snip|
-          Bundle.uuid_map[uuid] = create_snippet_command(snip, bundle)
-        end
-      end
-      puts "loaded snippet objects in #{Time.now - start}s"
-    end
-    
-    def self.make_redcar_commands_with_range(range)
-      i = 0
-      start = Time.now
-      bundles.each do |bundle|
-        bundle.commands = {}
-        bundle.command_hashes.each do |uuid, hash|
-          i += 1
-          new_command = Class.new(Redcar::ShellCommand)
-          new_command.range Redcar::EditTab
-          if key = Bundle.translate_key_equivalent(hash["keyEquivalent"], bundle.name + " | " + hash["name"])
-            new_command.key key
-          end
-          new_command.scope hash["scope"]
-          if hash["input"]
-            new_command.input hash["input"].underscore.intern
-          end
-          if hash["fallbackInput"]
-            new_command.fallback_input hash["fallbackInput"].underscore.intern
-          end
-          if hash["output"]
-            new_command.output hash["output"].underscore.intern
-          end
-          
-          new_command.tm_uuid = uuid
-          new_command.bundle = bundle
-          new_command.shell_script = hash["command"]
-          new_command.name = hash["name"]
-          bundle.commands[uuid] = new_command
-          Bundle.uuid_map[uuid] = new_command
-        end
-      end
-      puts "made #{i} Commands in #{Time.now - start}s"
+      
+      new_command.tm_uuid = hash["uuid"]
+      new_command.bundle = bundle
+      new_command.shell_script = hash["command"]
+      new_command.name = hash["name"]
+      new_command
     end
     
     def about_command

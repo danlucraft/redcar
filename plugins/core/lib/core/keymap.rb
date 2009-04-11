@@ -85,7 +85,7 @@ module Redcar
         coms = coms.select do |com| 
           if com.is_a? Proc 
             true
-          elsif com.ancestors.include? Redcar::Command 
+          else
             if com.executable?(Redcar.tab) 
               App.log.debug { "[Keymap] command operative: #{com.inspect}" } 
               App.log.debug { "         operative:  #{com.operative?.inspect}" }
@@ -120,7 +120,7 @@ module Redcar
             App.log.debug { "[Keymap] executing arbitrary code" }
             com.call
             return true
-          elsif com.ancestors.include? Redcar::Command
+          else
             if com.pass?            
               App.log.debug "[Keymap] passing on #{com.inspect}"
               command_instance = com.new
@@ -132,8 +132,6 @@ module Redcar
               com.new.do
               return true
             end
-          else
-            return false
           end
         end
       else

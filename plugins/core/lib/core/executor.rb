@@ -8,6 +8,8 @@ module Redcar
   #   * input_type
   #   * fallback_input_type
   #   * output_type
+  #   * record?
+  #
   class Executor
     def tab
       @tab
