@@ -12,15 +12,15 @@ module Redcar
     def active=(val)
       @sensitive_active = val
       #      p @name
-      #      puts "#{self}.active = #{val.inspect}" if @name == "Help"
+#       puts "#{self}.active = #{val.inspect}"
       update_operative
     end
     
     def update_operative
       old = @operative
-      # puts "update_operative: #{self.inspect}" if to_s == "Redcar::Undo"
-      #      puts "  #{!!active?}" if @name == "Help"
-      #      puts "  #{!!in_range?}" if @name == "Help"
+#       puts "update_operative: #{self.inspect}" if @key == "Ctrl+S"
+#       puts "  #{!!active?}" if @key == "Ctrl+S"
+#       puts "  #{!!in_range?}" if @key == "Ctrl+S"
       @operative = if active? and in_range?
         if self.ancestors[1].ancestors.include? Redcar::Command
           self.ancestors[1].operative?
@@ -30,11 +30,9 @@ module Redcar
       else
         false
       end
-      #      puts "  com: #{self.inspect}: #{old.inspect} -> #{@operative.inspect}" if @name == "Help"
-      #      p self.inspect if @name == "Help"
-      # p @menu if to_s == "Redcar::Undo"
+#       puts "  com: #{self.inspect}: #{old.inspect} -> #{@operative.inspect}" if @key == "Ctrl+S"
       if old != @operative and @menu_item
-        #        p :updating_menu_sensitivity if @name == "Help"
+#         p :updating_menu_sensitivity if @key == "Ctrl+S"
         Redcar::MenuDrawer.set_active(@menu_item, @operative)
       end
       child_commands.each(&:update_operative)

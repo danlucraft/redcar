@@ -4,7 +4,7 @@ When /^I (?:open|have opened) the file "([^"]+)"$/ do |filename|
 end
 
 When /^I save the EditTab$/ do
-  Redcar::SaveTab.new.do
+  When "I press \"Ctrl+S\""
 end
 
 When /^I save the EditTab as #{FeaturesHelper::STRING_RE}$/ do |filename|

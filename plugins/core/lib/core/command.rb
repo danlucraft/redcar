@@ -17,10 +17,10 @@ module Redcar
   #   end
   class Command
     include FreeBASE::DataBusHelper
+    extend Redcar::Sensitive
     extend Redcar::CommandActivation
     
     class << self
-      include Redcar::Sensitive
       attr_writer :name
     end
     
