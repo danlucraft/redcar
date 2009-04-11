@@ -22,6 +22,10 @@ module FeaturesHelper
     result + 1
   end
   
+  def parse_string(string)
+    string.gsub("\\\"", "\"")
+  end
+  
   def parse_ordinal(ordinal)
     ORDINALS[ordinal]
   end

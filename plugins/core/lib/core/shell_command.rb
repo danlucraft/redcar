@@ -22,7 +22,7 @@ module Redcar
       App.log.info shell_command
       status = Open4.popen4(shell_command) do |pid, stdin, stdout, stderr|
         stdin.write(input)
-        App.log.info "input: #{input[0..300].inspect}"
+        App.log.info "input: #{input ? input[0..300].inspect : "nil"}"
         stdin.close
         until stdout.eof?
           output = stdout.read
