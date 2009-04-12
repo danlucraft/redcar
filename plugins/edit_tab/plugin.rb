@@ -12,6 +12,10 @@ module Redcar
         Redcar.win and Redcar.tab and Redcar.tab.is_a? EditTab
       end
       
+      Sensitive.register(:open_edit_tabs, [:open_window, :new_tab, :close_tab]) do
+        Redcar.win and Redcar.win.tabs.any? {|tab| tab.is_a?(EditTab) }
+      end
+      
       Sensitive.register(:modified?, 
                          [:open_window, :new_tab, :close_tab, 
                           :after_focus_tab, :tab_changed, 
@@ -48,16 +52,16 @@ module Redcar
           gtk_line_label.sensitive = false
         end
       end
-
-#       Sensitive.register(:selected_text, 
-#                          [:open_window, :new_tab, :close_tab, 
-#                           :after_focus_tab]) do
-#         win and tab and tab.is_a? EditTab
-#       end
+      # 
+      # Sensitive.register(:selected_text, 
+      #                    [:open_window, :new_tab, :close_tab, 
+      #                     :after_focus_tab]) do
+      #   win and tab and tab.is_a? EditTab
+      # end
 
       Dir[File.dirname(__FILE__) + "/lib/*"].each {|f| Kernel.load f}
       Dir[File.dirname(__FILE__) + "/tabs/*"].each {|f| Kernel.load f}
-      Kernel.load File.dirname(__FILE__) + "/commands/edit_tab.rb"
+      Kernel.load File.dirname(__FILE__) + "/commands/edit_tab_command.rb"
       Kernel.load File.dirname(__FILE__) + "/commands/change_indent_command.rb"
       Kernel.load File.dirname(__FILE__) + "/commands/ruby.rb"
       Dir[File.dirname(__FILE__) + "/commands/*"].each {|f| Kernel.load f}

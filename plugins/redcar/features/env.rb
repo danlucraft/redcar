@@ -43,7 +43,7 @@ World do |world|
 end
 
 After do
-  Redcar::CloseAllTabs.new.do
+  Redcar.win.tabs.each(&:close)
   Redcar::UnifyAll.new.do
   Redcar::CommandHistory.clear
   make_event_key("Escape", :press).put
