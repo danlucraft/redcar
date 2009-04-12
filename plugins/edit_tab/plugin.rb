@@ -1,6 +1,11 @@
 
 module Redcar
   class EditTabPlugin < Redcar::Plugin
+    UNDO_CLOSE_TAB_DEPTH = 10
+    
+    cattr_accessor :closed_tabs
+    self.closed_tabs = []
+    
     def self.load(plugin) #:nodoc:
       Hook.register :tab_changed
       Hook.register :tab_save
@@ -14,6 +19,10 @@ module Redcar
       
       Sensitive.register(:open_edit_tabs, [:open_window, :new_tab, :close_tab]) do
         Redcar.win and Redcar.win.tabs.any? {|tab| tab.is_a?(EditTab) }
+      end
+
+      Sensitive.register(:closed_edit_tab, [:new_tab, :after_close_tab]) do
+        Redcar::EditTabPlugin.closed_tabs.any?
       end
       
       Sensitive.register(:modified?, 
@@ -34,6 +43,15 @@ module Redcar
         Redcar::EditTab.create_grammar_combo
         Redcar::EditTab.create_grammar_key_bindings
         Redcar::EditTab.create_line_col_status
+      end
+      
+      Hook.attach :close_tab do |tab|
+        if tab.is_a?(EditTab) and not tab.filename.blank?
+          self.closed_tabs << {:filename => tab.filename}
+          if self.closed_tabs.length == UNDO_CLOSE_TAB_DEPTH
+            self.closed_tabs = closed_tabs[1..-1]
+          end
+        end
       end
 
       Hook.attach :after_focus_tab do |tab|

@@ -6,12 +6,14 @@ Version 0.2 (TBA)
 New features, enhancements:
 
   * Improved fuzzy file finder
+  * Undo close tab (Ctrl+Shift+T)
 
 Bug fixes:
   
   * Fixed paste-over bug (#74)
   * Fixed bug that allows multiple project tabs (#69)
   * Fixed so only one copy of a file can be open (#62)
+  * Fixed file finder not finding new files (#??)
 
 Version 0.1 (6 April 2009)
 ==========================

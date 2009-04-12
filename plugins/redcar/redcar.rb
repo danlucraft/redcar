@@ -13,6 +13,7 @@ module Redcar
         separator
         item "Close",      CloseTab
         item "Close All",  CloseAllTabs
+        item "Undo Close", UndoCloseEditTabCommand
         separator
         item "Quit",       Quit
       end

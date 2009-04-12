@@ -1,6 +1,6 @@
 
 Given /^there is an? EditTab open(?: with syntax #{FeaturesHelper::STRING_RE})?$/ do |syntax|
-  When 'I press "Super+N"'
+  When 'I press "Ctrl+T"'
   if syntax
     case syntax
     when "Ruby"

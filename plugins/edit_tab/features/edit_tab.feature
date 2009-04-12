@@ -3,7 +3,7 @@ Feature: EditTab
   I want to open tabs for editing my code
 
   Scenario: Open an EditTab
-    When I press "Super+N"
+    When I press "Ctrl+T"
     Then there should be 1 EditTab open
   
   Scenario: Choose Ruby syntax

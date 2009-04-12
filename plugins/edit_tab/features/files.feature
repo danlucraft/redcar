@@ -70,3 +70,17 @@ Feature: Create, Open and Save files
     Then the file "plugins/core/features/fixtures/file1.rb" should contain "changed # First Ruby test file"
     And the file "plugins/core/features/fixtures/file2.rb" should contain "changed # Second Ruby test file"
 
+  Scenario: Undo close tab
+    When I open the file "plugins/core/features/fixtures/file1.rb"
+    And I press "Ctrl+W"
+    And I press "Ctrl+Shift+T"
+    Then the label of the EditTab should say "file1.rb"
+
+  Scenario: Undo two close tabs
+    When I open the file "plugins/core/features/fixtures/file1.rb"
+    And I open the file "plugins/core/features/fixtures/file2.rb"
+    And I press "Ctrl+W"
+    And I press "Ctrl+W"
+    And I press "Ctrl+Shift+T"
+    And I press "Ctrl+Shift+T"
+    Then there should be two EditTabs open
