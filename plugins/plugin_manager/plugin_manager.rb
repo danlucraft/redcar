@@ -47,27 +47,27 @@ module Com::RedcarIDE
         self.gtk_toolbar.append("Info", "", "", Gtk::Icon.get_image(:INFO)) do
           info((@tv.selection.selected||[])[0])
         end
-
-        self.gtk_toolbar.append("Reload", "", "", Gtk::Icon.get_image(:REFRESH)) do
-          reload((@tv.selection.selected||[])[0])
-          OpenPluginManager.new.do
-        end
-
-        self.gtk_toolbar.append("Test", "", "", Gtk::Icon.get_image(:EXECUTE)) do
-          test((@tv.selection.selected||[])[0])
-          OpenPluginManager.new.do
-        end
-
-        self.gtk_toolbar.append("Spec", "", "", Gtk::Icon.get_image(:EXECUTE)) do
-          spec((@tv.selection.selected||[])[0])
-          OpenPluginManager.new.do
-        end
-
-        self.gtk_toolbar.append("Test All", "", "", Gtk::Icon.get_image(:EXECUTE)) do
-          puts "\nTesting all plugins:"
-          bus("system/test").call
-          OpenPluginManager.new.do
-        end
+        # 
+        # self.gtk_toolbar.append("Reload", "", "", Gtk::Icon.get_image(:REFRESH)) do
+        #   reload((@tv.selection.selected||[])[0])
+        #   OpenPluginManager.new.do
+        # end
+        # 
+        # self.gtk_toolbar.append("Test", "", "", Gtk::Icon.get_image(:EXECUTE)) do
+        #   test((@tv.selection.selected||[])[0])
+        #   OpenPluginManager.new.do
+        # end
+        # 
+        # self.gtk_toolbar.append("Spec", "", "", Gtk::Icon.get_image(:EXECUTE)) do
+        #   spec((@tv.selection.selected||[])[0])
+        #   OpenPluginManager.new.do
+        # end
+        # 
+        # self.gtk_toolbar.append("Test All", "", "", Gtk::Icon.get_image(:EXECUTE)) do
+        #   puts "\nTesting all plugins:"
+        #   bus("system/test").call
+        #   OpenPluginManager.new.do
+        # end
       end
 
       def tab_icon

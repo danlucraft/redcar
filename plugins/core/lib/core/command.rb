@@ -183,7 +183,7 @@ module Redcar
     end
     
     def to_s
-      interesting_variables = instance_variables - %w(@__tab @__view @__doc @output)
+      interesting_variables = instance_variables - %w(@__tab @__view @__doc @output @executor)
       bits = interesting_variables.map do |iv|
         "#{iv}=" + instance_variable_get(iv.intern).inspect
       end
