@@ -56,5 +56,5 @@ Feature: Edit Text
     And I press "Ctrl+X"
     And I press "Shift+Left" then "Shift+Left"
     And I press "Ctrl+V"
-    Then I should see "<s>xx<c>" in the EditTab
+    Then I should see "xx<c>" in the EditTab
     And I should not see "aa" in the EditTab
