@@ -111,19 +111,19 @@ module Redcar
 
     # Load a Marshalled object from the cache.
     def self.with_cache(dir, name)
-      cache_dir = Redcar::ROOT + "/cache/"
+      cache_dir = File.join(home_dot_dir, "cache")
       unless File.exist?(cache_dir)
         FileUtils.mkdir(cache_dir)
       end
-      cache_dir = cache_dir + "0_2/"
+      cache_dir = File.join(cache_dir, "0_2")
       unless File.exist?(cache_dir)
         FileUtils.mkdir(cache_dir)
       end
       
-      unless File.exist?(cache_dir + "#{dir}/")
-        FileUtils.mkdir cache_dir + "#{dir}/"
+      unless File.exist?(this_dir = File.join(cache_dir, dir))
+        FileUtils.mkdir this_dir
       end
-      cache_file = cache_dir + "/#{dir}/#{name}.dump"
+      cache_file = File.join(this_dir, "#{name}.dump")
       if File.exist?(cache_file)
         obj = Marshal.load(File.read(cache_file))
       else
