@@ -13,3 +13,10 @@ Frequently Asked Questions
   keybindings. Super+R is the default for "Enhanced Zoom Desktop" for
   instance. You can modify Compiz keybindings in the Compiz Settings 
   Manager. You can modify Redcar keybindings by looking in the source :)
+
+**When I try to build Redcar, I get "error: rbgtkconversions.h: No such file or directory"**
+
+  Are you running on x86_64 bit Ubuntu? The Ruby-GNOME2 package for Ubuntu 
+  seems to be missing some header files. You can download them 
+  `here <http://redcareditor.com/stuff/missing_x64_headers>`_ and you should put them
+  in the same place as the rbgtk.h header. Which may be */usr/lib/ruby/1.8/x86_64-linux/*
