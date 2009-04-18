@@ -1,4 +1,6 @@
 
+require 'open3'
+
 desc "build redcar"
 task :build => [
   "build:dependencies",
@@ -18,6 +20,15 @@ def found(name, opts={})
   cputs("#{name.ljust(30, ".")} found", [GREEN_FG], opts)
 end
 
+def warning(string)
+  cputs("WARNING:\n" + string, [BLUE_FG])
+  if ENV["IGNORE_WARNINGS"]
+    puts "Ignoring warning. Naughty!\n\n"
+  else
+    exit(1)
+  end
+end
+
 def missing(name, suggestion=nil, opts={})
   cputs("#{name.ljust(30, ".")} not found", [RED_FG], opts)
   puts
@@ -34,9 +45,31 @@ def missing(name, suggestion=nil, opts={})
   exit(1)
 end
 
-namespace :build do
+namespace :build do  
   desc "check for necessary dependencies"
   task :dependencies do
+    stdin, stdout, stderr = Open3.popen3("ruby -e \"require 'rbconfig'; puts Config::CONFIG['sitedir']\" ")
+    stdin.close
+    output = stdout.read
+    
+    ruby_sitedir = output.chomp
+    rake_sitedir = Config::CONFIG["sitedir"]
+    
+    if ruby_sitedir != rake_sitedir
+      cputs(<<-WARNING, [RED_FG])
+ERROR:
+   Your 'rake' executable is running with a different Ruby than your 
+   'ruby' executable. 
+      
+      sitedir for rake: #{rake_sitedir}
+      sitedir for ruby: #{ruby_sitedir}
+      
+   This is likely to have happened if you tried installing Ruby from 
+   source and from packages simultaneously.
+   WARNING
+      exit(1)
+    end
+    
     cputs("Libraries", [GREEN_FG], :no_newline => true)
     [["glib-2.0", <<TXT],
   Can't find glib development headers.
@@ -80,10 +113,9 @@ TXT
         missing(name, suggestion)
       end
     end
-      
+    
     begin
       require 'gtk2'
-      found("Ruby-GNOME2")
     rescue LoadError
       missing("Ruby-GNOME2")
     end
