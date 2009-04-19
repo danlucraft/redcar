@@ -7,14 +7,22 @@ module Redcar
       @moz = Gtk::MozEmbed.new
       hbox.pack_start(@moz)
       super(pane, hbox, :scrolled => false)
+      @contents = source
+      
+      # God this is hacky. I can haz Webkit plz?
       Thread.new {
-        sleep 0.5
-        self.contents = source
+        sleep 1
+        render_contents
       }
     end
     
-    def contents=(source)
-      @moz.render_data(source, "file://"+Dir.getwd+"/", "text/html")
+    def render_contents
+      @moz.render_data(@contents, "file://"+Dir.getwd+"/", "text/html")
+    end
+    
+    # This only returns contents that have been set with contents=
+    def visible_contents_as_string
+      @contents
     end
   end
 end

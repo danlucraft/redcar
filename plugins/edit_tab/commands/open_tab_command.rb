@@ -14,6 +14,7 @@ module Redcar
       end
       if tab = EditTab.find_tab_for_file(@filename)
         tab.focus
+        tab
       elsif @filename and File.file?(@filename)
         new_tab = (@pane||win).new_tab(Redcar::EditTab)
         new_tab.load(@filename)

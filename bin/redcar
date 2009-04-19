@@ -48,10 +48,8 @@ end
 
 require File.join(File.dirname(__FILE__), %w'.. lib dbus')
 
-unless in_features_process?
-  unless ARGV.include?("--multiple-instance")
-    Redcar::DBus.try_export_service
-  end
+unless ARGV.include?("--multiple-instance")
+  Redcar::DBus.try_export_service
 end
 
 # See if a code base was passed as an argument. If not

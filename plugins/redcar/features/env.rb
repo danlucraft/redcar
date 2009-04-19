@@ -1,5 +1,4 @@
 
-
 require File.dirname(__FILE__) + "/formatters/gtk_formatter.rb"
 require File.dirname(__FILE__) + "/formatters/gtk_progress_formatter.rb"
 
@@ -23,7 +22,13 @@ Thread.new do
     end
   end
   
-  load File.dirname(__FILE__) + "/../../../bin/redcar"
+  begin
+    load File.dirname(__FILE__) + "/../../../bin/redcar"
+  rescue Object => e
+    puts "error loading Redcar"
+    puts e.message
+    puts e.backtrace
+  end
 end
 
 loop do

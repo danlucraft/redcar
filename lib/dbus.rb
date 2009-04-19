@@ -42,9 +42,9 @@ module Redcar
       end
       
       dbus_method :open, "in path:s, in line:s, in column:s" do |path, line, column|
+        App.log.info "open(#{path.inspect})"
         Gtk.queue do
           # TODO: fix this hardcoded reference
-          puts "open(#{path.inspect})"
           tab = OpenTabCommand.new(path).do
           if tab
             line = 1 if line.blank?
@@ -60,20 +60,20 @@ module Redcar
       
       dbus_method :new_tab, "in contents:s" do |contents|
         Gtk.queue do
-          puts "new_tab(#{contents.inspect})"
+          App.log.info "new_tab(#{contents.inspect})"
           tab = NewTab.new.do
           tab.buffer.text = contents
         end
       end
       
       dbus_method :debug, "in contents:s" do |contents|
-        puts "debug(#{contents.inspect})"
+        App.log.info "debug(#{contents.inspect})"
       end
     end
     
     # Return instance of dbus control object on success, none on failure
     def self.try_export_service
-      p namespace
+      puts "exporting dbus service: #{namespace}"
       Redcar::DBus.export_service
     rescue ::DBus::Connection::NameRequestError
       bus     = ::DBus::SessionBus.instance
@@ -84,6 +84,7 @@ module Redcar
       any_directories = ARGV.any? {|arg| File.exist?(arg) and File.directory?(arg)}
       object.debug(ARGV.inspect)
       object.debug(any_directories.inspect)
+      object.debug("namespace: #{namespace}")
       unless any_directories
         ARGV.each do |arg|
           object.debug(arg)

@@ -15,17 +15,21 @@ module Gtk
 		end
 	end
 
+  def self.execute_pending_blocks
+    GTK_PENDING_BLOCKS_LOCK.synchronize do
+      GTK_PENDING_BLOCKS.each do |block|
+        block.call
+      end
+      GTK_PENDING_BLOCKS.clear
+    end
+  end
+
 	def Gtk.main_with_queue(timeout)
-		Gtk.timeout_add timeout do
-			GTK_PENDING_BLOCKS_LOCK.synchronize do
-				for block in GTK_PENDING_BLOCKS
-					block.call
-				end
-				GTK_PENDING_BLOCKS.clear
-			end
-			true
-		end
-		Gtk.main
+    Gtk.timeout_add timeout do
+      execute_pending_blocks
+      true
+    end
+    Gtk.main
 	end
 
   class Widget

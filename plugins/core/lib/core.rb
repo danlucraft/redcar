@@ -49,7 +49,7 @@ module Redcar
       Hook.attach(:redcar_start) do
         puts "redcar_start: #{Time.now - Redcar::PROCESS_START_TIME} seconds"
       end
-      unless Redcar::App.ARGV.include?("--multiple-instance") or in_features_process
+      unless Redcar::App.ARGV.include?("--multiple-instance")
         Redcar::DBus.start_listener
       end
       plugin.transition(FreeBASE::RUNNING)

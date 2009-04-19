@@ -22,8 +22,8 @@ module Redcar
     # Do not call this directly, use App#new_window instead.
     # Creates a new Redcar window.
     def initialize
-      super()
       title = "Redcar"
+      super(title)
       @notebooks_panes = {}
       @focussed_tab = nil
       @focussed_gtk_widget = nil

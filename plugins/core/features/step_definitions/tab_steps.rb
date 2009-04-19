@@ -3,19 +3,23 @@ def escape_text(text)
   text.gsub("\\n", "\n").gsub("\\t", "\t")
 end
 
-def only_tab(tab_type)
-  only(Redcar.win.collect_tabs(Redcar.const_get(tab_type)))
+def only_tab(tab_type, title=nil)
+  tabs = Redcar.win.collect_tabs(Redcar.const_get(tab_type))
+  if title
+    tabs = tabs.select {|t| t.title == title}
+  end
+  only(tabs)
 end
 
-Then /^I should see #{FeaturesHelper::STRING_RE} in the (\w+)$/ do |text, tab_type| # "
+Then /^I should see #{FeaturesHelper::STRING_RE} in the (\w+)(?: "([^"]+)")?$/ do |text, tab_type, title| # "
   text = parse_string(text)
-  tab = only_tab(tab_type)
+  tab = only_tab(tab_type, title)
   tab.visible_contents_as_string.should include(escape_text(text))
 end
 
-Then /^I should not see #{FeaturesHelper::STRING_RE} in the (\w+)$/ do |text, tab_type| # "
+Then /^I should not see #{FeaturesHelper::STRING_RE} in the (\w+)(?: "([^"]+)")?$/ do |text, tab_type, title| # "
   text = eval(text.inspect)
-  tab = only_tab(tab_type)
+  tab = only_tab(tab_type, title)
   tab.visible_contents_as_string.should_not include(escape_text(text))
 end
 
