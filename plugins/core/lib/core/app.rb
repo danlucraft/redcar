@@ -139,7 +139,7 @@ module Redcar
       Gtk::Clipboard.get(Gdk::Atom.intern("CLIPBOARD"))
     end
 
-    ENV_VARS =  %w(RUBYLIB TM_RUBY TM_BUNDLE_SUPPORT TM_CURRENT_LINE)+
+    ENV_VARS =  %w(REDCAR_FEATURE_PROCESS RUBYLIB TM_RUBY TM_BUNDLE_SUPPORT TM_CURRENT_LINE)+
       %w(TM_CURRENT_LINE TM_LINE_INDEX TM_LINE_NUMBER TM_SELECTED_TEXT)+
       %w(TM_DIRECTORY TM_FILEPATH TM_SCOPE TM_SOFT_TABS TM_SUPPORT_PATH)+
       %w(TM_TAB_SIZE TM_FILENAME)
@@ -154,6 +154,7 @@ module Redcar
       ENV['REDCAR_BIN'] = Redcar::ROOT + "/bin/redcar"
       ENV['RUBYLIB'] = (ENV['RUBYLIB']||"")+":#{textmate_share_dir}/Support/lib"
       ENV['TM_RUBY'] = File.join(Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name'])
+      ENV['REDCAR_FEATURE_PROCESS'] = "1" if in_features_process? or ARGV.include?("--dbus-features")
       
       if bundle
         ENV['TM_BUNDLE_SUPPORT'] = bundle.dir+"/Support"

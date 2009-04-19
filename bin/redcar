@@ -41,13 +41,14 @@ if STDIN.isatty == false
   end
 end
 
-require File.join(File.dirname(__FILE__), %w'.. lib dbus')
-
-def in_features_process
-  defined?(Redcar::Testing::InternalCucumberRunner) and Redcar::Testing::InternalCucumberRunner.in_cucumber_process
+def in_features_process?
+  defined?(Redcar::Testing::InternalCucumberRunner) and 
+  Redcar::Testing::InternalCucumberRunner.in_cucumber_process
 end
 
-unless in_features_process
+require File.join(File.dirname(__FILE__), %w'.. lib dbus')
+
+unless in_features_process?
   unless ARGV.include?("--multiple-instance")
     Redcar::DBus.try_export_service
   end

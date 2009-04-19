@@ -1,21 +1,40 @@
 
 require 'dbus'
 
-DBUS_REDCAR_SERVICE   = "com.redcaride.app"
-DBUS_REDCAR_PATH      = "/com/redcaride/app"
-DBUS_REDCAR_INTERFACE = "com.redcaride.iface"
+DBUS_CONFIG = {
+  :default => {
+    :service   => "com.redcareditor.app",
+    :path      => "/com/redcareditor/app",
+    :interface => "com.redcareditor.app"
+  },
+  :features => {
+    :service   => "com.redcareditor.features",
+    :path      => "/com/redcareditor/features",
+    :interface => "com.redcareditor.features"
+  }
+}
 
 module Redcar
   class DBus < ::DBus::Object
+    def self.namespace
+      return @namespace if @namespace
+      if in_features_process? or 
+          ARGV.include?("--dbus-features")
+        @namespace = :features
+      else
+        @namespace = :default
+      end
+    end
+    
     def self.export_service
       @bus          = ::DBus::SessionBus.instance
-      service      = @bus.request_service(DBUS_REDCAR_SERVICE)
-      exported_obj = new(DBUS_REDCAR_PATH)
+      service      = @bus.request_service(DBUS_CONFIG[namespace][:service])
+      exported_obj = new(DBUS_CONFIG[namespace][:path])
       
       service.export(exported_obj)      
     end
     
-    dbus_interface DBUS_REDCAR_INTERFACE do
+    dbus_interface DBUS_CONFIG[namespace][:interface] do
       dbus_method :focus do
         Gtk.queue do
           Redcar.win.window.focus Gdk::Event::CURRENT_TIME
@@ -54,20 +73,22 @@ module Redcar
     
     # Return instance of dbus control object on success, none on failure
     def self.try_export_service
+      p namespace
       Redcar::DBus.export_service
     rescue ::DBus::Connection::NameRequestError
       bus     = ::DBus::SessionBus.instance
-      service = bus.service(DBUS_REDCAR_SERVICE)
-      object  = service.object(DBUS_REDCAR_PATH)
+      service = bus.service(DBUS_CONFIG[namespace][:service])
+      object  = service.object(DBUS_CONFIG[namespace][:path])
       object.introspect
-      object.default_iface = DBUS_REDCAR_INTERFACE
+      object.default_iface = DBUS_CONFIG[namespace][:interface]
       any_directories = ARGV.any? {|arg| File.exist?(arg) and File.directory?(arg)}
       object.debug(ARGV.inspect)
       object.debug(any_directories.inspect)
       unless any_directories
         ARGV.each do |arg|
           object.debug(arg)
-          if arg =~ /^redcar:\/\/open\/\?url=file:\/\/([^&]*)(?:\&line=(\d+))?(?:\&column=(\d+))?/
+          protocol = (namespace == :features ? "redcar-features" : "redcar")
+          if arg =~ /^#{protocol}:\/\/open\/\?url=file:\/\/([^&]*)(?:\&line=(\d+))?(?:\&column=(\d+))?/
             object.open(File.expand_path($1), $2.to_s, $3.to_s)
           end
         end
