@@ -84,3 +84,11 @@ Feature: Create, Open and Save files
     And I press "Ctrl+Shift+T"
     And I press "Ctrl+Shift+T"
     Then there should be two EditTabs open
+
+  Scenario: Prompt for save for modified file
+    When I open the file "plugins/core/features/fixtures/file1.rb"
+    And I type "changed"
+    And I press "Ctrl+W"
+    Then I should see a dialog "Document has unsaved changes" with buttons "Save" and "Discard"
+
+

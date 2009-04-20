@@ -173,6 +173,18 @@ end
 class Gtk::Widget
   alias :old_signal_connect :signal_connect
   
+  def child_widgets_with_class(klass, acc=[])
+    if self.is_a? klass
+      acc << self
+    end
+    if self.respond_to?(:children)
+      self.children.each do |gtk_child|
+        gtk_child.child_widgets_with_class(klass, acc)
+      end
+    end
+    acc
+  end
+  
   def debug_widget_tree(indent=0, str="") #:nodoc:
     str << " "*indent + self.class.to_s + "\n"
     if self.respond_to?(:children)
