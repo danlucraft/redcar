@@ -10,14 +10,18 @@ module Redcar
 
     def execute
       dialog = Gtk::Dialog.new("Document has unsaved changes",
-	      Redcar.win,
-	      Gtk::Dialog::DESTROY_WITH_PARENT,
-	      [ Gtk::Stock::OK, Gtk::Dialog::RESPONSE_NONE ])    
+        Redcar.win,
+        Gtk::Dialog::MODAL,
+        [ Gtk::Stock::SAVE, Gtk::Dialog::RESPONSE_OK],
+        [ Gtk::Stock::DISCARD, Gtk::Dialog::RESPONSE_REJECT],
+        [ Gtk::Stock::CANCEL, Gtk::Dialog::RESPONSE_CANCEL])
       dialog.vbox.add(Gtk::Label.new("Unsaved changes."))
-      dialog.signal_connect('response') { dialog.destroy }
+      dialog_runner = Redcar.win.modal_dialog_runner(dialog)
       
-
-      dialog.show_all
+      dialog.signal_connect('response') do 
+        dialog_runner.close
+      end
+      dialog_runner.run
       
       @tab ||= tab
       @tab.close if @tab

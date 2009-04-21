@@ -163,6 +163,32 @@ module Redcar
       update_tab_range(tab)
     end
     
+    class ModalDialogRunner
+      def initialize(window, dialog)
+        @window, @dialog = window, dialog
+      end
+
+      def run
+        # let's ignore all input to the window while the dialog is there
+        @modal_key_handler = @window.signal_connect("key-press-event") { true }
+        @modal_click_handler = @window.signal_connect("button-press-event") { true }
+        @dialog.show_all
+      end
+      
+      def close
+        @dialog.destroy
+        @window.signal_handler_disconnect(@modal_key_handler)
+        @window.signal_handler_disconnect(@modal_click_handler)
+      end
+    end
+    
+    # We can't use the standard Gtk modal dialog option
+    # because it hangs the main event loop waiting for input
+    # which means we can't test it.
+    def modal_dialog_runner(dialog)
+      ModalDialogRunner.new(self, dialog)
+    end
+    
     private
     
     # Iterates over the panes in the window in a well-defined order.

@@ -89,6 +89,15 @@ Feature: Create, Open and Save files
     When I open the file "plugins/core/features/fixtures/file1.rb"
     And I type "changed"
     And I press "Ctrl+W"
-    Then I should see a dialog "Document has unsaved changes" with buttons "Save" and "Discard"
+    Then I should see a dialog "Document has unsaved changes" with buttons "Save, Discard, Cancel"
+
+  Scenario: Prompt for save should save
+    When I open the file "plugins/core/features/fixtures/file1.rb"
+    And I type "changed"
+    And I press "Ctrl+W"
+    And I click the button "Save" in the dialog like "unsaved changes"
+
+
+
 
 
