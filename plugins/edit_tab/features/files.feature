@@ -7,6 +7,7 @@ Feature: Create, Open and Save files
     And the file "plugins/core/features/fixtures/file1.rb" contains "# First Ruby test file"
     And the file "plugins/core/features/fixtures/file2.rb" contains "# Second Ruby test file"
     And the file "plugins/edit_tab/features/fixtures/files2.html" does not exist
+    And the file "plugins/edit_tab/features/fixtures/new_tab.rb" does not exist
 
   Scenario: Open a file
     When I open the file "plugins/edit_tab/features/fixtures/files.rb"
@@ -121,12 +122,22 @@ Feature: Create, Open and Save files
     And I press "Ctrl+W"
     Then I should see a dialog "Document has unsaved changes" with buttons "Save As, Discard, Cancel"
 
-  Scenario: Prompt for save new tab and click save as
+  Scenario: Prompt for save new tab and click Save As shows dialog
     When I press "Ctrl+T"
     And I type "new tab"
     And I press "Ctrl+W"
     And I click the button "Save As" in the dialog "unsaved changes"
-    Then the file "plugins/core/features/fixtures/file1.rb" should contain "new tab"
+    Then I should see a dialog "Save As" with buttons "Save, Cancel"
+
+  Scenario: Prompt for save new tab and click Save As shows dialog
+    When I press "Ctrl+T"
+    And I type "new tab"
+    And I press "Ctrl+W"
+    And I click the button "Save As" in the dialog "unsaved changes"
+    And I set the "Save As" dialog's filename to "plugins/core/features/fixtures/new_file.rb"
+    And I click the button "Save" in the dialog "Save As"
+    Then there should be no dialog called "Save As"
+    Then the file "plugins/core/features/fixtures/new_file.rb" should contain "new tab"
 
 
 

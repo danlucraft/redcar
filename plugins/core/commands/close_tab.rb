@@ -29,13 +29,19 @@ module Redcar
       dialog_runner = Redcar.win.modal_dialog_runner(dialog)
       
       dialog.signal_connect('response') do |_, response|
+        p :response_from_question_dialog
         dialog_runner.close
         case response
         when Gtk::Dialog::RESPONSE_OK
           if tab.filename
             tab.save
           else
-            Redcar::Dialog.choose_file(win, "Save As")
+            Redcar::Dialog.save_as(win) do |filename|
+              p :got_filename
+              p filename
+              tab.filename = filename
+              tab.save
+            end
           end
           block.call
         when Gtk::Dialog::RESPONSE_REJECT

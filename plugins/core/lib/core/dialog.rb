@@ -171,39 +171,43 @@ module Redcar
       dirname
     end
     
-    def self.open(win)
-      choose_file(win, "Open")
+    def self.open(win, &block)
+      choose_file(win, "Open", Gtk::FileChooser::ACTION_OPEN, Gtk::Stock::OPEN, &block)
     end
-    
-    def self.choose_file(win, title)
+
+    def self.save_as(win, &block)
+      choose_file(win, "Save As", Gtk::FileChooser::ACTION_SAVE, Gtk::Stock::SAVE, &block)
+    end
+
+    def self.choose_file(win, title, action, button, &block)
       App.log.debug "[Core/Dialog] FileChooserDialog:"
       App.log.debug "[Core/Dialog]  " + Thread.current.inspect
       App.log.debug "[Core/Dialog]  " + win.inspect
       App.log.debug "[Core/Dialog]  " + Redcar::App[:last_dir_opened].to_s
       dialog = Gtk::FileChooserDialog.new(title,
                                           win,
-                                          Gtk::FileChooser::ACTION_OPEN,
+                                          action,
                                           nil,
                                           [Gtk::Stock::CANCEL, Gtk::Dialog::RESPONSE_CANCEL],
-                                          [Gtk::Stock::OPEN, Gtk::Dialog::RESPONSE_ACCEPT])
+                                          [button, Gtk::Dialog::RESPONSE_ACCEPT])
       if Redcar::App[:last_dir_opened]
         dialog.current_folder = Redcar::App[:last_dir_opened]
       end
       App.log.debug "[Core/Dialog]  " + dialog.inspect
       App.log.debug "[Core/Dialog]  " + dialog.destroyed?.to_s
       filename = nil
-      dialog.signal_connect(:response) do |_, response|
-        if response == Gtk::Dialog::RESPONSE_ACCEPT
+      dialog_runner = win.modal_dialog_runner(dialog)
+      dialog.signal_connect('response') do |_, response|
+        p :response
+        case response
+        when Gtk::Dialog::RESPONSE_ACCEPT
           filename = dialog.filename
+          Redcar::App[:last_dir_opened] = filename.split("/")[0..-2].join("/")
+          dialog_runner.close
+          block.call(filename)
         end
       end
-      dialog_runner = win.modal_dialog_runner(dialog)
       dialog_runner.run
-      if dialog.run == Gtk::Dialog::RESPONSE_ACCEPT
-        filename = dialog.filename
-        Redcar::App[:last_dir_opened] = filename.split("/")[0..-2].join("/")
-      end
-      dialog.destroy
       filename
     end
   end

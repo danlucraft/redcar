@@ -168,6 +168,10 @@ module Redcar
         @window, @dialog = window, dialog
       end
 
+      # Run the dialog in modal mode. Note that this method
+      # will immediately return, so operations that depend on
+      # the dialog being closed must hook onto dialog response
+      # signals.
       def run
         # Ignore all input to the window while the dialog is open
         @modal_key_handler = @window.signal_connect("key-press-event") { true }
