@@ -25,6 +25,7 @@ When /I click the button #{FeaturesHelper::STRING_RE} in the dialog #{FeaturesHe
   button, dialog = parse_string(button), parse_string(dialog)
   dialog = Gutkumber.find_gtk_window(dialog)
   button = Gutkumber.find_button(dialog, button)
+  button.signal_emit("clicked")
 end
 
 Then /I should see a dialog "([^"]+)" with buttons "([^"]+)"/ do |title, button_names| # "

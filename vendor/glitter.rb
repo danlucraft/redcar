@@ -201,6 +201,9 @@ class Gtk::Widget
       begin
         block.call(*args)
       rescue Object => e
+        if Gtk.non_signal_errors.include?(e.class)
+          raise e
+        end
         puts "--- Error in #{args.first.class} #{signal_name.inspect} signal handler:"
         puts "    " + e.class.to_s + ": "+ e.message
         puts e.backtrace .map{|line| "    " + line}
@@ -259,5 +262,15 @@ class GLib::Instantiatable
         end
       end
     end
+  end
+end
+
+module Gtk
+  def self.register_non_signal_error(error)
+    non_signal_errors << error
+  end
+  
+  def self.non_signal_errors
+    @non_signal_errors ||= []
   end
 end

@@ -91,11 +91,44 @@ Feature: Create, Open and Save files
     And I press "Ctrl+W"
     Then I should see a dialog "Document has unsaved changes" with buttons "Save, Discard, Cancel"
 
-  Scenario: Prompt for save should save
+  Scenario: Prompt for save and click save
     When I open the file "plugins/core/features/fixtures/file1.rb"
-    And I type "changed"
+    And I type "changed "
     And I press "Ctrl+W"
-    And I click the button "Save" in the dialog like "unsaved changes"
+    And I click the button "Save" in the dialog "unsaved changes"
+    Then the file "plugins/core/features/fixtures/file1.rb" should contain "changed # First Ruby test file"
+    And there should be zero EditTabs open
+
+  Scenario: Prompt for save and click discard
+    When I open the file "plugins/core/features/fixtures/file1.rb"
+    And I type "changed "
+    And I press "Ctrl+W"
+    And I click the button "Discard" in the dialog "unsaved changes"
+    Then the file "plugins/core/features/fixtures/file1.rb" should contain "# First Ruby test file"
+    And there should be zero EditTabs open
+
+  Scenario: Prompt for save and click cancel
+    When I open the file "plugins/core/features/fixtures/file1.rb"
+    And I type "changed "
+    And I press "Ctrl+W"
+    And I click the button "Cancel" in the dialog "unsaved changes"
+    Then the file "plugins/core/features/fixtures/file1.rb" should contain "# First Ruby test file"
+    And there should be one EditTabs open
+
+  Scenario: Prompt for save for new tab
+    When I press "Ctrl+T"
+    And I type "new tab"
+    And I press "Ctrl+W"
+    Then I should see a dialog "Document has unsaved changes" with buttons "Save As, Discard, Cancel"
+
+  Scenario: Prompt for save new tab and click save as
+    When I press "Ctrl+T"
+    And I type "new tab"
+    And I press "Ctrl+W"
+    And I click the button "Save As" in the dialog "unsaved changes"
+    Then the file "plugins/core/features/fixtures/file1.rb" should contain "new tab"
+
+
 
 
 

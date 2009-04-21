@@ -169,7 +169,7 @@ module Redcar
       end
 
       def run
-        # let's ignore all input to the window while the dialog is there
+        # Ignore all input to the window while the dialog is open
         @modal_key_handler = @window.signal_connect("key-press-event") { true }
         @modal_click_handler = @window.signal_connect("button-press-event") { true }
         @dialog.show_all

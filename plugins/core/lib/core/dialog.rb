@@ -172,11 +172,15 @@ module Redcar
     end
     
     def self.open(win)
+      choose_file(win, "Open")
+    end
+    
+    def self.choose_file(win, title)
       App.log.debug "[Core/Dialog] FileChooserDialog:"
       App.log.debug "[Core/Dialog]  " + Thread.current.inspect
       App.log.debug "[Core/Dialog]  " + win.inspect
       App.log.debug "[Core/Dialog]  " + Redcar::App[:last_dir_opened].to_s
-      dialog = Gtk::FileChooserDialog.new("Open",
+      dialog = Gtk::FileChooserDialog.new(title,
                                           win,
                                           Gtk::FileChooser::ACTION_OPEN,
                                           nil,
@@ -188,25 +192,17 @@ module Redcar
       App.log.debug "[Core/Dialog]  " + dialog.inspect
       App.log.debug "[Core/Dialog]  " + dialog.destroyed?.to_s
       filename = nil
+      dialog.signal_connect(:response) do |_, response|
+        if response == Gtk::Dialog::RESPONSE_ACCEPT
+          filename = dialog.filename
+        end
+      end
+      dialog_runner = win.modal_dialog_runner(dialog)
+      dialog_runner.run
       if dialog.run == Gtk::Dialog::RESPONSE_ACCEPT
         filename = dialog.filename
         Redcar::App[:last_dir_opened] = filename.split("/")[0..-2].join("/")
       end
-      dialog.destroy
-      filename
-    end
-    
-    def self.save
-      dialog = Gtk::FileChooserDialog.new("Save",
-                                          Redcar.win,
-                                          Gtk::FileChooser::ACTION_SAVE,
-                                          nil,
-                                          [Gtk::Stock::CANCEL, Gtk::Dialog::RESPONSE_CANCEL],
-                                          [Gtk::Stock::SAVE, Gtk::Dialog::RESPONSE_ACCEPT])
-      if dialog.run == Gtk::Dialog::RESPONSE_ACCEPT
-        puts "filename = #{dialog.filename}"
-      end
-      filename = dialog.filename
       dialog.destroy
       filename
     end
