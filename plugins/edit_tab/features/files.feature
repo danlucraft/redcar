@@ -134,8 +134,6 @@ Feature: Create, Open and Save files
     And I type "new tab"
     And I press "Ctrl+W"
     And I click the button "Save As" in the dialog "unsaved changes"
-    And I click the button "Discard" in the dialog "unsaved changes"
-    And I click the button "Cancel" in the dialog "unsaved changes"
     And I set the "Save As" dialog's filename to "plugins/core/features/fixtures/new_file.rb"
     And I click the button "Save" in the dialog "Save As"
     Then there should be no dialog called "Save As"

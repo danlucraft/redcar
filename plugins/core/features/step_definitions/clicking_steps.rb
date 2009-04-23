@@ -15,6 +15,9 @@ def make_event_button(window, x, y, button, type)
   event_button.button = button
   event_button.time = Gdk::Event::CURRENT_TIME
   event_button.window = window
+  p :event_button_coords
+  p event_button.coords
+  p event_button.root_coords
   event_button
 end
 
@@ -24,8 +27,11 @@ def right_click_on(widget)
 end
 
 def left_click_on(widget)
-  make_event_button(widget.window, 0, 0, 1, :press).put
-  make_event_button(widget.window, 0, 0, 1, :release).put
+  allocation = widget.allocation
+  x = allocation.x + allocation.width/2
+  y = allocation.y + allocation.height/2
+  make_event_button(widget.window, x, y, 1, :press).put
+  make_event_button(widget.window, x, y, 1, :release).put
 end
 
 When /^I (right|left) click on the (\w+)$/ do |button, tab_type| # 

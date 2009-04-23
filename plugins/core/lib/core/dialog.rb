@@ -203,9 +203,9 @@ module Redcar
         when Gtk::Dialog::RESPONSE_ACCEPT
           filename = dialog.filename
           Redcar::App[:last_dir_opened] = filename.split("/")[0..-2].join("/")
-          dialog_runner.close
           block.call(filename)
         end
+        dialog_runner.close
       end
       dialog_runner.run
       filename

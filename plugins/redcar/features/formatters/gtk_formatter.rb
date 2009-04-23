@@ -2,9 +2,10 @@
 module Cucumber
   module Formatter
     class GtkFormatter < Pretty
-      
       def visit_step(step)
-        Gtk.main_iteration while Gtk.events_pending?
+        while Gtk.events_pending?
+          Gtk.main_iteration 
+        end
         super
         if time_str = ENV['GUTKUMBER_SLEEP']
           sleep time_str.to_f

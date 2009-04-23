@@ -25,9 +25,17 @@ When /I click the button #{FeaturesHelper::STRING_RE} in the dialog #{FeaturesHe
   button, dialog = parse_string(button), parse_string(dialog)
   dialog = Gutkumber.find_gtk_window(dialog)
   button = Gutkumber.find_button(dialog, button)
-  p button
-  p button.child_widgets_with_class(Gtk::Label).map{|la| la.text}.join(" ")
-  left_click_on(button)
+  # p button
+  # p button.child_widgets_with_class(Gtk::Label).map{|la| la.text}.join(" ")
+  # button.clicked
+  
+  # button.released if dialog == "Save As"
+  Gtk.main_iteration while Gtk.events_pending?
+  # p button.destroyed?
+  # button.released unless button.destroyed?
+  # left_click_on(button)
+  p dialog.get_response(button)
+  dialog.response(dialog.get_response(button))
 end
 
 When /^I save as #{FeaturesHelper::STRING_RE}$/ do |filename|
@@ -46,7 +54,9 @@ When /^I set the #{FeaturesHelper::STRING_RE} dialog's filename to #{FeaturesHel
 end
 
 Then /I should see a dialog "([^"]+)" with buttons "([^"]+)"/ do |title, button_names| # "
-  buttons = Gutkumber.window_buttons(Gutkumber.find_gtk_window(title))
+  dialog = Gutkumber.find_gtk_window(title)
+  raise "couldn't find dialog #{title.inspect}" unless dialog
+  buttons = Gutkumber.window_buttons(dialog)
   button_names.split(",").map(&:strip).each do |name|
     buttons.should include(name)
   end

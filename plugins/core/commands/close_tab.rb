@@ -22,12 +22,16 @@ module Redcar
     def prompt_and_save(&block)
       dialog = Gtk::Dialog.new("Document has unsaved changes",
                                 Redcar.win,
-                                Gtk::Dialog::MODAL,
+                                nil,
                                 *responses
                                 )
       dialog.vbox.add(Gtk::Label.new("Unsaved changes."))
       dialog_runner = Redcar.win.modal_dialog_runner(dialog)
-      
+      p dialog.action_area
+      p(button=dialog.action_area.children.first)
+      button.signal_connect("clicked") do 
+        p :first_button_clicked
+      end
       dialog.signal_connect('response') do |_, response|
         p :response_from_question_dialog
         dialog_runner.close
