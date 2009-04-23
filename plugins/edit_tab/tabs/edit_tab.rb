@@ -101,7 +101,7 @@ module Redcar
     attr_reader :view
     attr_reader :filename
     attr_reader :modified
-    
+
     # Do not call this directly. Use Window#new_tab or 
     # Pane#new_tab instead:
     # 
@@ -128,6 +128,10 @@ module Redcar
       self.title = fn.split(/\//).last
       update_tab_label
       @filename = fn
+    end
+    
+    def modified?
+      @modified
     end
     
     def modified=(val) #:nodoc:

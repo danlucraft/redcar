@@ -37,8 +37,6 @@ module Redcar
             tab.save
           else
             Redcar::Dialog.save_as(win) do |filename|
-              p :got_filename
-              p filename
               tab.filename = filename
               tab.save
             end
@@ -60,7 +58,7 @@ module Redcar
     end
 
     def execute
-      if tab.document.modified?
+      if tab.modified?
         prompt_and_save { close_tab }
       else
         close_tab
