@@ -1,4 +1,3 @@
-
 INSTALL
 =======
 
@@ -34,7 +33,7 @@ If you are not using Debian/Ubuntu, or have installed Ruby yourself from source,
   $ rake build
 
 6. Now try running Redcar
-  $ cd REDCAR_PATH
+  $ cd REDCAR_PATH # probably your current directory
   $ ./bin/redcar
 
 The first time Redcar runs it will spend time loading the Textmate Bundles. 
