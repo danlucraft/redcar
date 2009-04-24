@@ -29,9 +29,6 @@ module Redcar
       dialog_runner = Redcar.win.modal_dialog_runner(dialog)
       p dialog.action_area
       p(button=dialog.action_area.children.first)
-      button.signal_connect("clicked") do 
-        p :first_button_clicked
-      end
       dialog.signal_connect('response') do |_, response|
         p :response_from_question_dialog
         dialog_runner.close

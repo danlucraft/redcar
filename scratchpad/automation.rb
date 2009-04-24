@@ -20,31 +20,51 @@ def make_event_button(window, x, y, button, type)
 end
  
 def left_click_on(widget)
-  make_event_button(widget.window, 0, 0, 1, :press).put
-  make_event_button(widget.window, 0, 0, 1, :release).put
+  allocation = widget.allocation
+  x = allocation.x + allocation.width/2
+  y = allocation.y + allocation.height/2
+  make_event_button(widget.window, x, y, 1, :press).put
+  make_event_button(widget.window, x, y, 1, :release).put
 end
  
+button, label = nil, nil
+win = Gtk::Window.new("bar") do
+  vbox = Gtk::VBox.new
+  add(vbox) do
+    button = Gtk::Button.new("foo")
+    label  = Gtk::Label.new("bar")
+    pack_start(button)
+    pack_start(label)
+  end
+end
 
-win = Gtk::Window.new("bar")
-button = Gtk::Button.new("foo")
 button.signal_connect("clicked") do 
-  p :clicked
+  p :clicked_on_button
 end
+
 button.signal_connect("button-press-event") do 
-  p :button_press_event
+  p :button_press_event_button
 end
 
-win.add(button)
+label.signal_connect("button-press-event") do 
+  p :button_press_event_label
+end
+
 win.show_all
+p :a
+Gtk.main_iteration while Gtk.events_pending?
 
-t = Time.now
-Thread.new { 
-  sleep 1
-  button.clicked
-  # left_click_on(button)
-  sleep 1
-  Gtk.main_quit
-}
+left_click_on(button)
 
-Gtk.main
+p :b
+Gtk.main_iteration while Gtk.events_pending?
+
+left_click_on(label)
+
+p :c
+Gtk.main_iteration while Gtk.events_pending?
+
+sleep 3
+
+
 

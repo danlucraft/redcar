@@ -15,9 +15,6 @@ def make_event_button(window, x, y, button, type)
   event_button.button = button
   event_button.time = Gdk::Event::CURRENT_TIME
   event_button.window = window
-  p :event_button_coords
-  p event_button.coords
-  p event_button.root_coords
   event_button
 end
 
