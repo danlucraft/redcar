@@ -27,10 +27,7 @@ module Redcar
                                 )
       dialog.vbox.add(Gtk::Label.new("Unsaved changes."))
       dialog_runner = Redcar.win.modal_dialog_runner(dialog)
-      p dialog.action_area
-      p(button=dialog.action_area.children.first)
       dialog.signal_connect('response') do |_, response|
-        p :response_from_question_dialog
         dialog_runner.close
         case response
         when Gtk::Dialog::RESPONSE_OK

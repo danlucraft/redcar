@@ -47,7 +47,6 @@ module Redcar
       filename = nil
       dialog_runner = win.modal_dialog_runner(dialog)
       dialog.signal_connect('response') do |_, response|
-        p :response
         case response
         when Gtk::Dialog::RESPONSE_ACCEPT
           filename = dialog.filename

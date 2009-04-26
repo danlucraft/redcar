@@ -1,6 +1,10 @@
 
-When /I wait (?:for )?(\d)(?: seconds)?/ do |num|
+When /I wait (?:for )?(\d+)(?: seconds?)?/ do |num|
   sleep num.to_i
+end
+
+When /I wait a tick/ do
+  sleep 1
 end
 
 Given /^the file "([^"]+)" does not exist$/ do |filename|

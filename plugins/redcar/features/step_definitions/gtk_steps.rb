@@ -1,5 +1,7 @@
 
 module Gutkumber
+  TICK_SIZE = ENV["GUTKUMBER_TICK_SIZE"] || 0.3
+  
   def self.find_gtk_window(title)
     Gtk::Window.toplevels.detect do |window| 
       window.title =~ Regexp.new(Regexp.escape(title))
@@ -19,23 +21,21 @@ module Gutkumber
     end
     nil
   end
+  
+  def self.wait_tick
+    Gtk.main_iteration while Gtk.events_pending?
+    sleep TICK_SIZE
+  end
 end
 
 When /I click the button #{FeaturesHelper::STRING_RE} in the dialog #{FeaturesHelper::STRING_RE}/ do |button, dialog|
   button, dialog = parse_string(button), parse_string(dialog)
   dialog = Gutkumber.find_gtk_window(dialog)
   button = Gutkumber.find_button(dialog, button)
-  # p button
-  # p button.child_widgets_with_class(Gtk::Label).map{|la| la.text}.join(" ")
-  # button.clicked
-  
-  # button.released if dialog == "Save As"
-  Gtk.main_iteration while Gtk.events_pending?
-  # p button.destroyed?
-  # button.released unless button.destroyed?
-  # left_click_on(button)
-  p dialog.get_response(button)
+ 
   dialog.response(dialog.get_response(button))
+  # sadly necessary for some reason. Please tell me why!
+  Gutkumber.wait_tick
 end
 
 When /^I save as #{FeaturesHelper::STRING_RE}$/ do |filename|
@@ -50,7 +50,6 @@ When /^I set the #{FeaturesHelper::STRING_RE} dialog's filename to #{FeaturesHel
   mystery_gtk = table.children[2]
   dialog.filename = filename
   mystery_gtk.text = filename.split("/").last
-  sleep 0.1
 end
 
 Then /I should see a dialog "([^"]+)" with buttons "([^"]+)"/ do |title, button_names| # "
@@ -63,6 +62,6 @@ Then /I should see a dialog "([^"]+)" with buttons "([^"]+)"/ do |title, button_
 end
 
 Then /there should be no dialog called "([^"]+)"/ do |title|
-  Gutkumber.find_gtk_window(dialog).should be_nil
+  Gutkumber.find_gtk_window(title).should be_nil
 end
 
