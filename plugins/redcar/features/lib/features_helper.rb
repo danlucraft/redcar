@@ -1,7 +1,7 @@
 
 module FeaturesHelper
   STRING_RE = /"((?:[^"]|\\")+)"/
-  NUMBER_RE = /(\d+|one|two|three|four|five|six|seven|eight|nine|ten)/
+  NUMBER_RE = /(\d+|zero|one|two|three|four|five|six|seven|eight|nine|ten)/
   ORDINALS = {
     "first" => 1,
     "second" => 2,
@@ -17,9 +17,8 @@ module FeaturesHelper
   ORDINAL_RE = /(#{ORDINALS.keys.join("|")})/
   
   def parse_number(number)
-    numbers = %w(one two three four five six seven eight nine ten)
-    result = numbers.index(number) || (number.to_i - 1)
-    result + 1
+    numbers = %w(zero one two three four five six seven eight nine ten)
+    numbers.index(number) || number.to_i
   end
   
   def parse_string(string)

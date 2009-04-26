@@ -37,3 +37,8 @@ end
 Then /^the current syntax should be "([^"]+)"$/ do |syntax|
   Redcar.win.focussed_tab.document.parser.grammar.name.should == syntax
 end
+
+Then /^the EditTab should not be modified$/ do
+  tab = only(Redcar.win.collect_tabs(Redcar::EditTab))
+  tab.should_not be_modified
+end

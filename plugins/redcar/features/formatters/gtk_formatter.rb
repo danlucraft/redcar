@@ -2,7 +2,6 @@
 module Cucumber
   module Formatter
     class GtkFormatter < Pretty
-      
       def visit_step(step)
         Gtk.main_iteration while Gtk.events_pending?
         Gtk.execute_pending_blocks

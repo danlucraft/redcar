@@ -173,6 +173,18 @@ end
 class Gtk::Widget
   alias :old_signal_connect :signal_connect
   
+  def child_widgets_with_class(klass, acc=[])
+    if self.is_a? klass
+      acc << self
+    end
+    if self.respond_to?(:children)
+      self.children.each do |gtk_child|
+        gtk_child.child_widgets_with_class(klass, acc)
+      end
+    end
+    acc
+  end
+  
   def debug_widget_tree(indent=0, str="") #:nodoc:
     str << " "*indent + self.class.to_s + "\n"
     if self.respond_to?(:children)
@@ -189,6 +201,9 @@ class Gtk::Widget
       begin
         block.call(*args)
       rescue Object => e
+        if Gtk.non_signal_errors.include?(e.class)
+          raise e
+        end
         puts "--- Error in #{args.first.class} #{signal_name.inspect} signal handler:"
         puts "    " + e.class.to_s + ": "+ e.message
         puts e.backtrace .map{|line| "    " + line}
@@ -247,5 +262,15 @@ class GLib::Instantiatable
         end
       end
     end
+  end
+end
+
+module Gtk
+  def self.register_non_signal_error(error)
+    non_signal_errors << error
+  end
+  
+  def self.non_signal_errors
+    @non_signal_errors ||= []
   end
 end
