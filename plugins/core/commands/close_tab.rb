@@ -33,13 +33,14 @@ module Redcar
         when Gtk::Dialog::RESPONSE_OK
           if tab.filename
             tab.save
+            block.call
           else
             Redcar::Dialog.save_as(win) do |filename|
               tab.filename = filename
               tab.save
+              block.call
             end
           end
-          block.call
         when Gtk::Dialog::RESPONSE_REJECT
           block.call
         when Gtk::Dialog::RESPONSE_CANCEL

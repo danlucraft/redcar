@@ -129,7 +129,7 @@ Feature: Create, Open and Save files
     And I click the button "Save As" in the dialog "unsaved changes"
     Then I should see a dialog "Save As" with buttons "Save, Cancel"
 
-  Scenario: Prompt for save new tab and click Save As shows dialog
+  Scenario: Prompt for save new tab and Save As
     When I press "Ctrl+T"
     And I type "new tab"
     And I press "Ctrl+W"
@@ -138,6 +138,17 @@ Feature: Create, Open and Save files
     And I click the button "Save" in the dialog "Save As"
     Then there should be no dialog called "Save As"
     And the file "plugins/edit_tab/features/fixtures/new_file.rb" should contain "new tab"
+
+  Scenario: Prompt for save, choose Save As, then Cancel
+    When I press "Ctrl+T"
+    And I type "new tab"
+    And I press "Ctrl+W"
+    And I click the button "Save As" in the dialog "unsaved changes"
+    And I set the "Save As" dialog's filename to "plugins/edit_tab/features/fixtures/new_file.rb"
+    And I click the button "Cancel" in the dialog "Save As"
+    Then there should be no dialog called "Save As"
+    And the file "plugins/edit_tab/features/fixtures/new_file.rb" should not exist
+    And there should be one EditTab open
 
 
 
