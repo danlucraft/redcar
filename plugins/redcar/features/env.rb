@@ -43,6 +43,9 @@ World do |world|
 end
 
 After do
+  while dialog = Redcar.win.open_modal_dialogs.first
+    dialog.close
+  end
   Redcar.win.tabs.each(&:close)
   Redcar::UnifyAll.new.do
   Redcar::CommandHistory.clear

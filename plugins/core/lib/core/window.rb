@@ -162,7 +162,11 @@ module Redcar
       end
       update_tab_range(tab)
     end
-    
+
+    def open_modal_dialogs
+      @open_modal_dialogs ||= []
+    end
+
     class ModalDialogRunner
       def initialize(window, dialog)
         @window, @dialog = window, dialog
@@ -177,12 +181,14 @@ module Redcar
         @modal_key_handler = @window.signal_connect("key-press-event") { true }
         @modal_click_handler = @window.signal_connect("button-press-event") { true }
         @dialog.show_all
+        @window.open_modal_dialogs << self
       end
       
       def close
         @dialog.destroy
         @window.signal_handler_disconnect(@modal_key_handler)
         @window.signal_handler_disconnect(@modal_click_handler)
+        @window.open_modal_dialogs.delete(self)
       end
     end
     
@@ -192,7 +198,7 @@ module Redcar
     def modal_dialog_runner(dialog)
       ModalDialogRunner.new(self, dialog)
     end
-    
+   
     private
     
     # Iterates over the panes in the window in a well-defined order.
