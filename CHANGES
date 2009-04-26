@@ -1,10 +1,12 @@
+
 Version 0.2 (TBA)
 =================
 
 New features, enhancements:
 
-  * Improved fuzzy file finder
+  * Improved fuzzy file finder.
   * Undo close tab (Ctrl+Shift+T)
+  * Now prompts to save if file is modified.
 
 Bug fixes:
   
