@@ -1,7 +1,0 @@
-History.txt
-Manifest.txt
-README.txt
-Rakefile
-bin/yaml_editor
-lib/yaml_editor.rb
-test/test_yaml_editor.rb

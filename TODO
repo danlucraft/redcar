@@ -1,3 +1,0 @@
-
- * Refactor Keymap into Keymap and Dispatcher
- * Tab definitions can declare themselves singleton ....DONE!
