@@ -25,7 +25,7 @@ If you are not using Debian/Ubuntu, or have installed Ruby yourself from source,
 
 4. Unzip the source:
 
-  $ tar xzf redcar-latest.tar.gz
+  $ tar xzf redcar-0.1.tar.gz
 
 5. Build Redcar
 
