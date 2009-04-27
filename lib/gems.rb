@@ -3,6 +3,7 @@ require 'pp'
 require 'fileutils'
 require 'open3'
 require 'open4'
+require 'tempfile'
 
 # GTK dependencies
 require 'gtk2'

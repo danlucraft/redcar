@@ -70,11 +70,13 @@ module Redcar
           bundle = Bundle.find_bundle_with_grammar(current_scope.pattern.grammar)
         end
         App.set_environment_variables(bundle)
-        File.open("#{Redcar::ROOT}/cache/tmp.command", "w") {|f| f.puts clean_script(shell_script)}
-        File.chmod(0770, "#{Redcar::ROOT}/cache/tmp.command")
+        tf = Tempfile.new("shellcommand")
+        tf.puts clean_script(shell_script)
+        File.chmod(0770, tf.path)
         output, error = nil, nil
-        App.log.info shell_command
-        status = Open4.popen4(shell_command) do |pid, stdin, stdout, stderr|
+        App.log.info shell_command(tf)
+        tf.close
+        status = Open4.popen4(shell_command(tf)) do |pid, stdin, stdout, stderr|
           stdin.write(input)
           App.log.info "input: #{input ? input[0..300].inspect : "nil"}"
           stdin.close
@@ -97,11 +99,11 @@ module Redcar
         @shell_meta_command.shell_script
       end
       
-      def shell_command
+      def shell_command(temp_file)
         if shell_script[0..1] == "#!" and shell_script.split("\n").first !~ /#!\/bin\/sh/
-          "ruby #{Redcar::ROOT}/cache/tmp.command"
+          "ruby #{temp_file.path}"
         else
-          "/bin/bash #{Redcar::ROOT}/cache/tmp.command"
+          "/bin/bash #{temp_file.path}"
         end
       end
       

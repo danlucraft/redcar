@@ -17,7 +17,7 @@ Feature: Snippets
   Scenario: Inserts snippet from menu
     Given there is an EditTab open with syntax "Ruby"
     When I type "cla"
-    And I press "Tab" then "1"
+    And I press "Tab" then "4"
     Then I should see "class" in the EditTab
 
   Scenario: Inserts tab if no snippets
