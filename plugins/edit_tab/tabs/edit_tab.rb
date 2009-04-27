@@ -226,7 +226,12 @@ module Redcar
       result = buffer.text
       result = result.insert(buffer.cursor_offset, "<c>")
       if buffer.selection_iter != buffer.cursor_iter
-        result = result.insert(buffer.selection_offset, "<s>")
+        if buffer.selection_offset >= buffer.cursor_offset
+          selection_offset = buffer.selection_offset + 3
+        else
+          selection_offset = buffer.selection_offset
+        end
+        result = result.insert(selection_offset, "<s>")
       end
       result
     end
@@ -235,16 +240,22 @@ module Redcar
       start = buffer.line_start(view.first_visible_line)
       _end =  buffer.line_end(view.last_visible_line)
       result = buffer.get_slice(start, _end)
+      inserted_cursor_offset = false
       if buffer.cursor_iter >= start and 
           (buffer.cursor_iter < _end or 
             (_end == buffer.end_iter and buffer.cursor_iter == buffer.end_iter))
         result = result.insert(buffer.cursor_offset - start.offset, "<c>")
+        inserted_cursor_offset = true
       end
       if buffer.selection_iter != buffer.cursor_iter and
            buffer.selection_iter >= start and 
             (buffer.selection_iter < _end or 
               (_end == buffer.end_iter and buffer.selection_iter == buffer.end_iter))
-        result = result.insert(buffer.selection_offset - start.offset, "<s>")
+        selection_offset = buffer.selection_offset - start.offset
+        if inserted_cursor_offset and buffer.selection_offset >= buffer.cursor_offset
+          selection_offset += 3
+        end
+        result = result.insert(selection_offset, "<s>")
       end
       result
     end
