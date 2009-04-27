@@ -33,6 +33,7 @@ module Redcar
       create_indenter
       create_autopairer
       create_snippet_inserter
+      create_wrapper
     end
 
     def set_gtk_cursor_colour
@@ -92,6 +93,10 @@ module Redcar
 
     def create_snippet_inserter
       @snippet_inserter = SnippetInserter.new(buffer)
+    end
+    
+    def create_wrapper
+      @wrapper = Wrapper.new(self)
     end
 
     def indent_line(line_num)

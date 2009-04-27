@@ -50,8 +50,8 @@ def press_key(key)
 end
 
 When /^I (?:have pressed|press) #{FeaturesHelper::STRING_RE}(?: then #{FeaturesHelper::STRING_RE})?$/ do |key1, key2|
-  press_key(key1)
-  press_key(key2) if key2
+  press_key(parse_string(key1))
+  press_key(parse_string(key2)) if key2
 end
 
 

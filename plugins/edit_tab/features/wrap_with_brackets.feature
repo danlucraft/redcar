@@ -7,6 +7,12 @@ Feature: Type " or ( to wrap selection with parentheses
     When I type "Ah"
     And I press "Shift+Left" then "Shift+Left"
     Then I should see "<c>Ah<s>" in the EditTab
+    And I press "\""
+    Then I should see "\"Ah\"<c>" in the EditTab
 
-  Scenario: T
-    When I type "asdf"
+  Scenario: Type ( to wrap selection
+    When I type "Ah"
+    And I press "Shift+Left" then "Shift+Left"
+    Then I should see "<c>Ah<s>" in the EditTab
+    And I press "("
+    Then I should see "(Ah)<c>" in the EditTab
