@@ -22,8 +22,12 @@ module Gutkumber
     nil
   end
   
-  def self.wait_tick
+  def self.tick
     Gtk.main_iteration while Gtk.events_pending?
+  end
+  
+  def self.wait_tick
+    tick
     sleep TICK_SIZE
   end
 end
@@ -43,13 +47,17 @@ When /^I save as #{FeaturesHelper::STRING_RE}$/ do |filename|
   dialog = Gutkumber.find_gtk_window("Save As")
 end
 
-When /^I set the #{FeaturesHelper::STRING_RE} dialog's filename to #{FeaturesHelper::STRING_RE}$/ do |dialog, filename|
-  dialog, filename = parse_string(dialog), parse_string(filename)
-  dialog = Gutkumber.find_gtk_window(dialog)
-  table = dialog.child_widgets_with_class(Gtk::Table).first
-  mystery_gtk = table.children[2]
-  dialog.filename = filename
-  mystery_gtk.text = filename.split("/").last
+When /^I set the #{FeaturesHelper::STRING_RE} dialog's filename to #{FeaturesHelper::STRING_RE}$/ do |dialog_name, filename|
+  dialog_name, filename = parse_string(dialog_name), parse_string(filename)
+  dialog = Gutkumber.find_gtk_window(dialog_name)
+  if dialog_name == "Open"
+    dialog.filename = filename
+  else
+    table = dialog.child_widgets_with_class(Gtk::Table).first
+    mystery_gtk = table.children[2]
+    dialog.filename = filename
+    mystery_gtk.text = filename.split("/").last
+  end
 end
 
 Then /I should see a dialog "([^"]+)" with buttons "([^"]+)"/ do |title, button_names| # "
