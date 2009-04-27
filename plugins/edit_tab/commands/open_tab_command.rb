@@ -8,10 +8,7 @@ module Redcar
       @pane = pane
     end
 
-    def execute
-      if !@filename
-        @filename = Redcar::Dialog.open(win)
-      end
+    def open
       if tab = EditTab.find_tab_for_file(@filename)
         tab.focus
         tab
@@ -22,6 +19,17 @@ module Redcar
         new_tab
       else
         puts "no file: #{@filename}"
+      end
+    end
+
+    def execute
+      if !@filename
+        Redcar::Dialog.open(win) do |filename|
+          @filename = filename
+          open
+        end
+      else
+        open
       end
     end
   end

@@ -1,6 +1,10 @@
 
-When /^I (?:open|have opened) the file "([^"]+)"$/ do |filename|
-  Redcar::OpenTabCommand.new(filename).do
+When /^I (?:open|have opened) the file #{FeaturesHelper::STRING_RE}$/ do |filename|
+  When "I press \"Ctrl+O\""
+  Gutkumber.tick
+  When "I set the \"Open\" dialog's filename to \"#{filename}\""
+  Gutkumber.tick
+  When "I click the button \"Open\" in the dialog \"Open\""
 end
 
 When /^I save the EditTab$/ do
