@@ -8,20 +8,29 @@ class Redcar::EditView
       '"' => '"',
       "[" => "]",
       "(" => ")",
-      "{" => "}"
+      "{" => "}",
+      "<" => ">"
     }
     def initialize(view)
       @view = view
       connect_signals
     end
     
+    def buffer
+      @view.buffer
+    end
+    
     def connect_signals
       @view.signal_connect("key-press-event") do |_, gdk_eventkey|
-        p [:keypress_event, Redcar::Keymap.clean_gdk_eventkey(gdk_eventkey)]
-        if WRAP_PAIRS.include?Redcar::Keymap.clean_gdk_eventkey(gdk_eventkey) and 
-            @view.buffer.selection?
-          p :wrapper_should_do_something_here
-          
+        char = Redcar::Keymap.clean_gdk_eventkey(gdk_eventkey)
+        if WRAP_PAIRS.include? char and 
+            buffer.selection?
+          left, right = *[buffer.cursor_mark, buffer.selection_mark].sort_by do |mark|
+            buffer.iter(mark).offset
+          end
+          buffer.insert(buffer.iter(left), char)
+          buffer.insert(buffer.iter(right), WRAP_PAIRS[char])
+          buffer.select(right_iter = buffer.iter(right), right_iter)
           true
         else
           false
