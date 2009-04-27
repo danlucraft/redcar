@@ -3,18 +3,6 @@
 *.so
 *.log
 *.log.*
-cache/bundle_commands.yml
-cache/bundles.yml
-cache/cache.img
-cache/grammars.dump
-cache/info/*.dump
-cache/commands/*.dump
-cache/themes.dump
-cache/tmp.command
-cache/snippets/*.dump
-cache/preferences/*.dump
-cache/cache.dump
-cache/0_2
 
 custom/arrangements.yaml
 custom/preferences.yaml
