@@ -11,6 +11,7 @@ class Redcar::EditView
       "{" => "}",
       "<" => ">"
     }
+    
     def initialize(view)
       @view = view
       connect_signals

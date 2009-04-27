@@ -7,6 +7,7 @@ New features, enhancements:
   * Improved fuzzy file finder.
   * Undo close tab (Ctrl+Shift+T)
   * Now prompts to save if file is modified.
+  * Type " or ( or [ etc to wrap selection in pair.
 
 Bug fixes:
   
