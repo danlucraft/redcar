@@ -42,7 +42,7 @@ def make_regex(text)
 end
 
 s = Time.now
-result = find_files("appcontr", ["/home/dan/Songkick/skweb/"])
+result = find_files("t", ["/home/dan/projects/skweb/"])
 puts "took #{Time.now - s}s"
 result.each do |file|
   # puts file

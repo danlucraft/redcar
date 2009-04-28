@@ -71,7 +71,7 @@ module Redcar
     
     def entry_changed
       @list.clear
-      if @entry.text.length > 0
+      if @entry.text.length > 2
         fs = FindFileDialog.find_files(@entry.text, ProjectTab.instance.directories)
         i = 0
         fs.each do |fn|
