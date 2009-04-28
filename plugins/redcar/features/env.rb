@@ -21,13 +21,15 @@ Thread.new do
       end
     end
   end
-  
-  begin
-    load File.dirname(__FILE__) + "/../../../bin/redcar"
-  rescue Object => e
-    puts "error loading Redcar"
-    puts e.message
-    puts e.backtrace
+
+  Thread.new do
+    begin
+      load File.dirname(__FILE__) + "/../../../bin/redcar"
+    rescue Object => e
+      puts "error loading Redcar"
+      puts e.message
+      puts e.backtrace
+    end
   end
 end
 
@@ -48,16 +50,23 @@ World do |world|
 end
 
 After do
-  while dialog = Redcar.win.open_modal_dialogs.first
-    dialog.close
+  Gtk.queue do
+    while dialog = Redcar.win.open_modal_dialogs.first
+      dialog.close
+    end
+    Redcar.win.tabs.each(&:close)
+    Redcar::UnifyAll.new.do
+    Redcar::CommandHistory.clear
+    make_event_key("Escape", :press).put
+    make_event_key("Escape", :release).put
   end
-  Redcar.win.tabs.each(&:close)
-  Redcar::UnifyAll.new.do
-  Redcar::CommandHistory.clear
-  make_event_key("Escape", :press).put
-  make_event_key("Escape", :release).put
-  Gtk.main_iteration while Gtk.events_pending?
-end  
+end
+
+at_exit do
+  Gtk.queue do
+    Redcar::App.quit
+  end
+end
 
 
 

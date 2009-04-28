@@ -22,11 +22,8 @@ module Redcar
           Hook.trigger(:redcar_start)
           if defined?(Redcar::Testing) and Redcar::Testing::InternalCucumberRunner.in_cucumber_process
             Redcar::Testing::InternalCucumberRunner.ready_for_cucumber = true
-          else
-            Gtk.main_with_queue(100)
-            bus["/system/shutdown"].call(1)
-            # exit(0)
           end
+          Gtk.main_with_queue(100)
         rescue Object => e
           $stderr.puts str=<<ERR
 

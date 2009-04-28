@@ -47,6 +47,7 @@ module Redcar
       end
       unless @gtk_quit
         log.info "[App] system shutdown"
+        puts :system_shutdow
         bus["/system/shutdown"].call(nil)
         Gtk.main_quit
       end
