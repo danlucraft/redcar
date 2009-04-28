@@ -11,7 +11,10 @@ class Redcar::EditView
       "{" => "}",
       "<" => ">"
     }
-    
+
+    private
+
+    # Accepts a Gtk::TextView
     def initialize(view)
       @view = view
       connect_signals
