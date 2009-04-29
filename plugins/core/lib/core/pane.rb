@@ -116,12 +116,6 @@ module Redcar
     end
 
     def connect_notebook_signals
-      # @gtk_notebook.signal_connect("button_press_event") do |gtk_widget, gtk_event|
-      #   gtk_widget.grab_focus
-      #   if gtk_event.kind_of? Gdk::EventButton and gtk_event.button == 3
-      #     bus('/redcar/services/context_menu_popup').call("Pane", gtk_event.button, gtk_event.time)
-      #   end
-      # end
       @gtk_notebook.signal_connect("page-added") do |nb, gtk_widget, _, _|
         tab = Tab.widget_to_tab[gtk_widget]
         tab.label_angle = @label_angle
@@ -130,7 +124,6 @@ module Redcar
       end
       @gtk_notebook.signal_connect("switch-page") do |nb, _, page_num|
         @window.update_focussed_tab(Tab.widget_to_tab[nb.get_nth_page(page_num)])
-#        puts "switch_page: #{nb.inspect}, #{page_num}"
         true
       end
     end

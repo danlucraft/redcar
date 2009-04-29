@@ -10,7 +10,7 @@ module Cucumber
         end
         loop do
           sleep 0.1
-          break if @finished_step and not Gdk::Event.events_pending?
+          break if @finished_step
         end
         if time_str = ENV['GUTKUMBER_SLEEP']
           sleep time_str.to_f
