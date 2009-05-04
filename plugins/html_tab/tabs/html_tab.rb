@@ -4,20 +4,15 @@ module Redcar
 
     def initialize(pane, source)
       hbox = Gtk::HBox.new
-      @moz = Gtk::MozEmbed.new
-      hbox.pack_start(@moz)
+      @wv = Gtk::WebKit::WebView.new
+      hbox.pack_start(@wv)
       super(pane, hbox, :scrolled => false)
       @contents = source
-      
-      # God this is hacky. I can haz Webkit plz?
-      Thread.new {
-        sleep 1
-        render_contents
-      }
+      render_contents
     end
     
     def render_contents
-      @moz.render_data(@contents, "file://"+Dir.getwd+"/", "text/html")
+      @wv.load_html_string(@contents)
     end
     
     # This only returns contents that have been set with contents=

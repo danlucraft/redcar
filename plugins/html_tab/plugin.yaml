@@ -1,6 +1,6 @@
 --- !ruby/object:FreeBASE::PluginConfiguration
 name: html_tab
-description: A tab containing an HTML widget (GtkMozembed or Webkit)
+description: A tab containing an HTML widget (Webkit)
 version: 1.0
 author: Daniel Lucraft
 autoload: true
