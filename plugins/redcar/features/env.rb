@@ -43,11 +43,8 @@ Dir[File.dirname(__FILE__) + "/../../*/features/step_definitions/*_steps.rb"].ea
 
 Redcar::Preference.return_defaults = true
 
-World do |world|
-  world.extend(FreeBASE::DataBusHelper)
-  world.extend(FeaturesHelper)
-  world
-end
+World(FreeBASE::DataBusHelper)
+World(FeaturesHelper)
 
 After do
   Gtk.queue do

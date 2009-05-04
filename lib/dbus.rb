@@ -1,5 +1,7 @@
-
 require 'dbus'
+require File.dirname(__FILE__) + "/../vendor/dbus_fix"
+require 'uri'
+require 'cgi'
 
 DBUS_CONFIG = {
   :default => {
@@ -89,8 +91,19 @@ module Redcar
         ARGV.each do |arg|
           object.debug(arg)
           protocol = (namespace == :features ? "redcar-features" : "redcar")
-          if arg =~ /^#{protocol}:\/\/open\/\?url=file:\/\/([^&]*)(?:\&line=(\d+))?(?:\&column=(\d+))?/
-            object.open(File.expand_path($1), $2.to_s, $3.to_s)
+          begin
+            uri = URI.parse(arg)
+            if uri.scheme == protocol
+              query = CGI.parse(uri.query)
+              if uri.host == "open" and query["url"]
+                file_uri = query["url"].first
+                path = file_uri.split("://").last
+                object.open(File.expand_path(path), 
+                            query["line"].first.to_s, query["column"].first.to_s)
+              end
+            end
+          rescue URI::InvalidURIError => e
+            object.debug(e.inspect)
           end
         end
         ARGV.each do |arg|

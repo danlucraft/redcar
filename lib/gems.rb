@@ -4,6 +4,8 @@ require 'fileutils'
 require 'open3'
 require 'open4'
 require 'tempfile'
+require 'uri'
+require 'cgi'
 
 # GTK dependencies
 require 'gtk2'
