@@ -10,7 +10,7 @@ module Redcar
 
     def execute
       unless @filename
-        @filename ||= Redcar::Dialog.save
+        @filename ||= Redcar::Dialog.save_as(win)
         if File.exist?(@filename) and @filename != tab.filename
           unless Zerenity::Question(:text => "File #{@filename} already exists. Overwrite?")
             return

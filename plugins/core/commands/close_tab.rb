@@ -57,7 +57,7 @@ module Redcar
     end
 
     def execute
-      if tab.modified?
+      if tab.is_a?(Redcar::EditTab) and tab.modified?
         prompt_and_save { close_tab }
       else
         close_tab
