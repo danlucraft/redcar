@@ -4,16 +4,18 @@ Version 0.2 (TBA)
 
 New features, enhancements:
 
-  * Improved fuzzy file finder.
+  * Fuzzy file finder notices new files.
   * Undo close tab (Ctrl+Shift+T)
-  * Now prompts to save if file is modified.
+  * Now prompts to save if file is modified when closed.
+  * HtmlTab now uses Webkit instead of Mozilla
 
 Bug fixes:
-  
+
+  * Fixed Jaunty DBus bug (#60)
   * Fixed paste-over bug (#74)
   * Fixed bug that allows multiple project tabs (#69)
   * Fixed so only one copy of a file can be open (#62)
-  * Fixed file finder not finding new files (#??)
+  * Fixed file finder not finding new files 
 
 
 Version 0.1 (6 April 2009)
