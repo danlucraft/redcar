@@ -26,6 +26,7 @@ module Redcar
                                 *responses
                                 )
       dialog.vbox.add(Gtk::Label.new("Unsaved changes."))
+      should_close_tab = true
       dialog.run do |response|
         dialog.destroy
         case response
@@ -36,10 +37,15 @@ module Redcar
             if filename = Redcar::Dialog.save_as(win)
               tab.filename = filename
               tab.save
+            else
+              should_close_tab = false
             end
           end
+        when Gtk::Dialog::RESPONSE_CANCEL
+          should_close_tab = false
         end
       end
+      should_close_tab
     end
 
     def close_tab
@@ -50,8 +56,9 @@ module Redcar
 
     def execute
       if tab.is_a?(Redcar::EditTab) and tab.modified?
-        prompt_and_save
-        close_tab
+        if prompt_and_save
+          close_tab
+        end
       else
         close_tab
       end
