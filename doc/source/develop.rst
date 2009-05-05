@@ -19,7 +19,7 @@ done with::
   ruby extconf.rb
   make
 
-You will also need a copy of *ruby-gtksourceview2*, which can be obtained and built
+You will need a copy of *ruby-gtksourceview2*, which can be obtained and built
 like so::
 
   wget http://redcareditor.com/packages/ruby-gtksourceview2.tar.bz2
@@ -27,13 +27,26 @@ like so::
   cd gtksourceview2
   ruby extconf.rb
   make
-
-You will also need to insert symlinks to the correct locations in the Redcar source
+  
+You will also need to insert symlinks to the these packages in the Redcar source
 tree. 
+  
+  * *redcar/textmate* should point to *redcar-bundles*
+  * *redcar/vendor/gtkmateview* should point to *gtkmateview*
+  * *redcar/vendor/gtksourceview2* should point to *ruby-gtksourceview2*
+  
+You will need a copy of *rbwebkitgtk*. This depends on *webkit*, which can be 
+installed on Ubuntu (Jaunty) with::
 
-* *redcar/textmate* should point to *redcar-bundles*
-* *redcar/vendor/gtkmateview* should point to *gtkmateview*
-* *redcar/vendor/gtksourceview2* should point to *ruby-gtksourceview2*
+  sudo apt-get install libwebkit-1.0-1 libwebkit-dev
+  
+and then install *rbwebkitgtk*::
+
+  git clone git://github.com/danlucraft/rbwebkitgtk.git
+  cd rbwebkitgtk
+  ruby extconf.rb
+  make
+  sudo make install
 
 Developer Documentation
 -----------------------
