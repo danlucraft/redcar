@@ -41,6 +41,11 @@ module Redcar
         end
         item "Kill Line", KillLine
         separator
+        submenu "Convert" do
+          item "TO UPPERCASE", ToUppercase
+          item "to lowercase", ToLowercase
+          item "To Title Case", ToTitlecase
+        end
         submenu "Indent" do
           item "Auto",  IndentLine
           item "Left",  IndentLeftCommand
