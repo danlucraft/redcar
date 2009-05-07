@@ -25,8 +25,10 @@ module Redcar
     def execute
       if !@filename
         Redcar::Dialog.open(win) do |filename|
-          @filename = filename
-          open
+          if filename 
+            @filename = filename
+            open
+          end
         end
       else
         open

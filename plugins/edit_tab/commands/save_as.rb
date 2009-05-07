@@ -8,18 +8,26 @@ module Redcar
       @filename = filename
     end
 
+    def do_save
+      tab.detect_and_set_grammar
+      tab.save
+    end
+
     def execute
-      unless @filename
-        @filename ||= Redcar::Dialog.save_as(win)
-        if File.exist?(@filename) and @filename != tab.filename
-          unless Zerenity::Question(:text => "File #{@filename} already exists. Overwrite?")
-            return
+      if @filename
+        tab.filename = @filename
+        do_save
+      else
+        Redcar::Dialog.save_as(win) do |filename|
+          @filename = filename
+          if File.exist?(@filename) and @filename != tab.filename
+            unless Zerenity::Question(:text => "File #{@filename} already exists. Overwrite?")
+              return
+            end
+            do_save
           end
         end
       end
-      tab.filename = @filename
-      tab.detect_and_set_grammar
-      tab.save
     end
   end
 end

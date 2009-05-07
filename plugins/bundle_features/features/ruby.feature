@@ -11,12 +11,14 @@ Feature: Ruby Bundle
     Then there should be one HtmlTab open
     And I should see "abracadabra" in the HtmlTab
 
-  Scenario: Open require
-    Given the EditTab contains "require 'open4'"
-    And I press "Ctrl+E"
-    And I press "Left" then "Left"
-    And I press "Super+Shift+D"
-    And I wait 1 seconds
-    And I wait 1 seconds
-    Then there should be 2 EditTabs open
-    And I should see "module Open4" in the EditTab "open4.rb"
+#  Scenario: Open require
+#    Given the EditTab contains "require 'open4'"
+#    And I press "Ctrl+E"
+#    And I press "Left" then "Left"
+#    And I press "Super+Shift+D"
+#    And I wait 1 seconds
+#    And I wait 1 seconds
+#    And I wait 1 seconds
+#    And I wait 1 seconds
+#    Then there should be 2 EditTabs open
+#    And I should see "module Open4" in the EditTab "open4.rb"
