@@ -19,7 +19,7 @@ module Redcar
       result
     end
 
-    def prompt_and_save
+    def prompt_then_close(&block)
       dialog = Gtk::Dialog.new("Document has unsaved changes",
                                 Redcar.win,
                                 nil,
@@ -33,19 +33,21 @@ module Redcar
         when Gtk::Dialog::RESPONSE_OK
           if tab.filename
             tab.save
+            close_tab
           else
-            if filename = Redcar::Dialog.save_as(win)
-              tab.filename = filename
-              tab.save
-            else
-              should_close_tab = false
+            Redcar::Dialog.save_as(win) do |filename|
+              if filename
+                tab.filename = filename
+                tab.save
+                close_tab
+              end
             end
           end
+        when Gtk::Dialog::RESPONSE_REJECT
+          close_tab
         when Gtk::Dialog::RESPONSE_CANCEL
-          should_close_tab = false
         end
       end
-      should_close_tab
     end
 
     def close_tab
@@ -56,9 +58,7 @@ module Redcar
 
     def execute
       if tab.is_a?(Redcar::EditTab) and tab.modified?
-        if prompt_and_save
-          close_tab
-        end
+        prompt_then_close
       else
         close_tab
       end

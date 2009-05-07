@@ -23,7 +23,7 @@ module Gutkumber
   end
   
   def self.tick
-    # Gtk.main_iteration while Gtk.events_pending?
+    Gtk.main_iteration while Gtk.events_pending?
   end
   
   def self.wait_tick
@@ -39,7 +39,7 @@ When /I click the button #{FeaturesHelper::STRING_RE} in the dialog #{FeaturesHe
  
   dialog.response(dialog.get_response(button))
   # sadly necessary for some reason. Please tell me why!
-  # Gutkumber.wait_tick
+  Gutkumber.wait_tick
 end
 
 When /^I save as #{FeaturesHelper::STRING_RE}$/ do |filename|

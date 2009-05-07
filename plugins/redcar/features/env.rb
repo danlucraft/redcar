@@ -48,7 +48,7 @@ World(FeaturesHelper)
 
 After do
   Gtk.queue do
-    while dialog = Redcar.win.open_modal_dialogs.first
+    while dialog = Gtk::Dialog._cucumber_running_dialogs.pop
       dialog.close
     end
     Redcar.win.tabs.each(&:close)

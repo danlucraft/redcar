@@ -19,15 +19,15 @@ module Redcar
       dirname
     end
     
-    def self.open(win)
-      choose_file(win, "Open", Gtk::FileChooser::ACTION_OPEN, Gtk::Stock::OPEN)
+    def self.open(win, &block)
+      choose_file(win, "Open", Gtk::FileChooser::ACTION_OPEN, Gtk::Stock::OPEN, &block)
     end
 
-    def self.save_as(win)
-      choose_file(win, "Save As", Gtk::FileChooser::ACTION_SAVE, Gtk::Stock::SAVE)
+    def self.save_as(win, &block)
+      choose_file(win, "Save As", Gtk::FileChooser::ACTION_SAVE, Gtk::Stock::SAVE, &block)
     end
 
-    def self.choose_file(win, title, action, button)
+    def self.choose_file(win, title, action, button, &block)
       App.log.debug "[Core/Dialog] FileChooserDialog:"
       App.log.debug "[Core/Dialog]  " + Thread.current.inspect
       App.log.debug "[Core/Dialog]  " + win.inspect
@@ -44,16 +44,15 @@ module Redcar
       end
       App.log.debug "[Core/Dialog]  " + dialog.inspect
       App.log.debug "[Core/Dialog]  " + dialog.destroyed?.to_s
-      filename = nil
       dialog.run do |response|
+        filename = dialog.filename
+        dialog.destroy
         case response
         when Gtk::Dialog::RESPONSE_ACCEPT
-          filename = dialog.filename
           Redcar::App[:last_dir_opened] = filename.split("/")[0..-2].join("/")
+          block.call(filename)
         end
-        dialog.destroy
       end
-      filename
     end
   end
 end

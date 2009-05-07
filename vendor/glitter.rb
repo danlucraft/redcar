@@ -275,16 +275,3 @@ module Gtk
   end
 end
 
-module Gtk
-  class Dialog
-    def run
-      p self
-      p (methods.sort - Object.instance_methods)
-      p [window, Redcar.win]
-      
-    end
-  end
-end
-
-
-
