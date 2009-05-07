@@ -6,7 +6,7 @@ module Redcar
 
     def initialize
       super("Find File in Project", Redcar.win,
-            Gtk::Dialog::DESTROY_WITH_PARENT)
+            Gtk::Dialog::MODAL | Gtk::Dialog::DESTROY_WITH_PARENT)
       set_size_request(500, 300)
       @entry = Gtk::Entry.new
       @list = Gtk::ListStore.new(String, String)

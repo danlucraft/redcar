@@ -19,7 +19,6 @@ module Redcar
         do_save
       else
         Redcar::Dialog.save_as(win) do |filename|
-          p [:save_as, filename]
           @filename = filename
           if File.exist?(@filename) and @filename != tab.filename
             unless Zerenity::Question(:text => "File #{@filename} already exists. Overwrite?")
