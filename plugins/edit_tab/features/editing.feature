@@ -58,3 +58,28 @@ Feature: Edit Text
     And I press "Ctrl+V"
     Then I should see "xx<c>" in the EditTab
     And I should not see "aa" in the EditTab
+
+  Scenario: Convert selected text to uppercase
+    When I type "Some Text"
+    And I press "Ctrl+Shift+L"
+    And I press "Ctrl+U"
+    Then I should see "SOME TEXT" in the EditTab
+
+  Scenario: Convert selected text to lowercase
+    When I type "Some Text"
+    And I press "Ctrl+Shift+L" 
+    And I press "Ctrl+Shift+U"
+    Then I should see "some text" in the EditTab
+
+  Scenario: Convert selected uppercase text to titlecase
+    When I type "SOME TEXT"
+    And I press "Ctrl+Shift+L" 
+    And I press "Ctrl+Alt+U"
+    Then I should see "Some Text" in the EditTab
+
+  Scenario: Convert selected lowercase text to titlecase
+    When I type "some text"
+    And I press "Ctrl+Shift+L" 
+    And I press "Ctrl+Alt+U"
+    Then I should see "Some Text" in the EditTab
+    
