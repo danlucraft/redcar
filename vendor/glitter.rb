@@ -197,14 +197,14 @@ class Gtk::Widget
   
   def signal_connect(*args, &block)
     signal_name = args.first
-    block_with_rescue = lambda do |*args|
+    block_with_rescue = lambda do |*blockargs|
       begin
-        block.call(*args)
+        block.call(*blockargs)
       rescue Object => e
         if Gtk.non_signal_errors.include?(e.class)
           raise e
         end
-        puts "--- Error in #{args.first.class} #{signal_name.inspect} signal handler:"
+        puts "--- Error in #{blockargs.first.class} #{signal_name.inspect} signal handler:"
         puts "    " + e.class.to_s + ": "+ e.message
         puts e.backtrace .map{|line| "    " + line}
         $stdout.flush
@@ -274,3 +274,4 @@ module Gtk
     @non_signal_errors ||= []
   end
 end
+

@@ -1,5 +1,5 @@
 
-require 'gtkmozembed'
+require 'webkit'
 
 module Redcar
   class HtmlTabPlugin < Redcar::Plugin

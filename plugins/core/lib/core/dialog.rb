@@ -44,19 +44,15 @@ module Redcar
       end
       App.log.debug "[Core/Dialog]  " + dialog.inspect
       App.log.debug "[Core/Dialog]  " + dialog.destroyed?.to_s
-      filename = nil
-      dialog_runner = win.modal_dialog_runner(dialog)
-      dialog.signal_connect('response') do |_, response|
+      dialog.run do |response|
+        filename = dialog.filename
+        dialog.destroy
         case response
         when Gtk::Dialog::RESPONSE_ACCEPT
-          filename = dialog.filename
           Redcar::App[:last_dir_opened] = filename.split("/")[0..-2].join("/")
           block.call(filename)
         end
-        dialog_runner.close
       end
-      dialog_runner.run
-      filename
     end
   end
 end
