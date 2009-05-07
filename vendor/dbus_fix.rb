@@ -2,9 +2,8 @@
 # there seems to be some kind of compatibility problem with 
 # Ruby-DBus on Jaunty. Needs fixing properly.
 
-
 module DBus
-  class Service
+  fix_block = proc do
     # Process a message _m_ based on its type.
     # method call:: FIXME...
     # method call return value:: FIXME...
@@ -63,5 +62,11 @@ module DBus
         puts "Unknown message type: #{m.message_type}" if $DEBUG
       end
     end
+  end
+  
+  if defined?(DBus::Service)
+    Service.class_eval(&fix_block)
+  elsif defined?(DBus::Connection)
+    Connection.class_eval(&fix_block)
   end
 end
