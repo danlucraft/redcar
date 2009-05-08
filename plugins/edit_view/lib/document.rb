@@ -127,6 +127,14 @@ module Redcar
     def cursor_line
       iter(cursor_mark).line
     end
+    
+    def word_before_cursor
+      line = get_slice(line_start(cursor_line), cursor_iter).reverse
+      if line =~ /([^\s]+)(\s|$)/
+        word = $1.reverse
+      end
+      word
+    end
 
     def cursor_offset
       iter(cursor_mark).offset
