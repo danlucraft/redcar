@@ -2,9 +2,8 @@
 # there seems to be some kind of compatibility problem with 
 # Ruby-DBus on Jaunty. Needs fixing properly.
 
-
 module DBus
-  class Service
+  class Connection
     # Process a message _m_ based on its type.
     # method call:: FIXME...
     # method call return value:: FIXME...
