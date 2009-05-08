@@ -2,7 +2,7 @@
 module Redcar
   class Document < Gtk::Mate::Buffer
     
-    attr_writer :parser, :indenter, :autopairer, :snippet_inserter
+    attr_writer :parser, :indenter, :autopairer, :snippet_inserter, :autocompleter
     attr_accessor :ignore_marks
     
     def initialize
@@ -261,7 +261,7 @@ module Redcar
     end
 
     def type(text)
-      text.split(//).each {|l| insert_at_cursor(l)}
+      text.each_char {|l| insert_at_cursor(l)}
     end
     
     class IgnoreObject
@@ -280,6 +280,10 @@ module Redcar
     
     def snippet_inserter
       @snippet_inserter || IgnoreObject.new
+    end
+    
+    def autocompleter
+      @autocompleter || IngoreObject.new
     end
 
     def insert_as_snippet(text, opts={})

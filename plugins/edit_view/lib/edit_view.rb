@@ -1,7 +1,7 @@
 
 module Redcar
   class EditView < Gtk::Mate::View
-    attr_accessor :snippet_inserter
+    attr_accessor :snippet_inserter, :autocompleter
 
     def initialize(options={})
       super()
@@ -33,6 +33,7 @@ module Redcar
       create_indenter
       create_autopairer
       create_snippet_inserter
+      create_autocompleter
     end
 
     def set_gtk_cursor_colour
@@ -92,6 +93,10 @@ module Redcar
 
     def create_snippet_inserter
       @snippet_inserter = SnippetInserter.new(buffer)
+    end
+    
+    def create_autocompleter
+      @autocompleter = AutoCompleteWord.new(buffer)
     end
 
     def indent_line(line_num)
