@@ -96,7 +96,7 @@ module Redcar
     end
     
     def create_autocompleter
-      @autocompleter = AutoCompleteWord.new(buffer)
+      @autocompleter = AutoCompleter.new(buffer)
     end
 
     def indent_line(line_num)
