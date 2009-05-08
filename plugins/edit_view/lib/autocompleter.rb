@@ -88,6 +88,7 @@ class Redcar::EditView
     def complete_word
       puts "complete word in AutoCompleteWord called! yay."
       @word_before_cursor = @buf.word_before_cursor
+      puts @word_before_cursor
     end
     
     

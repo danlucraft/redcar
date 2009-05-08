@@ -130,7 +130,8 @@ module Redcar
     
     def word_before_cursor
       line = get_slice(line_start(cursor_line), cursor_iter).reverse
-      if line =~ /([^\s]+)(\s|$)/
+      puts line
+      if line =~ /([\S]+)(\s|$|\.)/
         word = $1.reverse
       end
       word
