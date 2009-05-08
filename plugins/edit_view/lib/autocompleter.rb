@@ -1,4 +1,4 @@
-
+load File.dirname(__FILE__) + "/autocompleter/prefix_tree.rb"
 
 class Redcar::EditView
   class AutoCompleter
