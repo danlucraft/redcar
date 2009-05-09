@@ -12,7 +12,3 @@ rdoc
 doc/html
 doc/latex
 
-textmate
-vendor/gtksourceview2
-vendor/gtkmateview
-vendor/valar

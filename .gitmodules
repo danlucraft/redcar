@@ -1,0 +1,12 @@
+[submodule "textmate"]
+	path = textmate
+	url = git://github.com/danlucraft/redcar-bundles
+[submodule "vendor/valar"]
+	path = vendor/valar
+	url = git://github.com/danlucraft/valar
+[submodule "vendor/gtkmateview"]
+	path = vendor/gtkmateview
+	url = git://github.com/danlucraft/gtkmateview
+[submodule "vendor/rbwebkitgtk"]
+	path = vendor/rbwebkitgtk
+	url = git://github.com/danlucraft/rbwebkitgtk
