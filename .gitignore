@@ -12,3 +12,6 @@ rdoc
 doc/html
 doc/latex
 
+vendor/gtksourceview2/Makefile
+vendor/gtksourceview2/src/Makefile
+vendor/gtksourceview2/src/rbgtksourceview2version.h
