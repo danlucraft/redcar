@@ -10,3 +10,6 @@
 [submodule "vendor/rbwebkitgtk"]
 	path = vendor/rbwebkitgtk
 	url = git://github.com/danlucraft/rbwebkitgtk
+[submodule "vendor/zerenity"]
+	path = vendor/zerenity
+	url = git://github.com/danlucraft/zerenity.git
