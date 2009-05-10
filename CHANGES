@@ -8,7 +8,7 @@ New features, enhancements:
   * Undo close tab (Ctrl+Shift+T)
   * Now prompts to save if file is modified when closed.
   * HtmlTab now uses Webkit instead of Mozilla
-  * Case change commands
+  * Convert case commands
 
 Bug fixes:
 
@@ -22,6 +22,8 @@ New contributers:
 
   * Mark Wilkinson
   * Pat Ciambrone
+  * poweradapter
+  * Henrik Hodne
 
 Version 0.1 (6 April 2009)
 ==========================
