@@ -2,13 +2,26 @@
 $:.push(File.expand_path(File.dirname(__FILE__) + "/../../../vendor/gutkumber/lib"))
 require 'gutkumber'
 
-Gutkumber.start_application_thread do
+# need to start Redcar in a new thread because FreeBASE blocks.
+Thread.new do
   module Redcar
     module App
       class << self
         attr_accessor :ARGV
       end
       self.ARGV = []
+    end
+
+    module Testing
+      class InternalCucumberRunner
+        def self.begin_tests
+          @ready_for_test = true
+        end
+        
+        def self.ready_for_test?
+          @ready_for_test
+        end
+      end
     end
   end
 
@@ -23,7 +36,7 @@ end
 
 loop do
   sleep 0.1
-  break if Gutkumber.ready_to_test?
+  break if Redcar::Testing::InternalCucumberRunner.ready_for_test?
 end
 
 Dir[File.dirname(__FILE__) + "/../../*/features/lib/*.rb"].each {|fn| require fn}

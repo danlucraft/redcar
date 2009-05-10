@@ -21,7 +21,7 @@ module Redcar
           App.log.info "starting Gui.main (in thread #{Thread.current})"
           Hook.trigger(:redcar_start)
           if in_features_process?
-            Gutkumber.begin_tests
+            Redcar::Testing::InternalCucumberRunner.begin_tests
           else
             Gtk.main_with_queue(100)
             bus["/system/shutdown"].call(1)
