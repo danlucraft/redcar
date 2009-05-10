@@ -17,6 +17,7 @@ Bug fixes:
   * Fixed bug that allows multiple project tabs (#69)
   * Fixed so only one copy of a file can be open (#62)
   * Fixed file finder not finding new files
+  * Fixed silently failing to save when bad permissions (#10)
 
 New contributers:
 

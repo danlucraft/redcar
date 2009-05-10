@@ -195,7 +195,7 @@ module Redcar
     def save
       return unless @filename
       Hook.trigger :tab_save, self do
-        if File.writable?(@filename)
+        if File.writable?(File.dirname(@filename))
           File.open(@filename, "w") {|f| f.puts document.text}
           self.modified = false
         else
