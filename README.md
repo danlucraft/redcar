@@ -2,6 +2,7 @@ Redcar
 ======
 
 by Daniel Lucraft
+
 http://RedcarEditor.com/
 
 DESCRIPTION
@@ -25,8 +26,8 @@ See INSTALL.md
 FEATURES
 --------
 
-rake features
-rake features:[plugin_name]
+    rake features
+    rake features:[plugin_name]
 
 LICENSE
 -------
