@@ -2,6 +2,7 @@
 module Redcar
   class DeletePathInProjectCommand < Redcar::Command
     key "Delete"
+    range Redcar::ProjectTab
     
     def initialize(path=nil)
       # If no path is given, fetch the path for the currently selected node
