@@ -42,7 +42,9 @@ Feature: Create, Open and Save files
 
   Scenario: Save As
     Given I have opened the file "plugins/edit_tab/features/fixtures/file1.rb"
-    When I save the EditTab as "plugins/edit_tab/features/fixtures/new_file.rb"
+    When I press "Ctrl+Shift+S"
+    And I set the "Save As" dialog's filename to "plugins/edit_tab/features/fixtures/new_file.rb"
+    And I click the button "Save" in the dialog "Save As"
     And I close the tab
     And I open the file "plugins/edit_tab/features/fixtures/new_file.rb"
     Then I should see "# First" in the EditTab
