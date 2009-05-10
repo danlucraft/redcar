@@ -42,8 +42,7 @@ if STDIN.isatty == false
 end
 
 def in_features_process?
-  defined?(Redcar::Testing::InternalCucumberRunner) and 
-  Redcar::Testing::InternalCucumberRunner.in_cucumber_process
+  $gutkumber
 end
 
 require File.join(File.dirname(__FILE__), %w'.. lib dbus')
