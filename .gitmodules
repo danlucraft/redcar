@@ -13,3 +13,6 @@
 [submodule "vendor/zerenity"]
 	path = vendor/zerenity
 	url = git://github.com/danlucraft/zerenity.git
+[submodule "vendor/gutkumber"]
+	path = vendor/gutkumber
+	url = git://github.com/danlucraft/gutkumber.git
