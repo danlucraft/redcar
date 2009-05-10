@@ -4,11 +4,13 @@ Installing on Ubuntu 9.04 (Jaunty)
 
 This assumes that you have Ruby installed from packages. It will overwrite your Ruby if you have Ruby installed from source, so be sure.
 
-  0. Install Ruby from packages:
+  0. (Install Ruby from packages, if you haven't already).
 
     sudo apt-get install ruby ruby1.8-dev rubygems1.8 libhttp-access2-ruby1.8 rubygems1.8 rake
+    echo "export PATH=/var/lib/gems/1.8/bin:\$PATH" >> ~/.bashrc
+    source . ~/.bashrc
 
-  1. First download the latest Redcar release:
+  1. Download the latest Redcar release.
 
     wget http://cloud.github.com/downloads/danlucraft/redcar/redcar-latest.tar.gz
 
