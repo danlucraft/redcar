@@ -34,8 +34,10 @@ module Redcar
             break
           end
         }
+        
         doc.select(low,high)
         doc.replace_selection((doc.selection).downcase)
+        doc.select(c,c)
       end
     end  
   end
