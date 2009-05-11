@@ -1,5 +1,6 @@
 
-require 'webkit'
+$:.push(File.expand_path(File.dirname(__FILE__) + "/../../vendor/rbwebkitgtk/src"))
+require 'lib/webkit'
 
 module Redcar
   class HtmlTabPlugin < Redcar::Plugin

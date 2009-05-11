@@ -136,7 +136,7 @@ module Redcar
       re = make_regex(text)
 
       score_match_pairs = []
-      max = 10000000
+      cutoff = 10000000
 
       results = files.each do |fn| 
         unless File.directory?(fn)
@@ -150,12 +150,14 @@ module Redcar
 		            diffs += cs[i] - cs[i-1]
 		          end
 		        end
+						# lower score is better
             score = (cs[0] + diffs)*100 + bit.last.length
-            if score < max
+            if score < cutoff
               score_match_pairs << [score, fn]
               score_match_pairs.sort!
               if score_match_pairs.length == MAX_ENTRIES
-                max = score_match_pairs.last.first
+                cutoff = score_match_pairs.last.first
+                score_match_pairs.pop
               end
             end
       		end

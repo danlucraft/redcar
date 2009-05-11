@@ -57,9 +57,7 @@ module Redcar
     # Application-wide logger. Plugins may use this for
     # logging.
     def self.log
-      if ARGV.include?("--log") or 
-          (defined?(Redcar::Testing::InternalCucumberRunner) and
-          Redcar::Testing::InternalCucumberRunner.in_cucumber_process)
+      if ARGV.include?("--log") or in_features_process?
         if ENV["REDCAR_DEBUG"]
           @logger ||= Logger.new(STDOUT)
         else

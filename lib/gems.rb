@@ -11,6 +11,9 @@ require 'cgi'
 require 'gtk2'
 require 'gconf2'
 
+$:.push(File.expand_path(File.dirname(__FILE__) + "/../vendor/zerenity/lib"))
+require 'zerenity'
+
 # RubyGem dependencies
 require 'rubygems'
 require 'oniguruma'
@@ -35,4 +38,3 @@ require 'active_support/duration'
 require 'active_support/core_ext'
 require 'active_support/multibyte'
 
-require 'zerenity'
