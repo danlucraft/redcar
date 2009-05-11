@@ -14,7 +14,7 @@ module Redcar
         c.downto(line_start){|i|
           doc.select(i, i+1)
           low = i+1
-          if (doc.selection == ' ')
+          if (doc.selection == ' ' && i != c)
             low = i+1
             break
           elsif(i == line_start)
@@ -33,8 +33,7 @@ module Redcar
             high = line_end
             break
           end
-        }
-        
+        }   
         doc.select(low,high)
         doc.replace_selection((doc.selection).downcase)
         doc.select(c,c)
