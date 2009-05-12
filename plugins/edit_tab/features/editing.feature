@@ -69,7 +69,7 @@ Feature: Edit Text
     When I type "Some Text"
     And I press "Ctrl+A"
     And I press "Ctrl+U"
-    Then I should see "<s>SOME<c> Text" in the EditTab
+    Then I should see "<c>SOME Text" in the EditTab
 
   Scenario: Convert selected text to lowercase
     When I type "Some Text"
@@ -81,7 +81,7 @@ Feature: Edit Text
     When I type "Some Text"
     And I press "Ctrl+E"
     And I press "Ctrl+Shift+U"
-    Then I should see "Some <s>text<c>" in the EditTab
+    Then I should see "Some text<c>" in the EditTab
 
   Scenario: Convert selected uppercase text to titlecase
     When I type "SOME TEXT"
