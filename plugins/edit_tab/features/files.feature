@@ -32,6 +32,12 @@ Feature: Create, Open and Save files
     And I save the EditTab
     Then the label of the EditTab should say "file1.rb"
 
+  Scenario: Undoing all the way removes * from the label
+    Given I have opened the file "plugins/edit_tab/features/fixtures/file1.rb"
+    When I type "a"
+    And I press "Ctrl+Z"
+    Then the label of the EditTab should say "file1.rb"
+
   Scenario: Change a file and save it changes the file on disk
     Given I have opened the file "plugins/edit_tab/features/fixtures/file1.rb"
     When I type "changed "
