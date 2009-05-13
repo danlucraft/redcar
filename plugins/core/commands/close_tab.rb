@@ -32,14 +32,16 @@ module Redcar
         case response
         when Gtk::Dialog::RESPONSE_OK
           if @tab.filename
-            @tab.save
-            close_tab
+            if @tab.save
+              close_tab
+            end
           else
             Redcar::Dialog.save_as(win) do |filename|
               if filename
                 @tab.filename = filename
-                @tab.save
-                close_tab
+                if @tab.save
+                  close_tab
+                end
               end
             end
           end

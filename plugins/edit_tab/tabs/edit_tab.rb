@@ -201,6 +201,7 @@ module Redcar
           self.modified = false
         else
           Zerenity::Error(:text => "You don't have permission to write to this file.")
+          false
         end
       end
     end
