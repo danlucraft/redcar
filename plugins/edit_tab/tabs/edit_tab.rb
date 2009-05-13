@@ -200,7 +200,7 @@ module Redcar
           File.open(@filename, "w") {|f| f.puts document.text}
           self.modified = false
         else
-          Zerenity::Error(:text => "You don't have the permissions to write to this file.")
+          Zerenity::Error(:text => "You don't have permission to write to this file.")
         end
       end
     end

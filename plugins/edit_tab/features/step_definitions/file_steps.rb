@@ -9,6 +9,10 @@ Given /^I (?:open|have opened) the file #{FeaturesHelper::STRING_RE}$/ do |filen
   Redcar::OpenTabCommand.new(filename).do
 end
 
+Given /^I do not have permission to write to #{FeaturesHelper::STRING_RE}$/ do |filename|
+  File.writable?(filename).should be_false
+end
+
 When /^I save the EditTab$/ do
   When "I press \"Ctrl+S\""
 end

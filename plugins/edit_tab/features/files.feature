@@ -95,8 +95,9 @@ Feature: Create, Open and Save files
     And I press "Ctrl+Shift+T"
     Then there should be two EditTabs open
 
-
-
-
-
-
+  Scenario: Save a file you do not have permission to modify
+    Given I do not have permission to write to "/etc/X11/xorg.conf"
+    When I open the file "/etc/X11/xorg.conf"
+    And I type "Haha changes can't get saved"
+    And I press "Ctrl+S"
+    Then I should see "don't have permission" in a dialog
