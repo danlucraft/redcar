@@ -5,7 +5,7 @@ class Redcar::EditView
   
     # TODO: maybe this should be based on the grammar of the language
     # that is active in order to make this as flexible as possible...
-    WORD_BOUNDARIES = /(\s|\t|\.|\r|\(|\)|,|;)/
+    WORD_BOUNDARIES = /\w/ # /(\s|\t|\.|\r|\(|\)|,|;)/
     
     def initialize(buffer)
       @buf = buffer
@@ -50,23 +50,40 @@ class Redcar::EditView
     
     # class for Autocomplete state machine
     class AutocompleteState
+      @last_cursor_line = -1
+      
       # determines whether the cursor is currently in a word and
       # returns the current word if so,
       # nil otherwise.
       def cursor_in_word(document, iter, mark)
-        # TODO: only update line content if the line has actually changed!
-        @line = line_at_cursor(document)
-        puts @line
+        unless document.cursor_line == @last_cursor_line
+          @line = document.get_line
+          @last_cursor_line = document.cursor_line
+        end
+        range = word_range(document)
+        nil
       end
       
       # returns the range that holds the current word (depending on WORD_BOUNDARIES)
-      def word_range
+      def word_range(document)
+        left = document.cursor_line_offset - 1
+        right = document.cursor_line_offset
+        left_range = 0
+        right_range = 0
         
-      end
-      
-      def line_at_cursor(document)
-        line_number = document.cursor_line
-        document.get_slice(document.line_start(line_number), document.line_end(line_number))
+        until left == -1 || WORD_BOUNDARIES !~ (@line[left].chr)
+          left -= 1
+          left_range -= 1
+        end
+        
+        until WORD_BOUNDARIES !~ (@line[right].chr) || right == (@line.length)
+          right += 1
+          right_range += 1
+        end
+        
+        offset = document.cursor_offset
+        word = document.get_slice(document.iter(offset+left_range), document.iter(offset+right_range))
+        puts "current word: #{word}"
       end
     end
     
