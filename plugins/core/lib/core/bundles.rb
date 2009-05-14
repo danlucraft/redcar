@@ -271,7 +271,7 @@ module Redcar
     end
     
     def self.create_shell_command(bundle, hash)
-      new_command = Redcar::ShellCommand.new
+      new_command = Redcar::ShellCommand.new(bundle)
       if key = Bundle.translate_key_equivalent(hash["keyEquivalent"], bundle.name + " | " + hash["name"])
         new_command.key = key
       end
