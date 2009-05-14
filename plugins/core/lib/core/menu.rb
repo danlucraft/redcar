@@ -320,7 +320,11 @@ module Redcar
       def connect_item_signal(command, gtk_menuitem)
         gtk_menuitem.signal_connect("activate") do
           begin
-            command.new.do
+            if command.bundle
+              command.new(command.bundle).do
+            else
+              command.new.do
+            end
           rescue Object => e
             puts e
             puts e.message

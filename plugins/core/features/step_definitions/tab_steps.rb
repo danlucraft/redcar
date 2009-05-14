@@ -48,6 +48,17 @@ Given /^I am looking at TestTab "([^\"]*)"$/ do |name|
   Redcar.win.tabs.find{|tab| tab.name == name}.focus
 end
 
+When /^I (right|left) click on the (\w+)$/ do |button, tab_type| # 
+  tab = only(Redcar.win.collect_tabs(Redcar.const_get(tab_type)))
+  widget = tab.gtk_tab_widget
+  case button
+  when "right"
+    right_click_on(widget)
+  when "left"
+    left_click_on(widget)
+  end
+end
+
 Then /^I should be looking at the #{FeaturesHelper::ORDINAL_RE} EditTab$/ do |ordinal|
   num = parse_ordinal(ordinal) - 1
   Redcar.win.tabs[num].should == Redcar.tab

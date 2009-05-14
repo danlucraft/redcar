@@ -5,6 +5,9 @@ module Redcar
     
     def execute
       tab.view.undo
+      if !tab.document.can_undo?
+        tab.modified = false
+      end
     end
   end
 end

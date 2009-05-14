@@ -58,10 +58,6 @@ module Redcar
         end
       end
       
-      main_menu "Dans" do
-        item "RubyEnd", RubyEnd
-      end
-      
       main_menu "View" do
         item "Split Horizontal",  SplitHorizontal
         item "Split Vertical",    SplitVertical

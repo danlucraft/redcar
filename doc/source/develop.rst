@@ -1,57 +1,36 @@
 Developing Redcar
 =================
 
+This assumes that you already have the dependencies from the INSTALL.txt 
+instructions installed. If you haven't made Redcar work from that yet, 
+do that first.
+
 Setting up your environment
 ---------------------------
 
 To get started developing Redcar, you will need to retrieve a copy 
 of the source. Redcar uses the `git <http://git-scm.org>`_ source
-control system, and the repositories are::
+control system. To clone the repository run::
 
   git clone git://github.com/danlucraft/redcar.git
-  git clone git://github.com/danlucraft/gtkmateview.git
-  git clone git://github.com/danlucraft/redcar-bundles.git
 
-Once they have been downloaded, the gtkmateview source must be built, which can be
-done with::
+Once you have the source, retrieve the dependencies::
 
-  cd gtkmateview/dist
-  ruby extconf.rb
-  make
+  cd redcar/
+  git submodule init
+  git submodule update
 
-You will need a copy of *ruby-gtksourceview2*, which can be obtained and built
-like so::
+And build the project::
 
-  wget http://redcareditor.com/packages/ruby-gtksourceview2.tar.bz2
-  tar xjf ruby-gtksourceview2.tar.bz2
-  cd gtksourceview2
-  ruby extconf.rb
-  make
-  
-You will also need to insert symlinks to the these packages in the Redcar source
-tree. 
-  
-  * *redcar/textmate* should point to *redcar-bundles*
-  * *redcar/vendor/gtkmateview* should point to *gtkmateview*
-  * *redcar/vendor/gtksourceview2* should point to *ruby-gtksourceview2*
-  
-You will need a copy of *rbwebkitgtk*. This depends on *webkit*, which can be 
-installed on Ubuntu (Jaunty) with::
-
-  sudo apt-get install libwebkit-1.0-1 libwebkit-dev
-  
-and then install *rbwebkitgtk*::
-
-  git clone git://github.com/danlucraft/rbwebkitgtk.git
-  cd rbwebkitgtk
-  ruby extconf.rb
-  make
-  sudo make install
+  rake build
 
 Developer Documentation
 -----------------------
 
-RDoc files built from the source code are available `here <http://redcareditor.com/rdoc/>`_.
+RDoc files built from the source code are available `here <http://redcareditor.com/rdoc/>`_. 
+To build these for yourself run::
+
+  rake rdoc:<plugin_name>
 
 Running Specs and Features
 --------------------------

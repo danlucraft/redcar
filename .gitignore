@@ -12,7 +12,8 @@ rdoc
 doc/html
 doc/latex
 
-textmate
-vendor/gtksourceview2
-vendor/gtkmateview
-vendor/valar
+vendor/gtksourceview2/Makefile
+vendor/gtksourceview2/src/Makefile
+vendor/gtksourceview2/src/rbgtksourceview2version.h
+
+plugins/dans
