@@ -11,9 +11,8 @@ class Redcar::EditView
       @buf = buffer
       @parser = buffer.parser
       buffer.autocompleter = self
+      @state = NotInWordState.new(self)
       connect_signals
-      
-      @state = NotInWordState.new
     end
     
     def connect_signals
@@ -22,6 +21,7 @@ class Redcar::EditView
       @buf.signal_connect("mark_set") do |document, iter, mark|
         if mark == @buf.cursor_mark
           @state.cursor_moved(document, iter, mark)
+          puts @state
         end
       end
     end
@@ -41,27 +41,29 @@ class Redcar::EditView
     def multiple_characters_typed(text)
       
     end
-   
         
     def complete_word
       puts "complete word in AutoCompleteWord called! yay."
       @word_before_cursor = @buf.word_before_cursor
     end
     
+    def state=(state)
+      @state = state
+    end
+    
     # class for Autocomplete state machine
     class AutocompleteState
       @last_cursor_line = -1
       
-      # determines whether the cursor is currently in a word and
-      # returns the current word if so,
+      # returns the word (see WORD_BOUNDARIES) that the cursor is currently touching.
       # nil otherwise.
-      def cursor_in_word(document, iter, mark)
+      def word_touching_cursor(document)
         unless document.cursor_line == @last_cursor_line
           @line = document.get_line
           @last_cursor_line = document.cursor_line
         end
-        range = word_range(document)
-        nil
+        left, right = word_range(document)
+        document.get_slice(document.iter(left), document.iter(right))
       end
       
       # returns the range that holds the current word (depending on WORD_BOUNDARIES)
@@ -70,28 +72,34 @@ class Redcar::EditView
         right = document.cursor_line_offset
         left_range = 0
         right_range = 0
+        offset = document.cursor_offset
         
         until left == -1 || WORD_BOUNDARIES !~ (@line[left].chr)
           left -= 1
           left_range -= 1
         end
         
-        until WORD_BOUNDARIES !~ (@line[right].chr) || right == (@line.length)
+        until right == @line.length || WORD_BOUNDARIES !~ (@line[right].chr)
           right += 1
           right_range += 1
         end
-        
-        offset = document.cursor_offset
-        word = document.get_slice(document.iter(offset+left_range), document.iter(offset+right_range))
-        puts "current word: #{word}"
+        return [offset+left_range, offset+right_range]
+      end
+      
+      def state=(state)
+        @state = state
+      end
+      
+      def initialize(autocompleter)
+        @autocompleter = autocompleter
       end
     end
     
     class InWordState < AutocompleteState
       def cursor_moved(document, iter, mark)
-        unless cursor_in_word(document, iter, mark)
-          @state = NotInWordState.new
-          puts @state
+        touched_word = word_touching_cursor(document) 
+        if touched_word.length == 0
+          @autocompleter.state = NotInWordState.new(@autocompleter)
         end
       end
       
@@ -102,9 +110,9 @@ class Redcar::EditView
     
     class NotInWordState < AutocompleteState
       def cursor_moved(document, iter, mark)
-        if cursor_in_word(document, iter, mark)
-          @state = InWordState.new
-          puts @state
+        touched_word = word_touching_cursor(document)
+        unless touched_word.length == 0
+          @autocompleter.state = InWordState.new(@autocompleter)
         end
       end
       
