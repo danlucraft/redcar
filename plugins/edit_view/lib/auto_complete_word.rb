@@ -1,4 +1,4 @@
-
+require 'statemachine'
 
 class Redcar::EditView
   class AutoCompleter
@@ -9,9 +9,10 @@ class Redcar::EditView
     
     def initialize(buffer)
       @buf = buffer
+      
       @parser = buffer.parser
       buffer.autocompleter = self
-      @state = NotInWordState.new(self)
+      define_state_machine
       connect_signals
     end
     
@@ -20,8 +21,7 @@ class Redcar::EditView
       #connect_delete_range_signal
       @buf.signal_connect("mark_set") do |document, iter, mark|
         if mark == @buf.cursor_mark
-          @state.cursor_moved(document, iter, mark)
-          puts @state
+          @state.cursor_moved
         end
       end
     end
@@ -47,32 +47,61 @@ class Redcar::EditView
       @word_before_cursor = @buf.word_before_cursor
     end
     
-    def state=(state)
-      @state = state
+    
+    def define_state_machine
+      state_machine = Statemachine.build do
+        trans :in_word_state, :cursor_moved, :check_word_state # start state, event, target state -> check for touching word
+        trans :not_in_word_state, :cursor_moved, :check_word_state
+        state :check_word_state do
+          on_entry :check_for_word
+          event :not_in_word, :not_in_word_state
+          event :in_word, :in_word_state
+        end
+      end
+      
+      state_machine.context = AutocompleteStateContext.new(@buf)
+      state_machine.context.statemachine = state_machine
+      @state = state_machine
     end
     
-    # class for Autocomplete state machine
-    class AutocompleteState
-      @last_cursor_line = -1
+    class AutocompleteStateContext
+      attr_accessor :statemachine
+      
+      def initialize(doc)
+        @last_cursor_line = -1
+        @document = doc
+        puts @document.inspect
+      end
+      
+      def check_for_word
+        touched_word = word_touching_cursor
+        if touched_word.length == 0
+          @statemachine.not_in_word
+          puts "out of word"
+        else
+          @statemachine.in_word
+          puts "in word {#{touched_word}}"
+        end
+      end
       
       # returns the word (see WORD_BOUNDARIES) that the cursor is currently touching.
       # nil otherwise.
-      def word_touching_cursor(document)
-        unless document.cursor_line == @last_cursor_line
-          @line = document.get_line
-          @last_cursor_line = document.cursor_line
+      def word_touching_cursor
+        unless @document.cursor_line == @last_cursor_line
+          @line = @document.get_line
+          @last_cursor_line = @document.cursor_line
         end
-        left, right = word_range(document)
-        document.get_slice(document.iter(left), document.iter(right))
+        left, right = word_range
+        @document.get_slice(@document.iter(left), @document.iter(right))
       end
       
       # returns the range that holds the current word (depending on WORD_BOUNDARIES)
-      def word_range(document)
-        left = document.cursor_line_offset - 1
-        right = document.cursor_line_offset
+      def word_range
+        left = @document.cursor_line_offset - 1
+        right = @document.cursor_line_offset
         left_range = 0
         right_range = 0
-        offset = document.cursor_offset
+        offset = @document.cursor_offset
         
         until left == -1 || WORD_BOUNDARIES !~ (@line[left].chr)
           left -= 1
@@ -85,40 +114,6 @@ class Redcar::EditView
         end
         return [offset+left_range, offset+right_range]
       end
-      
-      def state=(state)
-        @state = state
-      end
-      
-      def initialize(autocompleter)
-        @autocompleter = autocompleter
-      end
-    end
-    
-    class InWordState < AutocompleteState
-      def cursor_moved(document, iter, mark)
-        touched_word = word_touching_cursor(document) 
-        if touched_word.length == 0
-          @autocompleter.state = NotInWordState.new(@autocompleter)
-        end
-      end
-      
-      def character_typed
-        
-      end
-    end
-    
-    class NotInWordState < AutocompleteState
-      def cursor_moved(document, iter, mark)
-        touched_word = word_touching_cursor(document)
-        unless touched_word.length == 0
-          @autocompleter.state = InWordState.new(@autocompleter)
-        end
-      end
-      
-      def character_typed
-        
-      end
-    end
+    end 
   end
 end
