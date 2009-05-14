@@ -29,8 +29,9 @@ module Redcar
       def self.make_gtk_menuitem_hbox(c, keybinding)
         child = c.child
         c.remove(child)
-        hbox = Gtk::HBox.new
-        child.set_size_request(200, 0)
+        hbox = Gtk::HBox.new(false, 10)
+        size = child.size_request
+        child.set_size_request(size[0], size[1])
         hbox.pack_start(child, false)
         accel = keybinding.to_s
         l = Gtk::Label.new(accel)
