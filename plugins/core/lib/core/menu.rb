@@ -31,7 +31,7 @@ module Redcar
         c.remove(child)
         hbox = Gtk::HBox.new(false, 10)
         size = child.size_request
-        child.set_size_request(size[0], size[1])
+        child.set_size_request([size[0], 150].max, size[1])
         hbox.pack_start(child, false)
         accel = keybinding.to_s
         l = Gtk::Label.new(accel)
