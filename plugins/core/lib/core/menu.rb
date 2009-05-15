@@ -321,7 +321,7 @@ module Redcar
       def connect_item_signal(command, gtk_menuitem)
         gtk_menuitem.signal_connect("activate") do
           begin
-            if command.bundle
+            if command.is_a?(ShellCommand) and command.bundle
               command.new(command.bundle).do
             else
               command.new.do

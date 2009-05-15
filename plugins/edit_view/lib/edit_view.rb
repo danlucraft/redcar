@@ -5,13 +5,13 @@ module Redcar
 
     def initialize(options={})
       super()
-      set_gtk_cursor_colour
       self.buffer = Document.new
       self.modify_font(Pango::FontDescription.new(Redcar::Preference.get("Appearance/Tab Font")))
       h = self.signal_connect_after("expose-event") do |_, ev|
         if ev.window == self.window
           if self.buffer.parser
             self.set_theme_by_name(Redcar::Preference.get("Appearance/Tab Theme"))
+            set_gtk_cursor_colour
             self.signal_handler_disconnect(h)
           end
         end
@@ -33,15 +33,19 @@ module Redcar
       create_indenter
       create_autopairer
       create_snippet_inserter
+      
     end
 
     def set_gtk_cursor_colour
-      Gtk::RC.parse_string(<<-EOR)
-    style "green-cursor" {
-      GtkTextView::cursor-color = "grey"
-    }
-    class "GtkWidget" style "green-cursor"
-      EOR
+      # p :setting_colour
+      # self.modify_cursor(Gdk::Color.parse('#FF0000'), Gdk::Color.parse('#0000FF'))
+      # self.modify_fg(Gtk::STATE_NORMAL, Gdk::Color.parse('#FF0000'))
+    #   Gtk::RC.parse_string(<<-EOR)
+    # style "green-cursor" {
+    #   GtkTextView::cursor-color = "grey"
+    # }
+    # class "GtkWidget" style "green-cursor"
+    #   EOR
     end
 
     def setup_bookmark_assets
