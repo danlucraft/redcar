@@ -26,7 +26,8 @@ module Redcar
         item "Copy",     Copy
         item "Paste",    Paste
         separator
-        item "Find",     Find
+        item "Find",               Find
+        item "Incremental Search", AskIncrementalSearch
         submenu "Move" do
           item "Forward Character",    ForwardCharacterCommand
           item "Backward Character",   BackwardCharacterCommand
@@ -41,6 +42,11 @@ module Redcar
         end
         item "Kill Line", KillLine
         separator
+        submenu "Convert" do
+          item "TO UPPERCASE", ToUppercase
+          item "to lowercase", ToLowercase
+          item "To Title Case", ToTitlecase
+        end
         submenu "Indent" do
           item "Auto",  IndentLine
           item "Left",  IndentLeftCommand
@@ -51,10 +57,6 @@ module Redcar
           item "Line",            SelectLine
           item "Current Scope",    SelectScopeCommand
         end
-      end
-      
-      main_menu "Dans" do
-        item "RubyEnd", RubyEnd
       end
       
       main_menu "View" do

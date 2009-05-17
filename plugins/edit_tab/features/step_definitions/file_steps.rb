@@ -1,13 +1,10 @@
 
-When /^I (?:open|have opened) the file #{FeaturesHelper::STRING_RE}$/ do |filename|
-  When "I press \"Ctrl+O\""
-  Gutkumber.tick
-  When "I set the \"Open\" dialog's filename to \"#{filename}\""
-  Gutkumber.tick
-  When "I click the button \"Open\" in the dialog \"Open\""
-
 Given /^I (?:open|have opened) the file #{FeaturesHelper::STRING_RE}$/ do |filename|
   Redcar::OpenTabCommand.new(filename).do
+end
+
+Given /^I do not have permission to write to #{FeaturesHelper::STRING_RE}$/ do |filename|
+  File.writable?(filename).should be_false
 end
 
 When /^I save the EditTab$/ do

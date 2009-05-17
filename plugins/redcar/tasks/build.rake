@@ -5,7 +5,8 @@ desc "build redcar"
 task :build => [
   "build:dependencies",
   "build:gtksourceview2", 
-  "build:gtkmateview"
+  "build:gtkmateview",
+  "build:rbwebkitgtk"
 ]
 
 def check_header(name)
@@ -154,6 +155,14 @@ TXT
   task :gtksourceview2 do
     puts "Building gtksourceview2"
     cd(File.join(*%w[vendor gtksourceview2])) do
+      execute_and_check "ruby extconf.rb"
+      execute_and_check "make"
+    end
+  end
+  
+  task :rbwebkitgtk do
+    puts "Building rbwebkitgtk"
+    cd(File.join(*%w[vendor rbwebkitgtk])) do
       execute_and_check "ruby extconf.rb"
       execute_and_check "make"
     end

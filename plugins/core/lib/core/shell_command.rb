@@ -7,6 +7,10 @@ module Redcar
     attr_accessor(:tm_uuid, :bundle, :shell_script, :name, :key, 
                   :range, :scope, :input_type, :fallback_input_type, :output_type,
                   :menu, :menu_item)
+
+    def initialize(bundle)
+      @bundle = bundle
+    end
     
     def range=(val)
       @range = val
@@ -18,8 +22,9 @@ module Redcar
       []
     end
     
-    def new
-      Instance.new(self)
+    def new(bundle=nil)
+      @bundle = bundle if bundle
+      Instance.new(self, @bundle)
     end
     
     def get(iv)
@@ -31,8 +36,9 @@ module Redcar
     end
     
     class Instance
-      def initialize(shell_meta_command)
+      def initialize(shell_meta_command, bundle=nil)
         @shell_meta_command = shell_meta_command
+        @bundle = bundle
       end
       
       def clean_script(shell_script)
@@ -64,12 +70,14 @@ module Redcar
       end
       
       def execute(input)
-        if current_scope = Redcar.doc.cursor_scope
-          App.log.info "current_scope #{current_scope.name}"
-          # puts "current_pattern #{current_scope.pattern.name}"
-          bundle = Bundle.find_bundle_with_grammar(current_scope.pattern.grammar)
+        if !@bundle
+          if current_scope = Redcar.doc.cursor_scope
+            App.log.info "current_scope #{current_scope.name}"
+            # puts "current_pattern #{current_scope.pattern.name}"
+            @bundle = Bundle.find_bundle_with_grammar(current_scope.pattern.grammar)
+          end
         end
-        App.set_environment_variables(bundle)
+        App.set_environment_variables(@bundle)
         tf = Tempfile.new("shellcommand")
         tf.puts clean_script(shell_script)
         File.chmod(0770, tf.path)

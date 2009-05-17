@@ -101,7 +101,6 @@ module FreeBASE
       end
       @bus["/system/shutdown"].set_proc  do |seconds|
         Thread.new do 
-          # more meddling with that which I don't understand. Why is the sleep necessary? -dan
           puts "Shutdown in #{seconds.to_i} seconds..."
           sleep seconds.to_i
           shutdown

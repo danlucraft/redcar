@@ -33,7 +33,7 @@ if STDIN.isatty == false
   STDERR.close
   $stdout = File.open("/dev/null", "w")
   $stderr = $stdout
-  if ARGV.include?("-d")
+  if ARGV.include?("-d") or ARGV.include?("--detach")
     if pid = fork
       Process.detach(pid)
       exit(0)
@@ -42,8 +42,7 @@ if STDIN.isatty == false
 end
 
 def in_features_process?
-  defined?(Redcar::Testing::InternalCucumberRunner) and 
-  Redcar::Testing::InternalCucumberRunner.in_cucumber_process
+  $gutkumber
 end
 
 require File.join(File.dirname(__FILE__), %w'.. lib dbus')

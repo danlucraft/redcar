@@ -1,7 +1,8 @@
 
-require File.dirname(__FILE__) + "/formatters/gtk_formatter.rb"
-require File.dirname(__FILE__) + "/formatters/gtk_progress_formatter.rb"
+$:.push(File.expand_path(File.dirname(__FILE__) + "/../../../vendor/gutkumber/lib"))
+require 'gutkumber'
 
+# need to start Redcar in a new thread because FreeBASE blocks.
 Thread.new do
   module Redcar
     module App
@@ -10,32 +11,32 @@ Thread.new do
       end
       self.ARGV = []
     end
-    
+
     module Testing
       class InternalCucumberRunner
-        class << self
-          attr_accessor :in_cucumber_process
-          attr_accessor :ready_for_cucumber
+        def self.begin_tests
+          @ready_for_test = true
         end
-        self.in_cucumber_process = true
+        
+        def self.ready_for_test?
+          @ready_for_test
+        end
       end
     end
   end
 
-  Thread.new do
-    begin
-      load File.dirname(__FILE__) + "/../../../bin/redcar"
-    rescue Object => e
-      puts "error loading Redcar"
-      puts e.message
-      puts e.backtrace
-    end
+  begin
+    load File.dirname(__FILE__) + "/../../../bin/redcar"
+  rescue Object => e
+    puts "error loading Redcar"
+    puts e.message
+    puts e.backtrace
   end
 end
 
 loop do
   sleep 0.1
-  break if Redcar::Testing::InternalCucumberRunner.ready_for_cucumber
+  break if Redcar::Testing::InternalCucumberRunner.ready_for_test?
 end
 
 Dir[File.dirname(__FILE__) + "/../../*/features/lib/*.rb"].each {|fn| require fn}
@@ -50,6 +51,9 @@ After do
   Gtk.queue do
     while dialog = Gtk::Dialog._cucumber_running_dialogs.pop
       dialog.close
+    end
+    while dialog = Zerenity::Base.open_dialogs.pop
+      dialog.destroy
     end
     Redcar.win.tabs.each(&:close)
     Redcar::UnifyAll.new.do

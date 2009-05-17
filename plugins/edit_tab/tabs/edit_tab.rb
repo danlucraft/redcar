@@ -195,8 +195,15 @@ module Redcar
     def save
       return unless @filename
       Hook.trigger :tab_save, self do
-        File.open(@filename, "w") {|f| f.puts document.text}
-        self.modified = false
+        if (File.exists?(@filename) and File.writable?(@filename)) or
+            (!File.exists?(@filename) and File.writable?(File.dirname(@filename)))
+          File.open(@filename, "w") {|f| f.puts document.text}
+          self.modified = false
+          true
+        else
+          Zerenity::Error(:text => "You don't have permission to write to this file.")
+          false
+        end
       end
     end
 
