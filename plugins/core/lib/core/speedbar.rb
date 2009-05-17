@@ -162,11 +162,21 @@ module Redcar
     
     def add_button(text, icon, key, block=nil, &blk)
       raise "Two blocks given to Speedbar#add_button" if block and blk
+      b = Gtk::Button.new
+      if key
+        normalized_key = Keymap.normalize(key)
+        add_key(normalized_key) { b.activate }
+      end
+      b.relief = Gtk::RELIEF_NONE
       label = Gtk::HBox.new
       label.pack_start(i=Gtk::Icon.get_image(icon, Gtk::IconSize::MENU)) if icon
-      label.pack_start(l=Gtk::Label.new(text)) if text
-      b = Gtk::Button.new
-      b.relief = Gtk::RELIEF_NONE
+      if text
+        if normalized_key
+          text += " (" + normalized_key + ")"
+          l = Gtk::Label.new(text)
+          label.pack_start(l)
+        end
+      end
       b.child = label
       b.signal_connect("clicked") do
         if block
@@ -175,7 +185,6 @@ module Redcar
           blk.call(@spbar)
         end
       end
-      add_key(Keymap.normalize(key)) { b.activate } if key
       pack_start(b, false)
       @focus_widget ||= b
     end
