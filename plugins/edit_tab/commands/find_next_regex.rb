@@ -1,12 +1,12 @@
 module Redcar
   class FindNextRegex < Redcar::EditTabCommand
-    def initialize(re, fa=nil)
+    def initialize(re, wrap=nil)
       @re = re
-      @fa = fa
+      @wrap = wrap
     end
 
     def to_s
-      "#{self.class}: @re=#{@re.inspect}"
+      "<#{self.class}: @re:#{@re.inspect} wrap:#{!!@wrap}>"
     end
 
     def execute
@@ -35,7 +35,7 @@ module Redcar
             tab.view.scroll_mark_onscreen(doc.cursor_mark)
           end
         end
-        if !doc.get_line(line_num) && @fa
+        if !doc.get_line(line_num) and @wrap
           doc.cursor = 0
           execute
         end
