@@ -1,4 +1,3 @@
-
 module Redcar
   class Speedbar
     include FreeBASE::DataBusHelper
@@ -141,7 +140,7 @@ module Redcar
     def add_toggle(name, text, key)
       toggle = Gtk::CheckButton.new(text)
       add_key(key) { toggle.active = !toggle.active? } if key
-      @value[name] = fn { toggle.active }
+      @value[name] = fn { toggle.active? }
       pack_start(toggle, false)
       @focus_widget ||= toggle
     end
