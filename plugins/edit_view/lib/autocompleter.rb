@@ -31,24 +31,18 @@ class Redcar::EditView
     
     def connect_insert_text_signal
       @buf.signal_connect("insert_text") do |document,iter,text,length|
-        invalidate_current_line
-
+        
       end
     end
         
     def connect_delete_range_signal
       @buf.signal_connect("delete_range") do |document, iter1, iter2|
-        invalidate_current_line
-
+        
       end
     end
     
     def multiple_characters_typed(text)
       
-    end
-    
-    def invalidate_current_line
-      @state.context.last_cursor_line = -1
     end
 
     def complete_word
@@ -61,8 +55,8 @@ class Redcar::EditView
     def define_state_machine
       state_machine = Statemachine.build do
         trans :in_word_state, :cursor_moved, :check_word_state # start state, event, target state -> check for touching word
-        trans :not_in_word_state, :cursor_moved, :check_word_state
-        state :check_word_state do
+	      trans :not_in_word_state, :cursor_moved, :check_word_state
+	      state :check_word_state do
           on_entry :check_for_word
           event :not_in_word, :not_in_word_state
           event :in_word, :in_word_state
@@ -97,13 +91,7 @@ class Redcar::EditView
       # returns the word (see WORD_BOUNDARIES) that the cursor is currently touching.
       # nil otherwise.
       def word_touching_cursor
-	# FIXME: maybe the line should only be loaded when invalid. however, editing is
-	# probably the most performed action, so it will be invalid most of the time anyway...
-        
-        #unless @document.cursor_line == @last_cursor_line
-          @line = @document.get_line
-        #  @last_cursor_line = @document.cursor_line
-        #end
+        @line = @document.get_line
         left, right = word_range
         @document.get_slice(@document.iter(left), @document.iter(right))
       end
