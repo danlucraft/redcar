@@ -70,10 +70,10 @@ class Redcar::EditView
 
     def complete_word
       puts "complete word in AutoCompleteWord called! yay."
-      @word_before_cursor = @buf.word_before_cursor
+      prefix = @state.context.touched_word
       
-      puts "completions for #{@word_before_cursor} (by distance)"
-      @word_list.completions(@word_before_cursor).each do |completion|
+      puts "completions for #{prefix} (by distance)"
+      @word_list.completions(prefix).each do |completion|
         puts completion
       end
     end
@@ -96,7 +96,7 @@ class Redcar::EditView
     end
     
     class AutocompleteStateContext
-      attr_accessor :statemachine, :last_cursor_line
+      attr_accessor :statemachine, :last_cursor_line, :touched_word
       
       def initialize(doc)
         @last_cursor_line = -1
@@ -105,13 +105,13 @@ class Redcar::EditView
       end
       
       def check_for_word
-        touched_word = word_touching_cursor
-        if touched_word.length == 0
+        @touched_word = word_touching_cursor
+        if @touched_word.length == 0
           @statemachine.not_in_word
           puts "out of word"
         else
           @statemachine.in_word
-          puts "in word {#{touched_word}}"
+          puts "in word {#{@touched_word}}"
         end
       end
       
