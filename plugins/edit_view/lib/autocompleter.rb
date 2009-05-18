@@ -1,5 +1,6 @@
 
-load File.dirname(__FILE__) + "/autocompleter/prefix_tree.rb"
+load File.dirname(__FILE__) + "/autocompleter/word_list.rb"
+load File.dirname(__FILE__) + "/autocompleter/autocomplete_iterator.rb"
 require 'statemachine'
 
 
@@ -8,30 +9,33 @@ class Redcar::EditView
   
     # TODO: maybe this should be based on the grammar of the language
     # that is active in order to make this as flexible as possible...
-    WORD_BOUNDARIES = /\w/ # /(\s|\t|\.|\r|\(|\)|,|;)/
+    WORD_CHARACTERS = /\w/ # /(\s|\t|\.|\r|\(|\)|,|;)/
     
     def initialize(buffer)
       @buf = buffer
-      
       @parser = buffer.parser
+      @word_list = WordList.new
+      @autocomplete_iterator = AutocompleteIterator.new(buffer, WORD_CHARACTERS)
       buffer.autocompleter = self
       define_state_machine
       connect_signals
+      rebuild_word_list
     end
     
     def connect_signals
-      #connect_insert_text_signal
-      #connect_delete_range_signal
+      connect_insert_text_signal
+      connect_delete_range_signal
       @buf.signal_connect("mark_set") do |document, iter, mark|
         if mark == @buf.cursor_mark
           @state.cursor_moved
+          update_word_list_cursor_offset
         end
       end
     end
     
     def connect_insert_text_signal
       @buf.signal_connect("insert_text") do |document,iter,text,length|
-        
+        rebuild_word_list
       end
     end
         
@@ -41,8 +45,25 @@ class Redcar::EditView
       end
     end
     
-    def multiple_characters_typed(text)
+    # rebuild the list of words from scratch
+    def rebuild_word_list
+      puts "rebuilding word list"
+      cursor_offset = @buf.cursor_offset
+      @word_list.cursor_offset = cursor_offset
       
+      @autocomplete_iterator.each_word_with_offset do |word, offset|
+        distance = (offset - cursor_offset).abs
+        @word_list.add_word(word, distance)
+      end
+      puts "word added: #{@word_list.words.length}"
+    end
+    
+    def update_word_list_cursor_offset
+      # @word_list.cursor_offset = @buf.cursor_offset
+      
+      @word_list.each do |word|
+        puts word
+      end
     end
 
     def complete_word
@@ -88,7 +109,7 @@ class Redcar::EditView
         end
       end
       
-      # returns the word (see WORD_BOUNDARIES) that the cursor is currently touching.
+      # returns the word (see WORD_CHARACTERS) that the cursor is currently touching.
       # nil otherwise.
       def word_touching_cursor
         @line = @document.get_line
@@ -96,7 +117,7 @@ class Redcar::EditView
         @document.get_slice(@document.iter(left), @document.iter(right))
       end
       
-      # returns the range that holds the current word (depending on WORD_BOUNDARIES)
+      # returns the range that holds the current word (depending on WORD_CHARACTERS)
       def word_range
         left = @document.cursor_line_offset - 1
         right = @document.cursor_line_offset
@@ -104,12 +125,12 @@ class Redcar::EditView
         right_range = 0
         offset = @document.cursor_offset
         
-        until left == -1 || WORD_BOUNDARIES !~ (@line[left].chr)
+        until left == -1 || WORD_CHARACTERS !~ (@line[left].chr)
           left -= 1
           left_range -= 1
         end
         
-        until right == @line.length || WORD_BOUNDARIES !~ (@line[right].chr)
+        until right == @line.length || WORD_CHARACTERS !~ (@line[right].chr)
           right += 1
           right_range += 1
         end
