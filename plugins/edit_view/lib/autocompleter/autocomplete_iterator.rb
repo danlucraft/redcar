@@ -26,7 +26,7 @@ class AutocompleteIterator
     
       if iter.char =~ @word_chars
         unless inside_word
-          word_offset = iter.offset-1
+          word_offset = iter.offset
           inside_word = true
         end
         word << iter.char

@@ -19,7 +19,6 @@ class Redcar::EditView
       buffer.autocompleter = self
       define_state_machine
       connect_signals
-      rebuild_word_list
     end
     
     def connect_signals
@@ -28,7 +27,8 @@ class Redcar::EditView
       @buf.signal_connect("mark_set") do |document, iter, mark|
         if mark == @buf.cursor_mark
           @state.cursor_moved
-          update_word_list_cursor_offset
+          # TODO: rebuilding word list doesn't actually have to occur here. updating the word offsets will do as well
+          rebuild_word_list
         end
       end
     end
@@ -41,35 +41,41 @@ class Redcar::EditView
         
     def connect_delete_range_signal
       @buf.signal_connect("delete_range") do |document, iter1, iter2|
-        
+        rebuild_word_list
       end
     end
     
     # rebuild the list of words from scratch
     def rebuild_word_list
-      puts "rebuilding word list"
       cursor_offset = @buf.cursor_offset
+      @word_list = WordList.new
       @word_list.cursor_offset = cursor_offset
       
       @autocomplete_iterator.each_word_with_offset do |word, offset|
         distance = (offset - cursor_offset).abs
         @word_list.add_word(word, distance)
       end
-      puts "word added: #{@word_list.words.length}"
+      
+      # TODO: remove this debug output
+      @word_list.each do |word, distance|
+        puts word.ljust(20) + distance.to_s
+      end
     end
+    
     
     def update_word_list_cursor_offset
       # @word_list.cursor_offset = @buf.cursor_offset
-      
-      @word_list.each do |word|
-        puts word
-      end
+      # TODO: this method should update the word_list cursor offset
     end
 
     def complete_word
       puts "complete word in AutoCompleteWord called! yay."
       @word_before_cursor = @buf.word_before_cursor
-      puts @word_before_cursor
+      
+      puts "completions for #{@word_before_cursor} (by distance)"
+      @word_list.completions(@word_before_cursor).each do |completion|
+        puts completion
+      end
     end
     
     

@@ -8,16 +8,12 @@ class WordList
   attr_reader :words
   
   def initialize()
-    @words = []
+    @words = Hash.new
     @offset = 0
   end
   
   def cursor_offset=(offset)
-    @words.each do |word|
-      difference = @offset - offset
-      word.distance += difference
-    end
-    
+    # TODO: enable incremental updating of cursor offset
     @offset = offset
   end
   
@@ -28,21 +24,23 @@ class WordList
   # adds a new word, iff it doesn't yet exist.
   # if the word exists, the distance will be adjusted, if it's lower.
   def add_word(word, distance)
-    @words << Word.new(word, distance)
+    if @words.include?(word)
+      if distance < @words[word]
+        @words[word] = distance
+      end
+    else
+      @words[word] = distance
+    end
+  end
+  
+  # yield the completions for the given prefix
+  def completions(prefix)
+    r = /^#{prefix}/
+    filtered = @words.keys.select{ |word| word =~ r }
+    return filtered.sort!{|a,b| @words[a] <=> @words[b] }
   end
   
   def each
-    @words.each { |word| yield word }
-  end
-  
-  class Word
-    attr_accessor :word, :distance
-    def initialize(word, distance)
-      @word, @distance = word, distance
-    end
-    
-    def to_s
-      @word.to_s.ljust(30) + @distance.to_s
-    end
+    @words.each {|word,distance| yield word, distance }
   end
 end
