@@ -13,8 +13,7 @@ class AutocompleteIterator
     end
   end
 
-  # iterates through each wordm defined as by PANGO rules, yields word + offset
-  # word_cahrs is a regex, that defined word characters
+  # word_chars is a regex, that defined word characters
   # we cannot use GTK::TextIter right now since starts_word? and others are not adequate for programming languages.
   def each_word_with_offset
     inside_word = false
