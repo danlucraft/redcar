@@ -40,5 +40,9 @@ class AutocompleteIterator
       iter.offset += 1
     end
     
+    # also yield the last word of the document
+    unless word.length == 0
+      yield word.join, word_offset
+    end
   end
 end

@@ -24,13 +24,7 @@ class Redcar::EditView
     def connect_signals
       connect_insert_text_signal
       connect_delete_range_signal
-      @buf.signal_connect("mark_set") do |document, iter, mark|
-        if mark == @buf.cursor_mark
-          @state.cursor_moved
-          # TODO: rebuilding word list doesn't actually have to occur here. updating the word offsets will do as well
-          rebuild_word_list
-        end
-      end
+      connect_mark_set_signal
     end
     
     def connect_insert_text_signal
@@ -45,6 +39,17 @@ class Redcar::EditView
       end
     end
     
+    def connect_mark_set_signal
+      @buf.signal_connect("mark_set") do |document, iter, mark|
+        if mark == @buf.cursor_mark && @buf.selection.length == 0
+          puts mark
+          @state.cursor_moved
+          # TODO: rebuilding word list doesn't actually have to occur here. updating the word offsets will do as well
+          rebuild_word_list
+        end
+      end
+    end
+    
     # rebuild the list of words from scratch
     def rebuild_word_list
       cursor_offset = @buf.cursor_offset
@@ -54,11 +59,6 @@ class Redcar::EditView
       @autocomplete_iterator.each_word_with_offset do |word, offset|
         distance = (offset - cursor_offset).abs
         @word_list.add_word(word, distance)
-      end
-      
-      # TODO: remove this debug output
-      @word_list.each do |word, distance|
-        puts word.ljust(20) + distance.to_s
       end
     end
     
@@ -108,10 +108,8 @@ class Redcar::EditView
         @touched_word = word_touching_cursor
         if @touched_word.length == 0
           @statemachine.not_in_word
-          puts "out of word"
         else
           @statemachine.in_word
-          puts "in word {#{@touched_word}}"
         end
       end
       
