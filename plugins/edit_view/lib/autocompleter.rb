@@ -22,21 +22,7 @@ class Redcar::EditView
     end
     
     def connect_signals
-      connect_insert_text_signal
-      connect_delete_range_signal
       connect_mark_set_signal
-    end
-    
-    def connect_insert_text_signal
-      @buf.signal_connect("insert_text") do |document,iter,text,length|
-        rebuild_word_list
-      end
-    end
-        
-    def connect_delete_range_signal
-      @buf.signal_connect("delete_range") do |document, iter1, iter2|
-        rebuild_word_list
-      end
     end
     
     def connect_mark_set_signal
@@ -44,8 +30,6 @@ class Redcar::EditView
         if mark == @buf.cursor_mark && @buf.selection.length == 0
           puts mark
           @state.cursor_moved
-          # TODO: rebuilding word list doesn't actually have to occur here. updating the word offsets will do as well
-          rebuild_word_list
         end
       end
     end
@@ -62,22 +46,15 @@ class Redcar::EditView
       end
     end
     
-    
-    def update_word_list_cursor_offset
-      # @word_list.cursor_offset = @buf.cursor_offset
-      # TODO: this method should update the word_list cursor offset
-    end
-
     def complete_word
       puts "complete word in AutoCompleteWord called! yay."
+      rebuild_word_list
       prefix = @state.context.touched_word
-      
       puts "completions for #{prefix} (by distance)"
       @word_list.completions(prefix).each do |completion|
         puts completion
       end
     end
-    
     
     def define_state_machine
       state_machine = Statemachine.build do
