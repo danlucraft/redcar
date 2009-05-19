@@ -1,3 +1,4 @@
+
 module Redcar
   class Speedbar
     include FreeBASE::DataBusHelper
@@ -140,7 +141,7 @@ module Redcar
     def add_toggle(name, text, key)
       toggle = Gtk::CheckButton.new(text)
       add_key(key) { toggle.active = !toggle.active? } if key
-      @value[name] = fn { toggle.active? }
+      @value[name] = fn { toggle.active }
       pack_start(toggle, false)
       @focus_widget ||= toggle
     end
@@ -161,21 +162,11 @@ module Redcar
     
     def add_button(text, icon, key, block=nil, &blk)
       raise "Two blocks given to Speedbar#add_button" if block and blk
-      b = Gtk::Button.new
-      if key
-        normalized_key = Keymap.normalize(key)
-        add_key(normalized_key) { b.activate }
-      end
-      b.relief = Gtk::RELIEF_NONE
       label = Gtk::HBox.new
       label.pack_start(i=Gtk::Icon.get_image(icon, Gtk::IconSize::MENU)) if icon
-      if text
-        if normalized_key
-          text += " (" + normalized_key + ")"
-          l = Gtk::Label.new(text)
-          label.pack_start(l)
-        end
-      end
+      label.pack_start(l=Gtk::Label.new(text)) if text
+      b = Gtk::Button.new
+      b.relief = Gtk::RELIEF_NONE
       b.child = label
       b.signal_connect("clicked") do
         if block
@@ -184,6 +175,7 @@ module Redcar
           blk.call(@spbar)
         end
       end
+      add_key(Keymap.normalize(key)) { b.activate } if key
       pack_start(b, false)
       @focus_widget ||= b
     end

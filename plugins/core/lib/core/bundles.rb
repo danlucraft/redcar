@@ -125,41 +125,6 @@ module Redcar
       @dir + "/info.plist"
     end
     
-    def self.best_preference(scope, setting_name)
-      @preference_lookup_cache ||= {}
-      hierarchy_names = scope.hierarchy_names(true)
-      if setting_lookup = @preference_lookup_cache[setting_name]
-        if setting = setting_lookup[hierarchy_names]
-          return setting
-        elsif setting = setting_lookup[nil]
-          return setting
-        end
-      end
-      best_match, best_setting = nil, nil
-      Bundle.bundles.each do |bundle|
-        bundle.preferences.each do |_, preference|
-          if setting = preference['settings'][setting_name]
-            if scope_selector = preference["scope"]
-              if match = Gtk::Mate::Matcher.get_match(scope_selector, hierarchy_names)
-                if best_match == nil or 
-                     Gtk::Mate::Matcher.compare_match(scope_selector, best_match, match) > 1
-                  best_match = match
-                  best_setting = setting
-                end
-              end
-            else
-              if best_match == nil
-                best_match = match
-                best_setting = setting
-              end
-            end
-          end
-        end
-      end
-      @preference_lookup_cache[setting_name] ||= {}
-      @preference_lookup_cache[setting_name][scope] = best_setting
-    end
-    
     # A hash of all Bundle preferences.
     def preferences
       @preferences ||= load_preferences

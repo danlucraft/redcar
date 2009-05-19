@@ -38,7 +38,6 @@ module Redcar
       Command.load
       Keymap.load
       Bundle.load
-      Zerenity::Base.no_main_loop = true
       plugin.transition(FreeBASE::LOADED)
     end
 

@@ -1,5 +1,4 @@
 
-require 'monitor'
 require 'gtk2'
 
 module Gtk

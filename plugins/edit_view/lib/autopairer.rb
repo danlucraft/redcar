@@ -128,7 +128,7 @@ class Redcar::EditView
       # as the new text could change them. (ex: HTML incomplete.illegal.
       # tag)
       @buffer.signal_connect("insert_text") do |_, iter, text, length|
-        if not @buffer.selection? and cursor_scope = @buffer.cursor_scope
+        if cursor_scope = @buffer.cursor_scope
           current_scope = cursor_scope.hierarchy_names(true)
           # Type over ends
           if @rules = AutoPairer.autopair_rules_for_scope(current_scope)

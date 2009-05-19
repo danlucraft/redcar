@@ -1,3 +1,4 @@
+
 module Redcar
   class Find < Redcar::EditTabCommand
     key  "Super+F"
@@ -7,9 +8,8 @@ module Redcar
     class FindSpeedbar < Redcar::Speedbar
       label "Find:"
       textbox :query_string
-      toggle :wrap, "Wrap?", "Ctrl+Space"
       button "Go", nil, "Return" do |sb|
-        FindNextRegex.new(Regexp.new(sb.query_string), sb.wrap).do
+        FindNextRegex.new(Regexp.new(sb.query_string)).do
       end
     end
 
