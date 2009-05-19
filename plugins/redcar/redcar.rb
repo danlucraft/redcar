@@ -26,7 +26,8 @@ module Redcar
         item "Copy",     Copy
         item "Paste",    Paste
         separator
-        item "Find",     Find
+        item "Find",               Find
+        item "Incremental Search", AskIncrementalSearch
         submenu "Move" do
           item "Forward Character",    ForwardCharacterCommand
           item "Backward Character",   BackwardCharacterCommand

@@ -6,6 +6,9 @@ New features, enhancements:
 
   * Fuzzy file finder notices new files and runs MUCH faster.
   * Undo close tab (Ctrl+Shift+T)
+  * Type " or ( or [ etc to wrap selection in pair.
+  * Warm startup 3 times faster.
+  * Added Incremental Search menu item.
   * Now prompts to save if file is modified when closed.
   * HtmlTab now uses Webkit instead of Mozilla
   * Convert case commands

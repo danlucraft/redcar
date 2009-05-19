@@ -7,6 +7,10 @@ module Redcar
     attr_accessor(:tm_uuid, :bundle, :shell_script, :name, :key, 
                   :range, :scope, :input_type, :fallback_input_type, :output_type,
                   :menu, :menu_item)
+
+    def initialize(bundle)
+      @bundle = bundle
+    end
     
     def range=(val)
       @range = val
@@ -19,8 +23,8 @@ module Redcar
     end
     
     def new(bundle=nil)
-      @bundle = bundle
-      Instance.new(self, bundle)
+      @bundle = bundle if bundle
+      Instance.new(self, @bundle)
     end
     
     def get(iv)
