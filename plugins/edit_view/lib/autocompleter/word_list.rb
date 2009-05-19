@@ -12,6 +12,15 @@ class WordList
     @offset = 0
   end
   
+  def cursor_offset=(offset)
+    # TODO: enable incremental updating of cursor offset
+    @offset = offset
+  end
+  
+  def cursor_offset
+    @offset
+  end
+  
   # adds a new word, iff it doesn't yet exist.
   # if the word exists, the distance will be adjusted, if it's lower.
   def add_word(word, distance)
