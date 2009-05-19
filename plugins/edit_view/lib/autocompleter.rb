@@ -7,8 +7,6 @@ require 'statemachine'
 class Redcar::EditView
   class AutoCompleter
   
-    # TODO: maybe this should be based on the grammar of the language
-    # that is active in order to make this as flexible as possible...
     WORD_CHARACTERS = /\w/ # /(\s|\t|\.|\r|\(|\)|,|;)/
     
     def initialize(buffer)
@@ -28,8 +26,7 @@ class Redcar::EditView
     def connect_mark_set_signal
       @buf.signal_connect("mark_set") do |document, iter, mark|
         if mark == @buf.cursor_mark && @buf.selection.length == 0
-          puts mark
-          @state.cursor_moved
+          @cursor_state.cursor_moved
         end
       end
     end
@@ -38,7 +35,6 @@ class Redcar::EditView
     def rebuild_word_list
       cursor_offset = @buf.cursor_offset
       @word_list = WordList.new
-      @word_list.cursor_offset = cursor_offset
       
       @autocomplete_iterator.each_word_with_offset do |word, offset|
         distance = (offset - cursor_offset).abs
@@ -48,13 +44,18 @@ class Redcar::EditView
     
     def complete_word
       puts "complete word in AutoCompleteWord called! yay."
-      rebuild_word_list
-      prefix = @state.context.touched_word
-      puts "completions for #{prefix} (by distance)"
-      @word_list.completions(prefix).each do |completion|
-        puts completion
+      
+      if @cursor_state.context.touching_word
+        # TODO: if repeatedly called this method should NOT requild the list, but toggle through the available completions, if any
+        rebuild_word_list
+        prefix = @cursor_state.context.touched_word
+        puts "completions for #{prefix} (by distance)"
+        @word_list.completions(prefix).each do |completion|
+          puts completion
+        end
       end
     end
+    
     
     def define_state_machine
       state_machine = Statemachine.build do
@@ -67,12 +68,12 @@ class Redcar::EditView
         end
       end
       
-      state_machine.context = AutocompleteStateContext.new(@buf)
+      state_machine.context = AutocompleteCursorStateContext.new(@buf)
       state_machine.context.statemachine = state_machine
-      @state = state_machine
+      @cursor_state = state_machine
     end
     
-    class AutocompleteStateContext
+    class AutocompleteCursorStateContext
       attr_accessor :statemachine, :last_cursor_line, :touched_word
       
       def initialize(doc)
@@ -81,6 +82,12 @@ class Redcar::EditView
         puts @document.inspect
       end
       
+      def touching_word
+        return nil if @touched_word.length == 0
+        return @touched_word
+      end
+      
+      private
       def check_for_word
         @touched_word = word_touching_cursor
         if @touched_word.length == 0
