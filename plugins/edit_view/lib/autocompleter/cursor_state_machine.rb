@@ -21,12 +21,10 @@ class Redcar::EditView
     end
 
     class AutocompleteCursorStateContext
-      attr_accessor :statemachine, :last_cursor_line, :touched_word
+      attr_accessor :statemachine
       
       def initialize(doc)
-        @last_cursor_line = -1
         @document = doc
-        puts @document.inspect
       end
       
       # returns the word that is being touched by the cursor and an array containing [left, right] document offsets of the word.
@@ -43,10 +41,8 @@ class Redcar::EditView
         @touched_word, _ = touched_word
         if @touched_word
           @statemachine.in_word
-          puts "in word"
         else
           @statemachine.not_in_word
-          puts "not in word"
         end
       end
       
