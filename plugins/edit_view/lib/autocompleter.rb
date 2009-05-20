@@ -9,13 +9,15 @@ load File.dirname(__FILE__) + "/autocompleter/completion_state_machine.rb"
 
 class Redcar::EditView
   class AutoCompleter
-  
+    
     WORD_CHARACTERS = /:|@|\w/ # /(\s|\t|\.|\r|\(|\)|,|;)/
+    
+    attr_accessor :prefix, :prefix_offsets
     
     def initialize(buffer)
       @buf = buffer
       @parser = buffer.parser
-      @word_list = WordList.new
+      
       @autocomplete_iterator = AutocompleteIterator.new(buffer, WORD_CHARACTERS)
       buffer.autocompleter = self
       define_cursor_state_machine
@@ -46,28 +48,20 @@ class Redcar::EditView
     # rebuild the list of words from scratch
     def rebuild_word_list
       cursor_offset = @buf.cursor_offset
-      @word_list = WordList.new
+      word_list = WordList.new
       
       @autocomplete_iterator.each_word_with_offset do |word, offset|
         distance = (offset - cursor_offset).abs
-        @word_list.add_word(word, distance)
+        word_list.add_word(word, distance)
       end
+      return word_list
     end
     
     def complete_word
-      prefix, offsets = @cursor_state.context.touched_word
-      if prefix
-        # TODO: if repeatedly called this method should NOT requild the list, but toggle through the available completions, if any
+      @prefix, @prefix_offsets = @cursor_state.context.touched_word
+      if @prefix
         @completion_state.esc_pressed
-        
-        rebuild_word_list
-        puts "completions for #{prefix} (by distance)"
-        @word_list.completions(prefix).each do |completion|
-          puts completion
-        end
       end
-    end
-    
-    
+    end 
   end
 end

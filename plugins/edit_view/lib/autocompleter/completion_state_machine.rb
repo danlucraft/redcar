@@ -22,7 +22,7 @@ class Redcar::EditView
         end
       end
       
-      state_machine.context = AutocompleteCompletionStateContext.new
+      state_machine.context = AutocompleteCompletionStateContext.new(self)
       state_machine.context.statemachine = state_machine
       @completion_state = state_machine
     end
@@ -30,13 +30,14 @@ class Redcar::EditView
     class AutocompleteCompletionStateContext
       attr_accessor :statemachine
       
-      def initialize
+      def initialize(autocompleter)
+        @autocompleter = autocompleter
         @i = 0
       end
       
       def cycle_completion
-        @i += 1
-        puts "cycling completion: #{@i}"
+        @i = (@i+1)%@completions.length
+        puts "cycling completion: #{@i}: #{@completions[@i]}"
       end
       
       def quit_cycling
@@ -46,6 +47,8 @@ class Redcar::EditView
       end
       
       def rebuild_word_list
+        @word_list = @autocompleter.rebuild_word_list
+        @completions = @word_list.completions(@autocompleter.prefix)
         statemachine.start_cycling
       end
     end
