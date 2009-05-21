@@ -8,16 +8,15 @@ class AutocompleteIterator
   # we cannot use GTK::TextIter right now since starts_word? and others are not adequate for programming languages.
   def each_word_with_offset
     inside_word = false
-    iter = @buf.iter(@buf.start_mark)
-    end_iter = @buf.end_iter
+    text = @buf.text
+    char_offset = 0
     word_offset = 0
     word = []
     
-    until iter == end_iter
-      char = iter.char
+    text.each_char do |char|
       if char =~ @word_chars
         unless inside_word
-          word_offset = iter.offset
+          word_offset = char_offset
           inside_word = true
         end
         word << char
@@ -28,7 +27,7 @@ class AutocompleteIterator
           word = []
         end
       end
-      iter.set_offset(iter.offset+1)
+      char_offset += 1
     end
     
     # also yield the last word of the document

@@ -36,8 +36,10 @@ class Redcar::EditView
       end
       
       def cycle_completion
-        @i = (@i+1)%@completions.length
-        puts "cycling completion: #{@i}: #{@completions[@i]}"
+        unless @completions.length == 0
+          @i = (@i+1)%@completions.length
+          puts "cycling completion: #{@i}: #{@completions[@i]}"
+        end
       end
       
       def quit_cycling
