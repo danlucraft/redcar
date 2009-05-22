@@ -4,7 +4,7 @@ class AutocompleteIterator
     @word_chars = word_chars
   end
 
-  # word_chars is a regex, that defined word characters
+  # word_chars is a regex, that defines word characters
   # we cannot use GTK::TextIter right now since starts_word? and others are not adequate for programming languages.
   def each_word_with_offset
     inside_word = false
