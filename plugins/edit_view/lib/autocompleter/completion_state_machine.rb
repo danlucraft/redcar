@@ -33,12 +33,14 @@ class Redcar::EditView
       end
       
       def cycle_completion
+        # TODO: add backwards cycling, should be a no-brainer, though
         unless @completions.length == 0
           @i = (@i+1)%@completions.length
           completion = @completions[@i]
-          puts "cycling completion: #{@i}: #{}"
+          # tell the autocompleter to pay attention now. :)
           @autocompleter.flag_completion
           @buf.replace_range(@prefix_offsets[0], @prefix_offsets[1], completion)
+          # place the cursor and replacement offsets right
           word_end_offset = @prefix_offsets[0] + completion.length
           @buf.place_cursor(@buf.iter(word_end_offset))
           @prefix_offsets[1] = word_end_offset
