@@ -57,6 +57,7 @@ class Redcar::EditView
     
     def complete_word
       prefix, prefix_offsets = @cursor_state.context.touched_word
+      puts "prefix: #{prefix}, offsets:(#{prefix_offsets.inspect})"
       if @prefix
         @completion_state.esc_pressed(prefix, prefix_offsets)
       end
