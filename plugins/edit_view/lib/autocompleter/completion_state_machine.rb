@@ -7,7 +7,7 @@ class Redcar::EditView
           event :any_key, :no_completion_state
           event :esc_pressed, :cycling_state, :rebuild_word_list
         end
-        
+         
         state :cycling_state do
           on_entry :cycle_completion
           event :esc_pressed, :cycling_state
@@ -19,7 +19,7 @@ class Redcar::EditView
         end
       end
       
-      state_machine.context = AutocompleteCompletionStateContext.new(self, @buf)
+      state_machine.context = AutocompleteCompletionStateContext.new(self)
       state_machine.context.statemachine = state_machine
       @completion_state = state_machine
     end
@@ -27,8 +27,8 @@ class Redcar::EditView
     class AutocompleteCompletionStateContext
       attr_accessor :statemachine
       
-      def initialize(autocompleter, buffer)
-        @autocompleter, @buf = autocompleter, buffer
+      def initialize(autocompleter)
+        @autocompleter = autocompleter
         @i = 0
       end
       
@@ -44,10 +44,9 @@ class Redcar::EditView
         puts "quitting cycling"
         statemachine.state = :no_completion_state
       end
-      
-      def rebuild_word_list(prefix, word_offsets)
-        @prefix = prefix
-        @word_offsets = word_offsets
+
+      def rebuild_word_list(prefix, prefix_offsets)
+        @prefix, @prefix_offsets = prefix, prefix_offsets
         word_list = @autocompleter.rebuild_word_list
         @completions = word_list.completions(@prefix)
       end
