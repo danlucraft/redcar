@@ -17,7 +17,7 @@ class Redcar::EditView
     def initialize(buffer)
       @buf = buffer
       @parser = buffer.parser
-      
+      @completion_flagged = false
       @autocomplete_iterator = AutocompleteIterator.new(buffer, WORD_CHARACTERS)
       buffer.autocompleter = self
       define_cursor_state_machine
@@ -32,7 +32,7 @@ class Redcar::EditView
     
     def connect_mark_set_signal
       @buf.signal_connect("mark_set") do |document, iter, mark|
-        if mark == @buf.cursor_mark && @buf.selection.length == 0
+        if mark == @buf.cursor_mark && @buf.selection.length == 0 && !@completion_flagged
           @cursor_state.cursor_moved
           @completion_state.any_key
         end
@@ -41,7 +41,10 @@ class Redcar::EditView
     
     def connect_changed_signal
       @buf.signal_connect("changed") do |document, iter, text, length|
-        @completion_state.any_key
+        # TODO: this IS kinda ugly, but the signal will also get fired while we're completing...
+        unless @completion_flagged
+          @completion_state.any_key
+        end
       end
     end
     
@@ -62,6 +65,11 @@ class Redcar::EditView
       if prefix
         @completion_state.esc_pressed(prefix, prefix_offsets)
       end
-    end 
+    end
+    
+    # sets the flag that a completion is occurring, this is because the "changed" signal is fired when text is replaced.
+    def flag_completion
+      @completion_flagged = !@completion_flagged
+    end
   end
 end
