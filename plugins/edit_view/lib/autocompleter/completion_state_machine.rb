@@ -3,12 +3,9 @@ class Redcar::EditView
   class AutoCompleter
     def define_completion_state_machine
       state_machine = Statemachine.build do
-        trans :no_completion_state, :any_key, :no_completion_state
-        trans :no_completion_state, :esc_pressed, :rebuild_word_list_state
-        
-        state :rebuild_word_list_state do
-          on_entry :rebuild_word_list
-          event :start_cycling, :cycling_state
+        state :no_completion_state do
+          event :any_key, :no_completion_state
+          event :esc_pressed, :cycling_state, :rebuild_word_list
         end
         
         state :cycling_state do
@@ -22,7 +19,7 @@ class Redcar::EditView
         end
       end
       
-      state_machine.context = AutocompleteCompletionStateContext.new(self)
+      state_machine.context = AutocompleteCompletionStateContext.new(self, @buf)
       state_machine.context.statemachine = state_machine
       @completion_state = state_machine
     end
@@ -30,8 +27,8 @@ class Redcar::EditView
     class AutocompleteCompletionStateContext
       attr_accessor :statemachine
       
-      def initialize(autocompleter)
-        @autocompleter = autocompleter
+      def initialize(autocompleter, buffer)
+        @autocompleter, @buf = autocompleter, buffer
         @i = 0
       end
       
@@ -48,10 +45,10 @@ class Redcar::EditView
         statemachine.state = :no_completion_state
       end
       
-      def rebuild_word_list
+      def rebuild_word_list(prefix, word_offsets)
+        @word_offsets = word_offsets
         @word_list = @autocompleter.rebuild_word_list
-        @completions = @word_list.completions(@autocompleter.prefix)
-        statemachine.start_cycling
+        @completions = @word_list.completions(prefix)
       end
     end
   end

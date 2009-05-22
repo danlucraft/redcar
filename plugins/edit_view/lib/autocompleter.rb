@@ -12,8 +12,6 @@ class Redcar::EditView
     
     WORD_CHARACTERS = /:|@|\w/ # /(\s|\t|\.|\r|\(|\)|,|;)/
     
-    attr_accessor :prefix, :prefix_offsets
-    
     def initialize(buffer)
       @buf = buffer
       @parser = buffer.parser
@@ -58,9 +56,9 @@ class Redcar::EditView
     end
     
     def complete_word
-      @prefix, @prefix_offsets = @cursor_state.context.touched_word
+      prefix, prefix_offsets = @cursor_state.context.touched_word
       if @prefix
-        @completion_state.esc_pressed
+        @completion_state.esc_pressed(prefix, prefix_offsets)
       end
     end 
   end
