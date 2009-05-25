@@ -9,6 +9,8 @@ Given /^there is an? EditTab open(?: with syntax #{FeaturesHelper::STRING_RE})?$
       When 'I press "Ctrl+Alt+Shift+R" then "6"'
     when "HTML"
       When 'I press "Ctrl+Alt+Shift+H" then "1"'
+    when "C"
+      When 'I press "Ctrl+Alt+Shift+C" then "1"'
     else
       raise "features don't know how to activate #{syntax} syntax"
     end
