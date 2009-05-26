@@ -54,4 +54,9 @@ This assumes that you have Ruby installed from packages. This will overwrite you
 The first time Redcar runs it will spend time loading the Textmate Bundles. 
 This only happens once.
 
+Problems?
+=========
+
+ * Irc at #redcar on irc.freenode.net
+ * Mailing list at http://groups.google.com/group/redcar-editor
 
