@@ -13,6 +13,8 @@ New features, enhancements:
   * HtmlTab now uses Webkit instead of Mozilla
   * Convert case commands
   * Keybindings match up with Gnome better (Ctrl+C/V)
+  * Added Scala and Haskell bundles.
+  * Added theme from Railscasts
 
 Bug fixes:
 
