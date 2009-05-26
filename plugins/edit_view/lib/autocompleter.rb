@@ -1,4 +1,3 @@
-
 require 'statemachine'
 
 load File.dirname(__FILE__) + "/autocompleter/word_list.rb"
