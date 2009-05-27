@@ -1,4 +1,3 @@
-
 require 'statemachine'
 
 load File.dirname(__FILE__) + "/autocompleter/word_list.rb"
@@ -49,11 +48,11 @@ class Redcar::EditView
     end
     
     # rebuild the list of words from scratch
-    def rebuild_word_list
+    def rebuild_word_list(prefix)
       cursor_offset = @buf.cursor_offset
       word_list = WordList.new
       
-      @autocomplete_iterator.each_word_with_offset do |word, offset|
+      @autocomplete_iterator.each_word_with_offset(prefix) do |word, offset|
         distance = (offset - cursor_offset).abs
         word_list.add_word(word, distance)
       end

@@ -6,7 +6,7 @@ class AutocompleteIterator
 
   # word_chars is a regex, that defines word characters
   # we cannot use GTK::TextIter right now since starts_word? and others are not adequate for programming languages.
-  def each_word_with_offset
+  def each_word_with_offset(prefix)
     inside_word = false
     text = @buf.text
     char_offset = 0
@@ -22,7 +22,10 @@ class AutocompleteIterator
         word << char
       else
         if inside_word
-          yield word.join, word_offset
+          joined = word.join
+          if joined =~ /^#{prefix}/
+            yield joined, word_offset
+          end
           inside_word = false
           word = []
         end

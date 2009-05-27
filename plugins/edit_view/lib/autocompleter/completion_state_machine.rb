@@ -56,8 +56,8 @@ class Redcar::EditView
 
       def rebuild_word_list(prefix, prefix_offsets)
         @prefix, @prefix_offsets = prefix, prefix_offsets
-        word_list = @autocompleter.rebuild_word_list
-        @completions = word_list.completions(@prefix)
+        word_list = @autocompleter.rebuild_word_list(prefix)
+        @completions = word_list.completions
       end
     end
   end
