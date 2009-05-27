@@ -25,9 +25,8 @@ class WordList
   end
   
   # yield the completions for the given prefix
-  def completions(prefix)
-    r = /^#{prefix}/
-    filtered = @words.keys.select{ |word| word =~ r }
+  def completions
+    filtered = @words.keys
     return filtered.sort!{|a,b| @words[a] <=> @words[b] }
   end
   
