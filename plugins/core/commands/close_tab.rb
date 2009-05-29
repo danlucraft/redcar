@@ -31,15 +31,17 @@ module Redcar
         dialog.destroy
         case response
         when Gtk::Dialog::RESPONSE_OK
-          if tab.filename
-            tab.save
-            close_tab
+          if @tab.filename
+            if @tab.save
+              close_tab
+            end
           else
             Redcar::Dialog.save_as(win) do |filename|
               if filename
-                tab.filename = filename
-                tab.save
-                close_tab
+                @tab.filename = filename
+                if @tab.save
+                  close_tab
+                end
               end
             end
           end
@@ -57,7 +59,8 @@ module Redcar
     end
 
     def execute
-      if tab.is_a?(Redcar::EditTab) and tab.modified?
+      @tab ||= tab
+      if @tab.is_a?(Redcar::EditTab) and @tab.modified?
         prompt_then_close
       else
         close_tab

@@ -50,7 +50,7 @@ class Redcar::EditView
       
       def quit_cycling
         @i = 0
-        puts "quitting cycling"
+        # puts "quitting cycling"
         statemachine.state = :no_completion_state
       end
 

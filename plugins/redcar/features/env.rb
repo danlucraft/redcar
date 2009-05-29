@@ -52,6 +52,9 @@ After do
     while dialog = Gtk::Dialog._cucumber_running_dialogs.pop
       dialog.close
     end
+    while dialog = Zerenity::Base.open_dialogs.pop
+      dialog.destroy
+    end
     Redcar.win.tabs.each(&:close)
     Redcar::UnifyAll.new.do
     Redcar::CommandHistory.clear
