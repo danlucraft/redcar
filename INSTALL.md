@@ -8,7 +8,7 @@ This assumes that you have Ruby installed from packages. This will overwrite you
 
         sudo apt-get install ruby ruby1.8-dev rubygems1.8 libhttp-access2-ruby1.8 rubygems1.8 rake
         echo "export PATH=/var/lib/gems/1.8/bin:\$PATH" >> ~/.bashrc
-        source . ~/.bashrc
+        source ~/.bashrc
 
   1. Now install Ruby-GNOME2 and other system packages. Ubuntu 9.04 has shipped with an out of date Ruby-GNOME2, so you need to add a new package repository to get the latest version. (If you are using a version of Ruby installed from source, you will need to download and install Ruby-GNOME2 from http://ruby-gnome2.sourceforge.jp/ instead of doing this.)
 
