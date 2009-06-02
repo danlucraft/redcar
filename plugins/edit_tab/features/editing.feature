@@ -106,4 +106,18 @@ Feature: Edit Text
     And I press "Ctrl+E" then "Ctrl+V"
     And I press "Ctrl+Alt+V" then "Down"
     And I press "Return"
-    Then I should see "ababab<c>" in the EditTab 
+    Then I should see "ababab<c>" in the EditTab
+
+  Scenario: Paste cycle
+    When I type "a"
+    And I press "Ctrl+Shift+L" then "Ctrl+C"
+    And I press "Ctrl+E" then "Ctrl+V"
+    And I press "Return" then "b"
+    And I press "Ctrl+Shift+L" then "Ctrl+C"
+    And I press "Ctrl+E" then "Ctrl+V"
+    And I press "Return" then "c"
+    And I press "Ctrl+Shift+L" then "Ctrl+C"
+    And I press "Ctrl+E" then "Ctrl+V"
+    And I press "Return" then "Ctrl+Alt+B"
+    And I press "Ctrl+Shift+V" then "Ctrl+Shift+V"
+    Then I should see "b" in the EditTab 
