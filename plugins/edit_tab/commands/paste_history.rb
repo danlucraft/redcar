@@ -1,30 +1,13 @@
 module Redcar
   class PasteHistory < Redcar::EditTabCommand
-    key  "Ctrl+Super+V"
+    key  "Ctrl+Alt+V"
     icon :PASTE
     
     def execute
-      if(Redcar::App.prev_clip != nil)
+      if(Redcar::App.paste_history != nil)
         paste_hist = Gtk::Menu.new
-        
-        Redcar::App.next_clip.each{|p|
-          paste_item = Gtk::MenuItem.new(p)
-          size = paste_item.size_request
-          paste_item.set_size_request(300, size[1])
-          paste_item.signal_connect('activate') { |m| paste_item_selected(m) }
-          paste_hist.append(paste_item)
-        }       
-        
-        if (cl = Redcar::App.clipboard).wait_is_text_available?
-          str = cl.wait_for_text
-          paste_item = Gtk::MenuItem.new(str)
-          size = paste_item.size_request
-          paste_item.set_size_request(300, size[1])
-          paste_item.signal_connect('activate') { |m| paste_item_selected(m) }
-          paste_hist.append(paste_item)
-        end
-        
-        Redcar::App.prev_clip.reverse_each{|p|
+
+        Redcar::App.paste_history.reverse_each{|p|
           paste_item = Gtk::MenuItem.new(p)
           size = paste_item.size_request
           paste_item.set_size_request(300, size[1])

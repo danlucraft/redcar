@@ -15,6 +15,15 @@ module Redcar
             tab.view.indent_line(l+i)
           end
         end
+        
+        if(Redcar::App.paste_history == nil)
+          Redcar::App.init_paste_history
+          Redcar::App.paste_history.push(str)
+        else
+          if(Redcar::App.paste_history.last != str)
+            Redcar::App.paste_history.push(str)
+          end
+        end
       end
     end
   end
