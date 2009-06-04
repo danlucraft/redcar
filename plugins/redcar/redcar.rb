@@ -26,6 +26,7 @@ module Redcar
         item "Copy",     Copy
         submenu "Paste" do
           item "Paste",    Paste
+          item "Paste Cycle", PasteCycle
           item "Paste History", PasteHistory
         end
         separator

@@ -18,10 +18,10 @@ module Redcar
         
         if(Redcar::App.paste_history == nil)
           Redcar::App.init_paste_history
-          Redcar::App.paste_history.push(str)
+          Redcar::App.paste_history.push_with_limit(str)
         else
           if(Redcar::App.paste_history.last != str)
-            Redcar::App.paste_history.push(str)
+            Redcar::App.paste_history.push_with_limit(str)
           end
         end
       end

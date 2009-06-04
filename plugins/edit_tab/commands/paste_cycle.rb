@@ -1,6 +1,6 @@
 module Redcar
   class PasteCycle < Redcar::EditTabCommand
-    key  "Ctrl+Shift+V"
+    key  "Ctrl+Super+V"
     icon :PASTE
     
     @@time_since_last = nil

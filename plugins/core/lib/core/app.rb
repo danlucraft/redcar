@@ -140,6 +140,13 @@ module Redcar
     
     def self.init_paste_history
       @paste_history = Array.new(size=0,obj=nil)
+      
+      def @paste_history.push_with_limit(obj)
+        if(self.size == 20)
+          self.shift
+        end
+        self.push(obj)
+      end
     end
     
     def self.paste_history

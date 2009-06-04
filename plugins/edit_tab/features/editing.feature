@@ -119,5 +119,5 @@ Feature: Edit Text
     And I press "Ctrl+Shift+L" then "Ctrl+C"
     And I press "Ctrl+E" then "Ctrl+V"
     And I press "Return" then "Ctrl+Alt+B"
-    And I press "Ctrl+Shift+V" then "Ctrl+Shift+V"
+    And I press "Ctrl+Super+V" then "Ctrl+Super+V"
     Then I should see "b" in the EditTab 
