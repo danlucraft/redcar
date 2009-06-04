@@ -137,6 +137,22 @@ module Redcar
     def self.clipboard
       Gtk::Clipboard.get(Gdk::Atom.intern("CLIPBOARD"))
     end
+    
+    def self.init_paste_history
+      @paste_history = Array.new(size=0,obj=nil)
+      
+      def @paste_history.push_with_limit(obj)
+        if(self.size == 20)
+          self.shift
+        end
+        self.push(obj)
+      end
+    end
+    
+    def self.paste_history
+      @paste_history
+    end
+    
 
     ENV_VARS =  %w(REDCAR_FEATURE_PROCESS RUBYLIB TM_RUBY TM_BUNDLE_SUPPORT TM_CURRENT_LINE)+
       %w(TM_CURRENT_LINE TM_LINE_INDEX TM_LINE_NUMBER TM_SELECTED_TEXT)+

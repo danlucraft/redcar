@@ -99,4 +99,25 @@ Feature: Edit Text
     When I type "some text"
     And I press "Ctrl+Alt+U"
     Then I should see "Some Text" in the EditTab
-    
+
+  Scenario: Paste history
+    When I type "ab"
+    And I press "Ctrl+Shift+L" then "Ctrl+C"
+    And I press "Ctrl+E" then "Ctrl+V"
+    And I press "Ctrl+Alt+V" then "Down"
+    And I press "Return"
+    Then I should see "ababab<c>" in the EditTab
+
+  Scenario: Paste cycle
+    When I type "a"
+    And I press "Ctrl+Shift+L" then "Ctrl+C"
+    And I press "Ctrl+E" then "Ctrl+V"
+    And I press "Return" then "b"
+    And I press "Ctrl+Shift+L" then "Ctrl+C"
+    And I press "Ctrl+E" then "Ctrl+V"
+    And I press "Return" then "c"
+    And I press "Ctrl+Shift+L" then "Ctrl+C"
+    And I press "Ctrl+E" then "Ctrl+V"
+    And I press "Return" then "Ctrl+Alt+B"
+    And I press "Ctrl+Super+V" then "Ctrl+Super+V"
+    Then I should see "b" in the EditTab 
