@@ -23,7 +23,13 @@ module Redcar
       connect_signals
     end
     
+    # All signal connection should be put here
     def connect_signals
+      # row-activated is the signal for dbl clicks
+      @treeview.signal_connect("row-activated") do 
+        treeview_activated
+      end
+      
       @entry.signal_connect("key-press-event") do |_, gdk_eventkey|
         entry_key_press(gdk_eventkey)
       end
@@ -52,9 +58,9 @@ module Redcar
     
     def entry_key_press(gdk_eventkey)
       kv = gdk_eventkey.keyval
-      ks = gdk_eventkey.state - Gdk::Window::MOD2_MASK
-      ks = ks - Gdk::Window::MOD4_MASK
-      key = Gtk::Accelerator.get_label(kv, ks)
+      
+      key = Gdk::Keyval.to_name(kv)
+      
       if key == "Down"
         treeview_select_down
         true
@@ -104,6 +110,7 @@ module Redcar
           @treeview.scroll_to_cell(ni, nil, false, 0.0, 0.0)
         end
       end
+      focus = @entry
     end
     
     def treeview_select_up
@@ -114,6 +121,7 @@ module Redcar
           @treeview.scroll_to_cell(pi, nil, false, 0.0, 0.0)
         end
       end
+      focus = @entry
     end
     
     # opens the selected file
