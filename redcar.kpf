@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Komodo Project File - DO NOT EDIT -->
-<project id="ed725f41-6d8f-4297-bf3f-f1c1479e7a91" kpf_version="4" name="redcar.kpf">
-<preference-set idref="ed725f41-6d8f-4297-bf3f-f1c1479e7a91">
-  <boolean id="import_live">1</boolean>
-</preference-set>
-</project>
