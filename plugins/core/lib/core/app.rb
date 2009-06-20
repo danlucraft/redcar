@@ -161,6 +161,7 @@ module Redcar
 
     def self.set_environment_variables(bundle=nil)
       ENV_VARS.each do |var|
+        log.debug { "deleting #{var.inspect}" }
         ENV[var] = nil
       end
       @env_variables ||= []
@@ -212,20 +213,21 @@ module Redcar
             if preferences[name]
               prev_match, _ = preferences[name]
               if Gtk::Mate::Matcher.compare_match(current_scope, prev_match, match) < 0
-                preferences[name] = [match, shell_variables]
+                preferences[name] = [match, shell_variables, this_bundle.name]
               end
             else
-              preferences[name] = [match, shell_variables]
+              preferences[name] = [match, shell_variables, this_bundle.name]
             end
           end
         end
       end
       
       preferences.each do |name, pair|
-        shell_variables = pair.last
+        shell_variables, bundle_name = *pair[1..-1]
         shell_variables.each do |variable_hash|
           name = variable_hash["name"]
           @env_variables << name unless @env_variables.include?(name)
+          log.debug { "setting #{name.inspect} to #{variable_hash["value"].inspect} from #{bundle_name.inspect}" }
           ENV[name] = variable_hash["value"]
         end        
       end
