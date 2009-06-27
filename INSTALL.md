@@ -42,12 +42,12 @@ This assumes that you have Ruby installed from packages. This will overwrite you
     (You can install git on Ubuntu with "sudo apt-get install git-core")
 
   5. Checkout the latest Redcar release.
-  
+
+        cd redcar/
         git checkout stable
 
   5. Download the Redcar git submodules
 
-        cd redcar/
         git submodule init
         git submodule update
 
