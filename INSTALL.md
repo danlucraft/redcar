@@ -20,12 +20,20 @@ This assumes that you have Ruby installed from packages. This will overwrite you
 
         wget redcareditor.com/stuff/missing_x64_headers/rbgdkconversions.h
         wget redcareditor.com/stuff/missing_x64_headers/rbgtkconversions.h
+        
+     If you are on 32bit Ubuntu (most likely):    
+    
         sudo cp rbgdkconversions.h /usr/lib/ruby/1.8/i486-linux/
         sudo cp rbgtkconversions.h /usr/lib/ruby/1.8/i486-linux/
+        
+     If you are on 64bit Ubuntu
+     
+        sudo cp rbgdkconversions.h /usr/lib/ruby/1.8/x86_64-linux/
+        sudo cp rbgtkconversions.h /usr/lib/ruby/1.8/x86_64-linux/
 
   3. Install the required Ruby gems:
 
-        sudo gem install oniguruma activesupport rspec cucumber hoe open4 zerenity
+        sudo gem install oniguruma activesupport rspec cucumber hoe open4 zerenity statemachine
 
   4. Clone the Redcar source.
   
@@ -34,12 +42,12 @@ This assumes that you have Ruby installed from packages. This will overwrite you
     (You can install git on Ubuntu with "sudo apt-get install git-core")
 
   5. Checkout the latest Redcar release.
-  
+
+        cd redcar/
         git checkout stable
 
   5. Download the Redcar git submodules
 
-        cd redcar/
         git submodule init
         git submodule update
 
