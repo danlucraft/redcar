@@ -12,7 +12,7 @@ This assumes that you have Ruby installed from packages. This will overwrite you
 
   1. Now install Ruby-GNOME2 and other system packages. Ubuntu 9.04 has shipped with an out of date Ruby-GNOME2, so you need to add a new package repository to get the latest version. (If you are using a version of Ruby installed from source, you will need to download and install Ruby-GNOME2 from http://ruby-gnome2.sourceforge.jp/ instead of doing this.)
 
-        echo "deb http://franz.hob-bruneck.info/downloads/ jaunty/" >> /etc/apt/sources.list
+        sudo sh -c 'echo "deb http://franz.hob-bruneck.info/downloads/ jaunty/" >> /etc/apt/sources.list'
         sudo apt-get update
         sudo apt-get install ruby-gnome2 build-essential libonig2 libonig-dev libgtk2.0-dev libglib2.0-dev libgee0 libgee-dev libgtksourceview2.0-dev libxul-dev xvfb libdbus-ruby libwebkit-dev libwebkit-1.0-1
 
