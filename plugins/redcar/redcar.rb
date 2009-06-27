@@ -58,8 +58,9 @@ module Redcar
         end
         separator
         submenu "Select" do
-          item "Line",            SelectLine
-          item "Current Scope",    SelectScopeCommand
+          item "Word",          SelectWordCommand
+          item "Line",          SelectLine
+          item "Current Scope", SelectScopeCommand
         end
       end
       

@@ -121,3 +121,22 @@ Feature: Edit Text
     And I press "Return" then "Ctrl+Alt+B"
     And I press "Ctrl+Super+V" then "Ctrl+Super+V"
     Then I should see "b" in the EditTab 
+
+  Scenario: Select word
+    When I type "foo bar"
+    And I press "Left" then "Super+W"
+    Then I should see "foo <s>bar<c>" in the EditTab
+
+  Scenario: Select word at end of word
+    When I type "foo bar"
+    And I press "Super+W"
+    Then I should see "foo <s>bar<c>" in the EditTab
+
+  Scenario: Select word does nothing outside of word
+    When I type "foo bar "
+    And I press "Super+W"
+    Then I should see "foo bar <c>" in the EditTab
+
+
+
+
