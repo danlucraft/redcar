@@ -46,7 +46,7 @@ Bug fixes:
   * Fixed file finder not finding new files
   * Fixed silently failing to save when bad permissions (#10)
 
-New contributers:
+New contributors:
 
   * Mark Wilkinson
   * Pat Ciambrone
@@ -65,3 +65,8 @@ Features:
   * Textmate snippets
   * Text, Source, Ruby Textmate commands + some others
   * Project pane
+
+Contributors:
+
+  * Daniel Lucraft
+  * Cairo Noleto
