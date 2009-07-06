@@ -55,6 +55,13 @@ Feature: Create, Open and Save files
     And I open the file "plugins/edit_tab/features/fixtures/new_file.rb"
     Then I should see "# First" in the EditTab
 
+  Scenario: Save As dialog has correct default directory for an existing file
+    Given I have opened the file "plugins/edit_tab/features/fixtures/file1.rb"
+    When I open the file "plugins/core/features/fixtures/new_file.rb"
+    And I press "Ctrl+Page_Up"
+    And I press "Ctrl+Shift+S"
+    Then the "Save As" dialog's current directory should be ".*/plugins/edit_tab/features/fixtures"
+
   Scenario: Change a file then save as changes the label
     Given I have opened the file "plugins/edit_tab/features/fixtures/file1.rb"
     When I type "a"
