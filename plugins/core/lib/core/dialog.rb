@@ -10,7 +10,7 @@ module Redcar
                                           nil,
                                           [Gtk::Stock::CANCEL, Gtk::Dialog::RESPONSE_CANCEL],
                                           [Gtk::Stock::OPEN, Gtk::Dialog::RESPONSE_ACCEPT])
-      if(directory)
+      if directory
         dialog.current_folder = directory
       end
       
@@ -48,11 +48,12 @@ module Redcar
         dialog.current_folder = Redcar::App[:last_dir_opened]
       end
             
-      if(win.focussed_tab && dialog.action == Gtk::FileChooser::ACTION_SAVE)
-        unless !win.focussed_tab.filename
+      if win.focussed_tab and dialog.action == Gtk::FileChooser::ACTION_SAVE
+        if win.focussed_tab.filename
           dialog.current_folder = win.focussed_tab.filename.split("/")[0..-2].join("/")
         end
       end
+      
       App.log.debug "[Core/Dialog]  " + dialog.inspect
       App.log.debug "[Core/Dialog]  " + dialog.destroyed?.to_s
       dialog.run do |response|
