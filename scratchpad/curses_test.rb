@@ -1,64 +1,92 @@
 
 =begin
-# Example ncurses program that should print all combinations of foreground
+# Example nCurses program that should print all combinations of foreground
 # color on background color but doesn't work.
 # Reduce the font so you can make your terminal 256 characters wide for best view.
  
 require 'rubygems'
-require 'ncurses'
+require 'nCurses'
  
-screen = Ncurses.initscr
-Ncurses.noecho
-Ncurses.cbreak
-Ncurses.start_color
+screen = NCurses.initscr
+NCurses.noecho
+NCurses.cbreak
+NCurses.start_color
  
-screen.addstr(Ncurses.COLORS.to_s)
+screen.addstr(NCurses.COLORS.to_s)
 screen.addstr("  ")
-screen.addstr(Ncurses.COLOR_PAIRS.to_s)
+screen.addstr(NCurses.COLOR_PAIRS.to_s)
 screen.getch
  
-Ncurses.curs_set 0
-Ncurses.move 0, 0
-Ncurses.clear
-Ncurses.refresh
+NCurses.curs_set 0
+NCurses.move 0, 0
+NCurses.clear
+NCurses.refresh
  
 color_count = 0
 256.times do |fg|
   256.times do |bg|
-    Ncurses.init_pair(color_count, fg, bg)
+    NCurses.init_pair(color_count, fg, bg)
     color_count += 1
   end
 end
 256.times do |i|
-  Ncurses.clear
+  NCurses.clear
   256.times do |j|
-    screen.attrset(Ncurses.COLOR_PAIR(i*256 + j))
+    screen.attrset(NCurses.COLOR_PAIR(i*256 + j))
     screen.addstr("#")
   end
   screen.getch
 end
 screen.getch
  
-Ncurses.endwin
+NCurses.endwin
 =end
 
 require 'curses'
 
-Curses::init_screen
+scr = Curses::init_screen
 Curses::nonl
 Curses::raw
 Curses::noecho
 p Curses.can_change_color?
 Curses.start_color
+scr.keypad(1)
 p :bazz
 # screen.keypad(1)
 p :qux
-begin
-  color_count = 0
-  256.times do |fg|
-    Curses.init_pair(color_count, fg, 0)
-    color_count += 1
+
+LETTERS = "abcdefghijklmnopqrstuvwxyz"
+
+def decode_key(ch, alt)
+  base = case ch
+          when 1..26
+            "Ctrl+#{LETTERS[ch-1]}"
+          when 65..(65+26)
+            "Shift+" + LETTERS[ch-65].upcase
+          when 97..(97+26)
+            LETTERS[ch-97]
+          when Curses::KEY_DOWN
+            "down"
+          when Curses::KEY_UP
+            "up"
+          when Curses::KEY_LEFT
+            "left"
+          when Curses::KEY_RIGHT
+            "right"
+          end
+  if alt
+    "Alt+" + base
+  else
+    base
   end
+end
+
+begin  # 
+  # color_count = 0
+  # 256.times do |fg|
+  #   Curses.init_pair(color_count, fg, 0)
+  #   color_count += 1
+  # end
   # 100.times do |fg|
   #   Curses.init_pair(color_count, fg, 200)
   #   color_count += 1
@@ -66,13 +94,29 @@ begin
   # 256.times do |fg|
   #   Curses.init_pair(color_count, 1, fg)
   #   color_count += 1
-  # end
-  (1*color_count).times do |i|
-    Curses.attrset(Curses.color_pair(i))
-    r = Curses.color_content(i)
+  # end  # 
+    # (1*color_count).times do |i|
+    #   Curses.attrset(Curses.color_pair(i))
+    #   r = Curses.color_content(i)
+    #   Curses.addstr(r.inspect)
+    # end
+  r = Curses.getch
+  while r.ord != Curses::KEY_CTRL_F
+    alt = false
+    if r.ord == 27
+      r = Curses.getch
+      alt = true
+    end
     Curses.addstr(r.inspect)
+    Curses.addstr(" ")
+    Curses.addstr(r.ord.inspect)
+    if res = decode_key(r.ord, alt)
+      Curses.addstr(" ")
+      Curses.addstr(res)
+    end
+    Curses.addstr("\n")
+    r = Curses.getch
   end
-  Curses.getch
     # 
     # color_count = 0
     # 256.times do |fg|
