@@ -2,7 +2,6 @@ Redcar
 ======
 
 by Daniel Lucraft
-
 http://RedcarEditor.com/
 
 DESCRIPTION
