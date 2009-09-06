@@ -207,7 +207,17 @@ module FreeBASE
         raise Exception.new("unment dependencies") unless @plugin_configuration.dependencies_met?
         require @plugin_configuration.dependencies_path if @plugin_configuration.dependencies_path
         log_requires do
-          require @plugin_configuration.require_path if @plugin_configuration.require_path
+          if @plugin_configuration.require_path
+            require @plugin_configuration.require_path
+          else
+            # loads from default path plugin_dir/lib/plugin_name if no load path given
+            path = File.expand_path(
+                File.join(
+                  @plugin_configuration.full_base_path, 
+                  "lib", 
+                  @plugin_configuration.name))
+            require path
+          end
           eval(@plugin_configuration.startup_module).load(self)
         end
       rescue Exception => error
