@@ -65,6 +65,7 @@ module FreeBASE
       num = 0
       if @load_list.size == 0
         puts "[FreeBASE] no plugins to load" if ARGV.include?("--debug-freebase")
+        exit
       end
       while num < @load_list.size
         plugin = @load_list[num]
