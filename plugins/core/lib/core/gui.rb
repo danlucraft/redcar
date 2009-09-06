@@ -1,6 +1,6 @@
 
 module Redcar
-  module Gui
+  class Gui
     class << self
       def all
         @all ||= []
