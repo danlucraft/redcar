@@ -3,7 +3,7 @@ name: testing
 description: Test runners
 version: 1.0
 author: Daniel Lucraft
-autoload: true
+autoload: false
 dependencies_path: testing/deps.rb
 require_path: testing/plugin.rb
 startup_module: Redcar::TestingPlugin

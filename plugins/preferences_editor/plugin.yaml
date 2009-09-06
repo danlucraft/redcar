@@ -3,7 +3,7 @@ name: preferences_editor
 description: Dialog for editing preferences.
 author: Daniel Lucraft
 version: 1.0
-autoload: true
+autoload: false
 require_path: preferences_editor/preferences_editor.rb
 startup_module: Com::RedcarIDE::PreferencesEditor
 load_dependencies: 

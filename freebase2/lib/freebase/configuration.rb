@@ -63,15 +63,18 @@ module FreeBASE
     #
     def load_plugins
       num = 0
+      if @load_list.size == 0
+        puts "[FreeBASE] no plugins to load" if ARGV.include?("--debug-freebase")
+      end
       while num < @load_list.size
         plugin = @load_list[num]
         plugin.instance.load
         if plugin.instance.state != LOADED
-          puts "[FB2] failed to load: #{plugin.name}"
+          puts "[FreeBASE] failed to load: #{plugin.name}"
           fail_load_dependencies(plugin)
           fail_start_dependencies(plugin)
         else
-          puts "[FB2] loaded: #{plugin.name}" if ARGV.include?("--debug-freebase")
+          puts "[FreeBASE] loaded: #{plugin.name}" if ARGV.include?("--debug-freebase")
           num += 1
         end
       end
@@ -86,10 +89,10 @@ module FreeBASE
         plugin = @start_list[num]
         plugin.instance.start
         if plugin.instance.state != RUNNING
-          puts "[FB2] failed to start: #{plugin.name}"
+          puts "[FreeBASE] failed to start: #{plugin.name}"
           fail_start_dependencies(plugin)
         else
-         puts "[FB2] started: #{plugin.name}" if ARGV.include?("--debug-freebase")
+         puts "[FreeBASE] started: #{plugin.name}" if ARGV.include?("--debug-freebase")
         num += 1
         end
       end

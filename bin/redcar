@@ -45,11 +45,13 @@ def in_features_process?
   $gutkumber
 end
 
-require File.join(File.dirname(__FILE__), %w'.. lib dbus')
+# TODO: replace with JRuby single-instance code
 
-unless ARGV.include?("--multiple-instance")
-  Redcar::DBus.try_export_service
-end
+# require File.join(File.dirname(__FILE__), %w'.. lib dbus')
+# 
+# unless ARGV.include?("--multiple-instance")
+#   Redcar::DBus.try_export_service
+# end
 
 # See if a code base was passed as an argument. If not
 # default the codebase to the path of the freeride.rb script
@@ -65,8 +67,7 @@ $:.unshift(File.join(codebase, "..", "lib"))
 require HERE + '/../freebase2/lib/freebase/freebase'
 
 require 'gems'
-Dir[HERE + "/../lib/*.rb"].each {|f| require f unless f =~ /(gems|dbus)\.rb/ }
-require HERE + "/../vendor/glitter"
+Dir[HERE + "/../lib/*.rb"].each {|f| require f unless f =~ /gems\.rb/ }
 
 module Redcar
   VERSION = '0.0.1'

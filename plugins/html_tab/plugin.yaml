@@ -3,7 +3,7 @@ name: html_tab
 description: A tab containing an HTML widget (Webkit)
 version: 1.0
 author: Daniel Lucraft
-autoload: true
+autoload: false
 require_path: html_tab/plugin.rb
 startup_module: Redcar::HtmlTabPlugin
 load_dependencies: 
