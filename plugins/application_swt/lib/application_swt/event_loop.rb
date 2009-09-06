@@ -1,6 +1,6 @@
 
 module Redcar
-  class SWT
+  class ApplicationSWT
     class EventLoop
       def self.start
       end

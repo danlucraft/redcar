@@ -4,7 +4,7 @@ description: SWT views for the application
 version: 1.0
 author: Daniel Lucraft
 autoload: true
-startup_module: Redcar::SWT
+startup_module: Redcar::ApplicationSWT
 load_dependencies: 
   application: "*"
 start_dependencies: 
