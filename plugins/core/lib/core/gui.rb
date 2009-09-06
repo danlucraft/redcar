@@ -2,6 +2,7 @@
 module Redcar
   class Gui
     class << self
+      # All defined GUIs
       def all
         @all ||= []
       end
@@ -33,12 +34,12 @@ module Redcar
     
     # Starts the event loop for this gui.
     def start
-      event_loop.start
+      @event_loop.start
     end
     
     # Stops the event loop for this gui.
     def stop
-      event_loop.stop
+      @event_loop.stop
     end
   end
 end

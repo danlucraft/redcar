@@ -11,6 +11,8 @@ custom/appdata.yaml
 rdoc
 doc/html
 doc/latex
+.yardoc
+yardoc
 
 vendor/gtksourceview2/Makefile
 vendor/gtksourceview2/src/Makefile

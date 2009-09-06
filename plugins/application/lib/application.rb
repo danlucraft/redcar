@@ -1,7 +1,8 @@
 
 module Redcar
-  class Application < Plugin
+  class Application
     class << self
+      # Set the application GUI.
       def gui=(gui)
         raise "can't set gui twice" if @gui
         @gui = gui
@@ -10,11 +11,11 @@ module Redcar
       attr_reader :gui
     end
   
-    def self.on_load
+    def self.load
       
     end
     
-    def self.on_start
+    def self.start
       gui.start
     end
   end

@@ -20,20 +20,6 @@ GREY_BG = "\033[40m"
 BLUE_FG = "\033[1;34m"
 CLEAR_COLOURS = "\033[0m"
 
-def cputs(text, colours, opts={})
-  colours.each {|colour| print colour }
-  print text
-  if opts[:no_newline]
-    print CLEAR_COLOURS
-  else
-    puts CLEAR_COLOURS
-  end
-end
-
-include FileUtils
-
-cd(File.dirname(__FILE__))
-
 def execute_and_check(command)
   puts %x{#{command}}
   $?.to_i == 0 ? true : raise
@@ -58,6 +44,14 @@ Dir[File.join(File.dirname(__FILE__), *%w[plugins *])].each do |plugin_dir|
       load rakefile
     end
   end
+end
+
+task :yardoc do
+  files = []
+  %w(core application application_swt).each do |plugin_name|
+    files += Dir["plugins/#{plugin_name}/**/*.rb"]
+  end
+  %x(yardoc #{files.join(" ")} -o yardoc)
 end
 
 task :clear_cache do

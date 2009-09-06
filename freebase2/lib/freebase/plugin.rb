@@ -222,8 +222,10 @@ module FreeBASE
                   @plugin_configuration.name))
             require path
           end
-          eval(@plugin_configuration.startup_module).load(self)
+          object = eval(@plugin_configuration.startup_module)
+          object.load if object.respond_to?(:load)
         end
+        transition(FreeBASE::LOADED)
       rescue Exception => error
         puts error
         puts error.backtrace
@@ -241,8 +243,10 @@ module FreeBASE
         begin
           raise Exception.new("unment dependencies") unless @plugin_configuration.dependencies_met?
           log_requires do
-            eval(@plugin_configuration.startup_module).start(self)
+            object = eval(@plugin_configuration.startup_module)
+            object.start if object.respond_to?(:start)
           end
+          transition(FreeBASE::RUNNING)
         rescue Exception => error
           puts error
           puts error.backtrace

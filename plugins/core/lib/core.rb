@@ -3,7 +3,7 @@ require "core/plugin"
 require "core/gui"
 
 module Redcar
-  class Core < Plugin
+  class Core
   end
 end
 
