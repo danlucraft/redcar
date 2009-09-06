@@ -78,7 +78,7 @@ class Object
     true
   end
   
-  def metaclass
+  def meta
     class << self; self; end
   end
   
