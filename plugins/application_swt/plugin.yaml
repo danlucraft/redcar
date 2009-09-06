@@ -1,0 +1,11 @@
+--- !ruby/object:FreeBASE::PluginConfiguration
+name: application_swt
+description: SWT views for the application
+version: 1.0
+author: Daniel Lucraft
+autoload: true
+startup_module: Redcar::SWT
+load_dependencies: 
+  application: "*"
+start_dependencies: 
+  application: "*"

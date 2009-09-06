@@ -1,0 +1,11 @@
+--- !ruby/object:FreeBASE::PluginConfiguration
+name: application
+description: Application layout
+version: 1.0
+author: Daniel Lucraft
+autoload: true
+startup_module: Redcar::Application
+load_dependencies: 
+  core: "*"
+start_dependencies: 
+  core: "*"
