@@ -1,3 +1,9 @@
+
+*Important*
+
+Currently Redcar is being ported to JRuby, and not a lot works on HEAD. If
+you would like to run the old GTK version, you MUST check out the tag 'gtk-head'
+
 Redcar
 ======
 
