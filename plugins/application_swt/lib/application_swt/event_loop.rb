@@ -10,7 +10,9 @@ module Redcar
       def start
         @running = true
         while @running
-          ApplicationSWT.display.sleep unless ApplicationSWT.display.read_and_dispatch
+          unless ApplicationSWT.display.read_and_dispatch
+            ApplicationSWT.display.sleep
+          end
         end
         ApplicationSWT.display.dispose
       end

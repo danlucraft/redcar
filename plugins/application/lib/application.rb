@@ -1,6 +1,7 @@
 
 module Redcar
   class Application
+    NAME = "Redcar"
     class << self
       # Set the application GUI.
       def gui=(gui)

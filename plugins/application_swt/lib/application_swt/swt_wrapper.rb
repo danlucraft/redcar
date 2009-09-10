@@ -1,27 +1,28 @@
 $:.unshift(Redcar::ROOT + "/vendor/swt")
 
 require 'rbconfig'
-
-swt_lib = case Config::CONFIG["host_os"]
-  when /darwin/i
-    if Config::CONFIG["host_cpu"] == "x86_64"
-      'osx64/swt'
-    else
-      'osx/swt'
-    end
-  when /linux/i
-    if Config::CONFIG["host_cpu"] == "x86_64" || Config::CONFIG["host_cpu"] == "amd64"
-      'linux64/swt'
-    else
-      'linux/swt'
-    end
-  when /windows|mswin/i
-    'windows/swt'
-end
- 
-require swt_lib
-
 module Swt
+  def self.jar_path
+    case Config::CONFIG["host_os"]
+    when /darwin/i
+      if Config::CONFIG["host_cpu"] == "x86_64"
+        'osx64/swt'
+      else
+        'osx/swt'
+      end
+    when /linux/i
+      if %w(amd64 x84_64).include? Config::CONFIG["host_cpu"]
+        'linux64/swt'
+      else
+        'linux/swt'
+      end
+    when /windows|mswin/i
+      'windows/swt'
+    end
+  end
+  
+  require Redcar::ROOT + "/vendor/swt/" + Swt.jar_path
+
   import org.eclipse.swt.SWT
   
   module Widgets
