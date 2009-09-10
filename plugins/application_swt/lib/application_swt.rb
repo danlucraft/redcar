@@ -12,7 +12,7 @@ module Redcar
       Swt::Widgets::Display.app_name = Redcar::Application::NAME
       gui = Redcar::Gui.new("swt")
       gui.register_event_loop(ApplicationSWT::EventLoop.new)
-      Application.gui = gui
+      Redcar.app.gui = gui
     end
   end
 end

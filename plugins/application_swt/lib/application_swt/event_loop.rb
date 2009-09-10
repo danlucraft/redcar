@@ -9,12 +9,13 @@ module Redcar
       # Begins the SWT event loop. Blocks.
       def start
         @running = true
-        while @running
-          unless ApplicationSWT.display.read_and_dispatch
-            ApplicationSWT.display.sleep
+        display = ApplicationSWT.display
+        while @running and not display.disposed?
+          unless display.read_and_dispatch
+            display.sleep
           end
         end
-        ApplicationSWT.display.dispose
+        display.dispose
       end
       
       # Halts the SWT event loop.

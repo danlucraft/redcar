@@ -12,16 +12,16 @@ module Redcar
     #
     # @param [String] name for the gui
     def initialize(name)
-      @views = Hash.new { |h,k| h[k] = [] }
+      @controllers = Hash.new { |h,k| h[k] = [] }
       Gui.all << self
     end
     
-    # Associates a model and a view within this Gui.
+    # Associates a model and a controller within this Gui.
     #
     # @param [Object] the Redcar model
-    # @param [Object] the view for the model
-    def register_view(model, view)
-      @views[model] << view
+    # @param [Object] the controller for the model
+    def register_controller(model, controller)
+      @views[model] << controller
     end
     
     # Set the event loop object for this gui.
