@@ -33,8 +33,8 @@ module FreeBASE
     def Core.startup(propertiesFile, defaultPropertiesFile)
       Thread.abort_on_exception = true
       core = Core.new(propertiesFile, defaultPropertiesFile)
-      yield core if block_given?
-      sleep
+      # yield core if block_given?
+      # sleep
     end
     
     def self.load_plugins(propertiesFile, defaultPropertiesFile)
@@ -70,10 +70,10 @@ module FreeBASE
       @bus["/system/state/all_plugins_loaded"].data = true
       @core_thread = Thread.current
       unless options[:load_only]
-        tui = Thread.new {
+        # tui = Thread.new {
           @bus["/system/ui/messagepump"].call()
-        }
-        tui.join
+        # }
+        # tui.join
       end
     end
     
