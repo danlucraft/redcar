@@ -8,9 +8,8 @@ module Redcar
   
   class Application
     NAME = "Redcar"
-    class << self
-    end
-  
+    include FreeBASE::DataBusHelper
+    
     def self.load
       
     end
@@ -31,8 +30,12 @@ module Redcar
     def gui=(gui)
       raise "can't set gui twice" if @gui
       @gui = gui
+      
+      bus["/system/ui/messagepump"].set_proc do
+        @gui.start
+      end
     end
-
+    
     attr_reader :gui
   end
 end
