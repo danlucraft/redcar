@@ -6,11 +6,11 @@ module Redcar
       def self.all
         @all ||= []
       end
-        
+
       def initialize
         Window.all << self
       end
-      
+
       def title
         "Redcar"
       end

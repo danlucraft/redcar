@@ -8,6 +8,7 @@ module Redcar
   
   class Application
     NAME = "Redcar"
+    
     include FreeBASE::DataBusHelper
     
     def self.load
