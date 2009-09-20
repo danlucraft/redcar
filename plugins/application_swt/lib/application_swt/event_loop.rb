@@ -1,6 +1,6 @@
 
 module Redcar
-  class ApplicationSWT
+  module ApplicationSWT
     class EventLoop
       def initialize
         @running = false

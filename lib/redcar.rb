@@ -3,10 +3,11 @@ $:.push(File.join(File.dirname(__FILE__), "..", "freebase2", "lib"))
 require 'freebase/freebase'
 
 module Redcar
-  VERSION = '0.0.1'
-  VERSION_MAJOR = 0
-  VERSION_MINOR = 0
+  VERSION         = '0.0.1'
+  VERSION_MAJOR   = 0
+  VERSION_MINOR   = 0
   VERSION_RELEASE = 1
+  
   ROOT = File.expand_path(File.join(File.dirname(__FILE__), ".."))
 
   $FR_CODEBASE          = File.expand_path(File.join(File.dirname(__FILE__)))

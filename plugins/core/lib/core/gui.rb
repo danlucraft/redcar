@@ -16,12 +16,13 @@ module Redcar
       Gui.all << self
     end
     
-    # Associates a model and a controller within this Gui.
+    # Associates a model class and a controller class within this Gui.
     #
-    # @param [Object] the Redcar model
-    # @param [Object] the controller for the model
-    def register_controller(model, controller)
-      @views[model] << controller
+    # @param [Hash] model_class => controller_class
+    def register_controller(options)
+      options.each do |model_class, controller_class|
+        @controllers[model_class] << controller_class
+      end
     end
     
     # Set the event loop object for this gui.
@@ -40,6 +41,10 @@ module Redcar
     # Stops the event loop for this gui.
     def stop
       @event_loop.stop
+    end
+    
+    def controller_for(model)
+      @controllers[model.class].first
     end
   end
 end
