@@ -8,10 +8,13 @@ module Redcar
       end
     end
     
+    attr_reader :name
+    
     # Initialize a new named gui.
     #
     # @param [String] name for the gui
     def initialize(name)
+      @name = name
       @controllers = Hash.new { |h,k| h[k] = [] }
       Gui.all << self
     end
@@ -23,6 +26,13 @@ module Redcar
       options.each do |model_class, controller_class|
         @controllers[model_class] << controller_class
       end
+    end
+
+    # Returns the controller class for the given model, or nil
+    #
+    # @param [Object] an instance of a Redcar model
+    def controller_for(model)
+      @controllers[model.class].first
     end
     
     # Set the event loop object for this gui.
@@ -41,10 +51,6 @@ module Redcar
     # Stops the event loop for this gui.
     def stop
       @event_loop.stop
-    end
-    
-    def controller_for(model)
-      @controllers[model.class].first
     end
   end
 end
