@@ -10,6 +10,10 @@ module Redcar
       def initialize
         Window.all << self
       end
+      
+      def title
+        "Redcar"
+      end
     end
   end
 end
