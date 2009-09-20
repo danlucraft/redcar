@@ -2,17 +2,13 @@
 module Redcar
   class Application
     class Window
-      class << self
-        def all
-          # All instantiated windows
-          def all
-            @all ||= []
-          end
-        end
+      # All instantiated windows
+      def self.all
+        @all ||= []
+      end
         
-        def initialize
-          Window.all << self
-        end
+      def initialize
+        Window.all << self
       end
     end
   end
