@@ -3,7 +3,10 @@ module Redcar
     START_DELAY = 1
     
     def self.run_cukes(args)
-      require 'cucumber/cli/main'
+      require "cucumber/cli/main"
+      require "cucumber"
+      require "core/cucumber/formatter"
+      
       Thread.new do
         begin
           sleep START_DELAY
