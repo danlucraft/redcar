@@ -14,11 +14,17 @@ module Redcar
   $FR_PROJECT           = nil
   $FREEBASE_APPLICATION = "Redcar"
   
+  include FreeBASE::DataBusHelper
+  
   def self.start
     FreeBASE::Core.startup("properties.yaml", "config/default.yaml")
   end
   
   def self.load
     FreeBASE::Core.load_plugins("properties.yaml","config/default.yaml")
+  end
+  
+  def self.pump
+    bus["/system/ui/messagepump"].call()
   end
 end

@@ -1,2 +1,8 @@
-  
-cucumber -p default -r plugins/redcar/features/env.rb $1 $2 $3 $4 $5 $6 $7 $8 $9
+#!/usr/bin/env ruby
+
+process_start_time = Time.now
+$:.push File.join(File.dirname(__FILE__), '..', 'lib')
+
+require 'redcar'
+Redcar.start
+

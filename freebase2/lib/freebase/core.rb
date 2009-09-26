@@ -71,7 +71,7 @@ module FreeBASE
       @core_thread = Thread.current
       unless options[:load_only]
         # tui = Thread.new {
-          @bus["/system/ui/messagepump"].call()
+          # @bus["/system/ui/messagepump"].call()
         # }
         # tui.join
       end
