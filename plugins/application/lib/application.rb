@@ -19,6 +19,11 @@ module Redcar
       Redcar.app.new_window
     end
     
+    # Immediately halts the gui event loop.
+    def quit
+      @gui.stop
+    end
+    
     def windows
       @windows ||= []
     end
