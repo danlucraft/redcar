@@ -65,6 +65,7 @@ module Redcar
     # The main menu.
     def menu=(menu)
       @menu = menu
+      controller.menu_changed
     end
     
   end

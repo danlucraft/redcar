@@ -21,5 +21,8 @@ module Redcar
       gui.register_features_runner(CucumberRunner.new)
       Redcar.gui = gui
     end
+    
+    def menu_changed
+    end
   end
 end

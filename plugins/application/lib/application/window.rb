@@ -22,11 +22,6 @@ module Redcar
       def title
         "Redcar"
       end
-      
-      def menu=(menu)
-        @menu = menu
-        controller.menu_changed
-      end
     end
   end
 end

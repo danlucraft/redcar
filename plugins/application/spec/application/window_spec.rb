@@ -5,9 +5,4 @@ describe Redcar::Application::Window do
     @window = Redcar::Application::Window.new
     @window.controller = RedcarSpec::WindowController.new
   end
-  
-  it "reports menu changes to the controller" do
-    @window.controller.should_receive(:menu_changed)
-    @window.menu = 1
-  end
 end

@@ -10,9 +10,19 @@ describe Redcar::Application do
   end
   
   describe "instance" do
+    before do
+      @app = Redcar::Application.new
+      @app.controller = RedcarSpec::ApplicationController.new
+    end
+    
     it "creates a new window" do
-      Redcar.app.new_window
-      Redcar.app.windows.length.should == 1
+      @app.new_window
+      @app.windows.length.should == 1
+    end
+    
+    it "notifies the controller that the menu has changed" do
+      @app.controller.should_receive(:menu_changed)
+      @app.menu = 1
     end
   end
 end
