@@ -45,4 +45,16 @@ module Swt
     import org.eclipse.swt.graphics.Font
     import org.eclipse.swt.graphics.Point
   end
+  
+  class RRunnable
+    include java.lang.Runnable
+
+    def initialize(&block)
+      @block = block
+    end
+
+    def run
+      @block.call
+    end
+  end
 end
