@@ -36,6 +36,9 @@ module Redcar
       new_window = Application::Window.new
       windows << new_window
       @gui.controller_for(new_window)
+      menu = Menu.new
+      menu << Menu.new("File") 
+      menu << Menu.new("Help")
     end
     
     # Set the application GUI.
