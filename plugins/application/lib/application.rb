@@ -1,7 +1,9 @@
 
-require 'application/window'
 require 'application/menu'
 require 'application/menu_item'
+require 'application/notebook'
+require 'application/tab'
+require 'application/window'
 
 module Redcar
   class << self
@@ -48,7 +50,7 @@ module Redcar
     def new_window
       new_window = Application::Window.new
       windows << new_window
-      Redcar.gui.controller_for(new_window)
+      new_window.controller = ApplicationSWT::Window.new(new_window)
       new_window.menu = menu
       new_window.show
     end

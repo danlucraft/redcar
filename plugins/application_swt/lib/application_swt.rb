@@ -1,9 +1,10 @@
 
+require "application_swt/cucumber_runner"
 require "application_swt/event_loop"
+require "application_swt/menu"
+require "application_swt/notebook"
 require "application_swt/swt_wrapper"
 require "application_swt/window"
-require "application_swt/cucumber_runner"
-require "application_swt/menu"
 
 module Redcar
   class ApplicationSWT
@@ -16,7 +17,6 @@ module Redcar
     def self.load
       Swt::Widgets::Display.app_name = Redcar::Application::NAME
       @gui = Redcar::Gui.new("swt")
-      @gui.register_controller(controller_map)
       @gui.register_event_loop(EventLoop.new)
       @gui.register_features_runner(CucumberRunner.new)
     end
@@ -28,11 +28,8 @@ module Redcar
       @gui
     end
     
-    def self.controller_map
-      { Application         => ApplicationSWT, 
-        Application::Window => ApplicationSWT::Window,
-        Redcar::Application::Menu => ApplicationSWT::Menu
-      }
+    def initialize(application)
+      @application = application
     end
     
     def menu_changed

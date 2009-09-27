@@ -9,8 +9,11 @@ module Redcar
         @all ||= []
       end
 
+      attr_reader :notebook
+
       def initialize
         Window.all << self
+        @notebook = Redcar::Notebook.new
       end
 
       def show

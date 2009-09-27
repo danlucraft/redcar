@@ -15,28 +15,7 @@ module Redcar
     # @param [String] name for the gui
     def initialize(name)
       @name = name
-      @controllers = Hash.new { |h,k| h[k] = [] }
       Gui.all << self
-    end
-    
-    # Associates a model class and a controller class within this Gui.
-    #
-    # @param [Hash] model_class => controller_class
-    def register_controller(options)
-      options.each do |model_class, controller_class|
-        @controllers[model_class] << controller_class
-      end
-    end
-
-    # Returns the controller class for the given model, or nil
-    #
-    # @param [Object] an instance of a Redcar model
-    def controller_for(model)
-      controller_class = @controllers[model.class].first
-      raise "no controller for #{model.class}" unless controller_class
-      controller = controller_class.new
-      model.controller = controller
-      controller.model = model
     end
     
     # Set the event loop object for this gui.

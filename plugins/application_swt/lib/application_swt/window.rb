@@ -2,19 +2,18 @@
 module Redcar
   class ApplicationSWT
     class Window
-      include Redcar::Controller
+      attr_reader :shell, :window
       
-      attr_reader :shell
-      
-      def initialize
+      def initialize(window)
+        @window = window
         create_shell
         create_tab_folder
+        ApplicationSWT::Notebook.new(window.notebook, @tab_folder)
       end
-
         
       def show
         @shell.open
-        @shell.text = @model.title
+        @shell.text = window.title
       end
 
       def close
@@ -35,9 +34,9 @@ module Redcar
         
       def create_tab_folder
         folder_style = Swt::SWT::BORDER + Swt::SWT::CLOSE
-        @tabFolder = Swt::Custom::CTabFolder.new(@shell, folder_style)
-    		@tabFolder.set_layout_data(Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH))
-    		@tabFolder.pack
+        @tab_folder = Swt::Custom::CTabFolder.new(@shell, folder_style)
+    		@tab_folder.set_layout_data(Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH))
+    		@tab_folder.pack
       end
 
     end
