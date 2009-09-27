@@ -1,5 +1,5 @@
 module Redcar
-  module ApplicationSWT
+  class ApplicationSWT
     class CucumberRunner
       START_DELAY = 1
     

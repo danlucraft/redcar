@@ -32,7 +32,7 @@ module Redcar
     #
     # @param [Object] an instance of a Redcar model
     def controller_for(model)
-      controller = @controllers[model.class].first.new(model)
+      controller = @controllers[model.class].first.new
       model.controller = controller
       controller.model = model
     end

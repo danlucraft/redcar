@@ -4,13 +4,29 @@ require 'application/menu'
 require 'application/menu_item'
 
 module Redcar
-  def self.app
-    @app ||= Application.new
+  class << self
+    attr_reader :gui, :app
+  end
+
+  def self.app=(app)
+    @app ||= app
+  end
+  
+  # Set the application GUI.
+  def self.gui=(gui)
+    raise "can't set gui twice" if @gui
+    @gui = gui
+    
+    bus["/system/ui/messagepump"].set_proc do
+      @gui.controller_for(@app)
+      @gui.start
+    end
   end
   
   class Application
     NAME = "Redcar"
     
+    include Redcar::Model
     include FreeBASE::DataBusHelper
     
     def self.load
@@ -18,12 +34,16 @@ module Redcar
     end
     
     def self.start
+      Redcar.app = Application.new
       Redcar.app.new_window
+    end
+    
+    def initialize
     end
     
     # Immediately halts the gui event loop.
     def quit
-      @gui.stop
+      Redcar.gui.stop
     end
     
     # Return a list of all open windows
@@ -35,22 +55,17 @@ module Redcar
     def new_window
       new_window = Application::Window.new
       windows << new_window
-      @gui.controller_for(new_window)
-      menu = Menu.new
-      menu << Menu.new("File") 
-      menu << Menu.new("Help")
+      Redcar.gui.controller_for(new_window)
+      # menu = Menu.new
+      # menu << Menu.new("File") 
+      # menu << Menu.new("Help")
+      new_window.show
     end
     
-    # Set the application GUI.
-    def gui=(gui)
-      raise "can't set gui twice" if @gui
-      @gui = gui
-      
-      bus["/system/ui/messagepump"].set_proc do
-        @gui.start
-      end
+    # The main menu.
+    def menu=(menu)
+      @menu = menu
     end
     
-    attr_reader :gui
   end
 end

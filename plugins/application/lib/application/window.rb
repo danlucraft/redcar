@@ -15,6 +15,10 @@ module Redcar
         Window.all << self
       end
 
+      def show
+        controller.show
+      end
+
       def title
         "Redcar"
       end

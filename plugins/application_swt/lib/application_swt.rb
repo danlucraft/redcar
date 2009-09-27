@@ -5,7 +5,9 @@ require "application_swt/window"
 require "application_swt/cucumber_runner"
 
 module Redcar
-  module ApplicationSWT
+  class ApplicationSWT
+    include Redcar::Controller
+    
     def self.display
       @display ||= Swt::Widgets::Display.new
     end
@@ -13,10 +15,11 @@ module Redcar
     def self.load
       Swt::Widgets::Display.app_name = Redcar::Application::NAME
       gui = Redcar::Gui.new("swt")
+      gui.register_controller(Application => ApplicationSWT)
       gui.register_event_loop(EventLoop.new)
       gui.register_controller(Application::Window => Window)
       gui.register_features_runner(CucumberRunner.new)
-      Redcar.app.gui = gui
+      Redcar.gui = gui
     end
   end
 end
