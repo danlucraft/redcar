@@ -33,7 +33,14 @@ module Swt
     import org.eclipse.swt.widgets.Label
     import org.eclipse.swt.widgets.Menu
     import org.eclipse.swt.widgets.MenuItem
+    import org.eclipse.swt.widgets.TabFolder
+    import org.eclipse.swt.widgets.TabItem
     import org.eclipse.swt.widgets.Text
+  end
+
+  module Custom
+    import org.eclipse.swt.custom.CTabFolder
+    import org.eclipse.swt.custom.CTabItem
   end
   
   module Layout

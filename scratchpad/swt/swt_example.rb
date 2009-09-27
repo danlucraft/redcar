@@ -21,9 +21,23 @@ class SwtExample
     Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH).setText("Test Button 1")
     
     @shell.setMenuBar(create_menu_bar)
+    
+    create_tab_folder
     @shell.pack
     @shell.open
   end
+
+  def create_tab_folder
+    tabFolder = Swt::Custom::CTabFolder.new(@shell, Swt::SWT::BORDER + Swt::SWT::CLOSE)
+  	3.times do |i|
+  		tab_item = Swt::Custom::CTabItem.new(tabFolder, Swt::SWT::NONE)
+  		tab_item.text = "TabItem " + i.to_s
+  		button = Swt::Widgets::Button.new(tabFolder, Swt::SWT::PUSH)
+  		button.setText("Page " + i.to_s)
+  		tab_item.setControl(button)
+		end
+		tabFolder.pack
+	end
   
   def create_menu_bar
     menuBar = Swt::Widgets::Menu.new(@shell, Swt::SWT::BAR)
@@ -105,7 +119,7 @@ class SwtExample
   def check_menus
     sync do
       puts "Menus and Submenus (to one level)"
-      @display.get_active_shell.get_menu_bar.get_items.to_a.each do |item|
+      @display.get_shells.first.get_menu_bar.get_items.to_a.each do |item|
         p item.get_text
         item.get_menu.get_items.to_a.each do |subitem|
           p "  " + subitem.get_text + " " + subitem.get_accelerator.to_s
