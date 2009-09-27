@@ -9,7 +9,7 @@ module Redcar
   end
 
   def self.app=(app)
-    @app ||= app
+    @app = app
   end
   
   # Set the application GUI.
@@ -18,7 +18,6 @@ module Redcar
     @gui = gui
     
     bus["/system/ui/messagepump"].set_proc do
-      @gui.controller_for(@app)
       @gui.start
     end
   end
@@ -29,12 +28,10 @@ module Redcar
     include Redcar::Model
     
     def self.load
-      
     end
     
     def self.start
       Redcar.app = Application.new
-      Redcar.app.new_window
     end
     
     # Immediately halts the gui event loop.
@@ -52,17 +49,16 @@ module Redcar
       new_window = Application::Window.new
       windows << new_window
       Redcar.gui.controller_for(new_window)
-      # menu = Menu.new
-      # menu << Menu.new("File") 
-      # menu << Menu.new("Help")
       new_window.show
     end
+    
+    attr_reader :menu
     
     # The main menu.
     def menu=(menu)
       @menu = menu
       controller.menu_changed
     end
-    
   end
 end
+
