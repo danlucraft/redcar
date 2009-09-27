@@ -12,8 +12,8 @@ http://RedcarEditor.com/
 
 DESCRIPTION
 -----------
-  
-A pure Ruby text editor for Gnome. Has syntax highlighting,
+
+A pure Ruby text editor runnng on JRuby. Has syntax highlighting,
 snippets, macros and is highly extensible.
 
 FEATURES
@@ -26,16 +26,33 @@ FEATURES
 INSTALLATION
 ------------
 
-See INSTALL.md
+(not yet finalized for the JRuby version)
 
-FEATURES
---------
+TESTS (specs)
+-------------
 
-    rake features
-    rake features:[plugin_name]
+On OSX:
+
+  jruby -J-XstartOnFirstThread $(which spec) plugins/#{plugin_name}/spec/
+
+On Linux:
+
+  jruby $(which spec) plugins/#{plugin_name}/spec/
+
+  
+TESTS (features)
+----------------
+
+On OSX:
+
+  jruby -J-XstartOnFirstThread bin/cucumber plugins/#{plugin_name}/features
+
+On Linux:
+
+  jruby bin/cucumber plugins/#{plugin_name}/features/
 
 LICENSE
 -------
 
-Redcar is copyright 2008 Daniel B. Lucraft and contributors. It is licensed under the GPL2. 
-See the included LICENSE file for details.
+Redcar is copyright 2008-2009 Daniel Lucraft and contributors. 
+It is licensed under the GPL2. See the included LICENSE file for details.

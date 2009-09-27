@@ -5,6 +5,5 @@ $:.push File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'redcar'
 Redcar.start
-cucumber_arg_index = ARGV.index("--cukes") + 1
-Redcar::CucumberRunner.run_cukes(ARGV[cucumber_arg_index..-1])
+Redcar::CucumberRunner.run_cukes(ARGV)
 Redcar.pump
