@@ -1,10 +1,10 @@
 
 module Redcar
   class MenuItem
-    attr_reader :text
+    attr_reader :text, :command
     
-    def initialize(text)
-      @text = text
+    def initialize(text, command)
+      @text, @command = text, command
     end
   end
 end
