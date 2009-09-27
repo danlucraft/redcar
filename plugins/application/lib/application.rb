@@ -27,7 +27,6 @@ module Redcar
     NAME = "Redcar"
     
     include Redcar::Model
-    include FreeBASE::DataBusHelper
     
     def self.load
       
@@ -36,9 +35,6 @@ module Redcar
     def self.start
       Redcar.app = Application.new
       Redcar.app.new_window
-    end
-    
-    def initialize
     end
     
     # Immediately halts the gui event loop.

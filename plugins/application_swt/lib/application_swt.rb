@@ -15,9 +15,9 @@ module Redcar
     def self.load
       Swt::Widgets::Display.app_name = Redcar::Application::NAME
       gui = Redcar::Gui.new("swt")
-      gui.register_controller(Application => ApplicationSWT)
+      gui.register_controller(Application         => ApplicationSWT, 
+                              Application::Window => ApplicationSWT::Window)
       gui.register_event_loop(EventLoop.new)
-      gui.register_controller(Application::Window => Window)
       gui.register_features_runner(CucumberRunner.new)
       Redcar.gui = gui
     end
