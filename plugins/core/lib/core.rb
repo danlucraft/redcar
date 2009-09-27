@@ -1,8 +1,9 @@
 
-require "core/plugin"
+require "core/command"
+require "core/controller"
 require "core/gui"
 require "core/model"
-require "core/controller"
+require "core/plugin"
 
 module Redcar
   class Core
