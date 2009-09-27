@@ -8,7 +8,6 @@ module Redcar
         @window = window
         create_shell
         create_tab_folder
-        ApplicationSWT::Notebook.new(window.notebook, @tab_folder)
       end
         
       def show
@@ -37,8 +36,8 @@ module Redcar
         @tab_folder = Swt::Custom::CTabFolder.new(@shell, folder_style)
     		@tab_folder.set_layout_data(Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH))
     		@tab_folder.pack
+        ApplicationSWT::Notebook.new(window.notebook, @tab_folder)
       end
-
     end
   end
 end
