@@ -5,5 +5,5 @@ $:.push File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'redcar'
 Redcar.start
-Redcar::CucumberRunner.run_cukes(ARGV)
+Redcar.app.gui.run_features(ARGV)
 Redcar.pump

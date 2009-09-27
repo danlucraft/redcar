@@ -52,5 +52,21 @@ module Redcar
     def stop
       @event_loop.stop
     end
+    
+    # Set the cucumber features runner for this gui.
+    #
+    # @param [Object] the feature runner, which must implement
+    #         a run_features(args) method, where args is the cucumber
+    #         arguments
+    def register_features_runner(feature_runner)
+      @feature_runner = feature_runner
+    end
+    
+    # Run cucumber features
+    #
+    # @param [Array[String]] run cucumber features with these args
+    def run_features(args)
+      @feature_runner.run_features(args)
+    end
   end
 end

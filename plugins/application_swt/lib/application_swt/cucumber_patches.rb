@@ -20,7 +20,6 @@ module Cucumber
           block = RRunnable.new do
             steps.accept(self)
           end
-          # TODO: Wo! Back references already!
           Redcar::ApplicationSWT.display.syncExec(block)
         end
       end
@@ -30,7 +29,6 @@ module Cucumber
           block = RRunnable.new do
             step.accept(self)
           end
-          # TODO: Wo! Back references already!
           Redcar::ApplicationSWT.display.syncExec(block)
         end
       end
