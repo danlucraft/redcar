@@ -4,8 +4,6 @@ module Redcar
     class Window
       include Redcar::Model
       
-      attr_reader :menu
-      
       # All instantiated windows
       def self.all
         @all ||= []
@@ -21,6 +19,12 @@ module Redcar
 
       def title
         "Redcar"
+      end
+      
+      attr_reader :menu
+
+      def menu=(menu)
+        controller.menu_changed(menu)
       end
     end
   end

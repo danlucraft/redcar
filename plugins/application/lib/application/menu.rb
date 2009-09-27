@@ -9,6 +9,11 @@ module Redcar
         @text, @entries = text, []
       end
     
+      # Iterate over each entry
+      def each
+        @entries.each {|e| yield e}
+      end
+    
       # Add a Redcar::MenuItem or a Redcar::Menu
       def <<(entry)
         @entries << entry

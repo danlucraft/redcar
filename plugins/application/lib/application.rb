@@ -49,6 +49,7 @@ module Redcar
       new_window = Application::Window.new
       windows << new_window
       Redcar.gui.controller_for(new_window)
+      new_window.menu = menu
       new_window.show
     end
     
@@ -57,7 +58,9 @@ module Redcar
     # The main menu.
     def menu=(menu)
       @menu = menu
-      controller.menu_changed
+      windows.each do |window|
+        window.menu = menu
+      end
     end
   end
 end

@@ -19,10 +19,5 @@ describe Redcar::Application do
       @app.new_window
       @app.windows.length.should == 1
     end
-    
-    it "notifies the controller that the menu has changed" do
-      @app.controller.should_receive(:menu_changed)
-      @app.menu = 1
-    end
   end
 end

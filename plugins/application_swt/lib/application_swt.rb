@@ -14,15 +14,14 @@ module Redcar
     end
     
     def self.load
-    end
-    
-    def self.start
       Swt::Widgets::Display.app_name = Redcar::Application::NAME
       @gui = Redcar::Gui.new("swt")
       @gui.register_controller(controller_map)
       @gui.register_event_loop(EventLoop.new)
       @gui.register_features_runner(CucumberRunner.new)
-      Redcar.gui = Redcar::ApplicationSWT.gui
+    end
+    
+    def self.start
     end
     
     def self.gui
@@ -37,7 +36,6 @@ module Redcar
     end
     
     def menu_changed
-      p :menu_changed
       Menu.new(self, @model.menu)
     end
   end
