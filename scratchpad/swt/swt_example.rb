@@ -59,8 +59,14 @@ class SwtExample
     helpMenu = Swt::Widgets::Menu.new(@shell, Swt::SWT::DROP_DOWN)
     helpMenuHeader.setMenu(helpMenu)
 
-    helpGetHelpItem = Swt::Widgets::MenuItem.new(helpMenu, Swt::SWT::PUSH)
+    helpGetHelpItem = Swt::Widgets::MenuItem.new(helpMenu, Swt::SWT::CASCADE)
     helpGetHelpItem.setText("&Get Help")
+
+    getHelpSubMenu = Swt::Widgets::Menu.new(@shell, Swt::SWT::DROP_DOWN)
+    helpGetHelpItem.setMenu(getHelpSubMenu)
+    
+    gotoWebsiteItem = Swt::Widgets::MenuItem.new(getHelpSubMenu, Swt::SWT::PUSH)
+    gotoWebsiteItem.setText("Goto Website")
 
     fileExitItem.addSelectionListener do
       puts "pressed File|Exit"
@@ -98,8 +104,12 @@ class SwtExample
   
   def check_menus
     sync do
+      puts "Menus and Submenus (to one level)"
       @display.get_active_shell.get_menu_bar.get_items.to_a.each do |item|
         p item.get_text
+        item.get_menu.get_items.to_a.each do |subitem|
+          p "  " + subitem.get_text + " " + subitem.get_accelerator.to_s
+        end
       end
     end
   end
