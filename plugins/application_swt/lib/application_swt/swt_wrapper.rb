@@ -41,10 +41,13 @@ module Swt
   module Custom
     import org.eclipse.swt.custom.CTabFolder
     import org.eclipse.swt.custom.CTabItem
+    import org.eclipse.swt.custom.SashForm
   end
   
   module Layout
     import org.eclipse.swt.layout.FillLayout
+    import org.eclipse.swt.layout.GridLayout
+    import org.eclipse.swt.layout.GridData
     import org.eclipse.swt.layout.RowLayout
   end
   

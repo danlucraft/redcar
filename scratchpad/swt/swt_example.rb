@@ -8,23 +8,43 @@ class SwtExample
     @display = Swt::Widgets::Display.new
     @shell = Swt::Widgets::Shell.new(@display)
     @shell.setSize(450, 200)
-
-    layout = Swt::Layout::RowLayout.new
-    layout.wrap = true
-
+    # 
+    layout = Swt::Layout::FillLayout.new
+    # layout.wrap = true
+    # 
     @shell.setLayout layout
     @shell.setText "Ruby SWT Test"
-
-    label = Swt::Widgets::Label.new(@shell, Swt::SWT::CENTER)
-    label.setText "Ruby SWT Test"
-    
-    Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH).setText("Test Button 1")
-    
+    # 
+    # label = Swt::Widgets::Label.new(@shell, Swt::SWT::CENTER)
+    # label.setText "Ruby SWT Test"
+    # 
+    # Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH).setText("Test Button 1")
+    # 
     @shell.setMenuBar(create_menu_bar)
     
-    create_tab_folder
+    # create_tab_folder
+    create_sash_form
     @shell.pack
     @shell.open
+  end
+  
+  def create_sash_form
+    form = Swt::Custom::SashForm.new(@shell, Swt::SWT::VERTICAL)
+  	form.setLayout(Swt::Layout::FillLayout.new)
+  	child1 = Swt::Widgets::Composite.new(form, Swt::SWT::NONE)
+  	child1.setLayout(Swt::Layout::FillLayout.new)
+  	Swt::Widgets::Label.new(child1,Swt::SWT::NONE).setText("Label in pane 1")
+
+  	child2 = Swt::Widgets::Composite.new(form, Swt::SWT::NONE)
+  	child2.setLayout(Swt::Layout::FillLayout.new)
+  	Swt::Widgets::Button.new(child2,Swt::SWT::PUSH).setText("Button in pane2")
+
+  	child3 = Swt::Widgets::Composite.new(form, Swt::SWT::NONE)
+  	child3.setLayout(Swt::Layout::FillLayout.new)
+  	Swt::Widgets::Label.new(child3,Swt::SWT::PUSH).setText("Label in pane3")
+
+  	form.setWeights([30,40,30].to_java(:int))
+  	form.setSashWidth(10)
   end
 
   def create_tab_folder
