@@ -33,11 +33,25 @@ class SwtExample
     fileMenu = Swt::Widgets::Menu.new(@shell, Swt::SWT::DROP_DOWN)
     fileMenuHeader.setMenu(fileMenu)
 
+    fileNewItem =  Swt::Widgets::MenuItem.new(fileMenu, Swt::SWT::PUSH)
+    fileNewItem.setText("&New")
+    fileNewItem.set_accelerator(Swt::SWT::SHIFT + 'N'[0])
+
+    fileOpenItem =  Swt::Widgets::MenuItem.new(fileMenu, Swt::SWT::PUSH)
+    fileOpenItem.setText("&Open")
+    fileOpenItem.set_accelerator(Swt::SWT::ALT + 'O'[0])
+
     fileSaveItem =  Swt::Widgets::MenuItem.new(fileMenu, Swt::SWT::PUSH)
     fileSaveItem.setText("&Save")
+    fileSaveItem.set_accelerator(Swt::SWT::CTRL + 'S'[0])
+
+    fileSaveAsItem =  Swt::Widgets::MenuItem.new(fileMenu, Swt::SWT::PUSH)
+    fileSaveAsItem.setText("&Save As")
+    fileSaveAsItem.set_accelerator(Swt::SWT::COMMAND + 'A'[0])
 
     fileExitItem = Swt::Widgets::MenuItem.new(fileMenu, Swt::SWT::PUSH)
     fileExitItem.setText("E&xit")
+    fileExitItem.set_accelerator(Swt::SWT::MOD1 + 'Q'[0])
 
     helpMenuHeader = Swt::Widgets::MenuItem.new(menuBar, Swt::SWT::CASCADE)
     helpMenuHeader.setText("&Help")
@@ -67,9 +81,32 @@ class SwtExample
 
     @display.dispose
   end
+  
+  def start_checking_thread
+    Thread.new do
+      sleep 1
+      check_menus
+    end
+  end
+  
+  def sync
+    block = Swt::RRunnable.new do
+      yield
+    end
+    @display.sync_exec(&block)
+  end
+  
+  def check_menus
+    sync do
+      @display.get_active_shell.get_menu_bar.get_items.to_a.each do |item|
+        p item.get_text
+      end
+    end
+  end
 end
 
 app = SwtExample.new
+app.start_checking_thread
 app.start
 
 
