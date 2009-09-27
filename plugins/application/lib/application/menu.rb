@@ -11,6 +11,7 @@ module Redcar
     # Add a Redcar::MenuItem or a Redcar::Menu
     def <<(entry)
       @entries << entry
+      self
     end
     
     # Number of entries in the menu

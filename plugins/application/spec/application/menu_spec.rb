@@ -19,10 +19,10 @@ describe Redcar::Menu do
   
   describe "with entries in it and text" do
     before do
-      @menu = Redcar::Menu.new("Edit")
-      @menu << Redcar::MenuItem.new("Cut", DummyCommand)
-      @menu << Redcar::MenuItem.new("Paste", DummyCommand)
-      @menu << Redcar::Menu.new("Convert")
+      @menu = Redcar::Menu.new("Edit") \
+                  << Redcar::MenuItem.new("Cut", DummyCommand) \
+                  << Redcar::MenuItem.new("Paste", DummyCommand) \
+                  << Redcar::Menu.new("Convert")
     end
 
     it "reports length" do
