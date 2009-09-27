@@ -1,5 +1,7 @@
 
 require 'application/window'
+require 'application/menu'
+require 'application/menu_item'
 
 module Redcar
   def self.app
