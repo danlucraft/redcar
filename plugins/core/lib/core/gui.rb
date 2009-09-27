@@ -32,7 +32,9 @@ module Redcar
     #
     # @param [Object] an instance of a Redcar model
     def controller_for(model)
-      @controllers[model.class].first
+      controller = @controllers[model.class].first.new(model)
+      model.controller = controller
+      controller.model = model
     end
     
     # Set the event loop object for this gui.

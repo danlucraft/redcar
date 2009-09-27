@@ -2,6 +2,8 @@
 module Redcar
   module ApplicationSWT
     class Window
+      include Redcar::Controller
+      
       def initialize(window)
         @window = window
         @shell = Swt::Widgets::Shell.new(ApplicationSWT.display)

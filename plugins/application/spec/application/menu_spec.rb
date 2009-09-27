@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), "..", "spec_helper")
 describe Redcar::Menu do
   class DummyCommand; end
   
-  describe "with nothing in it and no text" do
+  describe "with no entries and no text" do
     before do
       @menu = Redcar::Menu.new
     end
@@ -17,7 +17,7 @@ describe Redcar::Menu do
     end
   end  
   
-  describe "with items and other menus in it and text" do
+  describe "with entries in it and text" do
     before do
       @menu = Redcar::Menu.new("Edit")
       @menu << Redcar::MenuItem.new("Cut", DummyCommand)

@@ -35,7 +35,7 @@ module Redcar
     def new_window
       new_window = Application::Window.new
       windows << new_window
-      @gui.controller_for(new_window).new(new_window)
+      @gui.controller_for(new_window)
     end
     
     # Set the application GUI.
