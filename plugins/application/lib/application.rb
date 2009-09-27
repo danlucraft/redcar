@@ -24,10 +24,12 @@ module Redcar
       @gui.stop
     end
     
+    # Return a list of all open windows
     def windows
       @windows ||= []
     end
-    
+
+    # Create a new Application::Window, and the controller for it.
     def new_window
       new_window = Application::Window.new
       windows << new_window
