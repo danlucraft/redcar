@@ -1,4 +1,6 @@
 
+require 'application/command'
+require 'application/command/history'
 require 'application/menu'
 require 'application/menu_item'
 require 'application/notebook'
@@ -7,13 +9,10 @@ require 'application/window'
 
 module Redcar
   class << self
-    attr_reader :gui, :app
+    attr_accessor :app, :history
+    attr_reader :gui
   end
 
-  def self.app=(app)
-    @app = app
-  end
-  
   # Set the application GUI.
   def self.gui=(gui)
     raise "can't set gui twice" if @gui
@@ -33,7 +32,8 @@ module Redcar
     end
     
     def self.start
-      Redcar.app = Application.new
+      Redcar.app     = Application.new
+      Redcar.history = Command::History.new
     end
     
     # Immediately halts the gui event loop.

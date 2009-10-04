@@ -1,5 +1,4 @@
 
-require "core/command"
 require "core/controller"
 require "core/gui"
 require "core/model"

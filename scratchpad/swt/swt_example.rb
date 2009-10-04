@@ -102,6 +102,9 @@ class SwtExample
     gotoWebsiteItem = Swt::Widgets::MenuItem.new(getHelpSubMenu, Swt::SWT::PUSH)
     gotoWebsiteItem.setText("Goto Website")
 
+    fileNewItem.addSelectionListener do
+      puts "pressed File|New"
+    end
     fileExitItem.addSelectionListener do
       puts "pressed File|Exit"
     end

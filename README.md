@@ -56,3 +56,4 @@ LICENSE
 
 Redcar is copyright 2008-2009 Daniel Lucraft and contributors. 
 It is licensed under the GPL2. See the included LICENSE file for details.
+
