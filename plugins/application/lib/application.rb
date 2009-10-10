@@ -1,10 +1,11 @@
 
 require 'application/command'
 require 'application/command/history'
+require 'application/command/sensitive'
+require 'application/command/sensitivity'
 require 'application/menu'
 require 'application/menu_item'
 require 'application/notebook'
-require 'application/observable'
 require 'application/tab'
 require 'application/window'
 
