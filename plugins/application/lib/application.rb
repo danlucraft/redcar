@@ -48,7 +48,7 @@ module Redcar
 
     # Create a new Application::Window, and the controller for it.
     def new_window
-      new_window = Application::Window.new
+      new_window = Window.new
       windows << new_window
       new_window.controller = ApplicationSWT::Window.new(new_window)
       new_window.menu = menu

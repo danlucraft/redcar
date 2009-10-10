@@ -1,10 +1,10 @@
 require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
-describe Redcar::Application::MenuItem do
+describe Redcar::MenuItem do
   class DummyCommand; end
   
   before do
-    @menu_item = Redcar::Application::MenuItem.new("File", DummyCommand)
+    @menu_item = Redcar::MenuItem.new("File", DummyCommand)
   end
 
   it "has text" do

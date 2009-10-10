@@ -51,7 +51,6 @@ module Redcar
         @commands.last
       end
         
-      
       private
       
       def prune #:nodoc:

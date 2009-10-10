@@ -1,15 +1,15 @@
 require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
-describe Redcar::Application::Menu do
+describe Redcar::Menu do
   class DummyCommand; end
   
   describe "with no entries and no text" do
     before do
-      @menu = Redcar::Application::Menu.new
+      @menu = Redcar::Menu.new
     end
 
     it "should accept items" do
-      @menu << Redcar::Application::MenuItem.new("File", DummyCommand)
+      @menu << Redcar::MenuItem.new("File", DummyCommand)
     end
 
     it "reports length" do
@@ -19,10 +19,10 @@ describe Redcar::Application::Menu do
   
   describe "with entries in it and text" do
     before do
-      @menu = Redcar::Application::Menu.new("Edit") \
-                  << Redcar::Application::MenuItem.new("Cut", DummyCommand) \
-                  << Redcar::Application::MenuItem.new("Paste", DummyCommand) \
-                  << Redcar::Application::Menu.new("Convert")
+      @menu = Redcar::Menu.new("Edit") \
+                  << Redcar::MenuItem.new("Cut", DummyCommand) \
+                  << Redcar::MenuItem.new("Paste", DummyCommand) \
+                  << Redcar::Menu.new("Convert")
     end
 
     it "reports length" do
