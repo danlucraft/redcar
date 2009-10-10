@@ -7,6 +7,7 @@ module Redcar
       end
       
       def execute
+        @command_instance.execute
       end
     end
   end

@@ -21,8 +21,11 @@ module Redcar
             menu_header.menu = new_menu
             add_entries_to_menu(new_menu, entry)
           else
-            menu_header = Swt::Widgets::MenuItem.new(menu, Swt::SWT::PUSH)
-            menu_header.text = entry.text
+            item = Swt::Widgets::MenuItem.new(menu, Swt::SWT::PUSH)
+            item.text = entry.text
+            item.addSelectionListener do
+              entry.selected
+            end
           end
         end
       end
