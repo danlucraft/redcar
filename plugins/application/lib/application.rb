@@ -4,6 +4,7 @@ require 'application/command/history'
 require 'application/menu'
 require 'application/menu_item'
 require 'application/notebook'
+require 'application/observable'
 require 'application/tab'
 require 'application/window'
 
