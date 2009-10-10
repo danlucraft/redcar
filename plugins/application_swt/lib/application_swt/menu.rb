@@ -14,7 +14,7 @@ module Redcar
       
       def add_entries_to_menu(menu, menu_model)
         menu_model.each do |entry|
-          if entry.is_a?(Redcar::Application::Menu)
+          if entry.is_a?(Redcar::Menu)
             menu_header = Swt::Widgets::MenuItem.new(menu, Swt::SWT::CASCADE)
             menu_header.text = entry.text
             new_menu = Swt::Widgets::Menu.new(@window.shell, Swt::SWT::DROP_DOWN)

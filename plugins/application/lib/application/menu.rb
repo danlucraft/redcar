@@ -1,7 +1,7 @@
 
 module Redcar
   class Menu
-    attr_reader :text
+    attr_reader :text, :entries
   
     # A Menu will initially have nothing in it.
     def initialize(text="")
