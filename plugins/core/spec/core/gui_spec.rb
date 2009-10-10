@@ -24,9 +24,4 @@ describe Redcar::Gui do
     @gui.start
     @gui.stop
   end
-  
-  it "manages controller classes" do
-    @gui.register_controller(String => Date)
-    @gui.controller_for("").should == Date
-  end
 end
