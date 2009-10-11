@@ -3,7 +3,6 @@ module Redcar
   # to describe in what ways it can be called, and how Redcar will treat the
   # command instances.
   class Command
-    
     def self.key(key)
       @key = key
     end
@@ -20,10 +19,23 @@ module Redcar
       @record == nil or @record
     end
     
+    def environment(env)
+      @env = env
+    end
+    
     def run(opts = {})
       @executor = Executor.new(self, opts)
       @executor.execute
     end
     
+    private
+    
+    def env
+      @env || {}
+    end
+    
+    def win
+      env[:win]
+    end
   end
 end
