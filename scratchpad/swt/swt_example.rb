@@ -24,8 +24,20 @@ class SwtExample
     
     # create_tab_folder
     create_sash_form
+    
+    create_key_listener
+    
     @shell.pack
     @shell.open
+  end
+  
+  def create_key_listener
+    @display.add_filter(Swt::SWT::KeyDown) do |a|
+      puts "type: #{a.type}, keyCode: #{a.keyCode}, character: #{a.character}, statemask: #{a.stateMask}"
+    end
+    @display.add_filter(Swt::SWT::KeyUp) do |a|
+      puts "type: #{a.type}, keyCode: #{a.keyCode}, character: #{a.character}, statemask: #{a.stateMask}"
+    end
   end
   
   def create_sash_form

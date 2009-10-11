@@ -2,7 +2,7 @@
 module Redcar
   module Top
     class NewCommand < Command
-      key "Cmd+Alt+Shift+P"
+      key "Cmd+N"
       
       def execute
         puts "making a new document"

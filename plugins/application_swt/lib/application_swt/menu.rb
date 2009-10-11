@@ -27,6 +27,7 @@ module Redcar
               item.set_accelerator(BindingTranslator.key(entry.command.get_key))
             end
             item.addSelectionListener do
+              puts "#{entry.command} activated"
               entry.selected
             end
           end

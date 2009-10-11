@@ -1,6 +1,7 @@
 
 require 'rbconfig'
 
+
 module Swt
   def self.jar_path
     case Config::CONFIG["host_os"]
@@ -27,12 +28,13 @@ module Swt
   
   module Widgets
     import org.eclipse.swt.widgets.Button
-    import org.eclipse.swt.widgets.Display
-    import org.eclipse.swt.widgets.Shell
     import org.eclipse.swt.widgets.Composite
+    import org.eclipse.swt.widgets.Display
+    import org.eclipse.swt.widgets.Event
     import org.eclipse.swt.widgets.Label
     import org.eclipse.swt.widgets.Menu
     import org.eclipse.swt.widgets.MenuItem
+    import org.eclipse.swt.widgets.Shell
     import org.eclipse.swt.widgets.TabFolder
     import org.eclipse.swt.widgets.TabItem
     import org.eclipse.swt.widgets.Text
@@ -56,6 +58,10 @@ module Swt
     import org.eclipse.swt.graphics.Point
   end
   
+  module Events
+    import org.eclipse.swt.events.KeyEvent
+  end
+  
   class RRunnable
     include java.lang.Runnable
 
@@ -68,3 +74,29 @@ module Swt
     end
   end
 end
+
+require File.dirname(__FILE__) + "/../../vendor/jface/org.eclipse.jface.jar"
+
+module JFace
+  module Bindings
+    module Keys
+      import org.eclipse.jface.bindings.keys.KeyStroke
+    end
+  end
+end
+
+
+# Dir[File.dirname(__FILE__) + "/../../vendor/swtbot/*.jar"].each do |fn|
+#   next if fn =~ /source/
+#   p fn
+#   require fn
+# end
+# 
+# module SwtBot
+#   module Finder
+#     module Keyboard
+#       import org.eclipse.swtbot.swt.finder.keyboard.AbstractKeyboardStrategy
+#       # import org.eclipse.swtbot.swt.finder.keyboard.AWTKeyboardStrategy
+#     end
+#   end
+# end
