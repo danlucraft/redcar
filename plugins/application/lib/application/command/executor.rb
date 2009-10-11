@@ -8,6 +8,12 @@ module Redcar
       
       def execute
         @command_instance.execute
+        record
+      end
+      
+      private
+      
+      def record
         if Redcar.history
           Redcar.history.record(@command_instance)
         end
