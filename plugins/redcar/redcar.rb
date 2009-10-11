@@ -2,14 +2,18 @@
 module Redcar
   module Top
     class NewCommand < Command
+      key "Cmd+Alt+Shift+P"
+      
       def execute
         puts "making a new document"
       end
     end
     
-    class WebsiteCommand < Command
+    class PrintHistoryCommand < Command
       def execute
-        puts "go to website: redcareditor.com"
+        Redcar.history.each do |c|
+          puts c
+        end
       end
     end
     
@@ -20,8 +24,8 @@ module Redcar
         sub_menu "File" do
           item "New", NewCommand
         end
-        sub_menu "Help" do
-          item "Website", WebsiteCommand
+        sub_menu "Debug" do
+          item "Print Command History", PrintHistoryCommand
         end
       end
       

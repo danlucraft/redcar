@@ -23,6 +23,9 @@ module Redcar
           else
             item = Swt::Widgets::MenuItem.new(menu, Swt::SWT::PUSH)
             item.text = entry.text
+            if entry.command.get_key
+              item.set_accelerator(BindingTranslator.key(entry.command.get_key))
+            end
             item.addSelectionListener do
               entry.selected
             end

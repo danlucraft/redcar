@@ -2,6 +2,7 @@
 require "application_swt/cucumber_runner"
 require "application_swt/event_loop"
 require "application_swt/menu"
+require "application_swt/menu/binding_translator"
 require "application_swt/notebook"
 require "application_swt/swt_wrapper"
 require "application_swt/window"
