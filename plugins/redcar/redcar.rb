@@ -28,6 +28,9 @@ module Redcar
         sub_menu "Debug" do
           item "Print Command History", PrintHistoryCommand
         end
+        sub_menu "Help" do
+          item "Website", PrintHistoryCommand
+        end
       end
       
       Redcar.app.menu = builder.menu
