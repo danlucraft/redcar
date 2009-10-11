@@ -84,19 +84,26 @@ module JFace
     end
   end
 end
-
-
-# Dir[File.dirname(__FILE__) + "/../../vendor/swtbot/*.jar"].each do |fn|
+# 
+# 
+# Dir["plugins/application_swt/vendor/swtbot/*.jar"].each do |fn|
 #   next if fn =~ /source/
 #   p fn
 #   require fn
 # end
 # 
+# Dir[File.dirname(__FILE__) + "/../../vendor/swtbot/*.jar"].each do |fn|
+#   next if fn =~ /source/
+#   p fn
+#   require fn
+# end
+
 # module SwtBot
 #   module Finder
-#     module Keyboard
-#       import org.eclipse.swtbot.swt.finder.keyboard.AbstractKeyboardStrategy
-#       # import org.eclipse.swtbot.swt.finder.keyboard.AWTKeyboardStrategy
-#     end
+#     import org.eclipse.swtbot.swt.finder.SWTBot
 #   end
 # end
+
+# p SwtBot::Finder::SWTBot
+
+

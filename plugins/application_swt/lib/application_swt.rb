@@ -23,7 +23,7 @@ module Redcar
     end
     
     def self.start
-      add_debug_key_filters
+      # add_debug_key_filters
     end
     
     def self.add_debug_key_filters
