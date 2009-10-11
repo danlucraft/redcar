@@ -1,0 +1,4 @@
+#!/bin/bash
+
+jruby -J-XstartOnFirstThread $(which spec) plugins/*/spec/*/*_spec.rb plugins/*/spec/*/*/*_spec.rb &&
+jruby -J-XstartOnFirstThread bin/cucumber -f progress plugins/*/features/*.feature

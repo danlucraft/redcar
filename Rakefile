@@ -4,6 +4,8 @@
 
 require 'rubygems'
 require 'fileutils'
+require 'spec/rake/spectask'
+require 'cucumber/rake/task'
 
 if RUBY_PLATFORM =~ /mswin/
   begin
@@ -64,4 +66,18 @@ task :list do
     puts "rake #{task.name}"
   end
 end
+
+desc "Run all specs and features"
+task :default => ["specs"]
+
+Spec::Rake::SpecTask.new("specs") do |t|
+  t.spec_files = FileList[
+    'plugins/*/spec/*/*_spec.rb',
+    'plugins/*/spec/*/*/*_spec.rb',
+    'plugins/*/spec/*/*/*/*_spec.rb',
+    ]
+end
+
+
+
 
