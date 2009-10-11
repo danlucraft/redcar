@@ -8,20 +8,26 @@ module Redcar
         @window = window
         create_shell
         create_tab_folder
+        add_listeners
+      end
+      
+      def add_listeners
+        @window.add_listener(:show,         &method(:show))
+        @window.add_listener(:menu_changed, &method(:menu_changed))
       end
         
       def show
         @shell.open
         @shell.text = window.title
       end
-
-      def close
-        @shell.close
-      end
       
       def menu_changed(menu)
         @menu_controller = ApplicationSWT::Menu.new(self, menu)
         shell.menu_bar = @menu_controller.menu_bar
+      end
+
+      def close
+        @shell.close
       end
         
       private

@@ -19,8 +19,7 @@ module Redcar
     
     def self.start
       Redcar.gui = ApplicationSWT.gui
-      @app_controller = ApplicationSWT.new(Redcar.app)
-      
+      Redcar.app.controller = ApplicationSWT.new(Redcar.app)
       builder = Menu::Builder.new do
         sub_menu "File" do
           item "New", NewCommand

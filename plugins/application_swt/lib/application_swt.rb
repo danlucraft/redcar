@@ -29,8 +29,17 @@ module Redcar
       @gui
     end
     
-    def initialize(application)
-      @application = application
+    def initialize(app)
+      @app = app
+      add_listeners
+    end
+    
+    def add_listeners
+      @app.add_listener(:new_window, &method(:new_window))
+    end
+    
+    def new_window(win)
+      win.controller = ApplicationSWT::Window.new(win)
     end
     
     def menu_changed

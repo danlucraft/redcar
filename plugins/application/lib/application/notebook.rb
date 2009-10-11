@@ -1,6 +1,7 @@
 module Redcar
   class Notebook
     include Redcar::Model
+    include Redcar::Observable
     
     attr_reader :tabs
     

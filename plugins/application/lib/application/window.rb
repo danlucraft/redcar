@@ -2,6 +2,7 @@
 module Redcar
   class Window
     include Redcar::Model
+    include Redcar::Observable
     
     # All instantiated windows
     def self.all
@@ -12,21 +13,28 @@ module Redcar
 
     def initialize
       Window.all << self
+      @visible = false
       @notebook = Redcar::Notebook.new
-    end
-
-    def show
-      controller.show
     end
 
     def title
       "Redcar"
     end
     
+    def show
+      @visible = true
+      notify_listeners(:show)
+    end
+    
+    def visible?
+      @visible
+    end
+    
     attr_reader :menu
 
     def menu=(menu)
-      controller.menu_changed(menu)
+      @menu = menu
+      notify_listeners(:menu_changed, menu)
     end
   end
 end

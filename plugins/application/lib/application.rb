@@ -31,6 +31,7 @@ module Redcar
     NAME = "Redcar"
     
     include Redcar::Model
+    include Redcar::Observable
     
     def self.load
     end
@@ -54,7 +55,7 @@ module Redcar
     def new_window
       new_window = Window.new
       windows << new_window
-      new_window.controller = ApplicationSWT::Window.new(new_window)
+      notify_listeners(:new_window, new_window)
       new_window.menu = menu
       new_window.show
     end
