@@ -10,7 +10,7 @@ module Redcar
   
   ROOT = File.expand_path(File.join(File.dirname(__FILE__), ".."))
 
-  $FR_CODEBASE          = File.expand_path(File.join(File.dirname(__FILE__)))
+  $FR_CODEBASE          = File.expand_path(File.join(File.dirname(__FILE__)) + "/../")
   $FR_PROJECT           = nil
   $FREEBASE_APPLICATION = "Redcar"
   
