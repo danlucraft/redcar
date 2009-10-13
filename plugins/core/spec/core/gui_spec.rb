@@ -11,7 +11,7 @@ describe Redcar::Gui do
   end
   
   it "registers itself" do
-    Redcar::Gui.all.map(&:name).should == ["test gui"]
+    Redcar::Gui.all.map {|g| g.name} .should == ["test gui"]
   end
   
   it "delegates start and stop to the event loop" do

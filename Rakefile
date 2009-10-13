@@ -72,7 +72,12 @@ task :default => ["specs", "cucumber"]
 
 desc "Run features"
 task :cucumber do
-  sh("jruby -J-XstartOnFirstThread bin/cucumber -cf progress plugins/*/features && echo 'done'")
+  case Config::CONFIG["host_os"]
+  when "darwin"
+    sh("jruby -J-XstartOnFirstThread bin/cucumber -cf progress plugins/*/features && echo 'done'")
+  else
+    sh("jruby bin/cucumber -cf progress plugins/*/features && echo 'done'")
+  end
 end
 
 Spec::Rake::SpecTask.new("specs") do |t|
