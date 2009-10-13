@@ -74,16 +74,16 @@ module Swt
     end
   end
 end
-
-require File.dirname(__FILE__) + "/../../vendor/jface/org.eclipse.jface.jar"
-
-module JFace
-  module Bindings
-    module Keys
-      import org.eclipse.jface.bindings.keys.KeyStroke
-    end
-  end
-end
+# 
+# require File.dirname(__FILE__) + "/../../vendor/jface/org.eclipse.jface.jar"
+# 
+# module JFace
+#   module Bindings
+#     module Keys
+#       import org.eclipse.jface.bindings.keys.KeyStroke
+#     end
+#   end
+# end
 # 
 # 
 # Dir["plugins/application_swt/vendor/swtbot/*.jar"].each do |fn|
