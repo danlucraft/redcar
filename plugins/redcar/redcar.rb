@@ -6,7 +6,7 @@ module Redcar
       
       def execute
         puts "making a new document"
-        win.new_tab(EditTab)
+        win.new_tab(Redcar::Tab)
       end
     end
     

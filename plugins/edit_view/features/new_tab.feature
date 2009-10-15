@@ -2,7 +2,8 @@ Feature: Open a new tab
 
   Scenario: New tab
     When I press "Cmd+N"
-    Then there should be one tab
+    Then there should be one edit tab
+
   
   
   
