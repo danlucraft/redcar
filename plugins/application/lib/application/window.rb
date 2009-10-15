@@ -30,6 +30,13 @@ module Redcar
       @visible
     end
     
+    def new_tab(tab_class)
+      tab = tab_class.new
+      notify_listeners(:new_tab, tab) do
+        notebook << tab
+      end
+    end
+    
     attr_reader :menu
 
     def menu=(menu)

@@ -15,7 +15,7 @@ module Redcar
     
     def <<(tab)
       @tabs << tab
-      controller.tab_added(tab)
+      notify_listeners(:tab_added, tab)
     end
   end
 end

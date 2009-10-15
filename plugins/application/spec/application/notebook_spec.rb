@@ -4,7 +4,6 @@ describe Redcar::Notebook do
   describe "with no tabs" do
     before do
       @notebook = Redcar::Notebook.new
-      @notebook.controller = RedcarSpec::NotebookController.new
     end
     
     it "reports its length" do
@@ -12,9 +11,12 @@ describe Redcar::Notebook do
     end
     
     it "accepts new tabs and reports them to the controller" do
-      tab = Redcar::Tab.new
-      @notebook.controller.should_receive(:tab_added).with(tab)
-      @notebook << tab
+      tab_result = nil
+      @notebook.add_listener(:tab_added) do |tab|
+        tab_result = tab
+      end
+      @notebook << 12301
+      tab_result.should == 12301
     end
   end
 end
