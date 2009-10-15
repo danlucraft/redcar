@@ -36,5 +36,9 @@ module Redcar
       @menu = menu
       notify_listeners(:menu_changed, menu)
     end
+    
+    def inspect
+      "#<Redcar::Window \"#{title}\">"
+    end
   end
 end
