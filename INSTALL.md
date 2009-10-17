@@ -5,11 +5,21 @@ Installing
 To get set up, clone the repo from github:
 
     $ git clone git://github.com/danlucraft/redcar.git
+    $ git submodule init
+    $ git submodule update
 
 Download the SWT release that is appropriate for your platform from
 eclipse.org/swt and put the swt.jar file into
 
     plugins/application_swt/vendor/swt/{linux,osx64,osx}/
+    
+and into 
+
+    vendor/java-mateview/lib/{linux,osx64,osx}
+
+Build the jar (you will need ant):
+
+    $ rake build
 
 To run Redcar stand in redcar/ and run
 

@@ -27,6 +27,7 @@ INSTALLATION
 ------------
 
 (not yet finalized for the JRuby version)
+See INSTALL.md
 
 TESTS (specs)
 -------------
