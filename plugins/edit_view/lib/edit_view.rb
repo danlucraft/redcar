@@ -1,5 +1,5 @@
 
-require "edit_view/tab"
+require "edit_view/edit_tab"
 
 module Redcar
   class EditView
