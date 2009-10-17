@@ -15,23 +15,6 @@ if RUBY_PLATFORM =~ /mswin/
   end
 end
 
-GREEN_FG = "\033[1;32m"
-RED_FG = "\033[1;31m"
-RED_BG = "\033[1;37m\033[41m"
-GREY_BG = "\033[40m"
-BLUE_FG = "\033[1;34m"
-CLEAR_COLOURS = "\033[0m"
-
-def execute_and_check(command)
-  puts %x{#{command}}
-  $?.to_i == 0 ? true : raise
-end
-
-def execute(command)
-  puts %x{#{command}}
-  $?.to_i == 0 ? true : false
-end
-
 def plugin_names
   Dir["plugins/*"].map do |fn|
     name = fn.split("/").last
@@ -89,6 +72,12 @@ Spec::Rake::SpecTask.new("specs") do |t|
   t.spec_opts = ["-c"]
 end
 
+desc "Build"
+task :build do
+  sh("ant jar -f vendor/java-mateview/build.xml")
+  cp("vendor/java-mateview/lib/java-mateview.rb", "plugins/edit_view_swt/vendor/")
+  cp("vendor/java-mateview/release/java-mateview.jar", "plugins/edit_view_swt/vendor/")
+end
 
 
 
