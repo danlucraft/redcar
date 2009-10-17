@@ -15,6 +15,7 @@ module Redcar
     # @param [String] name for the gui
     def initialize(name)
       @name = name
+      @controllers = Hash.new {|h,k| h[k] = []}
       Gui.all << self
     end
     
@@ -51,5 +52,26 @@ module Redcar
     def run_features(args)
       @feature_runner.run_features(args)
     end
+    
+    # Associates a model class and a controller class within this Gui.
+    # Not always necessary, because controllers usually know which
+    # controller to use.
+    #
+    # @param [Hash] model_class => controller_class
+    def register_controllers(options)
+      options.each do |model_class, controller_class|
+        @controllers[model_class] << controller_class
+      end
+    end
+    
+    # Returns the controller class for the given model, or nil
+    #
+    # @param [Object] an instance of a Redcar model
+    def controller_for(model)
+      controller_class = @controllers[model.class].first
+      raise "no controller for #{model.class}" unless controller_class
+      controller_class
+    end
+    
   end
 end

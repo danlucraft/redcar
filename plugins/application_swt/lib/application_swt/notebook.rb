@@ -11,7 +11,7 @@ module Redcar
       
       def attach_listeners
         @model.add_listener(:tab_added) do |tab|
-          tab.controller = ApplicationSWT::Tab.new(tab, self)
+          tab.controller = Redcar.gui.controller_for(tab).new(tab, self)
         end
       end
     end

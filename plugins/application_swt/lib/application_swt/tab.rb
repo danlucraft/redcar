@@ -8,7 +8,7 @@ module Redcar
         @item = Swt::Custom::CTabItem.new(notebook.tab_folder, Swt::SWT::CLOSE)
         @item.text = "Hello!"
         text = Swt::Widgets::Text.new(notebook.tab_folder, Swt::SWT::MULTI)
-        text.text = "Big Text"
+        text.text = "Example of a tab"
         @item.control = text
       end
     end

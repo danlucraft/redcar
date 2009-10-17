@@ -21,6 +21,7 @@ module Redcar
       @gui = Redcar::Gui.new("swt")
       @gui.register_event_loop(EventLoop.new)
       @gui.register_features_runner(CucumberRunner.new)
+      @gui.register_controllers(Redcar::Tab => ApplicationSWT::Tab)
     end
     
     def self.start
