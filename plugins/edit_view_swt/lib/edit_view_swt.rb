@@ -9,8 +9,10 @@ module Redcar
       gui = ApplicationSWT.gui
       gui.register_controllers(Redcar::EditTab => EditViewSWT::Tab)
       
-      JavaMateView::Bundle.load_bundles(Redcar::ROOT + "/../java-mateview/input/")
-      JavaMateView::ThemeManager.load_themes(Redcar::ROOT + "/../java-mateview/input/")
+      JavaMateView::Bundle.load_bundles(Redcar::ROOT + "/textmate/")
+      JavaMateView::ThemeManager.load_themes(Redcar::ROOT + "/textmate/")
+      p JavaMateView::Bundle.bundles.to_a.map {|b| b.name }
+      p JavaMateView::ThemeManager.themes.to_a.map {|t| t.name }
     end
   end
 end
