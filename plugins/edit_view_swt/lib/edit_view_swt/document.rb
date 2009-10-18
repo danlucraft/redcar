@@ -11,6 +11,10 @@ module Redcar
       def to_s
         @swt.get
       end
+      
+      def text=(text)
+        @swt.set(text)
+      end
     end
   end
 end

@@ -15,8 +15,18 @@ module Redcar
       
       def execute
         puts "printing contents"
-        tab = Redcar.app.windows.first.notebook.tabs.first
+        tab = win.notebook.tabs.first
         p tab.document.to_s
+      end
+    end
+    
+    class SetContents < Command
+      key "Cmd+S"
+      
+      def execute
+        puts "setting contents"
+        tab = win.notebook.tabs.first
+        tab.document.text = "class Redcar\n  include JRuby\nend\n"
       end
     end
     
@@ -38,6 +48,7 @@ module Redcar
         sub_menu "Debug" do
           item "Print Command History", PrintHistoryCommand
           item "Print Contents", PrintContents
+          item "Set Contents", SetContents
         end
         sub_menu "Help" do
           item "Website", PrintHistoryCommand
