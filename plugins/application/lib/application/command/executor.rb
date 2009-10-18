@@ -12,11 +12,22 @@ module Redcar
       
       def execute
         @command_instance.environment(Executor.current_environment)
-        @command_instance.execute
+        begin
+          @command_instance.execute
+        rescue Object => e
+          @command_instance.error = e
+          log_error
+        end
         record
       end
       
       private
+      
+      def log_error
+        puts "* Error in command #{@command_instance.class}"
+        puts "  " + @command_instance.error.message
+        puts @command_instance.error.backtrace.map {|l| "  " + l }
+      end
       
       def record
         if Redcar.history

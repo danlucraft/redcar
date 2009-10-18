@@ -3,6 +3,8 @@ module Redcar
   # to describe in what ways it can be called, and how Redcar will treat the
   # command instances.
   class Command
+    attr_accessor :error
+    
     def self.key(key)
       @key = key
     end
