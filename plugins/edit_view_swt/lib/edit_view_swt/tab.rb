@@ -1,7 +1,7 @@
 module Redcar
   class EditViewSWT
     class Tab
-      attr_reader :item
+      attr_reader :item, :mate_text
       
       def initialize(model, notebook)
         @model, @notebook = model, notebook
@@ -15,6 +15,10 @@ module Redcar
         @mate_text.set_theme_by_name "Twilight"
         @mate_text.set_font "Monaco", 15
         @item.control = @contents
+      end
+      
+      def document
+        EditViewSWT::Document.new(self.mate_text.document)
       end
     end
   end

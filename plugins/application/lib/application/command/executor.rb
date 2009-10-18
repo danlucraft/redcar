@@ -17,6 +17,9 @@ module Redcar
         rescue Object => e
           @command_instance.error = e
           log_error
+        rescue java.lang.StackOverflowError => e
+          @command_instance.error = e
+          log_error
         end
         record
       end
@@ -25,8 +28,10 @@ module Redcar
       
       def log_error
         puts "* Error in command #{@command_instance.class}"
-        puts "  " + @command_instance.error.message
-        puts @command_instance.error.backtrace.map {|l| "  " + l }
+        if @command_instance.error.respond_to?(:backtrace)
+          puts "  " + @command_instance.error.message.to_s
+          puts @command_instance.error.backtrace.map {|l| "  " + l }
+        end
       end
       
       def record

@@ -1,3 +1,4 @@
+require 'edit_view_swt/document'
 require 'edit_view_swt/tab'
 
 require File.dirname(__FILE__) + '/../vendor/java-mateview'

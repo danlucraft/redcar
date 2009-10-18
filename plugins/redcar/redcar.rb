@@ -10,6 +10,16 @@ module Redcar
       end
     end
     
+    class PrintContents < Command
+      key "Cmd+P"
+      
+      def execute
+        puts "printing contents"
+        tab = Redcar.app.windows.first.notebook.tabs.first
+        p tab.document.to_s
+      end
+    end
+    
     class PrintHistoryCommand < Command
       def execute
         Redcar.history.each do |c|
@@ -27,6 +37,7 @@ module Redcar
         end
         sub_menu "Debug" do
           item "Print Command History", PrintHistoryCommand
+          item "Print Contents", PrintContents
         end
         sub_menu "Help" do
           item "Website", PrintHistoryCommand
