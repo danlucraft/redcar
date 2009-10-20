@@ -3,7 +3,7 @@ $:.push(File.join(File.dirname(__FILE__), "..", "freebase2", "lib"))
 require 'freebase/freebase'
 
 module Redcar
-  VERSION         = '0.0.1'
+  VERSION         = '0.3.0dev'
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 0
   VERSION_RELEASE = 1
@@ -27,4 +27,9 @@ module Redcar
   def self.pump
     bus["/system/ui/messagepump"].call()
   end
+end
+
+if ARGV.include?("-v")
+  puts "Redcar #{Redcar::VERSION}"
+  exit
 end
