@@ -15,18 +15,16 @@ module Redcar
       p JavaMateView::ThemeManager.themes.to_a.map {|t| t.name }
     end
 
-    def initialize(tab_folder)
-      @contents = Swt::Widgets::Composite.new(tab_folder, Swt::SWT::NONE)
-      @contents.layout = Swt::Layout::FillLayout.new
-      @mate_text = JavaMateView::MateText.new(@contents)
+    def initialize(tab)
+      @tab = tab
+      parent = @tab.notebook.tab_folder
+      @widget = Swt::Widgets::Composite.new(parent, Swt::SWT::NONE)
+      @widget.layout = Swt::Layout::FillLayout.new
+      @mate_text = JavaMateView::MateText.new(@widget)
       @mate_text.set_grammar_by_name "Ruby"
       @mate_text.set_theme_by_name "Twilight"
       @mate_text.set_font "Monaco", 15
-      @contents
-    end
-    
-    def widget
-      @contents
+      tab.item.control = @widget
     end
     
     def document
