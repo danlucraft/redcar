@@ -33,7 +33,7 @@ end
 
 task :yardoc do
   files = []
-  %w(core application application_swt edit_view edit_view_swt redcar).each do |plugin_name|
+  %w(core application application_swt edit_view edit_view_swt project redcar).each do |plugin_name|
     files += Dir["plugins/#{plugin_name}/**/*.rb"]
   end
   %x(yardoc #{files.join(" ")} -o yardoc)
