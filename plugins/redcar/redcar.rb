@@ -11,6 +11,17 @@ module Redcar
       end
     end
     
+    class FileOpenCommand < Command
+      key "Cmd+O"
+      
+      def execute
+        p :open
+        dialog = Swt::Widgets::FileDialog.new(win.controller.shell, Swt::SWT::OPEN)
+        dialog.set_filter_path("/home/danlucraft/")
+        puts "save to : " + dialog.open.to_s
+      end
+    end
+    
     class PrintContents < Command
       key "Cmd+P"
       
@@ -45,6 +56,7 @@ module Redcar
       builder = Menu::Builder.new do
         sub_menu "File" do
           item "New", NewCommand
+          item "Open", FileOpenCommand
         end
         sub_menu "Debug" do
           item "Print Command History", PrintHistoryCommand
