@@ -13,7 +13,7 @@ module Redcar
     
     class FileOpenCommand < Command
       key "Cmd+O"
-      
+    
       def execute
         p :open
         dialog = Swt::Widgets::FileDialog.new(win.controller.shell, Swt::SWT::OPEN)

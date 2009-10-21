@@ -1,4 +1,5 @@
 
+require "edit_view/mirror"
 require "edit_view/edit_tab"
 
 module Redcar

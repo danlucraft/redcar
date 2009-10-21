@@ -59,6 +59,7 @@ module Cucumber
             path = path.gsub(/\/$/, '') # Strip trailing slash.
             File.directory?(path) ? Dir["#{path}/**/*"] : path
           end.flatten.uniq
+          files.map!    {|f| File.expand_path(f) }
           files.reject! {|f| !File.file?(f)}
           files.reject! {|f| File.extname(f) == '.feature' }
           files.reject! {|f| f =~ /^http/}
