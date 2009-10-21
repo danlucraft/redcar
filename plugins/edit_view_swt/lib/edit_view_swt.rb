@@ -30,5 +30,14 @@ module Redcar
     def document
       EditViewSWT::Document.new(@mate_text.document)
     end
+    
+    def focus
+      @mate_text.set_focus
+    end
+    
+    def has_focus?
+      focus_control = ApplicationSWT.display.get_focus_control
+      focus_control.parent.parent == @mate_text
+    end
   end
 end
