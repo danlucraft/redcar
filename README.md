@@ -29,16 +29,25 @@ INSTALLATION
 (not yet finalized for the JRuby version)
 See INSTALL.md
 
+TESTS
+-----
+
+To run all specs and features:
+
+  $ rake
+
+NB. Features work with Cucumber version 0.4.2, you may have problems with other versions because for the moment we are patching Cucumber dynamically to support dependencies between sets of features.
+
 TESTS (specs)
 -------------
 
 On OSX:
 
-  jruby -J-XstartOnFirstThread $(which spec) plugins/#{plugin_name}/spec/
+  $ jruby -J-XstartOnFirstThread $(which spec) plugins/#{plugin_name}/spec/
 
 On Linux:
 
-  jruby $(which spec) plugins/#{plugin_name}/spec/
+  $ jruby $(which spec) plugins/#{plugin_name}/spec/
 
   
 TESTS (features)
@@ -46,11 +55,11 @@ TESTS (features)
 
 On OSX:
 
-  jruby -J-XstartOnFirstThread bin/cucumber plugins/#{plugin_name}/features
+  $ jruby -J-XstartOnFirstThread bin/cucumber plugins/#{plugin_name}/features
 
 On Linux:
 
-  jruby bin/cucumber plugins/#{plugin_name}/features/
+  $ jruby bin/cucumber plugins/#{plugin_name}/features/
 
 LICENSE
 -------

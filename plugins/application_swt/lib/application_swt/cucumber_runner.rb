@@ -6,6 +6,7 @@ module Redcar
       def run_features(args)
         require "cucumber/cli/main"
         require "cucumber"
+        require "cucumber/rb_support/rb_language"
         require "application_swt/cucumber_patches"
         Thread.new do
           begin
