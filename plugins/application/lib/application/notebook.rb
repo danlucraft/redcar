@@ -15,6 +15,10 @@ module Redcar
       @tabs.length
     end
     
+    def focussed_tab
+      controller.focussed_tab
+    end
+    
     # Creates a new tab in this Notebook, of class tab_class. Returns
     # the tab.
     #

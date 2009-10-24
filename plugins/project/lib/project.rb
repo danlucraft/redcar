@@ -22,7 +22,7 @@ module Redcar
       key "Cmd+S"
 
       def execute
-        tab = win.notebook.tabs.first
+        tab = win.notebook.focussed_tab
         puts "saving document"
         tab.edit_view.document.save!
       end

@@ -14,6 +14,11 @@ module Redcar
           tab.controller = Redcar.gui.controller_for(tab).new(tab, self)
         end
       end
+      
+      def focussed_tab
+        focussed_tab_item = tab_folder.get_selection
+        @model.tabs.detect {|tab| tab.controller.item == focussed_tab_item}
+      end
     end
   end
 end

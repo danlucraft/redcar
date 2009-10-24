@@ -16,7 +16,7 @@ module Redcar
       
       def execute
         puts "printing contents"
-        tab = win.notebook.tabs.first
+        tab = win.notebook.focussed_tab
         p tab.edit_view.document.to_s
       end
     end
@@ -25,7 +25,7 @@ module Redcar
       
       def execute
         puts "setting contents"
-        tab = win.notebook.tabs.first
+        tab = win.notebook.focussed_tab
         tab.edit_view.document.text = "class Redcar\n  include JRuby\nend\n"
       end
     end
