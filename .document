@@ -1,5 +1,3 @@
 bin/redcar
-freebase2/lib/freebase/*.rb
 lib/*.rb
 plugins/**/*.rb
-vendor/**/*.rb
