@@ -45,6 +45,12 @@ module Redcar
       end
     end
     
+    class ListTabsCommand < Command
+      def execute
+        p win.notebook.tabs.map {|tab| tab.class}
+      end
+    end
+    
     def self.start
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
@@ -60,6 +66,7 @@ module Redcar
           item "Print Command History", PrintHistoryCommand
           item "Print Contents", PrintContents
           item "Set Contents", SetContents
+          item "List Tabs", ListTabsCommand
         end
         sub_menu "Help" do
           item "Website", PrintHistoryCommand

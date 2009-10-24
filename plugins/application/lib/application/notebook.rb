@@ -19,6 +19,10 @@ module Redcar
       controller.focussed_tab
     end
     
+    def remove_tab!(tab)
+      @tabs.delete(tab)
+    end
+    
     # Creates a new tab in this Notebook, of class tab_class. Returns
     # the tab.
     #
