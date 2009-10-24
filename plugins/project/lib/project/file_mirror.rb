@@ -33,6 +33,10 @@ module Redcar
         @hash = Digest::SHA1.hexdigest(contents)
       end
       
+      def title
+        @path.split("/").last
+      end
+      
       private
       
       def load_contents

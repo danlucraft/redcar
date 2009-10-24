@@ -38,6 +38,7 @@ module Redcar
           update_from_mirror
         end
         update_from_mirror
+        @edit_view.title = mirror.title
       end
     end
     

@@ -18,5 +18,9 @@ module Redcar
     def create_document
       @document = Redcar::Document.new(self)
     end
+    
+    def title=(title)
+      @tab.title = title
+    end
   end
 end
