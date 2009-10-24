@@ -10,7 +10,9 @@ load_dependencies:
   core: "*"
   application: "*"
   application_swt: "*"
+  project: "*"
 start_dependencies: 
   core: "*"
   application: "*"
   application_swt: "*"
+  project: "*"
