@@ -26,10 +26,7 @@ module Redcar
       @mate_text.set_theme_by_name "Twilight"
       @mate_text.set_font "Monaco", 15
       @edit_tab.item.control = @widget
-    end
-    
-    def document
-      EditViewSWT::Document.new(@mate_text.document)
+      model.document.controller = EditViewSWT::Document.new(model.document, @mate_text.document)
     end
     
     def focus

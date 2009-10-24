@@ -5,15 +5,12 @@ module Redcar
       
       def initialize(model, notebook)
         super
+        @edit_view = EditViewSWT.new(model.edit_view, self)
       end
       
       def create_item_widget
         @item = Swt::Custom::CTabItem.new(notebook.tab_folder, Swt::SWT::CLOSE)
         @item.text = "Hello!"
-      end
-      
-      def edit_view
-        @edit_view ||= EditViewSWT.new(@model.edit_view, self)
       end
       
       # Focuses the CTabItem within the CTabFolder, and gives the keyboard

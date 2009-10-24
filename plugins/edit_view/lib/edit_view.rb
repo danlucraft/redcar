@@ -8,16 +8,15 @@ module Redcar
     include Redcar::Model
     include Redcar::Observable
     
+    attr_reader :document
+    
     def initialize(tab)
       @tab = tab
+      create_document
     end
     
-    def document
-      @document ||= begin 
-        doc = EditView::Document.new(self)
-        notify_listeners(:new_document, doc)
-        doc
-      end
+    def create_document
+      @document = Redcar::Document.new(self)
     end
   end
 end

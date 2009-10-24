@@ -30,18 +30,6 @@ module Redcar
       @visible
     end
     
-    # Creates a new tab in this window's Notebook, of class tab_class. Returns
-    # the tab.
-    #
-    # Events: new_tab (tab)
-    def new_tab(tab_class)
-      tab = tab_class.new
-      notify_listeners(:new_tab, tab) do
-        notebook << tab
-      end
-      tab
-    end
-    
     attr_reader :menu
 
     def menu=(menu)

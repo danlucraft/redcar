@@ -2,6 +2,9 @@ require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
 describe Redcar::Notebook do
   describe "with no tabs" do
+    class NotebookTestTab < Redcar::Tab
+    end
+    
     before do
       @notebook = Redcar::Notebook.new
     end
@@ -15,8 +18,8 @@ describe Redcar::Notebook do
       @notebook.add_listener(:tab_added) do |tab|
         tab_result = tab
       end
-      @notebook << 12301
-      tab_result.should == 12301
+      @notebook.new_tab NotebookTestTab
+      tab_result.should be_an_instance_of(NotebookTestTab)
     end
   end
 end

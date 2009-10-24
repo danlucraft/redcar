@@ -3,6 +3,10 @@ module Redcar
     include Redcar::Model
     include Redcar::Observable
     
+    def initialize(notebook)
+      @notebook = notebook
+    end
+    
     # Focus the tab within the notebook, and gives the keyboard focus to the 
     # contents of the tab, if appropriate.
     #
