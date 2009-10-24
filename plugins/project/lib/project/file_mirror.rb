@@ -25,7 +25,7 @@ module Redcar
       end
       
       def changed?
-        @hash == Digest::SHA1.hexdigest(load_contents)
+        @hash != Digest::SHA1.hexdigest(load_contents)
       end
       
       def commit(contents)
@@ -40,7 +40,7 @@ module Redcar
       end
       
       def save_contents(contents)
-        File.open(@path, "w") {|f| f.puts contents }
+        File.open(@path, "w") {|f| f.print contents }
       end
     end
   end

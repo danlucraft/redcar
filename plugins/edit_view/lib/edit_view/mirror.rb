@@ -4,7 +4,10 @@ module Redcar
     # Abstract interface. A Mirror allows an EditView contents to reflect 
     # some other resource. They have methods for loading the contents from the 
     # resource and commiting changes.
+    #
+    # Events: changed
     module Mirror
+      include Redcar::Observable
       
       # Return the contents of the resource reflected by this mirror. 
       # (E.g. the contents of the file)
