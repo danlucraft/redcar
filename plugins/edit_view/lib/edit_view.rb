@@ -8,7 +8,7 @@ module Redcar
     include Redcar::Model
     include Redcar::Observable
     
-    attr_reader :document, :tab
+    attr_reader :document
     
     def initialize(tab)
       @tab = tab
@@ -17,6 +17,10 @@ module Redcar
     
     def create_document
       @document = Redcar::Document.new(self)
+    end
+    
+    def title=(title)
+      @tab.title = title
     end
   end
 end

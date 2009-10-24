@@ -10,8 +10,6 @@ module Redcar
     class FileMirror
       include Redcar::EditView::Mirror
       
-      attr_reader :path
-      
       def initialize(path)
         @path = path
       end
@@ -33,6 +31,10 @@ module Redcar
       def commit(contents)
         save_contents(contents)
         @hash = Digest::SHA1.hexdigest(contents)
+      end
+      
+      def title
+        @path.split("/").last
       end
       
       private

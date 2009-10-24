@@ -6,6 +6,7 @@ module Redcar
       def initialize(model, notebook)
         super
         @edit_view = EditViewSWT.new(model.edit_view, self)
+        @model.add_listener(:changed_title) { |title| @item.text = title }
       end
       
       def create_item_widget
