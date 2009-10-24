@@ -43,6 +43,11 @@ module Redcar
       @gui
     end
     
+    def self.sync_exec(&block)
+      runnable = Swt::RRunnable.new(&block)
+      Redcar::ApplicationSWT.display.syncExec(runnable)
+    end
+    
     def initialize(app)
       @app = app
       add_listeners
