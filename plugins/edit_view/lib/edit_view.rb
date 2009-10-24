@@ -8,7 +8,7 @@ module Redcar
     include Redcar::Model
     include Redcar::Observable
     
-    attr_reader :document
+    attr_reader :document, :tab
     
     def initialize(tab)
       @tab = tab

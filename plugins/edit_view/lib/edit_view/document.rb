@@ -31,6 +31,10 @@ module Redcar
       @mirror.commit(to_s)
     end
     
+    def path
+      @mirror.path
+    end
+    
     def mirror=(new_mirror)
       notify_listeners(:new_mirror, new_mirror) do
         @mirror = new_mirror
@@ -38,6 +42,7 @@ module Redcar
           update_from_mirror
         end
         update_from_mirror
+        @edit_view.tab.controller.item.text = path.split("/").last if path
       end
     end
     

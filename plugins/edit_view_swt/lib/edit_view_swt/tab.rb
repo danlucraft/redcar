@@ -10,7 +10,7 @@ module Redcar
       
       def create_item_widget
         @item = Swt::Custom::CTabItem.new(notebook.tab_folder, Swt::SWT::CLOSE)
-        @item.text = "Hello!"
+        @item.text = "untitled"
       end
       
       # Focuses the CTabItem within the CTabFolder, and gives the keyboard

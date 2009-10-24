@@ -10,6 +10,8 @@ module Redcar
     class FileMirror
       include Redcar::EditView::Mirror
       
+      attr_reader :path
+      
       def initialize(path)
         @path = path
       end
