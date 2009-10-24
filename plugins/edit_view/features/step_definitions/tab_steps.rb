@@ -32,3 +32,9 @@ Then /^the tab should have the keyboard focus$/ do
   tab = get_tab(tab_folder)
   tab.controller.edit_view.has_focus?.should be_true
 end
+
+Then /^I should see "(.*)" in the edit tab$/ do |content|
+  tab_folder = get_tab_folder
+  tab = get_tab(tab_folder)
+  tab.edit_view.document.to_s.include?(content).should be_true
+end

@@ -23,7 +23,7 @@ module Redcar
       @gui.register_event_loop(EventLoop.new)
       @gui.register_features_runner(CucumberRunner.new)
       @gui.register_controllers(Redcar::Tab => ApplicationSWT::Tab)
-      @gui.register_dialog_adapter(ApplicationSWT::DialogAdapter)
+      @gui.register_dialog_adapter(ApplicationSWT::DialogAdapter.new)
     end
     
     def self.start
