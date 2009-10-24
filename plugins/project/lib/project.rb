@@ -7,9 +7,9 @@ module Redcar
       key "Cmd+O"
     
       def execute
-        tab = win.notebook.new_tab(Redcar::EditTab)
+        tab = win.new_tab(Redcar::EditTab)
         dialog = Swt::Widgets::FileDialog.new(win.controller.shell, Swt::SWT::OPEN)
-        dialog.set_filter_path("/home/danlucraft/")
+        dialog.set_filter_path(File.expand_path("~"))
         path = dialog.open
         puts "open file: " + path.to_s
         if path

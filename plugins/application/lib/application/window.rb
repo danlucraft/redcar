@@ -30,6 +30,11 @@ module Redcar
       @visible
     end
     
+    # Delegates to the new_tab method in the Window's active Notebook.
+    def new_tab(*args, &block)
+      notebook.new_tab(*args, &block)
+    end
+    
     attr_reader :menu
 
     def menu=(menu)
