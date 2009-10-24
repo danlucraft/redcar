@@ -1,6 +1,10 @@
 require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
 describe Redcar::Document do
+  class TestEditView
+    attr_accessor :title
+  end
+    
   class TestDocumentController
     def to_s
       @text
@@ -21,6 +25,10 @@ describe Redcar::Document do
     def commit(val)
       @text = val
     end
+    
+    def title
+      "foo"
+    end
 
     def make_a_change
       @text = "Changed content"
@@ -31,7 +39,7 @@ describe Redcar::Document do
   before do
     @controller = TestDocumentController.new
     @controller.text = ""
-    @doc = Redcar::Document.new(nil)
+    @doc = Redcar::Document.new(TestEditView.new)
     @doc.controller = @controller
     @mirror
   end
