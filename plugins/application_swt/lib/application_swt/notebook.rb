@@ -17,7 +17,6 @@ module Redcar
       end
       
       def attach_view_listeners
-        p(@tab_folder.methods.sort - Object.new.methods)
         @tab_folder.add_ctab_folder_listener do |event|
           tab = @model.tabs.detect {|tab| tab.controller.item == event.item }
           @model.remove_tab!(tab)
