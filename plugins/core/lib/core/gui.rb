@@ -73,5 +73,12 @@ module Redcar
       controller_class
     end
     
+    attr_reader :dialog_adapter
+    
+    # Set the dialog adapter for this gui. A dialog adapter must respond to the
+    # standard dialog methods defined in Application::Dialog
+    def register_dialog_adapter(dialog_adapter)
+      @dialog_adapter = dialog_adapter
+    end
   end
 end

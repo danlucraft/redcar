@@ -8,9 +8,7 @@ module Redcar
     
       def execute
         tab = win.new_tab(Redcar::EditTab)
-        dialog = Swt::Widgets::FileDialog.new(win.controller.shell, Swt::SWT::OPEN)
-        dialog.set_filter_path(File.expand_path("~"))
-        path = dialog.open
+        path = Application::Dialog.open_file(win, :filter_path => File.expand_path("~"))
         puts "open file: " + path.to_s
         if path
           mirror = FileMirror.new(path)

@@ -1,5 +1,6 @@
 
 require "application_swt/cucumber_runner"
+require "application_swt/dialog_adapter"
 require "application_swt/event_loop"
 require "application_swt/menu"
 require "application_swt/menu/binding_translator"
@@ -22,6 +23,7 @@ module Redcar
       @gui.register_event_loop(EventLoop.new)
       @gui.register_features_runner(CucumberRunner.new)
       @gui.register_controllers(Redcar::Tab => ApplicationSWT::Tab)
+      @gui.register_dialog_adapter(ApplicationSWT::DialogAdapter)
     end
     
     def self.start
