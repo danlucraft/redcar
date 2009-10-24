@@ -198,6 +198,27 @@ module FreeBASE
       @base_slot['state'].data
     end
     
+    # Require the plugins files
+    def require_files
+      log_requires do
+        $LOAD_PATH << File.expand_path(
+            File.join(
+              @plugin_configuration.full_base_path, 
+              "lib"))
+        if @plugin_configuration.require_path
+          require @plugin_configuration.require_path
+        else
+          # loads from default path plugin_dir/lib/plugin_name if no load path given
+          path = File.expand_path(
+              File.join(
+                @plugin_configuration.full_base_path, 
+                "lib", 
+                @plugin_configuration.name))
+          require path
+        end
+      end
+    end
+    
     ##
     # Loads the plugin instance by calling load on the Module defined by startup_module.
     #
@@ -206,25 +227,9 @@ module FreeBASE
       begin
         raise Exception.new("unment dependencies") unless @plugin_configuration.dependencies_met?
         require @plugin_configuration.dependencies_path if @plugin_configuration.dependencies_path
-        log_requires do
-          $LOAD_PATH << File.expand_path(
-              File.join(
-                @plugin_configuration.full_base_path, 
-                "lib"))
-          if @plugin_configuration.require_path
-            require @plugin_configuration.require_path
-          else
-            # loads from default path plugin_dir/lib/plugin_name if no load path given
-            path = File.expand_path(
-                File.join(
-                  @plugin_configuration.full_base_path, 
-                  "lib", 
-                  @plugin_configuration.name))
-            require path
-          end
-          object = eval(@plugin_configuration.startup_module)
-          object.load if object.respond_to?(:load)
-        end
+        require_files
+        object = eval(@plugin_configuration.startup_module)
+        object.load if object.respond_to?(:load)
         transition(FreeBASE::LOADED)
       rescue Exception => error
         puts error

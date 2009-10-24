@@ -41,6 +41,10 @@ module FreeBASE
       Core.new(propertiesFile, defaultPropertiesFile, :load_only => true)
     end
     
+    def self.require(propertiesFile, defaultPropertiesFile)
+      Core.new(propertiesFile, defaultPropertiesFile, :require_only => true)
+    end
+    
     # The master bus FreeBASE::DataBus
     attr_reader :bus
     
@@ -65,8 +69,12 @@ module FreeBASE
       @bus["/log/info"] << "--- #{@properties['config/product_name']} Started on #{Time.now.to_s}"
       @bus["/system/state/all_plugins_loaded"].data = false
       @plugin_config = Configuration.new(self, @properties["config/plugin_path"])
-      @plugin_config.load_plugins
-      @plugin_config.start_plugins unless options[:load_only]
+      if options[:require_only]
+        @plugin_config.require_plugins
+      else
+        @plugin_config.load_plugins
+        @plugin_config.start_plugins unless options[:load_only]
+      end
       @bus["/system/state/all_plugins_loaded"].data = true
       @core_thread = Thread.current
       unless options[:load_only]

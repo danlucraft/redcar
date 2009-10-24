@@ -24,6 +24,10 @@ module Redcar
     FreeBASE::Core.load_plugins("properties.yaml","config/default.yaml")
   end
   
+  def self.require
+    FreeBASE::Core.require("properties.yaml","config/default.yaml")
+  end
+  
   def self.pump
     bus["/system/ui/messagepump"].call()
   end

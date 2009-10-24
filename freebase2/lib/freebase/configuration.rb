@@ -59,6 +59,22 @@ module FreeBASE
     end
     
     ##
+    # Requires all the plugins based on the load list calculated by the dependency resolution
+    #
+    def require_plugins
+      num = 0
+      if @load_list.size == 0
+        puts "[FreeBASE] no plugins to require" if ARGV.include?("--debug-freebase")
+        exit
+      end
+      while num < @load_list.size
+        plugin = @load_list[num]
+        plugin.instance.require_files
+        num += 1
+      end
+    end
+    
+    ##
     # Loads all the plugins based on the load list calculated by the dependency resolution
     #
     def load_plugins
