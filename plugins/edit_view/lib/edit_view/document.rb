@@ -34,6 +34,9 @@ module Redcar
     def mirror=(new_mirror)
       notify_listeners(:new_mirror, new_mirror) do
         @mirror = new_mirror
+        mirror.add_listener(:change) do
+          update_from_mirror
+        end
         update_from_mirror
       end
     end
