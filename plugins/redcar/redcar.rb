@@ -38,6 +38,13 @@ module Redcar
       end
     end
     
+    class CloseTabCommand < Command
+      def execute
+        tab = win.notebook.focussed_tab
+        tab.close
+      end
+    end
+    
     def self.start
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
@@ -47,6 +54,7 @@ module Redcar
           item "Open", Project::FileOpenCommand
           # separator
           item "Save", Project::FileSaveCommand
+          item "Close", CloseTabCommand
         end
         sub_menu "Debug" do
           item "Print Command History", PrintHistoryCommand

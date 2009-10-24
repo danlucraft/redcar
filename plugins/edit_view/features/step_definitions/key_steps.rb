@@ -2,8 +2,8 @@
 module SwtKeyHelper
   def keypress(key)
     post(Swt::SWT::KeyDown, 0, 4194304)
-    post(Swt::SWT::KeyDown, 110, 110)
-    post(Swt::SWT::KeyUp, 110, 110)
+    post(Swt::SWT::KeyDown, key.downcase[-1], key.downcase[-1])
+    post(Swt::SWT::KeyUp, key.downcase[-1], key.downcase[-1])
     post(Swt::SWT::KeyUp, 0, 4194304)
   end
   

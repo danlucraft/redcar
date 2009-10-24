@@ -23,7 +23,7 @@ module Redcar
       @gui.register_event_loop(EventLoop.new)
       @gui.register_features_runner(CucumberRunner.new)
       @gui.register_controllers(Redcar::Tab => ApplicationSWT::Tab)
-      @gui.register_dialog_adapter(ApplicationSWT::DialogAdapter)
+      @gui.register_dialog_adapter(ApplicationSWT::DialogAdapter.new)
     end
     
     def self.start
@@ -41,6 +41,11 @@ module Redcar
     
     def self.gui
       @gui
+    end
+    
+    def self.sync_exec(&block)
+      runnable = Swt::RRunnable.new(&block)
+      Redcar::ApplicationSWT.display.syncExec(runnable)
     end
     
     def initialize(app)

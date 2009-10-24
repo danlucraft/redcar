@@ -19,10 +19,15 @@ module Redcar
       
       def attach_listeners
         @model.add_listener(:focus, &method(:focus))
+        @model.add_listener(:close, &method(:close))
       end
       
       def focus
         @notebook.tab_folder.set_selection(@item)
+      end
+      
+      def close
+        @item.dispose
       end
     end
   end
