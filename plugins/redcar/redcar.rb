@@ -22,7 +22,6 @@ module Redcar
     end
     
     class SetContents < Command
-      key "Cmd+S"
       
       def execute
         puts "setting contents"
@@ -46,6 +45,8 @@ module Redcar
         sub_menu "File" do
           item "New", NewCommand
           item "Open", Project::FileOpenCommand
+          # separator
+          item "Save", Project::FileSaveCommand
         end
         sub_menu "Debug" do
           item "Print Command History", PrintHistoryCommand
