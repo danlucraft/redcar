@@ -49,8 +49,9 @@ module Redcar
       key "Cmd+W"
       
       def execute
-        tab = win.notebook.focussed_tab
-        tab.close
+        if tab = win.notebook.focussed_tab
+          tab.close
+        end
       end
     end
     
