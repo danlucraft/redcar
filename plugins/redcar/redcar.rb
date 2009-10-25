@@ -39,6 +39,8 @@ module Redcar
     end
     
     class CloseTabCommand < Command
+      key "Cmd+W"
+      
       def execute
         tab = win.notebook.focussed_tab
         tab.close
