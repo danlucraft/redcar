@@ -2,6 +2,7 @@
 module Redcar
   class EditViewSWT
     class Document
+      include Redcar::Observable
       attr_reader :swt_document
       
       def initialize(model, swt_document)
@@ -15,7 +16,9 @@ module Redcar
       
       def text=(text)
         @swt_document.set(text)
+        notify_listeners(:set_text)
       end
+      
     end
   end
 end

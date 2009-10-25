@@ -29,7 +29,9 @@ module Redcar
       @mate_text.set_font "Monaco", 15
       @edit_tab.item.control = @widget
       model.controller = self
-      model.document.controller = EditViewSWT::Document.new(model.document, @mate_text.document)
+      @document = EditViewSWT::Document.new(model.document, @mate_text.document)
+      model.document.controller = @document
+      attach_listeners
     end
     
     def focus
@@ -39,6 +41,14 @@ module Redcar
     def has_focus?
       focus_control = ApplicationSWT.display.get_focus_control
       focus_control.parent.parent == @mate_text
+    end
+    
+    def attach_listeners
+      @document.add_listener(:set_text, &method(:reparse))
+    end
+    
+    def reparse
+      @mate_text.parser.parse_range(0, @mate_text.parser.styledText.get_line_count-1)
     end
   end
 end
