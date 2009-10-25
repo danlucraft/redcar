@@ -38,6 +38,13 @@ module Redcar
       end
     end
     
+    class PrintScopeTreeCommand < Command
+      def execute
+        tab = win.notebook.focussed_tab
+        puts tab.edit_view.controller.mate_text.parser.root.pretty(0)
+      end
+    end
+    
     class CloseTabCommand < Command
       key "Cmd+W"
       
@@ -69,6 +76,7 @@ module Redcar
           item "Print Contents", PrintContents
           item "Set Contents", SetContents
           item "List Tabs", ListTabsCommand
+          item "Print Scope Tree", PrintScopeTreeCommand
         end
         sub_menu "Help" do
           item "Website", PrintHistoryCommand

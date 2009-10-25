@@ -14,6 +14,8 @@ module Redcar
       p JavaMateView::Bundle.bundles.to_a.map {|b| b.name }
       p JavaMateView::ThemeManager.themes.to_a.map {|t| t.name }
     end
+    
+    attr_reader :mate_text
 
     def initialize(model, edit_tab)
       @model = model
@@ -26,6 +28,7 @@ module Redcar
       @mate_text.set_theme_by_name "Twilight"
       @mate_text.set_font "Monaco", 15
       @edit_tab.item.control = @widget
+      model.controller = self
       model.document.controller = EditViewSWT::Document.new(model.document, @mate_text.document)
     end
     
