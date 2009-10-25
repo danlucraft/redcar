@@ -38,14 +38,14 @@ module Redcar
           update_from_mirror
         end
         update_from_mirror
-        @edit_view.title = mirror.title
       end
     end
     
     private
     
     def update_from_mirror
-      self.text = mirror.read
+      self.text        = mirror.read
+      @edit_view.title = mirror.title
     end
   end
 end
