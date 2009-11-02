@@ -33,9 +33,9 @@ module Redcar
       @widget = Swt::Widgets::Composite.new(parent, Swt::SWT::NONE)
       @widget.layout = Swt::Layout::FillLayout.new
       @mate_text = JavaMateView::MateText.new(@widget)
-      @mate_text.set_grammar_by_name "Ruby"
-      @mate_text.set_theme_by_name "Twilight"
-      @mate_text.set_font "Monaco", 15
+      @mate_text.set_grammar_by_name "Plain Text"
+      @mate_text.set_theme_by_name "Mac Classic"
+      @mate_text.set_font "Courier", 16
       @edit_tab.item.control = @widget
       @model.controller = self
     end
@@ -43,6 +43,7 @@ module Redcar
     def create_document
       @document = EditViewSWT::Document.new(@model.document, @mate_text.document)
       @model.document.controller = @document
+      @model.document.add_listener(:new_mirror, &method(:update_grammar))
     end
     
     def focus
@@ -60,6 +61,11 @@ module Redcar
     
     def reparse
       @mate_text.parser.parse_range(0, @mate_text.parser.styledText.get_line_count-1)
+    end
+    
+    def update_grammar(*)
+      @mate_text.set_grammar_by_filename(@model.document.title)
+      @mate_text.set_grammar_by_first_line(@model.document.to_s.split("\n").first)
     end
   end
 end

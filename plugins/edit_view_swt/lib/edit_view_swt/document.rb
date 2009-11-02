@@ -18,7 +18,6 @@ module Redcar
         @swt_document.set(text)
         notify_listeners(:set_text)
       end
-      
     end
   end
 end
