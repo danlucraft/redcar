@@ -9,6 +9,11 @@ module Redcar
     module Mirror
       include Redcar::Observable
       
+      # Return the title of the resource. (e.g. the filename)
+      def title
+        raise "not implemented"
+      end
+      
       # Return the contents of the resource reflected by this mirror. 
       # (E.g. the contents of the file)
       def read
