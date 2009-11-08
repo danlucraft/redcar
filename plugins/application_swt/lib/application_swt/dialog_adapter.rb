@@ -9,19 +9,5 @@ module Redcar
         dialog.open
       end
     end
-    
-    class FakeDialogAdapter
-      def initialize
-        @responses = {}
-      end
-      
-      def set(method, value)
-        @responses[method] = value
-      end
-      
-      def open_file(*args)
-        @responses[:open_file]
-      end
-    end
   end
 end
