@@ -8,6 +8,7 @@ module Redcar
       def execute
         tab = win.new_tab(Redcar::EditTab)
         tab.edit_view.document.mirror = InternalMirror.new
+        tab.focus
       end
     end
   end
