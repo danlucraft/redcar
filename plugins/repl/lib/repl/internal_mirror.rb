@@ -12,11 +12,7 @@ module Redcar
       def read
         str = message
         @history.zip(@results) do |command, result|
-          str << prompt
-          str << command
-          str << "\n" + output_pointer
-          str << result
-          str << "\n"
+          str << prompt + command + "\n" + output_pointer + result + "\n"
         end
         str << prompt
       end
@@ -32,13 +28,17 @@ module Redcar
       def commit(contents)
         command = contents.split(prompt).last
         @history << command
-        result = eval(command)
-        @results << result.inspect
+        begin
+          result = eval(command).inspect
+        rescue Object => e
+          result = format_error(e)
+        end
+        @results << result
         notify_listeners(:change)
       end
 
       def title
-        "(internal).rb"
+        "(internal)"
       end
       
       private
@@ -53,6 +53,10 @@ module Redcar
       
       def output_pointer
         "=> "
+      end
+      
+      def format_error(e)
+        "#{e.class}: #{e.message}\n        #{e.backtrace.join("\n        ")}"
       end
     end
   end

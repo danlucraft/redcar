@@ -9,7 +9,7 @@ class Redcar::REPL
     end
     
     def commit_test_text1
-              text = <<-RUBY
+      text = <<-RUBY
 # Redcar REPL
 
 >> $internal_repl_test = 707
@@ -64,7 +64,7 @@ RUBY
       end
       
       it "should have a title" do
-        @mirror.title.should == "(internal).rb"
+        @mirror.title.should == "(internal)"
       end
       
       it "should not be changed" do
@@ -85,6 +85,18 @@ RUBY
         it "should now have the command and the result at the end" do
           commit_test_text1
           @mirror.read.should == result_test_text1
+        end
+        
+        it "should display errors" do
+          @mirror.commit(">> nil.foo")
+          @mirror.read.should == (<<-RUBY).chomp
+# Redcar REPL
+
+>> nil.foo
+=> NoMethodError: undefined method `foo' for nil:NilClass
+        (eval):1:in `commit'
+>> 
+RUBY
         end
       end
     end
