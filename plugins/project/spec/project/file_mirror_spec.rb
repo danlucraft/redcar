@@ -1,7 +1,5 @@
 require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
-require 'fakefs'
-
 class Redcar::Project
   describe FileMirror do
     def write_testfile_contents(val)
@@ -9,9 +7,13 @@ class Redcar::Project
     end
     
     before do
-      @filename = "testfile"
+      @filename = "project_spec_testfile"
       write_testfile_contents("wintersmith")
       @mirror = FileMirror.new(@filename)
+    end
+    
+    after do
+      FileUtils.rm(@filename)
     end
     
     describe "for a test file" do
