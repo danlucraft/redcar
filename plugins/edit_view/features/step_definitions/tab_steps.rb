@@ -11,6 +11,11 @@ Then /^there should be one (.*) tab$/ do |tab_type|
   tab.should be_an_instance_of tab_class
 end
 
+Then /^there should be no open tabs$/ do 
+  get_tab_folder.getItems.to_a.length.should == 0
+end
+  
+
 Then /^the tab should be focussed within the notebook$/ do
   tab_folder = get_tab_folder
   tab_folder.get_selection.should == tab_folder.getItems.to_a.first
