@@ -94,9 +94,10 @@ RUBY
 
 >> nil.foo
 => NoMethodError: undefined method `foo' for nil:NilClass
-        (eval):1:in `commit'
+        (repl):1
 >> 
 RUBY
+        # ` RUBY
         end
       end
     end
@@ -126,5 +127,21 @@ RUBY
         end
       end
     end
+    
+    describe "when executing" do
+      it "should execute inside a main object" do
+        @mirror.commit(">> self")
+        @mirror.results.last.should == "main"
+      end
+      
+      it "should persist local variables" do
+        @mirror.commit(">> a = 13")
+        @mirror.commit(">> a")
+        @mirror.results.last.should == "13"
+      end
+    end
   end
 end
+
+
+
