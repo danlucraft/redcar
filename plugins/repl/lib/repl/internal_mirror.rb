@@ -5,8 +5,7 @@ module Redcar
       include Redcar::EditView::Mirror
       
       def read
-        result, @result = @result, nil
-        result
+        message + prompt
       end
 
       def exists?
@@ -14,16 +13,23 @@ module Redcar
       end
 
       def changed?
-        @result
       end
 
       def commit(contents)
-        puts contents
-        @result = eval(contents)
       end
 
       def title
         "(internal)"
+      end
+      
+      private
+      
+      def message
+        "*** Redcar REPL\n\n"
+      end
+      
+      def prompt
+        ">> "
       end
     end
   end
