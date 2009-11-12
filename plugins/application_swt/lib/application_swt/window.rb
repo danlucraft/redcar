@@ -35,6 +35,7 @@ module Redcar
       def create_shell
         @shell = Swt::Widgets::Shell.new(ApplicationSWT.display)
         @shell.layout = Swt::Layout::GridLayout.new(1, false)
+        @shell.add_shell_listener(ApplicationSWT::ShellListener.new)
       end
         
       def create_tab_folder
