@@ -1,6 +1,5 @@
 require 'edit_view_swt/document'
 require 'edit_view_swt/tab'
-require 'edit_view_swt/grammer_selector'
 
 require File.dirname(__FILE__) + '/../vendor/java-mateview'
 
@@ -56,9 +55,9 @@ module Redcar
     
     def create_grammar_selector
       @combo = Swt::Widgets::Combo.new @widget, Swt::SWT::READ_ONLY
-      items = JavaMateView::Bundle.bundles.to_a.map{ |bundle| bundle.name }
+      items = JavaMateView::Bundle.bundles.to_a.map{ |bundle| bundle.name }.sort
       @combo.items = items.to_java :string
-      @combo
+      #@combo.select(@combo.index_of ) => Name of current Grammer
         
       @combo.add_selection_listener do |event|
         @mate_text.set_grammar_by_name @combo.text
