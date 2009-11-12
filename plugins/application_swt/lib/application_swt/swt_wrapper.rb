@@ -74,6 +74,24 @@ module Swt
       @block.call
     end
   end
+  
+  class Swt::Widgets::Shell
+    
+  
+    def on_close &block
+      listener.add_close_event &block
+    end
+    
+    def listener
+      if @listener
+        @listener
+      else
+        @listener = Redcar::ApplicationSWT::ShellListener.new
+        self.add_shell_listener(@listener)  
+        @listener
+      end
+    end
+  end
 end
 # 
 # require File.dirname(__FILE__) + "/../../vendor/jface/org.eclipse.jface.jar"

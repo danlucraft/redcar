@@ -3,11 +3,18 @@ module Redcar
     class ShellListener
       include org.eclipse.swt.events.ShellListener
       
+      def add_close_event &block
+        @on_close ||= []
+        @on_close << block
+      end
+      
       def shell_activated(event) # Shell is active window
       end
       
       def shell_closed(event)
-        Redcar.gui.stop
+        @on_close.each do |event|
+          event.call
+        end
       end
       
       def shell_deactivated(event) # Shell is no longer active window
