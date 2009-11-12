@@ -28,6 +28,7 @@ module Swt
   
   module Widgets
     import org.eclipse.swt.widgets.Button
+    import org.eclipse.swt.widgets.Combo
     import org.eclipse.swt.widgets.Composite
     import org.eclipse.swt.widgets.Display
     import org.eclipse.swt.widgets.Event
@@ -77,7 +78,6 @@ module Swt
   
   class Swt::Widgets::Shell
     
-  
     def on_close &block
       listener.add_close_event &block
     end

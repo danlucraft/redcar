@@ -1,4 +1,3 @@
-
 module Redcar
   class EditTab < Tab
     attr_reader :edit_view
