@@ -8,7 +8,7 @@ require "application_swt/notebook"
 require "application_swt/swt_wrapper"
 require "application_swt/tab"
 require "application_swt/window"
-require "application_swt/redcar_shell_listener.rb"
+require "application_swt/shell_listener.rb"
 
 module Redcar
   class ApplicationSWT
