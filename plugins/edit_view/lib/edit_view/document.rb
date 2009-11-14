@@ -27,6 +27,10 @@ module Redcar
       controller.text = text
     end
     
+    def length
+      controller.length
+    end
+    
     def save!
       @mirror.commit(to_s)
     end

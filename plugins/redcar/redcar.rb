@@ -78,7 +78,10 @@ module Redcar
           item "Set Contents", SetContents
           item "List Tabs", ListTabsCommand
           item "Print Scope Tree", PrintScopeTreeCommand
-          item "REPL", REPL::OpenInternalREPL
+          sub_menu "REPL" do
+            item "Open", REPL::OpenInternalREPL
+            item "Execute", REPL::CommitREPL
+          end
         end
         sub_menu "Help" do
           item "Website", PrintHistoryCommand

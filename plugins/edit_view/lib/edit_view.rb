@@ -22,5 +22,13 @@ module Redcar
     def title=(title)
       @tab.title = title
     end
+    
+    def cursor_offset=(offset)
+      controller.cursor_offset = offset
+    end
+    
+    def cursor_offset
+      controller.cursor_offset
+    end
   end
 end

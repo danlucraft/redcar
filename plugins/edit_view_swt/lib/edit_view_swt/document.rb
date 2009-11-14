@@ -14,6 +14,10 @@ module Redcar
         @swt_document.get
       end
       
+      def length
+        @swt_document.get_length
+      end
+      
       def text=(text)
         @swt_document.set(text)
         notify_listeners(:set_text)

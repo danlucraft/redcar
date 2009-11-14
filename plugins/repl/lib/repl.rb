@@ -7,8 +7,20 @@ module Redcar
       
       def execute
         tab = win.new_tab(Redcar::EditTab)
-        tab.edit_view.document.mirror = InternalMirror.new
+        edit_view = tab.edit_view
+        edit_view.document.mirror = InternalMirror.new
+        edit_view.cursor_offset = edit_view.document.length
         tab.focus
+      end
+    end
+    
+    class CommitREPL < Command
+      key "Cmd+M"
+
+      def execute
+        edit_view = win.notebook.focussed_tab.edit_view
+        edit_view.document.save!
+        edit_view.cursor_offset = edit_view.document.length
       end
     end
   end

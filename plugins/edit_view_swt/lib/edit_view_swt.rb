@@ -63,6 +63,14 @@ module Redcar
       @mate_text.parser.parse_range(0, @mate_text.parser.styledText.get_line_count-1)
     end
     
+    def cursor_offset=(offset)
+      @mate_text.get_text_widget.set_caret_offset(offset)
+    end
+    
+    def cursor_offset
+      @mate_text.get_text_widget.get_caret_offset
+    end
+    
     def update_grammar(*)
       @mate_text.set_grammar_by_filename(@model.document.title)
       @mate_text.set_grammar_by_first_line(@model.document.to_s.split("\n").first)
