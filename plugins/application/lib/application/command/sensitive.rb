@@ -21,18 +21,12 @@ module Redcar
     module Sensitive
       module ClassMethods
         def sensitize(*symbols)
-          @sensitivity_names = symbols
+          @sensitivity_names ||= []
+          @sensitivity_names += symbols
         end
         
         def sensitivity_names
-          (@sensitivity_names || []) + begin
-            parent = self.superclass
-            if parent.ancestors.include?(Redcar::Command::Sensitive)
-              parent.sensitivity_names
-            else
-              []
-            end
-          end
+          @sensitivity_names || []
         end
         
         def sensitivities

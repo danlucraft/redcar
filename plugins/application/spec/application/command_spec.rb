@@ -39,4 +39,21 @@ describe Redcar::Command do
       MyNonRecordableCommand.record?.should be_false
     end
   end
+  
+  describe "commands inherit sensitivities" do
+    class SensitiveCommand < Redcar::Command
+      sensitize :foo
+    end
+    
+    class SubSensitiveCommand < SensitiveCommand
+      sensitize :bar
+    end
+    
+    it "has it's own and it's parent's sensitivities" do
+      SubSensitiveCommand.sensitivity_names.should == [:foo, :bar]
+    end
+  end
 end
+
+
+

@@ -1,9 +1,9 @@
 
-require 'application/command'
 require 'application/command/executor'
 require 'application/command/history'
 require 'application/command/sensitive'
 require 'application/command/sensitivity'
+require 'application/command'
 require 'application/dialog'
 require 'application/menu'
 require 'application/menu/item'

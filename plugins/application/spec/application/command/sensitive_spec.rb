@@ -80,37 +80,6 @@ describe Redcar::Command::Sensitive do
       deactivate_open_tab
       @obj.my_activeness_changed.should be_true
     end
-
-    describe "inherited sensitivities" do
-      class InheritedObject < SensitiveObject
-      end
-      
-      before do
-        @obj = InheritedObject.new
-      end
-
-      it "should be active by default" do
-        @obj.should be_active
-      end
-
-      it "becomes inactive when its sensitivity becomes inactive" do
-        deactivate_open_tab
-        @obj.should_not be_active
-      end
-
-      it "becomes active when its sensitivity becomes active" do
-        deactivate_open_tab
-        @obj.should_not be_active
-        activate_open_tab
-        @obj.should be_active
-      end
-
-      it "knows when it's sensitivity has changed" do
-        deactivate_open_tab
-        @obj.my_activeness_changed.should be_true
-      end
-
-    end
   end
   
   describe "a multiple sensitive object" do

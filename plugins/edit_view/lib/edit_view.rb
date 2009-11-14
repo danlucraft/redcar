@@ -1,4 +1,5 @@
 
+require "edit_view/command"
 require "edit_view/document"
 require "edit_view/mirror"
 require "edit_view/edit_tab"
@@ -7,6 +8,9 @@ module Redcar
   class EditView
     include Redcar::Model
     include Redcar::Observable
+    
+    def self.load
+    end
     
     attr_reader :document
     

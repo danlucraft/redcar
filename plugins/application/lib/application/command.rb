@@ -4,6 +4,13 @@ module Redcar
   # command instances.
   class Command
     attr_accessor :error
+
+    include Redcar::Command::Sensitive
+
+    def self.inherited(klass)
+      klass.send(:include, Redcar::Command::Sensitive)
+      klass.sensitize(*sensitivity_names)
+    end
     
     def self.key(key)
       @key = key
