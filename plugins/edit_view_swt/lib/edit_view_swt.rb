@@ -41,7 +41,6 @@ module Redcar
       @mate_text.set_font "Courier", 16
       @edit_tab.item.control = @widget
       
-      
       @mate_text.layoutData = Swt::Layout::GridData.construct do |data|
         data.horizontalAlignment = Swt::Layout::GridData::FILL
         data.verticalAlignment = Swt::Layout::GridData::FILL
@@ -55,12 +54,15 @@ module Redcar
     
     def create_grammar_selector
       @combo = Swt::Widgets::Combo.new @widget, Swt::SWT::READ_ONLY
-      items = JavaMateView::Bundle.bundles.to_a.map{ |bundle| bundle.name }.sort
-      @combo.items = items.to_java :string
+      bundles  = JavaMateView::Bundle.bundles.to_a
+      grammars = bundles.map{|b| b.grammars.to_a}.flatten
+      items    = grammars.map{|g| g.name}
+      @combo.items = items.to_java(:string)
       #@combo.select(@combo.index_of ) => Name of current Grammer
         
       @combo.add_selection_listener do |event|
-        @mate_text.set_grammar_by_name @combo.text
+        puts "selected #{@combo.text}"
+        @mate_text.set_grammar_by_name(@combo.text)
       end
       
       @widget.pack

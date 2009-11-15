@@ -1,7 +1,7 @@
 module Swt
   module Layout
     class GridData
-      def self.construct &block
+      def self.construct
         layoutData = GridData.new
         yield layoutData
         layoutData

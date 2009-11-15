@@ -8,7 +8,6 @@ require "application_swt/notebook"
 require "application_swt/swt_wrapper"
 require "application_swt/tab"
 require "application_swt/window"
-require "application_swt/shell_listener"
 require "application_swt/swt/grid_data"
 
 module Redcar
