@@ -54,9 +54,9 @@ module Redcar
       
       def connect_listeners
         @event_names.each do |event_name|
-          @observed_object.add_listener(event_name) do
+          @observed_object.add_listener(event_name) do |args|
             before = @active
-            @active = @boolean_finder.call
+            @active = @boolean_finder.call(*args)
             if before != @active
               notify_listeners(:changed)
             end
