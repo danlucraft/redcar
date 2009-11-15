@@ -12,11 +12,7 @@ module Redcar
     # Events: close
     def close
       notify_listeners(:close)
-      has_closed
-    end
-    
-    def has_closed
-      @notebook.tabs.delete(self)
+      @notebook.remove_tab!(self)
     end
     
     # Focus the tab within the notebook, and gives the keyboard focus to the 
@@ -25,6 +21,18 @@ module Redcar
     # Events: focus
     def focus
       notify_listeners(:focus)
+    end
+    
+    def title=(title)
+      notify_listeners(:changed_title, title)
+    end
+    
+    def title
+      "unknown"
+    end
+    
+    def inspect
+      "#<#{self.class.name} \"#{title}\">"
     end
   end
 end

@@ -57,6 +57,7 @@ module Redcar
       new_window = Window.new
       windows << new_window
       notify_listeners(:new_window, new_window)
+      attach_window_listeners(new_window)
       new_window.menu = menu
       new_window.show
     end
@@ -68,6 +69,12 @@ module Redcar
       @menu = menu
       windows.each do |window|
         window.menu = menu
+      end
+    end
+    
+    def attach_window_listeners(window)
+      window.add_listener(:tab_focussed) do |tab|
+        notify_listeners(:tab_focussed, tab)
       end
     end
   end

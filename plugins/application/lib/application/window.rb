@@ -14,7 +14,18 @@ module Redcar
     def initialize
       Window.all << self
       @visible = false
+      create_notebook
+      attach_notebook_listeners
+    end
+      
+    def create_notebook
       @notebook = Redcar::Notebook.new
+    end
+    
+    def attach_notebook_listeners
+      @notebook.add_listener(:tab_focussed) do |tab|
+        notify_listeners(:tab_focussed, tab)
+      end
     end
 
     def title

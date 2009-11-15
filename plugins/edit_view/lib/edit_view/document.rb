@@ -36,7 +36,7 @@ module Redcar
     end
     
     def title
-      @mirror.title
+      @mirror ? @mirror.title : nil
     end
     
     def mirror=(new_mirror)

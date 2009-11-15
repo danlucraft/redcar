@@ -9,7 +9,10 @@ module Redcar
     include Redcar::Model
     include Redcar::Observable
     
-    def self.load
+    def self.start
+      Redcar::Command::Sensitivity.new(:open_edit_tab, Redcar.app, [:tab_focussed]) do |tab|
+        tab and tab.is_a?(EditTab)
+      end
     end
     
     attr_reader :document

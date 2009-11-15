@@ -12,8 +12,8 @@ module Redcar
       @edit_view = Redcar::EditView.new(self)
     end
     
-    def title=(title)
-      notify_listeners(:changed_title, title)
+    def title
+      edit_view.document ? (edit_view.document.title || super) : super
     end
   end
 end

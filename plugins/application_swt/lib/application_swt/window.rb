@@ -38,11 +38,7 @@ module Redcar
       end
         
       def create_tab_folder
-        folder_style = Swt::SWT::BORDER + Swt::SWT::CLOSE
-        @tab_folder = Swt::Custom::CTabFolder.new(@shell, folder_style)
-    		@tab_folder.set_layout_data(Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH))
-    		@tab_folder.pack
-        ApplicationSWT::Notebook.new(window.notebook, @tab_folder)
+        @notebook = ApplicationSWT::Notebook.new(window.notebook, @shell)
       end
     end
   end

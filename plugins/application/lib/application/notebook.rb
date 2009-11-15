@@ -8,7 +8,8 @@ module Redcar
     attr_reader :tabs
     
     def initialize
-      @tabs = []
+      @tabs         = []
+      @focussed_tab = nil
     end
     
     def length
@@ -16,11 +17,7 @@ module Redcar
     end
     
     def focussed_tab
-      controller.focussed_tab
-    end
-    
-    def remove_tab!(tab)
-      @tabs.delete(tab)
+      @focussed_tab
     end
     
     # Creates a new tab in this Notebook, of class tab_class. Returns
@@ -33,6 +30,22 @@ module Redcar
         @tabs << tab
       end
       tab
+    end
+    
+    # Should not be called by user code. Call tab.close instead.
+    def remove_tab!(tab)
+      @tabs.delete(tab)
+      select_tab!(nil) unless @tabs.any?
+    end
+    
+    # Should not be called by user code. Call tab.focus instead.
+    def select_tab!(tab)
+      @focussed_tab = tab
+      notify_listeners(:tab_focussed, tab)
+    end
+    
+    def inspect
+      "#<Redcar::Notebook>"
     end
   end
 end

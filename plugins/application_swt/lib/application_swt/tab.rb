@@ -1,7 +1,7 @@
 module Redcar
   class ApplicationSWT
     class Tab
-      attr_reader :item
+      attr_reader :item, :model
       
       def initialize(model, notebook)
         @model, @notebook = model, notebook
@@ -23,7 +23,7 @@ module Redcar
       end
       
       def focus
-        @notebook.tab_folder.set_selection(@item)
+        @notebook.model_event_focus_tab(self)
       end
       
       def close
