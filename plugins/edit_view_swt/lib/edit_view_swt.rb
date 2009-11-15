@@ -18,12 +18,13 @@ module Redcar
       p JavaMateView::ThemeManager.themes.to_a.map {|t| t.name }
     end
     
-    attr_reader :mate_text
+    attr_reader :mate_text, :widget
 
     def initialize(model, edit_tab)
       @model = model
       @edit_tab = edit_tab
       create_mate_text
+      create_grammar_selector
       create_document
       attach_listeners
     end
@@ -31,13 +32,38 @@ module Redcar
     def create_mate_text
       parent = @edit_tab.notebook.tab_folder
       @widget = Swt::Widgets::Composite.new(parent, Swt::SWT::NONE)
-      @widget.layout = Swt::Layout::FillLayout.new
+      layout = Swt::Layout::GridLayout.new
+      layout.numColumns = 2
+      @widget.layout = layout
       @mate_text = JavaMateView::MateText.new(@widget)
       @mate_text.set_grammar_by_name "Plain Text"
       @mate_text.set_theme_by_name "Mac Classic"
       @mate_text.set_font "Courier", 16
       @edit_tab.item.control = @widget
+      
+      
+      @mate_text.layoutData = Swt::Layout::GridData.construct do |data|
+        data.horizontalAlignment = Swt::Layout::GridData::FILL
+        data.verticalAlignment = Swt::Layout::GridData::FILL
+        data.grabExcessHorizontalSpace = true
+        data.grabExcessVerticalSpace = true
+        data.horizontalSpan = 2  
+      end
+      
       @model.controller = self
+    end
+    
+    def create_grammar_selector
+      @combo = Swt::Widgets::Combo.new @widget, Swt::SWT::READ_ONLY
+      items = JavaMateView::Bundle.bundles.to_a.map{ |bundle| bundle.name }.sort
+      @combo.items = items.to_java :string
+      #@combo.select(@combo.index_of ) => Name of current Grammer
+        
+      @combo.add_selection_listener do |event|
+        @mate_text.set_grammar_by_name @combo.text
+      end
+      
+      @widget.pack
     end
     
     def create_document
