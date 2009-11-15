@@ -46,14 +46,14 @@ describe Redcar::Command::Sensitive do
   describe "a singly sensitive object" do
     class SensitiveObject
       include Redcar::Command::Sensitive
-      sensitize :open_tab
-      attr_accessor :my_activeness_changed
-    
+      
       def initialize
+        sensitize :open_tab
         on_active_changed do
           @my_activeness_changed = true
         end
       end
+      attr_accessor :my_activeness_changed
     end
 
     before do
@@ -85,14 +85,14 @@ describe Redcar::Command::Sensitive do
   describe "a multiple sensitive object" do
     class MultiplySensitiveObject
       include Redcar::Command::Sensitive
-      sensitize :open_tab, :is_tuesday
-      attr_accessor :my_activeness_changed
-
       def initialize
+        sensitize :open_tab, :is_tuesday
         on_active_changed do
           @my_activeness_changed = true
         end
       end
+
+      attr_accessor :my_activeness_changed
     end
 
     before do
@@ -139,11 +139,11 @@ describe Redcar::Command::Sensitive do
     
   describe "a sensitive class" do
     it "reports its sensitivities" do
-      s = SensitiveObject.sensitivities
+      s = SensitiveObject.new.sensitivities
       s.length.should == 1
       s.first.name.should == :open_tab
       
-      s = MultiplySensitiveObject.sensitivities
+      s = MultiplySensitiveObject.new.sensitivities
       s.length.should == 2
       s.map {|s| s.name}.should == [:open_tab, :is_tuesday]
     end

@@ -5,10 +5,10 @@ module Redcar
   class Command
     attr_accessor :error
 
-    include Redcar::Command::Sensitive
+    extend Redcar::Command::Sensitive
 
     def self.inherited(klass)
-      klass.send(:include, Redcar::Command::Sensitive)
+      klass.send(:extend, Redcar::Command::Sensitive)
       klass.sensitize(*sensitivity_names)
     end
     

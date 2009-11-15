@@ -24,6 +24,7 @@ module Redcar
     # returns a boolean true or false.
     class Sensitivity
       include Redcar::Observable
+      extend Redcar::Observable
       
       # All sensitivities
       def self.all
@@ -31,7 +32,15 @@ module Redcar
       end
       
       def self.get(name)
-        @all[name] || raise("unknown Sensitivity:#{name}")
+        all[name] || raise("unknown Sensitivity:#{name}")
+      end
+      
+      def self.event_name(sensitivity_name)
+        :"sensitivity_#{sensitivity_name.to_s}"
+      end
+      
+      def self.broadcast_sensitivity_change(sensitivity_name, active)
+        notify_listeners(event_name(sensitivity_name), active)
       end
       
       attr_reader :name
@@ -59,6 +68,7 @@ module Redcar
             @active = @boolean_finder.call(*args)
             if before != @active
               notify_listeners(:changed)
+              Sensitivity.broadcast_sensitivity_change(@name, @active)
             end
           end
         end
