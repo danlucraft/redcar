@@ -14,7 +14,7 @@ describe Redcar::Command::Sensitive do
     
     @ex = ExampleModel.new
     
-    Redcar::Command::Sensitivity.new(:open_tab, @ex, [:new_tab]) do
+    Redcar::Command::Sensitivity.new(:raining, @ex, [:new_tab]) do
       @open_tab == true
     end
     
@@ -47,11 +47,12 @@ describe Redcar::Command::Sensitive do
     class SensitiveObject
       include Redcar::Command::Sensitive
       
+      def active_changed(value)
+        @my_activeness_changed = true
+      end
+      
       def initialize
-        sensitize :open_tab
-        on_active_changed do
-          @my_activeness_changed = true
-        end
+        sensitize :raining
       end
       attr_accessor :my_activeness_changed
     end
@@ -86,12 +87,13 @@ describe Redcar::Command::Sensitive do
     class MultiplySensitiveObject
       include Redcar::Command::Sensitive
       def initialize
-        sensitize :open_tab, :is_tuesday
-        on_active_changed do
-          @my_activeness_changed = true
-        end
+        sensitize :raining, :is_tuesday
       end
 
+      def active_changed(value)
+        @my_activeness_changed = true
+      end
+      
       attr_accessor :my_activeness_changed
     end
 
@@ -141,11 +143,11 @@ describe Redcar::Command::Sensitive do
     it "reports its sensitivities" do
       s = SensitiveObject.new.sensitivities
       s.length.should == 1
-      s.first.name.should == :open_tab
+      s.first.name.should == :raining
       
       s = MultiplySensitiveObject.new.sensitivities
       s.length.should == 2
-      s.map {|s| s.name}.should == [:open_tab, :is_tuesday]
+      s.map {|s| s.name}.should == [:raining, :is_tuesday]
     end
   end
 end

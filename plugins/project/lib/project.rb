@@ -18,7 +18,7 @@ module Redcar
       end
     end
     
-    class FileSaveCommand < Command
+    class FileSaveCommand < EditTabCommand
       key "Cmd+S"
 
       def execute

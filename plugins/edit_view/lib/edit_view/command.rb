@@ -1,6 +1,6 @@
 module Redcar
-  class EditViewCommand < Command
+  class EditTabCommand < TabCommand
 
-    sensitize :open_edit_tab
+    sensitize :edit_tab_focussed
   end
 end

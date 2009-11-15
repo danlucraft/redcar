@@ -23,11 +23,11 @@ module Redcar
         @sensitivity_names ||= []
         @sensitivity_names += sensitivity_names
         sensitivity_names.each do |sensitivity_name|
-          Sensitivity.add_listener(Sensitivity.event_name(sensitivity_name)) do
+            Sensitivity.add_listener(Sensitivity.event_name(sensitivity_name)) do
             old_sensitivity = @current_sensitivity
             @current_sensitivity = active?
             if old_sensitivity != @current_sensitivity
-              @on_active_changed.call
+              active_changed(@current_sensitivity)
             end
           end
         end
@@ -44,11 +44,6 @@ module Redcar
       # Whether all the sensitivities of this object are active.
       def active?
         sensitivities.all? {|s| s.active? }
-      end
-      
-      # Use this to run a block only when the value of active? changes.
-      def on_active_changed(&block)
-        @on_active_changed = block
       end
     end
   end

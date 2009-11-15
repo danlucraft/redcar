@@ -4,12 +4,18 @@ module Redcar
   # command instances.
   class Command
     attr_accessor :error
-
+    
+    extend Redcar::Observable
     extend Redcar::Command::Sensitive
 
     def self.inherited(klass)
       klass.send(:extend, Redcar::Command::Sensitive)
       klass.sensitize(*sensitivity_names)
+    end
+    
+    # Called by the Sensitive module when the active value of this changed
+    def self.active_changed(value)
+      notify_listeners(:active_changed, value)
     end
     
     def self.key(key)

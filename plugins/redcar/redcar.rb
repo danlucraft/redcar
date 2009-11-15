@@ -11,7 +11,7 @@ module Redcar
       end
     end
     
-    class PrintContents < Command
+    class PrintContents < EditTabCommand
       key "Cmd+P"
       
       def execute
@@ -21,7 +21,7 @@ module Redcar
       end
     end
     
-    class SetContents < Command
+    class SetContents < EditTabCommand
       
       def execute
         puts "setting contents"
@@ -45,7 +45,7 @@ module Redcar
       end
     end
     
-    class CloseTabCommand < Command
+    class CloseTabCommand < TabCommand
       key "Cmd+W"
       
       def execute

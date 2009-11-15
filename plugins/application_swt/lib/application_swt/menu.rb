@@ -30,6 +30,9 @@ module Redcar
               puts "#{entry.command} activated"
               entry.selected
             end
+            entry.command.add_listener(:active_changed) do |value|
+              item.enabled = value
+            end
           end
         end
       end

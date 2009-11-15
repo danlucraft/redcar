@@ -10,6 +10,7 @@ require 'application/menu/item'
 require 'application/menu/builder'
 require 'application/notebook'
 require 'application/tab'
+require 'application/tab/command'
 require 'application/window'
 
 module Redcar
@@ -40,6 +41,9 @@ module Redcar
     def self.start
       Redcar.app     = Application.new
       Redcar.history = Command::History.new
+      Command::Sensitivity.new(:open_tab, Redcar.app, [:tab_focussed]) do |tab|
+        tab
+      end
     end
     
     # Immediately halts the gui event loop.
