@@ -15,6 +15,7 @@ Then /^the "([^\"]*)" menu should contain a "([^\"]*)" entry$/ do |menu_text, en
   items = main_menu.get_items.to_a
   menu = items.detect {|i| i.text == menu_text}
   items = menu.get_menu.get_items.to_a
-  items.detect {|i| i.text == entry_text}.should_not be_nil
+  menu_texts = items.map{|i| i.text.split("\t").first}
+  menu_texts.detect {|t| t == entry_text}.should_not be_nil
 end
 

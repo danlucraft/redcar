@@ -1,4 +1,16 @@
 
+When /^I open a new edit tab$/ do 
+  Redcar::Top::NewCommand.new.run
+end
+
+When /^I close the focussed tab$/ do
+  Redcar::Top::CloseTabCommand.new.run
+end
+
+When /^I open a file$/ do
+  Redcar::Project::FileOpenCommand.new.run
+end
+
 Then /^there should be one (.*) tab$/ do |tab_type|
   case tab_type
   when "edit"
