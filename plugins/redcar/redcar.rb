@@ -2,7 +2,9 @@
 module Redcar
   module Top
     class NewCommand < Command
-      key "Cmd+N"
+      key :osx     => "Cmd+N",
+          :linux   => "Ctrl+N",
+          :windows => "Ctrl+N"
       
       def execute
         puts "making a new document"
