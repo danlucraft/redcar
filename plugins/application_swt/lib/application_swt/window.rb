@@ -12,6 +12,11 @@ module Redcar
         def shell_closed(_)
           @controller.swt_event_closed!
         end
+
+        def shell_activated(_); end
+        def shell_deactivated(_); end
+        def shell_deiconified(_); end
+        def shell_iconified(_); end
       end
       
       def initialize(window)
@@ -42,8 +47,10 @@ module Redcar
         
       def swt_event_closed!
         # TODO: this should only close the app if it is the last window
-        # on Linux or Windows (Windows 7?). On Mac you can close all the windows
-        Redcar.gui.stop
+        # on Linux or Windows (Windows 7?).
+        unless Core.platform == :osx
+          Redcar.gui.stop
+        end
       end
         
       private
@@ -51,6 +58,8 @@ module Redcar
       def create_shell
         @shell = Swt::Widgets::Shell.new(ApplicationSWT.display)
         @shell.layout = Swt::Layout::GridLayout.new(1, false)
+	@shell_listener = ShellListener.new(self)
+        @shell.add_shell_listener(@shell_listener)  
       end
         
       def create_tab_folder
