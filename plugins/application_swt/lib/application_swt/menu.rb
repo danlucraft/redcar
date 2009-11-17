@@ -27,6 +27,8 @@ module Redcar
               key_string    = BindingTranslator.platform_key_string(key_specifier)
               item.text = entry.text + "\t" + key_string
               item.set_accelerator(BindingTranslator.key(key_string))
+            else
+              item.text = entry.text
             end
             item.addSelectionListener do
               puts "#{entry.command} activated"
