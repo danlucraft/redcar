@@ -38,7 +38,11 @@ module Redcar
       @mate_text = JavaMateView::MateText.new(@widget)
       @mate_text.set_grammar_by_name "Plain Text"
       @mate_text.set_theme_by_name "Mac Classic"
-      @mate_text.set_font "Courier", 16
+      if Core.platform == :osx
+        @mate_text.set_font "Courier", 16
+      elsif Core.platform == :linux
+        @mate_text.set_font "Monospace", 14
+      end
       @edit_tab.item.control = @widget
       
       @mate_text.layoutData = Swt::Layout::GridData.construct do |data|
