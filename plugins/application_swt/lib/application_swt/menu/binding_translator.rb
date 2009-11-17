@@ -4,7 +4,12 @@ module Redcar
       module BindingTranslator
         MODIFIERS = %w(Cmd Ctrl Alt Shift)
         
-        def self.key(key_string)
+        def self.key(key_specifier)
+          if key_specifier.is_a?(Hash)
+            key_string = key_specifier[Core.platform]
+          else
+            key_string = key_specifier
+          end
           value = 0
           MODIFIERS.each do |modifier|
             if key_string =~ /\b#{modifier}\b/

@@ -15,7 +15,9 @@ module Redcar
     end
     
     class CommitREPL < Command
-      key "Cmd+M"
+      key :linux   => "Ctrl+M",
+          :osx     => "Cmd+M",
+          :windows => "Ctrl+M"
 
       def execute
         edit_view = win.notebook.focussed_tab.edit_view
