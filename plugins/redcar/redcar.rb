@@ -48,7 +48,9 @@ module Redcar
     end
     
     class CloseTabCommand < TabCommand
-      key "Cmd+W"
+      key :osx     => "Cmd+W",
+          :linux   => "Ctrl+W",
+          :windows => "Ctrl+W"
       
       def execute
         if tab = win.notebook.focussed_tab

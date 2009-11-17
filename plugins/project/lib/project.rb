@@ -4,7 +4,9 @@ require "project/file_mirror"
 module Redcar
   class Project
     class FileOpenCommand < Command
-      key "Cmd+O"
+      key :osx     => "Cmd+O",
+          :linux   => "Ctrl+O",
+          :windows => "Ctrl+O"
     
       def execute
         tab = win.new_tab(Redcar::EditTab)
@@ -19,7 +21,9 @@ module Redcar
     end
     
     class FileSaveCommand < EditTabCommand
-      key "Cmd+S"
+      key :osx     => "Cmd+S",
+          :linux   => "Ctrl+S",
+          :windows => "Ctrl+S"
 
       def execute
         tab = win.notebook.focussed_tab
