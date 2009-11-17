@@ -22,9 +22,11 @@ module Redcar
             add_entries_to_menu(new_menu, entry)
           else
             item = Swt::Widgets::MenuItem.new(menu, Swt::SWT::PUSH)
-            item.text = entry.text
             if entry.command.get_key
-              item.set_accelerator(BindingTranslator.key(entry.command.get_key))
+              key_specifier = entry.command.get_key
+              key_string    = BindingTranslator.platform_key_string(key_specifier)
+              item.text = entry.text + "\t" + key_string
+              item.set_accelerator(BindingTranslator.key(key_string))
             end
             item.addSelectionListener do
               puts "#{entry.command} activated"

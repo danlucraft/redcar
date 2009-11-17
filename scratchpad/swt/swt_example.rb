@@ -80,8 +80,8 @@ class SwtExample
     fileMenuHeader.setMenu(fileMenu)
 
     fileNewItem =  Swt::Widgets::MenuItem.new(fileMenu, Swt::SWT::PUSH)
-    fileNewItem.setText("&New")
-    fileNewItem.set_accelerator(Swt::SWT::SHIFT + 'N'[0])
+    fileNewItem.setText("&New\tCtrl+N")
+    fileNewItem.set_accelerator(Swt::SWT::CTRL + 'N'[0])
 
     fileOpenItem =  Swt::Widgets::MenuItem.new(fileMenu, Swt::SWT::PUSH)
     fileOpenItem.setText("&Open")
@@ -89,6 +89,7 @@ class SwtExample
 
     fileSaveItem =  Swt::Widgets::MenuItem.new(fileMenu, Swt::SWT::PUSH)
     fileSaveItem.setText("&Save")
+p Swt::SWT::CTRL + "N"[0]
     fileSaveItem.set_accelerator(Swt::SWT::CTRL + 'S'[0])
 
     fileSaveAsItem =  Swt::Widgets::MenuItem.new(fileMenu, Swt::SWT::PUSH)
