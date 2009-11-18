@@ -18,6 +18,13 @@ module Redcar
   #   obj.sensitize :is_tuesday
   #   obj.active?  # => true|false
   module Sensitive
+    # Sensitize the object to a list of sensitivities. May be called with
+    # multiple sensitivities multiple times.
+    #
+    #    obj.sensitize :is_tuesday, :raining
+    #    obj.sensitize :month_has_y
+    #
+    # @param [Array<Symbol>] list of sensitivity_names
     def sensitize(*sensitivity_names)
       @sensitivity_names ||= []
       @sensitivity_names += sensitivity_names
@@ -32,10 +39,12 @@ module Redcar
       end
     end
     
+    # @return [Array<Symbol>] list of senstivity names
     def sensitivity_names
       @sensitivity_names || []
     end
     
+    # @return [Array<Sensitivity>] list of senstivitys
     def sensitivities
       sensitivity_names.map {|n| Sensitivity.get(n) }
     end

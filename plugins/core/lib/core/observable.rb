@@ -44,7 +44,7 @@ module Redcar
   #
   # == Triggering with Objects
   # 
-  # An object may pass an object or objects to it's listeners:
+  # An object may pass an object or objects to its listeners:
   #
   #   @obj.add_listener :NewTab do |new_tab|
   #     puts "do some stuff with the new tab: " + new_tab.to_s

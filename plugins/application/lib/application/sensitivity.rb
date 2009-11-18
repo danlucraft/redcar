@@ -1,6 +1,6 @@
 
 module Redcar
-  # A Sensitivity represents an application state that can be true or false
+  # A Sensitivity represents an application state that can be true or false.
   # For example, whether there is text selected, whether there are any
   # open edit tabs, whether there is a project open.
   #
@@ -11,16 +11,17 @@ module Redcar
   # The "whether there are any open edit tabs" sensitivity is defined like this:
   #
   #   Sensitivity.new(:open_edit_tab, Redcar.app, [:new_tab, :close_tab]) do
-  #     # checks whether there are any open tabs
+  #     # checks whether there are any open edit tabs
+  #     Redcar.app.windows.any? {|w| w.notebook.tabs.any? {|t| t.is_a?(EditTab)}}
   #   end
   #
   # This says that this sensitivity is called :open_edit_tab, that the state
-  # it represents ONLY changes when the application object issues events :new_tab or
-  # close_tab (see Redcar::Observable for more on events).
+  # it represents ONLY changes when the application object issues events 
+  # :new_tab or close_tab (see Redcar::Observable for more on events).
   #
   # A new tab opening or a tab closing MAY change the state, but on the other
-  # hand it may not, so the code in the block examines the application and
-  # returns a boolean true or false.
+  # hand it may not (if it is a ProjectTab), so the code in the block examines
+  # the application and returns a boolean true or false.
   class Sensitivity
     include Redcar::Observable
     extend Redcar::Observable
