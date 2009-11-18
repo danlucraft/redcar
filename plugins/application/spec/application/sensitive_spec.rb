@@ -1,6 +1,6 @@
-require File.join(File.dirname(__FILE__), "..", "..", "spec_helper")
+require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
-describe Redcar::Command::Sensitive do
+describe Redcar::Sensitive do
   class ExampleModel
     include Redcar::Observable
     
@@ -10,15 +10,15 @@ describe Redcar::Command::Sensitive do
   end
 
   before do
-    Redcar::Command::Sensitivity.all.clear
+    Redcar::Sensitivity.all.clear
     
     @ex = ExampleModel.new
     
-    Redcar::Command::Sensitivity.new(:raining, @ex, [:new_tab]) do
+    Redcar::Sensitivity.new(:raining, @ex, [:new_tab]) do
       @open_tab == true
     end
     
-    Redcar::Command::Sensitivity.new(:is_tuesday, @ex, [:midnight]) do
+    Redcar::Sensitivity.new(:is_tuesday, @ex, [:midnight]) do
       @is_tuesday == true
     end
   end
@@ -45,7 +45,7 @@ describe Redcar::Command::Sensitive do
     
   describe "a singly sensitive object" do
     class SensitiveObject
-      include Redcar::Command::Sensitive
+      include Redcar::Sensitive
       
       def active_changed(value)
         @my_activeness_changed = true
@@ -85,7 +85,7 @@ describe Redcar::Command::Sensitive do
   
   describe "a multiple sensitive object" do
     class MultiplySensitiveObject
-      include Redcar::Command::Sensitive
+      include Redcar::Sensitive
       def initialize
         sensitize :raining, :is_tuesday
       end

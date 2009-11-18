@@ -1,8 +1,8 @@
 
 require 'application/command/executor'
 require 'application/command/history'
-require 'application/command/sensitive'
-require 'application/command/sensitivity'
+require 'application/sensitive'
+require 'application/sensitivity'
 require 'application/command'
 require 'application/dialog'
 require 'application/menu'
@@ -41,7 +41,7 @@ module Redcar
     def self.start
       Redcar.app     = Application.new
       Redcar.history = Command::History.new
-      Command::Sensitivity.new(:open_tab, Redcar.app, [:tab_focussed]) do |tab|
+      Sensitivity.new(:open_tab, Redcar.app, [:tab_focussed]) do |tab|
         tab
       end
     end

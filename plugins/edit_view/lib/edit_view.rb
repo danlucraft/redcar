@@ -10,7 +10,7 @@ module Redcar
     include Redcar::Observable
     
     def self.start
-      Redcar::Command::Sensitivity.new(:edit_tab_focussed, Redcar.app, [:tab_focussed]) do |tab|
+      Sensitivity.new(:edit_tab_focussed, Redcar.app, [:tab_focussed]) do |tab|
         tab and tab.is_a?(EditTab)
       end
     end

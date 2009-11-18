@@ -6,10 +6,10 @@ module Redcar
     attr_accessor :error
     
     extend Redcar::Observable
-    extend Redcar::Command::Sensitive
+    extend Redcar::Sensitive
 
     def self.inherited(klass)
-      klass.send(:extend, Redcar::Command::Sensitive)
+      klass.send(:extend, Redcar::Sensitive)
       klass.sensitize(*sensitivity_names)
     end
     
