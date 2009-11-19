@@ -8,6 +8,8 @@ module Redcar
       end
     end
     
+    include Redcar::Core::HasLogger
+    
     attr_reader :name
     
     # Initialize a new named gui.
@@ -29,6 +31,7 @@ module Redcar
     
     # Starts the event loop for this gui.
     def start
+      logger.info("Starting event loop")
       @event_loop.start
     end
     

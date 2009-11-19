@@ -1,4 +1,5 @@
 
+require "core/logger"
 require "core/controller"
 require "core/gui"
 require "core/model"
@@ -7,6 +8,12 @@ require "core/plugin"
 
 module Redcar
   class Core
+    include HasLogger
+    
+    def self.load
+      Core::Logger.init
+    end
+    
     def self.platform
       case Config::CONFIG["target_os"]
       when /darwin/

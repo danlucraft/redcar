@@ -10,29 +10,47 @@ module Redcar
     class FileMirror
       include Redcar::EditView::Mirror
       
+      # @param [String] a path to a file
       def initialize(path)
         @path = path
       end
       
+      # Load the contents of the file from disk
+      #
+      # @return [String]
       def read
         contents = load_contents
         @hash = Digest::SHA1.hexdigest(contents)
         contents
       end
       
+      # Does the file exist?
+      #
+      # @return [Boolean]
       def exists?
         File.exists?(@path)
       end
       
+      # Has the file changed since the last time it was read or commited?
+      # If it has never been read then this is true by default.
+      #
+      # @return [Boolean]
       def changed?
         @hash != Digest::SHA1.hexdigest(load_contents)
       end
       
+      # Save new file contents.
+      #
+      # @param [String] new contents
+      # @return [unspecified]
       def commit(contents)
         save_contents(contents)
         @hash = Digest::SHA1.hexdigest(contents)
       end
       
+      # The filename.
+      #
+      # @return [String]
       def title
         @path.split("/").last
       end

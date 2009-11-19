@@ -1,6 +1,8 @@
 module Redcar
   class Command
     class Executor
+      include Redcar::Core::HasLogger
+      
       def self.current_environment
         {:win => Redcar.app.windows.first}
       end
@@ -27,10 +29,10 @@ module Redcar
       private
       
       def log_error
-        puts "* Error in command #{@command_instance.class}"
+        logger.error "* Error in command #{@command_instance.class}"
         if @command_instance.error.respond_to?(:backtrace)
-          puts "  " + @command_instance.error.message.to_s
-          puts @command_instance.error.backtrace.map {|l| "  " + l }
+          logger.error "  " + @command_instance.error.message.to_s
+          @command_instance.error.backtrace.each {|l| logger.error("  " + l) }
         end
       end
       

@@ -3,6 +3,7 @@ $:.push(File.join(File.dirname(__FILE__), "..", "freebase2", "lib"))
 require 'freebase/freebase'
 
 require 'ruby_extensions'
+require 'logging'
 
 module Redcar
   VERSION         = '0.3.0dev'

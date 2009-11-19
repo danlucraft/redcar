@@ -1,7 +1,21 @@
 module Redcar
-  # A Redcar::Command encapsulates a block of code, along with metadata
+  # A Redcar::Command class encapsulates a block of code, along with metadata
   # to describe in what ways it can be called, and how Redcar will treat the
   # command instances.
+  #
+  # Define commands by subclassing the Redcar::Command class.
+  #
+  # === Examples
+  #
+  #   class CloseTab < Redcar::Command
+  #     key  :linux   => "Ctrl+W",
+  #          :osx     => "Cmd+W",
+  #          :windows => "Ctrl+W"
+  #
+  #     def execute
+  #       tab.close if tab
+  #     end
+  #   end
   class Command
     attr_accessor :error
     
