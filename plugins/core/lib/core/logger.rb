@@ -12,10 +12,9 @@ module Redcar
     
     module Logger
       def self.init
-        if level = ENV["REDCAR_LOG"]
-          appender = Logging::Appenders.stdout(:level => level)
-          root_logger.add_appenders(appender)
-        end
+        level = ENV["REDCAR_LOG"] || "error"
+        appender = Logging::Appenders.stdout(:level => level)
+        root_logger.add_appenders(appender)
       end
       
       def self.root_logger
