@@ -29,6 +29,7 @@ module Redcar
       def add_listeners
         @window.add_listener(:show,         &method(:show))
         @window.add_listener(:menu_changed, &method(:menu_changed))
+        @window.add_listener(:title_changed, &method(:title_changed))
       end
         
       def show
@@ -51,6 +52,10 @@ module Redcar
         unless Core.platform == :osx
           Redcar.gui.stop
         end
+      end
+      
+      def title_changed(new_title)
+        @shell.text = new_title
       end
         
       private

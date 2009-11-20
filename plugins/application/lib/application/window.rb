@@ -16,6 +16,7 @@ module Redcar
       @visible = false
       create_notebook
       attach_notebook_listeners
+      self.title = "Redcar"
     end
       
     def create_notebook
@@ -29,7 +30,12 @@ module Redcar
     end
 
     def title
-      "Redcar"
+      @title
+    end
+    
+    def title=(value)
+      @title = value
+      notify_listeners(:title_changed, @title)
     end
     
     def show

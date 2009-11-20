@@ -2,20 +2,6 @@
 module Redcar
   class REPL
     class InternalMirror
-      class Main
-        def initialize
-          @binding = binding
-        end
-        
-        def inspect
-          "main"
-        end
-        
-        def execute(command)
-          eval(command, @binding)
-        end
-      end
-      
       include Redcar::EditView::Mirror
       
       attr_reader :history, :results
@@ -23,7 +9,15 @@ module Redcar
       def initialize
         @history, @results, @instance = [], [], Main.new
       end
+
+      def title
+        "(internal)"
+      end
       
+      # Get the complete history of commands and results as a pretty formatted
+      # string.
+      #
+      # @return [String]
       def read
         str = message
         @history.zip(@results) do |command, result|
@@ -35,14 +29,10 @@ module Redcar
         str << prompt
       end
 
-      def exists?
-        true
-      end
-
-      def changed?
-        false
-      end
-
+      # Execute a new statement. Accepts the entire pretty formatted history,
+      # within which it looks for the last statement and executes it.
+      #
+      # @param [String] a string with at least one prompt and statement in it
       def commit(contents)
         command = contents.split(prompt).last
         @history << command
@@ -55,10 +45,17 @@ module Redcar
         notify_listeners(:change)
       end
 
-      def title
-        "(internal)"
+      # The Repl always exists because there is no external resource to 
+      # represent.
+      def exists?
+        true
       end
-      
+
+      # The Repl never changes except for after commit operations.
+      def changed?
+        false
+      end
+
       private
       
       def message
@@ -81,6 +78,20 @@ module Redcar
         backtrace = e.backtrace.reject{|l| l =~ /internal_mirror/}
         backtrace.unshift("(repl):1")
         "#{e.class}: #{e.message}\n        #{backtrace.join("\n        ")}"
+      end
+      
+      class Main
+        def initialize
+          @binding = binding
+        end
+
+        def inspect
+          "main"
+        end
+
+        def execute(command)
+          eval(command, @binding)
+        end
       end
     end
   end
