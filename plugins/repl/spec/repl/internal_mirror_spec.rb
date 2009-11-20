@@ -93,7 +93,7 @@ RUBY
 # Redcar REPL
 
 >> nil.foo
-=> NoMethodError: undefined method `foo' for nil:NilClass
+x> NoMethodError: undefined method `foo' for nil:NilClass
         (repl):1
 >> 
 RUBY
@@ -131,13 +131,13 @@ RUBY
     describe "when executing" do
       it "should execute inside a main object" do
         @mirror.commit(">> self")
-        @mirror.results.last.should == "main"
+        @mirror.results.last.should == ["main", false]
       end
       
       it "should persist local variables" do
         @mirror.commit(">> a = 13")
         @mirror.commit(">> a")
-        @mirror.results.last.should == "13"
+        @mirror.results.last.should == ["13", false]
       end
     end
   end
