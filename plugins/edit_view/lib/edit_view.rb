@@ -37,5 +37,9 @@ module Redcar
     def cursor_offset
       controller.cursor_offset
     end
+    
+    def scroll_to_line(line_index)
+      controller.scroll_to_line(line_index)
+    end
   end
 end

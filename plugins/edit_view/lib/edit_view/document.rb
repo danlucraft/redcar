@@ -31,6 +31,10 @@ module Redcar
       controller.length
     end
     
+    def line_count
+      controller.line_count
+    end
+    
     def save!
       @mirror.commit(to_s)
     end

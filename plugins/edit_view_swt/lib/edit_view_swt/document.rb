@@ -15,7 +15,11 @@ module Redcar
       end
       
       def length
-        @swt_document.get_length
+        @swt_document.length
+      end
+      
+      def line_count
+        @swt_document.get_number_of_lines
       end
       
       def text=(text)

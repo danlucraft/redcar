@@ -27,7 +27,10 @@ module Redcar
       def read
         str = message
         @history.zip(@results) do |command, result|
-          str << prompt + command + "\n" + output_pointer + result + "\n"
+          output, is_error = *result
+          str << prompt + command + "\n"
+          str << (is_error ? error_pointer : output_pointer)
+          str << output + "\n"
         end
         str << prompt
       end
@@ -44,11 +47,11 @@ module Redcar
         command = contents.split(prompt).last
         @history << command
         begin
-          result = @instance.execute(command).inspect
+          result, is_error = @instance.execute(command).inspect, false
         rescue Object => e
-          result = format_error(e)
+          result, is_error = format_error(e), true
         end
-        @results << result
+        @results << [result, is_error]
         notify_listeners(:change)
       end
 
@@ -68,6 +71,10 @@ module Redcar
       
       def output_pointer
         "=> "
+      end
+      
+      def error_pointer
+        "x> "
       end
       
       def format_error(e)

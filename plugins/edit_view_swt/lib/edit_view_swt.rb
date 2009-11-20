@@ -73,7 +73,7 @@ module Redcar
     end
     
     def create_document
-      @document = EditViewSWT::Document.new(@model.document, @mate_text.document)
+      @document = EditViewSWT::Document.new(@model.document, @mate_text.mate_document)
       @model.document.controller = @document
       @model.document.add_listener(:new_mirror, &method(:update_grammar))
     end
@@ -101,6 +101,10 @@ module Redcar
     
     def cursor_offset
       @mate_text.get_text_widget.get_caret_offset
+    end
+    
+    def scroll_to_line(line_index)
+      @mate_text.get_text_widget.set_top_index(line_index)
     end
     
     def update_grammar(*)
