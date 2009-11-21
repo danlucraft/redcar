@@ -53,8 +53,6 @@ module Redcar
         data.horizontalSpan = 2  
       end
       
-      update_caret
-      
       @model.controller = self
     end
     
@@ -113,27 +111,6 @@ module Redcar
       @mate_text.set_grammar_by_filename(@model.document.title)
       first_line = @model.document.to_s.split("\n").first
       @mate_text.set_grammar_by_first_line(first_line) if first_line
-    end
-    
-    def update_caret
-      caret = @mate_text.getTextWidget.getCaret
-      bounds = caret.getBounds
-      width, height = bounds.width*2, bounds.height
-      caret = Swt::Widgets::Caret.new(@mate_text.getTextWidget, Swt::SWT::NONE)
-      display = ApplicationSWT.display
-      white = display.getSystemColor(Swt::SWT::COLOR_WHITE)
-      black = display.getSystemColor(Swt::SWT::COLOR_BLACK)
-      
-      image = Swt::Graphics::Image.new(display, width, height)
-      gc = Swt::Graphics::GC.new(image)
-      gc.setBackground(white)
-      gc.fillRectangle(0, 0, width, height)
-      gc.setForeground(white)
-      gc.drawLine(0, 0, width, height)
-      gc.dispose()
-      caret.setLocation(10, 10)
-      caret.setImage(image)
-      @mate_text.getTextWidget.setCaret(caret)
     end
   end
 end
