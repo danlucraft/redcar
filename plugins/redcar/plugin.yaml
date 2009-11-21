@@ -11,8 +11,10 @@ load_dependencies:
   application: "*"
   application_swt: "*"
   project: "*"
+  repl: "*"
 start_dependencies: 
   core: "*"
   application: "*"
   application_swt: "*"
   project: "*"
+  repl: "*"

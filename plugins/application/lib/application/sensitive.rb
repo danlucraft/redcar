@@ -29,7 +29,7 @@ module Redcar
       @sensitivity_names ||= []
       @sensitivity_names += sensitivity_names
       sensitivity_names.each do |sensitivity_name|
-          Sensitivity.add_listener(Sensitivity.event_name(sensitivity_name)) do
+        Sensitivity.add_listener(Sensitivity.event_name(sensitivity_name)) do
           old_sensitivity = @current_sensitivity
           @current_sensitivity = active?
           if old_sensitivity != @current_sensitivity
@@ -46,7 +46,7 @@ module Redcar
     
     # @return [Array<Sensitivity>] list of senstivitys
     def sensitivities
-      sensitivity_names.map {|n| Sensitivity.get(n) }
+      sensitivity_names.map {|n| Sensitivity.get(n) }.compact
     end
     
     # Whether all the sensitivities of this object are active.

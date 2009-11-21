@@ -19,7 +19,7 @@ module Redcar
     end
     
     def self.start
-      Sensitivity.new(:open_repl_tab, Redcar.app, [:tab_focussed]) do |tab|
+      Sensitivity.new(:open_repl_tab, Redcar.app, false, [:tab_focussed]) do |tab|
         tab and 
         tab.is_a?(EditTab) and 
         tab.edit_view.document.mirror.is_a?(REPL::InternalMirror)

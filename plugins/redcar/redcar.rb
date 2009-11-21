@@ -46,7 +46,7 @@ module Redcar
         puts tab.edit_view.controller.mate_text.parser.root.pretty(0)
       end
     end
-    
+
     class CloseTabCommand < TabCommand
       key :osx     => "Cmd+W",
           :linux   => "Ctrl+W",

@@ -14,11 +14,11 @@ describe Redcar::Sensitive do
     
     @ex = ExampleModel.new
     
-    Redcar::Sensitivity.new(:raining, @ex, [:new_tab]) do
+    Redcar::Sensitivity.new(:raining, @ex, true, [:new_tab]) do
       @open_tab == true
     end
     
-    Redcar::Sensitivity.new(:is_tuesday, @ex, [:midnight]) do
+    Redcar::Sensitivity.new(:is_tuesday, @ex, true, [:midnight]) do
       @is_tuesday == true
     end
   end

@@ -37,6 +37,9 @@ module Redcar
             entry.command.add_listener(:active_changed) do |value|
               item.enabled = value
             end
+            if not entry.command.active?
+              item.enabled = false
+            end
           end
         end
       end

@@ -41,7 +41,7 @@ module Redcar
     def self.start
       Redcar.app     = Application.new
       Redcar.history = Command::History.new
-      Sensitivity.new(:open_tab, Redcar.app, [:tab_focussed]) do |tab|
+      Sensitivity.new(:open_tab, Redcar.app, false, [:tab_focussed]) do |tab|
         tab
       end
     end

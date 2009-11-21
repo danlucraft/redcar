@@ -32,7 +32,7 @@ module Redcar
     end
     
     def self.get(name)
-      all[name] || raise("unknown Sensitivity:#{name}")
+      all[name]
     end
     
     def self.event_name(sensitivity_name)
@@ -45,14 +45,15 @@ module Redcar
     
     attr_reader :name
 
-    def initialize(name, observed_object, event_names, &block)
+    def initialize(name, observed_object, first, event_names, &block)
       Sensitivity.all[name] = self
       @name                 = name
       @observed_object      = observed_object
       @event_names          = event_names
       @boolean_finder       = block
-      @active               = true
+      @active               = first
       connect_listeners
+      Sensitivity.broadcast_sensitivity_change(name, first)
     end
     
     def active?
