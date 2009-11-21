@@ -28,6 +28,7 @@ module Swt
   
   module Widgets
     import org.eclipse.swt.widgets.Button
+    import org.eclipse.swt.widgets.Caret
     import org.eclipse.swt.widgets.Combo
     import org.eclipse.swt.widgets.Composite
     import org.eclipse.swt.widgets.Display
@@ -56,7 +57,10 @@ module Swt
   end
   
   module Graphics
+    import org.eclipse.swt.graphics.Color
     import org.eclipse.swt.graphics.Font
+    import org.eclipse.swt.graphics.GC
+    import org.eclipse.swt.graphics.Image
     import org.eclipse.swt.graphics.Point
   end
   
