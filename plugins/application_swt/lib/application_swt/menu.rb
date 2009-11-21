@@ -20,7 +20,9 @@ module Redcar
             new_menu = Swt::Widgets::Menu.new(@window.shell, Swt::SWT::DROP_DOWN)
             menu_header.menu = new_menu
             add_entries_to_menu(new_menu, entry)
-          else
+          elsif entry.is_a?(Redcar::Menu::Item::Separator)
+            item = Swt::Widgets::MenuItem.new(menu, Swt::SWT::SEPARATOR)
+          elsif entry.is_a?(Redcar::Menu::Item)
             item = Swt::Widgets::MenuItem.new(menu, Swt::SWT::PUSH)
             if entry.command.get_key
               key_specifier = entry.command.get_key
@@ -40,6 +42,8 @@ module Redcar
             if not entry.command.active?
               item.enabled = false
             end
+          else
+            raise "unknown object of type #{entry.class} in menu"
           end
         end
       end
