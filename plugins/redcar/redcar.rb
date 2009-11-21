@@ -74,6 +74,7 @@ module Redcar
           item "Open", Project::FileOpenCommand
           # separator
           item "Save", Project::FileSaveCommand
+          item "Save As", Project::FileSaveAsCommand
           item "Close", CloseTabCommand
         end
         sub_menu "Debug" do

@@ -109,7 +109,8 @@ module Redcar
     
     def update_grammar(*)
       @mate_text.set_grammar_by_filename(@model.document.title)
-      @mate_text.set_grammar_by_first_line(@model.document.to_s.split("\n").first)
+      first_line = @model.document.to_s.split("\n").first
+      @mate_text.set_grammar_by_first_line(first_line) if first_line
     end
   end
 end

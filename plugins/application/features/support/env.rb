@@ -23,6 +23,10 @@ class FakeDialogAdapter
   def open_file(*args)
     @responses[:open_file]
   end
+  
+  def save_file(*args)
+    @responses[:save_file]
+  end
 end
 
 World(SwtHelper)

@@ -69,6 +69,10 @@ class Redcar::Project
       it "tells you if a file doesn't exist" do
         FileMirror.new("nontestfile").exists?.should be_false
       end
+      
+      it "returns an empty string for the contents" do
+        FileMirror.new("nontestfile").read.should == ""
+      end
     end
   end
 end

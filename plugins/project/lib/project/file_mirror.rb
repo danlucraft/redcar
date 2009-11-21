@@ -19,6 +19,7 @@ module Redcar
       #
       # @return [String]
       def read
+        return "" unless exists?
         contents = load_contents
         @hash = Digest::SHA1.hexdigest(contents)
         contents
