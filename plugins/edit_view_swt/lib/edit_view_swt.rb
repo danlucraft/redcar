@@ -27,6 +27,8 @@ module Redcar
       create_grammar_selector
       create_document
       attach_listeners
+      @mate_text.set_grammar_by_name "Plain Text"
+      @mate_text.set_theme_by_name "Twilight"
     end
     
     def create_mate_text
@@ -36,8 +38,6 @@ module Redcar
       layout.numColumns = 2
       @widget.layout = layout
       @mate_text = JavaMateView::MateText.new(@widget)
-      @mate_text.set_grammar_by_name "Plain Text"
-      @mate_text.set_theme_by_name "Twilight"
       if Core.platform == :osx
         @mate_text.set_font "Menlo", 15
       elsif Core.platform == :linux
@@ -62,6 +62,10 @@ module Redcar
       grammars = bundles.map{|b| b.grammars.to_a}.flatten
       items    = grammars.map{|g| g.name}
       @combo.items = items.to_java(:string)
+      @mate_text.add_grammar_listener do |new_grammar|
+        @combo.select(items.index(new_grammar))
+      end
+      
       #@combo.select(@combo.index_of ) => Name of current Grammer
         
       @combo.add_selection_listener do |event|
