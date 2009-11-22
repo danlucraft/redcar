@@ -63,7 +63,7 @@ module Redcar
       def create_shell
         @shell = Swt::Widgets::Shell.new(ApplicationSWT.display)
         @shell.layout = Swt::Layout::GridLayout.new(1, false)
-	@shell_listener = ShellListener.new(self)
+      	@shell_listener = ShellListener.new(self)
         @shell.add_shell_listener(@shell_listener)  
       end
         

@@ -29,14 +29,24 @@ module Redcar
         create_tab_folder(shell)
         attach_model_listeners
         attach_view_listeners
+        setup_drag_and_drop
       end
-
+      
       def create_tab_folder(shell)
         folder_style = Swt::SWT::BORDER + Swt::SWT::CLOSE
         @tab_folder = Swt::Custom::CTabFolder.new(shell, folder_style)
     		@tab_folder.set_layout_data(Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH))
     		@tab_folder.pack
   		end
+      
+      def setup_drag_and_drop
+        listener = DragAndDropListener.new(@tab_folder)
+        @tab_folder.addListener(Swt::SWT::DragDetect, listener)
+        @tab_folder.addListener(Swt::SWT::MouseUp, listener)
+        @tab_folder.addListener(Swt::SWT::MouseMove, listener)
+        @tab_folder.addListener(Swt::SWT::MouseExit, listener)
+        @tab_folder.addListener(Swt::SWT::MouseEnter, listener)
+      end
       
       def attach_model_listeners
         @model.add_listener(:tab_added) do |tab|

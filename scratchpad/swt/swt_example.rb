@@ -8,21 +8,11 @@ class SwtExample
     @display = Swt::Widgets::Display.new
     @shell = Swt::Widgets::Shell.new(@display)
     @shell.setSize(450, 200)
-    # 
     layout = Swt::Layout::FillLayout.new
-    # layout.wrap = true
-    # 
     @shell.setLayout layout
     @shell.setText "Ruby SWT Test"
-    # 
-    # label = Swt::Widgets::Label.new(@shell, Swt::SWT::CENTER)
-    # label.setText "Ruby SWT Test"
-    # 
-    # Swt::Widgets::Button.new(@shell, Swt::SWT::PUSH).setText("Test Button 1")
-    # 
     @shell.setMenuBar(create_menu_bar)
     
-    # create_tab_folder
     create_sash_form
     
     create_key_listener
@@ -41,22 +31,22 @@ class SwtExample
   end
   
   def create_sash_form
-    form = Swt::Custom::SashForm.new(@shell, Swt::SWT::VERTICAL)
-  	form.setLayout(Swt::Layout::FillLayout.new)
-  	child1 = Swt::Widgets::Composite.new(form, Swt::SWT::NONE)
+    @form = Swt::Custom::SashForm.new(@shell, Swt::SWT::HORIZONTAL)
+  	@form.setLayout(Swt::Layout::FillLayout.new)
+  	child1 = Swt::Widgets::Composite.new(@form, Swt::SWT::NONE)
   	child1.setLayout(Swt::Layout::FillLayout.new)
   	Swt::Widgets::Label.new(child1,Swt::SWT::NONE).setText("Label in pane 1")
 
-  	child2 = Swt::Widgets::Composite.new(form, Swt::SWT::NONE)
+  	child2 = Swt::Widgets::Composite.new(@form, Swt::SWT::NONE)
   	child2.setLayout(Swt::Layout::FillLayout.new)
   	Swt::Widgets::Button.new(child2,Swt::SWT::PUSH).setText("Button in pane2")
 
-  	child3 = Swt::Widgets::Composite.new(form, Swt::SWT::NONE)
+  	child3 = Swt::Widgets::Composite.new(@form, Swt::SWT::NONE)
   	child3.setLayout(Swt::Layout::FillLayout.new)
   	Swt::Widgets::Label.new(child3,Swt::SWT::PUSH).setText("Label in pane3")
 
-  	form.setWeights([30,40,30].to_java(:int))
-  	form.setSashWidth(10)
+  	@form.setWeights([30,40,30].to_java(:int))
+  	@form.setSashWidth(10)
   end
 
   def create_tab_folder
@@ -87,9 +77,23 @@ class SwtExample
     fileOpenItem.setText("&Open")
     fileOpenItem.set_accelerator(Swt::SWT::ALT + 'O'[0])
 
+    horizItem =  Swt::Widgets::MenuItem.new(fileMenu, Swt::SWT::PUSH)
+    horizItem.setText("&Horizontal")
+    
+    vertItem =  Swt::Widgets::MenuItem.new(fileMenu, Swt::SWT::PUSH)
+    vertItem.setText("&Vertical")
+
+    vertItem.addSelectionListener do
+      @form.setOrientation(Swt::SWT::VERTICAL)
+    end
+    
+    horizItem.addSelectionListener do
+      @form.setOrientation(Swt::SWT::HORIZONTAL)
+    end
+    
     fileSaveItem =  Swt::Widgets::MenuItem.new(fileMenu, Swt::SWT::PUSH)
     fileSaveItem.setText("&Save")
-p Swt::SWT::CTRL + "N"[0]
+
     fileSaveItem.set_accelerator(Swt::SWT::CTRL + 'S'[0])
 
     fileSaveAsItem =  Swt::Widgets::MenuItem.new(fileMenu, Swt::SWT::PUSH)
