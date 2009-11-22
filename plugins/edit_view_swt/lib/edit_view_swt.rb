@@ -66,8 +66,6 @@ module Redcar
         @combo.select(items.index(new_grammar))
       end
       
-      #@combo.select(@combo.index_of ) => Name of current Grammer
-        
       @combo.add_selection_listener do |event|
         puts "selected #{@combo.text}"
         @mate_text.set_grammar_by_name(@combo.text)
