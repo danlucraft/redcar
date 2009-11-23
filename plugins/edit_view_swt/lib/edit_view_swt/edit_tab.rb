@@ -17,8 +17,6 @@ module Redcar
       
       def create_tab_widget
         @edit_view = EditViewSWT.new(model.edit_view, self)
-        @edit_view.add_listener(:swt_focus_gained) { swt_focus_gained }
-        @edit_view
       end
       
       # Focuses the CTabItem within the CTabFolder, and gives the keyboard

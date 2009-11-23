@@ -1,4 +1,18 @@
 
+When /^I open a new edit tab$/ do 
+  Redcar::Top::NewCommand.new.run
+end
+
+When /^I close the focussed tab$/ do
+  Redcar::Top::CloseTabCommand.new.run
+end
+
+When /^I replace the contents with "([^\"]*)"$/ do |arg1|
+  win = Redcar.app.windows.first
+  tab = win.notebook.focussed_tab
+  tab.edit_view.document.text = arg1
+end
+
 Then /^there should be one (.*) tab$/ do |tab_type|
   case tab_type
   when "edit"

@@ -21,6 +21,7 @@ module Redcar
       @tab = tab
       create_document
       @grammar = nil
+      @focussed = nil
     end
     
     def create_document
@@ -54,6 +55,10 @@ module Redcar
     
     def set_grammar(name)
       @grammar = name
+    end
+    
+    def gained_focus
+      notify_listeners(:focussed)
     end
     
     def serialize

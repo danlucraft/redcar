@@ -66,7 +66,6 @@ module Redcar
       def attach_model_listeners
         @model.add_listener(:tab_added) do |tab|
           tab.controller = Redcar.gui.controller_for(tab).new(tab, self)
-          attach_tab_listeners(tab)
         end
         @model.add_listener(:tab_moved, &method(:model_event_tab_moved))
       end
@@ -74,21 +73,6 @@ module Redcar
       def attach_view_listeners
         @tab_folder.add_ctab_folder2_listener(CTabFolder2Listener.new(self))
         @tab_folder.add_selection_listener(SelectionListener.new(self))
-      end
-      
-      def attach_tab_listeners(tab)
-        handler = tab.controller.add_listener(:swt_focus_gained) do
-          p :notebook_tab_focus_gained
-          swt_event_tab_focussed(tab)
-          notify_listeners(:swt_focus_gained, @model)
-        end
-        @tab_handlers ||= {}
-        @tab_handlers[tab] ||= []
-        @tab_handlers[tab] << handler
-      end
-      
-      def clear_tab_listeners(tab)
-        @tab_handlers[tab].each {|h| tab.controller.remove_listener(h) }
       end
       
       # Called by the SWT event listener when a tab is closed by the user.
@@ -120,8 +104,6 @@ module Redcar
         tab_controller.create_item_widget
         tab_controller.create_tab_widget
         tab_controller.focus
-        from_notebook_model.controller.clear_tab_listeners(tab_model)
-        to_notebook_model.controller.attach_tab_listeners(tab_model)
         tab_model.deserialize(data)
       end
       

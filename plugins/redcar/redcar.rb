@@ -41,8 +41,8 @@ module Redcar
           :windows => "Ctrl+Alt+O"
 
       def execute
-        puts "moveing tab to other notebook"
         if tab = win.focussed_notebook.focussed_tab
+          puts "moveing tab to other notebook #{tab.title}"
           current_notebook = tab.notebook
           target_notebook = win.notebooks.detect {|nb| nb != current_notebook}
           target_notebook.grab_tab_from(current_notebook, tab)

@@ -81,8 +81,8 @@ module Redcar
     # @param [Handler] an event handler as returned by add_listener
     def remove_listener(handler)
       @events.each do |_, a|
-        a[0].delete(block)
-        a[1].delete(block)
+        a[0].delete(handler)
+        a[1].delete(handler)
       end
     end
 

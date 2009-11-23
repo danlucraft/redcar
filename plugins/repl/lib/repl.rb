@@ -32,7 +32,7 @@ module Redcar
           :windows => "Ctrl+M"
 
       def execute
-        edit_view = win.notebook.focussed_tab.edit_view
+        edit_view = win.focussed_notebook.focussed_tab.edit_view
         edit_view.document.save!
         edit_view.cursor_offset = edit_view.document.length
         edit_view.scroll_to_line(edit_view.document.line_count)

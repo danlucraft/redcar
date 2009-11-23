@@ -16,7 +16,12 @@ end
 World(SwtTabHelpers)
 
 After do
+  p :after
   Redcar::ApplicationSWT.sync_exec do
-    Redcar.app.windows.first.notebook.tabs.each {|tab| tab.close}
+    Redcar.app.windows.first.notebooks.each do |notebook|
+      p [:start, notebook]
+      notebook.tabs.each {|tab| tab.close}
+      p [:end, notebook]
+    end
   end
 end

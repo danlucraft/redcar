@@ -1,5 +1,5 @@
 require 'edit_view_swt/document'
-require 'edit_view_swt/tab'
+require 'edit_view_swt/edit_tab'
 
 require File.dirname(__FILE__) + '/../vendor/java-mateview'
 
@@ -80,18 +80,6 @@ module Redcar
       @widget.pack
     end
     
-    class FocusListener
-      def initialize(obj)
-        @obj = obj
-      end
-      
-      def focusGained(e)
-        @obj.swt_focus_gained
-      end
-      
-      def focusLost(_); end
-    end
-    
     def create_document
       @document = EditViewSWT::Document.new(@model.document, @mate_text.mate_document)
       @model.document.controller = @document
@@ -101,8 +89,7 @@ module Redcar
     end
     
     def swt_focus_gained
-      p :edit_view_focussed
-      notify_listeners(:swt_focus_gained)
+      @model.gained_focus
     end
     
     def focus
@@ -142,6 +129,18 @@ module Redcar
       @mate_text.set_grammar_by_filename(@model.document.title)
       first_line = @model.document.to_s.split("\n").first
       @mate_text.set_grammar_by_first_line(first_line) if first_line
+    end
+    
+    class FocusListener
+      def initialize(obj)
+        @obj = obj
+      end
+
+      def focusGained(e)
+        @obj.swt_focus_gained
+      end
+
+      def focusLost(_); end
     end
   end
 end
