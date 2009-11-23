@@ -9,7 +9,8 @@ module Redcar
         @model, @notebook = model, notebook
         create_item_widget
         attach_listeners
-        @item.image = Swt::Graphics::Image.new(ApplicationSWT.display, FILE_ICON)
+        @icon = Swt::Graphics::Image.new(ApplicationSWT.display, FILE_ICON)
+        @item.image = @icon
       end
       
       def create_item_widget
@@ -31,6 +32,7 @@ module Redcar
       
       def close
         @item.dispose
+        @icon.dispose
       end
     end
   end
