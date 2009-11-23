@@ -20,6 +20,7 @@ module Redcar
     def initialize(tab)
       @tab = tab
       create_document
+      @grammar = nil
     end
     
     def create_document
@@ -40,6 +41,31 @@ module Redcar
     
     def scroll_to_line(line_index)
       controller.scroll_to_line(line_index)
+    end
+    
+    def grammar
+      @grammar
+    end
+    
+    def grammar=(name)
+      @grammar = name
+      notify_listeners(:grammar_changed, name)
+    end
+    
+    def set_grammar(name)
+      @grammar = name
+    end
+    
+    def serialize
+      { :contents      => document.to_s,
+        :cursor_offset => cursor_offset,
+        :grammar       => grammar         }
+    end
+    
+    def deserialize(data)
+      document.text      = data[:contents]
+      self.cursor_offset = data[:cursor_offset]
+      self.grammar       = data[:grammar]
     end
   end
 end

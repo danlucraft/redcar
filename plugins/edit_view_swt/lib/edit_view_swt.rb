@@ -27,6 +27,9 @@ module Redcar
       create_grammar_selector
       create_document
       attach_listeners
+      @mate_text.add_grammar_listener do |new_grammar|
+        @model.set_grammar(new_grammar)
+      end
       @mate_text.set_grammar_by_name "Plain Text"
       @mate_text.set_theme_by_name "Twilight"
     end
@@ -62,6 +65,7 @@ module Redcar
       grammars = bundles.map{|b| b.grammars.to_a}.flatten
       items    = grammars.map{|g| g.name}
       @combo.items = items.to_java(:string)
+      
       @mate_text.add_grammar_listener do |new_grammar|
         @combo.select(items.index(new_grammar))
       end
@@ -78,6 +82,7 @@ module Redcar
       @document = EditViewSWT::Document.new(@model.document, @mate_text.mate_document)
       @model.document.controller = @document
       @model.document.add_listener(:new_mirror, &method(:update_grammar))
+      @model.add_listener(:grammar_changed, &method(:model_grammar_changed))
     end
     
     def focus
@@ -107,6 +112,10 @@ module Redcar
     
     def scroll_to_line(line_index)
       @mate_text.get_text_widget.set_top_index(line_index)
+    end
+    
+    def model_grammar_changed(name)
+      @mate_text.set_grammar_by_name(name)
     end
     
     def update_grammar(*)
