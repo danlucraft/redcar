@@ -32,6 +32,16 @@ module Redcar
       tab
     end
     
+    # Moves a tab from another notebook to this notebook.
+    #
+    # @param [Redcar::Notebook]
+    # @param [Redcar::Tab]
+    def grab_tab_from(other_notebook, tab)
+      other_notebook.remove_tab!(tab)
+      @tabs << tab
+      notify_listeners(:tab_moved, other_notebook, self, tab)
+    end
+    
     # Should not be called by user code. Call tab.close instead.
     def remove_tab!(tab)
       @tabs.delete(tab)

@@ -3,6 +3,8 @@ module Redcar
     include Redcar::Model
     include Redcar::Observable
     
+    attr_reader :notebook
+    
     def initialize(notebook)
       @notebook = notebook
     end

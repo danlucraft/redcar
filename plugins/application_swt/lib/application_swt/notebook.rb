@@ -23,19 +23,19 @@ module Redcar
         end
       end
       
-      def initialize(model, shell)
+      def initialize(model, sash)
         @model = model
         @model.controller = self
-        create_tab_folder(shell)
+        create_tab_folder(sash)
         style_tab_folder
         attach_model_listeners
         attach_view_listeners
         setup_drag_and_drop
       end
       
-      def create_tab_folder(shell)
+      def create_tab_folder(sash)
         folder_style = Swt::SWT::BORDER + Swt::SWT::CLOSE
-        @tab_folder = Swt::Custom::CTabFolder.new(shell, folder_style)
+        @tab_folder = Swt::Custom::CTabFolder.new(sash, folder_style)
         grid_data = Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH)
         @tab_folder.set_layout_data(grid_data)
         @tab_folder.pack
@@ -65,6 +65,7 @@ module Redcar
         @model.add_listener(:tab_added) do |tab|
           tab.controller = Redcar.gui.controller_for(tab).new(tab, self)
         end
+        @model.add_listener(:tab_moved, &method(:model_event_tab_moved))
       end
       
       def attach_view_listeners
@@ -87,7 +88,16 @@ module Redcar
         tab_folder.set_selection(tab.item)
         @model.select_tab!(tab.model)
       end
-
+      
+      def model_event_tab_moved(from_notebook_model, to_notebook_model, tab_model)
+        tab_controller = tab_model.controller
+        tab_controller.close
+        tab_controller.set_notebook(to_notebook_model.controller)
+        tab_controller.create_item_widget
+        tab_controller.create_tab_widget
+        tab_controller.focus
+      end
+      
       private
       
       def focussed_tab

@@ -8,6 +8,7 @@ module Redcar
       def initialize(model, notebook)
         @model, @notebook = model, notebook
         create_item_widget
+        create_tab_widget
         attach_listeners
         @icon = Swt::Graphics::Image.new(ApplicationSWT.display, FILE_ICON)
         @item.image = @icon
@@ -16,9 +17,16 @@ module Redcar
       def create_item_widget
         @item = Swt::Custom::CTabItem.new(notebook.tab_folder, Swt::SWT::CLOSE)
         @item.text = "Hello!"
+      end
+      
+      def create_tab_widget
         text = Swt::Widgets::Text.new(notebook.tab_folder, Swt::SWT::MULTI)
         text.text = "Example of a tab"
         @item.control = text
+      end
+      
+      def set_notebook(notebook_controller)
+        @notebook = notebook_controller
       end
       
       def attach_listeners

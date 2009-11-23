@@ -13,6 +13,43 @@ module Redcar
       end
     end
     
+    class NewNotebookCommand < Command
+      key :osx     => "Cmd+Alt+N",
+          :linux   => "Ctrl+Alt+N",
+          :windows => "Ctrl+Alt+N"
+
+      def execute
+        puts "making a new notebook"
+        unless win.notebooks.length > 1
+          win.create_notebook
+        end
+      end
+    end
+    
+    class RotateNotebooksCommand < Command
+          
+      def execute
+        puts "rotate notebooks"
+        win.rotate_notebooks
+      end
+    end
+    
+    class MoveTabToOtherNotebookCommand < Command
+      # TODO: sensitize to multiple notebooks and open tab
+      key :osx     => "Cmd+Alt+O",  
+          :linux   => "Ctrl+Alt+O",
+          :windows => "Ctrl+Alt+O"
+
+      def execute
+        puts "moveing tab to other notebook"
+        if tab = win.focussed_notebook.focussed_tab
+          current_notebook = tab.notebook
+          target_notebook = win.notebooks.detect {|nb| nb != current_notebook}
+          target_notebook.grab_tab_from(current_notebook, tab)
+        end
+      end
+    end
+
     class PrintContents < EditTabCommand
       key "Cmd+P"
       
@@ -53,7 +90,8 @@ module Redcar
           :windows => "Ctrl+W"
       
       def execute
-        if tab = win.notebook.focussed_tab
+        # TODO: should be win.focussed_notebook
+        if tab = win.focussed_notebook.focussed_tab
           tab.close
         end
       end
@@ -71,6 +109,7 @@ module Redcar
       builder = Menu::Builder.new do
         sub_menu "File" do
           item "New", NewCommand
+          item "New Notebook", NewNotebookCommand
           item "Open", Project::FileOpenCommand
           separator
           item "Save", Project::FileSaveCommand
@@ -88,6 +127,10 @@ module Redcar
             item "Open", REPL::OpenInternalREPL
             item "Execute", REPL::CommitREPL
           end
+        end
+        sub_menu "View" do
+          item "Rotate Notebooks", RotateNotebooksCommand
+          item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
         end
         sub_menu "Help" do
           item "Website", PrintHistoryCommand

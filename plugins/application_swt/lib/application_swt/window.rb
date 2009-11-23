@@ -22,14 +22,17 @@ module Redcar
       def initialize(window)
         @window = window
         create_shell
-        create_tab_folder
+        create_sash(window)
+        new_notebook(window.notebooks.first)
         add_listeners
       end
       
       def add_listeners
-        @window.add_listener(:show,         &method(:show))
-        @window.add_listener(:menu_changed, &method(:menu_changed))
+        @window.add_listener(:show,          &method(:show))
+        @window.add_listener(:menu_changed,  &method(:menu_changed))
         @window.add_listener(:title_changed, &method(:title_changed))
+        @window.add_listener(:new_notebook,  &method(:new_notebook))
+        @window.add_listener(:notebook_orientation_changed, &method(:notebook_orientation_changed))
       end
         
       def show
@@ -41,7 +44,25 @@ module Redcar
         @menu_controller = ApplicationSWT::Menu.new(self, menu)
         shell.menu_bar = @menu_controller.menu_bar
       end
-
+      
+      def title_changed(new_title)
+        @shell.text = new_title
+      end
+      
+      def new_notebook(notebook_model)
+        @notebooks ||= []
+        @notebooks << ApplicationSWT::Notebook.new(notebook_model, @sash)
+        width = (100/@notebooks.length).to_i
+        widths = [width]*@notebooks.length
+        p widths
+      	@sash.setWeights(widths.to_java(:int))
+      end
+      
+      def notebook_orientation_changed(new_orientation)
+        orientation = horizontal_vertical(new_orientation)
+        @sash.setOrientation(orientation)
+      end
+      
       def close
         @shell.close
       end
@@ -53,10 +74,6 @@ module Redcar
           Redcar.gui.stop
         end
       end
-      
-      def title_changed(new_title)
-        @shell.text = new_title
-      end
         
       private
       
@@ -66,9 +83,22 @@ module Redcar
       	@shell_listener = ShellListener.new(self)
         @shell.add_shell_listener(@shell_listener)  
       end
-        
-      def create_tab_folder
-        @notebook = ApplicationSWT::Notebook.new(window.notebook, @shell)
+      
+      def create_sash(window_model)
+        orientation = horizontal_vertical(window_model.notebook_orientation)
+        @sash     = Swt::Custom::SashForm.new(@shell, orientation)
+        grid_data = Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH)
+      	@sash.setLayoutData(grid_data)
+      	@sash.setSashWidth(10)
+      end
+      
+      def horizontal_vertical(symbol)
+        case symbol
+        when :horizontal
+          Swt::SWT::HORIZONTAL
+        when :vertical
+          Swt::SWT::VERTICAL
+        end
       end
     end
   end

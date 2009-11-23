@@ -9,22 +9,29 @@ module Redcar
       @all ||= []
     end
 
-    attr_reader :notebook
+    attr_reader :notebooks, :notebook_orientation
 
     def initialize
       Window.all << self
       @visible = false
       create_notebook
-      attach_notebook_listeners
+      @notebook_orientation = :horizontal
       self.title = "Redcar"
     end
       
+    # Create a new notebook in this window.
+    #
+    # @events [(:new_notebook, notebook)]
     def create_notebook
-      @notebook = Redcar::Notebook.new
+      @notebooks ||= []
+      notebook = Redcar::Notebook.new
+      @notebooks << notebook
+      attach_notebook_listeners(notebook)
+      notify_listeners(:new_notebook, notebook)
     end
     
-    def attach_notebook_listeners
-      @notebook.add_listener(:tab_focussed) do |tab|
+    def attach_notebook_listeners(notebook)
+      notebook.add_listener(:tab_focussed) do |tab|
         notify_listeners(:tab_focussed, tab)
       end
     end
@@ -49,7 +56,12 @@ module Redcar
     
     # Delegates to the new_tab method in the Window's active Notebook.
     def new_tab(*args, &block)
-      notebook.new_tab(*args, &block)
+      focussed_notebook.new_tab(*args, &block)
+    end
+    
+    def focussed_notebook
+      # TODO: make it find the focussed notebook
+      @notebooks.last
     end
     
     attr_reader :menu
@@ -57,6 +69,23 @@ module Redcar
     def menu=(menu)
       @menu = menu
       notify_listeners(:menu_changed, menu)
+    end
+    
+    # Sets the orientation of the notebooks.
+    #
+    # @param [:horizontal, :vertical] 
+    def notebook_orientation=(key)
+      @notebook_orientation = key
+      notify_listeners(:notebook_orientation_changed, key)
+    end
+    
+    # Sets the orientation of the notebooks to whatever it is not currently.
+    def rotate_notebooks
+      if notebook_orientation == :horizontal
+        self.notebook_orientation = :vertical
+      else
+        self.notebook_orientation = :horizontal
+      end
     end
     
     def inspect
