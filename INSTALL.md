@@ -2,6 +2,8 @@
 Installing
 ==========
 
+You must have JRuby installed. JRuby version 1.4.0 appears to have some Java interop regressions so you must get at least revision 1022103f1df259428d479baa5cbdb529b4490d3f from 22 Nov. Refer to jruby.org for instructions on cloning the latest master.
+
 To get set up, clone the repo from github:
 
     $ git clone git://github.com/danlucraft/redcar.git
