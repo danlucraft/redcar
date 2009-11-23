@@ -5,6 +5,8 @@ require File.dirname(__FILE__) + '/../vendor/java-mateview'
 
 module Redcar
   class EditViewSWT
+    include Redcar::Observable
+    
     def self.load
       gui = ApplicationSWT.gui
       gui.register_controllers(Redcar::EditTab => EditViewSWT::Tab)
@@ -78,11 +80,29 @@ module Redcar
       @widget.pack
     end
     
+    class FocusListener
+      def initialize(obj)
+        @obj = obj
+      end
+      
+      def focusGained(e)
+        @obj.swt_focus_gained
+      end
+      
+      def focusLost(_); end
+    end
+    
     def create_document
       @document = EditViewSWT::Document.new(@model.document, @mate_text.mate_document)
       @model.document.controller = @document
       @model.document.add_listener(:new_mirror, &method(:update_grammar))
       @model.add_listener(:grammar_changed, &method(:model_grammar_changed))
+      @mate_text.getTextWidget.addFocusListener(FocusListener.new(self))
+    end
+    
+    def swt_focus_gained
+      p :edit_view_focussed
+      notify_listeners(:swt_focus_gained)
     end
     
     def focus

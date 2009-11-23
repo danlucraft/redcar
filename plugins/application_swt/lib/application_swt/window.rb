@@ -51,11 +51,16 @@ module Redcar
       
       def new_notebook(notebook_model)
         @notebooks ||= []
-        @notebooks << ApplicationSWT::Notebook.new(notebook_model, @sash)
+        notebook_controller = ApplicationSWT::Notebook.new(notebook_model, @sash)
+        @notebooks << notebook_controller
         width = (100/@notebooks.length).to_i
         widths = [width]*@notebooks.length
-        p widths
       	@sash.setWeights(widths.to_java(:int))
+      	notebook_controller.add_listener(:swt_focus_gained) do |notebook|
+      	  p :window_focus_gained
+          @window.focussed_notebook = notebook
+        end
+        
       end
       
       def notebook_orientation_changed(new_orientation)

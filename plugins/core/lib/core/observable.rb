@@ -72,6 +72,13 @@ module Redcar
       end
     end
     
+    def remove_listener(block)
+      @events.each do |_, a|
+        a[0].delete(block)
+        a[1].delete(block)
+      end
+    end
+    
     private
     
     def notify_listeners(event_name, *args)

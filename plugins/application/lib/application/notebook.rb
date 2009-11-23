@@ -55,7 +55,7 @@ module Redcar
     end
     
     def inspect
-      "#<Redcar::Notebook>"
+      "#<Redcar::Notebook #{object_id}>"
     end
   end
 end

@@ -26,6 +26,9 @@ module Redcar
       @notebooks ||= []
       notebook = Redcar::Notebook.new
       @notebooks << notebook
+      if @notebooks.length == 1
+        self.focussed_notebook = notebook
+      end
       attach_notebook_listeners(notebook)
       notify_listeners(:new_notebook, notebook)
     end
@@ -60,8 +63,12 @@ module Redcar
     end
     
     def focussed_notebook
-      # TODO: make it find the focussed notebook
-      @notebooks.last
+      @focussed_notebook
+    end
+    
+    def focussed_notebook=(notebook)
+      p [:focussed_notebook, notebook]
+      @focussed_notebook = notebook
     end
     
     attr_reader :menu

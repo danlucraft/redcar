@@ -29,6 +29,11 @@ module Redcar
         @notebook = notebook_controller
       end
       
+      def swt_focus_gained
+        p :edit_tab_swt_focussed; 
+        notify_listeners(:swt_focus_gained)
+      end
+      
       def attach_listeners
         @model.add_listener(:focus, &method(:focus))
         @model.add_listener(:close, &method(:close))
