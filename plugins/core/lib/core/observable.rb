@@ -60,6 +60,9 @@ module Redcar
     
     # Attach a block to be called when any of the hooks in hooks are 
     # called.
+    #
+    # @param [Array<Symbol>] names of the events to attach to
+    # @return [Handler] event handler for this object
     def add_listener(*event_names, &block)
       if event_names.first.is_a?(Hash)
         event_names.first.each do |aspect, event_name|
@@ -70,22 +73,30 @@ module Redcar
           events(event_name.to_s)[ASPECTS[:after]] << block
         end
       end
+      block
     end
     
-    def remove_listener(block)
+    # Remove a listener from this object.
+    #
+    # @param [Handler] an event handler as returned by add_listener
+    def remove_listener(handler)
       @events.each do |_, a|
         a[0].delete(block)
         a[1].delete(block)
       end
     end
-    
-    private
-    
+
+    # Run all the listeners attached to this event. 
+    #
+    # @param [Symbol] name of event being run
+    # @param [*Object] event parameters
     def notify_listeners(event_name, *args)
       run_blocks(event_name, :before, args)
       yield if block_given?
       run_blocks(event_name, :after, args)
     end
+    
+    private
     
     def run_blocks(event_name, aspect, args)
       blocks = events(event_name.to_s)[ASPECTS[aspect]]
