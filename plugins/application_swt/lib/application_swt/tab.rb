@@ -3,10 +3,13 @@ module Redcar
     class Tab
       attr_reader :item, :model
       
+      FILE_ICON = File.join(Redcar.root, %w(plugins application lib application assets file.png))
+      
       def initialize(model, notebook)
         @model, @notebook = model, notebook
         create_item_widget
         attach_listeners
+        @item.image = Swt::Graphics::Image.new(ApplicationSWT.display, FILE_ICON)
       end
       
       def create_item_widget

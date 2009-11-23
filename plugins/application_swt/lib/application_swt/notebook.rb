@@ -27,6 +27,7 @@ module Redcar
         @model = model
         @model.controller = self
         create_tab_folder(shell)
+        style_tab_folder
         attach_model_listeners
         attach_view_listeners
         setup_drag_and_drop
@@ -35,9 +36,21 @@ module Redcar
       def create_tab_folder(shell)
         folder_style = Swt::SWT::BORDER + Swt::SWT::CLOSE
         @tab_folder = Swt::Custom::CTabFolder.new(shell, folder_style)
-    		@tab_folder.set_layout_data(Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH))
-    		@tab_folder.pack
-  		end
+        grid_data = Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH)
+        @tab_folder.set_layout_data(grid_data)
+        @tab_folder.pack
+      end
+      
+      def style_tab_folder
+        colors = [
+          Swt::Graphics::Color.new(ApplicationSWT.display, 230, 240, 255),
+          Swt::Graphics::Color.new(ApplicationSWT.display, 170, 199, 246),
+          Swt::Graphics::Color.new(ApplicationSWT.display, 135, 178, 247)
+        ].to_java(Swt::Graphics::Color)
+        percents = [40, 85].to_java(:int)
+        
+        @tab_folder.setSelectionBackground(colors, percents, true)
+      end
       
       def setup_drag_and_drop
         listener = DragAndDropListener.new(@tab_folder)

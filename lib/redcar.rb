@@ -19,6 +19,10 @@ module Redcar
   
   include FreeBASE::DataBusHelper
   
+  def self.root
+    ROOT
+  end
+  
   def self.start
     FreeBASE::Core.startup("properties.yaml", "config/default.yaml")
   end
