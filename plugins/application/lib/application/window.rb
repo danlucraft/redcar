@@ -26,7 +26,6 @@ module Redcar
     def create_notebook
       return if @notebooks.length == 2
       notebook = Redcar::Notebook.new
-      p [:new_notebook, notebook]
       @notebooks << notebook
       if @notebooks.length == 1
         self.focussed_notebook = notebook
@@ -49,6 +48,7 @@ module Redcar
         first_notebook.grab_tab_from(second_notebook, tab)
       end
       @notebooks.delete(second_notebook)
+      self.focussed_notebook = first_notebook
       notify_listeners(:notebook_removed, second_notebook)
     end
 
@@ -80,7 +80,6 @@ module Redcar
     end
     
     def focussed_notebook=(notebook)
-      p [:focussed_notebook, notebook]
       @focussed_notebook = notebook
     end
     

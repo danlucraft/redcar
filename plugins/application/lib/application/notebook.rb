@@ -10,6 +10,7 @@ module Redcar
     def initialize
       @tabs         = []
       @focussed_tab = nil
+      @tab_handlers = Hash.new {|h,k| h[k] = [] }
     end
     
     def length
@@ -49,6 +50,7 @@ module Redcar
     # Should not be called by user code. Call tab.close instead.
     def remove_tab!(tab)
       @tabs.delete(tab)
+      @tab_handlers[tab].each {|h| tab.remove_listener(h) }
       select_tab!(nil) unless @tabs.any?
     end
     
@@ -65,7 +67,7 @@ module Redcar
     private
     
     def attach_tab_listeners(tab)
-      tab.add_listener(:focussed) do
+      @tab_handlers[tab] << tab.add_listener(:focussed) do
         select_tab!(tab)
       end
     end

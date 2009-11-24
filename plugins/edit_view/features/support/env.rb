@@ -18,13 +18,24 @@ end
 
 World(SwtTabHelpers)
 
+def putsall
+  p :all
+  p Redcar.app.windows.first.notebooks
+  p Redcar.app.windows.first.notebooks.first.tabs
+  p Redcar.app.windows.first.notebooks.last.tabs
+end
+
 After do
-  Redcar::ApplicationSWT.sync_exec do
-    win = Redcar.app.windows.first
-    win.notebooks.each do |notebook|
-      notebook.tabs.each {|tab| tab.close}
+  win = Redcar.app.windows.first
+  win.notebooks.each do |notebook|
+    while tab = notebook.tabs.first
+      Redcar::ApplicationSWT.sync_exec do
+        tab.close
+      end
     end
-    if win.notebooks.length == 2
+  end
+  if win.notebooks.length == 2
+    Redcar::ApplicationSWT.sync_exec do
       win.close_notebook
     end
   end
