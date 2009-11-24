@@ -49,7 +49,7 @@ module Redcar
           Swt::Graphics::Color.new(ApplicationSWT.display, 170, 199, 246),
           Swt::Graphics::Color.new(ApplicationSWT.display, 135, 178, 247)
         ].to_java(Swt::Graphics::Color)
-        percents = [40, 85].to_java(:int)
+        percents = [60, 85].to_java(:int)
         
         @tab_folder.setSelectionBackground(colors, percents, true)
       end
