@@ -96,15 +96,19 @@ module Redcar
         @model.select_tab!(tab)
       end
       
-      def model_event_tab_moved(from_notebook_model, to_notebook_model, tab_model)
+      def model_event_tab_moved(from_notebook, to_notebook, tab_model)
         tab_controller = tab_model.controller
-        data = tab_model.serialize
+        data           = tab_model.serialize
         tab_controller.close
-        tab_controller.set_notebook(to_notebook_model.controller)
+        tab_controller.set_notebook(to_notebook.controller)
         tab_controller.create_item_widget
         tab_controller.create_tab_widget
         tab_controller.focus
         tab_model.deserialize(data)
+      end
+      
+      def dispose
+        @tab_folder.dispose
       end
       
       private

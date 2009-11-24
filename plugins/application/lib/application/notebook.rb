@@ -38,8 +38,10 @@ module Redcar
     # @param [Redcar::Notebook]
     # @param [Redcar::Tab]
     def grab_tab_from(other_notebook, tab)
+      return if other_notebook == self
       other_notebook.remove_tab!(tab)
       @tabs << tab
+      tab.set_notebook(self)
       notify_listeners(:tab_moved, other_notebook, self, tab)
       attach_tab_listeners(tab)
     end
@@ -52,7 +54,6 @@ module Redcar
     
     # Should not be called by user code. Call tab.focus instead.
     def select_tab!(tab)
-      p [:notebook_select_tab!, (tab.title if tab)]
       @focussed_tab = tab
       notify_listeners(:tab_focussed, tab)
     end

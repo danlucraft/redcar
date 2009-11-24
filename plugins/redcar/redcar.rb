@@ -9,6 +9,7 @@ module Redcar
       def execute
         puts "making a new document"
         tab = win.new_tab(Redcar::EditTab)
+        tab.title = "untitled"
         tab.focus
       end
     end
@@ -34,6 +35,16 @@ module Redcar
       end
     end
     
+    class CloseNotebookCommand < Command
+          
+      def execute
+        puts "close notebooks"
+        unless win.notebooks.length == 1
+          win.close_notebook
+        end
+      end
+    end
+    
     class MoveTabToOtherNotebookCommand < Command
       # TODO: sensitize to multiple notebooks and open tab
       key :osx     => "Cmd+Alt+O",  
@@ -44,6 +55,7 @@ module Redcar
         if tab = win.focussed_notebook.focussed_tab
           puts "moveing tab to other notebook #{tab.title}"
           current_notebook = tab.notebook
+          puts "  current notebook #{current_notebook}"
           target_notebook = win.notebooks.detect {|nb| nb != current_notebook}
           target_notebook.grab_tab_from(current_notebook, tab)
         end
@@ -130,6 +142,7 @@ module Redcar
         end
         sub_menu "View" do
           item "Rotate Notebooks", RotateNotebooksCommand
+          item "Close Notebook", CloseNotebookCommand
           item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
         end
         sub_menu "Help" do

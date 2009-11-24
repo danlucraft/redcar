@@ -38,7 +38,7 @@ module Redcar
           :windows => "Ctrl+S"
 
       def execute
-        tab = win.notebook.focussed_tab
+        tab = win.focussed_notebook.focussed_tab
         puts "saving document"
         tab.edit_view.document.save!
       end
@@ -55,7 +55,7 @@ module Redcar
       end
 
       def execute
-        tab = win.notebook.focussed_tab
+        tab = win.focussed_notebook.focussed_tab
         path = get_path
         puts "saving document as #{path}"
         if path

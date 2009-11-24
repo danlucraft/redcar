@@ -21,6 +21,7 @@ module Redcar
       
       def initialize(window)
         @window = window
+      	@notebook_handlers = Hash.new {|h,k| h[k] = []}
         create_shell
         create_sash(window)
         new_notebook(window.notebooks.first)
@@ -32,6 +33,7 @@ module Redcar
         @window.add_listener(:menu_changed,  &method(:menu_changed))
         @window.add_listener(:title_changed, &method(:title_changed))
         @window.add_listener(:new_notebook,  &method(:new_notebook))
+        @window.add_listener(:notebook_removed,  &method(:notebook_removed))
         @window.add_listener(:notebook_orientation_changed, &method(:notebook_orientation_changed))
       end
         
@@ -50,17 +52,25 @@ module Redcar
       end
       
       def new_notebook(notebook_model)
-        @notebooks ||= []
         notebook_controller = ApplicationSWT::Notebook.new(notebook_model, @sash)
-        @notebooks << notebook_controller
-        width = (100/@notebooks.length).to_i
-        widths = [width]*@notebooks.length
+        width = (100/@window.notebooks.length).to_i
+        widths = [width]*@window.notebooks.length
       	@sash.setWeights(widths.to_java(:int))
-      	notebook_controller.add_listener(:swt_focus_gained) do |notebook|
-      	  p :window_focus_gained
+      	h = notebook_controller.add_listener(:swt_focus_gained) do |notebook|
           @window.focussed_notebook = notebook
         end
-        
+        @notebook_handlers[notebook_model] << h
+      end
+      
+      def notebook_removed(notebook_model)
+        notebook_controller = notebook_model.controller
+        @notebook_handlers[notebook_model].each do |h|
+          notebook_controller.remove_listener(h)
+        end
+        notebook_controller.dispose
+        width = (100/@window.notebooks.length).to_i
+        widths = [width]*@window.notebooks.length
+      	@sash.setWeights(widths.to_java(:int))
       end
       
       def notebook_orientation_changed(new_orientation)

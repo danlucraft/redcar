@@ -14,6 +14,7 @@ module Redcar
     def initialize
       Window.all << self
       @visible = false
+      @notebooks = []
       create_notebook
       @notebook_orientation = :horizontal
       self.title = "Redcar"
@@ -23,7 +24,7 @@ module Redcar
     #
     # @events [(:new_notebook, notebook)]
     def create_notebook
-      @notebooks ||= []
+      return if @notebooks.length == 2
       notebook = Redcar::Notebook.new
       @notebooks << notebook
       if @notebooks.length == 1
@@ -37,6 +38,16 @@ module Redcar
       notebook.add_listener(:tab_focussed) do |tab|
         notify_listeners(:tab_focussed, tab)
       end
+    end
+    
+    def close_notebook
+      return if @notebooks.length == 1
+      first_notebook, second_notebook = *@notebooks
+      second_notebook.tabs.each do |tab|
+        first_notebook.grab_tab_from(second_notebook, tab)
+      end
+      @notebooks.delete(second_notebook)
+      notify_listeners(:notebook_removed, second_notebook)
     end
 
     def title

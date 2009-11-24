@@ -1,7 +1,7 @@
 module Redcar
   class ApplicationSWT
     class Tab
-      attr_reader :item, :model
+      attr_reader :item, :model, :notebook
       
       FILE_ICON = File.join(Redcar.root, %w(plugins application lib application assets file.png))
       
@@ -10,13 +10,12 @@ module Redcar
         create_item_widget
         create_tab_widget
         attach_listeners
-        @icon = Swt::Graphics::Image.new(ApplicationSWT.display, FILE_ICON)
-        @item.image = @icon
       end
       
       def create_item_widget
         @item = Swt::Custom::CTabItem.new(notebook.tab_folder, Swt::SWT::CLOSE)
-        @item.text = "Hello!"
+        @icon = Swt::Graphics::Image.new(ApplicationSWT.display, FILE_ICON)
+        @item.image = @icon
       end
       
       def create_tab_widget
@@ -30,7 +29,6 @@ module Redcar
       end
       
       def swt_focus_gained
-        p :edit_tab_swt_focussed; 
         notify_listeners(:swt_focus_gained)
       end
       

@@ -25,6 +25,7 @@ module Redcar
     def initialize(model, edit_tab)
       @model = model
       @edit_tab = edit_tab
+      @handlers = []
       create_mate_text
       create_grammar_selector
       create_document
@@ -83,9 +84,10 @@ module Redcar
     def create_document
       @document = EditViewSWT::Document.new(@model.document, @mate_text.mate_document)
       @model.document.controller = @document
-      @model.document.add_listener(:new_mirror, &method(:update_grammar))
-      @model.add_listener(:grammar_changed, &method(:model_grammar_changed))
+      h1 = @model.document.add_listener(:new_mirror, &method(:update_grammar))
+      h2 = @model.add_listener(:grammar_changed, &method(:model_grammar_changed))
       @mate_text.getTextWidget.addFocusListener(FocusListener.new(self))
+      @handlers << [@model.document, h1] << [@model, h2]
     end
     
     def swt_focus_gained
@@ -102,7 +104,8 @@ module Redcar
     end
     
     def attach_listeners
-      @document.add_listener(:set_text, &method(:reparse))
+      h = @document.add_listener(:set_text, &method(:reparse))
+      @handlers << [@document, h]
     end
     
     def reparse
@@ -129,6 +132,13 @@ module Redcar
       @mate_text.set_grammar_by_filename(@model.document.title)
       first_line = @model.document.to_s.split("\n").first
       @mate_text.set_grammar_by_first_line(first_line) if first_line
+    end
+    
+    def dispose
+      @combo.dispose
+      @widget.dispose
+      @handlers.each {|obj, h| obj.remove_listener(h) }
+      @handlers.clear
     end
     
     class FocusListener

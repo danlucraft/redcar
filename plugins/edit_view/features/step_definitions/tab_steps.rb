@@ -9,7 +9,7 @@ end
 
 When /^I replace the contents with "([^\"]*)"$/ do |arg1|
   win = Redcar.app.windows.first
-  tab = win.notebook.focussed_tab
+  tab = win.focussed_notebook.focussed_tab
   tab.edit_view.document.text = arg1
 end
 

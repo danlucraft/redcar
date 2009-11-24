@@ -7,6 +7,7 @@ module Redcar
     
     def initialize(notebook)
       @notebook = notebook
+      @title    = "unknown"
     end
     
     # Close the tab (remove it from the Notebook).
@@ -25,16 +26,22 @@ module Redcar
       notify_listeners(:focus)
     end
     
-    def title=(title)
-      notify_listeners(:changed_title, title)
+    def title
+      @title
     end
     
-    def title
-      "unknown"
+    def title=(title)
+      @title = title
+      notify_listeners(:changed_title, title)
     end
     
     def inspect
       "#<#{self.class.name} \"#{title}\">"
+    end
+    
+    # Sets the notebook of the tab. Should not be called from user code.
+    def set_notebook(notebook)
+      @notebook = notebook
     end
   end
 end

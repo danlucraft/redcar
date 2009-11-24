@@ -21,6 +21,10 @@ When /^I move the tab to the other notebook$/ do
   Redcar::Top::MoveTabToOtherNotebookCommand.new.run
 end
 
+When /^I close the current notebook$/ do
+  Redcar::Top::CloseNotebookCommand.new.run
+end
+
 Then /^there should be (one|two) notebooks?$/ do |count_str|
   count = count_str == "one" ? 1 : 2
   # in the model
@@ -39,3 +43,11 @@ Then /^notebook (\d) should have (\d) tabs?$/ do |index, tab_count|
   # in the GUI
   ctab_folders[index].children.to_a.length.should == tab_count.to_i
 end
+
+Then /^the tab in notebook (\d) should contain "([^\"]*)"$/ do |index, str|
+  index = index.to_i - 1
+  # in the model
+  tab = Redcar.app.windows.first.notebooks[index].focussed_tab
+  tab.edit_view.document.to_s.include?(str).should be_true
+end
+
