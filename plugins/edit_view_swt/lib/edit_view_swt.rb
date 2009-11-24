@@ -91,6 +91,7 @@ module Redcar
     end
     
     def swt_focus_gained
+      p [:swt_focus_gained, self.class]
       @model.gained_focus
     end
     

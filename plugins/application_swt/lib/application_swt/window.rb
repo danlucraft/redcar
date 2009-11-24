@@ -56,10 +56,6 @@ module Redcar
         width = (100/@window.notebooks.length).to_i
         widths = [width]*@window.notebooks.length
       	@sash.setWeights(widths.to_java(:int))
-      	h = notebook_controller.add_listener(:swt_focus_gained) do |notebook|
-          @window.focussed_notebook = notebook
-        end
-        @notebook_handlers[notebook_model] << h
       end
       
       def notebook_removed(notebook_model)

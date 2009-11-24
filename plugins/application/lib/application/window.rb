@@ -26,6 +26,7 @@ module Redcar
     def create_notebook
       return if @notebooks.length == 2
       notebook = Redcar::Notebook.new
+      p [:new_notebook, notebook]
       @notebooks << notebook
       if @notebooks.length == 1
         self.focussed_notebook = notebook
@@ -37,6 +38,7 @@ module Redcar
     def attach_notebook_listeners(notebook)
       notebook.add_listener(:tab_focussed) do |tab|
         notify_listeners(:tab_focussed, tab)
+        self.focussed_notebook = tab.notebook if tab
       end
     end
     

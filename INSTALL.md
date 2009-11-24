@@ -25,7 +25,7 @@ Build the jar (you will need ant):
 
 Install the required gems:
 
-    $ sudo gem install logging
+    $ jruby -S gem install logging
 
 To run Redcar stand in redcar/ and run
 

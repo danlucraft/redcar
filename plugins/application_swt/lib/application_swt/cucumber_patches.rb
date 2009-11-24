@@ -1,28 +1,59 @@
 
 module Cucumber
-  
   module Ast
-    class TreeWalker
-      def visit_steps(steps)
-        broadcast(steps) do
-          block = Swt::RRunnable.new do
-            steps.accept(self)
-          end
-          Redcar::ApplicationSWT.display.syncExec(block)
-        end
-      end
+    class StepInvocation #:nodoc:# 
 
-      def visit_step(step)
-        broadcast(step) do
-          block = Swt::RRunnable.new do
-            step.accept(self)
+      def invoke(step_mother, options)
+        block = Swt::RRunnable.new do
+          find_step_match!(step_mother)
+          unless @skip_invoke || options[:dry_run] || @exception || @step_collection.exception
+            @skip_invoke = true
+            begin
+              @step_match.invoke(@multiline_arg)
+              step_mother.after_step
+              status!(:passed)
+            rescue Pending => e
+              failed(options, e, false)
+              status!(:pending)
+            rescue Undefined => e
+              failed(options, e, false)
+              status!(:undefined)
+            rescue Exception => e
+              failed(options, e, false)
+              status!(:failed)
+            end
           end
-          Redcar::ApplicationSWT.display.syncExec(block)
+        end
+        Redcar::ApplicationSWT.display.syncExec(block)
+        if ENV["SLOW_CUKES"]
+          sleep ENV["SLOW_CUKES"].to_f
         end
       end
     end
   end
-  
+
+    #   module Ast
+    #     class TreeWalker
+    #       def visit_steps(steps)
+    #         broadcast(steps) do
+    #           block = Swt::RRunnable.new do
+    #             steps.accept(self)
+    #           end
+    #           Redcar::ApplicationSWT.display.syncExec(block)
+    #         end
+    #       end
+    # 
+    #       def visit_step(step)
+    #         broadcast(step) do
+    #           block = Swt::RRunnable.new do
+    #             step.accept(self)
+    #           end
+    #           Redcar::ApplicationSWT.display.syncExec(block)
+    #         end
+    #       end
+    #     end
+    #   end
+
   module RbSupport
     class RbLanguage
       def require_support_files(path)
@@ -41,6 +72,22 @@ module Cucumber
         end
       end
     end
+    
+    # class RbStepDefinition
+    #   def invoke(args)
+    #     args = args.map{|arg| Ast::PyString === arg ? arg.to_s : arg}
+    #     begin
+    #       args = @rb_language.execute_transforms(args)
+    #       block = Swt::RRunnable.new do
+    #         @rb_language.current_world.cucumber_instance_exec(true, regexp_source, *args, &@proc)
+    #       end
+    #       Redcar::ApplicationSWT.display.syncExec(block)
+    #     rescue Cucumber::ArityMismatchError => e
+    #       e.backtrace.unshift(self.backtrace_line)
+    #       raise e
+    #     end
+    #   end
+    # end
   end
   
   module Cli
