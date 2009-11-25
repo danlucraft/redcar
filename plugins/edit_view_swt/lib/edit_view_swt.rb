@@ -131,7 +131,6 @@ module Redcar
     end
     
     def update_grammar(new_mirror)
-      p :setting_grammar
       title = new_mirror.title
       return if @mate_text.set_grammar_by_filename(title)
       contents = new_mirror.read

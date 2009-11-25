@@ -7,7 +7,6 @@ module Redcar
           :windows => "Ctrl+N"
       
       def execute
-        puts "making a new document"
         tab = win.new_tab(Redcar::EditTab)
         tab.title = "untitled"
         tab.focus
@@ -20,7 +19,6 @@ module Redcar
           :windows => "Ctrl+Alt+N"
 
       def execute
-        puts "making a new notebook"
         unless win.notebooks.length > 1
           win.create_notebook
         end
@@ -30,7 +28,6 @@ module Redcar
     class RotateNotebooksCommand < Command
           
       def execute
-        puts "rotate notebooks"
         win.rotate_notebooks
       end
     end
@@ -38,7 +35,6 @@ module Redcar
     class CloseNotebookCommand < Command
           
       def execute
-        puts "close notebooks"
         unless win.notebooks.length == 1
           win.close_notebook
         end
@@ -53,9 +49,7 @@ module Redcar
 
       def execute
         if tab = win.focussed_notebook.focussed_tab
-          puts "moveing tab to other notebook #{tab.title}"
           current_notebook = tab.notebook
-          puts "  current notebook #{current_notebook}"
           target_notebook = win.notebooks.detect {|nb| nb != current_notebook}
           target_notebook.grab_tab_from(current_notebook, tab)
         end
@@ -69,15 +63,6 @@ module Redcar
         puts "printing contents"
         tab = win.focussed_notebook.focussed_tab
         p tab.edit_view.document.to_s
-      end
-    end
-    
-    class SetContents < EditTabCommand
-      
-      def execute
-        puts "setting contents"
-        tab = win.focussed_notebook.focussed_tab
-        tab.edit_view.document.text = "class Redcar\n  include JRuby\nend\n"
       end
     end
     
@@ -132,7 +117,6 @@ module Redcar
         sub_menu "Debug" do
           item "Print Command History", PrintHistoryCommand
           item "Print Contents", PrintContents
-          item "Set Contents", SetContents
           item "List Tabs", ListTabsCommand
           item "Print Scope Tree", PrintScopeTreeCommand
           sub_menu "REPL" do
