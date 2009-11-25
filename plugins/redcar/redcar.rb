@@ -67,7 +67,7 @@ module Redcar
       
       def execute
         puts "printing contents"
-        tab = win.notebook.focussed_tab
+        tab = win.focussed_notebook.focussed_tab
         p tab.edit_view.document.to_s
       end
     end
@@ -76,7 +76,7 @@ module Redcar
       
       def execute
         puts "setting contents"
-        tab = win.notebook.focussed_tab
+        tab = win.focussed_notebook.focussed_tab
         tab.edit_view.document.text = "class Redcar\n  include JRuby\nend\n"
       end
     end
@@ -91,7 +91,7 @@ module Redcar
     
     class PrintScopeTreeCommand < Command
       def execute
-        tab = win.notebook.focussed_tab
+        tab = win.focussed_notebook.focussed_tab
         puts tab.edit_view.controller.mate_text.parser.root.pretty(0)
       end
     end
@@ -111,7 +111,7 @@ module Redcar
     
     class ListTabsCommand < Command
       def execute
-        p win.notebook.tabs.map {|tab| tab.class}
+        p win.focussed_notebook.tabs.map {|tab| tab.class}
       end
     end
     
