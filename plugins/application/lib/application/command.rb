@@ -5,17 +5,17 @@ module Redcar
   #
   # Define commands by subclassing the Redcar::Command class.
   #
-  # === Examples
+  # ## Examples
   #
-  #   class CloseTab < Redcar::Command
-  #     key  :linux   => "Ctrl+W",
-  #          :osx     => "Cmd+W",
-  #          :windows => "Ctrl+W"
-  #
-  #     def execute
-  #       tab.close if tab
+  #     class CloseTab < Redcar::Command
+  #       key  :linux   => "Ctrl+W",
+  #            :osx     => "Cmd+W",
+  #            :windows => "Ctrl+W"
+  #     
+  #       def execute
+  #         tab.close if tab
+  #       end
   #     end
-  #   end
   class Command
     attr_accessor :error
     

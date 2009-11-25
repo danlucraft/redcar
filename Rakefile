@@ -31,6 +31,17 @@ Dir[File.join(File.dirname(__FILE__), *%w[plugins *])].each do |plugin_dir|
   end
 end
 
+require 'yard'
+
+YARD::Rake::YardocTask.new do |t|
+  t.files   = [
+      'lib/*.rb', 
+      'plugins/*/lib/*.rb',
+      'plugins/*/lib/**/*.rb'
+    ]
+  t.options = ['--markup', 'markdown']
+end
+
 task :yardoc do
   files = []
   %w(core application application_swt edit_view edit_view_swt project redcar).each do |plugin_name|

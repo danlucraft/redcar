@@ -1,7 +1,7 @@
 
 module Redcar
   class Command
-    # A module holding the Redcar command history. The maximum length
+    # A class that holds a Redcar command history. The maximum length
     # defaults to 500.
     class History < Array
       def initialize

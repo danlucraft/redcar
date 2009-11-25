@@ -10,10 +10,10 @@ module Redcar
   #
   # The "whether there are any open edit tabs" sensitivity is defined like this:
   #
-  #   Sensitivity.new(:open_edit_tab, Redcar.app, [:new_tab, :close_tab]) do
-  #     # checks whether there are any open edit tabs
-  #     Redcar.app.windows.any? {|w| w.notebook.tabs.any? {|t| t.is_a?(EditTab)}}
-  #   end
+  #     Sensitivity.new(:open_edit_tab, Redcar.app, [:new_tab, :close_tab]) do
+  #       # checks whether there are any open edit tabs
+  #       Redcar.app.windows.any? {|w| w.notebook.tabs.any? {|t| t.is_a?(EditTab)}}
+  #     end
   #
   # This says that this sensitivity is called :open_edit_tab, that the state
   # it represents ONLY changes when the application object issues events 

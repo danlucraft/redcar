@@ -5,7 +5,7 @@ require 'freebase/freebase'
 require 'ruby_extensions'
 require 'logging'
 
-# Foo Redcar
+# 
 module Redcar
   VERSION         = '0.3.0dev'
   VERSION_MAJOR   = 0

@@ -10,19 +10,19 @@ module Redcar
   # you can make an object sensitive to whether it is Tuesday by including
   # this module and sensitizing the instance.
   #
-  #   class MySensitiveClass
-  #     include Redcar::Sensitive
-  #   end
-  #
-  #   obj = MySensitiveClass.new
-  #   obj.sensitize :is_tuesday
-  #   obj.active?  # => true|false
+  #     class MySensitiveClass
+  #       include Redcar::Sensitive
+  #     end
+  #     
+  #     obj = MySensitiveClass.new
+  #     obj.sensitize :is_tuesday
+  #     obj.active?  # => true|false
   module Sensitive
     # Sensitize the object to a list of sensitivities. May be called with
     # multiple sensitivities multiple times.
     #
-    #    obj.sensitize :is_tuesday, :raining
-    #    obj.sensitize :month_has_y
+    #      obj.sensitize :is_tuesday, :raining
+    #      obj.sensitize :month_has_y
     #
     # @param [Array<Symbol>] list of sensitivity_names
     def sensitize(*sensitivity_names)
@@ -44,7 +44,7 @@ module Redcar
       @sensitivity_names || []
     end
     
-    # @return [Array<Sensitivity>] list of senstivitys
+    # @return [Array<Sensitivity>] list of senstivities
     def sensitivities
       sensitivity_names.map {|n| Sensitivity.get(n) }.compact
     end

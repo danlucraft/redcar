@@ -9,6 +9,7 @@ custom/preferences.yaml
 custom/appdata.yaml
 
 rdoc
+doc/
 doc/html
 doc/latex
 .yardoc

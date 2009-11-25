@@ -2,24 +2,24 @@ module Redcar
   class Menu
     # A DSL for building menus simply. An example of usage
     #
-    #   builder = Menu::Builder.new do
-    #     sub_menu "File" do
-    #       item "New", NewCommand
+    #     builder = Menu::Builder.new do
+    #       sub_menu "File" do
+    #         item "New", NewCommand
+    #       end
+    #       sub_menu "Help" do
+    #         item "Website", WebsiteCommand
+    #       end
     #     end
-    #     sub_menu "Help" do
-    #       item "Website", WebsiteCommand
-    #     end
-    #   end
     #
     # This is equivalent to:
     # 
-    #   menu = Redcar::Menu.new
-    #   file_menu = Redcar::Menu.new("File") 
-    #   help_menu = Redcar::Menu.new("Help")
-    #   menu << file_menu
-    #   menu << help_menu
-    #   file_menu << Redcar::Menu::Item.new("New", NewCommand)
-    #   help_menu << Redcar::Menu::Item.new("Website", WebsiteCommand)
+    #     menu = Redcar::Menu.new
+    #     file_menu = Redcar::Menu.new("File") 
+    #     help_menu = Redcar::Menu.new("Help")
+    #     menu << file_menu
+    #     menu << help_menu
+    #     file_menu << Redcar::Menu::Item.new("New", NewCommand)
+    #     help_menu << Redcar::Menu::Item.new("Website", WebsiteCommand)
     class Builder
       attr_reader :menu
       
