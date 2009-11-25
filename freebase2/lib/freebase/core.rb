@@ -26,24 +26,6 @@ module FreeBASE
   class Core
 
     include Config
-  
-    ##
-    # Starts the Core service.  This method blocks until shutdown.
-    #
-    def Core.startup(propertiesFile, defaultPropertiesFile)
-      Thread.abort_on_exception = true
-      core = Core.new(propertiesFile, defaultPropertiesFile)
-      # yield core if block_given?
-      # sleep
-    end
-    
-    def self.load_plugins(propertiesFile, defaultPropertiesFile)
-      Core.new(propertiesFile, defaultPropertiesFile, :load_only => true)
-    end
-    
-    def self.require(propertiesFile, defaultPropertiesFile)
-      Core.new(propertiesFile, defaultPropertiesFile, :require_only => true)
-    end
     
     # The master bus FreeBASE::DataBus
     attr_reader :bus
@@ -60,6 +42,12 @@ module FreeBASE
       init_bus
       load_properties
       load_setup
+    end
+    
+    ##
+    # Starts the Core service.  This method blocks until shutdown.
+    #
+    def startup(options={})
       # push all plugin paths into the require path. Prepend codebase
       # if it's a relative path
       @properties["config/plugin_path"].split(";").each do |path|
@@ -77,12 +65,14 @@ module FreeBASE
       end
       @bus["/system/state/all_plugins_loaded"].data = true
       @core_thread = Thread.current
-      unless options[:load_only]
-        # tui = Thread.new {
-          # @bus["/system/ui/messagepump"].call()
-        # }
-        # tui.join
-      end
+    end
+
+    def load_plugins
+      startup(:load_only => true)
+    end
+
+    def require_files
+      startup(:require_only => true)
     end
     
     ##

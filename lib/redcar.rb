@@ -5,6 +5,7 @@ require 'freebase/freebase'
 require 'ruby_extensions'
 require 'logging'
 
+# Foo Redcar
 module Redcar
   VERSION         = '0.3.0dev'
   VERSION_MAJOR   = 0
@@ -17,26 +18,37 @@ module Redcar
   $FR_PROJECT           = nil
   $FREEBASE_APPLICATION = "Redcar"
   
-  include FreeBASE::DataBusHelper
+  class << self
+    attr_reader :freebase_core
+  end
   
   def self.root
     ROOT
   end
   
   def self.start
-    FreeBASE::Core.startup("properties.yaml", "config/default.yaml")
+    @freebase_core = FreeBASE::Core.new(*freebase_core_args)
+    @freebase_core.startup
   end
   
   def self.load
-    FreeBASE::Core.load_plugins("properties.yaml","config/default.yaml")
+    @freebase_core = FreeBASE::Core.new(*freebase_core_args)
+    @freebase_core.load_plugins
   end
   
   def self.require
-    FreeBASE::Core.require("properties.yaml","config/default.yaml")
+    @freebase_core = FreeBASE::Core.new(*freebase_core_args)
+    @freebase_core.require_files
   end
   
   def self.pump
-    bus["/system/ui/messagepump"].call()
+    @freebase_core.bus["/system/ui/messagepump"].call()
+  end
+  
+  private
+  
+  def self.freebase_core_args
+    ["properties.yaml", "config/default.yaml"]
   end
 end
 

@@ -23,10 +23,6 @@ module Redcar
   def self.gui=(gui)
     raise "can't set gui twice" if @gui
     @gui = gui
-    
-    bus["/system/ui/messagepump"].set_proc do
-      @gui.start
-    end
   end
   
   class Application
@@ -36,6 +32,9 @@ module Redcar
     include Redcar::Observable
     
     def self.load
+      Redcar.freebase_core.bus["/system/ui/messagepump"].set_proc do
+        Redcar.gui.start
+      end
     end
     
     def self.start
