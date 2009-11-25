@@ -68,9 +68,9 @@ module Redcar
     end
     
     def deserialize(data)
+      self.grammar       = data[:grammar]
       document.text      = data[:contents]
       self.cursor_offset = data[:cursor_offset]
-      self.grammar       = data[:grammar]
     end
   end
 end

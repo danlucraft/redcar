@@ -56,7 +56,9 @@ module Redcar
     private
     
     def update_from_mirror
+      p :document_text=
       self.text        = mirror.read
+      p :document_text_done
       @edit_view.title = mirror.title
     end
   end

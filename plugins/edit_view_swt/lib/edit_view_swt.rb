@@ -84,7 +84,8 @@ module Redcar
     def create_document
       @document = EditViewSWT::Document.new(@model.document, @mate_text.mate_document)
       @model.document.controller = @document
-      h1 = @model.document.add_listener(:new_mirror, &method(:update_grammar))
+      h1 = @model.document.add_listener(:before => :new_mirror, 
+            &method(:update_grammar))
       h2 = @model.add_listener(:grammar_changed, &method(:model_grammar_changed))
       @mate_text.getTextWidget.addFocusListener(FocusListener.new(self))
       @handlers << [@model.document, h1] << [@model, h2]
@@ -105,8 +106,8 @@ module Redcar
     end
     
     def attach_listeners
-      h = @document.add_listener(:set_text, &method(:reparse))
-      @handlers << [@document, h]
+      # h = @document.add_listener(:set_text, &method(:reparse))
+      # @handlers << [@document, h]
     end
     
     def reparse
@@ -129,9 +130,12 @@ module Redcar
       @mate_text.set_grammar_by_name(name)
     end
     
-    def update_grammar(*)
-      @mate_text.set_grammar_by_filename(@model.document.title)
-      first_line = @model.document.to_s.split("\n").first
+    def update_grammar(new_mirror)
+      p :setting_grammar
+      title = new_mirror.title
+      return if @mate_text.set_grammar_by_filename(title)
+      contents = new_mirror.read
+      first_line = contents.to_s.split("\n").first
       @mate_text.set_grammar_by_first_line(first_line) if first_line
     end
     
