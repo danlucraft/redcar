@@ -12,7 +12,8 @@ module Redcar
       
       def create_tab_widget
         @edit_view = EditViewSWT.new(model.edit_view, self)
-        @item.control = @edit_view.widget
+        @widget = @edit_view.widget
+        @item.control = @widget
       end
       
       # Focuses the CTabItem within the CTabFolder, and gives the keyboard

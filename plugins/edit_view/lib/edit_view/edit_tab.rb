@@ -19,12 +19,10 @@ module Redcar
     end
     
     def serialize
-      { :edit_view => edit_view.serialize,
-        :title     => title }
+      { :title     => title }
     end
     
     def deserialize(data)
-      edit_view.deserialize(data[:edit_view])
       self.title = data[:title]
     end
   end
