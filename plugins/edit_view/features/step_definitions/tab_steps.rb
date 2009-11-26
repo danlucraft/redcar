@@ -14,15 +14,25 @@ When /^I replace the contents with "([^\"]*)"$/ do |arg1|
 end
 
 Then /^there should be one (.*) tab$/ do |tab_type|
+  # in the model
+  tabs = Redcar.app.windows.first.notebooks.map {|nb| nb.tabs }.flatten
+  tabs.length.should == 1
+  
+  # in the GUI
   case tab_type
   when "edit"
     tab_class = Redcar::EditTab
   end
   
-  tab_folder = get_tab_folder
-  tab        = get_tab(tab_folder)
-  tab_folder.getItems.to_a.length.should == 1
-  tab.should be_an_instance_of tab_class
+  tabs = get_tabs
+  tabs.length.should == 1
+end
+
+Then /^the edit tab should have the focus$/ do
+  tabs = get_tabs
+  edit_tabs = tabs.select {|t| t.is_a?(Redcar::EditTab)}
+  edit_tabs.length.should == 1
+  edit_tabs.first.controller.edit_view.mate_text.get_text_widget.is_focus_control?.should be_true
 end
 
 Then /^there should be no open tabs$/ do 

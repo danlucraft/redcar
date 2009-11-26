@@ -66,4 +66,12 @@ Feature: Multiple notebooks
     | 1        | 2        | 1        |
     | 2        | 1        | 2        |
     
+  Scenario: When you close a tab the focus moves to another notebook if required
+    When I open a new edit tab
+    And I make a new notebook
+    And I open a new edit tab
+    And I move the tab to the other notebook
+    And I close the focussed tab
+    Then there should be one edit tab
+    And the edit tab should have the focus
   
