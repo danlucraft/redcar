@@ -17,7 +17,7 @@ module Redcar
       @notebooks = []
       create_notebook
       @notebook_orientation = :horizontal
-      self.title = "Redcar"
+      self.title = "Redcar #{Redcar.app.windows.length}"
     end
       
     # Create a new notebook in this window.

@@ -75,7 +75,13 @@ module Redcar
     # Removes a window from this Application. Should not be called by user
     # code, use Window#close instead.
     def window_closed(window)
+      p [:window_closed, window]
+      p windows
       windows.delete(window)
+      p windows
+      if focussed_window == window
+        self.focussed_window = windows.first
+      end
       @window_handlers[window].each {|h| window.remove_listener(h) }
       @window_handlers.delete(window)
     end

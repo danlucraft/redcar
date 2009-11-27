@@ -7,7 +7,13 @@ module Redcar
         @window = window
         @menu_bar = Swt::Widgets::Menu.new(window.shell, Swt::SWT::BAR)
         return unless menu_model
+        @handlers = []
         add_entries_to_menu(@menu_bar, menu_model)
+      end
+      
+      def close
+        @handlers.each {|obj, h| obj.remove_listener(h)}
+        @menu_bar.dispose
       end
       
       private
@@ -36,9 +42,10 @@ module Redcar
               puts "#{entry.command} activated"
               entry.selected
             end
-            entry.command.add_listener(:active_changed) do |value|
+            h = entry.command.add_listener(:active_changed) do |value|
               item.enabled = value
             end
+            @handlers << [entry.command, h]
             if not entry.command.active?
               item.enabled = false
             end

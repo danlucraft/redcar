@@ -7,6 +7,7 @@ module Redcar
           :windows => "Ctrl+N"
       
       def execute
+        puts "new tab in #{win.inspect}"
         tab = win.new_tab(Redcar::EditTab)
         tab.title = "untitled"
         tab.focus
@@ -34,6 +35,12 @@ module Redcar
       def execute
         window = Redcar.app.new_window
         window.title = @title if @title
+      end
+    end
+    
+    class CloseWindowCommand < Command
+      def execute
+        win.close
       end
     end
     
@@ -125,7 +132,9 @@ module Redcar
           item "Save", Project::FileSaveCommand
           item "Save As", Project::FileSaveAsCommand
           separator
-          item "Close", CloseTabCommand
+          item "Close Tab", CloseTabCommand
+          item "Close Notebook", CloseNotebookCommand
+          item "Close Window", CloseWindowCommand
         end
         sub_menu "Debug" do
           item "Print Command History", PrintHistoryCommand
@@ -139,7 +148,6 @@ module Redcar
         end
         sub_menu "View" do
           item "Rotate Notebooks", RotateNotebooksCommand
-          item "Close Notebook", CloseNotebookCommand
           item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
         end
         sub_menu "Help" do

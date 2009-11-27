@@ -21,10 +21,21 @@ When /I open a new window(?: with title "(.*)")?/ do |title|
   Redcar::Top::NewWindowCommand.new(title).run
 end
 
+When /I close the window via command/ do
+  Redcar::Top::CloseWindowCommand.new.run
+end
+
+When /I close the window via the gui/ do
+  win = Redcar.app.focussed_window
+  win.controller.swt_event_closed
+end
+
 Then /the window "(.*)" should have (\d+) tabs?/ do |win_title, tab_num|
   tab_num = tab_num.to_i
 
   # in the model
+  p Redcar.app.windows
+  p win_title
   Redcar.app.windows.detect{|win| win.title == win_title }.notebooks.map{|nb| nb.tabs}.flatten.length.should == tab_num
   
   # in the GUI

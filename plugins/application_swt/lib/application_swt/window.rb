@@ -10,6 +10,7 @@ module Redcar
         end
         
         def shell_closed(_)
+          p :shell_closed
           @controller.swt_event_closed
         end
 
@@ -80,14 +81,23 @@ module Redcar
       
       def closed(_)
         @shell.close
+        @menu_controller.close
+      end
+      
+      def dispose
+        @shell.dispose
+        @menu_controller.close
       end
         
       def swt_event_closed
+        p :swt_event_closed
         # TODO: this should only close the app if it is the last window
         # on Linux or Windows (Windows 7?).
-        unless Core.platform == :osx
-          Redcar.gui.stop
-        end
+        dispose
+        Redcar.app.window_closed(@window)
+        # unless Core.platform == :osx
+        #   Redcar.gui.stop
+        # end
       end
         
       def swt_event_activated
