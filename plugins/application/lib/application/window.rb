@@ -114,6 +114,10 @@ module Redcar
       end
     end
     
+    def close
+      notify_listeners(:closed, self)
+    end
+    
     def inspect
       "#<Redcar::Window \"#{title}\">"
     end

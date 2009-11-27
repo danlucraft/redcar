@@ -25,6 +25,18 @@ module Redcar
       end
     end
     
+    class NewWindowCommand < Command
+      
+      def initialize(title=nil)
+        @title = title
+      end
+      
+      def execute
+        window = Redcar.app.new_window
+        window.title = @title if @title
+      end
+    end
+    
     class RotateNotebooksCommand < Command
           
       def execute
@@ -107,6 +119,7 @@ module Redcar
         sub_menu "File" do
           item "New", NewCommand
           item "New Notebook", NewNotebookCommand
+          item "New Window", NewWindowCommand
           item "Open", Project::FileOpenCommand
           separator
           item "Save", Project::FileSaveCommand

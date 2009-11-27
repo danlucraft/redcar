@@ -45,6 +45,11 @@ module Redcar
       end
     end
     
+    def initialize
+      @windows = []
+      @window_handlers = Hash.new {|h,k| h[k] = []}
+    end
+    
     # Immediately halts the gui event loop.
     def quit
       Redcar.gui.stop
@@ -52,7 +57,7 @@ module Redcar
     
     # Return a list of all open windows
     def windows
-      @windows ||= []
+      @windows
     end
 
     # Create a new Application::Window, and the controller for it.
@@ -63,6 +68,30 @@ module Redcar
       attach_window_listeners(new_window)
       new_window.menu = menu
       new_window.show
+      set_focussed_window(new_window)
+      new_window
+    end
+    
+    # Removes a window from this Application. Should not be called by user
+    # code, use Window#close instead.
+    def window_closed(window)
+      windows.delete(window)
+      @window_handlers[window].each {|h| window.remove_listener(h) }
+      @window_handlers.delete(window)
+    end
+    
+    def focussed_window
+      @focussed_window
+    end
+    
+    def focussed_window=(window)
+      set_focussed_window(window)
+      notify_listeners(:focussed_window, window)
+    end
+    
+    def set_focussed_window(window)
+      p [:focussed_window, window]
+      @focussed_window = window
     end
     
     attr_reader :menu
@@ -76,10 +105,19 @@ module Redcar
     end
     
     def attach_window_listeners(window)
-      window.add_listener(:tab_focussed) do |tab|
+      h1 = window.add_listener(:tab_focussed) do |tab|
         notify_listeners(:tab_focussed, tab)
       end
+      h2 = window.add_listener(:closed) do |win|
+        window_closed(win)
+      end
+      @window_handlers[window] << h1 << h2
     end
   end
 end
+
+
+
+
+
 

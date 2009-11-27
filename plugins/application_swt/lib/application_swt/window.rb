@@ -10,10 +10,13 @@ module Redcar
         end
         
         def shell_closed(_)
-          @controller.swt_event_closed!
+          @controller.swt_event_closed
         end
 
-        def shell_activated(_); end
+        def shell_activated(_)
+          @controller.swt_event_activated
+        end
+        
         def shell_deactivated(_); end
         def shell_deiconified(_); end
         def shell_iconified(_); end
@@ -35,6 +38,7 @@ module Redcar
         @window.add_listener(:new_notebook,  &method(:new_notebook))
         @window.add_listener(:notebook_removed,  &method(:notebook_removed))
         @window.add_listener(:notebook_orientation_changed, &method(:notebook_orientation_changed))
+        @window.add_listener(:closed,        &method(:closed))
       end
         
       def show
@@ -74,16 +78,20 @@ module Redcar
         @sash.setOrientation(orientation)
       end
       
-      def close
+      def closed(_)
         @shell.close
       end
         
-      def swt_event_closed!
+      def swt_event_closed
         # TODO: this should only close the app if it is the last window
         # on Linux or Windows (Windows 7?).
         unless Core.platform == :osx
           Redcar.gui.stop
         end
+      end
+        
+      def swt_event_activated
+        
       end
         
       private

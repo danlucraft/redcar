@@ -44,17 +44,23 @@ def putsall
 end
 
 After do
-  win = Redcar.app.windows.first
-  win.notebooks.each do |notebook|
-    while tab = notebook.tabs.first
+  Redcar.app.windows.each do |win|
+    win.notebooks.each do |notebook|
+      while tab = notebook.tabs.first
+        Redcar::ApplicationSWT.sync_exec do
+          tab.close
+        end
+      end
+    end
+    if win.notebooks.length == 2
       Redcar::ApplicationSWT.sync_exec do
-        tab.close
+        win.close_notebook
       end
     end
   end
-  if win.notebooks.length == 2
+  while Redcar.app.windows.length > 1
     Redcar::ApplicationSWT.sync_exec do
-      win.close_notebook
+      Redcar.app.windows.last.close
     end
   end
 end
