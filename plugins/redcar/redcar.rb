@@ -39,8 +39,12 @@ module Redcar
     end
     
     class CloseWindowCommand < Command
+      def initialize(window=nil)
+        @window = window
+      end
+    
       def execute
-        win.close
+        (@window||win).close
       end
     end
     

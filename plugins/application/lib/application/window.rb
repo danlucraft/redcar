@@ -17,7 +17,7 @@ module Redcar
       @notebooks = []
       create_notebook
       @notebook_orientation = :horizontal
-      self.title = "Redcar #{Redcar.app.windows.length}"
+      self.title = "Redcar"
     end
       
     # Create a new notebook in this window.
@@ -114,7 +114,19 @@ module Redcar
       end
     end
     
+    # Focus the Window.
+    def focus
+      notify_listeners(:focussed, self)
+    end
+
+    # LINUXTODO: should close the app if it is the last window
     def close
+      notebooks.each do |notebook| 
+        notebook.tabs.each {|tab| tab.close }
+      end
+      if notebooks.length > 1
+        close_notebook
+      end
       notify_listeners(:closed, self)
     end
     

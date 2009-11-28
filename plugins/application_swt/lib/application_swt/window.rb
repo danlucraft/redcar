@@ -2,20 +2,29 @@
 module Redcar
   class ApplicationSWT
     class Window
-      attr_reader :shell, :window
+      attr_reader :shell, :window, :shell_listener
       
       class ShellListener
         def initialize(controller)
           @controller = controller
         end
         
-        def shell_closed(_)
-          p :shell_closed
-          @controller.swt_event_closed
+        def shell_closed(e)
+          unless @in_close_operation
+            @in_close_operation = true
+            e.doit = false
+            @controller.swt_event_closed
+            @in_close_operation = false
+          end
         end
 
-        def shell_activated(_)
-          @controller.swt_event_activated
+        def shell_activated(e)
+          unless @in_activate_operation
+            @in_activate_operation = true
+            e.doit = false
+            @controller.swt_event_activated
+            @in_activate_operation = false
+          end
         end
         
         def shell_deactivated(_); end
@@ -38,8 +47,10 @@ module Redcar
         @window.add_listener(:title_changed, &method(:title_changed))
         @window.add_listener(:new_notebook,  &method(:new_notebook))
         @window.add_listener(:notebook_removed,  &method(:notebook_removed))
-        @window.add_listener(:notebook_orientation_changed, &method(:notebook_orientation_changed))
         @window.add_listener(:closed,        &method(:closed))
+        method = method(:notebook_orientation_changed)
+        @window.add_listener(:notebook_orientation_changed, &method)
+        @window.add_listener(:focussed,      &method(:focussed))
       end
         
       def show
@@ -79,6 +90,10 @@ module Redcar
         @sash.setOrientation(orientation)
       end
       
+      def focussed(_)
+        @shell.set_active
+      end
+      
       def closed(_)
         @shell.close
         @menu_controller.close
@@ -90,18 +105,11 @@ module Redcar
       end
         
       def swt_event_closed
-        p :swt_event_closed
-        # TODO: this should only close the app if it is the last window
-        # on Linux or Windows (Windows 7?).
-        dispose
-        Redcar.app.window_closed(@window)
-        # unless Core.platform == :osx
-        #   Redcar.gui.stop
-        # end
+        @window.close
       end
         
       def swt_event_activated
-        
+        @window.focus
       end
         
       private

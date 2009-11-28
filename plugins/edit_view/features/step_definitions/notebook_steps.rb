@@ -27,14 +27,8 @@ end
 
 When /^I focus on the edit_view in the tab in notebook (\d)$/ do |index|
   index = index.to_i - 1
-  # p Redcar.app.windows.first.notebooks
-  # p Redcar.app.windows.first.notebooks.first.tabs
-  # p Redcar.app.windows.first.notebooks.first.tabs.map{|t| t.notebook }
-  # p Redcar.app.windows.first.notebooks.last.tabs
-  # p Redcar.app.windows.first.notebooks.last.tabs.map{|t| t.notebook }
   notebook = Redcar.app.windows.first.notebooks[index]
   edit_view = notebook.focussed_tab.edit_view
-  # p [:focussing_on, notebook, notebook.focussed_tab.notebook]
   edit_view.controller.swt_focus_gained
 end
 

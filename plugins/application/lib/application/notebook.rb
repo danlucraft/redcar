@@ -5,8 +5,6 @@ module Redcar
     include Redcar::Model
     include Redcar::Observable
     
-    attr_reader :tabs
-    
     def initialize
       @tabs         = []
       @focussed_tab = nil
@@ -19,6 +17,10 @@ module Redcar
     
     def focussed_tab
       @focussed_tab
+    end
+    
+    def tabs
+      @tabs.clone
     end
     
     # Creates a new tab in this Notebook, of class tab_class. Returns
