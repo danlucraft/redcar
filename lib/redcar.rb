@@ -4,6 +4,7 @@ require 'freebase/freebase'
 
 require 'ruby_extensions'
 require 'logging'
+require 'usage'
 
 # ## Loading and Initialization
 #
@@ -91,7 +92,7 @@ module Redcar
   end
 end
 
-if ARGV.include?("-v")
-  puts "Redcar #{Redcar::VERSION}"
-  exit
-end
+
+usage = Redcar::Usage.new
+usage.version_requested
+usage.help_requested

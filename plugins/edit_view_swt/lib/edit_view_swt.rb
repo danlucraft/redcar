@@ -45,10 +45,14 @@ module Redcar
       @widget.layout = layout
       @mate_text = JavaMateView::MateText.new(@widget)
       if Core.platform == :osx
-        @mate_text.set_font "Menlo", 15
+        default_font = "Monaco"
+        default_font_size = 15
       elsif Core.platform == :linux
-        @mate_text.set_font "Monospace", 14
+        default_font = "Monospace"
+        default_font_size = 14
       end
+      @mate_text.set_font(ARGV.option("font") || default_font, 
+                          (ARGV.option("font-size") || default_font_size).to_i)
       @edit_tab.item.control = @widget
       
       @mate_text.layoutData = Swt::Layout::GridData.construct do |data|
