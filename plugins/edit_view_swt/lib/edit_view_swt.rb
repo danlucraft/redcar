@@ -34,7 +34,7 @@ module Redcar
         @model.set_grammar(new_grammar)
       end
       @mate_text.set_grammar_by_name "Plain Text"
-      @mate_text.set_theme_by_name "Twilight"
+      @mate_text.set_theme_by_name(ARGV.option("theme") || "Twilight")
     end
     
     def create_mate_text

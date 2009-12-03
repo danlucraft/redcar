@@ -15,6 +15,7 @@ module Redcar
         puts
         puts "       --font=FONT  Choose font"
         puts "  --font-size=SIZE  Choose font point size"
+        puts "     --theme=THEME  Choose Textmate theme"
         puts
         exit
       end
