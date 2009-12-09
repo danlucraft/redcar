@@ -1,0 +1,14 @@
+--- !ruby/object:FreeBASE::PluginConfiguration
+name: tree_view
+description: Tree view is the tree view widget 
+version: 1.0
+author: Daniel Lucraft
+autoload: true
+require_path: tree_view/lib/tree_view.rb
+startup_module: Redcar::TreeView
+load_dependencies: 
+  core: "*"
+  application: "*"
+start_dependencies: 
+  core: "*"
+  application: "*"
