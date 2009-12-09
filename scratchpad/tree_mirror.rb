@@ -1,4 +1,5 @@
 
+# the GUI 
 class TreeModel
   class Node
     attr_reader :id, :text, :icon, :parent
@@ -26,7 +27,7 @@ class TreeModel
   end
 end
 
-# Handles 
+# Handles user actions
 class TreeController
   # Double click / Enter
   def activated(node)

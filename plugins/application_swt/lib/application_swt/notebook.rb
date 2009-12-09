@@ -23,6 +23,9 @@ module Redcar
         def widgetSelected(event)
           @controller.swt_event_tab_selected(event.item)
         end
+        
+        def widgetDefaultSelected(*_)
+        end
       end
       
       def initialize(model, sash)
@@ -55,12 +58,13 @@ module Redcar
       end
       
       def setup_drag_and_drop
-        listener = DragAndDropListener.new(@tab_folder)
-        @tab_folder.addListener(Swt::SWT::DragDetect, listener)
-        @tab_folder.addListener(Swt::SWT::MouseUp, listener)
-        @tab_folder.addListener(Swt::SWT::MouseMove, listener)
-        @tab_folder.addListener(Swt::SWT::MouseExit, listener)
-        @tab_folder.addListener(Swt::SWT::MouseEnter, listener)
+        # Doesn't work yet
+        # listener = DragAndDropListener.new(@tab_folder)
+        # @tab_folder.addListener(Swt::SWT::DragDetect, listener)
+        # @tab_folder.addListener(Swt::SWT::MouseUp, listener)
+        # @tab_folder.addListener(Swt::SWT::MouseMove, listener)
+        # @tab_folder.addListener(Swt::SWT::MouseExit, listener)
+        # @tab_folder.addListener(Swt::SWT::MouseEnter, listener)
       end
       
       def attach_model_listeners
