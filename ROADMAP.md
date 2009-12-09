@@ -12,7 +12,7 @@ The features of this release are chosen to be the minimum to make Redcar self-ho
   * Syntax Highlighting           (done)
   * File editing                  (done)
   * Multiple notebook panes       (done)
-  * Multiple windows
+  * Multiple windows              (done)
   * _Basic_ project pane
   * Auto-indenter
   * Tests passing on 3 platforms 
@@ -22,6 +22,8 @@ The features of this release are chosen to be the minimum to make Redcar self-ho
 
 Features:
 
+  * Dialog library with simple DSL
+  * Per-plugin storage
   * HTML output from commands
   * Tooltip output from commands
   * Full project support
