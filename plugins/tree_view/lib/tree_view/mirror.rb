@@ -22,6 +22,13 @@ module Redcar
       def top
         raise "not implemented"
       end
+      
+      # Does the resource still exist (e.g. does the dir exist?)
+      #
+      # @return [Boolean]
+      def exist?
+        raise "not implemented"
+      end
 
       # Has the top nodes changed since the last time `top` 
       # were was called? (E.g. have the contents of the top level dir changed)

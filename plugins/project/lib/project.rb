@@ -1,5 +1,6 @@
 
 require "project/file_mirror"
+require "project/dir_mirror"
 
 module Redcar
   class Project
