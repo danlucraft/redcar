@@ -23,8 +23,8 @@ class Redcar::Project
         @mirror.changed?.should be_true
       end
       
-      describe "contents" do
-        it "the top nodes are the contents of the directory" do
+      describe "top level contents" do
+        it "the nodes are the contents of the directory" do
           top_nodes = @mirror.top
           top_nodes.length.should == 3
           top_nodes.map {|n| n.text}.should == %w(Carnegie Rockefeller subdir)
@@ -39,6 +39,20 @@ class Redcar::Project
         it "subdirectories are not leaf nodes" do
           top_nodes = @mirror.top
           top_nodes.detect {|n| n.text == "subdir"}.leaf?.should be_false
+        end
+        
+        it "isn't changed after you have got the top nodes" do
+          @mirror.top
+          @mirror.changed?.should be_false
+        end
+        
+        describe "sub directory contents" do
+          it "the nodes return their children" do
+            subdir_node = @mirror.top.detect {|n| n.text == "subdir"}
+            sub_nodes = subdir_node.children
+            sub_nodes.length.should == 1
+            sub_nodes.map {|n| n.text}.should == %w(Ford)
+          end
         end
       end
     end

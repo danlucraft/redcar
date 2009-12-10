@@ -7,6 +7,7 @@ module Redcar
       # @param [String] a path to a directory
       def initialize(path)
         @path = File.expand_path(path)
+        @changed = true
       end
       
       # Does the directory exist?
@@ -16,14 +17,19 @@ module Redcar
       
       # Have the toplevel nodes changed?
       def changed?
-        true
+        @changed
       end
       
       def top
-        Dir[@path + "/*"].map {|fn| Node.new(fn)}
+        @changed = false
+        Node.create_all_from_path(@path)
       end
       
       class Node
+        def self.create_all_from_path(path)
+          Dir[path + "/*"].map {|fn| Node.new(fn)}
+        end
+        
         include Redcar::TreeView::Mirror::NodeMirror
         
         def initialize(path)
@@ -36,6 +42,10 @@ module Redcar
         
         def leaf?
           File.file?(@path)
+        end
+        
+        def children
+          Node.create_all_from_path(@path)
         end
       end
     end
