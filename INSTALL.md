@@ -2,7 +2,7 @@
 Installing
 ==========
 
-You must have JRuby installed. JRuby version 1.4.0 appears to have some Java interop regressions so you must get at least revision 1022103f1df259428d479baa5cbdb529b4490d3f from 22 Nov. Refer to jruby.org for instructions on cloning the latest master.
+You must have JRuby installed. See jruby.org for instructions.
 
 To get set up, clone the repo from github:
 
@@ -10,18 +10,10 @@ To get set up, clone the repo from github:
     $ git submodule init
     $ git submodule update
 
-Download the SWT release that is appropriate for your platform from
-eclipse.org/swt and put the swt.jar file into
+Download and unpack the jar dependencies:
 
-    plugins/application_swt/vendor/swt/{linux,osx64,osx}/
-    
-and into 
-
-    vendor/java-mateview/lib/{linux,osx64,osx}
-
-Build the jar (you will need ant):
-
-    $ rake build
+    $ wget http://cloud.github.com/downloads/danlucraft/redcar/redcar_jars.tar.gz
+    $ tar xzf redcar_jars.tar.gz
 
 Install the required gems:
 

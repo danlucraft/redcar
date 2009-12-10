@@ -80,3 +80,22 @@ module Swt
     end
   end
 end
+
+module JFace
+  Dir[File.dirname(__FILE__) + "/../../vendor/jface/*.jar"].each do |jar_fn|
+    require jar_fn
+  end
+  
+  module Viewers
+    import org.eclipse.jface.viewers.TreeViewer
+    import org.eclipse.jface.viewers.ITreeContentProvider
+    import org.eclipse.jface.viewers.ILabelProvider
+  end
+end
+
+
+
+
+
+
+
