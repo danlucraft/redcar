@@ -31,14 +31,17 @@ Dir[File.join(File.dirname(__FILE__), *%w[plugins *])].each do |plugin_dir|
   end
 end
 
-require 'yard'
+begin
+  require 'yard'
 
-YARD::Rake::YardocTask.new do |t|
-  t.files   = [
-      'plugins/*/lib/*.rb',
-      'plugins/*/lib/**/*.rb'
-    ]
-  t.options = ['--markup', 'markdown']
+  YARD::Rake::YardocTask.new do |t|
+    t.files   = [
+        'plugins/*/lib/*.rb',
+        'plugins/*/lib/**/*.rb'
+      ]
+    t.options = ['--markup', 'markdown']
+  end  
+rescue LoadError
 end
 
 task :yardoc do
@@ -47,17 +50,6 @@ task :yardoc do
     files += Dir["plugins/#{plugin_name}/**/*.rb"]
   end
   %x(yardoc #{files.join(" ")} -o yardoc)
-end
-
-task :clear_cache do
-  sh "rm cache/*/*.dump"
-end
-
-desc "list all tasks"
-task :list do
-  Rake::Task.tasks.each do |task|
-    puts "rake #{task.name}"
-  end
 end
 
 desc "Run all specs and features"
@@ -92,5 +84,17 @@ task :build do
   end
 end
 
-
-
+desc "Package jars and submodules into big tar file"
+task :package do
+  sh("COPYFILE_DISABLE=true \
+      tar czvf redcar_jars.tar.gz \
+          --exclude textmate/.git \
+          --exclude **/._* \
+          --exclude *.off \
+      plugins/application_swt/vendor/swt/{osx64,linux,linux64,windows}/swt.jar \
+      plugins/application_swt/vendor/jface/org.eclipse.*.jar \
+      plugins/edit_view_swt/vendor/*.jar \
+      plugins/edit_view_swt/vendor/java-mateview.rb \
+      textmate/Bundles textmate/Themes"
+  )
+end

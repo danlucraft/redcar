@@ -21,6 +21,8 @@ vendor/gtksourceview2/src/rbgtksourceview2version.h
 plugins/application_swt/vendor/swt/osx64/swt.jar
 plugins/application_swt/vendor/swt/osx/swt.jar
 plugins/application_swt/vendor/swt/linux/swt.jar
+plugins/application_swt/vendor/swt/linux64/swt.jar
+plugins/application_swt/vendor/swt/windows/swt.jar
 plugins/application_swt/vendor/jface/
 plugins/application_swt/vendor/swtbot/
 plugins/edit_view_swt/vendor/org*

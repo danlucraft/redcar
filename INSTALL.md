@@ -7,13 +7,11 @@ You must have JRuby installed. See jruby.org for instructions.
 To get set up, clone the repo from github:
 
     $ git clone git://github.com/danlucraft/redcar.git
-    $ git submodule init
-    $ git submodule update
 
 Download and unpack the jar dependencies:
 
-    $ wget http://cloud.github.com/downloads/danlucraft/redcar/redcar_jars.tar.gz
-    $ tar xzf redcar_jars.tar.gz
+    $ wget http://cloud.github.com/downloads/danlucraft/redcar/redcar_jars-2009-12-11.tar.gz
+    $ tar xzf redcar_jars-2009-12-11.tar.gz
 
 Install the required gems:
 
@@ -22,11 +20,14 @@ Install the required gems:
 To run Redcar stand in redcar/ and run
 
     $ jruby bin/redcar
+    
+or (on OSX):
 
-To run all tests (specs and features) with rake (must be JRUBY rake),  
-install rspec and cucumber (as JRUBY gems) and run:
+    $ jruby -J-XstartOnFirstThread bin/redcar
 
-    $ rake
+To run all tests (specs and features) with rake, install rspec and cucumber (as JRUBY gems) and run:
+
+    $ jruby -S rake
 
 Problems?
 =========
