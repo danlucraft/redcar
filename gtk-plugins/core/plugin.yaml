@@ -1,8 +1,0 @@
---- !ruby/object:FreeBASE::PluginConfiguration
-name: core
-description: Redcar core libraries
-version: 1.0
-author: Daniel Lucraft
-autoload: false
-require_path: core/lib/core.rb
-startup_module: Redcar::CorePlugin

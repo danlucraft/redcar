@@ -1,1 +1,0 @@
-# Second Ruby test file
