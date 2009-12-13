@@ -1,9 +1,0 @@
-
-Load from scratch: 50s, 44s
-Load from cache: 16s, 16s, 16s
-  
-with new scheme of bulk savings of Marshalled tm hashes
-
-Load from scratch: 1m 9s, 1m 8s
-Load from cache: 17s, 16s, 17s
-
