@@ -4,17 +4,17 @@
 *.log
 *.log.*
 
+redcar.gemspec
+
 custom/arrangements.yaml
 custom/preferences.yaml
 custom/appdata.yaml
-
 rdoc
 doc/
 doc/html
 doc/latex
 .yardoc
 yardoc
-
 vendor/gtksourceview2/Makefile
 vendor/gtksourceview2/src/Makefile
 vendor/gtksourceview2/src/rbgtksourceview2version.h
@@ -28,5 +28,5 @@ plugins/application_swt/vendor/swtbot/
 plugins/edit_view_swt/vendor/org*
 plugins/edit_view_swt/vendor/j*
 plugins/edit_view_swt/vendor/swt*
-
 plugins/dans
+pkg

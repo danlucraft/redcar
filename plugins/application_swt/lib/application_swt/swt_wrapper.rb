@@ -21,7 +21,7 @@ module Swt
       'windows/swt'
     end
   end
-  
+
   require File.dirname(__FILE__) + "/../../vendor/swt/" + Swt.jar_path
 
   import org.eclipse.swt.SWT

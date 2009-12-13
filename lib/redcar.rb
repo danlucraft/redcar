@@ -1,5 +1,5 @@
 
-$:.push(File.join(File.dirname(__FILE__), "..", "freebase2", "lib"))
+$:.push(File.join(File.dirname(__FILE__), "freebase2", "lib"))
 require 'freebase/freebase'
 
 require 'ruby_extensions'
