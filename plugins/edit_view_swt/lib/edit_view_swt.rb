@@ -1,5 +1,10 @@
+
 require 'edit_view_swt/document'
 require 'edit_view_swt/edit_tab'
+
+require 'joni'
+require 'jcodings'
+require 'jdom'
 
 require File.dirname(__FILE__) + '/../vendor/java-mateview'
 
@@ -16,9 +21,7 @@ module Redcar
     def self.load_textmate_assets
       JavaMateView::Bundle.load_bundles(Redcar::ROOT + "/textmate/")
       JavaMateView::ThemeManager.load_themes(Redcar::ROOT + "/textmate/")
-      p JavaMateView::Bundle.bundles.to_a.map {|b| b.name }
-      p JavaMateView::ThemeManager.themes.to_a.map {|t| t.name }
-    end
+      end
     
     attr_reader :mate_text, :widget
 

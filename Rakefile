@@ -109,6 +109,7 @@ def remove_gitignored_files(filelist)
   ignores = ignores.select {|ignore| ignore.chomp.strip != ""}
   ignores = ignores.map {|ignore| Regexp.new(ignore.chomp.gsub(".", "\\.").gsub("*", ".*"))}
   r = filelist.select {|fn| not ignores.any? {|ignore| fn =~ ignore }}
+  r.select {|fn| fn !~ /\.jar$/}
 end
 
 # This builds the actual gem. For details of what all these options
@@ -120,8 +121,8 @@ spec = Gem::Specification.new do |s|
   
   # Change these as appropriate
   s.name              = "redcar"
-  s.version           = "0.3.0dev"
-  s.summary           = "A JRuby text editor"
+  s.version           = "0.2.9dev"
+  s.summary           = "A JRuby text editor. (Installing the gem will take a while as it downloads assets during the install.)"
   s.author            = "Daniel Lucraft"
   s.email             = "dan@fluentradical.com"
   s.homepage          = "http://redcareditor.com"
@@ -133,21 +134,26 @@ spec = Gem::Specification.new do |s|
 
   # Add any extra files to include in the gem
   s.files             = %w(CHANGES INSTALL.md LICENSE Rakefile README.md ROADMAP.md) + 
-                          Dir.glob("lib/**/*") + 
+                          Dir.glob("bin/redcar") + 
+                          Dir.glob("ext/**/*") + 
+                          remove_gitignored_files(Dir.glob("lib/**/*")) + 
                           remove_gitignored_files(Dir.glob("plugins/**/*")) + 
                           Dir.glob("textmate/Bundles/*.tmbundle/**/*") + 
                           Dir.glob("textmate/Themes/*.tmTheme")
-  s.executables       = FileList["bin/**"].map { |f| File.basename(f) }
+  s.executables       = FileList["bin/redcar"].map { |f| File.basename(f) }
    
   s.require_paths     = ["lib"]
   
   # If you want to depend on other gems, add them here, along with any
   # relevant versions
-  s.add_dependency("logging", "> 1.0.0")
+  # s.add_dependency("logging", "> 1.0.0")
   
   # If your tests use any gems, include them here
   s.add_development_dependency("cucumber")
   s.add_development_dependency("rspec")
+  
+  
+  s.extensions = ["ext/extconf.rb"]
 end
 
 # This task actually builds the gem. We also regenerate a static 

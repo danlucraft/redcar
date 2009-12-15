@@ -6,6 +6,8 @@
 
 redcar.gemspec
 
+lib/*.jar
+
 custom/arrangements.yaml
 custom/preferences.yaml
 custom/appdata.yaml
@@ -22,11 +24,9 @@ plugins/application_swt/vendor/swt/osx64/swt.jar
 plugins/application_swt/vendor/swt/osx/swt.jar
 plugins/application_swt/vendor/swt/linux/swt.jar
 plugins/application_swt/vendor/swt/linux64/swt.jar
-plugins/application_swt/vendor/swt/windows/swt.jar
+plugins/application_swt/vendor/swt/win32/swt.jar
 plugins/application_swt/vendor/jface/
 plugins/application_swt/vendor/swtbot/
-plugins/edit_view_swt/vendor/org*
-plugins/edit_view_swt/vendor/j*
-plugins/edit_view_swt/vendor/swt*
+plugins/edit_view_swt/vendor/j*.jar
 plugins/dans
 pkg

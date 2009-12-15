@@ -232,6 +232,9 @@ module FreeBASE
         object.load if object.respond_to?(:load)
         transition(FreeBASE::LOADED)
       rescue Exception => error
+        if error.is_a?(SystemExit)
+          exit
+        end
         puts error
         puts error.backtrace
         log_error << "Error loading #{@plugin_configuration.name}\n#{error.to_s}\n#{error.backtrace.join("\n")}"

@@ -1,7 +1,6 @@
 
 require 'rbconfig'
 
-
 module Swt
   def self.jar_path
     case Config::CONFIG["host_os"]
@@ -22,7 +21,13 @@ module Swt
     end
   end
 
-  require File.dirname(__FILE__) + "/../../vendor/swt/" + Swt.jar_path
+  path = File.expand_path(File.dirname(__FILE__) + "/../../vendor/swt/" + Swt.jar_path)
+  if File.exist?(path + ".jar")
+    require path
+  else
+    puts "SWT jar file required: #{path}.jar"
+    exit
+  end
 
   import org.eclipse.swt.SWT
   

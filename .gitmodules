@@ -4,3 +4,9 @@
 [submodule "vendor/java-mateview"]
 	path = vendor/java-mateview
 	url = git://github.com/danlucraft/java-mateview.git
+[submodule "lib/logging"]
+	path = lib/logging
+	url = git://github.com/TwP/logging.git
+[submodule "lib/little_plugger"]
+	path = lib/little_plugger
+	url = git://github.com/TwP/little-plugger.git
