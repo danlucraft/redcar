@@ -189,6 +189,9 @@ module FreeBASE
       paths.each do |path|
         fullpath = path
         fullpath = File.join($FR_CODEBASE,path) unless File.absolute_path?(fullpath)
+        unless File.exists?(fullpath)
+          raise "can't find directory #{fullpath}"
+        end
         Dir.foreach(fullpath) do |file|
           next if file=='..' || file=='.'
           if File.stat("#{fullpath}/#{file}").directory?
