@@ -1,3 +1,0 @@
-bin/redcar
-lib/*.rb
-plugins/**/*.rb
