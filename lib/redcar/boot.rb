@@ -1,4 +1,6 @@
 
+require 'java'
+
 $:.push(File.join(File.dirname(__FILE__), %w(.. little_plugger lib)))
 require 'little-plugger'
 
