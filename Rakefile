@@ -133,9 +133,10 @@ spec = Gem::Specification.new do |s|
   # s.platform          = 
 
   # Add any extra files to include in the gem
-  s.files             = %w(CHANGES INSTALL.md LICENSE Rakefile README.md ROADMAP.md) + 
+  s.files             = %w(CHANGES LICENSE Rakefile README.md ROADMAP.md) + 
                           Dir.glob("bin/redcar") + 
                           Dir.glob("ext/**/*") + 
+                          Dir.glob("config/**/*") + 
                           remove_gitignored_files(Dir.glob("lib/**/*")) + 
                           remove_gitignored_files(Dir.glob("plugins/**/*")) + 
                           Dir.glob("textmate/Bundles/*.tmbundle/**/*") + 
