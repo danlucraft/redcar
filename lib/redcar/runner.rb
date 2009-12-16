@@ -14,9 +14,9 @@ module Redcar
       jruby_complete = Dir[File.dirname(__FILE__) + "/../jruby-complete*.jar"].first
       args = []
       if false
-        command = "jruby #{java_args} \"#{bin}\" #{args.join(' ')}"
+        command = "jruby #{java_args} \"#{bin}\" #{ARGV.join(' ')}"
       else
-        command = "java #{java_args} -cp \"#{jruby_complete}\" org.jruby.Main \"#{bin}\" #{args.join(' ')}"
+        command = "java #{java_args} -cp \"#{jruby_complete}\" org.jruby.Main \"#{bin}\" #{ARGV.join(' ')}"
       end
       exec(command)
     end
