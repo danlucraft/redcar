@@ -12,14 +12,7 @@ http://RedcarEditor.com/
 
 ## DESCRIPTION
 
-A pure Ruby text editor running on JRuby. Has syntax highlighting,
-snippets, macros and is highly extensible.
-
-## FEATURES
-
-* Syntax highlighting for many languages.
-* Extensive snippets.
-* Ruby plugins.
+A pure Ruby text editor running on JRuby. 
 
 ## INSTALLATION
 
