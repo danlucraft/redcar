@@ -17,7 +17,7 @@ module Swt
         'linux/swt'
       end
     when /windows|mswin/i
-      'windows/swt'
+      'win32/swt'
     end
   end
 
