@@ -132,6 +132,7 @@ module Redcar
           item "New Notebook", NewNotebookCommand
           item "New Window", NewWindowCommand
           item "Open", Project::FileOpenCommand
+          item "Open Directory", Project::DirectoryOpenCommand
           separator
           item "Save", Project::FileSaveCommand
           item "Save As", Project::FileSaveAsCommand
@@ -139,6 +140,7 @@ module Redcar
           item "Close Tab", CloseTabCommand
           item "Close Notebook", CloseNotebookCommand
           item "Close Window", CloseWindowCommand
+          item "Close Directory", Project::DirectoryCloseCommand
         end
         sub_menu "Debug" do
           item "Print Command History", PrintHistoryCommand

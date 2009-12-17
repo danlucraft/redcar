@@ -4,8 +4,8 @@ module SwtTabHelpers
   def get_tab_folder
     display = Redcar::ApplicationSWT.display
     shell   = display.get_shells.to_a.first
-    sash_form = shell.getChildren.to_a.first
-    tab_folders = sash_form.children.to_a
+    sash_form = shell.children.to_a.first
+    tab_folders = sash_form.children.to_a[1].children.to_a
     tab_folders.length.should == 1
     tab_folders.first
   end
@@ -18,8 +18,8 @@ module SwtTabHelpers
   def get_tabs
     display = Redcar::ApplicationSWT.display
     shell   = display.get_shells.to_a.first
-    sash_form = shell.getChildren.to_a.first
-    tab_folders = sash_form.children.to_a.select{|c| c.is_a? Swt::Custom::CTabFolder}
+    sash_form = shell.children.to_a.first
+    tab_folders = sash_form.children.to_a[1].children.to_a.select{|c| c.is_a? Swt::Custom::CTabFolder}
     items = tab_folders.map{|f| f.getItems.to_a}.flatten
     items.map {|i| model_tab_for_item(i)}
   end
@@ -41,26 +41,4 @@ def putsall
   p Redcar.app.windows.first.notebooks
   p Redcar.app.windows.first.notebooks.first.tabs
   p Redcar.app.windows.first.notebooks.last.tabs
-end
-
-After do
-  Redcar.app.windows.each do |win|
-    win.notebooks.each do |notebook|
-      while tab = notebook.tabs.first
-        Redcar::ApplicationSWT.sync_exec do
-          tab.close
-        end
-      end
-    end
-    if win.notebooks.length == 2
-      Redcar::ApplicationSWT.sync_exec do
-        win.close_notebook
-      end
-    end
-  end
-  while Redcar.app.windows.length > 1
-    Redcar::ApplicationSWT.sync_exec do
-      Redcar.app.windows.last.close
-    end
-  end
 end

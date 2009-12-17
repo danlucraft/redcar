@@ -1,6 +1,6 @@
 
 module Redcar
-  class TreeView
+  class Tree
     # Abstract interface. A Mirror allows an TreeView contents to reflect 
     # some other resource, for example a directory tree on disk.
     # They have methods for loading the contents from the resource.

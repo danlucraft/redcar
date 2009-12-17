@@ -1,3 +1,4 @@
+
 module Redcar
   class Command
     class Executor

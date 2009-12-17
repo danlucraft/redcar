@@ -10,16 +10,36 @@ module Redcar
     end
 
     attr_reader :notebooks, :notebook_orientation
-
+    attr_reader :treebook
+    
     def initialize
       Window.all << self
-      @visible = false
+      @visible   = false
       @notebooks = []
-      create_notebook
       @notebook_orientation = :horizontal
+      create_notebook
+      @treebook = Treebook.new
       self.title = "Redcar"
     end
-      
+
+    def title
+      @title
+    end
+
+    def title=(value)
+      @title = value
+      notify_listeners(:title_changed, @title)
+    end
+
+    def show
+      @visible = true
+      notify_listeners(:show)
+    end
+
+    def visible?
+      @visible
+    end
+    
     # Create a new notebook in this window.
     #
     # @events [(:new_notebook, notebook)]
@@ -58,29 +78,6 @@ module Redcar
       self.focussed_notebook = first_notebook
       notify_listeners(:notebook_removed, second_notebook)
     end
-
-    def title
-      @title
-    end
-    
-    def title=(value)
-      @title = value
-      notify_listeners(:title_changed, @title)
-    end
-    
-    def show
-      @visible = true
-      notify_listeners(:show)
-    end
-    
-    def visible?
-      @visible
-    end
-    
-    # Delegates to the new_tab method in the Window's active Notebook.
-    def new_tab(*args, &block)
-      focussed_notebook.new_tab(*args, &block)
-    end
     
     def focussed_notebook
       @focussed_notebook
@@ -88,13 +85,6 @@ module Redcar
     
     def focussed_notebook=(notebook)
       @focussed_notebook = notebook
-    end
-    
-    attr_reader :menu
-
-    def menu=(menu)
-      @menu = menu
-      notify_listeners(:menu_changed, menu)
     end
     
     # Sets the orientation of the notebooks.
@@ -112,6 +102,18 @@ module Redcar
       else
         self.notebook_orientation = :horizontal
       end
+    end
+    
+    # Delegates to the new_tab method in the Window's active Notebook.
+    def new_tab(*args, &block)
+      focussed_notebook.new_tab(*args, &block)
+    end
+    
+    attr_reader :menu
+
+    def menu=(menu)
+      @menu = menu
+      notify_listeners(:menu_changed, menu)
     end
     
     # Focus the Window.

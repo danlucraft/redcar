@@ -5,7 +5,7 @@ module NotebookSwtHelper
   end
   
   def ctab_folders
-    sash.children.to_a.select do |c| 
+    sash.children.to_a[1].children.to_a.select do |c| 
       c.class == Java::OrgEclipseSwtCustom::CTabFolder
     end
   end

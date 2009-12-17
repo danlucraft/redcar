@@ -2,7 +2,7 @@
 module Redcar
   class Project
     class DirMirror
-      include Redcar::TreeView::Mirror
+      include Redcar::Tree::Mirror
       
       # @param [String] a path to a directory
       def initialize(path)
@@ -16,10 +16,15 @@ module Redcar
       end
       
       # Have the toplevel nodes changed?
+      #
+      # @return [Boolean]
       def changed?
         @changed
       end
       
+      # Get the top-level nodes
+      #
+      # @return [Array<Node>]
       def top
         @changed = false
         Node.create_all_from_path(@path)
@@ -30,7 +35,9 @@ module Redcar
           Dir[path + "/*"].map {|fn| Node.new(fn)}
         end
         
-        include Redcar::TreeView::Mirror::NodeMirror
+        include Redcar::Tree::Mirror::NodeMirror
+        
+        attr_reader :path
         
         def initialize(path)
           @path = path
@@ -38,6 +45,14 @@ module Redcar
         
         def text
           File.basename(@path)
+        end
+        
+        def icon
+          if File.file?(@path)
+            :file
+          elsif File.directory?(@path)
+            :directory
+          end
         end
         
         def leaf?

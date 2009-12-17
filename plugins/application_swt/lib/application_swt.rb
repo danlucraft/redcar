@@ -8,6 +8,7 @@ require "application_swt/notebook"
 require "application_swt/notebook/drag_and_drop_listener"
 require "application_swt/swt_wrapper"
 require "application_swt/tab"
+require "application_swt/treebook"
 require "application_swt/window"
 require "application_swt/swt/grid_data"
 

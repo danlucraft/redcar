@@ -1,9 +1,32 @@
 
 require "project/file_mirror"
 require "project/dir_mirror"
+require "project/dir_controller"
 
 module Redcar
   class Project
+    def self.open_tree(win, tree)
+      @window_trees ||= {}
+      if @window_trees[win]
+        old_tree = @window_trees[win]
+        set_tree(win, tree)
+        win.treebook.remove_tree(old_tree)
+      else
+        set_tree(win, tree)
+      end
+    end
+    
+    def self.close_tree(win)
+      win.treebook.remove_tree(@window_trees[win])
+    end
+    
+    private
+    
+    def self.set_tree(win, tree)
+      @window_trees[win] = tree
+      win.treebook.add_tree(tree)
+    end
+    
     class FileOpenCommand < Command
       key :osx     => "Cmd+O",
           :linux   => "Ctrl+O",
@@ -73,6 +96,34 @@ module Redcar
         @path || begin
           path = Application::Dialog.save_file(win, :filter_path => File.expand_path("~"))
         end
+      end
+    end
+    
+    class DirectoryOpenCommand < Command
+      key :osx     => "Cmd+Shift+O",
+          :linux   => "Ctrl+Shift+O",
+          :windows => "Ctrl+Shift+O"
+
+      def execute
+        tree = Tree.new(Project::DirMirror.new(get_path),
+                        Project::DirController.new)
+        Project.open_tree(win, tree)
+      end
+      
+      private
+
+      def get_path
+        @path || begin
+          path = Application::Dialog.open_directory(win, :filter_path => File.expand_path("~"))
+          File.expand_path(path)
+        end
+      end
+    end
+    
+    class DirectoryCloseCommand < Command
+
+      def execute
+        Project.close_tree(win)
       end
     end
   end

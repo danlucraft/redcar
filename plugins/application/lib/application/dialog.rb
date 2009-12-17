@@ -5,6 +5,11 @@ module Redcar
       def self.open_file(window, options)
         Redcar.gui.dialog_adapter.open_file(window, options)
       end
+      
+      # Prompt the user with an open directory dialog. Returns a path.
+      def self.open_directory(window, options)
+        Redcar.gui.dialog_adapter.open_directory(window, options)
+      end
 
       # Prompt the user with an save file dialog. Returns a path.
       def self.save_file(window, options)

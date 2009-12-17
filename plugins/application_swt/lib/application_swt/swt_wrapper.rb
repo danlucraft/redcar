@@ -38,6 +38,7 @@ module Swt
     import org.eclipse.swt.widgets.Composite
     import org.eclipse.swt.widgets.Display
     import org.eclipse.swt.widgets.Event
+    import org.eclipse.swt.widgets.DirectoryDialog
     import org.eclipse.swt.widgets.FileDialog
     import org.eclipse.swt.widgets.Label
     import org.eclipse.swt.widgets.Menu
@@ -52,6 +53,7 @@ module Swt
     import org.eclipse.swt.custom.CTabFolder
     import org.eclipse.swt.custom.CTabItem
     import org.eclipse.swt.custom.SashForm
+    import org.eclipse.swt.custom.StackLayout
   end
   
   module Layout
@@ -95,12 +97,7 @@ module JFace
     import org.eclipse.jface.viewers.TreeViewer
     import org.eclipse.jface.viewers.ITreeContentProvider
     import org.eclipse.jface.viewers.ILabelProvider
+    import org.eclipse.jface.viewers.ILazyTreeContentProvider
+    import org.eclipse.jface.viewers.ILabelProvider
   end
 end
-
-
-
-
-
-
-

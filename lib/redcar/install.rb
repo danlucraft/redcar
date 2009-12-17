@@ -3,10 +3,10 @@ require 'rbconfig'
 require 'open-uri'
 require 'fileutils'
 
-# Methods used in gem installation hooks
-#
-# Cribbed from the zerg and zerg_support gems by Victor Costan (big woop!)
 module Redcar
+  # Methods used in gem installation hooks
+  #
+  # Cribbed from the zerg and zerg_support gems by Victor Costan (big woop!)
   class Install
     
     # tricks rubygems into believeing that the extension compiled and worked out

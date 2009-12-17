@@ -11,6 +11,7 @@ require 'application/menu/builder'
 require 'application/notebook'
 require 'application/tab'
 require 'application/tab/command'
+require 'application/treebook'
 require 'application/window'
 
 module Redcar
