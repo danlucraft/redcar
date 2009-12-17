@@ -139,7 +139,7 @@ spec = Gem::Specification.new do |s|
                           Dir.glob("config/**/*") + 
                           remove_gitignored_files(Dir.glob("lib/**/*")) + 
                           remove_gitignored_files(Dir.glob("plugins/**/*")) + 
-                          Dir.glob("textmate/Bundles/*.tmbundle/**/*") + 
+                          Dir.glob("textmate/Bundles/*.tmbundle/{Syntaxes,Snippets,Templates}/**/*") + 
                           Dir.glob("textmate/Themes/*.tmTheme")
   s.executables       = FileList["bin/redcar"].map { |f| File.basename(f) }
    
@@ -174,6 +174,47 @@ Rake::RDocTask.new do |rd|
   rd.main = "README.md"
   rd.rdoc_files.include("README.md", "lib/**/*.rb")
   rd.rdoc_dir = "rdoc"
+end
+
+RELEASE_BUNDLES = %w(
+    HTML.tmbundle
+    C.tmbundle
+    CSS.tmbundle
+    Ruby.tmbundle
+    RedcarRepl.tmbundle
+    Text.tmbundle
+    Source.tmbundle
+  )
+
+desc 'Clean up the Textmate files for packaging'
+task :clean_textmate do
+  # rename files to be x-platform safe
+  Dir["textmate/Bundles/*.tmbundle/{Syntaxes,Snippets,Templates}/**/*"].each do |fn|
+    if File.file?(fn)
+      bits = fn.split("/").last.split(".")[0..-2].join("_")
+      new_basename = bits.gsub(" ", "_").gsub(/[^\w_]/, "__") + File.extname(fn)
+      new_fn = File.join(File.dirname(fn), new_basename)
+      # p [fn,new_fn]
+      next if new_fn == fn
+      if File.exist?(new_fn)
+        puts "already exists #{new_fn}"
+        new_fn = File.join(File.dirname(fn), "next_" + new_basename)
+        unless File.exist?(new_fn)
+          FileUtils.mv(fn, new_fn)
+        end
+      else
+        FileUtils.mv(fn, new_fn)
+      end
+    end
+  end
+  
+  # remove unwanted bundles
+  Dir["textmate/Bundles/*"].each do |bdir|
+    p bdir.split("/").last
+    unless RELEASE_BUNDLES.include?(bdir.split("/").last)
+      FileUtils.rm_r(bdir)
+    end
+  end
 end
 
 desc 'Clear out RDoc and generated packages'
