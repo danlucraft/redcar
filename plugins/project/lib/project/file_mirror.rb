@@ -8,7 +8,7 @@ module Redcar
     # loaded in Redcar. EditView contains a Document which contains a Mirror
     # which reflects a file.
     class FileMirror
-      include Redcar::EditView::Mirror
+      include Redcar::Document::Mirror
       
       # @param [String] a path to a file
       def initialize(path)

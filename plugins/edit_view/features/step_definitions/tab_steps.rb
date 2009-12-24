@@ -1,4 +1,15 @@
 
+Given /^there is an edit tab containing "([^\"]*)"$/ do |contents|
+  contents = eval(contents.inspect.gsub("\\\\", "\\"))
+  tab = Redcar::Top::NewCommand.new.run
+  cursor_offset = (contents =~ /<c>/)
+  contents = contents.gsub("<c>", "")
+  tab.edit_view.document.text = contents
+  if cursor_offset
+    tab.edit_view.document.cursor_offset = cursor_offset
+  end
+end
+
 When /^I open a new edit tab$/ do 
   Redcar::Top::NewCommand.new.run
 end

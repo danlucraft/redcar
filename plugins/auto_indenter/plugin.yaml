@@ -1,0 +1,12 @@
+--- !ruby/object:FreeBASE::PluginConfiguration
+name: auto_indenter
+description: Automatic indenter
+version: 1.0
+author: Daniel Lucraft
+autoload: true
+require_path: auto_indenter/lib/auto_indenter.rb
+startup_module: Redcar::AutoIndenter
+load_dependencies: 
+  edit_view: "*"
+start_dependencies: 
+  edit_view: "*"

@@ -14,6 +14,8 @@ require 'freebase/freebase'
 require 'redcar/ruby_extensions'
 require 'redcar/usage'
 
+require 'forwardable'
+
 # ## Loading and Initialization
 #
 # Every feature in Redcar is written as a plugin. This module contains a few 

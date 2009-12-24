@@ -1,6 +1,6 @@
 
 module Redcar
-  class EditView
+  class Document
     # Abstract interface. A Mirror allows an EditView contents to reflect 
     # some other resource. They have methods for loading the contents from the 
     # resource and commiting changes.

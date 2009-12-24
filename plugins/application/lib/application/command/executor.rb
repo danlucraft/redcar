@@ -16,7 +16,7 @@ module Redcar
       def execute
         @command_instance.environment(Executor.current_environment)
         begin
-          @command_instance.execute
+          result = @command_instance.execute
         rescue Object => e
           @command_instance.error = e
           log_error
@@ -25,6 +25,7 @@ module Redcar
           log_error
         end
         record
+        result
       end
       
       private

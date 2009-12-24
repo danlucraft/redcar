@@ -11,6 +11,7 @@ module Redcar
         tab = win.new_tab(Redcar::EditTab)
         tab.title = "untitled"
         tab.focus
+        tab
       end
     end
     

@@ -2,7 +2,7 @@
 module Redcar
   class REPL
     class InternalMirror
-      include Redcar::EditView::Mirror
+      include Redcar::Document::Mirror
       
       attr_reader :history, :results
       

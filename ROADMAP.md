@@ -13,8 +13,8 @@ The features of this release are chosen to be the minimum to make Redcar self-ho
   * File editing                  (done)
   * Multiple notebook panes       (done)
   * Multiple windows              (done)
-  * _Basic_ project pane
-  * Auto-indenter
+  * _Basic_ project pane          (done)
+  * Auto-indenter                 (done)
   * Tests passing on 3 platforms 
 
 0.3.1dev - *Developer preview*
