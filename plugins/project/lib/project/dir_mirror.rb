@@ -32,7 +32,7 @@ module Redcar
       
       class Node
         def self.create_all_from_path(path)
-          Dir[path + "/*"].map {|fn| Node.new(fn)}
+          Dir[path + "/*"].sort_by {|fn| fn.downcase }.map {|fn| Node.new(fn)}
         end
         
         include Redcar::Tree::Mirror::NodeMirror
