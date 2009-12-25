@@ -82,6 +82,9 @@ module Redcar
       end
       @window_handlers[window].each {|h| window.remove_listener(h) }
       @window_handlers.delete(window)
+      if windows.length == 0  and [:linux, :windows].include?(Core.platform)
+        quit
+      end
     end
     
     def focussed_window
