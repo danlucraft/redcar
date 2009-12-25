@@ -23,6 +23,19 @@ You must have Java installed.
 NB the install will take a minute or so to complete as it has to download about
 15MB of jar files.
 
+## USAGE
+
+Run 
+
+    $ redcar
+    
+Usage:
+
+         --font=FONT  Choose font
+    --font-size=SIZE  Choose font point size
+       --theme=THEME  Choose Textmate theme
+
+
 ## PROBLEMS?
 
 * Irc at #redcar on irc.freenode.net
