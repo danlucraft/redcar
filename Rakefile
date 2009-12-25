@@ -79,9 +79,9 @@ task :build do
   sh("ant jar -f vendor/java-mateview/build.xml")
   cp("vendor/java-mateview/lib/java-mateview.rb", "plugins/edit_view_swt/vendor/")
   cp("vendor/java-mateview/release/java-mateview.jar", "plugins/edit_view_swt/vendor/")
-  Dir["vendor/java-mateview/lib/*.jar"].each do |fn|
-    FileUtils.cp(fn, "plugins/edit_view_swt/vendor/")
-  end
+  # Dir["vendor/java-mateview/lib/*.jar"].each do |fn|
+  #   FileUtils.cp(fn, "plugins/edit_view_swt/vendor/")
+  # end
 end
 
 desc "Package jars and submodules into big tar file"

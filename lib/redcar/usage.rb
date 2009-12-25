@@ -2,6 +2,11 @@
 module Redcar
   
   class Usage
+    def version_string
+      str = "Redcar #{Redcar::VERSION} (jruby )"
+      puts str
+    end
+    
     def version_requested
       if ARGV.include?("-v")
         puts "Redcar #{Redcar::VERSION}"
