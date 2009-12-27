@@ -29,12 +29,19 @@ module FreeBASE
       require 'yaml'
     end
     
+    def self.windows?
+      (RUBY_PLATFORM =~ /(mswin32|mingw32)/) || 
+         ( (RUBY_PLATFORM == 'java') && 
+           (java.lang.System.getProperty('os.name') =~ /Windows/)
+         )
+    end
+    
     ##
     # Determine where the user directory is (if any)
     #
     def self.setup
       $FREEBASE_APPLICATION = "redcar" unless $FREEBASE_APPLICATION
-      if RUBY_PLATFORM =~ /(mswin32|mingw32)/
+      if windows?
         if ENV['USERPROFILE'].nil?
           @@userdir = "C:/My Documents/.redcar/"
           Dir.mkdir(@@userdir) unless File.directory?(@@userdir)
