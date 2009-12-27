@@ -1,15 +1,16 @@
 
-Version 0.3dev
-==============
+Version 0.3dev (25 Dec 2009)
+============================
 
 Rewritten in JRuby/SWT.
 
 Enhancements:
   
-  * _Much_ simpler installation
+  * _Much_ simpler installation: packaged as a gem.
   * Faster highlighter
   * Fewer bugs
   * Clearer architecture
+  * Multiple window/project support.
 
 
 Version 0.2 (28 May 2009)
