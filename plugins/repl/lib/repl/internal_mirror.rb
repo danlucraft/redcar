@@ -24,7 +24,9 @@ module Redcar
           output, is_error = *result
           str << prompt + command + "\n"
           str << (is_error ? error_pointer : output_pointer)
-          str << output + "\n"
+          output.scan(/.{1,80}/).each do |output_line|
+            str << output_line + "\n"
+          end
         end
         str << prompt
       end
