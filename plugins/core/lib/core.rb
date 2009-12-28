@@ -5,6 +5,7 @@ require "core/gui"
 require "core/model"
 require "core/observable"
 require "core/plugin"
+require "core/plugin/storage"
 
 module Redcar
   class Core
