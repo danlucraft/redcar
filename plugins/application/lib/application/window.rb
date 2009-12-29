@@ -56,8 +56,8 @@ module Redcar
     
     def attach_notebook_listeners(notebook)
       notebook.add_listener(:tab_focussed) do |tab|
+        notify_listeners(:tab_focussed, tab)
         if tab
-          notify_listeners(:tab_focussed, tab)
           self.focussed_notebook = tab.notebook
         else
           new_notebook = self.notebooks.sort_by {|nb| nb.tabs.length}.last
