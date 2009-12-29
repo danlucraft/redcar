@@ -7,7 +7,6 @@ module Redcar
           :windows => "Ctrl+N"
       
       def execute
-        puts "new tab in #{win.inspect}"
         tab = win.new_tab(Redcar::EditTab)
         tab.title = "untitled"
         tab.focus

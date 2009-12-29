@@ -6,8 +6,8 @@ Enhancements:
 
   * Keybindings to switch tabs.
 
-Version 0.3dev (25 Dec 2009)
-============================
+Version 0.3.0dev (25 Dec 2009)
+==============================
 
 Rewritten in JRuby/SWT.
 

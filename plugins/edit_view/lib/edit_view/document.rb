@@ -50,6 +50,7 @@ module Redcar
     
     def save!
       @mirror.commit(to_s)
+      set_modified(false)
     end
     
     def title
@@ -74,6 +75,7 @@ module Redcar
     end
     
     def modify_text
+      set_modified(true)
       @controllers[Controller::ModificationCallbacks].each do |controller|
         controller.after_modify
       end
@@ -89,7 +91,25 @@ module Redcar
     
     def update_from_mirror
       self.text        = mirror.read
-      @edit_view.title = mirror.title
+      @modified = false
+      @edit_view.title = title_with_star
+    end
+    
+    def set_modified(boolean)
+      @modified = boolean
+      @edit_view.title = title_with_star
+    end
+    
+    def title_with_star
+      if mirror
+        if @modified
+          "*" + mirror.title
+        else
+          mirror.title
+        end
+      else
+        "untitled"
+      end
     end
   end
 end
