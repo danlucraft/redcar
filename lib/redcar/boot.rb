@@ -15,6 +15,7 @@ require 'redcar/ruby_extensions'
 require 'redcar/usage'
 
 require 'forwardable'
+require 'yaml'
 
 # ## Loading and Initialization
 #

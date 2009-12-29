@@ -1,3 +1,4 @@
+
 require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
 describe Redcar::Plugin::Storage do
@@ -18,10 +19,12 @@ describe Redcar::Plugin::Storage do
   end
 
   it "saves to disk" do
-    storage = Redcar::Plugin::Storage.new('test-saved')
+    storage = Redcar::Plugin::Storage.new('test_storage_saved')
     storage[:some_key] = "some value"
     storage.save
-    storage = Redcar::Plugin::Storage.new('test-saved')
+    storage = Redcar::Plugin::Storage.new('test_storage_saved')
     storage[:some_key].should == "some value"
+    
+    FileUtils.rm_rf(storage.send(:path))
   end
 end

@@ -15,6 +15,9 @@ module Redcar
       Core::Logger.init
     end
     
+    # Platform symbol
+    #
+    # @return [:osx/:windows/:linux]
     def self.platform
       case Config::CONFIG["target_os"]
       when /darwin/
@@ -25,6 +28,23 @@ module Redcar
         :linux
       end
     end
+    
+    # Platform specific ~/.redcar
+    #
+    # @return [String] expanded path
+    def self.user_dir
+      if platform == :windows
+        if ENV['USERPROFILE'].nil?
+          userdir = "C:/My Documents/.redcar/"
+        else
+          userdir = File.join(ENV['USERPROFILE'], "redcar")
+        end
+      else
+        userdir = File.join(ENV['HOME'], ".redcar") unless ENV['HOME'].nil?
+      end
+      File.expand_path(userdir)
+    end
+
   end
 end
 
