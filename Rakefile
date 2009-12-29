@@ -112,11 +112,6 @@ def remove_gitignored_files(filelist)
   r.select {|fn| fn !~ /\.jar$/}
 end
 
-# This builds the actual gem. For details of what all these options
-# mean, and other ones you can add, check the documentation here:
-#
-#   http://rubygems.org/read/chapter/20
-#
 spec = Gem::Specification.new do |s|
   
   # Change these as appropriate
@@ -157,16 +152,8 @@ spec = Gem::Specification.new do |s|
   s.extensions = ["ext/extconf.rb"]
 end
 
-# This task actually builds the gem. We also regenerate a static 
-# .gemspec file, which is useful if something (i.e. GitHub) will
-# be automatically building a gem for this project. If you're not
-# using GitHub, edit as appropriate.
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
-  
-  # Generate the gemspec file for github.
-  file = File.dirname(__FILE__) + "/#{spec.name}.gemspec"
-  File.open(file, "w") {|f| f << spec.to_ruby }
 end
 
 # Generate documentation
