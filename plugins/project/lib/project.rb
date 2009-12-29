@@ -104,19 +104,26 @@ module Redcar
       key :osx     => "Cmd+Shift+O",
           :linux   => "Ctrl+Shift+O",
           :windows => "Ctrl+Shift+O"
-
+          
+      def initialize(path=nil)
+        @path = path
+      end
+      
       def execute
-        tree = Tree.new(Project::DirMirror.new(get_path),
-                        Project::DirController.new)
-        Project.open_tree(win, tree)
+        if path = get_path
+          tree = Tree.new(Project::DirMirror.new(path),
+                          Project::DirController.new)
+          Project.open_tree(win, tree)
+        end
       end
       
       private
 
       def get_path
         @path || begin
-          path = Application::Dialog.open_directory(win, :filter_path => File.expand_path("~"))
-          File.expand_path(path)
+          if path = Application::Dialog.open_directory(win, :filter_path => File.expand_path("~"))
+            File.expand_path(path)
+          end
         end
       end
     end
