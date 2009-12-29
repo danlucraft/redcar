@@ -33,10 +33,16 @@ When /I move (up|down) a tab/ do |type|
   end
 end
 
-Then /^there should be one (.*) tab$/ do |tab_type|
+Then /^there should be (one|\d+) (.*) tabs?$/ do |num, tab_type|
+  if num == "one"
+    num = 1
+  else
+    num = num.to_i
+  end
+  
   # in the model
   tabs = Redcar.app.windows.first.notebooks.map {|nb| nb.tabs }.flatten
-  tabs.length.should == 1
+  tabs.length.should == num
   
   # in the GUI
   case tab_type
@@ -45,7 +51,7 @@ Then /^there should be one (.*) tab$/ do |tab_type|
   end
   
   tabs = get_tabs
-  tabs.length.should == 1
+  tabs.length.should == num
 end
 
 Then /^the edit tab should have the focus$/ do

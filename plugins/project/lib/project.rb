@@ -20,6 +20,12 @@ module Redcar
       win.treebook.remove_tree(@window_trees[win])
     end
     
+    def self.open_file_tab(path)
+      path = File.expand_path(path)
+      all_tabs = Redcar.app.windows.map {|win| win.notebooks}.flatten.map {|nb| nb.tabs }.flatten
+      all_tabs.find {|t| t.is_a?(Redcar::EditTab) and t.edit_view.document.mirror and File.expand_path(t.edit_view.document.mirror.path) == path }
+    end
+    
     private
     
     def self.set_tree(win, tree)
@@ -37,14 +43,17 @@ module Redcar
       end
     
       def execute
-        tab  = win.new_tab(Redcar::EditTab)
         path = get_path
         if path
-          puts "open file: " + path.to_s
-          mirror = FileMirror.new(path)
-          tab.edit_view.document.mirror = mirror
+          if already_open_tab = Project.open_file_tab(path)
+            already_open_tab.focus
+          else
+            tab  = win.new_tab(Redcar::EditTab)
+            mirror = FileMirror.new(path)
+            tab.edit_view.document.mirror = mirror
+            tab.focus
+          end
         end
-        tab.focus
       end
       
       private

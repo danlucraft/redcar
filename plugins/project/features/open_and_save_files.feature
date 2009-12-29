@@ -5,6 +5,15 @@ Feature: Open and save files
     When I open a file
     Then there should be one edit tab
     And I should see "Wintersmith" in the edit tab
+
+  Scenario: Opening an already open file focusses the edit tab
+    Given I will choose "plugins/project/features/fixtures/winter.txt" from the "open_file" dialog
+    When I open a file
+    And I open a new edit tab
+    And I replace the contents with "Jenny Green Eyes"
+    And I open a file
+    Then there should be 2 edit tabs
+    And I should see "Wintersmith" in the edit tab
   
   Scenario: Save a file
     Given I have opened "plugins/project/features/fixtures/winter.txt"

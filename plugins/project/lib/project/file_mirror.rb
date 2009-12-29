@@ -10,6 +10,8 @@ module Redcar
     class FileMirror
       include Redcar::Document::Mirror
       
+      attr_reader :path
+      
       # @param [String] a path to a file
       def initialize(path)
         @path = path
