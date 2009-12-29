@@ -41,8 +41,14 @@ module Redcar
     def self.start
       Redcar.app     = Application.new
       Redcar.history = Command::History.new
-      Sensitivity.new(:open_tab, Redcar.app, false, [:tab_focussed]) do |tab|
-        tab
+      Sensitivity.new(:open_tab, Redcar.app, false, [:focussed_window, :tab_focussed]) do |tab|
+        Redcar.app.focussed_window.focussed_notebook.focussed_tab
+      end
+      Sensitivity.new(:single_notebook, Redcar.app, true, [:focussed_window, :notebook_change]) do
+        Redcar.app.focussed_window.notebooks.length == 1
+      end
+      Sensitivity.new(:multiple_notebooks, Redcar.app, false, [:focussed_window, :notebook_change]) do
+        Redcar.app.focussed_window.notebooks.length > 1
       end
     end
     
@@ -120,7 +126,13 @@ module Redcar
       h3 = window.add_listener(:focussed) do |win|
         self.focussed_window = win
       end
-      @window_handlers[window] << h1 << h2 << h3
+      h4 = window.add_listener(:new_notebook) do |win|
+        notify_listeners(:notebook_change)
+      end
+      h5 = window.add_listener(:notebook_removed) do |win|
+        notify_listeners(:notebook_change)
+      end
+      @window_handlers[window] << h1 << h2 << h3 << h4 << h5
     end
   end
 end

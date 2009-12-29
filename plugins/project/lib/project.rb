@@ -75,7 +75,6 @@ module Redcar
       key :osx     => "Cmd+Shift+S",
           :linux   => "Ctrl+Shift+S",
           :windows => "Ctrl+Shift+S"
-
       
       def initialize(path = nil)
         @path = path

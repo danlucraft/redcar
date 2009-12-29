@@ -16,6 +16,8 @@ module Redcar
     end
     
     class NewNotebookCommand < Command
+      sensitize :single_notebook
+      
       key :osx     => "Cmd+Alt+N",
           :linux   => "Ctrl+Alt+N",
           :windows => "Ctrl+Alt+N"
@@ -50,6 +52,7 @@ module Redcar
     end
     
     class RotateNotebooksCommand < Command
+      sensitize :multiple_notebooks
           
       def execute
         win.rotate_notebooks
@@ -57,6 +60,7 @@ module Redcar
     end
     
     class CloseNotebookCommand < Command
+      sensitize :multiple_notebooks
           
       def execute
         unless win.notebooks.length == 1
@@ -66,7 +70,8 @@ module Redcar
     end
     
     class MoveTabToOtherNotebookCommand < Command
-      # TODO: sensitize to multiple notebooks and open tab
+      sensitize :multiple_notebooks, :open_tab
+          
       key :osx     => "Cmd+Alt+O",  
           :linux   => "Ctrl+Alt+O",
           :windows => "Ctrl+Alt+O"
