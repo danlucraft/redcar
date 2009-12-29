@@ -62,6 +62,24 @@ module Redcar
       notify_listeners(:tab_focussed, tab)
     end
     
+    # Focus the next tab to the right from the currently focussed tab.
+    # Does not wrap.
+    def switch_up
+      current_ix = @tabs.index(@focussed_tab)
+      unless current_ix == @tabs.length - 1
+        @tabs[current_ix+1].focus
+      end
+    end
+    
+    # Focus the next tab to the left from the currently focussed tab.
+    # Does not wrap.
+    def switch_down
+      current_ix = @tabs.index(@focussed_tab)
+      unless current_ix == 0
+        @tabs[current_ix-1].focus
+      end
+    end
+    
     def inspect
       "#<Redcar::Notebook #{object_id}>"
     end

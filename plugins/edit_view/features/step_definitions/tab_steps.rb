@@ -24,6 +24,15 @@ When /^I replace the contents with "([^\"]*)"$/ do |arg1|
   tab.edit_view.document.text = arg1
 end
 
+When /I move (up|down) a tab/ do |type|
+  case type
+  when "down"
+    Redcar::Top::SwitchTabDownCommand.new.run
+  when "up"
+    Redcar::Top::SwitchTabUpCommand.new.run
+  end
+end
+
 Then /^there should be one (.*) tab$/ do |tab_type|
   # in the model
   tabs = Redcar.app.windows.first.notebooks.map {|nb| nb.tabs }.flatten
@@ -61,6 +70,5 @@ Then /^the tab should have the keyboard focus$/ do
 end
 
 Then /^I should see "(.*)" in the edit tab$/ do |content|
-  tab = get_tab(get_tab_folder)
-  tab.edit_view.document.to_s.include?(content).should be_true
+  focussed_tab.edit_view.document.to_s.include?(content).should be_true
 end

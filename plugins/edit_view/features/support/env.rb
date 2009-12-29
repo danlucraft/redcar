@@ -15,6 +15,10 @@ module SwtTabHelpers
     tab = Redcar.app.windows.first.notebooks.map{|n| n.tabs}.flatten.detect{|t| t.controller.item == item1}
   end
   
+  def focussed_tab
+    Redcar.app.windows.first.focussed_notebook.focussed_tab
+  end
+  
   def get_tabs
     display = Redcar::ApplicationSWT.display
     shell   = display.get_shells.to_a.first

@@ -124,6 +124,26 @@ module Redcar
       end
     end
     
+    class SwitchTabDownCommand < Command
+      key :osx     => "Cmd+Shift+[",
+          :linux   => "Ctrl+Shift+[",
+          :windows => "Ctrl+Shift+["
+       
+      def execute
+        win.focussed_notebook.switch_down
+      end
+    end
+    
+    class SwitchTabUpCommand < Command
+      key :osx     => "Cmd+Shift+]",
+          :linux   => "Ctrl+Shift+]",
+          :windows => "Ctrl+Shift+]"
+       
+      def execute
+        win.focussed_notebook.switch_up
+      end
+    end
+    
     def self.start
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
@@ -156,6 +176,9 @@ module Redcar
         sub_menu "View" do
           item "Rotate Notebooks", RotateNotebooksCommand
           item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
+          separator
+          item "Previous Tab", SwitchTabDownCommand
+          item "Next Tab", SwitchTabUpCommand
         end
         sub_menu "Help" do
           item "Website", PrintHistoryCommand

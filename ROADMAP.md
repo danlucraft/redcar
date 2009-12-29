@@ -23,6 +23,7 @@ The features of this release are chosen to be the minimum to make Redcar self-ho
 
 Features:
 
+  * Keybindings to switch tabs    (done)
   * Text editing stuff:          
       - Undo/Redo
       - Home/End
@@ -33,7 +34,6 @@ Features:
   * Plugins stuff:
       - can add to menus easily
       - gem plugins
-  * Keybindings to switch tabs
   
 More previews to add
 --------------------
