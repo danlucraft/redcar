@@ -63,8 +63,11 @@ module Redcar
 
       def execute
         tab = win.focussed_notebook.focussed_tab
-        puts "saving document"
-        tab.edit_view.document.save!
+        if tab.edit_view.document.mirror
+          tab.edit_view.document.save!
+        else
+          FileSaveAsCommand.new.run
+        end
       end
     end
     
@@ -81,7 +84,6 @@ module Redcar
       def execute
         tab = win.focussed_notebook.focussed_tab
         path = get_path
-        puts "saving document as #{path}"
         if path
           contents = tab.edit_view.document.to_s
           new_mirror = FileMirror.new(path)
