@@ -50,6 +50,12 @@ module Redcar
       Sensitivity.new(:multiple_notebooks, Redcar.app, false, [:focussed_window, :notebook_change]) do
         Redcar.app.focussed_window.notebooks.length > 1
       end
+      Sensitivity.new(:other_notebook_has_tab, Redcar.app, false, 
+                      [:focussed_window, :focussed_notebook, :notebook_change, :tab_closed]) do
+        if notebook = Redcar.app.focussed_window.nonfocussed_notebook
+          notebook.tabs.any?
+        end
+      end
     end
     
     def initialize
@@ -132,7 +138,13 @@ module Redcar
       h5 = window.add_listener(:notebook_removed) do |win|
         notify_listeners(:notebook_change)
       end
-      @window_handlers[window] << h1 << h2 << h3 << h4 << h5
+      h6 = window.add_listener(:notebook_focussed) do |win|
+        notify_listeners(:focussed_notebook)
+      end
+      h7 = window.add_listener(:tab_closed) do |win|
+        notify_listeners(:tab_closed)
+      end
+      @window_handlers[window] << h1 << h2 << h3 << h4 << h5 << h6 << h7
     end
   end
 end

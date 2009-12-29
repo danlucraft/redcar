@@ -25,6 +25,10 @@ When /^I close the current notebook$/ do
   Redcar::Top::CloseNotebookCommand.new.run
 end
 
+When /^I switch notebooks$/ do
+  Redcar::Top::SwitchNotebookCommand.new.run
+end
+
 When /^I focus on the edit_view in the tab in notebook (\d)$/ do |index|
   index = index.to_i - 1
   notebook = Redcar.app.windows.first.notebooks[index]

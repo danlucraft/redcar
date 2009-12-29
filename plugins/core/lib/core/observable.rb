@@ -99,7 +99,7 @@ module Redcar
     private
     
     def run_blocks(event_name, aspect, args)
-      blocks = events(event_name.to_s)[ASPECTS[aspect]]
+      blocks = events(event_name.to_s)[ASPECTS[aspect]].clone
       blocks.each {|b| b.call(*args) }
     end
     
@@ -107,20 +107,9 @@ module Redcar
       @events ||= {}
       @events[event_name.to_s] ||= [[], []]
     end
-    
-    # inserts a line into a backtrace at the correct location
-    def insert_into_backtrace(exception, re, newline)
-      loc = nil
-      exception.backtrace.each_with_index do |line, index|
-        if line =~ re
-          loc = index
-          break
-        end
-      end
-      if loc
-        exception.backtrace.insert(loc, newline)
-      end
-    end
-
   end
 end
+
+
+
+

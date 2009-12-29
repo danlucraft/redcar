@@ -87,8 +87,12 @@ module Redcar
     private
     
     def attach_tab_listeners(tab)
-      @tab_handlers[tab] << tab.add_listener(:focussed) do
+      @tab_handlers[tab] << tab.add_listener(:focus) do
         select_tab!(tab)
+      end
+      @tab_handlers[tab] << tab.add_listener(:close) do
+        remove_tab!(tab)
+        notify_listeners(:tab_closed)
       end
     end
   end

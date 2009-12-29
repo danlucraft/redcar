@@ -15,7 +15,6 @@ module Redcar
     # Events: close
     def close
       notify_listeners(:close)
-      @notebook.remove_tab!(self)
     end
     
     # Focus the tab within the notebook, and gives the keyboard focus to the 

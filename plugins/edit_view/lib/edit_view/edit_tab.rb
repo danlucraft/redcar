@@ -15,7 +15,7 @@ module Redcar
     end
     
     def edit_view_focussed
-      notify_listeners(:focussed)
+      notify_listeners(:focus)
     end
     
     def serialize

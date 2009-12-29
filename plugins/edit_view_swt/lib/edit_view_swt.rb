@@ -21,7 +21,7 @@ module Redcar
     def self.load_textmate_assets
       JavaMateView::Bundle.load_bundles(Redcar::ROOT + "/textmate/")
       JavaMateView::ThemeManager.load_themes(Redcar::ROOT + "/textmate/")
-      end
+    end
     
     attr_reader :mate_text, :widget
 
@@ -104,7 +104,6 @@ module Redcar
     end
     
     def swt_focus_gained
-      # p [:swt_focus_gained, self.class]
       @model.gained_focus
     end
     

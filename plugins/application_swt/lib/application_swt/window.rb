@@ -5,25 +5,23 @@ module Redcar
       attr_reader :shell, :window, :shell_listener
       
       class ShellListener
+        include ListenerHelpers
+        
         def initialize(controller)
           @controller = controller
         end
         
         def shell_closed(e)
-          unless @in_close_operation
-            @in_close_operation = true
+          ignore_within_self do
             e.doit = false
             @controller.swt_event_closed
-            @in_close_operation = false
           end
         end
 
         def shell_activated(e)
-          unless @in_activate_operation
-            @in_activate_operation = true
+          ignore_within_self do
             e.doit = false
             @controller.swt_event_activated
-            @in_activate_operation = false
           end
         end
         

@@ -1,4 +1,6 @@
 
+require "application_swt/swt/listener_helpers"
+
 require "application_swt/cucumber_runner"
 require "application_swt/dialog_adapter"
 require "application_swt/event_loop"

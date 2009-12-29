@@ -6,22 +6,36 @@ module Redcar
       attr_reader :tab_folder
       
       class CTabFolder2Listener
+        include ListenerHelpers
+        
         def initialize(controller)
           @controller = controller
         end
         
         def close(event)
-          @controller.swt_event_tab_closed(event.item)
+          ignore_within_self do
+            event.doit = false
+            if event.item
+              @controller.tab_widget_to_tab_model(event.item).close
+            end
+          end
         end
       end
       
       class SelectionListener
+        include ListenerHelpers
+        
         def initialize(controller)
           @controller = controller
         end
         
         def widgetSelected(event)
-          @controller.swt_event_tab_selected(event.item)
+          ignore_within_self do
+            event.doit = false
+            if event.item
+              @controller.tab_widget_to_tab_model(event.item).focus
+            end
+          end
         end
         
         def widgetDefaultSelected(*_)
@@ -35,7 +49,6 @@ module Redcar
         style_tab_folder
         attach_model_listeners
         attach_view_listeners
-        setup_drag_and_drop
       end
       
       def create_tab_folder(sash)
@@ -57,16 +70,6 @@ module Redcar
         @tab_folder.setSelectionBackground(colors, percents, true)
       end
       
-      def setup_drag_and_drop
-        # Doesn't work yet
-        # listener = DragAndDropListener.new(@tab_folder)
-        # @tab_folder.addListener(Swt::SWT::DragDetect, listener)
-        # @tab_folder.addListener(Swt::SWT::MouseUp, listener)
-        # @tab_folder.addListener(Swt::SWT::MouseMove, listener)
-        # @tab_folder.addListener(Swt::SWT::MouseExit, listener)
-        # @tab_folder.addListener(Swt::SWT::MouseEnter, listener)
-      end
-      
       def attach_model_listeners
         @model.add_listener(:tab_added) do |tab|
           tab.controller = Redcar.gui.controller_for(tab).new(tab, self)
@@ -79,27 +82,12 @@ module Redcar
         @tab_folder.add_selection_listener(SelectionListener.new(self))
       end
       
-      # Called by the SWT event listener when a tab is closed by the user.
-      def swt_event_tab_closed(tab_widget)
-        @model.remove_tab!(tab_widget_to_tab_model(tab_widget))
-      end
-      
-      # Called by the SWT event listener when a tab is selected by the user.
-      def swt_event_tab_selected(tab_widget)
-        @model.select_tab!(tab_widget_to_tab_model(tab_widget))
-      end
-      
       # Called by the models when a tab is selected by Redcar.
       def model_event_focus_tab(tab)
         tab_folder.set_selection(tab.item)
         @model.select_tab!(tab.model)
       end
 
-      # Called by SWT controllers when the tab is selected by the user.
-      def swt_event_tab_focussed(tab)
-        @model.select_tab!(tab)
-      end
-      
       def model_event_tab_moved(from_notebook, to_notebook, tab_model)
         tab_controller = tab_model.controller
         data           = tab_model.serialize
@@ -114,6 +102,10 @@ module Redcar
         @tab_folder.dispose
       end
       
+      def tab_widget_to_tab_model(tab_widget)
+        @model.tabs.detect {|tab| tab.controller.item == tab_widget }
+      end
+
       private
       
       def focussed_tab
@@ -121,9 +113,6 @@ module Redcar
         @model.tabs.detect {|tab| tab.controller.item == focussed_tab_item }
       end
       
-      def tab_widget_to_tab_model(tab_widget)
-        @model.tabs.detect {|tab| tab.controller.item == tab_widget }
-      end
     end
   end
 end

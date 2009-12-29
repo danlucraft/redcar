@@ -69,18 +69,33 @@ module Redcar
       end
     end
     
-    class MoveTabToOtherNotebookCommand < Command
-      sensitize :multiple_notebooks, :open_tab
-          
+    class SwitchNotebookCommand < Command
+      sensitize :multiple_notebooks, :other_notebook_has_tab
       key :osx     => "Cmd+Alt+O",  
           :linux   => "Ctrl+Alt+O",
           :windows => "Ctrl+Alt+O"
+          
+      def execute
+        new_notebook = win.nonfocussed_notebook
+        if new_notebook.focussed_tab
+          new_notebook.focussed_tab.focus
+        end
+      end
+    end
+    
+    class MoveTabToOtherNotebookCommand < Command
+      sensitize :multiple_notebooks, :open_tab
+          
+      key :osx     => "Cmd+Shift+Alt+O",  
+          :linux   => "Ctrl+Shift+Alt+O",
+          :windows => "Ctrl+Shift+Alt+O"
 
       def execute
         if tab = win.focussed_notebook.focussed_tab
           current_notebook = tab.notebook
           target_notebook = win.notebooks.detect {|nb| nb != current_notebook}
           target_notebook.grab_tab_from(current_notebook, tab)
+          tab.focus
         end
       end
     end
@@ -181,6 +196,7 @@ module Redcar
         sub_menu "View" do
           item "Rotate Notebooks", RotateNotebooksCommand
           item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
+          item "Switch Notebooks", SwitchNotebookCommand
           separator
           item "Previous Tab", SwitchTabDownCommand
           item "Next Tab", SwitchTabUpCommand

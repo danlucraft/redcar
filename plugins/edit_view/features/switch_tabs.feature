@@ -37,3 +37,19 @@ Feature: Switch and move tabs within a notebook
     Then I should see "Elizabeth Woodville" in the edit tab
     And I move up a tab
     Then I should see "Elizabeth Woodville" in the edit tab
+  
+  Scenario: Switch notebooks
+    When I open a new edit tab
+    And I replace the contents with "Anne Boleyn"
+    And I make a new notebook
+    When I open a new edit tab
+    And I replace the contents with "Scarlett"
+    And I move the tab to the other notebook
+    When I switch notebooks
+    Then I should see "Anne Boleyn" in the edit tab
+    
+    
+    
+    
+    
+  

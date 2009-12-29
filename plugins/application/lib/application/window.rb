@@ -66,6 +66,9 @@ module Redcar
           end
         end
       end
+      notebook.add_listener(:tab_closed) do
+        notify_listeners(:tab_closed)
+      end
     end
     
     def close_notebook
@@ -84,7 +87,18 @@ module Redcar
     end
     
     def focussed_notebook=(notebook)
+      if notebook != @focussed_notebook
+        set_focussed_notebook(notebook)
+        notify_listeners(:notebook_focussed, notebook)
+      end
+    end
+    
+    def set_focussed_notebook(notebook)
       @focussed_notebook = notebook
+    end
+    
+    def nonfocussed_notebook
+      @notebooks.find {|nb| nb != @focussed_notebook }
     end
     
     # Sets the orientation of the notebooks.
