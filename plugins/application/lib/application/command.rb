@@ -66,5 +66,9 @@ module Redcar
     def win
       env[:win]
     end
+    
+    def tab
+      env[:tab]
+    end
   end
 end

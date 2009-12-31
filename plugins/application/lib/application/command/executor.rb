@@ -5,7 +5,8 @@ module Redcar
       include Redcar::Core::HasLogger
       
       def self.current_environment
-        { :win => Redcar.app.focussed_window }
+        { :win => Redcar.app.focussed_window,
+          :tab => Redcar.app.focussed_window.focussed_notebook.focussed_tab }
       end
       
       def initialize(command_instance, options={})
