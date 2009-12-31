@@ -60,17 +60,21 @@ module Redcar
       @active
     end
     
+    def recompute(*args)
+      before = @active
+      @active = @boolean_finder.call(*args)
+      if before != @active
+        notify_listeners(:changed)
+        Sensitivity.broadcast_sensitivity_change(@name, @active)
+      end
+    end
+    
     private
     
     def connect_listeners
       @event_names.each do |event_name|
         @observed_object.add_listener(event_name) do |args|
-          before = @active
-          @active = @boolean_finder.call(*args)
-          if before != @active
-            notify_listeners(:changed)
-            Sensitivity.broadcast_sensitivity_change(@name, @active)
-          end
+          recompute(*args)
         end
       end
     end
