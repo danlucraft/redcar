@@ -90,12 +90,10 @@ module Redcar
           :windows => "Ctrl+Shift+Alt+O"
 
       def execute
-        if tab = win.focussed_notebook.focussed_tab
-          current_notebook = tab.notebook
-          target_notebook = win.notebooks.detect {|nb| nb != current_notebook}
-          target_notebook.grab_tab_from(current_notebook, tab)
-          tab.focus
-        end
+        current_notebook = tab.notebook
+        target_notebook = win.notebooks.detect {|nb| nb != current_notebook}
+        target_notebook.grab_tab_from(current_notebook, tab)
+        tab.focus
       end
     end
 
@@ -104,7 +102,6 @@ module Redcar
       
       def execute
         puts "printing contents"
-        tab = win.focussed_notebook.focussed_tab
         p tab.edit_view.document.to_s
       end
     end
@@ -119,7 +116,6 @@ module Redcar
     
     class PrintScopeTreeCommand < Command
       def execute
-        tab = win.focussed_notebook.focussed_tab
         puts tab.edit_view.controller.mate_text.parser.root.pretty(0)
       end
     end
@@ -163,6 +159,30 @@ module Redcar
       end
     end
     
+    class UndoCommand < EditTabCommand
+      sensitize :undoable
+      
+      key :osx     => "Cmd+Z",
+          :linux   => "Ctrl+Z",
+          :windows => "Ctrl+Z"
+      
+      def execute
+        tab.edit_view.undo
+      end
+    end
+    
+    class RedoCommand < EditTabCommand
+      sensitize :redoable
+      
+      key :osx     => "Cmd+Shift+Z",
+          :linux   => "Ctrl+Shift+Z",
+          :windows => "Ctrl+Shift+Z"
+      
+      def execute
+        tab.edit_view.redo
+      end
+    end
+    
     def self.start
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
@@ -181,6 +201,10 @@ module Redcar
           item "Close Notebook", CloseNotebookCommand
           item "Close Window", CloseWindowCommand
           item "Close Directory", Project::DirectoryCloseCommand
+        end
+        sub_menu "Edit" do
+          item "Undo", UndoCommand
+          item "Redo", RedoCommand
         end
         sub_menu "Debug" do
           item "Print Command History", PrintHistoryCommand

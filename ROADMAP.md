@@ -25,7 +25,7 @@ Features:
 
   * Keybindings to switch tabs    (done)
   * Text editing stuff:          
-      - Undo/Redo
+      - Undo/Redo                 (done)
       - Home/End
   * Project stuff: 
       - watches for file changes

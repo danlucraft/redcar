@@ -75,6 +75,10 @@ Then /^the tab should have the keyboard focus$/ do
   tab.controller.edit_view.has_focus?.should be_true
 end
 
-Then /^I should see "(.*)" in the edit tab$/ do |content|
-  focussed_tab.edit_view.document.to_s.include?(content).should be_true
+Then /^I should (not )?see "(.*)" in the edit tab$/ do |bool, content|
+  bool = !bool
+  matcher = bool ? be_true : be_false
+  focussed_tab.edit_view.document.to_s.include?(content).should matcher
 end
+
+

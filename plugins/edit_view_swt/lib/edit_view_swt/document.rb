@@ -6,8 +6,12 @@ module Redcar
       attr_reader :swt_document
       
       def initialize(model, swt_document)
-        @model = model
+        @model        = model
         @swt_document = swt_document
+      end
+      
+      def attach_modification_listeners
+        jface.add_document_listener(DocumentListener.new(@model))
       end
       
       def to_s
@@ -51,8 +55,22 @@ module Redcar
         @swt_document.getJFaceDocument
       end
       
+      class DocumentListener
+        def initialize(model)
+          @model = model
+        end
+        
+        def document_about_to_be_changed(e)
+          @model.about_to_be_changed(e.offset, e.length, e.text)
+        end
+        
+        def document_changed(e)
+          @model.changed(e.offset, e.length, e.text)
+        end
+      end
+      
       def text=(text)
-        @swt_document.set(text)
+        jface.set(text)
         notify_listeners(:set_text)
       end
     end

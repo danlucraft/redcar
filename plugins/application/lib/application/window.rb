@@ -69,6 +69,11 @@ module Redcar
       notebook.add_listener(:tab_closed) do
         notify_listeners(:tab_closed)
       end
+      notebook.add_listener(:focussed_tab_changed) do |tab|
+        if notebook == focussed_notebook
+          notify_listeners(:focussed_tab_changed, tab)
+        end
+      end
     end
     
     def close_notebook

@@ -10,12 +10,28 @@ module Redcar
     include Redcar::Model
     include Redcar::Observable
     
+    extend Forwardable
+
+    class << self
+      attr_reader :undo_sensitivity, :redo_sensitivity
+    end
+    
     def self.start
       Sensitivity.new(:edit_tab_focussed, Redcar.app, false, [:tab_focussed]) do |tab|
         tab and tab.is_a?(EditTab)
       end
+      @undo_sensitivity = 
+        Sensitivity.new(:undoable, Redcar.app, false, [:focussed_tab_changed, :tab_focussed]) do
+          tab = Redcar.app.focussed_window.focussed_notebook.focussed_tab
+          tab and tab.is_a?(EditTab) and tab.edit_view.undoable?
+        end
+      @redo_sensitivity = 
+        Sensitivity.new(:redoable, Redcar.app, false, [:focussed_tab_changed, :tab_focussed]) do
+          tab = Redcar.app.focussed_window.focussed_notebook.focussed_tab
+          tab and tab.is_a?(EditTab) and tab.edit_view.redoable?
+        end
     end
-    
+
     attr_reader :document
     
     def initialize(tab)
@@ -33,17 +49,10 @@ module Redcar
       @tab.title = title
     end
     
-    def cursor_offset=(offset)
-      controller.cursor_offset = offset
-    end
-    
-    def cursor_offset
-      controller.cursor_offset
-    end
-    
-    def scroll_to_line(line_index)
-      controller.scroll_to_line(line_index)
-    end
+    def_delegators :controller, :undo,      :redo,
+                                :undoable?, :redoable?,
+                                :cursor_offset, :cursor_offset=,
+                                :scroll_to_line
     
     def grammar
       @grammar

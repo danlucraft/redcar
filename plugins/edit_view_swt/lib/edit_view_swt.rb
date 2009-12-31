@@ -38,6 +38,8 @@ module Redcar
       end
       @mate_text.set_grammar_by_name "Plain Text"
       @mate_text.set_theme_by_name(ARGV.option("theme") || "Twilight")
+      create_undo_manager
+      @document.attach_modification_listeners # comes after undo manager
     end
     
     def create_mate_text
@@ -72,6 +74,31 @@ module Redcar
       @model.controller = self
     end
     
+    def create_undo_manager
+      @undo_manager = JFace::Text::TextViewerUndoManager.new(100)
+      @undo_manager.connect(@mate_text.viewer)
+    end
+    
+    def undo
+      @undo_manager.undo
+      EditView.undo_sensitivity.recompute
+      EditView.redo_sensitivity.recompute
+    end
+    
+    def undoable?
+      @undo_manager.undoable
+    end
+    
+    def redo
+      @undo_manager.redo
+      EditView.undo_sensitivity.recompute
+      EditView.redo_sensitivity.recompute
+    end
+    
+    def redoable?
+      @undo_manager.redoable
+    end
+    
     def create_grammar_selector
       @combo = Swt::Widgets::Combo.new @widget, Swt::SWT::READ_ONLY
       bundles  = JavaMateView::Bundle.bundles.to_a
@@ -84,7 +111,6 @@ module Redcar
       end
       
       @combo.add_selection_listener do |event|
-        puts "selected #{@combo.text}"
         @mate_text.set_grammar_by_name(@combo.text)
       end
       
@@ -98,8 +124,8 @@ module Redcar
             &method(:update_grammar))
       h2 = @model.add_listener(:grammar_changed, &method(:model_grammar_changed))
       @mate_text.getTextWidget.addFocusListener(FocusListener.new(self))
-      @mate_text.getTextWidget.addVerifyListener(VerifyListener.new(@model.document, self))
-      @mate_text.getTextWidget.addModifyListener(ModifyListener.new(@model.document, self))
+   #   @mate_text.getTextWidget.addVerifyListener(VerifyListener.new(@model.document, self))
+   #   @mate_text.getTextWidget.addModifyListener(ModifyListener.new(@model.document, self))
       @handlers << [@model.document, h1] << [@model, h2]
     end
     

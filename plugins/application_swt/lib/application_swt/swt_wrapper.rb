@@ -23,6 +23,7 @@ module Swt
 
   path = File.expand_path(File.dirname(__FILE__) + "/../../vendor/swt/" + Swt.jar_path)
   if File.exist?(path + ".jar")
+    puts "loading #{Swt.jar_path}"
     require path
   else
     puts "SWT jar file required: #{path}.jar"
@@ -99,5 +100,9 @@ module JFace
     import org.eclipse.jface.viewers.ILabelProvider
     import org.eclipse.jface.viewers.ILazyTreeContentProvider
     import org.eclipse.jface.viewers.ILabelProvider
+  end
+  
+  module Text
+    import org.eclipse.jface.text.TextViewerUndoManager
   end
 end

@@ -4,7 +4,8 @@ Version 0.3.1dev (TBA)
 
 Enhancements:
 
-  * Keybindings to switch tabs.
+  * Keybindings to switch tabs and notebooks.
+  * Undo/redo.
 
 Version 0.3.0dev (25 Dec 2009)
 ==============================

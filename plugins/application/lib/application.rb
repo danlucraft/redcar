@@ -144,7 +144,12 @@ module Redcar
       h7 = window.add_listener(:tab_closed) do |win|
         notify_listeners(:tab_closed)
       end
-      @window_handlers[window] << h1 << h2 << h3 << h4 << h5 << h6 << h7
+      h8 = window.add_listener(:focussed_tab_changed) do |tab|
+        if window == focussed_window
+          notify_listeners(:focussed_tab_changed, tab)
+        end
+      end
+      @window_handlers[window] << h1 << h2 << h3 << h4 << h5 << h6 << h7 << h8
     end
   end
 end

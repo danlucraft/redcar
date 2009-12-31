@@ -94,6 +94,11 @@ module Redcar
         remove_tab!(tab)
         notify_listeners(:tab_closed)
       end
+      @tab_handlers[tab] << tab.add_listener(:changed) do
+        if tab == focussed_tab
+          notify_listeners(:focussed_tab_changed, tab)
+        end
+      end
     end
   end
 end

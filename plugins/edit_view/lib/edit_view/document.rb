@@ -67,24 +67,23 @@ module Redcar
       end
     end
     
-    def verify_text(start_offset, end_offset, text)
-      @change = [start_offset, end_offset, text]
+    def about_to_be_changed(start_offset, length, text)
       @controllers[Controller::ModificationCallbacks].each do |controller|
-        controller.before_modify(start_offset, end_offset, text)
+        controller.before_modify(start_offset, start_offset + length, text)
       end
     end
     
-    def modify_text
+    def changed(start_offset, length, text)
       set_modified(true)
       @controllers[Controller::ModificationCallbacks].each do |controller|
         controller.after_modify
       end
       @controllers[Controller::NewlineCallback].each do |controller|
-        if @change[2] == "\n"
-          controller.after_newline(line_at_offset(@change[1]) + 1)
+        if text == "\n"
+          controller.after_newline(line_at_offset(start_offset) + 1)
         end
       end
-      @change = nil
+      notify_listeners(:changed)
     end
     
     private

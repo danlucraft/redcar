@@ -12,6 +12,7 @@ module Redcar
     def create_edit_view
       @edit_view = Redcar::EditView.new(self)
       @edit_view.add_listener(:focussed, &method(:edit_view_focussed))
+      @edit_view.document.add_listener(:changed) { notify_listeners(:changed, self) }
     end
     
     def edit_view_focussed
