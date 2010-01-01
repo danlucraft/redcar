@@ -35,6 +35,24 @@ Usage:
     --font-size=SIZE  Choose font point size
        --theme=THEME  Choose Textmate theme
 
+## INSTALLING FROM SOURCE
+
+Download from github, checkout the submodules and build JavaMateView
+
+    $ git clone git://github.com/danlucraft/redcar.git
+    $ cd redcar
+    $ git submodule init
+    $ git submodule update
+    $ rake build
+
+To run:
+
+    $ jruby bin/redcar
+
+To run on OSX:
+
+    $ jruby -J-XstartOnFirstThread bin/redcar        
+
 
 ## PROBLEMS?
 
