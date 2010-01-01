@@ -183,6 +183,30 @@ module Redcar
       end
     end
     
+    class MoveHomeCommand < EditTabCommand
+      key "Ctrl+A"
+      
+      def execute
+        doc = tab.edit_view.document
+        line_ix = doc.line_at_offset(doc.cursor_offset)
+        doc.cursor_offset = doc.offset_at_line(line_ix)
+      end
+    end
+    
+    class MoveEndCommand < EditTabCommand
+      key "Ctrl+E"
+      
+      def execute
+        doc = tab.edit_view.document
+        line_ix = doc.line_at_offset(doc.cursor_offset)
+        if line_ix == doc.line_count - 1
+          doc.cursor_offset = doc.length
+        else
+          doc.cursor_offset = doc.offset_at_line(line_ix + 1) - 1
+        end
+      end
+    end
+    
     def self.start
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
@@ -205,6 +229,9 @@ module Redcar
         sub_menu "Edit" do
           item "Undo", UndoCommand
           item "Redo", RedoCommand
+          separator
+          item "Home", MoveHomeCommand
+          item "End", MoveEndCommand
         end
         sub_menu "Debug" do
           item "Print Command History", PrintHistoryCommand
