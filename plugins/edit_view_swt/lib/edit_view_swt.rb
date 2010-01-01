@@ -124,8 +124,8 @@ module Redcar
             &method(:update_grammar))
       h2 = @model.add_listener(:grammar_changed, &method(:model_grammar_changed))
       @mate_text.getTextWidget.addFocusListener(FocusListener.new(self))
-      #@mate_text.getTextWidget.addVerifyListener(VerifyListener.new(@model.document, self))
-      #@mate_text.getTextWidget.addModifyListener(ModifyListener.new(@model.document, self))
+      @mate_text.getTextWidget.addVerifyListener(VerifyListener.new(@model.document, self))
+      @mate_text.getTextWidget.addModifyListener(ModifyListener.new(@model.document, self))
       @handlers << [@model.document, h1] << [@model, h2]
     end
     
@@ -200,6 +200,7 @@ module Redcar
       end
       
       def verify_text(e)
+        @document.verify_text(e.start, e.end, e.text)
       end
     end
     
@@ -208,7 +209,8 @@ module Redcar
         @document, @obj = document, obj
       end
       
-      def modify_text(_)
+      def modify_text(e)
+        @document.modify_text
       end
     end
   end

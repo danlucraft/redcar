@@ -66,14 +66,16 @@ module Redcar
         update_from_mirror
       end
     end
-    
-    def about_to_be_changed(start_offset, length, text)
+
+    def verify_text(start_offset, end_offset, text)
+      @change = [start_offset, end_offset, text]    
       @controllers[Controller::ModificationCallbacks].each do |controller|
-        controller.before_modify(start_offset, start_offset + length, text)
+        controller.before_modify(start_offset, end_offset, text)
       end
     end
-    
-    def changed(start_offset, length, text)
+
+    def modify_text
+      start_offset, end_offset, text = *@change
       set_modified(true)
       @controllers[Controller::ModificationCallbacks].each do |controller|
         controller.after_modify
@@ -83,6 +85,14 @@ module Redcar
           controller.after_newline(line_at_offset(start_offset) + 1)
         end
       end
+      @change = nil      
+      notify_listeners(:changed)
+    end                  
+    
+    def about_to_be_changed(start_offset, length, text)
+    end
+    
+    def changed(start_offset, length, text)
       notify_listeners(:changed)
     end
     
