@@ -11,5 +11,15 @@ module Redcar
     def open
       notify_listeners(:open)
     end
+    
+    def starting_list
+      %w(foo bar baz qux quux corge)
+    end
+    
+    def update_list(new_text)
+      a = []
+      5.times {|i| a << new_text + " " + i.to_s }
+      a
+    end
   end
 end
