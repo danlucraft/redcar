@@ -16,9 +16,9 @@ module Redcar
       %w(foo bar baz qux quux corge)
     end
     
-    def update_list(new_text)
+    def update_list(filter)
       a = []
-      5.times {|i| a << new_text + " " + i.to_s }
+      5.times {|i| a << filter + " " + i.to_s }
       a
     end
     

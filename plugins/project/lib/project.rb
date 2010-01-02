@@ -1,5 +1,6 @@
 
 require "project/file_mirror"
+require "project/find_file_dialog"
 require "project/dir_mirror"
 require "project/dir_controller"
 
@@ -158,7 +159,7 @@ module Redcar
     class FindFileCommand < Command
     
       def execute
-        dialog = FilterListDialog.new
+        dialog = FindFileDialog.new
         dialog.open
       end
     end
