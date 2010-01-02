@@ -26,5 +26,10 @@ module Redcar
         notify_listeners(:tree_removed, tree)
       end
     end
+    
+    # Refreshes all the trees in the Treebook. (See Tree#refresh).
+    def refresh_trees
+      @trees.each {|tree| tree.refresh }
+    end
   end
 end

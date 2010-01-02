@@ -28,7 +28,7 @@ Features:
       - Undo/Redo                 (done)
       - Home/End                  (done)
   * Project stuff: 
-      - watches for file changes
+      - watches for file changes  (done)
       - fuzzy file finder
   * Tests passing on 3 platforms
   * Plugins stuff:

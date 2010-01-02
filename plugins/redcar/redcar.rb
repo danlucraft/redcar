@@ -242,6 +242,7 @@ module Redcar
             item "Open", REPL::OpenInternalREPL
             item "Execute", REPL::CommitREPL
           end
+          item "Refresh Directory", Project::RefreshDirectoryCommand
         end
         sub_menu "View" do
           item "Rotate Notebooks", RotateNotebooksCommand

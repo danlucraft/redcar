@@ -1,6 +1,7 @@
 
 module Redcar
   class TreeViewSWT
+    attr_reader :viewer
     
     def initialize(composite, model)
       @composite, @model = composite, model
@@ -13,6 +14,8 @@ module Redcar
         @viewer.add_tree_listener(@viewer.getControl, TreeListener.new)
         @viewer.add_open_listener(OpenListener.new(@model.tree_controller))
       end
+      
+      @model.add_listener(:refresh) { s = Time.now; @viewer.refresh; puts "tree refresh took #{Time.now - s} seconds"}
     end
     
     def control

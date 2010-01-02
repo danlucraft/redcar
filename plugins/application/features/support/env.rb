@@ -26,6 +26,10 @@ module SwtHelper
   
   module TreeHelpers
     def items
+      getItems.to_a
+    end
+    
+    def item_texts
       getItems.to_a.map {|item| item.getText}
     end
   end

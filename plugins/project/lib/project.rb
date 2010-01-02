@@ -20,6 +20,10 @@ module Redcar
       win.treebook.remove_tree(@window_trees[win])
     end
     
+    def self.refresh_tree(win)
+      @window_trees[win].refresh
+    end
+    
     def self.open_file_tab(path)
       path = File.expand_path(path)
       all_tabs = Redcar.app.windows.map {|win| win.notebooks}.flatten.map {|nb| nb.tabs }.flatten
@@ -141,6 +145,13 @@ module Redcar
 
       def execute
         Project.close_tree(win)
+      end
+    end
+    
+    class RefreshDirectoryCommand < Command
+    
+      def execute
+        Project.refresh_tree(win)
       end
     end
   end
