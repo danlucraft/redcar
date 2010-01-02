@@ -1,5 +1,7 @@
 module Redcar
-  # A type of dialog containing a textbox and a list. Used to create the Find File dialog.
+  # A type of dialog containing a textbox and a list, where the list can be updated
+  # based on the contents of the textbox. For example, the Find File dialog box in
+  # the Project plugin.
   #
   # Subclasses should implement the 'update_list' method and the 'selected' method.
   class FilterListDialog
@@ -14,7 +16,11 @@ module Redcar
       notify_listeners(:open)
     end
     
-    # Update the list in the dialog based on the filter.
+    def close
+      notify_listeners(:close)
+    end
+    
+    # Called by the controller when the user changes the filter.
     #
     # @param [String] the filter entered by the user
     # @return [Array<String>] the new list to display

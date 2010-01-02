@@ -29,6 +29,7 @@ module Redcar
       
       def attach_model_listeners
         @model.add_listener(:open, &method(:open))
+        @model.add_listener(:close, &method(:close))
       end
 
       class ModifyListener
@@ -47,10 +48,10 @@ module Redcar
         end
         
         def key_pressed(e)
+          e.doit = @controller.key_pressed(e)
         end
         
         def key_released(e)
-          @controller.key_pressed(e)
         end
       end
       
@@ -64,9 +65,22 @@ module Redcar
         @dialog = nil
       end
       
+      def close
+        @dialog.close
+      end
+      
       def update_list
-        populate_list(@model.update_list(@dialog.text.get_text))
-        @dialog.list.set_selection(0)
+        @last_keypress = Time.now
+        Swt::Widgets::Display.getCurrent.timerExec(500, Swt::RRunnable.new { 
+          if @last_keypress and Time.now - @last_keypress > 0.450
+            @last_keypress = nil
+            s = Time.now
+            list = @model.update_list(@dialog.text.get_text)
+            puts "update list took #{Time.now - s}s"
+            populate_list(list)
+            @dialog.list.set_selection(0)
+          end
+        })
       end
       
       def selected
@@ -77,10 +91,15 @@ module Redcar
         case key_event.keyCode
         when Swt::SWT::CR, Swt::SWT::LF
           selected
+          false
         when Swt::SWT::ARROW_DOWN
           move_down
+          false
         when Swt::SWT::ARROW_UP
           move_up
+          false
+        else
+          true
         end
       end
       

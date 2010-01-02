@@ -3,6 +3,7 @@ module Redcar
   class Project
     class DirMirror
       include Redcar::Tree::Mirror
+      attr_reader :path
       
       # @param [String] a path to a directory
       def initialize(path)
