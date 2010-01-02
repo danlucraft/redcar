@@ -29,7 +29,7 @@ Features:
       - Home/End                  (done)
   * Project stuff: 
       - watches for file changes  (done)
-      - fuzzy file finder
+      - fuzzy file finder         (done)
   * Tests passing on 3 platforms
   * Plugins stuff:
       - can add to menus easily
