@@ -21,5 +21,9 @@ module Redcar
       5.times {|i| a << new_text + " " + i.to_s }
       a
     end
+    
+    def selected(text)
+      puts "Hooray! You selected #{text}"
+    end
   end
 end

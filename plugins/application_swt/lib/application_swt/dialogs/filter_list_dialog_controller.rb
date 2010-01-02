@@ -16,12 +16,19 @@ module Redcar
           @list.set_layout_data(Swt::Layout::RowData.new(400, 200))
           attach_listeners
           controller.populate_starting_list
+          @list.set_selection(0)
         end
         
         def attach_listeners
           @text.add_modify_listener do
             text = @text.get_text
             controller.text_changed(text)
+          end
+          @text.add_key_listener do |key_event|
+            case key_event.keyCode
+            when Swt::SWT::CR, Swt::SWT::LF
+              controller.selected
+            end
           end
         end
       end
@@ -48,6 +55,11 @@ module Redcar
       
       def text_changed(new_text)
         populate_list(@model.update_list(new_text))
+        @dialog.list.set_selection(0)
+      end
+      
+      def selected
+        @model.selected(@dialog.list.get_selection.first)
       end
       
       private
