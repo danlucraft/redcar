@@ -75,6 +75,7 @@ module Redcar
             tab  = win.new_tab(Redcar::EditTab)
             mirror = FileMirror.new(path)
             tab.edit_view.document.mirror = mirror
+            tab.edit_view.reset_undo
             tab.focus
           end
         end

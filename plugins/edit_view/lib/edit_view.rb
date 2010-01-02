@@ -51,6 +51,7 @@ module Redcar
     
     def_delegators :controller, :undo,      :redo,
                                 :undoable?, :redoable?,
+                                :reset_undo,
                                 :cursor_offset, :cursor_offset=,
                                 :scroll_to_line
     

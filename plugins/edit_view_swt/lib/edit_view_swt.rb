@@ -99,6 +99,10 @@ module Redcar
       @undo_manager.redoable
     end
     
+    def reset_undo
+      @undo_manager.reset
+    end
+    
     def create_grammar_selector
       @combo = Swt::Widgets::Combo.new @widget, Swt::SWT::READ_ONLY
       bundles  = JavaMateView::Bundle.bundles.to_a
