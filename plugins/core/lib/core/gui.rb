@@ -71,7 +71,12 @@ module Redcar
     #
     # @param [Object] an instance of a Redcar model
     def controller_for(model)
-      controller_class = @controllers[model.class].first
+      klass, controller_class = model.class, nil
+      while controller_class == nil and klass != Object
+        unless controller_class = @controllers[klass].first
+          klass = klass.superclass
+        end
+      end
       raise "no controller for #{model.class}" unless controller_class
       controller_class
     end
