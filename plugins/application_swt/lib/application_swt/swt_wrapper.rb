@@ -63,6 +63,7 @@ module Swt
     import org.eclipse.swt.layout.GridLayout
     import org.eclipse.swt.layout.GridData
     import org.eclipse.swt.layout.RowLayout
+    import org.eclipse.swt.layout.RowData
   end
   
   module Graphics
