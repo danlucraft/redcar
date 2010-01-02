@@ -157,7 +157,10 @@ module Redcar
     end
     
     class FindFileCommand < Command
-    
+      key :osx => "Cmd+Shift+T",
+          :linux => "Ctrl+Shift+T",
+          :windows => "Ctrl+Shift+T"
+     
       def execute
         dialog = FindFileDialog.new
         dialog.open

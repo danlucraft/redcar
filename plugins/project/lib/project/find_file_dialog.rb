@@ -5,14 +5,20 @@ module Redcar
       MAX_ENTRIES = 20
       
       def update_list(filter)
-        paths = find_files(filter, Redcar.app.focussed_window.treebook.trees.last.tree_mirror.path)
-        @last_list = paths
-        paths.map {|path| display_path(path) }
+        if filter.length < 2
+          []
+        else
+          paths = find_files(filter, Redcar.app.focussed_window.treebook.trees.last.tree_mirror.path)
+          @last_list = paths
+          paths.map {|path| display_path(path) }
+        end
       end
       
       def selected(text, ix)
-        close
-        FileOpenCommand.new(@last_list[ix]).run
+        if @last_list
+          close
+          FileOpenCommand.new(@last_list[ix]).run
+        end
       end
       
       private
