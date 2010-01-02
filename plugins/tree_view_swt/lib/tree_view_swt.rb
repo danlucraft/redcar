@@ -15,7 +15,20 @@ module Redcar
         @viewer.add_open_listener(OpenListener.new(@model.tree_controller))
       end
       
-      @model.add_listener(:refresh) { s = Time.now; @viewer.refresh; puts "tree refresh took #{Time.now - s} seconds"}
+      @model.add_listener(:refresh) do 
+        s = Time.now
+        begin
+          @viewer.refresh
+        rescue => e
+          # Don't know why the @viewer sometimes throws these:
+          # "undefined method `getParent' for #<Redcar::TreeViewSWT::TreeMirrorContentProvider:0x44655c8c> (NoMethodError)"
+          # It looks like it is expecting a ILazyTreeViewContentProvider, because getParent
+          # is in the API for that.
+          puts e.message
+          puts e.backtrace
+        end
+        puts "tree refresh took #{Time.now - s} seconds"
+      end
     end
     
     def control
