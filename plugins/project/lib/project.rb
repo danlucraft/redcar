@@ -39,7 +39,9 @@ module Redcar
     end
     
     def self.refresh_tree(win)
-      @window_trees[win].refresh
+      if tree = @window_trees[win]
+        tree.refresh
+      end
     end
     
     def self.open_file_tab(path)
@@ -119,6 +121,7 @@ module Redcar
           new_mirror = FileMirror.new(path)
           new_mirror.commit(contents)
           tab.edit_view.document.mirror = new_mirror
+          Project.refresh_tree(win)
         end
       end
       
