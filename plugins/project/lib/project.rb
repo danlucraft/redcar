@@ -1,4 +1,5 @@
 
+require "project/project_command"
 require "project/file_mirror"
 require "project/find_file_dialog"
 require "project/dir_mirror"
@@ -6,6 +7,20 @@ require "project/dir_controller"
 
 module Redcar
   class Project
+    def self.load
+    end
+    
+    def self.start
+      @open_project_sensitivity = 
+        Sensitivity.new(:open_project, Redcar.app, false, [:focussed_window]) do
+          Redcar.app.focussed_window.treebook.trees.detect {|t| t.tree_mirror.is_a?(DirMirror) }
+        end
+    end
+    
+    class << self
+      attr_reader :open_project_sensitivity
+    end
+  
     def self.open_tree(win, tree)
       @window_trees ||= {}
       if @window_trees[win]
@@ -15,10 +30,12 @@ module Redcar
       else
         set_tree(win, tree)
       end
+      Project.open_project_sensitivity.recompute
     end
     
     def self.close_tree(win)
       win.treebook.remove_tree(@window_trees[win])
+      Project.open_project_sensitivity.recompute
     end
     
     def self.refresh_tree(win)
@@ -142,21 +159,21 @@ module Redcar
       end
     end
     
-    class DirectoryCloseCommand < Command
+    class DirectoryCloseCommand < ProjectCommand
 
       def execute
         Project.close_tree(win)
       end
     end
     
-    class RefreshDirectoryCommand < Command
+    class RefreshDirectoryCommand < ProjectCommand
     
       def execute
         Project.refresh_tree(win)
       end
     end
     
-    class FindFileCommand < Command
+    class FindFileCommand < ProjectCommand
       key :osx => "Cmd+Shift+T",
           :linux => "Ctrl+Shift+T",
           :windows => "Ctrl+Shift+T"
