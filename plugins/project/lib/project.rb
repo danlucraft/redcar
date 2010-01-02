@@ -154,5 +154,13 @@ module Redcar
         Project.refresh_tree(win)
       end
     end
+    
+    class FindFileCommand < Command
+    
+      def execute
+        dialog = FilterListDialog.new
+        dialog.open
+      end
+    end
   end
 end

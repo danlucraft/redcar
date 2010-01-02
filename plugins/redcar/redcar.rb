@@ -233,6 +233,9 @@ module Redcar
           item "Home", MoveHomeCommand
           item "End", MoveEndCommand
         end
+        sub_menu "Project" do
+          item "Find File", Project::FindFileCommand
+        end
         sub_menu "Debug" do
           item "Print Command History", PrintHistoryCommand
           item "Print Contents", PrintContents

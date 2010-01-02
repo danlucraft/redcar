@@ -42,6 +42,7 @@ module Swt
     import org.eclipse.swt.widgets.DirectoryDialog
     import org.eclipse.swt.widgets.FileDialog
     import org.eclipse.swt.widgets.Label
+    import org.eclipse.swt.widgets.List
     import org.eclipse.swt.widgets.Menu
     import org.eclipse.swt.widgets.MenuItem
     import org.eclipse.swt.widgets.Shell
@@ -104,5 +105,9 @@ module JFace
   
   module Text
     import org.eclipse.jface.text.TextViewerUndoManager
+  end
+  
+  module Dialogs
+    import org.eclipse.jface.dialogs.Dialog
   end
 end

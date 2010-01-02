@@ -2,8 +2,8 @@
 Redcar JRuby Port Roadmap
 =========================
 
-0.3dev - *Developer preview*
-----------------------------
+0.3dev - *Developer preview* - DONE
+-----------------------------------
 
 This will be the first JRuby release of Redcar. 
 

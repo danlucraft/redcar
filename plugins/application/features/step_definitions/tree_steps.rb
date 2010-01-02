@@ -1,6 +1,4 @@
 
-# Doesn't work because expandToLevel takes a DirMirror Node not a tree item. So we need some way
-# to get Nodes from treeitems?
 When /^I expand the tree row "([^\"]*)"$/ do |row|
   item = top_tree.items.detect {|item| item.getText == row }
   viewer = Redcar.app.focussed_window.treebook.trees.last.controller.viewer
