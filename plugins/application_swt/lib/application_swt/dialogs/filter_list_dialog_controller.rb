@@ -43,15 +43,18 @@ module Redcar
       end
       
       def populate_starting_list
-        @dialog.list.removeAll
-        @model.starting_list.each do |text|
-          @dialog.list.add(text)
-        end
+        populate_list(@model.starting_list)
       end
       
       def text_changed(new_text)
+        populate_list(@model.update_list(new_text))
+      end
+      
+      private
+      
+      def populate_list(contents)
         @dialog.list.removeAll
-        @model.update_list(new_text).each do |text|
+        contents.each do |text|
           @dialog.list.add(text)
         end
       end
