@@ -15,7 +15,7 @@ module Redcar
           @list = Swt::Widgets::List.new(composite, Swt::SWT::SINGLE)
           @list.set_layout_data(Swt::Layout::RowData.new(400, 200))
           controller.attach_listeners
-          controller.populate_starting_list
+          controller.update_list
           @list.set_selection(0)
         end
       end
@@ -37,7 +37,7 @@ module Redcar
         end
         
         def modify_text(e)
-          @controller.text_changed
+          @controller.update_list
         end
       end
       
@@ -64,17 +64,13 @@ module Redcar
         @dialog = nil
       end
       
-      def populate_starting_list
-        populate_list(@model.starting_list)
-      end
-      
-      def text_changed
+      def update_list
         populate_list(@model.update_list(@dialog.text.get_text))
         @dialog.list.set_selection(0)
       end
       
       def selected
-        @model.selected(@dialog.list.get_selection.first)
+        @model.selected(@dialog.list.get_selection.first, @dialog.list.get_selection_index)
       end
       
       def key_pressed(key_event)
