@@ -43,7 +43,9 @@ module Redcar
               entry.selected
             end
             h = entry.command.add_listener(:active_changed) do |value|
-              item.enabled = value
+              unless item.disposed
+                item.enabled = value
+              end
             end
             @handlers << [entry.command, h]
             if not entry.command.active?
