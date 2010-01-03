@@ -37,6 +37,7 @@ module Redcar
           files += Dir[File.expand_path(dir + "/**/*")]
         end
         took = Time.now - s
+        puts "find files #{text}, #{directories.inspect} took #{took}s"
        
         re = make_regex(text)
 

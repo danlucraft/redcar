@@ -33,12 +33,12 @@ Features:
   * Tests passing on 3 platforms
   * Plugins stuff:
       - can add to menus easily
-      - gem plugins
   
 More previews to add
 --------------------
 
   * Dialog library with simple DSL
+  * Gem plugins
   * Per-plugin storage
   * HTML output from commands
   * Tooltip output from commands
