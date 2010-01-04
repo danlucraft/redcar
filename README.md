@@ -37,13 +37,15 @@ Usage:
 
 ## INSTALLING FROM SOURCE
 
-Download from github, checkout the submodules and build JavaMateView
+Download from github, checkout the submodules and build JavaMateView. You will need Ant 
+installed, and RSpec and Cucumber installed as JRuby gems.
 
     $ git clone git://github.com/danlucraft/redcar.git
     $ cd redcar
     $ git submodule init
     $ git submodule update
-    $ rake build
+    $ jruby ext/extconf.rb
+    $ jruby -S rake build
 
 To run:
 
