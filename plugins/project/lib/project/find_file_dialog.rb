@@ -30,21 +30,26 @@ module Redcar
           ")"
       end
       
-      def find_files(text, directories)
-        files = []
-        s = Time.now
-        directories.each do |dir|
-          files += Dir[File.expand_path(dir + "/**/*")]
+      def files(directories)
+        @files ||= begin
+          files = []
+          s = Time.now
+          directories.each do |dir|
+            files += Dir[File.expand_path(dir + "/**/*")]
+          end
+          took = Time.now - s
+          puts "find files #{directories.inspect} took #{took}s"
+          files
         end
-        took = Time.now - s
-        puts "find files #{text}, #{directories.inspect} took #{took}s"
-       
+      end
+      
+      def find_files(text, directories)
         re = make_regex(text)
 
         score_match_pairs = []
         cutoff = 10000000
 
-        results = files.each do |fn| 
+        results = files(directories).each do |fn| 
           unless File.directory?(fn)
             bit = fn.split("/")
             if m = bit.last.match(re)
