@@ -115,12 +115,20 @@ module Redcar
     
     attr_reader :menu
     
-    # The main menu.
+    # Set the main menu. Causes a redraw of the GUI menu.
+    #
+    # @param [Menu]
     def menu=(menu)
       @menu = menu
       windows.each do |window|
         window.menu = menu
       end
+    end
+    
+    # Redraw the main menu. Useful if you have modified the main menu
+    # instead of setting it afresh.
+    def refresh_menu!
+      self.menu = @menu
     end
     
     def attach_window_listeners(window)
