@@ -1,11 +1,13 @@
 
 module Redcar
   class Menu
+    include Enumerable
+    
     attr_reader :text, :entries
   
     # A Menu will initially have nothing in it.
-    def initialize(text="")
-      @text, @entries = text, []
+    def initialize(text=nil)
+      @text, @entries = text || "", []
     end
   
     # Iterate over each entry
