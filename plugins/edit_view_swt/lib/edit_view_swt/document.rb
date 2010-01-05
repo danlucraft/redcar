@@ -43,12 +43,29 @@ module Redcar
         jface.replace(offset, 0, text)
       end
       
+      def replace(offset, length, text)
+        jface.replace(offset, length, text)
+      end
+      
       def cursor_offset
         @swt_document.styledText.get_caret_offset
       end
       
       def cursor_offset=(offset)
         @swt_document.styledText.set_caret_offset(offset)
+      end
+      
+      # Returns the offset range selected in the document. The start of the range is always
+      # before the end of the range, even if the selection is right-to-left
+      #
+      # @return [Range<Integer>] offset range
+      def selection_range
+        range = @swt_document.styledText.get_selection_range
+        range.x...(range.x + range.y)
+      end
+      
+      def set_selection_range(start, _end)
+        @swt_document.styledText.set_selection(start, _end)
       end
       
       def jface

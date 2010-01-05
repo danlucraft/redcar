@@ -207,6 +207,64 @@ module Redcar
       end
     end
     
+    class ChangeIndentCommand < EditTabCommand
+      def execute
+        doc = tab.edit_view.document
+        if doc.selection?
+          first_line_ix = doc.line_at_offset(doc.selection_range.begin)
+          last_line_ix  = doc.line_at_offset(doc.selection_range.end)
+          if doc.selection_range.end == doc.offset_at_line(last_line_ix)
+            last_line_ix -= 1
+          end
+          first_line_ix.upto(last_line_ix) do |line_ix|
+            indent_line(doc, line_ix)
+          end
+          start_selection = doc.offset_at_line(first_line_ix)
+          if last_line_ix == doc.line_count - 1
+            end_selection = doc.length
+          else
+            end_selection = doc.offset_at_line(last_line_ix + 1)
+          end
+          doc.set_selection_range(start_selection, end_selection)
+        else
+          indent_line(doc, doc.cursor_line)
+        end
+      end
+    end
+    
+    class DecreaseIndentCommand < ChangeIndentCommand
+      key :osx     => "Cmd+[",
+          :linux   => "Ctrl+[",
+          :windows => "Ctrl+["
+      
+      def indent_line(doc, line_ix)
+        use_spaces = true
+        num_spaces = 2
+        line = doc.get_line(line_ix)
+        if line[0..0] == "\t"
+          line_start = doc.offset_at_line(line_ix)
+          to         = line_start + 1
+        elsif line[0...num_spaces] == " "*num_spaces
+          line_start = doc.offset_at_line(line_ix)
+          to         = line_start + num_spaces
+        end
+        doc.delete(line_start, to - line_start) unless line_start == to
+      end
+    end
+
+    class IncreaseIndentCommand < ChangeIndentCommand
+      key :osx     => "Cmd+]",
+          :linux   => "Ctrl+]",
+          :windows => "Ctrl+]"
+      
+      def indent_line(doc, line_ix)
+        line            = doc.get_line(line_ix)
+        whitespace_type = line[/^(  |\t)/, 1] || "  "
+        doc.insert(doc.offset_at_line(line_ix), whitespace_type)
+      end
+    end
+
+    
     def self.start
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
@@ -232,6 +290,9 @@ module Redcar
           separator
           item "Home", MoveHomeCommand
           item "End", MoveEndCommand
+          separator
+          item "Increase Indent", IncreaseIndentCommand
+          item "Decrease Indent", DecreaseIndentCommand
         end
         sub_menu "Project" do
           item "Find File", Project::FindFileCommand

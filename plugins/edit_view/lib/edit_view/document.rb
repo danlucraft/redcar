@@ -13,7 +13,8 @@ module Redcar
     def_delegators :controller, 
                       :length, :line_count, :to_s, :text=,
                       :line_at_offset, :get_line, :offset_at_line,
-                      :insert, :cursor_offset, :cursor_offset=
+                      :insert, :cursor_offset, :cursor_offset=,
+                      :selection_range, :replace, :set_selection_range
     
     def self.register_controller_type(controller_type)
       unless controller_type.ancestors.include?(Document::Controller)
@@ -94,6 +95,18 @@ module Redcar
     
     def changed(start_offset, length, text)
       notify_listeners(:changed)
+    end
+    
+    def cursor_line
+      line_at_offset(cursor_offset)
+    end
+    
+    def selection?
+      selection_range.count > 0
+    end
+    
+    def delete(offset, length)
+      replace(offset, length, "")
     end
     
     private
