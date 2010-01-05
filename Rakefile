@@ -171,10 +171,20 @@ RELEASE_BUNDLES = %w(
     RedcarRepl.tmbundle
     Text.tmbundle
     Source.tmbundle
-  )
+    Cucumber.tmbundle
+    Java.tmbundle
+  ) + ["Ruby on Rails.tmbundle"]
 
 desc 'Clean up the Textmate files for packaging'
 task :clean_textmate do
+  # remove unwanted bundles
+  Dir["textmate/Bundles/*"].each do |bdir|
+    p bdir.split("/").last
+    unless RELEASE_BUNDLES.include?(bdir.split("/").last)
+      FileUtils.rm_rf(bdir)
+    end
+  end
+
   # rename files to be x-platform safe
   Dir["textmate/Bundles/*.tmbundle/{Syntaxes,Snippets,Templates}/**/*"].each do |fn|
     if File.file?(fn)
@@ -190,16 +200,12 @@ task :clean_textmate do
           FileUtils.mv(fn, new_fn)
         end
       else
-        FileUtils.mv(fn, new_fn)
+        begin
+          FileUtils.mv(fn, new_fn)
+        rescue => e
+          puts e
+        end
       end
-    end
-  end
-  
-  # remove unwanted bundles
-  Dir["textmate/Bundles/*"].each do |bdir|
-    p bdir.split("/").last
-    unless RELEASE_BUNDLES.include?(bdir.split("/").last)
-      FileUtils.rm_r(bdir)
     end
   end
 end
