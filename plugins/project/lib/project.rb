@@ -21,10 +21,13 @@ module Redcar
       attr_reader :open_project_sensitivity
     end
   
-    def self.open_tree(win, tree)
+  	def self.window_trees
       @window_trees ||= {}
-      if @window_trees[win]
-        old_tree = @window_trees[win]
+    end
+  
+    def self.open_tree(win, tree)
+      if window_trees[win]
+        old_tree = window_trees[win]
         set_tree(win, tree)
         win.treebook.remove_tree(old_tree)
       else
@@ -34,12 +37,12 @@ module Redcar
     end
     
     def self.close_tree(win)
-      win.treebook.remove_tree(@window_trees[win])
+      win.treebook.remove_tree(window_trees[win])
       Project.open_project_sensitivity.recompute
     end
     
     def self.refresh_tree(win)
-      if tree = @window_trees[win]
+      if tree = window_trees[win]
         tree.refresh
       end
     end
