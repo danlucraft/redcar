@@ -39,10 +39,6 @@ module Redcar
         jface.get(line_info.offset, line_info.length)
       end
       
-      def insert(offset, text)
-        jface.replace(offset, 0, text)
-      end
-      
       def replace(offset, length, text)
         jface.replace(offset, length, text)
       end

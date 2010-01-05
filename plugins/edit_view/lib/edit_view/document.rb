@@ -13,7 +13,7 @@ module Redcar
     def_delegators :controller, 
                       :length, :line_count, :to_s, :text=,
                       :line_at_offset, :get_line, :offset_at_line,
-                      :insert, :cursor_offset, :cursor_offset=,
+                      :cursor_offset, :cursor_offset=,
                       :selection_range, :replace, :set_selection_range
     
     def self.register_controller_type(controller_type)
@@ -104,7 +104,11 @@ module Redcar
     def selection?
       selection_range.count > 0
     end
-    
+      
+    def insert(offset, text)
+      replace(offset, 0, text)
+    end
+      
     def delete(offset, length)
       replace(offset, length, "")
     end
