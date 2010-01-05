@@ -79,7 +79,7 @@ module Redcar
 
       def make_regex(text)
         re_src = "(" + text.split(//).map{|l| Regexp.escape(l) }.join(").*?(") + ")"
-        Regexp.new(re_src)
+        Regexp.new(re_src, :options => Regexp::IGNORECASE)
       end
     end
   end

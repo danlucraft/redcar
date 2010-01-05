@@ -10,6 +10,7 @@ Enhancements:
   * Modified tabs have little stars before their names.
   * Directory tree refreshes on window focus.
   * Fuzzy file finder.
+  * Increase indent and decrease indent commands
 
 Version 0.3.0dev (25 Dec 2009)
 ==============================
