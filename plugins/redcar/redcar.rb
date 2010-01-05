@@ -302,10 +302,6 @@ module Redcar
           item "Print Contents", PrintContents
           item "List Tabs", ListTabsCommand
           item "Print Scope Tree", PrintScopeTreeCommand
-          sub_menu "REPL" do
-            item "Open", REPL::OpenInternalREPL
-            item "Execute", REPL::CommitREPL
-          end
           item "Refresh Directory", Project::RefreshDirectoryCommand
         end
         sub_menu "View" do
@@ -315,6 +311,8 @@ module Redcar
           separator
           item "Previous Tab", SwitchTabDownCommand
           item "Next Tab", SwitchTabUpCommand
+        end
+        sub_menu "Plugins" do
         end
         sub_menu "Help" do
           item "Website", PrintHistoryCommand

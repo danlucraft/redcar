@@ -7,6 +7,6 @@ autoload: true
 require_path: repl/lib/repl.rb
 startup_module: Redcar::REPL
 load_dependencies: 
-  edit_view: "*"
+  redcar: "*"
 start_dependencies: 
-  edit_view: "*"
+  redcar: "*"

@@ -3,6 +3,23 @@ require 'repl/internal_mirror'
 
 module Redcar
   class REPL
+    def self.start
+      Sensitivity.new(:open_repl_tab, Redcar.app, false, [:tab_focussed]) do |tab|
+        tab and 
+        tab.is_a?(EditTab) and 
+        tab.edit_view.document.mirror.is_a?(REPL::InternalMirror)
+      end
+      
+      menu = Redcar.app.menu
+      builder = Menu::Builder.new "REPL" do
+        item "Open", REPL::OpenInternalREPL
+        item "Execute", REPL::CommitREPL
+      end
+      plugins_menu = menu.entries.detect {|e| e.text == "Plugins"}
+      plugins_menu << builder.menu
+      Redcar.app.menu = menu
+    end
+    
     class OpenInternalREPL < Command
       
       def execute
@@ -16,14 +33,6 @@ module Redcar
     
     class ReplCommand < Command
       sensitize :open_repl_tab
-    end
-    
-    def self.start
-      Sensitivity.new(:open_repl_tab, Redcar.app, false, [:tab_focussed]) do |tab|
-        tab and 
-        tab.is_a?(EditTab) and 
-        tab.edit_view.document.mirror.is_a?(REPL::InternalMirror)
-      end
     end
     
     class CommitREPL < ReplCommand

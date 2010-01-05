@@ -11,6 +11,7 @@ Enhancements:
   * Directory tree refreshes on window focus.
   * Fuzzy file finder.
   * Increase indent and decrease indent commands
+  * Themes support bold, italic and underline again.
 
 Version 0.3.0dev (25 Dec 2009)
 ==============================
