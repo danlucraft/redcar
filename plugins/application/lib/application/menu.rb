@@ -25,5 +25,18 @@ module Redcar
     def length
       @entries.length
     end
+    
+    # Fetch the sub_menu with the given name
+    #
+    # @param [String]
+    # @return [Menu]
+    def sub_menu(text)
+      detect {|e| e.text == text and e.is_a?(Menu) }
+    end
+    
+    # Append items and sub_menus using the same syntax as Menu::Builder
+    def build(&block)
+      Menu::Builder.new(self, &block)
+    end
   end
 end

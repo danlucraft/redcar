@@ -1,18 +1,6 @@
 require File.join(File.dirname(__FILE__), "..", "..", "spec_helper")
 
 describe "Redcar::Menu::Builder DSL" do
-  # before do
-  #   @menu = Redcar::Menu.build do
-  #     item "New", :NewCommand
-  #     separator
-  #     item "Save", :SaveCommand
-  #     sub_menu "Export" do
-  #       item "PDF", :PDFCommand
-  #       item "HTML", :HTMLCommand
-  #     end
-  #   end
-  # end
-  
   it "creates a menu" do
     builder = Redcar::Menu::Builder.new {}
     builder.menu.should be_an_instance_of(Redcar::Menu)

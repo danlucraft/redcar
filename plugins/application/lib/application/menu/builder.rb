@@ -21,8 +21,13 @@ module Redcar
     class Builder
       attr_reader :menu
       
-      def initialize(text=nil, &block)
-        @menu = Redcar::Menu.new(text)
+      def initialize(menu_or_text=nil, &block)
+        case menu_or_text
+        when String, nil
+          @menu = Redcar::Menu.new(menu_or_text||"")
+        when Menu
+          @menu = menu_or_text
+        end
         @current_menu = @menu
         instance_eval(&block)
       end

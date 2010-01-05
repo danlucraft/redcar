@@ -33,4 +33,18 @@ describe Redcar::Menu do
       @menu.text.should == "Edit"
     end
   end
+  
+  describe "building entries" do
+    before do
+      @menu = Redcar::Menu.new
+    end
+    
+    it "should let you add items by building" do
+      @menu.build do
+        item "Cut", DummyCommand
+      end
+      @menu.length.should == 1
+      @menu.entries.first.text.should == "Cut"
+    end
+  end
 end
