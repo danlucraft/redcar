@@ -12,6 +12,7 @@ Enhancements:
   * Fuzzy file finder.
   * Increase indent and decrease indent commands
   * Themes support bold, italic and underline again.
+  * Simple DSL for plugins to add commands to menus.
 
 Version 0.3.0dev (25 Dec 2009)
 ==============================

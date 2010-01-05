@@ -10,14 +10,13 @@ module Redcar
         tab.edit_view.document.mirror.is_a?(REPL::InternalMirror)
       end
       
-      menu = Redcar.app.menu
-      builder = Menu::Builder.new "REPL" do
-        item "Open", REPL::OpenInternalREPL
-        item "Execute", REPL::CommitREPL
+      Redcar.app.menu.sub_menu("Plugins").build do
+        sub_menu "REPL" do
+          item "Open",    REPL::OpenInternalREPL
+          item "Execute", REPL::CommitREPL
+        end
       end
-      plugins_menu = menu.entries.detect {|e| e.text == "Plugins"}
-      plugins_menu << builder.menu
-      Redcar.app.menu = menu
+      Redcar.app.refresh_menu!
     end
     
     class OpenInternalREPL < Command

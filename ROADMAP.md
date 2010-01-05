@@ -32,7 +32,7 @@ Features:
       - fuzzy file finder         (done)
   * Tests passing on 3 platforms
   * Plugins stuff:
-      - can add to menus easily
+      - can add to menus easily   (done)
   
 More previews to add
 --------------------
