@@ -40,7 +40,16 @@ module Redcar
       end
       
       def replace(offset, length, text)
+        @model.verify_text(offset, offset+length, text)
         jface.replace(offset, length, text)
+        @model.modify_text
+      end
+      
+      def text=(text)
+        @model.verify_text(0, length, text)
+        jface.set(text)
+        @model.modify_text
+        notify_listeners(:set_text)
       end
       
       def cursor_offset
@@ -80,11 +89,6 @@ module Redcar
         def document_changed(e)
           @model.changed(e.offset, e.length, e.text)
         end
-      end
-      
-      def text=(text)
-        jface.set(text)
-        notify_listeners(:set_text)
       end
     end
   end
