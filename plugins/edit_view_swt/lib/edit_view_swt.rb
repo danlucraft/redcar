@@ -106,8 +106,8 @@ module Redcar
     def create_grammar_selector
       @combo = Swt::Widgets::Combo.new @widget, Swt::SWT::READ_ONLY
       bundles  = JavaMateView::Bundle.bundles.to_a
-      grammars = bundles.map{|b| b.grammars.to_a}.flatten
-      items    = grammars.map{|g| g.name}
+      grammars = bundles.map {|b| b.grammars.to_a}.flatten
+      items    = grammars.map {|g| g.name}.sort_by {|name| name.downcase }
       @combo.items = items.to_java(:string)
       
       @mate_text.add_grammar_listener do |new_grammar|
