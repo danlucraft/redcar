@@ -173,6 +173,7 @@ RELEASE_BUNDLES = %w(
     Source.tmbundle
     Cucumber.tmbundle
     Java.tmbundle
+    Perl.tmbundle
   ) + ["Ruby on Rails.tmbundle"]
 
 desc 'Clean up the Textmate files for packaging'

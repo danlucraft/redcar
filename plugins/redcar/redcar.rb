@@ -264,6 +264,14 @@ module Redcar
       end
     end
 
+    class StripWhitespaceCommand < Redcar::EditTabCommand
+    
+      def execute
+        0.upto(doc.line_count - 1) do |line_ix|
+          doc.replace_line(line_ix) {|line| line.strip }
+        end
+      end
+    end
     
     def self.start
       Redcar.gui = ApplicationSWT.gui
@@ -293,6 +301,8 @@ module Redcar
           separator
           item "Increase Indent", IncreaseIndentCommand
           item "Decrease Indent", DecreaseIndentCommand
+          separator
+          item "Strip Whitespace", StripWhitespaceCommand
         end
         sub_menu "Project" do
           item "Find File", Project::FindFileCommand

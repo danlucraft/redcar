@@ -113,6 +113,21 @@ module Redcar
       replace(offset, length, "")
     end
     
+    def replace_line(line_ix, text=nil)
+      text ||= yield(get_line(line_ix))
+      start_offset = offset_at_line(line_ix)
+      end_offset   = offset_at_inner_end_of_line(line_ix)
+      replace(start_offset, end_offset - start_offset, text)
+    end
+    
+    def offset_at_inner_end_of_line(line_ix)
+      if line_ix == line_count - 1
+        length
+      else
+        offset_at_line(line_ix + 1) - 1
+      end
+    end
+    
     private
     
     def update_from_mirror
