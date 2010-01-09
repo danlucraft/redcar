@@ -48,7 +48,7 @@ module Redcar
     private
     
     def check_for_changes
-      if controller.changed?
+      if controller and controller.changed?
         controller.last_set = @contents.last
         self << controller.get_contents
       end

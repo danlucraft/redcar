@@ -22,9 +22,9 @@ module Redcar
     include Redcar::Controller
     
     def self.display
-      Swt::Widgets::Display.get_current
+      @display ||= (Swt::Widgets::Display.getCurrent || Swt::Widgets::Display.new)
     end
-    
+
     def self.load
       Swt::Widgets::Display.app_name = Redcar::Application::NAME
       @gui = Redcar::Gui.new("swt")

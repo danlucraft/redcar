@@ -3,81 +3,78 @@ module Redcar
   class EditViewSWT
     class Document
       include Redcar::Observable
-      attr_reader :swt_document
+      attr_reader :jface_document
       
-      def initialize(model, swt_document)
-        @model        = model
-        @swt_document = swt_document
+      def initialize(model, swt_mate_document)
+        @model          = model
+        @swt_mate_document = swt_mate_document
+        @jface_document = swt_mate_document.mateText.get_document
       end
       
       def attach_modification_listeners
-        jface.add_document_listener(DocumentListener.new(@model))
+        jface_document.add_document_listener(DocumentListener.new(@model))
       end
       
       def to_s
-        @swt_document.get
+        jface_document.get
       end
       
       def length
-        @swt_document.length
+        jface_document.length
       end
       
       def line_count
-        @swt_document.get_number_of_lines
+        jface_document.get_number_of_lines
       end
       
       def line_at_offset(offset)
-        jface.get_line_of_offset(offset)
+        jface_document.get_line_of_offset(offset)
       end
       
       def offset_at_line(line_ix)
-        jface.get_line_offset(line_ix)
+        jface_document.get_line_offset(line_ix)
       end
       
       def get_line(line_ix)
-        line_info = jface.get_line_information(line_ix)
-        jface.get(line_info.offset, line_info.length)
+        line_info = jface_document.get_line_information(line_ix)
+        jface_document.get(line_info.offset, line_info.length)
       end
       
       def get_range(start, length)
-        @swt_document.styledText.get_text_range(start, length)
+        jface_document.get(start, length)
       end
       
       def replace(offset, length, text)
         @model.verify_text(offset, offset+length, text)
-        @swt_document.styledText.replace_text_range(offset, length, text)
+        jface_document.replace(offset, length, text)
         if length > text.length
-          @swt_document.mateText.redraw
+          @swt_mate_document.mateText.redraw
         end
         @model.modify_text
       end
       
       def text=(text)
         @model.verify_text(0, length, text)
-        jface.set(text)
+        jface_document.set(text)
         @model.modify_text
         notify_listeners(:set_text)
       end
       
       def cursor_offset
-        @swt_document.styledText.get_caret_offset
+        @swt_mate_document.mateText.getControl.get_caret_offset
       end
       
       def cursor_offset=(offset)
-        @swt_document.styledText.set_caret_offset(offset)
+        @swt_mate_document.mateText.getControl.set_caret_offset(offset)
       end
       
       def selection_range
-        range = @swt_document.styledText.get_selection_range
+        range = @swt_mate_document.mateText.getControl.get_selection_range
         range.x...(range.x + range.y)
       end
       
       def set_selection_range(start, _end)
-        @swt_document.styledText.set_selection(start, _end)
-      end
-      
-      def jface
-        @swt_document.getJFaceDocument
+        @swt_mate_document.mateText.getControl.set_selection(start, _end)
       end
       
       class DocumentListener
