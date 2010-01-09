@@ -1,11 +1,10 @@
 
-# To create Rake tasks for your plugin, put them in plugins/my_plugin/Rakefile or
-# plugins/my_plugin/tasks/my_tasks.rake.
-
 require 'rubygems'
 require 'fileutils'
 require 'spec/rake/spectask'
 require 'cucumber/rake/task'
+require "rake/gempackagetask"
+require "rake/rdoctask"
 
 if RUBY_PLATFORM =~ /mswin/
   begin
@@ -15,21 +14,7 @@ if RUBY_PLATFORM =~ /mswin/
   end
 end
 
-def plugin_names
-  Dir["plugins/*"].map do |fn|
-    name = fn.split("/").last
-  end
-end
-
-Dir[File.join(File.dirname(__FILE__), *%w[plugins *])].each do |plugin_dir|
-  rakefiles = [File.join(plugin_dir, "Rakefile")] + 
-    Dir[File.join(plugin_dir, "tasks", "*.rake")]
-  rakefiles.each do |rakefile|
-    if File.exist?(rakefile)
-      load rakefile
-    end
-  end
-end
+### DOCUMENTATION
 
 begin
   require 'yard'
@@ -52,8 +37,27 @@ task :yardoc do
   %x(yardoc #{files.join(" ")} -o yardoc)
 end
 
+
+# Generate documentation
+Rake::RDocTask.new do |rd|
+  rd.main = "README.md"
+  rd.rdoc_files.include("README.md", "lib/**/*.rb")
+  rd.rdoc_dir = "rdoc"
+end
+
+### TESTS
+
 desc "Run all specs and features"
 task :default => ["specs", "cucumber"]
+
+Spec::Rake::SpecTask.new("specs") do |t|
+  t.spec_files = FileList[
+    'plugins/*/spec/*/*_spec.rb',
+    'plugins/*/spec/*/*/*_spec.rb',
+    'plugins/*/spec/*/*/*/*_spec.rb',
+  ]
+  t.spec_opts = ["-c"]
+end
 
 desc "Run features"
 task :cucumber do
@@ -65,44 +69,14 @@ task :cucumber do
   end
 end
 
-Spec::Rake::SpecTask.new("specs") do |t|
-  t.spec_files = FileList[
-    'plugins/*/spec/*/*_spec.rb',
-    'plugins/*/spec/*/*/*_spec.rb',
-    'plugins/*/spec/*/*/*/*_spec.rb',
-  ]
-  t.spec_opts = ["-c"]
-end
+### BUILD AND RELEASE
 
 desc "Build"
 task :build do
   sh("ant jar -f vendor/java-mateview/build.xml")
   cp("vendor/java-mateview/lib/java-mateview.rb", "plugins/edit_view_swt/vendor/")
   cp("vendor/java-mateview/release/java-mateview.jar", "plugins/edit_view_swt/vendor/")
-  # Dir["vendor/java-mateview/lib/*.jar"].each do |fn|
-  #   FileUtils.cp(fn, "plugins/edit_view_swt/vendor/")
-  # end
 end
-
-desc "Package jars and submodules into big tar file"
-task :package do
-  sh("COPYFILE_DISABLE=true \
-      tar czvf redcar_jars.tar.gz \
-          --exclude textmate/.git \
-          --exclude **/._* \
-          --exclude *.off \
-      plugins/application_swt/vendor/swt/{osx64,linux,linux64,windows}/swt.jar \
-      plugins/application_swt/vendor/jface/org.eclipse.*.jar \
-      plugins/edit_view_swt/vendor/*.jar \
-      plugins/edit_view_swt/vendor/java-mateview.rb \
-      textmate/Bundles textmate/Themes"
-  )
-end
-
-
-require "rubygems"
-require "rake/gempackagetask"
-require "rake/rdoctask"
 
 def remove_gitignored_files(filelist)
   ignores = File.readlines(".gitignore")
@@ -154,13 +128,6 @@ end
 
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
-end
-
-# Generate documentation
-Rake::RDocTask.new do |rd|
-  rd.main = "README.md"
-  rd.rdoc_files.include("README.md", "lib/**/*.rb")
-  rd.rdoc_dir = "rdoc"
 end
 
 RELEASE_BUNDLES = %w(

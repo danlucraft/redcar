@@ -30,13 +30,13 @@ Features:
   * Project stuff: 
       - watches for file changes  (done)
       - fuzzy file finder         (done)
-  * Tests passing on 3 platforms
   * Plugins stuff:
       - can add to menus easily   (done)
   
 More previews to add
 --------------------
 
+  * Tests passing on 3 platforms
   * Dialog library with simple DSL
   * Gem plugins
   * Per-plugin storage

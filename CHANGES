@@ -4,19 +4,19 @@ Version 0.3.1dev (TBA)
 
 Enhancements:
 
+  * Fuzzy file finder.
   * Keybindings to switch tabs and notebooks.
   * Undo/redo.
   * Home/end keys.
   * Modified tabs have little stars before their names.
   * Directory tree refreshes on window focus.
-  * Fuzzy file finder.
-  * Increase indent and decrease indent commands
+  * Increase indent and decrease indent commands (need further work).
   * Themes support bold, italic and underline again.
   * Simple DSL for plugins to add commands to menus.
   
 Fixes:
 
-  * Fix key logic in JavaMateView - should fix a bunch of subtle bugs.
+  * Change key logic in JavaMateView - should fix a bunch of subtle highlighting bugs.
 
 Version 0.3.0dev (25 Dec 2009)
 ==============================
