@@ -22,7 +22,7 @@ module Redcar
       case Config::CONFIG["target_os"]
       when /darwin/
         :osx
-      when /mswin/
+      when /mswin|mingw/
         :windows
       when /linux/
         :linux
@@ -37,7 +37,7 @@ module Redcar
         if ENV['USERPROFILE'].nil?
           userdir = "C:/My Documents/.redcar/"
         else
-          userdir = File.join(ENV['USERPROFILE'], "redcar")
+          userdir = File.join(ENV['USERPROFILE'], ".redcar")
         end
       else
         userdir = File.join(ENV['HOME'], ".redcar") unless ENV['HOME'].nil?
