@@ -18,7 +18,7 @@ The features of this release are chosen to be the minimum to make Redcar self-ho
   * Packaged as a gem             (done)
   * Runs on 3 platforms           (done)  
 
-0.3.1dev - *Developer preview*
+0.3.1dev - *Developer preview* - DONE
 ------------------------------
 
 Features:
