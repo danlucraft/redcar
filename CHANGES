@@ -5,18 +5,23 @@ Version 0.3.1dev (TBA)
 Enhancements:
 
   * Fuzzy file finder.
+  * Directory tree refreshes on window focus.
   * Keybindings to switch tabs and notebooks.
   * Undo/redo.
   * Home/end keys.
   * Modified tabs have little stars before their names.
-  * Directory tree refreshes on window focus.
   * Increase indent and decrease indent commands (need further work).
   * Themes support bold, italic and underline again.
-  * Simple DSL for plugins to add commands to menus.
+  * All commands are greyed out when inapplicable.
+  * Files can not be opened twice.
+  * Added Java, Perl and Ruby on Rails bundles.
+  * New simpler way for bundles to add commands to menus  (used in repl.rb)
   
 Fixes:
 
   * Change key logic in JavaMateView - should fix a bunch of subtle highlighting bugs.
+  * Runs on Java 5.
+  * Open Directory doesn't log an error if you cancel.
 
 Version 0.3.0dev (25 Dec 2009)
 ==============================
