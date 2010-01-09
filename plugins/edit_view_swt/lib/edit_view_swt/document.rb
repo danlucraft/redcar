@@ -39,9 +39,16 @@ module Redcar
         jface.get(line_info.offset, line_info.length)
       end
       
+      def get_range(start, length)
+        @swt_document.styledText.get_text_range(start, length)
+      end
+      
       def replace(offset, length, text)
         @model.verify_text(offset, offset+length, text)
-        jface.replace(offset, length, text)
+        @swt_document.styledText.replace_text_range(offset, length, text)
+        if length > text.length
+          @swt_document.mateText.redraw
+        end
         @model.modify_text
       end
       

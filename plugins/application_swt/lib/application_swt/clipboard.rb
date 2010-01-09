@@ -6,6 +6,8 @@ module Redcar
     # commands are implemented directly from the model. This is only useful
     # for copying/pasting between other applications and Redcar.
     class Clipboard
+      attr_accessor :last_set
+    
       def initialize(model)
         @model = model
         @model.controller = self
@@ -19,8 +21,17 @@ module Redcar
       
       def attach_model_listeners
         @model.add_listener(:added) do |text|
-          @swt_clipboard.set_contents(text, plain_text_data_type)
+          @last_set = text
+          @swt_clipboard.set_contents([text].to_java(:object), [plain_text_data_type].to_java(Swt::DND::Transfer))
         end
+      end
+      
+      def changed?
+        @last_set != get_contents
+      end
+      
+      def get_contents
+        @swt_clipboard.get_contents(plain_text_data_type)
       end
     end
   end

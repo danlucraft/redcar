@@ -273,6 +273,46 @@ module Redcar
       end
     end
     
+    class CutCommand < Redcar::EditTabCommand
+      key :osx     => "Cmd+X",
+          :linux   => "Ctrl+X",
+          :windows => "Ctrl+X"
+    
+      def execute
+        if doc.selection?
+          Redcar.app.clipboard << doc.selected_text
+          doc.delete(doc.selection_range.begin, doc.selection_range.count)
+        end
+      end
+    end
+    
+    class CopyCommand < Redcar::EditTabCommand
+      key :osx     => "Cmd+C",
+          :linux   => "Ctrl+C",
+          :windows => "Ctrl+C"
+    
+      def execute
+        if doc.selection?
+          Redcar.app.clipboard << doc.selected_text
+        end
+      end
+    end
+    
+    class PasteCommand < Redcar::EditTabCommand
+      key :osx     => "Cmd+V",
+          :linux   => "Ctrl+V",
+          :windows => "Ctrl+V"
+    
+      def execute
+        if doc.selection?
+          doc.delete(doc.selection_range.begin, doc.selection_range.count)
+        end
+        new_offset = doc.cursor_offset + Redcar.app.clipboard.last.length
+        doc.insert(doc.cursor_offset, Redcar.app.clipboard.last)
+        doc.cursor_offset = new_offset
+      end
+    end
+    
     def self.start
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
@@ -295,6 +335,10 @@ module Redcar
         sub_menu "Edit" do
           item "Undo", UndoCommand
           item "Redo", RedoCommand
+          separator
+          item "Cut", CutCommand
+          item "Copy", CopyCommand
+          item "Paste", PasteCommand
           separator
           item "Home", MoveHomeCommand
           item "End", MoveEndCommand

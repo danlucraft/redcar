@@ -98,7 +98,8 @@ module Redcar
       line_at_offset(cursor_offset)
     end
     
-    # Is there any text selected?
+    # Is there any text selected? (Or equivalently, is the length
+    # of the selection equal to 0)
     #
     # @return [Boolean]
     def selection?
@@ -200,6 +201,32 @@ module Redcar
     # @param [Range<Integer>] a range between two character offsets
     def set_selection_range(range)
       controller.set_selection_range(range)
+    end
+    
+    # Get the text selected by the user. If no text is selected
+    # returns "".
+    #
+    # @return [String]
+    def selected_text
+      get_range(selection_range.begin, selection_range.count)
+    end
+    
+    # Get a range of text from the document.
+    #
+    # @param [String] the character offset of the start of the range
+    # @param [String] the length of the string to get
+    # @return [String] the text
+    def get_range(start, length)
+      controller.get_range(start, length)
+    end
+
+    # Get the text of a line by index. (Includes a trailing "\n", 
+    # unless it is the last line in the document.)
+    #
+    # @param [Integer] the zero-based line number
+    # @return [String] the text of the line
+    def get_line(line_ix)
+      controller.get_line(line_ix)
     end
     
     # Replace a line in the document. This has two modes. In the first, 

@@ -26,19 +26,34 @@ module Redcar
     end
     
     def last
+      check_for_changes
       @contents.last
     end
     
     def length
+      check_for_changes
       @contents.length
     end
     
     def [](index)
+      check_for_changes
       @contents[-1*index-1]
     end
     
     def each(&block)
+      check_for_changes
       @contents.each(&block)
+    end
+    
+    private
+    
+    def check_for_changes
+      if controller.changed?
+        controller.last_set = @contents.last
+        self << controller.get_contents
+      end
     end
   end
 end
+
+
