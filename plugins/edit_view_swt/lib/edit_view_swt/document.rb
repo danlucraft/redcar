@@ -60,10 +60,6 @@ module Redcar
         @swt_document.styledText.set_caret_offset(offset)
       end
       
-      # Returns the offset range selected in the document. The start of the range is always
-      # before the end of the range, even if the selection is right-to-left
-      #
-      # @return [Range<Integer>] offset range
       def selection_range
         range = @swt_document.styledText.get_selection_range
         range.x...(range.x + range.y)

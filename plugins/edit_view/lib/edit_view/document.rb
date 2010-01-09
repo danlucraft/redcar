@@ -10,12 +10,6 @@ module Redcar
     include Redcar::Observable
     extend Forwardable
     
-    def_delegators :controller, 
-                      :length, :line_count, :to_s, :text=,
-                      :line_at_offset, :get_line, :offset_at_line,
-                      :cursor_offset, :cursor_offset=,
-                      :selection_range, :replace, :set_selection_range
-    
     def self.register_controller_type(controller_type)
       unless controller_type.ancestors.include?(Document::Controller)
         raise "expected #{Document::Controller}"
@@ -97,22 +91,127 @@ module Redcar
       notify_listeners(:changed)
     end
     
+    # The line index the cursor is on (zero-based)
+    #
+    # @return [Integer]
     def cursor_line
       line_at_offset(cursor_offset)
     end
     
+    # Is there any text selected?
+    #
+    # @return [Boolean]
     def selection?
       selection_range.count > 0
     end
-      
+    
+    # Insert text
+    #
+    # @param [Integer] character offset from the start of the document
+    # @param [String] text to insert
     def insert(offset, text)
       replace(offset, 0, text)
     end
-      
+    
+    # Delete text
+    #
+    # @param [Integer] character offset from the start of the document
+    # @param [Integer] length of text to delete
     def delete(offset, length)
       replace(offset, length, "")
     end
+
+    # Replace text
+    #
+    # @param [Integer] character offset from the start of the document
+    # @param [Integer] length of text to replace
+    # @param [String] replacement text
+    def replace(offset, length, text)
+      controller.replace(offset, length, text)
+    end
     
+    # Length of the document in characters
+    #
+    # @return [Integer]
+    def length
+      controller.length
+    end
+    
+    # Number of lines.
+    #
+    # @return [Integer]
+    def line_count
+      controller.line_count
+    end
+    
+    # The entire contents of the document
+    #
+    # @return [String]
+    def to_s
+      controller.to_s
+    end
+    
+    # Set the contents of the document
+    #
+    # @param [String] new text
+    def text=(text)
+      controller.text = text
+    end
+    
+    # Get the line index of the given offset
+    #
+    # @param [Integer] zero-based character offset
+    # @return [Integer] zero-based index
+    def line_at_offset(offset)
+      controller.line_at_offset(offset)
+    end
+    
+    # Get the character offset at the start of the given line
+    #
+    # @param [Integer] zero-based line index
+    # @return [Integer] zero-based character offset
+    def offset_at_line(line)
+      controller.offset_at_line(line)
+    end
+    
+    # Get the position of the cursor.
+    #
+    # @return [Integer] zero-based character offset
+    def cursor_offset
+      controller.cursor_offset
+    end
+    
+    # Set the position of the cursor.
+    #
+    # @param [Integer] zero-based character offset
+    def cursor_offset=(offset)
+      controller.cursor_offset = offset
+    end
+    
+    # The range of text selected by the user.
+    #
+    # @return [Range<Integer>] a range between two character offsets
+    def selection_range
+      controller.selection_range
+    end
+    
+    # Set the range of text selected by the user.
+    #
+    # @param [Range<Integer>] a range between two character offsets
+    def set_selection_range(range)
+      controller.set_selection_range(range)
+    end
+    
+    # Replace a line in the document. This has two modes. In the first, 
+    # you supply the replacement text as an argument:
+    #
+    #     replace_line(10, "new line text")
+    #
+    # In the second, you supply a block. The block argument is the current
+    # text of the line, and the return value of the block is the 
+    # replacement text:
+    #
+    #     replace_line(10) {|current_text| current_text.upcase }
     def replace_line(line_ix, text=nil)
       text ||= yield(get_line(line_ix))
       start_offset = offset_at_line(line_ix)
@@ -120,6 +219,9 @@ module Redcar
       replace(start_offset, end_offset - start_offset, text)
     end
     
+    # Get the offset at the end of a given line, *before* the newline character.
+    #
+    # @param [Integer] a zero-based line index
     def offset_at_inner_end_of_line(line_ix)
       if line_ix == line_count - 1
         length

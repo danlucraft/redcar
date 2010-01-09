@@ -90,7 +90,7 @@ spec = Gem::Specification.new do |s|
   
   # Change these as appropriate
   s.name              = "redcar"
-  s.version           = "0.3.1dev"
+  s.version           = "0.3.1.1dev"
   s.summary           = "A JRuby text editor."
   s.author            = "Daniel Lucraft"
   s.email             = "dan@fluentradical.com"
@@ -107,7 +107,7 @@ spec = Gem::Specification.new do |s|
                           Dir.glob("config/**/*") + 
                           remove_gitignored_files(Dir.glob("lib/**/*")) + 
                           remove_gitignored_files(Dir.glob("plugins/**/*")) + 
-                          Dir.glob("textmate/Bundles/*.tmbundle/{Syntaxes,Snippets,Templates}/**/*") + 
+                          Dir.glob("textmate/Bundles/*.tmbundle/Syntaxes/**/*") + 
                           Dir.glob("textmate/Themes/*.tmTheme")
   s.executables       = FileList["bin/redcar"].map { |f| File.basename(f) }
    

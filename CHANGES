@@ -15,7 +15,8 @@ Enhancements:
   * All commands are greyed out when inapplicable.
   * Files can not be opened twice.
   * Added Java, Perl and Ruby on Rails bundles.
-  * New simpler way for bundles to add commands to menus  (used in repl.rb)
+  * New simpler way for bundles to add commands to menus (used in repl.rb)
+  * New "redcar install" command to download jars.
   
 Fixes:
 
