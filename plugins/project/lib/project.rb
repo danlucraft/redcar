@@ -50,7 +50,12 @@ module Redcar
     def self.open_file_tab(path)
       path = File.expand_path(path)
       all_tabs = Redcar.app.windows.map {|win| win.notebooks}.flatten.map {|nb| nb.tabs }.flatten
-      all_tabs.find {|t| t.is_a?(Redcar::EditTab) and t.edit_view.document.mirror and File.expand_path(t.edit_view.document.mirror.path) == path }
+      all_tabs.find do |t| 
+        t.is_a?(Redcar::EditTab) and 
+        t.edit_view.document.mirror and 
+        t.edit_view.document.mirror.is_a?(FileMirror) and 
+        File.expand_path(t.edit_view.document.mirror.path) == path 
+      end
     end
     
     private
