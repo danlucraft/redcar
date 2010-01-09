@@ -3,6 +3,8 @@ require 'application/command/executor'
 require 'application/command/history'
 require 'application/sensitive'
 require 'application/sensitivity'
+
+require 'application/clipboard'
 require 'application/command'
 require 'application/dialog'
 require 'application/dialogs/filter_list_dialog'
