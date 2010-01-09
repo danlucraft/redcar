@@ -5,6 +5,8 @@ require File.join(File.dirname(__FILE__), %w(.. lib redcar))
 if ARGV.first == "install"
   installer = Redcar::Installer.new
   installer.install
+elsif ARGV.first == "--help" || ARGV.first == '-h'
+  puts "syntax: redcar [--install]"
 else
   Redcar.ensure_jruby
   Redcar.start

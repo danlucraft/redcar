@@ -7,6 +7,10 @@ require "project/dir_controller"
 
 module Redcar
   class Project
+    
+    Storage = Plugin::Storage.new('project_plugin')
+    ObjectSpace.define_finalizer(Storage, proc {Storage.save})
+    
     def self.load
     end
     
@@ -23,7 +27,7 @@ module Redcar
       attr_reader :open_project_sensitivity
     end
   
-  	def self.window_trees
+    def self.window_trees
       @window_trees ||= {}
     end
   
@@ -95,7 +99,7 @@ module Redcar
       
       def get_path
         @path || begin
-          path = Application::Dialog.open_file(win, :filter_path => File.expand_path("~"))
+          path = Application::Dialog.open_file(win, :filter_path => Storage['last_loc'])
         end
       end
     end
@@ -137,10 +141,10 @@ module Redcar
       end
       
       private
-      
       def get_path
         @path || begin
-          path = Application::Dialog.save_file(win, :filter_path => File.expand_path("~"))
+          path = Application::Dialog.save_file(win, :filter_path => (Storage['last_file_loc'] || File.expand_path(Dir.pwd)))
+          Storage['last_file_loc'] = path
         end
       end
     end
@@ -149,6 +153,7 @@ module Redcar
       key :osx     => "Cmd+Shift+O",
           :linux   => "Ctrl+Shift+O",
           :windows => "Ctrl+Shift+O"
+          
           
       def initialize(path=nil)
         @path = path
@@ -166,8 +171,10 @@ module Redcar
 
       def get_path
         @path || begin
-          if path = Application::Dialog.open_directory(win, :filter_path => File.expand_path("~"))
-            File.expand_path(path)
+          if path = Application::Dialog.open_directory(win, :filter_path => (Storage['last_dir_loc'] || File.expand_path(Dir.pwd)))
+            full_path = File.expand_path(path)
+            Storage['last_dir_loc'] = full_path
+            full_path
           end
         end
       end
