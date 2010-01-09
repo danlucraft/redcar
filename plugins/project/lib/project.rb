@@ -13,7 +13,9 @@ module Redcar
     def self.start
       @open_project_sensitivity = 
         Sensitivity.new(:open_project, Redcar.app, false, [:focussed_window]) do
-          Redcar.app.focussed_window.treebook.trees.detect {|t| t.tree_mirror.is_a?(DirMirror) }
+          if win = Redcar.app.focussed_window
+            win.treebook.trees.detect {|t| t.tree_mirror.is_a?(DirMirror) }
+          end
         end
     end
     

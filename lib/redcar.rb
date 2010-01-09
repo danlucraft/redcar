@@ -11,12 +11,16 @@ module Redcar
 
   def self.ensure_jruby
     if Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby"
-      require 'redcar/boot'
+      boot
     else
       require 'redcar/runner'
       runner = Redcar::Runner.new
       runner.spin_up
     end
+  end
+  
+  def self.boot
+    require 'redcar/boot'
   end
 end
 

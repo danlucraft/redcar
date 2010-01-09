@@ -43,17 +43,23 @@ module Redcar
       Redcar.app     = Application.new
       Redcar.history = Command::History.new
       Sensitivity.new(:open_tab, Redcar.app, false, [:focussed_window, :tab_focussed]) do |tab|
-        Redcar.app.focussed_window.focussed_notebook.focussed_tab
+        if win = Redcar.app.focussed_window
+          win.focussed_notebook.focussed_tab
+        end
       end
       Sensitivity.new(:single_notebook, Redcar.app, true, [:focussed_window, :notebook_change]) do
-        Redcar.app.focussed_window.notebooks.length == 1
+        if win = Redcar.app.focussed_window
+          win.notebooks.length == 1
+        end
       end
       Sensitivity.new(:multiple_notebooks, Redcar.app, false, [:focussed_window, :notebook_change]) do
-        Redcar.app.focussed_window.notebooks.length > 1
+        if win = Redcar.app.focussed_window
+          win.notebooks.length > 1
+        end
       end
       Sensitivity.new(:other_notebook_has_tab, Redcar.app, false, 
                       [:focussed_window, :focussed_notebook, :notebook_change, :tab_closed]) do
-        if notebook = Redcar.app.focussed_window.nonfocussed_notebook
+        if win = Redcar.app.focussed_window and notebook = win.nonfocussed_notebook
           notebook.tabs.any?
         end
       end

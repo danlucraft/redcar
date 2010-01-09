@@ -4,6 +4,7 @@ process_start_time = Time.now
 $:.push File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'redcar'
+Redcar.boot
 Redcar.start
 Redcar.gui.run_features(ARGV)
 Redcar.pump

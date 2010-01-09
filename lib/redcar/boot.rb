@@ -83,7 +83,7 @@ module Redcar
     @freebase_core.load_plugins
   end
   
-  def self.require
+  def self.require_files
     @freebase_core = FreeBASE::Core.new(*freebase_core_args)
     @freebase_core.require_files
   end
