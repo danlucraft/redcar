@@ -58,10 +58,6 @@ require 'yaml'
 #
 # and so on.
 module Redcar
-  VERSION         = '0.3.1dev'
-  VERSION_MAJOR   = 0
-  VERSION_MINOR   = 3
-  VERSION_RELEASE = 1
   
   ROOT = File.expand_path(File.join(File.dirname(__FILE__), "..", ".."))
 

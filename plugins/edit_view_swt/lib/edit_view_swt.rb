@@ -54,7 +54,7 @@ module Redcar
         default_font_size = 15
       elsif Core.platform == :linux
         default_font = "Monospace"
-        default_font_size = 14
+        default_font_size = 11
       elsif Core.platform == :windows
         default_font = "FixedSys"
         default_font_size = 15

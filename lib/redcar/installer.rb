@@ -1,26 +1,24 @@
 
-require 'rbconfig'
 require 'open-uri'
 require 'fileutils'
 
 module Redcar
-  # Methods used in gem installation hooks
-  #
-  # Cribbed from the zerg and zerg_support gems by Victor Costan (big woop!)
-  class Install
-    
-    # tricks rubygems into believeing that the extension compiled and worked out
-    def emulate_extension_install(extension_name)
-      File.open('Makefile', 'w') { |f| f.write "all:\n\ninstall:\n\n" }
-      File.open('make', 'w') do |f|
-        f.write '#!/bin/sh'
-        f.chmod f.stat.mode | 0111
-      end
-      File.open(extension_name + '.so', 'w') {}
-      File.open(extension_name + '.dll', 'w') {}
-      File.open('nmake.bat', 'w') { |f| }
-    end
-    
+  class Installer
+  
+  	def install
+  	  unless File.writable?(JRUBY_JAR_DIR)
+  	    puts "Don't have permission to write to #{JRUBY_JAR_DIR}. Please rerun with sudo."
+  	    exit 1
+  	  end
+  	  puts "Downloading >10MB of jar files. This may take a while."
+  	  grab_jruby
+  	  grab_common_jars
+  	  grab_platform_dependencies
+  	  grab_redcar_jars
+  	  puts
+  	  puts "Done! You're ready to run Redcar."
+  	end
+  
     def plugins_dir
       File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. plugins)))
     end
@@ -38,21 +36,23 @@ module Redcar
       /jface/org.eclipse.text_3.5.0.v20090513-2000.jar
     )
     
+    JRUBY_JAR_DIR = File.expand_path(File.join(File.dirname(__FILE__), ".."))
+    
     JRUBY = %w(
-      /jruby/jruby-complete-1.4.0.jar
+      http://jruby.kenai.com/downloads/1.4.0/jruby-complete-1.4.0.jar
       /jruby/jcodings.jar
       /jruby/jdom.jar
       /jruby/joni.jar
     )
 
     REDCAR_JARS = {
-      "/java-mateview.jar" => "plugins/edit_view_swt/vendor/java-mateview.jar"
+      "/java-mateview-#{Redcar::VERSION}.jar" => "plugins/edit_view_swt/vendor/java-mateview.jar"
     }
 
     def grab_jruby
       puts "* Downloading JRuby"
       JRUBY.each do |jar_url|
-        download(jar_url, File.expand_path(File.join(File.dirname(__FILE__), "..", File.basename(jar_url))))
+        download(jar_url, File.join(JRUBY_JAR_DIR, File.basename(jar_url)))
       end
     end
     
@@ -86,7 +86,9 @@ module Redcar
     end
     
     def download(uri, path)
-      uri = ASSET_HOST + uri
+      if uri =~ /^\//
+        uri = ASSET_HOST + uri
+      end
       FileUtils.mkdir_p(File.dirname(path))
       write_out = open(path, "wb")
       write_out.write(open(uri).read)

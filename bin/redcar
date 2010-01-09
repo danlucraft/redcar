@@ -2,5 +2,11 @@
 
 require File.join(File.dirname(__FILE__), %w(.. lib redcar))
 
-Redcar.start
-Redcar.pump
+if ARGV.first == "install"
+  installer = Redcar::Installer.new
+  installer.install
+else
+  Redcar.ensure_jruby
+  Redcar.start
+  Redcar.pump
+end

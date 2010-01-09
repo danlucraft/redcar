@@ -104,7 +104,6 @@ spec = Gem::Specification.new do |s|
   # Add any extra files to include in the gem
   s.files             = %w(CHANGES LICENSE Rakefile README.md ROADMAP.md) + 
                           Dir.glob("bin/redcar") + 
-                          Dir.glob("ext/**/*") + 
                           Dir.glob("config/**/*") + 
                           remove_gitignored_files(Dir.glob("lib/**/*")) + 
                           remove_gitignored_files(Dir.glob("plugins/**/*")) + 
@@ -122,8 +121,21 @@ spec = Gem::Specification.new do |s|
   s.add_development_dependency("cucumber")
   s.add_development_dependency("rspec")
   
-  
-  s.extensions = ["ext/extconf.rb"]
+  s.post_install_message = <<TEXT
+
+------------------------------------------------------------------------------------
+
+Please now run:
+
+  $ redcar install
+
+to complete the installation. 
+
+(If you installed the gem with 'sudo', you will need to run 'sudo redcar install').
+
+------------------------------------------------------------------------------------
+
+TEXT
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
