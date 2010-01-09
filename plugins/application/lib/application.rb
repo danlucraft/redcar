@@ -67,9 +67,12 @@ module Redcar
       end
     end
     
+    attr_reader :clipboard
+    
     def initialize
       @windows = []
       @window_handlers = Hash.new {|h,k| h[k] = []}
+      @clipboard       = Clipboard.new("application")
     end
     
     # Immediately halts the gui event loop.

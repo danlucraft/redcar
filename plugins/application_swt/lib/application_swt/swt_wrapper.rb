@@ -58,6 +58,12 @@ module Swt
     import org.eclipse.swt.custom.StackLayout
   end
   
+  module DND
+    import org.eclipse.swt.dnd.Clipboard
+    import org.eclipse.swt.dnd.Transfer
+    import org.eclipse.swt.dnd.TextTransfer
+  end
+  
   module Layout
     import org.eclipse.swt.layout.FillLayout
     import org.eclipse.swt.layout.GridLayout

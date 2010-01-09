@@ -2,6 +2,7 @@
 require "application_swt/swt_wrapper"
 require "application_swt/swt/listener_helpers"
 
+require "application_swt/clipboard"
 require "application_swt/cucumber_runner"
 require "application_swt/dialog_adapter"
 require "application_swt/dialogs/no_buttons_dialog"
@@ -21,7 +22,7 @@ module Redcar
     include Redcar::Controller
     
     def self.display
-      @display ||= Swt::Widgets::Display.new
+      Swt::Widgets::Display.get_current
     end
     
     def self.load
@@ -58,13 +59,18 @@ module Redcar
       Redcar::ApplicationSWT.display.syncExec(runnable)
     end
     
-    def initialize(app)
-      @app = app
+    def initialize(model)
+      @model = model
       add_listeners
+      create_clipboard
     end
     
     def add_listeners
-      @app.add_listener(:new_window, &method(:new_window))
+      @model.add_listener(:new_window, &method(:new_window))
+    end
+    
+    def create_clipboard
+      ApplicationSWT::Clipboard.new(@model.clipboard)
     end
     
     def new_window(win)

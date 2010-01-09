@@ -1,6 +1,6 @@
 module Redcar
-  # A simple array with a maximum length. Models a clipboard for 
-  # copying and pasting.
+  # A simple array with a maximum length. Models a copy/paste clipboard
+  # that can contain multiple elements.
   class Clipboard
     include Redcar::Model
     include Redcar::Observable
