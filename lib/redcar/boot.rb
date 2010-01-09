@@ -98,8 +98,3 @@ module Redcar
     ["properties.yaml", "config/default.yaml"]
   end
 end
-
-usage = Redcar::Usage.new
-usage.version_string
-usage.version_requested
-usage.help_requested

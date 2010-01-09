@@ -3,6 +3,8 @@ $:.push File.join(File.dirname(__FILE__))
 
 require 'rbconfig'
 
+require 'redcar/usage'
+
 module Redcar
   VERSION         = '0.3.2dev'
   VERSION_MAJOR   = 0
@@ -25,3 +27,8 @@ module Redcar
 end
 
 require 'redcar/installer'
+
+usage = Redcar::Usage.new
+usage.version_string
+usage.version_requested
+usage.help_requested
