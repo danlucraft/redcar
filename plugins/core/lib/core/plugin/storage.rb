@@ -2,10 +2,6 @@
 module Redcar
   class Plugin
     class Storage
-    
-      extend Forwardable
-      
-      def_delegators :@storage, :[], :[]=, :keys
       
       def self.storage_dir
         Core.user_dir
@@ -35,6 +31,20 @@ module Redcar
           @storage = {}
         end
         self
+      end
+      
+      def [](key)
+        @storage[key]
+      end
+      
+      def []=(key, value)
+        @storage[key] = value
+        save
+        value
+      end
+      
+      def keys
+        @storage.keys
       end
       
       private

@@ -7,9 +7,10 @@ require "project/dir_controller"
 
 module Redcar
   class Project
-    
-    Storage = Plugin::Storage.new('project_plugin')
-    ObjectSpace.define_finalizer(Storage, proc {Storage.save})
+
+    def self.storage
+      @storage ||= Plugin::Storage.new('project_plugin')
+    end
     
     def self.load
     end
@@ -25,6 +26,10 @@ module Redcar
     
     class << self
       attr_reader :open_project_sensitivity
+    end
+  
+    def self.filter_path
+      Project.storage['last_dir'] || File.expand_path(Dir.pwd)
     end
   
     def self.window_trees
@@ -99,7 +104,10 @@ module Redcar
       
       def get_path
         @path || begin
-          path = Application::Dialog.open_file(win, :filter_path => Storage['last_loc'])
+          if path = Application::Dialog.open_file(win, :filter_path => Project.filter_path)
+            Project.storage['last_dir'] = File.dirname(File.expand_path(path))
+            path
+          end
         end
       end
     end
@@ -143,8 +151,10 @@ module Redcar
       private
       def get_path
         @path || begin
-          path = Application::Dialog.save_file(win, :filter_path => (Storage['last_file_loc'] || File.expand_path(Dir.pwd)))
-          Storage['last_file_loc'] = path
+          if path = Application::Dialog.save_file(win, :filter_path => Project.filter_path)
+            Project.storage['last_dir'] = File.dirname(File.expand_path(path))
+            path
+          end
         end
       end
     end
@@ -171,10 +181,9 @@ module Redcar
 
       def get_path
         @path || begin
-          if path = Application::Dialog.open_directory(win, :filter_path => (Storage['last_dir_loc'] || File.expand_path(Dir.pwd)))
-            full_path = File.expand_path(path)
-            Storage['last_dir_loc'] = full_path
-            full_path
+          if path = Application::Dialog.open_directory(win, :filter_path => Project.filter_path)
+            Project.storage['last_dir'] = File.dirname(File.expand_path(path))
+            path
           end
         end
       end
