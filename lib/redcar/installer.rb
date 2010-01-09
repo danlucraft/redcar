@@ -72,7 +72,7 @@ module Redcar
       when /linux/i
         download("/swt/linux.jar", File.join(plugins_dir, %w(application_swt vendor swt linux swt.jar)))
         download("/swt/linux64.jar", File.join(plugins_dir, %w(application_swt vendor swt linux64 swt.jar)))
-      when /windows|mswin/i
+      when /windows|mswin|mingw/i
         download("/swt/win32.jar", File.join(plugins_dir, %w(application_swt vendor swt win32 swt.jar)))
         # download("/swt/win64.jar", File.join(plugins_dir, %w(application_swt vendor swt win64 swt.jar)))
       end
