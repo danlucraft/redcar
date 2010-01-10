@@ -169,11 +169,13 @@ module Redcar
       	@right_composite = Swt::Widgets::Composite.new(@sash, Swt::SWT::NONE)
       	@grid_layout = Swt::Layout::GridLayout.new(1, false)
       	@right_composite.setLayout(@grid_layout)
-#        grid_data = Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH)
-#      	@right_composite.setLayoutData(grid_data)
       	
         @notebook_sash     = Swt::Custom::SashForm.new(@right_composite, orientation)
-        grid_data = Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH)
+        grid_data = Swt::Layout::GridData.new
+        grid_data.grabExcessHorizontalSpace = true
+        grid_data.horizontalAlignment = Swt::Layout::GridData::FILL
+        grid_data.grabExcessVerticalSpace = true
+        grid_data.verticalAlignment = Swt::Layout::GridData::FILL
       	@notebook_sash.setLayoutData(grid_data)
       	@notebook_sash.setSashWidth(SASH_WIDTH)
       end

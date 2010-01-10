@@ -9,9 +9,17 @@ module Redcar
         create_widget
       end
       
+      def num_columns
+        @model.items.select {|i| !i.is_a?(Redcar::Speedbar::KeyItem) }.length
+      end
+      
       def create_widget
         composite = Swt::Widgets::Composite.new(@parent, Swt::SWT::NONE)
-        layout = Swt::Layout::RowLayout.new(Swt::SWT::HORIZONTAL)
+        grid_data = Swt::Layout::GridData.new
+        grid_data.grabExcessHorizontalSpace = true
+        grid_data.horizontalAlignment = Swt::Layout::GridData::FILL
+      	composite.setLayoutData(grid_data)
+        layout = Swt::Layout::GridLayout.new(num_columns, false)
         composite.setLayout(layout)
 
         @model.items.each do |item|
@@ -22,6 +30,10 @@ module Redcar
           when Redcar::Speedbar::TextBoxItem
             textbox = Swt::Widgets::Text.new(composite, Swt::SWT::BORDER)
             textbox.set_text(item.value)
+            gridData = Swt::Layout::GridData.new
+            gridData.grabExcessHorizontalSpace = true
+            gridData.horizontalAlignment = Swt::Layout::GridData::FILL
+            textbox.set_layout_data(gridData)
             if item.listener
               textbox.add_modify_listener do
                 item.value = textbox.get_text
@@ -48,10 +60,6 @@ module Redcar
           end
         end
         @parent.layout
-#        @text = Swt::Widgets::Text.new(composite, Swt::SWT::SINGLE | Swt::SWT::LEFT | Swt::SWT::ICON_CANCEL)
-#        @text.set_layout_data(Swt::Layout::RowData.new(400, 20))
-#        @list = Swt::Widgets::List.new(composite, Swt::SWT::SINGLE)
-#        @list.set_layout_data(Swt::Layout::RowData.new(400, 200))
       end
       
     end
