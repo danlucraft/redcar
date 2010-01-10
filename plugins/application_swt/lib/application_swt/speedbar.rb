@@ -19,6 +19,15 @@ module Redcar
           when Redcar::Speedbar::LabelItem
             label = Swt::Widgets::Label.new(composite, 0)
             label.set_text(item.text)
+          when Redcar::Speedbar::TextBoxItem
+            textbox = Swt::Widgets::Text.new(composite, Swt::SWT::BORDER)
+            textbox.set_text(item.value)
+          when Redcar::Speedbar::ButtonItem
+            button = Swt::Widgets::Button.new(composite, 0)
+            button.set_text(item.text)
+          when Redcar::Speedbar::ToggleItem
+            button = Swt::Widgets::Button.new(composite, Swt::SWT::CHECK)
+            button.set_text(item.text)
           end
         end
         @parent.layout
