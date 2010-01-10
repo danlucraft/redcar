@@ -11,6 +11,7 @@ module Redcar
 
     attr_reader :notebooks, :notebook_orientation
     attr_reader :treebook
+    attr_reader :speedbar
     
     def initialize
       Window.all << self
@@ -19,6 +20,7 @@ module Redcar
       @notebook_orientation = :horizontal
       create_notebook
       @treebook = Treebook.new
+      @speedbar = nil
       self.title = "Redcar"
     end
 
@@ -163,6 +165,15 @@ module Redcar
     
     def inspect
       "#<Redcar::Window \"#{title}\">"
+    end
+    
+    def open_speedbar(speedbar)
+      @speedbar = speedbar
+      notify_listeners(:speedbar_opened, speedbar)
+    end
+    
+    def close_speedbar
+      @speedbar = nil
     end
   end
 end

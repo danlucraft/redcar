@@ -319,7 +319,7 @@ module Redcar
       end
     end
     
-    class DialogTester < Redcar::Command
+    class DialogExample < Redcar::Command
       def execute
       	builder = Menu::Builder.new do
       	  item("Foo") { p :foo }
@@ -332,6 +332,20 @@ module Redcar
       	  end
       	end
       	win.popup_menu(builder.menu)
+      end
+    end
+    
+    class SpeedbarExample < Redcar::Command
+      class SearchSpeedbar < Redcar::Speedbar
+        label "Query"
+        textbox(:query, "search for this") { p :query_changed }
+        toggle(:case_sensitive, "case sensitive", "Ctrl+I", false) { p :case_sensitive_changed }
+        button(:search, "Ctrl+S") { p :search_pressed }
+        key("Ctrl+R") { p :ctrl_r_pressed }
+      end
+      
+      def execute
+        win.open_speedbar(SearchSpeedbar.new)
       end
     end
     
@@ -379,7 +393,8 @@ module Redcar
           item "List Tabs", ListTabsCommand
           item "Print Scope Tree", PrintScopeTreeCommand
           item "Refresh Directory", Project::RefreshDirectoryCommand
-          item "Dialog Tester", DialogTester
+          item "Dialog Tester", DialogExample
+          item "Speedbar Example", SpeedbarExample
         end
         sub_menu "View" do
           item "Rotate Notebooks", RotateNotebooksCommand

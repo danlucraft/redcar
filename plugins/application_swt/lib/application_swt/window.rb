@@ -53,6 +53,7 @@ module Redcar
         method = method(:notebook_orientation_changed)
         @window.add_listener(:notebook_orientation_changed, &method)
         @window.add_listener(:focussed,      &method(:focussed))
+        @window.add_listener(:speedbar_opened, &method(:speedbar_opened))
         
         @window.treebook.add_listener(:tree_added) do
           if @treebook_unopened
@@ -88,6 +89,11 @@ module Redcar
       def popup_menu(menu)
         menu.controller = ApplicationSWT::Menu.new(self, menu, Swt::SWT::POP_UP)
         menu.controller.show
+      end
+      
+      def speedbar_opened(speedbar)
+        speedbar.controller = ApplicationSWT::Speedbar.new(self, speedbar)
+        # TODO: show speedbar widget at the bottom of the screen
       end
       
       def title_changed(new_title)
@@ -161,10 +167,19 @@ module Redcar
       	button.setText("Button in pane2")
       	@tree_layout.topControl = button
       	
-        @notebook_sash     = Swt::Custom::SashForm.new(@sash, orientation)
+      	@right_composite = Swt::Widgets::Composite.new(@sash, Swt::SWT::NONE)
+      	@grid_layout = Swt::Layout::GridLayout.new(1, false)
+      	@right_composite.setLayout(@grid_layout)
+#        grid_data = Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH)
+#      	@right_composite.setLayoutData(grid_data)
+      	
+        @notebook_sash     = Swt::Custom::SashForm.new(@right_composite, orientation)
         grid_data = Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH)
       	@notebook_sash.setLayoutData(grid_data)
       	@notebook_sash.setSashWidth(SASH_WIDTH)
+
+      	button = Swt::Widgets::Button.new(@right_composite, Swt::SWT::PUSH)
+      	button.setText("Button in speedbar spot")
       end
       
       def horizontal_vertical(symbol)
