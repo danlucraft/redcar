@@ -117,5 +117,6 @@ module JFace
   
   module Dialogs
     import org.eclipse.jface.dialogs.Dialog
+    import org.eclipse.jface.dialogs.InputDialog
   end
 end

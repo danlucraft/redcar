@@ -29,11 +29,6 @@ module Redcar
       # >> Application::Dialog.message_box(win, "YO!", :type => :info, 
       # >>                                             :buttons => :yes_no_cancel)
       # => :yes
-      #
-      # @param [Window]
-      # @param [String] the message
-      # @param [Hash] options
-      # @return [Symbol] the button the user clicked on.
       def self.message_box(window, text, options={})
         if buttons = options[:buttons] and !available_message_box_button_combos.include?(buttons)
           raise "option :buttons must be in #{available_message_box_button_combos.inspect}"
@@ -51,9 +46,32 @@ module Redcar
       end
       
       # Returns the list of valid message box types that can be passed
-      # as an option to messsage_box
+      # as an option to message_box
       def self.available_message_box_types
         Redcar.gui.dialog_adapter.available_message_box_types
+      end
+      
+      # Show a dialog containing a text entry box to the user, and blocks
+      # until they dismiss it.
+      #
+      # If a block is given, the block is considered an input validator. A return
+      # value of nil from the block means the value is valid, a return value
+      # of a String from the block means the value is invalid, and the returned
+      # String will be displayed as an error message.
+      #
+      # Example:
+      #
+      # Application::Dialog.input(win, "Number", "Please enter a big number", "101") do |text|
+      #	  if text.to_i > 100
+      #	    nil
+      #	  else
+      #	    "must be bigger than 100"
+      #	  end
+      #	end
+      #
+      # The return value is a hash containing :button and :value.
+      def self.input(window, title, message, initial_value="", &validator)
+        Redcar.gui.dialog_adapter.input(window, title, message, initial_value, &validator)
       end
     end
   end

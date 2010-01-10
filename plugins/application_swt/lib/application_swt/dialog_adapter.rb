@@ -65,6 +65,16 @@ module Redcar
         MESSAGE_BOX_BUTTON_COMBOS.keys
       end
       
+      def input(window, title, message, initial_value, &block)
+        dialog = JFace::Dialogs::InputDialog.new(window.controller.shell,
+                   title, message, initial_value) do |text|
+          block ? block[text] : nil
+        end
+        code = dialog.open
+        button = (code == 0 ? :ok : :cancel)
+        {:button => button, :value => dialog.getValue}
+      end
+      
       private
       
       def file_dialog(window, type, options)
