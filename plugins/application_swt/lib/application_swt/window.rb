@@ -92,8 +92,7 @@ module Redcar
       end
       
       def speedbar_opened(speedbar)
-        speedbar.controller = ApplicationSWT::Speedbar.new(self, speedbar)
-        # TODO: show speedbar widget at the bottom of the screen
+        speedbar.controller = ApplicationSWT::Speedbar.new(right_composite, speedbar)
       end
       
       def title_changed(new_title)
@@ -177,10 +176,9 @@ module Redcar
         grid_data = Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH)
       	@notebook_sash.setLayoutData(grid_data)
       	@notebook_sash.setSashWidth(SASH_WIDTH)
-
-      	button = Swt::Widgets::Button.new(@right_composite, Swt::SWT::PUSH)
-      	button.setText("Button in speedbar spot")
       end
+
+      attr_reader :right_composite      
       
       def horizontal_vertical(symbol)
         case symbol
