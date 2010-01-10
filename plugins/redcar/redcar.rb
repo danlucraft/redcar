@@ -338,8 +338,8 @@ module Redcar
     class SpeedbarExample < Redcar::Command
       class SearchSpeedbar < Redcar::Speedbar
         label "Query"
-        textbox(:query, "search for this") { p :query_changed }
-        toggle(:case_sensitive, "case sensitive", "Ctrl+I", false) { p :case_sensitive_changed }
+        textbox(:query, "search for this") { |v| p [:query_changed, v] }
+        toggle(:case_sensitive, "case sensitive", "Ctrl+I", false) {|v| p [:case_sensitive_changed, v] }
         button(:search, "Ctrl+S") { p :search_pressed }
         key("Ctrl+R") { p :ctrl_r_pressed }
       end

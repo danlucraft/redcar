@@ -22,12 +22,29 @@ module Redcar
           when Redcar::Speedbar::TextBoxItem
             textbox = Swt::Widgets::Text.new(composite, Swt::SWT::BORDER)
             textbox.set_text(item.value)
+            if item.listener
+              textbox.add_modify_listener do
+                item.value = textbox.get_text
+                item.listener[item.value]
+              end
+            end
           when Redcar::Speedbar::ButtonItem
             button = Swt::Widgets::Button.new(composite, 0)
             button.set_text(item.text)
+            if item.listener
+              button.add_selection_listener do
+                item.listener[]
+              end
+            end
           when Redcar::Speedbar::ToggleItem
             button = Swt::Widgets::Button.new(composite, Swt::SWT::CHECK)
             button.set_text(item.text)
+            if item.listener
+              button.add_selection_listener do
+                item.value = button.get_selection
+                item.listener[item.value]
+              end
+            end
           end
         end
         @parent.layout
