@@ -99,6 +99,11 @@ module Redcar
           notify_listeners(:focussed_tab_changed, tab)
         end
       end
+      @tab_handlers[tab] << tab.add_listener(:selection_changed) do
+        if tab == focussed_tab
+          notify_listeners(:focussed_tab_selection_changed, tab)
+        end
+      end
     end
   end
 end

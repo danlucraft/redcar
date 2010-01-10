@@ -13,6 +13,7 @@ module Redcar
       
       def attach_modification_listeners
         jface_document.add_document_listener(DocumentListener.new(@model))
+        styledText.add_selection_listener(SelectionListener.new(@model))
       end
       
       def to_s
@@ -61,20 +62,39 @@ module Redcar
       end
       
       def cursor_offset
-        @swt_mate_document.mateText.getControl.get_caret_offset
+        styledText.get_caret_offset
       end
       
       def cursor_offset=(offset)
-        @swt_mate_document.mateText.getControl.set_caret_offset(offset)
+        styledText.set_caret_offset(offset)
       end
       
       def selection_range
-        range = @swt_mate_document.mateText.getControl.get_selection_range
+        range = styledText.get_selection_range
         range.x...(range.x + range.y)
       end
       
       def set_selection_range(start, _end)
-        @swt_mate_document.mateText.getControl.set_selection(start, _end)
+        styledText.set_selection(start, _end)
+        @model.selection_range_changed(start, _end)
+      end
+      
+      def styledText
+        @swt_mate_document.mateText.getControl
+      end
+      
+      class SelectionListener
+        def initialize(model)
+          @model = model
+        end
+
+        def widget_default_selected(e)
+          @model.selection_range_changed(e.x, e.y)
+        end
+        
+        def widget_selected(e)
+          @model.selection_range_changed(e.x, e.y)
+        end        
       end
       
       class DocumentListener

@@ -274,6 +274,8 @@ module Redcar
     end
     
     class CutCommand < Redcar::EditTabCommand
+      sensitize :selected_text
+      
       key :osx     => "Cmd+X",
           :linux   => "Ctrl+X",
           :windows => "Ctrl+X"
@@ -287,6 +289,8 @@ module Redcar
     end
     
     class CopyCommand < Redcar::EditTabCommand
+      sensitize :selected_text
+      
       key :osx     => "Cmd+C",
           :linux   => "Ctrl+C",
           :windows => "Ctrl+C"
@@ -299,6 +303,8 @@ module Redcar
     end
     
     class PasteCommand < Redcar::EditTabCommand
+      sensitize :clipboard_not_empty
+      
       key :osx     => "Cmd+V",
           :linux   => "Ctrl+V",
           :windows => "Ctrl+V"

@@ -72,7 +72,12 @@ module Redcar
     def initialize
       @windows = []
       @window_handlers = Hash.new {|h,k| h[k] = []}
+      create_clipboard
+    end
+    
+    def create_clipboard
       @clipboard       = Clipboard.new("application")
+      @clipboard.add_listener(:added) { notify_listeners(:clipboard_added) }
     end
     
     # Immediately halts the gui event loop.
@@ -169,7 +174,12 @@ module Redcar
           notify_listeners(:focussed_tab_changed, tab)
         end
       end
-      @window_handlers[window] << h1 << h2 << h3 << h4 << h5 << h6 << h7 << h8
+      h9 = window.add_listener(:focussed_tab_selection_changed) do |tab|
+        if window == focussed_window
+          notify_listeners(:focussed_tab_selection_changed, tab)
+        end
+      end
+      @window_handlers[window] << h1 << h2 << h3 << h4 << h5 << h6 << h7 << h8 << h9
     end
   end
 end

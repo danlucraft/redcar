@@ -91,6 +91,10 @@ module Redcar
       notify_listeners(:changed)
     end
     
+    def selection_range_changed(start_offset, end_offset)
+      notify_listeners(:selection_range_changed, start_offset..end_offset)
+    end
+    
     # The line index the cursor is on (zero-based)
     #
     # @return [Integer]
@@ -200,7 +204,7 @@ module Redcar
     #
     # @param [Range<Integer>] a range between two character offsets
     def set_selection_range(range)
-      controller.set_selection_range(range)
+      controller.set_selection_range(range.begin, range.end)
     end
     
     # Get the text selected by the user. If no text is selected

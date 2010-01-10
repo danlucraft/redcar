@@ -2,12 +2,21 @@
 Version 0.3.2dev (TBA)
 ======================
 
+New contributors:
+
+  * rogerdpack
+
 Enhancements:
 
-Internal changes
+  * Remembers last directory when opening a file/directory.
+
+Internal changes:
+
+  * Pure Ruby clipboard and Copy/Cut/Paste commands.
 
 Fixes:
 
+  * Deleting a lot of lines causes the last few to lose highlighting.
 
 Version 0.3.1dev (9 Jan 2010)
 =============================

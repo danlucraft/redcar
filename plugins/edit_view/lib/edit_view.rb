@@ -20,6 +20,12 @@ module Redcar
       Sensitivity.new(:edit_tab_focussed, Redcar.app, false, [:tab_focussed]) do |tab|
         tab and tab.is_a?(EditTab)
       end
+      Sensitivity.new(:selected_text, Redcar.app, false, [:focussed_tab_selection_changed, :tab_focussed]) do
+        if win = Redcar.app.focussed_window
+          tab = win.focussed_notebook.focussed_tab
+          tab and tab.is_a?(EditTab) and tab.edit_view.document.selection?
+        end
+      end
       @undo_sensitivity = 
         Sensitivity.new(:undoable, Redcar.app, false, [:focussed_tab_changed, :tab_focussed]) do
           tab = Redcar.app.focussed_window.focussed_notebook.focussed_tab
@@ -30,6 +36,9 @@ module Redcar
           tab = Redcar.app.focussed_window.focussed_notebook.focussed_tab
           tab and tab.is_a?(EditTab) and tab.edit_view.redoable?
         end
+      Sensitivity.new(:clipboard_not_empty, Redcar.app, false, [:clipboard_added]) do
+        Redcar.app.clipboard.length > 0
+      end
     end
 
     attr_reader :document
