@@ -321,14 +321,7 @@ module Redcar
     
     class DialogTester < Redcar::Command
       def execute
-      	r = Application::Dialog.input(win, "Number", "Please enter a big number", "101") do |text|
-      	  if text.to_i > 100
-      	    nil
-      	  else
-      	    "must be bigger than 100"
-      	  end
-      	end
-        p [:result, r]
+      	Application::Dialog.tool_tip(win, "This is a message")
       end
     end
     

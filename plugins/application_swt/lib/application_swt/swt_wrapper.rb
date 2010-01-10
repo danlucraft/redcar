@@ -50,6 +50,7 @@ module Swt
     import org.eclipse.swt.widgets.TabFolder
     import org.eclipse.swt.widgets.TabItem
     import org.eclipse.swt.widgets.Text
+    import org.eclipse.swt.widgets.ToolTip
   end
 
   module Custom

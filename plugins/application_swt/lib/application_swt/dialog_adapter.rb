@@ -75,6 +75,12 @@ module Redcar
         {:button => button, :value => dialog.getValue}
       end
       
+      def tool_tip(window, message)
+        tool_tip = Swt::Widgets::ToolTip.new(window.controller.shell, Swt::SWT::ICON_INFORMATION)
+        tool_tip.set_message(message)
+        tool_tip.set_visible(true)
+      end
+      
       private
       
       def file_dialog(window, type, options)

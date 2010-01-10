@@ -73,6 +73,11 @@ module Redcar
       def self.input(window, title, message, initial_value="", &validator)
         Redcar.gui.dialog_adapter.input(window, title, message, initial_value, &validator)
       end
+      
+      # Shows a tool tip to the user, at the cursor location.
+      def self.tool_tip(window, message)
+        Redcar.gui.dialog_adapter.tool_tip(window, message)
+      end
     end
   end
 end
