@@ -321,7 +321,17 @@ module Redcar
     
     class DialogTester < Redcar::Command
       def execute
-      	Application::Dialog.tool_tip(win, "This is a message")
+      	builder = Menu::Builder.new do
+      	  item("Foo") { p :foo }
+      	  item("Bar") { p :bar }
+      	  separator
+      	  sub_menu "Baz" do
+      	    item("Qux") { p :qx}
+      	    item("Quux") { p :quux }
+      	    item("Corge") { p :corge }
+      	  end
+      	end
+      	win.popup_menu(builder.menu)
       end
     end
     

@@ -139,6 +139,10 @@ module Redcar
       @menu = menu
       notify_listeners(:menu_changed, menu)
     end
+
+    def popup_menu(menu)
+      notify_listeners(:popup_menu, menu)
+    end
     
     # Focus the Window.
     def focus

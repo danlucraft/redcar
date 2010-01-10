@@ -10,10 +10,15 @@ module Redcar
       
       attr_reader :text, :command
   
-      # Create a new Item, with the given text to display in the menu, and the
-      # Redcar::Command that is run when the item is selected.
-      def initialize(text, command)
+      # Create a new Item, with the given text to display in the menu, and
+      # either:
+      #   the Redcar::Command that is run when the item is selected.
+      #   or a block to run when the item is selected
+      def initialize(text, command=nil, &block)
         @text, @command = text, command
+        if !command & block
+          @command = block
+        end
       end
       
       # Call this to signal that the menu item has been selected by the user.

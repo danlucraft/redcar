@@ -2,6 +2,7 @@
 module Redcar
   class Menu
     include Enumerable
+    include Redcar::Model
     
     attr_reader :text, :entries
   

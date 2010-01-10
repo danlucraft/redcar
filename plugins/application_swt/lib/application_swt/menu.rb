@@ -3,17 +3,29 @@ module Redcar
     class Menu
       attr_reader :menu_bar
       
-      def initialize(window, menu_model)
+      def self.menu_types
+        [Swt::SWT::BAR, Swt::SWT::POP_UP]
+      end
+      
+      def initialize(window, menu_model, type)
+        unless Menu.menu_types.include?(type)
+          raise "type should be in #{Menu.menu_types.inspect}"
+        end
         @window = window
-        @menu_bar = Swt::Widgets::Menu.new(window.shell, Swt::SWT::BAR)
+        @menu_bar = Swt::Widgets::Menu.new(window.shell, type)
         return unless menu_model
         @handlers = []
         add_entries_to_menu(@menu_bar, menu_model)
       end
       
+      def show
+        @menu_bar.set_visible(true)
+      end
+      
       def close
         @handlers.each {|obj, h| obj.remove_listener(h)}
         @menu_bar.dispose
+        @result
       end
       
       private
@@ -30,30 +42,42 @@ module Redcar
             item = Swt::Widgets::MenuItem.new(menu, Swt::SWT::SEPARATOR)
           elsif entry.is_a?(Redcar::Menu::Item)
             item = Swt::Widgets::MenuItem.new(menu, Swt::SWT::PUSH)
-            if entry.command.get_key
-              key_specifier = entry.command.get_key
-              key_string    = BindingTranslator.platform_key_string(key_specifier)
-              item.text = entry.text + "\t" + key_string
-              item.set_accelerator(BindingTranslator.key(key_string))
+            if entry.command.is_a?(Proc)
+              connect_proc_to_item(item, entry)
             else
-              item.text = entry.text
-            end
-            item.addSelectionListener do
-              puts "#{entry.command} activated"
-              entry.selected
-            end
-            h = entry.command.add_listener(:active_changed) do |value|
-              unless item.disposed
-                item.enabled = value
-              end
-            end
-            @handlers << [entry.command, h]
-            if not entry.command.active?
-              item.enabled = false
+              connect_command_to_item(item, entry)
             end
           else
             raise "unknown object of type #{entry.class} in menu"
           end
+        end
+      end
+      
+      def connect_proc_to_item(item, entry)
+        item.text = entry.text
+        item.add_selection_listener { entry.command[] }
+      end
+      
+      def connect_command_to_item(item, entry)
+        if entry.command.get_key
+          key_specifier = entry.command.get_key
+          key_string    = BindingTranslator.platform_key_string(key_specifier)
+          item.text = entry.text + "\t" + key_string
+          item.set_accelerator(BindingTranslator.key(key_string))
+        else
+          item.text = entry.text
+        end
+        item.addSelectionListener do
+          entry.selected
+        end
+        h = entry.command.add_listener(:active_changed) do |value|
+          unless item.disposed
+            item.enabled = value
+          end
+        end
+        @handlers << [entry.command, h]
+        if not entry.command.active?
+          item.enabled = false
         end
       end
     end

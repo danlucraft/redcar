@@ -6,7 +6,7 @@ module Redcar
     #       item "Select All", SelectAllCommand
     #       sub_menu "Indent" do
     #         item "Increase", IncreaseIndentCommand
-    #         item "Decrease", DecreaseIndentCommand
+    #         item("Decrease") { puts "decrease selected" }
     #       end
     #     end
     #
@@ -16,7 +16,9 @@ module Redcar
     #     menu << Redcar::Menu::Item.new("Select All", SelectAllCommand)
     #     indent_menu = Redcar::Menu.new("Indent") 
     #     indent_menu << Redcar::Menu::Item.new("Increase", IncreaseIndentCommand)
-    #     indent_menu << Redcar::Menu::Item.new("Decrease", DecreaseIndentCommand)
+    #     indent_menu << Redcar::Menu::Item.new("Decrease") do
+    #       puts "decrease selected"
+    #     end
     #     menu << indent_menu
     class Builder
       attr_reader :menu
@@ -34,8 +36,8 @@ module Redcar
       
       private
       
-      def item(text, command)
-        @current_menu << Item.new(text, command)
+      def item(text, command=nil, &block)
+        @current_menu << Item.new(text, command, &block)
       end
       
       def separator
