@@ -319,6 +319,12 @@ module Redcar
       end
     end
     
+    class DialogTester < Redcar::Command
+      def execute
+        p [:result, Application::Dialog.message_box(win, "hi there")]
+      end
+    end
+    
     def self.start
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
@@ -363,6 +369,7 @@ module Redcar
           item "List Tabs", ListTabsCommand
           item "Print Scope Tree", PrintScopeTreeCommand
           item "Refresh Directory", Project::RefreshDirectoryCommand
+          item "Dialog Tester", DialogTester
         end
         sub_menu "View" do
           item "Rotate Notebooks", RotateNotebooksCommand
