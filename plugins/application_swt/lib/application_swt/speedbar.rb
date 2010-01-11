@@ -54,9 +54,16 @@ module Redcar
         grid_data.grabExcessHorizontalSpace = true
         grid_data.horizontalAlignment = Swt::Layout::GridData::FILL
       	@composite.setLayoutData(grid_data)
-        layout = Swt::Layout::GridLayout.new(num_columns, false)
+        layout = Swt::Layout::GridLayout.new(num_columns + 1, false)
         @composite.setLayout(layout)
-
+        
+        path = File.join(Redcar.root, %w(plugins application icons darwin-folder.png))
+        image = Swt::Graphics::Image.new(ApplicationSWT.display, path)
+        label = Swt::Widgets::Label.new(@composite, 0)
+        label.set_image(image)
+	
+	    label.add_mouse_listener(MouseListener.new(self))
+	
         @model.items.each do |item|
           case item
           when Redcar::Speedbar::LabelItem
@@ -116,10 +123,28 @@ module Redcar
         end
       end
       
+      class MouseListener
+        def initialize(speedbar)
+          @speedbar = speedbar
+        end
+        
+        def mouse_down(*_); end
+        
+        def mouse_up(*_)
+          @speedbar.close_pressed
+        end
+        
+        def mouse_double_click(*_); end
+      end
+      
       def attach_key_listeners
         keyable_widgets.each do |widget|
           widget.add_key_listener(KeyListener.new(self))
         end
+      end
+      
+      def close_pressed
+        @window_model.close_speedbar
       end
       
       def key_press(e)
