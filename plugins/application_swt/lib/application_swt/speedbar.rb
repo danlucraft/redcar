@@ -10,6 +10,9 @@ module Redcar
         create_widgets
         attach_key_listeners
         disable_menu_items
+        if widget = focussable_widgets.first
+          widget.set_focus
+        end
       end
       
       def close
@@ -41,6 +44,10 @@ module Redcar
         @keyable_widgets ||= []
       end
       
+      def focussable_widgets
+        @focussable_widgets ||= []
+      end
+      
       def create_widgets
         @composite = Swt::Widgets::Composite.new(@parent, Swt::SWT::NONE)
         grid_data = Swt::Layout::GridData.new
@@ -69,6 +76,7 @@ module Redcar
               end
             end
             keyable_widgets << textbox
+            focussable_widgets << textbox
           when Redcar::Speedbar::ButtonItem
             button = Swt::Widgets::Button.new(@composite, 0)
             button.set_text(item.text)
@@ -78,6 +86,7 @@ module Redcar
               end
             end
             keyable_widgets << button
+            focussable_widgets << button
           when Redcar::Speedbar::ToggleItem
             button = Swt::Widgets::Button.new(@composite, Swt::SWT::CHECK)
             button.set_text(item.text)
@@ -88,6 +97,7 @@ module Redcar
               end
             end
             keyable_widgets << button
+            focussable_widgets << button
           end
         end
         @parent.layout
