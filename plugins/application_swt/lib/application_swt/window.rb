@@ -54,6 +54,7 @@ module Redcar
         @window.add_listener(:notebook_orientation_changed, &method)
         @window.add_listener(:focussed,      &method(:focussed))
         @window.add_listener(:speedbar_opened, &method(:speedbar_opened))
+        @window.add_listener(:speedbar_closed, &method(:speedbar_closed))
         
         @window.treebook.add_listener(:tree_added) do
           if @treebook_unopened
@@ -92,7 +93,11 @@ module Redcar
       end
       
       def speedbar_opened(speedbar)
-        speedbar.controller = ApplicationSWT::Speedbar.new(right_composite, speedbar)
+        speedbar.controller = ApplicationSWT::Speedbar.new(@window, right_composite, speedbar)
+      end
+      
+      def speedbar_closed(speedbar)
+        speedbar.controller.close
       end
       
       def title_changed(new_title)

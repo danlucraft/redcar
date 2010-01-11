@@ -23,6 +23,31 @@ module Redcar
           value += key_string[-1]
         end
         
+        def self.key_string(key_event)
+          modifiers = []
+          modifier_values.each do |string, constant|
+            if (key_event.stateMask & constant) != 0
+              modifiers << string
+            end
+          end
+          modifiers = modifiers.sort_by {|m| MODIFIERS.index(m) }
+          if key_event.character == 0
+            modifiers.join("+")
+          else
+            letter = java.lang.Character.new(key_event.keyCode).toString.upcase
+            if modifiers.any?
+              modifiers.join("+") << "+" << letter
+            else
+              letter
+            end
+          end
+        end
+        
+        def self.matches?(key_string, key_string2)
+          key_string.split("+").sort ==
+            key_string2.split("+").sort
+        end
+        
         private
         
         def self.modifier_values

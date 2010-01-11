@@ -3,32 +3,60 @@ module Redcar
     class Speedbar
       attr_reader :widget
       
-      def initialize(parent, model)
+      def initialize(window, parent, model)
+        @window_model = window
         @parent = parent
         @model = model
-        create_widget
+        create_widgets
+        attach_key_listeners
+        disable_menu_items
+      end
+      
+      def close
+        @composite.dispose
+        @parent.layout
+      end
+      
+      def disable_menu_items
+        key_strings = []
+        @model.items.each do |i|
+          if i.respond_to?(:key)
+            key_strings << i.key
+          end
+        end
+        key_strings.uniq.each do |key_string|
+          ApplicationSWT::Menu.disable_items(key_string)
+        end
       end
       
       def num_columns
         @model.items.select {|i| !i.is_a?(Redcar::Speedbar::KeyItem) }.length
       end
       
-      def create_widget
-        composite = Swt::Widgets::Composite.new(@parent, Swt::SWT::NONE)
+      def key_items
+        @model.items.select {|i| i.respond_to?(:key) }
+      end
+      
+      def keyable_widgets
+        @keyable_widgets ||= []
+      end
+      
+      def create_widgets
+        @composite = Swt::Widgets::Composite.new(@parent, Swt::SWT::NONE)
         grid_data = Swt::Layout::GridData.new
         grid_data.grabExcessHorizontalSpace = true
         grid_data.horizontalAlignment = Swt::Layout::GridData::FILL
-      	composite.setLayoutData(grid_data)
+      	@composite.setLayoutData(grid_data)
         layout = Swt::Layout::GridLayout.new(num_columns, false)
-        composite.setLayout(layout)
+        @composite.setLayout(layout)
 
         @model.items.each do |item|
           case item
           when Redcar::Speedbar::LabelItem
-            label = Swt::Widgets::Label.new(composite, 0)
+            label = Swt::Widgets::Label.new(@composite, 0)
             label.set_text(item.text)
           when Redcar::Speedbar::TextBoxItem
-            textbox = Swt::Widgets::Text.new(composite, Swt::SWT::BORDER)
+            textbox = Swt::Widgets::Text.new(@composite, Swt::SWT::BORDER)
             textbox.set_text(item.value)
             gridData = Swt::Layout::GridData.new
             gridData.grabExcessHorizontalSpace = true
@@ -40,16 +68,18 @@ module Redcar
                 item.listener[item.value]
               end
             end
+            keyable_widgets << textbox
           when Redcar::Speedbar::ButtonItem
-            button = Swt::Widgets::Button.new(composite, 0)
+            button = Swt::Widgets::Button.new(@composite, 0)
             button.set_text(item.text)
             if item.listener
               button.add_selection_listener do
                 item.listener[]
               end
             end
+            keyable_widgets << button
           when Redcar::Speedbar::ToggleItem
-            button = Swt::Widgets::Button.new(composite, Swt::SWT::CHECK)
+            button = Swt::Widgets::Button.new(@composite, Swt::SWT::CHECK)
             button.set_text(item.text)
             if item.listener
               button.add_selection_listener do
@@ -57,11 +87,45 @@ module Redcar
                 item.listener[item.value]
               end
             end
+            keyable_widgets << button
           end
         end
         @parent.layout
       end
       
+      class KeyListener
+        def initialize(speedbar)
+          @speedbar = speedbar
+        end
+        
+        def key_pressed(e)
+        end
+        
+        def key_released(e)
+          @speedbar.key_press(e)
+        end
+      end
+      
+      def attach_key_listeners
+        keyable_widgets.each do |widget|
+          widget.add_key_listener(KeyListener.new(self))
+        end
+      end
+      
+      def key_press(e)
+        key_string = Menu::BindingTranslator.key_string(e)
+        if key_string == "\e"
+          @window_model.close_speedbar
+          e.doit = false
+        end
+        key_items.each do |key_item|
+          if Menu::BindingTranslator.matches?(key_string, key_item.key)
+            e.doit = false
+            key_item.listener[]
+          end
+        end
+      end
     end
   end
 end
+

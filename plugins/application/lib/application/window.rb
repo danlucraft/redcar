@@ -173,6 +173,7 @@ module Redcar
     end
     
     def close_speedbar
+      notify_listeners(:speedbar_closed, @speedbar)
       @speedbar = nil
     end
   end

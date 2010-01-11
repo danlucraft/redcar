@@ -1,6 +1,14 @@
 module Redcar
   class ApplicationSWT
     class Menu
+      def self.items
+        @items ||= Hash.new {|h,k| h[k] = []}
+      end
+      
+      def self.disable_items(key_string)
+        items[key_string].each {|i| p i.text; i.enabled = false}
+      end
+    
       attr_reader :menu_bar
       
       def self.menu_types
@@ -64,6 +72,7 @@ module Redcar
           key_string    = BindingTranslator.platform_key_string(key_specifier)
           item.text = entry.text + "\t" + key_string
           item.set_accelerator(BindingTranslator.key(key_string))
+          Menu.items[key_string] << item
         else
           item.text = entry.text
         end
