@@ -44,7 +44,7 @@ installed, and RSpec and Cucumber installed as JRuby gems.
     $ cd redcar
     $ git submodule init
     $ git submodule update
-    $ jruby ext/extconf.rb
+    $ jruby bin/redcar install
     $ jruby -S rake build
 
 To run:
