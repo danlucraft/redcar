@@ -46,6 +46,10 @@ module Redcar
       parent = @edit_tab.notebook.tab_folder
       @widget = Swt::Widgets::Composite.new(parent, Swt::SWT::NONE)
       layout = Swt::Layout::GridLayout.new
+      layout.verticalSpacing = 0
+      layout.marginHeight = 0
+      layout.horizontalSpacing = 0
+      layout.marginWidth = 0
       layout.numColumns = 2
       @widget.layout = layout
       @mate_text = JavaMateView::MateText.new(@widget)

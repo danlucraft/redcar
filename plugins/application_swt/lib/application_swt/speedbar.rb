@@ -55,8 +55,9 @@ module Redcar
         grid_data.horizontalAlignment = Swt::Layout::GridData::FILL
       	@composite.setLayoutData(grid_data)
         layout = Swt::Layout::GridLayout.new(num_columns + 1, false)
+        layout.verticalSpacing = 0
+        layout.marginHeight = 0
         @composite.setLayout(layout)
-        
         path = File.join(Redcar.root, %w(plugins application icons darwin-folder.png))
         image = Swt::Graphics::Image.new(ApplicationSWT.display, path)
         label = Swt::Widgets::Label.new(@composite, 0)

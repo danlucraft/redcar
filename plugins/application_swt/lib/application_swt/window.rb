@@ -173,6 +173,10 @@ module Redcar
       	
       	@right_composite = Swt::Widgets::Composite.new(@sash, Swt::SWT::NONE)
       	@grid_layout = Swt::Layout::GridLayout.new(1, false)
+        @grid_layout.verticalSpacing = 0
+        @grid_layout.marginHeight = 0
+        @grid_layout.horizontalSpacing = 0
+        @grid_layout.marginWidth = 0
       	@right_composite.setLayout(@grid_layout)
       	
         @notebook_sash     = Swt::Custom::SashForm.new(@right_composite, orientation)
