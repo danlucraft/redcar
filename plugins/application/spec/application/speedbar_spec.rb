@@ -40,7 +40,7 @@ describe Redcar::Speedbar do
     class GetValueSpeedbar < Redcar::Speedbar
       textbox :query, "start"
     end
-    sp = GetValueSpeedbar.new
+    sp = GetValueSpeedbar.new(self)
     sp.query.should == "start"
   end
 end

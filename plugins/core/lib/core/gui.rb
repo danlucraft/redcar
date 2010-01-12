@@ -31,8 +31,13 @@ module Redcar
     
     # Starts the event loop for this gui.
     def start
-      logger.info("Starting event loop")
-      @event_loop.start
+      if ARGV.include?("--quit-immediately")
+        logger.info("Quitting straight away")
+        exit
+      else
+        logger.info("Starting event loop")
+        @event_loop.start
+      end
     end
     
     # Stops the event loop for this gui.

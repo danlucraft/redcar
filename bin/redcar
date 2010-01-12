@@ -3,6 +3,8 @@
 require File.join(File.dirname(__FILE__), %w(.. lib redcar))
 
 if ARGV.first == "install"
+  require 'redcar/installer'
+
   installer = Redcar::Installer.new
   installer.install
 else

@@ -42,6 +42,7 @@ Then /^there should be (one|two) notebooks?$/ do |count_str|
   Redcar.app.windows.first.notebooks.length.should == count
   
   # in the GUI
+  p ctab_folders
   ctab_folders.length.should == count
 end
 

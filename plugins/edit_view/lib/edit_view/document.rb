@@ -1,10 +1,8 @@
 
 module Redcar
-  # Each Redcar::Document is associated with an EditView, and has methods for
-  # reading and modifying the contents of the EditView. Every document has a
-  # Mirror of some resource.
-  #
-  # Events: new_mirror
+  # This class controls access to the document text in an edit tab. 
+  # There are methods to read, modify and register listeners
+  # for the document.
   class Document
     include Redcar::Model
     include Redcar::Observable
@@ -112,25 +110,25 @@ module Redcar
     
     # Insert text
     #
-    # @param [Integer] character offset from the start of the document
-    # @param [String] text to insert
+    # @param [Integer] offset  character offset from the start of the document
+    # @param [String] text  text to insert
     def insert(offset, text)
       replace(offset, 0, text)
     end
     
     # Delete text
     #
-    # @param [Integer] character offset from the start of the document
-    # @param [Integer] length of text to delete
+    # @param [Integer] offset  character offset from the start of the document
+    # @param [Integer] length  length of text to delete
     def delete(offset, length)
       replace(offset, length, "")
     end
 
     # Replace text
     #
-    # @param [Integer] character offset from the start of the document
-    # @param [Integer] length of text to replace
-    # @param [String] replacement text
+    # @param [Integer] offset  character offset from the start of the document
+    # @param [Integer] length  length of text to replace
+    # @param [String] text  replacement text
     def replace(offset, length, text)
       controller.replace(offset, length, text)
     end
@@ -158,14 +156,14 @@ module Redcar
     
     # Set the contents of the document
     #
-    # @param [String] new text
+    # @param [String] text  new text
     def text=(text)
       controller.text = text
     end
     
     # Get the line index of the given offset
     #
-    # @param [Integer] zero-based character offset
+    # @param [Integer] offset zero-based character offset
     # @return [Integer] zero-based index
     def line_at_offset(offset)
       controller.line_at_offset(offset)
@@ -173,7 +171,7 @@ module Redcar
     
     # Get the character offset at the start of the given line
     #
-    # @param [Integer] zero-based line index
+    # @param [Integer] line   zero-based line index
     # @return [Integer] zero-based character offset
     def offset_at_line(line)
       controller.offset_at_line(line)
@@ -188,7 +186,7 @@ module Redcar
     
     # Set the position of the cursor.
     #
-    # @param [Integer] zero-based character offset
+    # @param [Integer] offset   zero-based character offset
     def cursor_offset=(offset)
       controller.cursor_offset = offset
     end
@@ -202,7 +200,7 @@ module Redcar
     
     # Set the range of text selected by the user.
     #
-    # @param [Range<Integer>] a range between two character offsets
+    # @param [Range<Integer>] range   a range between two character offsets
     def set_selection_range(range)
       controller.set_selection_range(range.begin, range.end)
     end
@@ -217,8 +215,8 @@ module Redcar
     
     # Get a range of text from the document.
     #
-    # @param [String] the character offset of the start of the range
-    # @param [String] the length of the string to get
+    # @param [String] start  the character offset of the start of the range
+    # @param [String] length  the length of the string to get
     # @return [String] the text
     def get_range(start, length)
       controller.get_range(start, length)
@@ -227,7 +225,7 @@ module Redcar
     # Get the text of a line by index. (Includes a trailing "\n", 
     # unless it is the last line in the document.)
     #
-    # @param [Integer] the zero-based line number
+    # @param [Integer] line_ix  the zero-based line number
     # @return [String] the text of the line
     def get_line(line_ix)
       controller.get_line(line_ix)
@@ -252,7 +250,7 @@ module Redcar
     
     # Get the offset at the end of a given line, *before* the newline character.
     #
-    # @param [Integer] a zero-based line index
+    # @param [Integer] line_ix  a zero-based line index
     def offset_at_inner_end_of_line(line_ix)
       if line_ix == line_count - 1
         length

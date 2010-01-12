@@ -14,7 +14,7 @@
 # Copyright (c) 2001 Rich Kilmer. All rights reserved.
 #
 
-require 'rexml/document'
+#require 'rexml/document'
 
 module FreeBASE
 

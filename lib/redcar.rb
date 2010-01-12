@@ -26,8 +26,6 @@ module Redcar
   end
 end
 
-require 'redcar/installer'
-
 usage = Redcar::Usage.new
 usage.version_string
 usage.version_requested

@@ -5,7 +5,9 @@ module SwtTabHelpers
     display = Redcar::ApplicationSWT.display
     shell   = display.get_shells.to_a.first
     sash_form = shell.children.to_a.first
+    p sash_form
     tab_folders = sash_form.children.to_a[1].children.to_a
+    p tab_folders
     tab_folders.length.should == 1
     tab_folders.first
   end

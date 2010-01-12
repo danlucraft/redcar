@@ -11,10 +11,10 @@
 # 
 # Copyright (c) 2001 Rich Kilmer. All rights reserved.
 #
-begin
-  require 'rubygems'
-rescue
-end
+#begin
+##  require 'rubygems'
+#rescue
+#end
 
 module FreeBASE
 

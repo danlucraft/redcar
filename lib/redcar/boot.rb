@@ -1,12 +1,12 @@
 
 require 'java'
 
-$:.push(File.join(File.dirname(__FILE__), %w(.. little_plugger lib)))
-require 'little-plugger'
+#$:.push(File.join(File.dirname(__FILE__), %w(.. little_plugger lib)))
+#require 'little-plugger'
 
-$:.push(File.join(File.dirname(__FILE__), %w(.. logging lib)))
-require 'thread'
-require 'logging'
+#$:.push(File.join(File.dirname(__FILE__), %w(.. logging lib)))
+#require 'thread'
+#require 'logging'
 
 $:.push(File.join(File.dirname(__FILE__), %w(.. freebase2 lib)))
 require 'freebase/freebase'
