@@ -36,9 +36,9 @@ module Redcar
           else
             letter = java.lang.Character.new(key_event.keyCode).toString.upcase
             if modifiers.any?
-              modifiers.join("+") << "+" << letter
+              modifiers.join("+") << "+" << (pretty_letter(letter) || letter)
             else
-              letter
+              (pretty_letter(letter) || letter)
             end
           end
         end
@@ -46,6 +46,10 @@ module Redcar
         def self.matches?(key_string, key_string2)
           key_string.split("+").sort ==
             key_string2.split("+").sort
+        end
+        
+        def self.pretty_letter(char_string)
+          {"\r" => "Return"}[char_string]
         end
         
         private

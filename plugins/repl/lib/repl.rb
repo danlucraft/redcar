@@ -20,11 +20,14 @@ module Redcar
     end
     
     class OpenInternalREPL < Command
+      key :linux   => "Ctrl+Shift+M",
+          :osx     => "Cmd+Shift+M",
+          :windows => "Ctrl+Shift+M"
       
       def execute
         tab = win.new_tab(Redcar::EditTab)
         edit_view = tab.edit_view
-        edit_view.document.mirror = InternalMirror.new
+        edit_view.document.mirror = REPL::InternalMirror.new
         edit_view.cursor_offset = edit_view.document.length
         tab.focus
       end
@@ -38,7 +41,7 @@ module Redcar
       key :linux   => "Ctrl+M",
           :osx     => "Cmd+M",
           :windows => "Ctrl+M"
-
+      
       def execute
         edit_view = win.focussed_notebook.focussed_tab.edit_view
         edit_view.document.save!

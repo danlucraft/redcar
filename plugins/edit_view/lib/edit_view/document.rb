@@ -261,6 +261,10 @@ module Redcar
       end
     end
     
+    def scroll_to_line(line_ix)
+      @edit_view.controller.scroll_to_line(line_ix)
+    end
+    
     private
     
     def update_from_mirror

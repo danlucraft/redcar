@@ -164,7 +164,7 @@ module Redcar
     end
     
     def scroll_to_line(line_index)
-      @mate_text.get_text_widget.set_top_index(line_index)
+      @mate_text.viewer.set_top_index(line_index)
     end
     
     def model_grammar_changed(name)

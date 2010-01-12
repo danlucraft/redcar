@@ -9,11 +9,12 @@ module Redcar
     ButtonItem  = Struct.new(:text, :key, :listener)
     KeyItem     = Struct.new(:key, :listener)
     
-    attr_reader :items
+    attr_reader :__items, :__context
     
-    def initialize
-      @items = []
-      self.class.items.each {|i| @items << i.clone }
+    def initialize(context)
+      @__items = []
+      @__context = context
+      self.class.items.each {|i| @__items << i.clone }
     end
     
     def self.items
@@ -33,7 +34,7 @@ module Redcar
     end
     
     def __get_value_of(name)
-      item = items.detect do |i| 
+      item = __items.detect do |i| 
         i.respond_to?(:name) and
           i.name.to_s == name
       end

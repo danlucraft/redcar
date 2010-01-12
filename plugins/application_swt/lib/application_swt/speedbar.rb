@@ -22,7 +22,7 @@ module Redcar
       
       def disable_menu_items
         key_strings = []
-        @model.items.each do |i|
+        @model.__items.each do |i|
           if i.respond_to?(:key)
             key_strings << i.key
           end
@@ -33,11 +33,11 @@ module Redcar
       end
       
       def num_columns
-        @model.items.select {|i| !i.is_a?(Redcar::Speedbar::KeyItem) }.length
+        @model.__items.select {|i| !i.is_a?(Redcar::Speedbar::KeyItem) }.length
       end
       
       def key_items
-        @model.items.select {|i| i.respond_to?(:key) }
+        @model.__items.select {|i| i.respond_to?(:key) }
       end
       
       def keyable_widgets
@@ -64,7 +64,7 @@ module Redcar
 	
 	    label.add_mouse_listener(MouseListener.new(self))
 	
-        @model.items.each do |item|
+        @model.__items.each do |item|
           case item
           when Redcar::Speedbar::LabelItem
             label = Swt::Widgets::Label.new(@composite, 0)
@@ -76,10 +76,16 @@ module Redcar
             gridData.grabExcessHorizontalSpace = true
             gridData.horizontalAlignment = Swt::Layout::GridData::FILL
             textbox.set_layout_data(gridData)
-            if item.listener
-              textbox.add_modify_listener do
-                item.value = textbox.get_text
-                item.listener[item.value]
+            textbox.add_modify_listener do
+              item.value = textbox.get_text
+              if item.listener
+                begin
+                  @model.__context.instance_exec(item.value, &item.listener)
+                rescue => e
+                  puts "Error in speedbar listener"
+                  puts e
+                  puts e.backtrace
+                end
               end
             end
             keyable_widgets << textbox
@@ -89,7 +95,13 @@ module Redcar
             button.set_text(item.text)
             if item.listener
               button.add_selection_listener do
-                item.listener[]
+                begin
+                  @model.__context.instance_exec(&item.listener)
+                rescue => e
+                  puts "Error in speedbar listener"
+                  puts e
+                  puts e.backtrace
+                end
               end
             end
             keyable_widgets << button
@@ -97,10 +109,16 @@ module Redcar
           when Redcar::Speedbar::ToggleItem
             button = Swt::Widgets::Button.new(@composite, Swt::SWT::CHECK)
             button.set_text(item.text)
-            if item.listener
-              button.add_selection_listener do
-                item.value = button.get_selection
-                item.listener[item.value]
+            button.add_selection_listener do
+              item.value = button.get_selection
+              if item.listener
+                begin
+                  @model.__context.instance_exec(item.value, &item.listener)
+                rescue => e
+                  puts "Error in speedbar listener"
+                  puts e
+                  puts e.backtrace
+                end
               end
             end
             keyable_widgets << button
@@ -156,7 +174,7 @@ module Redcar
         key_items.each do |key_item|
           if Menu::BindingTranslator.matches?(key_string, key_item.key)
             e.doit = false
-            key_item.listener[]
+            @model.__context.instance_exec(&key_item.listener)
           end
         end
       end

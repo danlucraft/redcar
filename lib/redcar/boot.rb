@@ -12,6 +12,7 @@ $:.push(File.join(File.dirname(__FILE__), %w(.. freebase2 lib)))
 require 'freebase/freebase'
 
 require 'redcar/ruby_extensions'
+require 'redcar/instance_exec'
 require 'redcar/usage'
 
 require 'forwardable'

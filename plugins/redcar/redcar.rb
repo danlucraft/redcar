@@ -335,6 +335,26 @@ module Redcar
       end
     end
     
+    class GotoLineCommand < Redcar::EditTabCommand
+      key :osx     => "Cmd+L",
+          :linux   => "Ctrl+L",
+          :windows => "Ctrl+L"
+      
+      class Speedbar < Redcar::Speedbar
+        label "Goto line:"
+        textbox :line
+        button :go, "Return" do
+          doc.scroll_to_line(@speedbar.line.to_i - 1)
+          win.close_speedbar
+        end
+      end
+      
+      def execute
+        @speedbar = GotoLineCommand::Speedbar.new(self)
+        win.open_speedbar(@speedbar)
+      end
+    end
+    
     class SpeedbarExample < Redcar::Command
       class SearchSpeedbar < Redcar::Speedbar
         label "Query"
@@ -383,6 +403,8 @@ module Redcar
           item "Decrease Indent", DecreaseIndentCommand
           separator
           item "Strip Whitespace", StripWhitespaceCommand
+          separator
+          item "Goto Line", GotoLineCommand
         end
         sub_menu "Project" do
           item "Find File", Project::FindFileCommand
