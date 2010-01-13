@@ -1,0 +1,12 @@
+--- !ruby/object:FreeBASE::PluginConfiguration
+name: my_plugin
+description: My plugin, for my own things
+version: 1.0
+author: You!
+autoload: true
+require_path: my_plugin/lib/my_plugin.rb
+startup_module: Redcar::MyPlugin
+load_dependencies: 
+  redcar: "*"
+start_dependencies: 
+  redcar: "*"
