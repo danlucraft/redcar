@@ -23,7 +23,7 @@ module Redcar
     include Redcar::Controller
     
     def self.display
-      @display ||= (Swt::Widgets::Display.getCurrent || Swt::Widgets::Display.new)
+      @display ||= Swt.display 
     end
 
     def self.load

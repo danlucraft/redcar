@@ -1,4 +1,3 @@
-
 require 'rbconfig'
 
 module Swt
@@ -52,6 +51,12 @@ module Swt
     import org.eclipse.swt.widgets.Text
     import org.eclipse.swt.widgets.ToolTip
   end
+
+  def self.display
+    @display ||= (Swt::Widgets::Display.getCurrent || Swt::Widgets::Display.new)
+  end
+
+  display # must be created before we import the Clipboard class.
 
   module Custom
     import org.eclipse.swt.custom.CTabFolder
