@@ -20,6 +20,11 @@ module Redcar
             end
           end
         end
+        
+        def show_list(event); end
+        def maximize(*_); end
+        def minimize(*_); end
+        def restore(*_); end
       end
       
       class SelectionListener
