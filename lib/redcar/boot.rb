@@ -52,6 +52,14 @@ module Redcar
   
   def self.load
     plugin_manager.load
+    if plugin_manager.unreadable_definitions.any?
+      puts "Couldn't read definition files: "
+      puts plugin_manager.unreadable_definitions.map {|d| "  * " + d}
+    end
+    if plugin_manager.plugins_with_errors.any?
+      puts "There was an error loading: "
+      puts plugin_manager.plugins_with_errors.map {|d| "  * " + d.name}
+    end
   end
 
   def self.pump

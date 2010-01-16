@@ -1,4 +1,6 @@
 
+require 'fileutils'
+
 require "core/logger"
 require "core/controller"
 require "core/gui"
@@ -13,6 +15,9 @@ module Redcar
     
     def self.loaded
       Core::Logger.init
+      unless File.exist?(user_dir)
+        FileUtils.mkdir(user_dir)
+      end
     end
     
     # Platform symbol
