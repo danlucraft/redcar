@@ -46,6 +46,7 @@ module Redcar
     @plugin_manager ||= begin
       m = PluginManager.new
       m.add_plugin_source(File.join(root, "plugins"))
+      m.add_plugin_source(File.join(user_dir, "plugins"))
       m
     end
   end
@@ -60,9 +61,48 @@ module Redcar
       puts "There was an error loading: "
       puts plugin_manager.plugins_with_errors.map {|d| "  * " + d.name}
     end
+    if ENV["PLUGIN_DEBUG"]
+      puts "Loaded plugins:"
+      puts plugin_manager.loaded_plugins.map {|d| "  * " + d.name}
+      puts
+      puts "Unloaded plugins:"
+      puts plugin_manager.unloaded_plugins.map {|d| "  * " + d.name}
+      
+    end
   end
 
-  def self.pump
+  def self.pump 
     Redcar.gui.start
   end
+  
+  # Platform symbol
+  #
+  # @return [:osx/:windows/:linux]
+  def self.platform
+    case Config::CONFIG["target_os"]
+    when /darwin/
+      :osx
+    when /mswin|mingw/
+      :windows
+    when /linux/
+      :linux
+    end
+  end
+  
+  # Platform specific ~/.redcar
+  #
+  # @return [String] expanded path
+  def self.user_dir
+    if platform == :windows
+      if ENV['USERPROFILE'].nil?
+        userdir = "C:/My Documents/.redcar/"
+      else
+        userdir = File.join(ENV['USERPROFILE'], ".redcar")
+      end
+    else
+      userdir = File.join(ENV['HOME'], ".redcar") unless ENV['HOME'].nil?
+    end
+    File.expand_path(userdir)
+  end
+
 end

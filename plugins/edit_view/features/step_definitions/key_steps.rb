@@ -32,7 +32,7 @@ end
 World(SwtKeyHelper)
 
 When /^I press m"([^\"]*)" l"([^\"]*)" w"([^\"]*)"$/ do |key_mac, key_linux, key_windows|
-  case Redcar::Core.platform
+  case Redcar.platform
   when :osx
     key = key_mac
   when :linux

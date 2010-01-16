@@ -6,7 +6,7 @@ module Redcar
         
         def self.platform_key_string(key_specifier)
           if key_specifier.is_a?(Hash)
-            key_string = key_specifier[Core.platform]
+            key_string = key_specifier[Redcar.platform]
           else
             key_string = key_specifier
           end
