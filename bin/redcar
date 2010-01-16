@@ -9,6 +9,7 @@ if ARGV.first == "install"
   installer.install
 else
   Redcar.ensure_jruby
-  Redcar.start
+  Redcar.load
+  Redcar::Top.start
   Redcar.pump
 end

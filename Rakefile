@@ -50,13 +50,9 @@ end
 desc "Run all specs and features"
 task :default => ["specs", "cucumber"]
 
-Spec::Rake::SpecTask.new("specs") do |t|
-  t.spec_files = FileList[
-    'plugins/*/spec/*/*_spec.rb',
-    'plugins/*/spec/*/*/*_spec.rb',
-    'plugins/*/spec/*/*/*/*_spec.rb',
-  ]
-  t.spec_opts = ["-c"]
+task :specs do
+  files = Dir['plugins/*/spec/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*/*_spec.rb']
+  sh("jruby -J-XstartOnFirstThread -S spec -c #{files.join(" ")} && echo 'done'")
 end
 
 desc "Run features"

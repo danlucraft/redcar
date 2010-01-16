@@ -12,12 +12,15 @@ module Redcar
       unless controller_type.ancestors.include?(Document::Controller)
         raise "expected #{Document::Controller}"
       end
-      (@document_controller_types ||= []) << controller_type
+      document_controller_types << controller_type
+    end
+    
+    def self.document_controller_types
+      @document_controller_types ||= []
     end
     
     class << self
       attr_accessor :default_mirror
-      attr_reader :document_controller_types
     end
     
     attr_reader :mirror

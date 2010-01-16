@@ -11,7 +11,7 @@ module Redcar
   class Core
     include HasLogger
     
-    def self.load
+    def self.loaded
       Core::Logger.init
     end
     

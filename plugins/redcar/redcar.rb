@@ -370,6 +370,12 @@ module Redcar
     end
     
     def self.start
+      Application.start
+      ApplicationSWT.start
+      AutoIndenter.start
+      EditView.start
+      EditViewSWT.start
+      Project.start
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
       builder = Menu::Builder.new do
@@ -435,6 +441,8 @@ module Redcar
       
       Redcar.app.menu = builder.menu
       Redcar.app.new_window
+            MyPlugin.start
+
     end
   end
 end

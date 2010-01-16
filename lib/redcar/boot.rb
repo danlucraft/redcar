@@ -1,19 +1,11 @@
 
 require 'java'
 
-#$:.push(File.join(File.dirname(__FILE__), %w(.. little_plugger lib)))
-#require 'little-plugger'
-
-#$:.push(File.join(File.dirname(__FILE__), %w(.. logging lib)))
-#require 'thread'
-#require 'logging'
-
-$:.push(File.join(File.dirname(__FILE__), %w(.. freebase2 lib)))
-require 'freebase/freebase'
-
 require 'redcar/ruby_extensions'
 require 'redcar/instance_exec'
 require 'redcar/usage'
+
+require 'plugin_manager/lib/plugin_manager'
 
 require 'forwardable'
 require 'yaml'
@@ -21,21 +13,7 @@ require 'yaml'
 # ## Loading and Initialization
 #
 # Every feature in Redcar is written as a plugin. This module contains a few 
-# methods to bootstrap the plugins by loading the FreeBASE plugin handler.
-#
-# FreeBASE (kindly open sourced by the FreeRIDE project) will load Redcar in 
-# the following manner:
-#
-#   1. For each plugin load the file *plugin_name/lib/plugin_name.rb* and then
-#      run the method "load" on the class defined in plugin.yaml as the 
-#      "startup_module". The plugins will be loaded in an order respecting the
-#      "load_dependencies" in each plugin.yaml.
-#   2. Call the start method on each of the "startup_module" classes, respecting
-#      the "start_dependencies" in each plugin.yaml
-#
-# All Redcar initialization is done in these methods, "load" and "start" on 
-# every plugin class. Note that plugins are not required to define either of 
-# these methods.
+# methods to bootstrap the plugins by loading the PluginManager.
 #
 # Once loaded, bin/redcar will start the gui pump, which will run 
 # Redcar.gui.start. This starts the GUI library's event loop and hands over 
@@ -60,42 +38,23 @@ require 'yaml'
 # and so on.
 module Redcar
   
-  ROOT = File.expand_path(File.join(File.dirname(__FILE__), "..", ".."))
-
-  $FR_CODEBASE          = File.expand_path(File.join(File.dirname(__FILE__)) + "/../../")
-  $FR_PROJECT           = nil
-  $FREEBASE_APPLICATION = "Redcar"
-  
-  class << self
-    attr_reader :freebase_core
-  end
-  
   def self.root
-    ROOT
+    File.expand_path(File.join(File.dirname(__FILE__), "..", ".."))
   end
   
-  def self.start
-    @freebase_core = FreeBASE::Core.new(*freebase_core_args)
-    @freebase_core.startup
+  def self.plugin_manager
+    @plugin_manager ||= begin
+      m = PluginManager.new
+      m.add_plugin_source(File.join(root, "plugins"))
+      m
+    end
   end
   
   def self.load
-    @freebase_core = FreeBASE::Core.new(*freebase_core_args)
-    @freebase_core.load_plugins
+    plugin_manager.load
   end
-  
-  def self.require_files
-    @freebase_core = FreeBASE::Core.new(*freebase_core_args)
-    @freebase_core.require_files
-  end
-  
+
   def self.pump
-    @freebase_core.bus["/system/ui/messagepump"].call()
-  end
-  
-  private
-  
-  def self.freebase_core_args
-    ["properties.yaml", "config/default.yaml"]
+    Redcar.gui.start
   end
 end

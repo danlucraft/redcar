@@ -7,6 +7,7 @@ $:.push File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'redcar'
 Redcar.boot
-Redcar.start
+Redcar.load
+Redcar::Top.start
 Redcar.gui.run_features(ARGV)
 Redcar.pump

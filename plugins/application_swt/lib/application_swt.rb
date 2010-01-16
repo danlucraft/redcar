@@ -26,7 +26,7 @@ module Redcar
       @display ||= Swt.display 
     end
 
-    def self.load
+    def self.start
       Swt::Widgets::Display.app_name = Redcar::Application::NAME
       @gui = Redcar::Gui.new("swt")
       @gui.register_event_loop(EventLoop.new)
@@ -36,10 +36,6 @@ module Redcar
           Redcar::FilterListDialog => ApplicationSWT::FilterListDialogController
         )
       @gui.register_dialog_adapter(ApplicationSWT::DialogAdapter.new)
-    end
-    
-    def self.start
-      # add_debug_key_filters
     end
     
     def self.add_debug_key_filters

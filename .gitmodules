@@ -10,3 +10,6 @@
 [submodule "lib/little_plugger"]
 	path = lib/little_plugger
 	url = git://github.com/TwP/little-plugger.git
+[submodule "lib/plugin_manager"]
+	path = lib/plugin_manager
+	url = git://github.com/danlucraft/plugin_manager.git

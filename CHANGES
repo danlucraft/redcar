@@ -14,6 +14,7 @@ Enhancements:
 
 Internal changes:
 
+  * Ported plugins to plugin_manager gem (github.com/danlucraft/plugin_manager)
   * Pure Ruby clipboard and Copy/Cut/Paste commands.
 
 Fixes:

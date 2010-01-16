@@ -36,12 +36,6 @@ module Redcar
     include Redcar::Model
     include Redcar::Observable
     
-    def self.load
-      Redcar.freebase_core.bus["/system/ui/messagepump"].set_proc do
-        Redcar.gui.start
-      end
-    end
-    
     def self.start
       Redcar.app     = Application.new
       Redcar.history = Command::History.new

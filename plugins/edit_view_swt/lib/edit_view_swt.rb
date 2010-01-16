@@ -13,15 +13,15 @@ module Redcar
   class EditViewSWT
     include Redcar::Observable
     
-    def self.load
+    def self.start
       gui = ApplicationSWT.gui
       gui.register_controllers(Redcar::EditTab => EditViewSWT::Tab)
       load_textmate_assets
     end
     
     def self.load_textmate_assets
-      JavaMateView::Bundle.load_bundles(Redcar::ROOT + "/textmate/")
-      JavaMateView::ThemeManager.load_themes(Redcar::ROOT + "/textmate/")
+      JavaMateView::Bundle.load_bundles(Redcar.root + "/textmate/")
+      JavaMateView::ThemeManager.load_themes(Redcar.root + "/textmate/")
     end
     
     attr_reader :mate_text, :widget

@@ -12,9 +12,6 @@ module Redcar
       @storage ||= Plugin::Storage.new('project_plugin')
     end
     
-    def self.load
-    end
-    
     def self.start
       @open_project_sensitivity = 
         Sensitivity.new(:open_project, Redcar.app, false, [:focussed_window]) do
