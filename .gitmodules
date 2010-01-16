@@ -1,6 +1,3 @@
-[submodule "textmate"]
-	path = textmate
-	url = git://github.com/danlucraft/redcar-bundles
 [submodule "vendor/java-mateview"]
 	path = vendor/java-mateview
 	url = git://github.com/danlucraft/java-mateview.git
