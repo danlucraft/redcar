@@ -22,6 +22,7 @@ module Redcar
       if @contents.length == Clipboard.max_length + 1
         @contents.delete_at(0)
       end
+      notify_listeners(:added_internal, text)
       notify_listeners(:added, text)
     end
     

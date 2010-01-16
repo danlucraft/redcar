@@ -58,6 +58,7 @@ module Swt
     import org.eclipse.swt.custom.CTabItem
     import org.eclipse.swt.custom.SashForm
     import org.eclipse.swt.custom.StackLayout
+    import org.eclipse.swt.custom.ST
   end
   
   module DND

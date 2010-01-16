@@ -40,6 +40,7 @@ module Redcar
       @mate_text.set_theme_by_name(ARGV.option("theme") || "Twilight")
       create_undo_manager
       @document.attach_modification_listeners # comes after undo manager
+      remove_control_keybindings
     end
     
     def create_mate_text
@@ -149,7 +150,7 @@ module Redcar
       focus_control = ApplicationSWT.display.get_focus_control
       focus_control.parent.parent == @mate_text
     end
-    
+  
     def attach_listeners
       # h = @document.add_listener(:set_text, &method(:reparse))
       # @handlers << [@document, h]
@@ -181,6 +182,19 @@ module Redcar
       contents = new_mirror.read
       first_line = contents.to_s.split("\n").first
       @mate_text.set_grammar_by_first_line(first_line) if first_line
+    end
+    
+    STRIP_KEYS = { 
+      :cut   => 120|Swt::SWT::MOD1,
+      :copy  => 99|Swt::SWT::MOD1,
+      :paste => 118|Swt::SWT::MOD1
+    }
+    
+    def remove_control_keybindings
+      styled_text = @mate_text.get_text_widget
+      STRIP_KEYS.each do |_, key|
+        styled_text.set_key_binding(key, Swt::SWT::NULL)
+      end
     end
     
     def dispose

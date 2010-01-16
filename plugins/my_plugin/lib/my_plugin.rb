@@ -1,5 +1,6 @@
 module Redcar
-  # This class is your plugin.
+  # This class is your plugin. Try adding new commands in here
+  # and putting them in the menus.
   class MyPlugin
   
     # This method is run as Redcar is booting up.
