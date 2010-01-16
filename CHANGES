@@ -2,13 +2,15 @@
 Version 0.3.2dev (TBA)
 ======================
 
-New contributors:
-
-  * rogerdpack
-
 Enhancements:
 
-  * Remembers last directory when opening a file/directory.
+  * Dialog API for plugins and commands to use.
+  * Speedbar API for plugins and commands to use (e.g. Goto Line command).
+  * Remembers last directory when opening a file/directory. (thanks Roger Pack)
+  * Word movement (alt-left, alt-right) now works as it should in an editor for
+    programmers.
+  * Somewhat faster startup time.
+  * Nicer error message when jruby jar are missing.
 
 Internal changes:
 
