@@ -11,7 +11,11 @@ module Redcar
     # our vendored jarred one (useful for gems).
     def spin_up
       bin = "#{File.dirname(__FILE__)}/../../bin/redcar"
-      jruby_complete = Dir[File.dirname(__FILE__) + "/../jruby-complete-1.4.0.jar"].first
+      jruby_complete = File.expand_path(File.join(File.dirname(__FILE__), "..", "jruby-complete-1.4.0.jar"))
+      unless File.exist?(jruby_complete)
+        puts "\nCan't find jruby jar at #{jruby_complete}, did you run 'redcar install' ?"
+        exit 1
+      end
       args = []
       if false
         command = "jruby #{java_args} \"#{bin}\" #{ARGV.join(' ')}"
