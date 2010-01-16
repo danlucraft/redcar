@@ -4,7 +4,7 @@ module Redcar
     class Storage
       
       def self.storage_dir
-        Core.user_dir
+        Redcar.user_dir
       end
 
       # Open a storage file or create it if it doesn't exist.
