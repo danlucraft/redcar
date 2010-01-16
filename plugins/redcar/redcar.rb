@@ -225,7 +225,7 @@ module Redcar
           else
             end_selection = doc.offset_at_line(last_line_ix + 1)
           end
-          doc.set_selection_range(start_selection, end_selection)
+          doc.set_selection_range(start_selection..end_selection)
         else
           indent_line(doc, doc.cursor_line)
         end
