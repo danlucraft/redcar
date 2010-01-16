@@ -16,7 +16,9 @@ Internal changes:
 
 Fixes:
 
-  * Deleting a lot of lines causes the last few to lose highlighting.
+  * Cut/Copy sometimes didn't work.
+  * The show more tabs menu in a notebook is handled properly.
+  * Deleting a lot of lines no longer causes the last few to lose highlighting.
 
 Version 0.3.1dev (9 Jan 2010)
 =============================
