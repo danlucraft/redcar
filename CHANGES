@@ -10,7 +10,7 @@ Enhancements:
   * Word movement (alt-left, alt-right) now works as it should in an editor for
     programmers.
   * Somewhat faster startup time.
-  * Nicer error message when jruby jar are missing.
+  * Nicer error message when jruby jar is missing.
 
 Internal changes:
 
