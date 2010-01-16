@@ -151,9 +151,64 @@ module Redcar
       focus_control.parent.parent == @mate_text
     end
   
+    class WordMoveListener
+      def initialize(controller)
+        @controller = controller
+      end
+      
+      def get_next_offset(e)
+        if e.movement == Swt::SWT::MOVEMENT_WORD
+          if e.offset == e.lineOffset + e.lineText.length
+            e.newOffset = e.offset + 1
+          else
+            future_text = e.lineText[(e.offset - e.lineOffset + 1)..-1]
+            if future_text == nil or future_text == ""
+              set_end_of_line(e)
+            else
+              if inc = (future_text =~ /[^\w]/)
+                e.newOffset = e.offset + inc + 1
+              else
+                set_end_of_line(e)
+              end
+            end
+          end
+        end
+      end
+      
+      def get_previous_offset(e)
+        if e.movement == Swt::SWT::MOVEMENT_WORD
+          if e.offset == e.lineOffset
+            e.newOffset = e.offset - 1
+          else
+            future_text = e.lineText[0..(e.offset - e.lineOffset - 2)].reverse
+            if future_text == nil or future_text == ""
+              set_start_of_line(e)
+            else
+              if inc = (future_text =~ /[^\w]/)
+                e.newOffset = e.offset - inc - 1
+              else
+                set_start_of_line(e)
+              end
+            end
+          end
+        end
+      end
+      
+      private
+      
+      def set_start_of_line(e)
+        e.newOffset = e.lineOffset
+      end
+      
+      def set_end_of_line(e)
+        e.newOffset = e.lineOffset + e.lineText.length
+      end
+    end
+  
     def attach_listeners
       # h = @document.add_listener(:set_text, &method(:reparse))
       # @handlers << [@document, h]
+      @mate_text.get_text_widget.add_word_movement_listener(WordMoveListener.new(self))
     end
     
     def reparse
