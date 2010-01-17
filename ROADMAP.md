@@ -19,7 +19,7 @@ The features of this release are chosen to be the minimum to make Redcar self-ho
   * Runs on 3 platforms           (done)  
 
 0.3.1dev - *Developer preview* - DONE
-------------------------------
+-------------------------------------
 
 Features:
 
@@ -33,18 +33,25 @@ Features:
   * Plugins stuff:
       - can add to menus easily   (done)
   
+
+0.3.2dev - *Developer preview* - DONE
+-------------------------------------
+
+Features:
+  
+  * Dialog library with simple DSL
+  * Per-plugin storage
+  * Tooltip output from commands
+  * Speedbar returns
+
 More previews to add
 --------------------
 
   * Tests passing on 3 platforms
-  * Dialog library with simple DSL
   * Gem plugins
-  * Per-plugin storage
   * HTML output from commands
-  * Tooltip output from commands
   * Full project support
   * Fuzzy file finder
-  * Speedbar returns
   * Embedded web server for plugins/plugin configuration
   * Snippets
   * Go to symbol

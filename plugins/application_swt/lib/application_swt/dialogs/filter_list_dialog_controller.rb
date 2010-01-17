@@ -72,7 +72,7 @@ module Redcar
       def update_list
         @last_keypress = Time.now
         Swt::Widgets::Display.getCurrent.timerExec(300, Swt::RRunnable.new { 
-          if @last_keypress and Time.now - @last_keypress > 0.250
+          if @dialog and @last_keypress and Time.now - @last_keypress > 0.250
             @last_keypress = nil
             s = Time.now
             list = @model.update_list(@dialog.text.get_text)
