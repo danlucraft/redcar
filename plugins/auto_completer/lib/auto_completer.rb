@@ -13,7 +13,8 @@ module Redcar
     end
     
     class AutoCompleteCommand < Redcar::EditTabCommand
-      key "Ctrl+Escape"
+      key :osx => "Ctrl+Escape", :linux => "Ctrl+Escape",
+          :windows => "Ctrl+Escape"
       
       def execute
         controller = doc.controllers(AutoCompleter::DocumentController).first
@@ -21,19 +22,26 @@ module Redcar
 
         if controller.in_completion?
           doc.delete(doc.cursor_offset - controller.length_of_previous, controller.length_of_previous)
-        end
-
-        iterator = WordIterator.new(doc, WORD_CHARACTERS)
-        word_list = WordList.new
-        
-        word, left, right = touched_word
- 
-        if word
-          iterator.each_word_with_offset(word) do |word, offset|
-            distance = (offset - doc.cursor_offset).abs
-            word_list.add_word(word, distance)
+          word = controller.word
+          left = controller.left
+          right = controller.right
+          word_list = controller.word_list
+        else
+          word, left, right = touched_word
+          if word
+            iterator = WordIterator.new(doc, WORD_CHARACTERS)
+            word_list = WordList.new
+            iterator.each_word_with_offset(word) do |matching_word, offset|
+              distance = (offset - doc.cursor_offset).abs
+              word_list.add_word(matching_word, distance)
+            end
+            controller.word_list = word_list
+            controller.word      = word
+            controller.left      = left
+            controller.right     = right
           end
-  
+        end
+        if word
           index = (controller.index || 0) + 1
           if word_list.completions.length == index
             index = 0
@@ -43,14 +51,14 @@ module Redcar
           
           start_offset = right
           doc.insert(right, completion[word.length..-1])
-          word_end_offset = right + completion.length
+          word_end_offset = right + completion.length - word.length
           doc.cursor_offset = word_end_offset
   
           controller.length_of_previous = completion.length - word.length
   
-          controller.end_modification
           controller.start_completion
         end
+        controller.end_modification
       end
       
       private

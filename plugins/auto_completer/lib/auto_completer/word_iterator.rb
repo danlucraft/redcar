@@ -16,6 +16,7 @@ module Redcar
         word = []
 
         text.each_char do |char|
+         # p [inside_word, char, word]
           if char =~ @word_chars
             unless inside_word
               word_offset = char_offset
@@ -26,6 +27,7 @@ module Redcar
             if inside_word
               joined = word.join
               if joined =~ /^#{prefix}/
+          #    p [:yield, joined]
                 yield joined, word_offset
               end
               inside_word = false
@@ -35,8 +37,9 @@ module Redcar
           char_offset += 1
         end
         
-        # also yield the last word of the document (why???)
+        # also yield the last word of the document if it matches
         if word.join =~ /^#{prefix}/
+        #p [:yield, word.join]
           yield word.join, word_offset
         end
       end

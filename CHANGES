@@ -16,6 +16,7 @@ New features:
   * Select All and Select Line commands.
   * Cut and Copy will take the line if there is no selection
   * Block typing mode
+  * Auto completer
 
 Internal changes:
 
