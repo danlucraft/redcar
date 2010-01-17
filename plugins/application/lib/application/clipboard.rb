@@ -17,7 +17,13 @@ module Redcar
       @contents = []
     end
     
+    # Add text to the clipboard.
+    #
+    # @param [String, Array<String>]
     def <<(text)
+      if text.is_a?(String)
+        text = [text]
+      end
       @contents << text
       if @contents.length == Clipboard.max_length + 1
         @contents.delete_at(0)
@@ -50,7 +56,7 @@ module Redcar
     
     def check_for_changes
       if controller and controller.changed?
-        controller.last_set = @contents.last
+        controller.last_set = @contents.last.join("\n")
         self << controller.get_contents
       end
     end

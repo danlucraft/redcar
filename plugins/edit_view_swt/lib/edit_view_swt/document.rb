@@ -74,9 +74,24 @@ module Redcar
         range.x...(range.x + range.y)
       end
       
+      def selection_ranges
+        ranges = styledText.get_selection_ranges
+        ranges.to_a.each_slice(2).map do |from, length|
+          from...(from + length)
+        end
+      end
+      
       def set_selection_range(start, _end)
         styledText.set_selection(start, _end)
         @model.selection_range_changed(start, _end)
+      end
+      
+      def block_selection_mode?
+        styledText.get_block_selection
+      end
+      
+      def block_selection_mode=(bool)
+        styledText.set_block_selection(bool)
       end
       
       def styledText

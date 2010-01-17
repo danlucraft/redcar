@@ -301,11 +301,18 @@ module Redcar
     
       def execute
         if doc.selection?
-          Redcar.app.clipboard << doc.selected_text
-          doc.delete(doc.selection_range.begin, doc.selection_range.count)
+          text = doc.selection_ranges.map do |range|
+            doc.get_range(range.begin, range.count)
+          end
+          p text
+          Redcar.app.clipboard << text
+          diff = 0
+          doc.selection_ranges.each do |range|
+            doc.delete(range.begin - diff, range.count)
+            diff += range.count
+          end
         else
           Redcar.app.clipboard << doc.get_line(doc.cursor_line)
-          p Redcar.app.clipboard.last
           doc.delete(doc.cursor_line_start_offset, 
                      doc.cursor_line_end_offset - doc.cursor_line_start_offset)
         end
@@ -319,7 +326,10 @@ module Redcar
     
       def execute
         if doc.selection?
-          Redcar.app.clipboard << doc.selected_text
+          text = doc.selection_ranges.map do |range|
+            doc.get_range(range.begin, range.count)
+          end
+          Redcar.app.clipboard << text
         else
           Redcar.app.clipboard << doc.get_line(doc.cursor_line)
         end
@@ -334,11 +344,24 @@ module Redcar
           :windows => "Ctrl+V"
     
       def execute
-        if doc.selection?
-          doc.delete(doc.selection_range.begin, doc.selection_range.count)
+        start_offset = doc.selection_ranges.first.begin
+        start_line   = doc.line_at_offset(start_offset)
+        line_offset  = start_offset - doc.offset_at_line(start_line)
+        cursor_line  = doc.cursor_line
+        cursor_line_offset = doc.cursor_line_offset
+        diff = 0
+        doc.selection_ranges.each do |range|
+          doc.delete(range.begin - diff, range.count)
+          diff += range.count
         end
-        new_offset = doc.cursor_offset + Redcar.app.clipboard.last.length
-        doc.insert(doc.cursor_offset, Redcar.app.clipboard.last)
+        texts = Redcar.app.clipboard.last.dup
+        texts.each_with_index do |text, i|
+          doc.insert(
+            doc.offset_at_line(start_line + i) + line_offset,
+            text
+          )
+        end
+        new_offset = doc.offset_at_line(cursor_line) + cursor_line_offset + Redcar.app.clipboard.last.first.length
         doc.cursor_offset = new_offset
       end
     end
@@ -440,6 +463,12 @@ module Redcar
       end
     end
     
+    class ToggleBlockSelectionCommand < Redcar::EditTabCommand
+      def execute
+        doc.block_selection_mode = !doc.block_selection_mode?
+      end
+    end
+    
     def self.menus
       Menu::Builder.build do
         sub_menu "File" do
@@ -480,6 +509,7 @@ module Redcar
             item "All", SelectAllCommand
             item "Line", SelectLineCommand
           end
+          item "Toggle Block Selection", ToggleBlockSelectionCommand
         end
         sub_menu "Project" do
           item "Find File", Project::FindFileCommand

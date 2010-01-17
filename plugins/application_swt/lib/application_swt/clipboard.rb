@@ -21,6 +21,7 @@ module Redcar
       
       def attach_model_listeners
         @model.add_listener(:added_internal) do |text|
+          text = text.join("\n")
           @last_set = text
           @swt_clipboard.set_contents([text].to_java(:object), [plain_text_data_type].to_java(Swt::DND::Transfer))
         end

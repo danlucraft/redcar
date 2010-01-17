@@ -204,6 +204,10 @@ module Redcar
       controller.cursor_offset
     end
     
+    def cursor_line_offset
+      cursor_offset - offset_at_line(cursor_line)
+    end
+    
     # Set the position of the cursor.
     #
     # @param [Integer] offset   zero-based character offset
@@ -216,6 +220,13 @@ module Redcar
     # @return [Range<Integer>] a range between two character offsets
     def selection_range
       controller.selection_range
+    end
+
+    # The ranges of text selected by the user.
+    #
+    # @return [Range<Integer>] a range between two character offsets
+    def selection_ranges
+      controller.selection_ranges
     end
     
     # Set the range of text selected by the user.
@@ -231,6 +242,14 @@ module Redcar
     # @return [String]
     def selected_text
       get_range(selection_range.begin, selection_range.count)
+    end
+    
+    def block_selection_mode?
+      controller.block_selection_mode?
+    end
+    
+    def block_selection_mode=(boolean)
+      controller.block_selection_mode = !!boolean
     end
     
     # Get a range of text from the document.
