@@ -54,6 +54,12 @@ Feature: Auto Complete
     And I replace the contents with "Da Daly Dan"
     And I auto-complete
     Then I should see "Da Daly Dan" in the edit tab
-   
+
+  Scenario: Autocomplete with one completions at the end of a line
+    When I open a new edit tab
+    And I replace the contents with "Daly Da\nfoo"
+    And I move the cursor to 7
+    And I auto-complete
+    Then I should see "Daly Daly\nfoo" in the edit tab
 
 

@@ -19,6 +19,7 @@ When /^I close the focussed tab$/ do
 end
 
 When /^I replace the contents with "([^\"]*)"$/ do |arg1|
+  arg1 = arg1.gsub("\\n", "\n")
   win = Redcar.app.windows.first
   tab = win.focussed_notebook.focussed_tab
   tab.edit_view.document.text = arg1
@@ -76,6 +77,7 @@ Then /^the tab should have the keyboard focus$/ do
 end
 
 Then /^I should (not )?see "(.*)" in the edit tab$/ do |bool, content|
+  content = content.gsub("\\n", "\n")
   bool = !bool
   matcher = bool ? be_true : be_false
   focussed_tab.edit_view.document.to_s.include?(content).should matcher

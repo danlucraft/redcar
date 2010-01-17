@@ -27,7 +27,7 @@ module Redcar
         word_list = WordList.new
         
         word, left, right = touched_word
-
+ 
         if word
           iterator.each_word_with_offset(word) do |word, offset|
             distance = (offset - doc.cursor_offset).abs
