@@ -58,8 +58,7 @@ module Redcar
         layout.verticalSpacing = 0
         layout.marginHeight = 0
         @composite.setLayout(layout)
-        path = File.join(Redcar.root, %w(plugins application icons darwin-folder.png))
-        image = Swt::Graphics::Image.new(ApplicationSWT.display, path)
+        image = Swt::Graphics::Image.new(ApplicationSWT.display, Redcar::Speedbar.close_image_path)
         label = Swt::Widgets::Label.new(@composite, 0)
         label.set_image(image)
 	

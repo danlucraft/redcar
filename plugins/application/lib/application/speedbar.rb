@@ -25,6 +25,10 @@ module Redcar
       items << item
     end
     
+    def self.close_image_path
+      File.join(Redcar.root, %w(plugins application icons close.png))
+    end
+    
     def self.define_value_finder(name)
       self.class_eval %Q{
         def #{name}
