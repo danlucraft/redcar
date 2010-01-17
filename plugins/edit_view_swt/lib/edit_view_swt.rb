@@ -179,6 +179,14 @@ module Redcar
       @mate_text.set_grammar_by_name(name)
     end
     
+    def smallest_visible_line
+      @mate_text.viewer.get_top_index
+    end
+    
+    def biggest_visible_line
+      @mate_text.viewer.get_bottom_index
+    end
+    
     def update_grammar(new_mirror)
       title = new_mirror.title
       return if @mate_text.set_grammar_by_filename(title)

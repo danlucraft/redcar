@@ -355,17 +355,64 @@ module Redcar
       end
     end
     
-    class SpeedbarExample < Redcar::Command
-      class SearchSpeedbar < Redcar::Speedbar
-        label "Query"
-        textbox(:query, "search for this") { |v| p [:query_changed, v] }
-        toggle(:case_sensitive, "case sensitive", "Ctrl+I", false) {|v| p [:case_sensitive_changed, v] }
-        button(:search, "Cmd+N") { p :search_pressed }
-        key("Ctrl+R") { p :ctrl_r_pressed }
+    class SearchForwardCommand < Redcar::EditTabCommand
+      key :osx => "Ctrl+S"
+      
+      class Speedbar < Redcar::Speedbar
+        label "Regex"
+        textbox :query
+        button :search, "Return" do
+          FindNextRegex.new(Regexp.new(@speedbar.query), false).run
+        end
       end
       
       def execute
-        win.open_speedbar(SearchSpeedbar.new)
+        @speedbar = SearchForwardCommand::Speedbar.new(self)
+        win.open_speedbar(@speedbar)
+      end
+    end
+    
+    class FindNextRegex < Redcar::EditTabCommand
+      def initialize(re, wrap=nil)
+        @re = re
+        @wrap = wrap
+      end
+  
+      def to_s
+        "<#{self.class}: @re:#{@re.inspect} wrap:#{!!@wrap}>"
+      end
+  
+      def execute
+        # first search the remainder of the current line
+        curr_line = doc.get_line(doc.cursor_line)
+        cursor_line_offset = doc.cursor_offset - doc.offset_at_line(doc.cursor_line)
+        curr_line = curr_line[cursor_line_offset..-1]
+        if curr_line =~ @re
+          line_start = doc.offset_at_line(doc.cursor_line)
+          startoff = line_start + $`.length + cursor_line_offset
+          endoff   = startoff + $&.length
+          doc.set_selection_range(startoff..endoff)
+        else
+          # next search the rest of the lines
+          line_num = doc.cursor_line + 1
+          curr_line = doc.get_line(line_num)
+          until line_num == doc.line_count - 1 or 
+                found = (curr_line.to_s =~ @re)
+            line_num += 1
+            curr_line = doc.get_line(line_num)
+          end
+          if found
+            line_start = doc.offset_at_line(line_num)
+            startoff = line_start + $`.length
+            endoff   = startoff + $&.length
+            doc.set_selection_range(startoff..endoff)
+            doc.scroll_to_line(line_num)
+          end
+          if !doc.get_line(line_num) and @wrap
+            doc.cursor_offset = 0
+            execute
+          end
+        end
       end
     end
     
@@ -403,6 +450,7 @@ module Redcar
           item "Strip Whitespace", StripWhitespaceCommand
           separator
           item "Goto Line", GotoLineCommand
+          item "Regex Search",    SearchForwardCommand
         end
         sub_menu "Project" do
           item "Find File", Project::FindFileCommand
@@ -414,7 +462,6 @@ module Redcar
           item "Print Scope Tree", PrintScopeTreeCommand
           item "Refresh Directory", Project::RefreshDirectoryCommand
           item "Dialog Tester", DialogExample
-          item "Speedbar Example", SpeedbarExample
         end
         sub_menu "View" do
           item "Rotate Notebooks", RotateNotebooksCommand

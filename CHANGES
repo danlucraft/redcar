@@ -9,6 +9,7 @@ Enhancements:
   * Remembers last directory when opening a file/directory. (thanks Roger Pack)
   * Word movement (alt-left, alt-right) now works as it should in an editor for
     programmers.
+  * Very simple forward search command.
   * Somewhat faster startup time.
   * Nicer error message when jruby jar is missing.
 
@@ -22,6 +23,7 @@ Fixes:
   * Cut/Copy sometimes didn't work.
   * The show more tabs menu in a notebook is handled properly.
   * Deleting a lot of lines no longer causes the last few to lose highlighting.
+  * Clojure highlighting works.
 
 Version 0.3.1dev (9 Jan 2010)
 =============================

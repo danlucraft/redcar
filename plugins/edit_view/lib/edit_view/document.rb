@@ -262,10 +262,47 @@ module Redcar
       end
     end
     
+    # Does the minimum amount of scrolling that brings the given line 
+    # into the viewport. Which may be none at all.
+    #
+    # @param [Integer] line_ix  a zero-based line index
     def scroll_to_line(line_ix)
-      @edit_view.controller.scroll_to_line(line_ix)
+      if line_ix > biggest_visible_line
+        top_line_ix = smallest_visible_line + (line_ix - biggest_visible_line) + 2
+        top_line_ix = [top_line_ix, line_count - 1].min
+        scroll_to_line_at_top(top_line_ix)
+      elsif line_ix < smallest_visible_line
+        bottom_line_ix = line_ix - 2
+        bottom_line_ix = [bottom_line_ix, 0].max
+        scroll_to_line_at_top(bottom_line_ix)
+      end
     end
     
+    # Tries to scroll so the given line is at the top of the viewport.
+    #
+    # @param [Integer] line_ix  a zero-based line index
+    def scroll_to_line_at_top(line_ix)
+      @edit_view.controller.scroll_to_line(line_ix)
+    end
+
+    # The line_ix of the line at the top of the viewport.
+    #
+    # @return [Integer] a zero-based line index    
+    def smallest_visible_line
+      @edit_view.controller.smallest_visible_line
+    end
+    
+    # The line_ix of the line at the bottom of the viewport.
+    #
+    # @return [Integer] a zero-based line index    
+    def biggest_visible_line
+      @edit_view.controller.biggest_visible_line
+    end
+
+    def num_lines_visible
+      biggest_visible_line - smallest_visible_line
+    end
+
     private
     
     def update_from_mirror
