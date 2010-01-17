@@ -1,4 +1,6 @@
 
+SWT_APP_NAME = "Redcar"
+
 require "application_swt/swt_wrapper"
 require "application_swt/swt/listener_helpers"
 

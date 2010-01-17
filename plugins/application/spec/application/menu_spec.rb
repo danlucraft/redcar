@@ -47,4 +47,76 @@ describe Redcar::Menu do
       @menu.entries.first.text.should == "Cut"
     end
   end
+  
+  def build(name=nil, &block)
+    Redcar::Menu::Builder.build(name, &block)
+  end
+  
+  describe "merging Menus" do
+    it "adds items" do
+      menu = build "Plugins" do
+        item "Foo", 1
+        item "Bar", 2
+      end
+      
+      menu2 = build "Plugins" do
+        item "Bar", 3
+      end
+      
+      menu.merge(menu2)
+      
+      menu.should == build("Plugins") do
+        item "Foo", 1
+        item "Bar", 3
+      end
+    end
+
+    it "adds Menus" do
+      menu = build "Plugins" do
+        sub_menu "REPL" do
+        end
+      end
+      
+      menu2 = build "Plugins" do
+        sub_menu "My Plugin" do
+        end
+      end
+      
+      menu.merge(menu2)
+      
+      menu.should == build("Plugins") do
+        sub_menu "REPL" do
+        end
+        sub_menu "My Plugin" do
+        end
+        
+      end
+    end
+    
+    it "replaces a menu with an item and vice versa" do
+      menu = build "Plugins" do
+        item "My Plugin", 201
+        sub_menu "REPL" do
+        end
+      end
+      
+      menu2 = build "Plugins" do
+        item "REPL", 101
+        sub_menu "My Plugin" do
+        end
+      end
+      
+      menu.merge(menu2)
+      
+      menu.should == build("Plugins") do
+        sub_menu "My Plugin" do
+        end
+        item "REPL", 101
+      end
+    end
+  end
 end
+
+
+
+

@@ -3,20 +3,25 @@ require 'repl/internal_mirror'
 
 module Redcar
   class REPL
-    def self.start
-      Sensitivity.new(:open_repl_tab, Redcar.app, false, [:tab_focussed]) do |tab|
-        tab and 
-        tab.is_a?(EditTab) and 
-        tab.edit_view.document.mirror.is_a?(REPL::InternalMirror)
-      end
-      
-      Redcar.app.menu.sub_menu("Plugins").build do
-        sub_menu "REPL" do
-          item "Open",    REPL::OpenInternalREPL
-          item "Execute", REPL::CommitREPL
+    def self.sensitivities
+      [
+        Sensitivity.new(:open_repl_tab, Redcar.app, false, [:tab_focussed]) do |tab|
+          tab and 
+          tab.is_a?(EditTab) and 
+          tab.edit_view.document.mirror.is_a?(REPL::InternalMirror)
+        end
+      ]
+    end
+    
+    def self.menus
+      Menu::Builder.build do
+        sub_menu "Plugins" do
+          sub_menu "REPL" do
+            item "Open",    REPL::OpenInternalREPL
+            item "Execute", REPL::CommitREPL
+          end
         end
       end
-      Redcar.app.refresh_menu!
     end
     
     class OpenInternalREPL < Command

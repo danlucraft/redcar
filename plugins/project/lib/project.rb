@@ -12,13 +12,14 @@ module Redcar
       @storage ||= Plugin::Storage.new('project_plugin')
     end
     
-    def self.start
-      @open_project_sensitivity = 
-        Sensitivity.new(:open_project, Redcar.app, false, [:focussed_window]) do
-          if win = Redcar.app.focussed_window
-            win.treebook.trees.detect {|t| t.tree_mirror.is_a?(DirMirror) }
+    def self.sensitivities
+      [ @open_project_sensitivity = 
+          Sensitivity.new(:open_project, Redcar.app, false, [:focussed_window]) do
+            if win = Redcar.app.focussed_window
+              win.treebook.trees.detect {|t| t.tree_mirror.is_a?(DirMirror) }
+            end
           end
-        end
+      ]
     end
     
     class << self

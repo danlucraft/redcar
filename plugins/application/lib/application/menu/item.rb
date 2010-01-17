@@ -26,6 +26,14 @@ module Redcar
       def selected
         @command.new.run
       end
+      
+      def merge(other)
+        @command = other.command
+      end
+      
+      def ==(other)
+        text == other.text and command == other.command
+      end
     end
   end
 end

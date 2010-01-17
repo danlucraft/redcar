@@ -23,6 +23,10 @@ module Redcar
     class Builder
       attr_reader :menu
       
+      def self.build(name=nil, &block)
+        new(name, &block).menu
+      end
+      
       def initialize(menu_or_text=nil, &block)
         case menu_or_text
         when String, nil

@@ -51,8 +51,11 @@ module Swt
     import org.eclipse.swt.widgets.Text
     import org.eclipse.swt.widgets.ToolTip
   end
-
+  
   def self.display
+    if defined?(SWT_APP_NAME)
+      Swt::Widgets::Display.app_name = SWT_APP_NAME
+    end
     @display ||= (Swt::Widgets::Display.getCurrent || Swt::Widgets::Display.new)
   end
 

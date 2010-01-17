@@ -4,19 +4,17 @@ module Redcar
   class MyPlugin
   
     # This method is run as Redcar is booting up.
-    def self.start
+    def self.menus
       # Here's how the plugin menus are drawn. Try adding more
       # items or sub_menus.
-      Redcar.app.menu.sub_menu("Plugins").build do
-        sub_menu "My Plugin" do
-          item "Hello World!", HelloWorldCommand
-          item "Edit My Plugin", EditMyPluginCommand
+      Menu::Builder.build do
+        sub_menu "Plugins" do
+          sub_menu "My Plugin" do
+            item "Hello World!", HelloWorldCommand
+            item "Edit My Plugin", EditMyPluginCommand
+          end
         end
       end
-      
-      # We have to refresh the menus, because they may already
-      # have been drawn.
-      Redcar.app.refresh_menu!
     end
 
     # Example command: showing a dialog box.

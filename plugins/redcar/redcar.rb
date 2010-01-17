@@ -369,16 +369,8 @@ module Redcar
       end
     end
     
-    def self.start
-      Application.start
-      ApplicationSWT.start
-      AutoIndenter.start
-      EditView.start
-      EditViewSWT.start
-      Project.start
-      Redcar.gui = ApplicationSWT.gui
-      Redcar.app.controller = ApplicationSWT.new(Redcar.app)
-      builder = Menu::Builder.new do
+    def self.menus
+      Menu::Builder.build do
         sub_menu "File" do
           item "New", NewCommand
           item "New Notebook", NewNotebookCommand
@@ -438,11 +430,19 @@ module Redcar
           item "Website", PrintHistoryCommand
         end
       end
+    end
+    
+    def self.start
+      Application.start
+      ApplicationSWT.start
+      AutoIndenter.start
+      EditViewSWT.start
+      Redcar.gui = ApplicationSWT.gui
+      Redcar.app.controller = ApplicationSWT.new(Redcar.app)
       
-      Redcar.app.menu = builder.menu
+      Redcar.app.load_menus
+      Redcar.app.load_sensitivities
       Redcar.app.new_window
-            MyPlugin.start
-
     end
   end
 end

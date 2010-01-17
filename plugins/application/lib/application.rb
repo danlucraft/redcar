@@ -39,27 +39,32 @@ module Redcar
     def self.start
       Redcar.app     = Application.new
       Redcar.history = Command::History.new
-      Sensitivity.new(:open_tab, Redcar.app, false, [:focussed_window, :tab_focussed]) do |tab|
-        if win = Redcar.app.focussed_window
-          win.focussed_notebook.focussed_tab
+    end
+    
+    def self.sensitivities
+      [ 
+        Sensitivity.new(:open_tab, Redcar.app, false, [:focussed_window, :tab_focussed]) do |tab|
+          if win = Redcar.app.focussed_window
+            win.focussed_notebook.focussed_tab
+          end
+        end,
+        Sensitivity.new(:single_notebook, Redcar.app, true, [:focussed_window, :notebook_change]) do
+          if win = Redcar.app.focussed_window
+            win.notebooks.length == 1
+          end
+        end,
+        Sensitivity.new(:multiple_notebooks, Redcar.app, false, [:focussed_window, :notebook_change]) do
+          if win = Redcar.app.focussed_window
+            win.notebooks.length > 1
+          end
+        end,
+        Sensitivity.new(:other_notebook_has_tab, Redcar.app, false, 
+                        [:focussed_window, :focussed_notebook, :notebook_change, :tab_closed]) do
+          if win = Redcar.app.focussed_window and notebook = win.nonfocussed_notebook
+            notebook.tabs.any?
+          end
         end
-      end
-      Sensitivity.new(:single_notebook, Redcar.app, true, [:focussed_window, :notebook_change]) do
-        if win = Redcar.app.focussed_window
-          win.notebooks.length == 1
-        end
-      end
-      Sensitivity.new(:multiple_notebooks, Redcar.app, false, [:focussed_window, :notebook_change]) do
-        if win = Redcar.app.focussed_window
-          win.notebooks.length > 1
-        end
-      end
-      Sensitivity.new(:other_notebook_has_tab, Redcar.app, false, 
-                      [:focussed_window, :focussed_notebook, :notebook_change, :tab_closed]) do
-        if win = Redcar.app.focussed_window and notebook = win.nonfocussed_notebook
-          notebook.tabs.any?
-        end
-      end
+      ]
     end
     
     attr_reader :clipboard
@@ -140,6 +145,24 @@ module Redcar
     # instead of setting it afresh.
     def refresh_menu!
       self.menu = @menu
+    end
+    
+    def load_menus
+      menu = Menu.new
+      Redcar.plugin_manager.loaded_plugins.each do |plugin|
+        if plugin.object.respond_to?(:menus)
+          menu.merge(plugin.object.menus)
+        end
+      end
+      self.menu = menu
+    end
+    
+    def load_sensitivities
+      Redcar.plugin_manager.loaded_plugins.each do |plugin|
+        if plugin.object.respond_to?(:sensitivities)
+          plugin.object.sensitivities
+        end
+      end
     end
     
     def attach_window_listeners(window)
