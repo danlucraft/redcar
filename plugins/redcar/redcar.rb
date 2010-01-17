@@ -295,8 +295,6 @@ module Redcar
     end
     
     class CutCommand < Redcar::EditTabCommand
-      sensitize :selected_text
-      
       key :osx     => "Cmd+X",
           :linux   => "Ctrl+X",
           :windows => "Ctrl+X"
@@ -306,14 +304,15 @@ module Redcar
           Redcar.app.clipboard << doc.selected_text
           doc.delete(doc.selection_range.begin, doc.selection_range.count)
         else
-          
+          Redcar.app.clipboard << doc.get_line(doc.cursor_line)
+          p Redcar.app.clipboard.last
+          doc.delete(doc.cursor_line_start_offset, 
+                     doc.cursor_line_end_offset - doc.cursor_line_start_offset)
         end
       end
     end
     
     class CopyCommand < Redcar::EditTabCommand
-      sensitize :selected_text
-      
       key :osx     => "Cmd+C",
           :linux   => "Ctrl+C",
           :windows => "Ctrl+C"
@@ -321,6 +320,8 @@ module Redcar
       def execute
         if doc.selection?
           Redcar.app.clipboard << doc.selected_text
+        else
+          Redcar.app.clipboard << doc.get_line(doc.cursor_line)
         end
       end
     end

@@ -1,37 +1,5 @@
 Feature: Cut and Paste
 
-  Scenario: Commands are inactive for a new tab
-    When I open a new edit tab
-    Then the menu item "Edit|Cut" should be inactive
-    And the menu item "Edit|Copy" should be inactive
-    And the menu item "Edit|Paste" should be inactive
-  
-  Scenario: Cut and copy are active when there is selected text
-    When I open a new edit tab
-    And I replace the contents with "Frank"
-    And I select from 0 to 3
-    Then the menu item "Edit|Cut" should be active
-    And the menu item "Edit|Copy" should be active
-    And the menu item "Edit|Paste" should be inactive
-  
-  Scenario: Paste is active once I've copied something
-    When I open a new edit tab
-    And I replace the contents with "Frank"
-    And I select from 0 to 3
-    And I copy text
-    Then the menu item "Edit|Cut" should be active
-    And the menu item "Edit|Copy" should be active
-    And the menu item "Edit|Paste" should be active
-
-  Scenario: Paste is active once I've cut something
-    When I open a new edit tab
-    And I replace the contents with "Frank"
-    And I select from 0 to 3
-    And I cut text
-    Then the menu item "Edit|Cut" should be inactive
-    And the menu item "Edit|Copy" should be inactive
-    And the menu item "Edit|Paste" should be active
-  
   Scenario: Cut removes the text
     When I open a new edit tab
     And I replace the contents with "Frank"

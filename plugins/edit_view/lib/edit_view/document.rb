@@ -108,12 +108,15 @@ module Redcar
       offset_at_line(cursor_line)
     end
     
-    
     def cursor_line_end_offset
-      if cursor_line == line_count - 1
+      offset_at_line_end(cursor_line)
+    end
+    
+    def offset_at_line_end(line_ix)
+      if line_ix == line_count - 1
         end_offset = length
       else
-        end_offset = offset_at_line(cursor_line + 1)
+        end_offset = offset_at_line(line_ix + 1)
       end
     end
     
@@ -245,7 +248,10 @@ module Redcar
     # @param [Integer] line_ix  the zero-based line number
     # @return [String] the text of the line
     def get_line(line_ix)
-      controller.get_line(line_ix)
+      controller.get_range(
+        offset_at_line(line_ix),
+        offset_at_line_end(line_ix) - offset_at_line(line_ix)
+      )
     end
     
     # Replace a line in the document. This has two modes. In the first, 

@@ -13,6 +13,7 @@ Enhancements:
   * Somewhat faster startup time.
   * Nicer error message when jruby jar is missing.
   * Select All and Select Line commands.
+  * Cut and Copy will take the line if there is no selection
 
 Internal changes:
 
