@@ -2,7 +2,7 @@
 Version 0.3.2dev (TBA)
 ======================
 
-Enhancements:
+New features:
 
   * Dialog API for plugins and commands to use.
   * Speedbar API for plugins and commands to use (e.g. Goto Line command).
@@ -15,6 +15,7 @@ Enhancements:
   * Added Goto Line command
   * Select All and Select Line commands.
   * Cut and Copy will take the line if there is no selection
+  * Block typing mode
 
 Internal changes:
 

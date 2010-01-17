@@ -7,7 +7,7 @@ describe Redcar::Clipboard do
   
   it "accepts new contents" do
     @clipboard << "havelock"
-    @clipboard.last.should == "havelock"
+    @clipboard.last.should == ["havelock"]
   end
   
   it "reports it's length" do
@@ -22,9 +22,9 @@ describe Redcar::Clipboard do
     @clipboard << "havelock"
     @clipboard << "samuel"
     @clipboard << "sybil"
-    @clipboard[2].should == "havelock"
-    @clipboard[1].should == "samuel"
-    @clipboard[0].should == "sybil"
+    @clipboard[2].should == ["havelock"]
+    @clipboard[1].should == ["samuel"]
+    @clipboard[0].should == ["sybil"]
   end
   
   it "has a maximum length" do

@@ -361,7 +361,6 @@ module Redcar
             doc.insert(doc.length, "\n" + " "*line_offset)
           else
             line = doc.get_line(line_ix)
-            p line
             if line.length - 1 < line_offset
               doc.insert(
                 doc.offset_at_inner_end_of_line(line_ix),
