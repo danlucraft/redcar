@@ -67,12 +67,15 @@ module Redcar
       end
       
       def connect_command_to_item(item, entry)
-        if entry.command.get_key
-          key_specifier = entry.command.get_key
-          key_string    = BindingTranslator.platform_key_string(key_specifier)
-          item.text = entry.text + "\t" + key_string
-          item.set_accelerator(BindingTranslator.key(key_string))
-          Menu.items[key_string] << item
+        if key_specifier = entry.command.get_key
+          if key_string    = BindingTranslator.platform_key_string(key_specifier)
+            item.text = entry.text + "\t" + key_string
+            item.set_accelerator(BindingTranslator.key(key_string))
+            Menu.items[key_string] << item
+          else
+            puts "you didn't specify a keybinding for this platform for #{entry.text}"
+            item.text = entry.text
+          end
         else
           item.text = entry.text
         end

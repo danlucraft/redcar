@@ -415,7 +415,7 @@ module Redcar
     end
     
     class SearchForwardCommand < Redcar::EditTabCommand
-      key :osx => "Ctrl+S"
+      key :osx => "Cmd+F", :linux => "Ctrl+F", :windows => "Ctrl+F"
       
       class Speedbar < Redcar::Speedbar
         label "Regex"
