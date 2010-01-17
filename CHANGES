@@ -12,6 +12,7 @@ Enhancements:
   * Very simple forward search command.
   * Somewhat faster startup time.
   * Nicer error message when jruby jar is missing.
+  * Select All and Select Line commands.
 
 Internal changes:
 

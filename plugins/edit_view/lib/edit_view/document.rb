@@ -103,6 +103,20 @@ module Redcar
       line_at_offset(cursor_offset)
     end
     
+    
+    def cursor_line_start_offset
+      offset_at_line(cursor_line)
+    end
+    
+    
+    def cursor_line_end_offset
+      if cursor_line == line_count - 1
+        end_offset = length
+      else
+        end_offset = offset_at_line(cursor_line + 1)
+      end
+    end
+    
     # Is there any text selected? (Or equivalently, is the length
     # of the selection equal to 0)
     #

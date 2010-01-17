@@ -283,6 +283,17 @@ module Redcar
       end
     end
     
+    class SelectLineCommand < Redcar::EditTabCommand
+      key :osx     => "Cmd+Shift+L",
+          :linux   => "Ctrl+Shift+L",
+          :windows => "Ctrl+Shift+L"
+    
+      def execute
+        doc.set_selection_range(
+          doc.cursor_line_start_offset..doc.cursor_line_end_offset)
+      end
+    end
+    
     class CutCommand < Redcar::EditTabCommand
       sensitize :selected_text
       
@@ -294,6 +305,8 @@ module Redcar
         if doc.selection?
           Redcar.app.clipboard << doc.selected_text
           doc.delete(doc.selection_range.begin, doc.selection_range.count)
+        else
+          
         end
       end
     end
@@ -464,6 +477,7 @@ module Redcar
           separator
           sub_menu "Select" do
             item "All", SelectAllCommand
+            item "Line", SelectLineCommand
           end
         end
         sub_menu "Project" do
