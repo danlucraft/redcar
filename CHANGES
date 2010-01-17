@@ -12,7 +12,7 @@ New features:
   * Very simple forward search command.
   * Somewhat faster startup time.
   * Nicer error message when jruby jar is missing.
-  * Added Goto Line command
+  * Goto Line command
   * Select All and Select Line commands.
   * Cut and Copy will take the line if there is no selection
   * Block typing mode
