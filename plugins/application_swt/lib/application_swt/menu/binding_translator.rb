@@ -10,6 +10,7 @@ module Redcar
           else
             key_string = key_specifier
           end
+          key_string.gsub("Escape", "")
           key_string
         end
 
@@ -20,7 +21,11 @@ module Redcar
               value += modifier_values[modifier]
             end
           end
-          value += key_string[-1]
+          if key_string =~ /Escape$/
+            value += Swt::SWT::ESC
+          else
+            value += key_string[-1]
+          end
         end
         
         def self.key_string(key_event)
