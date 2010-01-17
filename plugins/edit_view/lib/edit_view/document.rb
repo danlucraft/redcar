@@ -44,6 +44,10 @@ module Redcar
       end
     end
     
+    def controllers(klass)
+      @controllers.values.flatten.uniq.select {|c| c.is_a?(klass) }
+    end
+    
     def save!
       @mirror.commit(to_s)
       set_modified(false)

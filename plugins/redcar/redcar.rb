@@ -526,6 +526,7 @@ module Redcar
             item "Line", SelectLineCommand
           end
           item "Toggle Block Selection", ToggleBlockSelectionCommand
+          item "Auto Complete", AutoCompleter::AutoCompleteCommand
         end
         sub_menu "Project" do
           item "Find File", Project::FindFileCommand
@@ -559,6 +560,7 @@ module Redcar
       ApplicationSWT.start
       AutoIndenter.start
       EditViewSWT.start
+      AutoCompleter.start
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
       

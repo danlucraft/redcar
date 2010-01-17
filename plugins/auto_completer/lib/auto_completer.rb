@@ -1,6 +1,6 @@
 
-#require 'auto_completer/document_controller'
 
+require 'auto_completer/document_controller'
 require 'auto_completer/word_iterator'
 require 'auto_completer/word_list'
 
@@ -8,33 +8,47 @@ module Redcar
   class AutoCompleter
     WORD_CHARACTERS = /:|@|\w/ # /(\s|\t|\.|\r|\(|\)|,|;)/
     
-    def self.menus
-      Menu::Builder.build do
-        sub_menu "Edit" do
-          item "Auto Complete", AutoCompleteCommand
-        end
-      end
+    def self.start
+      Document.register_controller_type(AutoCompleter::DocumentController)
     end
     
     class AutoCompleteCommand < Redcar::EditTabCommand
       key "Escape"
       
       def execute
+        controller = doc.controllers(AutoCompleter::DocumentController).first
+        controller.start_modification
+
+        if controller.in_completion?
+          doc.delete(doc.cursor_offset - controller.length_of_previous, controller.length_of_previous)
+        end
+
         iterator = WordIterator.new(doc, WORD_CHARACTERS)
         word_list = WordList.new
         
         word, left, right = touched_word
-        p [word, left, right]
         
         iterator.each_word_with_offset(word) do |word, offset|
           distance = (offset - doc.cursor_offset).abs
           word_list.add_word(word, distance)
         end
-        completion = word_list.completions[1]
+
+        index = (controller.index || 0) + 1
+        if word_list.completions.length == index
+          index = 1
+        end
+        completion = word_list.completions[index]
+        controller.index = index
         
+        start_offset = right
         doc.insert(right, completion[word.length..-1])
         word_end_offset = right + completion.length
         doc.cursor_offset = word_end_offset
+
+        controller.length_of_previous = word.length
+
+        controller.end_modification
+        controller.start_completion
       end
       
       private
