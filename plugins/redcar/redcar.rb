@@ -356,8 +356,21 @@ module Redcar
         end
         texts = Redcar.app.clipboard.last.dup
         texts.each_with_index do |text, i|
+          line_ix = start_line + i
+          if line_ix == doc.line_count
+            doc.insert(doc.length, "\n" + " "*line_offset)
+          else
+            line = doc.get_line(line_ix)
+            p line
+            if line.length - 1 < line_offset
+              doc.insert(
+                doc.offset_at_inner_end_of_line(line_ix),
+                " "*(line_offset - line.length + 1)
+              )
+            end
+          end
           doc.insert(
-            doc.offset_at_line(start_line + i) + line_offset,
+            doc.offset_at_line(line_ix) + line_offset,
             text
           )
         end
@@ -464,6 +477,10 @@ module Redcar
     end
     
     class ToggleBlockSelectionCommand < Redcar::EditTabCommand
+      key :osx     => "Cmd+B",
+          :windows => "Ctrl+B",
+          :linux   => "Ctrl+B"
+      
       def execute
         doc.block_selection_mode = !doc.block_selection_mode?
       end
