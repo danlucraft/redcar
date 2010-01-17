@@ -273,6 +273,16 @@ module Redcar
       end
     end
     
+    class SelectAllCommand < Redcar::EditTabCommand
+      key :osx     => "Cmd+A",
+          :linux   => "Ctrl+Shift+A",
+          :windows => "Ctrl+Shift+A"
+    
+      def execute
+        doc.set_selection_range(0..(doc.length))
+      end
+    end
+    
     class CutCommand < Redcar::EditTabCommand
       sensitize :selected_text
       
@@ -451,6 +461,10 @@ module Redcar
           separator
           item "Goto Line", GotoLineCommand
           item "Regex Search",    SearchForwardCommand
+          separator
+          sub_menu "Select" do
+            item "All", SelectAllCommand
+          end
         end
         sub_menu "Project" do
           item "Find File", Project::FindFileCommand
