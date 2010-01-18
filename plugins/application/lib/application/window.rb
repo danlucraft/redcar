@@ -168,6 +168,9 @@ module Redcar
     end
     
     def open_speedbar(speedbar)
+      if @speedbar
+        close_speedbar
+      end
       @speedbar = speedbar
       notify_listeners(:speedbar_opened, speedbar)
     end
