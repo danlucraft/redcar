@@ -96,6 +96,9 @@ module Swt
   end
   
   import org.eclipse.swt.browser.Browser
+  class Browser
+    import org.eclipse.swt.browser.BrowserFunction
+  end
   
   class RRunnable
     include java.lang.Runnable
