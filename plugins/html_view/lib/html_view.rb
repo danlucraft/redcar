@@ -6,7 +6,16 @@ module Redcar
     class TestHtmlCommand < Redcar::Command
       class MyFirstJavaFunc < Swt::Browser::BrowserFunction
         def function(*args)
-          p [MyFirstJavaFunc, args]
+          p [MyFirstJavaFunc, args.first.to_a]
+          "[1010, 341]"
+        end
+      end
+      
+      class HtmlThing
+        def self.search(query)
+          # do searchystuff
+          results
+          
         end
       end
       
@@ -21,7 +30,7 @@ module Redcar
 Thanks
 
 <script language="javascript">
-  myFirstJavaFunc("hello from javascript");
+  alert(eval(myFirstJavaFunc("hello from javascript")));
 </script>
 HTML
         tab.focus
