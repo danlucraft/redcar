@@ -19,6 +19,7 @@ A pure Ruby text editor running on JRuby.
 You must have Java installed. 
 
     $ sudo gem install redcar --pre
+    $ sudo redcar install
     
 NB the install will take a minute or so to complete as it has to download about
 15MB of jar files.
