@@ -3,6 +3,7 @@ SWT_APP_NAME = "Redcar"
 
 require "application_swt/swt_wrapper"
 require "application_swt/swt/listener_helpers"
+require "application_swt/tab"
 
 require "application_swt/clipboard"
 require "application_swt/cucumber_runner"
@@ -10,12 +11,12 @@ require "application_swt/dialog_adapter"
 require "application_swt/dialogs/no_buttons_dialog"
 require "application_swt/dialogs/filter_list_dialog_controller"
 require "application_swt/event_loop"
+require "application_swt/html_tab"
 require "application_swt/menu"
 require "application_swt/menu/binding_translator"
 require "application_swt/notebook"
 require "application_swt/notebook/drag_and_drop_listener"
 require "application_swt/speedbar"
-require "application_swt/tab"
 require "application_swt/treebook"
 require "application_swt/window"
 require "application_swt/swt/grid_data"
@@ -35,6 +36,7 @@ module Redcar
       @gui.register_features_runner(CucumberRunner.new)
       @gui.register_controllers(
           Redcar::Tab              => ApplicationSWT::Tab,
+          Redcar::HtmlTab          => ApplicationSWT::HtmlTab,
           Redcar::FilterListDialog => ApplicationSWT::FilterListDialogController
         )
       @gui.register_dialog_adapter(ApplicationSWT::DialogAdapter.new)

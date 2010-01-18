@@ -7,5 +7,6 @@ Plugin.define do
   dependencies "core",           ">0",
                "application",    ">0",
                "project",        ">0",
-               "Auto Completer", ">0"
+               "Auto Completer", ">0",
+               "HTML View",      ">=0.3.2"
 end

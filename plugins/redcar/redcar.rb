@@ -538,6 +538,7 @@ module Redcar
           item "Print Scope Tree", PrintScopeTreeCommand
           item "Refresh Directory", Project::RefreshDirectoryCommand
           item "Dialog Tester", DialogExample
+          item "Test HTML", HtmlView::TestHtmlCommand 
         end
         sub_menu "View" do
           item "Rotate Notebooks", RotateNotebooksCommand

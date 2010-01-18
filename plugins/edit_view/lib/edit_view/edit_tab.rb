@@ -1,6 +1,5 @@
 module Redcar
   class EditTab < Tab
-    include Redcar::Observable
     
     attr_reader :edit_view
     
@@ -18,14 +17,6 @@ module Redcar
     
     def edit_view_focussed
       notify_listeners(:focus)
-    end
-    
-    def serialize
-      { :title     => title }
-    end
-    
-    def deserialize(data)
-      self.title = data[:title]
     end
   end
 end

@@ -95,6 +95,8 @@ module Swt
     import org.eclipse.swt.events.KeyEvent
   end
   
+  import org.eclipse.swt.browser.Browser
+  
   class RRunnable
     include java.lang.Runnable
 
