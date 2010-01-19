@@ -538,7 +538,6 @@ module Redcar
           item "Print Scope Tree", PrintScopeTreeCommand
           item "Refresh Directory", Project::RefreshDirectoryCommand
           item "Dialog Tester", DialogExample
-          item "Test HTML", HtmlView::TestHtmlCommand 
         end
         sub_menu "View" do
           item "Rotate Notebooks", RotateNotebooksCommand
@@ -549,6 +548,8 @@ module Redcar
           item "Next Tab", SwitchTabUpCommand
         end
         sub_menu "Plugins" do
+          item "Plugin Manager", HtmlView::PluginManagerCommand
+          separator
         end
         sub_menu "Help" do
           item "Website", PrintHistoryCommand
