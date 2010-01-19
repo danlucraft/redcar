@@ -22,7 +22,7 @@ module Redcar
           str << foo=<<-HTML
 <script language="javascript">
   $("a").click(function() {
-    alert($(this).parent().parent().find(".plugin-name").text());
+    reloadPlugin($(this).parent().parent().find(".plugin-name").text());
   });
   
 </script>
@@ -45,17 +45,18 @@ HTML
         end
       end
       
-      class MyFirstJavaFunc < Swt::Browser::BrowserFunction
+      class ReloadFunc < Swt::Browser::BrowserFunction
         def function(*args)
-          p [MyFirstJavaFunc, args.first.to_a]
-          "[1010, 341]"
+          name = args.first.to_a.first
+          plugin = Redcar.plugin_manager.loaded_plugins.detect {|pl| pl.name == name }
+          plugin.load
         end
       end
       
       def execute
         tab = win.new_tab(HtmlTab)
         tab.title = "HTML 1"
-        MyFirstJavaFunc.new(tab.controller.browser, "myFirstJavaFunc")
+        ReloadFunc.new(tab.controller.browser, "reloadPlugin")
         controller = Controller.new
         puts controller.index
         tab.controller.browser.set_text(controller.index)
