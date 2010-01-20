@@ -11,6 +11,7 @@ module Redcar
             key_string = key_specifier
           end
           key_string.gsub("Escape", "")
+          key_string.gsub("Space", "")
           key_string
         end
 
@@ -23,6 +24,8 @@ module Redcar
           end
           if key_string =~ /Escape$/
             value += Swt::SWT::ESC
+          elsif key_string =~ /Space$/
+            value += " "[0]
           else
             value += key_string[-1]
           end
