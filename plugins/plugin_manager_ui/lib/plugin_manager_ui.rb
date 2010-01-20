@@ -23,12 +23,14 @@ module Redcar
         
         def plugin_table(plugins)
           str = "<table>\n"
+          highlight = true
           plugins.each do |plugin|
-            name = plugin.is_a?(Plugin) ? plugin.name : plugin
-            str << "<tr>"
-            str << "<td><span class=\"plugin-name\">" + plugin.name + "</span></td>"
-            str << "<td><a href=\"#\">Reload</a>" + "</td>"
+            name = plugin.is_a?(PluginManager::PluginDefinition) ? plugin.name : plugin
+            str << "<tr class=\"#{highlight ? "grey" : ""}\">"
+            str << "<td class=\"plugin\"><span class=\"plugin-name\">" + name + "</span></td>"
+            str << "<td class=\"links\"><a href=\"#\">Reload</a>" + "</td>"
             str << "</tr>"
+            highlight = !highlight
           end
           str << "</table>"
         end
@@ -39,7 +41,7 @@ module Redcar
         tab = win.new_tab(HtmlTab)
         tab.html_view.controller = controller
         tab.focus
-      end
+          end
     end
   end
 end

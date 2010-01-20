@@ -14,7 +14,8 @@ module Redcar
       @controller = new_controller
       @html_tab.title = controller.title
       setup_javascript_listeners
-      @html_tab.controller.browser.set_text(controller.index)
+      text = controller.index
+      @html_tab.controller.browser.set_text(text)
     end
     
     private
@@ -40,7 +41,6 @@ module Redcar
         js << "  },"
       end
       js << "}"
-      puts js.join("\n")
       @html_tab.controller.browser.evaluate(js.join("\n"))
     end
   end
