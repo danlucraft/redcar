@@ -549,6 +549,7 @@ module Redcar
         end
         sub_menu "Plugins" do
           item "Plugin Manager", PluginManagerUi::OpenCommand
+          item "Reload Again", PluginManagerUi::ReloadLastReloadedCommand
           separator
         end
         sub_menu "Help" do

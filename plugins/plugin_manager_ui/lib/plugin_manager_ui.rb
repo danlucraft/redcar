@@ -3,6 +3,20 @@ require 'erb'
 
 module Redcar
   class PluginManagerUi
+    class << self
+      attr_accessor :last_reloaded
+    end
+    
+    class ReloadLastReloadedCommand < Redcar::Command
+      key :osx => "Cmd+Shift+R", :linux => "Ctrl+Shift+R", :windows => "Ctrl+Shift+R"
+      
+      def execute
+        if plugin = PluginManagerUi.last_reloaded
+          plugin.load
+        end
+      end
+    end
+    
     class OpenCommand < Redcar::Command
       class Controller
         def title
@@ -17,6 +31,7 @@ module Redcar
         def reload_plugin(name)
           plugin = Redcar.plugin_manager.loaded_plugins.detect {|pl| pl.name == name }
           plugin.load
+          PluginManagerUi.last_reloaded = plugin
         end
         
         private
@@ -41,7 +56,7 @@ module Redcar
         tab = win.new_tab(HtmlTab)
         tab.html_view.controller = controller
         tab.focus
-          end
+      end
     end
   end
 end
