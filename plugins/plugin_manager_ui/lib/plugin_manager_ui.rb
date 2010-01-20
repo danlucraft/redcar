@@ -14,6 +14,11 @@ module Redcar
           rhtml.result(binding)
         end
         
+        def reload_plugin(name)
+          plugin = Redcar.plugin_manager.loaded_plugins.detect {|pl| pl.name == name }
+          plugin.load
+        end
+        
         private
         
         def plugin_table(plugins)
@@ -29,23 +34,12 @@ module Redcar
         end
       end
       
-      class ReloadFunc < Swt::Browser::BrowserFunction
-        def function(*args)
-          name = args.first.to_a.first
-          plugin = Redcar.plugin_manager.loaded_plugins.detect {|pl| pl.name == name }
-          plugin.load
-        end
-      end
-      
       def execute
         controller = Controller.new
         tab = win.new_tab(HtmlTab)
-        tab.title = controller.title
-        ReloadFunc.new(tab.controller.browser, "reloadPlugin")
-        tab.controller.browser.set_text(controller.index)
+        tab.html_view.controller = controller
         tab.focus
       end
     end
-
   end
 end
