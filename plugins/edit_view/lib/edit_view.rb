@@ -37,7 +37,7 @@ module Redcar
             tab = Redcar.app.focussed_window.focussed_notebook.focussed_tab
             tab and tab.is_a?(EditTab) and tab.edit_view.redoable?
           end,
-        Sensitivity.new(:clipboard_not_empty, Redcar.app, false, [:clipboard_added]) do
+        Sensitivity.new(:clipboard_not_empty, Redcar.app, false, [:clipboard_added, :focussed_window]) do
           Redcar.app.clipboard.length > 0
         end
       ]

@@ -52,6 +52,10 @@ module Redcar
       @contents.each(&block)
     end
     
+    def silently_add(text)
+      @contents << text
+    end
+    
     private
     
     def check_for_changes

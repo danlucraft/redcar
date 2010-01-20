@@ -13,6 +13,9 @@ module Redcar
         @model.controller = self
         @swt_clipboard = Swt::DND::Clipboard.new(Redcar.app.controller.display)
         attach_model_listeners
+        if contents = get_contents
+          @model.silently_add([contents])
+        end
       end
       
       def plain_text_data_type
