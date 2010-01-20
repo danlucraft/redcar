@@ -17,6 +17,8 @@ New features:
   * Cut and Copy will take the line if there is no selection
   * Block typing mode
   * Auto completer
+  * HTML View, with Ruby/JavaScript interface, to write plugins in HTML+CSS+JS.
+  * PluginManagerUI plugin, running on the HTML View.
 
 Internal changes:
 
