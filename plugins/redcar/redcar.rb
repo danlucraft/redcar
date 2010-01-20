@@ -548,7 +548,7 @@ module Redcar
           item "Next Tab", SwitchTabUpCommand
         end
         sub_menu "Plugins" do
-          item "Plugin Manager", HtmlView::PluginManagerCommand
+          item "Plugin Manager", PluginManagerUi::OpenCommand
           separator
         end
         sub_menu "Help" do
