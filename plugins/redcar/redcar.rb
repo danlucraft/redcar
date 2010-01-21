@@ -403,8 +403,13 @@ module Redcar
         label "Goto line:"
         textbox :line
         button :go, "Return" do
-          doc.scroll_to_line(@speedbar.line.to_i - 1)
-          win.close_speedbar
+          new_line_ix = @speedbar.line.to_i - 1
+          if new_line_ix < doc.line_count
+            doc.cursor_offset = doc.offset_at_line(new_line_ix)
+            doc.scroll_to_line(new_line_ix)
+            win.close_speedbar
+            tab.focus
+          end
         end
       end
       
