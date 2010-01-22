@@ -42,7 +42,7 @@ module Redcar
           if key_event.character == 0
             modifiers.join("+")
           else
-            letter = java.lang.Character.new(key_event.keyCode).toString.upcase
+            letter = java.lang.Character.new(key_event.character).toString.upcase # key_event.keyCode)
             if modifiers.any?
               modifiers.join("+") << "+" << (pretty_letter(letter) || letter)
             else

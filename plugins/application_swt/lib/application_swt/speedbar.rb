@@ -81,10 +81,8 @@ module Redcar
               if item.listener
                 begin
                   @model.__context.instance_exec(item.value, &item.listener)
-                rescue => e
-                  puts "Error in speedbar listener"
-                  puts e
-                  puts e.backtrace
+                rescue => err
+                  error_in_listener(err)
                 end
               end
             end
@@ -97,10 +95,8 @@ module Redcar
               button.add_selection_listener do
                 begin
                   @model.__context.instance_exec(&item.listener)
-                rescue => e
-                  puts "Error in speedbar listener"
-                  puts e
-                  puts e.backtrace
+                rescue => err
+                  error_in_listener(err)
                 end
               end
             end
@@ -114,10 +110,8 @@ module Redcar
               if item.listener
                 begin
                   @model.__context.instance_exec(item.value, &item.listener)
-                rescue => e
-                  puts "Error in speedbar listener"
-                  puts e
-                  puts e.backtrace
+                rescue => err
+                  error_in_listener(err)
                 end
               end
             end
@@ -174,9 +168,18 @@ module Redcar
         key_items.each do |key_item|
           if Menu::BindingTranslator.matches?(key_string, key_item.key)
             e.doit = false
-            @model.__context.instance_exec(&key_item.listener)
+            begin
+              @model.__context.instance_exec(&key_item.listener)
+            rescue Object => err
+              error_in_listener(err)
+            end
           end
         end
+      end
+      
+      def error_in_listener(e)
+        puts "*** Error in speedbar listener: #{e.message}"
+        puts e.backtrace.map {|l| "    " + l}
       end
     end
   end
