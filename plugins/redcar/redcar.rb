@@ -267,9 +267,7 @@ module Redcar
     class StripWhitespaceCommand < Redcar::EditTabCommand
     
       def execute
-        0.upto(doc.line_count - 1) do |line_ix|
-          doc.replace_line(line_ix) {|line| line.strip }
-        end
+        doc.text = doc.to_s.gsub(/\s+$/, "")
       end
     end
     
@@ -404,7 +402,7 @@ module Redcar
         textbox :line
         button :go, "Return" do
           new_line_ix = @speedbar.line.to_i - 1
-          if new_line_ix < doc.line_count
+          if new_line_ix < doc.line_count and new_line_ix > 0
             doc.cursor_offset = doc.offset_at_line(new_line_ix)
             doc.scroll_to_line(new_line_ix)
             win.close_speedbar
