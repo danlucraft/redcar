@@ -16,7 +16,7 @@ New features:
   * Select All and Select Line commands.
   * Cut and Copy will take the line if there is no selection
   * Block typing mode
-  * Auto completer
+  * Auto completion
   * HTML View, with Ruby/JavaScript interface, to write plugins in HTML+CSS+JS.
   * PluginManagerUI plugin, running on the HTML View.
 
@@ -30,6 +30,7 @@ Fixes:
   * The show more tabs menu in a notebook is handled properly.
   * Deleting a lot of lines no longer causes the last few to lose highlighting.
   * Clojure highlighting works.
+  * HTML colours no longer 'bleed' past the tags
 
 Version 0.3.1dev (9 Jan 2010)
 =============================
