@@ -41,10 +41,10 @@ require 'yaml'
 #
 # and so on.
 module Redcar
-  VERSION         = '0.3.3dev'
+  VERSION         = '0.3.2dev'
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 3
-  VERSION_RELEASE = 3
+  VERSION_RELEASE = 2
 
   def self.ensure_jruby
     if Config::CONFIG["RUBY_INSTALL_NAME"] != "jruby"

@@ -30,3 +30,5 @@ plugins/application_swt/vendor/swtbot/
 plugins/edit_view_swt/vendor/j*.jar
 plugins/dans
 pkg
+
+textmate/Bundles/asciidoc.tmbundle
