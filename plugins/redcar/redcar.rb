@@ -402,7 +402,7 @@ module Redcar
         textbox :line
         button :go, "Return" do
           new_line_ix = @speedbar.line.to_i - 1
-          if new_line_ix < doc.line_count and new_line_ix > 0
+          if new_line_ix < doc.line_count and new_line_ix >= 0
             doc.cursor_offset = doc.offset_at_line(new_line_ix)
             doc.scroll_to_line(new_line_ix)
             win.close_speedbar
