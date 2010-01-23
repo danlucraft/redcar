@@ -1,10 +1,18 @@
 
-require 'open-uri'
+require 'net/http'
 require 'fileutils'
 
 module Redcar
   class Installer
-  
+  	def initialize
+  	  if ENV['http_proxy']
+  	    proxy = URI.parse(ENV['http_proxy'])
+        @connection = Net::HTTP::Proxy(proxy.host, proxy.port, proxy.user, proxy.password)
+      else
+  	    @connection = Net::HTTP
+      end
+  	end
+
   	def install
   	  unless File.writable?(JRUBY_JAR_DIR)
   	    puts "Don't have permission to write to #{JRUBY_JAR_DIR}. Please rerun with sudo."
@@ -90,9 +98,10 @@ module Redcar
         uri = ASSET_HOST + uri
       end
       FileUtils.mkdir_p(File.dirname(path))
-      write_out = open(path, "wb")
-      write_out.write(open(uri).read)
-      write_out.close
+      File.open(path, "wb") do |write_out|
+        write_out.print @connection.get(URI.parse(uri))
+      end
+
       puts "  downloaded #{uri}\n          to #{path}\n"
     end
   end
