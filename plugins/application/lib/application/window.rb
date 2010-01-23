@@ -178,6 +178,7 @@ module Redcar
     def close_speedbar
       notify_listeners(:speedbar_closed, @speedbar)
       @speedbar = nil
+      focussed_notebook.focussed_tab.focus
     end
   end
 end

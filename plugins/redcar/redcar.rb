@@ -406,7 +406,6 @@ module Redcar
             doc.cursor_offset = doc.offset_at_line(new_line_ix)
             doc.scroll_to_line(new_line_ix)
             win.close_speedbar
-            tab.focus
           end
         end
       end
