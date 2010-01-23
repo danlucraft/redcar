@@ -52,7 +52,12 @@ task :default => ["specs", "cucumber"]
 
 task :specs do
   files = Dir['plugins/*/spec/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*/*_spec.rb']
-  sh("jruby -J-XstartOnFirstThread -S spec -c #{files.join(" ")} && echo 'done'")
+  case Config::CONFIG["host_os"]
+  when "darwin"
+    sh("jruby -J-XstartOnFirstThread -S spec -c #{files.join(" ")} && echo 'done'")
+  else
+    sh("jruby -S spec -c #{files.join(" ")} && echo 'done'")
+  end
 end
 
 desc "Run features"
