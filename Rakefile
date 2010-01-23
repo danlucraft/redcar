@@ -21,28 +21,14 @@ begin
 
   YARD::Rake::YardocTask.new do |t|
     t.files   = [
+        'lib/*.rb',
+        'lib/*/*.rb',
         'plugins/*/lib/*.rb',
         'plugins/*/lib/**/*.rb'
       ]
     t.options = ['--markup', 'markdown']
   end  
 rescue LoadError
-end
-
-task :yardoc do
-  files = []
-  %w(core application application_swt edit_view edit_view_swt project redcar).each do |plugin_name|
-    files += Dir["plugins/#{plugin_name}/**/*.rb"]
-  end
-  %x(yardoc #{files.join(" ")} -o yardoc)
-end
-
-
-# Generate documentation
-Rake::RDocTask.new do |rd|
-  rd.main = "README.md"
-  rd.rdoc_files.include("README.md", "lib/**/*.rb")
-  rd.rdoc_dir = "rdoc"
 end
 
 ### TESTS
@@ -143,29 +129,8 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
-RELEASE_BUNDLES = %w(
-    HTML.tmbundle
-    C.tmbundle
-    CSS.tmbundle
-    Ruby.tmbundle
-    RedcarRepl.tmbundle
-    Text.tmbundle
-    Source.tmbundle
-    Cucumber.tmbundle
-    Java.tmbundle
-    Perl.tmbundle
-  ) + ["Ruby on Rails.tmbundle"]
-
 desc 'Clean up the Textmate files for packaging'
 task :clean_textmate do
-  # remove unwanted bundles
-#  Dir["textmate/Bundles/*"].each do |bdir|
-#    p bdir.split("/").last
-#    unless RELEASE_BUNDLES.include?(bdir.split("/").last)
-#      FileUtils.rm_rf(bdir)
-#    end
-#  end
-
   # rename files to be x-platform safe
   Dir["textmate/Bundles/*.tmbundle/{Syntaxes,Snippets,Templates}/**/*"].each do |fn|
     if File.file?(fn)
@@ -189,9 +154,4 @@ task :clean_textmate do
       end
     end
   end
-end
-
-desc 'Clear out RDoc and generated packages'
-task :clean => [:clobber_package] do
-  rm "#{spec.name}.gemspec"
 end

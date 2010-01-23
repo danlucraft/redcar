@@ -1,9 +1,4 @@
 
-*Important*
-
-Currently Redcar is being ported to JRuby, and not a lot works on HEAD. Please download anyway if you 
-are interested in developing Redcar.
-
 {Redcar}
 ========
 

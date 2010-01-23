@@ -1,6 +1,5 @@
 
 require 'html_view/html_tab'
-#require 'html_controller'
 
 module Redcar
   class HtmlView
