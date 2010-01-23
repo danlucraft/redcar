@@ -1,4 +1,5 @@
 
+require 'java'
 require 'fileutils'
 
 require "core/logger"
@@ -18,9 +19,6 @@ module Redcar
       unless File.exist?(Redcar.user_dir)
         FileUtils.mkdir(Redcar.user_dir)
       end
-      
     end
-
   end
 end
-

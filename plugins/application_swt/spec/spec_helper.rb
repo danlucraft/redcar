@@ -2,7 +2,6 @@ $:.push File.join(File.dirname(__FILE__), '..', '..', '..', 'lib')
 
 require 'redcar'
 
-Redcar.boot
 Redcar.load
 
 Spec::Runner.configure do |config|
