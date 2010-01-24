@@ -114,6 +114,36 @@ describe Redcar::Menu do
         item "REPL", 101
       end
     end
+    
+    it "puts newer ones on the end" do
+      menu = build "Plugins" do
+        sub_menu "REPL" do
+        end
+        sub_menu "Encryption" do
+        end
+        sub_menu "My Plugin" do
+        end
+      end
+
+      menu2 = build "Plugins" do
+        sub_menu "My Plugin" do
+          item "Open", 101
+        end
+      end
+      
+      menu.merge(menu2)
+      
+      menu.should == build("Plugins") do
+        sub_menu "REPL" do
+        end
+        sub_menu "Encryption" do
+        end
+        sub_menu "My Plugin" do
+          item "Open", 101
+        end
+      end
+
+    end
   end
 end
 
