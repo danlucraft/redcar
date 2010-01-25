@@ -19,7 +19,7 @@ module Encryption
     def execute
       result = Redcar::Application::Dialog.input(win, "Password", "Enter password")
       pw = result[:value]
-      encrypted = dearmour(doc.to_s)
+      encrypted = dearmour(doc.to_s.gsub("\n", ""))
       begin
         decrypted = decrypt(encrypted, pw)
         doc.text = decrypted
@@ -53,7 +53,7 @@ module Encryption
     
     def armour(data)
       stream = java.io.ByteArrayOutputStream.new
-      armour = org.spaceroots.jarmor.Base64Encoder.new(stream)
+      armour = org.spaceroots.jarmor.Base64Encoder.new(stream, 80, java.lang.String.new("").getBytes, java.lang.String.new("\n").getBytes)
       data.each_byte {|byte| armour.write(byte) }
       armour.close
       stream.toString
@@ -64,7 +64,7 @@ module Encryption
       pw = result[:value]
       encrypted = encrypt(doc.to_s, pw)
       armoured = armour(encrypted)
-      doc.text = armoured
+      doc.text = "\n" + armoured
     end
   end
 end
