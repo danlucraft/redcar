@@ -16,18 +16,23 @@ require 'yaml'
 
 # ## Loading and Initialization
 #
-# Every feature in Redcar is written as a plugin. This module contains a few 
+# Every feature in Redcar is written as a plugin. This module contains a few
+
 # methods to bootstrap the plugins by loading the PluginManager.
 #
-# Once loaded, bin/redcar will start the gui pump, which will run 
-# Redcar.gui.start. This starts the GUI library's event loop and hands over 
+# Once loaded, bin/redcar will start the gui pump, which will run
+
+# Redcar.gui.start. This starts the GUI library's event loop and hands over
+
 # control to the GUI.
 #
 # ## Application
 #
-# The top class of Redcar is a {Redcar::Application}, which handles the creation 
+# The top class of Redcar is a {Redcar::Application}, which handles the creation
+
 # of Redcar::Windows. {Redcar::Application} is a good place to start
-# to see how the Redcar models are created. 
+# to see how the Redcar models are created.
+
 #
 # {Redcar::ApplicationSWT} is the start point for the SWT GUI, which listens
 # for events from the Redcar::Application model and reflects them in the GUI.
@@ -41,7 +46,7 @@ require 'yaml'
 #
 # and so on.
 module Redcar
-  VERSION         = '0.3.2dev'
+  VERSION         = '0.3.2'
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 3
   VERSION_RELEASE = 2
@@ -53,11 +58,11 @@ module Redcar
       runner.spin_up
     end
   end
-  
+
   def self.root
     File.expand_path(File.join(File.dirname(__FILE__), ".."))
   end
-  
+
   def self.plugin_manager
     @plugin_manager ||= begin
       m = PluginManager.new
@@ -66,7 +71,7 @@ module Redcar
       m
     end
   end
-  
+
   def self.load
     plugin_manager.load
     if plugin_manager.unreadable_definitions.any?
@@ -83,14 +88,15 @@ module Redcar
       puts
       puts "Unloaded plugins:"
       puts plugin_manager.unloaded_plugins.map {|d| "  * " + d.name}
-      
+
     end
   end
 
-  def self.pump 
+  def self.pump
+
     Redcar.gui.start
   end
-  
+
   # Platform symbol
   #
   # @return [:osx/:windows/:linux]
@@ -104,7 +110,7 @@ module Redcar
       :linux
     end
   end
-  
+
   # Platform specific ~/.redcar
   #
   # @return [String] expanded path
@@ -126,5 +132,3 @@ usage = Redcar::Usage.new
 usage.version_string
 usage.version_requested
 usage.help_requested
-
- 

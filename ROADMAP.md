@@ -21,15 +21,15 @@ Version 0.4.0
 
 Feature parity with Redcar 0.2.
 
-And then.....
--------------
+And then for 1.0...
+-------------------
 
   * Incremental search
   * Find/Replace
   * Go to symbol
-  * Search in project
-
-
-
-
+  * Command browser
+  * New from template
+  * Search in project (using Rak or similar)
+  * Recently opened files
+  * more ... ?
 

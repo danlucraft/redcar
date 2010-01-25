@@ -267,7 +267,7 @@ module Redcar
     class StripWhitespaceCommand < Redcar::EditTabCommand
     
       def execute
-        doc.text = doc.to_s.gsub(/\s+$/, "")
+        doc.text = doc.to_s.gsub(/\s+$/, "\n")
       end
     end
     
