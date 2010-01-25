@@ -99,7 +99,7 @@ spec = Gem::Specification.new do |s|
   s.executables       = FileList["bin/redcar"].map { |f| File.basename(f) }
    
   s.require_paths     = ["lib"]
-  
+
   # If you want to depend on other gems, add them here, along with any
   # relevant versions
   # s.add_dependency("logging", "> 1.0.0")

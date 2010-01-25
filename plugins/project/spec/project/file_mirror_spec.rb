@@ -55,6 +55,7 @@ class Redcar::Project
         
         describe "and has since changed on disk" do
           before do
+            sleep 2
             write_testfile_contents("the queen")
           end
           

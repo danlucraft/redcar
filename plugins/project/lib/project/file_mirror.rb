@@ -23,7 +23,7 @@ module Redcar
       def read
         return "" unless exists?
         contents = load_contents
-        @hash = Digest::SHA1.hexdigest(contents)
+        @timestamp = File.stat(@path).mtime
         contents
       end
       
@@ -39,7 +39,7 @@ module Redcar
       #
       # @return [Boolean]
       def changed?
-        @hash != Digest::SHA1.hexdigest(load_contents)
+        !@timestamp or @timestamp < File.stat(@path).mtime
       end
       
       # Save new file contents.
@@ -48,7 +48,7 @@ module Redcar
       # @return [unspecified]
       def commit(contents)
         save_contents(contents)
-        @hash = Digest::SHA1.hexdigest(contents)
+        @time = Time.now
       end
       
       # The filename.
