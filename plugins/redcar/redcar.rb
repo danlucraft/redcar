@@ -572,6 +572,7 @@ module Redcar
       Redcar.app.load_menus
       Redcar.app.load_sensitivities
       Redcar.app.new_window
+      Redcar::Project.start
     end
   end
 end

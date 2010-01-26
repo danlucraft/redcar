@@ -7,7 +7,21 @@ require "project/dir_controller"
 
 module Redcar
   class Project
-
+    def self.start
+      if ARGV
+        win = Redcar.app.focussed_window
+        ARGV.each do |path|
+          if File.directory?(path)
+            tree = Tree.new(Project::DirMirror.new(path),
+                            Project::DirController.new)
+            Project.open_tree(win, tree)
+          elsif File.file?(path)
+            Project.open_file(win, path)
+          end
+        end
+      end
+    end
+    
     def self.storage
       @storage ||= Plugin::Storage.new('project_plugin')
     end
@@ -67,6 +81,14 @@ module Redcar
       end
     end
     
+    def self.open_file(win, path)
+      tab  = win.new_tab(Redcar::EditTab)
+      mirror = FileMirror.new(path)
+      tab.edit_view.document.mirror = mirror
+      tab.edit_view.reset_undo
+      tab.focus
+    end
+    
     private
     
     def self.set_tree(win, tree)
@@ -89,11 +111,7 @@ module Redcar
           if already_open_tab = Project.open_file_tab(path)
             already_open_tab.focus
           else
-            tab  = win.new_tab(Redcar::EditTab)
-            mirror = FileMirror.new(path)
-            tab.edit_view.document.mirror = mirror
-            tab.edit_view.reset_undo
-            tab.focus
+            Project.open_file(Redcar.app.focussed_window, path)
           end
         end
       end
