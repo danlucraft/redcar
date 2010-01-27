@@ -116,6 +116,34 @@ module Redcar
       end
     end
     
+    def all_notebooks
+      windows.inject([]) { |arr, window| arr << window.notebooks }.flatten
+    end
+    
+    def all_tabs
+      all_notebooks.inject([]) { |arr, notebook| arr << notebook.tabs }.flatten
+    end
+    
+    def focussed_window_notebook
+      focussed_window.focussed_notebook if focussed_window
+    end
+    
+    def focussed_notebook_tab
+      focussed_window_notebook.focussed_tab if focussed_window_notebook
+    end
+    
+    def focussed_tab_edit_view
+      focussed_notebook_tab.edit_view if focussed_notebook_tab and focussed_notebook_tab.is_a?(EditTab)
+    end
+    
+    def focussed_edit_view_document
+      focussed_tab_edit_view.document if focussed_tab_edit_view
+    end
+    
+    def focussed_document_mirror
+      focussed_edit_view_document.mirror if focussed_edit_view_document
+    end
+    
     def focussed_window
       @focussed_window
     end
