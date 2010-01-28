@@ -8,21 +8,10 @@ require "project/dir_controller"
 module Redcar
   class Project
     def self.start
-      if ARGV
-        win = Redcar.app.focussed_window
-        
-        dir_args  = ARGV.select {|path| File.directory?(path) }
-        file_args = ARGV.select {|path| File.file?(path)      }
-        
-        if dir_args.any? or file_args.any?
-          dir_args.each {|path| open_dir(win, path) }
-          file_args.each {|path| open_file(win, path) }
-        else
-          if path = storage['last_open_dir']
-            open_dir(win, path)
-          end
-        end
-      end
+      # this will restore open files unless other files or dirs were passed
+      # as command line parameters
+      restore_last_dir unless handle_startup_arguments
+      init_current_files_hooks
     end
     
     def self.storage
@@ -97,7 +86,6 @@ module Redcar
     # @param [Window] win  the Window to open the tab in
     # @path  [String] path  the path of the file to be edited
     def self.open_file(win, path)
-      add_to_recent_files(path)
       tab  = win.new_tab(Redcar::EditTab)
       mirror = FileMirror.new(path)
       tab.edit_view.document.mirror = mirror
@@ -126,17 +114,48 @@ module Redcar
     
     private
     
-    def self.add_to_recent_files(path)
-      current_file = Redcar.app.focussed_document_mirror.path if Redcar.app.focussed_document_mirror
-      unless path == current_file
-        recent_files.delete(path)
-        recent_files << path
+    # restores the directory used on the last section
+    def self.restore_last_dir
+      if path = storage['last_open_dir']
+        open_dir(Redcar.app.focussed_window, path)
+      end
+    end
+    
+    # handles files and/or dirs passed as command line arguments
+    def self.handle_startup_arguments
+      if ARGV
+        win = Redcar.app.focussed_window
+        
+        dir_args  = ARGV.select {|path| File.directory?(path) }
+        file_args = ARGV.select {|path| File.file?(path)      }
+        
+        dir_args.each {|path| open_dir(win, path) }
+        file_args.each {|path| open_file(win, path) }
+
+        return dir_args.any? or file_args.any?
+      end
+    end
+    
+    # Attaches a new listener to tab focus change events, so we can 
+    # keep the current_files list.
+    def self.init_current_files_hooks
+      Redcar.app.add_listener(:tab_focussed) do |tab|
+        add_to_recent_files(tab.document_mirror.path) if tab.edit_tab?
+      end
+    end
+    
+    def self.add_to_recent_files(new_file)
+      unless new_file == @last_file
+        recent_files.delete(new_file)
+        recent_files << new_file
       
-        if current_file
-          recent_files.delete(current_file)
-          recent_files.unshift(current_file)
+        if @last_file
+          recent_files.delete(@last_file)
+          recent_files.unshift(@last_file)
         end
       end
+
+      @last_file = new_file
     end
     
     def self.set_tree(win, tree)
