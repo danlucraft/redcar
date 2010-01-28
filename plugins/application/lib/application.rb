@@ -133,7 +133,7 @@ module Redcar
     end
     
     def focussed_tab_edit_view
-      focussed_notebook_tab.edit_view if focussed_notebook_tab and focussed_notebook_tab.is_a?(EditTab)
+      focussed_notebook_tab.edit_view if focussed_notebook_tab and focussed_notebook_tab.edit_tab?
     end
     
     def focussed_edit_view_document

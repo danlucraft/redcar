@@ -42,5 +42,20 @@ module Redcar
     def set_notebook(notebook)
       @notebook = notebook
     end
+    
+    def edit_tab?
+      is_a?(EditTab)
+    end
+    
+    # Helper method to get the edit_view's document, if applicable.
+    def document
+      edit_view.document if edit_tab?
+    end
+    
+    # Helper method to get this tab's Mirror object for the current
+    # document, if applicable.
+    def document_mirror
+      document.mirror if document
+    end
   end
 end
