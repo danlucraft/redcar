@@ -4,11 +4,14 @@ Version 0.3.3dev (TBA)
 
 New features:
 
+  * Reopens last open directory on startup
+  * FindFileDialog opens with a list of files opened this session
+
 Internal changes:
 
 Fixes:
 
-
+  * Fixed some highlighter bugs.
 
 Version 0.3.2dev (23 Jan 2010)
 ==============================
