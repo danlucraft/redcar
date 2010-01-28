@@ -3,8 +3,48 @@ require 'digest/sha2'
 require 'digest/sha1'
 require 'base64'
 
-module EzCrypto #:nodoc:
+class EncryptionTools
+  def self.dearmour_and_decrypt(data, pw)
+    encrypted = EncryptionTools.dearmour(data.gsub("\n", ""))
+    EncryptionTools.decrypt(encrypted, pw)
+  end
+  
+  def self.encrypt_and_armour(data, pw)
+    encrypted = EncryptionTools.encrypt(data, pw)
+    "\n" + EncryptionTools.armour(encrypted)
+  end
+  
+  def self.dearmour(data)
+    stream = java.io.ByteArrayInputStream.new(java.lang.String.new(data).getBytes)
+    armour = org.spaceroots.jarmor.Base64Decoder.new(stream)
+    encrypted = ""
+    while (byte = armour.read) != -1
+      encrypted << byte
+    end
+    armour.close
+    encrypted
+  end
+  
+  def self.decrypt(data, pw)
+    key = EzCrypto::Key.with_password pw, "system salt"
+    key.decrypt(data)
+  end
+  
+  def self.encrypt(data, pw)
+    key = EzCrypto::Key.with_password pw, "system salt"
+    key.encrypt(data)
+  end
+  
+  def self.armour(data)
+    stream = java.io.ByteArrayOutputStream.new
+    armour = org.spaceroots.jarmor.Base64Encoder.new(stream, 80, java.lang.String.new("").getBytes, java.lang.String.new("\n").getBytes)
+    data.each_byte {|byte| armour.write(byte) }
+    armour.close
+    stream.toString
+  end
+end
 
+module EzCrypto #:nodoc:
 
 =begin rdoc
 The Key is the only class you need to understand for simple use.

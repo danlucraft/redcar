@@ -14,57 +14,25 @@ module Encryption
       end
     end
   end
-  
+
   class DecryptDocumentCommand < Redcar::EditTabCommand
     def execute
       result = Redcar::Application::Dialog.input(win, "Password", "Enter password")
       pw = result[:value]
-      encrypted = dearmour(doc.to_s.gsub("\n", ""))
       begin
-        decrypted = decrypt(encrypted, pw)
-        doc.text = decrypted
+        doc.text = EncryptionTools.dearmour_and_decrypt(doc.to_s, pw)
       rescue => e
         Redcar::Application::Dialog.message_box(win, "Couldn't decrypt!", :type => :error)
       end
     end
-    
-    def dearmour(data)
-      stream = java.io.ByteArrayInputStream.new(java.lang.String.new(data).getBytes)
-      armour = org.spaceroots.jarmor.Base64Decoder.new(stream)
-      encrypted = ""
-      while (byte = armour.read) != -1
-        encrypted << byte
-      end
-      armour.close
-      encrypted
-    end
-    
-    def decrypt(data, pw)
-      key = EzCrypto::Key.with_password pw, "system salt"
-      key.decrypt(data)
-    end
   end
   
   class EncryptDocumentCommand < Redcar::EditTabCommand
-    def encrypt(data, pw)
-      key = EzCrypto::Key.with_password pw, "system salt"
-      key.encrypt(data)
-    end
-    
-    def armour(data)
-      stream = java.io.ByteArrayOutputStream.new
-      armour = org.spaceroots.jarmor.Base64Encoder.new(stream, 80, java.lang.String.new("").getBytes, java.lang.String.new("\n").getBytes)
-      data.each_byte {|byte| armour.write(byte) }
-      armour.close
-      stream.toString
-    end
-    
     def execute
       result = Redcar::Application::Dialog.input(win, "Password", "Enter password")
       pw = result[:value]
-      encrypted = encrypt(doc.to_s, pw)
-      armoured = armour(encrypted)
-      doc.text = "\n" + armoured
+      doc.text = EncryptionTools.encrypt_and_armour(doc.to_s, pw)
     end
   end
 end
+
