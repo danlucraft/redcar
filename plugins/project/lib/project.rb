@@ -10,13 +10,16 @@ module Redcar
     def self.start
       if ARGV
         win = Redcar.app.focussed_window
-        ARGV.each do |path|
-          if File.directory?(path)
-            tree = Tree.new(Project::DirMirror.new(path),
-                            Project::DirController.new)
-            Project.open_tree(win, tree)
-          elsif File.file?(path)
-            Project.open_file(win, path)
+        
+        dir_args  = ARGV.select {|path| File.directory?(path) }
+        file_args = ARGV.select {|path| File.file?(path)      }
+        
+        if dir_args.any? or file_args.any?
+          dir_args.each {|path| open_dir(win, path) }
+          file_args.each {|path| open_file(win, path) }
+        else
+          if path = storage['last_open_dir']
+            open_dir(win, path)
           end
         end
       end
@@ -87,6 +90,13 @@ module Redcar
       tab.edit_view.document.mirror = mirror
       tab.edit_view.reset_undo
       tab.focus
+    end
+    
+    def self.open_dir(win, path)
+      tree = Tree.new(Project::DirMirror.new(path),
+                      Project::DirController.new)
+      Project.open_tree(win, tree)
+      storage['last_open_dir'] = path
     end
     
     private
@@ -187,9 +197,7 @@ module Redcar
       
       def execute
         if path = get_path
-          tree = Tree.new(Project::DirMirror.new(path),
-                          Project::DirController.new)
-          Project.open_tree(win, tree)
+          Project.open_dir(win, path)
         end
       end
       
