@@ -71,7 +71,7 @@ module Redcar
     end
     
     def self.open_file_tab(path)
-      add_to_mru(path)
+      add_to_recent_files(path)
       path = File.expand_path(path)
       all_tabs = Redcar.app.windows.map {|win| win.notebooks}.flatten.map {|nb| nb.tabs }.flatten
       all_tabs.find do |t| 
@@ -90,21 +90,21 @@ module Redcar
       tab.focus
     end
     
-    def self.most_recent_used_files
-      @mru ||= []
+    def self.recent_files
+      @recent_files ||= []
     end
     
     private
     
-    def self.add_to_mru(path)
+    def self.add_to_recent_files(path)
       current_file = Redcar.app.focussed_document_mirror.path if Redcar.app.focussed_document_mirror
       unless path == current_file
-        most_recent_used_files.delete(path)
-        most_recent_used_files << path
+        recent_files.delete(path)
+        recent_files << path
       
         if current_file
-          most_recent_used_files.delete(current_file)
-          most_recent_used_files.unshift(current_file)
+          recent_files.delete(current_file)
+          recent_files.unshift(current_file)
         end
       end
     end

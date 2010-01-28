@@ -6,7 +6,7 @@ module Redcar
       
       def update_list(filter)
         if filter.length < 2
-          paths = Project.most_recent_used_files
+          paths = Project.recent_files
         else
           paths = find_files(filter, Redcar.app.focussed_window.treebook.trees.last.tree_mirror.path)
         end
