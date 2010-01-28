@@ -6,22 +6,27 @@ module Redcar
       
       def update_list(filter)
         if filter.length < 2
-          []
+          paths = Project.recent_files
         else
           paths = find_files(filter, Redcar.app.focussed_window.treebook.trees.last.tree_mirror.path)
-          @last_list = paths
-          paths.map {|path| display_path(path) }
         end
+        
+        @last_list = paths
+        paths.map { |path| display_path(path) }
       end
       
-      def selected(text, ix)
+      def selected(text, ix, closing=false)
         if @last_list
           close
           FileOpenCommand.new(@last_list[ix]).run
-        end
+         end
       end
       
       private
+      
+      def remove_from_list(path)
+        self.class.recent_files.delete(path)
+      end
       
       def display_path(path)
         path.split("/").last + 

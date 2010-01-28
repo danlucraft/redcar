@@ -61,18 +61,26 @@ module Redcar
       end
       Project.open_project_sensitivity.recompute
     end
-    
+
+    # Close the Directory Tree for the given window, if there 
+    # is one.
     def self.close_tree(win)
       win.treebook.remove_tree(window_trees[win])
       Project.open_project_sensitivity.recompute
     end
     
+    # Refresh the DirMirror Tree for the given Window, if 
+    # there is one.
     def self.refresh_tree(win)
       if tree = window_trees[win]
         tree.refresh
       end
     end
     
+    # Finds an EditTab with a mirror for the given path.
+    #
+    # @param [String] path  the path of the file being edited
+    # @return [EditTab, nil] the EditTab that is editing it, or nil
     def self.open_file_tab(path)
       path = File.expand_path(path)
       all_tabs = Redcar.app.windows.map {|win| win.notebooks}.flatten.map {|nb| nb.tabs }.flatten
@@ -84,7 +92,12 @@ module Redcar
       end
     end
     
+    # Opens a new EditTab with a FileMirror for the given path.
+    #
+    # @param [Window] win  the Window to open the tab in
+    # @path  [String] path  the path of the file to be edited
     def self.open_file(win, path)
+      add_to_recent_files(path)
       tab  = win.new_tab(Redcar::EditTab)
       mirror = FileMirror.new(path)
       tab.edit_view.document.mirror = mirror
@@ -92,6 +105,11 @@ module Redcar
       tab.focus
     end
     
+    # Opens a new Tree with a DirMirror and DirController for the given
+    # path.
+    #
+    # @param [Window] win  the Window to open the Tree in
+    # @param [String] path  the path of the directory to view
     def self.open_dir(win, path)
       tree = Tree.new(Project::DirMirror.new(path),
                       Project::DirController.new)
@@ -99,7 +117,27 @@ module Redcar
       storage['last_open_dir'] = path
     end
     
+    # A list of files previously opened in this session
+    #
+    # @return [Array<String>] an array of paths
+    def self.recent_files
+      @recent_files ||= []
+    end
+    
     private
+    
+    def self.add_to_recent_files(path)
+      current_file = Redcar.app.focussed_document_mirror.path if Redcar.app.focussed_document_mirror
+      unless path == current_file
+        recent_files.delete(path)
+        recent_files << path
+      
+        if current_file
+          recent_files.delete(current_file)
+          recent_files.unshift(current_file)
+        end
+      end
+    end
     
     def self.set_tree(win, tree)
       @window_trees[win] = tree
