@@ -140,7 +140,9 @@ module Redcar
     # keep the current_files list.
     def self.init_current_files_hooks
       Redcar.app.add_listener(:tab_focussed) do |tab|
-        add_to_recent_files(tab.document_mirror.path) if tab and tab.edit_tab?
+        if tab and tab.document_mirror.respond_to?(:path)
+          add_to_recent_files(tab.document_mirror.path)
+        end
       end
     end
     
