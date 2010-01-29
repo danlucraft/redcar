@@ -14,7 +14,7 @@
 	<array>
 		<dict>
 			<key>begin</key>
-			<string>(x>)</string>
+			<string>^>></string>
 			<key>beginCaptures</key>
 			<dict>
 				<key>1</key>
@@ -24,23 +24,7 @@
 				</dict>
 			</dict>
 			<key>end</key>
-			<string>(?=>>|=>|x>)</string>
-			<key>name</key>
-			<string>repl.entry source.ruby.error</string>
-		</dict>
-		<dict>
-			<key>begin</key>
-			<string>(>>|=>)</string>
-			<key>beginCaptures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>keyword.control.repl</string>
-				</dict>
-			</dict>
-			<key>end</key>
-			<string>(?=>>|=>|x>)</string>
+			<string>^(?=&gt;|x&gt;)</string>
 			<key>name</key>
 			<string>repl.entry source.ruby</string>
 			<key>patterns</key>

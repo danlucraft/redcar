@@ -48,7 +48,6 @@ module Redcar
         rescue Object => e
           result, entry_type = format_error(e), "error"
         end
-        puts "#{@history.inspect}"
         @history.last[1] << [@instance.output, "output"] if @instance.output
         @history.last[1] << [result, entry_type]
         notify_listeners(:change)
@@ -115,8 +114,8 @@ module Redcar
           $stdout.rewind
           @output = $stdout.read
 
-	        $stdout = orig_stdout
-	        result
+          $stdout = orig_stdout
+          result
         end
       end
     end
