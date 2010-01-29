@@ -20,12 +20,17 @@ module Redcar
       # @return [String]
       def read
         str = message
-        @history.zip(@results) do |command, result|
-          output, is_error = *result
+        @history.each do |entry|
+          command = entry.first
+          results = entry.last
+
           str << prompt + command + "\n"
-          str << (is_error ? error_pointer : output_pointer)
-          output.scan(/.{1,80}/).each do |output_line|
-            str << output_line + "\n"
+          results.each do |result|
+            output, entry_type = *result
+            str << send("#{entry_type}_pointer")
+            output.scan(/.{1,80}/).each do |output_line|
+              str << output_line + "\n"
+            end
           end
         end
         str << prompt
@@ -37,13 +42,15 @@ module Redcar
       # @param [String] a string with at least one prompt and statement in it
       def commit(contents)
         command = contents.split(prompt).last
-        @history << command
+        @history << [command, []]
         begin
-          result, is_error = @instance.execute(command).inspect, false
+          result, entry_type = @instance.execute(command).inspect, "result"
         rescue Object => e
-          result, is_error = format_error(e), true
+          result, entry_type = format_error(e), "error"
         end
-        @results << [result, is_error]
+        puts "#{@history.inspect}"
+        @history.last[1] << [@instance.output, "output"] if @instance.output
+        @history.last[1] << [result, entry_type]
         notify_listeners(:change)
       end
 
@@ -69,6 +76,10 @@ module Redcar
       end
       
       def output_pointer
+        ""
+      end
+      
+      def result_pointer
         "=> "
       end
       
@@ -83,16 +94,29 @@ module Redcar
       end
       
       class Main
+        attr_reader :output
+        
         def initialize
           @binding = binding
+          @output = nil
         end
 
         def inspect
           "main"
         end
-
+        
         def execute(command)
-          eval(command, @binding)
+          orig_stdout = $stdout
+          stdout_handler = StringIO.new
+          $stdout = stdout_handler
+
+          result = eval(command, @binding)
+
+          $stdout.rewind
+          @output = $stdout.read
+
+	        $stdout = orig_stdout
+	        result
         end
       end
     end
