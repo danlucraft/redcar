@@ -1,4 +1,12 @@
-
+module Redcar
+  class ApplicationSWT
+    class Menu
+      def move(x, y)
+      	@menu_bar.setLocation(x, y)
+      end
+    end
+  end
+end
 
 require 'auto_completer/document_controller'
 require 'auto_completer/word_iterator'
@@ -94,6 +102,56 @@ module Redcar
 #        end
         return [offset+left_range, offset+right_range]
       end
+    end
+    
+    class MenuAutoCompleterCommand < AutoCompleteCommand
+      key 	:linux   => "Ctrl+Shift+C",
+      		:osx     => "Cmd+Shift+C",
+      		:windows => "Ctrl+Shift+C"
+    
+      def execute
+        controller = doc.controllers(AutoCompleter::DocumentController).first
+        input_word = ""
+        word_list = controller.word_list
+        word, left, right = touched_word
+        if word
+          iterator = WordIterator.new(doc, WORD_CHARACTERS)
+          word_list = WordList.new
+          iterator.each_word_with_offset(word) do |matching_word, offset|
+            distance = (offset - doc.cursor_offset).abs
+            unless (distance - matching_word.length) == 0
+	            word_list.add_word(matching_word, distance)
+	          else
+	          	input_word = matching_word
+	          end
+          end
+          controller.word_list = word_list
+          controller.word      = word
+          controller.left      = left
+          controller.right     = right
+        end
+
+		cur_doc = doc
+      	builder = Menu::Builder.new do
+      	  word_list.words.each do |current_word, word_distance|
+      	  	item(current_word) do
+      	  		cur_doc.insert(cur_doc.cursor_offset, current_word[input_word.length..current_word.length])
+      	  	end
+      	  end
+      	end
+      	
+      	window = Redcar.app.focussed_window
+      	location = window.focussed_notebook.focussed_tab.controller.edit_view.mate_text.viewer.getTextWidget.getLocationAtOffset(window.focussed_notebook.focussed_tab.controller.edit_view.cursor_offset)
+      	absolute_x = location.x
+      	absolute_y = location.y
+      	location = window.focussed_notebook.focussed_tab.controller.edit_view.mate_text.viewer.getTextWidget.toDisplay(0,0)
+      	absolute_x += location.x
+      	absolute_y += location.y
+      	menu = ApplicationSWT::Menu.new(window.controller, builder.menu, Swt::SWT::POP_UP)
+        menu.move(absolute_x, absolute_y)
+        menu.show
+      end
+
     end
   end
 end
