@@ -105,9 +105,9 @@ module Redcar
     end
     
     class MenuAutoCompleterCommand < AutoCompleteCommand
-      key 	:linux   => "Ctrl+Shift+C",
-      		:osx     => "Cmd+Shift+C",
-      		:windows => "Ctrl+Shift+C"
+      key 	:linux   => "Escape",
+      		:osx     => "Escape",
+      		:windows => "Escape"
     
       def execute
         controller = doc.controllers(AutoCompleter::DocumentController).first
