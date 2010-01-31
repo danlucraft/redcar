@@ -24,6 +24,8 @@ module Redcar
       if text.is_a?(String)
         text = [text]
       end
+      return if text == [""]
+      
       @contents << text
       if @contents.length == Clipboard.max_length + 1
         @contents.delete_at(0)
