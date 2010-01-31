@@ -1,3 +1,4 @@
+
 require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
 class Redcar::REPL
@@ -131,13 +132,13 @@ RUBY
     describe "when executing" do
       it "should execute inside a main object" do
         @mirror.commit(">> self")
-        @mirror.results.last.should == ["main", false]
+        @mirror.history.last.should == ["self", [["", :output], ["main", :result]] ]
       end
       
       it "should persist local variables" do
         @mirror.commit(">> a = 13")
         @mirror.commit(">> a")
-        @mirror.results.last.should == ["13", false]
+        @mirror.history.last.should == ["a", [["", :output], ["13", :result]] ]
       end
     end
   end

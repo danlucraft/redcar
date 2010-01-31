@@ -4,10 +4,16 @@ module Redcar
     class InternalMirror
       include Redcar::Document::Mirror
       
+      POINTERS = {
+        :output => "",
+        :result => "=> ",
+        :error  => "x> "
+      }
+      
       attr_reader :history, :results
       
       def initialize
-        @history, @results, @instance = [], [], Main.new
+        @history, @instance = [], Main.new
       end
 
       def title
@@ -27,7 +33,7 @@ module Redcar
           str << prompt + command + "\n"
           results.each do |result|
             output, entry_type = *result
-            str << send("#{entry_type}_pointer")
+            str << POINTERS[entry_type]
             output.scan(/.{1,80}/).each do |output_line|
               str << output_line + "\n"
             end
@@ -44,11 +50,11 @@ module Redcar
         command = contents.split(prompt).last
         @history << [command, []]
         begin
-          result, entry_type = @instance.execute(command).inspect, "result"
+          result, entry_type = @instance.execute(command).inspect, :result
         rescue Object => e
-          result, entry_type = format_error(e), "error"
+          result, entry_type = format_error(e), :error
         end
-        @history.last[1] << [@instance.output, "output"] if @instance.output
+        @history.last[1] << [@instance.output, :output] if @instance.output
         @history.last[1] << [result, entry_type]
         notify_listeners(:change)
       end
@@ -72,18 +78,6 @@ module Redcar
       
       def prompt
         ">> "
-      end
-      
-      def output_pointer
-        ""
-      end
-      
-      def result_pointer
-        "=> "
-      end
-      
-      def error_pointer
-        "x> "
       end
       
       def format_error(e)
