@@ -16,7 +16,6 @@ module Redcar
 
     def help_requested
       if ARGV.include?("-h") or ARGV.include?("--help")
-        puts "Redcar #{Redcar::VERSION}"
         puts
         puts "       --font=FONT  Choose font"
         puts "  --font-size=SIZE  Choose font point size"
