@@ -20,6 +20,7 @@ module Redcar
         puts "       --font=FONT  Choose font"
         puts "  --font-size=SIZE  Choose font point size"
         puts "     --theme=THEME  Choose Textmate theme"
+        puts "        [filename1, filename2, dirname1, dirname2 ...]"
         puts
         puts "To download jars:"
         puts
