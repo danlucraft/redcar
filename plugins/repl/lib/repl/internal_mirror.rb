@@ -26,11 +26,11 @@ module Redcar
       # @return [String]
       def read
         str = message
+        
         @history.each do |entry|
           command = entry.first
           results = entry.last
-
-          str << prompt + command + "\n"
+          str << prompt.to_s + command.to_s + "\n"
           results.each do |result|
             output, entry_type = *result
             str << POINTERS[entry_type]
@@ -47,10 +47,15 @@ module Redcar
       #
       # @param [String] a string with at least one prompt and statement in it
       def commit(contents)
-        command = contents.split(prompt).last
+        # first two lines are our message at the top
+        command = contents.split("\n")[2..-1].join("\n").split(prompt).last
         @history << [command, []]
         begin
+    	 if command.nil? || contents.split("\n").last == prompt
+  		  result, entry_type = "Please enter something", :error
+  		 else
           result, entry_type = @instance.execute(command).inspect, :result
+         end
         rescue Object => e
           result, entry_type = format_error(e), :error
         end

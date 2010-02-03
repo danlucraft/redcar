@@ -1,4 +1,3 @@
-
 require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
 class Redcar::REPL
@@ -37,6 +36,7 @@ RUBY
 >> $internal_repl_test = 909
 RUBY
       @mirror.commit(text.chomp)
+      text.chomp
     end
     
     def result_test_text2
@@ -50,7 +50,21 @@ RUBY
 >> 
 RUBY
     end
+    
+    
+    def commit_no_input
+     text = <<-RUBY
+# Redcar REPL
 
+>> 
+RUBY
+      @mirror.commit(text)
+    end
+    
+    def prompt     
+       "# Redcar REPL\n\n"
+    end
+    
     describe "with no history" do
       it "should exist" do
         @mirror.should be_exist
@@ -77,6 +91,19 @@ RUBY
           commit_test_text1
           $internal_repl_test.should == 707
         end
+        
+        it "should disallow committing nothing as the first command" do
+          commit_no_input
+          @mirror.read.should == "# Redcar REPL\n\n>> \nx> Please enter something\n>> "
+        end
+        
+        it "should disallow committing nothing as an xth command" do
+          committed = commit_test_text2
+          @mirror.commit committed + "\n>> "
+          @mirror.read.should == "# Redcar REPL\n\n>> $internal_repl_test = 909\n=> 909\n>> $internal_repl_test = 909\n\nx> Please enter something\n>> "      
+        end
+        
+        it "should not duplicate lines"       
 
         it "should emit changed event when text is executed" do
           commit_test_text1
@@ -89,7 +116,7 @@ RUBY
         end
         
         it "should display errors" do
-          @mirror.commit(">> nil.foo")
+          @mirror.commit(prompt + ">> nil.foo")
           @mirror.read.should == (<<-RUBY).chomp
 # Redcar REPL
 
@@ -131,13 +158,14 @@ RUBY
     
     describe "when executing" do
       it "should execute inside a main object" do
-        @mirror.commit(">> self")
+        @mirror.commit(prompt + ">> self")
         @mirror.history.last.should == ["self", [["", :output], ["main", :result]] ]
       end
       
       it "should persist local variables" do
-        @mirror.commit(">> a = 13")
-        @mirror.commit(">> a")
+        sent = prompt + ">> a = 13"
+        @mirror.commit(sent)
+        @mirror.commit(sent + "\n>> a")
         @mirror.history.last.should == ["a", [["", :output], ["13", :result]] ]
       end
     end
