@@ -34,10 +34,19 @@ module Redcar
         def #{name}
           __get_value_of(#{name.to_s.inspect})
         end
+        
+        def #{name}=(to_this)
+          __set_value_of(#{name.to_s.inspect}, to_this)
+        end        
       }
     end
     
     def __get_value_of(name)
+      item = __get_item(name)
+      item.value
+    end
+    
+    def __get_item(name)
       item = __items.detect do |i| 
         i.respond_to?(:name) and
           i.name.to_s == name
@@ -45,7 +54,12 @@ module Redcar
       unless item
         raise "can't find item #{name}"
       end
-      item.value
+      item
+    end    
+    
+    def __set_value_of(name, to_this)
+      item = __get_item(name)
+      item.value= to_this
     end
     
     def self.label(text)

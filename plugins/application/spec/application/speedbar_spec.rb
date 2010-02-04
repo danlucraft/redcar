@@ -43,4 +43,14 @@ describe Redcar::Speedbar do
     sp = GetValueSpeedbar.new(self)
     sp.query.should == "start"
   end
+  
+  it "should let you set values for instances" do
+    class SetValueSpeedbar < Redcar::Speedbar
+      textbox :query, "start"
+    end
+    sp = GetValueSpeedbar.new(self)
+    sp.query = "yoyo"
+    sp.query.should == "yoyo"
+   end
+  
 end
