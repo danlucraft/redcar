@@ -420,27 +420,50 @@ module Redcar
       key :osx => "Cmd+F", :linux => "Ctrl+F", :windows => "Ctrl+F"
       
       class Speedbar < Redcar::Speedbar
-        @@previous_query = '' 
+        @@previous_query = ''
+        def self.previous_query
+          @@previous_query
+        end
         def initialize(controller)
           super(controller)
           self.query= @@previous_query
+          self
         end
       
         label "Regex"
         textbox :query
-        button :search, "Return" do
-
-          current_query = @speedbar.query
+        button :search, "Return" do          
+          current_query = @speedbar.query           # question--why is this instance execed in the scope of the controller?
           @@previous_query = current_query
-          FindNextRegex.new(Regexp.new(current_query), false).run
+          find current_query
         end
+        
       end
       
       def execute
         @speedbar = SearchForwardCommand::Speedbar.new(self)
         win.open_speedbar(@speedbar)
       end
+
+      def find query = @@previous_query
+        FindNextRegex.new(Regexp.new(query), false).run        
+      end
+      attr_reader :speedbar
     end
+    
+    class RepeatPreviousSearchForwardCommand < Redcar::EditTabCommand
+      key :osx => "Cmd+G", :linux => "Ctrl+G", :windows => "Ctrl+G" # TODO F3 on doze
+      
+      def execute
+        open_bar = SearchForwardCommand.new
+        # open_bar.execute # Question: is there a way to programmatically
+        # pull up a bar (and execute it)? (the above line doesn't work)
+        # open_bar.speedbar.find
+        FindNextRegex.new(Regexp.new(SearchForwardCommand::Speedbar.previous_query), false).run   
+      end
+      
+    end
+        
     
     class FindNextRegex < Redcar::EditTabCommand
       def initialize(re, wrap=nil)
@@ -531,6 +554,7 @@ module Redcar
           separator
           item "Goto Line", GotoLineCommand
           item "Regex Search",    SearchForwardCommand
+          item "Repeat Last Search", RepeatPreviousSearchForwardCommand
           separator
           sub_menu "Select" do
             item "All", SelectAllCommand
