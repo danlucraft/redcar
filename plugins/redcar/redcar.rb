@@ -540,6 +540,7 @@ module Redcar
           end
           item "Toggle Block Selection", ToggleBlockSelectionCommand
           item "Auto Complete", AutoCompleter::AutoCompleteCommand
+          item "Menu Auto Complete", AutoCompleter::MenuAutoCompleterCommand
         end
         sub_menu "Project" do
           item "Find File", Project::FindFileCommand
