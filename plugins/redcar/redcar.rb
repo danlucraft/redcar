@@ -468,7 +468,7 @@ module Redcar
           # next search the rest of the lines
           line_num = doc.cursor_line + 1
           curr_line = doc.get_line(line_num)
-          until line_num == doc.line_count - 1 or 
+          until line_num == doc.line_count or 
                 found = (curr_line.to_s =~ @re)
             line_num += 1
             curr_line = doc.get_line(line_num)
