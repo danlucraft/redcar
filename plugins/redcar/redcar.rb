@@ -464,7 +464,7 @@ module Redcar
           startoff = line_start + $`.length + cursor_line_offset
           endoff   = startoff + $&.length
           doc.set_selection_range(startoff..endoff)
-        else
+        elsif doc.cursor_line < doc.line_count - 1
           # next search the rest of the lines
           line_num = doc.cursor_line + 1
           curr_line = doc.get_line(line_num)
