@@ -20,6 +20,7 @@ module Redcar
       if false
         command = "jruby #{java_args} \"#{bin}\" #{ARGV.join(' ')}"
       else
+        ENV['RUBYOPT'] = nil # disable other native args
         command = "java #{java_args} -cp \"#{jruby_complete}\" org.jruby.Main \"#{bin}\" #{ARGV.join(' ')}"
       end
       exec(command)
