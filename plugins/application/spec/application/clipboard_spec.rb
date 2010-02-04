@@ -10,7 +10,7 @@ describe Redcar::Clipboard do
     @clipboard.last.should == ["havelock"]
   end
   
-  it "reports it's length" do
+  it "reports its length" do
     @clipboard.length.should == 0
     @clipboard << "havelock"
     @clipboard.length.should == 1
@@ -25,6 +25,13 @@ describe Redcar::Clipboard do
     @clipboard[2].should == ["havelock"]
     @clipboard[1].should == ["samuel"]
     @clipboard[0].should == ["sybil"]
+  end
+
+  it "loads well when the clipboard starts as blank" do
+    cont = "fake controller"
+    def cont.changed?; true; end
+    @clipboard.controller = cont
+    @clipboard.length.should == 0 # shouldn't blow up
   end
   
   it "has a maximum length" do
