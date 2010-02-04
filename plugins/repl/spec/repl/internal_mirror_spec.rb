@@ -92,19 +92,17 @@ RUBY
           $internal_repl_test.should == 707
         end
         
-        it "should disallow committing nothing as the first command" do
+        it "should allow committing nothing as the first command" do
           commit_no_input
-          @mirror.read.should == "# Redcar REPL\n\n>> \nx> Please enter something\n>> "
+          @mirror.read.should == "# Redcar REPL\n\n>> \n=> nil\n>> "
         end
         
-        it "should disallow committing nothing as an xth command" do
+        it "should allow committing nothing as an xth command" do
           committed = commit_test_text2
           @mirror.commit committed + "\n>> "
-          @mirror.read.should == "# Redcar REPL\n\n>> $internal_repl_test = 909\n=> 909\n>> $internal_repl_test = 909\n\nx> Please enter something\n>> "      
+          @mirror.read.should == "# Redcar REPL\n\n>> $internal_repl_test = 909\n=> 909\n>> \n=> nil\n>> "      
         end
         
-        it "should not duplicate lines"       
-
         it "should emit changed event when text is executed" do
           commit_test_text1
           @changed_event.should be_true
