@@ -420,18 +420,20 @@ module Redcar
       key :osx => "Cmd+F", :linux => "Ctrl+F", :windows => "Ctrl+F"
       
       class Speedbar < Redcar::Speedbar
-        @@previous_query = '' 
+        class << self
+          attr_accessor :previous_query
+        end
+        
         def initialize(controller)
           super(controller)
-          self.query= @@previous_query
+          self.query = Speedbar.previous_query || ""
         end
       
         label "Regex"
         textbox :query
         button :search, "Return" do
-
           current_query = @speedbar.query
-          @@previous_query = current_query
+          SearchForwardCommand::Speedbar.previous_query = current_query
           FindNextRegex.new(Regexp.new(current_query), false).run
         end
       end
