@@ -47,15 +47,14 @@ module Redcar
       #
       # @param [String] a string with at least one prompt and statement in it
       def commit(contents)
-        # first two lines are our message at the top
-        command = contents.split("\n")[2..-1].join("\n").split(prompt).last
+        if contents.split("\n").last =~ />>\s+$/
+          command = ""
+        else
+          command = contents.split(prompt).last
+        end
         @history << [command, []]
         begin
-    	 if command.nil? || contents.split("\n").last == prompt
-  		  result, entry_type = "Please enter something", :error
-  		 else
           result, entry_type = @instance.execute(command).inspect, :result
-         end
         rescue Object => e
           result, entry_type = format_error(e), :error
         end

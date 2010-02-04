@@ -420,22 +420,21 @@ module Redcar
       key :osx => "Cmd+F", :linux => "Ctrl+F", :windows => "Ctrl+F"
       
       class Speedbar < Redcar::Speedbar
-        @@previous_query = ''
-        def self.previous_query
-          @@previous_query
+        class << self
+          attr_accessor :previous_query
         end
+        
         def initialize(controller)
           super(controller)
-          self.query= @@previous_query
-          self
+          self.query = Speedbar.previous_query || ""
         end
       
         label "Regex"
         textbox :query
-        button :search, "Return" do          
-          current_query = @speedbar.query           # question--why is this instance execed in the scope of the controller?
-          @@previous_query = current_query
-          find current_query
+        button :search, "Return" do
+          current_query = @speedbar.query
+          SearchForwardCommand::Speedbar.previous_query = current_query
+          FindNextRegex.new(Regexp.new(current_query), false).run
         end
         
       end
@@ -485,11 +484,11 @@ module Redcar
           startoff = line_start + $`.length + cursor_line_offset
           endoff   = startoff + $&.length
           doc.set_selection_range(startoff..endoff)
-        else
+        elsif doc.cursor_line < doc.line_count - 1
           # next search the rest of the lines
           line_num = doc.cursor_line + 1
           curr_line = doc.get_line(line_num)
-          until line_num == doc.line_count - 1 or 
+          until line_num == doc.line_count or 
                 found = (curr_line.to_s =~ @re)
             line_num += 1
             curr_line = doc.get_line(line_num)
@@ -562,6 +561,7 @@ module Redcar
           end
           item "Toggle Block Selection", ToggleBlockSelectionCommand
           item "Auto Complete", AutoCompleter::AutoCompleteCommand
+          item "Menu Auto Complete", AutoCompleter::MenuAutoCompleterCommand
         end
         sub_menu "Project" do
           item "Find File", Project::FindFileCommand
