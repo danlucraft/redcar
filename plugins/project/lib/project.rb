@@ -10,8 +10,15 @@ module Redcar
     def self.start
       # this will restore open files unless other files or dirs were passed
       # as command line parameters
-      restore_last_dir unless handle_startup_arguments
+      restore_last_session unless handle_startup_arguments
       init_current_files_hooks
+      init_window_closed_hooks
+    end
+    
+    def self.init_window_closed_hooks
+      Redcar.app.add_listener(:window_about_to_close) do |win|
+        self.save_file_list win
+      end
     end
     
     def self.storage
@@ -115,10 +122,30 @@ module Redcar
     private
     
     # restores the directory used on the last section
-    def self.restore_last_dir
+    def self.restore_last_session      
       if path = storage['last_open_dir']
         open_dir(Redcar.app.focussed_window, path)
       end
+      if files = Project.storage['files_open_last_session']
+        win = Redcar.app.focussed_window
+        files.each{|path|
+          open_file(win, path)
+        }
+      end
+      
+    end
+        
+    # saves away the currently open files
+    # well, some of them
+    def self.save_file_list win
+      # create a list of open files
+      file_list = []
+      win.notebooks[0].tabs.each{|tab|
+        if File.file? tab.title
+          file_list << File.expand_path(tab.title)
+        end
+      }
+      Project.storage['files_open_last_session'] = file_list      
     end
     
     # handles files and/or dirs passed as command line arguments
