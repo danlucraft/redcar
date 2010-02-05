@@ -62,8 +62,8 @@ module Redcar
         default_font = "Monospace"
         default_font_size = 11
       elsif Redcar.platform == :windows
-        default_font = "FixedSys"
-        default_font_size = 15
+        default_font = "Courier New"
+        default_font_size = 9
       end
       @mate_text.set_font(ARGV.option("font") || default_font, 
                           (ARGV.option("font-size") || default_font_size).to_i)
