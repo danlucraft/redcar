@@ -3,7 +3,7 @@ module Redcar
   
   class Usage
     def version_string
-      str = "Redcar #{Redcar::VERSION} (jruby )"
+      str = "Redcar #{Redcar::VERSION} ( #{RUBY_PLATFORM} )"
       puts str
     end
     
