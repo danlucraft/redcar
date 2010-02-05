@@ -433,7 +433,7 @@ module Redcar
         button :search, "Return" do
           current_query = @speedbar.query
           SearchForwardCommand::Speedbar.previous_query = current_query
-          FindNextRegex.new(Regexp.new(current_query), true).run
+          result = FindNextRegex.new(Regexp.new(current_query), true).run # TODO use result
         end
         
       end
@@ -449,7 +449,7 @@ module Redcar
       key :osx => "Cmd+G", :linux => "Ctrl+G", :windows => "Ctrl+G" # TODO F3 on doze
       
       def execute
-        open_bar = SearchForwardCommand.new
+        # open_bar = SearchForwardCommand.new
         # open_bar.execute # Question: is there a way to programmatically
         # pull up a bar (and execute it)? (the above line doesn't work)
         # open_bar.speedbar.find
@@ -494,12 +494,14 @@ module Redcar
             endoff   = startoff + $&.length
             doc.set_selection_range(startoff..endoff)
             doc.scroll_to_line(line_num)
+            return true
           end
           if line_num == (doc.line_count - 1) and @wrap
             @wrap = false
             doc.cursor_offset = 0
-            execute
+            return execute
           end
+          false
         end
       end
     end
