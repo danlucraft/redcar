@@ -202,7 +202,15 @@ module Redcar
       end
     
       def execute
-        path = get_path
+        # prefer opening in the dir of the currently open file
+        if Redcar.app.focussed_window && Redcar.app.focussed_window.focussed_notebook && Redcar.app.focussed_window.focussed_notebook.focussed_tab
+          # make sure it's a file
+          if Redcar.app.focussed_window.focussed_notebook.focussed_tab.document_mirror.respond_to?(:path) && File.file?(Redcar.app.focussed_window.focussed_notebook.focussed_tab.document_mirror.path )
+            dir = File.dirname(Redcar.app.focussed_window.focussed_notebook.focussed_tab.title)
+          end
+        end
+        
+        path = get_path dir
         if path
           if already_open_tab = Project.open_file_tab(path)
             already_open_tab.focus
@@ -214,9 +222,9 @@ module Redcar
       
       private
       
-      def get_path
+      def get_path specific_path = nil
         @path || begin
-          if path = Application::Dialog.open_file(win, :filter_path => Project.filter_path)
+          if path = Application::Dialog.open_file(win, :filter_path => (specific_path || Project.filter_path))
             Project.storage['last_dir'] = File.dirname(File.expand_path(path))
             path
           end
