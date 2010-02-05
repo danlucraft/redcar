@@ -1,4 +1,3 @@
-
 module Redcar
   module Top
     class NewCommand < Command
@@ -434,7 +433,7 @@ module Redcar
         button :search, "Return" do
           current_query = @speedbar.query
           SearchForwardCommand::Speedbar.previous_query = current_query
-          FindNextRegex.new(Regexp.new(current_query), false).run
+          FindNextRegex.new(Regexp.new(current_query), true).run
         end
         
       end
@@ -444,10 +443,6 @@ module Redcar
         win.open_speedbar(@speedbar)
       end
 
-      def find query = @@previous_query
-        FindNextRegex.new(Regexp.new(query), false).run        
-      end
-      attr_reader :speedbar
     end
     
     class RepeatPreviousSearchForwardCommand < Redcar::EditTabCommand
@@ -458,7 +453,7 @@ module Redcar
         # open_bar.execute # Question: is there a way to programmatically
         # pull up a bar (and execute it)? (the above line doesn't work)
         # open_bar.speedbar.find
-        FindNextRegex.new(Regexp.new(SearchForwardCommand::Speedbar.previous_query), false).run   
+        FindNextRegex.new(Regexp.new(SearchForwardCommand::Speedbar.previous_query), true).run   
       end
       
     end
@@ -488,7 +483,7 @@ module Redcar
           # next search the rest of the lines
           line_num = doc.cursor_line + 1
           curr_line = doc.get_line(line_num)
-          until line_num == doc.line_count or 
+          until line_num == (doc.line_count - 1) or 
                 found = (curr_line.to_s =~ @re)
             line_num += 1
             curr_line = doc.get_line(line_num)
@@ -500,7 +495,8 @@ module Redcar
             doc.set_selection_range(startoff..endoff)
             doc.scroll_to_line(line_num)
           end
-          if !doc.get_line(line_num) and @wrap
+          if line_num == (doc.line_count - 1) and @wrap
+            @wrap = false
             doc.cursor_offset = 0
             execute
           end
