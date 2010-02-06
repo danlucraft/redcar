@@ -70,7 +70,7 @@ module Redcar
             label = Swt::Widgets::Label.new(@composite, 0)
             label.set_text(item.text)
           when Redcar::Speedbar::TextBoxItem
-            textbox = Swt::Widgets::Text.new(@composite, Swt::SWT::BORDER)
+            textbox = Swt::Custom::StyledText.new(@composite, Swt::SWT::SINGLE)
             textbox.set_text(item.value)
             gridData = Swt::Layout::GridData.new
             gridData.grabExcessHorizontalSpace = true

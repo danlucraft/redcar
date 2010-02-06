@@ -481,22 +481,19 @@ module Redcar
           doc.set_selection_range(startoff..endoff)
         elsif doc.cursor_line < doc.line_count - 1
           # next search the rest of the lines
-          line_num = doc.cursor_line + 1
-          curr_line = doc.get_line(line_num)
-          until line_num == (doc.line_count - 1) or 
-                found = (curr_line.to_s =~ @re)
-            line_num += 1
+          found = nil
+          (doc.cursor_line + 1).upto(doc.line_count - 1) do |line_num|
             curr_line = doc.get_line(line_num)
+            if (curr_line.to_s =~ @re)
+              line_start = doc.offset_at_line(line_num)
+              startoff = line_start + $`.length
+              endoff   = startoff + $&.length
+              doc.set_selection_range(startoff..endoff)
+              doc.scroll_to_line(line_num)
+              return true
+            end
           end
-          if found
-            line_start = doc.offset_at_line(line_num)
-            startoff = line_start + $`.length
-            endoff   = startoff + $&.length
-            doc.set_selection_range(startoff..endoff)
-            doc.scroll_to_line(line_num)
-            return true
-          end
-          if line_num == (doc.line_count - 1) and @wrap
+          if @wrap
             @wrap = false
             doc.cursor_offset = 0
             return execute
