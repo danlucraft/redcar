@@ -135,15 +135,22 @@ module Redcar
       focussed_notebook.new_tab(*args, &block)
     end
     
-    attr_reader :menu
+    attr_reader :menu, :keymap
 
     def menu=(menu)
       @menu = menu
-      notify_listeners(:menu_changed, menu)
+    end
+
+    def keymap=(keymap)
+      @keymap = keymap
     end
 
     def popup_menu(menu)
       notify_listeners(:popup_menu, menu)
+    end
+    
+    def refresh_menu
+      notify_listeners(:refresh_menu)
     end
     
     # Focus the Window.

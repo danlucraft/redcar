@@ -69,7 +69,7 @@ module Redcar
       ]
     end
     
-    attr_reader :clipboard
+    attr_reader :clipboard, :keymap, :menu
     
     def initialize
       @windows = []
@@ -98,7 +98,9 @@ module Redcar
       windows << new_window
       notify_listeners(:new_window, new_window)
       attach_window_listeners(new_window)
-      new_window.menu = menu
+      new_window.menu   = load_menu
+      new_window.keymap = main_keymap
+      new_window.refresh_menu
       new_window.show
       set_focussed_window(new_window)
       new_window
@@ -159,32 +161,37 @@ module Redcar
       @focussed_window = window
     end
     
-    attr_reader :menu
-    
-    # Set the main menu. Causes a redraw of the GUI menu.
-    #
-    # @param [Menu]
-    def menu=(menu)
-      @menu = menu
+    # Redraw the main menu.
+    def refresh_menu!
       windows.each do |window|
-        window.menu = menu
+        window.menu = load_menu
+        window.keymap = main_keymap
+        window.refresh_menu
       end
     end
     
-    # Redraw the main menu. Useful if you have modified the main menu
-    # instead of setting it afresh.
-    def refresh_menu!
-      self.menu = @menu
-    end
-    
-    def load_menus
+    def load_menu
       menu = Menu.new
       Redcar.plugin_manager.loaded_plugins.each do |plugin|
         if plugin.object.respond_to?(:menus)
           menu.merge(plugin.object.menus)
         end
       end
-      self.menu = menu
+      menu
+    end
+    
+    def main_keymap
+      keymap = Keymap.new("main", Redcar.platform)
+      Redcar.plugin_manager.loaded_plugins.each do |plugin|
+        if plugin.object.respond_to?(:keymaps)
+          maps = plugin.object.keymaps
+          keymaps = maps.select do |map| 
+            map.name == "main" or map.platforms.include?(Redcar.platform)
+          end
+          keymap = keymaps.inject(keymap) {|k, nk| k.merge(nk) }
+        end
+      end
+      keymap
     end
     
     def load_sensitivities

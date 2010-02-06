@@ -8,7 +8,6 @@ module Redcar
     end
     
     class ReloadLastReloadedCommand < Redcar::Command
-      key :osx => "Cmd+Shift+R", :linux => "Ctrl+Shift+R", :windows => "Ctrl+Shift+R"
       
       def execute
         if plugin = PluginManagerUi.last_reloaded

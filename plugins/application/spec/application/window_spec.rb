@@ -9,10 +9,10 @@ describe Redcar::Window do
     
     it "notifies the controller that the menu has changed" do
       @called_menu_changed = false
-      @window.add_listener(:menu_changed) do
+      @window.add_listener(:refresh_menu) do
         @called_menu_changed = true
       end
-      @window.menu = 1
+      @window.refresh_menu
       @called_menu_changed.should be_true
     end
 

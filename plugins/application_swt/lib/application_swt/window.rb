@@ -44,7 +44,7 @@ module Redcar
       
       def add_listeners
         @window.add_listener(:show,          &method(:show))
-        @window.add_listener(:menu_changed,  &method(:menu_changed))
+        @window.add_listener(:refresh_menu,  &method(:refresh_menu))
         @window.add_listener(:popup_menu,    &method(:popup_menu))
         @window.add_listener(:title_changed, &method(:title_changed))
         @window.add_listener(:new_notebook,  &method(:new_notebook))
@@ -82,8 +82,8 @@ module Redcar
         @shell.text = window.title
       end
       
-      def menu_changed(menu)
-        @menu_controller = ApplicationSWT::Menu.new(self, menu, Swt::SWT::BAR)
+      def refresh_menu
+        @menu_controller = ApplicationSWT::Menu.new(self, @window.menu, @window.keymap, Swt::SWT::BAR)
         shell.menu_bar = @menu_controller.menu_bar
       end
       

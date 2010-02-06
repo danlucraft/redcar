@@ -15,11 +15,12 @@ module Redcar
         [Swt::SWT::BAR, Swt::SWT::POP_UP]
       end
       
-      def initialize(window, menu_model, type)
+      def initialize(window, menu_model, keymap, type)
         unless Menu.menu_types.include?(type)
           raise "type should be in #{Menu.menu_types.inspect}"
         end
         @window = window
+        @keymap = keymap
         @menu_bar = Swt::Widgets::Menu.new(window.shell, type)
         return unless menu_model
         @handlers = []
@@ -31,7 +32,7 @@ module Redcar
       end
       
       def close
-        @handlers.each {|obj, h| obj.remove_listener(h)}
+        @handlers.each {|obj, h| obj.remove_listener(h) }
         @menu_bar.dispose
         @result
       end
@@ -67,7 +68,7 @@ module Redcar
       end
       
       def connect_command_to_item(item, entry)
-        if key_specifier = entry.command.get_key
+        if key_specifier = @keymap.command_to_key(entry.command)
           if key_string    = BindingTranslator.platform_key_string(key_specifier)
             item.text = entry.text + "\t" + key_string
             item.set_accelerator(BindingTranslator.key(key_string))

@@ -166,9 +166,6 @@ module Redcar
     end
     
     class FileOpenCommand < Command
-      key :osx     => "Cmd+O",
-          :linux   => "Ctrl+O",
-          :windows => "Ctrl+O"
       
       def initialize(path = nil)
         @path = path
@@ -198,9 +195,6 @@ module Redcar
     end
     
     class FileSaveCommand < EditTabCommand
-      key :osx     => "Cmd+S",
-          :linux   => "Ctrl+S",
-          :windows => "Ctrl+S"
 
       def execute
         tab = win.focussed_notebook.focussed_tab
@@ -213,9 +207,6 @@ module Redcar
     end
     
     class FileSaveAsCommand < EditTabCommand
-      key :osx     => "Cmd+Shift+S",
-          :linux   => "Ctrl+Shift+S",
-          :windows => "Ctrl+Shift+S"
       
       def initialize(path = nil)
         @path = path
@@ -245,10 +236,6 @@ module Redcar
     end
     
     class DirectoryOpenCommand < Command
-      key :osx     => "Cmd+Shift+O",
-          :linux   => "Ctrl+Shift+O",
-          :windows => "Ctrl+Shift+O"
-          
           
       def initialize(path=nil)
         @path = path
@@ -287,9 +274,6 @@ module Redcar
     end
     
     class FindFileCommand < ProjectCommand
-      key :osx => "Cmd+T",
-          :linux => "Ctrl+T",
-          :windows => "Ctrl+T"
      
       def execute
         dialog = FindFileDialog.new

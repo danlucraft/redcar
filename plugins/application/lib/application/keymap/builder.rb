@@ -4,12 +4,8 @@ module Redcar
     class Builder
       attr_reader :keymap
 
-      def self.build(name=nil, &block)
-        new(name, &block).keymap
-      end
-      
-      def initialize(name=nil, &block)
-        @keymap = Keymap.new(name)
+      def initialize(name, platforms, &block)
+        @keymap = Keymap.new(name, platforms)
         instance_eval(&block)
       end
       

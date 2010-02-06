@@ -21,8 +21,6 @@ module Redcar
     end
     
     class AutoCompleteCommand < Redcar::EditTabCommand
-      key :osx => "Ctrl+Escape", :linux => "Ctrl+Space",
-          :windows => "Ctrl+Space"
       
       def execute
         controller = doc.controllers(AutoCompleter::DocumentController).first
@@ -105,9 +103,6 @@ module Redcar
     end
     
     class MenuAutoCompleterCommand < AutoCompleteCommand
-      key 	:linux   => "Escape",
-      		:osx     => "Escape",
-      		:windows => "Escape"
     
       def execute
         controller = doc.controllers(AutoCompleter::DocumentController).first

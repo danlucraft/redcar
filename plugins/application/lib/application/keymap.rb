@@ -1,9 +1,16 @@
 
 module Redcar
   class Keymap
-    def initialize(name)
-      @name = name
-      @map  = {}
+    def self.build(name, platform, &block)
+      Builder.new(name, platform, &block).keymap
+    end
+    
+    attr_reader :name, :platforms
+    attr_accessor :map
+      
+    def initialize(name, platforms)
+      @name, @platforms = name, [*platforms]
+      @map = {}
     end
     
     def link(key_string, command)
@@ -20,6 +27,12 @@ module Redcar
     
     def length
       @map.length
+    end
+    
+    def merge(other)
+      keymap = Keymap.new(@name, @platforms)
+      keymap.map = @map.merge(other.map)
+      keymap
     end
   end
 end
