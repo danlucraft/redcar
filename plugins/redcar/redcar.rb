@@ -125,8 +125,7 @@ module Redcar
           :windows => "Ctrl+W"
       
       def execute
-        # TODO: should be win.focussed_notebook
-        if tab = win.focussed_notebook.focussed_tab
+        if tab = win.focussed_notebook_tab
           tab.close
         end
       end

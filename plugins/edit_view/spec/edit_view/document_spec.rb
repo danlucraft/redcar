@@ -13,6 +13,14 @@ describe Redcar::Document do
     def text=(val)
       @text = val
     end
+    
+    def length
+     @text.length
+    end
+    
+    def get_range(from_here, to_here)
+     @text[from_here, to_here]
+    end
   end
   
   class TestMirror
@@ -42,6 +50,11 @@ describe Redcar::Document do
     @doc = Redcar::Document.new(TestEditView.new)
     @doc.controller = @controller
     @mirror
+  end
+  
+  it "should allow for retrieving all text" do
+    @controller.text = "a\nb\n"
+    @doc.get_all_text.should == "a\nb\n"
   end
   
   describe "with no mirror" do

@@ -121,7 +121,7 @@ module Redcar
     
     private
     
-    # restores the directory used on the last section
+    # restores the directory/files in the last open window
     def self.restore_last_session      
       if path = storage['last_open_dir']
         open_dir(Redcar.app.focussed_window, path)
@@ -135,8 +135,8 @@ module Redcar
       
     end
         
-    # saves away the currently open files
-    # well, some of them
+    # saves away a list of the currently open files in 
+    # @param [win]
     def self.save_file_list win
       # create a list of open files
       file_list = []

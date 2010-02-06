@@ -183,6 +183,10 @@ module Redcar
     # @param [String] text  new text
     def text=(text)
       controller.text = text
+    end    
+	
+    def controller_text
+      controller.text
     end
     
     # Get the line index of the given offset
@@ -275,6 +279,11 @@ module Redcar
         offset_at_line(line_ix),
         offset_at_line_end(line_ix) - offset_at_line(line_ix)
       )
+    end
+    
+    # Get all text
+    def get_all_text
+      get_range(0, length)
     end
     
     # Replace a line in the document. This has two modes. In the first, 
