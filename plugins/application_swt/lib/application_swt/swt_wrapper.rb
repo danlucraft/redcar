@@ -67,6 +67,7 @@ module Swt
     import org.eclipse.swt.custom.SashForm
     import org.eclipse.swt.custom.StackLayout
     import org.eclipse.swt.custom.ST
+    import org.eclipse.swt.custom.StyledText
   end
   
   module DND
