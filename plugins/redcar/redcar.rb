@@ -466,12 +466,12 @@ module Redcar
           doc.set_selection_range(startoff..endoff)
         elsif doc.cursor_line < doc.line_count - 1
           # next search the rest of the lines
-          line_num = doc.cursor_line + 1
-          curr_line = doc.get_line(line_num)
-          until line_num == doc.line_count or 
-                found = (curr_line.to_s =~ @re)
-            line_num += 1
+          found = nil
+          line_num = nil
+          (doc.cursor_line + 1).upto(doc.line_count - 1) do |line_num|
+            next if found
             curr_line = doc.get_line(line_num)
+            found = (curr_line.to_s =~ @re)
           end
           if found
             line_start = doc.offset_at_line(line_num)
