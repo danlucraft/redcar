@@ -4,14 +4,18 @@ Version 0.3.3dev (TBA)
 
 New features:
 
-  * Reopens last open directory on startup
-  * FindFileDialog opens with a list of files opened this session
+  * Reopens last open directory on startup.
+  * FindFileDialog opens with a list of files opened this session.
+  * Can autocomplete with a menu popup (thanks Sam Clopton).
+  * Added 'encryption' plugin, mainly as an example.
+  * Opens files and folders passed on the command line.
 
 Internal changes:
 
 Fixes:
 
   * Fixed some highlighter bugs.
+  * Search searches last line in doc.
 
 Version 0.3.2dev (23 Jan 2010)
 ==============================
