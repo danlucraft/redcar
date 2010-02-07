@@ -406,21 +406,26 @@ module Redcar
           doc.set_selection_range(startoff..endoff)
         elsif doc.cursor_line < doc.line_count - 1
           # next search the rest of the lines
-          found = nil
-          line_num = nil
+          found_line_offset = nil
+          found_line_num = nil
+          found_length = nil
           (doc.cursor_line + 1).upto(doc.line_count - 1) do |line_num|
-            next if found
+            next if found_line_num
             curr_line = doc.get_line(line_num)
-            found = (curr_line.to_s =~ @re)
+            if new_offset = (curr_line.to_s =~ @re)
+              found_line_offset = new_offset
+              found_line_num = line_num
+              found_length = $&.length
+            end
           end
-          if found
-            line_start = doc.offset_at_line(line_num)
-            startoff = line_start + $`.length
-            endoff   = startoff + $&.length
+          if found_line_num
+            line_start = doc.offset_at_line(found_line_num)
+            startoff = line_start + found_line_offset
+            endoff   = startoff + found_length
             doc.set_selection_range(startoff..endoff)
-            doc.scroll_to_line(line_num)
+            doc.scroll_to_line(found_line_num)
           end
-          if !doc.get_line(line_num) and @wrap
+          if found_line_num and !doc.get_line(found_line_num) and @wrap
             doc.cursor_offset = 0
             execute
           end
@@ -596,3 +601,4 @@ module Redcar
     end
   end
 end
+
