@@ -19,9 +19,10 @@ module Redcar
         doc = win.focussed_notebook_tab_document
         path = doc.path if doc
         if path
-          out = `ruby #{path} 2>&1`
+          command = "ruby #{path} 2>&1"
+          out = `#{command}`
           new_tab = Top::NewCommand.new.run
-          new_tab.document.text = out
+          new_tab.document.text = "***** generated output from #{command} ***\n" + out
         else
           puts 'unable to execute'
         end
@@ -35,7 +36,7 @@ module Redcar
         doc = win.focussed_notebook_tab_document
         out = doc.get_all_text if doc
         if out
-          eval out, TOPLEVEL_BINDING, doc.path || doc.title
+          eval out, TOPLEVEL_BINDING, doc.path || doc.title || ''
         else
           puts 'unable to execute embedded'
         end
