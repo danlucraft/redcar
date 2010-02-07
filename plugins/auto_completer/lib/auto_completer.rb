@@ -105,7 +105,7 @@ module Redcar
     end
     
     class MenuAutoCompleterCommand < AutoCompleteCommand
-      key 	:linux   => "Escape",
+      key 	:linux   => "Cmd+Escape",
       		:osx     => "Escape",
       		:windows => "Escape"
     
