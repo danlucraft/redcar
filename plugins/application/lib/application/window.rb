@@ -98,13 +98,13 @@ module Redcar
       @focussed_notebook
     end
     
-    def focussed_notebook_focussed_tab
+    def focussed_notebook_tab
       @focussed_notebook.focussed_tab
     end
     
-    def focussed_notebook_focussed_tab_document
-      focussed_notebook_focussed_tab.document if focussed_notebook_focussed_tab
-    end
+    def focussed_notebook_tab_document
+      focussed_notebook_tab.document if focussed_notebook_tab
+    end    
     
     def focussed_notebook=(notebook)
       if notebook != @focussed_notebook

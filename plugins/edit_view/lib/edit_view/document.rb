@@ -57,6 +57,17 @@ module Redcar
       @mirror ? @mirror.title : nil
     end
     
+    # helper method to get
+    # the mirror's path
+    # if it has one
+    def path
+      if @mirror && @mirror.respond_to?(:path) && @mirror.path
+        @mirror.path
+      else
+        nil
+      end
+    end
+    
     def mirror=(new_mirror)
       notify_listeners(:new_mirror, new_mirror) do
         @mirror = new_mirror

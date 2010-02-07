@@ -135,13 +135,15 @@ module Redcar
       
     end
         
-    # saves away a list of the currently open files in 
+    # saves away a list of the currently open files in
     # @param [win]
     def self.save_file_list win
       # create a list of open files
       file_list = []
       win.notebooks[0].tabs.each{|tab|
         if File.file? tab.title
+          # TODO rdp use Redcar.app.focussed_window.focussed_notebook.focussed_tab.document_mirror.respond_to?(:path)
+          # instead of title
           file_list << File.expand_path(tab.title)
         end
       }
@@ -202,6 +204,7 @@ module Redcar
       end
     
       def execute
+        # TODO rdp cleanup
         # prefer opening in the dir of the currently open file
         if Redcar.app.focussed_window && Redcar.app.focussed_window.focussed_notebook && Redcar.app.focussed_window.focussed_notebook.focussed_tab
           # make sure it's a file

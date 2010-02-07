@@ -80,6 +80,19 @@ describe Redcar::Document do
       @doc.save!
       @mirror.read.should == "Saved text"
     end
+    
+    it "should allow for a path method" do
+      @doc.path.should == nil
+      def @mirror.path
+         'abc'
+      end
+      @doc.path.should == 'abc'    
+      def @mirror.path
+         nil
+      end
+      @doc.path.should == nil      
+    end
+    
   end
 end
 
