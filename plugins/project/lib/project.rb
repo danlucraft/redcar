@@ -141,10 +141,8 @@ module Redcar
       # create a list of open files
       file_list = []
       win.notebooks[0].tabs.each{|tab|
-        if File.file? tab.title
-          # TODO rdp use Redcar.app.focussed_window.focussed_notebook.focussed_tab.document_mirror.respond_to?(:path)
-          # instead of title
-          file_list << File.expand_path(tab.title)
+        if path = tab.document.path
+          file_list << path
         end
       }
       Project.storage['files_open_last_session'] = file_list      
