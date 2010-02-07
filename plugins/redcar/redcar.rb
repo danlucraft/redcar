@@ -246,14 +246,13 @@ module Redcar
       end
     end
     
-    class CutCommand < Redcar::EditTabCommand
+    class CutCommand < Redcar::DocumentCommand
     
       def execute
         if doc.selection?
           text = doc.selection_ranges.map do |range|
             doc.get_range(range.begin, range.count)
           end
-          p text
           Redcar.app.clipboard << text
           diff = 0
           doc.selection_ranges.each do |range|
@@ -268,7 +267,7 @@ module Redcar
       end
     end
     
-    class CopyCommand < Redcar::EditTabCommand
+    class CopyCommand < Redcar::DocumentCommand
     
       def execute
         if doc.selection?
@@ -282,7 +281,7 @@ module Redcar
       end
     end
     
-    class PasteCommand < Redcar::EditTabCommand
+    class PasteCommand < Redcar::DocumentCommand
       sensitize :clipboard_not_empty
       
       def execute

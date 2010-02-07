@@ -1,6 +1,7 @@
 
 require "edit_view/command"
 require "edit_view/document"
+require "edit_view/document/command"
 require "edit_view/document/controller"
 require "edit_view/document/mirror"
 require "edit_view/edit_tab"
