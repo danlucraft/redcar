@@ -54,7 +54,7 @@ module Redcar
       layout.marginWidth = 0
       layout.numColumns = 2
       @widget.layout = layout
-      @mate_text = JavaMateView::MateText.new(@widget)
+      @mate_text = JavaMateView::MateText.new(@widget, false)
       if Redcar.platform == :osx
         default_font = "Monaco"
         default_font_size = 15
