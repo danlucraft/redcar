@@ -57,8 +57,6 @@ module Redcar
   def self.try_to_load_via_drb
     if ARGV.length > 0
       ARGV.each{|arg| return unless File.exist?(arg)}
-    else
-      return
     end
     port = 9999
     require 'socket'
@@ -66,14 +64,17 @@ module Redcar
       TCPSocket.new('127.0.0.1', 9999).close
       require 'drb'
       redcar = DRbObject.new nil, "druby://127.0.0.1:9999"
-      ARGV.each{|arg|
-        if redcar.open_item_drb( File.expand_path(arg)) != 'ok'
-          return # some error
-        end        
-      }
+      if ARGV.length > 0
+        ARGV.each{|arg|
+          if redcar.open_item_drb( File.expand_path(arg)) != 'ok'
+            return # some error
+          end        
+        }
+      else
+       return unless redcar.open_item_drb('just_bring_to_front')
+      end
       return true
     rescue Exception => e
-      puts e
        # no socket open? drb error? ... fall through and continue
     end
     false

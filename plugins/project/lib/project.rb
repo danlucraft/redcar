@@ -122,12 +122,16 @@ module Redcar
             Redcar.app.focussed_window.controller.bring_to_front
           }
           'ok'
+        elsif full_path == 'just_bring_to_front'
+          Redcar::ApplicationSWT.sync_exec {
+            Redcar.app.focussed_window.controller.bring_to_front
+          }
+          'ok'
         else
-          # unexpected to get here
+          # unexpected to get here...
           puts 'remote load: not found' + full_path
           'not ok'
-        end        
-      
+        end       
     end
     
     # Opens a new EditTab with a FileMirror for the given path.
