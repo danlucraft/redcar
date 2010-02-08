@@ -71,7 +71,11 @@ module Redcar
             label.set_text(item.text)
           when Redcar::Speedbar::TextBoxItem
             mate_text = JavaMateView::MateText.new(@composite, true)
+            mate_text.set_font(EditView.font, EditView.font_size)
             mate_text.getControl.set_text(item.value)
+            mate_text.set_grammar_by_name "Ruby"
+            mate_text.set_theme_by_name(EditView.theme)
+            mate_text.set_root_scope_by_content_name("Ruby", "string.regexp.classic.ruby")
             gridData = Swt::Layout::GridData.new
             gridData.grabExcessHorizontalSpace = true
             gridData.horizontalAlignment = Swt::Layout::GridData::FILL

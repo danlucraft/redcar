@@ -38,7 +38,7 @@ module Redcar
         @model.set_grammar(new_grammar)
       end
       @mate_text.set_grammar_by_name "Plain Text"
-      @mate_text.set_theme_by_name(ARGV.option("theme") || "Twilight")
+      @mate_text.set_theme_by_name(EditView.theme)
       create_undo_manager
       @document.attach_modification_listeners # comes after undo manager
       remove_control_keybindings
@@ -55,18 +55,7 @@ module Redcar
       layout.numColumns = 2
       @widget.layout = layout
       @mate_text = JavaMateView::MateText.new(@widget, false)
-      if Redcar.platform == :osx
-        default_font = "Monaco"
-        default_font_size = 15
-      elsif Redcar.platform == :linux
-        default_font = "Monospace"
-        default_font_size = 11
-      elsif Redcar.platform == :windows
-        default_font = "FixedSys"
-        default_font_size = 15
-      end
-      @mate_text.set_font(ARGV.option("font") || default_font, 
-                          (ARGV.option("font-size") || default_font_size).to_i)
+      @mate_text.set_font(EditView.font, EditView.font_size)
       @edit_tab.item.control = @widget
       
       @mate_text.layoutData = Swt::Layout::GridData.construct do |data|

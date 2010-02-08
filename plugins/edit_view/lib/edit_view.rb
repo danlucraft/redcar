@@ -44,6 +44,33 @@ module Redcar
       ]
     end
 
+    def self.font_info
+      if Redcar.platform == :osx
+        default_font = "Monaco"
+        default_font_size = 15
+      elsif Redcar.platform == :linux
+        default_font = "Monospace"
+        default_font_size = 11
+      elsif Redcar.platform == :windows
+        default_font = "FixedSys"
+        default_font_size = 15
+      end
+      [ ARGV.option("font") || default_font, 
+        (ARGV.option("font-size") || default_font_size).to_i ]
+    end
+    
+    def self.font
+      font_info[0]
+    end
+    
+    def self.font_size
+      font_info[1]
+    end
+    
+    def self.theme
+      ARGV.option("theme") || "Twilight"
+    end    
+
     attr_reader :document
     
     def initialize(tab)
