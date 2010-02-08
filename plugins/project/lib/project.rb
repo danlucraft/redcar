@@ -113,13 +113,13 @@ module Redcar
         if File.file? full_path
           Redcar::ApplicationSWT.sync_exec {
             FileOpenCommand.new(full_path).execute
-            Redcar.app.focussed_window.controller.shell.force_active  # bring it to the front
+            Redcar.app.focussed_window.controller.bring_to_front
           }
           'ok'
         elsif File.directory? full_path
           Redcar::ApplicationSWT.sync_exec {
             open_dir(full_path)
-            Redcar.app.focussed_window.controller.shell.force_active  # bring it to the front
+            Redcar.app.focussed_window.controller.bring_to_front
           }
           'ok'
         else
