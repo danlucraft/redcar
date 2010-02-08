@@ -8,6 +8,7 @@ if ARGV.first == "install"
   installer = Redcar::Installer.new
   installer.install
 else
+  exit if Redcar.try_to_load_via_drb
   Redcar.ensure_jruby
   Redcar.load
   Redcar::Top.start

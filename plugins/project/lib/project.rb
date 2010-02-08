@@ -24,12 +24,12 @@ module Redcar
     end
     
     def self.init_drb_listener
-      # TODO choose any random port
+      # XXXX choose a random port instead of hard coded
       begin
         address = "druby://127.0.0.1:9999"
         @drb_service = DRb.start_service(address, self)
       rescue Errno::EADDRINUSE => e
-        puts 'warning--unable to start listener ' + e + ' ' + address
+        puts 'warning--not starting listener (perhaps theres another Redcar already open?)' + e + ' ' + address
       end
     end
     
@@ -112,7 +112,7 @@ module Redcar
     def self.open_item_drb(full_path)
         if File.file? full_path
           Redcar::ApplicationSWT.sync_exec {
-            open_file(full_path)
+            FileOpenCommand.new(full_path).execute
             Redcar.app.focussed_window.controller.shell.force_active  # bring it to the front
           }
           'ok'
@@ -123,7 +123,8 @@ module Redcar
           }
           'ok'
         else
-          puts 'not found' + full_path
+          # unexpected to get here
+          puts 'remote load: not found' + full_path
           'not ok'
         end        
       
