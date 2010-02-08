@@ -61,8 +61,11 @@ module Redcar
     private
     
     def check_for_changes
-      if controller and controller.changed? && @contents.length > 0
-        controller.last_set = @contents.last.join("\n")
+       #puts 'check_for_changes', controller, controller.changed?, @contents.length
+      if controller and controller.changed?
+        if @contents.length > 0
+          controller.last_set = @contents.last.join("\n")
+        end
         contents = controller.get_contents
         self << contents if contents
       end
