@@ -384,7 +384,6 @@ module Redcar
     end
     
     class RepeatPreviousSearchForwardCommand < Redcar::EditTabCommand
-      key :osx => "Cmd+G", :linux => "Ctrl+G", :windows => "Ctrl+G" # TODO F3 on doze
       
       def execute
         # open_bar = SearchForwardCommand.new
@@ -476,6 +475,7 @@ module Redcar
         link "Cmd+]",       IncreaseIndentCommand
         link "Cmd+L",       GotoLineCommand
         link "Cmd+F",       SearchForwardCommand
+        link "Cmd+G",       RepeatPreviousSearchForwardCommand
         link "Cmd+A",       SelectAllCommand
         link "Cmd+B",       ToggleBlockSelectionCommand
         link "Ctrl+Escape", AutoCompleter::AutoCompleteCommand
@@ -489,7 +489,7 @@ module Redcar
 
         link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
       end
-      
+
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
         link "Ctrl+N",       NewCommand
         link "Ctrl+Shift+N", NewNotebookCommand
@@ -510,6 +510,7 @@ module Redcar
         link "Ctrl+]",       IncreaseIndentCommand
         link "Ctrl+L",       GotoLineCommand
         link "Ctrl+F",       SearchForwardCommand
+        link "Ctrl+G",       RepeatPreviousSearchForwardCommand
         link "Ctrl+A",       SelectAllCommand
         link "Ctrl+B",       ToggleBlockSelectionCommand
         link "Ctrl+Escape",  AutoCompleter::AutoCompleteCommand
