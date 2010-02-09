@@ -188,7 +188,7 @@ module Redcar
         if plugin.object.respond_to?(:keymaps)
           maps = plugin.object.keymaps
           keymaps = maps.select do |map| 
-            map.name == "main" or map.platforms.include?(Redcar.platform)
+            map.name == "main" and map.platforms.include?(Redcar.platform)
           end
           keymap = keymaps.inject(keymap) {|k, nk| k.merge(nk) }
         end
