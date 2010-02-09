@@ -100,7 +100,9 @@ module Redcar
       def key_pressed(key_event)
         if key_event.character == Swt::SWT::TAB
         p :tab_pressed
-        end
+            elsif key_event.character == Swt::SWT::ESC
+        p :esc_pressed
+    end
       end
       
       def verify_key(key_event)
