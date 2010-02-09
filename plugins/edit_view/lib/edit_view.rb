@@ -117,7 +117,11 @@ module Redcar
     def focus
       notify_listeners(:focussed)
     end
-    
+
+    def title=(title)
+      notify_listeners(:title_changed, title)
+    end
+
     def serialize
       { :contents      => document.to_s,
         :cursor_offset => cursor_offset,
