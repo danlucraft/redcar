@@ -24,7 +24,7 @@ module Redcar
           new_tab = Top::NewCommand.new.run
           new_tab.document.text = "***** generated output from #{command} ***\n" + out
         else
-          puts 'unable to execute'
+          puts 'unable to execute--maybe you need to save it first, so it has a filename?'
         end
       end
 
