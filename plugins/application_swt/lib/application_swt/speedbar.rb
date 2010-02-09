@@ -70,7 +70,9 @@ module Redcar
             label = Swt::Widgets::Label.new(@composite, 0)
             label.set_text(item.text)
           when Redcar::Speedbar::TextBoxItem
-            mate_text = JavaMateView::MateText.new(@composite, true)
+            edit_view = EditView.new
+            edit_view_swt = EditViewSWT.new(edit_view, @composite, :single_line => true)
+            mate_text = edit_view_swt.mate_text
             mate_text.set_font(EditView.font, EditView.font_size)
             mate_text.getControl.set_text(item.value)
             mate_text.set_grammar_by_name "Ruby"
@@ -79,7 +81,7 @@ module Redcar
             gridData = Swt::Layout::GridData.new
             gridData.grabExcessHorizontalSpace = true
             gridData.horizontalAlignment = Swt::Layout::GridData::FILL
-            mate_text.set_layout_data(gridData)
+            mate_text.getControl.set_layout_data(gridData)
             mate_text.getControl.add_modify_listener do
               item.value = mate_text.getControl.get_text
               if item.listener

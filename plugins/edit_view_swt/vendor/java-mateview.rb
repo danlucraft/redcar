@@ -26,3 +26,4 @@ module JavaMateView
   end
 end
 
+ 

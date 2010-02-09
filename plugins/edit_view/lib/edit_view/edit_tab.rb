@@ -9,7 +9,7 @@ module Redcar
     end
     
     def create_edit_view
-      @edit_view = Redcar::EditView.new(self)
+      @edit_view = Redcar::EditView.new
       @edit_view.add_listener(:focussed, &method(:edit_view_focussed))
       @edit_view.document.add_listener(:changed) { notify_listeners(:changed, self) }
       @edit_view.document.add_listener(:selection_range_changed) { notify_listeners(:selection_changed) }

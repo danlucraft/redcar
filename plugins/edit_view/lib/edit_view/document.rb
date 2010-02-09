@@ -351,12 +351,12 @@ module Redcar
     def update_from_mirror
       self.text        = mirror.read
       @modified = false
-      @edit_view.title = title_with_star
+      #@edit_view.title = title_with_star
     end
     
     def set_modified(boolean)
       @modified = boolean
-      @edit_view.title = title_with_star
+      #@edit_view.title = title_with_star
     end
     
     def title_with_star

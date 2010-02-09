@@ -25,19 +25,16 @@ module Redcar
     end
     
     attr_reader :mate_text, :widget
-
-    def initialize(model, edit_tab)
+      
+    def initialize(model, parent, options={})
+      @options = options
       @model = model
-      @edit_tab = edit_tab
+      @parent = parent
       @handlers = []
       create_mate_text
-      create_grammar_selector
       create_document
       attach_listeners
-      @mate_text.add_grammar_listener do |new_grammar|
-        @model.set_grammar(new_grammar)
-      end
-      @mate_text.set_grammar_by_name "Plain Text"
+      @mate_text.set_grammar_by_name("Plain Text")
       @mate_text.set_theme_by_name(EditView.theme)
       create_undo_manager
       @document.attach_modification_listeners # comes after undo manager
@@ -45,26 +42,8 @@ module Redcar
     end
     
     def create_mate_text
-      parent = @edit_tab.notebook.tab_folder
-      @widget = Swt::Widgets::Composite.new(parent, Swt::SWT::NONE)
-      layout = Swt::Layout::GridLayout.new
-      layout.verticalSpacing = 0
-      layout.marginHeight = 0
-      layout.horizontalSpacing = 0
-      layout.marginWidth = 0
-      layout.numColumns = 2
-      @widget.layout = layout
-      @mate_text = JavaMateView::MateText.new(@widget, false)
+      @mate_text = JavaMateView::MateText.new(@parent, !!@options[:single_line])
       @mate_text.set_font(EditView.font, EditView.font_size)
-      @edit_tab.item.control = @widget
-      
-      @mate_text.layoutData = Swt::Layout::GridData.construct do |data|
-        data.horizontalAlignment = Swt::Layout::GridData::FILL
-        data.verticalAlignment = Swt::Layout::GridData::FILL
-        data.grabExcessHorizontalSpace = true
-        data.grabExcessVerticalSpace = true
-        data.horizontalSpan = 2  
-      end
       
       @model.controller = self
     end
@@ -98,23 +77,6 @@ module Redcar
       @undo_manager.reset
     end
     
-    def create_grammar_selector
-      @combo = Swt::Widgets::Combo.new @widget, Swt::SWT::READ_ONLY
-      bundles  = JavaMateView::Bundle.bundles.to_a
-      grammars = bundles.map {|b| b.grammars.to_a}.flatten
-      items    = grammars.map {|g| g.name}.sort_by {|name| name.downcase }
-      @combo.items = items.to_java(:string)
-      
-      @mate_text.add_grammar_listener do |new_grammar|
-        @combo.select(items.index(new_grammar))
-      end
-      
-      @combo.add_selection_listener do |event|
-        @mate_text.set_grammar_by_name(@combo.text)
-      end
-      
-      @widget.pack
-    end
     
     def create_document
       @document = EditViewSWT::Document.new(@model.document, @mate_text.mate_document)
@@ -129,18 +91,23 @@ module Redcar
     end
     
     def swt_focus_gained
-      @model.gained_focus
+    p :focus_gained
+      EditView.focussed_mate_text = self
+    end
+    
+    def swt_focus_lost
+    p :focus_lost
+      EditView.focussed_mate_text = nil
     end
     
     def focus
-      @mate_text.set_focus
+      @mate_text.get_control.set_focus
     end
     
     def has_focus?
       focus_control = ApplicationSWT.display.get_focus_control
       focus_control.parent.parent == @mate_text
     end
-  
   
     def attach_listeners
       # h = @document.add_listener(:set_text, &method(:reparse))
@@ -198,8 +165,6 @@ module Redcar
     end
     
     def dispose
-      @combo.dispose
-      @widget.dispose
       @handlers.each {|obj, h| obj.remove_listener(h) }
       @handlers.clear
     end
@@ -213,7 +178,9 @@ module Redcar
         @obj.swt_focus_gained
       end
 
-      def focusLost(_); end
+      def focusLost(_)
+        @obj.swt_focus_lost
+      end
     end
     
     class VerifyListener

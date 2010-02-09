@@ -9,12 +9,18 @@ require "edit_view/edit_tab"
 module Redcar
   class EditView
     include Redcar::Model
+    extend Redcar::Observable
     include Redcar::Observable
     
     extend Forwardable
 
     class << self
       attr_reader :undo_sensitivity, :redo_sensitivity
+    end
+    
+    def self.focussed_mate_text=(mate_text)
+      @focussed_mate_text = mate_text
+      notify_listeners(:focussed_mate_text, mate_text)
     end
     
     def self.sensitivities
@@ -73,8 +79,7 @@ module Redcar
 
     attr_reader :document
     
-    def initialize(tab)
-      @tab = tab
+    def initialize
       create_document
       @grammar = nil
       @focussed = nil
@@ -82,10 +87,6 @@ module Redcar
     
     def create_document
       @document = Redcar::Document.new(self)
-    end
-    
-    def title=(title)
-      @tab.title = title
     end
     
     def_delegators :controller, :undo,      :redo,
