@@ -87,7 +87,32 @@ module Redcar
       @mate_text.getTextWidget.addFocusListener(FocusListener.new(self))
       @mate_text.getTextWidget.addVerifyListener(VerifyListener.new(@model.document, self))
       @mate_text.getTextWidget.addModifyListener(ModifyListener.new(@model.document, self))
+      @mate_text.get_control.add_key_listener(KeyListener.new(self))
+      @mate_text.get_control.add_verify_key_listener(KeyListener.new(self))
       @handlers << [@model.document, h1] << [@model, h2]
+    end
+    
+    class KeyListener
+      def initialize(edit_view_swt)
+        @edit_view_swt = edit_view_swt
+      end
+      
+      def key_pressed(key_event)
+        if key_event.character == Swt::SWT::TAB
+        p :tab_pressed
+        end
+      end
+      
+      def verify_key(key_event)
+      p :verkey
+        if key_event.character == Swt::SWT::TAB
+        p :tab_pressed
+        key_event.doit = false
+        end
+      end
+      
+      def key_released(key_event)
+      end
     end
     
     def swt_focus_gained
@@ -188,6 +213,7 @@ module Redcar
       end
       
       def verify_text(e)
+      p :veryify
         @document.verify_text(e.start, e.end, e.text)
       end
     end
@@ -198,6 +224,7 @@ module Redcar
       end
       
       def modify_text(e)
+      p :modify
         @document.modify_text
       end
     end
