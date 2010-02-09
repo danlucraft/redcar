@@ -201,8 +201,7 @@ module Redcar
         
         dir_args.each {|path| open_dir(path) }
         file_args.each {|path| open_file(path) }
-
-        return dir_args.any? or file_args.any?
+        return (dir_args.any? or file_args.any?)
       end
     end
     
