@@ -131,6 +131,7 @@ module Redcar
       	  word_list.words.each do |current_word, word_distance|
       	  	item(current_word) do
       	  		cur_doc.insert(cur_doc.cursor_offset, current_word[input_word.length..current_word.length])
+      	  		cur_doc.cursor_offset = cur_doc.cursor_offset + current_word[input_word.length..current_word.length].length
       	  	end
       	  end
       	end

@@ -463,7 +463,7 @@ module Redcar
         link "Cmd+A",       SelectAllCommand
         link "Cmd+B",       ToggleBlockSelectionCommand
         link "Ctrl+Escape", AutoCompleter::AutoCompleteCommand
-        link "Escape",      AutoCompleter::MenuAutoCompleterCommand
+        link "Cmd+Escape",      AutoCompleter::MenuAutoCompleterCommand
         
         link "Cmd+T",           Project::FindFileCommand
         link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
@@ -551,8 +551,8 @@ module Redcar
             item "Line", SelectLineCommand
           end
           item "Toggle Block Selection", ToggleBlockSelectionCommand
-          item "Auto Complete", AutoCompleter::AutoCompleteCommand
-          item "Menu Auto Complete", AutoCompleter::MenuAutoCompleterCommand
+          item "Auto Complete",          AutoCompleter::AutoCompleteCommand
+          item "Menu Auto Complete",     AutoCompleter::MenuAutoCompleterCommand
         end
         sub_menu "Project" do
           item "Find File", Project::FindFileCommand
