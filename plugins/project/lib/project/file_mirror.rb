@@ -61,11 +61,11 @@ module Redcar
       private
       
       def load_contents
-        File.read(@path)
+        File.open(@path, 'rb') do |f|; f.read; end
       end
       
       def save_contents(contents)
-        File.open(@path, "w") {|f| f.print contents }
+        File.open(@path, "wb") {|f| f.print contents }
       end
     end
   end

@@ -86,6 +86,11 @@ module Redcar
         @menu_controller = ApplicationSWT::Menu.new(self, @window.menu, @window.keymap, Swt::SWT::BAR)
         shell.menu_bar = @menu_controller.menu_bar
       end
+
+      def bring_to_front
+        @shell.set_minimized(false)
+        @shell.force_active
+      end        
       
       def popup_menu(menu)
         menu.controller = ApplicationSWT::Menu.new(self, menu, Swt::SWT::POP_UP)
@@ -216,7 +221,7 @@ module Redcar
         width = (100/@window.notebooks.length).to_i
         widths = [width]*@window.notebooks.length
       	@notebook_sash.setWeights(widths.to_java(:int))
-    	end
+      end
     end
   end
 end

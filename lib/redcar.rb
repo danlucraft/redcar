@@ -50,6 +50,35 @@ module Redcar
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 3
   VERSION_RELEASE = 2
+  
+  # if they are all files/dirs
+  # then attempt to load via drb
+  # if available
+  def self.try_to_load_via_drb
+    if ARGV.length > 0
+      ARGV.each{|arg| return unless File.exist?(arg)}
+    end
+    port = 9999
+    require 'socket'
+    begin
+      TCPSocket.new('127.0.0.1', 9999).close
+      require 'drb'
+      redcar = DRbObject.new nil, "druby://127.0.0.1:9999"
+      if ARGV.length > 0
+        ARGV.each{|arg|
+          if redcar.open_item_drb( File.expand_path(arg)) != 'ok'
+            return # some error
+          end        
+        }
+      else
+       return unless redcar.open_item_drb('just_bring_to_front')
+      end
+      return true
+    rescue Exception => e
+       # no socket open? drb error? ... fall through and continue
+    end
+    false
+  end
 
   def self.ensure_jruby
     if Config::CONFIG["RUBY_INSTALL_NAME"] != "jruby"
@@ -79,7 +108,7 @@ module Redcar
       puts plugin_manager.unreadable_definitions.map {|d| "  * " + d}
     end
     if plugin_manager.plugins_with_errors.any?
-      puts "There was an error loading: "
+      puts "There was an error loading plugins: "
       puts plugin_manager.plugins_with_errors.map {|d| "  * " + d.name}
     end
     if ENV["PLUGIN_DEBUG"]

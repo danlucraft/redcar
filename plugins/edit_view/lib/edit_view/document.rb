@@ -57,6 +57,17 @@ module Redcar
       @mirror ? @mirror.title : nil
     end
     
+    # helper method to get
+    # the mirror's path
+    # if it has one
+    def path
+      if @mirror && @mirror.respond_to?(:path) && @mirror.path
+        @mirror.path
+      else
+        nil
+      end
+    end
+    
     def mirror=(new_mirror)
       notify_listeners(:new_mirror, new_mirror) do
         @mirror = new_mirror
@@ -189,6 +200,10 @@ module Redcar
     # @param [String] text  new text
     def text=(text)
       controller.text = text
+    end    
+	
+    def controller_text
+      controller.text
     end
     
     # Get the line index of the given offset
@@ -281,6 +296,11 @@ module Redcar
         offset_at_line(line_ix),
         offset_at_line_end(line_ix) - offset_at_line(line_ix)
       )
+    end
+    
+    # Get all text
+    def get_all_text
+      get_range(0, length)
     end
     
     # Replace a line in the document. This has two modes. In the first, 

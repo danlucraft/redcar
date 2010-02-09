@@ -13,6 +13,14 @@ describe Redcar::Document do
     def text=(val)
       @text = val
     end
+    
+    def length
+     @text.length
+    end
+    
+    def get_range(from_here, to_here)
+     @text[from_here, to_here]
+    end
   end
   
   class TestMirror
@@ -44,6 +52,11 @@ describe Redcar::Document do
     @mirror
   end
   
+  it "should allow for retrieving all text" do
+    @controller.text = "a\nb\n"
+    @doc.get_all_text.should == "a\nb\n"
+  end
+  
   describe "with no mirror" do
     it "reads from the mirror when it is set" do
       @doc.mirror = TestMirror.new
@@ -67,6 +80,19 @@ describe Redcar::Document do
       @doc.save!
       @mirror.read.should == "Saved text"
     end
+    
+    it "should allow for a path method" do
+      @doc.path.should == nil
+      def @mirror.path
+         'abc'
+      end
+      @doc.path.should == 'abc'    
+      def @mirror.path
+         nil
+      end
+      @doc.path.should == nil      
+    end
+    
   end
 end
 

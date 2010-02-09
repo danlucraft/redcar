@@ -82,7 +82,7 @@ module Redcar
       @clipboard.add_listener(:added) { notify_listeners(:clipboard_added) }
     end
     
-    # Immediately halts the gui event loop.
+    # Immediatley halts the gui event loop.
     def quit
       Redcar.gui.stop
     end
@@ -106,6 +106,7 @@ module Redcar
       new_window
     end
     
+    
     # Removes a window from this Application. Should not be called by user
     # code, use Window#close instead.
     def window_closed(window)
@@ -114,6 +115,7 @@ module Redcar
         self.focussed_window = windows.first
       end
       @window_handlers[window].each {|h| window.remove_listener(h) }
+      
       @window_handlers.delete(window)
       if windows.length == 0  and [:linux, :windows].include?(Redcar.platform)
         quit
@@ -194,6 +196,7 @@ module Redcar
       keymap
     end
     
+    
     def load_sensitivities
       Redcar.plugin_manager.loaded_plugins.each do |plugin|
         if plugin.object.respond_to?(:sensitivities)
@@ -234,7 +237,12 @@ module Redcar
           notify_listeners(:focussed_tab_selection_changed, tab)
         end
       end
-      @window_handlers[window] << h1 << h2 << h3 << h4 << h5 << h6 << h7 << h8 << h9
+      
+      h10 = window.add_listener(:about_to_close) do |win|
+        notify_listeners(:window_about_to_close, win)
+      end
+      
+      @window_handlers[window] << h1 << h2 << h3 << h4 << h5 << h6 << h7 << h8 << h9 << h10
     end
   end
 end

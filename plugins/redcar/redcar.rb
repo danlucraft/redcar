@@ -1,4 +1,3 @@
-
 module Redcar
   module Top
     class NewCommand < Command
@@ -108,8 +107,7 @@ module Redcar
     class CloseTabCommand < TabCommand
       
       def execute
-        # TODO: should be win.focussed_notebook
-        if tab = win.focussed_notebook.focussed_tab
+        if tab = win.focussed_notebook_tab
           tab.close
         end
       end
@@ -373,15 +371,31 @@ module Redcar
         button :search, "Return" do
           current_query = @speedbar.query
           SearchForwardCommand::Speedbar.previous_query = current_query
-          FindNextRegex.new(Regexp.new(current_query), false).run
+          result = FindNextRegex.new(Regexp.new(current_query), true).run # TODO use result
         end
+        
       end
       
       def execute
         @speedbar = SearchForwardCommand::Speedbar.new(self)
         win.open_speedbar(@speedbar)
       end
+
     end
+    
+    class RepeatPreviousSearchForwardCommand < Redcar::EditTabCommand
+      key :osx => "Cmd+G", :linux => "Ctrl+G", :windows => "Ctrl+G" # TODO F3 on doze
+      
+      def execute
+        # open_bar = SearchForwardCommand.new
+        # open_bar.execute # Question: is there a way to programmatically
+        # pull up a bar (and execute it)? (the above line doesn't work)
+        # open_bar.speedbar.find
+        FindNextRegex.new(Regexp.new(SearchForwardCommand::Speedbar.previous_query), true).run   
+      end
+      
+    end
+        
     
     class FindNextRegex < Redcar::EditTabCommand
       def initialize(re, wrap=nil)
@@ -425,9 +439,11 @@ module Redcar
             doc.scroll_to_line(found_line_num)
           end
           if found_line_num and !doc.get_line(found_line_num) and @wrap
+            @wrap = false
             doc.cursor_offset = 0
-            execute
+            return execute
           end
+          false
         end
       end
     end
@@ -545,6 +561,7 @@ module Redcar
           separator
           item "Goto Line", GotoLineCommand
           item "Regex Search",    SearchForwardCommand
+          item "Repeat Last Search", RepeatPreviousSearchForwardCommand
           separator
           sub_menu "Select" do
             item "All", SelectAllCommand
@@ -600,4 +617,3 @@ module Redcar
     end
   end
 end
-

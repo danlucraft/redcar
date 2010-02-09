@@ -55,6 +55,9 @@ module Redcar
       @gui
     end
     
+    #
+    # allow other threads to run code "back in the GUI"
+    #  
     def self.sync_exec(&block)
       runnable = Swt::RRunnable.new(&block)
       Redcar::ApplicationSWT.display.syncExec(runnable)

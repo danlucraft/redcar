@@ -30,8 +30,20 @@ describe Redcar::Clipboard do
   it "loads well when the clipboard starts as blank" do
     cont = "fake controller"
     def cont.changed?; true; end
+    def cont.last_set=(something); @a = something;end
+    def cont.get_contents; @a; end
     @clipboard.controller = cont
     @clipboard.length.should == 0 # shouldn't blow up
+  end
+  
+  it "should allow for the controller to return contents" do
+    cont = "fake controller"
+    def cont.changed?; true; end
+    def cont.last_set=(something); @a = something;end
+    def cont.get_contents; @a; end
+    @clipboard.controller = cont
+    @clipboard << "yo"
+    @clipboard.length.should == 2
   end
   
   it "has a maximum length" do

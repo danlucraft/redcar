@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), "..", "spec_helper")
 class Redcar::Project
   describe FileMirror do
     def write_testfile_contents(val)
-      File.open(@filename, "w") {|f| f.print val}
+      File.open(@filename, "wb") {|f| f.print val}
     end
     
     before do
@@ -32,6 +32,14 @@ class Redcar::Project
       it "lets you save new contents" do
         @mirror.commit("hiver")
         @mirror.read.should == "hiver"
+      end
+      
+      it "preserves line endings" do
+        write_testfile_contents("a\nb")
+        
+        @mirror.read.should == "a\nb"
+        write_testfile_contents("a\r\nb")
+        @mirror.read.should == "a\r\nb"
       end
       
       describe "that you have read" do
