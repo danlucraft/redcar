@@ -12,6 +12,20 @@ module Redcar
         end
       ]
     end
+
+    def self.keymaps
+      osx = Keymap.build("main", :osx) do
+        link "Cmd+Shift+M", REPL::OpenInternalREPL
+        link "Cmd+M",       REPL::CommitREPL
+      end
+      
+      linwin = Keymap.build("main", [:linux, :windows]) do
+        link "Ctrl+Shift+M", REPL::OpenInternalREPL
+        link "Ctrl+M",       REPL::CommitREPL
+      end
+      
+      [linwin, osx]
+    end
     
     def self.menus
       Menu::Builder.build do
@@ -25,9 +39,6 @@ module Redcar
     end
     
     class OpenInternalREPL < Command
-      key :linux   => "Ctrl+Shift+M",
-          :osx     => "Cmd+Shift+M",
-          :windows => "Ctrl+Shift+M"
       
       def execute
         tab = win.new_tab(Redcar::EditTab)
@@ -43,9 +54,6 @@ module Redcar
     end
     
     class CommitREPL < ReplCommand
-      key :linux   => "Ctrl+M",
-          :osx     => "Cmd+M",
-          :windows => "Ctrl+M"
       
       def execute
         edit_view = win.focussed_notebook.focussed_tab.edit_view

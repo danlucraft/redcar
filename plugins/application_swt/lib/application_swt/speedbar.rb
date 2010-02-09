@@ -70,14 +70,20 @@ module Redcar
             label = Swt::Widgets::Label.new(@composite, 0)
             label.set_text(item.text)
           when Redcar::Speedbar::TextBoxItem
-            textbox = Swt::Custom::StyledText.new(@composite, Swt::SWT::SINGLE)
-            textbox.set_text(item.value)
+            edit_view = EditView.new
+            edit_view_swt = EditViewSWT.new(edit_view, @composite, :single_line => true)
+            mate_text = edit_view_swt.mate_text
+            mate_text.set_font(EditView.font, EditView.font_size)
+            mate_text.getControl.set_text(item.value)
+            mate_text.set_grammar_by_name "Ruby"
+            mate_text.set_theme_by_name(EditView.theme)
+            mate_text.set_root_scope_by_content_name("Ruby", "string.regexp.classic.ruby")
             gridData = Swt::Layout::GridData.new
             gridData.grabExcessHorizontalSpace = true
             gridData.horizontalAlignment = Swt::Layout::GridData::FILL
-            textbox.set_layout_data(gridData)
-            textbox.add_modify_listener do
-              item.value = textbox.get_text
+            mate_text.getControl.set_layout_data(gridData)
+            mate_text.getControl.add_modify_listener do
+              item.value = mate_text.getControl.get_text
               if item.listener
                 begin
                   @model.__context.instance_exec(item.value, &item.listener)
@@ -86,8 +92,8 @@ module Redcar
                 end
               end
             end
-            keyable_widgets << textbox
-            focussable_widgets << textbox
+            keyable_widgets << mate_text.getControl
+            focussable_widgets << mate_text.getControl
           when Redcar::Speedbar::ButtonItem
             button = Swt::Widgets::Button.new(@composite, 0)
             button.set_text(item.text)

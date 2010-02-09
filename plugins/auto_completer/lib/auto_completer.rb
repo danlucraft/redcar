@@ -21,8 +21,6 @@ module Redcar
     end
     
     class AutoCompleteCommand < Redcar::EditTabCommand
-      key :osx => "Ctrl+Escape", :linux => "Ctrl+Space",
-          :windows => "Ctrl+Space"
       
       def execute
         controller = doc.controllers(AutoCompleter::DocumentController).first
@@ -105,9 +103,6 @@ module Redcar
     end
     
     class MenuAutoCompleterCommand < AutoCompleteCommand
-      key 	:linux   => "Escape",
-      		:osx     => "Escape",
-      		:windows => "Escape"
     
       def execute
         controller = doc.controllers(AutoCompleter::DocumentController).first
@@ -136,6 +131,7 @@ module Redcar
       	  word_list.words.each do |current_word, word_distance|
       	  	item(current_word) do
       	  		cur_doc.insert(cur_doc.cursor_offset, current_word[input_word.length..current_word.length])
+      	  		cur_doc.cursor_offset = cur_doc.cursor_offset + current_word[input_word.length..current_word.length].length
       	  	end
       	  end
       	end

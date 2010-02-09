@@ -1,6 +1,7 @@
 
 require "edit_view/command"
 require "edit_view/document"
+require "edit_view/document/command"
 require "edit_view/document/controller"
 require "edit_view/document/mirror"
 require "edit_view/edit_tab"
@@ -8,18 +9,30 @@ require "edit_view/edit_tab"
 module Redcar
   class EditView
     include Redcar::Model
+    extend Redcar::Observable
     include Redcar::Observable
     
     extend Forwardable
 
     class << self
       attr_reader :undo_sensitivity, :redo_sensitivity
+      attr_reader :focussed_edit_view
+    end
+    
+    # Called by the GUI whenever an EditView is focussed or
+    # loses focus. Sends :focussed_edit_view event.
+    def self.focussed_edit_view=(edit_view)
+      @focussed_edit_view = edit_view
+      notify_listeners(:focussed_edit_view, edit_view)
     end
     
     def self.sensitivities
       [
         Sensitivity.new(:edit_tab_focussed, Redcar.app, false, [:tab_focussed]) do |tab|
           tab and tab.is_a?(EditTab)
+        end,
+        Sensitivity.new(:edit_view_focussed, EditView, false, [:focussed_edit_view]) do |edit_view|
+          edit_view
         end,
         Sensitivity.new(:selected_text, Redcar.app, false, [:focussed_tab_selection_changed, :tab_focussed]) do
           if win = Redcar.app.focussed_window
@@ -43,10 +56,36 @@ module Redcar
       ]
     end
 
+    def self.font_info
+      if Redcar.platform == :osx
+        default_font = "Monaco"
+        default_font_size = 15
+      elsif Redcar.platform == :linux
+        default_font = "Monospace"
+        default_font_size = 11
+      elsif Redcar.platform == :windows
+        default_font = "FixedSys"
+        default_font_size = 15
+      end
+      [ ARGV.option("font") || default_font, 
+        (ARGV.option("font-size") || default_font_size).to_i ]
+    end
+    
+    def self.font
+      font_info[0]
+    end
+    
+    def self.font_size
+      font_info[1]
+    end
+    
+    def self.theme
+      ARGV.option("theme") || "Twilight"
+    end    
+
     attr_reader :document
     
-    def initialize(tab)
-      @tab = tab
+    def initialize
       create_document
       @grammar = nil
       @focussed = nil
@@ -54,10 +93,6 @@ module Redcar
     
     def create_document
       @document = Redcar::Document.new(self)
-    end
-    
-    def title=(title)
-      @tab.title = title
     end
     
     def_delegators :controller, :undo,      :redo,
@@ -79,10 +114,14 @@ module Redcar
       @grammar = name
     end
     
-    def gained_focus
+    def focus
       notify_listeners(:focussed)
     end
-    
+
+    def title=(title)
+      notify_listeners(:title_changed, title)
+    end
+
     def serialize
       { :contents      => document.to_s,
         :cursor_offset => cursor_offset,

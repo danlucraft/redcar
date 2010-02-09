@@ -44,7 +44,7 @@ module Redcar
       
       def add_listeners
         @window.add_listener(:show,          &method(:show))
-        @window.add_listener(:menu_changed,  &method(:menu_changed))
+        @window.add_listener(:refresh_menu,  &method(:refresh_menu))
         @window.add_listener(:popup_menu,    &method(:popup_menu))
         @window.add_listener(:title_changed, &method(:title_changed))
         @window.add_listener(:new_notebook,  &method(:new_notebook))
@@ -82,15 +82,15 @@ module Redcar
         @shell.text = window.title
       end
       
-      def bring_to_front
-        @shell.set_minimized false
-        @shell.force_active
-      end        
-      
-      def menu_changed(menu)
-        @menu_controller = ApplicationSWT::Menu.new(self, menu, Swt::SWT::BAR)
+      def refresh_menu
+        @menu_controller = ApplicationSWT::Menu.new(self, @window.menu, @window.keymap, Swt::SWT::BAR)
         shell.menu_bar = @menu_controller.menu_bar
       end
+
+      def bring_to_front
+        @shell.set_minimized(false)
+        @shell.force_active
+      end        
       
       def popup_menu(menu)
         menu.controller = ApplicationSWT::Menu.new(self, menu, Swt::SWT::POP_UP)
@@ -185,11 +185,12 @@ module Redcar
       	@right_composite.setLayout(@grid_layout)
       	
         @notebook_sash     = Swt::Custom::SashForm.new(@right_composite, orientation)
-        grid_data = Swt::Layout::GridData.new
-        grid_data.grabExcessHorizontalSpace = true
-        grid_data.horizontalAlignment = Swt::Layout::GridData::FILL
-        grid_data.grabExcessVerticalSpace = true
-        grid_data.verticalAlignment = Swt::Layout::GridData::FILL
+        #grid_data = Swt::Layout::GridData.new
+        #grid_data.grabExcessHorizontalSpace = true
+        #grid_data.horizontalAlignment = Swt::Layout::GridData::FILL
+        #grid_data.grabExcessVerticalSpace = true
+        #grid_data.verticalAlignment = Swt::Layout::GridData::FILL
+        grid_data = Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH)
       	@notebook_sash.setLayoutData(grid_data)
       	@notebook_sash.setSashWidth(SASH_WIDTH)
       end

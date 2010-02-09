@@ -25,57 +25,25 @@ module Redcar
     end
     
     attr_reader :mate_text, :widget
-
-    def initialize(model, edit_tab)
+      
+    def initialize(model, parent, options={})
+      @options = options
       @model = model
-      @edit_tab = edit_tab
+      @parent = parent
       @handlers = []
       create_mate_text
-      create_grammar_selector
       create_document
       attach_listeners
-      @mate_text.add_grammar_listener do |new_grammar|
-        @model.set_grammar(new_grammar)
-      end
-      @mate_text.set_grammar_by_name "Plain Text"
-      @mate_text.set_theme_by_name(ARGV.option("theme") || "Twilight")
+      @mate_text.set_grammar_by_name("Plain Text")
+      @mate_text.set_theme_by_name(EditView.theme)
       create_undo_manager
       @document.attach_modification_listeners # comes after undo manager
       remove_control_keybindings
     end
     
     def create_mate_text
-      parent = @edit_tab.notebook.tab_folder
-      @widget = Swt::Widgets::Composite.new(parent, Swt::SWT::NONE)
-      layout = Swt::Layout::GridLayout.new
-      layout.verticalSpacing = 0
-      layout.marginHeight = 0
-      layout.horizontalSpacing = 0
-      layout.marginWidth = 0
-      layout.numColumns = 2
-      @widget.layout = layout
-      @mate_text = JavaMateView::MateText.new(@widget)
-      if Redcar.platform == :osx
-        default_font = "Monaco"
-        default_font_size = 15
-      elsif Redcar.platform == :linux
-        default_font = "Monospace"
-        default_font_size = 11
-      elsif Redcar.platform == :windows
-        default_font = "Courier New"
-        default_font_size = 9
-      end
-      @mate_text.set_font(ARGV.option("font") || default_font, 
-                          (ARGV.option("font-size") || default_font_size).to_i)
-      @edit_tab.item.control = @widget
-      
-      @mate_text.layoutData = Swt::Layout::GridData.construct do |data|
-        data.horizontalAlignment = Swt::Layout::GridData::FILL
-        data.verticalAlignment = Swt::Layout::GridData::FILL
-        data.grabExcessHorizontalSpace = true
-        data.grabExcessVerticalSpace = true
-        data.horizontalSpan = 2  
-      end
+      @mate_text = JavaMateView::MateText.new(@parent, !!@options[:single_line])
+      @mate_text.set_font(EditView.font, EditView.font_size)
       
       @model.controller = self
     end
@@ -109,30 +77,13 @@ module Redcar
       @undo_manager.reset
     end
     
-    def create_grammar_selector
-      @combo = Swt::Widgets::Combo.new @widget, Swt::SWT::READ_ONLY
-      bundles  = JavaMateView::Bundle.bundles.to_a
-      grammars = bundles.map {|b| b.grammars.to_a}.flatten
-      items    = grammars.map {|g| g.name}.sort_by {|name| name.downcase }
-      @combo.items = items.to_java(:string)
-      
-      @mate_text.add_grammar_listener do |new_grammar|
-        @combo.select(items.index(new_grammar))
-      end
-      
-      @combo.add_selection_listener do |event|
-        @mate_text.set_grammar_by_name(@combo.text)
-      end
-      
-      @widget.pack
-    end
-    
     def create_document
       @document = EditViewSWT::Document.new(@model.document, @mate_text.mate_document)
       @model.document.controller = @document
       h1 = @model.document.add_listener(:before => :new_mirror, 
             &method(:update_grammar))
       h2 = @model.add_listener(:grammar_changed, &method(:model_grammar_changed))
+      h3 = @model.add_listener(:focussed, &method(:focus))
       @mate_text.getTextWidget.addFocusListener(FocusListener.new(self))
       @mate_text.getTextWidget.addVerifyListener(VerifyListener.new(@model.document, self))
       @mate_text.getTextWidget.addModifyListener(ModifyListener.new(@model.document, self))
@@ -140,18 +91,22 @@ module Redcar
     end
     
     def swt_focus_gained
-      @model.gained_focus
+      EditView.focussed_edit_view = @model
+      @model.focus
+    end
+    
+    def swt_focus_lost
+      EditView.focussed_edit_view = nil
     end
     
     def focus
-      @mate_text.set_focus
+      @mate_text.get_control.set_focus
     end
     
     def has_focus?
       focus_control = ApplicationSWT.display.get_focus_control
-      focus_control.parent.parent == @mate_text
+      focus_control == @mate_text.get_control
     end
-  
   
     def attach_listeners
       # h = @document.add_listener(:set_text, &method(:reparse))
@@ -209,8 +164,6 @@ module Redcar
     end
     
     def dispose
-      @combo.dispose
-      @widget.dispose
       @handlers.each {|obj, h| obj.remove_listener(h) }
       @handlers.clear
     end
@@ -224,7 +177,9 @@ module Redcar
         @obj.swt_focus_gained
       end
 
-      def focusLost(_); end
+      def focusLost(_)
+        @obj.swt_focus_lost
+      end
     end
     
     class VerifyListener

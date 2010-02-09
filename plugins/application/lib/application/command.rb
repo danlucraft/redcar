@@ -32,14 +32,6 @@ module Redcar
       notify_listeners(:active_changed, value)
     end
     
-    def self.key(key)
-      @key = key
-    end
-    
-    def self.get_key
-      @key
-    end
-    
     def self.norecord
       @record = false
     end

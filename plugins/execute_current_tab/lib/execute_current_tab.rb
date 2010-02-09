@@ -12,8 +12,11 @@ module Redcar
       end
     end
 
+    def self.keymaps
+      [Keymap.build("main", :osx) { link "Ctrl+R", ExecuteCurrentTab::Execute }]
+    end
+
     class Execute < Command
-      key "Ctrl+R"
 
       def execute
         doc = win.focussed_notebook_tab_document

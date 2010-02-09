@@ -7,17 +7,12 @@ describe Redcar::Command do
     end
     
     class MyCommand < Redcar::Command
-      key "Ctrl+K"
       
       def execute
         $spec_command_env = {:win => win}
       end
     end
 
-    it "stores the keybinding " do
-      MyCommand.get_key.should == "Ctrl+K"
-    end
-  
     it "is recordable by default" do
       MyCommand.record?.should be_true
     end

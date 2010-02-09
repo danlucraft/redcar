@@ -1,9 +1,6 @@
 module Redcar
   module Top
     class NewCommand < Command
-      key :osx     => "Cmd+N",
-          :linux   => "Ctrl+N",
-          :windows => "Ctrl+N"
       
       def execute
         tab = win.new_tab(Redcar::EditTab)
@@ -16,10 +13,6 @@ module Redcar
     class NewNotebookCommand < Command
       sensitize :single_notebook
       
-      key :osx     => "Cmd+Alt+N",
-          :linux   => "Ctrl+Alt+N",
-          :windows => "Ctrl+Alt+N"
-
       def execute
         unless win.notebooks.length > 1
           win.create_notebook
@@ -69,9 +62,6 @@ module Redcar
     
     class SwitchNotebookCommand < Command
       sensitize :multiple_notebooks, :other_notebook_has_tab
-      key :osx     => "Cmd+Alt+O",  
-          :linux   => "Ctrl+Alt+O",
-          :windows => "Ctrl+Alt+O"
           
       def execute
         new_notebook = win.nonfocussed_notebook
@@ -84,10 +74,6 @@ module Redcar
     class MoveTabToOtherNotebookCommand < Command
       sensitize :multiple_notebooks, :open_tab
           
-      key :osx     => "Cmd+Shift+Alt+O",  
-          :linux   => "Ctrl+Shift+Alt+O",
-          :windows => "Ctrl+Shift+Alt+O"
-
       def execute
         current_notebook = tab.notebook
         target_notebook = win.notebooks.detect {|nb| nb != current_notebook}
@@ -97,7 +83,6 @@ module Redcar
     end
 
     class PrintContents < EditTabCommand
-      key "Cmd+P"
       
       def execute
         puts "printing contents"
@@ -120,9 +105,6 @@ module Redcar
     end
 
     class CloseTabCommand < TabCommand
-      key :osx     => "Cmd+W",
-          :linux   => "Ctrl+W",
-          :windows => "Ctrl+W"
       
       def execute
         if tab = win.focussed_notebook_tab
@@ -138,9 +120,6 @@ module Redcar
     end
     
     class SwitchTabDownCommand < Command
-      key :osx     => "Cmd+Shift+[",
-          :linux   => "Ctrl+Shift+[",
-          :windows => "Ctrl+Shift+["
        
       def execute
         win.focussed_notebook.switch_down
@@ -148,9 +127,6 @@ module Redcar
     end
     
     class SwitchTabUpCommand < Command
-      key :osx     => "Cmd+Shift+]",
-          :linux   => "Ctrl+Shift+]",
-          :windows => "Ctrl+Shift+]"
        
       def execute
         win.focussed_notebook.switch_up
@@ -160,10 +136,6 @@ module Redcar
     class UndoCommand < EditTabCommand
       sensitize :undoable
       
-      key :osx     => "Cmd+Z",
-          :linux   => "Ctrl+Z",
-          :windows => "Ctrl+Z"
-      
       def execute
         tab.edit_view.undo
       end
@@ -172,17 +144,12 @@ module Redcar
     class RedoCommand < EditTabCommand
       sensitize :redoable
       
-      key :osx     => "Cmd+Shift+Z",
-          :linux   => "Ctrl+Shift+Z",
-          :windows => "Ctrl+Shift+Z"
-      
       def execute
         tab.edit_view.redo
       end
     end
     
     class MoveHomeCommand < EditTabCommand
-      key "Ctrl+A"
       
       def execute
         doc = tab.edit_view.document
@@ -192,7 +159,6 @@ module Redcar
     end
     
     class MoveEndCommand < EditTabCommand
-      key "Ctrl+E"
       
       def execute
         doc = tab.edit_view.document
@@ -231,9 +197,6 @@ module Redcar
     end
     
     class DecreaseIndentCommand < ChangeIndentCommand
-      key :osx     => "Cmd+[",
-          :linux   => "Ctrl+[",
-          :windows => "Ctrl+["
       
       def indent_line(doc, line_ix)
         use_spaces = true
@@ -251,9 +214,6 @@ module Redcar
     end
 
     class IncreaseIndentCommand < ChangeIndentCommand
-      key :osx     => "Cmd+]",
-          :linux   => "Ctrl+]",
-          :windows => "Ctrl+]"
       
       def indent_line(doc, line_ix)
         line            = doc.get_line(line_ix)
@@ -270,9 +230,6 @@ module Redcar
     end
     
     class SelectAllCommand < Redcar::EditTabCommand
-      key :osx     => "Cmd+A",
-          :linux   => "Ctrl+Shift+A",
-          :windows => "Ctrl+Shift+A"
     
       def execute
         doc.set_selection_range(0..(doc.length))
@@ -280,9 +237,6 @@ module Redcar
     end
     
     class SelectLineCommand < Redcar::EditTabCommand
-      key :osx     => "Cmd+Shift+L",
-          :linux   => "Ctrl+Shift+L",
-          :windows => "Ctrl+Shift+L"
     
       def execute
         doc.set_selection_range(
@@ -290,17 +244,13 @@ module Redcar
       end
     end
     
-    class CutCommand < Redcar::EditTabCommand
-      key :osx     => "Cmd+X",
-          :linux   => "Ctrl+X",
-          :windows => "Ctrl+X"
+    class CutCommand < Redcar::DocumentCommand
     
       def execute
         if doc.selection?
           text = doc.selection_ranges.map do |range|
             doc.get_range(range.begin, range.count)
           end
-          p text
           Redcar.app.clipboard << text
           diff = 0
           doc.selection_ranges.each do |range|
@@ -315,10 +265,7 @@ module Redcar
       end
     end
     
-    class CopyCommand < Redcar::EditTabCommand
-      key :osx     => "Cmd+C",
-          :linux   => "Ctrl+C",
-          :windows => "Ctrl+C"
+    class CopyCommand < Redcar::DocumentCommand
     
       def execute
         if doc.selection?
@@ -332,13 +279,9 @@ module Redcar
       end
     end
     
-    class PasteCommand < Redcar::EditTabCommand
+    class PasteCommand < Redcar::DocumentCommand
       sensitize :clipboard_not_empty
       
-      key :osx     => "Cmd+V",
-          :linux   => "Ctrl+V",
-          :windows => "Ctrl+V"
-    
       def execute
         start_offset = doc.selection_ranges.first.begin
         start_line   = doc.line_at_offset(start_offset)
@@ -381,7 +324,7 @@ module Redcar
       	  item("Bar") { p :bar }
       	  separator
       	  sub_menu "Baz" do
-      	    item("Qux") { p :qx}
+      	    item("Qux") { p :qx }
       	    item("Quux") { p :quux }
       	    item("Corge") { p :corge }
       	  end
@@ -391,9 +334,6 @@ module Redcar
     end
     
     class GotoLineCommand < Redcar::EditTabCommand
-      key :osx     => "Cmd+L",
-          :linux   => "Ctrl+L",
-          :windows => "Ctrl+L"
       
       class Speedbar < Redcar::Speedbar
         label "Goto line:"
@@ -415,7 +355,6 @@ module Redcar
     end
     
     class SearchForwardCommand < Redcar::EditTabCommand
-      key :osx => "Cmd+F", :linux => "Ctrl+F", :windows => "Ctrl+F"
       
       class Speedbar < Redcar::Speedbar
         class << self
@@ -445,7 +384,6 @@ module Redcar
     end
     
     class RepeatPreviousSearchForwardCommand < Redcar::EditTabCommand
-      key :osx => "Cmd+G", :linux => "Ctrl+G", :windows => "Ctrl+G" # TODO F3 on doze
       
       def execute
         # open_bar = SearchForwardCommand.new
@@ -480,19 +418,26 @@ module Redcar
           doc.set_selection_range(startoff..endoff)
         elsif doc.cursor_line < doc.line_count - 1
           # next search the rest of the lines
-          found = nil
+          found_line_offset = nil
+          found_line_num = nil
+          found_length = nil
           (doc.cursor_line + 1).upto(doc.line_count - 1) do |line_num|
+            next if found_line_num
             curr_line = doc.get_line(line_num)
-            if (curr_line.to_s =~ @re)
-              line_start = doc.offset_at_line(line_num)
-              startoff = line_start + $`.length
-              endoff   = startoff + $&.length
-              doc.set_selection_range(startoff..endoff)
-              doc.scroll_to_line(line_num)
-              return true
+            if new_offset = (curr_line.to_s =~ @re)
+              found_line_offset = new_offset
+              found_line_num = line_num
+              found_length = $&.length
             end
           end
-          if @wrap
+          if found_line_num
+            line_start = doc.offset_at_line(found_line_num)
+            startoff = line_start + found_line_offset
+            endoff   = startoff + found_length
+            doc.set_selection_range(startoff..endoff)
+            doc.scroll_to_line(found_line_num)
+          end
+          if found_line_num and !doc.get_line(found_line_num) and @wrap
             @wrap = false
             doc.cursor_offset = 0
             return execute
@@ -503,13 +448,83 @@ module Redcar
     end
     
     class ToggleBlockSelectionCommand < Redcar::EditTabCommand
-      key :osx     => "Cmd+B",
-          :windows => "Ctrl+B",
-          :linux   => "Ctrl+B"
       
       def execute
         doc.block_selection_mode = !doc.block_selection_mode?
       end
+    end
+    
+    def self.keymaps
+      osx = Redcar::Keymap.build("main", :osx) do
+        link "Cmd+N",       NewCommand
+        link "Cmd+Shift+N", NewNotebookCommand
+        link "Cmd+O",       Project::FileOpenCommand
+        link "Cmd+Shift+O", Project::DirectoryOpenCommand
+        link "Cmd+S",       Project::FileSaveCommand
+        link "Cmd+Shift+S", Project::FileSaveAsCommand
+        link "Cmd+W",       CloseTabCommand
+        
+        link "Cmd+Z",       UndoCommand
+        link "Cmd+Shift+Z", RedoCommand
+        link "Cmd+X",       CutCommand
+        link "Cmd+C",       CopyCommand
+        link "Cmd+V",       PasteCommand
+        link "Ctrl+A",      MoveHomeCommand
+        link "Ctrl+E",      MoveEndCommand
+        link "Cmd+[",       DecreaseIndentCommand
+        link "Cmd+]",       IncreaseIndentCommand
+        link "Cmd+L",       GotoLineCommand
+        link "Cmd+F",       SearchForwardCommand
+        link "Cmd+G",       RepeatPreviousSearchForwardCommand
+        link "Cmd+A",       SelectAllCommand
+        link "Cmd+B",       ToggleBlockSelectionCommand
+        link "Ctrl+Escape", AutoCompleter::AutoCompleteCommand
+        link "Cmd+Escape",      AutoCompleter::MenuAutoCompleterCommand
+        
+        link "Cmd+T",           Project::FindFileCommand
+        link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
+        link "Cmd+Alt+O",       SwitchNotebookCommand
+        link "Cmd+Shift+[",     SwitchTabDownCommand
+        link "Cmd+Shift+]",     SwitchTabUpCommand
+
+        link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
+      end
+
+      linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
+        link "Ctrl+N",       NewCommand
+        link "Ctrl+Shift+N", NewNotebookCommand
+        link "Ctrl+O",       Project::FileOpenCommand
+        link "Ctrl+Shift+O", Project::DirectoryOpenCommand
+        link "Ctrl+S",       Project::FileSaveCommand
+        link "Ctrl+Shift+S", Project::FileSaveAsCommand
+        link "Ctrl+W",       CloseTabCommand
+        
+        link "Ctrl+Z",       UndoCommand
+        link "Ctrl+Shift+Z", RedoCommand
+        link "Ctrl+X",       CutCommand
+        link "Ctrl+C",       CopyCommand
+        link "Ctrl+V",       PasteCommand
+        link "Ctrl+A",       MoveHomeCommand
+        link "Ctrl+E",       MoveEndCommand
+        link "Ctrl+[",       DecreaseIndentCommand
+        link "Ctrl+]",       IncreaseIndentCommand
+        link "Ctrl+L",       GotoLineCommand
+        link "Ctrl+F",       SearchForwardCommand
+        link "Ctrl+G",       RepeatPreviousSearchForwardCommand
+        link "Ctrl+A",       SelectAllCommand
+        link "Ctrl+B",       ToggleBlockSelectionCommand
+        link "Ctrl+Escape",  AutoCompleter::AutoCompleteCommand
+        link "Escape",       AutoCompleter::MenuAutoCompleterCommand
+        
+        link "Ctrl+T",           Project::FindFileCommand
+        link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
+        link "Ctrl+Alt+O",       SwitchNotebookCommand
+        link "Ctrl+Shift+[",     SwitchTabDownCommand
+        link "Ctrl+Shift+]",     SwitchTabUpCommand
+
+        link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
+      end
+      [linwin, osx]
     end
     
     def self.menus
@@ -554,8 +569,8 @@ module Redcar
             item "Line", SelectLineCommand
           end
           item "Toggle Block Selection", ToggleBlockSelectionCommand
-          item "Auto Complete", AutoCompleter::AutoCompleteCommand
-          item "Menu Auto Complete", AutoCompleter::MenuAutoCompleterCommand
+          item "Auto Complete",          AutoCompleter::AutoCompleteCommand
+          item "Menu Auto Complete",     AutoCompleter::MenuAutoCompleterCommand
         end
         sub_menu "Project" do
           item "Find File", Project::FindFileCommand
@@ -596,7 +611,7 @@ module Redcar
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
       
-      Redcar.app.load_menus
+      Redcar.app.refresh_menu!
       Redcar.app.load_sensitivities
       Redcar.app.new_window
       Redcar::Project.start
