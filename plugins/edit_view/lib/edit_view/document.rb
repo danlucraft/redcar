@@ -92,7 +92,7 @@ module Redcar
         controller.after_modify
       end
       @controllers[Controller::NewlineCallback].each do |controller|
-        if text == "\n"
+        if text == "\n" or text == "\r\n"
           controller.after_newline(line_at_offset(start_offset) + 1)
         end
       end
