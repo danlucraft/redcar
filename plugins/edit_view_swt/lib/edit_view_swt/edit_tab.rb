@@ -44,7 +44,15 @@ module Redcar
         @edit_view.mate_text.get_control.parent.set_layout_data(grid_data)
 
         @item.control = @widget
+
+        grid_data = Swt::Layout::GridData.new
+        grid_data.grabExcessHorizontalSpace = true
+        grid_data.horizontalAlignment = Swt::Layout::GridData::FILL
+        @status_bar_widget = Swt::Widgets::Composite.new(@widget, Swt::SWT::NONE)
+        @status_bar_widget.set_layout_data(grid_data)
+        @status_bar_widget.set_layout(Swt::Layout::GridLayout.new(2, false))
         create_grammar_selector
+        create_tab_stops_selector
         @edit_view.mate_text.add_grammar_listener do |new_grammar|
           @model.edit_view.set_grammar(new_grammar)
         end
@@ -52,7 +60,12 @@ module Redcar
       end
       
       def create_grammar_selector
-        @combo = Swt::Widgets::Combo.new @widget, Swt::SWT::READ_ONLY
+        @combo = Swt::Widgets::Combo.new(@status_bar_widget, Swt::SWT::READ_ONLY)
+#        grid_data = Swt::Layout::GridData.new
+#        grid_data.horizontalSpan = 1
+##        grid_data.grabExcessHorizontalSpace = true
+#        grid_data.horizontalAlignment = Swt::SWT::LEFT
+#        @combo.set_layout_data(grid_data)
         bundles  = JavaMateView::Bundle.bundles.to_a
         grammars = bundles.map {|b| b.grammars.to_a}.flatten
         items    = grammars.map {|g| g.name}.sort_by {|name| name.downcase }
@@ -68,8 +81,20 @@ module Redcar
         
         grammar = @edit_view.mate_text.parser.grammar.name
         @combo.select(items.index(grammar))
+      end
+      
+      def create_tab_stops_selector
+        @tabs_combo = Swt::Widgets::Combo.new(@status_bar_widget, Swt::SWT::READ_ONLY)
+#        grid_data = Swt::Layout::GridData.new
+#        grid_data.horizontalSpan = 1
+#        grid_data.horizontalAlignment = Swt::SWT::LEFT
+#        @tabs_combo.set_layout_data(grid_data)
+        tab_widths = %w(2 3 4 6 8)
+        @tabs_combo.items = tab_widths.to_java(:string)
         
-        @widget.pack
+        @tabs_combo.add_selection_listener do |event|
+          puts "selected tab width: #{@tabs_combo.text}"
+        end
       end
     end
   end
