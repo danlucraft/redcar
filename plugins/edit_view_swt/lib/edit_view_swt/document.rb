@@ -16,6 +16,10 @@ module Redcar
         styledText.add_selection_listener(SelectionListener.new(@model))
       end
       
+      def single_line?
+        @swt_mate_document.mateText.isSingleLine
+      end
+      
       def to_s
         jface_document.get
       end

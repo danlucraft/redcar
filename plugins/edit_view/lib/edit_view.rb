@@ -16,17 +16,23 @@ module Redcar
 
     class << self
       attr_reader :undo_sensitivity, :redo_sensitivity
+      attr_reader :focussed_edit_view
     end
     
-    def self.focussed_mate_text=(mate_text)
-      @focussed_mate_text = mate_text
-      notify_listeners(:focussed_mate_text, mate_text)
+    # Called by the GUI whenever an EditView is focussed or
+    # loses focus. Sends :focussed_edit_view event.
+    def self.focussed_edit_view=(edit_view)
+      @focussed_edit_view = edit_view
+      notify_listeners(:focussed_edit_view, edit_view)
     end
     
     def self.sensitivities
       [
         Sensitivity.new(:edit_tab_focussed, Redcar.app, false, [:tab_focussed]) do |tab|
           tab and tab.is_a?(EditTab)
+        end,
+        Sensitivity.new(:edit_view_focussed, EditView, false, [:focussed_edit_view]) do |edit_view|
+          edit_view
         end,
         Sensitivity.new(:selected_text, Redcar.app, false, [:focussed_tab_selection_changed, :tab_focussed]) do
           if win = Redcar.app.focussed_window
@@ -108,7 +114,7 @@ module Redcar
       @grammar = name
     end
     
-    def gained_focus
+    def focus
       notify_listeners(:focussed)
     end
     

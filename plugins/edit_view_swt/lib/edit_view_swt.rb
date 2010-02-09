@@ -77,13 +77,13 @@ module Redcar
       @undo_manager.reset
     end
     
-    
     def create_document
       @document = EditViewSWT::Document.new(@model.document, @mate_text.mate_document)
       @model.document.controller = @document
       h1 = @model.document.add_listener(:before => :new_mirror, 
             &method(:update_grammar))
       h2 = @model.add_listener(:grammar_changed, &method(:model_grammar_changed))
+      h3 = @model.add_listener(:focussed, &method(:focus))
       @mate_text.getTextWidget.addFocusListener(FocusListener.new(self))
       @mate_text.getTextWidget.addVerifyListener(VerifyListener.new(@model.document, self))
       @mate_text.getTextWidget.addModifyListener(ModifyListener.new(@model.document, self))
@@ -91,13 +91,12 @@ module Redcar
     end
     
     def swt_focus_gained
-    p :focus_gained
-      EditView.focussed_mate_text = self
+      EditView.focussed_edit_view = @model
+      @model.focus
     end
     
     def swt_focus_lost
-    p :focus_lost
-      EditView.focussed_mate_text = nil
+      EditView.focussed_edit_view = nil
     end
     
     def focus
@@ -106,7 +105,7 @@ module Redcar
     
     def has_focus?
       focus_control = ApplicationSWT.display.get_focus_control
-      focus_control.parent.parent == @mate_text
+      focus_control == @mate_text.get_control
     end
   
     def attach_listeners

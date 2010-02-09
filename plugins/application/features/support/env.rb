@@ -59,7 +59,7 @@ end
 
 World(SwtHelper)
 
-After do
+def close_everything
   Redcar.app.windows.each do |win|
     while tree = win.treebook.trees.first
       Redcar::ApplicationSWT.sync_exec do
@@ -84,6 +84,14 @@ After do
       Redcar.app.windows.last.close
     end
   end
+end
+
+Before do
+  close_everything
+end
+
+After do
+  close_everything
 end
 
 

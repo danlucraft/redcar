@@ -100,6 +100,10 @@ module Redcar
       notify_listeners(:selection_range_changed, start_offset..end_offset)
     end
     
+    def single_line?
+      controller.single_line?
+    end
+    
     # The line index the cursor is on (zero-based)
     #
     # @return [Integer]
@@ -137,6 +141,7 @@ module Redcar
     # @param [Integer] offset  character offset from the start of the document
     # @param [String] text  text to insert
     def insert(offset, text)
+      text = text.gsub("\n", "") if single_line?
       replace(offset, 0, text)
     end
     
@@ -154,6 +159,7 @@ module Redcar
     # @param [Integer] length  length of text to replace
     # @param [String] text  replacement text
     def replace(offset, length, text)
+      text = text.gsub("\n", "") if single_line?
       controller.replace(offset, length, text)
     end
     
