@@ -122,7 +122,6 @@ module Redcar
       line_at_offset(cursor_offset)
     end
     
-    
     def cursor_line_start_offset
       offset_at_line(cursor_line)
     end

@@ -158,9 +158,7 @@ module Redcar
     
     def tab_pressed
       p :tab
-      EditView.all_tab_handlers.each {|h| h.handle(self) }
-      doit = true
-      doit
+      doit = !EditView.all_tab_handlers.detect { |h| h.handle(self) }
     end
     
     def esc_pressed
