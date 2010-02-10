@@ -61,11 +61,6 @@ module Redcar
       
       def create_grammar_selector
         @combo = Swt::Widgets::Combo.new(@status_bar_widget, Swt::SWT::READ_ONLY)
-#        grid_data = Swt::Layout::GridData.new
-#        grid_data.horizontalSpan = 1
-##        grid_data.grabExcessHorizontalSpace = true
-#        grid_data.horizontalAlignment = Swt::SWT::LEFT
-#        @combo.set_layout_data(grid_data)
         bundles  = JavaMateView::Bundle.bundles.to_a
         grammars = bundles.map {|b| b.grammars.to_a}.flatten
         items    = grammars.map {|g| g.name}.sort_by {|name| name.downcase }
@@ -85,15 +80,12 @@ module Redcar
       
       def create_tab_stops_selector
         @tabs_combo = Swt::Widgets::Combo.new(@status_bar_widget, Swt::SWT::READ_ONLY)
-#        grid_data = Swt::Layout::GridData.new
-#        grid_data.horizontalSpan = 1
-#        grid_data.horizontalAlignment = Swt::SWT::LEFT
-#        @tabs_combo.set_layout_data(grid_data)
         tab_widths = %w(2 3 4 6 8)
         @tabs_combo.items = tab_widths.to_java(:string)
         
         @tabs_combo.add_selection_listener do |event|
           puts "selected tab width: #{@tabs_combo.text}"
+          @model.edit_view.tab_width = @tabs_combo.text.to_i
         end
       end
     end

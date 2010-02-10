@@ -24,7 +24,7 @@ module Redcar
       JavaMateView::ThemeManager.load_themes(Redcar.root + "/textmate/")
     end
     
-    attr_reader :mate_text, :widget
+    attr_reader :mate_text, :widget, :model
       
     def initialize(model, parent, options={})
       @options = options
@@ -87,33 +87,33 @@ module Redcar
       @mate_text.getTextWidget.addFocusListener(FocusListener.new(self))
       @mate_text.getTextWidget.addVerifyListener(VerifyListener.new(@model.document, self))
       @mate_text.getTextWidget.addModifyListener(ModifyListener.new(@model.document, self))
-      @mate_text.get_control.add_key_listener(KeyListener.new(self))
-      @mate_text.get_control.add_verify_key_listener(KeyListener.new(self))
+      @mate_text.get_control.add_verify_key_listener(VerifyKeyListener.new(self))
       @handlers << [@model.document, h1] << [@model, h2]
     end
     
-    class KeyListener
+    def tab_pressed
+      p :tab
+      doit = @model.tab_pressed
+      doit
+    end
+    
+    def esc_pressed
+      p :esc
+      doit = true
+      doit
+    end
+    
+    class VerifyKeyListener
       def initialize(edit_view_swt)
         @edit_view_swt = edit_view_swt
       end
       
-      def key_pressed(key_event)
-        if key_event.character == Swt::SWT::TAB
-        p :tab_pressed
-            elsif key_event.character == Swt::SWT::ESC
-        p :esc_pressed
-    end
-      end
-      
       def verify_key(key_event)
-      p :verkey
         if key_event.character == Swt::SWT::TAB
-        p :tab_pressed
-        key_event.doit = false
+          key_event.doit = @edit_view_swt.model.tab_pressed
+        elsif key_event.character == Swt::SWT::ESC
+          key_event.doit = @edit_view_swt.model.esc_pressed
         end
-      end
-      
-      def key_released(key_event)
       end
     end
     
@@ -215,7 +215,7 @@ module Redcar
       end
       
       def verify_text(e)
-      p :veryify
+        p :verify
         @document.verify_text(e.start, e.end, e.text)
       end
     end
@@ -226,7 +226,7 @@ module Redcar
       end
       
       def modify_text(e)
-      p :modify
+        p :modify
         @document.modify_text
       end
     end

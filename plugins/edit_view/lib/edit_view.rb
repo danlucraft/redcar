@@ -14,9 +14,30 @@ module Redcar
     
     extend Forwardable
 
+    module Handler
+      include Interface::Abstract
+
+      def handle(edit_view)
+      end
+    end
+    
     class << self
       attr_reader :undo_sensitivity, :redo_sensitivity
       attr_reader :focussed_edit_view
+      
+      def all_tab_handlers
+        result = []
+        Redcar.plugin_manager.loaded_plugins.each do |plugin|
+          if plugin.object.respond_to?(:tab_handlers)
+            result += plugin.object.tab_handlers
+          end
+        end
+        result.each {|h| Handler.verify_interface!(h) }
+      end
+      
+      def esc_handlers
+        @esc_handlers ||= []
+      end
     end
     
     # Called by the GUI whenever an EditView is focussed or
@@ -84,6 +105,7 @@ module Redcar
     end    
 
     attr_reader :document
+    attr_accessor :tab_width
     
     def initialize
       create_document
@@ -132,6 +154,19 @@ module Redcar
       self.grammar       = data[:grammar]
       document.text      = data[:contents]
       self.cursor_offset = data[:cursor_offset]
+    end
+    
+    def tab_pressed
+      p :tab
+      EditView.all_tab_handlers.each {|h| h.handle(self) }
+      doit = true
+      doit
+    end
+    
+    def esc_pressed
+      p :esc
+      doit = true
+      doit
     end
   end
 end
