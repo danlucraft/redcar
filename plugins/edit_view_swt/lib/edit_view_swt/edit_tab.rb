@@ -71,7 +71,7 @@ module Redcar
         end
         
         @combo.add_selection_listener do |event|
-          @edit_view.mate_text.set_grammar_by_name(@combo.text)
+          @edit_view.model.grammar = @combo.text
         end
         
         grammar = @edit_view.mate_text.parser.grammar.name
@@ -82,10 +82,14 @@ module Redcar
         @tabs_combo = Swt::Widgets::Combo.new(@status_bar_widget, Swt::SWT::READ_ONLY)
         tab_widths = %w(2 3 4 6 8)
         @tabs_combo.items = tab_widths.to_java(:string)
-        
+        @tabs_combo.select(tab_widths.index(EditView.tab_widths.for(@edit_view.model.grammar).to_s))
         @tabs_combo.add_selection_listener do |event|
           puts "selected tab width: #{@tabs_combo.text}"
           @model.edit_view.tab_width = @tabs_combo.text.to_i
+        end
+        
+        @edit_view.model.add_listener(:tab_width_changed) do |new_value|
+          @tabs_combo.select(tab_widths.index(new_value.to_s))
         end
       end
     end
