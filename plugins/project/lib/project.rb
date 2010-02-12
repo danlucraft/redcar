@@ -115,8 +115,7 @@ module Redcar
         if File.file? full_path
           
           Redcar::ApplicationSWT.sync_exec {            
-            if Redcar.app.windows.length == 0
-              Redcar.app.make_sure_at_least_one_window_open
+            if Redcar.app.windows.length == 0              
               restore_last_session
             end
             
@@ -126,15 +125,31 @@ module Redcar
           'ok'
         elsif File.directory? full_path
           Redcar::ApplicationSWT.sync_exec {
-            # open in a new window
-            open_dir(full_path, Redcar.app.new_window)
+          
+            # open in any existing window that already has that dir open as a tree
+            # else in a new window
+            # open the window that already has this dir open
+            if Redcar.app.windows.length == 0 && storage['last_open_dir'] == full_path
+              restore_last_session
+            end
+            
+            if Redcar.app.windows.length > 0
+              window = Redcar.app.windows.find{|win| 
+                # XXXX how can win be nil here?
+                win && win.treebook.trees.find{|t| 
+                  t.tree_mirror.is_a?(Redcar::Project::DirMirror) && t.tree_mirror.path == full_path
+                }
+              }            
+            end               
+            window ||= Redcar.app.new_window          
+            open_dir(full_path, window)
             Redcar.app.focussed_window.controller.bring_to_front
+            
           }
           'ok'
         elsif full_path == 'just_bring_to_front'          
           Redcar::ApplicationSWT.sync_exec {
             if Redcar.app.windows.length == 0
-              Redcar.app.make_sure_at_least_one_window_open
               restore_last_session
             end
             Redcar.app.focussed_window.controller.bring_to_front
@@ -185,7 +200,8 @@ module Redcar
     private
     
     # restores the directory/files in the last open window
-    def self.restore_last_session      
+    def self.restore_last_session
+      Redcar.app.make_sure_at_least_one_window_open # in case there are no windows open
       if path = storage['last_open_dir']
         open_dir(path)
       end
