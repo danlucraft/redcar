@@ -52,6 +52,13 @@ module Redcar
     end
   
     def self.filter_path
+      if Redcar.app.focussed_notebook_tab
+       if path = Redcar.app.focussed_notebook_tab.document.path
+          dir = File.dirname(path)
+          puts 'using dir', dir
+          return dir
+        end
+      end      
       Project.storage['last_dir'] || File.expand_path(Dir.pwd)
     end
   
@@ -274,16 +281,7 @@ module Redcar
       end
     
       def execute
-        # TODO rdp cleanup
-        # prefer opening in the dir of the currently open file
-        if Redcar.app.focussed_window && Redcar.app.focussed_window.focussed_notebook && Redcar.app.focussed_window.focussed_notebook.focussed_tab
-          # make sure it's a file
-          if Redcar.app.focussed_window.focussed_notebook.focussed_tab.document_mirror.respond_to?(:path) && File.file?(Redcar.app.focussed_window.focussed_notebook.focussed_tab.document_mirror.path )
-            dir = File.dirname(Redcar.app.focussed_window.focussed_notebook.focussed_tab.title)
-          end
-        end
-        
-        path = get_path dir
+        path = get_path
         if path
           if already_open_tab = Project.open_file_tab(path)
             already_open_tab.focus
@@ -295,9 +293,9 @@ module Redcar
       
       private
       
-      def get_path specific_path = nil
+      def get_path
         @path || begin
-          if path = Application::Dialog.open_file(win, :filter_path => (specific_path || Project.filter_path))
+          if path = Application::Dialog.open_file(win, :filter_path => Project.filter_path)
             Project.storage['last_dir'] = File.dirname(File.expand_path(path))
             path
           end
