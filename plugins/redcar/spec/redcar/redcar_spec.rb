@@ -25,7 +25,6 @@ class DocString
   
   def get_line x
      out = @string.split("\n")[x]
-     puts 'returning', out.inspect, ' for get_line ', x
      out
   end
   
@@ -34,12 +33,10 @@ class DocString
   end
    
   def offset_at_line x
-   puts 'got offset', x
    @string.split("\n")[0..x].join("\n").length  
   end
   
 end
-  
 
 module Redcar::Top
  describe FindNextRegex do
