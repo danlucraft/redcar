@@ -115,22 +115,28 @@ module Redcar
         if File.file? full_path
           
           Redcar::ApplicationSWT.sync_exec {            
-            Redcar.app.make_sure_at_least_one_window_open
+            if Redcar.app.windows.length == 0
+              Redcar.app.make_sure_at_least_one_window_open
+              restore_last_session
+            end
+            
             FileOpenCommand.new(full_path).execute
-            Redcar.app.focussed_window.controller.bring_to_front
-          
+            Redcar.app.focussed_window.controller.bring_to_front          
           }
           'ok'
         elsif File.directory? full_path
           Redcar::ApplicationSWT.sync_exec {
-            Redcar.app.make_sure_at_least_one_window_open
-            open_dir(full_path)
+            # open in a new window
+            open_dir(full_path, Redcar.app.new_window)
             Redcar.app.focussed_window.controller.bring_to_front
           }
           'ok'
         elsif full_path == 'just_bring_to_front'          
           Redcar::ApplicationSWT.sync_exec {
-            Redcar.app.make_sure_at_least_one_window_open
+            if Redcar.app.windows.length == 0
+              Redcar.app.make_sure_at_least_one_window_open
+              restore_last_session
+            end
             Redcar.app.focussed_window.controller.bring_to_front
           }
           'ok'
