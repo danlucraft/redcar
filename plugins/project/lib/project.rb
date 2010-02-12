@@ -110,28 +110,39 @@ module Redcar
     # as if from the command line
     # for use via drb
     def self.open_item_drb(full_path)
+      begin
+        puts 'drb opening ' + full_path if $VERBOSE
         if File.file? full_path
-          Redcar::ApplicationSWT.sync_exec {
+          
+          Redcar::ApplicationSWT.sync_exec {            
+            Redcar.app.make_sure_at_least_one_window_open
             FileOpenCommand.new(full_path).execute
             Redcar.app.focussed_window.controller.bring_to_front
+          
           }
           'ok'
         elsif File.directory? full_path
           Redcar::ApplicationSWT.sync_exec {
+            Redcar.app.make_sure_at_least_one_window_open
             open_dir(full_path)
             Redcar.app.focussed_window.controller.bring_to_front
           }
           'ok'
-        elsif full_path == 'just_bring_to_front'
+        elsif full_path == 'just_bring_to_front'          
           Redcar::ApplicationSWT.sync_exec {
+            Redcar.app.make_sure_at_least_one_window_open
             Redcar.app.focussed_window.controller.bring_to_front
           }
           'ok'
         else
-          # unexpected to get here...
-          puts 'remote load: not found' + full_path
-          'not ok'
-        end       
+          puts 'remote load: unexpected: file not found ' + full_path
+          'fail'
+        end
+      rescue Exception => e
+        # normally drb would swallow these
+        puts 'drb got exception:' + e, e.backtrace
+        raise e
+      end 
     end
     
     # Opens a new EditTab with a FileMirror for the given path.

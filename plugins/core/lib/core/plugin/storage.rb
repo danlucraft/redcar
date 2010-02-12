@@ -54,6 +54,7 @@ module Redcar
           @storage[key]
         else
           @storage[key] = value
+          save
           value
         end
       end

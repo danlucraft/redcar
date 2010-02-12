@@ -104,7 +104,13 @@ module Redcar
       new_window.show
       set_focussed_window(new_window)
       new_window
-    end    
+    end   
+    
+    def make_sure_at_least_one_window_open
+      if windows.length == 0
+        new_window
+      end
+    end 
     
     # Removes a window from this Application. Should not be called by user
     # code, use Window#close instead.
@@ -116,9 +122,10 @@ module Redcar
       @window_handlers[window].each {|h| window.remove_listener(h) }
       
       @window_handlers.delete(window)
-      if windows.length == 0  and [:linux, :windows].include?(Redcar.platform)
+      if windows.length == 0 and [:linux, :windows].include?(Redcar.platform)
+        # default to exit now
         if Application.storage.get_with_default('stay_resident_after_last_window_closed', 'no') == 'yes'
-          puts 'staying resident'
+          puts 'continuing to run to wait for incoming drb connections later'
         else
           quit
         end
@@ -128,8 +135,6 @@ module Redcar
     def self.storage
       @storage ||= Plugin::Storage.new('application_plugin')
     end
-    
-    
     
     def all_notebooks
       windows.inject([]) { |arr, window| arr << window.notebooks }.flatten
