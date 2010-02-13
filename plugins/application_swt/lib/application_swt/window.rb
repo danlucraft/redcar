@@ -123,6 +123,7 @@ module Redcar
       def bring_to_front
         @shell.set_minimized(false)
         @shell.force_active
+        @shell.set_minimized(false)
       end        
       
       def popup_menu(menu)
