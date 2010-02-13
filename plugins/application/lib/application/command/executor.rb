@@ -42,8 +42,8 @@ module Redcar
       end
       
       def record
-        if Redcar.history
-          Redcar.history.record(@command_instance)
+        if Redcar.app.history
+          Redcar.app.history.record(@command_instance)
         end
       end
     end

@@ -92,7 +92,7 @@ module Redcar
     
     class PrintHistoryCommand < Command
       def execute
-        Redcar.history.each do |c|
+        Redcar.app.history.each do |c|
           puts c
         end
       end
