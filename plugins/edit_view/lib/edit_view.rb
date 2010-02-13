@@ -5,7 +5,7 @@ require "edit_view/document/command"
 require "edit_view/document/controller"
 require "edit_view/document/mirror"
 require "edit_view/edit_tab"
-require "edit_view/tab_widths"
+require "edit_view/tab_settings"
 require "edit_view/info_speedbar"
 
 module Redcar
@@ -28,8 +28,8 @@ module Redcar
       attr_reader :focussed_edit_view
     end
     
-    def self.tab_widths
-      @tab_widths ||= TabWidths.new
+    def self.tab_settings
+      @tab_settings ||= TabSettings.new
     end
       
     def self.storage
@@ -120,7 +120,7 @@ module Redcar
       create_document
       @grammar = nil
       @focussed = nil
-      self.tab_width = EditView.tab_widths.for(grammar)
+      self.tab_width = EditView.tab_settings.width_for(grammar)
     end
     
     def create_document
@@ -144,7 +144,7 @@ module Redcar
     
     def set_grammar(name)
       @grammar = name
-      self.tab_width = EditView.tab_widths.for(name) || tab_width
+      self.tab_width = EditView.tab_settings.width_for(name) || tab_width
     end
     
     def focus
@@ -157,7 +157,7 @@ module Redcar
     
     def tab_width=(val)
       @tab_width = val
-      EditView.tab_widths.set_for(grammar, val)
+      EditView.tab_settings.set_width_for(grammar, val)
       notify_listeners(:tab_width_changed, val)
     end
     

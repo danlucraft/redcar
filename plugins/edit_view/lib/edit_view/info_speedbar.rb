@@ -11,7 +11,7 @@ module Redcar
         @tab.edit_view.grammar = new_grammar
       end
       
-      combo :tab_width, TabWidths::TAB_WIDTHS, TabWidths::DEFAULT_TAB_WIDTH do |new_tab_width|
+      combo :tab_width, TabSettings::TAB_WIDTHS, TabSettings::DEFAULT_TAB_WIDTH do |new_tab_width|
         @tab.edit_view.tab_width = new_tab_width.to_i
       end
       
@@ -33,7 +33,7 @@ module Redcar
           @tab = new_tab
           grammar.items = InfoSpeedbar.grammar_names
           grammar.value = @tab.edit_view.grammar
-          tab_width.value = EditView.tab_widths.for(@tab.edit_view.grammar).to_s
+          tab_width.value = EditView.tab_settings.width_for(@tab.edit_view.grammar).to_s
           @width_handler = @tab.edit_view.add_listener(:tab_width_changed) do |new_value|
             tab_width.value = new_value.to_s
           end
