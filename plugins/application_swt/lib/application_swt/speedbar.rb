@@ -75,6 +75,7 @@ module Redcar
         layout = Swt::Layout::GridLayout.new(num_columns + 1, false)
         layout.verticalSpacing = 0
         layout.marginHeight = 0
+        layout.marginTop = 5
         @composite.setLayout(layout)
         image = Swt::Graphics::Image.new(ApplicationSWT.display, Redcar::Speedbar.close_image_path)
         label = Swt::Widgets::Label.new(@composite, 0)
