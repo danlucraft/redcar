@@ -3,19 +3,12 @@ module Redcar
   class Speedbar
     include Redcar::Model
     
-    LabelItem   = Struct.new(:text)
-    ToggleItem  = Struct.new(:name, :text, :key, :listener, :value)
-    TextBoxItem = Struct.new(:name, :listener, :value)
-    ButtonItem  = Struct.new(:text, :key, :listener)
-    KeyItem     = Struct.new(:key, :listener)
-    
-    attr_reader :__items, :__context
-    
-    def initialize(context)
-      @__items = []
-      @__context = context
-      self.class.items.each {|i| @__items << i.clone }
-    end
+    LabelItem   = ObservableStruct.new(:name, :text)
+    ToggleItem  = ObservableStruct.new(:name, :text, :key, :listener, :value)
+    TextBoxItem = ObservableStruct.new(:name, :listener, :value)
+    ButtonItem  = ObservableStruct.new(:name, :text, :key, :listener)
+    ComboItem   = ObservableStruct.new(:name, :items, :value, :listener)
+    KeyItem     = ObservableStruct.new(:key, :listener)
     
     def self.items
       @items ||= []
@@ -29,21 +22,12 @@ module Redcar
       File.join(Redcar.root, %w(plugins application icons close.png))
     end
     
-    def self.define_value_finder(name)
+    def self.define_item_finder(name)
       self.class_eval %Q{
         def #{name}
-          __get_value_of(#{name.to_s.inspect})
+          __get_item(#{name.to_s.inspect})
         end
-        
-        def #{name}=(to_this)
-          __set_value_of(#{name.to_s.inspect}, to_this)
-        end        
       }
-    end
-    
-    def __get_value_of(name)
-      item = __get_item(name)
-      item.value
     end
     
     def __get_item(name)
@@ -55,29 +39,35 @@ module Redcar
         raise "can't find item #{name}"
       end
       item
-    end    
-    
-    def __set_value_of(name, to_this)
-      item = __get_item(name)
-      item.value= to_this
     end
     
-    def self.label(text)
-      append_item LabelItem.new(text)
+    def __items
+      @__items ||= self.class.items.map {|i| i.clone }
+    end
+    
+    def self.label(name, text)
+      append_item LabelItem.new(name, text)
+      define_item_finder(name)
     end
     
     def self.toggle(name, text, key, value=false, &block)
       append_item ToggleItem.new(name, text, key, block, value)
-      define_value_finder(name)
+      define_item_finder(name)
     end
     
     def self.textbox(name, value="", &block)
       append_item TextBoxItem.new(name, block, value)
-      define_value_finder(name)
+      define_item_finder(name)
     end
     
-    def self.button(text, key, &block)
-      append_item ButtonItem.new(text, key, block)
+    def self.button(name, text, key, &block)
+      append_item ButtonItem.new(name, text, key, block)
+      define_item_finder(name)
+    end
+    
+    def self.combo(name, items=[], value=nil, &block)
+      append_item ComboItem.new(name, items, value, block)
+      define_item_finder(name)
     end
     
     def self.key(key, &block)

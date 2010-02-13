@@ -13,6 +13,7 @@ module Redcar
         if widget = focussable_widgets.first
           widget.set_focus
         end
+        @parent.layout
       end
       
       def close
@@ -48,7 +49,22 @@ module Redcar
         @focussable_widgets ||= []
       end
       
+      def ignore_changes
+        @ignore_changes ||= Hash.new(0)
+      end
+      
+      def ignore(name)
+        ignore_changes[name] += 1
+        yield if ignore_changes[name] == 1
+        ignore_changes[name] -= 1
+      end
+      
       def create_widgets
+        create_bar_widget
+        create_item_widgets
+      end
+      
+      def create_bar_widget
         @composite = Swt::Widgets::Composite.new(@parent, Swt::SWT::NONE)
         grid_data = Swt::Layout::GridData.new
         grid_data.grabExcessHorizontalSpace = true
@@ -63,12 +79,17 @@ module Redcar
         label.set_image(image)
 	
 	    label.add_mouse_listener(MouseListener.new(self))
-	
+	  end
+	  
+	  def create_item_widgets
         @model.__items.each do |item|
           case item
           when Redcar::Speedbar::LabelItem
             label = Swt::Widgets::Label.new(@composite, 0)
             label.set_text(item.text)
+            item.add_listener(:changed_text) do |new_text|
+              label.set_text(item.text)
+            end
           when Redcar::Speedbar::TextBoxItem
             edit_view = EditView.new
             edit_view_swt = EditViewSWT.new(edit_view, @composite, :single_line => true)
@@ -83,13 +104,20 @@ module Redcar
             gridData.horizontalAlignment = Swt::Layout::GridData::FILL
             mate_text.getControl.set_layout_data(gridData)
             mate_text.getControl.add_modify_listener do
-              item.value = mate_text.getControl.get_text
-              if item.listener
-                begin
-                  @model.__context.instance_exec(item.value, &item.listener)
-                rescue => err
-                  error_in_listener(err)
+              ignore(item.name) do
+                item.value = mate_text.getControl.get_text
+                if item.listener
+                  begin
+                    @model.instance_exec(item.value, &item.listener)
+                  rescue => err
+                    error_in_listener(err)
+                  end
                 end
+              end
+            end
+            item.add_listener(:changed_value) do |new_value|
+              ignore(item.name) do
+                mate_text.getControl.set_text(new_value)
               end
             end
             keyable_widgets << mate_text.getControl
@@ -100,32 +128,76 @@ module Redcar
             if item.listener
               button.add_selection_listener do
                 begin
-                  @model.__context.instance_exec(&item.listener)
+                  @model.instance_exec(&item.listener)
                 rescue => err
                   error_in_listener(err)
                 end
               end
             end
+            item.add_listener(:changed_text) do |new_text|
+              button.set_text(item.text)
+            end
             keyable_widgets << button
             focussable_widgets << button
+          when Redcar::Speedbar::ComboItem
+            combo = Swt::Widgets::Combo.new(@composite, Swt::SWT::READ_ONLY)
+            combo.items = item.items.to_java(:string)
+            if item.value
+              combo.select(item.items.index(item.value))
+            end
+            combo.add_selection_listener do
+              ignore(item.name) do
+                item.value = combo.text
+                if item.listener
+                  rescue_speedbar_errors do
+                    @model.instance_exec(item.value, &item.listener)
+                  end
+                end
+              end
+            end
+            item.add_listener(:changed_items) do |new_items|
+              rescue_speedbar_errors do
+                ignore(item.name) do
+                  combo.items = item.items.to_java(:string)
+                  item.value = nil
+                end
+              end
+            end
+            item.add_listener(:changed_value) do |new_value|
+              rescue_speedbar_errors do
+                ignore(item.name) do
+                  combo.select(item.items.index(item.value))
+                end
+              end
+            end
           when Redcar::Speedbar::ToggleItem
             button = Swt::Widgets::Button.new(@composite, Swt::SWT::CHECK)
             button.set_text(item.text)
+            button.set_selection(!!item.value)
             button.add_selection_listener do
               item.value = button.get_selection
               if item.listener
                 begin
-                  @model.__context.instance_exec(item.value, &item.listener)
+                  @model.instance_exec(item.value, &item.listener)
                 rescue => err
                   error_in_listener(err)
                 end
+              end
+            end
+            item.add_listener(:changed_text) do |new_text|
+              rescue_speedbar_errors do
+                button.set_text = new_text
+              end
+            end
+            item.add_listener(:changed_value) do |new_value|
+              rescue_speedbar_errors do
+                button.set_selection(!!new_value)
               end
             end
             keyable_widgets << button
             focussable_widgets << button
           end
         end
-        @parent.layout
       end
       
       class KeyListener
@@ -175,11 +247,21 @@ module Redcar
           if Menu::BindingTranslator.matches?(key_string, key_item.key)
             e.doit = false
             begin
-              @model.__context.instance_exec(&key_item.listener)
+              @model.instance_exec(&key_item.listener)
             rescue Object => err
               error_in_listener(err)
             end
           end
+        end
+      end
+      
+      def rescue_speedbar_errors
+        begin
+          yield
+        rescue Object => e
+          puts "*** Error in speedbar"
+          puts e.class.to_s + ": " + e.message
+          puts e.backtrace
         end
       end
       

@@ -336,16 +336,25 @@ module Redcar
     class GotoLineCommand < Redcar::EditTabCommand
       
       class Speedbar < Redcar::Speedbar
-        label "Goto line:"
+        label :goto_label, "Goto line:"
+        
         textbox :line
-        button :go, "Return" do
-          new_line_ix = @speedbar.line.to_i - 1
+        
+        button :go, "Go", "Return" do
+          new_line_ix = line.value.to_i - 1
           if new_line_ix < doc.line_count and new_line_ix >= 0
             doc.cursor_offset = doc.offset_at_line(new_line_ix)
             doc.scroll_to_line(new_line_ix)
             win.close_speedbar
           end
         end
+        
+        def initialize(command)
+          @command = command
+        end
+        
+        def doc; @command.doc; end
+        def win; @command.send(:win); end
       end
       
       def execute
@@ -366,9 +375,9 @@ module Redcar
           self.query = Speedbar.previous_query || ""
         end
       
-        label "Regex"
+        label :label, "Regex"
         textbox :query
-        button :search, "Return" do
+        button :search, "Search", "Return" do
           current_query = @speedbar.query
           SearchForwardCommand::Speedbar.previous_query = current_query
           result = FindNextRegex.new(Regexp.new(current_query), true).run # TODO use result
@@ -571,6 +580,7 @@ module Redcar
           item "Toggle Block Selection", ToggleBlockSelectionCommand
           item "Auto Complete",          AutoCompleter::AutoCompleteCommand
           item "Menu Auto Complete",     AutoCompleter::MenuAutoCompleterCommand
+          item "Tab Info",               EditView::InfoSpeedbarCommand
         end
         sub_menu "Project" do
           item "Find File", Project::FindFileCommand

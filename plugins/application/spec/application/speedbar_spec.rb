@@ -29,6 +29,13 @@ describe Redcar::Speedbar do
     ButtonSpeedbar.items.should == [Redcar::Speedbar::ButtonItem.new(:search, "Ctrl+S")]
   end
 
+  it "should let you add combos" do
+    class ComboSpeedbar < Redcar::Speedbar
+      combo :tab_widths, %w"1 2 3 4", "1"
+    end
+    ComboSpeedbar.items.should == [Redcar::Speedbar::ComboItem.new(:tab_widths, %w(1 2 3 4))]
+  end
+
   it "should let you add keys" do
     class KeySpeedbar < Redcar::Speedbar
       key "Ctrl+S"
