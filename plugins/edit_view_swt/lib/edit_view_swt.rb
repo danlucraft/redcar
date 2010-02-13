@@ -35,10 +35,14 @@ module Redcar
       create_document
       attach_listeners
       @mate_text.set_grammar_by_name("Plain Text")
+      @model.set_grammar("Plain Text")
       @mate_text.set_theme_by_name(EditView.theme)
       create_undo_manager
       @document.attach_modification_listeners # comes after undo manager
       remove_control_keybindings
+      mate_text.add_grammar_listener do |new_grammar|
+        @model.set_grammar(new_grammar)
+      end
     end
     
     def create_mate_text

@@ -468,6 +468,7 @@ module Redcar
         link "Cmd+Shift+S", Project::FileSaveAsCommand
         link "Cmd+W",       CloseTabCommand
         
+        link "Cmd+Shift+E", EditView::InfoSpeedbarCommand
         link "Cmd+Z",       UndoCommand
         link "Cmd+Shift+Z", RedoCommand
         link "Cmd+X",       CutCommand
@@ -483,7 +484,7 @@ module Redcar
         link "Cmd+A",       SelectAllCommand
         link "Cmd+B",       ToggleBlockSelectionCommand
         link "Ctrl+Escape", AutoCompleter::AutoCompleteCommand
-        link "Cmd+Escape",      AutoCompleter::MenuAutoCompleterCommand
+        link "Cmd+Escape",  AutoCompleter::MenuAutoCompleterCommand
         
         link "Cmd+T",           Project::FindFileCommand
         link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
@@ -503,6 +504,7 @@ module Redcar
         link "Ctrl+Shift+S", Project::FileSaveAsCommand
         link "Ctrl+W",       CloseTabCommand
         
+        link "Ctrl+Shift+E", EditView::InfoSpeedbarCommand
         link "Ctrl+Z",       UndoCommand
         link "Ctrl+Shift+Z", RedoCommand
         link "Ctrl+X",       CutCommand
@@ -549,6 +551,8 @@ module Redcar
           item "Close Directory", Project::DirectoryCloseCommand
         end
         sub_menu "Edit" do
+          item "Tab Info",  EditView::InfoSpeedbarCommand
+          separator
           item "Undo", UndoCommand
           item "Redo", RedoCommand
           separator
@@ -575,7 +579,6 @@ module Redcar
           item "Toggle Block Selection", ToggleBlockSelectionCommand
           item "Auto Complete",          AutoCompleter::AutoCompleteCommand
           item "Menu Auto Complete",     AutoCompleter::MenuAutoCompleterCommand
-          item "Tab Info",               EditView::InfoSpeedbarCommand
         end
         sub_menu "Project" do
           item "Find File", Project::FindFileCommand

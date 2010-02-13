@@ -13,6 +13,7 @@ module Redcar
         if widget = focussable_widgets.first
           widget.set_focus
         end
+        @handlers = Hash.new {|h,k| h[k] = []}
         @parent.layout
         @model.after_draw if @model.respond_to?(:after_draw)
       end
@@ -39,7 +40,7 @@ module Redcar
       end
       
       def key_items
-        @model.__items.select {|i| i.respond_to?(:key) }
+        @model.__items.select {|i| i.respond_to?(:key) and i.key }
       end
       
       def keyable_widgets
@@ -172,6 +173,8 @@ module Redcar
                 end
               end
             end
+            keyable_widgets    << combo
+            focussable_widgets << combo
           when Redcar::Speedbar::ToggleItem
             button = Swt::Widgets::Button.new(@composite, Swt::SWT::CHECK)
             button.set_text(item.text)
@@ -196,7 +199,7 @@ module Redcar
                 button.set_selection(!!new_value)
               end
             end
-            keyable_widgets << button
+            keyable_widgets    << button
             focussable_widgets << button
           end
         end

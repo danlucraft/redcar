@@ -7,9 +7,16 @@ module Redcar
         items    = grammars.map {|g| g.name}.sort_by {|name| name.downcase }
       end
       
-      label :time, "FOO"
+      combo :grammar do |new_grammar|
+        @tab.edit_view.grammar = new_grammar
+      end
       
-      combo :grammar do |val|
+      combo :tab_width, TabWidths::TAB_WIDTHS, TabWidths::DEFAULT_TAB_WIDTH do |new_tab_width|
+        @tab.edit_view.tab_width = new_tab_width.to_i
+      end
+      
+      toggle :soft_tabs, "Soft Tabs", nil, true do |new_value|
+        p new_value
       end
       
       def initialize(command, tab)
@@ -18,10 +25,29 @@ module Redcar
       end
       
       def tab_changed(new_tab)
-        @tab = new_tab
-        grammar.items = InfoSpeedbar.grammar_names
-        grammar.value = @tab.edit_view.grammar
-        time.text = Time.now.to_s
+        if @tab
+          @tab.edit_view.remove_listener(@width_handler)
+          @tab.edit_view.remove_listener(@grammar_handler)
+        end
+        if new_tab.is_a?(EditTab)
+          @tab = new_tab
+          grammar.items = InfoSpeedbar.grammar_names
+          grammar.value = @tab.edit_view.grammar
+          tab_width.value = EditView.tab_widths.for(@tab.edit_view.grammar).to_s
+          @width_handler = @tab.edit_view.add_listener(:tab_width_changed) do |new_value|
+            tab_width.value = new_value.to_s
+          end
+          @grammar_handler = @tab.edit_view.add_listener(:grammar_changed) do |new_grammar|
+            grammar.value = new_grammar
+          end
+        end
+      end
+      
+      def close
+        if @tab
+          @tab.edit_view.remove_listener(@width_handler)
+          @tab.edit_view.remove_listener(@grammar_handler)
+        end
       end
     end
     

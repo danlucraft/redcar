@@ -2,6 +2,7 @@ module Redcar
   class EditView
     class TabWidths
       DEFAULT_TAB_WIDTH = 2
+      TAB_WIDTHS        = %w(2 3 4 5 6 8)
       
       attr_reader :tab_widths
     

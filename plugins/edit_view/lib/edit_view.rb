@@ -5,8 +5,8 @@ require "edit_view/document/command"
 require "edit_view/document/controller"
 require "edit_view/document/mirror"
 require "edit_view/edit_tab"
-require "edit_view/info_speedbar"
 require "edit_view/tab_widths"
+require "edit_view/info_speedbar"
 
 module Redcar
   class EditView
