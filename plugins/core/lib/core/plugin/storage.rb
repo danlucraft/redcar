@@ -47,6 +47,18 @@ module Redcar
         @storage.keys
       end
       
+      # gets a value or a default (and assigns the default, if it has never been set)
+      # like value = (storage[key] ||= default)
+      def get_with_default(key, value)
+        if @storage[key]
+          @storage[key]
+        else
+          @storage[key] = value
+          save
+          value
+        end
+      end
+      
       private
       
       def path

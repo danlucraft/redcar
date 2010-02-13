@@ -336,16 +336,25 @@ module Redcar
     class GotoLineCommand < Redcar::EditTabCommand
       
       class Speedbar < Redcar::Speedbar
-        label "Goto line:"
+        label :goto_label, "Goto line:"
+        
         textbox :line
-        button :go, "Return" do
-          new_line_ix = @speedbar.line.to_i - 1
+        
+        button :go, "Go", "Return" do
+          new_line_ix = line.value.to_i - 1
           if new_line_ix < doc.line_count and new_line_ix >= 0
             doc.cursor_offset = doc.offset_at_line(new_line_ix)
             doc.scroll_to_line(new_line_ix)
             win.close_speedbar
           end
         end
+        
+        def initialize(command)
+          @command = command
+        end
+        
+        def doc; @command.doc; end
+        def win; @command.send(:win); end
       end
       
       def execute
@@ -361,23 +370,22 @@ module Redcar
           attr_accessor :previous_query
         end
         
-        def initialize(controller)
-          super(controller)
-          self.query = Speedbar.previous_query || ""
+        def after_draw
+          self.query.value = Speedbar.previous_query || ""
+          self.query.edit_view.document.select_all
         end
       
-        label "Regex"
+        label :label, "Regex"
         textbox :query
-        button :search, "Return" do
-          current_query = @speedbar.query
+        button :search, "Search", "Return" do
+          current_query = query.value
           SearchForwardCommand::Speedbar.previous_query = current_query
           result = FindNextRegex.new(Regexp.new(current_query), true).run # TODO use result
         end
-        
       end
       
       def execute
-        @speedbar = SearchForwardCommand::Speedbar.new(self)
+        @speedbar = SearchForwardCommand::Speedbar.new
         win.open_speedbar(@speedbar)
       end
 
@@ -386,10 +394,6 @@ module Redcar
     class RepeatPreviousSearchForwardCommand < Redcar::EditTabCommand
       
       def execute
-        # open_bar = SearchForwardCommand.new
-        # open_bar.execute # Question: is there a way to programmatically
-        # pull up a bar (and execute it)? (the above line doesn't work)
-        # open_bar.speedbar.find
         FindNextRegex.new(Regexp.new(SearchForwardCommand::Speedbar.previous_query), true).run   
       end
       
@@ -421,28 +425,29 @@ module Redcar
           found_line_offset = nil
           found_line_num = nil
           found_length = nil
-          (doc.cursor_line + 1).upto(doc.line_count - 1) do |line_num|
-            next if found_line_num
+          line_nums = ((doc.cursor_line() + 1)..(doc.line_count() - 1)).to_a # the rest of the document
+          if @wrap
+            line_nums += (0..doc.cursor_line()).to_a
+          end
+          for line_num in line_nums do
             curr_line = doc.get_line(line_num)
             if new_offset = (curr_line.to_s =~ @re)
               found_line_offset = new_offset
               found_line_num = line_num
               found_length = $&.length
+              break
             end
           end
           if found_line_num
             line_start = doc.offset_at_line(found_line_num)
             startoff = line_start + found_line_offset
             endoff   = startoff + found_length
-            doc.set_selection_range(startoff..endoff)
             doc.scroll_to_line(found_line_num)
+            doc.set_selection_range(startoff..endoff)
+            true
+          else
+           false
           end
-          if found_line_num and !doc.get_line(found_line_num) and @wrap
-            @wrap = false
-            doc.cursor_offset = 0
-            return execute
-          end
-          false
         end
       end
     end
@@ -464,6 +469,7 @@ module Redcar
         link "Cmd+Shift+S", Project::FileSaveAsCommand
         link "Cmd+W",       CloseTabCommand
         
+        link "Cmd+Shift+E", EditView::InfoSpeedbarCommand
         link "Cmd+Z",       UndoCommand
         link "Cmd+Shift+Z", RedoCommand
         link "Cmd+X",       CutCommand
@@ -479,7 +485,7 @@ module Redcar
         link "Cmd+A",       SelectAllCommand
         link "Cmd+B",       ToggleBlockSelectionCommand
         link "Ctrl+Escape", AutoCompleter::AutoCompleteCommand
-        link "Cmd+Escape",      AutoCompleter::MenuAutoCompleterCommand
+        link "Cmd+Escape",  AutoCompleter::MenuAutoCompleterCommand
         
         link "Cmd+T",           Project::FindFileCommand
         link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
@@ -499,6 +505,7 @@ module Redcar
         link "Ctrl+Shift+S", Project::FileSaveAsCommand
         link "Ctrl+W",       CloseTabCommand
         
+        link "Ctrl+Shift+E", EditView::InfoSpeedbarCommand
         link "Ctrl+Z",       UndoCommand
         link "Ctrl+Shift+Z", RedoCommand
         link "Ctrl+X",       CutCommand
@@ -545,6 +552,8 @@ module Redcar
           item "Close Directory", Project::DirectoryCloseCommand
         end
         sub_menu "Edit" do
+          item "Tab Info",  EditView::InfoSpeedbarCommand
+          separator
           item "Undo", UndoCommand
           item "Redo", RedoCommand
           separator

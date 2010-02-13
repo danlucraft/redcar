@@ -5,8 +5,10 @@ require 'fileutils'
 require "core/logger"
 require "core/controller"
 require "core/gui"
+require "core/interface"
 require "core/model"
 require "core/observable"
+require "core/observable_struct"
 require "core/plugin"
 require "core/plugin/storage"
 

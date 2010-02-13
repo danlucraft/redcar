@@ -122,7 +122,6 @@ module Redcar
       line_at_offset(cursor_offset)
     end
     
-    
     def cursor_line_start_offset
       offset_at_line(cursor_line)
     end
@@ -259,6 +258,11 @@ module Redcar
     # @param [Range<Integer>] range   a range between two character offsets
     def set_selection_range(range)
       controller.set_selection_range(range.begin, range.end)
+    end
+    
+    # Select all text in the document.
+    def select_all
+      set_selection_range(0..length)
     end
     
     # Get the text selected by the user. If no text is selected

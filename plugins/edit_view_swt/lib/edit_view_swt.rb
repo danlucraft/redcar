@@ -24,7 +24,7 @@ module Redcar
       JavaMateView::ThemeManager.load_themes(Redcar.root + "/textmate/")
     end
     
-    attr_reader :mate_text, :widget
+    attr_reader :mate_text, :widget, :model
       
     def initialize(model, parent, options={})
       @options = options
@@ -35,10 +35,14 @@ module Redcar
       create_document
       attach_listeners
       @mate_text.set_grammar_by_name("Plain Text")
+      @model.set_grammar("Plain Text")
       @mate_text.set_theme_by_name(EditView.theme)
       create_undo_manager
       @document.attach_modification_listeners # comes after undo manager
       remove_control_keybindings
+      mate_text.add_grammar_listener do |new_grammar|
+        @model.set_grammar(new_grammar)
+      end
     end
     
     def create_mate_text
@@ -84,10 +88,40 @@ module Redcar
             &method(:update_grammar))
       h2 = @model.add_listener(:grammar_changed, &method(:model_grammar_changed))
       h3 = @model.add_listener(:focussed, &method(:focus))
+      h4 = @model.add_listener(:tab_width_changed) do |new_tab_width|
+        @mate_text.get_control.set_tabs(new_tab_width)
+      end
       @mate_text.getTextWidget.addFocusListener(FocusListener.new(self))
       @mate_text.getTextWidget.addVerifyListener(VerifyListener.new(@model.document, self))
       @mate_text.getTextWidget.addModifyListener(ModifyListener.new(@model.document, self))
-      @handlers << [@model.document, h1] << [@model, h2]
+      @mate_text.get_control.add_verify_key_listener(VerifyKeyListener.new(self))
+      @handlers << [@model.document, h1] << [@model, h2] << [@model, h3] << [@model, h4]
+    end
+    
+    def tab_pressed
+      p :tab
+      doit = @model.tab_pressed
+      doit
+    end
+    
+    def esc_pressed
+      p :esc
+      doit = true
+      doit
+    end
+    
+    class VerifyKeyListener
+      def initialize(edit_view_swt)
+        @edit_view_swt = edit_view_swt
+      end
+      
+      def verify_key(key_event)
+        if key_event.character == Swt::SWT::TAB
+          key_event.doit = @edit_view_swt.model.tab_pressed
+        elsif key_event.character == Swt::SWT::ESC
+          key_event.doit = @edit_view_swt.model.esc_pressed
+        end
+      end
     end
     
     def swt_focus_gained
@@ -127,6 +161,7 @@ module Redcar
     end
     
     def scroll_to_line(line_index)
+      @mate_text.parser.last_visible_line_changed(line_index + 100)
       @mate_text.viewer.set_top_index(line_index)
     end
     
@@ -148,9 +183,10 @@ module Redcar
       contents = new_mirror.read
       first_line = contents.to_s.split("\n").first
       @mate_text.set_grammar_by_first_line(first_line) if first_line
+      @model.set_grammar(@mate_text.grammarName)
     end
     
-    STRIP_KEYS = { 
+    STRIP_KEYS = {
       :cut   => 120|Swt::SWT::MOD1,
       :copy  => 99|Swt::SWT::MOD1,
       :paste => 118|Swt::SWT::MOD1

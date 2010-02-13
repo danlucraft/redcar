@@ -40,6 +40,7 @@ module Redcar
         create_treebook_controller
         reset_sash_widths
         @treebook_unopened = true
+        set_icon  File.join(Redcar.root, %w(plugins application icons redcar_icon_beta.png))
       end
       
       def add_listeners
@@ -66,8 +67,35 @@ module Redcar
         @window.treebook.add_listener(:tree_removed) do
           reset_sash_widths
         end
+        @shell.add_key_listener(KeyListener.new(self))
       end
         
+    class KeyListener
+      def initialize(edit_view_swt)
+        @edit_view_swt = edit_view_swt
+      end
+      
+      def key_pressed(key_event)
+      p key_event
+        if key_event.character == Swt::SWT::TAB
+        p :tab_pressedwin
+        elsif key_event.character == Swt::SWT::ESC
+        p :esc_pressedwin
+        end
+      end
+      
+      def verify_key(key_event)
+      p :verkey
+        if key_event.character == Swt::SWT::TAB
+        p :tab_pressed
+        key_event.doit = false
+        end
+      end
+      
+      def key_released(key_event)
+      end
+    end
+    
       def create_treebook_controller
         treebook = @window.treebook
         controller = ApplicationSWT::Treebook.new(
@@ -86,6 +114,11 @@ module Redcar
         @menu_controller = ApplicationSWT::Menu.new(self, @window.menu, @window.keymap, Swt::SWT::BAR)
         shell.menu_bar = @menu_controller.menu_bar
       end
+      
+      def set_icon path
+         icon = Swt::Graphics::Image.new(ApplicationSWT.display, path)
+         shell.image = icon
+       end
 
       def bring_to_front
         @shell.set_minimized(false)
