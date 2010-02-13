@@ -15,6 +15,7 @@ module Redcar
     end
 
     def self.append_item(item)
+      return if items.detect {|i| i.respond_to?(:name) and i.name == item.name }
       items << item
     end
     

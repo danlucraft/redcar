@@ -3,9 +3,9 @@ require File.join(File.dirname(__FILE__), "..", "spec_helper")
 describe Redcar::Speedbar do
   it "should let you add labels" do
     class LabelSpeedbar < Redcar::Speedbar
-      label "Here is a speedbar"
+      label :label, "Here is a speedbar"
     end
-    LabelSpeedbar.items.should == [Redcar::Speedbar::LabelItem.new("Here is a speedbar")]
+    LabelSpeedbar.items.should == [Redcar::Speedbar::LabelItem.new(:label, "Here is a speedbar")]
   end
 
   it "should let you add toggles" do
@@ -24,16 +24,16 @@ describe Redcar::Speedbar do
   
   it "should let you add buttons" do
     class ButtonSpeedbar < Redcar::Speedbar
-      button :search, "Ctrl+S"
+      button :search, "Search", "Ctrl+S"
     end
-    ButtonSpeedbar.items.should == [Redcar::Speedbar::ButtonItem.new(:search, "Ctrl+S")]
+    ButtonSpeedbar.items.should == [Redcar::Speedbar::ButtonItem.new(:search, "Search", "Ctrl+S")]
   end
 
   it "should let you add combos" do
     class ComboSpeedbar < Redcar::Speedbar
       combo :tab_widths, %w"1 2 3 4", "1"
     end
-    ComboSpeedbar.items.should == [Redcar::Speedbar::ComboItem.new(:tab_widths, %w(1 2 3 4))]
+    ComboSpeedbar.items.should == [Redcar::Speedbar::ComboItem.new(:tab_widths, %w(1 2 3 4), "1")]
   end
 
   it "should let you add keys" do
@@ -47,17 +47,24 @@ describe Redcar::Speedbar do
     class GetValueSpeedbar < Redcar::Speedbar
       textbox :query, "start"
     end
-    sp = GetValueSpeedbar.new(self)
-    sp.query.should == "start"
+    sp = GetValueSpeedbar.new
+    sp.query.value.should == "start"
   end
   
   it "should let you set values for instances" do
     class SetValueSpeedbar < Redcar::Speedbar
       textbox :query, "start"
     end
-    sp = GetValueSpeedbar.new(self)
-    sp.query = "yoyo"
-    sp.query.should == "yoyo"
+    sp = GetValueSpeedbar.new
+    sp.query.value = "yoyo"
+    sp.query.value.should == "yoyo"
    end
-  
+   
+   it "should let only add an item with the same name once" do
+     class TextBoxSpeedbar < Redcar::Speedbar
+       textbox :query
+       textbox :query
+     end
+     TextBoxSpeedbar.items.should == [Redcar::Speedbar::TextBoxItem.new(:query, nil, "")]
+   end
 end

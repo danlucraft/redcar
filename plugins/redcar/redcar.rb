@@ -438,8 +438,8 @@ module Redcar
             line_start = doc.offset_at_line(found_line_num)
             startoff = line_start + found_line_offset
             endoff   = startoff + found_length
-            doc.set_selection_range(startoff..endoff)
             doc.scroll_to_line(found_line_num)
+            doc.set_selection_range(startoff..endoff)
           end
           if found_line_num and !doc.get_line(found_line_num) and @wrap
             @wrap = false

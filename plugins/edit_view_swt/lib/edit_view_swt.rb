@@ -161,6 +161,7 @@ module Redcar
     end
     
     def scroll_to_line(line_index)
+      @mate_text.parser.last_visible_line_changed(line_index + 100)
       @mate_text.viewer.set_top_index(line_index)
     end
     
@@ -185,7 +186,7 @@ module Redcar
       @model.set_grammar(@mate_text.grammarName)
     end
     
-    STRIP_KEYS = { 
+    STRIP_KEYS = {
       :cut   => 120|Swt::SWT::MOD1,
       :copy  => 99|Swt::SWT::MOD1,
       :paste => 118|Swt::SWT::MOD1
