@@ -88,11 +88,14 @@ module Redcar
             &method(:update_grammar))
       h2 = @model.add_listener(:grammar_changed, &method(:model_grammar_changed))
       h3 = @model.add_listener(:focussed, &method(:focus))
+      h4 = @model.add_listener(:tab_width_changed) do |new_tab_width|
+        @mate_text.get_control.set_tabs(new_tab_width)
+      end
       @mate_text.getTextWidget.addFocusListener(FocusListener.new(self))
       @mate_text.getTextWidget.addVerifyListener(VerifyListener.new(@model.document, self))
       @mate_text.getTextWidget.addModifyListener(ModifyListener.new(@model.document, self))
       @mate_text.get_control.add_verify_key_listener(VerifyKeyListener.new(self))
-      @handlers << [@model.document, h1] << [@model, h2]
+      @handlers << [@model.document, h1] << [@model, h2] << [@model, h3] << [@model, h4]
     end
     
     def tab_pressed

@@ -121,6 +121,7 @@ module Redcar
       @grammar = nil
       @focussed = nil
       self.tab_width = EditView.tab_settings.width_for(grammar)
+      self.soft_tabs = EditView.tab_settings.softness_for(grammar)
     end
     
     def create_document
@@ -163,6 +164,16 @@ module Redcar
     
     def set_tab_width(val)
       @tab_width = val
+    end
+    
+    def soft_tabs?
+      @soft_tabs
+    end
+    
+    def soft_tabs=(bool)
+      @soft_tabs = bool
+      EditView.tab_settings.set_softness_for(grammar, bool)
+      notify_listeners(:softness_changed, bool)
     end
 
     def title=(title)

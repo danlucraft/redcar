@@ -16,7 +16,7 @@ module Redcar
       end
       
       toggle :soft_tabs, "Soft Tabs", nil, true do |new_value|
-        p new_value
+        @tab.edit_view.soft_tabs = new_value
       end
       
       def initialize(command, tab)
@@ -26,16 +26,19 @@ module Redcar
       
       def tab_changed(new_tab)
         if @tab
-          @tab.edit_view.remove_listener(@width_handler)
-          @tab.edit_view.remove_listener(@grammar_handler)
+          remove_handlers
         end
         if new_tab.is_a?(EditTab)
           @tab = new_tab
           grammar.items = InfoSpeedbar.grammar_names
           grammar.value = @tab.edit_view.grammar
           tab_width.value = EditView.tab_settings.width_for(@tab.edit_view.grammar).to_s
+          soft_tabs.value = EditView.tab_settings.softness_for(@tab.edit_view.grammar)
           @width_handler = @tab.edit_view.add_listener(:tab_width_changed) do |new_value|
             tab_width.value = new_value.to_s
+          end
+          @softness_handler = @tab.edit_view.add_listener(:softness_changed) do |new_value|
+            soft_tabs.value = new_value
           end
           @grammar_handler = @tab.edit_view.add_listener(:grammar_changed) do |new_grammar|
             grammar.value = new_grammar
@@ -43,10 +46,15 @@ module Redcar
         end
       end
       
+      def remove_handlers
+        @tab.edit_view.remove_listener(@width_handler)
+        @tab.edit_view.remove_listener(@grammar_handler)
+        @tab.edit_view.remove_listener(@softness_handler)
+      end        
+      
       def close
         if @tab
-          @tab.edit_view.remove_listener(@width_handler)
-          @tab.edit_view.remove_listener(@grammar_handler)
+          remove_handlers
         end
       end
     end

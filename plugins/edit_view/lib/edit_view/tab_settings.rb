@@ -17,6 +17,7 @@ module Redcar
       end
       
       def set_width_for(grammar_name, width)
+        width = width.to_i
         if tab_widths[grammar_name] != width
           tab_widths[grammar_name] = width
           EditView.storage['tab_widths'] = tab_widths
@@ -28,6 +29,7 @@ module Redcar
       end
       
       def set_softness_for(grammar_name, boolean)
+        boolean = !!boolean
         if softnesses[grammar_name] != boolean
           softnesses[grammar_name] = boolean
           EditView.storage['softnesses'] = softnesses

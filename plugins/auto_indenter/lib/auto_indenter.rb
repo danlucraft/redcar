@@ -14,6 +14,7 @@ module Redcar
     
     class IndentTabHandler
       def self.handle(edit_view)
+        return false unless edit_view.soft_tabs?
         doc = edit_view.document
         line = doc.get_line(doc.cursor_line)
         before_line = line[0...doc.cursor_line_offset]
