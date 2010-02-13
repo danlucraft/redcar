@@ -9,8 +9,19 @@ New features:
   * Can autocomplete with a menu popup (thanks Sam Clopton).
   * Added 'encryption' plugin, mainly as an example.
   * Opens files and folders passed on the command line.
+  * Quick open: redirects to currently open instance if any.
+  * Can set tab width for open tab.
+  * Default tab width is remembered per language.
+  * Can choose soft or hard tabs for open tab.
+  * Default soft/hard option is remembered per language.
 
 Internal changes:
+
+  * Keybindings are now stored in Keymap objects.
+  * Speedbar now uses an EditView for textboxes.
+  * Speedbars can have combos in them.
+  * Speedbars have access to the properties of the widgets in them.
+  * Added tab and escape key handler support to the EditView.
 
 Fixes:
 

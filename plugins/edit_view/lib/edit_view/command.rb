@@ -3,8 +3,6 @@ module Redcar
 
     sensitize :edit_tab_focussed
     
-    private
-    
     def doc
       tab.edit_view.document
     end

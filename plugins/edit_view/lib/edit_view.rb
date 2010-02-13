@@ -5,6 +5,8 @@ require "edit_view/document/command"
 require "edit_view/document/controller"
 require "edit_view/document/mirror"
 require "edit_view/edit_tab"
+require "edit_view/tab_settings"
+require "edit_view/info_speedbar"
 
 module Redcar
   class EditView
@@ -14,9 +16,38 @@ module Redcar
     
     extend Forwardable
 
+    module Handler
+      include Interface::Abstract
+
+      def handle(edit_view)
+      end
+    end
+    
     class << self
       attr_reader :undo_sensitivity, :redo_sensitivity
       attr_reader :focussed_edit_view
+    end
+    
+    def self.tab_settings
+      @tab_settings ||= TabSettings.new
+    end
+      
+    def self.storage
+      @storage ||= Plugin::Storage.new('edit_view_plugin')
+    end
+
+    def self.all_tab_handlers
+      result = []
+      Redcar.plugin_manager.loaded_plugins.each do |plugin|
+        if plugin.object.respond_to?(:tab_handlers)
+          result += plugin.object.tab_handlers
+        end
+      end
+      result.each {|h| Handler.verify_interface!(h) }
+    end
+    
+    def self.esc_handlers
+      @esc_handlers ||= []
     end
     
     # Called by the GUI whenever an EditView is focussed or
@@ -89,6 +120,8 @@ module Redcar
       create_document
       @grammar = nil
       @focussed = nil
+      self.tab_width = EditView.tab_settings.width_for(grammar)
+      self.soft_tabs = EditView.tab_settings.softness_for(grammar)
     end
     
     def create_document
@@ -106,16 +139,41 @@ module Redcar
     end
     
     def grammar=(name)
-      @grammar = name
+      set_grammar(name)
       notify_listeners(:grammar_changed, name)
     end
     
     def set_grammar(name)
       @grammar = name
+      self.tab_width = EditView.tab_settings.width_for(name) || tab_width
     end
     
     def focus
       notify_listeners(:focussed)
+    end
+
+    def tab_width
+      @tab_width
+    end
+    
+    def tab_width=(val)
+      @tab_width = val
+      EditView.tab_settings.set_width_for(grammar, val)
+      notify_listeners(:tab_width_changed, val)
+    end
+    
+    def set_tab_width(val)
+      @tab_width = val
+    end
+    
+    def soft_tabs?
+      @soft_tabs
+    end
+    
+    def soft_tabs=(bool)
+      @soft_tabs = bool
+      EditView.tab_settings.set_softness_for(grammar, bool)
+      notify_listeners(:softness_changed, bool)
     end
 
     def title=(title)
@@ -132,6 +190,17 @@ module Redcar
       self.grammar       = data[:grammar]
       document.text      = data[:contents]
       self.cursor_offset = data[:cursor_offset]
+    end
+    
+    def tab_pressed
+      p :tab_pressed
+      doit = !EditView.all_tab_handlers.detect { |h| h.handle(self) }
+    end
+    
+    def esc_pressed
+      p :esc_pressed
+      doit = true
+      doit
     end
   end
 end
