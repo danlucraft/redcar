@@ -67,6 +67,9 @@ module Redcar
             new_notebook.focussed_tab.focus
           end
         end
+        if speedbar and speedbar.respond_to?(:tab_changed)
+          speedbar.tab_changed(tab)
+        end
       end
       notebook.add_listener(:tab_closed) do
         notify_listeners(:tab_closed)

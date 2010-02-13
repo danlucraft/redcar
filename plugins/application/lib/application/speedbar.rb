@@ -5,7 +5,7 @@ module Redcar
     
     LabelItem   = ObservableStruct.new(:name, :text)
     ToggleItem  = ObservableStruct.new(:name, :text, :key, :listener, :value)
-    TextBoxItem = ObservableStruct.new(:name, :listener, :value)
+    TextBoxItem = ObservableStruct.new(:name, :listener, :value, :edit_view)
     ButtonItem  = ObservableStruct.new(:name, :text, :key, :listener)
     ComboItem   = ObservableStruct.new(:name, :items, :value, :listener)
     KeyItem     = ObservableStruct.new(:key, :listener)
@@ -72,6 +72,10 @@ module Redcar
     
     def self.key(key, &block)
       append_item KeyItem.new(key, block)
+    end
+    
+    def inspect
+      "#<Speedbar #{__items.inspect}"
     end
   end
 end

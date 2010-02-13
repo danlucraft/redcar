@@ -175,7 +175,7 @@ module Redcar
       contents = new_mirror.read
       first_line = contents.to_s.split("\n").first
       @mate_text.set_grammar_by_first_line(first_line) if first_line
-      @model.set_grammar(@mate_text.grammar)
+      @model.set_grammar(@mate_text.grammarName)
     end
     
     STRIP_KEYS = { 
@@ -216,7 +216,6 @@ module Redcar
       end
       
       def verify_text(e)
-        p :verify
         @document.verify_text(e.start, e.end, e.text)
       end
     end
@@ -227,7 +226,6 @@ module Redcar
       end
       
       def modify_text(e)
-        p :modify
         @document.modify_text
       end
     end

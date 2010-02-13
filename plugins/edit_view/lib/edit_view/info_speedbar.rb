@@ -13,7 +13,12 @@ module Redcar
       end
       
       def initialize(command, tab)
-        @command, @tab = command, tab
+        @command = command
+        tab_changed(tab)
+      end
+      
+      def tab_changed(new_tab)
+        @tab = new_tab
         grammar.items = InfoSpeedbar.grammar_names
         grammar.value = @tab.edit_view.grammar
         time.text = Time.now.to_s

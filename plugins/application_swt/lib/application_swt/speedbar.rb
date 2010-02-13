@@ -14,6 +14,7 @@ module Redcar
           widget.set_focus
         end
         @parent.layout
+        @model.after_draw if @model.respond_to?(:after_draw)
       end
       
       def close
@@ -92,6 +93,7 @@ module Redcar
             end
           when Redcar::Speedbar::TextBoxItem
             edit_view = EditView.new
+            item.edit_view = edit_view
             edit_view_swt = EditViewSWT.new(edit_view, @composite, :single_line => true)
             mate_text = edit_view_swt.mate_text
             mate_text.set_font(EditView.font, EditView.font_size)

@@ -260,6 +260,11 @@ module Redcar
       controller.set_selection_range(range.begin, range.end)
     end
     
+    # Select all text in the document.
+    def select_all
+      set_selection_range(0..length)
+    end
+    
     # Get the text selected by the user. If no text is selected
     # returns "".
     #

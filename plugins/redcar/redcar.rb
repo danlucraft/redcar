@@ -370,23 +370,22 @@ module Redcar
           attr_accessor :previous_query
         end
         
-        def initialize(controller)
-          super(controller)
-          self.query = Speedbar.previous_query || ""
+        def after_draw
+          self.query.value = Speedbar.previous_query || ""
+          self.query.edit_view.document.select_all
         end
       
         label :label, "Regex"
         textbox :query
         button :search, "Search", "Return" do
-          current_query = @speedbar.query
+          current_query = query.value
           SearchForwardCommand::Speedbar.previous_query = current_query
           result = FindNextRegex.new(Regexp.new(current_query), true).run # TODO use result
         end
-        
       end
       
       def execute
-        @speedbar = SearchForwardCommand::Speedbar.new(self)
+        @speedbar = SearchForwardCommand::Speedbar.new
         win.open_speedbar(@speedbar)
       end
 
@@ -395,10 +394,6 @@ module Redcar
     class RepeatPreviousSearchForwardCommand < Redcar::EditTabCommand
       
       def execute
-        # open_bar = SearchForwardCommand.new
-        # open_bar.execute # Question: is there a way to programmatically
-        # pull up a bar (and execute it)? (the above line doesn't work)
-        # open_bar.speedbar.find
         FindNextRegex.new(Regexp.new(SearchForwardCommand::Speedbar.previous_query), true).run   
       end
       
