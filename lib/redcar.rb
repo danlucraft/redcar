@@ -55,6 +55,7 @@ module Redcar
   # then attempt to load via drb
   # if available
   def self.try_to_load_via_drb
+    return if ARGV.include?("--multiple-instance")
     if ARGV.length > 0
       ARGV.each{|arg| return unless File.exist?(arg)}
     end
