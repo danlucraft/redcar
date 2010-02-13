@@ -27,3 +27,24 @@ When /^I move the cursor to (\d+)$/ do |offset|
   doc = Redcar.app.focussed_window.focussed_notebook.focussed_tab.edit_view.document
   doc.cursor_offset = offset.to_i
 end
+
+When /^tabs are hard$/ do
+  Redcar::EditView.focussed_tab_edit_view.soft_tabs = false
+end
+
+When /^tabs are soft, (\d+) spaces$/ do |int|
+  Redcar::EditView.focussed_tab_edit_view.soft_tabs = true
+  Redcar::EditView.focussed_tab_edit_view.tab_width = int.to_i
+end
+
+When /^I press the Tab key in the edit tab$/ do
+  edit_view = Redcar::EditView.focussed_tab_edit_view
+  edit_view.tab_pressed
+end
+
+Then /^the contents of the edit tab should be "([^\"]*)"$/ do |text|
+  text = text.gsub("\\t", "\t").gsub("\\n", "\n")
+  Redcar::EditView.focussed_edit_view_document.to_s.should == text
+end
+
+ 

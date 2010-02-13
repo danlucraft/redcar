@@ -119,11 +119,11 @@ module Redcar
     end
     
     def self.focussed_edit_view_document
-      Redcar.app.focussed_tab_edit_view.document if Redcar.app.focussed_tab_edit_view
+      focussed_tab_edit_view.document if focussed_tab_edit_view
     end
     
     def self.focussed_document_mirror
-      Redcar.app.focussed_edit_view_document.mirror if Redcar.app.focussed_edit_view_document
+      focussed_edit_view_document.mirror if focussed_edit_view_document
     end
     
     attr_reader :document
@@ -205,7 +205,6 @@ module Redcar
     end
     
     def tab_pressed
-      p :tab_pressed
       doit = !EditView.all_tab_handlers.detect { |h| h.handle(self) }
     end
     

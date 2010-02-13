@@ -23,8 +23,10 @@ require 'application/window'
 module Redcar
   # A Redcar process contains one Application instance. The application instance
   # (the app) contains:
-  #    * an array of Redcar::Window objects and handles creating new Windows.
-  #    * a Redcar::Clipboard
+  #
+  #  * an array of {Redcar::Window} objects and handles creating new Windows.
+  #  * a {Redcar::Clipboard}
+  #  * a {Redcar::Command::History}
   #
   # A lot of events in Redcar bubble up through the app, which gives plugins
   # one place to hook into Redcar events.

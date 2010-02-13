@@ -30,14 +30,14 @@ require 'yaml'
 # to see how the Redcar models are created.
 #
 # {Redcar::ApplicationSWT} is the start point for the SWT GUI, which listens
-# for events from the Redcar::Application model and reflects them in the GUI.
+# for events from the {Redcar::Application} model and reflects them in the GUI.
 #
 # This structure of a model and a controller that listens to it is repeated for
 # each part of Redcar reflected in the GUI.
 #
-#   * Redcar::Window has Redcar::ApplicationSWT::Window
-#   * Redcar::Notebook has Redcar::ApplicationSWT::Notebook
-#   * Redcar::EditTab has Redcar::EditViewSWT::EditTab
+#   * {Redcar::Window} has {Redcar::ApplicationSWT::Window}
+#   * {Redcar::Notebook} has {Redcar::ApplicationSWT::Notebook}
+#   * {Redcar::EditTab} has {Redcar::EditViewSWT::EditTab}
 #
 # and so on.
 module Redcar
