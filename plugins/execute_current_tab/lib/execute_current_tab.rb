@@ -5,15 +5,15 @@ module Redcar
       Menu::Builder.build do
         sub_menu "Plugins" do
           sub_menu "Execute" do
-            item "Execute Current Tab as Ruby", ExecuteCurrentTab::Execute
-            item "Execute Current Tab (within Redcar interpreter)", ExecuteCurrentTab::EmbeddedExecute
+            item "Execute Current Tab as Ruby File", ExecuteCurrentTab::Execute
+            item "Eval Current Tab (within Redcar itself)", ExecuteCurrentTab::EmbeddedExecute
           end
         end
       end
     end
 
     def self.keymaps
-      [Keymap.build("main", :osx) { link "Ctrl+R", ExecuteCurrentTab::Execute }]
+      [Keymap.build("main", [:osx, :linux, :windows]) { link "Ctrl+R", ExecuteCurrentTab::Execute }]
     end
 
     class Execute < Command
@@ -24,8 +24,9 @@ module Redcar
         if path
           command = "ruby #{path} 2>&1"
           out = `#{command}`
-          new_tab = Top::NewCommand.new.run
+          new_tab = Top::NewCommand.new.run          
           new_tab.document.text = "***** generated output from #{command} ***\n" + out
+          new_tab.title= 'exec output'
         else
           puts 'unable to execute--maybe you need to save it first, so it has a filename?'
         end
@@ -41,7 +42,7 @@ module Redcar
         if out
           eval out, TOPLEVEL_BINDING, doc.path || doc.title || ''
         else
-          puts 'unable to execute embedded'
+          puts 'unable to eval embedded'
         end
       end
 
