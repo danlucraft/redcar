@@ -17,32 +17,27 @@ require 'yaml'
 # ## Loading and Initialization
 #
 # Every feature in Redcar is written as a plugin. This module contains a few
-
 # methods to bootstrap the plugins by loading the PluginManager.
 #
 # Once loaded, bin/redcar will start the gui pump, which will run
-
 # Redcar.gui.start. This starts the GUI library's event loop and hands over
-
 # control to the GUI.
 #
 # ## Application
 #
 # The top class of Redcar is a {Redcar::Application}, which handles the creation
-
 # of Redcar::Windows. {Redcar::Application} is a good place to start
 # to see how the Redcar models are created.
-
 #
 # {Redcar::ApplicationSWT} is the start point for the SWT GUI, which listens
-# for events from the Redcar::Application model and reflects them in the GUI.
+# for events from the {Redcar::Application} model and reflects them in the GUI.
 #
 # This structure of a model and a controller that listens to it is repeated for
 # each part of Redcar reflected in the GUI.
 #
-#   * Redcar::Window has Redcar::ApplicationSWT::Window
-#   * Redcar::Notebook has Redcar::ApplicationSWT::Notebook
-#   * Redcar::EditTab has Redcar::EditViewSWT::EditTab
+#   * {Redcar::Window} has {Redcar::ApplicationSWT::Window}
+#   * {Redcar::Notebook} has {Redcar::ApplicationSWT::Notebook}
+#   * {Redcar::EditTab} has {Redcar::EditViewSWT::EditTab}
 #
 # and so on.
 module Redcar
@@ -102,6 +97,7 @@ module Redcar
     end
   end
 
+  # Tells the plugin manager to load plugins, and prints debug output.
   def self.load
     plugin_manager.load
     if plugin_manager.unreadable_definitions.any?
@@ -122,8 +118,8 @@ module Redcar
     end
   end
 
+  # Starts the GUI.
   def self.pump
-
     Redcar.gui.start
   end
 
@@ -155,6 +151,17 @@ module Redcar
       userdir = File.join(ENV['HOME'], ".redcar") unless ENV['HOME'].nil?
     end
     File.expand_path(userdir)
+  end
+  
+  class << self
+    attr_accessor :app
+    attr_reader :gui
+  end
+
+  # Set the application GUI.
+  def self.gui=(gui)
+    raise "can't set gui twice" if @gui
+    @gui = gui
   end
 end
 

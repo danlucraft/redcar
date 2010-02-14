@@ -92,7 +92,7 @@ module Redcar
     
     class PrintHistoryCommand < Command
       def execute
-        Redcar.history.each do |c|
+        Redcar.app.history.each do |c|
           puts c
         end
       end
@@ -463,6 +463,7 @@ module Redcar
       osx = Redcar::Keymap.build("main", :osx) do
         link "Cmd+N",       NewCommand
         link "Cmd+Shift+N", NewNotebookCommand
+        link "Cmd+Alt+N",   NewWindowCommand
         link "Cmd+O",       Project::FileOpenCommand
         link "Cmd+Shift+O", Project::DirectoryOpenCommand
         link "Cmd+S",       Project::FileSaveCommand
@@ -499,6 +500,7 @@ module Redcar
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
         link "Ctrl+N",       NewCommand
         link "Ctrl+Shift+N", NewNotebookCommand
+        link "Ctrl+Alt+N",   NewWindowCommand
         link "Ctrl+O",       Project::FileOpenCommand
         link "Ctrl+Shift+O", Project::DirectoryOpenCommand
         link "Ctrl+S",       Project::FileSaveCommand

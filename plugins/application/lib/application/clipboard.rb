@@ -1,6 +1,13 @@
 module Redcar
-  # A simple array with a maximum length. Models a copy/paste clipboard
-  # that can contain multiple elements.
+  # Models a copy/paste clipboard that can contain multiple elements.
+  #
+  # Each entry in the Clipboard is an array of Strings, like these:
+  #
+  #      ["mytext"]
+  #      ["foo", "bar"]
+  #
+  # Each entry is an array of Strings in order to support copy/paste in 
+  # block selection mode.
   class Clipboard
     include Redcar::Model
     include Redcar::Observable
@@ -17,7 +24,9 @@ module Redcar
       @contents = []
     end
     
-    # Add text to the clipboard.
+    # Add an entry to the clipboard.
+    #
+    # Events: [:added, Array<String>]
     #
     # @param [String, Array<String>]
     def <<(text)
@@ -34,26 +43,37 @@ module Redcar
       notify_listeners(:added, text)
     end
     
+    # The most recent entry added to the Clipboard
+    #
+    # @return [Array<String>]
     def last
       check_for_changes
       @contents.last
     end
     
+    # The number of entries on the Clipboard
     def length
       check_for_changes
       @contents.length
     end
     
+    # Fetch an entry. 0 is the most recent
+    #
+    # @return [Array<String>]
     def [](index)
       check_for_changes
       @contents[-1*index-1]
     end
     
+    # Iterate over each entry.
     def each(&block)
       check_for_changes
       @contents.each(&block)
     end
     
+    # Add an entry without raising an event.
+    #
+    # @param [String, Array<String>]
     def silently_add(text)
       @contents << text
     end

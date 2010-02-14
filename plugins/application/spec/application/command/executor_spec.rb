@@ -2,9 +2,14 @@ require File.join(File.dirname(__FILE__), "..", "..", "spec_helper")
 
 class Redcar::Command
   describe Executor do
+    class FakeApp
+      attr_accessor :history
+    end
+    
     before do
       Executor.stub!(:current_environment).and_return(:current_environment)
-      Redcar.history = History.new
+      Redcar.app = FakeApp.new
+      Redcar.app.history = History.new
     end
     
     describe "executing a command" do
@@ -32,7 +37,7 @@ class Redcar::Command
     
       it "should add the command to the History" do
         @executor.execute
-        Redcar.history.last.should == @command
+        Redcar.app.history.last.should == @command
       end
     
       it "should set the command environment" do

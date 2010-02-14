@@ -21,17 +21,15 @@ require 'application/treebook'
 require 'application/window'
 
 module Redcar
-  class << self
-    attr_accessor :app, :history
-    attr_reader :gui
-  end
-
-  # Set the application GUI.
-  def self.gui=(gui)
-    raise "can't set gui twice" if @gui
-    @gui = gui
-  end
-  
+  # A Redcar process contains one Application instance. The application instance
+  # (the app) contains:
+  #
+  #  * an array of {Redcar::Window} objects and handles creating new Windows.
+  #  * a {Redcar::Clipboard}
+  #  * a {Redcar::Command::History}
+  #
+  # A lot of events in Redcar bubble up through the app, which gives plugins
+  # one place to hook into Redcar events.
   class Application
     NAME = "Redcar"
     
@@ -39,8 +37,7 @@ module Redcar
     include Redcar::Observable
     
     def self.start
-      Redcar.app     = Application.new
-      Redcar.history = Command::History.new
+      Redcar.app = Application.new
     end
     
     def self.sensitivities
@@ -69,25 +66,24 @@ module Redcar
       ]
     end
     
-    attr_reader :clipboard, :keymap, :menu
+    attr_reader :clipboard, :keymap, :menu, :history
     
+    # Create an application instance with a Redcar::Clipboard and a Redcar::History.
     def initialize
       @windows = []
       @window_handlers = Hash.new {|h,k| h[k] = []}
       create_clipboard
+      create_history
     end
     
-    def create_clipboard
-      @clipboard       = Clipboard.new("application")
-      @clipboard.add_listener(:added) { notify_listeners(:clipboard_added) }
-    end
-    
-    # Immediatley halts the gui event loop.
+    # Immediately halts the gui event loop.
     def quit
       Redcar.gui.stop
     end
     
-    # Return a list of all open windows
+    # All open windows
+    #
+    # @return [Array<Redcar::Window>]
     def windows
       @windows
     end
@@ -112,8 +108,8 @@ module Redcar
       end
     end 
     
-    # Removes a window from this Application. Should not be called by user
-    # code, use Window#close instead.
+    # Removes a window from this Application. Should not be called by plugins,
+    # use Window#close instead.
     def window_closed(window)
       windows.delete(window)
       if focussed_window == window
@@ -136,48 +132,45 @@ module Redcar
       @storage ||= Plugin::Storage.new('application_plugin')
     end
     
+    # All Redcar::Notebooks in all Windows.
     def all_notebooks
       windows.inject([]) { |arr, window| arr << window.notebooks }.flatten
     end
     
+    # All Redcar::Tabs in all Notebooks in all Windows.
     def all_tabs
       all_notebooks.inject([]) { |arr, notebook| arr << notebook.tabs }.flatten
     end
     
+    # The focussed Redcar::Notebook in the focussed window, or nil.
     def focussed_window_notebook
       focussed_window.focussed_notebook if focussed_window
     end
     
+    # The focussed Redcar::Tab in the focussed notebook in the focussed window.
     def focussed_notebook_tab
       focussed_window_notebook.focussed_tab if focussed_window_notebook
     end
-    
-    def focussed_tab_edit_view
-      focussed_notebook_tab.edit_view if focussed_notebook_tab and focussed_notebook_tab.edit_tab?
-    end
-    
-    def focussed_edit_view_document
-      focussed_tab_edit_view.document if focussed_tab_edit_view
-    end
-    
-    def focussed_document_mirror
-      focussed_edit_view_document.mirror if focussed_edit_view_document
-    end
-    
+
+    # The focussed Redcar::Window.    
     def focussed_window
       @focussed_window
     end
     
+    # Set which window the app thinks is focussed. 
+    # Should not be called by plugins, use Window#focus instead.
     def focussed_window=(window)
       set_focussed_window(window)
       notify_listeners(:focussed_window, window)
     end
     
+    # Set which window the app thinks is focussed.
+    # Should not be called by plugins, use Window#focus instead.
     def set_focussed_window(window)
       @focussed_window = window
     end
     
-    # Redraw the main menu.
+    # Redraw the main menu, reloading all the Menus and Keymaps from the plugins.
     def refresh_menu!
       windows.each do |window|
         window.menu = load_menu
@@ -186,6 +179,9 @@ module Redcar
       end
     end
     
+    # Generate the main menu by combining menus from all plugins.
+    #
+    # @return [Redcar::Menu]
     def load_menu
       menu = Menu.new
       Redcar.plugin_manager.loaded_plugins.each do |plugin|
@@ -196,6 +192,9 @@ module Redcar
       menu
     end
     
+    # Generate the main keymap by merging the keymaps from all plugins.
+    #
+    # @return [Redcar::Keymap]
     def main_keymap
       keymap = Keymap.new("main", Redcar.platform)
       Redcar.plugin_manager.loaded_plugins.each do |plugin|
@@ -210,7 +209,7 @@ module Redcar
       keymap
     end
     
-    
+    # Loads sensitivities from all plugins.
     def load_sensitivities
       Redcar.plugin_manager.loaded_plugins.each do |plugin|
         if plugin.object.respond_to?(:sensitivities)
@@ -218,6 +217,8 @@ module Redcar
         end
       end
     end
+    
+    private
     
     def attach_window_listeners(window)
       h1 = window.add_listener(:tab_focussed) do |tab|
@@ -251,12 +252,19 @@ module Redcar
           notify_listeners(:focussed_tab_selection_changed, tab)
         end
       end
-      
       h10 = window.add_listener(:about_to_close) do |win|
         notify_listeners(:window_about_to_close, win)
       end
-      
       @window_handlers[window] << h1 << h2 << h3 << h4 << h5 << h6 << h7 << h8 << h9 << h10
+    end
+    
+    def create_clipboard
+      @clipboard       = Clipboard.new("application")
+      @clipboard.add_listener(:added) { notify_listeners(:clipboard_added) }
+    end
+    
+    def create_history
+      @history = Command::History.new
     end
   end
 end

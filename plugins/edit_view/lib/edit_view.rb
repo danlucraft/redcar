@@ -113,7 +113,19 @@ module Redcar
     def self.theme
       ARGV.option("theme") || "Twilight"
     end    
-
+    
+    def self.focussed_tab_edit_view
+      Redcar.app.focussed_notebook_tab.edit_view if Redcar.app.focussed_notebook_tab and Redcar.app.focussed_notebook_tab.edit_tab?
+    end
+    
+    def self.focussed_edit_view_document
+      focussed_tab_edit_view.document if focussed_tab_edit_view
+    end
+    
+    def self.focussed_document_mirror
+      focussed_edit_view_document.mirror if focussed_edit_view_document
+    end
+    
     attr_reader :document
     
     def initialize
@@ -193,7 +205,6 @@ module Redcar
     end
     
     def tab_pressed
-      p :tab_pressed
       doit = !EditView.all_tab_handlers.detect { |h| h.handle(self) }
     end
     

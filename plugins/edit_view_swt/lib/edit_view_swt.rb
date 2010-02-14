@@ -182,8 +182,9 @@ module Redcar
       return if @mate_text.set_grammar_by_filename(title)
       contents = new_mirror.read
       first_line = contents.to_s.split("\n").first
-      @mate_text.set_grammar_by_first_line(first_line) if first_line
-      @model.set_grammar(@mate_text.grammarName)
+      grammar = @mate_text.set_grammar_by_first_line(first_line) if first_line
+      grammar ||= "Plain Text"
+      @model.set_grammar(grammar)
     end
     
     STRIP_KEYS = {
