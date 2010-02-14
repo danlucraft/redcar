@@ -299,11 +299,11 @@ module Redcar
           if line_ix == doc.line_count
             doc.insert(doc.length, "\n" + " "*line_offset)
           else
-            line = doc.get_line(line_ix)
-            if line.length - 1 < line_offset
+            line = doc.get_line(line_ix).chomp
+            if line.length < line_offset
               doc.insert(
                 doc.offset_at_inner_end_of_line(line_ix),
-                " "*(line_offset - line.length + 1)
+                " "*(line_offset - line.length)
               )
             end
           end
