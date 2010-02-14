@@ -17,11 +17,12 @@ class DocString
   end
   
   
-  def set_selection_range range
+  def set_selection_range(start, _end)
    # ignore
   end
-  # more ignores
-  alias :scroll_to_line :set_selection_range
+  
+  def scroll_to_line(n)
+  end
   
   def get_line x
      out = @string.split("\n")[x]
@@ -48,6 +49,7 @@ module Redcar::Top
      DocString.new("a\nb\nc")
     end
   end
+  
   it "should be able to search forward and fail" do
     setup /abc/
     @a.execute.should be_false
@@ -57,7 +59,6 @@ module Redcar::Top
     setup /c/
     @a.execute.should be_true  
   end
-  
   
   it "should be able to wrap search" do
     setup /a/, true
