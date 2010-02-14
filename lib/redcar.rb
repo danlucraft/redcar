@@ -13,6 +13,8 @@ require 'plugin_manager/lib/plugin_manager'
 
 require 'forwardable'
 require 'yaml'
+require 'socket'
+require 'drb'
 
 # ## Loading and Initialization
 #
@@ -46,32 +48,37 @@ module Redcar
   VERSION_MINOR   = 3
   VERSION_RELEASE = 2
   
-  # if they are all files/dirs
-  # then attempt to load via drb
-  # if available
+  # if they are all files/dirs then attempt to load via drb if available
   def self.try_to_load_via_drb
     return if ARGV.include?("--multiple-instance")
-    if ARGV.length > 0
-      ARGV.each{|arg| return unless File.exist?(arg)}
-    end
+    return unless ARGV.any? and ARGV.all? {|arg| File.exist?(arg) }
+    
     port = 9999
-    require 'socket'
+    
     begin
-      TCPSocket.new('127.0.0.1', 9999).close
-      require 'drb'
-      redcar = DRbObject.new nil, "druby://127.0.0.1:9999"
-      if ARGV.length > 0
-        ARGV.each{|arg|
-          if redcar.open_item_drb( File.expand_path(arg)) != 'ok'
-            return # some error
+      begin
+        TCPSocket.new('127.0.0.1', 9999).close
+      rescue Errno::ECONNREFUSED
+        # no other instance running...
+        return
+      end
+      
+      drb = DRbObject.new(nil, "druby://127.0.0.1:9999")
+      
+      if ARGV.any?
+        ARGV.each do |arg|
+          if drb.open_item_drb(File.expand_path(arg)) != 'ok'
+            return
           end        
-        }
+        end
       else
-       return unless redcar.open_item_drb('just_bring_to_front')
+       return unless drb.open_item_drb('just_bring_to_front')
       end
       return true
     rescue Exception => e
-       # no socket open? drb error? ... fall through and continue
+      puts e.class.to_s + ": " + e.message
+      puts e.backtrace
+      # fall through and continue anyway
     end
     false
   end
