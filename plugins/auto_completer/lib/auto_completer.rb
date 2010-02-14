@@ -126,7 +126,7 @@ module Redcar
           controller.right     = right
         end
 
-		cur_doc = doc
+		    cur_doc = doc
       	builder = Menu::Builder.new do
       	  word_list.words.each do |current_word, word_distance|
       	  	item(current_word) do
@@ -143,7 +143,7 @@ module Redcar
       	location = window.focussed_notebook.focussed_tab.controller.edit_view.mate_text.viewer.getTextWidget.toDisplay(0,0)
       	absolute_x += location.x
       	absolute_y += location.y
-      	menu = ApplicationSWT::Menu.new(window.controller, builder.menu, Swt::SWT::POP_UP)
+      	menu = ApplicationSWT::Menu.new(window.controller, builder.menu, nil, Swt::SWT::POP_UP)
         menu.move(absolute_x, absolute_y)
         menu.show
       end

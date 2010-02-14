@@ -120,7 +120,7 @@ module Redcar
       end        
       
       def popup_menu(menu)
-        menu.controller = ApplicationSWT::Menu.new(self, menu, Swt::SWT::POP_UP)
+        menu.controller = ApplicationSWT::Menu.new(self, menu, nil, Swt::SWT::POP_UP)
         menu.controller.show
       end
       
