@@ -105,13 +105,13 @@ module Redcar
       
       def verify_key(key_event)
         if key_event.character == Swt::SWT::TAB
-          key_event.doit = !@edit_view_swt.model.tab_pressed
+          key_event.doit = !@edit_view_swt.model.tab_pressed(ApplicationSWT::Menu::BindingTranslator.modifiers(key_event))
         elsif key_event.character == Swt::SWT::ESC
-          key_event.doit = !@edit_view_swt.model.esc_pressed
+          key_event.doit = !@edit_view_swt.model.esc_pressed(ApplicationSWT::Menu::BindingTranslator.modifiers(key_event))
         elsif key_event.keyCode == Swt::SWT::ARROW_LEFT
-          key_event.doit = !@edit_view_swt.model.left_pressed
+          key_event.doit = !@edit_view_swt.model.left_pressed(ApplicationSWT::Menu::BindingTranslator.modifiers(key_event))
         elsif key_event.keyCode == Swt::SWT::ARROW_RIGHT
-          key_event.doit = !@edit_view_swt.model.right_pressed
+          key_event.doit = !@edit_view_swt.model.right_pressed(ApplicationSWT::Menu::BindingTranslator.modifiers(key_event))
         end
       end
     end

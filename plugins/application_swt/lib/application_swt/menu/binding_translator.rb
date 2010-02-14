@@ -31,7 +31,7 @@ module Redcar
           end
         end
         
-        def self.key_string(key_event)
+        def self.modifiers(key_event)
           modifiers = []
           modifier_values.each do |string, constant|
             if (key_event.stateMask & constant) != 0
@@ -39,6 +39,10 @@ module Redcar
             end
           end
           modifiers = modifiers.sort_by {|m| MODIFIERS.index(m) }
+        end
+        
+        def self.key_string(key_event)
+          modifiers = modifiers(key_event)
           if key_event.character == 0
             modifiers.join("+")
           else

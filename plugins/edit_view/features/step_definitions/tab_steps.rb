@@ -19,7 +19,7 @@ When /^I close the focussed tab$/ do
 end
 
 When /^I replace the contents with "([^\"]*)"$/ do |arg1|
-  arg1 = arg1.gsub("\\n", "\n")
+  arg1 = arg1.gsub("\\n", "\n").gsub("\\t", "\t")
   win = Redcar.app.windows.first
   tab = win.focussed_notebook.focussed_tab
   tab.edit_view.document.text = arg1

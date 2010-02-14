@@ -19,7 +19,7 @@ module Redcar
     module Handler
       include Interface::Abstract
 
-      def handle(edit_view)
+      def handle(edit_view, modifiers)
       end
     end
     
@@ -216,20 +216,20 @@ module Redcar
       self.cursor_offset = data[:cursor_offset]
     end
     
-    def tab_pressed
-      EditView.all_tab_handlers.detect { |h| h.handle(self) }
+    def tab_pressed(modifiers)
+      EditView.all_tab_handlers.detect { |h| h.handle(self, modifiers) }
     end
     
-    def esc_pressed
-      EditView.all_esc_handlers.detect { |h| h.handle(self) }
+    def esc_pressed(modifiers)
+      EditView.all_esc_handlers.detect { |h| h.handle(self, modifiers) }
     end
     
-    def left_pressed
-      EditView.all_arrow_left_handlers.detect { |h| h.handle(self) }
+    def left_pressed(modifiers)
+      EditView.all_arrow_left_handlers.detect { |h| h.handle(self, modifiers) }
     end
     
-    def right_pressed
-      EditView.all_arrow_right_handlers.detect { |h| h.handle(self) }
+    def right_pressed(modifiers)
+      EditView.all_arrow_right_handlers.detect { |h| h.handle(self, modifiers) }
     end
     
     def self.tab_handlers
@@ -237,12 +237,15 @@ module Redcar
     end
     
     class IndentTabHandler
-      def self.handle(edit_view)
+      def self.handle(edit_view, modifiers)
+        return false if modifiers.any?
         doc = edit_view.document
-        line = doc.get_line(doc.cursor_line)
         if edit_view.soft_tabs?
-          next_tab_stop_offset = (doc.cursor_line_offset/edit_view.tab_width + 1)*edit_view.tab_width
-          insert_string = " "*(next_tab_stop_offset - doc.cursor_line_offset)
+          line = doc.get_line(doc.cursor_line)
+          width = edit_view.tab_width
+          imaginary_cursor_offset = ArrowHandler.real_offset_to_imaginary(line, width, doc.cursor_line_offset)
+          next_tab_stop_offset = (imaginary_cursor_offset/width + 1)*width
+          insert_string = " "*(next_tab_stop_offset - imaginary_cursor_offset)
           doc.insert(doc.cursor_offset, insert_string)
           doc.cursor_offset = doc.cursor_offset + insert_string.length
         else
@@ -257,61 +260,104 @@ module Redcar
       [ArrowLeftHandler]
     end
     
-    class ArrowLeftHandler
-      def self.handle(edit_view)
-        if edit_view.soft_tabs?
-          doc = edit_view.document
-          line = doc.get_line(doc.cursor_line)
-          return if doc.cursor_line_offset == 0
-          if doc.cursor_line_offset % edit_view.tab_width == 0
-            tab_stop = doc.cursor_line_offset/edit_view.tab_width - 1
-          else
-            tab_stop = doc.cursor_line_offset/edit_view.tab_width
+    class ArrowHandler
+      def self.real_offset_to_imaginary(line, width, offset)
+        before = line[0...offset]
+        before.length + (width - 1)*before.scan("\t").length
+      end
+
+      def self.imaginary_offset_to_real(line, width, offset)
+        real_ix = 0
+        imaginary_ix = 0
+        prev_real_ix = 0
+        prev_imaginary_ix = 0
+        sc = StringScanner.new(line)
+        while sc.skip(/[^\t]*\t/)
+          prev_real_ix = real_ix
+          prev_imaginary_ix = imaginary_ix
+          imaginary_ix += sc.pos - real_ix + width - 1
+          real_ix = sc.pos
+          p(:prev_real => prev_real_ix, :prev_imaginary => prev_imaginary_ix, :real => real_ix, :imag => imaginary_ix)
+          if imaginary_ix > offset
+            return prev_real_ix + (offset - prev_imaginary_ix)
+          elsif imaginary_ix == offset
+            return real_ix
           end
-          tab_stop_offset = tab_stop*edit_view.tab_width
-          next_tab_stop_offset = tab_stop_offset + edit_view.tab_width
-          if line.length >= next_tab_stop_offset
-            before_line = line[tab_stop_offset...doc.cursor_line_offset]
+        end
+        real_ix + offset - imaginary_ix
+      end
+    end
+    
+    class ArrowLeftHandler < ArrowHandler
+      def self.handle(edit_view, modifiers)
+        return false if modifiers.any?
+        doc = edit_view.document
+        if edit_view.soft_tabs?
+          line = doc.get_line(doc.cursor_line)
+          width = edit_view.tab_width
+          return if doc.cursor_line_offset == 0
+          imaginary_cursor_offset = real_offset_to_imaginary(line, width, doc.cursor_line_offset)
+          if imaginary_cursor_offset % width == 0
+            tab_stop = imaginary_cursor_offset/width - 1
+          else
+            tab_stop = imaginary_cursor_offset/width
+          end
+          tab_stop_offset = tab_stop*width
+          next_tab_stop_offset = tab_stop_offset + width
+          if line.length >= imaginary_offset_to_real(line, width, next_tab_stop_offset)
+            before_line = line[imaginary_offset_to_real(line, width, tab_stop_offset)...doc.cursor_line_offset]
             if match = before_line.match(/\s+$/)
               doc.cursor_offset = doc.cursor_offset - match[0].length
+            else
+              default(doc)
             end
+          else
+            default(doc)
           end
         else
-          false
+          default(doc)
         end
       end
+      
+      def self.default(doc)
+        doc.cursor_offset = doc.cursor_offset - 1
+      end
+      
     end
         
     def self.arrow_right_handlers
       [ArrowRightHandler]
     end
     
-    class ArrowRightHandler
-      def self.handle(edit_view)
+    class ArrowRightHandler < ArrowHandler
+      def self.handle(edit_view, modifiers)
+        return false if modifiers.any?
+        doc = edit_view.document
         if edit_view.soft_tabs?
-          doc = edit_view.document
           line = doc.get_line(doc.cursor_line)
-          tab_stop = doc.cursor_line_offset/edit_view.tab_width + 1
-          tab_stop_offset = tab_stop*edit_view.tab_width
-          if line.length >= tab_stop_offset
-            after_line = line[doc.cursor_line_offset...tab_stop_offset]
+          width = edit_view.tab_width
+          imaginary_cursor_offset = real_offset_to_imaginary(line, width, doc.cursor_line_offset)
+          tab_stop = imaginary_cursor_offset/width + 1
+          tab_stop_offset = tab_stop*width
+          if line.length >= imaginary_offset_to_real(line, width, tab_stop_offset)
+            after_line = line[doc.cursor_line_offset...imaginary_offset_to_real(line, width, tab_stop_offset)]
             if match = after_line.match(/^\s+/)
               doc.cursor_offset = doc.cursor_offset + match[0].length
+            else
+              default(doc)
             end
+          else
+            default(doc)
           end
         else
-          false
+          default(doc)
         end
       end
+      
+      def self.default(doc)
+        doc.cursor_offset = doc.cursor_offset + 1
+      end
     end
-
   end
 end
-
-
-
-
-
-
-
 
