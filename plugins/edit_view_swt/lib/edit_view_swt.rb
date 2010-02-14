@@ -112,6 +112,10 @@ module Redcar
           key_event.doit = !@edit_view_swt.model.left_pressed(ApplicationSWT::Menu::BindingTranslator.modifiers(key_event))
         elsif key_event.keyCode == Swt::SWT::ARROW_RIGHT
           key_event.doit = !@edit_view_swt.model.right_pressed(ApplicationSWT::Menu::BindingTranslator.modifiers(key_event))
+        elsif key_event.character == Swt::SWT::DEL
+          key_event.doit = !@edit_view_swt.model.delete_pressed(ApplicationSWT::Menu::BindingTranslator.modifiers(key_event))
+        elsif key_event.character == Swt::SWT::BS
+          key_event.doit = !@edit_view_swt.model.backspace_pressed(ApplicationSWT::Menu::BindingTranslator.modifiers(key_event))
         end
       end
     end

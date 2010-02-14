@@ -8,7 +8,7 @@ end
 
 When /^I select from (\d+) to (\d+)$/ do |start_offset, end_offset|
   doc = Redcar.app.focussed_window.focussed_notebook.focussed_tab.edit_view.document
-  doc.set_selection_range((start_offset.to_i)..(end_offset.to_i))
+  doc.set_selection_range(start_offset.to_i, end_offset.to_i)
 end
 
 When /^I copy text$/ do
@@ -67,17 +67,28 @@ When /^I press Shift\+Right key in the edit tab$/ do
   edit_view.right_pressed(["Shift"])
 end
 
+When /^I press the Delete key in the edit tab$/ do
+  edit_view = Redcar::EditView.focussed_tab_edit_view
+  edit_view.delete_pressed([])
+end
+
+When /^I press the Backspace key in the edit tab$/ do
+  edit_view = Redcar::EditView.focussed_tab_edit_view
+  edit_view.backspace_pressed([])
+end
+
 Then /^the contents should be "([^\"]*)"$/ do |text|
   expected = text.gsub("\\t", "\t").gsub("\\n", "\n")
   doc = Redcar::EditView.focussed_edit_view_document
   actual = doc.to_s
   if expected.include?("<c>")
-    actual = actual.insert(doc.cursor_offset, "<c>")
+    curoff = doc.cursor_offset
+    actual = actual.insert(curoff, "<c>")
     seloff = doc.selection_offset
-    if seloff > doc.cursor_offset
+    if seloff > curoff
       seloff += 3
     end
-    actual = actual.insert(seloff, "<s>")
+    actual = actual.insert(seloff, "<s>") unless curoff == seloff
   end
   actual.should == expected
 end

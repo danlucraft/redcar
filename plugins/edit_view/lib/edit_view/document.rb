@@ -267,7 +267,7 @@ module Redcar
     
     # Select all text in the document.
     def select_all
-      set_selection_range(0..length)
+      set_selection_range(length, 0)
     end
     
     # Get the text selected by the user. If no text is selected

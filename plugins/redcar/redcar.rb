@@ -189,7 +189,7 @@ module Redcar
           else
             end_selection = doc.offset_at_line(last_line_ix + 1)
           end
-          doc.set_selection_range(start_selection..end_selection)
+          doc.set_selection_range(start_selection, end_selection)
         else
           indent_line(doc, doc.cursor_line)
         end
@@ -232,7 +232,7 @@ module Redcar
     class SelectAllCommand < Redcar::EditTabCommand
     
       def execute
-        doc.set_selection_range(0..(doc.length))
+        doc.set_selection_range(doc.length, 0)
       end
     end
     
@@ -240,7 +240,7 @@ module Redcar
     
       def execute
         doc.set_selection_range(
-          doc.cursor_line_start_offset..doc.cursor_line_end_offset)
+          doc.cursor_line_start_offset, doc.cursor_line_end_offset)
       end
     end
     
@@ -419,7 +419,7 @@ module Redcar
           line_start = doc.offset_at_line(doc.cursor_line)
           startoff = line_start + $`.length + cursor_line_offset
           endoff   = startoff + $&.length
-          doc.set_selection_range(startoff..endoff)
+          doc.set_selection_range(startoff, endoff)
         elsif doc.cursor_line < doc.line_count - 1
           # next search the rest of the lines
           found_line_offset = nil
@@ -443,7 +443,7 @@ module Redcar
             startoff = line_start + found_line_offset
             endoff   = startoff + found_length
             doc.scroll_to_line(found_line_num)
-            doc.set_selection_range(startoff..endoff)
+            doc.set_selection_range(endoff, startoff)
             true
           else
            false
