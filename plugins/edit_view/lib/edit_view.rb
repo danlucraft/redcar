@@ -36,20 +36,32 @@ module Redcar
       @storage ||= Plugin::Storage.new('edit_view_plugin')
     end
 
-    def self.all_tab_handlers
+    def self.all_handlers(type)
       result = []
       Redcar.plugin_manager.loaded_plugins.each do |plugin|
-        if plugin.object.respond_to?(:tab_handlers)
-          result += plugin.object.tab_handlers
+        if plugin.object.respond_to?(:"#{type}_handlers")
+          result += plugin.object.send(:"#{type}_handlers")
         end
       end
       result.each {|h| Handler.verify_interface!(h) }
     end
-    
-    def self.esc_handlers
-      @esc_handlers ||= []
+
+    def self.all_tab_handlers
+      all_handlers(:tab)
     end
     
+    def self.all_esc_handlers
+      all_handlers(:esc)
+    end
+
+    def self.all_arrow_left_handlers
+      all_handlers(:arrow_left)
+    end
+
+    def self.all_arrow_right_handlers
+      all_handlers(:arrow_right)
+    end
+
     # Called by the GUI whenever an EditView is focussed or
     # loses focus. Sends :focussed_edit_view event.
     def self.focussed_edit_view=(edit_view)
@@ -209,9 +221,15 @@ module Redcar
     end
     
     def esc_pressed
-      p :esc_pressed
-      doit = true
-      doit
+      doit = !EditView.all_esc_handlers.detect { |h| h.handle(self) }
+    end
+    
+    def left_pressed
+      doit = !EditView.all_left_arrow_handlers.detect { |h| h.handle(self) }
+    end
+    
+    def right_pressed
+      doit = !EditView.all_right_arrow_handlers.detect { |h| h.handle(self) }
     end
   end
 end

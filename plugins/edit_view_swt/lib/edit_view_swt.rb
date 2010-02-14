@@ -120,6 +120,10 @@ module Redcar
           key_event.doit = @edit_view_swt.model.tab_pressed
         elsif key_event.character == Swt::SWT::ESC
           key_event.doit = @edit_view_swt.model.esc_pressed
+        elsif key_event.character == Swt::SWT::ARROW_LEFT
+          key_event.doit = @edit_view_swt.model.left_pressed
+        elsif key_event.character == Swt::SWT::ARROW_RIGHT
+          key_event.doit = @edit_view_swt.model.right_pressed
         end
       end
     end
