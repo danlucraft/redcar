@@ -253,11 +253,16 @@ module Redcar
       controller.selection_ranges
     end
     
-    # Set the range of text selected by the user.
+    def selection_offset
+      controller.selection_offset
+    end
+    
+    # Set the range of text selected by the user. 
     #
-    # @param [Range<Integer>] range   a range between two character offsets
-    def set_selection_range(range)
-      controller.set_selection_range(range.begin, range.end)
+    # @param [Integer] cursor_offset
+    # @param [Integer] selection_offset
+    def set_selection_range(cursor_offset, selection_offset)
+      controller.set_selection_range(cursor_offset, selection_offset)
     end
     
     # Select all text in the document.

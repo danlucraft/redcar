@@ -57,14 +57,29 @@ When /^I press the Right key in the edit tab$/ do
   edit_view.right_pressed([])
 end
 
-Then /^the Left key in the edit tab should not be handled$/ do
+When /^I press Shift\+Left key in the edit tab$/ do
   edit_view = Redcar::EditView.focussed_tab_edit_view
-  edit_view.left_pressed([]).should_not be_true
+  edit_view.left_pressed(["Shift"])
 end
 
-When /^the Right key in the edit tab should not be handled$/ do
+When /^I press Shift\+Right key in the edit tab$/ do
   edit_view = Redcar::EditView.focussed_tab_edit_view
-  edit_view.right_pressed([]).should_not be_true
+  edit_view.right_pressed(["Shift"])
+end
+
+Then /^the contents should be "([^\"]*)"$/ do |text|
+  expected = text.gsub("\\t", "\t").gsub("\\n", "\n")
+  doc = Redcar::EditView.focussed_edit_view_document
+  actual = doc.to_s
+  if expected.include?("<c>")
+    actual = actual.insert(doc.cursor_offset, "<c>")
+    seloff = doc.selection_offset
+    if seloff > doc.cursor_offset
+      seloff += 3
+    end
+    actual = actual.insert(seloff, "<s>")
+  end
+  actual.should == expected
 end
 
 Then /^the contents of the edit tab should be "([^\"]*)"$/ do |text|

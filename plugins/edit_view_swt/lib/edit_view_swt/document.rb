@@ -69,6 +69,11 @@ module Redcar
         styledText.get_caret_offset
       end
       
+      def selection_offset
+        range = styledText.get_selection_range
+        range.x == cursor_offset ? range.x + range.y : range.x
+      end
+      
       def cursor_offset=(offset)
         styledText.set_caret_offset(offset)
       end
@@ -85,9 +90,9 @@ module Redcar
         end
       end
       
-      def set_selection_range(start, _end)
-        styledText.set_selection(start, _end)
-        @model.selection_range_changed(start, _end)
+      def set_selection_range(cursor_offset, selection_offset)
+        styledText.set_selection_range(selection_offset, cursor_offset - selection_offset)
+        @model.selection_range_changed(cursor_offset, selection_offset)
       end
       
       def block_selection_mode?

@@ -277,7 +277,6 @@ module Redcar
           prev_imaginary_ix = imaginary_ix
           imaginary_ix += sc.pos - real_ix + width - 1
           real_ix = sc.pos
-          p(:prev_real => prev_real_ix, :prev_imaginary => prev_imaginary_ix, :real => real_ix, :imag => imaginary_ix)
           if imaginary_ix > offset
             return prev_real_ix + (offset - prev_imaginary_ix)
           elsif imaginary_ix == offset
@@ -290,12 +289,22 @@ module Redcar
     
     class ArrowLeftHandler < ArrowHandler
       def self.handle(edit_view, modifiers)
-        return false if modifiers.any?
+        return false if (modifiers & %w(Alt Cmd Ctrl)).any?
+        doc = edit_view.document
+        if modifiers.include?("Shift")
+          old_selection_offset = doc.selection_offset
+          doc.set_selection_range(move_left_offset(edit_view), old_selection_offset)
+        else
+          doc.cursor_offset = move_left_offset(edit_view)
+        end
+      end
+      
+      def self.move_left_offset(edit_view)
         doc = edit_view.document
         if edit_view.soft_tabs?
           line = doc.get_line(doc.cursor_line)
           width = edit_view.tab_width
-          return if doc.cursor_line_offset == 0
+          return 0 if doc.cursor_line_offset == 0
           imaginary_cursor_offset = real_offset_to_imaginary(line, width, doc.cursor_line_offset)
           if imaginary_cursor_offset % width == 0
             tab_stop = imaginary_cursor_offset/width - 1
@@ -307,22 +316,17 @@ module Redcar
           if line.length >= imaginary_offset_to_real(line, width, next_tab_stop_offset)
             before_line = line[imaginary_offset_to_real(line, width, tab_stop_offset)...doc.cursor_line_offset]
             if match = before_line.match(/\s+$/)
-              doc.cursor_offset = doc.cursor_offset - match[0].length
+              doc.cursor_offset - match[0].length
             else
-              default(doc)
+              doc.cursor_offset - 1
             end
           else
-            default(doc)
+            doc.cursor_offset - 1
           end
         else
-          default(doc)
+          doc.cursor_offset - 1
         end
       end
-      
-      def self.default(doc)
-        doc.cursor_offset = doc.cursor_offset - 1
-      end
-      
     end
         
     def self.arrow_right_handlers
@@ -331,7 +335,17 @@ module Redcar
     
     class ArrowRightHandler < ArrowHandler
       def self.handle(edit_view, modifiers)
-        return false if modifiers.any?
+        return false if (modifiers & %w(Alt Cmd Ctrl)).any?
+        doc = edit_view.document
+        if modifiers.include?("Shift")
+          old_selection_offset = doc.selection_offset
+          doc.set_selection_range(move_right_offset(edit_view), old_selection_offset)
+        else
+          doc.cursor_offset = move_right_offset(edit_view)
+        end
+      end
+      
+      def self.move_right_offset(edit_view)
         doc = edit_view.document
         if edit_view.soft_tabs?
           line = doc.get_line(doc.cursor_line)
@@ -342,20 +356,16 @@ module Redcar
           if line.length >= imaginary_offset_to_real(line, width, tab_stop_offset)
             after_line = line[doc.cursor_line_offset...imaginary_offset_to_real(line, width, tab_stop_offset)]
             if match = after_line.match(/^\s+/)
-              doc.cursor_offset = doc.cursor_offset + match[0].length
+              doc.cursor_offset + match[0].length
             else
-              default(doc)
+              doc.cursor_offset + 1
             end
           else
-            default(doc)
+            doc.cursor_offset + 1
           end
         else
-          default(doc)
+          doc.cursor_offset + 1
         end
-      end
-      
-      def self.default(doc)
-        doc.cursor_offset = doc.cursor_offset + 1
       end
     end
   end

@@ -212,9 +212,59 @@ Feature: Soft and hard tabs
     And I press the Left key in the edit tab
     Then the cursor should be at 0
     
+  @moveleft
+  Scenario: Select left through soft tabs
+    When I open a new edit tab
+    And tabs are soft, 2 spaces
+    And I replace the contents with "    "
+    And I move the cursor to 4
+    And I press Shift+Left key in the edit tab
+    Then the contents should be "  <c>  <s>"
+
+  @moveright
+  Scenario: Select right through soft tabs
+    When I open a new edit tab
+    And tabs are soft, 2 spaces
+    And I replace the contents with "    "
+    And I move the cursor to 2
+    And I press Shift+Right key in the edit tab
+    Then the contents should be "  <s>  <c>"
     
+  @moveleft
+  Scenario: Select left twice through soft tabs
+    When I open a new edit tab
+    And tabs are soft, 2 spaces
+    And I replace the contents with "    "
+    And I move the cursor to 4
+    And I press Shift+Left key in the edit tab
+    And I press Shift+Left key in the edit tab
+    Then the contents should be "<c>    <s>"
     
+  @moveright
+  Scenario: Select right through soft tabs
+    When I open a new edit tab
+    And tabs are soft, 2 spaces
+    And I replace the contents with "    "
+    And I move the cursor to 0
+    And I press Shift+Right key in the edit tab
+    And I press Shift+Right key in the edit tab
+    Then the contents should be "<s>    <c>"
+
+  @moveleft
+  Scenario: Shouldn't die if the cursor is at the start of the document
+    When I open a new edit tab
+    And tabs are soft, 4 spaces
+    And I replace the contents with ""
+    And I move the cursor to 0
+    And I press Shift+Left key in the edit tab
+    Then the cursor should be at 0
     
-    
-    
-    
+  @moveright
+  Scenario: Shouldn't die if the cursor is at the end of the document
+    When I open a new edit tab
+    And tabs are soft, 4 spaces
+    And I replace the contents with ""
+    And I move the cursor to 0
+    And I press Shift+Right key in the edit tab
+    Then the cursor should be at 0
+  
