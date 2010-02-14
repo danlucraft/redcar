@@ -10,6 +10,7 @@ if ARGV.first == "install"
 else
   exit if Redcar.try_to_load_via_drb
   Redcar.ensure_jruby
+  Redcar.environment = :user
   Redcar.load
   Redcar::Top.start
   Redcar.pump

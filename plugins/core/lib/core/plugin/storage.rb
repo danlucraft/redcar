@@ -2,9 +2,12 @@
 module Redcar
   class Plugin
     class Storage
-      
+      class << self
+        attr_writer :storage_dir
+      end
+    
       def self.storage_dir
-        Redcar.user_dir
+        @user_dir ||= Redcar.user_dir
       end
 
       # Open a storage file or create it if it doesn't exist.

@@ -48,6 +48,19 @@ module Redcar
   VERSION_MINOR   = 3
   VERSION_RELEASE = 2
   
+  ENVIRONMENTS = [:user, :debug, :test]
+
+  def self.environment=(env)
+    unless ENVIRONMENTS.include?(env)
+      raise "environment must be one of #{ENVIRONMENTS.inspect}"
+    end
+    @environment = env
+  end
+  
+  def self.environment
+    @environment
+  end
+
   # if they are all files/dirs then attempt to load via drb if available
   def self.try_to_load_via_drb
     return if ARGV.include?("--multiple-instance")

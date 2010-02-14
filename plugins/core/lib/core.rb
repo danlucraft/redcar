@@ -22,5 +22,6 @@ module Redcar
         FileUtils.mkdir(Redcar.user_dir)
       end
     end
+    
   end
 end

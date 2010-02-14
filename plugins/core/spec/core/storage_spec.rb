@@ -8,6 +8,8 @@ describe Redcar::Plugin::Storage do
     storage[:some_key].should == "some value"
     storage[:some_key] = "some other value"
     storage[:some_key].should == "some other value"
+    
+    FileUtils.rm_rf(storage.send(:path))
   end
 
   it "saves to disk" do
@@ -24,5 +26,7 @@ describe Redcar::Plugin::Storage do
     storage.get_with_default("a", "b").should == "b"
     storage['a'] = 'c'
     storage.get_with_default("a", "b").should == "c"
+    
+    FileUtils.rm_rf(storage.send(:path))
   end
 end

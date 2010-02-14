@@ -6,6 +6,7 @@ process_start_time = Time.now
 $:.push File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'redcar'
+Redcar.environment = :test
 Redcar.load
 Redcar::Top.start
 Redcar.gui.run_features(ARGV)
