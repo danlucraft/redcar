@@ -425,13 +425,17 @@ module Redcar
           found_line_offset = nil
           found_line_num = nil
           found_length = nil
-          (doc.cursor_line + 1).upto(doc.line_count - 1) do |line_num|
-            next if found_line_num
+          line_nums = ((doc.cursor_line() + 1)..(doc.line_count() - 1)).to_a # the rest of the document
+          if @wrap
+            line_nums += (0..doc.cursor_line()).to_a
+          end
+          for line_num in line_nums do
             curr_line = doc.get_line(line_num)
             if new_offset = (curr_line.to_s =~ @re)
               found_line_offset = new_offset
               found_line_num = line_num
               found_length = $&.length
+              break
             end
           end
           if found_line_num
@@ -440,13 +444,10 @@ module Redcar
             endoff   = startoff + found_length
             doc.scroll_to_line(found_line_num)
             doc.set_selection_range(startoff..endoff)
+            true
+          else
+           false
           end
-          if found_line_num and !doc.get_line(found_line_num) and @wrap
-            @wrap = false
-            doc.cursor_offset = 0
-            return execute
-          end
-          false
         end
       end
     end

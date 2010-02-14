@@ -52,6 +52,13 @@ module Redcar
     end
   
     def self.filter_path
+      if Redcar.app.focussed_notebook_tab
+       if path = Redcar.app.focussed_notebook_tab.document.path
+          dir = File.dirname(path)
+          puts 'using dir', dir
+          return dir
+        end
+      end      
       Project.storage['last_dir'] || File.expand_path(Dir.pwd)
     end
   
@@ -110,28 +117,60 @@ module Redcar
     # as if from the command line
     # for use via drb
     def self.open_item_drb(full_path)
+      begin
+        puts 'drb opening ' + full_path if $VERBOSE
         if File.file? full_path
-          Redcar::ApplicationSWT.sync_exec {
+          
+          Redcar::ApplicationSWT.sync_exec {            
+            if Redcar.app.windows.length == 0              
+              restore_last_session
+            end
+            
             FileOpenCommand.new(full_path).execute
-            Redcar.app.focussed_window.controller.bring_to_front
+            Redcar.app.focussed_window.controller.bring_to_front          
           }
           'ok'
         elsif File.directory? full_path
           Redcar::ApplicationSWT.sync_exec {
-            open_dir(full_path)
+          
+            # open in any existing window that already has that dir open as a tree
+            # else in a new window
+            # open the window that already has this dir open
+            if Redcar.app.windows.length == 0 && storage['last_open_dir'] == full_path
+              restore_last_session
+            end
+            
+            if Redcar.app.windows.length > 0
+              window = Redcar.app.windows.find{|win| 
+                # XXXX how can win be nil here?
+                win && win.treebook.trees.find{|t| 
+                  t.tree_mirror.is_a?(Redcar::Project::DirMirror) && t.tree_mirror.path == full_path
+                }
+              }            
+            end               
+            window ||= Redcar.app.new_window          
+            open_dir(full_path, window)
             Redcar.app.focussed_window.controller.bring_to_front
+            
           }
           'ok'
-        elsif full_path == 'just_bring_to_front'
+        elsif full_path == 'just_bring_to_front'          
           Redcar::ApplicationSWT.sync_exec {
+            if Redcar.app.windows.length == 0
+              restore_last_session
+            end
             Redcar.app.focussed_window.controller.bring_to_front
           }
           'ok'
         else
-          # unexpected to get here...
-          puts 'remote load: not found' + full_path
-          'not ok'
-        end       
+          puts 'remote load: unexpected: file not found ' + full_path
+          'fail'
+        end
+      rescue Exception => e
+        # normally drb would swallow these
+        puts 'drb got exception:' + e, e.backtrace
+        raise e
+      end 
     end
     
     # Opens a new EditTab with a FileMirror for the given path.
@@ -168,7 +207,8 @@ module Redcar
     private
     
     # restores the directory/files in the last open window
-    def self.restore_last_session      
+    def self.restore_last_session
+      Redcar.app.make_sure_at_least_one_window_open # in case there are no windows open
       if path = storage['last_open_dir']
         open_dir(path)
       end
@@ -201,8 +241,7 @@ module Redcar
         
         dir_args.each {|path| open_dir(path) }
         file_args.each {|path| open_file(path) }
-
-        return dir_args.any? or file_args.any?
+        return (dir_args.any? or file_args.any?)
       end
     end
     
@@ -242,16 +281,7 @@ module Redcar
       end
     
       def execute
-        # TODO rdp cleanup
-        # prefer opening in the dir of the currently open file
-        if Redcar.app.focussed_window && Redcar.app.focussed_window.focussed_notebook && Redcar.app.focussed_window.focussed_notebook.focussed_tab
-          # make sure it's a file
-          if Redcar.app.focussed_window.focussed_notebook.focussed_tab.document_mirror.respond_to?(:path) && File.file?(Redcar.app.focussed_window.focussed_notebook.focussed_tab.document_mirror.path )
-            dir = File.dirname(Redcar.app.focussed_window.focussed_notebook.focussed_tab.title)
-          end
-        end
-        
-        path = get_path dir
+        path = get_path
         if path
           if already_open_tab = Project.open_file_tab(path)
             already_open_tab.focus
@@ -263,9 +293,9 @@ module Redcar
       
       private
       
-      def get_path specific_path = nil
+      def get_path
         @path || begin
-          if path = Application::Dialog.open_file(win, :filter_path => (specific_path || Project.filter_path))
+          if path = Application::Dialog.open_file(win, :filter_path => Project.filter_path)
             Project.storage['last_dir'] = File.dirname(File.expand_path(path))
             path
           end

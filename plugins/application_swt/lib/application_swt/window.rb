@@ -40,6 +40,7 @@ module Redcar
         create_treebook_controller
         reset_sash_widths
         @treebook_unopened = true
+        set_icon  File.join(Redcar.root, %w(plugins application icons redcar_icon_beta.png))
       end
       
       def add_listeners
@@ -113,10 +114,16 @@ module Redcar
         @menu_controller = ApplicationSWT::Menu.new(self, @window.menu, @window.keymap, Swt::SWT::BAR)
         shell.menu_bar = @menu_controller.menu_bar
       end
+      
+      def set_icon path
+         icon = Swt::Graphics::Image.new(ApplicationSWT.display, path)
+         shell.image = icon
+       end
 
       def bring_to_front
         @shell.set_minimized(false)
         @shell.force_active
+        @shell.set_minimized(false)
       end        
       
       def popup_menu(menu)

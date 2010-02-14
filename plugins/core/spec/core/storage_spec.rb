@@ -18,4 +18,11 @@ describe Redcar::Plugin::Storage do
     
     FileUtils.rm_rf(storage.send(:path))
   end
+  
+  it "has a get_with_default method" do
+    storage = Redcar::Plugin::Storage.new('test_storage_saved2')
+    storage.get_with_default("a", "b").should == "b"
+    storage['a'] = 'c'
+    storage.get_with_default("a", "b").should == "c"
+  end
 end
