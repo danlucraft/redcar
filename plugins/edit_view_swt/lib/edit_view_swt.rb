@@ -98,18 +98,6 @@ module Redcar
       @handlers << [@model.document, h1] << [@model, h2] << [@model, h3] << [@model, h4]
     end
     
-    def tab_pressed
-      p :tab
-      doit = @model.tab_pressed
-      doit
-    end
-    
-    def esc_pressed
-      p :esc
-      doit = true
-      doit
-    end
-    
     class VerifyKeyListener
       def initialize(edit_view_swt)
         @edit_view_swt = edit_view_swt
@@ -117,13 +105,13 @@ module Redcar
       
       def verify_key(key_event)
         if key_event.character == Swt::SWT::TAB
-          key_event.doit = @edit_view_swt.model.tab_pressed
+          key_event.doit = !@edit_view_swt.model.tab_pressed
         elsif key_event.character == Swt::SWT::ESC
-          key_event.doit = @edit_view_swt.model.esc_pressed
-        elsif key_event.character == Swt::SWT::ARROW_LEFT
-          key_event.doit = @edit_view_swt.model.left_pressed
-        elsif key_event.character == Swt::SWT::ARROW_RIGHT
-          key_event.doit = @edit_view_swt.model.right_pressed
+          key_event.doit = !@edit_view_swt.model.esc_pressed
+        elsif key_event.keyCode == Swt::SWT::ARROW_LEFT
+          key_event.doit = !@edit_view_swt.model.left_pressed
+        elsif key_event.keyCode == Swt::SWT::ARROW_RIGHT
+          key_event.doit = !@edit_view_swt.model.right_pressed
         end
       end
     end

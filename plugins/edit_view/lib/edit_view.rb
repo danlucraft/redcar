@@ -217,19 +217,101 @@ module Redcar
     end
     
     def tab_pressed
-      doit = !EditView.all_tab_handlers.detect { |h| h.handle(self) }
+      EditView.all_tab_handlers.detect { |h| h.handle(self) }
     end
     
     def esc_pressed
-      doit = !EditView.all_esc_handlers.detect { |h| h.handle(self) }
+      EditView.all_esc_handlers.detect { |h| h.handle(self) }
     end
     
     def left_pressed
-      doit = !EditView.all_left_arrow_handlers.detect { |h| h.handle(self) }
+      EditView.all_arrow_left_handlers.detect { |h| h.handle(self) }
     end
     
     def right_pressed
-      doit = !EditView.all_right_arrow_handlers.detect { |h| h.handle(self) }
+      EditView.all_arrow_right_handlers.detect { |h| h.handle(self) }
     end
+    
+    def self.tab_handlers
+      [IndentTabHandler]
+    end
+    
+    class IndentTabHandler
+      def self.handle(edit_view)
+        doc = edit_view.document
+        line = doc.get_line(doc.cursor_line)
+        if edit_view.soft_tabs?
+          next_tab_stop_offset = (doc.cursor_line_offset/edit_view.tab_width + 1)*edit_view.tab_width
+          insert_string = " "*(next_tab_stop_offset - doc.cursor_line_offset)
+          doc.insert(doc.cursor_offset, insert_string)
+          doc.cursor_offset = doc.cursor_offset + insert_string.length
+        else
+          doc.insert(doc.cursor_offset, "\t")
+          doc.cursor_offset += 1
+        end
+        true
+      end
+    end
+    
+    def self.arrow_left_handlers
+      [ArrowLeftHandler]
+    end
+    
+    class ArrowLeftHandler
+      def self.handle(edit_view)
+        if edit_view.soft_tabs?
+          doc = edit_view.document
+          line = doc.get_line(doc.cursor_line)
+          return if doc.cursor_line_offset == 0
+          if doc.cursor_line_offset % edit_view.tab_width == 0
+            tab_stop = doc.cursor_line_offset/edit_view.tab_width - 1
+          else
+            tab_stop = doc.cursor_line_offset/edit_view.tab_width
+          end
+          tab_stop_offset = tab_stop*edit_view.tab_width
+          next_tab_stop_offset = tab_stop_offset + edit_view.tab_width
+          if line.length >= next_tab_stop_offset
+            before_line = line[tab_stop_offset...doc.cursor_line_offset]
+            if match = before_line.match(/\s+$/)
+              doc.cursor_offset = doc.cursor_offset - match[0].length
+            end
+          end
+        else
+          false
+        end
+      end
+    end
+        
+    def self.arrow_right_handlers
+      [ArrowRightHandler]
+    end
+    
+    class ArrowRightHandler
+      def self.handle(edit_view)
+        if edit_view.soft_tabs?
+          doc = edit_view.document
+          line = doc.get_line(doc.cursor_line)
+          tab_stop = doc.cursor_line_offset/edit_view.tab_width + 1
+          tab_stop_offset = tab_stop*edit_view.tab_width
+          if line.length >= tab_stop_offset
+            after_line = line[doc.cursor_line_offset...tab_stop_offset]
+            if match = after_line.match(/^\s+/)
+              doc.cursor_offset = doc.cursor_offset + match[0].length
+            end
+          end
+        else
+          false
+        end
+      end
+    end
+
   end
 end
+
+
+
+
+
+
+
+

@@ -28,6 +28,11 @@ When /^I move the cursor to (\d+)$/ do |offset|
   doc.cursor_offset = offset.to_i
 end
 
+Then /^the cursor should be at (\d+)$/ do |offset|
+  doc = Redcar::EditView.focussed_tab_edit_view.document
+  doc.cursor_offset.should == offset.to_i
+end
+
 When /^tabs are hard$/ do
   Redcar::EditView.focussed_tab_edit_view.soft_tabs = false
 end
@@ -42,9 +47,30 @@ When /^I press the Tab key in the edit tab$/ do
   edit_view.tab_pressed
 end
 
+When /^I press the Left key in the edit tab$/ do
+  edit_view = Redcar::EditView.focussed_tab_edit_view
+  edit_view.left_pressed
+end
+
+When /^I press the Right key in the edit tab$/ do
+  edit_view = Redcar::EditView.focussed_tab_edit_view
+  edit_view.right_pressed
+end
+
+Then /^the Left key in the edit tab should not be handled$/ do
+  edit_view = Redcar::EditView.focussed_tab_edit_view
+  edit_view.left_pressed.should_not be_true
+end
+
+When /^the Right key in the edit tab should not be handled$/ do
+  edit_view = Redcar::EditView.focussed_tab_edit_view
+  edit_view.right_pressed.should_not be_true
+end
+
 Then /^the contents of the edit tab should be "([^\"]*)"$/ do |text|
   text = text.gsub("\\t", "\t").gsub("\\n", "\n")
   Redcar::EditView.focussed_edit_view_document.to_s.should == text
 end
+
 
  
