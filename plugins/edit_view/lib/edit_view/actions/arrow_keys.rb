@@ -31,7 +31,8 @@ module Redcar
       
       class ArrowLeftHandler < ArrowHandler
         def self.handle(edit_view, modifiers)
-          return false if (modifiers & %w(Alt Cmd Ctrl)).any?
+          return if (modifiers & %w(Alt Cmd Ctrl)).any?
+          return if edit_view.document.block_selection_mode?
           doc = edit_view.document
           if modifiers.include?("Shift")
             old_selection_offset = doc.selection_offset
@@ -73,7 +74,8 @@ module Redcar
       
       class ArrowRightHandler < ArrowHandler
         def self.handle(edit_view, modifiers)
-          return false if (modifiers & %w(Alt Cmd Ctrl)).any?
+          return if (modifiers & %w(Alt Cmd Ctrl)).any?
+          return if edit_view.document.block_selection_mode?
           doc = edit_view.document
           if modifiers.include?("Shift")
             old_selection_offset = doc.selection_offset

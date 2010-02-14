@@ -6,6 +6,7 @@ module Redcar
         def self.handle(edit_view, modifiers)
           return if modifiers.any?
           return if edit_view.document.selection?
+          return if edit_view.document.block_selection_mode?
           doc = edit_view.document
           old_offset = doc.cursor_offset
           new_offset = ArrowRightHandler.move_right_offset(edit_view)
@@ -17,6 +18,7 @@ module Redcar
         def self.handle(edit_view, modifiers)
           return if modifiers.any?
           return if edit_view.document.selection?
+          return if edit_view.document.block_selection_mode?
           doc = edit_view.document
           old_offset = doc.cursor_offset
           new_offset = ArrowLeftHandler.move_left_offset(edit_view)
