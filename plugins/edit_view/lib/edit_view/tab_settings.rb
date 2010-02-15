@@ -25,7 +25,7 @@ module Redcar
       end
       
       def softness_for(grammar_name)
-        softnesses[grammar_name] || DEFAULT_SOFTNESS
+        softnesses[grammar_name] == nil ? DEFAULT_SOFTNESS : softnesses[grammar_name]
       end
       
       def set_softness_for(grammar_name, boolean)

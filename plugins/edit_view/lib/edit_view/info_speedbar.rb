@@ -32,8 +32,8 @@ module Redcar
           @tab = new_tab
           grammar.items = InfoSpeedbar.grammar_names
           grammar.value = @tab.edit_view.grammar
-          tab_width.value = EditView.tab_settings.width_for(@tab.edit_view.grammar).to_s
-          soft_tabs.value = EditView.tab_settings.softness_for(@tab.edit_view.grammar)
+          tab_width.value = @tab.edit_view.tab_width.to_s #EditView.tab_settings.width_for(@tab.edit_view.grammar).to_s
+          soft_tabs.value = @tab.edit_view.soft_tabs?     #EditView.tab_settings.softness_for(@tab.edit_view.grammar)
           @width_handler = @tab.edit_view.add_listener(:tab_width_changed) do |new_value|
             tab_width.value = new_value.to_s
           end

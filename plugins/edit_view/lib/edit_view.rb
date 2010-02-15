@@ -199,8 +199,6 @@ module Redcar
       create_document
       @grammar = nil
       @focussed = nil
-      self.tab_width = EditView.tab_settings.width_for(grammar)
-      self.soft_tabs = EditView.tab_settings.softness_for(grammar)
     end
     
     def create_document
@@ -224,7 +222,8 @@ module Redcar
     
     def set_grammar(name)
       @grammar = name
-      self.tab_width = EditView.tab_settings.width_for(name) || tab_width
+      self.tab_width = EditView.tab_settings.width_for(name)
+      self.soft_tabs = EditView.tab_settings.softness_for(name)
     end
     
     def focus
