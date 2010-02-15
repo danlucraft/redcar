@@ -81,6 +81,14 @@ module Redcar
         tab.focus
       end
     end
+    
+    class About < Command
+      def execute
+          new_tab = Top::NewCommand.new.run          
+          new_tab.document.text = "About: Redcar\nVersion: #{Redcar::VERSION}\nRuby Version: #{RUBY_VERSION}\nJruby version: #{JRUBY_VERSION}\nhttp://redcareditor.com"
+          new_tab.title= 'About'
+      end
+    end
 
     class PrintContents < EditTabCommand
       
@@ -97,6 +105,7 @@ module Redcar
         end
       end
     end
+    
     
     class PrintScopeTreeCommand < Command
       def execute
@@ -623,7 +632,7 @@ module Redcar
           separator
         end
         sub_menu "Help" do
-          item "Website", PrintHistoryCommand
+          item "About", About
         end
       end
     end
