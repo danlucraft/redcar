@@ -162,8 +162,8 @@ module Redcar
       # create a list of open files
       file_list = []
       win.notebooks[0].tabs.each{|tab|
-        if path = tab.document.path
-          file_list << path
+        if tab.document && tab.document.path
+          file_list << tab.document.path
         end
       }
       Project.storage['files_open_last_session'] = file_list      
