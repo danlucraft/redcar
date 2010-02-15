@@ -41,7 +41,7 @@ module Redcar
         js << "    rubyCall(\"#{method_name}\", Array.prototype.slice.call(arguments));"
         js << "  },"
       end
-      js << "}; alert(123);"
+      js << "};"
       js << "</script>"
       js.join("\n")
     end
