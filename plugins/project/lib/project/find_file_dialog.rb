@@ -31,7 +31,7 @@ module Redcar
       def display_path(path)
         path.split("/").last + 
           " (" + 
-          path.split("/")[-3..-2].join("/") + 
+          path.split("/")[-3..-2].join("/") +
           ")"
       end
       

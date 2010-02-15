@@ -2,10 +2,11 @@ require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
 class DocString
 
-  def initialize string
+  def initialize(string)
    @string = string
    @cursor_offset = 0
   end
+  
   attr_accessor :cursor_offset
   
   def cursor_line
@@ -14,8 +15,7 @@ class DocString
   
   def cursor_offset
     0
-  end
-  
+  end  
   
   def set_selection_range(start, _end)
    # ignore
@@ -24,7 +24,7 @@ class DocString
   def scroll_to_line(n)
   end
   
-  def get_line x
+  def get_line(x)
      out = @string.split("\n")[x]
      out
   end
@@ -33,7 +33,7 @@ class DocString
     @string.split("\n").length
   end
    
-  def offset_at_line x
+  def offset_at_line(x)
    @string.split("\n")[0..x].join("\n").length  
   end
   
@@ -42,7 +42,7 @@ end
 module Redcar::Top
  describe FindNextRegex do
 
-  def setup regex, wrap = false
+  def setup(regex, wrap = false)
     @a = FindNextRegex.new regex, wrap
    
     def @a.doc

@@ -40,7 +40,7 @@ module Redcar
         create_treebook_controller
         reset_sash_widths
         @treebook_unopened = true
-        set_icon  File.join(Redcar.root, %w(plugins application icons redcar_icon_beta.png))
+        set_icon File.join(Redcar.root, %w(plugins application icons redcar_icon_beta.png))
       end
       
       def add_listeners
@@ -115,7 +115,7 @@ module Redcar
         shell.menu_bar = @menu_controller.menu_bar
       end
       
-      def set_icon path
+      def set_icon(path)
          icon = Swt::Graphics::Image.new(ApplicationSWT.display, path)
          shell.image = icon
        end
