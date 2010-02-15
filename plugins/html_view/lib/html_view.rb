@@ -12,8 +12,10 @@ module Redcar
     def controller=(new_controller)
       @controller = new_controller
       @html_tab.title = controller.title
-      setup_javascript_listeners
-      text = controller.index
+      func = RubyFunc.new(@html_tab.controller.browser, "rubyCall")
+      func.controller = @controller
+      text = controller.index + setup_javascript_listeners
+      puts text
       @html_tab.controller.browser.set_text(text)
     end
     
@@ -30,17 +32,18 @@ module Redcar
     end
         
     def setup_javascript_listeners
-      func = RubyFunc.new(@html_tab.controller.browser, "rubyCall")
-      func.controller = @controller
       js = []
-      js << "Controller = {"
+      js << "<script type=\"text/javascript\">"
+      js << "this.Controller = {"
       (controller.methods - Object.new.methods).each do |method_name|
         js << "  #{method_name.gsub(/_(\w)/) { |a| $1.upcase}}: function() {"
-        js << "    rubyCall(\"#{method_name}\", arguments);"
+        js << "   alert(Array.prototype.slice.call(arguments).join(\", \"));"
+        js << "    rubyCall(\"#{method_name}\", Array.prototype.slice.call(arguments));"
         js << "  },"
       end
-      js << "}"
-      @html_tab.controller.browser.evaluate(js.join("\n"))
+      js << "}; alert(123);"
+      js << "</script>"
+      js.join("\n")
     end
   end
 end

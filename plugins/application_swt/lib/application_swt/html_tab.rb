@@ -10,6 +10,7 @@ module Redcar
       end
       
       def create_tab_widget
+        Swt::Graphics::Device.DEBUG = true
         @browser = Swt::Browser.new(notebook.tab_folder, Swt::SWT::NONE)
         @widget = @browser
         @item.control = @widget

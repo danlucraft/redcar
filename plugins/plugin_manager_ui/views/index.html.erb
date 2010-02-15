@@ -12,7 +12,7 @@
     
     <h3>Loaded Plugins</h3>
     <%= plugin_table(Redcar.plugin_manager.loaded_plugins) %>
-    
+
     <h3>Unloaded Plugins</h3>
     <%= plugin_table(Redcar.plugin_manager.unloaded_plugins) %>
     
@@ -23,8 +23,14 @@
     <%= plugin_table(Redcar.plugin_manager.plugins_with_errors) %>
     
     <script language="javascript">
-      $("a").click(function() {
-        Controller.reloadPlugin($(this).parent().parent().find(".plugin-name").text());
+      $("a").click(function(e) {
+        e.preventDefault();
+        var pluginName = $(this).parent().parent().find(".plugin-name").text();
+        try {
+          Controller.reloadPlugin(pluginName);
+        } catch(e) {
+          alert(e.message);
+        }
       });
     </script>
   </div>
@@ -38,6 +44,6 @@ var version=parseFloat(b_version);
 
 document.write("Browser name: "+ browser);
 document.write("<br />");
-document.write("Browser version: "+ version);
+document.write("Browser version: "+ b_version);
 </script>
  
