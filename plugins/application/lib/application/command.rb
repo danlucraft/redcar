@@ -8,10 +8,10 @@ module Redcar
   # ## Examples
   #
   #     class CloseTab < Redcar::Command
-  #       key  :linux   => "Ctrl+W",
-  #            :osx     => "Cmd+W",
-  #            :windows => "Ctrl+W"
-  #     
+  #       def self.keymaps
+  #          Redcar::Keymap.build("main", :osx) do
+  #            link "Cmd+W",  CloseTab
+  #          end            
   #       def execute
   #         tab.close if tab
   #       end
