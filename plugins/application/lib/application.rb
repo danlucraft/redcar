@@ -120,7 +120,7 @@ module Redcar
       @window_handlers.delete(window)
       if windows.length == 0 and [:linux, :windows].include?(Redcar.platform)
         # default to exit now
-        if Application.storage.get_with_default('stay_resident_after_last_window_closed', 'no') == 'yes'
+        if Application.storage['stay_resident_after_last_window_closed'] == 'yes'
           puts 'continuing to run to wait for incoming drb connections later'
         else
           quit
@@ -129,7 +129,12 @@ module Redcar
     end
     
     def self.storage
-      @storage ||= Plugin::Storage.new('application_plugin')
+      @storage ||= begin
+         @storage = Plugin::Storage.new('application_plugin')
+         # setup some defaults
+         @storage['stay_resident_after_last_window_closed'] ||= 'no'
+         @storage
+      end
     end
     
     # All Redcar::Notebooks in all Windows.
