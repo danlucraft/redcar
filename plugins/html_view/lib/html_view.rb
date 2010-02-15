@@ -37,7 +37,6 @@ module Redcar
       js << "this.Controller = {"
       (controller.methods - Object.new.methods).each do |method_name|
         js << "  #{method_name.gsub(/_(\w)/) { |a| $1.upcase}}: function() {"
-        js << "   alert(Array.prototype.slice.call(arguments).join(\", \"));"
         js << "    rubyCall(\"#{method_name}\", Array.prototype.slice.call(arguments));"
         js << "  },"
       end
