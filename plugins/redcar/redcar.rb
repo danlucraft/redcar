@@ -378,12 +378,24 @@ module Redcar
           self.query.edit_view.document.select_all
         end
       
-        label :label, "Regex"
-        textbox :query
+        label :label, "Search:"
+        textbox :query        
+        
+        toggle :is_regex, 'Regex', nil, true do
+          # it sets is_regex to either true or false
+        end
+        
+        toggle :match_case, 'Match case', nil, true do
+          
+        end      
+        
         button :search, "Search", "Return" do
           current_query = query.value
           SearchForwardCommand::Speedbar.previous_query = current_query
-          result = FindNextRegex.new(Regexp.new(current_query), true).run # TODO use result
+          if !is_regex.value
+            current_query = Regexp.escape(current_query)
+          end
+          success = FindNextRegex.new(Regexp.new(current_query, !match_case.value), true).run
         end
       end
       
