@@ -107,6 +107,7 @@ spec = Gem::Specification.new do |s|
   # If your tests use any gems, include them here
   s.add_development_dependency("cucumber")
   s.add_development_dependency("rspec")
+  s.add_development_dependency("watchr")
   
   s.post_install_message = <<TEXT
 
@@ -129,7 +130,7 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
-desc 'Clean up the Textmate files for packaging'
+desc 'Clean up (sanitize) the Textmate files for packaging'
 task :clean_textmate do
   # rename files to be x-platform safe
   Dir["textmate/Bundles/*.tmbundle/{Syntaxes,Snippets,Templates}/**/*"].each do |fn|
@@ -155,3 +156,25 @@ task :clean_textmate do
     end
   end
 end
+
+desc 'Run a watchr continuous integration daemon for the specs'
+task :run_ci do
+  require 'watchr'
+  script = Watchr::Script.new
+  script.watch(/.*\/([^\/]+).rb$/) { |filename|    if filename[0] =~ /_spec\.rb/ # a spec file
+      a = ("jruby -S spec #{filename} --backtrace")    
+      puts a
+      system a
+    end  
+  
+    spec_filename = filename[0] + '/spec/' + filename[1] + "/#{filename[2]}_spec.rb"
+    if File.exist? spec_filename
+     a = ("jruby -S spec #{spec_filename}")  
+     puts a
+     system a
+    end
+  }
+  contrl = Watchr::Controller.new(script, Watchr.handler.new)
+  contrl.run
+end
+
