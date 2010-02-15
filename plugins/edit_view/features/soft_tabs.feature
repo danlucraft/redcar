@@ -276,4 +276,9 @@ Feature: Soft and hard tabs
     And I press the Delete key in the edit tab
     Then the contents should be "Ha<c>"
     
-    
+  Scenario: Move left at the start of a line
+    When I open a new edit tab
+    And I replace the contents with "Hi\nHo"
+    And I move the cursor to 3
+    And I press the Left key in the edit tab
+    Then the contents should be "Hi<c>\nHo"
