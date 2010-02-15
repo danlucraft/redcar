@@ -47,7 +47,7 @@ module Redcar
           if edit_view.soft_tabs?
             line = doc.get_line(doc.cursor_line)
             width = edit_view.tab_width
-            return 0 if doc.cursor_line_offset == 0
+            return (doc.cursor_offset - 1) if doc.cursor_line_offset == 0
             imaginary_cursor_offset = real_offset_to_imaginary(line, width, doc.cursor_line_offset)
             if imaginary_cursor_offset % width == 0
               tab_stop = imaginary_cursor_offset/width - 1
