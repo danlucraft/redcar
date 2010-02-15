@@ -32,7 +32,7 @@ module Redcar
               # open in any existing window that already has that dir open as a tree
               # else in a new window
               # open the window that already has this dir open
-              if Redcar.app.windows.length == 0 && storage['last_open_dir'] == full_path
+              if Redcar.app.windows.length == 0 && Application.storage['last_open_dir'] == full_path
                 Project.restore_last_session
               end
               
@@ -43,7 +43,7 @@ module Redcar
                     t.tree_mirror.is_a?(Redcar::Project::DirMirror) && t.tree_mirror.path == full_path
                   }
                 }            
-              end               
+              end
               window ||= Redcar.app.new_window          
               Project.open_dir(full_path, window)
               Redcar.app.focussed_window.controller.bring_to_front
