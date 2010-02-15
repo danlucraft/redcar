@@ -70,13 +70,13 @@ module Redcar
     
     begin
       begin
-        TCPSocket.new('127.0.0.1', 9999).close
+        TCPSocket.new('127.0.0.1', port).close
       rescue Errno::ECONNREFUSED
         # no other instance running...
         return
       end
-      
-      drb = DRbObject.new(nil, "druby://127.0.0.1:9999")
+      puts 'attempting to load via drb'
+      drb = DRbObject.new(nil, "druby://127.0.0.1:#{port}")
       
       if ARGV.any?
         ARGV.each do |arg|
@@ -87,13 +87,13 @@ module Redcar
       else
        return unless drb.open_item_drb('just_bring_to_front')
       end
-      return true
+      puts 'success'
+      true
     rescue Exception => e
       puts e.class.to_s + ": " + e.message
       puts e.backtrace
-      # fall through and continue anyway
+      false
     end
-    false
   end
 
   def self.ensure_jruby
