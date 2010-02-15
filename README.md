@@ -43,7 +43,7 @@ installed, and RSpec and Cucumber installed as JRuby gems.
     $ jruby bin/redcar install
     $ jruby -S rake build
 
-To run:
+To run on Linux and Windows:
 
     $ jruby bin/redcar
 
