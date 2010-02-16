@@ -61,21 +61,19 @@ module Redcar
     @environment
   end
 
-  # if they are all files/dirs then attempt to load via drb if available
+  # attempt to load via drb if available
   def self.try_to_load_via_drb
     return if ARGV.include?("--multiple-instance")
-    return unless ARGV.any? and ARGV.all? {|arg| File.exist?(arg) }
     
-    port = 9999
-    
+    port = 9999    
     begin
       begin
         TCPSocket.new('127.0.0.1', port).close
-      rescue Errno::ECONNREFUSED
-        # no other instance running...
+      rescue Errno::ECONNREFUSED 
+        # no other instance is currently running...
         return
       end
-      puts 'attempting to load via drb'
+      puts 'attempting to start via running instance'
       drb = DRbObject.new(nil, "druby://127.0.0.1:#{port}")
       
       if ARGV.any?
@@ -87,7 +85,7 @@ module Redcar
       else
        return unless drb.open_item_drb('just_bring_to_front')
       end
-      puts 'success'
+      puts 'Success'
       true
     rescue Exception => e
       puts e.class.to_s + ": " + e.message
