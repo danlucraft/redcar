@@ -7,6 +7,10 @@ if ARGV.first == "install"
 
   installer = Redcar::Installer.new
   installer.install
+elsif ARGV.first == '--associate_with_any_right_click'
+  require 'redcar/installer'
+  installer = Redcar::Installer.new
+  installer.associate_with_any_right_click
 else
   exit if Redcar.try_to_load_via_drb
   Redcar.ensure_jruby

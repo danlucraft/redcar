@@ -12,6 +12,21 @@ module Redcar
   	    @connection = Net::HTTP
       end
   	end
+  	
+    def associate_with_any_right_click
+      raise 'this is currently only for windows' unless Redcar.platform == :windows  	  
+      require 'rbconfig'
+      require 'win32/registry'
+      # associate it with the current rubyw.exe
+      rubyw_bin = File.join([Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name']]) << 'w' << Config::CONFIG['EXEEXT']
+      rubyw_bin.gsub!('/', '\\') # executable name wants back slashes
+      name = Win32::Registry::HKEY_LOCAL_MACHINE.create "Software\\classes\\*\\shell\\open_with_redcar"
+      name.write_s nil, "Drive with Redcar"      dir = Win32::Registry::HKEY_LOCAL_MACHINE.create "Software\\classes\\*\\shell\\open_with_redcar\\command"
+      
+      command = %!"#{rubyw_bin}" "#{File.expand_path($0)}" "%1"!
+      dir.write_s nil, command
+      puts 'Associated.'
+    end
 
   	def install
   	  unless File.writable?(JRUBY_JAR_DIR)
