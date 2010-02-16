@@ -82,10 +82,14 @@ module Redcar
       end
     end
     
-    class About < Command
+    class AboutCommand < Command
       def execute
           new_tab = Top::NewCommand.new.run          
-          new_tab.document.text = "About: Redcar\nVersion: #{Redcar::VERSION}\nRuby Version: #{RUBY_VERSION}\nJruby version: #{JRUBY_VERSION}\nhttp://redcareditor.com"
+          new_tab.document.text = "About: Redcar\nVersion: #{Redcar::VERSION}\n" +
+            "Ruby Version: #{RUBY_VERSION}\n" + 
+            "Jruby version: #{JRUBY_VERSION}\n" + 
+            "Redcar.environment: #{Redcar.environment}\n" + 
+            "http://redcareditor.com"
           new_tab.title= 'About'
       end
     end
@@ -634,7 +638,7 @@ module Redcar
           separator
         end
         sub_menu "Help" do
-          item "About", About
+          item "About", AboutCommand
         end
       end
     end
