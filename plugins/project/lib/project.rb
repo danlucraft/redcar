@@ -192,6 +192,9 @@ module Redcar
     end
     
     def self.add_to_recent_files(new_file)
+      # sanitize paths for doze
+      # like "E:\\installs\\ruby191p376\\bin/rdebug.bat" => "E:/installs/ruby191p376/bin/rdebug.bat"
+      new_file = File.expand_path(new_file) 
       unless new_file == @last_file
         recent_files.delete(new_file)
         recent_files << new_file

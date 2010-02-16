@@ -42,11 +42,6 @@ module Redcar
       end
       
       def display_path(path, first_remove_this_prefix = nil)
-        if File::ALT_SEPARATOR
-          # substitute on doze
-          path = path.gsub(File::ALT_SEPARATOR, '/')
-        end
-        
         n = -3
         if first_remove_this_prefix && path.index(first_remove_this_prefix) == 0
           path = path[first_remove_this_prefix.length..-1]
@@ -83,10 +78,6 @@ module Redcar
       def find_files_from_list(text, file_list)
         re = make_regex(text)
         file_list.select{|fn| 
-          if File::ALT_SEPARATOR
-            # doze
-            fn = fn.gsub(File::ALT_SEPARATOR, '/')
-          end
           fn.split('/').last =~ re
         }.compact
       end
