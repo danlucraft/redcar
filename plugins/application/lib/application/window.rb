@@ -170,8 +170,7 @@ module Redcar
       notify_listeners(:focussed, self)
     end
 
-    # LINUXTODO: should close the app if it is the last window
-    def close      
+    def close
       notify_listeners(:about_to_close, self)
       notebooks.each do |notebook| 
         notebook.tabs.each {|tab| tab.close }

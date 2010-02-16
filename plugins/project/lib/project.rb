@@ -9,9 +9,11 @@ require "project/drb_service"
 
 module Redcar
   class Project
+
+    # this will restore open files unless other files or dirs were passed
+    # as command line parameters
     def self.start
-      # this will restore open files unless other files or dirs were passed
-      # as command line parameters
+      FindFileDialog.start
       restore_last_session unless handle_startup_arguments
       init_current_files_hooks
       init_window_closed_hooks
@@ -51,7 +53,6 @@ module Redcar
       if Redcar.app.focussed_notebook_tab
        if path = Redcar.app.focussed_notebook_tab.document.path
           dir = File.dirname(path)
-          puts 'using dir', dir
           return dir
         end
       end      
@@ -103,17 +104,12 @@ module Redcar
       end
     end
     
-    
-    # helper method for determing this is an active drb connection
-    def self.alive
-      'yes'
-    end
-    
     # Opens a new EditTab with a FileMirror for the given path.
     #
     # @path  [String] path  the path of the file to be edited
     # @param [Window] win  the Window to open the File in
     def self.open_file(path, win = Redcar.app.focussed_window)
+      win ||= Redcar.app.new_window
       tab = win.new_tab(Redcar::EditTab)
       mirror = FileMirror.new(path)
       tab.edit_view.document.mirror = mirror
@@ -126,7 +122,8 @@ module Redcar
     #
     # @param [String] path  the path of the directory to view
     # @param [Window] win  the Window to open the Tree in
-    def self.open_dir(path, win =  Redcar.app.focussed_window)
+    def self.open_dir(path, win = Redcar.app.focussed_window)
+      win ||= Redcar.app.new_window
       tree = Tree.new(Project::DirMirror.new(path),
                       Project::DirController.new)
       Project.open_tree(win, tree)

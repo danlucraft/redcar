@@ -4,6 +4,37 @@ module Redcar
     class FindFileDialog < FilterListDialog
       MAX_ENTRIES = 20
       
+      def self.start
+        # bind back to any new windows receiving a :focussed message
+        # so that we can clear our global cache
+        Redcar.app.add_listener(:new_window) { |win|
+          win.add_listener(:focussed) {
+             # unfortunately we receive a :focussed
+             # message after the FindFileDialog
+             # itself exits
+             # so only really clear if it's an *unexpected* :focussed message
+             if @expect_a_clear
+                @expect_a_clear = false
+             else
+               @cached_dir_lists.clear
+             end
+          }  
+        }
+      end
+      
+      @cached_dir_lists = {}
+      @expect_a_clear = false
+      
+      class << self
+       attr_reader :cached_dir_lists
+       attr_accessor :expect_a_clear
+      end
+      
+      def initialize
+        super
+        FindFileDialog.expect_a_clear = true
+      end
+      
       def update_list(filter)
         if filter.length < 2
           paths = Project.recent_files
@@ -62,7 +93,7 @@ module Redcar
       end
       
       def files(directories)
-        @files ||= begin
+        FindFileDialog.cached_dir_lists[directories] ||= begin
           files = []
           s = Time.now
           directories.each do |dir|
@@ -70,9 +101,8 @@ module Redcar
           end
           took = Time.now - s
           puts "find files #{directories.length} took #{took}s"
-          files
           files.reject!{|f|
-             begin
+            begin
               File.directory?(f)
             rescue Errno::ENOENT
               # File.directory? can throw no such file or directory even if File.exist?

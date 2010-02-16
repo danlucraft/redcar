@@ -15,7 +15,7 @@ module Redcar
         @viewer.add_open_listener(OpenListener.new(@model.tree_controller))
       end
       
-      @model.add_listener(:refresh) do 
+      @model.add_listener(:refresh) do
         s = Time.now
         begin
           @viewer.refresh
