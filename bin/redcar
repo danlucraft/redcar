@@ -2,9 +2,10 @@
 
 require File.join(File.dirname(__FILE__), %w(.. lib redcar))
 
+$VERBOSE = true if ARGV.find{|arg| arg == '--verbose'}
+
 if ARGV.first == "install"
   require 'redcar/installer'
-
   installer = Redcar::Installer.new
   installer.install
 elsif ARGV.first == '--associate_with_any_right_click'

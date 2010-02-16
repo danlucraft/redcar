@@ -21,7 +21,9 @@ module Redcar
         puts "   --font-size=SIZE  Choose font point size"
         puts "      --theme=THEME  Choose Textmate theme"
         puts "--multiple-instance  Don't attempt to run from an existing instance"
-        puts "        [filename1, filename2, dirname1, dirname2 ...]"
+        puts "          --verbose  Set $VERBOSE to true"
+        puts "        filename1, filename2, dirname1, dirname2 ..."
+        puts
         puts
         puts "To download jars:"
         puts
