@@ -20,11 +20,13 @@ module Redcar
       # associate it with the current rubyw.exe
       rubyw_bin = File.join([Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name']]) << 'w' << Config::CONFIG['EXEEXT']
       rubyw_bin.gsub!('/', '\\') # executable name wants back slashes
-      name = Win32::Registry::HKEY_LOCAL_MACHINE.create "Software\\classes\\*\\shell\\open_with_redcar"
-      name.write_s nil, "Drive with Redcar"      dir = Win32::Registry::HKEY_LOCAL_MACHINE.create "Software\\classes\\*\\shell\\open_with_redcar\\command"
-      
-      command = %!"#{rubyw_bin}" "#{File.expand_path($0)}" "%1"!
-      dir.write_s nil, command
+      for type, english_text  in {'*' => 'Drive with Redcar', 'Directory' => 'Drive with Redcar (dir)'}
+        name = Win32::Registry::HKEY_LOCAL_MACHINE.create "Software\\classes\\#{type}\\shell\\open_with_redcar"
+        name.write_s nil, english_text
+        dir = Win32::Registry::HKEY_LOCAL_MACHINE.create "Software\\classes\\#{type}\\shell\\open_with_redcar\\command"
+        command = %!"#{rubyw_bin}" "#{File.expand_path($0)}" "%1"!
+        dir.write_s nil, command
+      end
       puts 'Associated.'
     end
 
