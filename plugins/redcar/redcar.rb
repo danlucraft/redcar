@@ -493,7 +493,8 @@ module Redcar
         link "Cmd+S",       Project::FileSaveCommand
         link "Cmd+Shift+S", Project::FileSaveAsCommand
         link "Cmd+W",       CloseTabCommand
-        
+        link "Cmd+Shift+W", CloseWindowCommand
+
         link "Cmd+Shift+E", EditView::InfoSpeedbarCommand
         link "Cmd+Z",       UndoCommand
         link "Cmd+Shift+Z", RedoCommand
@@ -530,6 +531,7 @@ module Redcar
         link "Ctrl+S",       Project::FileSaveCommand
         link "Ctrl+Shift+S", Project::FileSaveAsCommand
         link "Ctrl+W",       CloseTabCommand
+        link "Ctrl+Shift+W", CloseWindowCommand
         
         link "Ctrl+Shift+E", EditView::InfoSpeedbarCommand
         link "Ctrl+Z",       UndoCommand
