@@ -71,6 +71,17 @@ module Redcar
           took = Time.now - s
           puts "find files #{directories.length} took #{took}s"
           files
+          files.reject!{|f|
+             begin
+              File.directory?(f)
+            rescue Errno::ENOENT
+              # File.directory? can throw no such file or directory even if File.exist?
+              # has returned true. For example this happens on some awful textmate filenames
+              # unicode in them.
+              true
+            end
+          }
+          files
         end
       end
       
@@ -88,26 +99,24 @@ module Redcar
         cutoff = 10000000
         results = files(directories).each do |fn|
           begin
-            unless File.directory?(fn)
-              bit = fn.split("/")
-              if m = bit.last.match(re)
-                cs = []
-                diffs = 0
-                m.captures.each_with_index do |_, i|
-                  cs << m.begin(i + 1)
-                  if i > 0
-                    diffs += cs[i] - cs[i-1]
-                  end
+            bit = fn.split("/")
+            if m = bit.last.match(re)
+              cs = []
+              diffs = 0
+              m.captures.each_with_index do |_, i|
+                cs << m.begin(i + 1)
+                if i > 0
+                  diffs += cs[i] - cs[i-1]
                 end
-                # lower score is better
-                score = (cs[0] + diffs)*100 + bit.last.length
-                if score < cutoff
-                  score_match_pairs << [score, fn]
-                  score_match_pairs.sort!
-                  if score_match_pairs.length == MAX_ENTRIES
-                    cutoff = score_match_pairs.last.first
-                    score_match_pairs.pop
-                  end
+              end
+              # lower score is better
+              score = (cs[0] + diffs)*100 + bit.last.length
+              if score < cutoff
+                score_match_pairs << [score, fn]
+                score_match_pairs.sort!
+                if score_match_pairs.length == MAX_ENTRIES
+                  cutoff = score_match_pairs.last.first
+                  score_match_pairs.pop
                 end
               end
             end
