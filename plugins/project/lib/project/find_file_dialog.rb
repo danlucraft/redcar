@@ -8,11 +8,12 @@ module Redcar
         if filter.length < 2
           paths = Project.recent_files
         else
-          paths = find_files(filter, Redcar.app.focussed_window.treebook.trees.last.tree_mirror.path)
+          paths = find_files(filter, Redcar.app.focussed_window.treebook.trees.last.tree_mirror.path) + find_files_from_list(filter, Project.recent_files)
+          paths.uniq!
         end
         
         @last_list = paths
-        paths.map { |path| display_path(path) }
+        paths.map { |path| display_path(path, Redcar.app.focussed_window.treebook.trees.last.tree_mirror.path) }
       end
       
       def selected(text, ix, closing=false)
@@ -28,7 +29,11 @@ module Redcar
         self.class.recent_files.delete(path)
       end
       
-      def display_path(path)
+      def display_path(path, root)
+        if File::ALT_SEPARATOR
+          # doze
+          path = path.gsub(File::ALT_SEPARATOR, '/')
+        end
         path.split("/").last + 
           " (" + 
           path.split("/")[-3..-2].join("/") +
@@ -46,6 +51,17 @@ module Redcar
           puts "find files #{directories.inspect} took #{took}s"
           files
         end
+      end
+      
+      def find_files_from_list(text, file_list)
+        re = make_regex(text)
+        file_list.select{|fn| 
+          if File::ALT_SEPARATOR
+            # doze
+            fn = fn.gsub(File::ALT_SEPARATOR, '/')
+          end
+          fn.split('/').last =~ re
+        }.compact
       end
       
       def find_files(text, directories)
