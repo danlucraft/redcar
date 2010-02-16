@@ -47,7 +47,6 @@ module Redcar
           path = path[first_remove_this_prefix.length..-1]
           # show the full subdirs in the case of collisions
           n = -100
-          puts path
         end
         
         if path.count('/') > 0
@@ -70,7 +69,7 @@ module Redcar
             files += Dir[File.expand_path(dir + "/**/*")]
           end
           took = Time.now - s
-          puts "find files #{directories.inspect} took #{took}s"
+          puts "find files #{directories.length} took #{took}s"
           files
         end
       end
