@@ -109,7 +109,7 @@ module Redcar
     # @path  [String] path  the path of the file to be edited
     # @param [Window] win  the Window to open the File in
     def self.open_file(path, win = Redcar.app.focussed_window)
-      win ||= Redcar.app.new_window
+      win ||= Redcar.app.new_window # in case there's not one open
       tab = win.new_tab(Redcar::EditTab)
       mirror = FileMirror.new(path)
       tab.edit_view.document.mirror = mirror
@@ -123,7 +123,7 @@ module Redcar
     # @param [String] path  the path of the directory to view
     # @param [Window] win  the Window to open the Tree in
     def self.open_dir(path, win = Redcar.app.focussed_window)
-      win ||= Redcar.app.new_window
+      win ||= Redcar.app.new_window # case none open
       tree = Tree.new(Project::DirMirror.new(path),
                       Project::DirController.new)
       Project.open_tree(win, tree)
@@ -141,10 +141,10 @@ module Redcar
     
     # restores the directory/files in the last open window
     def self.restore_last_session
-      Redcar.app.make_sure_at_least_one_window_open # in case there are no windows open
       if path = storage['last_open_dir']
         open_dir(path)
       end
+      
       if files = Project.storage['files_open_last_session']
         files.each{|path|
           open_file(path)
