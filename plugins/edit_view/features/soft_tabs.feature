@@ -282,3 +282,12 @@ Feature: Soft and hard tabs
     And I move the cursor to 3
     And I press the Left key in the edit tab
     Then the contents should be "Hi<c>\nHo"
+    
+  Scenario: Shouldn't die if the cursor is at the end of the document
+    When I open a new edit tab
+    And tabs are soft, 4 spaces
+    And I replace the contents with ""
+    And I move the cursor to 0
+    And I press the Delete key in the edit tab
+    Then the cursor should be at 0
+  
