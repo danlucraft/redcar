@@ -161,15 +161,17 @@ desc 'Run a watchr continuous integration daemon for the specs'
 task :run_ci do
   require 'watchr'
   script = Watchr::Script.new
-  script.watch(/.*\/([^\/]+).rb$/) { |filename|    if filename[0] =~ /_spec\.rb/ # a spec file
-      a = ("jruby -S spec #{filename} --backtrace")    
+  script.watch(/.*\/([^\/]+).rb$/) { |filename|
+    if filename[0] =~ /_spec\.rb/ # a spec file
+      a = "jruby -S spec #{filename} --backtrace"
       puts a
       system a
     end  
   
-    spec_filename = filename[0] + '/spec/' + filename[1] + "/#{filename[2]}_spec.rb"
-    if File.exist? spec_filename
-     a = ("jruby -S spec #{spec_filename}")  
+    spec_filename = "#{filename[1]}_spec.rb"
+    spec = Dir["**/#{spec_filename}"]
+    if spec.length > 0
+     a = "jruby -S spec #{spec[0]}"
      puts a
      system a
     end
@@ -177,4 +179,4 @@ task :run_ci do
   contrl = Watchr::Controller.new(script, Watchr.handler.new)
   contrl.run
 end
-
+
