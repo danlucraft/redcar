@@ -119,8 +119,7 @@ module Redcar
       
       @window_handlers.delete(window)
       if windows.length == 0 and [:linux, :windows].include?(Redcar.platform)
-        # default to exit now
-        if Application.storage['stay_resident_after_last_window_closed'] == 'yes'
+        if Application.storage['stay_resident_after_last_window_closed'] == 'yes' && !(ARGV.include?("--multiple-instance"))
           puts 'continuing to run to wait for incoming drb connections later'
         else
           quit
@@ -130,10 +129,9 @@ module Redcar
     
     def self.storage
       @storage ||= begin
-         @storage = Plugin::Storage.new('application_plugin')
-         # setup some defaults
-         @storage['stay_resident_after_last_window_closed'] ||= 'no'
-         @storage
+         storage = Plugin::Storage.new('application_plugin')
+         storage.set_default('stay_resident_after_last_window_closed', 'no')
+         storage
       end
     end
     
