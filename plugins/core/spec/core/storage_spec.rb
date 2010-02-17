@@ -26,11 +26,14 @@ describe Redcar::Plugin::Storage do
   
   it "has a set default method" do
     storage = Redcar::Plugin::Storage.new('test_storage_saved')
-    storage.set_default('a', 'b')
+    storage.set_default('a', 'b')    
+    storage['a'].should == 'b'
+    storage = Redcar::Plugin::Storage.new('test_storage_saved')
     storage['a'].should == 'b'
     storage['a'] = 'c'
     storage['a'].should == 'c'
-  end
-    
+    storage = Redcar::Plugin::Storage.new('test_storage_saved')
+    storage['a'].should == 'c'
+  end    
   
 end
