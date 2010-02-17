@@ -190,18 +190,10 @@ module Redcar
     def self.add_to_recent_files(new_file)
       # sanitize paths for doze
       # like "E:\\installs\\ruby191p376\\bin/rdebug.bat" => "E:/installs/ruby191p376/bin/rdebug.bat"
-      new_file = File.expand_path(new_file) 
-      unless new_file == @last_file
-        recent_files.delete(new_file)
-        recent_files << new_file
+      new_file = File.expand_path(new_file)
       
-        if @last_file
-          recent_files.delete(@last_file)
-          recent_files.unshift(@last_file)
-        end
-      end
-
-      @last_file = new_file
+      recent_files.delete(new_file)
+      recent_files.unshift(new_file) # put it at the beginning
     end
     
     def self.set_tree(win, tree)
