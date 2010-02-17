@@ -12,7 +12,7 @@ module Redcar
         if @expect_a_clear
            @expect_a_clear = false
         else
-          unless storage['recache_on_refocus'] == 'no'
+          if storage['clear_cache_on_refocus']
             @cached_dir_lists.clear 
           end
         end
@@ -40,7 +40,7 @@ module Redcar
       def self.storage
         @storage ||= begin
           storage = Plugin::Storage.new('find_file_dialog')
-          storage.set_default('recache_on_refocus', 'yes')
+          storage.set_default('clear_cache_on_refocus', true)
           storage
         end
       end    
