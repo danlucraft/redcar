@@ -138,7 +138,9 @@ module Redcar
       def find_files_from_list(text, file_list)
         re = make_regex(text)
         file_list.select{|fn| 
-          fn.split('/').last =~ re && not_on_ignore_list(fn)
+          fn.split('/').last =~ re # we don't worry about the ignore list
+          # for this one, because theoretically if they have chosen recent files
+          # they probably don't want to ignore them now
         }.compact
       end
       
