@@ -447,7 +447,7 @@ module Redcar
           line_start = doc.offset_at_line(doc.cursor_line)
           startoff = line_start + $`.length + cursor_line_offset
           endoff   = startoff + $&.length
-          doc.set_selection_range(startoff, endoff)
+          doc.set_selection_range(endoff, startoff)
         elsif doc.cursor_line < doc.line_count - 1
           # next search the rest of the lines
           found_line_offset = nil
