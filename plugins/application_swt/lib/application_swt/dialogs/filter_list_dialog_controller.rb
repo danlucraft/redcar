@@ -20,6 +20,15 @@ module Redcar
         end
       end
       
+          
+      def self.storage
+        @storage ||= begin
+          storage = Plugin::Storage.new('filter_list_dialog_controller')
+          storage.set_default('pause_before_update_seconds', 0.25)
+          storage
+        end
+      end    
+      
       def initialize(model)
         @model = model
         @dialog = FilterListDialog.new(Redcar.app.focussed_window.controller.shell)
@@ -72,7 +81,7 @@ module Redcar
       def update_list
         @last_keypress = Time.now
         Swt::Widgets::Display.getCurrent.timerExec(300, Swt::RRunnable.new { 
-          if @dialog and @last_keypress and Time.now - @last_keypress > 0.250
+          if @dialog and @last_keypress and Time.now - @last_keypress > FilterListDialogController.storage['pause_before_update_seconds']
             @last_keypress = nil
             s = Time.now
             list = @model.update_list(@dialog.text.get_text)
