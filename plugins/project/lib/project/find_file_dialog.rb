@@ -41,6 +41,8 @@ module Redcar
         @storage ||= begin
           storage = Plugin::Storage.new('find_file_dialog')
           storage.set_default('clear_cache_on_refocus', true)
+          storage.set_default('ignore_files_that_match_these_regexes', [])
+          storage.set_default('ignore_files_that_match_these_regexes_example_for_reference', [/.*\.class/i])
           storage
         end
       end    
@@ -124,10 +126,19 @@ module Redcar
         end
       end
       
+      def not_on_ignore_list(filename)
+        self.class.storage['ignore_files_that_match_these_regexes'].each{|re|
+          if re =~ filename        
+            return false 
+          end
+        }
+        true
+      end
+      
       def find_files_from_list(text, file_list)
         re = make_regex(text)
         file_list.select{|fn| 
-          fn.split('/').last =~ re
+          fn.split('/').last =~ re && not_on_ignore_list(fn)
         }.compact
       end
       
@@ -139,7 +150,7 @@ module Redcar
         results = files(directories).each do |fn|
           begin
             bit = fn.split("/")
-            if m = bit.last.match(re)
+            if (m = bit.last.match(re)) && not_on_ignore_list(bit.last)
               cs = []
               diffs = 0
               m.captures.each_with_index do |_, i|
