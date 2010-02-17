@@ -15,7 +15,6 @@ module Redcar
       # @param [String] a (short) name, should be suitable for use as a filename
       def initialize(name)
         @name    = name
-        @storage = {}
         rollback
       end
 
@@ -36,14 +35,24 @@ module Redcar
         self
       end
       
+      # retrieve key value
+      # note: it does not re-read from disk before returning you this value
       def [](key)
         @storage[key]
       end
       
+      # set key to value
+      # note: it automatically saves this to disk
       def []=(key, value)
         @storage[key] = value
         save
         value
+      end
+      
+      def set_default(key, value)
+        unless @storage[key]
+          @storage[key] = value
+        end
       end
       
       def keys
