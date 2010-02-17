@@ -13,7 +13,6 @@ module Redcar
     # this will restore open files unless other files or dirs were passed
     # as command line parameters
     def self.start
-      FindFileDialog.start
       restore_last_session unless handle_startup_arguments
       init_current_files_hooks
       init_window_closed_hooks
@@ -321,9 +320,10 @@ module Redcar
     class FindFileCommand < ProjectCommand
      
       def execute
-        dialog = FindFileDialog.new
+        dialog = FindFileDialog.new win
         dialog.open
       end
     end
+    
   end
 end

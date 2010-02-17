@@ -97,6 +97,19 @@ describe Redcar::Observable do
       @value.should be_nil
     end
   end
+  
+  
+  it "hooks only once if desired" do
+      sum = 0
+      2.times {
+        @obj.add_listener_at_most_once(self, :christmas) do
+          sum += 1
+        end
+      }
+      @obj.trigger_event(:christmas)
+      sum.should == 1    
+  end
+
 end
 
 

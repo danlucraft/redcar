@@ -4,22 +4,18 @@ module Redcar
     class FindFileDialog < FilterListDialog
       MAX_ENTRIES = 20
       
-      def self.start
-        # bind back to any new windows receiving a :focussed message
-        # so that we can clear our global cache
-        Redcar.app.add_listener(:new_window) { |win|
-          win.add_listener(:focussed) {
-             # unfortunately we receive a :focussed
-             # message after the FindFileDialog
-             # itself exits
-             # so only really clear if it's an *unexpected* :focussed message
-             if @expect_a_clear
-                @expect_a_clear = false
-             else
-               @cached_dir_lists.clear
-             end
-          }  
-        }
+      def self.clear
+        # unfortunately we receive a :focussed
+        # message when the FindFileDialog
+        # itself exits
+        # so we only really clear when we receive an *unexpected* message
+        if @expect_a_clear
+           @expect_a_clear = false
+        else
+          puts storage['recache_on_refocus']
+          @cached_dir_lists.clear unless storage['recache_on_refocus'] == 'no'
+        end
+    
       end
       
       @cached_dir_lists = {}
@@ -30,17 +26,30 @@ module Redcar
        attr_accessor :expect_a_clear
       end
       
-      def initialize
-        super
+      def initialize win
+        super()        
+        # add a :focussed listener to the window if it hasn't
+        # been set before
+        win.add_listener_at_most_once(FindFileDialog, :focussed) {
+          FindFileDialog.clear
+        }
         FindFileDialog.expect_a_clear = true
       end
+      
+      def self.storage
+        @storage ||= begin
+          storage = Plugin::Storage.new('find_file_dialog')
+          storage.set_default('recache_on_refocus', 'yes')
+          storage
+        end
+      end    
       
       def update_list(filter)
         if filter.length < 2
           paths = Project.recent_files
         else
           paths = find_files_from_list(filter, Project.recent_files) + find_files(filter, Redcar.app.focussed_window.treebook.trees.last.tree_mirror.path)             
-          paths.uniq! # just in case there's some dupe's
+          paths.uniq! # in case there's some dupe's between the two lists
         end
                 
         @last_list = paths        
@@ -51,9 +60,8 @@ module Redcar
           duplicates = display_paths.duplicates_as_hash
           display_paths.each_with_index{|dp, i|
             if duplicates[dp]
-              display_paths[i] = display_path(full_paths[i], 
-                  Redcar.app.focussed_window.treebook.trees.last.tree_mirror.path.split('/')[0..-2].join('/'))
-            end                    
+              display_paths[i] = display_path(full_paths[i], Redcar.app.focussed_window.treebook.trees.last.tree_mirror.path.split('/')[0..-2].join('/'))
+            end
           }
         end
         display_paths
@@ -100,7 +108,7 @@ module Redcar
             files += Dir[File.expand_path(dir + "/**/*")]
           end
           took = Time.now - s
-          puts "find files #{directories.length} took #{took}s"
+          puts "find files (#{directories.length} dirs) took #{took}s"
           files.reject!{|f|
             begin
               File.directory?(f)

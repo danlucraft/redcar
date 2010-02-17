@@ -34,7 +34,8 @@ module Redcar
     def self.tab_settings
       @tab_settings ||= TabSettings.new
     end
-      
+
+    # unused?      
     def self.storage
       @storage ||= Plugin::Storage.new('edit_view_plugin')
     end
