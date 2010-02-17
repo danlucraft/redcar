@@ -12,7 +12,6 @@ module Redcar
         if @expect_a_clear
            @expect_a_clear = false
         else
-          puts storage['recache_on_refocus']
           @cached_dir_lists.clear unless storage['recache_on_refocus'] == 'no'
         end
     
