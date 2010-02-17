@@ -34,6 +34,9 @@ describe Redcar::Plugin::Storage do
     storage['a'].should == 'c'
     storage = Redcar::Plugin::Storage.new('test_storage_saved')
     storage['a'].should == 'c'
-  end    
+    storage['b'] = false
+    storage.set_default('b', true)
+    storage['b'].should == false
+  end
   
 end

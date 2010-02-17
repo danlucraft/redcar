@@ -50,7 +50,7 @@ module Redcar
       end
       
       def set_default(key, value)
-        unless @storage[key]
+        unless @storage.has_key?(key)
           self[key] = value
         end
         value
