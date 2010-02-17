@@ -178,7 +178,9 @@ module Redcar
       if notebooks.length > 1
         close_notebook
       end
-      notify_listeners(:closed, self)
+      ignore(:closing) do
+        notify_listeners(:closed, self)
+      end
     end
     
     def inspect
