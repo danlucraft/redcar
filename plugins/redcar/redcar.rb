@@ -455,7 +455,7 @@ module Redcar
           line_start = doc.offset_at_line(doc.cursor_line)
           startoff = line_start + $`.length + cursor_line_offset
           endoff   = startoff + $&.length
-          doc.set_selection_range(startoff, endoff)
+          doc.set_selection_range(endoff, startoff)
         elsif doc.cursor_line < doc.line_count - 1
           # next search the rest of the lines
           found_line_offset = nil
@@ -643,7 +643,8 @@ module Redcar
         sub_menu "Plugins" do
           item "Plugin Manager", PluginManagerUi::OpenCommand
           item "Reload Again", PluginManagerUi::ReloadLastReloadedCommand
-          item( "Edit Preferences" ) { Project.open_dir(Redcar::Plugin::Storage.storage_dir, Redcar.app.new_window) }
+          item("Edit Preferences") { Project.open_dir(Redcar::Plugin::Storage.storage_dir, Redcar.app.new_window) }
+          separator
         end
         sub_menu "Help" do
           item "About", AboutCommand

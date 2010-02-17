@@ -78,6 +78,7 @@ module Redcar
           return if (modifiers & %w(Alt Cmd Ctrl)).any?
           return if edit_view.document.block_selection_mode?
           doc = edit_view.document
+          
           if modifiers.include?("Shift")
             old_selection_offset = doc.selection_offset
             doc.set_selection_range(move_right_offset(edit_view), old_selection_offset)
@@ -88,7 +89,12 @@ module Redcar
         
         def self.move_right_offset(edit_view)
           doc = edit_view.document
-          return doc.length - 1 if doc.cursor_offset == doc.length - 1
+          [move_right_offset1(edit_view), doc.length].min
+        end
+        
+        def self.move_right_offset1(edit_view)
+          doc = edit_view.document
+          return doc.length if doc.cursor_offset == doc.length - 1
           if edit_view.soft_tabs?
             line = doc.get_line(doc.cursor_line)
             width = edit_view.tab_width
