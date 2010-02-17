@@ -13,8 +13,6 @@ require 'plugin_manager/lib/plugin_manager'
 
 require 'forwardable'
 require 'yaml'
-require 'socket'
-require 'drb'
 
 # ## Loading and Initialization
 #
@@ -59,39 +57,6 @@ module Redcar
   
   def self.environment
     @environment
-  end
-
-  # attempt to load via drb if available
-  def self.try_to_load_via_drb
-    return if ARGV.include?("--multiple-instance")
-    
-    port = 9999    
-    begin
-      begin
-        TCPSocket.new('127.0.0.1', port).close
-      rescue Errno::ECONNREFUSED 
-        # no other instance is currently running...
-        return
-      end
-      puts 'attempting to start via running instance'
-      drb = DRbObject.new(nil, "druby://127.0.0.1:#{port}")
-      
-      if ARGV.any?
-        ARGV.each do |arg|
-          if drb.open_item_drb(File.expand_path(arg)) != 'ok'
-            return
-          end        
-        end
-      else
-       return unless drb.open_item_drb('just_bring_to_front')
-      end
-      puts 'Success'
-      true
-    rescue Exception => e
-      puts e.class.to_s + ": " + e.message
-      puts e.backtrace
-      false
-    end
   end
 
   def self.ensure_jruby
