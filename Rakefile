@@ -6,8 +6,9 @@ require 'cucumber/rake/task'
 require "rake/gempackagetask"
 require "rake/rdoctask"
 
-if RUBY_PLATFORM =~ /mswin/
+if RUBY_PLATFORM =~ /mswin|mingw/
   begin
+    # not available for jruby yet
     require 'win32console'
   rescue LoadError
     ARGV << "--nocolour"
