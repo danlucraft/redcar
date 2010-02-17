@@ -3,6 +3,7 @@ require 'java'
 require 'fileutils'
 
 require "core/logger"
+require "core/reentry_helpers"
 require "core/controller"
 require "core/gui"
 require "core/interface"
