@@ -145,23 +145,23 @@ module Redcar
       end
       
       if files = Project.storage['files_open_last_session']
-        files.each{|path|
+        files.each do |path|
           open_file(path)
-        }
+        end
       end
       
     end
         
     # saves away a list of the currently open files in
     # @param [win]
-    def self.save_file_list win
+    def self.save_file_list(win)
       # create a list of open files
       file_list = []
-      win.notebooks[0].tabs.each{|tab|
+      win.notebooks[0].tabs.each do |tab|
         if tab.document && tab.document.path
           file_list << tab.document.path
         end
-      }
+      end
       Project.storage['files_open_last_session'] = file_list      
     end
     
