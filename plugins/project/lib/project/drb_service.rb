@@ -15,18 +15,7 @@ module Redcar
       def open_item_drb(full_path)
         begin
           puts 'drb opening ' + full_path if $VERBOSE
-          if File.file? full_path
-            
-            Redcar::ApplicationSWT.sync_exec {            
-              if Redcar.app.windows.length == 0              
-                Project.restore_last_session
-              end
-              
-              FileOpenCommand.new(full_path).execute
-              Redcar.app.focussed_window.controller.bring_to_front          
-            }
-            'ok'
-          elsif File.directory? full_path
+          if File.directory? full_path
             Redcar::ApplicationSWT.sync_exec {
             
               # open in any existing window that already has that dir open as a tree
@@ -59,8 +48,15 @@ module Redcar
             }
             'ok'
           else
-            puts 'remote load: unexpected: file not found ' + full_path
-            'fail'
+            # existing or not (yet) existing file
+            Redcar::ApplicationSWT.sync_exec {
+              if Redcar.app.windows.length == 0
+                Project.restore_last_session
+              end
+              FileOpenCommand.new(full_path).execute
+              Redcar.app.focussed_window.controller.bring_to_front
+            }
+            'ok'            
           end
         rescue Exception => e
           # normally drb would swallow these

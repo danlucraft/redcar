@@ -4,7 +4,7 @@ module Redcar
 
   # attempt to load via drb if available
   def self.try_to_load_via_drb
-    return if ARGV.include?("--multiple-instance")    
+    return if ARGV.include?("--multiple-instance")
     port = 9999
     begin
       begin
@@ -19,6 +19,7 @@ module Redcar
       
       if ARGV.any?
         ARGV.each do |arg|
+          next if arg.start_with?('--')
           if drb.open_item_drb(File.expand_path(arg)) != 'ok'
             return
           end        
