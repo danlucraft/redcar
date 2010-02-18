@@ -26,6 +26,10 @@ module Redcar
             value += Swt::SWT::ESC
           elsif key_string =~ /Space$/
             value += " "[0]
+          elsif key_string =~ /Page Up$/
+            value += Swt::SWT::PAGE_UP
+          elsif key_string =~ /Page Down$/
+            value += Swt::SWT::PAGE_DOWN
           else
             value += key_string[-1]
           end
@@ -68,9 +72,9 @@ module Redcar
         
         def self.modifier_values
           {
-            "Cmd" => Swt::SWT::COMMAND,
-            "Ctrl" => Swt::SWT::CTRL,
-            "Alt" => Swt::SWT::ALT,
+            "Cmd"   => Swt::SWT::COMMAND,
+            "Ctrl"  => Swt::SWT::CTRL,
+            "Alt"   => Swt::SWT::ALT,
             "Shift" => Swt::SWT::SHIFT,
           }
         end
