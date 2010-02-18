@@ -5,23 +5,23 @@ module Redcar
       attr_reader :shell, :window, :shell_listener
       
       class ShellListener
-        include ListenerHelpers
+        include ReentryHelpers
         
         def initialize(controller)
           @controller = controller
         end
         
         def shell_closed(e)
-          ignore_within_self do
+          @controller.window.close
+          @controller.window.ignore(:closing) do
             e.doit = false
-            @controller.swt_event_closed
           end
         end
 
         def shell_activated(e)
-          ignore_within_self do
+          @controller.window.focus
+          @controller.window.ignore(:focussing) do
             e.doit = false
-            @controller.swt_event_activated
           end
         end
         
@@ -176,14 +176,6 @@ module Redcar
         @menu_controller.close
       end
         
-      def swt_event_closed
-        @window.close
-      end
-        
-      def swt_event_activated
-        @window.focus
-      end
-      
       private
       
       SASH_WIDTH = 5

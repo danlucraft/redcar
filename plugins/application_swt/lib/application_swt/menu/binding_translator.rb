@@ -32,6 +32,10 @@ module Redcar
             value += Swt::SWT.const_get 'ARROW_'+$1.upcase
           elsif key_string =~ /Tab/
             value += Swt::SWT::TAB
+          elsif key_string =~ /Page Up$/
+            value += Swt::SWT::PAGE_UP
+          elsif key_string =~ /Page Down$/
+            value += Swt::SWT::PAGE_DOWN
           else
             value += key_string[-1]
           end
@@ -74,9 +78,9 @@ module Redcar
         
         def self.modifier_values
           {
-            "Cmd" => Swt::SWT::COMMAND,
-            "Ctrl" => Swt::SWT::CTRL,
-            "Alt" => Swt::SWT::ALT,
+            "Cmd"   => Swt::SWT::COMMAND,
+            "Ctrl"  => Swt::SWT::CTRL,
+            "Alt"   => Swt::SWT::ALT,
             "Shift" => Swt::SWT::SHIFT,
           }
         end

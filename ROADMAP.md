@@ -5,7 +5,6 @@ Redcar JRuby Port Roadmap
 Features still to port
 -----------------------
 
-  * Understands tabs v. spaces
   * Tests passing on 3 platforms
   * Full project support
   * Snippets
@@ -14,7 +13,6 @@ Features still to port
   * Drag and drop of tabs
   * Packaged for one-click install on 3 platforms
   * Ruby on Rails/HTML/CSS/YAML bundle commands ported
-  * Single instance support
   * Use Gecko as embedded browser widget on all 3 platforms
   
 Version 0.4.0
