@@ -566,14 +566,13 @@ module Redcar
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
         link "Ctrl+Alt+O",       SwitchNotebookCommand
-        link "Ctrl+Shift+[",     SwitchTabDownCommand
-        link "Ctrl+Shift+]",     SwitchTabUpCommand
-
+        link "Ctrl+Tab",         SwitchTabUpCommand
+        link "Ctrl+Shift+Tab",   SwitchTabDownCommand
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
       end
       
       win = Redcar::Keymap.build("main", [:linux, :windows]) do
-        link "F3",       RepeatPreviousSearchForwardCommand        
+        link "F3",  RepeatPreviousSearchForwardCommand        
       end
       
       [linwin, osx, win]

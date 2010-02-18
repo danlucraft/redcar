@@ -28,8 +28,10 @@ module Redcar
             value += " "[0]
           elsif key_string =~ /(F\d+)/
             value += Swt::SWT.const_get $1
-          elsif key_string =~ /(right|left|up|down)/
+          elsif key_string =~ /(Right|Left|Up|Down)/
             value += Swt::SWT.const_get 'ARROW_'+$1.upcase
+          elsif key_string =~ /Tab/
+            value += Swt::SWT::TAB
           else
             value += key_string[-1]
           end

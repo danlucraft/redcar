@@ -32,10 +32,14 @@ describe BindingTranslator do
     end
     
     it "translates arrow keys" do
-      check("right", Swt::SWT::ARROW_RIGHT)
-      check("left", Swt::SWT::ARROW_LEFT)
-      check("up", Swt::SWT::ARROW_UP)
-      check("down", Swt::SWT::ARROW_DOWN)
+      check("Right", Swt::SWT::ARROW_RIGHT)
+      check("Left", Swt::SWT::ARROW_LEFT)
+      check("Up", Swt::SWT::ARROW_UP)
+      check("Down", Swt::SWT::ARROW_DOWN)
+    end
+    
+    it "translates tab" do
+      check("Tab", Swt::SWT::TAB)
     end
 
   end
