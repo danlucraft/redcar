@@ -26,6 +26,10 @@ module Redcar
             value += Swt::SWT::ESC
           elsif key_string =~ /Space$/
             value += " "[0]
+          elsif key_string =~ /(F\d+)/
+            value += Swt::SWT.const_get $1
+          elsif key_string =~ /(right|left|up|down)/
+            value += Swt::SWT.const_get 'ARROW_'+$1.upcase
           else
             value += key_string[-1]
           end

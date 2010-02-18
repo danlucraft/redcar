@@ -25,6 +25,19 @@ describe BindingTranslator do
     it "translates Cmd+letter" do
       check("Cmd+X", Swt::SWT::COMMAND + 'X'[0])
     end
+    
+    it "translates F keys" do
+      check("F3", Swt::SWT::F3)
+      check("F4", Swt::SWT::F4)
+    end
+    
+    it "translates arrow keys" do
+      check("right", Swt::SWT::ARROW_RIGHT)
+      check("left", Swt::SWT::ARROW_LEFT)
+      check("up", Swt::SWT::ARROW_UP)
+      check("down", Swt::SWT::ARROW_DOWN)
+    end
+
   end
 
   describe "multiple modifiers" do
