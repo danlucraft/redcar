@@ -4,7 +4,7 @@ module Redcar
 
   # attempt to load via drb if available
   def self.try_to_load_via_drb
-    return if ARGV.include?("--multiple-instance")
+    return if ARGV.find{|arg| arg == "--multiple-instance" || arg == '--help' || arg == '-h'}
     port = 9999
     begin
       begin
