@@ -571,7 +571,12 @@ module Redcar
 
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
       end
-      [linwin, osx]
+      
+      win = Redcar::Keymap.build("main", [:linux, :windows]) do
+        link "F3",       RepeatPreviousSearchForwardCommand        
+      end
+      
+      [linwin, osx, win]
     end
     
     def self.menus
