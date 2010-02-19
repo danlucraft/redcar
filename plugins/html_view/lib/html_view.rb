@@ -34,12 +34,16 @@ module Redcar
     def setup_javascript_listeners
       js = []
       js << "<script type=\"text/javascript\">"
-      js << "this.Controller = {"
+      js << "Controller = {"
+      methods = []
       (controller.methods - Object.new.methods).each do |method_name|
-        js << "  #{method_name.gsub(/_(\w)/) { |a| $1.upcase}}: function() {"
-        js << "    rubyCall(\"#{method_name}\", Array.prototype.slice.call(arguments));"
-        js << "  },"
+        method = []
+        method << "  #{method_name.gsub(/_(\w)/) { |a| $1.upcase}}: function() {"
+        method << "    rubyCall(\"#{method_name}\", Array.prototype.slice.call(arguments));"
+        method << "  }"
+        methods << method.join("\n")
       end
+      js << methods.join(",\n")
       js << "};"
       js << "</script>"
       js.join("\n")
