@@ -122,6 +122,11 @@ module Redcar
     # @param [String] path  the path of the directory to view
     # @param [Window] win  the Window to open the Tree in
     def self.open_dir(path, win = Redcar.app.focussed_window)
+      if !File.directory?(path)
+      	# avoid blank directory panels
+      	puts 'warning, unable to open dir ' + path
+      	return
+      end
       win ||= Redcar.app.new_window # case none open
       tree = Tree.new(Project::DirMirror.new(path),
                       Project::DirController.new)
