@@ -98,5 +98,4 @@ Then /^the contents of the edit tab should be "([^\"]*)"$/ do |text|
   Redcar::EditView.focussed_edit_view_document.to_s.should == text
 end
 
-
  

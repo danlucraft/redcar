@@ -290,4 +290,4 @@ Feature: Soft and hard tabs
     And I move the cursor to 0
     And I press the Delete key in the edit tab
     Then the cursor should be at 0
-  
+    
