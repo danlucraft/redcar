@@ -94,6 +94,15 @@ module Redcar
       end
     end
 
+    class ChangelogCommand < Command
+      def execute
+          new_tab = Top::NewCommand.new.run          
+          new_tab.document.text = File.read(File.join(File.dirname(__FILE__), "..", "..", "CHANGES"))
+          new_tab.title = 'Changes'
+      end
+    end
+
+
     class PrintContents < EditTabCommand
       
       def execute
@@ -640,6 +649,7 @@ module Redcar
         end
         sub_menu "Help" do
           item "About", AboutCommand
+          item "New In This Version", ChangelogCommand
         end
       end
     end
