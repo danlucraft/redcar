@@ -70,14 +70,14 @@ def remove_gitignored_files(filelist)
   ignores = ignores.select {|ignore| ignore.chomp.strip != ""}
   ignores = ignores.map {|ignore| Regexp.new(ignore.chomp.gsub(".", "\\.").gsub("*", ".*"))}
   r = filelist.select {|fn| not ignores.any? {|ignore| fn =~ ignore }}
-  r.select {|fn| fn !~ /\.jar$/}
+  r.select {|fn| fn !~ /\.git/ }
 end
 
 spec = Gem::Specification.new do |s|
   
   # Change these as appropriate
   s.name              = "redcar"
-  s.version           = "0.3.2"
+  s.version           = "0.3.3"
   s.summary           = "A JRuby text editor."
   s.author            = "Daniel Lucraft"
   s.email             = "dan@fluentradical.com"
