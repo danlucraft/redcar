@@ -94,28 +94,39 @@ module Redcar
       all_handlers(:backspace)
     end
 
+    def handle_key(handlers, modifiers)
+      handlers.detect do |h|
+        begin
+          h.handle(self, modifiers)
+        rescue => e
+          puts "*** Error in key handler: #{e.class} #{e.message}"
+          puts e.backtrace.map {|l| " - " + l }
+        end
+      end
+    end
+
     def tab_pressed(modifiers)
-      EditView.all_tab_handlers.detect { |h| h.handle(self, modifiers) }
+      handle_key(EditView.all_tab_handlers, modifiers)
     end
     
     def esc_pressed(modifiers)
-      EditView.all_esc_handlers.detect { |h| h.handle(self, modifiers) }
+      handle_key(EditView.all_esc_handlers, modifiers)
     end
     
     def left_pressed(modifiers)
-      EditView.all_arrow_left_handlers.detect { |h| h.handle(self, modifiers) }
+      handle_key(EditView.all_arrow_left_handlers, modifiers)
     end
     
     def right_pressed(modifiers)
-      EditView.all_arrow_right_handlers.detect { |h| h.handle(self, modifiers) }
+      handle_key(EditView.all_arrow_right_handlers, modifiers)
     end
     
     def delete_pressed(modifiers)
-      EditView.all_delete_handlers.detect { |h| h.handle(self, modifiers) }
+      handle_key(EditView.all_delete_handlers, modifiers)
     end
     
     def backspace_pressed(modifiers)
-      EditView.all_backspace_handlers.detect { |h| h.handle(self, modifiers) }
+      handle_key(EditView.all_backspace_handlers, modifiers)
     end
     
     # Called by the GUI whenever an EditView is focussed or
