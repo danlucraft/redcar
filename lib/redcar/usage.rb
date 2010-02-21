@@ -29,10 +29,10 @@ module Redcar
         puts
         puts "   $ [sudo] redcar install"
         puts
-        puts "To associate with right click in windows explorer:"
-        puts
-        puts "  C:> redcar --associate_with_any_right_click"
-        puts
+        #puts "To associate with right click in windows explorer:"
+        #puts
+        #puts "  C:> redcar --associate_with_any_right_click"
+        #puts
         exit
       end
     end

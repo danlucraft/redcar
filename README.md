@@ -32,6 +32,7 @@ Usage:
        --theme=THEME  Choose Textmate theme
 
 ## INSTALLING FROM SOURCE
+
 Download from github, checkout the submodules and build JavaMateView. You will need Ant 
 installed, and RSpec and Cucumber installed as JRuby gems.
 
