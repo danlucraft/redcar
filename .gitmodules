@@ -193,3 +193,6 @@
 [submodule "textmate/Bundles/Scala.tmbundle"]
 	path = textmate/Bundles/Scala.tmbundle
 	url = git://github.com/deanwampler/Scala.tmbundle.git
+[submodule "lib/openssl"]
+	path = lib/openssl
+	url = git://github.com/jruby/jruby-openssl.git
