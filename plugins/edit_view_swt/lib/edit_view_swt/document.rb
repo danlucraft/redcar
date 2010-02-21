@@ -91,7 +91,19 @@ module Redcar
       end
       
       def set_selection_range(cursor_offset, selection_offset)
-        styledText.set_selection_range(selection_offset, cursor_offset - selection_offset)
+        if block_selection_mode?
+          start_offset, end_offset = *[cursor_offset, selection_offset].sort
+          start_location = styledText.getLocationAtOffset(start_offset)
+          end_location   = styledText.getLocationAtOffset(end_offset)
+          styledText.set_block_selection_bounds(
+            start_location.x, 
+            start_location.y,
+            end_location.x - start_location.x,
+            end_location.y - start_location.y + styledText.get_line_height
+          )
+        else
+          styledText.set_selection_range(selection_offset, cursor_offset - selection_offset)
+        end
         @model.selection_range_changed(cursor_offset, selection_offset)
       end
       

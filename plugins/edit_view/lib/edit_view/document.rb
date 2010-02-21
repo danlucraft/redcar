@@ -115,29 +115,6 @@ module Redcar
       controller.single_line?
     end
     
-    # The line index the cursor is on (zero-based)
-    #
-    # @return [Integer]
-    def cursor_line
-      line_at_offset(cursor_offset)
-    end
-    
-    def cursor_line_start_offset
-      offset_at_line(cursor_line)
-    end
-    
-    def cursor_line_end_offset
-      offset_at_line_end(cursor_line)
-    end
-    
-    def offset_at_line_end(line_ix)
-      if line_ix == line_count - 1
-        end_offset = length
-      else
-        end_offset = offset_at_line(line_ix + 1)
-      end
-    end
-    
     # Is there any text selected? (Or equivalently, is the length
     # of the selection equal to 0)
     #
@@ -237,6 +214,29 @@ module Redcar
     # @param [Integer] offset   zero-based character offset
     def cursor_offset=(offset)
       controller.cursor_offset = offset
+    end
+    
+    # The line index the cursor is on (zero-based)
+    #
+    # @return [Integer]
+    def cursor_line
+      line_at_offset(cursor_offset)
+    end
+    
+    def cursor_line_start_offset
+      offset_at_line(cursor_line)
+    end
+    
+    def cursor_line_end_offset
+      offset_at_line_end(cursor_line)
+    end
+    
+    def offset_at_line_end(line_ix)
+      if line_ix == line_count - 1
+        end_offset = length
+      else
+        end_offset = offset_at_line(line_ix + 1)
+      end
     end
     
     # The range of text selected by the user.
