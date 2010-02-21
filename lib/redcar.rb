@@ -9,12 +9,6 @@ require 'redcar/ruby_extensions'
 require 'redcar/instance_exec'
 require 'redcar/usage'
 
-$:.push File.expand_path(File.join(File.dirname(__FILE__), "plugin_manager", "lib"))
-require 'plugin_manager'
-
-$:.push File.expand_path(File.join(File.dirname(__FILE__), "openssl", "lib"))
-require 'openssl'
-
 require 'forwardable'
 require 'yaml'
 
@@ -86,6 +80,12 @@ module Redcar
 
   # Tells the plugin manager to load plugins, and prints debug output.
   def self.load
+    $:.push File.expand_path(File.join(File.dirname(__FILE__), "plugin_manager", "lib"))
+    require 'plugin_manager'
+    
+    $:.push File.expand_path(File.join(File.dirname(__FILE__), "openssl", "lib"))
+    require 'openssl'
+
     plugin_manager.load
     if plugin_manager.unreadable_definitions.any?
       puts "Couldn't read definition files: "
