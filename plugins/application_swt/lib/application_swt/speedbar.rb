@@ -99,9 +99,9 @@ module Redcar
             gridData.grabExcessHorizontalSpace = true
             gridData.horizontalAlignment = Swt::Layout::GridData::FILL
             mate_text.getControl.set_layout_data(gridData)
-            mate_text.getControl.add_modify_listener do
+            edit_view.document.add_listener(:changed) do
               ignore(item.name) do
-                item.value = mate_text.getControl.get_text
+                item.value = edit_view.document.to_s
                 if item.listener
                   begin
                     @model.instance_exec(item.value, &item.listener)
