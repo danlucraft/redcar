@@ -8,15 +8,14 @@ module Redcar
     include Redcar::Observable
     extend Forwardable
     
-    def self.register_controller_type(controller_type)
-      unless controller_type.ancestors.include?(Document::Controller)
-        raise "expected #{Document::Controller}"
+    def self.all_document_controller_types
+      result = []
+      Redcar.plugin_manager.loaded_plugins.each do |plugin|
+        if plugin.object.respond_to?(:document_controllers)
+          result += plugin.object.document_controllers
+        end
       end
-      document_controller_types << controller_type
-    end
-    
-    def self.document_controller_types
-      @document_controller_types ||= []
+      result
     end
     
     class << self
@@ -35,7 +34,7 @@ module Redcar
         Controller::ModificationCallbacks => [],
         Controller::NewlineCallback => []
       }
-      Document.document_controller_types.each do |type|
+      Document.all_document_controller_types.each do |type|
         @controllers.each do |key, value|
           if type.ancestors.include?(key)
             value << type.new(self)

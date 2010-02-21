@@ -657,9 +657,7 @@ module Redcar
     def self.start
       Application.start
       ApplicationSWT.start
-      AutoIndenter.start
       EditViewSWT.start
-      AutoCompleter.start
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
       
