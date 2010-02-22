@@ -556,7 +556,7 @@ module Redcar
         
         link "Ctrl+Shift+E", EditView::InfoSpeedbarCommand
         link "Ctrl+Z",       UndoCommand
-        link "Ctrl+Shift+Z", RedoCommand
+        link "Ctrl+Y",       RedoCommand
         link "Ctrl+X",       CutCommand
         link "Ctrl+C",       CopyCommand
         link "Ctrl+V",       PasteCommand
@@ -570,8 +570,7 @@ module Redcar
         link "Ctrl+A",       SelectAllCommand
         link "Ctrl+B",       ToggleBlockSelectionCommand
         link "Ctrl+Escape",  AutoCompleter::AutoCompleteCommand
-        link "Escape",       AutoCompleter::MenuAutoCompleterCommand
-        
+        link "Escape",       AutoCompleter::MenuAutoCompleterCommand        
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
         link "Ctrl+Alt+O",       SwitchNotebookCommand
