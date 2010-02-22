@@ -20,7 +20,7 @@ module Redcar
       # associate it with the current rubyw.exe
       rubyw_bin = File.join([Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name']]) << 'w' << Config::CONFIG['EXEEXT']
       rubyw_bin.gsub!('/', '\\') # executable name wants back slashes
-      for type, english_text  in {'*' => 'Drive with Redcar', 'Directory' => 'Drive with Redcar (dir)'}
+      for type, english_text  in {'*' => 'Open with Redcar', 'Directory' => 'Open with Redcar (dir)'}
         name = Win32::Registry::HKEY_LOCAL_MACHINE.create "Software\\classes\\#{type}\\shell\\open_with_redcar"
         name.write_s nil, english_text
         dir = Win32::Registry::HKEY_LOCAL_MACHINE.create "Software\\classes\\#{type}\\shell\\open_with_redcar\\command"
@@ -63,12 +63,18 @@ module Redcar
     
     JRUBY_JAR_DIR = File.expand_path(File.join(File.dirname(__FILE__), ".."))
     
-    JRUBY = %w(
-      http://jruby.kenai.com/downloads/1.4.0/jruby-complete-1.4.0.jar
-      /jruby/jcodings.jar
-      /jruby/jdom.jar
-      /jruby/joni.jar
-    )
+    JRUBY = [
+      "http://jruby.kenai.com/downloads/1.4.0/jruby-complete-1.4.0.jar",
+      "/jruby/jcodings.jar",
+      "/jruby/jdom.jar",
+      "/jruby/joni.jar"
+    ]
+    
+    JOPENSSL = {
+      "/jruby/bcmail-jdk14-139-#{Redcar::VERSION}.jar" => "lib/openssl/lib/bcmail-jdk14-139.jar",
+      "/jruby/bcprov-jdk14-139-#{Redcar::VERSION}.jar" => "lib/openssl/lib/bcprov-jdk14-139.jar",
+      "/jruby/jopenssl-#{Redcar::VERSION}.jar"         => "lib/openssl/lib/jopenssl.jar",
+    }
 
     REDCAR_JARS = {
       "/java-mateview-#{Redcar::VERSION}.jar" => "plugins/edit_view_swt/vendor/java-mateview.jar"
@@ -78,6 +84,9 @@ module Redcar
       puts "* Downloading JRuby"
       JRUBY.each do |jar_url|
         download(jar_url, File.join(JRUBY_JAR_DIR, File.basename(jar_url)))
+      end
+      JOPENSSL.each do |jar_url, relative_path|
+        download(jar_url, File.join(File.dirname(__FILE__), "..", "..", relative_path))
       end
     end
     

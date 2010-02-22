@@ -1,9 +1,14 @@
 
-Version 0.3.3dev (TBA)
+Version 0.3.3dev (21 Feb 2010)
 ==============================
 
 New features:
 
+  * Tab stops:
+    - Can set tab width for open tab.
+    - Default tab width is remembered per language.
+    - Soft tabs (spaces that behave like tabs).
+    - Default soft/hard option is remembered per language.
   * FindFileDialog:
      - opens with a list of files opened this session.
      - caches file list between invocations (cleared on window focus)
@@ -11,19 +16,17 @@ New features:
   * Opens files and folders passed on the command line.
   * Reopens last open directory on startup.
   * Single instance support: redirects to currently open instance if any.
-  * Tab stops:
-    - Can set tab width for open tab.
-    - Default tab width is remembered per language.
-    - Soft tabs.
-    - Default soft/hard option is remembered per language.
   * Added 'encryption' plugin, mainly as an example.
   * Forward search: wraps, regex option, match case option.
   * Very raw edit preferences command (Show me the YAML!)
   * Help > About command
+  * Can specify HTTP_PROXY for downloading jars.
+  * REPL captures and prints STDOUT
+  * Can register Redcar for opening files on Windows. (See redcar -h)
 
 Internal changes:
 
-  * Keybindings are now stored in Keymap objects.
+  * Keybindings are now stored in Keymap objects, in preparation for user preferences.
   * Speedbar now uses an EditView for textboxes.
   * Speedbars can have combos in them.
   * Speedbars have access to the properties of the widgets in them.
@@ -33,6 +36,8 @@ Fixes:
 
   * Fixed some highlighter bugs.
   * Search searches last line in doc.
+  * Doesn't die on Windows-1252 encodings.
+  * Plugin Manager UI works on Linux and Windows.
   
 New contributors:
 

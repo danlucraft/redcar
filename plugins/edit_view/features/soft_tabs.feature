@@ -1,55 +1,5 @@
 Feature: Soft and hard tabs
   
-  Scenario: Inserts hard tab at the start of a line
-    When I open a new edit tab
-    And tabs are hard
-    And I press the Tab key in the edit tab
-    Then the contents of the edit tab should be "\t"
-    
-  Scenario: Inserts hard tab at the end of a line
-    When I open a new edit tab
-    And tabs are hard
-    And I replace the contents with "Hacker"
-    And I move the cursor to 6
-    And I press the Tab key in the edit tab
-    Then the contents of the edit tab should be "Hacker\t"
-    
-  Scenario: Inserts 2 space soft tab at the start of a line
-    When I open a new edit tab
-    And tabs are soft, 2 spaces
-    And I press the Tab key in the edit tab
-    Then the contents of the edit tab should be "  "
-    
-  Scenario: Inserts 2 space soft tab at the end of a line
-    When I open a new edit tab
-    And tabs are soft, 2 spaces
-    And I replace the contents with "Hacker"
-    And I move the cursor to 6
-    And I press the Tab key in the edit tab
-    Then the contents of the edit tab should be "Hacker  "
-    
-  Scenario: Inserts 4 space soft tab at the start of a line
-    When I open a new edit tab
-    And tabs are soft, 4 spaces
-    And I press the Tab key in the edit tab
-    Then the contents of the edit tab should be "    "
-    
-  Scenario: Inserts 4 space soft tab at the end of a line
-    When I open a new edit tab
-    And tabs are soft, 4 spaces
-    And I replace the contents with "Hacker"
-    And I move the cursor to 6
-    And I press the Tab key in the edit tab
-    Then the contents of the edit tab should be "Hacker  "
-
-  Scenario: Inserts 4 space soft tab at the end of a line, with a tab character
-    When I open a new edit tab
-    And tabs are soft, 4 spaces
-    And I replace the contents with "\tHacker"
-    And I move the cursor to 7
-    And I press the Tab key in the edit tab
-    Then the contents of the edit tab should be "\tHacker  "
-     
   Scenario: Move left through soft tabs
     When I open a new edit tab
     And tabs are soft, 2 spaces
@@ -290,4 +240,4 @@ Feature: Soft and hard tabs
     And I move the cursor to 0
     And I press the Delete key in the edit tab
     Then the cursor should be at 0
-  
+    

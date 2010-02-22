@@ -1,4 +1,3 @@
-
 require 'repl/internal_mirror'
 
 module Redcar

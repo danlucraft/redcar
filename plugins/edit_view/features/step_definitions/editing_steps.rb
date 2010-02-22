@@ -98,5 +98,21 @@ Then /^the contents of the edit tab should be "([^\"]*)"$/ do |text|
   Redcar::EditView.focussed_edit_view_document.to_s.should == text
 end
 
+When /^I block select from (\d+) to (\d+)$/ do |from_str, to_str|
+  doc = Redcar::EditView.focussed_edit_view_document
+  doc.block_selection_mode = true
+  doc.set_selection_range(from_str.to_i, to_str.to_i)
+end
 
+Then /^the selection range should be from (\d+) to (\d+)$/ do |from_str, to_str|
+  doc = Redcar::EditView.focussed_edit_view_document
+  doc.block_selection_mode = true
+  r = doc.selection_range
+  r.begin.should == from_str.to_i
+  r.end.should == to_str.to_i
+end
+ 
+ 
+ 
+ 
  
