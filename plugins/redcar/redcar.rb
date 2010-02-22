@@ -564,9 +564,9 @@ module Redcar
         link "Ctrl+E",       MoveEndCommand
         link "Ctrl+[",       DecreaseIndentCommand
         link "Ctrl+]",       IncreaseIndentCommand
-        link "Ctrl+L",       GotoLineCommand
+        link "Ctrl+G",       GotoLineCommand
         link "Ctrl+F",       SearchForwardCommand
-        link "Ctrl+G",       RepeatPreviousSearchForwardCommand
+        link "F3",           RepeatPreviousSearchForwardCommand
         link "Ctrl+A",       SelectAllCommand
         link "Ctrl+B",       ToggleBlockSelectionCommand
         link "Ctrl+Escape",  AutoCompleter::AutoCompleteCommand
@@ -575,15 +575,13 @@ module Redcar
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
         link "Ctrl+Alt+O",       SwitchNotebookCommand
-        link "Ctrl+Shift+Page Up",       SwitchTabDownCommand
-        link "Ctrl+Shift+Page Down",     SwitchTabUpCommand
+        link "Ctrl+Shift+Tab",       SwitchTabDownCommand
+        link "Ctrl+Tab",     SwitchTabUpCommand
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
       end
       
       win = Redcar::Keymap.build("main", [:linux, :windows]) do
-        link "F3",  RepeatPreviousSearchForwardCommand        
-        link "Ctrl+Tab",         SwitchTabUpCommand
-        link "Ctrl+Shift+Tab",   SwitchTabDownCommand
+        link "Shift+Escape",   AutoCompleter::AutoCompleteCommand # ctrl+escape brings up the start button in doze
       end
       
       [linwin, osx, win]
