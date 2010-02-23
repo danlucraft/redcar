@@ -120,10 +120,18 @@ module Redcar
          shell.image = icon
        end
 
-      def bring_to_front
+      def bring_to_front   
+        # it appears that swt offers no real way to
+        # bring a window to the front [oddly]
+        # so we fake it by minimizing and unminimizing it
+        # and try to avoid ugliness by setting it invisible on the minimize side
+        @shell.set_visible(false)
+        @shell.set_minimized(true)
+        @shell.set_visible(true)
         @shell.set_minimized(false)
-        @shell.force_active
-        @shell.set_minimized(false)
+        @shell.force_active # should be the only thing we need--doesn't always work
+        # http://stackoverflow.com/questions/2315560/how-do-you-force-a-java-swt-program-to-move-itself-to-the-foreground
+        # there's probably a better way...
       end        
       
       def popup_menu(menu)
