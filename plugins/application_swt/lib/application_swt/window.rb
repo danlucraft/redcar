@@ -122,16 +122,19 @@ module Redcar
 
       def bring_to_front   
         # it appears that swt offers no real way to
-        # bring a window to the front [oddly]
-        # so we fake it by minimizing and unminimizing it
-        # and try to avoid ugliness by setting it invisible on the minimize side
-        @shell.set_visible(false)
-        @shell.set_minimized(true)
-        @shell.set_visible(true)
-        @shell.set_minimized(false)
-        @shell.force_active # should be the only thing we need--doesn't always work
+        # bring a window to the front [oddly] force_active doesn't seem to actually bring windows to the front
         # http://stackoverflow.com/questions/2315560/how-do-you-force-a-java-swt-program-to-move-itself-to-the-foreground
+        # so in windows we fake it by minimizing and unminimizing it
+        # and try to avoid ugliness by setting during the minimize
+        # which still doesn't always work, but more often than just using force_active
         # there's probably a better way...
+        if Redcar.platform == :windows
+          @shell.set_visible(false)
+          @shell.set_minimized(true)
+          @shell.set_visible(true)
+        end
+        @shell.set_minimized(false) # unminimize, just in case
+        @shell.force_active
       end        
       
       def popup_menu(menu)

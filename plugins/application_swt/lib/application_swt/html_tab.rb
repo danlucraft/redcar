@@ -11,7 +11,12 @@ module Redcar
       
       def create_tab_widget
         Swt::Graphics::Device.DEBUG = true
-        @browser = Swt::Browser.new(notebook.tab_folder, Swt::SWT::NONE)
+        puts 'here1', Redcar.platform
+        if Redcar.platform == :windows
+          ENV['XULRunnerPath'] = (Redcar.root + '/vendor/xulrunner').gsub('/', '\\')
+          puts 'setting env', ENV['XULRunnerPath']
+        end
+        @browser = Swt::Browser.new(notebook.tab_folder, Swt::SWT::MOZILLA)
         @widget = @browser
         @item.control = @widget
       end
