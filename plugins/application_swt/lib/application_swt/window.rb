@@ -120,21 +120,15 @@ module Redcar
          shell.image = icon
        end
 
-      def bring_to_front   
-        # it appears that swt offers no real way to
-        # bring a window to the front [oddly] force_active doesn't seem to actually bring windows to the front
-        # http://stackoverflow.com/questions/2315560/how-do-you-force-a-java-swt-program-to-move-itself-to-the-foreground
-        # so in windows we fake it by minimizing and unminimizing it
-        # and try to avoid ugliness by setting during the minimize
-        # which still doesn't always work, but more often than just using force_active
-        # there's probably a better way...
-        if Redcar.platform == :windows
-          @shell.set_visible(false)
-          @shell.set_minimized(true)
-          @shell.set_visible(true)
-        end
+      def bring_to_front
         @shell.set_minimized(false) # unminimize, just in case
-        @shell.force_active
+        @shell.redraw
+        if Redcar.platform == :windows
+          require File.dirname(__FILE__) + '/bring_to_front'
+          BringToFront.bring_window_to_front self.shell.handle          
+        end
+        @shell.force_active # doesn't do anything, really
+        @shell.set_active
       end        
       
       def popup_menu(menu)
