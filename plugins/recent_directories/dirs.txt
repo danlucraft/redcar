@@ -1,0 +1,5 @@
+/Users/danlucraft/Redcar/redcar
+/Users/danlucraft/Songkick/skweb
+/Users/danlucraft/Redcar/gtk-plugins
+/Users/danlucraft/life
+.

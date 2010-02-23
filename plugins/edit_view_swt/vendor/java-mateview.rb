@@ -8,6 +8,7 @@ module JavaMateView
   import com.redcareditor.mate.Parser
   import com.redcareditor.mate.Pattern
   import com.redcareditor.mate.Scope
+  import com.redcareditor.mate.ScopeMatcher
   import com.redcareditor.theme.Theme
   import com.redcareditor.theme.ThemeManager
   

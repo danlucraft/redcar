@@ -8,7 +8,7 @@ module Redcar
     end
     
     def self.all_bundles
-      all_bundle_paths.map {|path| Bundle.new(path) }
+      @all_bundles ||= all_bundle_paths.map {|path| Bundle.new(path) }
     end
     
     class Bundle
@@ -52,7 +52,9 @@ module Redcar
       def settings
         @settings ||= begin
           @plist["settings"].map do |name, setting_plist|
-            klass.new(setting_plist) if klass = setting_class(name)
+            if klass = setting_class(name)
+              klass.new(scope, setting_plist)
+            end
           end
         end
       end
@@ -69,7 +71,10 @@ module Redcar
     end
     
     class Setting
-      def initialize(plist)
+      attr_reader :scope
+    
+      def initialize(scope, plist)
+        @scope = scope
         @plist = plist
       end
     end
