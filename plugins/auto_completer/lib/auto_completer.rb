@@ -1,3 +1,4 @@
+
 module Redcar
   class ApplicationSWT
     class Menu
@@ -16,8 +17,8 @@ module Redcar
   class AutoCompleter
     WORD_CHARACTERS = /:|@|\w/ # /(\s|\t|\.|\r|\(|\)|,|;)/
     
-    def self.start
-      Document.register_controller_type(AutoCompleter::DocumentController)
+    def self.document_controller_types
+      [AutoCompleter::DocumentController]
     end
     
     class AutoCompleteCommand < Redcar::EditTabCommand

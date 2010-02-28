@@ -102,7 +102,6 @@ module Redcar
       end
     end
 
-
     class PrintContents < EditTabCommand
       
       def execute
@@ -126,6 +125,12 @@ module Redcar
       end
     end
 
+    class PrintScopeCommand < Command
+      def execute
+        p tab.edit_view.document.cursor_scope
+      end
+    end
+    
     class CloseTabCommand < Command
       
       def execute
@@ -629,9 +634,11 @@ module Redcar
           item "Print Command History", PrintHistoryCommand
           item "Print Contents", PrintContents
           item "List Tabs", ListTabsCommand
-          item "Print Scope Tree", PrintScopeTreeCommand
           item "Refresh Directory", Project::RefreshDirectoryCommand
           item "Dialog Tester", DialogExample
+          separator
+          item "Print Scope Tree", PrintScopeTreeCommand
+          item "Print Scope at Cursor", PrintScopeCommand
         end
         sub_menu "View" do
           item "Rotate Notebooks", RotateNotebooksCommand
@@ -657,9 +664,7 @@ module Redcar
     def self.start
       Application.start
       ApplicationSWT.start
-      AutoIndenter.start
       EditViewSWT.start
-      AutoCompleter.start
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
       
