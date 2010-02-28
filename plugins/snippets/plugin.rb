@@ -1,9 +1,9 @@
 
 Plugin.define do
-  name    "auto_pairer"
+  name    "snippets"
   version "1.0"
-  file    "lib", "auto_pairer"
-  object  "Redcar::AutoPairer"
+  file    "lib", "snippets"
+  object  "Redcar::Snippets"
   dependencies "edit_view", ">0",
                "textmate",  ">0"
 end

@@ -95,7 +95,8 @@ module Redcar
     end
 
     def handle_key(handlers, modifiers)
-      handlers.detect do |h|
+      sorted_handlers = handlers.sort_by {|h| (h.respond_to?(:priority) and h.priority) || 0 }.reverse
+      sorted_handlers.detect do |h|
         begin
           h.handle(self, modifiers)
         rescue => e

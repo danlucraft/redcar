@@ -3,19 +3,19 @@ Version 0.3.4dev (TBA)
 
 New features:
 
-  *
+  * Auto-pairer inserts matching characters ( -> ), " -> ", etc
   
 Internal changes:
 
-  *
+  * New API for creating text Marks, to tag a position in a Document.
   
 Fixes:
 
-  *
+  * 
   
 New contributors:
 
-  *
+  * 
 
 Version 0.3.3dev (21 Feb 2010)
 ==============================
