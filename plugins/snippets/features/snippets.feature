@@ -40,7 +40,6 @@ Feature: Snippets
     And I press the Tab key in the edit tab
     Then the contents should be "0123 Felix 5 Gaeta<c>"
 
-
   Scenario: Transforms Textmate environment variables
     Given there is a snippet with tab trigger "fg" and scope "text.plain" and content
       """
@@ -50,6 +49,29 @@ Feature: Snippets
     And I replace the contents with "CoABC fg<c>"
     And I press the Tab key in the edit tab
     Then the contents should be "CoABC Felix ChiefOfStaffABC  Gaeta<c>"
+
+  Scenario: Transforms Textmate environment variables global find and replace
+    # also tests escaping of slashes in transform
+    Given there is a snippet with tab trigger "fg" and scope "text.plain" and content
+      """
+        Felix ${TM_CURRENT_LINE/\w/CS /g} Gaeta
+      """
+    When I open a new edit tab
+    And I replace the contents with "ABC fg<c>"
+    And I press the Tab key in the edit tab
+    Then the contents should be "ABC Felix CS CS CS   Gaeta<c>"
+
+  Scenario: Transforms Textmate environment variables escapes characters
+    # also tests escaping of slashes in transform
+    Given there is a snippet with tab trigger "fg" and scope "text.plain" and content
+      """
+        Felix ${TM_CURRENT_LINE/\w/C\/S /g} Gaeta
+      """
+    When I open a new edit tab
+    And I replace the contents with "ABC fg<c>"
+    And I press the Tab key in the edit tab
+    Then the contents should be "ABC Felix C/S C/S C/S   Gaeta<c>"
+
 
 
   #Scenario: Escapes dollars
