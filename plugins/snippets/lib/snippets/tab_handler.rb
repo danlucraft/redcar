@@ -35,13 +35,13 @@ module Redcar
         if @word
           @offset = document.cursor_offset
           @start_word_offset = document.cursor_offset - @word.length
-          if snippet = choose_snippet(Snippets.registry.global_with_tab(@word))
-            snippet
-#          elsif snippets_for_scope = SnippetInserter.snippets_for_scope(@buf.cursor_scope) and
-#              snippet = choose_snippet(snippets_for_scope[@word])
-#            snippet
+          if scope_snippet = Snippets.registry.find_by_scope_and_tab_trigger(document.cursor_scope, @word)
+            scope_snippet
           else
-            false
+            global_options = Snippets.registry.global_with_tab(@word)
+            if global_options.any?
+              choose_snippet(global_options)
+            end
           end
         else
           false
