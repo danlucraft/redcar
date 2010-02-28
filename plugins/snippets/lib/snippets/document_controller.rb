@@ -147,7 +147,7 @@ module Redcar
                 remaining_content = md1.post_match[(defn.length+1)..-1]
               elsif md2 = defn.match(/\A(\d+)\//)
                 # placeholder is a transformation
-                bits = defn.onig_split(Regexp.new("(?<!\\\\)/"))
+                bits = onig_split(defn, Regexp.new("(?<!\\\\)/"))
                 bits[2] = bits[2].gsub("\\/", "/")
                 @transformations[md2[1].to_i] ||= []
                 @transformations[md2[1].to_i] << {
@@ -166,7 +166,7 @@ module Redcar
               elsif md2 = defn.match(/\A((\w+|_)+)\//)
                 # transformed env variable
                 env = @env[$1]||""
-                bits = md2.post_match.onig_split(Regexp.new("(?<!\\\\)/"))
+                bits = onig_split(md2.post_match, Regexp.new("(?<!\\\\)/"))
                 bits[1] = bits[1].gsub("\\/", "/")
                 rr = RegexReplace.new(bits[0], bits[1])
                 if bits[2] == "g"
@@ -193,7 +193,19 @@ module Redcar
           end
         end
       end
-        
+            
+      def onig_split(string, re)
+        line = string.dup
+        bits = []
+        while line.length > 0 and 
+            md = re.match(line)
+          line = md.post_match
+          bits << md.pre_match
+        end
+        bits << line
+        bits
+      end
+
       def fix_indent
         firstline = document.get_line(@insert_line_num).chomp
         if firstline
