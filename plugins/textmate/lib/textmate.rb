@@ -1,5 +1,6 @@
 
 require 'textmate/bundle'
+require 'textmate/environment'
 require 'textmate/plist'
 require 'textmate/preference'
 require 'textmate/snippet'
