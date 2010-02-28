@@ -30,6 +30,17 @@ Feature: Snippets
     And I press the Tab key in the edit tab
     Then the contents should be "0123 Felix 5 Gaeta<c>"
 
+  Scenario: Inserts Textmate environment variable TM_LINE_INDEX without curlies
+    Given there is a snippet with tab trigger "fg" and scope "text.plain" and content
+      """
+        Felix $TM_LINE_INDEX Gaeta
+      """
+    When I open a new edit tab
+    And I replace the contents with "0123 fg<c>"
+    And I press the Tab key in the edit tab
+    Then the contents should be "0123 Felix 5 Gaeta<c>"
+
+
   #Scenario: Escapes dollars
   #  Given there is a snippet with tab trigger "DBL" and scope "text.plain" and content
   #    """
