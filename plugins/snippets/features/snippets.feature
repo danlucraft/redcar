@@ -79,6 +79,16 @@ Feature: Snippets
     And I replace the contents with "if<c>"
     And I press the Tab key in the edit tab
     Then the contents should be "if <c>\n\t\nend"
+    
+  Scenario: Escapes dollars
+    Given there is a snippet with tab trigger "DBL" and scope "text.plain" and content
+      """
+        Daniel \$1 Benjamin Lucraft
+      """
+    When I open a new edit tab
+    And I replace the contents with "DBL<c>"
+    And I press the Tab key in the edit tab
+    Then the contents should be "Daniel $1 Benjamin Lucraft<c>"
 
   Scenario: Selects tab stop zero
     Given there is a snippet with tab trigger "if" and scope "text.plain" and content
@@ -157,15 +167,39 @@ Feature: Snippets
     And I press Shift+Tab in the edit tab
     Then the contents should be "if <s>Pegasus<c>\n\tCain\nend"
 
-  #Scenario: Escapes dollars
-  #  Given there is a snippet with tab trigger "DBL" and scope "text.plain" and content
-  #    """
-  #      Daniel \$1 Benjamin Lucraft
-  #    """
-  #  When I open a new edit tab
-  #  And I replace the contents with "DBL<c>"
-  #  And I press the Tab key in the edit tab
-  #  Then the contents should be "Daniel $1 Benjamin Lucraft<c>"
+  Scenario: Inserts tab stop content
+    Given there is a snippet with tab trigger "if" and scope "text.plain" and content
+      """
+        if ${1:condition}\n\t$0\nend
+      """
+    When I open a new edit tab
+    And I replace the contents with "if<c>"
+    And I press the Tab key in the edit tab
+    Then the contents should be "if <s>condition<c>\n\t\nend"
+
+  Scenario: Inserts environment variable as placeholder
+    Given there is a snippet with tab trigger "fg" and scope "text.plain" and content
+      """
+        Felix ${1:$TM_LINE_INDEX} Gaeta
+      """
+    When I open a new edit tab
+    And I replace the contents with "ABC fg<c>"
+    And I press the Tab key in the edit tab
+    Then the contents should be "ABC Felix 4 Gaeta"
+
+  Scenario: Leaves snippet on cursor move
+    Given there is a snippet with tab trigger "if" and scope "text.plain" and content
+      """
+        if ${1:condition}\n\t$0\nend
+      """
+    When I open a new edit tab
+    And tabs are hard
+    And I replace the contents with "ABC if<c>"
+    And I press the Tab key in the edit tab
+    And I move the cursor to 0
+    And I press the Tab key in the edit tab
+    Then the contents should be "\t<c>ABC if condition\n\t\nend"
+
 
 
 

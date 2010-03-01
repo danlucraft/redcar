@@ -3,18 +3,21 @@ module Redcar
   class Snippets
     class DocumentController
       include Redcar::Document::Controller
-      include Redcar::Document::Controller::ModificationCallbacks
+      #include Redcar::Document::Controller::ModificationCallbacks
       include Redcar::Document::Controller::CursorCallbacks
 
       attr_reader :current_snippet
 
-      def before_modify(start_offset, end_offset, text)
-      end
-      
-      def after_modify
-      end
+      #def before_modify(start_offset, end_offset, text)
+      #end
+      #
+      #def after_modify
+      #end
       
       def cursor_moved(new_offset)
+        if @current_snippet and !@ignore
+          check_in_snippet
+        end
       end
       
       def start_snippet!(snippet)
@@ -33,7 +36,6 @@ module Redcar
       end
       
       def insert_snippet(snippet)
-        @in_snippet = true
         @content = snippet.content
         @insert_line_num = document.cursor_line
         @tab_stops = {}
@@ -79,6 +81,10 @@ module Redcar
       def insert_at_cursor_with_gravity(text)
         document.insert_at_cursor(text)
         document.cursor_offset += text.length
+      end
+  
+      def check_in_snippet
+        clear_snippet unless find_current_tab_stop
       end
 
       def parse_text_for_tab_stops(text)
@@ -336,7 +342,7 @@ module Redcar
       end
       
       def clear_snippet
-        @in_snippet = false
+        @current_snippet = false
         @word = nil
         @offset = nil
         @tab_stops = nil
@@ -355,7 +361,9 @@ module Redcar
           leftoff = hash[:leftmark].mark.get_offset
           rightoff = hash[:rightmark].mark.get_offset
           if document.cursor_offset <= rightoff and
-              document.selection_offset >= leftoff
+             document.cursor_offset >= leftoff and
+              document.selection_offset >= leftoff and
+              document.selection_offset <= rightoff
             candidates << [(document.cursor_offset - rightoff).abs +
                            (document.selection_offset - leftoff).abs,
                            num]
