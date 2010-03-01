@@ -7,14 +7,20 @@ module Redcar
       end
     
       def self.handle(edit_view, modifiers)
-        return false if modifiers.any?
         controller = edit_view.document.controllers(Snippets::DocumentController).first
         if controller.in_snippet?
-          controller.move_forward_tab_stop
-          true
+          if modifiers == ["Shift"]
+            controller.move_backward_tab_stop
+            true
+          elsif modifiers == []
+            controller.move_forward_tab_stop
+            true
+          else
+            false
+          end
         else
+          return false if modifiers.any?
           if snippet = find_snippet(edit_view)
-            p [:found_snippet, snippet]
             doc = edit_view.document
             doc.delete(doc.cursor_offset - snippet.tab_trigger.length, snippet.tab_trigger.length)
             controller.start_snippet!(snippet)

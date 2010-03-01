@@ -228,7 +228,7 @@ module Redcar
         @transformations.each {|_, hs| hs.each {|h| hashes << h}}
         hashes.each do |hash|
           if right = hash[:rightmark]
-            new_right_mark = document.create_mark(right, :right)
+            new_right_mark = document.create_mark(right.mark.get_offset, :right)
             new_right = SnippetMark.new(new_right_mark, right.order_id, right.stop_id)
             hash[:rightmark] = new_right
             document.delete_mark(right.mark)
@@ -237,7 +237,6 @@ module Redcar
             raise "error: no rightmark already here"
           end
           @marks << new_right
-          new_right.snippet_mark = true
         end
       end
 
@@ -296,12 +295,81 @@ module Redcar
           end
         end
       end
+      
+      def select_tab_stop(n)
+        document.set_selection_range(@tab_stops[n][:rightmark].mark.get_offset, 
+                                     @tab_stops[n][:leftmark].mark.get_offset)
+      end
+  
+      def move_forward_tab_stop
+        current = find_current_tab_stop
+        raise "unexpectedly outside snippet" unless current
+        if current == @tab_stops.keys.sort.last
+          if @tab_stops.include? 0
+            select_tab_stop(0)
+          else
+            document.cursor_offset = @snippet_end_mark.get_offset
+          end
+          clear_snippet
+        else
+          ix = @tab_stops.keys.sort.index(current)
+          new_ts = @tab_stops.keys.sort[ix+1]
+          if new_ts
+            select_tab_stop(new_ts)
+          else
+            if @tab_stops.include? 0
+              select_tab_stop(0)
+            else
+              document.cursor_offset = @snippet_end_mark.get_offset
+            end
+          end
+        end
+      end
+
+      def move_backward_tab_stop
+        current = find_current_tab_stop
+        raise "unexpectedly outside snippet" unless current
+        if current == 1
+        else
+          select_tab_stop(current-1)
+        end
+      end
+      
+      def clear_snippet
+        @in_snippet = false
+        @word = nil
+        @offset = nil
+        @tab_stops = nil
+        @snippet_end_mark = nil
+        @line = nil
+        @mirrors = nil
+        @ignore = true
+        @marks.each do |mark|
+          document.delete_mark(mark.mark)
+        end
+      end
+      
+      def find_current_tab_stop
+        candidates = []
+        @tab_stops.each do |num, hash|
+          leftoff = hash[:leftmark].mark.get_offset
+          rightoff = hash[:rightmark].mark.get_offset
+          if document.cursor_offset <= rightoff and
+              document.selection_offset >= leftoff
+            candidates << [(document.cursor_offset - rightoff).abs +
+                           (document.selection_offset - leftoff).abs,
+                           num]
+          end
+        end
+        unless candidates.empty?
+          candidates.sort.first[1]
+        end
+      end
 
       def insert_duplicate_contents
         update_mirrors
         update_transformations
       end
-
   
       def update_mirrors(start=nil, stop=nil)
         @mirrors.each do |num, mirrors|
