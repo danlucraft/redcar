@@ -200,6 +200,31 @@ Feature: Snippets
     And I press the Tab key in the edit tab
     Then the contents should be "\t<c>ABC if condition\n\t\nend"
 
+  Scenario: Multiple tab stops with content
+    Given there is a snippet with tab trigger "if" and scope "text.plain" and content
+      """
+        if ${1:condition}\n\t${2:code}\nend
+      """
+    When I open a new edit tab
+    And I replace the contents with "if<c>"
+    And I press the Tab key in the edit tab
+    Then the contents should be "if <s>condition<c>\n\tcode\nend"
+    And I press the Tab key in the edit tab
+    Then the contents should be "if condition\n\t<s>code<c>\nend"
+    And I press the Tab key in the edit tab
+    Then the contents should be "if condition\n\tcode\nend<c>"
+
+  Scenario: Mirrors mirror text
+    Given there is a snippet with tab trigger "name2" and scope "text.plain" and content
+      """
+        name: $1\nname: $1
+      """
+    When I open a new edit tab
+    And I replace the contents with "name2<c>"
+    And I press the Tab key in the edit tab
+    Then the contents should be "name: <c>\nname: "
+    And I insert "raider" at the cursor
+    Then the contents should be "name: <c>raider\nname: raider"
 
 
 

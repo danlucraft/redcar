@@ -3,16 +3,65 @@ module Redcar
   class Snippets
     class DocumentController
       include Redcar::Document::Controller
-      #include Redcar::Document::Controller::ModificationCallbacks
+      include Redcar::Document::Controller::ModificationCallbacks
       include Redcar::Document::Controller::CursorCallbacks
 
       attr_reader :current_snippet
 
-      #def before_modify(start_offset, end_offset, text)
-      #end
-      #
-      #def after_modify
-      #end
+      def before_modify(start_offset, end_offset, text)
+        if in_snippet?
+          @start_offset = start_offset
+          @end_offset   = end_offset
+          @text         = text
+        end
+      end
+      
+      def after_modify
+        if in_snippet? and @end_offset > @start_offset
+          update_after_delete(@start_offset, @end_offset)
+        end
+        if in_snippet? and @start_offset and !@constructing
+          left_marks = marks_at_offset(@start_offset)
+          right_marks = marks_at_offset(@start_offset + @text.length)
+          if @editing_stop_id
+            current_stop_id = @editing_stop_id
+          else
+            left_tab_stops = left_marks.select {|m| m.name =~ /^\$/ }.map(&:stop_id)
+            right_tab_stops = right_marks.select {|m| m.name =~ /^\$/ }.map(&:stop_id)
+            current_stop_id = (left_tab_stops + right_tab_stops).sort.first
+          end
+          current_left_mark = left_marks.find {|m| m.stop_id == current_stop_id }
+          current_right_mark = right_marks.find {|m| m.stop_id == current_stop_id }
+          if current_left_mark
+            current_left_offset = current_left_mark.mark.get_offset
+            (left_marks + right_marks).each do |mark|
+              if mark.stop_id != current_stop_id
+                if mark.order_id < current_left_mark.order_id and
+                    mark.mark.get_offset > current_left_offset
+                  mark.mark.offset = current_left_mark.mark.get_offset
+                end
+              end
+            end
+          end
+          if current_right_mark
+            current_right_offset = current_right_mark.mark.get_offset
+            (left_marks + right_marks).each do |mark|
+              if mark.stop_id != current_stop_id
+                if mark.order_id > current_right_mark.order_id and
+                    mark.mark.get_offset < current_right_offset
+                  mark.mark.offset = current_right_mark.mark.get_offset
+                end
+              end
+            end
+          end
+        end
+        if in_snippet? and !@ignore and @start_offset
+          update_after_insert(@start_offset, @text.length)
+          #@buf.parser.start_parsing
+          @start_offset, @end_offset, @text = nil, nil, nil
+        end
+        false
+      end
       
       def cursor_moved(new_offset)
         if @current_snippet and !@ignore
@@ -252,7 +301,53 @@ module Redcar
         @marks << snippet_mark
         snippet_mark
       end
+      
+      def marks_at_cursor
+        marks_at_offset(document.cursor_offset)
+      end
   
+      def marks_at_offset(offset)
+        marks.select {|m| m.mark.get_offset == offset }
+      end
+      
+      def marks
+        @marks
+      end
+  
+      def update_after_insert(offset, length)
+        #@buf.parser.stop_parsing
+        update_mirrors(offset, offset+length)
+        update_transformations(offset, offset+length)
+        #@buf.parser.start_parsing
+      end
+  
+      def update_after_delete(offset1, offset2)
+        #@buf.parser.stop_parsing
+        delete_any_mirrors(offset1, offset2)
+        update_mirrors(offset1, offset2)
+        update_transformations(offset1, offset2)
+        #@buf.parser.start_parsing
+      end
+  
+      def delete_any_mirrors(offset1, offset2)
+        @mirrors.each do |num, mirrors|
+          (mirrors||[]).reject! do |mirror|
+            if mirror[:leftmark].mark.get_offset == mirror[:rightmark].mark.get_offset
+              document.delete_mark(mirror[:leftmark].mark)
+              document.delete_mark(mirror[:rightmark].mark)
+              true
+            else
+              false
+            end
+          end
+        end
+        @mirrors.each do |num, ms|
+          if ms.empty?
+            @mirrors.delete(num)
+          end
+        end
+      end
+
       def get_balanced_braces(string)
         defn = []
         line = "$" + string
@@ -372,6 +467,18 @@ module Redcar
         unless candidates.empty?
           candidates.sort.first[1]
         end
+      end
+      
+      def get_tab_stop_range(num)
+        off1 = @tab_stops[num][:leftmark].mark.get_offset
+        off2 = @tab_stops[num][:rightmark].mark.get_offset
+        off1..off2
+      end
+  
+      def get_tab_stop_text(num)
+        i1 = @tab_stops[num][:leftmark].mark.get_offset
+        i2 = @tab_stops[num][:rightmark].mark.get_offset
+        document.get_slice(i1, i2)
       end
 
       def insert_duplicate_contents
