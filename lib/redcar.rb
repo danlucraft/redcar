@@ -8,6 +8,7 @@ require 'rbconfig'
 require 'redcar/ruby_extensions'
 require 'redcar/instance_exec'
 require 'redcar/usage'
+require 'regex_replace'
 
 require 'forwardable'
 require 'yaml'
@@ -57,8 +58,8 @@ module Redcar
     @environment
   end
 
-  def self.ensure_jruby
-    if Config::CONFIG["RUBY_INSTALL_NAME"] != "jruby"
+  def self.spin_up
+    unless ARGV.include?("--no-sub-jruby")
       require 'redcar/runner'
       runner = Redcar::Runner.new
       runner.spin_up
