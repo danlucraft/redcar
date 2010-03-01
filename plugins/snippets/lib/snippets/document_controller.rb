@@ -1,12 +1,20 @@
 
 module Redcar
   class Snippets
+    def self.current_mirrors
+      if m = Redcar::EditView.focussed_edit_view_document.controllers(Snippets::DocumentController).first.mirrors
+        if v = m[1]
+          v[0][:rightmark].mark
+        end
+      end
+    end
+
     class DocumentController
       include Redcar::Document::Controller
       include Redcar::Document::Controller::ModificationCallbacks
       include Redcar::Document::Controller::CursorCallbacks
 
-      attr_reader :current_snippet
+      attr_reader :current_snippet, :mirrors
 
       def before_modify(start_offset, end_offset, text)
         if in_snippet?
@@ -17,7 +25,7 @@ module Redcar
       end
       
       def after_modify
-        if in_snippet? and @end_offset > @start_offset
+        if in_snippet? and @end_offset > @start_offset and !@ignore
           update_after_delete(@start_offset, @end_offset)
         end
         if in_snippet? and @start_offset and !@constructing
@@ -60,6 +68,7 @@ module Redcar
           #@buf.parser.start_parsing
           @start_offset, @end_offset, @text = nil, nil, nil
         end
+
         false
       end
       

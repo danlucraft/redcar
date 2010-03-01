@@ -226,6 +226,47 @@ Feature: Snippets
     And I insert "raider" at the cursor
     Then the contents should be "name: <c>raider\nname: raider"
 
+  Scenario: Mirrors mirror tab stop with content
+    Given there is a snippet with tab trigger "name2" and scope "text.plain" and content
+      """
+        name: ${1:leoban}\nname: $1
+      """
+    When I open a new edit tab
+    And I replace the contents with "name2<c>"
+    And I press the Tab key in the edit tab
+    Then the contents should be "name: <s>leoban<c>\nname: leoban"
+    And I insert "s" at the cursor
+    Then the contents should be "name: <s>leoban<c>s\nname: leobans"
+
+  Scenario: Mirrors mirror tab stop with content at both ends
+    Given there is a snippet with tab trigger "name2" and scope "text.plain" and content
+      """
+        name: ${1:leoban}\nname: ${1:leoban}
+      """
+    When I open a new edit tab
+    And I replace the contents with "name2<c>"
+    And I press the Tab key in the edit tab
+    Then the contents should be "name: <s>leoban<c>\nname: leoban"
+    And I move the cursor to 10
+    And I insert "s" at the cursor
+    Then the contents should be "name: leob<c>san\nname: leobsan"
+    And I move the cursor to 10
+    And I press the Backspace key in the edit tab
+    And I press the Backspace key in the edit tab
+    Then the contents should be "name: le<c>san\nname: lesan"
+
+#  Scenario: Transforms tab stops
+#    Given there is a snippet with tab trigger "name" and scope "text.plain" and content
+#      """
+#        name: $1\nupper: ${1/(\\w+)/\\U$1\\E/}
+#      """
+#    When I open a new edit tab
+#    And I replace the contents with "name<c>"
+#    And I press the Tab key in the edit tab
+#    And I insert "raptor" at the cursor
+#    Then the contents should be "name: <s>raptor<c>\nname: RAPTOR"
+#    And I move the cursor to 13
+
 
 
 

@@ -112,7 +112,7 @@ module Redcar
         def get_offset;      location.get_offset;      end
         def get_line;        location.get_line;        end
         def get_line_offset; location.get_line_offset; end
-        def inspect;         "<Mark #{get_line}:#{get_line_offset}>"; end
+        def inspect;         "<Mark #{get_line}:#{get_line_offset} (#{get_offset})>"; end
       end
       
       def create_mark(offset, gravity)
