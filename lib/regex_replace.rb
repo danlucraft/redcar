@@ -70,8 +70,10 @@ class RegexReplace
       re.sub(string, &blk)
     else
       md = re.match(string)
-      r  = yield md
-      string[md.begin(0)..(md.end(0)-1)] = r
+      if md
+        r  = yield md
+        string[md.begin(0)..(md.end(0)-1)] = r
+      end
       string
     end
   end
@@ -142,6 +144,12 @@ if $0 == __FILE__
       rr = RegexReplace.new("blackbird", 
                             "laura")
       assert_equal "foo laura bar", rr.rep("foo blackbird bar")
+    end
+    
+    def test_simple_blank
+      rr = RegexReplace.new("blackbird", 
+                            "laura")
+      assert_equal "", rr.rep("")
     end
     
     def test_simple_global

@@ -255,17 +255,36 @@ Feature: Snippets
     And I press the Backspace key in the edit tab
     Then the contents should be "name: le<c>san\nname: lesan"
 
-#  Scenario: Transforms tab stops
-#    Given there is a snippet with tab trigger "name" and scope "text.plain" and content
-#      """
-#        name: $1\nupper: ${1/(\\w+)/\\U$1\\E/}
-#      """
-#    When I open a new edit tab
-#    And I replace the contents with "name<c>"
-#    And I press the Tab key in the edit tab
-#    And I insert "raptor" at the cursor
-#    Then the contents should be "name: <s>raptor<c>\nname: RAPTOR"
-#    And I move the cursor to 13
+  Scenario: Transforms tab stops
+    Given there is a snippet with tab trigger "name" and scope "text.plain" and content
+      """
+        name: $1\nupper: ${1/(\w+)/\U$1\E/}
+      """
+    When I open a new edit tab
+    And I replace the contents with "name<c>"
+    And I press the Tab key in the edit tab
+    And I insert "raptor" at the cursor
+    Then the contents should be "name: <c>raptor\nupper: RAPTOR"
+    And I move the cursor to 10
+    And I press the Backspace key in the edit tab
+    And I press the Backspace key in the edit tab
+    Then the contents should be "name: ra<c>or\nupper: RAOR"
+
+  Scenario: Globally transforms tab stops
+    Given there is a snippet with tab trigger "name" and scope "text.plain" and content
+      """
+        name: $1\nupper: ${1/(\w+)/\U$1\E/g}
+      """
+    When I open a new edit tab
+    And I replace the contents with "name<c>"
+    And I press the Tab key in the edit tab
+    And I insert "raptor blackbird" at the cursor
+    Then the contents should be "name: <c>raptor blackbird\nupper: RAPTOR BLACKBIRD"
+
+
+
+
+
 
 
 
