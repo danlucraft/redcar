@@ -64,6 +64,11 @@ When /^I press the Tab key in the edit tab$/ do
   edit_view.tab_pressed([])
 end
 
+When /^I press Shift\+Tab in the edit tab$/ do
+  edit_view = Redcar::EditView.focussed_tab_edit_view
+  edit_view.tab_pressed(["Shift"])
+end
+
 When /^I press the Left key in the edit tab$/ do
   edit_view = Redcar::EditView.focussed_tab_edit_view
   edit_view.left_pressed([])

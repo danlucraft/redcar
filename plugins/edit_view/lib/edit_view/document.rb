@@ -22,7 +22,7 @@ module Redcar
       attr_accessor :default_mirror
     end
     
-    attr_reader :mirror
+    attr_reader :mirror, :edit_view
     
     def initialize(edit_view)
       @edit_view = edit_view
@@ -314,6 +314,15 @@ module Redcar
     # @return [String] the text
     def get_range(start, length)
       controller.get_range(start, length)
+    end
+    
+    # Get a slice of text from the document.
+    #
+    # @param [String] start_offset the character offset of the start of the slice
+    # @param [String] end_offset   the character offset of the end of the slice
+    # @return [String] the text
+    def get_slice(start_offset, end_offset)
+      get_range(start_offset, end_offset - start_offset)
     end
 
     # Get the text of a line by index. (Includes a trailing "\n", 
