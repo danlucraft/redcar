@@ -59,11 +59,12 @@ module Redcar
   end
 
   def self.spin_up
-    unless ARGV.include?("--no-sub-jruby")
-      require 'redcar/runner'
-      runner = Redcar::Runner.new
-      runner.spin_up
-    end
+    return if ARGV.include?("--no-sub-jruby")
+    return if Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby" and [:linux, :windows].include?(platform)
+    
+    require 'redcar/runner'
+    runner = Redcar::Runner.new
+    runner.spin_up
   end
 
   def self.root
