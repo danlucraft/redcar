@@ -22,7 +22,7 @@ module Redcar
       attr_accessor :default_mirror
     end
     
-    attr_reader :mirror
+    attr_reader :mirror, :edit_view
     
     def initialize(edit_view)
       @edit_view = edit_view

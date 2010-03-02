@@ -117,7 +117,7 @@ module Redcar
           unless @tab_stops.include? 0
             @snippet_end_mark = document.create_mark(document.cursor_offset, :right)
           end
-          #fix_indent unless opts.include?(:indent) and !opts[:indent]
+          fix_indent
           create_right_marks
           @constructing = false
           set_names
@@ -129,6 +129,37 @@ module Redcar
           select_tab_stop(1)
         elsif !@tab_stops.empty?
           select_tab_stop(@tab_stops.keys.sort.first)
+        end
+      end
+      
+      def leading_whitespace(line)
+        line[/^(\s*)([^\s]|$)/, 1].chomp
+      end
+      
+      def compute_tab_stop(line, tab_width, soft_tabs)
+        re = / {0,#{tab_width - 1}}\t|#{" "*tab_width}/
+        sc = StringScanner.new(leading_whitespace(line))
+        tab_stop = 0
+        tab_stop += 1 while sc.skip(re)
+        tab_stop
+      end
+      
+      def fix_indent
+        tab_width = document.edit_view.tab_width
+        soft_tabs  = document.edit_view.soft_tabs?
+        line = document.get_line(@insert_line_num)
+        tab_stop = compute_tab_stop(line, tab_width, soft_tabs)
+        (@insert_line_num + 1).upto(@end_line_num) do |line_ix|
+          this_line = document.get_line(line_ix)
+          this_tab_stop = compute_tab_stop(this_line, tab_width, soft_tabs)
+          new_tab_stop  = tab_stop + this_tab_stop
+          pre = leading_whitespace(this_line)
+          document.delete(document.offset_at_line(line_ix), pre.length)
+          if soft_tabs
+            document.insert(document.offset_at_line(line_ix), " "*tab_width*new_tab_stop)
+          else
+            document.insert(document.offset_at_line(line_ix), "\t"*new_tab_stop)
+          end
         end
       end
         
@@ -256,6 +287,7 @@ module Redcar
             remaining_content = ""
           end
         end
+        @end_line_num = document.cursor_line
       end
             
       def onig_split(string, re)
@@ -270,21 +302,6 @@ module Redcar
         bits
       end
 
-      def fix_indent
-        firstline = document.get_line(@insert_line_num).chomp
-        if firstline
-          if md = firstline.match(/^(\s+)/)
-            indent = md[1]
-          else
-            indent = ""
-          end
-          lines = @content.scan("\n").length
-          lines.times do |i|
-            document.insert(document.offset_at_line(@insert_line_num + i + 1), indent)
-          end
-        end
-      end
-  
       def create_right_marks
         hashes = []
         @tab_stops.each {|_, h| hashes << h}
