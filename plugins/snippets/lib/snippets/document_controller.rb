@@ -154,12 +154,13 @@ module Redcar
           this_tab_stop = compute_tab_stop(this_line, tab_width, soft_tabs)
           new_tab_stop  = tab_stop + this_tab_stop
           pre = leading_whitespace(this_line)
-          document.delete(document.offset_at_line(line_ix), pre.length)
           if soft_tabs
-            document.insert(document.offset_at_line(line_ix), " "*tab_width*new_tab_stop)
+            new_indent = " "*tab_width*new_tab_stop
           else
-            document.insert(document.offset_at_line(line_ix), "\t"*new_tab_stop)
+            new_indent = "\t"*new_tab_stop
           end
+          document.insert(document.offset_at_line(line_ix), new_indent)
+          document.delete(document.offset_at_line(line_ix) + new_indent.length, pre.length)
         end
       end
         
