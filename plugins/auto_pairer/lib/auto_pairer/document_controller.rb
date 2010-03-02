@@ -17,6 +17,18 @@ module Redcar
         @mark_pairs = []
       end
       
+      def ignore
+        @ignore ||= 0 
+        @ignore += 1
+        yield
+        @ignore -= 1
+        @ignore = nil if @ignore == 0
+      end
+      
+      def ignore?
+        @ignore
+      end
+      
       def add_mark_pair(pair)
         @mark_pairs << pair
         if @mark_pairs.length > 10
@@ -50,6 +62,7 @@ module Redcar
       end
 
       def before_modify(start_offset, end_offset, text)
+        return if ignore?
         @start_offset  = start_offset
         @end_offset    = end_offset
         @text          = text
@@ -78,6 +91,7 @@ module Redcar
       end
       
       def after_modify
+        return if ignore?
         @done = nil
         
         # Deleted start of a mark pair
@@ -128,6 +142,7 @@ module Redcar
       end
       
       def cursor_moved(offset)
+        return if ignore?
         if !@ignore_mark 
           invalidate_pairs(offset)
         end

@@ -80,7 +80,9 @@ module Redcar
       
       def start_snippet!(snippet)
         @current_snippet = snippet
-        insert_snippet(snippet)
+        document.controllers(AutoPairer::DocumentController).first.ignore do
+          insert_snippet(snippet)
+        end
       end
       
       def in_snippet?
