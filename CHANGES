@@ -4,10 +4,12 @@ Version 0.3.4dev (TBA)
 New features:
 
   * Auto-pairer inserts matching characters ( -> ), " -> ", etc
+  * Snippets
   
 Internal changes:
 
   * New API for creating text Marks, to tag a position in a Document.
+  * Use 32 bit JVM by default.
   
 Fixes:
 

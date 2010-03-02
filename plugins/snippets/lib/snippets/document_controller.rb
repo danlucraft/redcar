@@ -64,7 +64,9 @@ module Redcar
           end
         end
         if in_snippet? and !@ignore and @start_offset
-          update_after_insert(@start_offset, @text.length)
+          document.controllers(AutoPairer::DocumentController).first.ignore do
+            update_after_insert(@start_offset, @text.length)
+          end
           #@buf.parser.start_parsing
           @start_offset, @end_offset, @text = nil, nil, nil
         end
