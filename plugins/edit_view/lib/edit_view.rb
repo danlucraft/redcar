@@ -283,6 +283,9 @@ module Redcar
       self.cursor_offset = data[:cursor_offset]
     end
     
+    def delay_parsing
+      controller.delay_parsing { yield }
+    end
   end
 end
 

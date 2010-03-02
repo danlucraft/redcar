@@ -83,7 +83,9 @@ module Redcar
       def start_snippet!(snippet)
         @current_snippet = snippet
         document.controllers(AutoPairer::DocumentController).first.ignore do
-          insert_snippet(snippet)
+          document.edit_view.delay_parsing do
+            insert_snippet(snippet)
+          end
         end
       end
       
@@ -115,19 +117,15 @@ module Redcar
         #@content = execute_backticks(@content, bundle ? bundle.dir : nil)
         selection_range = document.selection_range
         document.delete(selection_range.begin, selection_range.count)
-        #@buf.parser.stop_parsing
-        #@buf.autopairer.ignore do
-          parse_text_for_tab_stops(@content)
-          unless @tab_stops.include? 0
-            @snippet_end_mark = document.create_mark(document.cursor_offset, :right)
-          end
-          fix_indent
-          create_right_marks
-          @constructing = false
-          set_names
-          insert_duplicate_contents
-        #end
-        #@buf.parser.start_parsing
+        parse_text_for_tab_stops(@content)
+        unless @tab_stops.include? 0
+          @snippet_end_mark = document.create_mark(document.cursor_offset, :right)
+        end
+        fix_indent
+        create_right_marks
+        @constructing = false
+        set_names
+        insert_duplicate_contents
         @ignore = false
         if @tab_stops.keys.include? 1
           select_tab_stop(1)

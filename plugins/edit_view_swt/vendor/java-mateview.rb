@@ -24,6 +24,12 @@ module JavaMateView
       scope.isOpen = true
       self.parser.root = scope
     end
+    
+    def delay_parsing
+      parser.deactivate
+      yield
+      parser.reactivate
+    end
   end
 end
 
