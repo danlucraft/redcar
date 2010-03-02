@@ -46,7 +46,7 @@ module Redcar
               if mark.stop_id != current_stop_id
                 if mark.order_id < current_left_mark.order_id and
                     mark.mark.get_offset > current_left_offset
-                  mark.mark.offset = current_left_mark.mark.get_offset
+                  mark.mark.location.offset = current_left_mark.mark.get_offset
                 end
               end
             end
@@ -57,7 +57,7 @@ module Redcar
               if mark.stop_id != current_stop_id
                 if mark.order_id > current_right_mark.order_id and
                     mark.mark.get_offset < current_right_offset
-                  mark.mark.offset = current_right_mark.mark.get_offset
+                  mark.mark.location.offset = current_right_mark.mark.get_offset
                 end
               end
             end

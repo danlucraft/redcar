@@ -281,11 +281,108 @@ Feature: Snippets
     And I insert "raptor blackbird" at the cursor
     Then the contents should be "name: <c>raptor blackbird\nupper: RAPTOR BLACKBIRD"
 
+  Scenario: Nested tab stops
+    Given there is a snippet with tab trigger "hash" and scope "text.plain" and content
+      """
+        :${1:key} => ${2:"${3:value}"}${4:, }
+      """
+    When I open a new edit tab
+    And I replace the contents with "hash<c>"
+    And I press the Tab key in the edit tab
+    Then the contents should be ":<s>key<c> => \"value\", "
+    And I press the Tab key in the edit tab
+    Then the contents should be ":key => <s>\"value\"<c>, "
+    And I press the Tab key in the edit tab
+    Then the contents should be ":key => \"<s>value<c>\", "
+    And I insert "s" at the cursor
+    Then the contents should be ":key => \"<s>value<c>s\", "
+    And I press Shift+Tab in the edit tab
+    Then the contents should be ":key => <s>\"values\"<c>, "
 
+  Scenario: Very nested tab stops
+    Given there is a snippet with tab trigger "hash" and scope "text.plain" and content
+      """
+        :${1:key} => ${2:"${3:value ${4:is} 3}"}${5:, }
+      """
+    When I open a new edit tab
+    And I replace the contents with "hash<c>"
+    And I press the Tab key in the edit tab
+    Then the contents should be ":<s>key<c> => \"value is 3\", "
+    When I press the Tab key in the edit tab
+    Then the contents should be ":key => <s>\"value is 3\"<c>, "
+    When I press the Tab key in the edit tab
+    Then the contents should be ":key => \"<s>value is 3<c>\", "
+    When I press the Tab key in the edit tab
+    Then the contents should be ":key => \"value <s>is<c> 3\", "
+    When I press the Tab key in the edit tab
+    Then the contents should be ":key => \"value is 3\"<s>, <c>"
+    When I press Shift+Tab in the edit tab
+    Then the contents should be ":key => \"value <s>is<c> 3\", "
+    When I press Shift+Tab in the edit tab
+    Then the contents should be ":key => \"<s>value is 3<c>\", "
+    When I press Shift+Tab in the edit tab
+    Then the contents should be ":key => <s>\"value is 3\"<c>, "
+    When I press Shift+Tab in the edit tab
+    Then the contents should be ":<s>key<c> => \"value is 3\", "
 
+  Scenario: Latex snippet
+    Given there is a snippet with tab trigger "list" and scope "text.plain" and content
+      """
+        \begin{${1:env}}\n\t${1/(enumerate|itemize|list)|(description)|.*/(?1:\item )(?2:\item)/}$0\n\end{${1:env}}
+      """
+    When I open a new edit tab
+    And I replace the contents with "list<c>"
+    And I press the Tab key in the edit tab
+    Then the contents should be "\begin{<s>env<c>}\n\t\n\end{env}"
+    When I replace 7 to 10 with "list"
+    Then the contents should be "\begin{list<c>}\n\t\item \n\end{list}"
+    And I press the Tab key in the edit tab
+    Then the contents should be "\begin{list}\n\t\item <c>\n\end{list}"
 
+  Scenario: Transformations do not move cursor
+    Given there is a snippet with tab trigger "def" and scope "text.plain" and content
+      """
+        def $1${1/.+/\"\"\"/}
+      """
+    When I open a new edit tab
+    And I replace the contents with "def<c>"
+    And I press the Tab key in the edit tab
+    Then the contents should be "def <c>"
+    And I insert "a" at the cursor
+    Then the contents should be "def <c>a\"\"\""
 
-
+  Scenario: Abutting dollars
+    Given there is a snippet with tab trigger "def" and scope "text.plain" and content
+      """
+        def ${1:fname} ${3:docstring for $1}${3/.+/\"\"\"\n/}
+      """
+    When I open a new edit tab
+    And I replace the contents with "def<c>"
+    And I press the Tab key in the edit tab
+    Then the contents should be "def <s>fname<c> docstring for fname\"\"\"\n"
+    When I replace 4 to 9 with ""
+    Then the contents should be "def <c> docstring for \"\"\"\n"
+    
+  Scenario: Abutting dollars 2
+    Given there is a snippet with tab trigger "def" and scope "text.plain" and content
+      """
+        def ${1:fname} ${3:docstring for $1}${3/.+/\"\"\"\n/}${3/.+/\t/}${0:pass}
+      """
+    When I open a new edit tab
+    And I replace the contents with "def<c>"
+    And I press the Tab key in the edit tab
+    Then the contents should be "def <s>fname<c> docstring for fname\"\"\"\n\tpass"
+    When I replace 4 to 9 with ""
+    Then the contents should be "def <c> docstring for \"\"\"\n\tpass"
+    When I insert "m" at the cursor
+    Then the contents should be "def <c>m docstring for m\"\"\"\n\tpass"
+    And I press the Tab key in the edit tab
+    Then the contents should be "def m <s>docstring for m<c>\"\"\"\n\tpass"
+    When I insert "a" at the cursor
+    When I replace 6 to 21 with ""
+    Then the contents should be "def m <c>a\"\"\"\n\tpass"
+    When I insert "b" at the cursor
+    Then the contents should be "def m <c>ba\"\"\"\n\tpass"
 
 
 
