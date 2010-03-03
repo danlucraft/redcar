@@ -20,15 +20,15 @@ module Redcar
           end
         else
           return false if modifiers.any?
-          if snippet = find_snippet(edit_view)
-            doc = edit_view.document
-            doc.delete(doc.cursor_offset - snippet.tab_trigger.length, snippet.tab_trigger.length)
-            controller.start_snippet!(snippet)
-            true
-          else
-            false
-          end
+          find_snippet(edit_view)
         end
+      end
+      
+      def self.activate_snippet(edit_view, snippet)
+        controller = edit_view.document.controllers(Snippets::DocumentController).first
+        doc = edit_view.document
+        doc.delete(doc.cursor_offset - snippet.tab_trigger.length, snippet.tab_trigger.length)
+        controller.start_snippet!(snippet)
       end
       
       # Decides whether a snippet can be inserted at this location. If so
@@ -41,16 +41,10 @@ module Redcar
         if @word
           @offset = document.cursor_offset
           @start_word_offset = document.cursor_offset - @word.length
-          if scope_snippet = Snippets.registry.find_by_scope_and_tab_trigger(document.cursor_scope, @word)
-            scope_snippet
-          else
-            global_options = Snippets.registry.global_with_tab(@word)
-            if global_options.any?
-              choose_snippet(global_options)
-            end
+          options = Snippets.registry.find_by_scope_and_tab_trigger(document.cursor_scope, @word)
+          if options.any?
+            choose_snippet(edit_view, options)
           end
-        else
-          false
         end
       end
       
@@ -63,21 +57,25 @@ module Redcar
         word
       end
       
-      def self.choose_snippet(snippets)
+      def self.choose_snippet(edit_view, snippets)
         if not snippets or snippets.length == 0
-          nil
+          false
         elsif snippets.length == 1
-          snippets.first
+          activate_snippet(edit_view, snippets.first)
+          true
         else
-#          entries = snippets.map do |snippet_command|
-#            [nil, snippet_command.name, fn { 
-##              @buf.delete(@buf.iter(@start_word_offset), @buf.cursor_iter)
-#              snippet_command.new.do
-###            }]
-#          end
-#          Redcar::Menu.context_menu_options_popup(entries)
-#          nil
-          snippets.first
+        	builder = Menu::Builder.new do
+        	  snippets.group_by {|s| s.bundle_name }.each do |_, bsnippets|
+          	  bsnippets.each_with_index do |snippet, i|
+                item(snippet.name||"<untitled>") do
+                  Snippets::TabHandler.activate_snippet(edit_view, snippet) 
+                end
+            	end
+            	separator
+            end
+        	end
+        	Redcar.app.focussed_window.popup_menu_with_numbers(builder.menu)
+        	true
         end
       end
 

@@ -1,13 +1,6 @@
 
 module Redcar
   class Snippets
-    def self.current_mirrors
-      if m = Redcar::EditView.focussed_edit_view_document.controllers(Snippets::DocumentController).first.mirrors
-        if v = m[1]
-          v[0][:rightmark].mark
-        end
-      end
-    end
 
     class DocumentController
       include Redcar::Document::Controller

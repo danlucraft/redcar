@@ -2,9 +2,12 @@
 module Redcar
   module Textmate
     class Snippet
-      def initialize(path)
+      attr_reader :bundle_name
+    
+      def initialize(path, bundle_name)
         @path = path
         @plist = Plist.xml_to_plist(File.read(path))
+        @bundle_name = bundle_name
       end
       
       def name

@@ -53,7 +53,7 @@ module Redcar
         global.select {|s| s.tab_trigger == tab_trigger}
       end
       
-      def find_by_scope_and_tab_trigger(current_scope, tab_trigger)
+      def ranked_matching(current_scope, tab_trigger)
         matches_tab = @snippets.select {|s| s.tab_trigger == tab_trigger}
         matches = matches_tab.map do |snippet|
           next unless snippet.scope
@@ -62,12 +62,14 @@ module Redcar
           end
         end
         matches = matches.compact
-        best_match = matches.sort { |a, b|
+        sorted_matches = matches.sort { |a, b|
           JavaMateView::ScopeMatcher.compare_match(current_scope, a[0], b[0])
-        }.last
-        if best_match
-          best_match.last
-        end
+        }
+        sorted_matches.map {|m| m.last }
+      end
+      
+      def find_by_scope_and_tab_trigger(current_scope, tab_trigger)
+        (ranked_matching(current_scope, tab_trigger) + global_with_tab(tab_trigger)).uniq
       end
     end
     
@@ -91,6 +93,10 @@ module Redcar
       
       def key
         @options[:key]
+      end
+      
+      def bundle_name
+        nil
       end
     end
   end

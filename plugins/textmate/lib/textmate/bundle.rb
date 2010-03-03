@@ -17,7 +17,7 @@ module Redcar
       end
       
       def snippets
-        @snippets ||= snippet_paths.map {|path| Snippet.new(path) }
+        @snippets ||= snippet_paths.map {|path| Snippet.new(path, self.name) }
       end
       
       private
