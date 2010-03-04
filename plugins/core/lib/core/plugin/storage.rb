@@ -30,6 +30,7 @@ module Redcar
       def rollback
         if File.exists?(path)
           @storage = YAML.load_file(path)
+          raise 'storage file is corrupted--please delete ' + path unless @storage.is_a? Hash
           update_timestamp
         else
           @storage = {}
