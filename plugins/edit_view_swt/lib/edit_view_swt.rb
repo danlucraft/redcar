@@ -120,6 +120,10 @@ module Redcar
       end
     end
     
+    def delay_parsing
+      mate_text.delay_parsing { yield }
+    end
+    
     def swt_focus_gained
       EditView.focussed_edit_view = @model
       @model.focus

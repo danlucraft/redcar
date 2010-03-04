@@ -1,7 +1,7 @@
 
 Given /^there is an edit tab containing "([^\"]*)"$/ do |contents|
-  contents = eval(contents.inspect.gsub("\\\\", "\\"))
   tab = Redcar::Top::NewCommand.new.run
+  contents = eval(contents.inspect.gsub("\\\\", "\\"))
   cursor_offset = (contents =~ /<c>/)
   contents = contents.gsub("<c>", "")
   tab.edit_view.document.text = contents
@@ -18,11 +18,14 @@ When /^I close the focussed tab$/ do
   Redcar::Top::CloseTabCommand.new.run
 end
 
-When /^I replace the contents with "([^\"]*)"$/ do |arg1|
-  arg1 = arg1.gsub("\\n", "\n").gsub("\\t", "\t")
+When /^I replace the contents with "([^\"]*)"$/ do |contents|
+  contents = contents.gsub("\\n", "\n").gsub("\\t", "\t")
   win = Redcar.app.windows.first
   tab = win.focussed_notebook.focussed_tab
-  tab.edit_view.document.text = arg1
+  cursor_offset = (contents =~ /<c>/)
+  contents = contents.gsub("<c>", "")
+  tab.edit_view.document.text = contents
+  tab.edit_view.document.cursor_offset = cursor_offset
 end
 
 When /I move (up|down) a tab/ do |type|

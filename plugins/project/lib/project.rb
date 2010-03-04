@@ -131,6 +131,8 @@ module Redcar
       tree = Tree.new(Project::DirMirror.new(path),
                       Project::DirController.new)
       Project.open_tree(win, tree)
+      # adds the directory path to the RecentDirectories plugin
+      Redcar::RecentDirectories.store_path(path)
       storage['last_open_dir'] = path
     end
     

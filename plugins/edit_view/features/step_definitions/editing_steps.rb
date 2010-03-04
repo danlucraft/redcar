@@ -1,3 +1,8 @@
+
+def unescape_text(text)
+  text.gsub("\\t", "\t").gsub("\\n", "\n").gsub("\\\"", "\"")
+end
+
 When /^I undo$/ do
   Redcar::Top::UndoCommand.new.run
 end
@@ -42,9 +47,26 @@ When /^tabs are soft, (\d+) spaces$/ do |int|
   Redcar::EditView.focussed_tab_edit_view.tab_width = int.to_i
 end
 
+When /^I insert "(.*)" at the cursor$/ do |text|
+  Redcar::EditView.focussed_edit_view_document.insert_at_cursor(unescape_text(text))
+end
+
+When /^I insert "(.*)" at (\d+)$/ do |text, offset_s|
+  Redcar::EditView.focussed_edit_view_document.insert(offset_s.to_i, unescape_text(text))
+end
+
+When /^I replace (\d+) to (\d+) with "(.*)"$/ do |from, to, text|
+  Redcar::EditView.focussed_edit_view_document.replace(from.to_i, to.to_i - from.to_i, unescape_text(text))
+end
+
 When /^I press the Tab key in the edit tab$/ do
   edit_view = Redcar::EditView.focussed_tab_edit_view
   edit_view.tab_pressed([])
+end
+
+When /^I press Shift\+Tab in the edit tab$/ do
+  edit_view = Redcar::EditView.focussed_tab_edit_view
+  edit_view.tab_pressed(["Shift"])
 end
 
 When /^I press the Left key in the edit tab$/ do
@@ -77,8 +99,8 @@ When /^I press the Backspace key in the edit tab$/ do
   edit_view.backspace_pressed([])
 end
 
-Then /^the contents should be "([^\"]*)"$/ do |text|
-  expected = text.gsub("\\t", "\t").gsub("\\n", "\n")
+Then /^the contents should be "(.*)"$/ do |text|
+  expected = unescape_text(text)
   doc = Redcar::EditView.focussed_edit_view_document
   actual = doc.to_s
   if expected.include?("<c>")
@@ -93,9 +115,8 @@ Then /^the contents should be "([^\"]*)"$/ do |text|
   actual.should == expected
 end
 
-Then /^the contents of the edit tab should be "([^\"]*)"$/ do |text|
-  text = text.gsub("\\t", "\t").gsub("\\n", "\n")
-  Redcar::EditView.focussed_edit_view_document.to_s.should == text
+Then /^the contents of the edit tab should be "(.*)"$/ do |text|
+  Redcar::EditView.focussed_edit_view_document.to_s.should == unescape_text(text)
 end
 
 When /^I block select from (\d+) to (\d+)$/ do |from_str, to_str|

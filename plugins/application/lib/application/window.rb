@@ -160,6 +160,10 @@ module Redcar
       notify_listeners(:popup_menu, menu)
     end
     
+    def popup_menu_with_numbers(menu)
+      notify_listeners(:popup_menu_with_numbers, menu)
+    end
+    
     def refresh_menu
       notify_listeners(:refresh_menu)
     end

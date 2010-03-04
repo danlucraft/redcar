@@ -15,7 +15,7 @@ module Redcar
         [Swt::SWT::BAR, Swt::SWT::POP_UP]
       end
       
-      def initialize(window, menu_model, keymap, type)
+      def initialize(window, menu_model, keymap, type, options={})
         unless Menu.menu_types.include?(type)
           raise "type should be in #{Menu.menu_types.inspect}"
         end
@@ -24,6 +24,8 @@ module Redcar
         @menu_bar = Swt::Widgets::Menu.new(window.shell, type)
         return unless menu_model
         @handlers = []
+        @use_numbers = options[:numbers]
+        @number = 1
         add_entries_to_menu(@menu_bar, menu_model)
       end
       
@@ -38,6 +40,10 @@ module Redcar
       end
       
       private
+      
+      def use_numbers?
+        @use_numbers
+      end
       
       def add_entries_to_menu(menu, menu_model)
         menu_model.each do |entry|
@@ -63,8 +69,13 @@ module Redcar
       end
       
       def connect_proc_to_item(item, entry)
-        item.text = entry.text
-        item.add_selection_listener { entry.command[] }
+        if use_numbers?
+          item.text = entry.text + "\t" + @number.to_s
+          @number += 1
+        else
+          item.text = entry.text
+        end
+        item.add_selection_listener { entry.command.call }
       end
       
       def connect_command_to_item(item, entry)

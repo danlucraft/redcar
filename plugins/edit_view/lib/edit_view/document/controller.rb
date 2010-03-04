@@ -2,12 +2,10 @@
 module Redcar
   class Document
     module Controller
-      def initialize(document)
-        @document = document
-      end
+      attr_accessor :document
       
-      def document
-        @document
+      def inspect
+        "<#{self.class}>"
       end
       
       module ModificationCallbacks
@@ -22,6 +20,12 @@ module Redcar
       
       module NewlineCallback
         def after_newline(line_ix)
+          raise "not implemented"
+        end
+      end
+      
+      module CursorCallbacks
+        def cursor_moved(offset)
           raise "not implemented"
         end
       end

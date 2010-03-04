@@ -14,6 +14,7 @@ module Redcar
       def attach_modification_listeners
         jface_document.add_document_listener(DocumentListener.new(@model))
         styledText.add_selection_listener(SelectionListener.new(@model))
+        styledText.add_caret_listener(CaretListener.new(@model))
       end
       
       def single_line?
@@ -107,6 +108,31 @@ module Redcar
         @model.selection_range_changed(cursor_offset, selection_offset)
       end
       
+      class Mark < Struct.new(:location, :category)
+        def get_offset;      location.get_offset;      end
+        def get_line;        location.get_line;        end
+        def get_line_offset; location.get_line_offset; end
+        def inspect;         "<Mark #{get_line}:#{get_line_offset} (#{get_offset})>"; end
+      end
+      
+      def create_mark(offset, gravity)
+        line = line_at_offset(offset)
+        line_offset = offset - offset_at_line(line)
+        case gravity
+        when :left
+          category = "lefts"
+        when :right
+          category = "rights"
+        end
+  			location = @swt_mate_document.get_text_location(line, line_offset)
+				@swt_mate_document.add_text_location(category, location)
+				Mark.new(location, category)
+      end
+      
+      def delete_mark(mark)
+        @swt_mate_document.remove_text_location(mark.category, mark.location)
+      end
+      
       def block_selection_mode?
         styledText.get_block_selection
       end
@@ -117,6 +143,20 @@ module Redcar
       
       def styledText
         @swt_mate_document.mateText.getControl
+      end
+      
+      def scope_at(line, line_offset)
+        @swt_mate_document.mateText.scope_at(line, line_offset)
+      end
+      
+      class CaretListener
+        def initialize(model)
+          @model = model
+        end
+        
+        def caret_moved(event)
+          @model.cursor_moved(event.caretOffset)
+        end
       end
       
       class SelectionListener
