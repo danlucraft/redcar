@@ -16,7 +16,7 @@ else
   require File.join(File.dirname(__FILE__), %w(.. lib redcar_quick_start))
   exit if Redcar.try_to_load_via_drb
   require File.join(File.dirname(__FILE__), %w(.. lib redcar))
-  Redcar.ensure_jruby
+  Redcar.spin_up
   Redcar.environment = :user
   Redcar.load
   Redcar::Top.start

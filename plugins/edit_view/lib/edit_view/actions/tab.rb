@@ -2,6 +2,10 @@ module Redcar
   class EditView
     module Actions
       class IndentTabHandler
+        def self.priority
+          1
+        end
+        
         def self.handle(edit_view, modifiers)
           return false if modifiers.any?
           doc = edit_view.document

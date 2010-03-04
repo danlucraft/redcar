@@ -8,22 +8,21 @@ module Redcar
     include Redcar::Observable
     extend Forwardable
     
-    def self.register_controller_type(controller_type)
-      unless controller_type.ancestors.include?(Document::Controller)
-        raise "expected #{Document::Controller}"
+    def self.all_document_controller_types
+      result = []
+      Redcar.plugin_manager.loaded_plugins.each do |plugin|
+        if plugin.object.respond_to?(:document_controller_types)
+          result += plugin.object.document_controller_types
+        end
       end
-      document_controller_types << controller_type
-    end
-    
-    def self.document_controller_types
-      @document_controller_types ||= []
+      result
     end
     
     class << self
       attr_accessor :default_mirror
     end
     
-    attr_reader :mirror
+    attr_reader :mirror, :edit_view
     
     def initialize(edit_view)
       @edit_view = edit_view
@@ -33,12 +32,15 @@ module Redcar
     def get_controllers
       @controllers = {
         Controller::ModificationCallbacks => [],
-        Controller::NewlineCallback => []
+        Controller::NewlineCallback       => [],
+        Controller::CursorCallbacks       => []
       }
-      Document.document_controller_types.each do |type|
+      Document.all_document_controller_types.each do |type|
+        controller = type.new
+        controller.document = self
         @controllers.each do |key, value|
-          if type.ancestors.include?(key)
-            value << type.new(self)
+          if controller.is_a?(key)
+            value << controller
           end
         end
       end
@@ -57,11 +59,9 @@ module Redcar
       @mirror ? @mirror.title : nil
     end
     
-    # helper method to get
-    # the mirror's path
-    # if it has one
+    # helper method to get the mirror's path if it has one
     def path
-      if @mirror && @mirror.respond_to?(:path) && @mirror.path
+      if @mirror and @mirror.respond_to?(:path) and @mirror.path
         @mirror.path
       else
         nil
@@ -81,7 +81,9 @@ module Redcar
     def verify_text(start_offset, end_offset, text)
       @change = [start_offset, end_offset, text]    
       @controllers[Controller::ModificationCallbacks].each do |controller|
-        controller.before_modify(start_offset, end_offset, text)
+        rescue_document_controller_error(controller) do
+          controller.before_modify(start_offset, end_offset, text)
+        end
       end
     end
 
@@ -89,16 +91,28 @@ module Redcar
       start_offset, end_offset, text = *@change
       set_modified(true)
       @controllers[Controller::ModificationCallbacks].each do |controller|
-        controller.after_modify
+        rescue_document_controller_error(controller) do
+          controller.after_modify
+        end
       end
       @controllers[Controller::NewlineCallback].each do |controller|
         if text == "\n" or text == "\r\n"
-          controller.after_newline(line_at_offset(start_offset) + 1)
+          rescue_document_controller_error(controller) do
+            controller.after_newline(line_at_offset(start_offset) + 1)
+          end
         end
       end
       @change = nil      
       notify_listeners(:changed)
-    end                  
+    end
+    
+    def cursor_moved(new_offset)
+      @controllers[Controller::CursorCallbacks].each do |controller|
+        rescue_document_controller_error(controller) do
+          controller.cursor_moved(new_offset)
+        end
+      end
+    end               
     
     def about_to_be_changed(start_offset, length, text)
     end
@@ -130,6 +144,13 @@ module Redcar
     def insert(offset, text)
       text = text.gsub("\n", "") if single_line?
       replace(offset, 0, text)
+    end
+    
+    # Insert text at the cursor offset
+    #
+    # @param [String] text  text to insert
+    def insert_at_cursor(text)
+      insert(cursor_offset, text)
     end
     
     # Delete text
@@ -294,6 +315,15 @@ module Redcar
     def get_range(start, length)
       controller.get_range(start, length)
     end
+    
+    # Get a slice of text from the document.
+    #
+    # @param [String] start_offset the character offset of the start of the slice
+    # @param [String] end_offset   the character offset of the end of the slice
+    # @return [String] the text
+    def get_slice(start_offset, end_offset)
+      get_range(start_offset, end_offset - start_offset)
+    end
 
     # Get the text of a line by index. (Includes a trailing "\n", 
     # unless it is the last line in the document.)
@@ -380,6 +410,21 @@ module Redcar
     def num_lines_visible
       biggest_visible_line - smallest_visible_line
     end
+    
+    # The scope hierarchy at this point
+    #
+    # @param [String]
+    def cursor_scope
+      controller.scope_at(cursor_line, cursor_line_offset)
+    end
+    
+    def create_mark(offset, gravity=:right)
+      controller.create_mark(offset, gravity)
+    end
+    
+    def delete_mark(mark)
+      controller.delete_mark(mark)
+    end
 
     private
     
@@ -405,5 +450,17 @@ module Redcar
         "untitled"
       end
     end
+    
+    def rescue_document_controller_error(controller)
+      begin
+        yield
+      rescue => e
+        puts "*** ERROR in Document controller: #{controller.inspect}"
+        puts e.class.name + ": " + e.message
+        puts e.backtrace
+      end   
+    end
   end
 end
+
+

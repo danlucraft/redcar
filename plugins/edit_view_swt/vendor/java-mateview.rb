@@ -8,6 +8,7 @@ module JavaMateView
   import com.redcareditor.mate.Parser
   import com.redcareditor.mate.Pattern
   import com.redcareditor.mate.Scope
+  import com.redcareditor.mate.ScopeMatcher
   import com.redcareditor.theme.Theme
   import com.redcareditor.theme.ThemeManager
   
@@ -22,6 +23,12 @@ module JavaMateView
       scope.pattern = rps
       scope.isOpen = true
       self.parser.root = scope
+    end
+    
+    def delay_parsing
+      parser.deactivate
+      yield
+      parser.reactivate
     end
   end
 end

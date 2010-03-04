@@ -47,6 +47,7 @@ module Redcar
         @window.add_listener(:show,          &method(:show))
         @window.add_listener(:refresh_menu,  &method(:refresh_menu))
         @window.add_listener(:popup_menu,    &method(:popup_menu))
+        @window.add_listener(:popup_menu_with_numbers, &method(:popup_menu_with_numbers))
         @window.add_listener(:title_changed, &method(:title_changed))
         @window.add_listener(:new_notebook,  &method(:new_notebook))
         @window.add_listener(:notebook_removed,  &method(:notebook_removed))
@@ -133,6 +134,11 @@ module Redcar
       
       def popup_menu(menu)
         menu.controller = ApplicationSWT::Menu.new(self, menu, nil, Swt::SWT::POP_UP)
+        menu.controller.show
+      end
+      
+      def popup_menu_with_numbers(menu)
+        menu.controller = ApplicationSWT::Menu.new(self, menu, nil, Swt::SWT::POP_UP, :numbers => true)
         menu.controller.show
       end
       
