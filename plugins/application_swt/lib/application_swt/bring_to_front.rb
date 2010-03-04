@@ -6,7 +6,7 @@ module Redcar
         # bring a window to the front
         # force_active doesn't seem to work as expected, at least on doze
         # http://stackoverflow.com/questions/2315560/how-do-you-force-a-java-swt-program-to-move-itself-to-the-foreground
-        # this hack around works for windows.
+        # this hack around seems to work for windows.
       module BringToFront
         extend FFI::Library
         ffi_lib 'user32', 'kernel32'
@@ -18,7 +18,6 @@ module Redcar
         attach_function :GetCurrentThreadId, [], :int # unused
 
         def self.bring_window_to_front hwnd_int
-          puts 'bringing it' + hwnd_int.to_s
           wanted = hwnd_int
           top_window = BringToFront.GetForegroundWindow
           if top_window == 0

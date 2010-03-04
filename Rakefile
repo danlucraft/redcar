@@ -105,6 +105,8 @@ spec = Gem::Specification.new do |s|
   # relevant versions
   # s.add_dependency("logging", "> 1.0.0")
   
+  s.add_dependency("rubyzip")
+  
   # If your tests use any gems, include them here
   s.add_development_dependency("cucumber")
   s.add_development_dependency("rspec")
