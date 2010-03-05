@@ -136,9 +136,6 @@ module Redcar
       def execute
         if tab = win.focussed_notebook_tab
           tab.close
-        else
-         # interpret Ctrl+W with no tabs open as "close window", not just close tab
-         win.close
         end
       end
     end
@@ -546,6 +543,8 @@ module Redcar
         link "Cmd+Shift+]",     SwitchTabUpCommand
 
         link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
+        
+        link "Cmd+Shift+S", Snippets::OpenSnippetExplorer
       end
 
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
@@ -582,6 +581,8 @@ module Redcar
         link "Ctrl+Shift+Tab",       SwitchTabDownCommand
         link "Ctrl+Tab",     SwitchTabUpCommand
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
+        
+        link "Ctrl+Shift+S", Snippets::OpenSnippetExplorer
       end
       
       win = Redcar::Keymap.build("main", [:linux, :windows]) do
@@ -664,6 +665,9 @@ module Redcar
           item "Reload Again", PluginManagerUi::ReloadLastReloadedCommand
           item("Edit Preferences") { Project.open_dir(Redcar::Plugin::Storage.storage_dir, Redcar.app.new_window) }
           separator
+        end
+        sub_menu "Bundles" do
+          item "Find Snippet", Snippets::OpenSnippetExplorer
         end
         sub_menu "Help" do
           item "About", AboutCommand

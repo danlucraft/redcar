@@ -1,3 +1,4 @@
+
 Version 0.3.4dev (TBA)
 ======================
 
@@ -5,11 +6,13 @@ New features:
 
   * Auto-pairer inserts matching characters ( -> ), " -> ", etc
   * Snippets
+  * Recent directories menu (thanks Aaron)
   
 Internal changes:
 
   * New API for creating text Marks, to tag a position in a Document.
-  * Use 32 bit JVM by default.
+  * new PersistentCache class for plugins to simply cache stuff.
+  * Textmate plugin for dealing with Textmate bundles
   
 Fixes:
 
@@ -17,7 +20,7 @@ Fixes:
   
 New contributors:
 
-  * 
+  * Aaron McLeod
 
 Version 0.3.3dev (21 Feb 2010)
 ==============================

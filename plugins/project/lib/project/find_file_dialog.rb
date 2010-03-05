@@ -2,8 +2,6 @@ module Redcar
   class Project
   
     class FindFileDialog < FilterListDialog
-      MAX_ENTRIES = 20
-      
       def self.clear
         # unfortunately we receive a :focussed
         # message when the FindFileDialog
@@ -27,13 +25,13 @@ module Redcar
        attr_accessor :expect_a_clear
       end
       
-      def initialize win
+      def initialize(win)
         super()        
         # add a :focussed listener to the window if it hasn't
         # been set before
-        win.add_listener_at_most_once(FindFileDialog, :focussed) {
+        win.add_listener_at_most_once(FindFileDialog, :focussed) do
           FindFileDialog.clear
-        }
+        end
         FindFileDialog.expect_a_clear = true
       end
       
@@ -49,9 +47,10 @@ module Redcar
       
       def update_list(filter)
         if filter.length < 2
-          paths = Project.recent_files
+          paths = Project.recent_files_for(Project.focussed_project_path)
         else
-          paths = find_files_from_list(filter, Project.recent_files) + find_files(filter, Redcar.app.focussed_window.treebook.trees.last.tree_mirror.path)             
+          paths = find_files_from_list(filter, Project.recent_files_for(Project.focussed_project_path)) + 
+                  find_files(filter, Project.focussed_project_path)             
           paths.uniq! # in case there's some dupe's between the two lists
         end
                 
@@ -59,13 +58,13 @@ module Redcar
         full_paths = paths
         display_paths = full_paths.map { |path| display_path(path) }
         if display_paths.uniq.length < full_paths.length
-         # search out and expand duplicates
-          duplicates = display_paths.duplicates_as_hash
-          display_paths.each_with_index{|dp, i|
+          # search out and expand duplicates
+          duplicates = duplicates_as_hash(display_paths)
+          display_paths.each_with_index do |dp, i|
             if duplicates[dp]
-              display_paths[i] = display_path(full_paths[i], Redcar.app.focussed_window.treebook.trees.last.tree_mirror.path.split('/')[0..-2].join('/'))
+              display_paths[i] = display_path(full_paths[i], Project.focussed_project_path.split('/')[0..-2].join('/'))
             end
-          }
+          end
         end
         display_paths
       end
@@ -78,11 +77,11 @@ module Redcar
       end
       
       private
-      
-      def remove_from_list(path)
-        self.class.recent_files.delete(path)
+          
+      def duplicates_as_hash(enum)
+        enum.inject(Hash.new(0)) {|h,v| h[v] += 1 }.reject {|k,v| v == 1 }
       end
-      
+
       def display_path(path, first_remove_this_prefix = nil)
         n = -3
         if first_remove_this_prefix && path.index(first_remove_this_prefix) == 0
@@ -112,7 +111,7 @@ module Redcar
           end
           took = Time.now - s
           puts "find files (#{directories.length} dirs) took #{took}s"
-          files.reject!{|f|
+          files.reject do |f|
             begin
               File.directory?(f)
             rescue Errno::ENOENT
@@ -121,8 +120,7 @@ module Redcar
               # unicode in them.
               true
             end
-          }
-          files
+          end
         end
       end
       
@@ -137,60 +135,16 @@ module Redcar
       
       def find_files_from_list(text, file_list)
         re = make_regex(text)
-        file_list.select{|fn| 
-          fn.split('/').last =~ re # we don't worry about the ignore list
-          # for this one, because theoretically if they have chosen recent files
-          # they probably don't want to ignore them now
+        file_list.select { |fn| 
+          fn.split('/').last =~ re
         }.compact
       end
       
       def find_files(text, directories)
-        re = make_regex(text)
-
-        score_match_pairs = []
-        cutoff = 10000000
-        results = files(directories).each do |fn|
-          begin
-            bit = fn.split("/")
-            if (m = bit.last.match(re)) && not_on_ignore_list(bit.last)
-              cs = []
-              diffs = 0
-              m.captures.each_with_index do |_, i|
-                cs << m.begin(i + 1)
-                if i > 0
-                  diffs += cs[i] - cs[i-1]
-                end
-              end
-              # lower score is better
-              score = (cs[0] + diffs)*100 + bit.last.length
-              if score < cutoff
-                score_match_pairs << [score, fn]
-                score_match_pairs.sort!
-                if score_match_pairs.length == MAX_ENTRIES
-                  cutoff = score_match_pairs.last.first
-                  score_match_pairs.pop
-                end
-              end
-            end
-          rescue Errno::ENOENT
-            # File.directory? can throw no such file or directory even if File.exist?
-            # has returned true. For example this happens on some awful textmate filenames
-            # unicode in them.
-          end
+        filter_and_rank_by(files(directories), text) do |fn|
+          fn.split("/").last
         end
-        score_match_pairs.map {|a| a.last }
-      end
-
-      def make_regex(text)
-        re_src = "(" + text.split(//).map{|l| Regexp.escape(l) }.join(").*?(") + ")"
-        Regexp.new(re_src, :options => Regexp::IGNORECASE)
       end
     end
-  end
-end
-
-module Enumerable
-  def duplicates_as_hash
-    inject({}) {|h,v| h[v]=h[v].to_i+1; h}.reject{|k,v| v==1}
   end
 end

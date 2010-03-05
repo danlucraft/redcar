@@ -6,14 +6,14 @@ module Redcar
           rules = Hash.new {|h, k| h[k] = {}}
           @autopair_default = nil
           start = Time.now
-          all_settings = Textmate.all_bundles.map {|b| b.preferences}.flatten.map {|p| p.settings }.flatten
-          all_settings.each do |setting|
-            if setting.is_a?(Textmate::SmartTypingPairsSetting)
-              if setting.scope
-                rules[setting.scope] = Hash[*setting.pairs.flatten]
-              else
-                @autopair_default = Hash[*setting.pairs.flatten]
-              end
+          pair_settings = Textmate.all_settings.select do |setting|
+            setting.is_a?(Textmate::SmartTypingPairsSetting)
+          end
+          pair_settings.each do |setting|
+            if setting.scope
+              rules[setting.scope] = Hash[*setting.pairs.flatten]
+            else
+              @autopair_default = Hash[*setting.pairs.flatten]
             end
           end
           if @autopair_default
