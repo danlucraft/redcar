@@ -6,6 +6,7 @@ New features:
 
   * Auto-pairer inserts matching characters ( -> ), " -> ", etc
   * Snippets
+  * Recent directories menu (thanks Aaron)
   
 Internal changes:
 
@@ -19,7 +20,7 @@ Fixes:
   
 New contributors:
 
-  * 
+  * Aaron McLeod
 
 Version 0.3.3dev (21 Feb 2010)
 ==============================
