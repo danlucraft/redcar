@@ -5,6 +5,12 @@ module Redcar
       attr_accessor :storage_dir
     end
     
+    def self.all
+      Dir[File.join(storage_dir, "*.cache")].map do |fn|
+        PersistentCache.new(File.basename(fn)[/^(.*)\.cache$/, 1])
+      end
+    end
+    
     attr_reader :name
     
     def initialize(name)
@@ -19,6 +25,10 @@ module Redcar
         write_cache_file(Marshal.dump(result))
         result
       end
+    end
+    
+    def clear
+      FileUtils.rm_f(cache_file_name)
     end
     
     def cache_file_name

@@ -69,6 +69,27 @@ describe PersistentCache do
     cache.cache(&test_block).should == expected_result
     cache_file_exists?("test1.cache")
   end
+  
+  it "should let you get a list of all defined caches" do
+    PersistentCache.all.should == []
+    cache = PersistentCache.new("test1")
+    cache.cache(&test_block)
+    PersistentCache.all.map(&:name).should == ["test1"]
+  end
+  
+  it "should let you clear a cache" do
+    PersistentCache.all.should == []
+    cache = PersistentCache.new("test1")
+    cache.cache(&test_block)
+    it_should_have_calculated
+    PersistentCache.all.map(&:name).should == ["test1"]
+    cache.clear
+    PersistentCache.all.should == []
+    cache = PersistentCache.new("test1")
+    cache.cache(&test_block)
+    it_should_have_calculated
+    PersistentCache.all.map(&:name).should == ["test1"]
+  end
 end
 
 
