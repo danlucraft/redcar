@@ -10,6 +10,7 @@ require "core/interface"
 require "core/model"
 require "core/observable"
 require "core/observable_struct"
+require "core/persistent_cache"
 require "core/plugin"
 require "core/plugin/storage"
 
@@ -22,6 +23,7 @@ module Redcar
       unless File.exist?(Redcar.user_dir)
         FileUtils.mkdir(Redcar.user_dir)
       end
+      PersistentCache.storage_dir = Redcar.user_dir
     end
     
   end
