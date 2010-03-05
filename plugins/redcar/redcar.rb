@@ -136,9 +136,6 @@ module Redcar
       def execute
         if tab = win.focussed_notebook_tab
           tab.close
-        else
-         # interpret Ctrl+W with no tabs open as "close window", not just close tab
-         win.close
         end
       end
     end
