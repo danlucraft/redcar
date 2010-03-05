@@ -1,7 +1,6 @@
 
 require 'net/http'
 require 'fileutils'
-require File.dirname(__FILE__) + '/unzipper'
 
 module Redcar
   class Installer
@@ -137,6 +136,7 @@ module Redcar
       end
       
       if path =~ /.*\.zip$/
+        require File.dirname(__FILE__) + '/unzipper'
       	puts '  unzipping ' + path
       	Zip.unzip_file(path)
       end
