@@ -13,7 +13,7 @@ module Redcar
         # no other instance is currently running...
         return
       end
-      puts 'attempting to start via running instance'
+      puts 'attempting to start via running instance' if $VERBOSE
       require 'drb' # late require to avoid loadup time
       drb = DRbObject.new(nil, "druby://127.0.0.1:#{port}")
       
@@ -27,7 +27,7 @@ module Redcar
       else
        return unless drb.open_item_drb('just_bring_to_front')
       end
-      puts 'Success'
+      puts 'Success' if $VERBOSE
       true
     rescue Exception => e
       puts e.class.to_s + ": " + e.message

@@ -108,7 +108,8 @@ module Redcar
         @model.selection_range_changed(cursor_offset, selection_offset)
       end
       
-      class Mark < Struct.new(:location, :category)
+      @markStruct ||= Struct.new(:location, :category) # save away the parent class
+      class Mark < @markStruct
         def get_offset;      location.get_offset;      end
         def get_line;        location.get_line;        end
         def get_line_offset; location.get_line_offset; end
