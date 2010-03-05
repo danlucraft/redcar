@@ -23,7 +23,7 @@ module Redcar
       unless File.exist?(Redcar.user_dir)
         FileUtils.mkdir(Redcar.user_dir)
       end
-      PersistentCache.storage_dir = Redcar.user_dir
+      PersistentCache.storage_dir = File.join(Redcar.user_dir, "cache")
     end
     
   end

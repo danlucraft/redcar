@@ -23,6 +23,15 @@ module Redcar
         end
       end
     end
+    
+    def self.all_settings
+      @all_settings ||= begin
+        cache = PersistentCache.new("textmate_settings")
+        cache.cache do
+          Textmate.all_bundles.map {|b| b.preferences}.flatten.map {|p| p.settings }.flatten
+        end
+      end
+    end
   end
 end
 
