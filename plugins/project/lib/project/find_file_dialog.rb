@@ -3,36 +3,9 @@ module Redcar
   
     class FindFileDialog < FilterListDialog
       def self.clear
-        # unfortunately we receive a :focussed
-        # message when the FindFileDialog
-        # itself exits
-        # so we only really clear when we receive an *unexpected* message
-        if @expect_a_clear
-           @expect_a_clear = false
-        else
-          if storage['clear_cache_on_refocus']
-            @cached_dir_lists.clear 
-          end
+        if storage['clear_cache_on_refocus']
+          @cached_dir_lists.clear 
         end
-    
-      end
-      
-      @cached_dir_lists = {}
-      @expect_a_clear = false
-      
-      class << self
-       attr_reader :cached_dir_lists
-       attr_accessor :expect_a_clear
-      end
-      
-      def initialize(win)
-        super()        
-        # add a :focussed listener to the window if it hasn't
-        # been set before
-        win.add_listener_at_most_once(FindFileDialog, :focussed) do
-          FindFileDialog.clear
-        end
-        FindFileDialog.expect_a_clear = true
       end
       
       def self.storage
@@ -42,6 +15,27 @@ module Redcar
           storage
         end
       end    
+      
+      @cached_dir_lists = {}
+      
+      class << self
+       attr_reader :cached_dir_lists
+      end
+      
+      def self.open_dialogs
+        @open_dialogs ||= []
+      end
+      
+      def initialize(win)
+        super()
+        FindFileDialog.open_dialogs << [win, self]
+      end
+      
+      def close
+        super
+        # remove after so that we ignore the window focus event from the dialog itself closing
+        FindFileDialog.open_dialogs.reject! {|a| a.last == self }
+      end
       
       def update_list(filter)
         if filter.length < 2
@@ -77,7 +71,7 @@ module Redcar
       private
           
       def duplicates_as_hash(enum)
-        enum.inject(Hash.new(0)) {|h,v| h[v] += 1 }.reject {|k,v| v == 1 }
+        enum.inject(Hash.new(0)) {|h,v| h[v] += 1; h }.reject {|k,v| v == 1 }
       end
 
       def display_path(path, first_remove_this_prefix = nil)

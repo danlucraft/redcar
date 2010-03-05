@@ -205,6 +205,18 @@ module Redcar
           add_to_recent_files_for(Project.focussed_project_path, tab.document_mirror.path)
         end
       end
+      Redcar.app.windows.each {|w| attach_window_listeners(w) }
+      Redcar.app.add_listener(:new_window) do |win|
+        attach_window_listeners(win)
+      end
+    end
+    
+    def self.attach_window_listeners(window)
+      window.add_listener(:focussed) do
+        unless FindFileDialog.open_dialogs.map(&:first).include?(window)
+          FindFileDialog.clear
+        end
+      end
     end
     
     def self.add_to_recent_files_for(directory_path, new_file)

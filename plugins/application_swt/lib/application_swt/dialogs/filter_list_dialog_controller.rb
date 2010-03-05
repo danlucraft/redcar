@@ -1,6 +1,8 @@
 module Redcar
   class ApplicationSWT
     class FilterListDialogController
+      include ReentryHelpers
+        
       class FilterListDialog < Dialogs::NoButtonsDialog
         attr_reader :list, :text
         attr_accessor :controller
@@ -16,11 +18,30 @@ module Redcar
           @list.set_layout_data(Swt::Layout::RowData.new(400, 200))
           controller.attach_listeners
           controller.update_list
+          get_shell.add_shell_listener(ShellListener.new(controller))
+
           @list.set_selection(0)
         end
       end
       
-          
+      class ShellListener
+        def initialize(controller)
+          @controller = controller
+        end
+        
+        def shell_closed(e)
+          @controller.ignore(:closing) do
+            e.doit = false
+            @controller.model.close
+          end
+        end
+      
+        def shell_activated(_); end
+        def shell_deactivated(_); end
+        def shell_deiconified(_); end
+        def shell_iconified(_); end
+      end
+      
       def self.storage
         @storage ||= begin
           storage = Plugin::Storage.new('filter_list_dialog_controller')
@@ -28,6 +49,8 @@ module Redcar
           storage
         end
       end    
+      
+      attr_reader :model
       
       def initialize(model)
         @model = model
