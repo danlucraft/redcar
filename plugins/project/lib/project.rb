@@ -322,7 +322,7 @@ module Redcar
     class FindFileCommand < ProjectCommand
      
       def execute
-        dialog = FindFileDialog.new win
+        dialog = FindFileDialog.new(win)
         dialog.open
       end
     end

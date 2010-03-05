@@ -538,6 +538,8 @@ module Redcar
         link "Cmd+Shift+]",     SwitchTabUpCommand
 
         link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
+        
+        link "Cmd+Shift+S", Snippets::OpenSnippetExplorer
       end
 
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
@@ -576,6 +578,8 @@ module Redcar
         link "Ctrl+Shift+Page Down",     SwitchTabUpCommand
 
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
+        
+        link "Ctrl+Shift+S", Snippets::OpenSnippetExplorer
       end
       [linwin, osx]
     end
@@ -653,6 +657,9 @@ module Redcar
           item "Reload Again", PluginManagerUi::ReloadLastReloadedCommand
           item("Edit Preferences") { Project.open_dir(Redcar::Plugin::Storage.storage_dir, Redcar.app.new_window) }
           separator
+        end
+        sub_menu "Bundles" do
+          item "Find Snippet", Snippets::OpenSnippetExplorer
         end
         sub_menu "Help" do
           item "About", AboutCommand

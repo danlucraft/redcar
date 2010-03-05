@@ -95,6 +95,8 @@ spec = Gem::Specification.new do |s|
                           remove_gitignored_files(Dir.glob("lib/**/*")) + 
                           remove_gitignored_files(Dir.glob("plugins/**/*")) + 
                           Dir.glob("textmate/Bundles/*.tmbundle/Syntaxes/**/*") + 
+                          Dir.glob("textmate/Bundles/*.tmbundle/Preferences/**/*") + 
+                          Dir.glob("textmate/Bundles/*.tmbundle/Snippets/**/*") + 
                           Dir.glob("textmate/Themes/*.tmTheme")
   s.executables       = FileList["bin/redcar"].map { |f| File.basename(f) }
    
@@ -133,7 +135,7 @@ end
 desc 'Clean up (sanitize) the Textmate files for packaging'
 task :clean_textmate do
   # rename files to be x-platform safe
-  Dir["textmate/Bundles/*.tmbundle/{Syntaxes,Snippets,Templates}/**/*"].each do |fn|
+  Dir["textmate/Bundles/*.tmbundle/*/**/*"].each do |fn|
     if File.file?(fn)
       bits = fn.split("/").last.split(".")[0..-2].join("_")
       new_basename = bits.gsub(" ", "_").gsub(/[^\w_]/, "__") + File.extname(fn)

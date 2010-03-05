@@ -2,8 +2,6 @@ module Redcar
   class Project
   
     class FindFileDialog < FilterListDialog
-      MAX_ENTRIES = 20
-      
       def self.clear
         # unfortunately we receive a :focussed
         # message when the FindFileDialog
@@ -27,13 +25,13 @@ module Redcar
        attr_accessor :expect_a_clear
       end
       
-      def initialize win
+      def initialize(win)
         super()        
         # add a :focussed listener to the window if it hasn't
         # been set before
-        win.add_listener_at_most_once(FindFileDialog, :focussed) {
+        win.add_listener_at_most_once(FindFileDialog, :focussed) do
           FindFileDialog.clear
-        }
+        end
         FindFileDialog.expect_a_clear = true
       end
       
@@ -132,45 +130,9 @@ module Redcar
       end
       
       def find_files(text, directories)
-        re = make_regex(text)
-
-        score_match_pairs = []
-        cutoff = 10000000
-        results = files(directories).each do |fn|
-          begin
-            bit = fn.split("/")
-            if m = bit.last.match(re)
-              cs = []
-              diffs = 0
-              m.captures.each_with_index do |_, i|
-                cs << m.begin(i + 1)
-                if i > 0
-                  diffs += cs[i] - cs[i-1]
-                end
-              end
-              # lower score is better
-              score = (cs[0] + diffs)*100 + bit.last.length
-              if score < cutoff
-                score_match_pairs << [score, fn]
-                score_match_pairs.sort!
-                if score_match_pairs.length == MAX_ENTRIES
-                  cutoff = score_match_pairs.last.first
-                  score_match_pairs.pop
-                end
-              end
-            end
-          rescue Errno::ENOENT
-            # File.directory? can throw no such file or directory even if File.exist?
-            # has returned true. For example this happens on some awful textmate filenames
-            # unicode in them.
-          end
+        filter_and_rank_by(files(directories), text) do |fn|
+          fn.split("/").last
         end
-        score_match_pairs.map {|a| a.last }
-      end
-
-      def make_regex(text)
-        re_src = "(" + text.split(//).map{|l| Regexp.escape(l) }.join(").*?(") + ")"
-        Regexp.new(re_src, :options => Regexp::IGNORECASE)
       end
     end
   end

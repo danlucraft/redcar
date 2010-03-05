@@ -1,5 +1,6 @@
 
 require 'snippets/document_controller'
+require 'snippets/explorer'
 require 'snippets/tab_handler'
 
 module Redcar
@@ -21,6 +22,14 @@ module Redcar
         puts "took #{Time.now - s}s to load snippets"
         registry.add(tm_snippets)
         registry
+      end
+    end
+    
+    class OpenSnippetExplorer < DocumentCommand
+      
+      def execute
+        dialog = Explorer.new(doc)
+        dialog.open
       end
     end
     
