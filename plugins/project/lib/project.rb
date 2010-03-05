@@ -9,6 +9,7 @@ require "project/drb_service"
 
 module Redcar
   class Project
+    RECENT_FILES_LENGTH = 20
 
     # this will restore open files unless other files or dirs were passed
     # as command line parameters
@@ -131,11 +132,28 @@ module Redcar
       storage['last_open_dir'] = path
     end
     
-    # A list of files previously opened in this session
+    # A list of files previously opened in this session for a given directory path
     #
+    # @param  [String] path   a directory path
     # @return [Array<String>] an array of paths
-    def self.recent_files
-      @recent_files ||= []
+    def self.recent_files_for(path)
+      (@recent_files ||= Hash.new {|h,k| h[k] = [] })[path]
+    end
+    
+    # The directory path of the currently focussed project, or nil if
+    # there is no directory open in the focussed window.
+    #
+    # @return [String, nil]
+    def self.focussed_project_path
+      if tree = focussed_project_tree
+        tree.tree_mirror.path
+      end
+    end
+    
+    # The Tree object for the currently focussed project tree, or nil
+    # if there is no directory open in the focussed window.
+    def self.focussed_project_tree
+      Redcar.app.focussed_window.treebook.trees.detect {|t| t.tree_mirror.is_a?(Project::DirMirror)}
     end
     
     private
@@ -184,26 +202,20 @@ module Redcar
     def self.init_current_files_hooks
       Redcar.app.add_listener(:tab_focussed) do |tab|
         if tab and tab.document_mirror.respond_to?(:path)
-          add_to_recent_files(tab.document_mirror.path)
+          add_to_recent_files_for(Project.focussed_project_path, tab.document_mirror.path)
         end
       end
     end
     
-    def self.add_to_recent_files(new_file)
-      # sanitize paths for doze
-      # like "E:\\installs\\ruby191p376\\bin/rdebug.bat" => "E:/installs/ruby191p376/bin/rdebug.bat"
+    def self.add_to_recent_files_for(directory_path, new_file)
       new_file = File.expand_path(new_file) 
-      unless new_file == @last_file
-        recent_files.delete(new_file)
-        recent_files << new_file
-      
-        if @last_file
-          recent_files.delete(@last_file)
-          recent_files.unshift(@last_file)
-        end
+      if recent_files_for(directory_path).include?(new_file)
+        recent_files_for(directory_path).delete(new_file)
       end
-
-      @last_file = new_file
+      recent_files_for(directory_path) << new_file
+      if recent_files_for(directory_path).length > RECENT_FILES_LENGTH
+        recent_files_for(directory_path).shift
+      end
     end
     
     def self.set_tree(win, tree)

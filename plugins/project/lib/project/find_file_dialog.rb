@@ -45,9 +45,10 @@ module Redcar
       
       def update_list(filter)
         if filter.length < 2
-          paths = Project.recent_files
+          paths = Project.recent_files_for(Project.focussed_project_path)
         else
-          paths = find_files_from_list(filter, Project.recent_files) + find_files(filter, Redcar.app.focussed_window.treebook.trees.last.tree_mirror.path)             
+          paths = find_files_from_list(filter, Project.recent_files_for(Project.focussed_project_path)) + 
+                  find_files(filter, Project.focussed_project_path)             
           paths.uniq! # in case there's some dupe's between the two lists
         end
                 
@@ -55,13 +56,13 @@ module Redcar
         full_paths = paths
         display_paths = full_paths.map { |path| display_path(path) }
         if display_paths.uniq.length < full_paths.length
-         # search out and expand duplicates
-          duplicates = display_paths.duplicates_as_hash
-          display_paths.each_with_index{|dp, i|
+          # search out and expand duplicates
+          duplicates = duplicates_as_hash(display_paths)
+          display_paths.each_with_index do |dp, i|
             if duplicates[dp]
-              display_paths[i] = display_path(full_paths[i], Redcar.app.focussed_window.treebook.trees.last.tree_mirror.path.split('/')[0..-2].join('/'))
+              display_paths[i] = display_path(full_paths[i], Project.focussed_project_path.split('/')[0..-2].join('/'))
             end
-          }
+          end
         end
         display_paths
       end
@@ -74,11 +75,11 @@ module Redcar
       end
       
       private
-      
-      def remove_from_list(path)
-        self.class.recent_files.delete(path)
+          
+      def duplicates_as_hash(enum)
+        enum.inject(Hash.new(0)) {|h,v| h[v] += 1 }.reject {|k,v| v == 1 }
       end
-      
+
       def display_path(path, first_remove_this_prefix = nil)
         n = -3
         if first_remove_this_prefix && path.index(first_remove_this_prefix) == 0
@@ -108,7 +109,7 @@ module Redcar
           end
           took = Time.now - s
           puts "find files (#{directories.length} dirs) took #{took}s"
-          files.reject!{|f|
+          files.reject do |f|
             begin
               File.directory?(f)
             rescue Errno::ENOENT
@@ -117,14 +118,13 @@ module Redcar
               # unicode in them.
               true
             end
-          }
-          files
+          end
         end
       end
       
       def find_files_from_list(text, file_list)
         re = make_regex(text)
-        file_list.select{|fn| 
+        file_list.select { |fn| 
           fn.split('/').last =~ re
         }.compact
       end
@@ -135,11 +135,5 @@ module Redcar
         end
       end
     end
-  end
-end
-
-module Enumerable
-  def duplicates_as_hash
-    inject({}) {|h,v| h[v]=h[v].to_i+1; h}.reject{|k,v| v==1}
   end
 end
