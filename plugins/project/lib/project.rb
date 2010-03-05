@@ -6,6 +6,7 @@ require "project/find_file_dialog"
 require "project/dir_mirror"
 require "project/dir_controller"
 require "project/drb_service"
+require "project/recent_directories"
 
 module Redcar
   class Project
@@ -133,7 +134,7 @@ module Redcar
                       Project::DirController.new)
       Project.open_tree(win, tree)
       # adds the directory path to the RecentDirectories plugin
-      Redcar::RecentDirectories.store_path(path)
+      RecentDirectories.store_path(path)
       storage['last_open_dir'] = path
     end
     
@@ -210,6 +211,18 @@ module Redcar
       Redcar.app.add_listener(:tab_focussed) do |tab|
         if tab and tab.document_mirror.respond_to?(:path)
           add_to_recent_files_for(Project.focussed_project_path, tab.document_mirror.path)
+        end
+      end
+      Redcar.app.windows.each {|w| attach_window_listeners(w) }
+      Redcar.app.add_listener(:new_window) do |win|
+        attach_window_listeners(win)
+      end
+    end
+    
+    def self.attach_window_listeners(window)
+      window.add_listener(:focussed) do
+        unless FindFileDialog.open_dialogs.map(&:first).include?(window)
+          FindFileDialog.clear
         end
       end
     end

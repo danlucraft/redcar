@@ -76,17 +76,6 @@ module Redcar
       block
     end
     
-    #  Same as add_listener
-    #  but only adds the listener once, based on 
-    #  @param [key] 
-    def add_listener_at_most_once(key, *event_names)
-      @already_here ||= {}
-      unless @already_here[key]
-        add_listener(*event_names) { |*args| yield(*args) }
-        @already_here[key] = true
-      end
-    end
-    
     # Remove a listener from this object.
     #
     # @param [Handler] an event handler as returned by add_listener

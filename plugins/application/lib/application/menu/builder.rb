@@ -38,8 +38,6 @@ module Redcar
         instance_eval(&block)
       end
       
-      private
-      
       def item(text, command=nil, &block)
         @current_menu << Item.new(text, command, &block)
       end

@@ -70,33 +70,33 @@ module Redcar
         end
         @shell.add_key_listener(KeyListener.new(self))
       end
+          
+      class KeyListener
+        def initialize(edit_view_swt)
+          @edit_view_swt = edit_view_swt
+        end
         
-    class KeyListener
-      def initialize(edit_view_swt)
-        @edit_view_swt = edit_view_swt
-      end
-      
-      def key_pressed(key_event)
-      p key_event
-        if key_event.character == Swt::SWT::TAB
-        p :tab_pressedwin
-        elsif key_event.character == Swt::SWT::ESC
-        p :esc_pressedwin
+        def key_pressed(key_event)
+        p key_event
+          if key_event.character == Swt::SWT::TAB
+          p :tab_pressedwin
+          elsif key_event.character == Swt::SWT::ESC
+          p :esc_pressedwin
+          end
+        end
+        
+        def verify_key(key_event)
+        p :verkey
+          if key_event.character == Swt::SWT::TAB
+          p :tab_pressed
+          key_event.doit = false
+          end
+        end
+        
+        def key_released(key_event)
         end
       end
       
-      def verify_key(key_event)
-      p :verkey
-        if key_event.character == Swt::SWT::TAB
-        p :tab_pressed
-        key_event.doit = false
-        end
-      end
-      
-      def key_released(key_event)
-      end
-    end
-    
       def create_treebook_controller
         treebook = @window.treebook
         controller = ApplicationSWT::Treebook.new(
