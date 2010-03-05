@@ -585,11 +585,7 @@ module Redcar
         link "Ctrl+Shift+S", Snippets::OpenSnippetExplorer
       end
       
-      win = Redcar::Keymap.build("main", [:linux, :windows]) do
-        link "Shift+Escape",   AutoCompleter::AutoCompleteCommand # ctrl+escape brings up the start button in doze
-      end
-      
-      [linwin, osx, win]
+      [linwin, osx]
     end
     
     def self.menus
