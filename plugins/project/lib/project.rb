@@ -6,6 +6,7 @@ require "project/find_file_dialog"
 require "project/dir_mirror"
 require "project/dir_controller"
 require "project/drb_service"
+require "project/recent_directories"
 
 module Redcar
   class Project
@@ -128,7 +129,7 @@ module Redcar
                       Project::DirController.new)
       Project.open_tree(win, tree)
       # adds the directory path to the RecentDirectories plugin
-      Redcar::RecentDirectories.store_path(path)
+      RecentDirectories.store_path(path)
       storage['last_open_dir'] = path
     end
     
