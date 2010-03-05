@@ -10,7 +10,8 @@ New features:
 Internal changes:
 
   * New API for creating text Marks, to tag a position in a Document.
-  * Use 32 bit JVM by default.
+  * new PersistentCache class for plugins to simply cache stuff.
+  * Textmate plugin for dealing with Textmate bundles
   
 Fixes:
 

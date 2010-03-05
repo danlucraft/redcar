@@ -7,8 +7,6 @@ Features still to port
 
   * Tests passing on 3 platforms
   * Full project support
-  * Snippets
-  * Bracket matching
   * Text/Source/Ruby bundle commands ported
   * Drag and drop of tabs
   * Packaged for one-click install on 3 platforms
