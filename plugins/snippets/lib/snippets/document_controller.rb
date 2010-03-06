@@ -18,9 +18,6 @@ module Redcar
       end
       
       def after_modify
-        if in_snippet? and @end_offset > @start_offset and !@ignore
-          update_after_delete(@start_offset, @end_offset)
-        end
         if in_snippet? and @start_offset and !@constructing
           left_marks = marks_at_offset(@start_offset)
           right_marks = marks_at_offset(@start_offset + @text.length)
@@ -56,11 +53,13 @@ module Redcar
             end
           end
         end
+        if in_snippet? and @end_offset > @start_offset and !@ignore
+          update_after_delete(@start_offset, @end_offset)
+        end
         if in_snippet? and !@ignore and @start_offset
           document.controllers(AutoPairer::DocumentController).first.ignore do
             update_after_insert(@start_offset, @text.length)
           end
-          #@buf.parser.start_parsing
           @start_offset, @end_offset, @text = nil, nil, nil
         end
 

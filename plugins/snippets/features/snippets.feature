@@ -357,6 +357,15 @@ Feature: Snippets
     When I insert "b" at the cursor
     Then the contents should be "def m <c>ba\"\"\"\n\tpass"
 
-
+  Scenario: Enclosing transformations
+    Given there is a snippet with tab trigger "def" and scope "text.plain" and content
+      """
+        def i${3/(^.*?\S.*)|.*/(?1:\()/}${3:args}${3/(^.*?\S.*)|.*/(?1:\))/}
+      """
+    When I replace the contents with "def<c>"
+    And I press the Tab key in the edit tab
+    Then the contents should be "def i(<s>args<c>)"
+    When I replace 6 to 10 with "foo"
+    Then the contents should be "def i(foo)"
 
 
