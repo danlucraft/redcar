@@ -78,6 +78,20 @@ module Redcar
         item.add_selection_listener { entry.command.call }
       end
       
+      class SelectionListener
+        def initialize(entry)
+          @entry = entry
+        end
+        
+        def widget_selected(e)
+          @entry.selected(e.stateMask != 0)
+        end
+        
+        def widget_default_selected(e)
+          @entry.selected(e.stateMask != 0)
+        end
+      end
+      
       def connect_command_to_item(item, entry)
         if key_specifier = @keymap.command_to_key(entry.command)
           if key_string    = BindingTranslator.platform_key_string(key_specifier)
@@ -91,9 +105,7 @@ module Redcar
         else
           item.text = entry.text
         end
-        item.addSelectionListener do
-          entry.selected
-        end
+        item.add_selection_listener(SelectionListener.new(entry))
         h = entry.command.add_listener(:active_changed) do |value|
           unless item.disposed
             item.enabled = value

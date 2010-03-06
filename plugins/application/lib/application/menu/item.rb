@@ -22,8 +22,8 @@ module Redcar
       end
       
       # Call this to signal that the menu item has been selected by the user.
-      def selected
-        @command.new.run
+      def selected(with_key=false)
+        @command.new.run#(:with_key => with_key)
       end
       
       def merge(other)

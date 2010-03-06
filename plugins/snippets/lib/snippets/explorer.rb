@@ -32,7 +32,7 @@ module Redcar
       private
       
       def display(snippet)
-        "#{snippet.bundle_name} - #{snippet.name} - #{snippet.tab_trigger}"
+        "#{snippet.bundle_name} / #{snippet.name} (#{snippet.tab_trigger}↦)"
       end
       
       def all_snippets
