@@ -17,6 +17,10 @@ module Redcar
         @plist["scope"]
       end
       
+      def uuid
+        @plist["uuid"]
+      end
+      
       def settings
         @settings ||= begin
           @plist["settings"].map do |name, setting_plist|

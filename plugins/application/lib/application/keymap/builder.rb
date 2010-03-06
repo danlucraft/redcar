@@ -6,7 +6,11 @@ module Redcar
 
       def initialize(name, platforms, &block)
         @keymap = Keymap.new(name, platforms)
-        instance_eval(&block)
+        if block.arity == 1
+          block.call(self)
+        else
+          instance_eval(&block)
+        end
       end
       
       private

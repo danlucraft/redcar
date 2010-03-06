@@ -537,6 +537,7 @@ module Redcar
         link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
         
         link "Cmd+Shift+S", Snippets::OpenSnippetExplorer
+        #Textmate.attach_keybindings(self, :osx)
       end
 
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
@@ -577,6 +578,8 @@ module Redcar
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
         
         link "Ctrl+Shift+S", Snippets::OpenSnippetExplorer
+        #Textmate.attach_keybindings(self, :linux)
+
       end
       [linwin, osx]
     end
@@ -661,6 +664,8 @@ module Redcar
         end
         sub_menu "Bundles" do
           item "Find Snippet", Snippets::OpenSnippetExplorer
+          separator
+          Textmate.attach_menus(self)
         end
         sub_menu "Help" do
           item "About", AboutCommand

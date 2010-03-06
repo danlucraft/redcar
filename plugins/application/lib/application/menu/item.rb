@@ -8,7 +8,7 @@ module Redcar
         end
       end
       
-      attr_reader :text, :command, :block
+      attr_reader :text, :command
   
       # Create a new Item, with the given text to display in the menu, and
       # either:
@@ -18,25 +18,12 @@ module Redcar
         @text, @command = text, command
         if !command & block
           @command = block
-        # if command and block are set, set the block attribute
-        elsif command && block
-          @block = block
         end
       end
       
       # Call this to signal that the menu item has been selected by the user.
-      # This runs the Item's Command
       def selected
-        if @block
-          c = @command.new
-          # block is called, passing the returned variable into the Command's block attribute
-          # This was implemented for RecentDirectories plugin
-          # Refactor if you feel necessary
-          c.block(@block.call)
-          c.run
-        else
-          @command.new.run
-        end
+        @command.new.run
       end
       
       def merge(other)

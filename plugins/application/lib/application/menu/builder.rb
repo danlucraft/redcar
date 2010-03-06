@@ -35,7 +35,11 @@ module Redcar
           @menu = menu_or_text
         end
         @current_menu = @menu
-        instance_eval(&block)
+        if block.arity == 1
+          block.call(self)
+        else
+          instance_eval(&block)
+        end
       end
       
       def item(text, command=nil, &block)
@@ -50,7 +54,11 @@ module Redcar
         new_menu = Menu.new(text)
         @current_menu << new_menu
         old_menu, @current_menu = @current_menu, new_menu
-        instance_eval(&block)
+        if block.arity == 1
+          block.call(self)
+        else
+          instance_eval(&block)
+        end
         @current_menu = old_menu
       end
     end

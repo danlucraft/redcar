@@ -2,22 +2,84 @@
 module Redcar
   module Textmate
     class Bundle
-      attr_reader :path
+      attr_reader :path, :snippets, :preferences
     
       def initialize(path)
         @path = File.expand_path(path)
+        info_path = File.join(path, "info.plist")
+        if File.exist?(info_path)
+          @plist = Plist.xml_to_plist(File.read(info_path))
+        end
+        @snippets = snippet_paths.map {|path| Snippet.new(path, self.name) }
+        @preferences = preference_paths.map {|path| Preference.new(path) }
       end
       
       def name
-        File.split(path).last.gsub(/\.tmbundle/i, "")
+        @plist["name"]
       end
       
-      def preferences
-        @preferences ||= preference_paths.map {|path| Preference.new(path) }
+      def uuid
+        @plist["uuid"]
       end
       
-      def snippets
-        @snippets ||= snippet_paths.map {|path| Snippet.new(path, self.name) }
+      def ordering
+        @plist["ordering"]
+      end
+      
+      def contact_name
+        @plist["contactName"]
+      end
+      
+      def contact_email
+        @plist["contactEmailRot13"]
+      end
+      
+      def description
+        @plist["description"]
+      end
+      
+      def deleted
+        @plist["deleted"]
+      end
+      
+      def main_menu
+        @plist["mainMenu"]
+      end
+      
+      def sub_menus
+        main_menu["submenus"]
+      end
+      
+      def build_menu(builder)
+        snippets
+        if main_menu and main_menu["items"]
+          builder.sub_menu name do |m|
+            main_menu["items"].each do |item|
+              build_menu_from_item(builder, item)
+            end
+          end
+        end
+      end
+      
+      def build_menu_from_item(builder, item)
+        if item =~ /^$/
+          builder.separator
+        elsif snippet = Textmate.uuid_hash[item] and snippet.is_a?(Textmate::Snippet)
+          return unless snippet.name and snippet.name != ""
+          builder.item(snippet.to_menu_string) do
+            doc = EditView.focussed_edit_view_document
+            if doc
+              controller = doc.controllers(Snippets::DocumentController).first
+              controller.start_snippet!(snippet)
+            end
+          end
+        elsif sub_menu = sub_menus[item]
+          builder.sub_menu(sub_menu["name"]) do |sub_builder|
+            sub_menu["items"].each do |sub_item|
+              build_menu_from_item(sub_builder, sub_item)
+            end
+          end
+        end
       end
       
       private
