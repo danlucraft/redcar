@@ -392,52 +392,60 @@ module Redcar
     
     class SearchForwardCommand < Redcar::EditTabCommand
       
-      class Speedbar < Redcar::Speedbar
+      class SearchSpeedbar < Redcar::Speedbar
         class << self
           attr_accessor :previous_query
+          attr_accessor :previous_is_regex
+          attr_accessor :previous_match_case
         end
         
         def after_draw
-          self.query.value = Speedbar.previous_query || ""
+          self.query.value = SearchSpeedbar.previous_query || ""
+          self.is_regex.value = SearchSpeedbar.previous_is_regex
+          self.match_case.value = SearchSpeedbar.previous_match_case
           self.query.edit_view.document.select_all
         end
       
         label :label, "Search:"
         textbox :query        
         
-        toggle :is_regex, 'Regex', nil, true do
-          # it sets is_regex to either true or false
+        toggle :is_regex, 'Regex', nil, false do |v|
+          # v is true or false
+          SearchSpeedbar.previous_is_regex = v          
         end
         
-        toggle :match_case, 'Match case', nil, true do
-          
+        toggle :match_case, 'Match case', nil, false do |v|
+          SearchSpeedbar.previous_match_case = v          
         end      
         
         button :search, "Search", "Return" do
-          current_query = query.value
-          SearchForwardCommand::Speedbar.previous_query = current_query
-          if !is_regex.value
+          SearchSpeedbar.previous_query = query.value
+          SearchSpeedbar.previous_match_case = match_case.value
+          SearchSpeedbar.previous_is_regex = is_regex.value
+          success = SearchSpeedbar.repeat_query
+        end
+        
+        def self.repeat_query
+          current_query = @previous_query
+          if !@previous_is_regex
             current_query = Regexp.escape(current_query)
           end
-          success = FindNextRegex.new(Regexp.new(current_query, !match_case.value), true).run
+          FindNextRegex.new(Regexp.new(current_query, !@previous_match_case), true).run
         end
       end
       
       def execute
-        @speedbar = SearchForwardCommand::Speedbar.new
+        @speedbar = SearchSpeedbar.new
         win.open_speedbar(@speedbar)
       end
-
+      
     end
     
-    class RepeatPreviousSearchForwardCommand < Redcar::EditTabCommand
-      
+    class RepeatPreviousSearchForwardCommand < Redcar::EditTabCommand      
       def execute
-        FindNextRegex.new(Regexp.new(SearchForwardCommand::Speedbar.previous_query), true).run   
+        SearchForwardCommand::SearchSpeedbar.repeat_query
       end
-      
     end
-        
     
     class FindNextRegex < Redcar::EditTabCommand
       def initialize(re, wrap=nil)
@@ -553,7 +561,7 @@ module Redcar
         
         link "Ctrl+Shift+E", EditView::InfoSpeedbarCommand
         link "Ctrl+Z",       UndoCommand
-        link "Ctrl+Shift+Z", RedoCommand
+        link "Ctrl+Y",       RedoCommand
         link "Ctrl+X",       CutCommand
         link "Ctrl+C",       CopyCommand
         link "Ctrl+V",       PasteCommand
@@ -561,9 +569,9 @@ module Redcar
         link "Ctrl+E",       MoveEndCommand
         link "Ctrl+[",       DecreaseIndentCommand
         link "Ctrl+]",       IncreaseIndentCommand
-        link "Ctrl+L",       GotoLineCommand
+        link "Ctrl+G",       GotoLineCommand
         link "Ctrl+F",       SearchForwardCommand
-        link "Ctrl+G",       RepeatPreviousSearchForwardCommand
+        link "F3",           RepeatPreviousSearchForwardCommand
         link "Ctrl+A",       SelectAllCommand
         link "Ctrl+B",       ToggleBlockSelectionCommand
         link "Ctrl+Space",       AutoCompleter::AutoCompleteCommand
@@ -572,15 +580,15 @@ module Redcar
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
         link "Ctrl+Alt+O",       SwitchNotebookCommand
-        link "Ctrl+Shift+Page Up",       SwitchTabDownCommand
-        link "Ctrl+Shift+Page Down",     SwitchTabUpCommand
-
+        link "Ctrl+Shift+Tab",       SwitchTabDownCommand
+        link "Ctrl+Tab",     SwitchTabUpCommand
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
         
         link "Ctrl+Shift+S", Snippets::OpenSnippetExplorer
         #Textmate.attach_keybindings(self, :linux)
 
       end
+      
       [linwin, osx]
     end
     

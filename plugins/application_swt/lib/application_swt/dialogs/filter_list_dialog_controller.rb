@@ -103,8 +103,9 @@ module Redcar
       
       def update_list
         @last_keypress = Time.now
-        Swt::Widgets::Display.getCurrent.timerExec(300, Swt::RRunnable.new { 
-          if @dialog and @last_keypress and Time.now - @last_keypress > FilterListDialogController.storage['pause_before_update_seconds']
+        pause_time = FilterListDialogController.storage['pause_before_update_seconds']
+        Swt::Widgets::Display.getCurrent.timerExec(pause_time*1000, Swt::RRunnable.new { 
+          if @dialog and @last_keypress and (Time.now - @last_keypress + pause_time) > pause_time
             @last_keypress = nil
             s = Time.now
             list = @model.update_list(@dialog.text.get_text)

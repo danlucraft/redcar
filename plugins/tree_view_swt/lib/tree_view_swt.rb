@@ -3,6 +3,15 @@ module Redcar
   class TreeViewSWT
     attr_reader :viewer
     
+    def self.storage
+      @storage ||= begin
+         storage = Plugin::Storage.new('tree_view_swt_plugin')
+         storage.set_default('refresh_trees_on_refocus', true)
+         storage
+      end
+    end
+
+    
     def initialize(composite, model)
       @composite, @model = composite, model
       @viewer = JFace::Viewers::TreeViewer.new(@composite, Swt::SWT::VIRTUAL)
@@ -18,7 +27,7 @@ module Redcar
       @model.add_listener(:refresh) do
         s = Time.now
         begin
-          @viewer.refresh
+          @viewer.refresh if TreeViewSWT.storage['refresh_trees_on_refocus']
         rescue => e
           # Don't know why the @viewer sometimes throws these:
           # "undefined method `getParent' for #<Redcar::TreeViewSWT::TreeMirrorContentProvider:0x44655c8c> (NoMethodError)"

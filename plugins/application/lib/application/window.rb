@@ -175,14 +175,14 @@ module Redcar
     end
 
     def close
-      notify_listeners(:about_to_close, self)
-      notebooks.each do |notebook| 
-        notebook.tabs.each {|tab| tab.close }
-      end
-      if notebooks.length > 1
-        close_notebook
-      end
       ignore(:closing) do
+        notify_listeners(:about_to_close, self)
+        notebooks.each do |notebook| 
+          notebook.tabs.each {|tab| tab.close }
+        end
+        if notebooks.length > 1
+          close_notebook
+        end
         notify_listeners(:closed, self)
       end
     end

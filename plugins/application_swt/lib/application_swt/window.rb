@@ -122,9 +122,14 @@ module Redcar
        end
 
       def bring_to_front
-        @shell.set_minimized(false)
-        @shell.force_active
-        @shell.set_minimized(false)
+        @shell.set_minimized(false) # unminimize, just in case
+        @shell.redraw
+        if Redcar.platform == :windows
+          require File.dirname(__FILE__) + '/bring_to_front'
+          BringToFront.bring_window_to_front self.shell.handle          
+        end
+        @shell.force_active # doesn't do anything, really
+        @shell.set_active
       end        
       
       def popup_menu(menu)

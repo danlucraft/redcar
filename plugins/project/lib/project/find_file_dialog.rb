@@ -31,6 +31,16 @@ module Redcar
         FindFileDialog.open_dialogs << [win, self]
       end
       
+      def self.storage
+        @storage ||= begin
+          storage = Plugin::Storage.new('find_file_dialog')
+          storage.set_default('clear_cache_on_refocus', true)
+          storage.set_default('ignore_files_that_match_these_regexes', [])
+          storage.set_default('ignore_files_that_match_these_regexes_example_for_reference', [/.*\.class/i])
+          storage
+        end
+      end    
+
       def close
         super
         # remove after so that we ignore the window focus event from the dialog itself closing
@@ -114,6 +124,15 @@ module Redcar
             end
           end
         end
+      end
+      
+      def not_on_ignore_list(filename)
+        self.class.storage['ignore_files_that_match_these_regexes'].each{|re|
+          if re =~ filename        
+            return false 
+          end
+        }
+        true
       end
       
       def find_files_from_list(text, file_list)

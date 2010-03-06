@@ -23,13 +23,9 @@ NB the install will take a minute or so to complete as it has to download about
 
 Run 
 
-    $ redcar
+    $ redcar --help
     
-Usage:
-
-         --font=FONT  Choose font
-    --font-size=SIZE  Choose font point size
-       --theme=THEME  Choose Textmate theme
+for a list of options.
 
 ## INSTALLING FROM SOURCE
 
@@ -51,6 +47,7 @@ To run on OSX:
 
     $ jruby -J-XstartOnFirstThread bin/redcar        
 
+You may also need to install the rake, rspec and cucumber gems.
 
 ## PROBLEMS?
 

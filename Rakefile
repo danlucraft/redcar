@@ -6,8 +6,9 @@ require 'cucumber/rake/task'
 require "rake/gempackagetask"
 require "rake/rdoctask"
 
-if RUBY_PLATFORM =~ /mswin/
+if RUBY_PLATFORM =~ /mswin|mingw/
   begin
+    # not available for jruby yet
     require 'win32console'
   rescue LoadError
     ARGV << "--nocolour"
@@ -105,6 +106,8 @@ spec = Gem::Specification.new do |s|
   # If you want to depend on other gems, add them here, along with any
   # relevant versions
   # s.add_dependency("logging", "> 1.0.0")
+  
+  s.add_dependency("rubyzip")
   
   # If your tests use any gems, include them here
   s.add_development_dependency("cucumber")

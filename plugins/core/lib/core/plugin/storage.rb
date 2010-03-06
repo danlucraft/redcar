@@ -21,6 +21,7 @@ module Redcar
       # Save the storage to disk.
       def save
         File.open(path, "w") { |f| YAML.dump(@storage, f) }
+        update_timestamp
         self
       end
 
@@ -29,6 +30,8 @@ module Redcar
       def rollback
         if File.exists?(path)
           @storage = YAML.load_file(path)
+          raise 'storage file is corrupted--please delete ' + path unless @storage.is_a? Hash
+          update_timestamp
         else
           @storage = {}
         end
@@ -38,6 +41,11 @@ module Redcar
       # retrieve key value
       # note: it does not re-read from disk before returning you this value
       def [](key)
+        if @last_modified_time
+          if File.stat(path()).mtime != @last_modified_time
+            rollback
+          end
+        end
         @storage[key]
       end
       
@@ -50,7 +58,7 @@ module Redcar
       end
       
       def set_default(key, value)
-        unless @storage[key]
+        unless @storage.has_key?(key)
           self[key] = value
         end
         value
@@ -64,6 +72,10 @@ module Redcar
       
       def path
         File.join(Storage.storage_dir, @name + ".yaml")
+      end
+      
+      def update_timestamp
+        @last_modified_time = File.stat(path()).mtime
       end
     end
   end

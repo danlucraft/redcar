@@ -3,14 +3,16 @@ require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
 describe Redcar::Plugin::Storage do
   
+  before do
+    FileUtils.rm_rf(Redcar::Plugin::Storage.new('test_storage_saved').send(:path))
+  end
+  
   it "acts like a hash" do
-    storage = Redcar::Plugin::Storage.new('test')
+    storage = Redcar::Plugin::Storage.new('test_storage_saved')
     storage[:some_key] = "some value"
     storage[:some_key].should == "some value"
     storage[:some_key] = "some other value"
     storage[:some_key].should == "some other value"
-    
-    FileUtils.rm_rf(storage.send(:path))
   end
 
   it "saves to disk" do
@@ -34,6 +36,33 @@ describe Redcar::Plugin::Storage do
     storage['a'].should == 'c'
     storage = Redcar::Plugin::Storage.new('test_storage_saved')
     storage['a'].should == 'c'
-  end    
+    storage['b'] = false
+    storage.set_default('b', true)
+    storage['b'].should == false
+  end
+  
+  it "should have the default work when that's the first method called" do
+    storage = Redcar::Plugin::Storage.new('test_storage_saved2')
+    FileUtils.touch storage.send(:path)
+    proc { storage.rollback }.should raise_exception
+    FileUtils.rm storage.send(:path)
+  end
+  
+  it "should reload when the storage file itself has been elsewise modified" do
+    storage = Redcar::Plugin::Storage.new('test_storage_saved')
+    storage['a'] = 'b'
+    storage['a'].should == 'b'
+    storage['a'].should == 'b'
+    sleep 1 # windows doesn't have finer granularity than this
+    File.open(storage.send(:path), 'w') do |f|
+      f.write "---
+                a: new"
+    end    
+    storage['a'].should == 'new'
+    storage['a'].should == 'new'
+    storage = Redcar::Plugin::Storage.new('test_storage_saved')
+    storage['a'].should == 'new'    
+  end
+  
   
 end

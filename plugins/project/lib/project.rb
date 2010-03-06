@@ -107,7 +107,7 @@ module Redcar
     
     # Opens a new EditTab with a FileMirror for the given path.
     #
-    # @path  [String] path  the path of the file to be edited
+    # @path  [String] path the path of the file to be edited
     # @param [Window] win  the Window to open the File in
     def self.open_file(path, win = Redcar.app.focussed_window)
       win ||= Redcar.app.new_window # in case there's not one open
@@ -124,6 +124,11 @@ module Redcar
     # @param [String] path  the path of the directory to view
     # @param [Window] win  the Window to open the Tree in
     def self.open_dir(path, win = Redcar.app.focussed_window)
+      if !File.directory?(path)
+      	# avoid blank directory panels
+      	puts 'warning, unable to open dir ' + path
+      	return
+      end
       win ||= Redcar.app.new_window # case none open
       tree = Tree.new(Project::DirMirror.new(path),
                       Project::DirController.new)
@@ -189,8 +194,10 @@ module Redcar
     # handles files and/or dirs passed as command line arguments
     def self.handle_startup_arguments
       if ARGV
-        dir_args  = ARGV.select {|path| File.directory?(path) }
-        file_args = ARGV.select {|path| File.file?(path)      }
+        args = ARGV.dup
+        dir_args  = args.select {|path| File.directory?(path) }
+        args -= dir_args
+        file_args = args.select {|path| !path.start_with?('--') }
         
         dir_args.each {|path| open_dir(path) }
         file_args.each {|path| open_file(path) }

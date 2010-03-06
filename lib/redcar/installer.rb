@@ -19,7 +19,10 @@ module Redcar
       require 'win32/registry'
       # associate it with the current rubyw.exe
       rubyw_bin = File.join([Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name']]) << 'w' << Config::CONFIG['EXEEXT']
-      rubyw_bin.gsub!('/', '\\') # executable name wants back slashes
+      if rubyw_bin.include? 'file'
+        raise 'this must be run from a ruby exe, not a java -cpjruby.jar command'
+      end
+      rubyw_bin.gsub!('/', '\\') # executable names wants back slashes
       for type, english_text  in {'*' => 'Open with Redcar', 'Directory' => 'Open with Redcar (dir)'}
         name = Win32::Registry::HKEY_LOCAL_MACHINE.create "Software\\classes\\#{type}\\shell\\open_with_redcar"
         name.write_s nil, english_text
@@ -64,11 +67,12 @@ module Redcar
     JRUBY_JAR_DIR = File.expand_path(File.join(File.dirname(__FILE__), ".."))
     
     JRUBY = [
-      "http://jruby.kenai.com/downloads/1.4.0/jruby-complete-1.4.0.jar",
       "/jruby/jcodings.jar",
       "/jruby/jdom.jar",
       "/jruby/joni.jar"
     ]
+
+    JRUBY << "http://jruby.kenai.com/downloads/1.4.0/jruby-complete-1.4.0.jar" unless RUBY_PLATFORM =~ /java/
     
     JOPENSSL = {
       "/jruby/bcmail-jdk14-139-#{Redcar::VERSION}.jar" => "lib/openssl/lib/bcmail-jdk14-139.jar",
@@ -109,6 +113,9 @@ module Redcar
       when /windows|mswin|mingw/i
         download("/swt/win32.jar", File.join(plugins_dir, %w(application_swt vendor swt win32 swt.jar)))
         # download("/swt/win64.jar", File.join(plugins_dir, %w(application_swt vendor swt win64 swt.jar)))
+        vendor_dir = File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. vendor)))
+
+        download("http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.2/runtimes/xulrunner-1.9.2.en-US.win32.zip", File.join(vendor_dir, 'xulrunner.zip'))
       end
     end
     
@@ -126,6 +133,12 @@ module Redcar
       FileUtils.mkdir_p(File.dirname(path))
       File.open(path, "wb") do |write_out|
         write_out.print @connection.get(URI.parse(uri))
+      end
+      
+      if path =~ /.*\.zip$/
+        require File.dirname(__FILE__) + '/unzipper'
+      	puts '  unzipping ' + path
+      	Zip.unzip_file(path)
       end
 
       puts "  downloaded #{uri}\n          to #{path}\n"
