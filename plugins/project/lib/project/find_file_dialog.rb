@@ -19,7 +19,7 @@ module Redcar
       @cached_dir_lists = {}
       
       class << self
-       attr_reader :cached_dir_lists
+        attr_reader :cached_dir_lists
       end
       
       def self.open_dialogs
@@ -86,22 +86,21 @@ module Redcar
 
       def display_path(path, first_remove_this_prefix = nil)
         n = -3
-        if first_remove_this_prefix && path.index(first_remove_this_prefix) == 0
+        if first_remove_this_prefix and path.index(first_remove_this_prefix) == 0
           path = path[first_remove_this_prefix.length..-1]
           # show the full subdirs in the case of collisions
           n = -100
         end
         
         if path.count('/') > 0
-            count_back = [-path.count('/'), n].max
-            path.split("/").last +
+          count_back = [-path.count('/'), n].max
+          path.split("/").last +
             " (" +
-              path.split("/")[count_back..-2].join("/") +
+            path.split("/")[count_back..-2].join("/") +
             ")"
         else
-           path
+          path
         end
-          
       end
       
       def files(directories)
@@ -127,11 +126,11 @@ module Redcar
       end
       
       def not_on_ignore_list(filename)
-        self.class.storage['ignore_files_that_match_these_regexes'].each{|re|
-          if re =~ filename        
-            return false 
+        self.class.storage['ignore_files_that_match_these_regexes'].each do |re|
+          if re =~ filename
+            return false
           end
-        }
+        end
         true
       end
       

@@ -125,9 +125,7 @@ module Redcar
     # @param [Window] win  the Window to open the Tree in
     def self.open_dir(path, win = Redcar.app.focussed_window)
       if !File.directory?(path)
-      	# avoid blank directory panels
-      	puts 'warning, unable to open dir ' + path
-      	return
+      	raise 'Not a directory: ' + path
       end
       win ||= Redcar.app.new_window # case none open
       tree = Tree.new(Project::DirMirror.new(path),
@@ -175,7 +173,6 @@ module Redcar
           open_file(path)
         end
       end
-      
     end
         
     # saves away a list of the currently open files in
@@ -232,9 +229,9 @@ module Redcar
       if recent_files_for(directory_path).include?(new_file)
         recent_files_for(directory_path).delete(new_file)
       end
-      recent_files_for(directory_path) << new_file
+      recent_files_for(directory_path).unshift(new_file)
       if recent_files_for(directory_path).length > RECENT_FILES_LENGTH
-        recent_files_for(directory_path).shift
+        recent_files_for(directory_path).pop
       end
     end
     
