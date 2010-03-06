@@ -20,7 +20,12 @@ module Redcar
 
       # Save the storage to disk.
       def save
-        File.open(path, "w") { |f| YAML.dump(@storage, f) }
+				unless File.exists?(path)
+				  require 'ftools'
+				  file_name = File.basename(path)
+				  File.makedirs(path[0..(path.length - (file_name.length + 2))])
+				end
+				File.open(path, "w") { |f| YAML.dump(@storage, f) }
         update_timestamp
         self
       end
