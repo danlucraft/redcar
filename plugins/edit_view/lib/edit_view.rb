@@ -1,6 +1,7 @@
 
 require "edit_view/actions/arrow_keys"
 require "edit_view/actions/deletion"
+require "edit_view/actions/esc"
 require "edit_view/actions/tab"
 require "edit_view/command"
 require "edit_view/document"
@@ -68,6 +69,10 @@ module Redcar
     
     def self.delete_handlers
       [Actions::DeleteHandler]
+    end
+    
+    def self.esc_handlers
+      [Actions::EscapeHandler]
     end
     
     def self.all_tab_handlers

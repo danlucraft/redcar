@@ -61,6 +61,10 @@ module Redcar
         end
         @current_menu = old_menu
       end
+      
+      def append(item)
+        @current_menu << item
+      end
     end
   end
 end

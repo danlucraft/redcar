@@ -525,8 +525,8 @@ module Redcar
         link "Cmd+G",       RepeatPreviousSearchForwardCommand
         link "Cmd+A",       SelectAllCommand
         link "Cmd+B",       ToggleBlockSelectionCommand
-        link "Ctrl+Escape", AutoCompleter::AutoCompleteCommand
-        link "Cmd+Escape",  AutoCompleter::MenuAutoCompleterCommand
+        #link "Escape", AutoCompleter::AutoCompleteCommand
+        link "Ctrl+Escape",  AutoCompleter::MenuAutoCompleterCommand
         
         link "Cmd+T",           Project::FindFileCommand
         link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
@@ -566,8 +566,8 @@ module Redcar
         link "Ctrl+G",       RepeatPreviousSearchForwardCommand
         link "Ctrl+A",       SelectAllCommand
         link "Ctrl+B",       ToggleBlockSelectionCommand
-        link "Ctrl+Escape",  AutoCompleter::AutoCompleteCommand
-        link "Escape",       AutoCompleter::MenuAutoCompleterCommand
+        link "Ctrl+Space",       AutoCompleter::AutoCompleteCommand
+        link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleterCommand
         
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand

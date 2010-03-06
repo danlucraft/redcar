@@ -13,9 +13,14 @@ module Redcar
     
     def self.attach_menus(builder)
       s = Time.now
-      all_bundles.each do |bundle|
-        bundle.build_menu(builder)
+      @menus ||= begin
+        Menu::Builder.build do |a|
+          all_bundles.each do |bundle|
+            bundle.build_menu(a)
+          end
+        end
       end
+      @menus.entries.each {|i| builder.append(i) }
       puts "took #{Time.now - s}s to attach bundle menus"
     end
     
