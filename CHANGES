@@ -14,10 +14,6 @@ Internal changes:
   * new PersistentCache class for plugins to simply cache stuff.
   * Textmate plugin for dealing with Textmate bundles
   
-Fixes:
-
-  * 
-  
 New contributors:
 
   * Aaron McLeod
