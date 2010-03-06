@@ -7,7 +7,7 @@ module Redcar
       end
     
       def self.storage_dir
-        @user_dir ||= Redcar.user_dir
+        @user_dir ||= File.join(Redcar.user_dir, "storage")
       end
 
       # Open a storage file or create it if it doesn't exist.

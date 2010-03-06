@@ -127,6 +127,7 @@ module Redcar
       
       def not_on_ignore_list(filename)
         self.class.storage['ignore_files_that_match_these_regexes'].each do |re|
+          p filename
           if re =~ filename
             return false
           end
