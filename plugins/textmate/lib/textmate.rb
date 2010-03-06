@@ -54,7 +54,7 @@ module Redcar
     
     def self.all_settings
       @all_settings ||= begin
-        all_bundles.map {|b| b.preferences }.flatten.map {|p| p.settings}
+        all_bundles.map {|b| b.preferences }.flatten.map {|p| p.settings}.flatten
       end
     end
     
