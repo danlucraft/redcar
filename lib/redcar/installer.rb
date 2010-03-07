@@ -3,7 +3,8 @@ require 'net/http'
 require 'fileutils'
 
 if Redcar.platform == :windows
-  require 'rubygems'  require 'zip/zipfilesystem'
+  require "rubygems"
+  require "zip/zipfilesystem"
 end
 
 module Redcar
@@ -149,7 +150,8 @@ module Redcar
       puts "  downloaded #{uri}\n          to #{path}\n"
     end
     
-    # unzip a .zip file into the directory it is located    def self.unzip_file(source)
+    # unzip a .zip file into the directory it is located
+    def self.unzip_file(source)
       source = File.expand_path(source)
       Dir.chdir(File.dirname(source)) do
         Zip::ZipFile.open(source) do |zipfile|
