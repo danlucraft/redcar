@@ -102,7 +102,9 @@ module Redcar
         if options[:filter_path]
           dialog.set_filter_path(options[:filter_path])
         end
-        dialog.open
+        Redcar.app.protect_application_focus do
+          dialog.open
+        end
       end
       
       def directory_dialog(window, options)
@@ -110,7 +112,9 @@ module Redcar
         if options[:filter_path]
           dialog.set_filter_path(options[:filter_path])
         end
-        dialog.open
+        Redcar.app.protect_application_focus do
+          dialog.open
+        end
       end
     end
   end
