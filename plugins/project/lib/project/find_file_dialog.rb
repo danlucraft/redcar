@@ -4,7 +4,7 @@ module Redcar
     class FindFileDialog < FilterListDialog
       def self.clear
         if storage['clear_cache_on_refocus']
-          @cached_dir_lists.clear 
+          cached_dir_lists.clear 
         end
       end
       
@@ -16,21 +16,10 @@ module Redcar
         end
       end    
       
-      @cached_dir_lists = {}
-      
-      class << self
-        attr_reader :cached_dir_lists
+      def self.cached_dir_lists
+        @cached_dir_lists ||= {}
       end
-      
-      def self.open_dialogs
-        @open_dialogs ||= []
-      end
-      
-      def initialize(win)
-        super()
-        FindFileDialog.open_dialogs << [win, self]
-      end
-      
+
       def self.storage
         @storage ||= begin
           storage = Plugin::Storage.new('find_file_dialog')
@@ -43,8 +32,6 @@ module Redcar
 
       def close
         super
-        # remove after so that we ignore the window focus event from the dialog itself closing
-        FindFileDialog.open_dialogs.reject! {|a| a.last == self }
       end
       
       def update_list(filter)
@@ -127,7 +114,6 @@ module Redcar
       
       def not_on_ignore_list(filename)
         self.class.storage['ignore_files_that_match_these_regexes'].each do |re|
-          p filename
           if re =~ filename
             return false
           end

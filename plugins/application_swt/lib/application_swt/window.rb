@@ -42,7 +42,7 @@ module Redcar
         @treebook_unopened = true
         set_icon File.join(Redcar.root, %w(plugins application icons redcar_icon_beta.png))
       end
-      
+
       def add_listeners
         @window.add_listener(:show,          &method(:show))
         @window.add_listener(:refresh_menu,  &method(:refresh_menu))
@@ -196,7 +196,8 @@ module Redcar
         @shell = Swt::Widgets::Shell.new(ApplicationSWT.display)
         @shell.layout = Swt::Layout::GridLayout.new(1, false)
       	@shell_listener = ShellListener.new(self)
-        @shell.add_shell_listener(@shell_listener)  
+        @shell.add_shell_listener(@shell_listener)
+        ApplicationSWT.register_shell(@shell)
       end
       
       def create_sashes(window_model)

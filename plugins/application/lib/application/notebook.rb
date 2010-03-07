@@ -66,7 +66,7 @@ module Redcar
     # Does not wrap.
     def switch_up
       current_ix = @tabs.index(@focussed_tab)
-      unless current_ix == @tabs.length - 1
+      unless current_ix == @tabs.length - 1 or current_ix == nil
         @tabs[current_ix+1].focus
       end
     end
@@ -75,8 +75,8 @@ module Redcar
     # Does not wrap.
     def switch_down
       current_ix = @tabs.index(@focussed_tab)
-      unless current_ix == 0
-        @tabs[current_ix-1].focus
+      unless current_ix == 0 or current_ix == nil
+        @tabs[current_ix - 1].focus
       end
     end
     

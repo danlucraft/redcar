@@ -579,9 +579,11 @@ module Redcar
         
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
+        
         link "Ctrl+Alt+O",       SwitchNotebookCommand
-        link "Ctrl+Shift+Tab",       SwitchTabDownCommand
-        link "Ctrl+Tab",     SwitchTabUpCommand
+        
+        link "Ctrl+Page Up",       SwitchTabDownCommand
+        link "Ctrl+Page Down",     SwitchTabUpCommand
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
         
         link "Ctrl+Shift+S", Snippets::OpenSnippetExplorer

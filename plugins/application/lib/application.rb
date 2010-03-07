@@ -221,6 +221,35 @@ module Redcar
       end
     end
     
+    # Called by the Gui to tell the Application that it
+    # has lost focus.
+    def lost_application_focus
+      return if @protect_application_focus
+      @application_focus = false
+      puts "Lost application focus"
+      notify_listeners(:lost_focus, self)
+    end
+    
+    # Called by the Gui to tell the Application that it
+    # has gained focus.
+    def gained_application_focus
+      if @application_focus == false
+        @application_focus = true
+        puts "Gained application focus"
+        notify_listeners(:focussed, self)
+      end
+    end
+    
+    def has_focus?
+      @application_focus
+    end
+    
+    def protect_application_focus
+      @protect_application_focus = true
+      yield
+      @protect_application_focus = false
+    end
+    
     private
     
     def attach_window_listeners(window)

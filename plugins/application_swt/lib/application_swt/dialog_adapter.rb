@@ -49,7 +49,10 @@ module Redcar
         end
         dialog = Swt::Widgets::MessageBox.new(window.controller.shell, styles)
         dialog.set_message(text)
-        result = dialog.open
+        result = nil
+        Redcar.app.protect_application_focus do
+          result = dialog.open
+        end
         BUTTONS.invert[result]
       end
       
@@ -63,6 +66,17 @@ module Redcar
       
       def available_message_box_button_combos
         MESSAGE_BOX_BUTTON_COMBOS.keys
+      end
+      
+      class InputDialog < JFace::Dialogs::InputDialog
+        def initialize(parentShell, dialogTitle, dialogMessage, initialValue, &block)
+          super(parentShell, dialogTitle, dialogMessage, initialValue, block)
+        end
+        
+        def createShell
+          super
+          p [:in, get_shell]
+        end
       end
       
       def input(window, title, message, initial_value, &block)
@@ -88,7 +102,9 @@ module Redcar
         if options[:filter_path]
           dialog.set_filter_path(options[:filter_path])
         end
-        dialog.open
+        Redcar.app.protect_application_focus do
+          dialog.open
+        end
       end
       
       def directory_dialog(window, options)
@@ -96,7 +112,9 @@ module Redcar
         if options[:filter_path]
           dialog.set_filter_path(options[:filter_path])
         end
-        dialog.open
+        Redcar.app.protect_application_focus do
+          dialog.open
+        end
       end
     end
   end

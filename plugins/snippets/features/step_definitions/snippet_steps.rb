@@ -10,7 +10,7 @@ def remove_snippet_after(snippet)
 end
 
 After do
-  @snippets_to_remove.each do |snippet|
+  (@snippets_to_remove||[]).each do |snippet|
     Redcar::Snippets.registry.remove(snippet)
   end
 end

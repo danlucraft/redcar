@@ -15,6 +15,9 @@ module Redcar
       # @param [String] a (short) name, should be suitable for use as a filename
       def initialize(name)
         @name    = name
+        unless File.exists?(Storage.storage_dir)
+          FileUtils.mkdir_p(Storage.storage_dir)
+        end
         rollback
       end
 

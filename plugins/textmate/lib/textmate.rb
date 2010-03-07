@@ -15,7 +15,7 @@ module Redcar
       s = Time.now
       @menus ||= begin
         Menu::Builder.build do |a|
-          all_bundles.each do |bundle|
+          all_bundles.sort_by {|b| (b.name||"").downcase}.each do |bundle|
             bundle.build_menu(a)
           end
         end
