@@ -7,12 +7,14 @@ New features:
   * Auto-pairer inserts matching characters ( -> ), " -> ", etc
   * Snippets
   * Recent directories menu
+  * Uses Gecko for HTMLTabs on Windows.
   
 Internal changes:
 
   * New API for creating text Marks, to tag a position in a Document.
   * new PersistentCache class for plugins to simply cache stuff.
-  * Textmate plugin for dealing with Textmate bundles
+  * Textmate plugin for dealing with Textmate bundles.
+  * Application focus in/out events.
   
 New contributors:
 
