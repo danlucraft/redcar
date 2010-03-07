@@ -21,7 +21,7 @@ module Redcar
         command = "jruby #{java_args} \"#{bin}\" #{ARGV.join(' ')}"
       else
         ENV['RUBYOPT'] = nil # disable other native args
-        command = "java #{java_args} -Xmx1024m -cp \"#{jruby_complete}\" org.jruby.Main \"#{bin}\" #{ARGV.join(' ')} --no-sub-jruby"
+        command = "java #{java_args} -Xmx500m -Xss1024k -Djruby.memory.max=500m -Djruby.stack.max=1024k -cp \"#{jruby_complete}\" org.jruby.Main \"#{bin}\" #{ARGV.join(' ')} --no-sub-jruby"
       end
       puts command
       exec(command)
