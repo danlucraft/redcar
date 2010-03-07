@@ -19,7 +19,7 @@ module Redcar
       
       if ARGV.any?
         ARGV.each do |arg|
-          next if arg.start_with?('-')
+          next if arg[0..0] == "-"
           if drb.open_item_drb(File.expand_path(arg)) != 'ok'
             return
           end        
