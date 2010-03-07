@@ -52,8 +52,8 @@ module Redcar
   
     def self.filter_path
       if Redcar.app.focussed_notebook_tab
-       if path = Redcar.app.focussed_notebook_tab.document.path
-          dir = File.dirname(path)
+        if mirror = EditView.focussed_document_mirror and mirror.is_a?(FileMirror)
+          dir = File.dirname(mirror.path)
           return dir
         end
       end      
