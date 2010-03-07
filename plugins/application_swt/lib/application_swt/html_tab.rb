@@ -13,7 +13,7 @@ module Redcar
         Swt::Graphics::Device.DEBUG = true
         if Redcar.platform == :windows
           java.lang.System.setProperty('org.eclipse.swt.browser.XULRunnerPath',
-                                       File.join(Redcar.root, %w(vendor xulrunner)))
+                                      (Redcar.root + "/vendor/xulrunner").gsub("/", "\\"))
           @browser = Swt::Browser.new(notebook.tab_folder, Swt::SWT::MOZILLA)
         else
           @browser = Swt::Browser.new(notebook.tab_folder, Swt::SWT::NONE)
