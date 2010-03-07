@@ -63,6 +63,28 @@ module Redcar
       Redcar::ApplicationSWT.display.syncExec(runnable)
     end
     
+    class ShellListener
+      def shell_deactivated(_)
+        unless Swt::Widgets::Display.get_current.get_active_shell
+          Redcar.app.lost_application_focus
+        end
+      end
+      
+      def shell_activated(_)
+        Redcar.app.gained_application_focus
+      end
+      
+      def shell_closed(_); end
+      def shell_deiconified(_); end
+      def shell_iconified(_); end
+    end
+
+    # ALL new shells must be registered here, otherwise Redcar will
+    # get confused about when it has lost the application focus.
+    def self.register_shell(shell)
+      shell.add_shell_listener(ShellListener.new)
+    end
+    
     def initialize(model)
       @model = model
       add_listeners

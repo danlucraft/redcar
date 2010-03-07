@@ -19,6 +19,7 @@ module Redcar
           controller.attach_listeners
           controller.update_list
           get_shell.add_shell_listener(ShellListener.new(controller))
+          ApplicationSWT.register_shell(get_shell)
 
           @list.set_selection(0)
         end
