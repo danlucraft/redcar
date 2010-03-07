@@ -170,7 +170,6 @@ module Redcar
     
     # Focus the Window.
     def focus
-      treebook.refresh_trees
       notify_listeners(:focussed, self)
     end
 

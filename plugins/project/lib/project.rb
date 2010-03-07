@@ -210,17 +210,16 @@ module Redcar
           add_to_recent_files_for(Project.focussed_project_path, tab.document_mirror.path)
         end
       end
-      Redcar.app.windows.each {|w| attach_window_listeners(w) }
-      Redcar.app.add_listener(:new_window) do |win|
-        attach_window_listeners(win)
-      end
+      attach_app_listeners
     end
     
-    def self.attach_window_listeners(window)
-      window.add_listener(:focussed) do
-        unless FindFileDialog.open_dialogs.map(&:first).include?(window)
-          FindFileDialog.clear
-        end
+    def self.attach_app_listeners
+      Redcar.app.add_listener(:lost_focus) do
+        FindFileDialog.clear
+      end
+      
+      Redcar.app.add_listener(:focussed) do
+        @window_trees.values.each {|tree| tree.refresh}
       end
     end
     
@@ -351,7 +350,7 @@ module Redcar
     class FindFileCommand < ProjectCommand
      
       def execute
-        dialog = FindFileDialog.new(win)
+        dialog = FindFileDialog.new
         dialog.open
       end
     end
