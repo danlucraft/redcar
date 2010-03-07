@@ -40,10 +40,10 @@ require 'yaml'
 #
 # and so on.
 module Redcar
-  VERSION         = '0.3.3'
+  VERSION         = '0.3.4'
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 3
-  VERSION_RELEASE = 3
+  VERSION_RELEASE = 4
   
   ENVIRONMENTS = [:user, :debug, :test]
 
