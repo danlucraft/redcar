@@ -77,7 +77,10 @@ module Redcar
         end
       end
       
-      def shell_activated(_);   end
+      def shell_activated(_)
+        Redcar.app.gained_application_focus
+      end
+      
       def shell_closed(_);      end
       def shell_deiconified(_); end
       def shell_iconified(_);   end
