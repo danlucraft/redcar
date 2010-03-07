@@ -4,7 +4,7 @@ module Redcar
     class FindFileDialog < FilterListDialog
       def self.clear
         if storage['clear_cache_on_refocus']
-          @cached_dir_lists.clear 
+          cached_dir_lists.clear 
         end
       end
       
