@@ -124,6 +124,7 @@ module Redcar
     # @param [String] path  the path of the directory to view
     # @param [Window] win  the Window to open the Tree in
     def self.open_dir(path, win = Redcar.app.focussed_window)
+      path = File.expand_path(path)
       if !File.directory?(path)
       	raise 'Not a directory: ' + path
       end
