@@ -246,8 +246,9 @@ module Redcar
     
     def protect_application_focus
       @protect_application_focus = true
-      yield
+      r = yield
       @protect_application_focus = false
+      r
     end
     
     private

@@ -52,8 +52,8 @@ module Redcar
   
     def self.filter_path
       if Redcar.app.focussed_notebook_tab
-       if path = Redcar.app.focussed_notebook_tab.document.path
-          dir = File.dirname(path)
+        if mirror = EditView.focussed_document_mirror and mirror.is_a?(FileMirror)
+          dir = File.dirname(mirror.path)
           return dir
         end
       end      
@@ -124,6 +124,7 @@ module Redcar
     # @param [String] path  the path of the directory to view
     # @param [Window] win  the Window to open the Tree in
     def self.open_dir(path, win = Redcar.app.focussed_window)
+      path = File.expand_path(path)
       if !File.directory?(path)
       	raise 'Not a directory: ' + path
       end

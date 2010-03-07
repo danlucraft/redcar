@@ -2,6 +2,11 @@
 require 'net/http'
 require 'fileutils'
 
+if Redcar.platform == :windows
+  require "rubygems"
+  require "zip/zipfilesystem"
+end
+
 module Redcar
   class Installer
   	def initialize
@@ -83,6 +88,8 @@ module Redcar
     REDCAR_JARS = {
       "/java-mateview-#{Redcar::VERSION}.jar" => "plugins/edit_view_swt/vendor/java-mateview.jar"
     }
+    
+    XULRUNNER_URI = "http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.2/runtimes/xulrunner-1.9.2.en-US.win32.zip"
 
     def grab_jruby
       puts "* Downloading JRuby"
@@ -115,7 +122,7 @@ module Redcar
         # download("/swt/win64.jar", File.join(plugins_dir, %w(application_swt vendor swt win64 swt.jar)))
         vendor_dir = File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. vendor)))
 
-        download("http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.2/runtimes/xulrunner-1.9.2.en-US.win32.zip", File.join(vendor_dir, 'xulrunner.zip'))
+        download(XULRUNNER_URI, File.join(vendor_dir, 'xulrunner.zip'))
       end
     end
     
@@ -136,12 +143,29 @@ module Redcar
       end
       
       if path =~ /.*\.zip$/
-        require File.dirname(__FILE__) + '/unzipper'
-      	puts '  unzipping ' + path
-      	Zip.unzip_file(path)
+      	puts '  unzipping  ' + path
+      	Installer.unzip_file(path)
       end
 
       puts "  downloaded #{uri}\n          to #{path}\n"
     end
+    
+    # unzip a .zip file into the directory it is located
+    def self.unzip_file(source)
+      source = File.expand_path(source)
+      Dir.chdir(File.dirname(source)) do
+        Zip::ZipFile.open(source) do |zipfile|
+          zipfile.entries.each do |entry|
+            FileUtils.mkdir_p(File.dirname(entry.name))
+          	begin
+              entry.extract
+            rescue Zip::ZipDestinationFileExistsError
+            end
+          end
+        end
+      end
+    end
   end
 end
+
+

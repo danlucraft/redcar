@@ -3,6 +3,7 @@ module Redcar
     module Actions
       class EscapeHandler
         def self.handle(edit_view, modifiers)
+          return false if Redcar.app.focussed_window.speedbar
           return false if modifiers.any?
           # on osx menu items with "Escape" as their keybinding don't seem to activate correctly
           return false if Redcar.platform != :osx

@@ -32,7 +32,7 @@ module Redcar
       def show
         @menu_bar.set_visible(true)
       end
-      
+
       def close
         @handlers.each {|obj, h| obj.remove_listener(h) }
         @menu_bar.dispose
@@ -44,7 +44,7 @@ module Redcar
       def use_numbers?
         @use_numbers
       end
-      
+
       def add_entries_to_menu(menu, menu_model)
         menu_model.each do |entry|
           if entry.is_a?(Redcar::Menu)
@@ -69,7 +69,7 @@ module Redcar
       end
       
       def connect_proc_to_item(item, entry)
-        if use_numbers?
+        if use_numbers? and Redcar.platform == :osx
           item.text = entry.text + "\t" + @number.to_s
           @number += 1
         else

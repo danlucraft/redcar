@@ -15,7 +15,7 @@ module Redcar
       func = RubyFunc.new(@html_tab.controller.browser, "rubyCall")
       func.controller = @controller
       text = controller.index + setup_javascript_listeners
-      puts text
+     # puts text
       @html_tab.controller.browser.set_text(text)
     end
     
