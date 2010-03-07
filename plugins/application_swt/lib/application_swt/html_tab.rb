@@ -12,9 +12,12 @@ module Redcar
       def create_tab_widget
         Swt::Graphics::Device.DEBUG = true
         if Redcar.platform == :windows
-          java.lang.System.setProperty('org.eclipse.swt.browser.XULRunnerPath', (Redcar.root + '/vendor/xulrunner').gsub('/', '\\'))
+          java.lang.System.setProperty('org.eclipse.swt.browser.XULRunnerPath',
+                                       File.join(Redcar.root, %w(vendor xulrunner))
+          @browser = Swt::Browser.new(notebook.tab_folder, Swt::SWT::MOZILLA)
+        else
+          @browser = Swt::Browser.new(notebook.tab_folder, Swt::SWT::NONE)
         end
-        @browser = Swt::Browser.new(notebook.tab_folder, Swt::SWT::MOZILLA)
         @widget = @browser
         @item.control = @widget
       end

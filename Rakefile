@@ -74,8 +74,6 @@ def remove_gitignored_files(filelist)
 end
 
 spec = Gem::Specification.new do |s|
-  
-  # Change these as appropriate
   s.name              = "redcar"
   s.version           = "0.3.4"
   s.summary           = "A JRuby text editor."
@@ -86,9 +84,7 @@ spec = Gem::Specification.new do |s|
   s.has_rdoc          = true
   s.extra_rdoc_files  = %w(README.md)
   s.rdoc_options      = %w(--main README.md)
-  # s.platform          = 
 
-  # Add any extra files to include in the gem
   s.files             = %w(CHANGES LICENSE Rakefile README.md ROADMAP.md) + 
                           Dir.glob("bin/redcar") + 
                           Dir.glob("config/**/*") + 
@@ -102,13 +98,8 @@ spec = Gem::Specification.new do |s|
    
   s.require_paths     = ["lib"]
 
-  # If you want to depend on other gems, add them here, along with any
-  # relevant versions
-  # s.add_dependency("logging", "> 1.0.0")
-  
   s.add_dependency("rubyzip")
   
-  # If your tests use any gems, include them here
   s.add_development_dependency("cucumber")
   s.add_development_dependency("rspec")
   s.add_development_dependency("watchr")
