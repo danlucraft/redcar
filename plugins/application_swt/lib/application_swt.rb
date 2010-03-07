@@ -55,28 +55,32 @@ module Redcar
       @gui
     end
     
-    #
-    # allow other threads to run code "back in the GUI"
-    #  
+    # Runs the given block in the SWT Event thread
     def self.sync_exec(&block)
       runnable = Swt::RRunnable.new(&block)
       Redcar::ApplicationSWT.display.syncExec(runnable)
     end
     
+    # Runs the given block in the SWT Event thread after
+    # the given number of milliseconds
+    def self.timer_exec(ms, &block)
+      runnable = Swt::RRunnable.new(&block)
+      Redcar::ApplicationSWT.display.timerExec(ms, runnable)
+    end
+
     class ShellListener
       def shell_deactivated(_)
-        unless Swt::Widgets::Display.get_current.get_active_shell
-          Redcar.app.lost_application_focus
+        ApplicationSWT.timer_exec(100) do
+          unless Swt::Widgets::Display.get_current.get_active_shell
+            Redcar.app.lost_application_focus
+          end
         end
       end
       
-      def shell_activated(_)
-        Redcar.app.gained_application_focus
-      end
-      
-      def shell_closed(_); end
+      def shell_activated(_);   end
+      def shell_closed(_);      end
       def shell_deiconified(_); end
-      def shell_iconified(_); end
+      def shell_iconified(_);   end
     end
 
     # ALL new shells must be registered here, otherwise Redcar will
