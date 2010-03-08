@@ -544,7 +544,7 @@ module Redcar
 
         link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
         
-        link "Cmd+Shift+S", Snippets::OpenSnippetExplorer
+        link "Cmd+Alt+S", Snippets::OpenSnippetExplorer
         #Textmate.attach_keybindings(self, :osx)
       end
 
@@ -586,7 +586,7 @@ module Redcar
         link "Ctrl+Page Down",     SwitchTabUpCommand
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
         
-        link "Ctrl+Shift+S", Snippets::OpenSnippetExplorer
+        link "Ctrl+Alt+S", Snippets::OpenSnippetExplorer
         #Textmate.attach_keybindings(self, :linux)
 
       end
