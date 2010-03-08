@@ -7,7 +7,7 @@ module Redcar
       
       def after_newline(line_ix)
         if line_ix > 0
-          previous_line     = document.get_line(line_ix - 1).gsub("\n", "")
+          previous_line     = document.get_line(line_ix - 1).gsub(document.delim, "")
           whitespace_prefix = whitespace_prefix(previous_line)
           offset            = document.offset_at_line(line_ix)
           document.insert(offset, whitespace_prefix)

@@ -16,6 +16,10 @@ Internal changes:
   * Textmate plugin for dealing with Textmate bundles.
   * Application focus in/out events.
   
+Fixes:
+
+  * Respects Windows style line delimiters
+  
 New contributors:
 
   * Aaron McLeod

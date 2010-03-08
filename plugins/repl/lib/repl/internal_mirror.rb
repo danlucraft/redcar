@@ -106,13 +106,13 @@ module Redcar
           orig_stdout = $stdout
           stdout_handler = StringIO.new
           $stdout = stdout_handler
-
-          result = eval(command, @binding)
-
-          $stdout.rewind
-          @output = $stdout.read
-
-          $stdout = orig_stdout
+          begin
+            result = eval(command, @binding)
+          ensure
+            $stdout.rewind
+            @output = $stdout.read
+            $stdout = orig_stdout
+          end
           result
         end
       end

@@ -44,8 +44,8 @@ module Redcar
         
         def self.move_left_offset(edit_view)
           doc = edit_view.document
-          return 0                     if doc.cursor_offset == 0
-          return doc.cursor_offset - 1 if doc.cursor_line_offset == 0
+          return 0                                    if doc.cursor_offset == 0
+          return doc.cursor_offset - doc.delim.length if doc.cursor_line_offset == 0
           if edit_view.soft_tabs?
             line = doc.get_line(doc.cursor_line)
             width = edit_view.tab_width

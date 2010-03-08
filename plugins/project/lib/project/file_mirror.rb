@@ -55,7 +55,7 @@ module Redcar
       #
       # @return [String]
       def title
-        @path.split("/").last
+        @path.split(/\/|\\/).last
       end
       
       private
