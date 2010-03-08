@@ -220,7 +220,7 @@ module Redcar
       end
       
       Redcar.app.add_listener(:focussed) do
-        @window_trees.values.each {|tree| tree.refresh}
+        window_trees.values.each {|tree| tree.refresh }
       end
     end
     
@@ -236,7 +236,7 @@ module Redcar
     end
     
     def self.set_tree(win, tree)
-      @window_trees[win] = tree
+      window_trees[win] = tree
       win.treebook.add_tree(tree)
     end
     
