@@ -33,6 +33,10 @@ module Redcar
         jface_document.get_number_of_lines
       end
       
+      def get_line_delimiter
+        styledText.get_line_delimiter
+      end
+      
       def line_at_offset(offset)
         jface_document.get_line_of_offset(offset)
       end

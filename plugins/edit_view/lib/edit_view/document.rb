@@ -96,7 +96,7 @@ module Redcar
         end
       end
       @controllers[Controller::NewlineCallback].each do |controller|
-        if text == "\n" or text == "\r\n"
+        if text == line_delimiter
           rescue_document_controller_error(controller) do
             controller.after_newline(line_at_offset(start_offset) + 1)
           end
@@ -129,6 +129,17 @@ module Redcar
       controller.single_line?
     end
     
+    # Returns the line delimiter for this document. Either
+    # \n or \r\n. It will attempt to detect the delimiter from the document
+    # or it will default to the platform delimiter.
+    #
+    # @return [String]
+    def line_delimiter
+      controller.get_line_delimiter
+    end
+
+    alias :delim :line_delimiter 
+    
     # Is there any text selected? (Or equivalently, is the length
     # of the selection equal to 0)
     #
@@ -142,7 +153,7 @@ module Redcar
     # @param [Integer] offset  character offset from the start of the document
     # @param [String] text  text to insert
     def insert(offset, text)
-      text = text.gsub("\n", "") if single_line?
+      text = text.gsub(delim, "") if single_line?
       replace(offset, 0, text)
     end
     
@@ -167,7 +178,7 @@ module Redcar
     # @param [Integer] length  length of text to replace
     # @param [String] text  replacement text
     def replace(offset, length, text)
-      text = text.gsub("\n", "") if single_line?
+      text = text.gsub(delim, "") if single_line?
       controller.replace(offset, length, text)
     end
     
@@ -359,14 +370,14 @@ module Redcar
       replace(start_offset, end_offset - start_offset, text)
     end
     
-    # Get the offset at the end of a given line, *before* the newline character.
+    # Get the offset at the end of a given line, *before* the line delimiter.
     #
     # @param [Integer] line_ix  a zero-based line index
     def offset_at_inner_end_of_line(line_ix)
       if line_ix == line_count - 1
         length
       else
-        offset_at_line(line_ix + 1) - 1
+        offset_at_line(line_ix + 1) - delim.length
       end
     end
     

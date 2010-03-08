@@ -9,7 +9,9 @@ module Redcar
         current_scope = nil
         if document = Redcar::EditView.focussed_edit_view_document
           line = document.get_line(document.cursor_line)
-          line = line[0..-2] if line[-1..-1] == "\n"
+          if line =~ /#{document.delim}$/
+            line = line[0..(-1*document.delim.length - 1)]
+          end
           @env['TM_CURRENT_LINE'] = line
           @env['TM_LINE_INDEX'] = document.cursor_line_offset.to_s
           @env['TM_LINE_NUMBER'] = (document.cursor_line + 1).to_s
