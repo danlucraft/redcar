@@ -418,6 +418,10 @@ module Redcar
       @edit_view.controller.biggest_visible_line
     end
 
+    def ensure_visible(offset)
+      @edit_view.controller.ensure_visible(offset)
+    end
+
     def num_lines_visible
       biggest_visible_line - smallest_visible_line
     end

@@ -177,6 +177,10 @@ module Redcar
       @mate_text.viewer.get_bottom_index
     end
     
+    def ensure_visible(offset)
+      @mate_text.viewer.reveal_range(offset, 1)
+    end
+    
     def update_grammar(new_mirror)
       title = new_mirror.title
       return if @mate_text.set_grammar_by_filename(title)
