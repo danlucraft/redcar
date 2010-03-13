@@ -178,7 +178,16 @@ module Redcar
     end
     
     def ensure_visible(offset)
-      @mate_text.viewer.reveal_range(offset, 1)
+      line = @document.line_at_offset(offset)
+      line_start_offset = @document.offset_at_line(line)
+      if offset == line_start_offset
+        # This doesn't work. Bug in JFace.SourceViewer?
+        @mate_text.viewer.reveal_range(offset, 1)
+        # so we do this too:
+        @mate_text.get_control.set_horizontal_pixel(0)
+      else
+        @mate_text.viewer.reveal_range(offset, 1)
+      end
     end
     
     def update_grammar(new_mirror)
