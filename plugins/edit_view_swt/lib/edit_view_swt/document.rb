@@ -57,9 +57,9 @@ module Redcar
       def replace(offset, length, text)
         @model.verify_text(offset, offset+length, text)
         jface_document.replace(offset, length, text)
-        if length > text.length
-          @swt_mate_document.mateText.redraw
-        end
+        #if length > text.length
+        #  @swt_mate_document.mateText.redraw
+        #end
         @model.modify_text
       end
       
