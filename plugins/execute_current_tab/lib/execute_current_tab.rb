@@ -19,33 +19,44 @@ module Redcar
       }]
     end
 
-    class Execute < Command
+    class Execute < EditTabCommand
 
       def execute
-        doc = win.focussed_notebook_tab_document
-        path = doc.path if doc
+        path = doc.path
         if path
-          command = "ruby #{path} 2>&1"
-          out = `#{command}`
-          new_tab = Top::NewCommand.new.run          
-          new_tab.document.text = "***** generated output from #{command} ***\n" + out
-          new_tab.title= 'exec output'
+          execute_file(path)
         else
-          puts 'unable to execute--maybe you need to save it first, so it has a filename?'
+          path = File.join(Redcar.tmp_dir, "execute_file.rb")
+          File.open(path, "w") { |file| file.puts doc.to_s }
+          execute_file(path)
+          FileUtils.rm(path)
         end
       end
 
+      def execute_file(path)
+        command = "ruby \"#{path}\" 2>&1"
+        output = `#{command}`
+        new_tab = Top::NewCommand.new.run          
+        title = "Output from #{command}"
+        new_tab.document.text = title + "\n" + "="*title.length + "\n\n" + output
+        new_tab.title = 'Output'
+      end
     end
 
-    class EmbeddedExecute < Command
+    class EmbeddedExecute < EditTabCommand
 
       def execute
-        doc = win.focussed_notebook_tab_document
-        out = doc.get_all_text if doc
+        out = doc.get_all_text
         if out
-          eval out, TOPLEVEL_BINDING, doc.path || doc.title || ''
-        else
-          puts 'unable to eval embedded'
+          begin
+            eval(out, TOPLEVEL_BINDING, doc.path || doc.title || '')
+          rescue Object => e
+            Application::Dialog.message_box(
+							win,
+							"#{e.class}\n#{e.message}",
+							:type => :error )
+              
+          end
         end
       end
 
