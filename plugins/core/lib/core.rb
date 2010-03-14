@@ -15,6 +15,14 @@ require "core/plugin"
 require "core/plugin/storage"
 
 module Redcar
+  def self.tmp_dir
+    path = File.join(Redcar.user_dir, "tmp")
+    unless File.exists?(path)
+      FileUtils.mkdir(path)
+    end
+    path
+  end
+    
   class Core
     include HasLogger
     
@@ -25,6 +33,5 @@ module Redcar
       end
       PersistentCache.storage_dir = File.join(Redcar.user_dir, "cache")
     end
-    
   end
 end

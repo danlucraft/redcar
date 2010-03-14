@@ -201,24 +201,26 @@ module Redcar
     class ChangeIndentCommand < EditTabCommand
       def execute
         doc = tab.edit_view.document
-        if doc.selection?
-          first_line_ix = doc.line_at_offset(doc.selection_range.begin)
-          last_line_ix  = doc.line_at_offset(doc.selection_range.end)
-          if doc.selection_range.end == doc.offset_at_line(last_line_ix)
-            last_line_ix -= 1
-          end
-          first_line_ix.upto(last_line_ix) do |line_ix|
-            indent_line(doc, line_ix)
-          end
-          start_selection = doc.offset_at_line(first_line_ix)
-          if last_line_ix == doc.line_count - 1
-            end_selection = doc.length
+        doc.compound do
+          if doc.selection?
+            first_line_ix = doc.line_at_offset(doc.selection_range.begin)
+            last_line_ix  = doc.line_at_offset(doc.selection_range.end)
+            if doc.selection_range.end == doc.offset_at_line(last_line_ix)
+              last_line_ix -= 1
+            end
+            first_line_ix.upto(last_line_ix) do |line_ix|
+              indent_line(doc, line_ix)
+            end
+            start_selection = doc.offset_at_line(first_line_ix)
+            if last_line_ix == doc.line_count - 1
+              end_selection = doc.length
+            else
+              end_selection = doc.offset_at_line(last_line_ix + 1)
+            end
+            doc.set_selection_range(start_selection, end_selection)
           else
-            end_selection = doc.offset_at_line(last_line_ix + 1)
+            indent_line(doc, doc.cursor_line)
           end
-          doc.set_selection_range(start_selection, end_selection)
-        else
-          indent_line(doc, doc.cursor_line)
         end
       end
     end

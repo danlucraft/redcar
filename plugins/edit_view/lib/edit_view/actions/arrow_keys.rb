@@ -27,6 +27,10 @@ module Redcar
           end
           real_ix + offset - imaginary_ix
         end
+        
+        def self.ensure_cursor_in_view(edit_view)
+          edit_view.document.ensure_visible(edit_view.document.cursor_offset)
+        end
       end
       
       class ArrowLeftHandler < ArrowHandler
@@ -40,6 +44,8 @@ module Redcar
           else
             doc.cursor_offset = move_left_offset(edit_view)
           end
+          ArrowHandler.ensure_cursor_in_view(edit_view)
+          true
         end
         
         def self.move_left_offset(edit_view)
@@ -85,6 +91,8 @@ module Redcar
           else
             doc.cursor_offset = move_right_offset(edit_view)
           end
+          ArrowHandler.ensure_cursor_in_view(edit_view)
+          true
         end
         
         def self.move_right_offset(edit_view)

@@ -1,7 +1,4 @@
 
-require 'openssl'
-require File.dirname(__FILE__) + "/jarmor-1.1"
-require File.dirname(__FILE__) + "/ezcrypto"
 
 module Encryption
   def self.menus
@@ -15,8 +12,14 @@ module Encryption
     end
   end
 
+  def self.lazy_load
+    require File.dirname(__FILE__) + "/jarmor-1.1"
+    require File.dirname(__FILE__) + "/ezcrypto"
+  end
+
   class DecryptDocumentCommand < Redcar::EditTabCommand
     def execute
+      Encryption.lazy_load
       result = Redcar::Application::Dialog.input(win, "Password", "Enter password")
       pw = result[:value]
       begin
@@ -29,6 +32,7 @@ module Encryption
   
   class EncryptDocumentCommand < Redcar::EditTabCommand
     def execute
+      Encryption.lazy_load
       result = Redcar::Application::Dialog.input(win, "Password", "Enter password")
       pw = result[:value]
       doc.text = EncryptionTools.encrypt_and_armour(doc.to_s, pw)

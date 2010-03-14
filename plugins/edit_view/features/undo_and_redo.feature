@@ -50,3 +50,23 @@ Feature: Undo and Redo
     Then the menu item "Edit|Undo" should be active
     And the menu item "Edit|Redo" should be inactive
     
+  Scenario: Compound undo steps work
+    When I open a new edit tab
+    And I replace the contents with "Bolzano\nWeierstrass"
+    And I select from 0 to 19
+    And tabs are hard
+    And I run the command Redcar::Top::IncreaseIndentCommand
+    Then the contents should be "  Bolzano\n  Weierstrass"
+    And I undo
+    Then the contents should be "Bolzano\nWeierstrass"
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

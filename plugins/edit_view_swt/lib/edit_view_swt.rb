@@ -25,7 +25,7 @@ module Redcar
     end
     
     attr_reader :mate_text, :widget, :model
-      
+
     def initialize(model, parent, options={})
       @options = options
       @model = model
@@ -81,6 +81,20 @@ module Redcar
       @undo_manager.reset
     end
     
+    def compound
+      begin_compound
+      yield
+      end_compound
+    end
+    
+    def begin_compound
+      @undo_manager.begin_compound_change
+    end
+    
+    def end_compound
+      @undo_manager.end_compound_change
+    end
+    
     def create_document
       @document = EditViewSWT::Document.new(@model.document, @mate_text.mate_document)
       @model.document.controller = @document
@@ -95,6 +109,7 @@ module Redcar
       @mate_text.getTextWidget.addVerifyListener(VerifyListener.new(@model.document, self))
       @mate_text.getTextWidget.addModifyListener(ModifyListener.new(@model.document, self))
       @mate_text.get_control.add_verify_key_listener(VerifyKeyListener.new(self))
+      @mate_text.get_control.add_key_listener(KeyListener.new(self))
       @handlers << [@model.document, h1] << [@model, h2] << [@model, h3] << [@model, h4]
     end
     
@@ -104,6 +119,9 @@ module Redcar
       end
       
       def verify_key(key_event)
+        if @edit_view_swt.model.document.block_selection_mode?
+          @edit_view_swt.begin_compound
+        end
         if key_event.character == Swt::SWT::TAB
           key_event.doit = !@edit_view_swt.model.tab_pressed(ApplicationSWT::Menu::BindingTranslator.modifiers(key_event))
         elsif key_event.character == Swt::SWT::ESC
@@ -116,6 +134,22 @@ module Redcar
           key_event.doit = !@edit_view_swt.model.delete_pressed(ApplicationSWT::Menu::BindingTranslator.modifiers(key_event))
         elsif key_event.character == Swt::SWT::BS
           key_event.doit = !@edit_view_swt.model.backspace_pressed(ApplicationSWT::Menu::BindingTranslator.modifiers(key_event))
+        end
+      end
+    end
+    
+    class KeyListener
+      def initialize(edit_view_swt)
+        @edit_view_swt = edit_view_swt
+      end
+      
+      def key_pressed(_)
+        @was_in_block_selection = @edit_view_swt.model.document.block_selection_mode?
+      end
+      
+      def key_released(_)
+        if @was_in_block_selection
+          @edit_view_swt.end_compound
         end
       end
     end
@@ -175,6 +209,19 @@ module Redcar
     
     def biggest_visible_line
       @mate_text.viewer.get_bottom_index
+    end
+    
+    def ensure_visible(offset)
+      line = @document.line_at_offset(offset)
+      line_start_offset = @document.offset_at_line(line)
+      if offset == line_start_offset
+        # This doesn't work. Bug in JFace.SourceViewer?
+        @mate_text.viewer.reveal_range(offset, 1)
+        # so we do this too:
+        @mate_text.get_control.set_horizontal_pixel(0)
+      else
+        @mate_text.viewer.reveal_range(offset, 1)
+      end
     end
     
     def update_grammar(new_mirror)

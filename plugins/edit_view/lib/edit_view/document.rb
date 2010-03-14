@@ -418,6 +418,10 @@ module Redcar
       @edit_view.controller.biggest_visible_line
     end
 
+    def ensure_visible(offset)
+      @edit_view.controller.ensure_visible(offset)
+    end
+
     def num_lines_visible
       biggest_visible_line - smallest_visible_line
     end
@@ -436,7 +440,15 @@ module Redcar
     def delete_mark(mark)
       controller.delete_mark(mark)
     end
-
+    
+    # Everything within the block will be treated as a single action
+    # for the purposes of Undo.
+    #
+    #     doc.compound { first_thing; second_thing }
+    def compound
+      @edit_view.controller.compound { yield }
+    end
+    
     private
     
     def update_from_mirror

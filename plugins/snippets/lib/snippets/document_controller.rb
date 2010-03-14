@@ -104,7 +104,7 @@ module Redcar
         @stop_id = 0
         
         @env = Textmate::Environment.new
-        
+        fix_line_endings
         # Not sure what to do about backticks. Currently they don't work in Redcar.
         #@content = execute_backticks(@content, bundle ? bundle.dir : nil)
         selection_range = document.selection_range
@@ -128,6 +128,12 @@ module Redcar
       
       def leading_whitespace(line)
         line[/^(\s*)([^\s]|$)/, 1].chomp
+      end
+      
+      def fix_line_endings
+        if document.delim != "\n" # textmate uses "\n" everywhere
+          @content = @content.gsub("\n", document.delim)
+        end
       end
       
       def compute_tab_stop(line, tab_width, soft_tabs)
