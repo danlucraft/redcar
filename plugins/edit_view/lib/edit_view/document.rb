@@ -440,7 +440,15 @@ module Redcar
     def delete_mark(mark)
       controller.delete_mark(mark)
     end
-
+    
+    # Everything within the block will be treated as a single action
+    # for the purposes of Undo.
+    #
+    #     doc.compound { first_thing; second_thing }
+    def compound
+      @edit_view.controller.compound { yield }
+    end
+    
     private
     
     def update_from_mirror

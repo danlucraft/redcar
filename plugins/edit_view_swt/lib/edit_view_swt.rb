@@ -25,7 +25,7 @@ module Redcar
     end
     
     attr_reader :mate_text, :widget, :model
-      
+
     def initialize(model, parent, options={})
       @options = options
       @model = model
@@ -79,6 +79,12 @@ module Redcar
     
     def reset_undo
       @undo_manager.reset
+    end
+    
+    def compound
+      @undo_manager.begin_compound_change
+      yield
+      @undo_manager.end_compound_change
     end
     
     def create_document
