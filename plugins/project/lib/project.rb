@@ -24,6 +24,7 @@ module Redcar
     def self.init_window_closed_hooks
       Redcar.app.add_listener(:window_about_to_close) do |win|
         self.save_file_list win
+        window_trees.delete(win)
       end
     end
     

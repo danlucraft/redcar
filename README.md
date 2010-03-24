@@ -13,7 +13,7 @@ A pure Ruby text editor running on JRuby.
 
 You must have Java installed. 
 
-    $ sudo gem install redcar --pre
+    $ sudo gem install redcar
     $ sudo redcar install
     
 NB the install will take a minute or so to complete as it has to download about
@@ -29,6 +29,7 @@ for a list of options.
 
 ## INSTALLING FROM SOURCE
 
+If you want to contribute to Redcar, you can install it from the source code.
 Download from github, checkout the submodules and build JavaMateView. You will need Ant 
 installed, and RSpec and Cucumber installed as JRuby gems.
 
