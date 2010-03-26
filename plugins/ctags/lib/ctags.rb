@@ -116,7 +116,7 @@ module Redcar
         regstr = "^#{Regexp.escape(match[:regexp])}$"
         regexp = Regexp.new(regstr)
         log(regexp)
-        Redcar::Top::FindNextRegex.new(regexp).run
+        Redcar::Top::FindNextRegex.new(regexp, true).run
       end
 
       def open_select_tag_dialog(matches)
