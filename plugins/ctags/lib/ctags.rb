@@ -1,3 +1,5 @@
+require 'ctags/select_tag_dialog'
+
 module Redcar
 
   # = CTags plugin
@@ -7,6 +9,11 @@ module Redcar
   # Knows how search selected text in "tags" file.
   #
   class CTags
+
+    # Store multiple matches for access from SelectTagDialog
+    class << self
+      attr_accessor :matches
+    end
 
     # This method is run as Redcar is booting up.
     def self.menus
@@ -31,7 +38,7 @@ module Redcar
 
       [linwin, osx]
     end
-    
+
     def self.file_path
       File.join(Redcar::Project.focussed_project_path, 'tags')
     end
@@ -69,18 +76,13 @@ module Redcar
 
         @ctags_dir ? File.join(@ctags_dir, bin_name) : false
       end
-    end
+    end # GenerateCtagsCommand
 
     class GoToTagCommand < EditTabCommand
 
-      def log(message)
-        puts("==> Ctags: #{message}")
-      end
-
       def execute
         if doc.selection?
-          token = doc.selected_text
-          handle_matches(find_tag(token), token)
+          handle_tag(doc.selected_text)
         else
           # TODO try automagically figure out pattern for search
           # Document
@@ -88,9 +90,11 @@ module Redcar
           log("Current line: #{doc.get_line(doc.cursor_line)}")
           log("Cursor offset: #{doc.cursor_offset}")
         end
+
       end
 
-      def handle_matches(matches, token = '')
+      def handle_tag(token = '')
+        matches = find_tag(token)
         case matches.size
         when 0
           Application::Dialog.message_box(win, "There is no definition for '#{token}' in tags file...")
@@ -103,7 +107,7 @@ module Redcar
       end
 
       def find_tag(tag)
-        tags_hash[tag] || []
+        CTags.matches = tags_hash[tag] || []
       end
 
       def go_definition(match)
@@ -122,7 +126,8 @@ module Redcar
       def open_select_tag_dialog(matches)
         # show 10 files for now...
         # TODO make dialog like in project find file
-        Application::Dialog.message_box(win, matches[0..10].collect { |m| m[:file] }.join("\n"))
+        CTags::SelectTagDialog.new.open
+        # Application::Dialog.message_box(win, matches[0..10].collect { |m| m[:file] }.join("\n"))
       end
 
       def tags_hash
@@ -135,6 +140,10 @@ module Redcar
         end
         @tags
       end
-    end
-  end
-end
+
+      def log(message)
+        puts("==> Ctags: #{message}")
+      end
+    end # GoToTagCommand
+  end # CTags
+end # Redcar
