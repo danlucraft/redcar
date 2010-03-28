@@ -107,7 +107,7 @@ module Redcar
       end
 
       def go_definition(match)
-        path = match[:file]
+        path   = match[:file]
         if tab = Redcar::Project.open_file_tab(path)
           tab.focus
         else
@@ -120,15 +120,9 @@ module Redcar
       end
 
       def open_select_tag_dialog(matches)
-        this = self
-        builder = Menu::Builder.new do
-          matches.each do |match|
-            item(match[:file]||"unknown") do
-              this.go_definition(match)
-            end
-          end
-        end
-        Redcar.app.focussed_window.popup_menu_with_numbers(builder.menu)
+        # show 10 files for now...
+        # TODO make dialog like in project find file
+        Application::Dialog.message_box(win, matches[0..10].collect { |m| m[:file] }.join("\n"))
       end
 
       def tags_hash
