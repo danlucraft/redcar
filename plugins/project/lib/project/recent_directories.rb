@@ -17,8 +17,12 @@ module Redcar
       def self.generate_menu(builder)
         directories = storage['list']
         directories.each do |dir|
-          builder.item(File.basename(dir)) do 
-            Project.open_dir(dir)
+          builder.item(File.basename(dir)) do
+            begin
+              Project.open_dir(dir) #currently throws error if directory doesn't exist
+            rescue
+              remove_path(dir)
+            end
           end
         end
       end
@@ -33,6 +37,13 @@ module Redcar
         if storage["list"].length == MAX_LENGTH + 1
           storage["list"].pop
         end
+        storage.save
+        Redcar.app.refresh_menu!
+      end
+      
+      def self.remove_path(path)
+        path = File.expand_path(path)
+        storage["list"].delete(path)
         storage.save
         Redcar.app.refresh_menu!
       end
