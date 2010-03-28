@@ -19,9 +19,13 @@ module Redcar
         directories.each do |dir|
           builder.item(File.basename(dir)) do
             begin
-              Project.open_dir(dir) #currently throws error if directory doesn't exist
-            rescue
-              remove_path(dir)
+              Project.open_dir(dir) #currently throws error 'Not a directory: ...' if the directory doesn't exist
+            rescue RuntimeError => error
+              if error.to_s == 'Not a directory: ' + dir 
+                remove_path(dir)
+              else #Not the RuntimeError expected, rethrowing error
+                raise error.to_s
+              end
             end
           end
         end
