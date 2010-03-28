@@ -1,0 +1,9 @@
+* automagicaly match word under cursor
+* use Redcar::FilterListDialog#filter_and_rank_by
+  for multiple choices
+* align entries in SelectTagDialog
+* ajust width of SelectTagDialog
+* improve ctags_binary search logic
+* do something with go_definition in SelectTagDialog
+* automagically update tags file (watchr?)
+* automagically create tags file? (when shift+ctrl+T pressed first time)
