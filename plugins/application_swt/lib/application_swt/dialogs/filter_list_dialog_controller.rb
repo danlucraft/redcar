@@ -21,7 +21,6 @@ module Redcar
           get_shell.add_shell_listener(ShellListener.new(controller))
           ApplicationSWT.register_shell(get_shell)
           
-          @list.set_focus
           @list.set_selection(0)
         end
       end
@@ -76,7 +75,7 @@ module Redcar
         end
       end
       
-      class TextKeyListener
+      class KeyListener
         def initialize(controller)
           @controller = controller
         end
@@ -89,38 +88,24 @@ module Redcar
         end
       end
       
-      class ListKeyListener
-        def initialize(controller)
-          @controller = controller
-        end
-        
-        def key_pressed(e)
-          e.doit = @controller.list_key_pressed(e)
-        end
-        
-        def key_released(e)
-        end
-      end
-      
       class SelectionListener
         def initialize(controller)
           @controller = controller
         end
         
         def widgetDefaultSelected(e)
-          @controller.selected
+          e.doit = @controller.selected
         end
         
         def widgetSelected(e)
-
+          e.doit = @controller.text_focus
         end
         
       end
       
       def attach_listeners
         @dialog.text.add_modify_listener(ModifyListener.new(self))
-        @dialog.text.add_key_listener(TextKeyListener.new(self))
-        @dialog.list.add_key_listener(ListKeyListener.new(self))
+        @dialog.text.add_key_listener(KeyListener.new(self))
         @dialog.list.add_selection_listener(SelectionListener.new(self))
       end
       
@@ -144,9 +129,13 @@ module Redcar
             puts "update list took #{Time.now - s}s"
             populate_list(list)
             @dialog.list.set_selection(0)
-            @dialog.text.set_focus
+            text_focus
           end
         })
+      end
+      
+      def text_focus
+        @dialog.text.set_focus
       end
       
       def selected
@@ -163,21 +152,6 @@ module Redcar
           false
         when Swt::SWT::ARROW_UP
           move_up
-          false
-        else
-          true
-        end
-      end
-
-      def list_key_pressed(key_event)
-        case key_event.keyCode
-        when 32..126 #character
-          @dialog.text.set_text(@dialog.text.get_text << key_event.character)
-          @dialog.text.set_selection(@dialog.text.get_text.length)
-          false
-        when 8 #backspace
-          @dialog.text.set_text(@dialog.text.get_text.chop)
-          @dialog.text.set_selection(@dialog.text.get_text.length)
           false
         else
           true
