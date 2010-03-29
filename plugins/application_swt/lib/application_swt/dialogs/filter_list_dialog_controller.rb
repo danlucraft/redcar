@@ -76,6 +76,32 @@ module Redcar
         end
       end
       
+      class TextKeyListener
+        def initialize(controller)
+          @controller = controller
+        end
+        
+        def key_pressed(e)
+          e.doit = @controller.key_pressed(e)
+        end
+        
+        def key_released(e)
+        end
+      end
+      
+      class ListKeyListener
+        def initialize(controller)
+          @controller = controller
+        end
+        
+        def key_pressed(e)
+          e.doit = @controller.list_key_pressed(e)
+        end
+        
+        def key_released(e)
+        end
+      end
+      
       class SelectionListener
         def initialize(controller)
           @controller = controller
@@ -93,6 +119,8 @@ module Redcar
       
       def attach_listeners
         @dialog.text.add_modify_listener(ModifyListener.new(self))
+        @dialog.text.add_key_listener(TextKeyListener.new(self))
+        @dialog.list.add_key_listener(ListKeyListener.new(self))
         @dialog.list.add_selection_listener(SelectionListener.new(self))
       end
       
@@ -116,6 +144,7 @@ module Redcar
             puts "update list took #{Time.now - s}s"
             populate_list(list)
             @dialog.list.set_selection(0)
+            @dialog.text.set_focus
           end
         })
       end
@@ -124,9 +153,7 @@ module Redcar
         @model.selected(@dialog.list.get_selection.first, @dialog.list.get_selection_index)
       end
       
-      #depreciated
       def key_pressed(key_event)
-        puts "Warning depreciated!"
         case key_event.keyCode
         when Swt::SWT::CR, Swt::SWT::LF
           selected
@@ -141,18 +168,29 @@ module Redcar
           true
         end
       end
+
+      def list_key_pressed(key_event)
+        case key_event.keyCode
+        when 32..126 #character
+          @dialog.text.set_text(@dialog.text.get_text << key_event.character)
+          @dialog.text.set_selection(@dialog.text.get_text.length)
+          false
+        when 8 #backspace
+          @dialog.text.set_text(@dialog.text.get_text.chop)
+          @dialog.text.set_selection(@dialog.text.get_text.length)
+          false
+        else
+          true
+        end
+      end
       
-      #depreciated
       def move_down
-        puts "Warning depreciated!"
         curr_ix = @dialog.list.get_selection_index
         new_ix = [curr_ix + 1, @dialog.list.get_item_count - 1].min
         @dialog.list.set_selection(new_ix)
       end
       
-      #depreciated
       def move_up
-        puts "Warning depreciated!"
         curr_ix = @dialog.list.get_selection_index
         new_ix = [curr_ix - 1, 0].max
         @dialog.list.set_selection(new_ix)
