@@ -14,7 +14,7 @@ module Redcar
 
           @text = Swt::Widgets::Text.new(composite, Swt::SWT::SINGLE | Swt::SWT::LEFT | Swt::SWT::ICON_CANCEL)
           @text.set_layout_data(Swt::Layout::RowData.new(400, 20))
-          @list = Swt::Widgets::List.new(composite, Swt::SWT::SINGLE)
+          @list = Swt::Widgets::List.new(composite, Swt::SWT::V_SCROLL | Swt::SWT::H_SCROLL | Swt::SWT::SINGLE)
           @list.set_layout_data(Swt::Layout::RowData.new(400, 200))
           controller.attach_listeners
           controller.update_list
