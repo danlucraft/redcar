@@ -135,8 +135,10 @@ module Redcar
         @tags = {}
         File.read(CTags.file_path).each_line do |line|
           key, file, regexp = line.split("\t")
-          @tags[key] ||= []
-          @tags[key] << { :file => file, :regexp => regexp[2..-5] }
+          if [key, file, regexp].all? { |s| !s.nil? && !s.empty? }
+            @tags[key] ||= []
+            @tags[key] << { :file => file, :regexp => regexp[2..-5] }
+          end
         end
         @tags
       end
