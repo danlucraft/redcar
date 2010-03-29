@@ -20,7 +20,8 @@ module Redcar
           controller.update_list
           get_shell.add_shell_listener(ShellListener.new(controller))
           ApplicationSWT.register_shell(get_shell)
-
+          
+          @list.set_focus
           @list.set_selection(0)
         end
       end
@@ -75,22 +76,24 @@ module Redcar
         end
       end
       
-      class KeyListener
+      class SelectionListener
         def initialize(controller)
           @controller = controller
         end
         
-        def key_pressed(e)
-          e.doit = @controller.key_pressed(e)
+        def widgetDefaultSelected(e)
+          @controller.selected
         end
         
-        def key_released(e)
+        def widgetSelected(e)
+
         end
+        
       end
       
       def attach_listeners
         @dialog.text.add_modify_listener(ModifyListener.new(self))
-        @dialog.text.add_key_listener(KeyListener.new(self))
+        @dialog.list.add_selection_listener(SelectionListener.new(self))
       end
       
       def open
@@ -121,7 +124,9 @@ module Redcar
         @model.selected(@dialog.list.get_selection.first, @dialog.list.get_selection_index)
       end
       
+      #depreciated
       def key_pressed(key_event)
+        puts "Warning depreciated!"
         case key_event.keyCode
         when Swt::SWT::CR, Swt::SWT::LF
           selected
@@ -137,13 +142,17 @@ module Redcar
         end
       end
       
+      #depreciated
       def move_down
+        puts "Warning depreciated!"
         curr_ix = @dialog.list.get_selection_index
         new_ix = [curr_ix + 1, @dialog.list.get_item_count - 1].min
         @dialog.list.set_selection(new_ix)
       end
       
+      #depreciated
       def move_up
+        puts "Warning depreciated!"
         curr_ix = @dialog.list.get_selection_index
         new_ix = [curr_ix - 1, 0].max
         @dialog.list.set_selection(new_ix)
