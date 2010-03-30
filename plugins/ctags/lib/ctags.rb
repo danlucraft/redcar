@@ -42,6 +42,19 @@ module Redcar
     def self.file_path
       File.join(Redcar::Project.focussed_project_path, 'tags')
     end
+    
+    def self.tags_for_path(path)
+      @tags_for_path ||= {}
+      @tags_for_path[path] ||= begin
+        tags = {}
+        File.read(path).each_line do |line|
+          key, file, regexp = line.split("\t")
+          tags[key] ||= []
+          tags[key] << { :file => file, :regexp => regexp[2..-5] }
+        end
+        tags
+      end
+    end
 
     # Generate ./ctags file
     #
@@ -95,6 +108,7 @@ module Redcar
 
       def handle_tag(token = '')
         matches = find_tag(token)
+        CTags.matches = matches
         case matches.size
         when 0
           Application::Dialog.message_box(win, "There is no definition for '#{token}' in tags file...")
@@ -107,7 +121,7 @@ module Redcar
       end
 
       def find_tag(tag)
-        CTags.matches = tags_hash[tag] || []
+        CTags.tags_for_path(CTags.file_path)[tag] || []
       end
 
       def go_definition(match)
@@ -128,17 +142,6 @@ module Redcar
         # TODO make dialog like in project find file
         CTags::SelectTagDialog.new.open
         # Application::Dialog.message_box(win, matches[0..10].collect { |m| m[:file] }.join("\n"))
-      end
-
-      def tags_hash
-        return @tags unless @tags.nil?
-        @tags = {}
-        File.read(CTags.file_path).each_line do |line|
-          key, file, regexp = line.split("\t")
-          @tags[key] ||= []
-          @tags[key] << { :file => file, :regexp => regexp[2..-5] }
-        end
-        @tags
       end
 
       def log(message)
