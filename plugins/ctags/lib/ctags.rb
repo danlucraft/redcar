@@ -81,9 +81,9 @@ module Redcar
           command = "#{ctags_binary} -o #{file_path} -R #{Redcar::Project.focussed_project_path}"
           Redcar.logger.debug command
           Thread.new do
-            system(command) 
+            system(command)
             CTags.clear_tags_for_path(file_path)
-          end.join
+          end
         else
           Application::Dialog.message_box win, <<-MESSAGE
             No ctags executable found in your $PATH.
