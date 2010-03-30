@@ -19,7 +19,7 @@ When /^I close the focussed tab$/ do
 end
 
 When /^I replace the contents with "([^\"]*)"$/ do |contents|
-  contents = contents.gsub("\\n", "\n").gsub("\\t", "\t")
+  contents = unescape_text(contents)
   win = Redcar.app.windows.first
   tab = win.focussed_notebook.focussed_tab
   cursor_offset = (contents =~ /<c>/)

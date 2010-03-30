@@ -1,6 +1,6 @@
 
 def unescape_text(text)
-  text.gsub("\\t", "\t").gsub("\\n", "\n").gsub("\\\"", "\"")
+  text.gsub("\\t", "\t").gsub("\\n", "\n").gsub("\\r", "\r").gsub("\\\"", "\"")
 end
 
 When /^I undo$/ do
@@ -133,7 +133,11 @@ Then /^the selection range should be from (\d+) to (\d+)$/ do |from_str, to_str|
   r.end.should == to_str.to_i
 end
  
- 
+Then /the line delimiter should be "(.*)"/ do |delim|
+  doc = Redcar::EditView.focussed_edit_view_document
+  doc.delim.should == unescape_text(delim)
+end
+
  
  
  

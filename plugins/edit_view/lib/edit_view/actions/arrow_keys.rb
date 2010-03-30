@@ -114,11 +114,19 @@ module Redcar
               if match = after_line.match(/^\s+/)
                 doc.cursor_offset + match[0].length
               else
-                doc.cursor_offset + 1
+                incremented_offset(doc)
               end
             else
-              doc.cursor_offset + 1
+              incremented_offset(doc)
             end
+          else
+            incremented_offset(doc)
+          end
+        end
+        
+        def self.incremented_offset(doc)
+          if doc.get_range(doc.cursor_offset, doc.delim.length) == doc.delim
+            doc.cursor_offset + doc.delim.length
           else
             doc.cursor_offset + 1
           end
