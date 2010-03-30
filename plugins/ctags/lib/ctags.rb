@@ -10,11 +10,6 @@ module Redcar
   #
   class CTags
 
-    # Store multiple matches for access from SelectTagDialog
-    class << self
-      attr_accessor :matches
-    end
-
     # This method is run as Redcar is booting up.
     def self.menus
       Menu::Builder.build do
@@ -55,6 +50,11 @@ module Redcar
         tags
       end
     end
+    
+    def self.clear_tags_for_path(path)
+      @tags_for_path ||= {}
+      @tags_for_path.delete(path)
+    end
 
     # Generate ./ctags file
     #
@@ -63,10 +63,13 @@ module Redcar
         if ctags_binary
           puts "=> Building ctags for project with #{ctags_binary}"
           puts "=> Output is: #{CTags.file_path}"
-
-          command = "#{ctags_binary} -o #{CTags.file_path} -R #{Redcar::Project.focussed_project_path}"
+          file_path = CTags.file_path
+          command = "#{ctags_binary} -o #{file_path} -R #{Redcar::Project.focussed_project_path}"
           Redcar.logger.debug command
-          Thread.new { system(command) }.join
+          Thread.new do
+            system(command) 
+            CTags.clear_tags_for_path(file_path)
+          end.join
         else
           Application::Dialog.message_box win, <<-MESSAGE
             No ctags executable found in your $PATH.
@@ -108,7 +111,6 @@ module Redcar
 
       def handle_tag(token = '')
         matches = find_tag(token)
-        CTags.matches = matches
         case matches.size
         when 0
           Application::Dialog.message_box(win, "There is no definition for '#{token}' in tags file...")
@@ -140,7 +142,7 @@ module Redcar
       def open_select_tag_dialog(matches)
         # show 10 files for now...
         # TODO make dialog like in project find file
-        CTags::SelectTagDialog.new.open
+        CTags::SelectTagDialog.new(matches).open
         # Application::Dialog.message_box(win, matches[0..10].collect { |m| m[:file] }.join("\n"))
       end
 
