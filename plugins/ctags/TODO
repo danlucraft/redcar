@@ -4,6 +4,9 @@
 * align entries in SelectTagDialog
 * ajust width of SelectTagDialog
 * improve ctags_binary search logic
-* do something with go_definition in SelectTagDialog
 * automagically update tags file (watchr?)
 * automagically create tags file? (when shift+ctrl+T pressed first time)
+
+
+* FIXED by Samsinite/4f6c3e6abb362e64256bda5c572f3216a842c5a8
+  do something with go_definition in SelectTagDialog
