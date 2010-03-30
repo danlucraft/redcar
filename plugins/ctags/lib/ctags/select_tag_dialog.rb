@@ -34,25 +34,10 @@ module Redcar
       def selected(text, ix, closing=false)
         if @last_list
           close
-          # FIXME Redcar::CTags::GoToTagCommand.new(match).run
-          go_definition(@last_list[ix])
+          Redcar::CTags.go_to_definition(@last_list[ix])
         end
       end # selected
 
-      # FIXME duplicate from ctags.rb
-      # Crashes when trying to
-      # Redcar::CTags::GoToTagCommand.new(match).run
-      def go_definition(match)
-        path   = match[:file]
-        if tab = Redcar::Project.open_file_tab(path)
-          tab.focus
-        else
-          Redcar::Project.open_file(path)
-        end
-        regstr = "^#{Regexp.escape(match[:regexp])}$"
-        regexp = Regexp.new(regstr)
-        Redcar::Top::FindNextRegex.new(regexp, true).run
-      end # go_definition
     end # SelectTagDialog
   end # CTags
 end # Redcar

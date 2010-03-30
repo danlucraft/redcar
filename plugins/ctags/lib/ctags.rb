@@ -37,7 +37,7 @@ module Redcar
     def self.file_path
       File.join(Redcar::Project.focussed_project_path, 'tags')
     end
-    
+
     def self.tags_for_path(path)
       @tags_for_path ||= {}
       @tags_for_path[path] ||= begin
@@ -56,6 +56,18 @@ module Redcar
     def self.clear_tags_for_path(path)
       @tags_for_path ||= {}
       @tags_for_path.delete(path)
+    end
+
+    def self.go_to_definition(match)
+      path   = match[:file]
+      if tab = Redcar::Project.open_file_tab(path)
+        tab.focus
+      else
+        Redcar::Project.open_file(path)
+      end
+      regstr = "^#{Regexp.escape(match[:regexp])}$"
+      regexp = Regexp.new(regstr)
+      Redcar::Top::FindNextRegex.new(regexp, true).run
     end
 
     # Generate ./ctags file
@@ -118,7 +130,7 @@ module Redcar
           Application::Dialog.message_box(win, "There is no definition for '#{token}' in tags file...")
         when 1
           log(matches.to_yaml)
-          go_definition(matches.first)
+          Redcar::CTags.go_to_definition(matches.first)
         else
           open_select_tag_dialog(matches)
         end
@@ -126,19 +138,6 @@ module Redcar
 
       def find_tag(tag)
         CTags.tags_for_path(CTags.file_path)[tag] || []
-      end
-
-      def go_definition(match)
-        path   = match[:file]
-        if tab = Redcar::Project.open_file_tab(path)
-          tab.focus
-        else
-          Redcar::Project.open_file(path)
-        end
-        regstr = "^#{Regexp.escape(match[:regexp])}$"
-        regexp = Regexp.new(regstr)
-        log(regexp)
-        Redcar::Top::FindNextRegex.new(regexp, true).run
       end
 
       def open_select_tag_dialog(matches)
