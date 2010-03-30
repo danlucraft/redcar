@@ -103,6 +103,10 @@ module Redcar
         def self.move_right_offset1(edit_view)
           doc = edit_view.document
           return doc.length if doc.cursor_offset == doc.length - 1
+          if doc.length >= doc.cursor_offset + doc.delim.length and 
+              doc.get_range(doc.cursor_offset, doc.delim.length) == doc.delim
+            return doc.cursor_offset + doc.delim.length
+          end
           if edit_view.soft_tabs?
             line = doc.get_line(doc.cursor_line)
             width = edit_view.tab_width
@@ -125,11 +129,7 @@ module Redcar
         end
         
         def self.incremented_offset(doc)
-          if doc.get_range(doc.cursor_offset, doc.delim.length) == doc.delim
-            doc.cursor_offset + doc.delim.length
-          else
-            doc.cursor_offset + 1
-          end
+          doc.cursor_offset + 1
         end
       end
     end
