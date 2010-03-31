@@ -14,13 +14,11 @@ module Redcar
       def update_list(filter)
         @last_list = @matches
         filtered_list = @last_list
-        if filter.length > 1
-          # TODO use Redcar::FilterListDialog#filter_and_rank_by
-          filtered_list = @last_list.reject do |match|
-            !(match[:file].split(File::SEPARATOR).last =~ Regexp.compile("^" + filter))
+        if filter.length >= 1
+          filtered_list = filter_and_rank_by(filtered_list, filter, filtered_list.length) do |match|
+            match[:file].split(File::SEPARATOR).last
           end
-        end
-
+        end #if
         filtered_list.collect do |match|
           file_path    =  match[:file]
           display_item =  file_path.split(File::SEPARATOR).last
