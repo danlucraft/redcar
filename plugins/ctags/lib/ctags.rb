@@ -11,7 +11,7 @@ module Redcar
       Menu::Builder.build do
         sub_menu "Project" do
           sub_menu "Tags" do
-            item "Go To Difinition", CTags::GoToTagCommand
+            item "Go To Definition", CTags::GoToTagCommand
             item "Generate Tags (ctags)", CTags::GenerateCtagsCommand
           end
         end
