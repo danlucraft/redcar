@@ -10,11 +10,6 @@ module Redcar
   #
   class CTags
 
-    # Store multiple matches for access from SelectTagDialog
-    class << self
-      attr_accessor :matches
-    end
-
     # This method is run as Redcar is booting up.
     def self.menus
       Menu::Builder.build do
@@ -43,6 +38,24 @@ module Redcar
       File.join(Redcar::Project.focussed_project_path, 'tags')
     end
     
+    def self.tags_for_path(path)
+      @tags_for_path ||= {}
+      @tags_for_path[path] ||= begin
+        tags = {}
+        File.read(path).each_line do |line|
+          key, file, regexp = line.split("\t")
+          tags[key] ||= []
+          tags[key] << { :file => file, :regexp => regexp[2..-5] }
+        end
+        tags
+      end
+    end
+
+    def self.clear_tags_for_path(path)
+      @tags_for_path ||= {}
+      @tags_for_path.delete(path)
+    end
+
     def self.go_to_definition(match)
       path   = match[:file]
       if tab = Redcar::Project.open_file_tab(path)
@@ -62,10 +75,13 @@ module Redcar
         if ctags_binary
           puts "=> Building ctags for project with #{ctags_binary}"
           puts "=> Output is: #{CTags.file_path}"
-
-          command = "#{ctags_binary} -o #{CTags.file_path} -R #{Redcar::Project.focussed_project_path}"
+          file_path = CTags.file_path
+          command = "#{ctags_binary} -o #{file_path} -R #{Redcar::Project.focussed_project_path}"
           Redcar.logger.debug command
-          Thread.new { system(command) }.join
+          Thread.new do
+            system(command) 
+            CTags.clear_tags_for_path(file_path)
+          end.join
         else
           Application::Dialog.message_box win, <<-MESSAGE
             No ctags executable found in your $PATH.
@@ -119,22 +135,14 @@ module Redcar
       end
 
       def find_tag(tag)
-        CTags.matches = tags_hash[tag] || []
+        CTags.tags_for_path(CTags.file_path)[tag] || []
       end
 
       def open_select_tag_dialog(matches)
-        CTags::SelectTagDialog.new.open
-      end
-
-      def tags_hash
-        return @tags unless @tags.nil?
-        @tags = {}
-        File.read(CTags.file_path).each_line do |line|
-          key, file, regexp = line.split("\t")
-          @tags[key] ||= []
-          @tags[key] << { :file => file, :regexp => regexp[2..-5] }
-        end
-        @tags
+        # show 10 files for now...
+        # TODO make dialog like in project find file
+        CTags::SelectTagDialog.new(matches).open
+        # Application::Dialog.message_box(win, matches[0..10].collect { |m| m[:file] }.join("\n"))
       end
 
       def log(message)
@@ -143,3 +151,6 @@ module Redcar
     end # GoToTagCommand
   end # CTags
 end # Redcar
+
+
+

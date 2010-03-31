@@ -2,12 +2,17 @@ module Redcar
   class CTags
     class SelectTagDialog < FilterListDialog
 
+      def initialize(matches)
+        super()
+        @matches = matches
+      end
+
       def close
         super
       end
 
       def update_list(filter)
-        @last_list = Redcar::CTags.matches
+        @last_list = @matches
         filtered_list = @last_list
         if filter.length > 1
           # TODO use Redcar::FilterListDialog#filter_and_rank_by
