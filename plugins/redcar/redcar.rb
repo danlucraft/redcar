@@ -231,12 +231,21 @@ module Redcar
         use_spaces = true
         num_spaces = 2
         line = doc.get_line(line_ix)
-        if line[0..0] == "\t"
+        if doc.edit_view.soft_tabs?
           line_start = doc.offset_at_line(line_ix)
-          to         = line_start + 1
-        elsif line[0...num_spaces] == " "*num_spaces
+          re = /^ {0,#{doc.edit_view.tab_width}}/
+          if md = line.match(re)
+            to = line_start + md[0].length
+          else
+            to = line_start
+          end
+        else
           line_start = doc.offset_at_line(line_ix)
-          to         = line_start + num_spaces
+          if line =~ /^\t/
+            to = line_start + 1
+          else
+            to = line_start
+          end
         end
         doc.delete(line_start, to - line_start) unless line_start == to
       end
@@ -246,8 +255,12 @@ module Redcar
       
       def indent_line(doc, line_ix)
         line            = doc.get_line(line_ix)
-        whitespace_type = line[/^(  |\t)/, 1] || "  "
-        doc.insert(doc.offset_at_line(line_ix), whitespace_type)
+        if doc.edit_view.soft_tabs?
+          whitespace = " "*doc.edit_view.tab_width
+        else
+          whitespace = "\t"
+        end
+        doc.insert(doc.offset_at_line(line_ix), whitespace)
       end
     end
 
