@@ -81,7 +81,7 @@ module Redcar
         end
         
         def key_pressed(e)
-          e.doit = @controller.key_pressed(e)
+          @controller.key_pressed(e)
         end
         
         def key_released(e)
@@ -94,13 +94,12 @@ module Redcar
         end
         
         def widgetDefaultSelected(e)
-          e.doit = @controller.selected
+          @controller.selected
         end
         
         def widgetSelected(e)
-          e.doit = @controller.text_focus
+          @controller.text_focus
         end
-        
       end
       
       def attach_listeners
