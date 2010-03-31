@@ -37,15 +37,17 @@ module Redcar
     def self.file_path
       File.join(Redcar::Project.focussed_project_path, 'tags')
     end
-    
+
     def self.tags_for_path(path)
       @tags_for_path ||= {}
       @tags_for_path[path] ||= begin
         tags = {}
         File.read(path).each_line do |line|
           key, file, regexp = line.split("\t")
-          tags[key] ||= []
-          tags[key] << { :file => file, :regexp => regexp[2..-5] }
+          if [key, file, regexp].all? { |el| !el.nil? && !el.empty? }
+            tags[key] ||= []
+            tags[key] << { :file => file, :regexp => regexp[2..-5] }
+          end
         end
         tags
       end
@@ -79,9 +81,9 @@ module Redcar
           command = "#{ctags_binary} -o #{file_path} -R #{Redcar::Project.focussed_project_path}"
           Redcar.logger.debug command
           Thread.new do
-            system(command) 
+            system(command)
             CTags.clear_tags_for_path(file_path)
-          end.join
+          end
         else
           Application::Dialog.message_box win, <<-MESSAGE
             No ctags executable found in your $PATH.
@@ -139,10 +141,7 @@ module Redcar
       end
 
       def open_select_tag_dialog(matches)
-        # show 10 files for now...
-        # TODO make dialog like in project find file
         CTags::SelectTagDialog.new(matches).open
-        # Application::Dialog.message_box(win, matches[0..10].collect { |m| m[:file] }.join("\n"))
       end
 
       def log(message)
@@ -151,6 +150,3 @@ module Redcar
     end # GoToTagCommand
   end # CTags
 end # Redcar
-
-
-
