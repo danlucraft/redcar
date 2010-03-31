@@ -17,16 +17,16 @@ module Redcar
       def self.generate_menu(builder)
         directories = storage['list']
         directories.each do |dir|
-          builder.item(File.basename(dir)) do
-            begin
-              Project.open_dir(dir) #currently throws error 'Not a directory: ...' if the directory doesn't exist
-            rescue RuntimeError => error
-              if error.to_s == 'Not a directory: ' + dir 
+          if File.directory?(File.expand_path(dir))
+            builder.item(File.basename(dir)) do
+              if File.directory?(File.expand_path(dir))
+                Project.open_dir(dir)
+              else
                 remove_path(dir)
-              else #Not the RuntimeError expected, rethrowing error
-                raise error.to_s
               end
             end
+          else
+            remove_path(dir)
           end
         end
       end
