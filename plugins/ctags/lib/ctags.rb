@@ -66,18 +66,18 @@ module Redcar
       Redcar::Top::FindNextRegex.new(regexp, true).run
     end
 
-    # Generate ./ctags file
+    # Generate "tags" file for current project
     class GenerateCtagsCommand < Redcar::Command
+
+      autoload :Tempfile,  'tempfile'
     
       def execute
         if ctags_binary
-          puts "=> Building ctags for project with #{ctags_binary}"
-          puts "=> Output is: #{CTags.file_path}"
-          file_path = CTags.file_path
-          command = "#{ctags_binary} -o #{file_path} -R #{Redcar::Project.focussed_project_path}"
-          Redcar.logger.debug command
           Thread.new do
-            system(command)
+            tempfile = Tempfile.new('tags')
+            tempfile.close # we need just temp path here
+            system("#{ctags_binary} -o #{tempfile.path} -R #{Redcar::Project.focussed_project_path}")
+            FileUtils.mv tempfile.path, CTags.file_path
             CTags.clear_tags_for_path(file_path)
           end
         else
