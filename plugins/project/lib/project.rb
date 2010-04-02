@@ -226,13 +226,13 @@ module Redcar
     end
     
     def self.add_to_recent_files_for(directory_path, new_file)
-      new_file = File.expand_path(new_file) 
+      new_file = File.expand_path(new_file)
       if recent_files_for(directory_path).include?(new_file)
         recent_files_for(directory_path).delete(new_file)
       end
-      recent_files_for(directory_path).unshift(new_file)
+      recent_files_for(directory_path) << new_file
       if recent_files_for(directory_path).length > RECENT_FILES_LENGTH
-        recent_files_for(directory_path).pop
+        recent_files_for(directory_path).shift
       end
     end
     

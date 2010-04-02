@@ -52,11 +52,12 @@ Feature: Undo and Redo
     
   Scenario: Compound undo steps work
     When I open a new edit tab
+    And tabs are hard
     And I replace the contents with "Bolzano\nWeierstrass"
     And I select from 0 to 19
     And tabs are hard
     And I run the command Redcar::Top::IncreaseIndentCommand
-    Then the contents should be "  Bolzano\n  Weierstrass"
+    Then the contents should be "\tBolzano\n\tWeierstrass"
     And I undo
     Then the contents should be "Bolzano\nWeierstrass"
     

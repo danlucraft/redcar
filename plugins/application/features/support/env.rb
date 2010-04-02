@@ -10,6 +10,16 @@ module SwtHelper
     Redcar::ApplicationSWT.display.get_shells.to_a.first
   end
   
+  def dialog(type)
+    dialogs.detect {|d| d.is_a?(type) }
+  end
+  
+  def dialogs
+    Redcar::ApplicationSWT.display.get_shells.to_a.map do |s| 
+      Redcar::ApplicationSWT.shell_dialogs[s]
+    end.compact
+  end
+  
   def sash_form 
     first_shell.getChildren.to_a.first
   end
@@ -60,6 +70,10 @@ end
 World(SwtHelper)
 
 def close_everything
+  Redcar::ApplicationSWT.sync_exec do
+    dialogs.each {|d| d.controller.model.close }
+  end
+  
   Redcar.app.windows.each do |win|
     while tree = win.treebook.trees.first
       Redcar::ApplicationSWT.sync_exec do
@@ -88,15 +102,9 @@ end
 
 Before do
   close_everything
+  Redcar::ApplicationSWT::FilterListDialogController.test_mode = true
 end
 
 After do
   close_everything
 end
-
-
-
-
-
-
-

@@ -2,7 +2,10 @@
 module Cucumber
   module Ast
     class StepInvocation #:nodoc:# 
-
+      class << self
+        attr_accessor :wait_time
+      end
+      
       def invoke(step_mother, options)
         block = Swt::RRunnable.new do
           find_step_match!(step_mother)
@@ -28,6 +31,8 @@ module Cucumber
         if ENV["SLOW_CUKES"]
           sleep ENV["SLOW_CUKES"].to_f
         end
+        sleep(Cucumber::Ast::StepInvocation.wait_time || 0)
+        Cucumber::Ast::StepInvocation.wait_time = nil
       end
     end
   end
