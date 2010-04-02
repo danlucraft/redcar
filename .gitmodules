@@ -102,7 +102,7 @@
 	url = git://github.com/textmate/perl-template-toolkit.tmbundle.git
 [submodule "textmate/Bundles/Perl.tmbundle"]
 	path = textmate/Bundles/Perl.tmbundle
-	url = git://github.com/textmate/perl.tmbundle.git
+	url = git://github.com/redcar-bundles/perl.tmbundle.git
 [submodule "textmate/Bundles/PHP.tmbundle"]
 	path = textmate/Bundles/PHP.tmbundle
 	url = git://github.com/textmate/php.tmbundle.git
