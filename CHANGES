@@ -9,11 +9,11 @@ New features:
 Fixes:
 
   * Fix delete at end of line when using "\r\n" delimiter
+  * Increase and decrease indent commands respect soft tabs and tab width settings
   
 New contributors:
 
   * Antono Vasiljev
-  
 
 Version 0.3.4dev (7 Mar 2010)
 =============================

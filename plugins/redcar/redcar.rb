@@ -353,9 +353,8 @@ module Redcar
             doc.offset_at_line(line_ix) + line_offset,
             text
           )
+          doc.cursor_offset = doc.offset_at_line(line_ix) + line_offset + text.length
         end
-        new_offset = doc.offset_at_line(cursor_line) + cursor_line_offset + Redcar.app.clipboard.last.first.length
-        doc.cursor_offset = new_offset
       end
     end
     
