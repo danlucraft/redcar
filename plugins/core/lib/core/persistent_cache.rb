@@ -18,8 +18,8 @@ module Redcar
     end
     
     def cache
-      if File.exist?(cache_file_name)
-        Marshal.load(File.read(cache_file_name))
+      if result = read_cache_file
+        result
       else
         result = yield
         write_cache_file(Marshal.dump(result))
@@ -40,6 +40,18 @@ module Redcar
     def write_cache_file(contents)
       FileUtils.mkdir_p(PersistentCache.storage_dir)
       File.open(cache_file_name, "w") {|f| f.puts contents }
+    end
+    
+    def read_cache_file
+      if File.exist?(cache_file_name)
+        begin
+          Marshal.load(File.read(cache_file_name))
+        rescue => e
+          puts "WARNING: couldn't load #{cache_file_name}, despite it existing."
+          puts e.class.name + " " + e.message
+          puts e.backtrace
+        end
+      end
     end
   end
 end
