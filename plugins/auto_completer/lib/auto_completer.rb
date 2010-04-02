@@ -16,7 +16,7 @@ require 'auto_completer/word_list'
 
 module Redcar
   class AutoCompleter
-    WORD_CHARACTERS = /:|@|\w/ # /(\s|\t|\.|\r|\(|\)|,|;)/
+    WORD_CHARACTERS = /\w/ # /(\s|\t|\.|\r|\(|\)|,|;)/
     
     def self.document_controller_types
       [AutoCompleter::DocumentController]
@@ -24,6 +24,16 @@ module Redcar
     
     def self.autocompletion_source_types
       [AutoCompleter::CurrentDocumentCompletionSource]
+    end
+    
+    def self.all_autocompletion_source_types
+      result = []
+      Redcar.plugin_manager.loaded_plugins.each do |plugin|
+        if plugin.object.respond_to?(:autocompletion_source_types)
+          result += plugin.object.autocompletion_source_types
+        end
+      end
+      result
     end
     
     class AutoCompleteCommand < Redcar::EditTabCommand
@@ -72,9 +82,15 @@ module Redcar
       private
       
       def alternatives(prefix)
-        sources = AutoCompleter.autocompletion_source_types.map {|t| t.new(doc, nil) }
+        sources = AutoCompleter.all_autocompletion_source_types.map do |t| 
+          t.new(doc, Project.focussed_project_path)
+        end
         word_list = WordList.new
-        sources.each {|source| word_list.merge!(source.alternatives(prefix)) }
+        sources.each do |source|
+          if alts = source.alternatives(prefix)
+            word_list.merge!(alts)
+          end
+        end
         word_list
       end
       

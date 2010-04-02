@@ -38,6 +38,10 @@ module Redcar
       def merge!(other)
         @words.merge!(other.words)
       end
+      
+      def inspect
+        "<WordList: " + @words.map {|k,v| "#{k}:#{v}"}.join(" ") + ">"
+      end
     end
   end
 end
