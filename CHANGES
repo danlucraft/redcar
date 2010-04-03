@@ -6,8 +6,12 @@ New features:
   
   * CTags support
   * Project-wide autocomplete
-  * Double click respects word boundaries
+  
+Enhancements:
 
+  * Double click respects word boundaries
+  * Window title reflects project name
+  
 Fixes:
 
   * Fix delete at end of line when using "\r\n" delimiter

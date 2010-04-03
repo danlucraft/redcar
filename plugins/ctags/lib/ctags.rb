@@ -2,11 +2,9 @@ require 'ctags/completion_source'
 require 'ctags/select_tag_dialog'
 
 module Redcar
-  # = CTags plugin
-  #
-  # Generates tag file from code of current project
-  # using [ctags-exuberant](http://ctags.sourceforge.net/)
-  # Knows how search selected text in "tags" file.
+  # Integrates [ctags-exuberant](http://ctags.sourceforge.net/) into Redcar. ctags
+  # builds an index of method and class definitions, which allows for jump to 
+  # definition commands.
   class CTags
     def self.menus
       Menu::Builder.build do
