@@ -73,6 +73,7 @@ module Redcar
       else
         set_tree(win, tree)
       end
+      win.title = File.basename(tree.tree_mirror.path)
       Project.open_project_sensitivity.recompute
     end
 
@@ -80,6 +81,7 @@ module Redcar
     # is one.
     def self.close_tree(win)
       win.treebook.remove_tree(window_trees[win])
+      win.title = Window::DEFAULT_TITLE
       Project.open_project_sensitivity.recompute
     end
     

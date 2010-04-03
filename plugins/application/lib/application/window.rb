@@ -1,6 +1,8 @@
 
 module Redcar
   class Window
+    DEFAULT_TITLE = "Redcar"
+    
     include Redcar::Model
     include Redcar::Observable
     
@@ -21,7 +23,7 @@ module Redcar
       create_notebook
       @treebook = Treebook.new
       @speedbar = nil
-      self.title = "Redcar"
+      self.title = DEFAULT_TITLE
     end
 
     def title
