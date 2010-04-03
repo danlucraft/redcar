@@ -1,21 +1,18 @@
+require 'ctags/completion_source'
 require 'ctags/select_tag_dialog'
 
 module Redcar
-
   # = CTags plugin
   #
   # Generates tag file from code of current project
   # using [ctags-exuberant](http://ctags.sourceforge.net/)
   # Knows how search selected text in "tags" file.
-  #
   class CTags
-
-    # This method is run as Redcar is booting up.
     def self.menus
       Menu::Builder.build do
         sub_menu "Project" do
           sub_menu "Tags" do
-            item "Go To Difinition", CTags::GoToTagCommand
+            item "Go To Definition", CTags::GoToTagCommand
             item "Generate Tags (ctags)", CTags::GenerateCtagsCommand
           end
         end
@@ -34,8 +31,12 @@ module Redcar
       [linwin, osx]
     end
 
-    def self.file_path
-      File.join(Redcar::Project.focussed_project_path, 'tags')
+    def self.autocompletion_source_types
+      [CTags::CompletionSource]
+    end
+
+    def self.file_path(project_path=Redcar::Project.focussed_project_path)
+      File.join(project_path, 'tags')
     end
 
     def self.tags_for_path(path)
@@ -59,7 +60,7 @@ module Redcar
     end
 
     def self.go_to_definition(match)
-      path   = match[:file]
+      path = match[:file]
       if tab = Redcar::Project.open_file_tab(path)
         tab.focus
       else
@@ -71,15 +72,15 @@ module Redcar
     end
 
     # Generate ./ctags file
-    #
     class GenerateCtagsCommand < Redcar::Command
+    
       def execute
         if ctags_binary
           puts "=> Building ctags for project with #{ctags_binary}"
           puts "=> Output is: #{CTags.file_path}"
           file_path = CTags.file_path
           command = "#{ctags_binary} -o #{file_path} -R #{Redcar::Project.focussed_project_path}"
-          Redcar.logger.debug command
+          puts command
           Thread.new do
             system(command)
             CTags.clear_tags_for_path(file_path)
@@ -106,7 +107,7 @@ module Redcar
 
         @ctags_dir ? File.join(@ctags_dir, bin_name) : false
       end
-    end # GenerateCtagsCommand
+    end
 
     class GoToTagCommand < EditTabCommand
 
@@ -120,7 +121,6 @@ module Redcar
           log("Current line: #{doc.get_line(doc.cursor_line)}")
           log("Cursor offset: #{doc.cursor_offset}")
         end
-
       end
 
       def handle_tag(token = '')
@@ -147,6 +147,6 @@ module Redcar
       def log(message)
         puts("==> Ctags: #{message}")
       end
-    end # GoToTagCommand
-  end # CTags
-end # Redcar
+    end
+  end
+end

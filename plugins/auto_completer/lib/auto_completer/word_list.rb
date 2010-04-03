@@ -11,7 +11,6 @@ module Redcar
       
       def initialize
         @words = Hash.new
-        @offset = 0
       end
       
       # adds a new word, iff it doesn't yet exist.
@@ -34,6 +33,14 @@ module Redcar
       
       def each
         @words.each {|word,distance| yield word, distance }
+      end
+      
+      def merge!(other)
+        @words.merge!(other.words)
+      end
+      
+      def inspect
+        "<WordList: " + @words.map {|k,v| "#{k}:#{v}"}.join(" ") + ">"
       end
     end
   end

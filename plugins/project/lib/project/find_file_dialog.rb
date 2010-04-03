@@ -36,9 +36,9 @@ module Redcar
       
       def update_list(filter)
         if filter.length < 2
-          paths = Project.recent_files_for(Project.focussed_project_path)
+          paths = recent_files
         else
-          paths = find_files_from_list(filter, Project.recent_files_for(Project.focussed_project_path)) + 
+          paths = find_files_from_list(filter, recent_files) + 
                   find_files(filter, Project.focussed_project_path)             
           paths.uniq! # in case there's some dupe's between the two lists
         end
@@ -67,6 +67,11 @@ module Redcar
       
       private
           
+      def recent_files
+        files = Project.recent_files_for(Project.focussed_project_path)
+        ((files[0..-2]||[]).reverse + [files[-1]]).compact
+      end
+    
       def duplicates_as_hash(enum)
         enum.inject(Hash.new(0)) {|h,v| h[v] += 1; h }.reject {|k,v| v == 1 }
       end
@@ -98,7 +103,6 @@ module Redcar
             files += Dir[File.expand_path(dir + "/**/*")]
           end
           took = Time.now - s
-          puts "find files (#{directories.length} dirs) took #{took}s"
           files.reject do |f|
             begin
               File.directory?(f)

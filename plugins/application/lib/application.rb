@@ -226,7 +226,6 @@ module Redcar
     def lost_application_focus
       return if @protect_application_focus
       @application_focus = false
-      puts "Lost application focus"
       notify_listeners(:lost_focus, self)
     end
     
@@ -235,7 +234,6 @@ module Redcar
     def gained_application_focus
       if @application_focus == false
         @application_focus = true
-        puts "Gained application focus"
         notify_listeners(:focussed, self)
       end
     end

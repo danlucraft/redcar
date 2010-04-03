@@ -18,7 +18,7 @@ module Redcar
           filtered_list = filter_and_rank_by(filtered_list, filter, filtered_list.length) do |match|
             match[:file].split(File::SEPARATOR).last
           end
-        end #if
+        end
         filtered_list.collect do |match|
           file_path    =  match[:file]
           display_item =  file_path.split(File::SEPARATOR).last
@@ -34,8 +34,7 @@ module Redcar
           close
           Redcar::CTags.go_to_definition(@last_list[ix])
         end
-      end # selected
-
-    end # SelectTagDialog
-  end # CTags
-end # Redcar
+      end
+    end
+  end
+end

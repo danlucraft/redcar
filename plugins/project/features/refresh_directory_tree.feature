@@ -35,3 +35,9 @@ Feature: Refresh directory tree
     And I refresh the directory tree
     Then I should see "bin,config,lib,freebase2,plugins" in the tree
   
+  Scenario: Tree is moved
+    Given I will choose "plugins/project/spec/fixtures/myproject" from the "open_directory" dialog
+    When I open a directory
+    And I move the myproject fixture away
+    And I refresh the directory tree
+    Then I should not see "lib" in the tree  

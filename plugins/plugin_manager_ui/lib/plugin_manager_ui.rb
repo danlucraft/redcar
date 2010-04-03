@@ -40,6 +40,7 @@ module Redcar
         def plugin_table(plugins)
           str = "<table>\n"
           highlight = true
+          plugins = plugins.sort_by {|pl| pl.name.downcase }
           plugins.each do |plugin|
             name = plugin.is_a?(PluginManager::PluginDefinition) ? plugin.name : plugin
             str << "<tr class=\"#{highlight ? "grey" : ""}\">"
