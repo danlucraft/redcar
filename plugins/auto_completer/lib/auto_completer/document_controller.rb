@@ -30,7 +30,7 @@ module Redcar
       
       attr_accessor :index
       attr_accessor :length_of_previous
-      attr_accessor :word_list, :word, :left, :right
+      attr_accessor :word_list, :prefix, :left, :right
       
       def before_modify(*_)
       end
@@ -41,7 +41,7 @@ module Redcar
           @index         = 0
           @length_of_previous = nil
           @word_list = nil
-          @word = nil
+          @prefix = nil
           @left = nil
           @right = nil
         end

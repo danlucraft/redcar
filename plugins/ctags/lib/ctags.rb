@@ -1,3 +1,4 @@
+require 'ctags/completion_source'
 require 'ctags/select_tag_dialog'
 
 module Redcar
@@ -30,8 +31,12 @@ module Redcar
       [linwin, osx]
     end
 
-    def self.file_path
-      File.join(Redcar::Project.focussed_project_path, 'tags')
+    def self.autocompletion_source_types
+      [CTags::CompletionSource]
+    end
+
+    def self.file_path(project_path=Redcar::Project.focussed_project_path)
+      File.join(project_path, 'tags')
     end
 
     def self.tags_for_path(path)

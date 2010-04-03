@@ -2,7 +2,13 @@ module Redcar
   class ApplicationSWT
     class FilterListDialogController
       include ReentryHelpers
-        
+      
+      class << self
+        # when set, the FilterListDialog is non-modal for testing
+        attr_writer :test_mode
+        def test_mode?; @test_mode; end
+      end
+      
       class FilterListDialog < Dialogs::NoButtonsDialog
         attr_reader :list, :text
         attr_accessor :controller
@@ -17,10 +23,11 @@ module Redcar
           @list = Swt::Widgets::List.new(composite, Swt::SWT::V_SCROLL | Swt::SWT::H_SCROLL | Swt::SWT::SINGLE)
           @list.set_layout_data(Swt::Layout::RowData.new(400, 200))
           controller.attach_listeners
-          controller.update_list
+          controller.update_list_sync
           get_shell.add_shell_listener(ShellListener.new(controller))
           ApplicationSWT.register_shell(get_shell)
-          
+          ApplicationSWT.register_dialog(get_shell, self)
+
           @list.set_selection(0)
         end
       end
@@ -57,6 +64,10 @@ module Redcar
         @model = model
         @dialog = FilterListDialog.new(Redcar.app.focussed_window.controller.shell)
         @dialog.controller = self
+        if FilterListDialogController.test_mode?
+          @dialog.setBlockOnOpen(false)
+          @dialog.setShellStyle(Swt::SWT::DIALOG_TRIM)
+        end
         attach_model_listeners
       end
       
@@ -110,27 +121,33 @@ module Redcar
       
       def open
         @dialog.open
-        @dialog = nil
+        @dialog = nil unless FilterListDialogController.test_mode?
       end
       
       def close
         @dialog.close
+        @dialog = nil
       end
       
       def update_list
         @last_keypress = Time.now
         pause_time = FilterListDialogController.storage['pause_before_update_seconds']
-        Swt::Widgets::Display.getCurrent.timerExec(pause_time*1000, Swt::RRunnable.new { 
-          if @dialog and @last_keypress and (Time.now - @last_keypress + pause_time) > pause_time
+        Swt::Widgets::Display.getCurrent.timerExec(pause_time*1000, Swt::RRunnable.new {
+          if @last_keypress and (Time.now - @last_keypress + pause_time) > pause_time
             @last_keypress = nil
-            s = Time.now
-            list = @model.update_list(@dialog.text.get_text)
-            puts "update list took #{Time.now - s}s"
-            populate_list(list)
-            @dialog.list.set_selection(0)
-            text_focus
+            update_list_sync
           end
         })
+      end
+      
+      def update_list_sync
+        if @dialog
+          s = Time.now
+          list = @model.update_list(@dialog.text.get_text)
+          populate_list(list)
+          @dialog.list.set_selection(0)
+          text_focus
+        end
       end
       
       def text_focus

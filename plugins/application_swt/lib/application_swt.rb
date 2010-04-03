@@ -92,6 +92,14 @@ module Redcar
       shell.add_shell_listener(ShellListener.new)
     end
     
+    def self.shell_dialogs
+      @shell_dialogs ||= {}
+    end
+    
+    def self.register_dialog(shell, dialog)
+      shell_dialogs[shell] = dialog
+    end
+    
     def initialize(model)
       @model = model
       add_listeners

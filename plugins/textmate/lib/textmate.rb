@@ -21,7 +21,6 @@ module Redcar
         end
       end
       @menus.entries.each {|i| builder.append(i) }
-      puts "took #{Time.now - s}s to attach bundle menus"
     end
     
     #def self.attach_keybindings(builder)

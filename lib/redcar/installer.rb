@@ -77,7 +77,7 @@ module Redcar
       "/jruby/joni.jar"
     ]
 
-    JRUBY << "http://jruby.kenai.com/downloads/1.4.0/jruby-complete-1.4.0.jar" unless RUBY_PLATFORM =~ /java/
+    JRUBY << "http://jruby.kenai.com/downloads/1.4.0/jruby-complete-1.4.0.jar"
     
     JOPENSSL = {
       "/jruby/bcmail-jdk14-139-#{Redcar::VERSION}.jar" => "lib/openssl/lib/bcmail-jdk14-139.jar",

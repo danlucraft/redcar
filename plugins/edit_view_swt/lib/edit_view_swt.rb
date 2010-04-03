@@ -226,12 +226,14 @@ module Redcar
     
     def update_grammar(new_mirror)
       title = new_mirror.title
-      return if @mate_text.set_grammar_by_filename(title)
       contents = new_mirror.read
       first_line = contents.to_s.split("\n").first
-      grammar = @mate_text.set_grammar_by_first_line(first_line) if first_line
-      grammar ||= "Plain Text"
-      @model.set_grammar(grammar)
+      grammar_name = @mate_text.set_grammar_by_first_line(first_line) if first_line
+      unless grammar_name
+        grammar_name = @mate_text.set_grammar_by_filename(title)
+      end
+      grammar_name ||= "Plain Text"
+      @model.set_grammar(grammar_name)
     end
     
     STRIP_KEYS = {

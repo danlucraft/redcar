@@ -12,6 +12,14 @@ Feature: Open directory tree
     When I open a directory
     Then I should see "core,application,tree" in the tree
   
-  
-  
-  
+  Scenario: Title of window reflects open project
+    Given I will choose "plugins/project/spec/fixtures/myproject" from the "open_directory" dialog
+    When I open a directory
+    Then the window should have title "myproject"
+
+  Scenario: Title of window returns to "Redcar" if directory is closed
+    Given I will choose "plugins/project/spec/fixtures/myproject" from the "open_directory" dialog
+    When I open a directory
+    Then the window should have title "myproject"
+    When I close the directory
+    Then the window should have title "Redcar"

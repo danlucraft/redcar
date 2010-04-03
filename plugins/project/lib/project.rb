@@ -73,6 +73,7 @@ module Redcar
       else
         set_tree(win, tree)
       end
+      win.title = File.basename(tree.tree_mirror.path)
       Project.open_project_sensitivity.recompute
     end
 
@@ -80,6 +81,7 @@ module Redcar
     # is one.
     def self.close_tree(win)
       win.treebook.remove_tree(window_trees[win])
+      win.title = Window::DEFAULT_TITLE
       Project.open_project_sensitivity.recompute
     end
     
@@ -90,7 +92,7 @@ module Redcar
         tree.refresh
       end
     end
-    
+
     # Finds an EditTab with a mirror for the given path.
     #
     # @param [String] path  the path of the file being edited
@@ -226,13 +228,13 @@ module Redcar
     end
     
     def self.add_to_recent_files_for(directory_path, new_file)
-      new_file = File.expand_path(new_file) 
+      new_file = File.expand_path(new_file)
       if recent_files_for(directory_path).include?(new_file)
         recent_files_for(directory_path).delete(new_file)
       end
-      recent_files_for(directory_path).unshift(new_file)
+      recent_files_for(directory_path) << new_file
       if recent_files_for(directory_path).length > RECENT_FILES_LENGTH
-        recent_files_for(directory_path).pop
+        recent_files_for(directory_path).shift
       end
     end
     

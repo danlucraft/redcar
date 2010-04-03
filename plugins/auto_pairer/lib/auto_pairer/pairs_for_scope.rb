@@ -5,7 +5,6 @@ module Redcar
         @autopair_rules ||= begin
           rules = Hash.new {|h, k| h[k] = {}}
           @autopair_default = nil
-          start = Time.now
           pair_settings = Textmate.all_settings.select do |setting|
             setting.is_a?(Textmate::SmartTypingPairsSetting)
           end
@@ -19,7 +18,6 @@ module Redcar
           if @autopair_default
             @autopair_default1 = @autopair_default.invert
           end
-          puts "loaded autopair rules in #{Time.now - start}s"
           rules.default = nil
           rules
         end

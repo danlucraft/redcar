@@ -9,7 +9,7 @@ module Redcar
       end
       
       def get_next_offset(e)
-        if e.movement == Swt::SWT::MOVEMENT_WORD
+        if [Swt::SWT::MOVEMENT_WORD, Swt::SWT::MOVEMENT_WORD_END].include? e.movement
           e.newOffset = next_offset(e.offset, e.lineOffset, e.lineText)
           # SWT gets pissy without this:
           if e.newOffset == e.lineOffset + e.lineText.length + 1
@@ -36,7 +36,7 @@ module Redcar
       end
       
       def get_previous_offset(e)
-        if e.movement == Swt::SWT::MOVEMENT_WORD
+        if [Swt::SWT::MOVEMENT_WORD, Swt::SWT::MOVEMENT_WORD_START].include? e.movement
           e.newOffset = previous_offset(e.offset, e.lineOffset, e.lineText)
           # SWT gets pissy without this:
           if e.newOffset == e.lineOffset - 1
