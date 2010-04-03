@@ -127,7 +127,7 @@ module Redcar
         matches = find_tag(token)
         case matches.size
         when 0
-          Application::Dialog.message_box(win, "There is no definition for '#{token}' in tags file...")
+          Application::Dialog.message_box(win, "There is no definition for '#{token}' in the tags file.")
         when 1
           log(matches.to_yaml)
           Redcar::CTags.go_to_definition(matches.first)
