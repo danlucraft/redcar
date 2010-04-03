@@ -19,20 +19,24 @@ module Redcar
             match[:file].split(File::SEPARATOR).last
           end
         end
-        filtered_list.collect do |match|
-          file_path    =  match[:file]
-          display_item =  file_path.split(File::SEPARATOR).last
-          display_item += "\t\t"
-          display_item += ' ('
-          display_item += file_path.gsub(Regexp.compile(Redcar::Project.focussed_project_path + '/'), '')
-          display_item += ')'
-        end
+        align_matches_for_display(filtered_list)
       end
 
       def selected(text, ix, closing=false)
         if @last_list
           close
           Redcar::CTags.go_to_definition(@last_list[ix])
+        end
+      end
+      
+      private
+      
+      def align_matches_for_display(filtered_list)
+        filtered_list.collect do |match|
+          file_path     = match[:file]
+          file          = file_path.split(File::SEPARATOR).last
+          relative_path = file_path.gsub(Regexp.compile(Redcar::Project.focussed_project_path + '/'), '')
+          "%s (%s)" % [file, relative_path]
         end
       end
     end

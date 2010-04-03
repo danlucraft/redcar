@@ -70,7 +70,7 @@ module Redcar
     class GenerateCtagsCommand < Redcar::Command
 
       autoload :Tempfile,  'tempfile'
-    
+
       def execute
         if ctags_binary
           Thread.new do
