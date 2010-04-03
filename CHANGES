@@ -5,7 +5,9 @@ Version 0.3.5dev (TBA)
 New features:
   
   * CTags support
-  
+  * Project-wide autocomplete
+  * Double click respects word boundaries
+
 Fixes:
 
   * Fix delete at end of line when using "\r\n" delimiter
