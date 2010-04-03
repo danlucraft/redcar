@@ -98,12 +98,11 @@ module Redcar
       # http://prdownloads.sourceforge.net/ctags/ctags58.zip
       # FIXME make it really cross-platform
       def ctags_binary
+        ctags_path
         bin_name = 'ctags'
         bin_name += '.exe' if Redcar.platform == :windows
-
-        @ctags_dir ||= ENV['PATH'].split(':').detect do |path|
-          File.exist?(File.join(path, bin_name))
-        end
+        path = File.expand_path(File.join(File.dirname(__FILE__), %w(.. vendor ctags58)))
+        @ctags_dir ||= File.exist?(File.join(path, bin_name))
 
         @ctags_dir ? File.join(@ctags_dir, bin_name) : false
       end

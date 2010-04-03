@@ -48,6 +48,7 @@ module Redcar
   	  grab_common_jars
   	  grab_platform_dependencies
   	  grab_redcar_jars
+  	  grab_ctag_dependencies
   	  puts
   	  puts "Done! You're ready to run Redcar."
   	end
@@ -91,6 +92,11 @@ module Redcar
     
     XULRUNNER_URI = "http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.2/runtimes/xulrunner-1.9.2.en-US.win32.zip"
 
+    CTAGS = {"win32" => "http://iweb.dl.sourceforge.net/project/ctags/ctags/5.8/ctags58.zip",
+      "osx" => "http://iweb.dl.sourceforge.net/project/ctags/ctags/5.8/ctags-5.8.tar.gz",
+      "linux" => "http://iweb.dl.sourceforge.net/project/ctags/ctags/5.8/ctags-5.8.tar.gz"
+    }
+
     def grab_jruby
       puts "* Downloading JRuby"
       JRUBY.each do |jar_url|
@@ -131,6 +137,29 @@ module Redcar
       REDCAR_JARS.each do |jar_url, relative_path|
         download(jar_url, File.join(File.dirname(__FILE__), "..", "..", relative_path))
       end
+    end
+    
+    def grab_ctag_dependencies
+      puts "*Downloading platform-specific Ctag files"
+      case Config::CONFIG["host_os"]
+      when /darwin/i
+        download(CTAGS["osx"], File.join(plugins_dir, %w(ctags vendor ctags osx ctags.tar.gz)))
+        path = File.join(plugins_dir, %w(ctags vendor ctags osx))
+	      puts `tar xzvf #{path}/ctags.tar.gz -C #{path}`
+        puts `cd #{path}/ctags-5.8/; ./configure`
+        puts `cd #{path}/ctags-5.8/; make`
+        puts `mv #{path}/ctags-5.8 #{path}/../../ctags58` #File.rename was giving me permission problems on linux
+      when /linux/i
+        download(CTAGS["linux"], File.join(plugins_dir, %w(ctags vendor ctags linux ctags.tar.gz)))
+        path = File.join(plugins_dir, %w(ctags vendor ctags linux))
+	      puts `tar xzvf #{path}/ctags.tar.gz -C #{path}`
+        puts `cd #{path}/ctags-5.8/; ./configure`
+        puts `cd #{path}/ctags-5.8/; make`
+        puts `mv #{path}/ctags-5.8 #{path}/../../ctags58` #File.rename was giving me permission problems on linux
+      when /windows|mswin|mingw/i
+        download(CTAGS["win32"], File.join(plugins_dir, %w(ctags vendor ctags win32 ctags.zip)))
+        File.rename(File.join(plugins_dir, %w(ctags vendor ctags win32 ctags58)), File.join(plugins_dir, %w(ctags vendor ctags58)))
+      end  
     end
     
     def download(uri, path)
