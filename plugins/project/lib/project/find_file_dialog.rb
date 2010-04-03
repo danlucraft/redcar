@@ -103,7 +103,6 @@ module Redcar
             files += Dir[File.expand_path(dir + "/**/*")]
           end
           took = Time.now - s
-          puts "find files (#{directories.length} dirs) took #{took}s"
           files.reject do |f|
             begin
               File.directory?(f)

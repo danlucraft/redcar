@@ -19,7 +19,6 @@ module Redcar
         registry = Registry.new
         s = Time.now
         tm_snippets = Textmate.all_snippets
-        puts "took #{Time.now - s}s to load snippets"
         registry.add(tm_snippets)
         registry
       end

@@ -90,7 +90,7 @@ module Redcar
         tree.refresh
       end
     end
-    
+
     # Finds an EditTab with a mirror for the given path.
     #
     # @param [String] path  the path of the file being edited

@@ -36,7 +36,6 @@ module Redcar
           puts e.message
           puts e.backtrace
         end
-        puts "tree refresh took #{Time.now - s} seconds"
       end
     end
     
@@ -50,27 +49,22 @@ module Redcar
     
     class TreeListener
       def tree_collapsed(e)
-        p [:collapsed, e]
       end
       
       def tree_expanded(e)
-        p [:expanded, e]
       end
     end
     
     class SelectionListener
       def widget_default_selected(e)
-        p [:def_selected, e]
       end
       
       def widget_selected(e)
-        p [:selected, e]
       end
     end
     
     class DoubleClickListener
       def double_click(e)
-        p [:double_click, e]
       end
     end
     

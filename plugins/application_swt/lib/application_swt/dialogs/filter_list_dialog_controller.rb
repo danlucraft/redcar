@@ -144,7 +144,6 @@ module Redcar
         if @dialog
           s = Time.now
           list = @model.update_list(@dialog.text.get_text)
-          puts "update list took #{Time.now - s}s"
           populate_list(list)
           @dialog.list.set_selection(0)
           text_focus
