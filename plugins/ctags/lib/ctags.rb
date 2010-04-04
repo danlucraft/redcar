@@ -2,11 +2,9 @@ require 'ctags/completion_source'
 require 'ctags/select_tag_dialog'
 
 module Redcar
-  # = CTags plugin
-  #
-  # Generates tag file from code of current project
-  # using [ctags-exuberant](http://ctags.sourceforge.net/)
-  # Knows how search selected text in "tags" file.
+  # Integrates [ctags-exuberant](http://ctags.sourceforge.net/) into Redcar. ctags
+  # builds an index of method and class definitions, which allows for jump to 
+  # definition commands.
   class CTags
     def self.menus
       Menu::Builder.build do
@@ -71,18 +69,18 @@ module Redcar
       Redcar::Top::FindNextRegex.new(regexp, true).run
     end
 
-    # Generate ./ctags file
+    # Generate "tags" file for current project
     class GenerateCtagsCommand < Redcar::Command
-    
+
+      autoload :Tempfile,  'tempfile'
+
       def execute
         if ctags_binary
-          puts "=> Building ctags for project with #{ctags_binary}"
-          puts "=> Output is: #{CTags.file_path}"
-          file_path = CTags.file_path
-          command = "#{ctags_binary} -o #{file_path} -R #{Redcar::Project.focussed_project_path}"
-          puts command
           Thread.new do
-            system(command)
+            tempfile = Tempfile.new('tags')
+            tempfile.close # we need just temp path here
+            system("#{ctags_binary} -o #{tempfile.path} -R #{Redcar::Project.focussed_project_path}")
+            FileUtils.mv tempfile.path, CTags.file_path
             CTags.clear_tags_for_path(file_path)
           end
         else
@@ -126,7 +124,7 @@ module Redcar
         matches = find_tag(token)
         case matches.size
         when 0
-          Application::Dialog.message_box(win, "There is no definition for '#{token}' in tags file...")
+          Application::Dialog.message_box(win, "There is no definition for '#{token}' in the tags file.")
         when 1
           log(matches.to_yaml)
           Redcar::CTags.go_to_definition(matches.first)
