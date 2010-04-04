@@ -80,7 +80,7 @@ module Redcar
             tempfile = Tempfile.new('tags')
             tempfile.close # we need just temp path here
             system("#{ctags_binary} -o #{tempfile.path} -R #{Redcar::Project.focussed_project_path}")
-            FileUtils.mv tempfile.path, CTags.file_path
+            FileUtils.mv(tempfile.path, CTags.file_path)
             CTags.clear_tags_for_path(file_path)
           end
         else
@@ -96,13 +96,11 @@ module Redcar
       # http://prdownloads.sourceforge.net/ctags/ctags58.zip
       # FIXME make it really cross-platform
       def ctags_binary
-        ctags_path
         bin_name = 'ctags'
         bin_name += '.exe' if Redcar.platform == :windows
         path = File.expand_path(File.join(File.dirname(__FILE__), %w(.. vendor ctags58)))
-        @ctags_dir ||= File.exist?(File.join(path, bin_name))
-
-        @ctags_dir ? File.join(@ctags_dir, bin_name) : false
+        @ctags_dir ||= File.join(path, bin_name) if File.exist?(File.join(path, bin_name))
+        @ctags_dir ? File.join(@ctags_dir) : false
       end
     end
 
