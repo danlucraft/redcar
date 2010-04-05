@@ -79,6 +79,20 @@ module Redcar
       end
     end
     
+    class FocusWindowCommand < Command
+      def initialize(window=nil)
+        @window = window
+      end
+    
+      def execute
+        win.focus
+      end
+      
+      def win
+        @window || super
+      end
+    end
+    
     class RotateNotebooksCommand < Command
       sensitize :multiple_notebooks
           
@@ -773,6 +787,10 @@ module Redcar
       
       def application_close(app)
         QuitCommand.new.run
+      end
+      
+      def window_focus(win)
+        FocusWindowCommand.new(win).run
       end
     end
     

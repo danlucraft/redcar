@@ -98,6 +98,9 @@ def close_everything
       Redcar.app.windows.last.close
     end
   end
+  Redcar::ApplicationSWT.sync_exec do
+    Redcar.app.windows.first.title = Redcar::Window::DEFAULT_TITLE
+  end
 end
 
 Before do
