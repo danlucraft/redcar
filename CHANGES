@@ -6,11 +6,9 @@ New features:
   
   * CTags support
   * Project-wide autocomplete
-  
-Enhancements:
-
   * Double click respects word boundaries
   * Window title reflects project name
+  * Duplicate region command
   
 Fixes:
 
@@ -20,6 +18,7 @@ Fixes:
 New contributors:
 
   * Antono Vasiljev
+  * Kirill Nikitin
 
 Version 0.3.4dev (7 Mar 2010)
 =============================

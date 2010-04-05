@@ -5,23 +5,21 @@ module Redcar
       attr_reader :shell, :window, :shell_listener
       
       class ShellListener
-        include ReentryHelpers
-        
         def initialize(controller)
-          @controller = controller
+          @win = controller.window
         end
         
         def shell_closed(e)
-          @controller.window.close
-          @controller.window.ignore(:closing) do
+          unless Redcar.app.events.ignore?(:window_close, @win)
             e.doit = false
+            Redcar.app.events.create(:window_close, @win)
           end
         end
 
         def shell_activated(e)
-          @controller.window.focus
-          @controller.window.ignore(:focussing) do
+          unless Redcar.app.events.ignore?(:window_focus, @win)
             e.doit = false
+            Redcar.app.events.create(:window_focus, @win)
           end
         end
         

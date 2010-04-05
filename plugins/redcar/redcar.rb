@@ -3,7 +3,10 @@ module Redcar
     class QuitCommand < Command
       
       def execute
-        Redcar.app.quit
+        should_abort = Redcar.plugin_manager.loaded_plugins.detect {|pl| !Plugin.call(pl.object, :quit, true) }
+        unless should_abort
+          Redcar.app.quit
+        end
       end
     end
     
@@ -45,23 +48,50 @@ module Redcar
       end
     
       def execute
-        EditView::ModifiedTabsChecker.new(
-          win.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(EditTab)}, 
-          "Save all before closing the window?",
-          :none     => lambda { close_window },
-          :continue => lambda { close_window },
-          :cancel   => nil
-        ).check
+        check_for_modified_tabs_and_close_window
+        quit_if_no_windows if [:linux, :windows].include?(Redcar.platform)
+        @window = nil
       end
       
       private
       
+      def quit_if_no_windows
+        if Redcar.app.windows.length == 0
+          if Application.storage['stay_resident_after_last_window_closed'] && !(ARGV.include?("--multiple-instance"))
+            puts 'continuing to run to wait for incoming drb connections later'
+          else
+            QuitCommand.new.run
+          end
+        end
+      end
+      
+      def check_for_modified_tabs_and_close_window
+        EditView::ModifiedTabsChecker.new(
+          win.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(EditTab)}, 
+          "Save all before closing the window?",
+          :none     => lambda { win.close },
+          :continue => lambda { win.close },
+          :cancel   => nil
+        ).check
+      end
+      
       def win
         @window || super
       end
+    end
+    
+    class FocusWindowCommand < Command
+      def initialize(window=nil)
+        @window = window
+      end
+    
+      def execute
+        win.focus
+        @window = nil
+      end
       
-      def close_window
-        (@window||win).close
+      def win
+        @window || super
       end
     end
     
@@ -155,6 +185,13 @@ module Redcar
     end
     
     class CloseTabCommand < TabCommand
+      def initialize(tab=nil)
+        @tab = tab
+      end
+      
+      def tab
+        @tab || super
+      end
       
       def execute
         if tab.is_a?(EditTab)
@@ -172,10 +209,13 @@ module Redcar
               tab.close
             when :cancel
             end
+          else
+            tab.close
           end
         else
           tab.close
         end
+        @tab = nil
       end
     end
     
@@ -397,6 +437,27 @@ module Redcar
       end
     end
     
+    class DuplicateCommand < Redcar::DocumentCommand
+    
+      def execute
+        doc = tab.edit_view.document
+        if doc.selection?
+          first_line_ix = doc.line_at_offset(doc.selection_range.begin)
+          last_line_ix  = doc.line_at_offset(doc.selection_range.end)
+          text = doc.get_slice(doc.offset_at_line(first_line_ix),
+                               doc.offset_at_line_end(last_line_ix))
+        else
+          last_line_ix = doc.cursor_line
+          text = doc.get_line(doc.cursor_line)
+        end          
+        if last_line_ix == (doc.line_count - 1)
+          text = "\n#{text}"
+        end
+        doc.insert(doc.offset_at_line_end(last_line_ix), text)
+        doc.scroll_to_line(last_line_ix + 1)
+      end        
+    end
+    
     class DialogExample < Redcar::Command
       def execute
       	builder = Menu::Builder.new do
@@ -578,6 +639,7 @@ module Redcar
         link "Cmd+X",       CutCommand
         link "Cmd+C",       CopyCommand
         link "Cmd+V",       PasteCommand
+        link "Cmd+D",       DuplicateCommand        
         link "Ctrl+A",      MoveHomeCommand
         link "Ctrl+E",      MoveEndCommand
         link "Cmd+[",       DecreaseIndentCommand
@@ -620,6 +682,7 @@ module Redcar
         link "Ctrl+X",       CutCommand
         link "Ctrl+C",       CopyCommand
         link "Ctrl+V",       PasteCommand
+        link "Ctrl+D",       DuplicateCommand
         link "Ctrl+A",       MoveHomeCommand
         link "Ctrl+E",       MoveEndCommand
         link "Ctrl+[",       DecreaseIndentCommand
@@ -681,6 +744,7 @@ module Redcar
           item "Cut", CutCommand
           item "Copy", CopyCommand
           item "Paste", PasteCommand
+          item "Duplicate Region", DuplicateCommand
           separator
           item "Home", MoveHomeCommand
           item "End", MoveEndCommand
@@ -739,6 +803,28 @@ module Redcar
           item "New In This Version", ChangelogCommand
         end
       end
+    end
+    
+    class ApplicationEventHandler
+      def tab_close(tab)
+        CloseTabCommand.new(tab).run
+      end
+      
+      def window_close(win)
+        CloseWindowCommand.new(win).run
+      end
+      
+      def application_close(app)
+        QuitCommand.new.run
+      end
+      
+      def window_focus(win)
+        FocusWindowCommand.new(win).run
+      end
+    end
+    
+    def self.application_event_handler
+      ApplicationEventHandler.new
     end
     
     def self.start

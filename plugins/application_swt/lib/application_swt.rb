@@ -127,8 +127,10 @@ module Redcar
     
     class QuitListener
       def handle_event(e)
-        e.doit = false
-        Redcar.app.quit
+        unless Redcar.app.events.ignore?(:application_close, Redcar.app)
+          e.doit = false
+          Redcar.app.events.create(:application_close, Redcar.app)
+        end
       end
     end
     

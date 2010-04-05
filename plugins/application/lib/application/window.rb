@@ -172,11 +172,13 @@ module Redcar
     
     # Focus the Window.
     def focus
-      notify_listeners(:focussed, self)
+      Redcar.app.events.ignore(:window_focus, self) do
+        notify_listeners(:focussed, self)
+      end
     end
 
     def close
-      ignore(:closing) do
+      Redcar.app.events.ignore(:window_close, self) do
         notify_listeners(:about_to_close, self)
         notebooks.each do |notebook| 
           notebook.tabs.each {|tab| tab.close }

@@ -1,5 +1,6 @@
 require 'ctags/completion_source'
 require 'ctags/select_tag_dialog'
+require 'tempfile'
 
 module Redcar
   # Integrates [ctags-exuberant](http://ctags.sourceforge.net/) into Redcar. ctags
@@ -51,7 +52,7 @@ module Redcar
         tags
       end
     end
-
+    
     def self.clear_tags_for_path(path)
       @tags_for_path ||= {}
       @tags_for_path.delete(path)
@@ -72,8 +73,8 @@ module Redcar
     # Generate "tags" file for current project
     class GenerateCtagsCommand < Redcar::Command
 
-      autoload :Tempfile,  'tempfile'
-
+      #autoload :Tempfile,  'tempfile'
+      
       def execute
         if ctags_binary
           Thread.new do
