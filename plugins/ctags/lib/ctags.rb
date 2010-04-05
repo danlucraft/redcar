@@ -50,6 +50,8 @@ module Redcar
           end
         end
         tags
+      rescue Errno::ENOENT
+        {}
       end
     end
     
