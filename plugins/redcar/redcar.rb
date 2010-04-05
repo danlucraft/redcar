@@ -209,6 +209,8 @@ module Redcar
               tab.close
             when :cancel
             end
+          else
+            tab.close
           end
         else
           tab.close
