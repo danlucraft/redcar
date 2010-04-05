@@ -81,18 +81,10 @@ module Redcar
     def events
       @event_spewer
     end
-    
-    # Quits the application, stopping all plugins along the way.
-    # This operation may be cancelled by the user.
+  
+    # Immediately stop the gui event loop.
+    # (You should probably be running QuitCommand instead.)    
     def quit
-      should_abort = Redcar.plugin_manager.loaded_plugins.detect {|pl| !Plugin.call(pl.object, :quit, true) }
-      unless should_abort
-        stop
-      end
-    end
-    
-    # Immediately halts the gui event loop.
-    def stop
       Redcar.gui.stop
     end
     
@@ -133,13 +125,6 @@ module Redcar
       @window_handlers[window].each {|h| window.remove_listener(h) }
       
       @window_handlers.delete(window)
-      if windows.length == 0 and [:linux, :windows].include?(Redcar.platform)
-        if Application.storage['stay_resident_after_last_window_closed'] && !(ARGV.include?("--multiple-instance"))
-          puts 'continuing to run to wait for incoming drb connections later'
-        else
-          quit
-        end
-      end
     end
     
     def self.storage

@@ -3,7 +3,10 @@ module Redcar
     class QuitCommand < Command
       
       def execute
-        Redcar.app.quit
+        should_abort = Redcar.plugin_manager.loaded_plugins.detect {|pl| !Plugin.call(pl.object, :quit, true) }
+        unless should_abort
+          Redcar.app.quit
+        end
       end
     end
     
@@ -45,6 +48,23 @@ module Redcar
       end
     
       def execute
+        check_for_modified_tabs_and_close_window
+        quit_if_no_windows if [:linux, :windows].include?(Redcar.platform)
+      end
+      
+      private
+      
+      def quit_if_no_windows
+        if Redcar.app.windows.length == 0
+          if Application.storage['stay_resident_after_last_window_closed'] && !(ARGV.include?("--multiple-instance"))
+            puts 'continuing to run to wait for incoming drb connections later'
+          else
+            QuitCommand.new.run
+          end
+        end
+      end
+      
+      def check_for_modified_tabs_and_close_window
         EditView::ModifiedTabsChecker.new(
           win.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(EditTab)}, 
           "Save all before closing the window?",
@@ -53,8 +73,6 @@ module Redcar
           :cancel   => nil
         ).check
       end
-      
-      private
       
       def win
         @window || super
