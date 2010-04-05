@@ -9,6 +9,7 @@ require "edit_view/document/command"
 require "edit_view/document/controller"
 require "edit_view/document/mirror"
 require "edit_view/edit_tab"
+require "edit_view/modified_tabs_checker"
 require "edit_view/tab_settings"
 require "edit_view/info_speedbar"
 
@@ -35,29 +36,16 @@ module Redcar
     def self.tab_settings
       @tab_settings ||= TabSettings.new
     end
-    
+
     def self.quit
-      edit_tabs          = Redcar.app.all_tabs.select {|t| t.is_a?(EditTab)}
-      modified_edit_tabs = edit_tabs.select {|t| t.edit_view.document.modified? }
-      if modified_edit_tabs.any?
-        result = Application::Dialog.message_box(
-          Redcar.app.focussed_window,
-          "You have #{modified_edit_tabs.length} modified tabs.\n\n" + 
-          "Save all before quitting?",
-          :buttons => :yes_no_cancel
-        )
-        case result
-        when :yes
-          modified_edit_tabs.each {|t| t.edit_view.document.save! }
-          true
-        when :no
-          true
-        when :cancel
-          false
-        end
-      else
-        true
-      end
+      result = ModifiedTabsChecker.new(
+                  Redcar.app.all_tabs.select {|t| t.is_a?(EditTab)}, 
+                  "Save all before quitting?",
+                  :none     => lambda { true },
+                  :continue => lambda { true },
+                  :cancel   => lambda { false }
+                ).check
+      result
     end
 
     # unused?      
