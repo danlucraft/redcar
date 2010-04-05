@@ -66,11 +66,11 @@ module Redcar
     def add_listener(*event_names, &block)
       if event_names.first.is_a?(Hash)
         event_names.first.each do |aspect, event_name|
-          events(event_name.to_s)[ASPECTS[aspect]] << block
+          observable_events(event_name.to_s)[ASPECTS[aspect]] << block
         end
       else
         event_names.each do |event_name|
-          events(event_name.to_s)[ASPECTS[:after]] << block
+          observable_events(event_name.to_s)[ASPECTS[:after]] << block
         end
       end
       block
@@ -91,19 +91,19 @@ module Redcar
     # @param [Symbol] name of event being run
     # @param [*Object] event parameters
     def notify_listeners(event_name, *args)
-      run_blocks(event_name, :before, args)
+      observable_run_blocks(event_name, :before, args)
       yield if block_given?
-      run_blocks(event_name, :after, args)
+      observable_run_blocks(event_name, :after, args)
     end
     
     private
     
-    def run_blocks(event_name, aspect, args)
-      blocks = events(event_name.to_s)[ASPECTS[aspect]].clone
+    def observable_run_blocks(event_name, aspect, args)
+      blocks = observable_events(event_name.to_s)[ASPECTS[aspect]].clone
       blocks.each {|b| b.call(*args) }
     end
     
-    def events(event_name)
+    def observable_events(event_name)
       @events ||= {}
       @events[event_name.to_s] ||= [[], []]
     end
