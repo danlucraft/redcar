@@ -29,23 +29,23 @@ module Redcar
   #
   # For example, this command has a memory leak:
   #
-  #   class MyCommand < Redcar::Command
-  #     def execute
-  #       @cache = create_outrageously_large_data_structure
-  #       do_some_stuff_with_data_structure
+  #     class MyCommand < Redcar::Command
+  #       def execute
+  #         @cache = create_outrageously_large_data_structure
+  #         do_some_stuff_with_data_structure
+  #       end
   #     end
-  #   end
   #
   # Because the History will store the MyCommand instance, the @cache object will 
   # be around for quite a while. Best to get rid of it:
   #
-  #   class MyCommand < Redcar::Command
-  #     def execute
-  #       @cache = create_outrageously_large_data_structure
-  #       do_some_stuff_with_data_structure
-  #       @cache = nil
+  #     class MyCommand < Redcar::Command
+  #       def execute
+  #         @cache = create_outrageously_large_data_structure
+  #         do_some_stuff_with_data_structure
+  #         @cache = nil
+  #       end
   #     end
-  #   end
   class Command
     attr_accessor :error
     

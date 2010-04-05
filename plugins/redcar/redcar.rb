@@ -1,5 +1,12 @@
 module Redcar
   module Top
+    class QuitCommand < Command
+      
+      def execute
+        Redcar.app.quit
+      end
+    end
+    
     class NewCommand < Command
       
       def execute
@@ -531,6 +538,7 @@ module Redcar
         link "Cmd+Shift+S", Project::FileSaveAsCommand
         link "Cmd+W",       CloseTabCommand
         link "Cmd+Shift+W", CloseWindowCommand
+        link "Cmd+Q",       QuitCommand
 
         link "Cmd+Shift+E", EditView::InfoSpeedbarCommand
         link "Cmd+Z",       UndoCommand
@@ -572,7 +580,8 @@ module Redcar
         link "Ctrl+Shift+S", Project::FileSaveAsCommand
         link "Ctrl+W",       CloseTabCommand
         link "Ctrl+Shift+W", CloseWindowCommand
-        
+        link "Ctrl+Q",       QuitCommand
+
         link "Ctrl+Shift+E", EditView::InfoSpeedbarCommand
         link "Ctrl+Z",       UndoCommand
         link "Ctrl+Y",       RedoCommand
@@ -628,6 +637,8 @@ module Redcar
           item "Close Notebook", CloseNotebookCommand
           item "Close Window", CloseWindowCommand
           item "Close Directory", Project::DirectoryCloseCommand
+          separator
+          item "Quit", QuitCommand
         end
         sub_menu "Edit" do
           item "Tab Info",  EditView::InfoSpeedbarCommand

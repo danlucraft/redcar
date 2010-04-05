@@ -35,6 +35,10 @@ module Redcar
     def self.tab_settings
       @tab_settings ||= TabSettings.new
     end
+    
+    def self.quit
+      true
+    end
 
     # unused?      
     def self.storage

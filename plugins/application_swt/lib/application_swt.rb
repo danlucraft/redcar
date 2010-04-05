@@ -21,6 +21,8 @@ require "application_swt/treebook"
 require "application_swt/window"
 require "application_swt/swt/grid_data"
 
+require "dist/application_swt"
+
 module Redcar
   class ApplicationSWT
     include Redcar::Controller
@@ -103,11 +105,46 @@ module Redcar
     def initialize(model)
       @model = model
       add_listeners
+      add_swt_listeners
       create_clipboard
     end
     
     def add_listeners
       @model.add_listener(:new_window, &method(:new_window))
+    end
+    
+    class Listener
+      def initialize(name)
+        @name = name
+      end
+      
+      def handle_event(e)
+        Application::Dialog.message_box(
+          Redcar.app.focussed_window,
+          "#{@name} menu is not hooked up yet")
+      end
+    end
+    
+    class QuitListener
+      def handle_event(e)
+        e.doit = false
+        Redcar.app.quit
+      end
+    end
+    
+    def add_swt_listeners
+      if Redcar.platform == :osx
+        quit_listener  = Listener.new(:quit)
+        about_listener = Listener.new(:about)
+        prefs_listener = Listener.new(:prefs)
+        enhancer = com.redcareditor.application_swt.CocoaUIEnhancer.new("Redcar")
+        enhancer.hook_application_menu(
+          ApplicationSWT.display,
+          QuitListener.new, 
+          about_listener, 
+          prefs_listener
+        )
+      end
     end
     
     def create_clipboard
