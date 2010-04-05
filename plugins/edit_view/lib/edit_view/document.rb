@@ -55,6 +55,10 @@ module Redcar
       set_modified(false)
     end
     
+    def modified?
+      @modified
+    end
+    
     def title
       @mirror ? @mirror.title : nil
     end
