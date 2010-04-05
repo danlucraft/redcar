@@ -1,5 +1,12 @@
 module Redcar
   module Top
+    class QuitCommand < Command
+      
+      def execute
+        Redcar.app.quit
+      end
+    end
+    
     class NewCommand < Command
       
       def execute
@@ -38,6 +45,22 @@ module Redcar
       end
     
       def execute
+        EditView::ModifiedTabsChecker.new(
+          win.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(EditTab)}, 
+          "Save all before closing the window?",
+          :none     => lambda { close_window },
+          :continue => lambda { close_window },
+          :cancel   => nil
+        ).check
+      end
+      
+      private
+      
+      def win
+        @window || super
+      end
+      
+      def close_window
         (@window||win).close
       end
     end
@@ -131,10 +154,26 @@ module Redcar
       end
     end
     
-    class CloseTabCommand < Command
+    class CloseTabCommand < TabCommand
       
       def execute
-        if tab = win.focussed_notebook_tab
+        if tab.is_a?(EditTab)
+          if tab.edit_view.document.modified?
+            result = Application::Dialog.message_box(
+              Redcar.app.focussed_window,
+              "This tab has unsaved changes. \n\nSave before closing?",
+              :buttons => :yes_no_cancel
+            )
+            case result
+            when :yes
+              tab.edit_view.document.save!
+              tab.close
+            when :no
+              tab.close
+            when :cancel
+            end
+          end
+        else
           tab.close
         end
       end
@@ -531,6 +570,7 @@ module Redcar
         link "Cmd+Shift+S", Project::FileSaveAsCommand
         link "Cmd+W",       CloseTabCommand
         link "Cmd+Shift+W", CloseWindowCommand
+        link "Cmd+Q",       QuitCommand
 
         link "Cmd+Shift+E", EditView::InfoSpeedbarCommand
         link "Cmd+Z",       UndoCommand
@@ -572,7 +612,8 @@ module Redcar
         link "Ctrl+Shift+S", Project::FileSaveAsCommand
         link "Ctrl+W",       CloseTabCommand
         link "Ctrl+Shift+W", CloseWindowCommand
-        
+        link "Ctrl+Q",       QuitCommand
+
         link "Ctrl+Shift+E", EditView::InfoSpeedbarCommand
         link "Ctrl+Z",       UndoCommand
         link "Ctrl+Y",       RedoCommand
@@ -628,6 +669,8 @@ module Redcar
           item "Close Notebook", CloseNotebookCommand
           item "Close Window", CloseWindowCommand
           item "Close Directory", Project::DirectoryCloseCommand
+          separator
+          item "Quit", QuitCommand
         end
         sub_menu "Edit" do
           item "Tab Info",  EditView::InfoSpeedbarCommand

@@ -76,8 +76,17 @@ module Redcar
       create_history
     end
     
-    # Immediately halts the gui event loop.
+    # Quits the application, stopping all plugins along the way.
+    # This operation may be cancelled by the user.
     def quit
+      should_abort = Redcar.plugin_manager.loaded_plugins.detect {|pl| !Plugin.call(pl.object, :quit, true) }
+      unless should_abort
+        stop
+      end
+    end
+    
+    # Immediately halts the gui event loop.
+    def stop
       Redcar.gui.stop
     end
     
