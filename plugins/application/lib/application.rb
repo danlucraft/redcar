@@ -8,6 +8,7 @@ require 'application/clipboard'
 require 'application/command'
 require 'application/dialog'
 require 'application/dialogs/filter_list_dialog'
+require 'application/event_spewer'
 require 'application/keymap'
 require 'application/keymap/builder'
 require 'application/menu'
@@ -74,6 +75,11 @@ module Redcar
       @window_handlers = Hash.new {|h,k| h[k] = []}
       create_clipboard
       create_history
+      @event_spewer = EventSpewer.new
+    end
+    
+    def events
+      @event_spewer
     end
     
     # Quits the application, stopping all plugins along the way.

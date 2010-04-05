@@ -14,7 +14,9 @@ module Redcar
     #
     # Events: close
     def close
-      notify_listeners(:close)
+      Redcar.app.events.ignore(:tab_close, self) do
+        notify_listeners(:close)
+      end
     end
     
     # Focus the tab within the notebook, and gives the keyboard focus to the 
@@ -22,7 +24,9 @@ module Redcar
     #
     # Events: focus
     def focus
-      notify_listeners(:focus)
+      Redcar.app.events.ignore(:tab_focus, self) do
+        notify_listeners(:focus)
+      end
     end
     
     def title

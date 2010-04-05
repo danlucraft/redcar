@@ -11,7 +11,7 @@ module Redcar
           result = Application::Dialog.message_box(
             Redcar.app.focussed_window,
             "You have #{modified_edit_tabs.length} modified tabs.\n\n" + 
-            "Save all before quitting?",
+            @message,
             :buttons => :yes_no_cancel
           )
           case result

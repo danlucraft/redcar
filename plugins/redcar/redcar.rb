@@ -48,8 +48,8 @@ module Redcar
         EditView::ModifiedTabsChecker.new(
           win.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(EditTab)}, 
           "Save all before closing the window?",
-          :none     => lambda { close_window },
-          :continue => lambda { close_window },
+          :none     => lambda { win.close },
+          :continue => lambda { win.close },
           :cancel   => nil
         ).check
       end
@@ -58,10 +58,6 @@ module Redcar
       
       def win
         @window || super
-      end
-      
-      def close_window
-        (@window||win).close
       end
     end
     
@@ -155,6 +151,13 @@ module Redcar
     end
     
     class CloseTabCommand < TabCommand
+      def initialize(tab=nil)
+        @tab = tab
+      end
+      
+      def tab
+        @tab || super
+      end
       
       def execute
         if tab.is_a?(EditTab)
@@ -739,6 +742,24 @@ module Redcar
           item "New In This Version", ChangelogCommand
         end
       end
+    end
+    
+    class ApplicationEventHandler
+      def tab_close(tab)
+        CloseTabCommand.new(tab).run
+      end
+      
+      def window_close(win)
+        CloseWindowCommand.new(win).run
+      end
+      
+      def application_close(app)
+        QuitCommand.new.run
+      end
+    end
+    
+    def self.application_event_handler
+      ApplicationEventHandler.new
     end
     
     def self.start
