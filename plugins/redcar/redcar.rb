@@ -154,10 +154,26 @@ module Redcar
       end
     end
     
-    class CloseTabCommand < Command
+    class CloseTabCommand < TabCommand
       
       def execute
-        if tab = win.focussed_notebook_tab
+        if tab.is_a?(EditTab)
+          if tab.edit_view.document.modified?
+            result = Application::Dialog.message_box(
+              Redcar.app.focussed_window,
+              "This tab has unsaved changes. \n\nSave before closing?",
+              :buttons => :yes_no_cancel
+            )
+            case result
+            when :yes
+              tab.edit_view.document.save!
+              tab.close
+            when :no
+              tab.close
+            when :cancel
+            end
+          end
+        else
           tab.close
         end
       end
