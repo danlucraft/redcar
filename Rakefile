@@ -60,9 +60,12 @@ end
 
 desc "Build"
 task :build do
-  sh("ant jar -f vendor/java-mateview/build.xml")
-  cp("vendor/java-mateview/lib/java-mateview.rb", "plugins/edit_view_swt/vendor/")
-  cp("vendor/java-mateview/release/java-mateview.jar", "plugins/edit_view_swt/vendor/")
+  sh "ant jar -f vendor/java-mateview/build.xml"
+  cp "vendor/java-mateview/lib/java-mateview.rb", "plugins/edit_view_swt/vendor/"
+  cp "vendor/java-mateview/release/java-mateview.jar", "plugins/edit_view_swt/vendor/"
+  cd "plugins/application_swt" do
+    sh "ant"
+  end
 end
 
 def remove_gitignored_files(filelist)
