@@ -50,6 +50,7 @@ module Redcar
       def execute
         check_for_modified_tabs_and_close_window
         quit_if_no_windows if [:linux, :windows].include?(Redcar.platform)
+        @window = nil
       end
       
       private
@@ -86,6 +87,7 @@ module Redcar
     
       def execute
         win.focus
+        @window = nil
       end
       
       def win
@@ -211,6 +213,7 @@ module Redcar
         else
           tab.close
         end
+        @tab = nil
       end
     end
     

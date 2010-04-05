@@ -73,7 +73,6 @@ def close_everything
   Redcar::ApplicationSWT.sync_exec do
     dialogs.each {|d| d.controller.model.close }
   end
-  
   Redcar.app.windows.each do |win|
     while tree = win.treebook.trees.first
       Redcar::ApplicationSWT.sync_exec do

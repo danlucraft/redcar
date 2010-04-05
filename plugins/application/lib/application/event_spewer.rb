@@ -2,6 +2,8 @@
 module Redcar
   class Application
     class EventSpewer
+      attr_accessor :within
+      
       def initialize
         @within = {}
       end
