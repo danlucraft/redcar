@@ -99,8 +99,8 @@ module Redcar
         bin_name = 'ctags'
         bin_name += '.exe' if Redcar.platform == :windows
         path = File.expand_path(File.join(File.dirname(__FILE__), %w(.. vendor ctags58)))
-        @ctags_dir ||= File.join(path, bin_name) if File.exist?(File.join(path, bin_name))
-        @ctags_dir ? File.join(@ctags_dir) : false
+        @ctags_path ||= File.join(path, bin_name) if File.exist?(File.join(path, bin_name))
+        @ctags_path || false
       end
     end
 
