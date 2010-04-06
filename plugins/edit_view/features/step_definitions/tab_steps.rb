@@ -15,7 +15,7 @@ When /^I open a new edit tab$/ do
 end
 
 When /^I close the focussed tab$/ do
-  Redcar::Top::CloseTabCommand.new.run
+  Redcar.app.focussed_notebook_tab.close
 end
 
 When /^I replace the contents with "([^\"]*)"$/ do |contents|

@@ -42,14 +42,12 @@ module Redcar
           storage["list"].pop
         end
         storage.save
-        Redcar.app.refresh_menu!
       end
       
       def self.remove_path(path)
         path = File.expand_path(path)
         storage["list"].delete(path)
         storage.save
-        Redcar.app.refresh_menu!
       end
     end
   end

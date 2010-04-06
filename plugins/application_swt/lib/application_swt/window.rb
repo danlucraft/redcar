@@ -5,23 +5,21 @@ module Redcar
       attr_reader :shell, :window, :shell_listener
       
       class ShellListener
-        include ReentryHelpers
-        
         def initialize(controller)
-          @controller = controller
+          @win = controller.window
         end
         
         def shell_closed(e)
-          @controller.window.close
-          @controller.window.ignore(:closing) do
+          unless Redcar.app.events.ignore?(:window_close, @win)
             e.doit = false
+            Redcar.app.events.create(:window_close, @win)
           end
         end
 
         def shell_activated(e)
-          @controller.window.focus
-          @controller.window.ignore(:focussing) do
+          unless Redcar.app.events.ignore?(:window_focus, @win)
             e.doit = false
+            Redcar.app.events.create(:window_focus, @win)
           end
         end
         
@@ -112,14 +110,16 @@ module Redcar
       end
       
       def refresh_menu
+        old_menu_bar = shell.menu_bar
         @menu_controller = ApplicationSWT::Menu.new(self, @window.menu, @window.keymap, Swt::SWT::BAR)
         shell.menu_bar = @menu_controller.menu_bar
+        old_menu_bar.dispose if old_menu_bar
       end
       
       def set_icon(path)
-         icon = Swt::Graphics::Image.new(ApplicationSWT.display, path)
-         shell.image = icon
-       end
+        icon = Swt::Graphics::Image.new(ApplicationSWT.display, path)
+        shell.image = icon
+      end
 
       def bring_to_front
         @shell.set_minimized(false) # unminimize, just in case

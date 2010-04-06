@@ -6,20 +6,24 @@ New features:
   
   * CTags support
   * Project-wide autocomplete
-  
-Enhancements:
-
   * Double click respects word boundaries
   * Window title reflects project name
+  * Duplicate region command
+  * Switch tab with Alt-1, Alt-2 (or Cmd-1, Cmd-2 on OSX)
+  * Prompts to save modified tabs on tab, window or application close
   
 Fixes:
 
   * Fix delete at end of line when using "\r\n" delimiter
   * Increase and decrease indent commands respect soft tabs and tab width settings
+  * Directory tree sorts correctly
   
 New contributors:
 
   * Antono Vasiljev
+  * Sergey Potapov
+  * Kirill Nikitin
+  * Juozas Gaigalas
 
 Version 0.3.4dev (7 Mar 2010)
 =============================

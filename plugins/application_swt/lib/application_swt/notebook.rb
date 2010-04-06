@@ -6,17 +6,16 @@ module Redcar
       attr_reader :tab_folder
       
       class CTabFolder2Listener
-        include ListenerHelpers
-        
         def initialize(controller)
           @controller = controller
         end
         
         def close(event)
-          ignore_within_self do
-            event.doit = false
-            if event.item
-              @controller.tab_widget_to_tab_model(event.item).close
+          if event.item
+            tab = @controller.tab_widget_to_tab_model(event.item)
+            unless Redcar.app.events.ignore?(:tab_close, tab)
+              event.doit = false
+              Redcar.app.events.create(:tab_close, tab)
             end
           end
         end
@@ -28,17 +27,16 @@ module Redcar
       end
       
       class SelectionListener
-        include ListenerHelpers
-        
         def initialize(controller)
           @controller = controller
         end
         
         def widgetSelected(event)
-          ignore_within_self do
-            event.doit = false
-            if event.item
-              @controller.tab_widget_to_tab_model(event.item).focus
+          if event.item
+            tab = @controller.tab_widget_to_tab_model(event.item)
+            unless Redcar.app.events.ignore?(:tab_focus, tab)
+              event.doit = false
+              Redcar.app.events.create(:tab_focus, tab)
             end
           end
         end

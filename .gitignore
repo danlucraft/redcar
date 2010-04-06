@@ -3,6 +3,7 @@
 *.so
 *.log
 *.log.*
+*.class
 
 redcar.gemspec
 
@@ -27,8 +28,11 @@ plugins/application_swt/vendor/swt/linux64/swt.jar
 plugins/application_swt/vendor/swt/win32/swt.jar
 plugins/application_swt/vendor/jface/
 plugins/application_swt/vendor/swtbot/
+plugins/application_swt/build/
+plugins/application_swt/dist
 plugins/edit_view_swt/vendor/j*.jar
 plugins/dans
+plugins/*/lib/dist/
 pkg
 
 textmate/Bundles/asciidoc.tmbundle

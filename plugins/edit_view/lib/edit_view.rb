@@ -9,6 +9,7 @@ require "edit_view/document/command"
 require "edit_view/document/controller"
 require "edit_view/document/mirror"
 require "edit_view/edit_tab"
+require "edit_view/modified_tabs_checker"
 require "edit_view/tab_settings"
 require "edit_view/info_speedbar"
 
@@ -34,6 +35,17 @@ module Redcar
     
     def self.tab_settings
       @tab_settings ||= TabSettings.new
+    end
+
+    def self.quit
+      result = ModifiedTabsChecker.new(
+                  Redcar.app.all_tabs.select {|t| t.is_a?(EditTab)}, 
+                  "Save all before quitting?",
+                  :none     => lambda { true },
+                  :continue => lambda { true },
+                  :cancel   => lambda { false }
+                ).check
+      result
     end
 
     # unused?      
