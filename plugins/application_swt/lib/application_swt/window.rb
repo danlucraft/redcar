@@ -110,14 +110,16 @@ module Redcar
       end
       
       def refresh_menu
+        old_menu_bar = shell.menu_bar
         @menu_controller = ApplicationSWT::Menu.new(self, @window.menu, @window.keymap, Swt::SWT::BAR)
         shell.menu_bar = @menu_controller.menu_bar
+        old_menu_bar.dispose if old_menu_bar
       end
       
       def set_icon(path)
-         icon = Swt::Graphics::Image.new(ApplicationSWT.display, path)
-         shell.image = icon
-       end
+        icon = Swt::Graphics::Image.new(ApplicationSWT.display, path)
+        shell.image = icon
+      end
 
       def bring_to_front
         @shell.set_minimized(false) # unminimize, just in case
