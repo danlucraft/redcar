@@ -620,6 +620,17 @@ module Redcar
       end
     end
     
+    # define commands from SelectTab1Command to SelectTab9Command
+    (1..9).each do |tab_num|
+      const_set("SelectTab#{tab_num}Command", Class.new(Redcar::Command)).class_eval do
+        define_method :execute do
+          notebook = Redcar.app.focussed_window_notebook
+          notebook.tabs[tab_num-1].focus if notebook.tabs[tab_num-1]
+        end
+      end
+    end
+
+    
     def self.keymaps
       osx = Redcar::Keymap.build("main", :osx) do
         link "Cmd+N",       NewCommand
@@ -662,6 +673,12 @@ module Redcar
         
         link "Cmd+Alt+S", Snippets::OpenSnippetExplorer
         #Textmate.attach_keybindings(self, :osx)
+
+        # map SelectTab<number>Command
+        (1..9).each do |tab_num|
+          link "Cmd+#{tab_num}", Top.const_get("SelectTab#{tab_num}Command")
+        end
+
       end
 
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
@@ -707,6 +724,11 @@ module Redcar
         link "Ctrl+Alt+S", Snippets::OpenSnippetExplorer
         #Textmate.attach_keybindings(self, :linux)
 
+        # map SelectTab<number>Command
+        (1..9).each do |tab_num|
+          link "Alt+#{tab_num}", Top.const_get("SelectTab#{tab_num}Command")
+        end
+
       end
       
       [linwin, osx]
@@ -729,6 +751,11 @@ module Redcar
           item "Save As", Project::FileSaveAsCommand
           separator
           item "Close Tab", CloseTabCommand
+          sub_menu "Switch Tab" do
+             (1..9).each do |num|
+               item "Tab #{num}", Top.const_get("SelectTab#{num}Command")
+             end
+          end
           item "Close Notebook", CloseNotebookCommand
           item "Close Window", CloseWindowCommand
           item "Close Directory", Project::DirectoryCloseCommand

@@ -33,7 +33,7 @@ module Redcar
       
       class Node
         def self.create_all_from_path(path)
-          Dir[path + "/*"].sort_by {|fn| fn[0..0].downcase }.map {|fn| create_from_path(fn) }
+          Dir[path + "/*"].sort_by {|fn| File.basename(fn).downcase }.map {|fn| create_from_path(fn) }
         end
         
         def self.create_from_path(path)
