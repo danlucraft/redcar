@@ -102,6 +102,10 @@ module Redcar
       shell_dialogs[shell] = dialog
     end
     
+    def self.unregister_dialog(dialog)
+      shell_dialogs.delete(shell_dialogs.invert[dialog])
+    end
+    
     def initialize(model)
       @model = model
       add_listeners

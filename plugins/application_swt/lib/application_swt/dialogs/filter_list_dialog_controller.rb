@@ -126,6 +126,7 @@ module Redcar
       
       def close
         @dialog.close
+        ApplicationSWT.unregister_dialog(@dialog)
         @dialog = nil
       end
       
