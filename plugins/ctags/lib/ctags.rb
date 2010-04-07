@@ -111,9 +111,7 @@ module Redcar
         if doc.selection?
           handle_tag(doc.selected_text)
         else
-          # TODO try automagically figure out pattern for search
-          # Document
-          # autodetect_token(doc.get_line(doc.cursor_line), )
+          log("TODO: autodetect word under cursor")
           log("Current line: #{doc.get_line(doc.cursor_line)}")
           log("Cursor offset: #{doc.cursor_offset}")
         end
@@ -125,7 +123,6 @@ module Redcar
         when 0
           Application::Dialog.message_box(win, "There is no definition for '#{token}' in the tags file.")
         when 1
-          log(matches.to_yaml)
           Redcar::CTags.go_to_definition(matches.first)
         else
           open_select_tag_dialog(matches)
