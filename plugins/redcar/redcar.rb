@@ -833,6 +833,10 @@ module Redcar
     end
     
     class ApplicationEventHandler
+      def tab_focus(tab)
+        tab.focus
+      end
+    
       def tab_close(tab)
         CloseTabCommand.new(tab).run
       end
