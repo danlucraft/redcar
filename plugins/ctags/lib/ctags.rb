@@ -34,7 +34,7 @@ module Redcar
       [CTags::CompletionSource]
     end
 
-    def self.file_path(project_path=Redcar::Project.focussed_project_path)
+    def self.file_path(project_path=Project::Manager.focussed_project.path)
       File.join(project_path, 'tags')
     end
 
@@ -62,11 +62,7 @@ module Redcar
 
     def self.go_to_definition(match)
       path = match[:file]
-      if tab = Redcar::Project.open_file_tab(path)
-        tab.focus
-      else
-        Redcar::Project.open_file(path)
-      end
+      Project::Manager.open_file(path)
       regstr = "^#{Regexp.escape(match[:regexp])}$"
       regexp = Regexp.new(regstr)
       Redcar::Top::FindNextRegex.new(regexp, true).run
@@ -82,7 +78,7 @@ module Redcar
           Thread.new do
             tempfile = Tempfile.new('tags')
             tempfile.close # we need just temp path here
-            system("#{ctags_binary} -o #{tempfile.path} -R #{Redcar::Project.focussed_project_path}")
+            system("#{ctags_binary} -o #{tempfile.path} -R #{Project::Manager.focussed_project.path}")
             FileUtils.mv(tempfile.path, CTags.file_path)
             CTags.clear_tags_for_path(file_path)
           end
