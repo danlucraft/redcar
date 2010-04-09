@@ -10,6 +10,10 @@ module SwtHelper
     Redcar::ApplicationSWT.display.get_shells.to_a.first
   end
   
+  def active_shell
+    Redcar::ApplicationSWT.display.get_active_shell
+  end
+  
   def dialog(type)
     dialogs.detect {|d| d.is_a?(type) }
   end
@@ -21,7 +25,7 @@ module SwtHelper
   end
   
   def sash_form 
-    first_shell.getChildren.to_a.first
+    active_shell.getChildren.to_a.first
   end
   
   def tree_book

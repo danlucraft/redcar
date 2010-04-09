@@ -16,7 +16,7 @@ module SwtTabHelpers
   end
   
   def focussed_tab
-    Redcar.app.windows.first.focussed_notebook.focussed_tab
+    Redcar.app.focussed_window.focussed_notebook.focussed_tab
   end
   
   def get_tabs

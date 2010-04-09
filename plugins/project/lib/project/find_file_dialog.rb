@@ -39,7 +39,7 @@ module Redcar
           paths = recent_files
         else
           paths = find_files_from_list(filter, recent_files) + 
-                  find_files(filter, Project.focussed_project_path)             
+                  find_files(filter, Manager.focussed_project.path)
           paths.uniq! # in case there's some dupe's between the two lists
         end
                 
@@ -51,7 +51,7 @@ module Redcar
           duplicates = duplicates_as_hash(display_paths)
           display_paths.each_with_index do |dp, i|
             if duplicates[dp]
-              display_paths[i] = display_path(full_paths[i], Project.focussed_project_path.split('/')[0..-2].join('/'))
+              display_paths[i] = display_path(full_paths[i], Manager.focussed_project.path.split('/')[0..-2].join('/'))
             end
           end
         end
@@ -68,7 +68,7 @@ module Redcar
       private
           
       def recent_files
-        files = Project.recent_files_for(Project.focussed_project_path)
+        files = Manager.focussed_project.recent_files
         ((files[0..-2]||[]).reverse + [files[-1]]).compact
       end
     

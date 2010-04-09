@@ -27,7 +27,7 @@ class Redcar::Project
         it "the nodes are the contents of the directory" do
           top_nodes = @mirror.top
           top_nodes.length.should == 3
-          top_nodes.map {|n| n.text}.should == %w(Carnegie Rockefeller subdir)
+          top_nodes.map {|n| n.text}.should == %w(subdir Carnegie Rockefeller)
         end
         
         it "files are leaf nodes" do

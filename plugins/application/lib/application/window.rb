@@ -49,7 +49,7 @@ module Redcar
     # @events [(:new_notebook, notebook)]
     def create_notebook
       return if @notebooks.length == 2
-      notebook = Redcar::Notebook.new
+      notebook = Redcar::Notebook.new(self)
       @notebooks << notebook
       if @notebooks.length == 1
         self.focussed_notebook = notebook

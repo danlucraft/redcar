@@ -867,7 +867,7 @@ module Redcar
       
       Redcar.app.refresh_menu!
       Redcar.app.load_sensitivities
-      Redcar::Project.start
+      Redcar::Project::Manager.start
       Redcar.app.make_sure_at_least_one_window_open
     end
   end
