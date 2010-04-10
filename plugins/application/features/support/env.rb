@@ -10,6 +10,10 @@ module SwtHelper
     Redcar::ApplicationSWT.display.get_shells.to_a.first
   end
   
+  def active_shell
+    Redcar::ApplicationSWT.display.get_active_shell
+  end
+  
   def dialog(type)
     dialogs.detect {|d| d.is_a?(type) }
   end
@@ -21,7 +25,7 @@ module SwtHelper
   end
   
   def sash_form 
-    first_shell.getChildren.to_a.first
+    active_shell.getChildren.to_a.first
   end
   
   def tree_book
@@ -55,15 +59,30 @@ class FakeDialogAdapter
   end
   
   def open_file(*args)
-    @responses[:open_file]
+    check_for_raise(@responses[:open_file])
   end
   
   def open_directory(*args)
-    @responses[:open_directory]
+    check_for_raise(@responses[:open_directory])
   end
   
   def save_file(*args)
-    @responses[:save_file]
+    check_for_raise(@responses[:save_file])
+  end
+  
+  def message_box(*args)
+    check_for_raise(@responses[:message_box].to_sym)
+  end
+  
+  def check_for_raise(result)
+    if result == :raise_error
+      raise "did not expect dialog"
+    end
+    result
+  end
+  
+  def available_message_box_button_combos
+    Redcar::ApplicationSWT::DialogAdapter.new.available_message_box_button_combos
   end
 end
 

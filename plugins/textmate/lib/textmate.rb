@@ -23,12 +23,6 @@ module Redcar
       @menus.entries.each {|i| builder.append(i) }
     end
     
-    #def self.attach_keybindings(builder)
-    #  s = Time.now
-    #  all_bundles
-    #  puts "took #{Time.now - s}s to attach bundle menus"
-    #end
-    
     def self.uuid_hash
       @uuid_hash ||= begin
         h = {}

@@ -35,7 +35,12 @@ module Redcar
       
       def to_menu_string
         r = name.clone
-        r << " (#{tab_trigger}↦)" if tab_trigger
+        # It doesn't seem to be possible to set accelerator text on OSX.
+        if Redcar.platform == :osx
+          r << " (#{tab_trigger}↦)" if tab_trigger
+        else
+          r << "\t#{tab_trigger}" if tab_trigger
+        end
         r
       end
     end

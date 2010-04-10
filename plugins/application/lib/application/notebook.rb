@@ -1,14 +1,15 @@
 module Redcar
-  #
-  # Events: new_tab (tab)
   class Notebook
     include Redcar::Model
     include Redcar::Observable
     
-    def initialize
+    attr_reader :window
+    
+    def initialize(window)
       @tabs         = []
       @focussed_tab = nil
       @tab_handlers = Hash.new {|h,k| h[k] = [] }
+      @window       = window
     end
     
     def length
@@ -93,6 +94,11 @@ module Redcar
       @tab_handlers[tab] << tab.add_listener(:close) do
         remove_tab!(tab)
         notify_listeners(:tab_closed)
+      end
+      @tab_handlers[tab] << tab.add_listener(:changed) do
+        if tab == focussed_tab
+          notify_listeners(:focussed_tab_changed, tab)
+        end
       end
       @tab_handlers[tab] << tab.add_listener(:selection_changed) do
         if tab == focussed_tab

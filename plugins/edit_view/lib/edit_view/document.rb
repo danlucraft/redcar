@@ -81,6 +81,10 @@ module Redcar
         update_from_mirror
       end
     end
+    
+    def mirror_changed?
+      mirror and mirror.changed?
+    end
 
     def verify_text(start_offset, end_offset, text)
       @change = [start_offset, end_offset, text]    
@@ -453,13 +457,13 @@ module Redcar
       @edit_view.controller.compound { yield }
     end
     
-    private
-    
     def update_from_mirror
       self.text        = mirror.read
       @modified = false
       @edit_view.title = title_with_star
     end
+    
+    private
     
     def set_modified(boolean)
       @modified = boolean

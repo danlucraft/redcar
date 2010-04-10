@@ -42,6 +42,10 @@ module Redcar
         !@timestamp or @timestamp < File.stat(@path).mtime
       end
       
+      def changed_since?(time)
+        !@timestamp or (!time and changed?) or (time and time < File.stat(@path).mtime)
+      end
+      
       # Save new file contents.
       #
       # @param [String] new contents

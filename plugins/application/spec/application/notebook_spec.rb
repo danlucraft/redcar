@@ -6,7 +6,7 @@ describe Redcar::Notebook do
     end
     
     before do
-      @notebook = Redcar::Notebook.new
+      @notebook = Redcar::Notebook.new(nil)
     end
     
     it "reports its length" do

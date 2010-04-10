@@ -1,7 +1,7 @@
 
 module NotebookSwtHelper
   def sash
-    sash = first_shell.children.to_a.first
+    sash = active_shell.children.to_a.first
   end
   
   def ctab_folders

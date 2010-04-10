@@ -20,6 +20,10 @@ When /^I touch the file "([^\"]*)"$/ do |fn|
   add_test_file(fn)
 end
 
+When /^I put "([^\"]*)" into the file "([^\"]*)"$/ do |contents, path|
+  File.open(path, "w") {|fout| fout.print contents }
+end
+
 When /^I save the tab as$/ do
   Redcar::Project::FileSaveAsCommand.new.run
 end

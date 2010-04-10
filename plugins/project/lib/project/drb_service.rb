@@ -2,65 +2,55 @@ module Redcar
   class Project
     class DrbService
       def initialize
-        # TODO choose a random port instead of hard coded
         begin
-          address = "druby://127.0.0.1:9999"
+          address = "druby://127.0.0.1:#{DRB_PORT}"
           @drb = DRb.start_service(address, self)
         rescue Errno::EADDRINUSE => e
           puts 'warning--not starting listener (perhaps theres another Redcar already open?)' + e + ' ' + address
         end
       end
     
-      # opens an item as if from the command line for use via drb
       def open_item_drb(full_path)
         begin
           puts 'drb opening ' + full_path if $VERBOSE
           if File.directory? full_path
-            Redcar::ApplicationSWT.sync_exec {
-            
-              # open in any existing window that already has that dir open as a tree
-              # else in a new window
-              # open the window that already has this dir open
-              if Redcar.app.windows.length == 0 && Application.storage['last_open_dir'] == full_path
-                Project.restore_last_session
+            Redcar::ApplicationSWT.sync_exec do
+              if Redcar.app.windows.length == 0 and Application.storage['last_open_dir'] == full_path
+                Project::Manager.restore_last_session
               end
               
               if Redcar.app.windows.length > 0
-                window = Redcar.app.windows.find{|win| 
-                  # XXXX how can win be nil here?
-                  win && win.treebook.trees.find{|t| 
-                    t.tree_mirror.is_a?(Redcar::Project::DirMirror) && t.tree_mirror.path == full_path
-                  }
-                }            
+                window = Redcar.app.windows.find do |win| 
+                  next unless win
+                  win.treebook.trees.find do |t| 
+                    t.tree_mirror.is_a?(Redcar::Project::DirMirror) and t.tree_mirror.path == full_path
+                  end
+                end        
               end
-              window ||= Redcar.app.new_window          
-              Project.open_dir(full_path, window)
+              Project::Manager.open_project_for_path(full_path)
               Redcar.app.focussed_window.controller.bring_to_front
-              
-            }
+            end
             'ok'
           elsif full_path == 'just_bring_to_front'          
-            Redcar::ApplicationSWT.sync_exec {
+            Redcar::ApplicationSWT.sync_exec do
               if Redcar.app.windows.length == 0
-                Project.restore_last_session
+                Project::Manager.restore_last_session
               end
               Redcar.app.focussed_window.controller.bring_to_front
-            }
+            end
             'ok'
-          else
-            # existing or not (yet) existing file
-            Redcar::ApplicationSWT.sync_exec {
+          elsif File.file?(full_path)
+            Redcar::ApplicationSWT.sync_exec do
               if Redcar.app.windows.length == 0
-                Project.restore_last_session
+                Project::Manager.restore_last_session
               end
-              FileOpenCommand.new(full_path).execute
+              Project::Manager.open_file(full_path)
               Redcar.app.focussed_window.controller.bring_to_front
-            }
+            end
             'ok'            
           end
         rescue Exception => e
-          # normally drb would swallow these
-          puts 'drb got exception:' + e, e.backtrace
+          puts 'drb got exception:' + e.class + " " + e.message, e.backtrace
           raise e
         end 
       end

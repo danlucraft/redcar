@@ -151,6 +151,7 @@ module Redcar
     # loses focus. Sends :focussed_edit_view event.
     def self.focussed_edit_view=(edit_view)
       @focussed_edit_view = edit_view
+      edit_view.check_for_updated_document if edit_view
       notify_listeners(:focussed_edit_view, edit_view)
     end
     
@@ -302,6 +303,26 @@ module Redcar
     
     def delay_parsing
       controller.delay_parsing { yield }
+    end
+    
+    def check_for_updated_document
+      if document and document.mirror and document.mirror.changed_since?(@last_checked)
+        if document.modified?
+          result = Application::Dialog.message_box(
+                     Redcar.app.focussed_window,
+                     "This file has been changed on disc, and you have unsaved changes in Redcar.\n\n" + 
+                     "Revert to version on disc (and lose your changes)?",
+                     :buttons => :yes_no
+                    )
+          case result
+          when :yes
+            document.update_from_mirror
+          end
+        else
+          document.update_from_mirror
+        end
+      end
+      @last_checked = Time.now
     end
   end
 end

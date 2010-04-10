@@ -8,7 +8,7 @@ When /I close the directory/ do
 end
 
 When /^I refresh the directory tree$/ do
-  Redcar::Project.refresh_tree(Redcar.app.focussed_window)
+  Redcar::Project::Manager.focussed_project.refresh
 end
 
 When /^I move the myproject fixture away$/ do
