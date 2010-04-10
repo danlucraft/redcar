@@ -59,15 +59,30 @@ class FakeDialogAdapter
   end
   
   def open_file(*args)
-    @responses[:open_file]
+    check_for_raise(@responses[:open_file])
   end
   
   def open_directory(*args)
-    @responses[:open_directory]
+    check_for_raise(@responses[:open_directory])
   end
   
   def save_file(*args)
-    @responses[:save_file]
+    check_for_raise(@responses[:save_file])
+  end
+  
+  def message_box(*args)
+    check_for_raise(@responses[:message_box].to_sym)
+  end
+  
+  def check_for_raise(result)
+    if result == :raise_error
+      raise "did not expect dialog"
+    end
+    result
+  end
+  
+  def available_message_box_button_combos
+    Redcar::ApplicationSWT::DialogAdapter.new.available_message_box_button_combos
   end
 end
 
