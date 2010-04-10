@@ -46,6 +46,7 @@ module Redcar
   VERSION_RELEASE = 4
   
   ENVIRONMENTS = [:user, :debug, :test]
+  DRB_PORT = 10021
 
   def self.environment=(env)
     unless ENVIRONMENTS.include?(env)

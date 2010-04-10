@@ -1,8 +1,6 @@
 require 'socket'
 
 module Redcar
-  DRB_PORT = 10021
-
   def self.try_to_load_via_drb
     return if ARGV.find{|arg| arg == "--multiple-instance" || arg == '--help' || arg == '-h'}
     begin
