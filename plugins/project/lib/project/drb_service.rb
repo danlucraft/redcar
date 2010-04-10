@@ -3,7 +3,7 @@ module Redcar
     class DrbService
       def initialize
         begin
-          address = "druby://127.0.0.1:9999"
+          address = "druby://127.0.0.1:#{DRB_PORT}"
           @drb = DRb.start_service(address, self)
         rescue Errno::EADDRINUSE => e
           puts 'warning--not starting listener (perhaps theres another Redcar already open?)' + e + ' ' + address
