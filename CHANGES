@@ -11,12 +11,16 @@ New features:
   * Duplicate region command
   * Switch tab with Alt-1, Alt-2 (or Cmd-1, Cmd-2 on OSX)
   * Prompts to save modified tabs on tab, window or application close
+  * Snippet menus show tab trigger more nicely (linux/windows)
+  * Watches to changes to open files, and prompts to revert
+  * Project view sorts directories before files (by popular request!)
   
 Fixes:
 
   * Fix delete at end of line when using "\r\n" delimiter
   * Increase and decrease indent commands respect soft tabs and tab width settings
   * Directory tree sorts correctly
+  * Speed up opening a project (about 1s faster)
   
 New contributors:
 
