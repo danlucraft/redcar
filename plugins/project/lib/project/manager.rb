@@ -98,7 +98,8 @@ module Redcar
         else
           window = Redcar.app.focussed_window || Redcar.app.new_window
         end
-        open_file_in_window(path, Redcar.app.focussed_window)
+        open_file_in_window(path, window)
+        window.focus
       end
       
       # Opens a new Tree with a DirMirror and DirController for the given

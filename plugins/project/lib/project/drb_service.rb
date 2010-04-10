@@ -22,7 +22,7 @@ module Redcar
               # else in a new window
               # open the window that already has this dir open
               if Redcar.app.windows.length == 0 && Application.storage['last_open_dir'] == full_path
-                Project.restore_last_session
+                Project::Manager.restore_last_session
               end
               
               if Redcar.app.windows.length > 0
@@ -33,8 +33,7 @@ module Redcar
                   }
                 }            
               end
-              window ||= Redcar.app.new_window          
-              Project.open_dir(full_path, window)
+              Project::Manager.open_project_for_path(full_path)
               Redcar.app.focussed_window.controller.bring_to_front
               
             }
@@ -42,7 +41,7 @@ module Redcar
           elsif full_path == 'just_bring_to_front'          
             Redcar::ApplicationSWT.sync_exec {
               if Redcar.app.windows.length == 0
-                Project.restore_last_session
+                Project::Manager.restore_last_session
               end
               Redcar.app.focussed_window.controller.bring_to_front
             }
@@ -51,9 +50,9 @@ module Redcar
             # existing or not (yet) existing file
             Redcar::ApplicationSWT.sync_exec {
               if Redcar.app.windows.length == 0
-                Project.restore_last_session
+                Project::Manager.restore_last_session
               end
-              FileOpenCommand.new(full_path).execute
+              Project::Manager.open_file(full_path)
               Redcar.app.focussed_window.controller.bring_to_front
             }
             'ok'            
