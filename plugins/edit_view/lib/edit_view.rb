@@ -304,6 +304,10 @@ module Redcar
       controller.delay_parsing { yield }
     end
     
+    def reset_last_checked
+      @last_checked = Time.now
+    end
+    
     def check_for_updated_document
       if document and document.mirror and document.mirror.changed_since?(@last_checked)
         if document.modified?

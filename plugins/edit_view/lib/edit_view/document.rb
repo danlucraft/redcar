@@ -50,6 +50,7 @@ module Redcar
     
     def save!
       @mirror.commit(to_s)
+      @edit_view.reset_last_checked
       set_modified(false)
     end
     
