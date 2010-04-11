@@ -28,19 +28,11 @@ module Redcar
     # and open this file.
     class EditMyPluginCommand < Redcar::Command
       def execute
-        # Create a new window
-        new_window = Redcar.app.new_window
-        
-        # Create a new Tree. Tree's have mirrors for displaying data and controllers
-        # for reacting to events.
-        tree = Tree.new(Project::DirMirror.new(File.join(Redcar.root, "plugins", "my_plugin")),
-                        Project::DirController.new)
-                        
-        # Open the tree in the new window.
-        Project.open_tree(new_window, tree)
+        # Open the project in a new window
+        Project::Manager.open_project_for_path("plugins/my_plugin")
         
         # Create a new edittab
-        tab  = new_window.new_tab(Redcar::EditTab)
+        tab  = Redcar.app.focussed_window.new_tab(Redcar::EditTab)
         
         # A FileMirror's job is to wrap up the file in an interface that the Document understands.
         mirror = Project::FileMirror.new(File.join(Redcar.root, "plugins", "my_plugin", "lib", "my_plugin.rb"))
