@@ -103,7 +103,10 @@ module Redcar
       attach_window_listeners(new_window)
       new_window.menu   = load_menu
       new_window.keymap = main_keymap
+      s = Time.now
       new_window.refresh_menu
+      puts "refresh_menu took #{Time.now - s}s"
+      s = Time.now
       new_window.show
       set_focussed_window(new_window)
       new_window

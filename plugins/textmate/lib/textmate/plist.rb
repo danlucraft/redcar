@@ -1,6 +1,4 @@
 
-require 'rexml/document'
-
 module Redcar
   # An Apple Plist parser.
   class Plist
@@ -14,6 +12,7 @@ module Redcar
     end
 
     def self.plist_from_xml(xml_string) # :nodoc:
+      require 'rexml/document'
       xml = REXML::Document.new(xml_string)
       plist_from_xml1(xml.root.elements.first)
     end

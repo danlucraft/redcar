@@ -47,6 +47,8 @@ module Redcar
   VERSION_RELEASE = 4
   
   ENVIRONMENTS = [:user, :debug, :test]
+  
+  PROCESS_START_TIME = Time.now
 
   def self.environment=(env)
     unless ENVIRONMENTS.include?(env)
@@ -86,9 +88,6 @@ module Redcar
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "plugin_manager", "lib"))
     require 'plugin_manager'
     
-    $:.push File.expand_path(File.join(File.dirname(__FILE__), "openssl", "lib"))
-    require 'openssl'
-
     plugin_manager.load
     if plugin_manager.unreadable_definitions.any?
       puts "Couldn't read definition files: "

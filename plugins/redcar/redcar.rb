@@ -814,8 +814,6 @@ module Redcar
         end
         sub_menu "Bundles" do
           item "Find Snippet", Snippets::OpenSnippetExplorer
-          separator
-          Textmate.attach_menus(self)
         end
         sub_menu "Help" do
           item "About", AboutCommand
@@ -851,15 +849,19 @@ module Redcar
     end
     
     def self.start
+      puts "loading plugins took #{Time.now - PROCESS_START_TIME}"
       Application.start
       ApplicationSWT.start
+      s = Time.now
       EditViewSWT.start
+      puts "EditViewSWT.start took #{Time.now - s}s"
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
-      
       Redcar.app.refresh_menu!
       Redcar.app.load_sensitivities
+      s = Time.now
       Redcar::Project::Manager.start
+      puts "project start took #{Time.now - s}s"
       Redcar.app.make_sure_at_least_one_window_open
     end
   end

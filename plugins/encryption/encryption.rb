@@ -13,6 +13,9 @@ module Encryption
   end
 
   def self.lazy_load
+    $:.push File.expand_path(File.join(Redcar.root, "openssl", "lib"))
+    require 'openssl'
+
     require File.dirname(__FILE__) + "/jarmor-1.1"
     require File.dirname(__FILE__) + "/ezcrypto"
   end
