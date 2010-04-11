@@ -318,6 +318,7 @@ module Redcar
             document.update_from_mirror
           end
         else
+          puts "updating document as has changed since #{@last_checked}"
           document.update_from_mirror
         end
       end
