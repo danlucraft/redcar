@@ -121,11 +121,15 @@ module Redcar
         old_menu_bar = shell.menu_bar
         @menu_controller = ApplicationSWT::Menu.new(self, @window.menu, @window.keymap, Swt::SWT::BAR)
         shell.menu_bar = @menu_controller.menu_bar
-        if Redcar.platform == :osx
-          @fake_menu_controller = ApplicationSWT::Menu.new(FakeWindow.new(Redcar.app.controller.fake_shell), @window.menu, @window.keymap, Swt::SWT::BAR)
-          Redcar.app.controller.fake_shell.menu_bar = @fake_menu_controller.menu_bar
-        end
         old_menu_bar.dispose if old_menu_bar
+        
+        if Redcar.platform == :osx
+          fake_shell = Redcar.app.controller.fake_shell
+          old_menu_bar = fake_shell.menu_bar
+          @fake_menu_controller = ApplicationSWT::Menu.new(FakeWindow.new(Redcar.app.controller.fake_shell), @window.menu, @window.keymap, Swt::SWT::BAR)
+          fake_shell.menu_bar = @fake_menu_controller.menu_bar
+          old_menu_bar.dispose if old_menu_bar
+        end
       end
       
       def set_icon(path)
