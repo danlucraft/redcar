@@ -344,13 +344,6 @@ module Redcar
       end
     end
 
-    class StripWhitespaceCommand < Redcar::EditTabCommand
-    
-      def execute
-        doc.text = doc.to_s.gsub(/\s+$/, "\n")
-      end
-    end
-    
     class SelectAllCommand < Redcar::EditTabCommand
     
       def execute
@@ -779,8 +772,6 @@ module Redcar
           separator
           item "Increase Indent", IncreaseIndentCommand
           item "Decrease Indent", DecreaseIndentCommand
-          separator
-          item "Strip Whitespace", StripWhitespaceCommand
           separator
           item "Goto Line", GotoLineCommand
           item "Regex Search",    SearchForwardCommand
