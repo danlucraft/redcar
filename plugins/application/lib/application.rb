@@ -187,10 +187,8 @@ module Redcar
     # @return [Redcar::Menu]
     def load_menu
       menu = Menu.new
-      Redcar.plugin_manager.loaded_plugins.each do |plugin|
-        if plugin.object.respond_to?(:menus)
-          menu.merge(plugin.object.menus)
-        end
+      Redcar.plugin_manager.objects_implementing(:menus).each do |object|
+        menu.merge(object.menus)
       end
       menu
     end
@@ -200,24 +198,20 @@ module Redcar
     # @return [Redcar::Keymap]
     def main_keymap
       keymap = Keymap.new("main", Redcar.platform)
-      Redcar.plugin_manager.loaded_plugins.each do |plugin|
-        if plugin.object.respond_to?(:keymaps)
-          maps = plugin.object.keymaps
-          keymaps = maps.select do |map| 
-            map.name == "main" and map.platforms.include?(Redcar.platform)
-          end
-          keymap = keymaps.inject(keymap) {|k, nk| k.merge(nk) }
+      Redcar.plugin_manager.objects_implementing(:keymaps).each do |object|
+        maps = object.keymaps
+        keymaps = maps.select do |map| 
+          map.name == "main" and map.platforms.include?(Redcar.platform)
         end
+        keymap = keymaps.inject(keymap) {|k, nk| k.merge(nk) }
       end
       keymap
     end
     
     # Loads sensitivities from all plugins.
     def load_sensitivities
-      Redcar.plugin_manager.loaded_plugins.each do |plugin|
-        if plugin.object.respond_to?(:sensitivities)
-          plugin.object.sensitivities
-        end
+      Redcar.plugin_manager.objects_implementing(:sensitivities).each do |object|
+        object.sensitivities
       end
     end
     

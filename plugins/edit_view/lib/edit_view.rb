@@ -55,10 +55,9 @@ module Redcar
 
     def self.all_handlers(type)
       result = []
-      Redcar.plugin_manager.loaded_plugins.each do |plugin|
-        if plugin.object.respond_to?(:"#{type}_handlers")
-          result += plugin.object.send(:"#{type}_handlers")
-        end
+      method_name = :"#{type}_handlers"
+      Redcar.plugin_manager.objects_implementing(method_name).each do |object|
+        result += object.send(method_name)
       end
       result.each {|h| Handler.verify_interface!(h) }
     end
