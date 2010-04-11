@@ -261,6 +261,7 @@ module Redcar
         doc = tab.edit_view.document
         line_ix = doc.line_at_offset(doc.cursor_offset)
         doc.cursor_offset = doc.offset_at_line(line_ix)
+        doc.ensure_visible(doc.cursor_offset)
       end
     end
     
@@ -274,6 +275,7 @@ module Redcar
         else
           doc.cursor_offset = doc.offset_at_line(line_ix + 1) - 1
         end
+        doc.ensure_visible(doc.cursor_offset)
       end
     end
     
