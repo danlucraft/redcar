@@ -47,7 +47,7 @@ module Redcar
           buttons = MESSAGE_BOX_BUTTON_COMBOS[options[:buttons]]
           buttons.each {|b| styles = styles | BUTTONS[b] }
         end
-        dialog = Swt::Widgets::MessageBox.new(window.controller.shell, styles)
+        dialog = Swt::Widgets::MessageBox.new(parent_shell, styles)
         dialog.set_message(text)
         result = nil
         Redcar.app.protect_application_focus do
@@ -80,7 +80,8 @@ module Redcar
       end
       
       def input(window, title, message, initial_value, &block)
-        dialog = JFace::Dialogs::InputDialog.new(window.controller.shell,
+        dialog = JFace::Dialogs::InputDialog.new(
+                   parent_shell,
                    title, message, initial_value) do |text|
           block ? block[text] : nil
         end
@@ -90,7 +91,7 @@ module Redcar
       end
       
       def tool_tip(window, message)
-        tool_tip = Swt::Widgets::ToolTip.new(window.controller.shell, Swt::SWT::ICON_INFORMATION)
+        tool_tip = Swt::Widgets::ToolTip.new(parent_shell, Swt::SWT::ICON_INFORMATION)
         tool_tip.set_message(message)
         tool_tip.set_visible(true)
       end
@@ -98,7 +99,7 @@ module Redcar
       private
       
       def file_dialog(window, type, options)
-        dialog = Swt::Widgets::FileDialog.new(window.controller.shell, type)
+        dialog = Swt::Widgets::FileDialog.new(parent_shell, type)
         if options[:filter_path]
           dialog.set_filter_path(options[:filter_path])
         end
@@ -108,12 +109,20 @@ module Redcar
       end
       
       def directory_dialog(window, options)
-        dialog = Swt::Widgets::DirectoryDialog.new(window.controller.shell)
+        dialog = Swt::Widgets::DirectoryDialog.new(parent_shell)
         if options[:filter_path]
           dialog.set_filter_path(options[:filter_path])
         end
         Redcar.app.protect_application_focus do
           dialog.open
+        end
+      end
+      
+      def parent_shell
+        if focussed_window = Redcar.app.focussed_window
+          focussed_window.controller.shell
+        else
+          Redcar.app.controller.fake_shell
         end
       end
     end
