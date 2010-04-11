@@ -20,12 +20,12 @@ module Encryption
   class DecryptDocumentCommand < Redcar::EditTabCommand
     def execute
       Encryption.lazy_load
-      result = Redcar::Application::Dialog.input(win, "Password", "Enter password")
+      result = Redcar::Application::Dialog.input("Password", "Enter password")
       pw = result[:value]
       begin
         doc.text = EncryptionTools.dearmour_and_decrypt(doc.to_s, pw)
       rescue => e
-        Redcar::Application::Dialog.message_box(win, "Couldn't decrypt!", :type => :error)
+        Redcar::Application::Dialog.message_box("Couldn't decrypt!", :type => :error)
       end
     end
   end
@@ -33,7 +33,7 @@ module Encryption
   class EncryptDocumentCommand < Redcar::EditTabCommand
     def execute
       Encryption.lazy_load
-      result = Redcar::Application::Dialog.input(win, "Password", "Enter password")
+      result = Redcar::Application::Dialog.input("Password", "Enter password")
       pw = result[:value]
       doc.text = EncryptionTools.encrypt_and_armour(doc.to_s, pw)
     end

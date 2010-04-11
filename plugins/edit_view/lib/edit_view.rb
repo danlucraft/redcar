@@ -308,7 +308,6 @@ module Redcar
       if document and document.mirror and document.mirror.changed_since?(@last_checked)
         if document.modified?
           result = Application::Dialog.message_box(
-                     Redcar.app.focussed_window,
                      "This file has been changed on disc, and you have unsaved changes in Redcar.\n\n" + 
                      "Revert to version on disc (and lose your changes)?",
                      :buttons => :yes_no

@@ -2,18 +2,18 @@ module Redcar
   class Application
     class Dialog
       # Prompt the user with an open file dialog. Returns a path.
-      def self.open_file(window, options)
-        Redcar.gui.dialog_adapter.open_file(window, options)
+      def self.open_file(options)
+        Redcar.gui.dialog_adapter.open_file(options)
       end
       
       # Prompt the user with an open directory dialog. Returns a path.
-      def self.open_directory(window, options)
-        Redcar.gui.dialog_adapter.open_directory(window, options)
+      def self.open_directory(options)
+        Redcar.gui.dialog_adapter.open_directory(options)
       end
 
       # Prompt the user with an save file dialog. Returns a path.
-      def self.save_file(window, options)
-        Redcar.gui.dialog_adapter.save_file(window, options)
+      def self.save_file(options)
+        Redcar.gui.dialog_adapter.save_file(options)
       end
       
       # Show a message to the user. Requires a message and
@@ -26,17 +26,17 @@ module Redcar
       #
       # For example:
       #
-      # >> Application::Dialog.message_box(win, "YO!", :type => :info, 
+      # >> Application::Dialog.message_box("YO!", :type => :info, 
       # >>                                             :buttons => :yes_no_cancel)
       # => :yes
-      def self.message_box(window, text, options={})
+      def self.message_box(text, options={})
         if buttons = options[:buttons] and !available_message_box_button_combos.include?(buttons)
           raise "option :buttons must be in #{available_message_box_button_combos.inspect}"
         end
         if type = options[:type] and !available_message_box_types.include?(type)
           raise "option :type must be in #{available_message_box_button_types.inspect}"
         end
-        Redcar.gui.dialog_adapter.message_box(window, text, options)
+        Redcar.gui.dialog_adapter.message_box(text, options)
       end
       
       # Returns the list of valid button combos that can be passed
@@ -61,7 +61,7 @@ module Redcar
       #
       # Example:
       #
-      # Application::Dialog.input(win, "Number", "Please enter a big number", "101") do |text|
+      # Application::Dialog.input("Number", "Please enter a big number", "101") do |text|
       #	  if text.to_i > 100
       #	    nil
       #	  else
@@ -70,13 +70,13 @@ module Redcar
       #	end
       #
       # The return value is a hash containing :button and :value.
-      def self.input(window, title, message, initial_value="", &validator)
-        Redcar.gui.dialog_adapter.input(window, title, message, initial_value, &validator)
+      def self.input(title, message, initial_value="", &validator)
+        Redcar.gui.dialog_adapter.input(title, message, initial_value, &validator)
       end
       
       # Shows a tool tip to the user, at the cursor location.
-      def self.tool_tip(window, message)
-        Redcar.gui.dialog_adapter.tool_tip(window, message)
+      def self.tool_tip(message)
+        Redcar.gui.dialog_adapter.tool_tip(message)
       end
     end
   end

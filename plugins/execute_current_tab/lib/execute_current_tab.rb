@@ -52,7 +52,6 @@ module Redcar
             eval(out, TOPLEVEL_BINDING, doc.path || doc.title || '')
           rescue Object => e
             Application::Dialog.message_box(
-							win,
 							"#{e.class}\n#{e.message}",
 							:type => :error )
               

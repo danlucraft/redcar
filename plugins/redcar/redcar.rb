@@ -197,7 +197,6 @@ module Redcar
         if tab.is_a?(EditTab)
           if tab.edit_view.document.modified?
             result = Application::Dialog.message_box(
-              Redcar.app.focussed_window,
               "This tab has unsaved changes. \n\nSave before closing?",
               :buttons => :yes_no_cancel
             )

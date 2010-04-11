@@ -1,16 +1,16 @@
 module Redcar
   class ApplicationSWT
     class DialogAdapter
-      def open_file(window, options)
-        file_dialog(window, Swt::SWT::OPEN, options)
+      def open_file(options)
+        file_dialog(Swt::SWT::OPEN, options)
       end
       
-      def open_directory(window, options)
-        directory_dialog(window, options)
+      def open_directory(options)
+        directory_dialog(options)
       end
       
-      def save_file(window, options)
-        file_dialog(window, Swt::SWT::SAVE, options)
+      def save_file(options)
+        file_dialog(Swt::SWT::SAVE, options)
       end
       
       MESSAGE_BOX_TYPES = {
@@ -40,7 +40,7 @@ module Redcar
         :abort_retry_ignore => [:abort, :retry, :ignore]
       }
       
-      def message_box(window, text, options)
+      def message_box(text, options)
         styles = 0
         styles = styles | MESSAGE_BOX_TYPES[options[:type]] if options[:type]
         if options[:buttons]
@@ -75,11 +75,10 @@ module Redcar
         
         def createShell
           super
-          p [:in, get_shell]
         end
       end
       
-      def input(window, title, message, initial_value, &block)
+      def input(title, message, initial_value, &block)
         dialog = JFace::Dialogs::InputDialog.new(
                    parent_shell,
                    title, message, initial_value) do |text|
@@ -90,7 +89,7 @@ module Redcar
         {:button => button, :value => dialog.getValue}
       end
       
-      def tool_tip(window, message)
+      def tool_tip(message)
         tool_tip = Swt::Widgets::ToolTip.new(parent_shell, Swt::SWT::ICON_INFORMATION)
         tool_tip.set_message(message)
         tool_tip.set_visible(true)
@@ -98,7 +97,7 @@ module Redcar
       
       private
       
-      def file_dialog(window, type, options)
+      def file_dialog(type, options)
         dialog = Swt::Widgets::FileDialog.new(parent_shell, type)
         if options[:filter_path]
           dialog.set_filter_path(options[:filter_path])
@@ -108,7 +107,7 @@ module Redcar
         end
       end
       
-      def directory_dialog(window, options)
+      def directory_dialog(options)
         dialog = Swt::Widgets::DirectoryDialog.new(parent_shell)
         if options[:filter_path]
           dialog.set_filter_path(options[:filter_path])

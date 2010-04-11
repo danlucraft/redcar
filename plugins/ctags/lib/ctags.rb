@@ -83,7 +83,7 @@ module Redcar
             CTags.clear_tags_for_path(file_path)
           end
         else
-          Application::Dialog.message_box win, <<-MESSAGE
+          Application::Dialog.message_box <<-MESSAGE
             No ctags executable found in your $PATH.
             Please intall it before use this command.
             http://ctags.sourceforge.net/
@@ -119,7 +119,7 @@ module Redcar
         matches = find_tag(token)
         case matches.size
         when 0
-          Application::Dialog.message_box(win, "There is no definition for '#{token}' in the tags file.")
+          Application::Dialog.message_box("There is no definition for '#{token}' in the tags file.")
         when 1
           Redcar::CTags.go_to_definition(matches.first)
         else

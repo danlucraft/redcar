@@ -9,7 +9,6 @@ module Redcar
         modified_edit_tabs = @tabs.select {|t| t.edit_view.document.modified? }
         if modified_edit_tabs.any?
           result = Application::Dialog.message_box(
-            Redcar.app.focussed_window,
             "You have #{modified_edit_tabs.length} modified tabs.\n\n" + 
             @message,
             :buttons => :yes_no_cancel

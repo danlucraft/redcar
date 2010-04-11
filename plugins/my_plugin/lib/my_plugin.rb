@@ -20,7 +20,7 @@ module Redcar
     # Example command: showing a dialog box.
     class HelloWorldCommand < Redcar::Command
       def execute
-        Application::Dialog.message_box(win, "Hello World!")
+        Application::Dialog.message_box("Hello World!")
       end
     end
 

@@ -136,9 +136,7 @@ module Redcar
       end
       
       def handle_event(e)
-        Application::Dialog.message_box(
-          Redcar.app.focussed_window,
-          "#{@name} menu is not hooked up yet")
+        Application::Dialog.message_box("#{@name} menu is not hooked up yet")
       end
     end
     
