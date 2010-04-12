@@ -24,7 +24,7 @@ module Redcar
       
       def get_path
         @path || begin
-          if path = Application::Dialog.open_file(win, :filter_path => Manager.filter_path)
+          if path = Application::Dialog.open_file(:filter_path => Manager.filter_path)
             Manager.storage['last_dir'] = File.dirname(File.expand_path(path))
             path
           end
@@ -65,7 +65,7 @@ module Redcar
       private
       def get_path
         @path || begin
-          if path = Application::Dialog.save_file(win, :filter_path => Manager.filter_path)
+          if path = Application::Dialog.save_file(:filter_path => Manager.filter_path)
             Manager.storage['last_dir'] = File.dirname(File.expand_path(path))
             path
           end
@@ -89,7 +89,7 @@ module Redcar
 
       def get_path
         @path || begin
-          if path = Application::Dialog.open_directory(win, :filter_path => Manager.filter_path)
+          if path = Application::Dialog.open_directory(:filter_path => Manager.filter_path)
             Manager.storage['last_dir'] = File.dirname(File.expand_path(path))
             path
           end

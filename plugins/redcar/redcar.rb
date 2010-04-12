@@ -197,7 +197,6 @@ module Redcar
         if tab.is_a?(EditTab)
           if tab.edit_view.document.modified?
             result = Application::Dialog.message_box(
-              Redcar.app.focussed_window,
               "This tab has unsaved changes. \n\nSave before closing?",
               :buttons => :yes_no_cancel
             )
@@ -261,6 +260,7 @@ module Redcar
         doc = tab.edit_view.document
         line_ix = doc.line_at_offset(doc.cursor_offset)
         doc.cursor_offset = doc.offset_at_line(line_ix)
+        doc.ensure_visible(doc.cursor_offset)
       end
     end
     
@@ -274,6 +274,7 @@ module Redcar
         else
           doc.cursor_offset = doc.offset_at_line(line_ix + 1) - 1
         end
+        doc.ensure_visible(doc.cursor_offset)
       end
     end
     
@@ -343,13 +344,6 @@ module Redcar
       end
     end
 
-    class StripWhitespaceCommand < Redcar::EditTabCommand
-    
-      def execute
-        doc.text = doc.to_s.gsub(/\s+$/, "\n")
-      end
-    end
-    
     class SelectAllCommand < Redcar::EditTabCommand
     
       def execute
@@ -779,8 +773,6 @@ module Redcar
           item "Increase Indent", IncreaseIndentCommand
           item "Decrease Indent", DecreaseIndentCommand
           separator
-          item "Strip Whitespace", StripWhitespaceCommand
-          separator
           item "Goto Line", GotoLineCommand
           item "Regex Search",    SearchForwardCommand
           item "Repeat Last Search", RepeatPreviousSearchForwardCommand
@@ -822,8 +814,6 @@ module Redcar
         end
         sub_menu "Bundles" do
           item "Find Snippet", Snippets::OpenSnippetExplorer
-          separator
-          Textmate.attach_menus(self)
         end
         sub_menu "Help" do
           item "About", AboutCommand
@@ -859,15 +849,19 @@ module Redcar
     end
     
     def self.start
+      puts "loading plugins took #{Time.now - PROCESS_START_TIME}"
       Application.start
       ApplicationSWT.start
+      s = Time.now
       EditViewSWT.start
+      puts "EditViewSWT.start took #{Time.now - s}s"
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
-      
       Redcar.app.refresh_menu!
       Redcar.app.load_sensitivities
+      s = Time.now
       Redcar::Project::Manager.start
+      puts "project start took #{Time.now - s}s"
       Redcar.app.make_sure_at_least_one_window_open
     end
   end

@@ -14,7 +14,11 @@ Then /^there should be (no|one|\d+) windows?$/ do |num|
   # in the gui
   display = Swt::Widgets::Display.get_current
   shells  = display.get_shells.to_a
-  shells.length.should == num
+  
+  # on OSX there is always an invisible window
+  diff = Redcar.platform == :osx ? 1 : 0
+  
+  shells.length.should == num + diff
 end
 
 When /I open a new window(?: with title "(.*)")?/ do |title|

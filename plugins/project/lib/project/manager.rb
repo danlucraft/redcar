@@ -173,7 +173,9 @@ module Redcar
       # restores the directory/files in the last open window
       def self.restore_last_session
         if path = storage['last_open_dir']
+          s = Time.now
           open_project_for_path(path)
+          puts "open project took #{Time.now - s}s"
         end
         
         if files = storage['files_open_last_session']

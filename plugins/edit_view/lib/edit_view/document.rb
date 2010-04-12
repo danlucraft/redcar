@@ -10,10 +10,8 @@ module Redcar
     
     def self.all_document_controller_types
       result = []
-      Redcar.plugin_manager.loaded_plugins.each do |plugin|
-        if plugin.object.respond_to?(:document_controller_types)
-          result += plugin.object.document_controller_types
-        end
+      Redcar.plugin_manager.objects_implementing(:document_controller_types).each do |object|
+        result += object.document_controller_types
       end
       result
     end
@@ -52,6 +50,7 @@ module Redcar
     
     def save!
       @mirror.commit(to_s)
+      @edit_view.reset_last_checked
       set_modified(false)
     end
     

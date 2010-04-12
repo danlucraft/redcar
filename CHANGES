@@ -14,6 +14,8 @@ New features:
   * Snippet menus show tab trigger more nicely (linux/windows)
   * Watches to changes to open files, and prompts to revert
   * Project view sorts directories before files (by popular request!)
+  * Shows menu bar on OSX when there are no windows open
+  * Halve startup time from 0.3.4 (warm startup)
   
 Fixes:
 

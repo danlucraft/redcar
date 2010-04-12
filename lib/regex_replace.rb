@@ -1,11 +1,4 @@
 
-begin
-  require 'rubygems'
-  require 'oniguruma'
-rescue LoadError
-  
-end
-
 class RegexReplace
   COND_RE = /\(
                 \?(\d+):

@@ -22,13 +22,9 @@ module Redcar
       end
       
       def create(name, *args)
-        Redcar.plugin_manager.loaded_plugins.detect do |plugin|
-          if plugin.object.respond_to?(:application_event_handler)
-            handler = plugin.object.application_event_handler
-            if handler.respond_to?(name)
-              handler.send(name, *args)
-            end
-          end
+        Redcar.plugin_manager.objects_implementing(:application_event_handler).each do |object|
+          handler = object.application_event_handler
+          handler.send(name, *args) if handler.respond_to?(name)
         end
       end
     end

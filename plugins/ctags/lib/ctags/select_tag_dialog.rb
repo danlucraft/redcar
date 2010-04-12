@@ -35,7 +35,7 @@ module Redcar
         filtered_list.collect do |match|
           file_path     = match[:file]
           file          = file_path.split(File::SEPARATOR).last
-          relative_path = file_path.gsub(Regexp.compile(Redcar::Project.focussed_project_path + '/'), '')
+          relative_path = file_path.gsub(Regexp.compile(Project::Manager.focussed_project.path + '/'), '')
           "%s (%s)" % [file, relative_path]
         end
       end

@@ -111,8 +111,21 @@ module Redcar
       add_listeners
       add_swt_listeners
       create_clipboard
+      create_fake_window
     end
     
+    def fake_shell
+      @fake_shell
+    end
+    
+    def create_fake_window
+      if Redcar.platform == :osx
+        @fake_shell = Swt::Widgets::Shell.new(ApplicationSWT.display, Swt::SWT::NO_TRIM)
+        @fake_shell.open
+        @fake_shell.set_size(0, 0)
+      end
+    end
+
     def add_listeners
       @model.add_listener(:new_window, &method(:new_window))
     end
@@ -123,9 +136,7 @@ module Redcar
       end
       
       def handle_event(e)
-        Application::Dialog.message_box(
-          Redcar.app.focussed_window,
-          "#{@name} menu is not hooked up yet")
+        Application::Dialog.message_box("#{@name} menu is not hooked up yet")
       end
     end
     
