@@ -1,4 +1,6 @@
+
 require 'ctags/completion_source'
+require 'ctags/declarations'
 require 'ctags/select_tag_dialog'
 require 'tempfile'
 
@@ -43,10 +45,10 @@ module Redcar
       @tags_for_path[path] ||= begin
         tags = {}
         File.read(path).each_line do |line|
-          key, file, regexp = line.split("\t")
-          if [key, file, regexp].all? { |el| !el.nil? && !el.empty? }
+          key, file, *match = line.split("\t")
+          if [key, file, match].all? { |el| !el.nil? && !el.empty? }
             tags[key] ||= []
-            tags[key] << { :file => file, :regexp => regexp[2..-5] }
+            tags[key] << { :file => file, :match => match.join("\t").chomp }
           end
         end
         tags
@@ -63,44 +65,29 @@ module Redcar
     def self.go_to_definition(match)
       path = match[:file]
       Project::Manager.open_file(path)
-      regstr = "^#{Regexp.escape(match[:regexp])}$"
-      regexp = Regexp.new(regstr)
+      regexp = Regexp.new(Regexp.escape(match[:match]))
       Redcar::Top::FindNextRegex.new(regexp, true).run
     end
 
     # Generate "tags" file for current project
     class GenerateCtagsCommand < Redcar::Command
 
-      #autoload :Tempfile,  'tempfile'
-      
       def execute
-        if ctags_binary
-          Thread.new do
-            tempfile = Tempfile.new('tags')
-            tempfile.close # we need just temp path here
-            system("#{ctags_binary} -o #{tempfile.path} -R #{Project::Manager.focussed_project.path}")
-            FileUtils.mv(tempfile.path, CTags.file_path)
-            CTags.clear_tags_for_path(file_path)
-          end
-        else
-          Application::Dialog.message_box <<-MESSAGE
-            No ctags executable found in your $PATH.
-            Please intall it before use this command.
-            http://ctags.sourceforge.net/
-          MESSAGE
+        Thread.new do
+          s = Time.now
+          tempfile = Tempfile.new('tags')
+          tempfile.close # we need just temp path here
+          decl = Declarations.new(tempfile.path)
+          file_path = Project::Manager.focussed_project.path
+          decl.parse(Dir[file_path + "/**/*.rb"])
+          decl.parse(Dir[file_path + "/**/*.java"])
+          decl.dump
+          FileUtils.mv(tempfile.path, CTags.file_path)
+          CTags.clear_tags_for_path(file_path)
+          puts "generated tags file in #{Time.now - s}s"
         end
       end
 
-      # need ctags.exe in $PATH on win
-      # http://prdownloads.sourceforge.net/ctags/ctags58.zip
-      # FIXME make it really cross-platform
-      def ctags_binary
-        bin_name = 'ctags'
-        bin_name += '.exe' if Redcar.platform == :windows
-        path = File.expand_path(File.join(File.dirname(__FILE__), %w(.. vendor ctags58)))
-        @ctags_dir ||= File.join(path, bin_name) if File.exist?(File.join(path, bin_name))
-        @ctags_dir ? File.join(@ctags_dir) : false
-      end
     end
 
     class GoToTagCommand < EditTabCommand
