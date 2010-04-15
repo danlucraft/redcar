@@ -77,5 +77,24 @@ module Redcar
         recent_files.shift
       end
     end
+    
+    def all_files
+      @all_files ||= begin
+        files = []
+        s = Time.now
+        files += Dir[File.expand_path(path + "/**/*")]
+        took = Time.now - s
+        files.reject do |f|
+          begin
+            File.directory?(f)
+          rescue Errno::ENOENT
+            # File.directory? can throw no such file or directory even if File.exist?
+            # has returned true. For example this happens on some awful textmate filenames
+            # unicode in them.
+            true
+          end
+        end
+      end
+    end
   end
 end
