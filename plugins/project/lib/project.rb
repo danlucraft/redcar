@@ -91,7 +91,7 @@ module Redcar
         s = Time.now
         files += Dir[File.expand_path(path + "/**/*")]
         took = Time.now - s
-        files.reject do |f|
+        files = files.reject do |f|
           begin
             File.directory?(f)
           rescue Errno::ENOENT
