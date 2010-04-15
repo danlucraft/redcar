@@ -67,7 +67,7 @@ module Redcar
       ]
     end
     
-    attr_reader :clipboard, :keymap, :menu, :history
+    attr_reader :clipboard, :keymap, :menu, :history, :task_queue
     
     # Create an application instance with a Redcar::Clipboard and a Redcar::History.
     def initialize
@@ -76,6 +76,7 @@ module Redcar
       create_clipboard
       create_history
       @event_spewer = EventSpewer.new
+      @task_queue   = TaskQueue.new
     end
     
     def events
