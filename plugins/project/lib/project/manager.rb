@@ -110,6 +110,7 @@ module Redcar
         win     = Redcar.app.new_window
         project = Project.new(path)
         project.open(win)
+        project
       end
       
       # The currently focussed Project, or nil if none.
@@ -138,7 +139,7 @@ module Redcar
         ARGV.each do |arg|
           if File.directory?(arg)
             found_path_args = true
-            open_project_for_path(arg)
+            DirectoryOpenCommand.new(arg).run
           elsif File.file?(arg)
             found_path_args = true
             open_file(arg)

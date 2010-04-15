@@ -30,6 +30,10 @@ module Redcar
       @window = nil
     end
     
+    def inspect
+      "<Project #{path}>"
+    end
+    
     def open(win)
       @window = win
       if current_project = Project.window_projects[window]
@@ -53,7 +57,7 @@ module Redcar
     # Refresh the DirMirror Tree for the given Window, if 
     # there is one.
     def refresh
-      puts "refresh #{self}"
+      puts "refresh #{self.inspect}"
       @tree.refresh
       file_list_resource.compute
     end
@@ -83,10 +87,10 @@ module Redcar
     def all_files
       @all_files 
     end
-        
+
     def file_list_resource
       @resource ||= Resource.new do
-        puts "refreshing file list for #{self}"
+        puts "refreshing file list for #{self.inspect}"
         files = []
         s = Time.now
         files += Dir[File.expand_path(path + "/**/*")]
