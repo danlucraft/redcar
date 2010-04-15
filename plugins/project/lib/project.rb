@@ -53,7 +53,9 @@ module Redcar
     # Refresh the DirMirror Tree for the given Window, if 
     # there is one.
     def refresh
+      puts "refresh #{self}"
       @tree.refresh
+      file_list_resource.compute
     end
     
     def contains_path?(path)
@@ -76,6 +78,40 @@ module Redcar
       if recent_files.length > RECENT_FILES_LENGTH
         recent_files.shift
       end
+    end
+    
+    def all_files
+      @all_files 
+    end
+        
+    def file_list_resource
+      @resource ||= Resource.new do
+        puts "refreshing file list for #{self}"
+        files = []
+        s = Time.now
+        files += Dir[File.expand_path(path + "/**/*")]
+        took = Time.now - s
+        files.reject do |f|
+          begin
+            File.directory?(f)
+          rescue Errno::ENOENT
+            # File.directory? can throw no such file or directory even if File.exist?
+            # has returned true. For example this happens on some awful textmate filenames
+            # unicode in them.
+            true
+          end
+        end
+        puts "done"
+        files
+      end
+    end
+    
+    def file_list
+      file_list_resource.value
+    end
+    
+    def all_files
+      file_list
     end
   end
 end

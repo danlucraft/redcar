@@ -20,7 +20,7 @@ module Redcar
           if File.directory?(File.expand_path(dir))
             builder.item(File.basename(dir)) do
               if File.directory?(File.expand_path(dir))
-                Project.open_dir(dir)
+                Project::Manager.open_project_for_path(dir)
               else
                 remove_path(dir)
               end

@@ -2,33 +2,21 @@ module Redcar
   class Project
   
     class FindFileDialog < FilterListDialog
-      def self.clear
-        if storage['clear_cache_on_refocus']
-          cached_dir_lists.clear 
-        end
-      end
-      
       def self.storage
         @storage ||= begin
           storage = Plugin::Storage.new('find_file_dialog')
-          storage.set_default('clear_cache_on_refocus', true)
-          storage
-        end
-      end    
-      
-      def self.cached_dir_lists
-        @cached_dir_lists ||= {}
-      end
-
-      def self.storage
-        @storage ||= begin
-          storage = Plugin::Storage.new('find_file_dialog')
-          storage.set_default('clear_cache_on_refocus', true)
           storage.set_default('ignore_files_that_match_these_regexes', [])
           storage.set_default('ignore_files_that_match_these_regexes_example_for_reference', [/.*\.class/i])
           storage
         end
-      end    
+      end
+      
+      attr_reader :project
+      
+      def initialize(project)
+        super()
+        @project = project
+      end
 
       def close
         super
@@ -39,7 +27,7 @@ module Redcar
           paths = recent_files
         else
           paths = find_files_from_list(filter, recent_files) + 
-                  find_files(filter, Manager.focussed_project.path)
+                  find_files(filter, project.path)
           paths.uniq! # in case there's some dupe's between the two lists
         end
                 
@@ -51,7 +39,7 @@ module Redcar
           duplicates = duplicates_as_hash(display_paths)
           display_paths.each_with_index do |dp, i|
             if duplicates[dp]
-              display_paths[i] = display_path(full_paths[i], Manager.focussed_project.path.split('/')[0..-2].join('/'))
+              display_paths[i] = display_path(full_paths[i], project.path.split('/')[0..-2].join('/'))
             end
           end
         end
@@ -68,7 +56,7 @@ module Redcar
       private
           
       def recent_files
-        files = Manager.focussed_project.recent_files
+        files = project.recent_files
         ((files[0..-2]||[]).reverse + [files[-1]]).compact
       end
     
@@ -95,27 +83,6 @@ module Redcar
         end
       end
       
-      def files(directories)
-        FindFileDialog.cached_dir_lists[directories] ||= begin
-          files = []
-          s = Time.now
-          directories.each do |dir|
-            files += Dir[File.expand_path(dir + "/**/*")]
-          end
-          took = Time.now - s
-          files.reject do |f|
-            begin
-              File.directory?(f)
-            rescue Errno::ENOENT
-              # File.directory? can throw no such file or directory even if File.exist?
-              # has returned true. For example this happens on some awful textmate filenames
-              # unicode in them.
-              true
-            end
-          end
-        end
-      end
-      
       def not_on_ignore_list(filename)
         self.class.storage['ignore_files_that_match_these_regexes'].each do |re|
           if re =~ filename
@@ -133,7 +100,7 @@ module Redcar
       end
       
       def find_files(text, directories)
-        filter_and_rank_by(files(directories), text) do |fn|
+        filter_and_rank_by(project.all_files, text) do |fn|
           fn.split("/").last
         end
       end

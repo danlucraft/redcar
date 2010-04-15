@@ -162,7 +162,6 @@ module Redcar
       
       def self.attach_app_listeners
         Redcar.app.add_listener(:lost_focus) do
-          FindFileDialog.clear
         end
         
         Redcar.app.add_listener(:focussed) do

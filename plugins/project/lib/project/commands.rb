@@ -114,7 +114,7 @@ module Redcar
     class FindFileCommand < ProjectCommand
      
       def execute
-        dialog = FindFileDialog.new
+        dialog = FindFileDialog.new(Manager.focussed_project)
         dialog.open
       end
     end
