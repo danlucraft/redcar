@@ -39,11 +39,19 @@ module Redcar
       #
       # @return [Boolean]
       def changed?
-        !@timestamp or @timestamp < File.stat(@path).mtime
+        begin
+          !@timestamp or @timestamp < File.stat(@path).mtime
+        rescue Errno::ENOENT
+          false
+        end
       end
       
       def changed_since?(time)
-        !@timestamp or (!time and changed?) or (time and time < File.stat(@path).mtime)
+        begin
+          !@timestamp or (!time and changed?) or (time and time < File.stat(@path).mtime)
+        rescue Errno::ENOENT
+          false
+        end
       end
       
       # Save new file contents.
