@@ -3,35 +3,44 @@ module Redcar
   class Task
     include java.util.concurrent.Callable
 
+    attr_accessor :_queue, :_status
+    attr_reader :name
+
+    def initialize(name)
+      @name = name
+      @_status = :initialized
+    end
+
     def call
+      begin
+        @_status = :executing
+        execute
+        @_status = :completed
+      rescue Object => e
+        puts "Error in task: " + e.class.to_s + ": " + e.message
+        @_status = :errored
+      ensure
+        _queue.completed_task(self)
+      end
+    end
+    
+    def execute
       raise "implement me!"
+    end
+    
+    def inspect
+      "<#{self.class.name} #{name}>"
     end
   end
   
   class LambdaTask < Task
-    def initialize(&block)
+    def initialize(name, &block)
+      super(name)
       @block = block
     end
     
-    def call
+    def execute
       @block.call
     end
   end
 end
-
-__END__
-
-class UpdateCtagsTask < Task
-  def call
-    all_files.each do |file|
-      if file.changed?
-        update_ctags_append
-      end
-    end
-  end
-end
-
-def self.project_refresh
-  UpdateCtagsTask.new.enqueue
-end
-

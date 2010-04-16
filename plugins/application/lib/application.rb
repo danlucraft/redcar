@@ -86,6 +86,7 @@ module Redcar
     # Immediately stop the gui event loop.
     # (You should probably be running QuitCommand instead.)    
     def quit
+      @task_queue.stop
       Redcar.gui.stop
     end
     

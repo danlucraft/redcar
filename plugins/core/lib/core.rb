@@ -13,9 +13,10 @@ require "core/observable_struct"
 require "core/persistent_cache"
 require "core/plugin"
 require "core/plugin/storage"
-require "core/resource"
+
 require "core/task"
 require "core/task_queue"
+require "core/resource"
 
 module Redcar
   def self.tmp_dir

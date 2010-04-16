@@ -89,7 +89,7 @@ module Redcar
     end
 
     def file_list_resource
-      @resource ||= Resource.new do
+      @resource ||= Resource.new("Project: List all files") do
         puts "refreshing file list for #{self.inspect}"
         files = []
         s = Time.now
