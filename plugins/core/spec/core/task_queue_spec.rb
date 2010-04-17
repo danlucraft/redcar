@@ -24,6 +24,7 @@ describe TaskQueue do
     
     def execute
       $started_tasks << @id
+      :hiho
     end
     
     def inspect
@@ -42,6 +43,10 @@ describe TaskQueue do
       @q.submit(QuickTask.new(102))
       @q.submit(QuickTask.new(103)).get
       $started_tasks.should == [101, 102, 103]
+    end
+    
+    it "should return the result of the Task execute method" do
+      @q.submit(QuickTask.new(103)).get.should == :hiho
     end
   end
   
@@ -78,6 +83,15 @@ describe TaskQueue do
         @q.submit(t1 = QuickTask.new(:a))
         t1.enqueue_time.should be_an_instance_of(Time)
       end
+      
+      it "should tell you it is pending" do
+        @q.submit(t1 = BlockingTask.new(:a))
+        @q.submit(t2 = BlockingTask.new(:b))
+        1 until $started_tasks.include?(:a)
+        t2.should be_pending
+        t2.should_not be_completed
+        t2.should_not be_in_process
+      end
     end
     
     describe "in process tasks" do
@@ -91,6 +105,14 @@ describe TaskQueue do
         @q.submit(t1 = BlockingTask.new(:a))
         1 until $started_tasks.include?(:a)
         t1.start_time.should be_an_instance_of(Time)
+      end
+      
+      it "should tell you they are in process" do
+        @q.submit(t1 = BlockingTask.new(:a))
+        1 until $started_tasks.include?(:a)
+        t1.should be_in_process
+        t1.should_not be_pending
+        t1.should_not be_completed
       end
     end
     
@@ -122,6 +144,15 @@ describe TaskQueue do
         @q.submit(t2 = BlockingTask.new(:b))
         1 until $started_tasks.include?(:b)
         t1.completed_time.should be_an_instance_of(Time)
+      end
+      
+      it "should tell you they are completed" do
+        @q.submit(t1 = QuickTask.new(:a))
+        @q.submit(t2 = BlockingTask.new(:b))
+        1 until $started_tasks.include?(:b)
+        t1.should be_completed
+        t1.should_not be_pending
+        t1.should_not be_in_process
       end
     end
   end
