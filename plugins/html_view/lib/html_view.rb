@@ -20,11 +20,18 @@ module Redcar
     
     def controller_action(action_name, path=nil)
       action_method_arity = controller.method(action_name).arity
-      text = if action_method_arity == 0
-               controller.send(action_name)
-             elsif action_method_arity == 1
-               controller.send(action_name, path)
-             end
+      begin
+        text = if action_method_arity == 0
+                 controller.send(action_name)
+               elsif action_method_arity == 1
+                 controller.send(action_name, path)
+               end
+      rescue => e
+        text = <<-HTML
+          Sorry, there was an error.<br />
+          #{e.message}
+        HTML
+      end
       @html_tab.controller.browser.set_text(text + setup_javascript_listeners)
     end
     

@@ -16,6 +16,8 @@ New features:
   * Project view sorts directories before files (by popular request!)
   * Shows menu bar on OSX when there are no windows open
   * Halve startup time from 0.3.4 (warm startup)
+  * Added background Task APIs.
+  * Task Manager
   
 Fixes:
 

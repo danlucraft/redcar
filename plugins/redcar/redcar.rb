@@ -789,6 +789,7 @@ module Redcar
           item "Find File", Project::FindFileCommand
         end
         sub_menu "Debug" do
+          item "Task Manager", TaskManager::OpenCommand
           item "Print Command History", PrintHistoryCommand
           item "Print Contents", PrintContents
           item "List Tabs", ListTabsCommand

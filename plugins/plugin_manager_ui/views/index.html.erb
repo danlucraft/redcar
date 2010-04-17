@@ -1,40 +1,33 @@
-<br />
-<br />
-<div class="container">
-  <div class="span-8">
-    <% jquery_path = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets jquery-1.4.min.js))) %>
-    <script type="text/javascript" src="file://<%= jquery_path %>"></script>
-    <% blueprint_dir = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets blueprint))) %>
-    <% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets redcar.css))) %>
-    <link rel="stylesheet" href="file://<%= blueprint_dir %>/screen.css" type="text/css" media="screen, projection">
-    <link rel="stylesheet" href="file://<%= blueprint_dir %>/print.css" type="text/css" media="print">
-    <link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
-    
-    <h3>Loaded Plugins</h3>
-    <%= plugin_table(Redcar.plugin_manager.loaded_plugins) %>
+<h3>Plugin Manager</h3>
 
-    <h3>Unloaded Plugins</h3>
-    <%= plugin_table(Redcar.plugin_manager.unloaded_plugins) %>
-    
-    <h3>Unreadable definitions</h3>
-    <%= plugin_table(Redcar.plugin_manager.unreadable_definitions) %>
-    
-    <h3>Plugins with Errors</h3>
-    <%= plugin_table(Redcar.plugin_manager.plugins_with_errors) %>
-    
-    <script language="javascript">
-      $("a").click(function(e) {
-        e.preventDefault();
-        var pluginName = $(this).parent().parent().find(".plugin-name").text();
-        try {
-          Controller.reloadPlugin(pluginName);
-        } catch(e) {
-          alert(e.message);
-        }
-      });
-    </script>
-  </div>
-</div>
+<% jquery_path = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets jquery-1.4.min.js))) %>
+<script type="text/javascript" src="file://<%= jquery_path %>"></script>
+<% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets redcar.css))) %>
+<link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
+
+<h4>Loaded Plugins</h4>
+<%= plugin_table(Redcar.plugin_manager.loaded_plugins) %>
+
+<h4>Unloaded Plugins</h4>
+<%= plugin_table(Redcar.plugin_manager.unloaded_plugins) %>
+
+<h4>Unreadable definitions</h4>
+<%= plugin_table(Redcar.plugin_manager.unreadable_definitions) %>
+
+<h4>Plugins with Errors</h4>
+<%= plugin_table(Redcar.plugin_manager.plugins_with_errors) %>
+
+<script language="javascript">
+  $("a").click(function(e) {
+    e.preventDefault();
+    var pluginName = $(this).parent().parent().find(".plugin-name").text();
+    try {
+      Controller.reloadPlugin(pluginName);
+    } catch(e) {
+      alert(e.message);
+    }
+  });
+</script>
 
 
 <script type="text/javascript">
