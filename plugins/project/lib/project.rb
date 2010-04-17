@@ -84,18 +84,13 @@ module Redcar
       end
     end
     
-    def all_files
-      @all_files 
-    end
-
     def file_list_resource
-      @resource ||= Resource.new("Project: List all files") do
-        puts "refreshing file list for #{self.inspect}"
+      @resource ||= Resource.new("refresh file list for #{self.inspect}") do
         files = []
         s = Time.now
         files += Dir[File.expand_path(path + "/**/*")]
         took = Time.now - s
-        files = files.reject do |f|
+        files.reject do |f|
           begin
             File.directory?(f)
           rescue Errno::ENOENT
@@ -105,8 +100,6 @@ module Redcar
             true
           end
         end
-        puts "done"
-        files
       end
     end
     

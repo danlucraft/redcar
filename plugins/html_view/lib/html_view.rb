@@ -7,6 +7,7 @@ module Redcar
   
     def initialize(html_tab)
       @html_tab = html_tab
+      @html_tab.add_listener(:controller_action, &method(:controller_action))
     end
     
     def controller=(new_controller)
@@ -14,8 +15,24 @@ module Redcar
       @html_tab.title = controller.title
       func = RubyFunc.new(@html_tab.controller.browser, "rubyCall")
       func.controller = @controller
-      text = controller.index + setup_javascript_listeners
-      @html_tab.controller.browser.set_text(text)
+      controller_action("index")
+    end
+    
+    def controller_action(action_name, path=nil)
+      action_method_arity = controller.method(action_name).arity
+      begin
+        text = if action_method_arity == 0
+                 controller.send(action_name)
+               elsif action_method_arity == 1
+                 controller.send(action_name, path)
+               end
+      rescue => e
+        text = <<-HTML
+          Sorry, there was an error.<br />
+          #{e.message}
+        HTML
+      end
+      @html_tab.controller.browser.set_text(text + setup_javascript_listeners)
     end
     
     def contents=(source)

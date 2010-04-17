@@ -1,54 +1,58 @@
 
 module Redcar
   class TaskQueue
+    attr_reader :in_process, :mutex
+    
     def initialize
       @executor = java.util.concurrent.Executors.newSingleThreadExecutor
       @mutex    = Mutex.new
-      @pending   = {}
-      @completed = {}
+      @pending   = []
+      @completed = []
+      @in_process = nil
     end
     
     def submit(task)
       @mutex.synchronize do
-        @pending[task] = Time.now
-        task._queue = self
-        task._status = :pending
-        @executor.submit(task)
+        @pending << task
+        task._queue        = self
+        task.enqueue_time = Time.now
+        future = @executor.submit(task)
       end
-      puts self
+    end
+    
+    def pending
+      @mutex.synchronize do
+        @pending.dup
+      end
+    end
+    
+    def completed
+      @mutex.synchronize do
+        @completed.dup
+      end
+    end
+        
+    def stop
+      @mutex.synchronize do
+        @executor.shutdown
+      end
+    end
+
+    private
+    
+    def started_task(task)
+      @mutex.synchronize do
+        @in_process = task
+        @pending.delete(task)
+      end
     end
     
     def completed_task(task)
       @mutex.synchronize do
-        started = @pending[task]
         @pending.delete(task)
-        @completed[task] = [started, Time.now]
+        @in_process = nil if @in_process == task
+        @completed << task
       end
-      puts self
-    end
-    
-    def stop
-      @executor.shutdown
-    end
-    
-    def to_s
-      r = "Queue\n"
-      @mutex.synchronize do
-        r << "  pending:"
-        @pending.each do |task, time|
-          r << "    * #{task.inspect} enqueued #{Time.now - time}s ago\n"
-        end
-        if @pending.empty?
-          r << "  (empty)\n"
-        end
-        r << "\n"
-        r << "  completed:\n"
-        @completed.each do |task, (started, ended)|
-          r << "    * #{task.inspect} took: #{ended - started}\n"
-        end
-        r
-      end
-      r
     end
   end
 end

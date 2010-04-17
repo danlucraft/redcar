@@ -1,0 +1,55 @@
+<% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets redcar.css))) %>
+    <link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
+
+<h3>Task Manager</h3>
+
+<a href="controller/index">Refresh</a>
+
+<h4>Pending</h4>
+
+<table>
+  <tr>
+    <th>Enqueued</th>
+    <th>Description</th>
+  </tr>
+  <% Redcar.app.task_queue.pending.each do |task| %>
+    <tr>
+      <td><%= task.enqueue_time.strftime("%X") %></td>
+      <td><%= CGI.escapeHTML(task.description || task.class.to_s) %></td>
+    </tr>
+  <% end %>
+</table>
+
+<h4>In Process</h4>
+
+<table>
+  <tr>
+    <th>Started</th>
+    <th>Description</th>
+  </tr>
+  <% if task = Redcar.app.task_queue.in_process %>
+    <tr>
+      <td><%= task.start_time.strftime("%X") %></td>
+      <td><%= CGI.escapeHTML(task.description || task.class.to_s) %></td>
+    </tr>
+  <% end %>
+</table>
+
+<h4>Completed</h4>
+
+<table>
+  <tr>
+    <th>Completed</th>
+    <th>Description</th>
+    <th>Duration</th>
+  </tr>
+  <% Redcar.app.task_queue.completed.reverse.each do |task| %>
+    <tr class="<%= "error" if task.error %>">
+      <td><%= task.completed_time.strftime("%X") %></td>
+      <td><%= CGI.escapeHTML(task.description || task.class.to_s) %></td>
+      <td><%= task.completed_time - task.start_time %></td>
+    </tr>
+  <% end %>
+</table>
+
+
