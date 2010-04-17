@@ -20,6 +20,7 @@ module Redcar
         end
         @widget = @browser
         @item.control = @widget
+        add_listeners
       end
       
       # Focuses the Browser tab within the CTabFolder, and gives the keyboard
@@ -33,6 +34,25 @@ module Redcar
       def close
         @browser.dispose
         super
+      end
+      
+      class LocationListener
+        def initialize(html_tab)
+          @html_tab = html_tab
+        end
+        
+        def changing(event)
+          if event.location =~ %r{file:///controller/([^/]*)(/(.*))?}
+            event.doit = false
+            @html_tab.controller_action($1, $2)
+          end
+        end
+
+        def changed(*_); end
+      end
+      
+      def add_listeners
+        @browser.add_location_listener(LocationListener.new(@model))
       end
     end
   end

@@ -12,5 +12,9 @@ module Redcar
     def create_html_view
       @html_view = HtmlView.new(self)
     end
+    
+    def controller_action(action, path)
+      notify_listeners(:controller_action, action, path)
+    end
   end
 end
