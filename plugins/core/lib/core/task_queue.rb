@@ -1,8 +1,8 @@
 
 module Redcar
   class TaskQueue
-    attr_reader :in_process
-  
+    attr_reader :in_process, :mutex
+    
     def initialize
       @executor = java.util.concurrent.Executors.newSingleThreadExecutor
       @mutex    = Mutex.new
@@ -49,7 +49,8 @@ module Redcar
     
     def completed_task(task)
       @mutex.synchronize do
-        @in_process = nil
+        @pending.delete(task)
+        @in_process = nil if @in_process == task
         @completed << task
       end
     end

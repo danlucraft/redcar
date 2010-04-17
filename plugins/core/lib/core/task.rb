@@ -17,15 +17,26 @@ module Redcar
     def completed?
       @completed_time
     end
-
+    
+    def cancel
+      @cancelled = true
+      _queue.send(:completed_task, self)
+    end
+    
+    def cancelled?
+      @cancelled
+    end
+    
     def call
       begin
-        _queue.send(:started_task, self)
-        @start_time = Time.now
-        result = execute
-        @completed_time = Time.now
-        _queue.send(:completed_task, self)
-        result
+        unless cancelled?
+          _queue.send(:started_task, self)
+          @start_time = Time.now
+          result = execute
+          @completed_time = Time.now
+          _queue.send(:completed_task, self)
+          result
+        end
       rescue Object => e
         @error = e
         @completed_time = Time.now

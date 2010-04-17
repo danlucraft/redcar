@@ -18,7 +18,7 @@ describe TaskQueue do
   end
   
   class QuickTask < Task
-    def initialize(id)
+    def initialize(id=nil)
       @id = id
     end
     
@@ -29,6 +29,13 @@ describe TaskQueue do
     
     def inspect
       "<#{self.class} #{@id}>"
+    end
+  end
+
+  class BlockingTask < QuickTask
+    def execute
+      $started_tasks << @id
+      loop {}
     end
   end
   
@@ -50,14 +57,32 @@ describe TaskQueue do
     end
   end
   
-  describe "information" do
-    class BlockingTask < QuickTask
+  describe "cancelling tasks" do
+    before do
+      $wait_task_finish = false
+    end
+    
+    class WaitTask < QuickTask
       def execute
-        $started_tasks << @id
-        loop {}
+        super
+        1 until $wait_task_finish
       end
     end
     
+    it "can be cancelled" do
+      @q.submit(QuickTask.new(101))
+      @q.submit(WaitTask.new(102))
+      @q.submit(task = QuickTask.new(103))
+      task.cancel
+      $wait_task_finish = true
+      sleep 0.1
+      $started_tasks.should == [101, 102]
+      @q.pending.should be_empty
+      task.should be_cancelled
+    end
+  end
+  
+  describe "information" do
     describe "about pending tasks" do
       it "should tell you about tasks that have not been started yet" do
         @q.submit(t1 = BlockingTask.new(:a))
