@@ -2,45 +2,26 @@
 module Redcar
   class Task
     include java.util.concurrent.Callable
-
-    attr_accessor :_queue, :_status
-    attr_reader :name
-
-    def initialize(name)
-      @name = name
-      @_status = :initialized
-    end
+ 
+    attr_accessor :_queue, :enqueue_time, :start_time, :completed_time
+    attr_reader   :error
 
     def call
       begin
-        @_status = :executing
+        _queue.send(:started_task, self)
+        @start_time = Time.now
         execute
-        @_status = :completed
+        @completed_time = Time.now
+        _queue.send(:completed_task, self)
       rescue Object => e
-        puts "Error in task: " + e.class.to_s + ": " + e.message
-        @_status = :errored
-      ensure
-        _queue.completed_task(self)
+        @error = e
+        @completed_time = Time.now
+        _queue.send(:completed_task, self)
       end
     end
     
     def execute
       raise "implement me!"
-    end
-    
-    def inspect
-      "<#{self.class.name} #{name}>"
-    end
-  end
-  
-  class LambdaTask < Task
-    def initialize(name, &block)
-      super(name)
-      @block = block
-    end
-    
-    def execute
-      @block.call
     end
   end
 end
