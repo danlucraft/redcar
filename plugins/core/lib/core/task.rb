@@ -3,7 +3,7 @@ module Redcar
   class Task
     include java.util.concurrent.Callable
  
-    attr_accessor :_queue, :enqueue_time, :start_time, :completed_time
+    attr_accessor :_queue, :enqueue_time, :start_time, :completed_time, :description
     attr_reader   :error
 
     def pending?
@@ -47,6 +47,10 @@ module Redcar
     
     def execute
       raise "implement me!"
+    end
+    
+    def inspect
+      "<Task>"
     end
   end
 end

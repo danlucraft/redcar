@@ -7,7 +7,8 @@ module Redcar
       Redcar.app.task_queue
     end
     
-    def initialize(&block)
+    def initialize(description, &block)
+      @description = description
       @block  = block
       @value  = nil
       @future = nil
@@ -35,6 +36,7 @@ module Redcar
     
     def compute
       @task = Resource::Task.new(self)
+      @task.description = @description
       @future = Resource.task_queue.submit(@task)
     end
     
