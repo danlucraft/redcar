@@ -45,7 +45,7 @@ module Redcar
     
     def compute
       @mutex.synchronize do
-        unless @task
+        unless @task and @task.pending?
           @task = Resource::Task.new(self)
           @task.description = @description
           @future = Resource.task_queue.submit(@task)
