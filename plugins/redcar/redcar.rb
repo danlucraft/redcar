@@ -810,7 +810,7 @@ module Redcar
         sub_menu "Plugins" do
           item "Plugin Manager", PluginManagerUi::OpenCommand
           item "Reload Again", PluginManagerUi::ReloadLastReloadedCommand
-          item("Edit Preferences") { Project.open_dir(Redcar::Plugin::Storage.storage_dir, Redcar.app.new_window) }
+          item("Edit Preferences") { Project::Manager.open_project_for_path(Redcar::Plugin::Storage.storage_dir) }
           separator
         end
         sub_menu "Bundles" do
