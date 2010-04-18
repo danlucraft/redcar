@@ -1,6 +1,6 @@
 
 require 'declarations/completion_source'
-require 'declarations/declarations'
+require 'declarations/parser'
 require 'declarations/select_tag_dialog'
 require 'tempfile'
 
@@ -72,16 +72,15 @@ module Redcar
         s = Time.now
         tempfile = Tempfile.new('tags')
         tempfile.close # we need just temp path here
-        decl = Declarations.new(tempfile.path)
+        parser = Declarations::Parser.new(tempfile.path)
         file_path = Project::Manager.focussed_project.path
-        decl.parse(Dir[file_path + "/**/*.rb"])
-        decl.parse(Dir[file_path + "/**/*.java"])
-        decl.dump
+        parser.parse(Dir[file_path + "/**/*.rb"])
+        parser.parse(Dir[file_path + "/**/*.java"])
+        parser.dump
         FileUtils.mv(tempfile.path, Declarations.file_path)
         Declarations.clear_tags_for_path(file_path)
         puts "generated tags file in #{Time.now - s}s"
       end
-
     end
 
     class GoToTagCommand < EditTabCommand
