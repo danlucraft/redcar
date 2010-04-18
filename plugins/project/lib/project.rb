@@ -85,7 +85,7 @@ module Redcar
     end
     
     def file_list_resource
-      @resource ||= Resource.new("refresh file list for #{self.inspect}") do
+      @resource ||= Resource.new("refresh file list for #{@path}") do
         files = []
         s = Time.now
         files += Dir[File.expand_path(path + "/**/*")]

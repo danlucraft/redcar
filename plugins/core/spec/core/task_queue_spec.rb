@@ -17,28 +17,6 @@ describe TaskQueue do
     @q.stop
   end
   
-  class QuickTask < Task
-    def initialize(id=nil)
-      @id = id
-    end
-    
-    def execute
-      $started_tasks << @id
-      :hiho
-    end
-    
-    def inspect
-      "<#{self.class} #{@id}>"
-    end
-  end
-
-  class BlockingTask < QuickTask
-    def execute
-      $started_tasks << @id
-      loop {}
-    end
-  end
-  
   describe "running tasks" do
     it "should accept tasks and call them" do
       @q.submit(QuickTask.new(101)).get

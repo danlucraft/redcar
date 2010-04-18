@@ -7,37 +7,50 @@ module Redcar
       Redcar.app.task_queue
     end
     
-    def initialize(description, &block)
+    def initialize(description=nil, &block)
       @description = description
       @block  = block
       @value  = nil
       @future = nil
       @task   = nil
+      @mutex  = Mutex.new
     end
     
     def value
-      if @value
-        @value
-      else
+      return @value if @value
+      
+      object = nil
+      @mutex.synchronize do
         if @future
           if @task.pending?
             @task.cancel
             @future = nil
             @task   = nil
-            @value = @block.call
+            object = @block
           else
-            @future.get
+            object = @future
           end
         else
-          @value = block.call
+          object = @block
         end
+      end
+      
+      case object
+      when Proc
+        @value = object.call
+      else
+        @value = object.get
       end
     end
     
     def compute
-      @task = Resource::Task.new(self)
-      @task.description = @description
-      @future = Resource.task_queue.submit(@task)
+      @mutex.synchronize do
+        unless @task
+          @task = Resource::Task.new(self)
+          @task.description = @description
+          @future = Resource.task_queue.submit(@task)
+        end
+      end
     end
     
     class Task < Redcar::Task
@@ -55,9 +68,11 @@ module Redcar
     private
     
     def set_value_from_background(value)
-      @value  = value
-      @future = nil
-      @task   = nil
+      @mutex.synchronize do
+        @value  = value
+        @future = nil
+        @task   = nil
+      end
     end
   end
 end

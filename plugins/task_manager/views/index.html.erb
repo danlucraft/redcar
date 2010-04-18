@@ -13,7 +13,7 @@
     <th>Description</th>
   </tr>
   <% Redcar.app.task_queue.pending.each do |task| %>
-    <tr>
+    <tr class="<%= "cancelled" if task.cancelled? %>">
       <td><%= task.enqueue_time.strftime("%X") %></td>
       <td><%= CGI.escapeHTML(task.description || task.class.to_s) %></td>
     </tr>
@@ -44,7 +44,7 @@
     <th>Duration</th>
   </tr>
   <% Redcar.app.task_queue.completed.reverse.each do |task| %>
-    <tr class="<%= "error" if task.error %>">
+    <tr class="<%= "error" if task.error %> <%= "cancelled" if task.cancelled? %>">
       <td><%= task.completed_time.strftime("%X") %></td>
       <td><%= CGI.escapeHTML(task.description || task.class.to_s) %></td>
       <td><%= task.completed_time - task.start_time %></td>

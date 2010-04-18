@@ -38,3 +38,6 @@ tr.error {
   background-color: #FCC;
 }
 
+tr.cancelled {
+  background-color: #EEE;
+}
