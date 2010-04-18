@@ -13,17 +13,7 @@ module Redcar
       end
       
       def update
-        new_files = {}
-        find(path) do |file_path|
-          throw :prune if file_path =~ /\.git|\.yardoc|\.svn/
-          next if file_path == ""
-          begin
-            stat = File.lstat(file_path)
-            next if stat.directory?
-            new_files[file_path] = stat.mtime
-          rescue Errno::ENOENT, Errno::EACCES
-          end
-        end
+        new_files      = find(path)
         added_files    = get_added_files(@files, new_files)
         modified_files = get_modified_files(@files, new_files)
         deleted_files  = get_deleted_files(@files, new_files)
@@ -52,13 +42,17 @@ module Redcar
       end
       
       def find(*paths)
+        files = {}
         paths.collect!{|d| d.dup}
         while file = paths.shift
-          catch(:prune) do
-            yield file.dup.taint
+          stat = File.lstat(file)
+          unless file =~ /\.git|\.yardoc|\.svn/
+            unless stat.directory?
+              files[file.dup] = stat.mtime
+            end
             next unless File.exist? file
             begin
-              if File.lstat(file).directory? then
+              if stat.directory? then
                 d = Dir.open(file)
                 begin
                   for f in d
@@ -80,6 +74,7 @@ module Redcar
             end
           end
         end
+        files
       end
     end
   end
