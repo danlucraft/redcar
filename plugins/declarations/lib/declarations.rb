@@ -9,10 +9,7 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Project" do
-          sub_menu "Declarations" do
-            item "Go to declaration", Declarations::GoToTagCommand
-            item "Regenerate declarations", Declarations::GenerateDeclarationsCommand
-          end
+          item "Go to declaration", Declarations::GoToTagCommand
         end
       end
     end
@@ -58,7 +55,16 @@ module Redcar
       
       def execute
         return if @should_not_update
-        GenerateDeclarationsCommand.new.run
+        s = Time.now
+        tempfile = Tempfile.new('tags')
+        tempfile.close # we need just temp path here
+        parser = Declarations::Parser.new(tempfile.path)
+        file_path = project.path
+        parser.parse(Dir[file_path + "/**/*.rb"])
+        parser.parse(Dir[file_path + "/**/*.java"])
+        parser.dump
+        FileUtils.mv(tempfile.path, Declarations.file_path(project.path))
+        Declarations.clear_tags_for_path(File.join(file_path, "tags"))
       end
       
       private
@@ -99,23 +105,6 @@ module Redcar
       Project::Manager.open_file(path)
       regexp = Regexp.new(Regexp.escape(match[:match]))
       Redcar::Top::FindNextRegex.new(regexp, true).run
-    end
-
-    class GenerateDeclarationsCommand < Redcar::Command
-
-      def execute
-        s = Time.now
-        tempfile = Tempfile.new('tags')
-        tempfile.close # we need just temp path here
-        parser = Declarations::Parser.new(tempfile.path)
-        file_path = Project::Manager.focussed_project.path
-        parser.parse(Dir[file_path + "/**/*.rb"])
-        parser.parse(Dir[file_path + "/**/*.java"])
-        parser.dump
-        FileUtils.mv(tempfile.path, Declarations.file_path)
-        Declarations.clear_tags_for_path(File.join(file_path, "tags"))
-        puts "generated tags file in #{Time.now - s}s"
-      end
     end
 
     class GoToTagCommand < EditTabCommand

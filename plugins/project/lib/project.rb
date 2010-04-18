@@ -58,7 +58,6 @@ module Redcar
     # Refresh the DirMirror Tree for the given Window, if 
     # there is one.
     def refresh
-      puts "refresh #{self.inspect}"
       @tree.refresh
       file_list_resource.compute
     end
