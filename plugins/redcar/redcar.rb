@@ -137,21 +137,25 @@ module Redcar
     
     class AboutCommand < Command
       def execute
-          new_tab = Top::NewCommand.new.run          
-          new_tab.document.text = "About: Redcar\nVersion: #{Redcar::VERSION}\n" +
-            "Ruby Version: #{RUBY_VERSION}\n" + 
-            "Jruby version: #{JRUBY_VERSION}\n" + 
-            "Redcar.environment: #{Redcar.environment}\n" + 
-            "http://redcareditor.com"
-          new_tab.title= 'About'
+        new_tab = Top::NewCommand.new.run          
+        new_tab.document.text = "About: Redcar\nVersion: #{Redcar::VERSION}\n" +
+          "Ruby Version: #{RUBY_VERSION}\n" + 
+          "Jruby version: #{JRUBY_VERSION}\n" + 
+          "Redcar.environment: #{Redcar.environment}\n" + 
+          "http://redcareditor.com"
+        new_tab.title= 'About'
+        new_tab.edit_view.reset_undo
+        new_tab.document.set_modified(false)
       end
     end
 
     class ChangelogCommand < Command
       def execute
-          new_tab = Top::NewCommand.new.run          
-          new_tab.document.text = File.read(File.join(File.dirname(__FILE__), "..", "..", "CHANGES"))
-          new_tab.title = 'Changes'
+        new_tab = Top::NewCommand.new.run          
+        new_tab.document.text = File.read(File.join(File.dirname(__FILE__), "..", "..", "CHANGES"))
+        new_tab.title = 'Changes'
+        new_tab.edit_view.reset_undo
+        new_tab.edit_view.document.set_modified(false)
       end
     end
 

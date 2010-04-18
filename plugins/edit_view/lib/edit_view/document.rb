@@ -461,14 +461,14 @@ module Redcar
       @modified = false
       @edit_view.title = title_with_star
     end
-    
-    private
-    
+       
     def set_modified(boolean)
       @modified = boolean
       @edit_view.title = title_with_star
     end
-    
+ 
+    private 
+   
     def title_with_star
       if mirror
         if @modified
