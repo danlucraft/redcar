@@ -24,10 +24,32 @@ module Redcar
           rescue Errno::ENOENT, Errno::EACCES
           end
         end
+        added_files    = get_added_files(@files, new_files)
+        modified_files = get_modified_files(@files, new_files)
+        deleted_files  = get_deleted_files(@files, new_files)
         @files = new_files
+        [added_files, modified_files, deleted_files]
       end
       
       private
+      
+      def get_added_files(from, to)
+        to.keys - from.keys
+      end
+      
+      def get_deleted_files(from, to)
+        from.keys - to.keys
+      end
+      
+      def get_modified_files(from, to)
+        result = []
+        from.each do |file, mtime|
+          if new_mtime = to[file] and new_mtime > mtime
+            result << file
+          end
+        end
+        result
+      end
       
       def find(*paths)
         paths.collect!{|d| d.dup}

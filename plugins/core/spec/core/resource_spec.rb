@@ -116,7 +116,8 @@ describe Resource do
     20.times { resource.compute }
     @finish_flag = true
     resource.value.should == 999
-    @block_runs.should == 1
+    1 until @block_runs == 2
+    @block_runs.should == 2
   end
 end
 

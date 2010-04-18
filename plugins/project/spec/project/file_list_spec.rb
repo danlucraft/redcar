@@ -43,7 +43,6 @@ describe FileList do
       write_dir_contents(@dirname, @files)
       @file_list = FileList.new(@dirname)
       @file_list.update
-      p @file_list.all_files
     end
     
     after do
@@ -62,7 +61,40 @@ describe FileList do
       end
       
       it "should report on the added files" do
-        @file_list.update.include?(@file_name).should be_true
+        @file_list.update[0].include?(@file_name).should be_true
+      end
+    end
+    
+    describe "after files have been modified" do
+      before do
+        sleep 1
+        write_file(@dirname, "Carnegie", "peace")
+        @file_name = File.expand_path(File.join(@dirname, "Carnegie"))
+      end
+      
+      it "should still be in the file list" do
+        @file_list.update
+        @file_list.all_files.include?(@file_name).should be_true
+      end
+      
+      it "should report on the modified files" do
+        @file_list.update[1].include?(@file_name).should be_true
+      end
+    end
+    
+    describe "after files have been deleted" do
+      before do
+        remove_file(@dirname, "Rockefeller")
+        @file_name = File.expand_path(File.join(@dirname, "Rockefeller"))
+      end
+      
+      it "should not be in the file list" do
+        @file_list.update
+        @file_list.all_files.include?(@file_name).should be_false
+      end
+      
+      it "should report on the deleted files" do
+        @file_list.update[2].include?(@file_name).should be_true
       end
     end
   end
