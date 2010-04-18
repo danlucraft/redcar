@@ -52,5 +52,11 @@ module Redcar
     def inspect
       "<Task>"
     end
+    
+    private
+    
+    def _set_cancelled
+      @cancelled = true
+    end
   end
 end

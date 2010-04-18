@@ -89,6 +89,7 @@ end
 World(SwtHelper)
 
 def close_everything
+  Redcar.app.task_queue.cancel_all
   Redcar::ApplicationSWT.sync_exec do
     dialogs.each {|d| d.controller.model.close }
   end

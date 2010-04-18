@@ -39,6 +39,14 @@ module Redcar
         @executor.shutdown
       end
     end
+    
+    def cancel_all
+      @mutex.synchronize do
+        @pending.each {|task| task.send(:_set_cancelled) }
+        @completed += @pending
+        @pending   = []
+      end
+    end
 
     private
     
