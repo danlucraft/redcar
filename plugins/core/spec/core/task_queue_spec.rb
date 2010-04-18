@@ -59,13 +59,12 @@ describe TaskQueue do
     end
     
     it "can cancel all pending tasks" do
-      @q.submit(QuickTask.new(101))
       @q.submit(WaitTask.new(102))
       @q.submit(task1 = QuickTask.new(103))
       @q.submit(task2 = QuickTask.new(104))
       @q.cancel_all
       $wait_task_finish = true
-      $started_tasks.should == [101, 102]
+      $started_tasks.should == [102]
     end
   end
   
