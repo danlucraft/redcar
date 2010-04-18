@@ -5,7 +5,6 @@ module Redcar
       include Redcar::Document::Mirror
       
       POINTERS = {
-        :output => "",
         :result => "=> ",
         :error  => "x> "
       }
@@ -32,9 +31,9 @@ module Redcar
           results = entry.last
           str << prompt.to_s + command.to_s + "\n"
           results.each do |result|
-            output, entry_type = *result
+            text, entry_type = *result
             str << POINTERS[entry_type]
-            output.scan(/.{1,80}/).each do |output_line|
+            text.scan(/.{1,80}/).each do |output_line|
               str << output_line + "\n"
             end
           end
@@ -58,7 +57,6 @@ module Redcar
         rescue Object => e
           result, entry_type = format_error(e), :error
         end
-        @history.last[1] << [@instance.output, :output] if @instance.output
         @history.last[1] << [result, entry_type]
         notify_listeners(:change)
       end
@@ -103,17 +101,7 @@ module Redcar
         end
         
         def execute(command)
-          orig_stdout = $stdout
-          stdout_handler = StringIO.new
-          $stdout = stdout_handler
-          begin
-            result = eval(command, @binding)
-          ensure
-            $stdout.rewind
-            @output = $stdout.read
-            $stdout = orig_stdout
-          end
-          result
+          eval(command, @binding)
         end
       end
     end
