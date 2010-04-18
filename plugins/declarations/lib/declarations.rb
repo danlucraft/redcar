@@ -36,6 +36,20 @@ module Redcar
     def self.file_path(project_path=Project::Manager.focussed_project.path)
       File.join(project_path, 'tags')
     end
+    
+    class ProjectRefresh < Task
+      def initialize(*args)
+        p args.map{|a| a.length}
+      end
+      
+      def execute
+        GenerateDeclarationsCommand.new.run
+      end
+    end
+    
+    def self.project_refresh_task_type
+      ProjectRefresh
+    end
 
     def self.tags_for_path(path)
       @tags_for_path ||= {}
@@ -78,7 +92,7 @@ module Redcar
         parser.parse(Dir[file_path + "/**/*.java"])
         parser.dump
         FileUtils.mv(tempfile.path, Declarations.file_path)
-        Declarations.clear_tags_for_path(file_path)
+        Declarations.clear_tags_for_path(File.join(file_path, "tags"))
         puts "generated tags file in #{Time.now - s}s"
       end
     end
