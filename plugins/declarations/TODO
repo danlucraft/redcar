@@ -1,0 +1,3 @@
+* automagicaly match word under cursor
+* automagically update tags file (watchr / gtags)
+* automagically create tags file? (when shift+ctrl+T pressed first time)

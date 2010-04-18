@@ -1,5 +1,5 @@
 module Redcar
-  class CTags
+  class Declarations
     class SelectTagDialog < FilterListDialog
 
       def initialize(matches)
@@ -25,7 +25,7 @@ module Redcar
       def selected(text, ix, closing=false)
         if @last_list
           close
-          Redcar::CTags.go_to_definition(@last_list[ix])
+          Redcar::Declarations.go_to_definition(@last_list[ix])
         end
       end
       

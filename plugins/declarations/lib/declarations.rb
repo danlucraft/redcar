@@ -1,20 +1,17 @@
 
-require 'ctags/completion_source'
-require 'ctags/declarations'
-require 'ctags/select_tag_dialog'
+require 'declarations/completion_source'
+require 'declarations/declarations'
+require 'declarations/select_tag_dialog'
 require 'tempfile'
 
 module Redcar
-  # Integrates [ctags-exuberant](http://ctags.sourceforge.net/) into Redcar. ctags
-  # builds an index of method and class definitions, which allows for jump to 
-  # definition commands.
-  class CTags
+  class Declarations
     def self.menus
       Menu::Builder.build do
         sub_menu "Project" do
-          sub_menu "Tags" do
-            item "Go To Definition", CTags::GoToTagCommand
-            item "Generate Tags (ctags)", CTags::GenerateCtagsCommand
+          sub_menu "Declarations" do
+            item "Go to declaration", Declarations::GoToTagCommand
+            item "Regenerate declarations", Declarations::GenerateDeclarationsCommand
           end
         end
       end
@@ -22,18 +19,18 @@ module Redcar
 
     def self.keymaps
       linwin = Keymap.build("main", [:linux, :windows]) do
-        link "Ctrl+Shift+T", CTags::GoToTagCommand
+        link "Ctrl+Shift+T", Declarations::GoToTagCommand
       end
 
       osx = Keymap.build("main", :osx) do
-        link "Cmd+Shift+T", CTags::GoToTagCommand
+        link "Cmd+Shift+T", Declarations::GoToTagCommand
       end
 
       [linwin, osx]
     end
 
     def self.autocompletion_source_types
-      [CTags::CompletionSource]
+      [Declarations::CompletionSource]
     end
 
     def self.file_path(project_path=Project::Manager.focussed_project.path)
@@ -69,23 +66,20 @@ module Redcar
       Redcar::Top::FindNextRegex.new(regexp, true).run
     end
 
-    # Generate "tags" file for current project
-    class GenerateCtagsCommand < Redcar::Command
+    class GenerateDeclarationsCommand < Redcar::Command
 
       def execute
-        Thread.new do
-          s = Time.now
-          tempfile = Tempfile.new('tags')
-          tempfile.close # we need just temp path here
-          decl = Declarations.new(tempfile.path)
-          file_path = Project::Manager.focussed_project.path
-          decl.parse(Dir[file_path + "/**/*.rb"])
-          decl.parse(Dir[file_path + "/**/*.java"])
-          decl.dump
-          FileUtils.mv(tempfile.path, CTags.file_path)
-          CTags.clear_tags_for_path(file_path)
-          puts "generated tags file in #{Time.now - s}s"
-        end
+        s = Time.now
+        tempfile = Tempfile.new('tags')
+        tempfile.close # we need just temp path here
+        decl = Declarations.new(tempfile.path)
+        file_path = Project::Manager.focussed_project.path
+        decl.parse(Dir[file_path + "/**/*.rb"])
+        decl.parse(Dir[file_path + "/**/*.java"])
+        decl.dump
+        FileUtils.mv(tempfile.path, Declarations.file_path)
+        Declarations.clear_tags_for_path(file_path)
+        puts "generated tags file in #{Time.now - s}s"
       end
 
     end
@@ -108,18 +102,18 @@ module Redcar
         when 0
           Application::Dialog.message_box("There is no definition for '#{token}' in the tags file.")
         when 1
-          Redcar::CTags.go_to_definition(matches.first)
+          Redcar::Declarations.go_to_definition(matches.first)
         else
           open_select_tag_dialog(matches)
         end
       end
 
       def find_tag(tag)
-        CTags.tags_for_path(CTags.file_path)[tag] || []
+        Declarations.tags_for_path(Declarations.file_path)[tag] || []
       end
 
       def open_select_tag_dialog(matches)
-        CTags::SelectTagDialog.new(matches).open
+        Declarations::SelectTagDialog.new(matches).open
       end
 
       def log(message)
