@@ -93,7 +93,7 @@ module Redcar
       @resource ||= Resource.new("refresh file list for #{@path}") do
         project_changes = file_list.update
         Redcar.plugin_manager.objects_implementing(:project_refresh_task_type).each do |object|
-          Redcar.app.task_queue.submit(object.project_refresh_task_type.new(*project_changes))
+          Redcar.app.task_queue.submit(object.project_refresh_task_type.new(self, *project_changes))
         end
       end
     end

@@ -38,12 +38,33 @@ module Redcar
     end
     
     class ProjectRefresh < Task
-      def initialize(*args)
-        p args.map{|a| a.length}
+      def initialize(project, *args)
+        @project = project
+        @project_changes = args
+        @should_not_update = ((num_changes == 0) or (
+          @project_changes[0].length + @project_changes[2].length == 0 and 
+          @project_changes[1].length == 1 and 
+          @project_changes[1].first =~ /tags$/
+        ))
+      end
+      
+      def description
+        if @should_not_update
+          "#{@project.path}: reparse 0 files for declarations"
+        else
+          "#{@project.path}: reparse #{num_changes} files for declarations"
+        end
       end
       
       def execute
+        return if @should_not_update
         GenerateDeclarationsCommand.new.run
+      end
+      
+      private
+      
+      def num_changes
+        @project_changes.flatten.length
       end
     end
     
