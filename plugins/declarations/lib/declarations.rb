@@ -36,38 +36,20 @@ module Redcar
     end
     
     class ProjectRefresh < Task
-      def initialize(project, a, m, d)
-        @added_files, @modified_files, @deleted_files = a, m, d
-        @project = project
-        @should_not_update = ((num_changes == 0) or (
-          @added_files.length + @deleted_files.length == 0 and 
-          @modified_files.length == 1 and 
-          @modified_files.first =~ /tags$/
-        ))
+      def initialize(project)
+        @file_list   = project.file_list
+        @project     = project
       end
       
       def description
-        if @should_not_update
-          "#{@project.path}: reparse 0 files for declarations"
-        else
-          "#{@project.path}: reparse #{num_changes} files for declarations"
-        end
+        "#{@project.path}: reparse files for declarations"
       end
       
       def execute
-        return if @should_not_update
         file = Declarations::File.new(Declarations.file_path(@project))
-        file.add_tags_for_paths(@added_files)        
-        file.remove_tags_for_paths(@modified_files + @deleted_files)
-        file.add_tags_for_paths(@modified_files)
+        file.update_files(@file_list)
         file.dump
         Declarations.clear_tags_for_path(file.path)
-      end
-      
-      private
-      
-      def num_changes
-        @added_files.length + @modified_files.length + @deleted_files.length
       end
     end
     

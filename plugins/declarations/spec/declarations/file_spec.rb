@@ -21,7 +21,7 @@ module Redcar
           @file.tags.should be_empty
         end
         
-        it "should accept new tags" do
+        it "should add new tags" do
           @file.add_tags([%w"Abc /foo class:Abc"])
           @file.tags.length.should == 1
         end
@@ -42,6 +42,8 @@ module Redcar
         before do
           file = Declarations::File.new(@tags_file)
           file.add_tags([%w"Abc /foo class:Abc"])
+          file.last_updated = Time.now
+          @last_updated = Time.now
           file.dump
           @file = Declarations::File.new(@tags_file)
         end
@@ -49,25 +51,12 @@ module Redcar
         it "should load up the tags" do
           @file.tags.should == [%w"Abc /foo class:Abc"]
         end
+        
+        it "should know the timestamp of when it was last updated" do
+          @file.last_updated.to_s.should == @last_updated.to_s
+        end
       end
     end
     
-    describe "remove tags for file" do
-      before do
-        file = Declarations::File.new(@tags_file)
-        file.add_tags([
-                        %w"Abc /foo class:Abc",
-                        %w"Def /bar class:Def",
-                        %w"Ghi /baz class:Ghi",
-                      ])
-        file.dump
-        @file = Declarations::File.new(@tags_file)
-      end
-      
-      it "should remove tags for a file" do
-        @file.remove_tags_for_paths(["/bar", "/baz"])
-        @file.tags.length.should == 1
-      end
-    end
   end
 end

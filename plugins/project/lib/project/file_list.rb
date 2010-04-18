@@ -12,34 +12,25 @@ module Redcar
         @files.keys
       end
       
+      def contains?(file)
+        @files[file]
+      end
+      
       def update
-        new_files      = find(path)
-        added_files    = get_added_files(@files, new_files)
-        modified_files = get_modified_files(@files, new_files)
-        deleted_files  = get_deleted_files(@files, new_files)
-        @files = new_files
-        [added_files, modified_files, deleted_files]
+        @files = find(path)
       end
       
-      private
-      
-      def get_added_files(from, to)
-        to.keys - from.keys
-      end
-      
-      def get_deleted_files(from, to)
-        from.keys - to.keys
-      end
-      
-      def get_modified_files(from, to)
-        result = []
-        from.each do |file, mtime|
-          if new_mtime = to[file] and new_mtime > mtime
-            result << file
+      def changed_since(time)
+        result = {}
+        @files.each do |file, mtime|
+          if mtime.to_i >= time.to_i - 1
+            result[file] = mtime
           end
         end
         result
       end
+      
+      private
       
       def find(*paths)
         files = {}

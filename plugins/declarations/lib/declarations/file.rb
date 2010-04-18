@@ -2,7 +2,8 @@
 module Redcar
   class Declarations
     class File
-      attr_reader :tags, :path
+      attr_reader   :tags, :path
+      attr_accessor :last_updated
       
       def initialize(path)
         @path = path
@@ -10,20 +11,32 @@ module Redcar
         load
       end
       
-      def add_tags(tags)
-        @tags += tags
-      end
-      
       def load
         @tags = []
-        return unless ::File.exist?(path)
-        ::File.read(path).each_line do |line|
-          key, path, *match = line.split("\t")
-          if [key, path, match].all? { |el| !el.nil? && !el.empty? }
-            @tags << [key, path, match.join("\t").chomp]
+        @last_updated = Time.at(0)
+        if ::File.exist?(path)
+          first_line = true
+          ::File.read(path).each_line do |line|
+            if first_line
+              first_line = false
+              @last_updated = Time.at(line.chomp.to_i)
+            end
+            key, path, *match = line.split("\t")
+            if [key, path, match].all? { |el| !el.nil? && !el.empty? }
+              @tags << [key, path, match.join("\t").chomp]
+            end
           end
         end
-        @tags
+      end
+      
+      def update_files(file_list)
+        changed_files = file_list.changed_since(last_updated)
+        changed_files.delete(@path)
+        @tags = @tags.select do |_, path, _|
+          file_list.contains?(path) and !changed_files[path]
+        end
+        add_tags_for_paths(changed_files.keys)
+        @last_updated = Time.now
       end
       
       def add_tags_for_paths(add_paths)
@@ -32,10 +45,8 @@ module Redcar
         add_tags(parser.tags)
       end
       
-      def remove_tags_for_paths(remove_paths)
-        @tags = @tags.reject do |_, path, _|
-          remove_paths.include?(path)
-        end
+      def add_tags(tags)
+        @tags += tags
       end
       
       def dump
@@ -43,6 +54,7 @@ module Redcar
         tempfile = Tempfile.new('tags')
         tempfile.close # we need just temp path here
         ::File.open(tempfile.path, "w") do |tags_file|
+          tags_file.puts(@last_updated.to_i.to_s)
           @tags.each do |id, path, declaration|
             tags_file.puts "#{id}\t#{path}\t#{declaration}"
           end
