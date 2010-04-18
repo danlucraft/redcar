@@ -155,23 +155,6 @@ module Redcar
       end
     end
 
-    class PrintContents < EditTabCommand
-      
-      def execute
-        puts "printing contents"
-        p tab.edit_view.document.to_s
-      end
-    end
-    
-    class PrintHistoryCommand < Command
-      def execute
-        Redcar.app.history.each do |c|
-          puts c
-        end
-      end
-    end
-    
-    
     class PrintScopeTreeCommand < Command
       def execute
         puts tab.edit_view.controller.mate_text.parser.root.pretty(0)
@@ -215,12 +198,6 @@ module Redcar
           tab.close
         end
         @tab = nil
-      end
-    end
-    
-    class ListTabsCommand < Command
-      def execute
-        p win.focussed_notebook.tabs.map {|tab| tab.class}
       end
     end
     
@@ -790,9 +767,6 @@ module Redcar
         end
         sub_menu "Debug" do
           item "Task Manager", TaskManager::OpenCommand
-          item "Print Command History", PrintHistoryCommand
-          item "Print Contents", PrintContents
-          item "List Tabs", ListTabsCommand
           item "Refresh Directory", Project::RefreshDirectoryCommand
           item "Dialog Tester", DialogExample
           separator

@@ -7,6 +7,7 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Debug" do
+          item "Command History", Debug::OpenHistoryCommand
           sub_menu "Profile" do
             item "Start Profiling", Debug::StartProfilingCommand
             item "Stop Profiling", Debug::StopProfilingCommand
@@ -55,6 +56,27 @@ module Redcar
         tab.html_view.contents = File.read(path)
         tab.focus
         FileUtils.rm_f(path)
+      end
+    end
+    
+    class OpenHistoryCommand < Redcar::Command
+      
+      def execute
+        controller = Controller.new
+        tab = win.new_tab(HtmlTab)
+        tab.html_view.controller = controller
+        tab.focus
+      end
+        
+      class Controller
+        def title
+          "History"
+        end
+      
+        def index
+          rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "views", "history.html.erb")))
+          rhtml.result(binding)
+        end
       end
     end
   end
