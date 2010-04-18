@@ -1,5 +1,6 @@
 
 require 'declarations/completion_source'
+require 'declarations/file'
 require 'declarations/parser'
 require 'declarations/select_tag_dialog'
 require 'tempfile'
@@ -30,18 +31,18 @@ module Redcar
       [Declarations::CompletionSource]
     end
 
-    def self.file_path(project_path=Project::Manager.focussed_project.path)
-      File.join(project_path, 'tags')
+    def self.file_path(project)
+      ::File.join(project.path, 'tags')
     end
     
     class ProjectRefresh < Task
-      def initialize(project, *args)
+      def initialize(project, a, m, d)
+        @added_files, @modified_files, @deleted_files = a, m, d
         @project = project
-        @project_changes = args
         @should_not_update = ((num_changes == 0) or (
-          @project_changes[0].length + @project_changes[2].length == 0 and 
-          @project_changes[1].length == 1 and 
-          @project_changes[1].first =~ /tags$/
+          @added_files.length + @deleted_files.length == 0 and 
+          @modified_files.length == 1 and 
+          @modified_files.first =~ /tags$/
         ))
       end
       
@@ -55,22 +56,18 @@ module Redcar
       
       def execute
         return if @should_not_update
-        s = Time.now
-        tempfile = Tempfile.new('tags')
-        tempfile.close # we need just temp path here
-        parser = Declarations::Parser.new(tempfile.path)
-        file_path = project.path
-        parser.parse(Dir[file_path + "/**/*.rb"])
-        parser.parse(Dir[file_path + "/**/*.java"])
-        parser.dump
-        FileUtils.mv(tempfile.path, Declarations.file_path(project.path))
-        Declarations.clear_tags_for_path(File.join(file_path, "tags"))
+        file = Declarations::File.new(Declarations.file_path(@project))
+        file.add_tags_for_paths(@added_files)        
+        file.remove_tags_for_paths(@modified_files + @deleted_files)
+        file.add_tags_for_paths(@modified_files)
+        file.dump
+        Declarations.clear_tags_for_path(file.path)
       end
       
       private
       
       def num_changes
-        @project_changes.flatten.length
+        @added_files.length + @modified_files.length + @deleted_files.length
       end
     end
     
@@ -82,7 +79,7 @@ module Redcar
       @tags_for_path ||= {}
       @tags_for_path[path] ||= begin
         tags = {}
-        File.read(path).each_line do |line|
+        ::File.read(path).each_line do |line|
           key, file, *match = line.split("\t")
           if [key, file, match].all? { |el| !el.nil? && !el.empty? }
             tags[key] ||= []
@@ -132,7 +129,7 @@ module Redcar
       end
 
       def find_tag(tag)
-        Declarations.tags_for_path(Declarations.file_path)[tag] || []
+        Declarations.tags_for_path(Declarations.file_path(Project::Manager.focussed_project))[tag] || []
       end
 
       def open_select_tag_dialog(matches)

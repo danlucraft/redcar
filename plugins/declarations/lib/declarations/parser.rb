@@ -1,6 +1,5 @@
 
 module Redcar
-  
   JAVA_YAML=<<-YAML
   - regex:    "class\\s+(\\w+)"
     capture:  1
@@ -38,23 +37,15 @@ module Redcar
         /\.java$/ => YAML.load(JAVA_YAML)
       }
       
-      def initialize(tags_file_path)
-        @tags_file_path = tags_file_path
-        @tags           = []
+      attr_reader :tags
+      
+      def initialize
+        @tags = []
       end
       
       def parse(files)
         files.each do |path|
           @tags += match_in_file(path)
-        end
-      end
-      
-      def dump
-        @tags.sort!
-        File.open(@tags_file_path, "w") do |tags_file|
-          @tags.each do |id, path, declaration|
-            tags_file.puts "#{id}\t#{path}\t#{declaration}"
-          end
         end
       end
       
@@ -72,7 +63,7 @@ module Redcar
       def match_in_file(path)
         tags = []
         begin
-          file = File.read(path)
+          file = ::File.read(path)
           if decls = decls_for_file(path)
             decls.each do |decl| 
               file.each_line do |line| 
