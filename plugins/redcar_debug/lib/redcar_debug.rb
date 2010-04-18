@@ -1,7 +1,4 @@
 
-$:.unshift("/Users/danlucraft/projects/jruby-prof/lib")
-require 'jruby-prof'
-
 module Redcar
   class Debug
     def self.menus
