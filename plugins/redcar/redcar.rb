@@ -827,7 +827,7 @@ module Redcar
       ApplicationEventHandler.new
     end
     
-    def self.start
+    def self.start(args=[])
       puts "loading plugins took #{Time.now - PROCESS_START_TIME}"
       Application.start
       ApplicationSWT.start
@@ -839,7 +839,7 @@ module Redcar
       Redcar.app.refresh_menu!
       Redcar.app.load_sensitivities
       s = Time.now
-      Redcar::Project::Manager.start
+      Redcar::Project::Manager.start(args)
       puts "project start took #{Time.now - s}s"
       Redcar.app.make_sure_at_least_one_window_open
     end

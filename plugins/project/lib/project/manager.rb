@@ -18,8 +18,12 @@ module Redcar
       
       # this will restore open files unless other files or dirs were passed
       # as command line parameters
-      def self.start
-        restore_last_session unless handle_startup_arguments
+      def self.start(args)
+        unless handle_startup_arguments(args)
+          unless Redcar.environment == :test
+            restore_last_session
+          end
+        end
         init_current_files_hooks
         init_window_closed_hooks
         init_drb_listener
@@ -139,9 +143,9 @@ module Redcar
       end
       
       # handles files and/or dirs passed as command line arguments
-      def self.handle_startup_arguments
+      def self.handle_startup_arguments(args)
         found_path_args = false
-        ARGV.each do |arg|
+        args.each do |arg|
           if File.directory?(arg)
             found_path_args = true
             DirectoryOpenCommand.new(arg).run

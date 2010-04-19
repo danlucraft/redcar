@@ -19,6 +19,6 @@ else
   Redcar.spin_up
   Redcar.environment = :user
   Redcar.load
-  Redcar::Top.start
+  Redcar::Top.start(ARGV)
   Redcar.pump
 end
