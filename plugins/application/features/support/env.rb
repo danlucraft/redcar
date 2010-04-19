@@ -130,3 +130,9 @@ end
 After do
   close_everything
 end
+
+at_exit {
+  FileUtils.rm_rf(Redcar::Plugin::Storage.storage_dir)
+}
+
+

@@ -130,14 +130,19 @@ module Redcar
   #
   # @return [String] expanded path
   def self.user_dir
+    dirname = {
+      :user => ".redcar",
+      :test => ".redcar_test",
+      :debug => ".redcar_debug"
+    }[Redcar.environment]
     if platform == :windows
       if ENV['USERPROFILE'].nil?
-        userdir = "C:/My Documents/.redcar/"
+        userdir = "C:/My Documents/#{dirname}/"
       else
-        userdir = File.join(ENV['USERPROFILE'], ".redcar")
+        userdir = File.join(ENV['USERPROFILE'], dirname)
       end
     else
-      userdir = File.join(ENV['HOME'], ".redcar") unless ENV['HOME'].nil?
+      userdir = File.join(ENV['HOME'], dirname) unless ENV['HOME'].nil?
     end
     File.expand_path(userdir)
   end
