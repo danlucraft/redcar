@@ -12,6 +12,10 @@ module Redcar
         Project.window_projects[window]
       end
       
+      def self.windows_without_projects
+        Redcar.app.windows.reject {|w| in_window(w) }
+      end
+      
       # this will restore open files unless other files or dirs were passed
       # as command line parameters
       def self.start
@@ -97,7 +101,7 @@ module Redcar
         if project = find_project_containing_path(path)
           window = project.window
         else
-          window = Redcar.app.focussed_window || Redcar.app.new_window
+          window = windows_without_projects.first || Redcar.app.new_window
         end
         open_file_in_window(path, window)
         window.focus
