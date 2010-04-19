@@ -1,9 +1,7 @@
 
 require 'java'
 
-require File.join(File.dirname(__FILE__), *%w".. .. lib core task_queue")
-require File.join(File.dirname(__FILE__), *%w".. .. lib core task")
-require File.join(File.dirname(__FILE__), *%w".. .. lib core resource")
+require File.join(File.dirname(__FILE__), *%w".. spec_helper")
 
 TaskQueue = Redcar::TaskQueue
 Task      = Redcar::Task
@@ -109,6 +107,18 @@ describe Resource do
     @block_runs.should == 1
   end
   
+  it "should not compute lots of times" do
+    resource = Resource.new do
+      @block_runs += 1
+      1 until @finish_flag
+      999
+    end
+    20.times { resource.compute }
+    @finish_flag = true
+    resource.value.should == 999
+    1 until @block_runs == 2
+    @block_runs.should == 2
+  end
 end
 
 

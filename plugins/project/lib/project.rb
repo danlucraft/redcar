@@ -4,6 +4,7 @@ require "project/commands"
 require "project/dir_mirror"
 require "project/dir_controller"
 require "project/drb_service"
+require "project/file_list"
 require "project/file_mirror"
 require "project/find_file_dialog"
 require "project/manager"
@@ -57,7 +58,6 @@ module Redcar
     # Refresh the DirMirror Tree for the given Window, if 
     # there is one.
     def refresh
-      puts "refresh #{self.inspect}"
       @tree.refresh
       file_list_resource.compute
     end
@@ -84,31 +84,21 @@ module Redcar
       end
     end
     
+    def file_list
+      @file_list ||= FileList.new(path)
+    end
+    
     def file_list_resource
-      @resource ||= Resource.new("refresh file list for #{self.inspect}") do
-        files = []
-        s = Time.now
-        files += Dir[File.expand_path(path + "/**/*")]
-        took = Time.now - s
-        files.reject do |f|
-          begin
-            File.directory?(f)
-          rescue Errno::ENOENT
-            # File.directory? can throw no such file or directory even if File.exist?
-            # has returned true. For example this happens on some awful textmate filenames
-            # unicode in them.
-            true
-          end
+      @resource ||= Resource.new("refresh file list for #{@path}") do
+        project_changes = file_list.update
+        Redcar.plugin_manager.objects_implementing(:project_refresh_task_type).each do |object|
+          Redcar.app.task_queue.submit(object.project_refresh_task_type.new(self))
         end
       end
     end
     
-    def file_list
-      file_list_resource.value
-    end
-    
     def all_files
-      file_list
+      file_list.all_files
     end
   end
 end

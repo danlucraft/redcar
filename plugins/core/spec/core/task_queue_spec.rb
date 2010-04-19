@@ -1,8 +1,7 @@
 
 require 'java'
 
-require File.join(File.dirname(__FILE__), *%w".. .. lib core task_queue")
-require File.join(File.dirname(__FILE__), *%w".. .. lib core task")
+require File.join(File.dirname(__FILE__), *%w".. spec_helper")
 
 TaskQueue = Redcar::TaskQueue
 Task      = Redcar::Task
@@ -15,28 +14,6 @@ describe TaskQueue do
   
   after do
     @q.stop
-  end
-  
-  class QuickTask < Task
-    def initialize(id=nil)
-      @id = id
-    end
-    
-    def execute
-      $started_tasks << @id
-      :hiho
-    end
-    
-    def inspect
-      "<#{self.class} #{@id}>"
-    end
-  end
-
-  class BlockingTask < QuickTask
-    def execute
-      $started_tasks << @id
-      loop {}
-    end
   end
   
   describe "running tasks" do
@@ -79,6 +56,15 @@ describe TaskQueue do
       $started_tasks.should == [101, 102]
       @q.pending.should be_empty
       task.should be_cancelled
+    end
+    
+    it "can cancel all pending tasks" do
+      @q.submit(WaitTask.new(102))
+      @q.submit(task1 = QuickTask.new(103))
+      @q.submit(task2 = QuickTask.new(104))
+      @q.cancel_all
+      $wait_task_finish = true
+      $started_tasks.should == [102]
     end
   end
   

@@ -100,7 +100,7 @@ module Redcar
       end
       
       def find_files(text, directories)
-        filter_and_rank_by(project.all_files, text) do |fn|
+        filter_and_rank_by(project.all_files.sort, text) do |fn|
           fn.split("/").last
         end
       end

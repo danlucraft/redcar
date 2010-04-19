@@ -1,4 +1,5 @@
 
+
 module Redcar
   class Project
     class Manager

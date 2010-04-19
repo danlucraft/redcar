@@ -49,6 +49,18 @@
       <td><%= CGI.escapeHTML(task.description || task.class.to_s) %></td>
       <td><%= task.completed_time - task.start_time %></td>
     </tr>
+    <% if e = task.error %>
+      <tr>
+        <td colspan="3">
+          <strong><%= e.class %></strong> 
+          <%= CGI.escapeHTML(e.message) %>
+          <br /><br />
+          <% e.backtrace.each do |line| %>
+            <%= line %><br />
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
   <% end %>
 </table>
 

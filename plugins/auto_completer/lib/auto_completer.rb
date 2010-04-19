@@ -81,7 +81,7 @@ module Redcar
       
       def alternatives(prefix)
         sources = AutoCompleter.all_autocompletion_source_types.map do |t| 
-          t.new(doc, Project::Manager.focussed_project.path)
+          t.new(doc, Project::Manager.focussed_project)
         end
         word_list = WordList.new
         sources.each do |source|

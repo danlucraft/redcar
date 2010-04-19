@@ -309,7 +309,11 @@ module Redcar
     end
     
     def check_for_updated_document
-      if document and document.mirror and document.mirror.changed_since?(@last_checked)
+      # awful forward dependency on the Project plugin here....
+      if document and 
+            document.mirror and 
+            document.mirror.is_a?(Project::FileMirror) and 
+            document.mirror.changed_since?(@last_checked)
         if document.modified?
           result = Application::Dialog.message_box(
                      "This file has been changed on disc, and you have unsaved changes in Redcar.\n\n" + 

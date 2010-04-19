@@ -4,7 +4,7 @@ Version 0.3.5dev (TBA)
 
 New features:
   
-  * CTags support
+  * Jump to declaration support (background re-indexing)
   * Project-wide autocomplete
   * Double click respects word boundaries
   * Window title reflects project name
@@ -18,6 +18,9 @@ New features:
   * Halve startup time from 0.3.4 (warm startup)
   * Added background Task APIs.
   * Task Manager
+  * Added ProjectRefresh Task API
+  * No longer dumps command errors to the console
+  * Command history tab
   
 Fixes:
 

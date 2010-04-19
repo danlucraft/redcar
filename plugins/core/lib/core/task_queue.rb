@@ -1,6 +1,8 @@
 
 module Redcar
   class TaskQueue
+    MAX_COMPLETED_LENGTH = 20
+    
     attr_reader :in_process, :mutex
     
     def initialize
@@ -37,6 +39,14 @@ module Redcar
         @executor.shutdown
       end
     end
+    
+    def cancel_all
+      @mutex.synchronize do
+        @pending.each {|task| task.send(:_set_cancelled) }
+        @completed += @pending
+        @pending   = []
+      end
+    end
 
     private
     
@@ -52,6 +62,9 @@ module Redcar
         @pending.delete(task)
         @in_process = nil if @in_process == task
         @completed << task
+        if @completed.length > MAX_COMPLETED_LENGTH
+          @completed = @completed[(-1*MAX_COMPLETED_LENGTH)..-1]
+        end
       end
     end
   end

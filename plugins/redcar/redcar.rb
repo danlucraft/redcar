@@ -137,41 +137,28 @@ module Redcar
     
     class AboutCommand < Command
       def execute
-          new_tab = Top::NewCommand.new.run          
-          new_tab.document.text = "About: Redcar\nVersion: #{Redcar::VERSION}\n" +
-            "Ruby Version: #{RUBY_VERSION}\n" + 
-            "Jruby version: #{JRUBY_VERSION}\n" + 
-            "Redcar.environment: #{Redcar.environment}\n" + 
-            "http://redcareditor.com"
-          new_tab.title= 'About'
+        new_tab = Top::NewCommand.new.run          
+        new_tab.document.text = "About: Redcar\nVersion: #{Redcar::VERSION}\n" +
+          "Ruby Version: #{RUBY_VERSION}\n" + 
+          "Jruby version: #{JRUBY_VERSION}\n" + 
+          "Redcar.environment: #{Redcar.environment}\n" + 
+          "http://redcareditor.com"
+        new_tab.title= 'About'
+        new_tab.edit_view.reset_undo
+        new_tab.document.set_modified(false)
       end
     end
 
     class ChangelogCommand < Command
       def execute
-          new_tab = Top::NewCommand.new.run          
-          new_tab.document.text = File.read(File.join(File.dirname(__FILE__), "..", "..", "CHANGES"))
-          new_tab.title = 'Changes'
+        new_tab = Top::NewCommand.new.run          
+        new_tab.document.text = File.read(File.join(File.dirname(__FILE__), "..", "..", "CHANGES"))
+        new_tab.title = 'Changes'
+        new_tab.edit_view.reset_undo
+        new_tab.edit_view.document.set_modified(false)
       end
     end
 
-    class PrintContents < EditTabCommand
-      
-      def execute
-        puts "printing contents"
-        p tab.edit_view.document.to_s
-      end
-    end
-    
-    class PrintHistoryCommand < Command
-      def execute
-        Redcar.app.history.each do |c|
-          puts c
-        end
-      end
-    end
-    
-    
     class PrintScopeTreeCommand < Command
       def execute
         puts tab.edit_view.controller.mate_text.parser.root.pretty(0)
@@ -215,12 +202,6 @@ module Redcar
           tab.close
         end
         @tab = nil
-      end
-    end
-    
-    class ListTabsCommand < Command
-      def execute
-        p win.focussed_notebook.tabs.map {|tab| tab.class}
       end
     end
     
@@ -790,9 +771,6 @@ module Redcar
         end
         sub_menu "Debug" do
           item "Task Manager", TaskManager::OpenCommand
-          item "Print Command History", PrintHistoryCommand
-          item "Print Contents", PrintContents
-          item "List Tabs", ListTabsCommand
           item "Refresh Directory", Project::RefreshDirectoryCommand
           item "Dialog Tester", DialogExample
           separator
@@ -810,7 +788,7 @@ module Redcar
         sub_menu "Plugins" do
           item "Plugin Manager", PluginManagerUi::OpenCommand
           item "Reload Again", PluginManagerUi::ReloadLastReloadedCommand
-          item("Edit Preferences") { Project.open_dir(Redcar::Plugin::Storage.storage_dir, Redcar.app.new_window) }
+          item("Edit Preferences") { Project::Manager.open_project_for_path(Redcar::Plugin::Storage.storage_dir) }
           separator
         end
         sub_menu "Bundles" do
