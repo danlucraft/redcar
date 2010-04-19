@@ -457,9 +457,17 @@ module Redcar
     end
     
     def update_from_mirror
-      self.text        = mirror.read
-      @modified = false
-      @edit_view.title = title_with_star
+      previous_line      = cursor_line
+      top_line           = smallest_visible_line
+      
+      self.text          = mirror.read
+      
+      @modified          = false
+      @edit_view.title   = title_with_star
+      if line_count > previous_line
+        self.cursor_offset = offset_at_line(previous_line)
+        scroll_to_line_at_top(top_line)
+      end
     end
        
     def set_modified(boolean)

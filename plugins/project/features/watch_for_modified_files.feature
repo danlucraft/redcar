@@ -51,3 +51,29 @@ Feature: Watch for modified files
     Then I should not see a "message_box" dialog for the rest of the feature
     And I close the focussed tab
   
+  Scenario: Keep in the same position in the file when reloading
+    Given I close the focussed tab
+    And I put a lot of lines into the file "plugins/project/spec/fixtures/winter.txt"
+    When I open a file
+    And I move to line 100
+    Then there should be one edit tab
+    When I open a new edit tab
+    And I wait "2" seconds
+    And I put a lot of lines into the file "plugins/project/spec/fixtures/winter.txt"
+    And I close the focussed tab
+    Then the cursor should be on line 100
+    
+  Scenario: Move to the top if the line you were on is no longer there
+    Given I close the focussed tab
+    And I put a lot of lines into the file "plugins/project/spec/fixtures/winter.txt"
+    When I open a file
+    And I move to line 100
+    Then there should be one edit tab
+    When I open a new edit tab
+    And I wait "2" seconds
+    And I put "Summer" into the file "plugins/project/spec/fixtures/winter.txt"
+    And I close the focussed tab
+    Then the cursor should be on line 0
+    
+  
+  

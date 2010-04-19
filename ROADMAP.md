@@ -11,7 +11,6 @@ Features still to port
   * Drag and drop of tabs
   * Packaged for one-click install on 3 platforms
   * Ruby on Rails/HTML/CSS/YAML bundle commands ported
-  * Use Gecko as embedded browser widget on all 3 platforms
   
 Version 0.4.0
 -------------
