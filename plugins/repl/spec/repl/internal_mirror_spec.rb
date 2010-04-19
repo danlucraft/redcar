@@ -157,14 +157,14 @@ RUBY
     describe "when executing" do
       it "should execute inside a main object" do
         @mirror.commit(prompt + ">> self")
-        @mirror.history.last.should == ["self", [["", :output], ["main", :result]] ]
+        @mirror.history.last.should == ["self", [["main", :result]] ]
       end
       
       it "should persist local variables" do
         sent = prompt + ">> a = 13"
         @mirror.commit(sent)
         @mirror.commit(sent + "\n>> a")
-        @mirror.history.last.should == ["a", [["", :output], ["13", :result]] ]
+        @mirror.history.last.should == ["a", [["13", :result]] ]
       end
     end
   end
