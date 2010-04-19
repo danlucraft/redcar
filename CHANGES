@@ -2,7 +2,7 @@
 Version 0.3.5dev (TBA)
 ======================
 
-New features:
+Enhancements:
   
   * Jump to declaration support (background re-indexing)
   * Project-wide autocomplete
@@ -21,6 +21,7 @@ New features:
   * Added ProjectRefresh Task API
   * No longer dumps command errors to the console
   * Command history tab
+  * Speed up opening of first file by lazy loading embedded grammars
   
 Fixes:
 
