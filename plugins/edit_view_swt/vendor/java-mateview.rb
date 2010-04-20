@@ -6,6 +6,7 @@ module JavaMateView
   import com.redcareditor.mate.Grammar
   import com.redcareditor.mate.MateText
   import com.redcareditor.mate.Parser
+  import com.redcareditor.mate.ParserScheduler
   import com.redcareditor.mate.Pattern
   import com.redcareditor.mate.Scope
   import com.redcareditor.mate.ScopeMatcher

@@ -195,7 +195,7 @@ module Redcar
     end
     
     def scroll_to_line(line_index)
-      @mate_text.parser.last_visible_line_changed(line_index + 100)
+      @mate_text.parser.parserScheduler.last_visible_line_changed(line_index + 100)
       @mate_text.viewer.set_top_index(line_index)
     end
     
