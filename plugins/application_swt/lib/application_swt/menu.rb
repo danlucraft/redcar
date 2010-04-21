@@ -16,17 +16,21 @@ module Redcar
       end
       
       def initialize(window, menu_model, keymap, type, options={})
+        s = Time.now
         unless Menu.menu_types.include?(type)
           raise "type should be in #{Menu.menu_types.inspect}"
         end
         @window = window
         @keymap = keymap
         @menu_bar = Swt::Widgets::Menu.new(window.shell, type)
+        @menu_bar.set_visible(false)
         return unless menu_model
         @handlers = []
         @use_numbers = options[:numbers]
         @number = 1
         add_entries_to_menu(@menu_bar, menu_model)
+        @menu_bar.set_visible(true)
+        puts "ApplicationSWT::Menu initialize took #{Time.now - s}s"
       end
       
       def show

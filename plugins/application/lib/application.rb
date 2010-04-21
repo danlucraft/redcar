@@ -99,18 +99,15 @@ module Redcar
 
     # Create a new Application::Window, and the controller for it.
     def new_window
+      s = Time.now
       new_window = Window.new
       windows << new_window
       notify_listeners(:new_window, new_window)
       attach_window_listeners(new_window)
-      new_window.menu   = load_menu
-      new_window.keymap = main_keymap
-      s = Time.now
       new_window.refresh_menu
-      puts "refresh_menu took #{Time.now - s}s"
-      s = Time.now
       new_window.show
       set_focussed_window(new_window)
+      puts "App#new_window took #{Time.now - s}s"
       new_window
     end   
     
@@ -180,37 +177,40 @@ module Redcar
     
     # Redraw the main menu, reloading all the Menus and Keymaps from the plugins.
     def refresh_menu!
-      windows.each do |window|
-        window.menu = load_menu
-        window.keymap = main_keymap
-        window.refresh_menu
-      end
+      @main_menu = nil
+      @main_keymap = nil
+      windows.each {|window| window.refresh_menu }
+      controller.refresh_menu
     end
     
     # Generate the main menu by combining menus from all plugins.
     #
     # @return [Redcar::Menu]
-    def load_menu
-      menu = Menu.new
-      Redcar.plugin_manager.objects_implementing(:menus).each do |object|
-        menu.merge(object.menus)
+    def main_menu
+      @main_menu ||= begin
+        menu = Menu.new
+        Redcar.plugin_manager.objects_implementing(:menus).each do |object|
+          menu.merge(object.menus)
+        end
+        menu
       end
-      menu
     end
     
     # Generate the main keymap by merging the keymaps from all plugins.
     #
     # @return [Redcar::Keymap]
     def main_keymap
-      keymap = Keymap.new("main", Redcar.platform)
-      Redcar.plugin_manager.objects_implementing(:keymaps).each do |object|
-        maps = object.keymaps
-        keymaps = maps.select do |map| 
-          map.name == "main" and map.platforms.include?(Redcar.platform)
+      @main_keymap ||= begin
+        keymap = Keymap.new("main", Redcar.platform)
+        Redcar.plugin_manager.objects_implementing(:keymaps).each do |object|
+          maps = object.keymaps
+          keymaps = maps.select do |map| 
+            map.name == "main" and map.platforms.include?(Redcar.platform)
+          end
+          keymap = keymaps.inject(keymap) {|k, nk| k.merge(nk) }
         end
-        keymap = keymaps.inject(keymap) {|k, nk| k.merge(nk) }
+        keymap
       end
-      keymap
     end
     
     # Loads sensitivities from all plugins.
