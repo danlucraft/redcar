@@ -793,6 +793,8 @@ module Redcar
         end
         sub_menu "Bundles" do
           item "Find Snippet", Snippets::OpenSnippetExplorer
+          separator
+          Textmate.attach_menus(self)
         end
         sub_menu "Help" do
           item "About", AboutCommand
