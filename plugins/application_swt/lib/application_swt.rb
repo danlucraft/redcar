@@ -125,6 +125,23 @@ module Redcar
         @fake_shell.set_size(0, 0)
       end
     end
+      
+    class FakeWindow
+      def initialize(shell)
+        @shell = shell
+      end
+      
+      attr_reader :shell
+    end
+
+    def refresh_menu
+      if Redcar.platform == :osx
+        old_menu_bar = @fake_shell.menu_bar
+        fake_menu_controller = ApplicationSWT::Menu.new(FakeWindow.new(@fake_shell), Redcar.app.main_menu, Redcar.app.main_keymap, Swt::SWT::BAR)
+        fake_shell.menu_bar = fake_menu_controller.menu_bar
+        old_menu_bar.dispose if old_menu_bar
+      end
+    end
 
     def add_listeners
       @model.add_listener(:new_window, &method(:new_window))

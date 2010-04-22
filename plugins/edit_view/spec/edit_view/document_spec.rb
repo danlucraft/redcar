@@ -6,6 +6,13 @@ describe Redcar::Document do
     
     def reset_last_checked
     end
+    
+    def controller
+      o = Object.new
+      def o.method_missing(*_)
+      end
+      o
+    end
   end
     
   class TestDocumentController
@@ -23,6 +30,18 @@ describe Redcar::Document do
     
     def get_range(from_here, to_here)
      @text[from_here, to_here]
+    end
+    
+    def cursor_offset
+      0
+    end
+    
+    def line_at_offset(_)
+      0
+    end
+    
+    def line_count
+      0
     end
   end
   

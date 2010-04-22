@@ -223,6 +223,10 @@ module Redcar
       focussed_edit_view_document.mirror if focussed_edit_view_document
     end
     
+    def self.all_edit_views
+      Redcar.app.windows.map {|w| w.notebooks.map {|n| n.tabs}.flatten }.flatten.select {|t| t.is_a?(EditTab)}.map {|t| t.edit_view}
+    end
+    
     attr_reader :document
     
     def initialize
@@ -254,6 +258,7 @@ module Redcar
       @grammar = name
       self.tab_width = EditView.tab_settings.width_for(name)
       self.soft_tabs = EditView.tab_settings.softness_for(name)
+      refresh_show_invisibles
     end
     
     def focus
@@ -282,6 +287,24 @@ module Redcar
       @soft_tabs = bool
       EditView.tab_settings.set_softness_for(grammar, bool)
       notify_listeners(:softness_changed, bool)
+    end
+    
+    def show_invisibles?
+      @show_invisibles
+    end
+
+    def self.show_invisibles?
+      EditView.tab_settings.show_invisibles?
+    end
+
+    def self.show_invisibles=(bool)
+      EditView.tab_settings.set_show_invisibles(bool)
+      all_edit_views.each {|ev| ev.refresh_show_invisibles }
+    end
+    
+    def refresh_show_invisibles
+      @show_invisibles = EditView.tab_settings.show_invisibles?
+      notify_listeners(:invisibles_changed, @show_invisibles)
     end
 
     def title=(title)

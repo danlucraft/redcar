@@ -14,6 +14,7 @@ describe FileList do
   
   before do
     @file_list = FileList.new(fixture_path)
+    FileUtils.rm_f(relative_path("tags"))
   end
   
   it "should return an empty list initially" do

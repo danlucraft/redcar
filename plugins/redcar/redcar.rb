@@ -604,6 +604,12 @@ module Redcar
         end
       end
     end
+    
+    class ToggleInvisibles < Redcar::EditTabCommand
+      def execute
+        EditView.show_invisibles = !EditView.show_invisibles?
+      end
+    end
 
     
     def self.keymaps
@@ -784,6 +790,8 @@ module Redcar
           separator
           item "Previous Tab", SwitchTabDownCommand
           item "Next Tab", SwitchTabUpCommand
+          separator
+          item "Show/Hide Invisibles", ToggleInvisibles
         end
         sub_menu "Plugins" do
           item "Plugin Manager", PluginManagerUi::OpenCommand
@@ -793,6 +801,8 @@ module Redcar
         end
         sub_menu "Bundles" do
           item "Find Snippet", Snippets::OpenSnippetExplorer
+          separator
+          Textmate.attach_menus(self)
         end
         sub_menu "Help" do
           item "About", AboutCommand
@@ -827,7 +837,7 @@ module Redcar
       ApplicationEventHandler.new
     end
     
-    def self.start
+    def self.start(args=[])
       puts "loading plugins took #{Time.now - PROCESS_START_TIME}"
       Application.start
       ApplicationSWT.start
@@ -839,7 +849,7 @@ module Redcar
       Redcar.app.refresh_menu!
       Redcar.app.load_sensitivities
       s = Time.now
-      Redcar::Project::Manager.start
+      Redcar::Project::Manager.start(args)
       puts "project start took #{Time.now - s}s"
       Redcar.app.make_sure_at_least_one_window_open
     end

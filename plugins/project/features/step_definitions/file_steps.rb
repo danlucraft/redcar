@@ -32,6 +32,12 @@ Then /^the file "([^\"]*)" should contain "([^\"]*)"$/ do |arg1, arg2|
   File.read(arg1).should == arg2
 end
 
+When /^I put a lot of lines into the file "([^\"]*)"$/ do |file|
+  File.open(file, "w") do |f|
+    200.times { |i| f.puts (i*20).to_s }
+  end
+end
+
 def add_test_file(fn)
   (@test_files ||= []) << File.expand_path(fn)
 end

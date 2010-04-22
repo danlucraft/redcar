@@ -138,6 +138,14 @@ Then /the line delimiter should be "(.*)"/ do |delim|
   doc.delim.should == unescape_text(delim)
 end
 
- 
- 
+When /^I move to line (\d+)$/ do |num|
+  doc = Redcar::EditView.focussed_edit_view_document
+  doc.cursor_offset = doc.offset_at_line(num.to_i)
+end
+
+Then /^the cursor should be on line (\d+)$/ do |num|
+  doc = Redcar::EditView.focussed_edit_view_document
+  doc.cursor_line.should == num.to_i
+end
+
  

@@ -62,6 +62,7 @@ describe TaskQueue do
       @q.submit(WaitTask.new(102))
       @q.submit(task1 = QuickTask.new(103))
       @q.submit(task2 = QuickTask.new(104))
+      1 until $started_tasks.include?(102)
       @q.cancel_all
       $wait_task_finish = true
       $started_tasks.should == [102]

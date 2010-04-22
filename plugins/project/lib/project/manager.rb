@@ -12,10 +12,18 @@ module Redcar
         Project.window_projects[window]
       end
       
+      def self.windows_without_projects
+        Redcar.app.windows.reject {|w| in_window(w) }
+      end
+      
       # this will restore open files unless other files or dirs were passed
       # as command line parameters
-      def self.start
-        restore_last_session unless handle_startup_arguments
+      def self.start(args)
+        unless handle_startup_arguments(args)
+          unless Redcar.environment == :test
+            restore_last_session
+          end
+        end
         init_current_files_hooks
         init_window_closed_hooks
         init_drb_listener
@@ -97,7 +105,7 @@ module Redcar
         if project = find_project_containing_path(path)
           window = project.window
         else
-          window = Redcar.app.focussed_window || Redcar.app.new_window
+          window = windows_without_projects.first || Redcar.app.new_window
         end
         open_file_in_window(path, window)
         window.focus
@@ -135,9 +143,9 @@ module Redcar
       end
       
       # handles files and/or dirs passed as command line arguments
-      def self.handle_startup_arguments
+      def self.handle_startup_arguments(args)
         found_path_args = false
-        ARGV.each do |arg|
+        args.each do |arg|
           if File.directory?(arg)
             found_path_args = true
             DirectoryOpenCommand.new(arg).run

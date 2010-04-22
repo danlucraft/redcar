@@ -23,6 +23,17 @@ module Redcar
       end
     end
     
+    def self.attach_menus(builder)
+      @menus ||= begin
+        Menu::Builder.build do |a|
+          all_bundles.sort_by {|b| (b.name||"").downcase}.each do |bundle|
+            bundle.build_menu(a)
+          end
+        end
+      end
+      @menus.entries.each {|i| builder.append(i) }
+    end
+    
     def self.all_bundles
       @all_bundles ||= begin
         cache = PersistentCache.new("textmate_bundles")

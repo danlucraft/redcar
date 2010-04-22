@@ -23,7 +23,7 @@ module Redcar
 
       # Save the storage to disk.
       def save
-				File.open(path, "w") { |f| YAML.dump(@storage, f) }
+        File.open(path, "w") { |f| YAML.dump(@storage, f) }
         update_timestamp
         self
       end
