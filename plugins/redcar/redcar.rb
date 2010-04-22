@@ -604,6 +604,12 @@ module Redcar
         end
       end
     end
+    
+    class ToggleInvisibles < Redcar::EditTabCommand
+      def execute
+        EditView.show_invisibles = !EditView.show_invisibles?
+      end
+    end
 
     
     def self.keymaps
@@ -784,6 +790,8 @@ module Redcar
           separator
           item "Previous Tab", SwitchTabDownCommand
           item "Next Tab", SwitchTabUpCommand
+          separator
+          item "Show/Hide Invisibles", ToggleInvisibles
         end
         sub_menu "Plugins" do
           item "Plugin Manager", PluginManagerUi::OpenCommand
