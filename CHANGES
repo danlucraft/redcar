@@ -22,7 +22,7 @@ Enhancements:
   * No longer dumps command errors to the console
   * Command history tab
   * Speed up opening of first file by lazy loading embedded grammars
-  * Sped up Ruby highlighting by 68%
+  * Sped up Ruby highlighting by 17x
   * Added show/hide invisible characters menu option
   
 Fixes:
