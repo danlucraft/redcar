@@ -43,7 +43,7 @@ module Redcar
     end
     
     class Setting
-      attr_reader :scope
+      attr_reader :scope, :plist
     
       def initialize(scope, plist)
         @scope = scope
@@ -67,15 +67,19 @@ module Redcar
     end
     
     class IncreaseIndentPatternSetting < Setting
+      def pattern; @plist; end
     end
     
     class DecreaseIndentPatternSetting < Setting
+      def pattern; @plist; end
     end
     
     class UnIndentedLinePatternSetting < Setting
+      def pattern; @plist; end
     end
     
     class IndentNextLinePatternSetting < Setting
+      def pattern; @plist; end
     end
     
     class ShowInSymbolListSetting < Setting

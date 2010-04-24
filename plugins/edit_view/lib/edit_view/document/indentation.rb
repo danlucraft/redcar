@@ -12,7 +12,7 @@ module Redcar
       
       def whitespace_prefix(ix)
         line = @doc.get_line(ix)
-        line.match(/^(\s*)([^\s]|$)/)[1]
+        line.match(/^(\s*)([^\s]|$)/)[1].chomp
       end
       
       def set_level(ix, level)
