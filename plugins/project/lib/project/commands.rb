@@ -38,7 +38,7 @@ module Redcar
         tab = win.focussed_notebook.focussed_tab
         if tab.edit_view.document.mirror
           tab.edit_view.document.save!
-          
+          Project::Manager.refresh_modified_file(tab.edit_view.document.mirror.path)
         else
           FileSaveAsCommand.new.run
         end
@@ -59,11 +59,12 @@ module Redcar
           new_mirror = FileMirror.new(path)
           new_mirror.commit(contents)
           tab.edit_view.document.mirror = new_mirror
-          Manager.open_projects.each {|pr| pr.refresh}
+          Project::Manager.refresh_modified_file(tab.edit_view.document.mirror.path)
         end
       end
       
       private
+      
       def get_path
         @path || begin
           if path = Application::Dialog.save_file(:filter_path => Manager.filter_path)

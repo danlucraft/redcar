@@ -83,6 +83,15 @@ describe FileList do
           @file_list.all_files.include?(@file_name).should be_true
           @file_list.all_files.include?(file_name2).should be_false
         end
+        
+        it "should not remove files that are already there" do
+          write_file(@dirname, "Kurzweil", "theories")
+          file_name2 = File.expand_path(File.join(@dirname, "Kurzweil"))
+          
+          @file_list.update(file_name2)
+          @file_list.all_files.include?(file_name2).should be_true
+          @file_list.all_files.include?(File.expand_path(File.join(@dirname, "Carnegie"))).should be_true
+        end
       end
     end
     

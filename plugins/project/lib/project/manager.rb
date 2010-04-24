@@ -93,8 +93,8 @@ module Redcar
         tab.focus
       end
       
-      def self.find_project_containing_path(path)
-        open_projects.detect {|project| project.contains_path?(path) }
+      def self.find_projects_containing_path(path)
+        open_projects.select {|project| project.contains_path?(path) }
       end
       
       def self.open_file(path)
@@ -102,7 +102,7 @@ module Redcar
           tab.focus
           return
         end
-        if project = find_project_containing_path(path)
+        if project = find_projects_containing_path(path).first
           window = project.window
         else
           window = windows_without_projects.first || Redcar.app.new_window
@@ -191,6 +191,13 @@ module Redcar
           files.each do |path|
             open_file(path)
           end
+        end
+      end
+
+      def self.refresh_modified_file(path)
+        path = File.expand_path(path)
+        find_projects_containing_path(path).each do |project|
+          project.refresh_modified_file(path)
         end
       end
           

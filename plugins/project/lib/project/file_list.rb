@@ -18,7 +18,7 @@ module Redcar
       
       def update(paths=nil)
         if paths
-          @files = find(*paths)
+          @files = @files.merge(find(*paths))
         else
           @files = find(path)
         end
