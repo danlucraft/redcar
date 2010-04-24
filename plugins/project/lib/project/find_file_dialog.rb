@@ -83,13 +83,12 @@ module Redcar
         end
       end
       
-      def not_on_ignore_list(filename)
-        self.class.storage['ignore_files_that_match_these_regexes'].each do |re|
-          if re =~ filename
-            return false
-          end
-        end
-        true
+      def ignore_regexes
+        self.class.storage['ignore_files_that_match_these_regexes']
+      end
+      
+      def ignore_file?(filename)
+        ignore_regexes.any? {|re| re =~ filename }
       end
       
       def find_files_from_list(text, file_list)
@@ -100,7 +99,8 @@ module Redcar
       end
       
       def find_files(text, directories)
-        filter_and_rank_by(project.all_files.sort, text) do |fn|
+        files = project.all_files.reject {|fn| ignore_file?(fn) }.sort
+        filter_and_rank_by(files, text) do |fn|
           fn.split("/").last
         end
       end

@@ -16,7 +16,7 @@ require 'auto_completer/word_list'
 
 module Redcar
   class AutoCompleter
-    WORD_CHARACTERS = /\w/ # /(\s|\t|\.|\r|\(|\)|,|;)/
+    WORD_CHARACTERS = /\w|_/ # /(\s|\t|\.|\r|\(|\)|,|;)/
     
     def self.document_controller_types
       [AutoCompleter::DocumentController]
@@ -120,7 +120,7 @@ module Redcar
     end
     
     class MenuAutoCompleterCommand < AutoCompleteCommand
-    
+
       def execute
         controller = doc.controllers(AutoCompleter::DocumentController).first
         input_word = ""

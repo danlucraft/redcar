@@ -29,7 +29,6 @@ module Redcar
         @use_numbers = options[:numbers]
         @number = 1
         add_entries_to_menu(@menu_bar, menu_model)
-        @menu_bar.set_visible(true)
         puts "ApplicationSWT::Menu initialize took #{Time.now - s}s"
       end
       
@@ -71,6 +70,18 @@ module Redcar
           end
         end
       end
+
+      class ProcSelectionListener
+        def initialize(entry)
+          @entry = entry
+        end
+        
+        def widget_selected(e)
+          @entry.command.call
+        end
+        
+        alias :widget_default_selected :widget_selected
+      end
       
       def connect_proc_to_item(item, entry)
         if use_numbers? and Redcar.platform == :osx
@@ -79,7 +90,7 @@ module Redcar
         else
           item.text = entry.text
         end
-        item.add_selection_listener { entry.command.call }
+        item.addSelectionListener(ProcSelectionListener.new(entry))
       end
       
       class SelectionListener

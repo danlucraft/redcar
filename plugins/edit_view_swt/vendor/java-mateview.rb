@@ -27,9 +27,9 @@ module JavaMateView
     end
     
     def delay_parsing
-      parser.deactivate
+      parser.parserScheduler.deactivate
       yield
-      parser.reactivate
+      parser.parserScheduler.reactivate
     end
   end
 end

@@ -57,14 +57,41 @@ describe FileList do
         @file_name = File.expand_path(File.join(@dirname, "Branson"))
       end
       
-      it "should add the file to the list" do
-        @file_list.update
-        @file_list.all_files.include?(@file_name).should be_true
+      describe "on general update" do
+        it "should add the file to the list" do
+          @file_list.update
+          @file_list.all_files.include?(@file_name).should be_true
+        end
+        
+        it "should be changed_since" do
+          @file_list.update
+          @file_list.changed_since(@time).keys.include?(@file_name).should be_true
+        end
       end
       
-      it "should be changed_since" do
-        @file_list.update
-        @file_list.changed_since(@time).keys.include?(@file_name).should be_true
+      describe "on specific update" do
+        it "should add the file to the list" do
+          @file_list.update(@file_name)
+          @file_list.all_files.include?(@file_name).should be_true
+        end
+        
+        it "should not add other new files to the list" do
+          write_file(@dirname, "Kurzweil", "theories")
+          file_name2 = File.expand_path(File.join(@dirname, "Kurzweil"))
+          
+          @file_list.update(@file_name)
+          @file_list.all_files.include?(@file_name).should be_true
+          @file_list.all_files.include?(file_name2).should be_false
+        end
+        
+        it "should not remove files that are already there" do
+          write_file(@dirname, "Kurzweil", "theories")
+          file_name2 = File.expand_path(File.join(@dirname, "Kurzweil"))
+          
+          @file_list.update(file_name2)
+          @file_list.all_files.include?(file_name2).should be_true
+          @file_list.all_files.include?(File.expand_path(File.join(@dirname, "Carnegie"))).should be_true
+        end
       end
     end
     
@@ -75,6 +102,7 @@ describe FileList do
         write_file(@dirname, "Carnegie", "peace")
         @file_name = File.expand_path(File.join(@dirname, "Carnegie"))
       end
+
       
       it "should still be in the file list" do
         @file_list.update

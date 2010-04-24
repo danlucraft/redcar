@@ -1,6 +1,7 @@
 $:.push File.join(File.dirname(__FILE__), '..', '..', '..', 'lib')
 
 require 'redcar'
+Redcar.environment = :test
 Redcar.load
 
 def write_dir_contents(dirname, files)
