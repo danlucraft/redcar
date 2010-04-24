@@ -38,6 +38,7 @@ module Redcar
         tab = win.focussed_notebook.focussed_tab
         if tab.edit_view.document.mirror
           tab.edit_view.document.save!
+          
         else
           FileSaveAsCommand.new.run
         end

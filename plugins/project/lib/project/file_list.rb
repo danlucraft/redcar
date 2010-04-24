@@ -16,8 +16,12 @@ module Redcar
         @files[file]
       end
       
-      def update
-        @files = find(path)
+      def update(paths=nil)
+        if paths
+          @files = find(*paths)
+        else
+          @files = find(path)
+        end
       end
       
       def changed_since(time)
