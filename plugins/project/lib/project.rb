@@ -91,6 +91,7 @@ module Redcar
     def file_list_resource
       @resource ||= Resource.new("refresh file list for #{@path}") do
         project_changes = file_list.update
+        send_refresh_to_plugins
       end
     end
     
