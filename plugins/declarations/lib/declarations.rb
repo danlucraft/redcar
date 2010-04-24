@@ -17,11 +17,11 @@ module Redcar
 
     def self.keymaps
       linwin = Keymap.build("main", [:linux, :windows]) do
-        link "Ctrl+Shift+T", Declarations::GoToTagCommand
+        link "Ctrl+G", Declarations::GoToTagCommand
       end
 
       osx = Keymap.build("main", :osx) do
-        link "Cmd+Shift+T", Declarations::GoToTagCommand
+        link "Cmd+G", Declarations::GoToTagCommand
       end
 
       [linwin, osx]
