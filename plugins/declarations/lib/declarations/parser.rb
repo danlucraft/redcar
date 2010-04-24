@@ -13,7 +13,7 @@ module Redcar
   YAML
   
   RUBY_YAML=<<-YAML
-  - regex:    "^[^#]*(class|module)\\s+(\\w+)"
+  - regex:    "^[^#]*(class|module)\\s+(?:\\w*::)*(\\w+)(?:$|\\s|<)"
     capture:  2
     type:     id
   - regex:    "^[^#]*def (self\\.)?(\\w+)"
@@ -26,6 +26,9 @@ module Redcar
     capture:  1
     type:     id
   - regex:    "^[^#]*alias_method\s+:(\\w+)"
+    capture:  1
+    type:     id
+  - regex:    "^\\s*([A-Z]\\w*)\\s*="
     capture:  1
     type:     id
   YAML
