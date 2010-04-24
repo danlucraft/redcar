@@ -475,6 +475,10 @@ module Redcar
       @edit_view.title = title_with_star
     end
  
+    def indentation
+      Document::Indentation.new(self, @edit_view.tab_width, @edit_view.soft_tabs?)
+    end
+ 
     private 
    
     def title_with_star
