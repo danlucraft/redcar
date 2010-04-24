@@ -55,8 +55,12 @@ module Redcar
       end
     end
     
-    # Translates a Textmate key equivalent into a Redcar
-    # keybinding. 
+    def self.settings(type=nil)
+      @all_settings_by_type ||= {}
+      @all_settings_by_type[type] ||= all_settings.select {|s| s.is_a?(type) }
+    end
+
+    # Translates a Textmate key equivalent into a Redcar keybinding. 
     def self.translate_key_equivalent(keyeq, name=nil)
       if keyeq
         key_str      = keyeq[-1..-1]

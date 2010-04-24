@@ -5,9 +5,7 @@ module Redcar
         @autopair_rules ||= begin
           rules = Hash.new {|h, k| h[k] = {}}
           @autopair_default = nil
-          pair_settings = Textmate.all_settings.select do |setting|
-            setting.is_a?(Textmate::SmartTypingPairsSetting)
-          end
+          pair_settings = Textmate.settings(Textmate::SmartTypingPairsSetting)
           pair_settings.each do |setting|
             if setting.scope
               rules[setting.scope] = Hash[*setting.pairs.flatten]
