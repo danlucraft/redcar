@@ -9,7 +9,7 @@ module Redcar
         @indentation = doc.indentation
       end
       
-      def calculate_for_line(line_ix)
+      def calculate_for_line(line_ix, typing=false)
         return 0 if line_ix == 0
         #p [:line_ix, line_ix]
         current_line  = @doc.get_line(line_ix)
@@ -22,10 +22,11 @@ module Redcar
         #p [:current_line, current_line]
         #p [:current_level, current_level]
 
-        if rules.unindented_line?(current_line)
-          return 0
+        if !typing and rules.unindented_line?(current_line)
+          #p [:unindented_line]
+          return @indentation.get_level(line_ix)
         end
-        
+
         if rules.increase_indent?(previous_line)
           #p [:inc_indent]
           new_level += 1
@@ -34,10 +35,11 @@ module Redcar
           #p [:dec_indent]
           new_level -= 1
         end
-        if indent_next_line
+        if !typing and indent_next_line and !rules.increase_indent?(current_line)
           #p [:indent_next_line]
           new_level += 1
         end
+
         #p [:new_level, new_level]
         new_level
       end
@@ -54,16 +56,20 @@ module Redcar
             current -= 1
           else
             if indent_next_line == nil
+              #p [:indent_next_line?, line, rules.indent_next_line?(line)]
               indent_next_line = rules.indent_next_line?(line)
             end
-                
             previous_ix = index_of_previous_non_unindented_line(current)
-            previous_line = @doc.get_line(previous_ix)
-          
-            if !rules.indent_next_line?(previous_line)
+            if previous_ix < 0
               return current, indent_next_line
             else
-              current -= 1
+              previous_line = @doc.get_line(previous_ix)
+            
+              if rules.indent_next_line?(previous_line) and !rules.increase_indent?(line)
+                current -= 1
+              else
+                return current, indent_next_line
+              end
             end
           end
         end
@@ -71,10 +77,10 @@ module Redcar
       
       def index_of_previous_non_unindented_line(line_ix)
         current = line_ix - 1
-        line = @doc.get_line(current)
-        while current >= 0 and rules.unindented_line?(line)
+        while current >= 0 and 
+              line = @doc.get_line(current) and 
+              rules.unindented_line?(line)
           current -= 1
-          line = @doc.get_line(current)
         end
         #p [:index_of_previous_non_unindented_line, line_ix, current]
         current

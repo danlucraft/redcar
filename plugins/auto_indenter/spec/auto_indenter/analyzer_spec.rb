@@ -75,20 +75,28 @@ RUBY
     end
     
     def source
-      t=<<-C
+      t=<<-CSOURCE
 int main (int argc, char const* argv[]) {
 	while(true) {
 		if(something())
 			break;
-#if 0
+#if 3
 		play_awful_music();
-#else
+		#else
 		play_nice_music();
 #endif
 	}
 	return 0;
 }
-C
+ 
+if (foo)
+  break;
+ 
+if (foo)
+{
+  d;
+ 
+CSOURCE
     end
     
     it "should set indentation on the first line to 0" do
@@ -105,11 +113,12 @@ C
     
     it "should indent next line" do
       should_indent(:line => 3,  :indent => 3)
+      should_indent(:line => 14,  :indent => 1)
     end
     
-    it "should indent to zero unindented lines" do
+    it "should leave unindented lines as they are" do
       should_indent(:line => 4,  :indent => 0)
-      should_indent(:line => 6,  :indent => 0)
+      should_indent(:line => 6,  :indent => 2)
       should_indent(:line => 8,  :indent => 0)
     end
     
@@ -129,10 +138,14 @@ C
     it "should match indent" do
       should_indent(:line => 10, :indent => 1)
     end
+
+    it "should not indent next lines if the next line matches the increase indent" do
+      should_indent(:line => 17, :indent => 0)
+    end
+
+    it "should still increase the indent after an increase indent line after an increase next line" do
+      should_indent(:line => 18, :indent => 1)
+    end
   end
 end  
-
-
-
-
 

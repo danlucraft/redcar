@@ -46,7 +46,23 @@ module Redcar
         if dec_best_match = best_match(indentation_rules[:decrease], current_scope)
           dec_best_match = Regexp.new(dec_best_match)
         end
-        Rules.new(inc_best_match, dec_best_match)
+        if indent_next_best_match = best_match(indentation_rules[:indent_next], current_scope)
+          indent_next_best_match = Regexp.new(indent_next_best_match)
+        end
+        if unindented_match = best_match(indentation_rules[:unindented], current_scope)
+          unindented_match = Regexp.new(unindented_match)
+        end
+        Rules.new(inc_best_match, dec_best_match, indent_next_best_match, unindented_match)
+      end
+    end
+    
+    def self.initialize_rules(settings, rules)
+      settings.each do |setting|
+        if setting.scope
+          rules[setting.scope] = setting.pattern
+        else
+          puts "indent setting without scope! #{setting.inspect}"
+        end
       end
     end
     
@@ -54,25 +70,26 @@ module Redcar
       @indentation_rules ||= begin
         increase_rules = Hash.new {|h, k| h[k] = {}}
         decrease_rules = Hash.new {|h, k| h[k] = {}}
+        indent_next_rules = Hash.new {|h, k| h[k] = {}}
+        unindented_rules = Hash.new {|h, k| h[k] = {}}
         increase_settings = Textmate.settings(Textmate::IncreaseIndentPatternSetting)
         decrease_settings = Textmate.settings(Textmate::DecreaseIndentPatternSetting)
-        increase_settings.each do |setting|
-          if setting.scope
-            increase_rules[setting.scope] = setting.pattern
-          else
-            raise "indent setting without scope! #{setting}"
-          end
-        end
-        decrease_settings.each do |setting|
-          if setting.scope
-            decrease_rules[setting.scope] = setting.pattern
-          else
-            raise "indent setting without scope! #{setting}"
-          end
-        end
+        indent_next_settings = Textmate.settings(Textmate::IndentNextLinePatternSetting)
+        unindented_settings = Textmate.settings(Textmate::UnIndentedLinePatternSetting)
+        initialize_rules(increase_settings, increase_rules)
+        initialize_rules(decrease_settings, decrease_rules)
+        initialize_rules(indent_next_settings, indent_next_rules)
+        initialize_rules(unindented_settings, unindented_rules)
         increase_rules.default = nil
         decrease_rules.default = nil
-        {:increase => increase_rules, :decrease => decrease_rules}
+        indent_next_rules.default = nil
+        unindented_rules.default = nil
+        { 
+          :increase => increase_rules, 
+          :decrease => decrease_rules,
+          :indent_next => indent_next_rules,
+          :unindented => unindented_rules
+        }
       end
     end
   end
