@@ -7,11 +7,17 @@ module Redcar
       include Redcar::Document::Controller::NewlineCallback
       
       def before_modify(start_offset, end_offset, text)
-        return if @ignore
+        return if @ignore or in_snippet?
+        
         @start_offset, @end_offset, @text = start_offset, end_offset, text
         line = document.get_line(document.cursor_line)
         rules = AutoIndenter.rules_for_scope(document.cursor_scope)
         @flags = get_flags(line, rules)
+      end
+      
+      def in_snippet?
+        snippet_controller = document.controllers(Snippets::DocumentController).first and
+         snippet_controller.in_snippet?
       end
       
       def get_flags(line, rules)
@@ -19,7 +25,7 @@ module Redcar
       end
       
       def after_modify
-        return if @ignore
+        return if @ignore or in_snippet?
         start_line_ix = document.line_at_offset(@start_offset)
         end_line_ix   = document.line_at_offset(@start_offset + @text.length)
         if start_line_ix == end_line_ix
@@ -36,6 +42,7 @@ module Redcar
       end
       
       def after_newline(line_ix)
+        return if @ignore or in_snippet?
         rules = AutoIndenter.rules_for_scope(document.cursor_scope)
         if line_ix > 0
           indentation = document.indentation
