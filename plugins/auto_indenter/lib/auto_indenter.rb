@@ -1,5 +1,6 @@
 
 require 'auto_indenter/analyzer'
+require 'auto_indenter/commands'
 require 'auto_indenter/document_controller'
 require 'auto_indenter/rules'
 

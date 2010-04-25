@@ -296,6 +296,10 @@ module Redcar
       controller.selection_offset
     end
     
+    def selection_line
+      line_at_offset(selection_offset)
+    end
+    
     # Set the range of text selected by the user. 
     #
     # @param [Integer] cursor_offset
