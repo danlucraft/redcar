@@ -23,6 +23,7 @@ Enhancements:
   * Command history tab
   * Speed up opening of first file by lazy loading embedded grammars
   * Sped up Ruby highlighting by 17x
+  * Doesn't die on long lines (gives up after 500 characters now)
   * Added show/hide invisible characters menu option
   * Smart indentation as you type (based on Textmate bundle rules)
   
