@@ -296,6 +296,10 @@ module Redcar
       controller.selection_offset
     end
     
+    def selection_line
+      line_at_offset(selection_offset)
+    end
+    
     # Set the range of text selected by the user. 
     #
     # @param [Integer] cursor_offset
@@ -473,6 +477,10 @@ module Redcar
     def set_modified(boolean)
       @modified = boolean
       @edit_view.title = title_with_star
+    end
+ 
+    def indentation
+      Document::Indentation.new(self, @edit_view.tab_width, @edit_view.soft_tabs?)
     end
  
     private 

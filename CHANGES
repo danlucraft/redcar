@@ -24,6 +24,7 @@ Enhancements:
   * Speed up opening of first file by lazy loading embedded grammars
   * Sped up Ruby highlighting by 17x
   * Added show/hide invisible characters menu option
+  * Smart indentation as you type (based on Textmate bundle rules)
   
 Fixes:
 

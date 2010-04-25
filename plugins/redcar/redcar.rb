@@ -636,6 +636,7 @@ module Redcar
         link "Ctrl+E",      MoveEndCommand
         link "Cmd+[",       DecreaseIndentCommand
         link "Cmd+]",       IncreaseIndentCommand
+        link "Cmd+Shift+I", AutoIndenter::IndentCommand
         link "Cmd+L",       GotoLineCommand
         link "Cmd+F",       SearchForwardCommand
         link "Cmd+G",       RepeatPreviousSearchForwardCommand
@@ -685,6 +686,7 @@ module Redcar
         link "Ctrl+E",       MoveEndCommand
         link "Ctrl+[",       DecreaseIndentCommand
         link "Ctrl+]",       IncreaseIndentCommand
+        link "Ctrl+Shift+[", AutoIndenter::IndentCommand
         link "Ctrl+G",       GotoLineCommand
         link "Ctrl+F",       SearchForwardCommand
         link "F3",           RepeatPreviousSearchForwardCommand
@@ -759,6 +761,7 @@ module Redcar
           separator
           item "Increase Indent", IncreaseIndentCommand
           item "Decrease Indent", DecreaseIndentCommand
+          item "Indent",          AutoIndenter::IndentCommand
           separator
           item "Goto Line", GotoLineCommand
           item "Regex Search",    SearchForwardCommand
