@@ -40,21 +40,21 @@ module Redcar
         files = {}
         paths.collect!{|d| d.dup}
         while file = paths.shift
-          stat = File.lstat(file)
-          unless file =~ /\.git|\.yardoc|\.svn/
-            unless stat.directory?
-              files[file.dup] = stat.mtime
-            end
-            next unless File.exist? file
-            begin
-              if stat.directory? then
+          begin
+            stat = File.lstat(file)
+            unless file =~ /\.git|\.yardoc|\.svn/
+              unless stat.directory?
+                files[file.dup] = stat.mtime
+              end
+              next unless File.exist? file
+              if stat.directory?
                 d = Dir.open(file)
                 begin
                   for f in d
                     next if f == "." or f == ".."
-                    if File::ALT_SEPARATOR and file =~ /^(?:[\/\\]|[A-Za-z]:[\/\\]?)$/ then
+                    if File::ALT_SEPARATOR and file =~ /^(?:[\/\\]|[A-Za-z]:[\/\\]?)$/
                       f = file + f
-                    elsif file == "/" then
+                    elsif file == "/"
                       f = "/" + f
                     else
                       f = File.join(file, f)
@@ -65,8 +65,8 @@ module Redcar
                   d.close
                 end
               end
-            rescue Errno::ENOENT, Errno::EACCES
             end
+          rescue Errno::ENOENT, Errno::EACCES
           end
         end
         files
