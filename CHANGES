@@ -4,8 +4,7 @@ Version 0.3.5dev (TBA)
 
 Enhancements:
   
-  * Jump to declaration support (background re-indexing)
-  * Project-wide autocomplete
+  * Jump to declaration support for Ruby and Java
   * Double click respects word boundaries
   * Window title reflects project name
   * Duplicate region command

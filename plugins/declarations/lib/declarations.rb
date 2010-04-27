@@ -28,7 +28,7 @@ module Redcar
     end
 
     def self.autocompletion_source_types
-      [Declarations::CompletionSource]
+      [] #[Declarations::CompletionSource]
     end
 
     def self.file_path(project)
