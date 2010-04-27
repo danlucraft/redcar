@@ -16,15 +16,20 @@ module Redcar
         puts "\nCan't find jruby jar at #{jruby_complete}, did you run 'redcar install' ?"
         exit 1
       end
-      args = []
-      if false
-        command = "jruby #{java_args} \"#{bin}\" #{ARGV.join(' ')}"
-      else
-        ENV['RUBYOPT'] = nil # disable other native args
-        command = "java #{java_args} -Xmx500m -Xss1024k -Djruby.memory.max=500m -Djruby.stack.max=1024k -cp \"#{jruby_complete}\" org.jruby.Main \"#{bin}\" #{ARGV.join(' ')} --no-sub-jruby"
-      end
+      ENV['RUBYOPT'] = nil # disable other native args
+      command = "java #{java_args} -Xmx500m -Xss1024k -Djruby.memory.max=500m -Djruby.stack.max=1024k -cp \"#{jruby_complete}\" org.jruby.Main \"#{bin}\" #{cleaned_args} --no-sub-jruby"
       puts command
       exec(command)
+    end
+    
+    def cleaned_args
+      ARGV.map do |arg|
+        if arg =~ /--(.+)=(.+)/
+          "--" + $1 + "=\"" + $2 + "\""
+        else
+          arg
+        end
+      end.join(' ')
     end
     
     def java_args
