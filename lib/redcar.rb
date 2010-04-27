@@ -1,7 +1,6 @@
 
 $:.push File.expand_path(File.join(File.dirname(__FILE__)))
 
-require 'redcar_quick_start'
 require 'redcar/usage'
 
 require 'rbconfig'
