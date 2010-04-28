@@ -689,7 +689,7 @@ module Redcar
         link "Ctrl+[",       DecreaseIndentCommand
         link "Ctrl+]",       IncreaseIndentCommand
         link "Ctrl+Shift+[", AutoIndenter::IndentCommand
-        link "Ctrl+G",       GotoLineCommand
+        link "Ctrl+L",       GotoLineCommand
         link "Ctrl+F",       SearchForwardCommand
         link "F3",           RepeatPreviousSearchForwardCommand
         link "Ctrl+A",       SelectAllCommand
