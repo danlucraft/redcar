@@ -27,7 +27,7 @@ module Redcar
       def after_modify
         return if @ignore or in_snippet?
         start_line_ix = document.line_at_offset(@start_offset)
-        end_line_ix   = document.line_at_offset(@start_offset + @text.length)
+        end_line_ix   = document.line_at_offset(@start_offset + @text.length - 1)
         if start_line_ix == end_line_ix
           rules = AutoIndenter.rules_for_scope(document.cursor_scope)
           line = document.get_line(start_line_ix)
