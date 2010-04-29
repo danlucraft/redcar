@@ -51,13 +51,14 @@ module Redcar
       
       def dump
         @tags.sort!
-        tags_file = Tempfile.new('tags')
-        tags_file.puts(@last_updated.to_i.to_s)
-        @tags.each do |id, path, declaration|
-          tags_file.puts "#{id}\t#{path}\t#{declaration}"
-        end
-	tags_file.close
-        FileUtils.cp(tags_file.path, path)
+        Tempfile.open('tags') do |tags_file |
+          tags_file.puts(@last_updated.to_i.to_s)
+          @tags.each do |id, path, declaration|
+            tags_file.puts "#{id}\t#{path}\t#{declaration}"
+          end
+	  tags_file.flush
+          FileUtils.cp(tags_file.path, path)
+	end
       end
     end
   end
