@@ -4,8 +4,7 @@ Version 0.3.5dev (TBA)
 
 Enhancements:
   
-  * Jump to declaration support (background re-indexing)
-  * Project-wide autocomplete
+  * Jump to declaration support for Ruby and Java
   * Double click respects word boundaries
   * Window title reflects project name
   * Duplicate region command
@@ -23,6 +22,7 @@ Enhancements:
   * Command history tab
   * Speed up opening of first file by lazy loading embedded grammars
   * Sped up Ruby highlighting by 17x
+  * Doesn't die on long lines (gives up after 500 characters now)
   * Added show/hide invisible characters menu option
   * Smart indentation as you type (based on Textmate bundle rules)
   

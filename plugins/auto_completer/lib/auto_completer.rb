@@ -3,7 +3,7 @@ module Redcar
   class ApplicationSWT
     class Menu
       def move(x, y)
-      	@menu_bar.setLocation(x, y)
+        @menu_bar.setLocation(x, y)
       end
     end
   end
@@ -39,7 +39,7 @@ module Redcar
       def execute
         controller = doc.controllers(AutoCompleter::DocumentController).first
         controller.start_modification
-
+        
         if controller.in_completion?
           doc.delete(doc.cursor_offset - controller.length_of_previous, controller.length_of_previous)
           prefix = controller.prefix
@@ -69,9 +69,9 @@ module Redcar
           doc.insert(right, completion[prefix.length..-1])
           word_end_offset = right + completion.length - prefix.length
           doc.cursor_offset = word_end_offset
-  
+          
           controller.length_of_previous = completion.length - prefix.length
-  
+          
           controller.start_completion
         end
         controller.end_modification
@@ -120,7 +120,7 @@ module Redcar
     end
     
     class MenuAutoCompleterCommand < AutoCompleteCommand
-
+      
       def execute
         controller = doc.controllers(AutoCompleter::DocumentController).first
         input_word = ""
@@ -132,26 +132,26 @@ module Redcar
           controller.prefix    = prefix
           controller.left      = left
           controller.right     = right
-
-  		    cur_doc = doc
-        	builder = Menu::Builder.new do
-        	  word_list.words.each do |current_word, word_distance|
-        	  	item(current_word) do
-        	  	  offset = cur_doc.cursor_offset - prefix.length
-        	  	  text   = current_word[input_word.length..current_word.length]
-        	  	  cur_doc.replace(offset, prefix.length, text)
-        	  	end
-        	  end
-        	end
-        	
-        	window = Redcar.app.focussed_window
-        	location = window.focussed_notebook.focussed_tab.controller.edit_view.mate_text.viewer.getTextWidget.getLocationAtOffset(window.focussed_notebook.focussed_tab.controller.edit_view.cursor_offset)
-        	absolute_x = location.x
-        	absolute_y = location.y
-        	location = window.focussed_notebook.focussed_tab.controller.edit_view.mate_text.viewer.getTextWidget.toDisplay(0,0)
-        	absolute_x += location.x
-        	absolute_y += location.y
-        	menu = ApplicationSWT::Menu.new(window.controller, builder.menu, nil, Swt::SWT::POP_UP)
+          
+          cur_doc = doc
+          builder = Menu::Builder.new do
+            word_list.words.each do |current_word, word_distance|
+              item(current_word) do
+                offset = cur_doc.cursor_offset - prefix.length
+                text   = current_word[input_word.length..current_word.length]
+                cur_doc.replace(offset, prefix.length, text)
+              end
+            end
+          end
+          
+          window = Redcar.app.focussed_window
+          location = window.focussed_notebook.focussed_tab.controller.edit_view.mate_text.viewer.getTextWidget.getLocationAtOffset(window.focussed_notebook.focussed_tab.controller.edit_view.cursor_offset)
+          absolute_x = location.x
+          absolute_y = location.y
+          location = window.focussed_notebook.focussed_tab.controller.edit_view.mate_text.viewer.getTextWidget.toDisplay(0,0)
+          absolute_x += location.x
+          absolute_y += location.y
+          menu = ApplicationSWT::Menu.new(window.controller, builder.menu, nil, Swt::SWT::POP_UP)
           menu.move(absolute_x, absolute_y)
           menu.show
         end

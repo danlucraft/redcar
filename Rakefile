@@ -78,7 +78,7 @@ end
 
 spec = Gem::Specification.new do |s|
   s.name              = "redcar"
-  s.version           = "0.3.4.3"
+  s.version           = "0.3.5"
   s.summary           = "A JRuby text editor."
   s.author            = "Daniel Lucraft"
   s.email             = "dan@fluentradical.com"
@@ -116,7 +116,8 @@ Please now run:
 
   $ redcar install
 
-to complete the installation. 
+to complete the installation. This will download jars that Redcar needs to run. It
+will put them only into the Redcar gem directory.
 
 (If you installed the gem with 'sudo', you will need to run 'sudo redcar install').
 
