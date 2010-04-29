@@ -93,50 +93,51 @@ module Redcar
       def after_modify
         return if ignore?
         @done = nil
-        
-        # Deleted start of a mark pair
-        if @end_offset == @start_offset + 1 and !@ignore_delete
-          mark_pair = find_mark_pair_by_start(@start_offset)
-          if mark_pair
-            @ignore_delete = true
-            document.delete(mark_pair.end_mark.get_offset, 1)
-            @ignore_delete = false
-            @mark_pairs.delete(mark_pair)
-            @deletion = nil
+        document.controllers(AutoIndenter::DocumentController).first.disable do
+          # Deleted start of a mark pair
+          if @end_offset == @start_offset + 1 and !@ignore_delete
+            mark_pair = find_mark_pair_by_start(@start_offset)
+            if mark_pair
+              @ignore_delete = true
+              document.delete(mark_pair.end_mark.get_offset, 1)
+              @ignore_delete = false
+              @mark_pairs.delete(mark_pair)
+              @deletion = nil
+            end
           end
-        end
-        
-        # Type over ends
-        if @type_over_end
-          @type_over_end = false
-          @ignore_delete = true
-          document.delete(@end_offset, 1)
-          @ignore_delete = nil
-          document.cursor_offset += 1
-          #@buffer.parser.start_parsing
-          @done = true
-        end
-
-        # Insert matching ends
-        if @insert_end and !@ignore_insert
-          @ignore_insert = true
-          endtext = @rules[@text]
-          document.insert(@start_offset + 1, endtext)
-          mark1 = document.create_mark(@start_offset - 1,     :right)
-          mark2 = document.create_mark(@start_offset, :right)
-          add_mark_pair(MarkPair.new(mark1, mark2, @text, endtext))
-          @ignore_insert = false
-          #@buffer.parser.start_parsing
-          @insert_end = false
-        end
-        
-        if @selected_text and !@ignore_insert
-          @ignore_insert = true
-          offset = document.cursor_offset
-          document.insert(@start_offset, @selected_text)
-          document.cursor_offset = offset + @selected_text.length + 1
-          @ignore_insert = false
-          @selected_text = nil
+          
+          # Type over ends
+          if @type_over_end
+            @type_over_end = false
+            @ignore_delete = true
+            document.delete(@end_offset, 1)
+            @ignore_delete = nil
+            document.cursor_offset += 1
+            #@buffer.parser.start_parsing
+            @done = true
+          end
+          
+          # Insert matching ends
+          if @insert_end and !@ignore_insert
+            @ignore_insert = true
+            endtext = @rules[@text]
+            document.insert(@start_offset + 1, endtext)
+            mark1 = document.create_mark(@start_offset - 1,     :right)
+            mark2 = document.create_mark(@start_offset, :right)
+            add_mark_pair(MarkPair.new(mark1, mark2, @text, endtext))
+            @ignore_insert = false
+            #@buffer.parser.start_parsing
+            @insert_end = false
+          end
+          
+          if @selected_text and !@ignore_insert
+            @ignore_insert = true
+            offset = document.cursor_offset
+            document.insert(@start_offset, @selected_text)
+            document.cursor_offset = offset + @selected_text.length + 1
+            @ignore_insert = false
+            @selected_text = nil
+          end
         end
         false
       end

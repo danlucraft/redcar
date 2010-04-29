@@ -6,6 +6,13 @@ module Redcar
       include Redcar::Document::Controller::ModificationCallbacks
       include Redcar::Document::Controller::NewlineCallback
       
+      def disable
+        @ignore = true
+        result = yield
+        @ignore = nil
+        result
+      end
+      
       def before_modify(start_offset, end_offset, text)
         return if @ignore or in_snippet?
         
