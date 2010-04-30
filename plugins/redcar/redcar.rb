@@ -689,7 +689,7 @@ module Redcar
         link "Ctrl+[",       DecreaseIndentCommand
         link "Ctrl+]",       IncreaseIndentCommand
         link "Ctrl+Shift+[", AutoIndenter::IndentCommand
-        link "Ctrl+G",       GotoLineCommand
+        link "Ctrl+L",       GotoLineCommand
         link "Ctrl+F",       SearchForwardCommand
         link "F3",           RepeatPreviousSearchForwardCommand
         link "Ctrl+A",       SelectAllCommand
@@ -727,7 +727,7 @@ module Redcar
           item "New Window", NewWindowCommand
           item "Open", Project::FileOpenCommand
           item "Open Directory", Project::DirectoryOpenCommand
-          sub_menu "Open Recent" do
+          lazy_sub_menu "Open Recent" do
             Project::RecentDirectories.generate_menu(self)
           end
           

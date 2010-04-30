@@ -13,18 +13,18 @@ module Redcar
   
     # Iterate over each entry
     def each
-      @entries.each {|e| yield e}
+      entries.each {|e| yield e}
     end
   
     # Add a Redcar::MenuItem or a Redcar::Menu
     def <<(entry)
-      @entries << entry
+      entries << entry
       self
     end
   
     # Number of entries in the menu
     def length
-      @entries.length
+      entries.length
     end
     
     # Fetch the sub_menu with the given name
@@ -47,7 +47,7 @@ module Redcar
     def ==(other)
       return false unless length == other.length
       return false unless text == other.text
-      @entries.zip(other.entries) do |here, there|
+      entries.zip(other.entries) do |here, there|
         return false unless here.class == there.class and here == there
       end
       true
@@ -62,7 +62,7 @@ module Redcar
           if here.class == other_entry.class
             here.merge(other_entry)
           else
-            @entries[@entries.index(here)] = other_entry
+            entries[entries.index(here)] = other_entry
           end
         else
           self << other_entry
