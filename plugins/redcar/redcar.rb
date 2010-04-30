@@ -727,7 +727,7 @@ module Redcar
           item "New Window", NewWindowCommand
           item "Open", Project::FileOpenCommand
           item "Open Directory", Project::DirectoryOpenCommand
-          sub_menu "Open Recent" do
+          lazy_sub_menu "Open Recent" do
             Project::RecentDirectories.generate_menu(self)
           end
           

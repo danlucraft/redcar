@@ -42,4 +42,20 @@ describe "Redcar::Menu::Builder DSL" do
     top_item = builder.menu.entries.last
     top_item.text.should == "Exit"
   end
+  
+  it "adds lazy submenus to the menu" do
+    builder = Redcar::Menu::Builder.new do
+      lazy_sub_menu "Export" do
+        item "PDF", :PDFCommand
+      end
+    end
+    builder.menu.length.should == 1
+    
+    lazy_sub_menu = builder.menu.entries.first
+    lazy_sub_menu.should be_an_instance_of(Redcar::Menu::LazyMenu)
+    
+    lazy_sub_menu.entries.length.should == 1
+    lazy_sub_menu.entries.first.text.should == "PDF"
+  end
 end
+
