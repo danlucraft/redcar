@@ -62,6 +62,11 @@ module Redcar
         @current_menu = old_menu
       end
       
+      def lazy_sub_menu(text, &block)
+        new_menu = LazyMenu.new(block, text)
+        @current_menu << new_menu
+      end
+      
       def append(item)
         @current_menu << item
       end
