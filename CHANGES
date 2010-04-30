@@ -26,6 +26,7 @@ Enhancements:
   * Added show/hide invisible characters menu option
   * Smart indentation as you type (based on Textmate bundle rules)
   * Add profiling commands to the Debug menu (uses jruby-prof)
+  * Lazy menus API
   
 Fixes:
 
