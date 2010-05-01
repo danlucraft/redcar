@@ -108,7 +108,7 @@ module Redcar
       new_window.refresh_menu
       new_window.show
       set_focussed_window(new_window)
-      puts "App#new_window took #{Time.now - s}s"
+      #puts "App#new_window took #{Time.now - s}s"
       new_window
     end   
     

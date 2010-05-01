@@ -852,10 +852,12 @@ module Redcar
       s = Time.now
       EditViewSWT.start
       puts "EditViewSWT.start took #{Time.now - s}s"
+      s = Time.now
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
       Redcar.app.refresh_menu!
       Redcar.app.load_sensitivities
+      puts "initializing gui took #{Time.now - s}s"
       s = Time.now
       Redcar::Project::Manager.start(args)
       puts "project start took #{Time.now - s}s"
