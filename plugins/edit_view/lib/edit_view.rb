@@ -38,17 +38,6 @@ module Redcar
       @tab_settings ||= TabSettings.new
     end
 
-    def self.quit
-      result = ModifiedTabsChecker.new(
-                  Redcar.app.all_tabs.select {|t| t.is_a?(EditTab)}, 
-                  "Save all before quitting?",
-                  :none     => lambda { true },
-                  :continue => lambda { true },
-                  :cancel   => lambda { false }
-                ).check
-      result
-    end
-
     # unused?      
     def self.storage
       @storage ||= Plugin::Storage.new('edit_view_plugin')
