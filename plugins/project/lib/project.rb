@@ -111,5 +111,16 @@ module Redcar
         Redcar.app.task_queue.submit(object.project_refresh_task_type.new(self))
       end
     end
+    
+    def lost_application_focus
+      @lost_application_focus = true
+    end
+    
+    def gained_focus
+      if @lost_application_focus
+        refresh
+      end
+      @lost_application_focus = nil
+    end
   end
 end

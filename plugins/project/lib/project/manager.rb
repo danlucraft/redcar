@@ -172,10 +172,11 @@ module Redcar
       
       def self.attach_app_listeners
         Redcar.app.add_listener(:lost_focus) do
+          Manager.open_projects.each {|project| project.lost_application_focus }
         end
         
-        Redcar.app.add_listener(:focussed) do
-          Manager.open_projects.each {|project| project.refresh }
+        Redcar.app.add_listener(:window_focussed) do |win|
+          Manager.in_window(win).andand.gained_focus
         end
       end
       
