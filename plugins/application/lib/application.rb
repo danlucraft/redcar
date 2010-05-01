@@ -260,6 +260,7 @@ module Redcar
       end
       h3 = window.add_listener(:focussed) do |win|
         self.focussed_window = win
+        notify_listeners(:window_focussed, win)
       end
       h4 = window.add_listener(:new_notebook) do |win|
         notify_listeners(:notebook_change)
