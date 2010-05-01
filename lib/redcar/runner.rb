@@ -17,7 +17,7 @@ module Redcar
         exit 1
       end
       ENV['RUBYOPT'] = nil # disable other native args
-      command = "java #{java_args} -Xmx500m -Xss1024k -Djruby.memory.max=500m -Djruby.stack.max=1024k -cp \"#{jruby_complete}\" org.jruby.Main \"#{bin}\" #{cleaned_args} --no-sub-jruby"
+      command = "java #{java_args} -Xmx500m -Xss1024k -Djruby.memory.max=500m -Djruby.stack.max=1024k -cp \"#{jruby_complete}\" org.jruby.Main #{"--debug" if debug_mode?} \"#{bin}\" #{cleaned_args} --no-sub-jruby"
       puts command
       exec(command)
     end
@@ -30,6 +30,10 @@ module Redcar
           arg
         end
       end.join(' ')
+    end
+    
+    def debug_mode?
+      ARGV.include?("--debug")
     end
     
     def java_args
