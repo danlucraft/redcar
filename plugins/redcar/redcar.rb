@@ -170,7 +170,7 @@ module Redcar
 
     class PrintScopeCommand < Command
       def execute
-        p tab.edit_view.document.cursor_scope
+        Application::Dialog.tool_tip(tab.edit_view.document.cursor_scope.gsub(" ", "\n"))
       end
     end
     
@@ -656,6 +656,8 @@ module Redcar
         link "Cmd+Shift+[",     SwitchTabDownCommand
         link "Cmd+Shift+]",     SwitchTabUpCommand
 
+        link "Ctrl+Shift+P",    PrintScopeCommand
+        
         link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
         
         link "Cmd+Alt+S", Snippets::OpenSnippetExplorer
@@ -703,6 +705,8 @@ module Redcar
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
         
+        link "Ctrl+Shift+P",    PrintScopeCommand
+
         link "Ctrl+Alt+O",       SwitchNotebookCommand
         
         link "Ctrl+Page Up",       SwitchTabDownCommand
@@ -782,13 +786,12 @@ module Redcar
         end
         sub_menu "Project" do
           item "Find File", Project::FindFileCommand
+          item "Refresh Directory", Project::RefreshDirectoryCommand
         end
         sub_menu "Debug" do
           item "Task Manager", TaskManager::OpenCommand
-          item "Refresh Directory", Project::RefreshDirectoryCommand
-          item "Dialog Tester", DialogExample
           separator
-          item "Print Scope Tree", PrintScopeTreeCommand
+          #item "Print Scope Tree", PrintScopeTreeCommand
           item "Print Scope at Cursor", PrintScopeCommand
         end
         sub_menu "View" do
