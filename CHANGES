@@ -1,6 +1,6 @@
 
-Version 0.3.5dev (TBA)
-======================
+Version 0.3.5dev (1 May 2010)
+=============================
 
 Enhancements:
   
@@ -27,6 +27,7 @@ Enhancements:
   * Smart indentation as you type (based on Textmate bundle rules)
   * Add profiling commands to the Debug menu (uses jruby-prof)
   * Lazy menus API
+  * Commands to profile Redcar with jruby-prof.
   
 Fixes:
 
