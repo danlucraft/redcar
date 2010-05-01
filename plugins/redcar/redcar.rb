@@ -3,10 +3,13 @@ module Redcar
     class QuitCommand < Command
       
       def execute
-        should_abort = Redcar.plugin_manager.loaded_plugins.detect {|pl| !Plugin.call(pl.object, :quit, true) }
-        unless should_abort
-          Redcar.app.quit
-        end
+        EditView::ModifiedTabsChecker.new(
+          Redcar.app.all_tabs.select {|t| t.is_a?(EditTab)},
+          "Save all before quitting?",
+          :none     => lambda { Redcar.app.quit },
+          :continue => lambda { Redcar.app.quit },
+          :cancel   => nil
+        ).check
       end
     end
     
