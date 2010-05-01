@@ -108,7 +108,7 @@ module Redcar
       new_window.refresh_menu
       new_window.show
       set_focussed_window(new_window)
-      puts "App#new_window took #{Time.now - s}s"
+      #puts "App#new_window took #{Time.now - s}s"
       new_window
     end   
     
@@ -260,6 +260,7 @@ module Redcar
       end
       h3 = window.add_listener(:focussed) do |win|
         self.focussed_window = win
+        notify_listeners(:window_focussed, win)
       end
       h4 = window.add_listener(:new_notebook) do |win|
         notify_listeners(:notebook_change)

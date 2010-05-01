@@ -112,10 +112,15 @@ module Redcar
       end
 
       def handle_tag(token = '')
-        matches = find_tag(token)
+        tags_path = Declarations.file_path(Project::Manager.focussed_project)
+        unless ::File.exist?(tags_path)
+          Application::Dialog.message_box("The declarations file 'tags' has not been generated yet.")
+          return
+        end
+        matches = find_tag(tags_path, token)
         case matches.size
         when 0
-          Application::Dialog.message_box("There is no definition for '#{token}' in the tags file.")
+          Application::Dialog.message_box("There is no declaration for '#{token}' in the 'tags' file.")
         when 1
           Redcar::Declarations.go_to_definition(matches.first)
         else
@@ -123,8 +128,8 @@ module Redcar
         end
       end
 
-      def find_tag(tag)
-        Declarations.tags_for_path(Declarations.file_path(Project::Manager.focussed_project))[tag] || []
+      def find_tag(tags_path, tag)
+        Declarations.tags_for_path(tags_path)[tag] || []
       end
 
       def open_select_tag_dialog(matches)

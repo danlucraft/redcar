@@ -29,6 +29,7 @@ module Redcar
       @tree   = Tree.new(Project::DirMirror.new(path),
                          Project::DirController.new)
       @window = nil
+      file_list_resource.compute
     end
     
     def inspect
@@ -90,7 +91,7 @@ module Redcar
     
     def file_list_resource
       @resource ||= Resource.new("refresh file list for #{@path}") do
-        project_changes = file_list.update
+        file_list.update
         send_refresh_to_plugins
       end
     end
@@ -109,6 +110,17 @@ module Redcar
       Redcar.plugin_manager.objects_implementing(:project_refresh_task_type).each do |object|
         Redcar.app.task_queue.submit(object.project_refresh_task_type.new(self))
       end
+    end
+    
+    def lost_application_focus
+      @lost_application_focus = true
+    end
+    
+    def gained_focus
+      if @lost_application_focus
+        refresh
+      end
+      @lost_application_focus = nil
     end
   end
 end

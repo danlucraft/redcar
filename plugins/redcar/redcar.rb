@@ -3,10 +3,13 @@ module Redcar
     class QuitCommand < Command
       
       def execute
-        should_abort = Redcar.plugin_manager.loaded_plugins.detect {|pl| !Plugin.call(pl.object, :quit, true) }
-        unless should_abort
-          Redcar.app.quit
-        end
+        EditView::ModifiedTabsChecker.new(
+          Redcar.app.all_tabs.select {|t| t.is_a?(EditTab)},
+          "Save all before quitting?",
+          :none     => lambda { Redcar.app.quit },
+          :continue => lambda { Redcar.app.quit },
+          :cancel   => nil
+        ).check
       end
     end
     
@@ -167,7 +170,7 @@ module Redcar
 
     class PrintScopeCommand < Command
       def execute
-        p tab.edit_view.document.cursor_scope
+        Application::Dialog.tool_tip(tab.edit_view.document.cursor_scope.gsub(" ", "\n"))
       end
     end
     
@@ -653,6 +656,8 @@ module Redcar
         link "Cmd+Shift+[",     SwitchTabDownCommand
         link "Cmd+Shift+]",     SwitchTabUpCommand
 
+        link "Ctrl+Shift+P",    PrintScopeCommand
+        
         link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
         
         link "Cmd+Alt+S", Snippets::OpenSnippetExplorer
@@ -700,6 +705,8 @@ module Redcar
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
         
+        link "Ctrl+Shift+P",    PrintScopeCommand
+
         link "Ctrl+Alt+O",       SwitchNotebookCommand
         
         link "Ctrl+Page Up",       SwitchTabDownCommand
@@ -779,13 +786,12 @@ module Redcar
         end
         sub_menu "Project" do
           item "Find File", Project::FindFileCommand
+          item "Refresh Directory", Project::RefreshDirectoryCommand
         end
         sub_menu "Debug" do
           item "Task Manager", TaskManager::OpenCommand
-          item "Refresh Directory", Project::RefreshDirectoryCommand
-          item "Dialog Tester", DialogExample
           separator
-          item "Print Scope Tree", PrintScopeTreeCommand
+          #item "Print Scope Tree", PrintScopeTreeCommand
           item "Print Scope at Cursor", PrintScopeCommand
         end
         sub_menu "View" do
@@ -849,10 +855,12 @@ module Redcar
       s = Time.now
       EditViewSWT.start
       puts "EditViewSWT.start took #{Time.now - s}s"
+      s = Time.now
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
       Redcar.app.refresh_menu!
       Redcar.app.load_sensitivities
+      puts "initializing gui took #{Time.now - s}s"
       s = Time.now
       Redcar::Project::Manager.start(args)
       puts "project start took #{Time.now - s}s"

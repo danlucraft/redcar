@@ -86,11 +86,11 @@ module Redcar
     end
     
     def win
-      env[:win]
+      @win || env[:win]
     end
     
     def tab
-      env[:tab]
+      @tab || env[:tab]
     end
   end
 end

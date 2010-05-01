@@ -15,7 +15,10 @@ module Redcar
           )
           case result
           when :yes
-            modified_edit_tabs.each {|t| t.edit_view.document.save! }
+            modified_edit_tabs.each do |t|
+              t.focus
+              Project::FileSaveCommand.new(t).run
+            end
             @options[:continue] ? @options[:continue].call : nil
           when :no
             @options[:continue] ? @options[:continue].call : nil

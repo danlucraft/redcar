@@ -22,7 +22,7 @@ module Redcar
     
     class StartProfilingCommand < Redcar::Command
       def execute
-        require 'rubygems'
+        $:.unshift(File.dirname(__FILE__) + '/../vendor/jruby-prof/lib/')
         require 'jruby-prof'
         JRubyProf.start
       end

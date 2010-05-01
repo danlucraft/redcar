@@ -33,9 +33,11 @@ module Redcar
     end
     
     class FileSaveCommand < EditTabCommand
+      def initialize(tab=nil)
+        @tab = tab
+      end
 
       def execute
-        tab = win.focussed_notebook.focussed_tab
         if tab.edit_view.document.mirror
           tab.edit_view.document.save!
           Project::Manager.refresh_modified_file(tab.edit_view.document.mirror.path)
@@ -47,12 +49,12 @@ module Redcar
     
     class FileSaveAsCommand < EditTabCommand
       
-      def initialize(path = nil)
+      def initialize(tab=nil, path=nil)
+        @tab  = tab
         @path = path
       end
 
       def execute
-        tab = win.focussed_notebook.focussed_tab
         path = get_path
         if path
           contents = tab.edit_view.document.to_s
