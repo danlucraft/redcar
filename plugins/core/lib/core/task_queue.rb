@@ -36,7 +36,7 @@ module Redcar
         
     def stop
       @mutex.synchronize do
-        @executor.shutdown
+        @executor.shutdown_now
       end
     end
     

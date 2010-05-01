@@ -22,6 +22,6 @@ end
 class BlockingTask < QuickTask
   def execute
     $started_tasks << @id
-    loop {}
+    loop { break if java.lang.Thread.interrupted }
   end
 end
