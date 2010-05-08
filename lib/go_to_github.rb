@@ -18,7 +18,7 @@ module Redcar
       Menu::Builder.build do
         sub_menu "Plugins" do
           sub_menu "Go to GitHub" do
-            item "Show currnet line in Github!", ShowLineInGithub
+            item "Show current line in Github!", ShowLineInGithub
             item "Edit plugin", EditGoToGithub
           end
         end
@@ -52,9 +52,9 @@ module Redcar
         
     class EditGoToGithub < Redcar::Command
       def execute        
-        Project::Manager.open_project_for_path(File.join(Redcar.user_dir, "plugins", "go_to_github"))                
+        Project::Manager.open_project_for_path(File.join(Redcar.user_dir, "plugins", "go-to-github"))                
         tab  = Redcar.app.focussed_window.new_tab(Redcar::EditTab)                
-        mirror = Project::FileMirror.new(File.join(Redcar.user_dir, "plugins", "go_to_github", "lib", "go_to_github.rb"))
+        mirror = Project::FileMirror.new(File.join(Redcar.user_dir, "plugins", "go-to-github", "lib", "go_to_github.rb"))
         tab.edit_view.document.mirror = mirror        
         tab.edit_view.reset_undo
         tab.focus
