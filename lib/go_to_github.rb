@@ -36,7 +36,7 @@ module Redcar
         begin
           branch = `cd #{path} && git branch --no-color 2> /dev/null`.match(/\*\ (.*)\n/)[1]          
           remote = `cd #{path} && git remote`.gsub("\n", "")        
-          project_name = `cd #{path} && git config --get remote.#{remote}.url`.match(/git@github.com:(.*)\.git\n/)[1]                    
+          project_name = `cd #{path} && git config --get remote.#{remote}.url`.match(/github.com[:|\/](.*)\.git\n/)[1]                              
           
           raise unless branch && remote && project_name
           
