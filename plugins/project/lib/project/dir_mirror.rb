@@ -13,7 +13,7 @@ module Redcar
       
       # Does the directory exist?
       def exists?
-        File.exist?(@path)
+        File.exist?(@path) && File.directory?(@path)
       end
       
       # Have the toplevel nodes changed?
