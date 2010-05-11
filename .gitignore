@@ -5,6 +5,8 @@
 *.log.*
 *.class
 
+**/*.swp
+
 redcar.gemspec
 
 lib/*.jar
