@@ -116,11 +116,9 @@ module Redcar
       #
       # @param [String] path  the path of the directory to view
       def self.open_project_for_path(path)
-        if File.readable?(File.expand_path(path)) 
-          win     = Redcar.app.new_window
-          project = Project.new(path).tap do |p|
-            p.open(win)
-          end
+        win     = Redcar.app.new_window
+        project = Project.new(path).tap do |p|
+          p.open(win) if p.ready?
         end
       end
       
