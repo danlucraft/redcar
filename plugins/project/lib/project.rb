@@ -30,6 +30,10 @@ module Redcar
       end
     end
     
+    def ready?
+      @tree && @path
+    end
+
     def inspect
       "<Project #{path}>"
     end
