@@ -23,7 +23,7 @@ module Redcar
     def initialize(path)
       @path   = File.expand_path(path)
       dir_mirror = Project::DirMirror.new(path)
-      if dir_mirror.exist?(path)
+      if dir_mirror.exists?
         @tree   = Tree.new(dir_mirror, Project::DirController.new)
         @window = nil
         file_list_resource.compute
