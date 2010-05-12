@@ -1,8 +1,12 @@
 
 Plugin.define do
-  name    "go-to-github"
-  version "0.1b"
-  file    "lib", "go_to_github"
-  object  "Redcar::GoToGithub"
-  dependencies "redcar", ">0"
+  name    "find-in-project"
+  version "0.1.0"
+  
+  
+  object  "Redcar::FindInProject"
+  file    "lib", "find_in_project"
+  
+  dependencies "core", ">0",
+               "HTML View", ">=0.3.2"  
 end
