@@ -32,6 +32,11 @@ module Redcar
       end
       
       class Node
+
+        include Redcar::Tree::Mirror::NodeMirror
+
+        attr_reader :path
+
         def self.create_all_from_path(path)
           Dir[path + "/*"].sort_by do |fn|
             File.basename(fn).downcase
@@ -47,10 +52,6 @@ module Redcar
         def self.cache
           @cache ||= {}
         end
-        
-        include Redcar::Tree::Mirror::NodeMirror
-        
-        attr_reader :path
         
         def initialize(path)
           @path = path
