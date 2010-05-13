@@ -45,18 +45,20 @@ module Redcar
         
         def index
           @plugin_path = File.join(File.dirname(__FILE__), "..")
-          @files ||= ".gitignore tags"
-          @dirs ||= ".git .svn *.log"
+          @files ||= ".gitignore tags *.log"
+          @dirs ||= ".git .svn"
           @includes ||= "*.*"
+          @lines ||= 100
           rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "views", "index.html.erb")))
           rhtml.result(binding)
         end
         
-        def find(query, files, dirs, includes)
+        def find(query, files, dirs, includes, lines)
           @query = query
           @files = files
           @dirs = dirs
           @includes = includes
+          @lines = lines.to_i
                   
           options = "-r -n -H -E --binary-files='without-match' "
           
@@ -72,9 +74,16 @@ module Redcar
             options << "--include=\"#{inc}\" "
           end      
           
-          path = Project::Manager.focussed_project.path
-          @output = `cd #{path}; grep "#{query}" #{options} .`
-          @outputs = @output.split("\n")        
+          if @lines
+            head = "| head -n#{lines.to_i}"
+          else
+            head = ''
+          end
+          
+          path = Project::Manager.focussed_project.path                    
+          @output = `cd #{path}; grep "#{query}" #{options} . #{head}`
+          @outputs = @output.split("\n")            
+          Redcar.app.focussed_window.focussed_notebook_tab.html_view.controller = self                      
           1
         end  
         

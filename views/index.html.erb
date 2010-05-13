@@ -5,18 +5,27 @@
 <link rel="stylesheet" href="file://<%= css_path %>" type="text/css" media="screen">
 <h3>Find in project</h3>
 <form id="form">
-<label for="dirs">Exclude dirs:</label>
-<input id="dirs" type="text" value="<%= @dirs %>"/>
-<br />
-<label for="files">Exclude files:</label>
-<input id="files" type="text" value="<%= @files %>"/>
-<br />
-<label for="includes">Include files:</label>
-<input id="includes" type="text" value="<%= @includes %>"/>
-<br />
-<label for="query">Find:</label>
-<input id="query" type="text" value="<%= @query %>"/>
-<input id="search" type="submit" value="Find in project"/>
+  <label for="query">Find:</label>
+  <input id="query" type="text" value="<%= @query %>"/> (regex)
+  <input id="search" type="submit" value="Find in project"/>
+  <div id="show_options">
+    <a href="#" >Show advanced options</a>
+  </div>
+  <div id="advanced_options">
+    <br/>
+    <label for="dirs">Exclude dirs:</label>
+    <input id="dirs" type="text" value="<%= @dirs %>"/>
+    <br />
+    <label for="files">Exclude files:</label>
+    <input id="files" type="text" value="<%= @files %>"/>
+    <br />
+    <label for="includes">Include files:</label>
+    <input id="includes" type="text" value="<%= @includes %>"/>
+    <br />
+    <label for="lines">Number of results:</label>
+    <input id="lines" type="text" value="<%= @lines %>"/>
+    <br />
+  </div>
 </form>
 <div id="output">
 <table>
@@ -31,7 +40,7 @@
       <%= out[1] %>
     </td>
     <td class="content">
-      <%= CGI.escapeHTML(out[2] || "").gsub("#{@query}", "<b>#{@query}</b>") %>
+      <%= CGI.escapeHTML(out[2] || "").gsub(/(#{@query.gsub("/", "\\/")})/, '<b>\1</b>') %>
     </td>
   </tr>
 <% end %>
@@ -46,24 +55,31 @@
     var files = $("#files").val();
     var dirs = $("#dirs").val();
     var includes = $("#includes").val();
-    search.attr('disabled', 'disabled');
-    search.val("wait...");
+    var lines = $("#lines").val();
     try {
-      Controller.find(query, files, dirs, includes);
+      Controller.find(query, files, dirs, includes, lines);
     } catch(e) {
       alert(e.message);
     }
-    window.location = "controller/index";
     return false;
   });
 
-  $("a").click(function(e) {
+  $("table a").click(function(e) {
     e.preventDefault(); 
     try {
       Controller.openFile($(this).attr('href'), $(this).attr('line'));
     } catch(e) {
       alert(e.message);
     }
+  });
+
+  $("#show_options a").click(function(e) {
+    e.preventDefault(); 
+    $("#advanced_options").show();
+  });
+
+  $(document).ready(function() {
+    
   });
 
   
