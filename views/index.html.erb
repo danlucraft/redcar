@@ -10,14 +10,13 @@
   <input id="search" type="submit" value="Find in project"/>
   <br />
   <label for="match_case">
-  <input type="checkbox" id="match_case" <%="checked=checked" if @match_case %>"> Match case
+    <input type="checkbox" id="match_case" <%="checked=checked" if @match_case %>> Match case
   </label>
   <br />
   <div id="show_options">
     <a href="#" >Show advanced options</a>
   </div>
   <div id="advanced_options">
-    <br/>
     <label for="dirs">Exclude dirs:</label>
     <input id="dirs" type="text" value="<%= @dirs %>"/>
     <br />
@@ -85,6 +84,7 @@
   $("#show_options a").click(function(e) {
     e.preventDefault(); 
     $("#advanced_options").show();
+    $(this).hide();
   });
 
   $(document).ready(function() {

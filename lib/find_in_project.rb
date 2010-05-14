@@ -111,7 +111,10 @@ module Redcar
           mirror = Project::FileMirror.new(File.join(Project::Manager.focussed_project.path, file))
           tab.edit_view.document.mirror = mirror        
           tab.edit_view.reset_undo          
-          tab.edit_view.document.scroll_to_line(line.to_i-2)
+          doc = tab.edit_view.document
+          doc.scroll_to_line(line.to_i-5)          
+          doc.cursor_offset = doc.offset_at_line(line.to_i - 1)
+          doc.set_selection_range(doc.cursor_line_start_offset, doc.cursor_line_end_offset)
           tab.focus           
           1
         end
