@@ -20,12 +20,25 @@ module Redcar
       Menu::Builder.build do
         sub_menu "Plugins" do
           sub_menu "Find in project" do
-            item "find!", FindInProject::OpenCommand
+            item "Find in project!", FindInProject::OpenCommand
             item "Edit plugin", FindInProject::EditFindInProject
+            item "Edit preferences", FindInProject::EditPreferences
           end
         end
       end
     end    
+    
+    def self.storage
+      @storage ||= begin
+        storage = Plugin::Storage.new('find_in_project')
+        storage.set_default('exclude_dirs', '.git .svn')
+        storage.set_default('exclude_files', '.gitignore tags *.log') 
+        storage.set_default('include_files', '*.*')
+        storage.set_default('number_of_results', '1000')
+        storage.set_default('match_case', false)
+        storage
+      end
+    end
     
     class OpenCommand < Redcar::Command
 
@@ -45,20 +58,22 @@ module Redcar
         
         def index
           @plugin_path = File.join(File.dirname(__FILE__), "..")
-          @files ||= ".gitignore tags *.log"
-          @dirs ||= ".git .svn"
-          @includes ||= "*.*"
-          @lines ||= 100
+          @files ||= FindInProject.storage['exclude_files']
+          @dirs ||= FindInProject.storage['exclude_dirs']
+          @includes ||= FindInProject.storage['include_files']
+          @lines ||= FindInProject.storage['number_of_results'].to_i
+          @match_case = FindInProject.storage['match_case'] if @match_case.nil?
           rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "views", "index.html.erb")))
           rhtml.result(binding)
         end
         
-        def find(query, files, dirs, includes, lines)
+        def find(query, files, dirs, includes, lines, match_case)
           @query = query
           @files = files
           @dirs = dirs
           @includes = includes
           @lines = lines.to_i
+          @match_case = (match_case == "true" ? true : false)
                   
           options = "-r -n -H -E --binary-files='without-match' "
           
@@ -78,6 +93,10 @@ module Redcar
             head = "| head -n#{lines.to_i}"
           else
             head = ''
+          end
+          
+          if !@match_case
+            options << "-i "
           end
           
           path = Project::Manager.focussed_project.path                    
@@ -106,6 +125,16 @@ module Redcar
         Project::Manager.open_project_for_path(File.join(Redcar.user_dir, "plugins", "find-in-project"))                
         tab  = Redcar.app.focussed_window.new_tab(Redcar::EditTab)
         mirror = Project::FileMirror.new(File.join(Redcar.user_dir, "plugins", "find-in-project", "lib", "find_in_project.rb"))
+        tab.edit_view.document.mirror = mirror        
+        tab.edit_view.reset_undo
+        tab.focus
+      end
+    end
+    
+    class EditPreferences < Redcar::Command
+      def execute             
+        tab  = Redcar.app.focussed_window.new_tab(Redcar::EditTab)
+        mirror = Project::FileMirror.new(File.join(Redcar.user_dir, "storage", "find_in_project.yaml"))
         tab.edit_view.document.mirror = mirror        
         tab.edit_view.reset_undo
         tab.focus

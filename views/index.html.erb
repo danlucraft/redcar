@@ -8,6 +8,11 @@
   <label for="query">Find:</label>
   <input id="query" type="text" value="<%= @query %>"/> (regex)
   <input id="search" type="submit" value="Find in project"/>
+  <br />
+  <label for="match_case">
+  <input type="checkbox" id="match_case" <%="checked=checked" if @match_case %>"> Match case
+  </label>
+  <br />
   <div id="show_options">
     <a href="#" >Show advanced options</a>
   </div>
@@ -40,7 +45,7 @@
       <%= out[1] %>
     </td>
     <td class="content">
-      <%= CGI.escapeHTML(out[2] || "").gsub(/(#{@query.gsub("/", "\\/")})/, '<b>\1</b>') %>
+      <%= CGI.escapeHTML(out[2] || "").gsub(( @match_case ? /(#{@query.gsub("/", "\\/")})/ : /(#{@query.gsub("/", "\\/")})/i), '<b>\1</b>') %>
     </td>
   </tr>
 <% end %>
@@ -56,8 +61,12 @@
     var dirs = $("#dirs").val();
     var includes = $("#includes").val();
     var lines = $("#lines").val();
+    var match_case = "false"    
+    if ($('#match_case').attr('checked')) {
+     match_case = "true";
+    }    
     try {
-      Controller.find(query, files, dirs, includes, lines);
+      Controller.find(query, files, dirs, includes, lines, match_case);
     } catch(e) {
       alert(e.message);
     }
@@ -79,7 +88,7 @@
   });
 
   $(document).ready(function() {
-    
+    $("#query").focus().select();
   });
 
   
