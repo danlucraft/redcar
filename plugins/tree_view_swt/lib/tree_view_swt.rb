@@ -21,6 +21,7 @@ module Redcar
       
       if @model.tree_controller
         @viewer.add_tree_listener(@viewer.getControl, TreeListener.new)
+        @viewer.add_double_click_listener(DoubleClickListener.new)
         @viewer.add_open_listener(OpenListener.new(@model.tree_controller))
       end
       
@@ -65,6 +66,20 @@ module Redcar
     
     class DoubleClickListener
       def double_click(e)
+
+        double_clicked_element = e.get_viewer.get_selection.get_first_element
+
+        #do nothing for leaves
+        return if double_clicked_element.leaf?
+
+        viewer = e.get_viewer
+        node_is_expanded = viewer.getExpandedState(double_clicked_element) 
+
+        if node_is_expanded
+          viewer.collapseToLevel(double_clicked_element, 1)
+        else
+          viewer.expandToLevel(double_clicked_element, 1)
+        end
       end
     end
     
