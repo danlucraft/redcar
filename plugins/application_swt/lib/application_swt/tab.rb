@@ -1,7 +1,8 @@
 module Redcar
   class ApplicationSWT
     class Tab
-      attr_reader :item, :model, :notebook
+      attr_reader :model, :notebook
+      attr_accessor :item
       
       FILE_ICON = File.join(Redcar.root, %w(plugins application lib application assets file.png))
       

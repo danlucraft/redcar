@@ -6,7 +6,7 @@ module Redcar
         include org.eclipse.swt.dnd.DropTargetListener
         
         # CTabItem state
-        STATE_VARIABLES = [:control, :font, :tool_tip_text, :text, :image, :data]
+        STATE_VARIABLES = [:control, :font, :tool_tip_text, :text, :image]
         
         def initialize(tab_folder)
           @tab_folder = tab_folder
@@ -37,7 +37,7 @@ module Redcar
         
         def insert(item1, item2)
           # Save the values of the item to be moved
-          saved_values = STATE_VARIABLES.collect {|v| item1.send(v)}
+          saved_values = STATE_VARIABLES.collect {|v| item1.send(v)} << item1.data
 
           if @tab_folder.index_of(item1) < @tab_folder.index_of(item2)
             insert_after(item1, item2)
@@ -49,6 +49,7 @@ module Redcar
           STATE_VARIABLES.each_with_index do |v, idx|
             item2.send(:"#{v}=", saved_values[idx])
           end
+          saved_values.last.item = item2 # The next items controller now controls us!
           @tab_folder.set_selection(item2)
         end
         
@@ -70,6 +71,7 @@ module Redcar
             STATE_VARIABLES.each do |v|
               item.send(:"#{v}=", next_item.send(v))
             end
+            next_item.data.item = item # The next items controller now controls us!
           end
         end
         
