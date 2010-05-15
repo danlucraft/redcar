@@ -64,7 +64,7 @@ module Redcar
       end
       
       def register_tab_dnd(tab_folder)
-        dnd_listener = TabDragAndDropListener.new(tab_folder)
+        dnd_listener = TabDragAndDropListener.new(self)
         operations = (Swt::DND::DND::DROP_COPY | Swt::DND::DND::DROP_DEFAULT | Swt::DND::DND::DROP_MOVE)
         transfer_types = [TabTransfer.get_instance].to_java(:"org.eclipse.swt.dnd.ByteArrayTransfer")
         

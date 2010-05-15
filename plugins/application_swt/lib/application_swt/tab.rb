@@ -6,21 +6,29 @@ module Redcar
       
       FILE_ICON = File.join(Redcar.root, %w(plugins application lib application assets file.png))
       
-      def initialize(model, notebook)
+      def initialize(model, notebook, position = nil)
         @model, @notebook = model, notebook
-        create_item_widget
+        create_item_widget(position || @notebook.tab_folder.item_count)
         create_tab_widget
         attach_listeners
       end
       
-      def create_item_widget
+      def move_to_position(position)
+        # CTabItem state
+        state_variables = [:control, :font, :tool_tip_text, :text, :image]
+        view_state = state_variables.collect {|var| @item.send(var)}
+        create_item_widget(position)
+        state_variables.each_with_index {|var, idx| @item.send(:"#{var}=", view_state[idx])}
+        focus
+      end
+      
+      def create_item_widget(position)
         if @item
           @item.dispose
         end
-        @item = Swt::Custom::CTabItem.new(notebook.tab_folder, Swt::SWT::CLOSE)
+        @item = Swt::Custom::CTabItem.new(notebook.tab_folder, Swt::SWT::CLOSE, position)
         icon = Swt::Graphics::Image.new(ApplicationSWT.display, FILE_ICON)
         @item.image = icon
-        @item.data = self
       end
       
       def create_tab_widget
