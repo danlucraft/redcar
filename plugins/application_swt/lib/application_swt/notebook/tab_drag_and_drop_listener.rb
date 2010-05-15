@@ -6,7 +6,7 @@ module Redcar
         include org.eclipse.swt.dnd.DropTargetListener
         
         # CTabItem state
-        STATE_VARIABLES = [:control, :font, :tool_tip_text, :text, :image]
+        STATE_VARIABLES = [:control, :font, :tool_tip_text, :text, :image, :data]
         
         def initialize(tab_folder)
           @tab_folder = tab_folder

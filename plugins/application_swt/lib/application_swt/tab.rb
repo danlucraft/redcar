@@ -1,7 +1,7 @@
 module Redcar
   class ApplicationSWT
     class Tab
-      attr_reader :item, :model, :notebook, :widget
+      attr_reader :item, :model, :notebook
       
       FILE_ICON = File.join(Redcar.root, %w(plugins application lib application assets file.png))
       
@@ -17,19 +17,28 @@ module Redcar
           @item.dispose
         end
         @item = Swt::Custom::CTabItem.new(notebook.tab_folder, Swt::SWT::CLOSE)
-        @icon = Swt::Graphics::Image.new(ApplicationSWT.display, FILE_ICON)
-        @item.image = @icon
+        icon = Swt::Graphics::Image.new(ApplicationSWT.display, FILE_ICON)
+        @item.image = icon
+        @item.data = self
       end
       
       def create_tab_widget
-        @widget = Swt::Widgets::Text.new(notebook.tab_folder, Swt::SWT::MULTI)
-        @widget.text = "Example of a tab"
-        @item.control = @widget
+        widget = Swt::Widgets::Text.new(notebook.tab_folder, Swt::SWT::MULTI)
+        widget.text = "Example of a tab"
+        @item.control = widget
+      end
+      
+      def widget
+        item.control
+      end
+      
+      def icon
+        item.image
       end
       
       def move_tab_widget_to_current_notebook
-        @widget.setParent(notebook.tab_folder)
-        @item.control = @widget
+        widget.setParent(notebook.tab_folder)
+        @item.control = widget
       end
       
       def set_notebook(notebook_controller)
@@ -51,9 +60,7 @@ module Redcar
       
       def close
         @item.dispose
-        @icon.dispose
       end
     end
   end
 end
-
