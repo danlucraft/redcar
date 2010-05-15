@@ -19,6 +19,7 @@ module Redcar
         view_state = state_variables.collect {|var| @item.send(var)}
         create_item_widget(position)
         state_variables.each_with_index {|var, idx| @item.send(:"#{var}=", view_state[idx])}
+        @notebook.recalculate_tab_order
         focus
       end
       

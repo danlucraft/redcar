@@ -116,6 +116,12 @@ module Redcar
         tab_model.deserialize(data)
       end
       
+      def recalculate_tab_order
+        @model.sort_tabs! do |a,b|
+          tab_folder.index_of(a.controller.item) <=> tab_folder.index_of(b.controller.item)
+        end
+      end
+      
       def dispose
         @tab_folder.dispose
       end

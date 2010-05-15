@@ -63,6 +63,10 @@ module Redcar
       notify_listeners(:tab_focussed, tab)
     end
     
+    def sort_tabs!(&block)
+      @tabs.sort! &block
+    end
+    
     # Focus the next tab to the right from the currently focussed tab.
     # Does not wrap.
     def switch_up
