@@ -5,6 +5,9 @@ module Redcar
         include org.eclipse.swt.dnd.DragSourceListener
         include org.eclipse.swt.dnd.DropTargetListener
         
+        # CTabItem state
+        STATE_VARIABLES = [:control, :font, :tool_tip_text, :text, :image]
+        
         def initialize(tab_folder)
           @tab_folder = tab_folder
         end
@@ -33,10 +36,18 @@ module Redcar
         end
         
         def insert(item1, item2)
+          # Save the values of the item to be moved
+          saved_values = STATE_VARIABLES.collect {|v| item1.send(v)}
+
           if @tab_folder.index_of(item1) < @tab_folder.index_of(item2)
             insert_after(item1, item2)
           else
             insert_before(item1, item2)
+          end
+
+          # finally, update the last item to make it the new position of the dropped item
+          STATE_VARIABLES.each_with_index do |v, idx|
+            item2.send(:"#{v}=", saved_values[idx])
           end
           @tab_folder.set_selection(item2)
         end
@@ -44,45 +55,22 @@ module Redcar
         def insert_after(item1, item2)
           # Exclude the last item from the list of moving items -> the moved on will go there
           moving_items = @tab_folder.get_items[@tab_folder.index_of(item1)...@tab_folder.index_of(item2)]
-          # Save the item's values, that is to be moved
-          saved_values = [item1.get_control, item1.get_font, item1.get_tool_tip_text, item1.get_text]
-          
-          moving_items.each do |item| # move all tabs down from right to left
-            next_item = @tab_folder.get_item(@tab_folder.index_of(item) + 1)
-            item.set_control(next_item.get_control)
-            item.set_font(next_item.get_font)
-            item.set_tool_tip_text(next_item.get_tool_tip_text)
-            item.set_text(next_item.get_text)
-          end
-          
-          # finally, update the last item to make it the new position of the dropped item
-          item2.set_control(saved_values[0])
-          item2.set_font(saved_values[1])
-          item2.set_tool_tip_text(saved_values[2])
-          item2.set_text(saved_values[3])
+          move_in_place(moving_items, 1) # move all tabs down from right to left
         end
         
         def insert_before(item1, item2)
           # Exclude the first item from the list of moving items -> the moved on will go there
-          moving_items_reverse = @tab_folder.get_items[(@tab_folder.index_of(item2) + 1)..@tab_folder.index_of(item1)]
-          # Save the item's values, that is to be moved to the front
-          saved_values = [item1.get_control, item1.get_font, item1.get_tool_tip_text, item1.get_text]
-          
-          moving_items = []
-          moving_items_reverse.each {|i| moving_items << i}
-          moving_items.reverse.each do |item| # move all tabs up from left to right
-            next_item = @tab_folder.get_item(@tab_folder.index_of(item) - 1)
-            item.set_control(next_item.get_control)
-            item.set_font(next_item.get_font)
-            item.set_tool_tip_text(next_item.get_tool_tip_text)
-            item.set_text(next_item.get_text)
+          moving_items = @tab_folder.get_items[(@tab_folder.index_of(item2) + 1)..@tab_folder.index_of(item1)]
+          move_in_place(moving_items.to_a.reverse, -1) # move all tabs up from left to right
+        end
+
+        def move_in_place(array, offset)
+          array.each do |item| # move all tabs up from left to right
+            next_item = @tab_folder.get_item(@tab_folder.index_of(item) + offset)
+            STATE_VARIABLES.each do |v|
+              item.send(:"#{v}=", next_item.send(v))
+            end
           end
-          
-          # finally, update the last item to make it the new position of the dropped item
-          item2.set_control(saved_values[0])
-          item2.set_font(saved_values[1])
-          item2.set_tool_tip_text(saved_values[2])
-          item2.set_text(saved_values[3])
         end
         
         # Must implement the java interface
