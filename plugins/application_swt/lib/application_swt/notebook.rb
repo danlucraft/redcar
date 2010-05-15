@@ -60,6 +60,21 @@ module Redcar
         grid_data = Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH)
         @tab_folder.set_layout_data(grid_data)
         @tab_folder.pack
+        register_tab_dnd(@tab_folder)
+      end
+      
+      def register_tab_dnd(tab_folder)
+        dnd_listener = TabDragAndDropListener.new(tab_folder)
+        operations = (Swt::DND::DND::DROP_COPY | Swt::DND::DND::DROP_DEFAULT | Swt::DND::DND::DROP_MOVE)
+        transfer_types = [TabTransfer.get_instance].to_java(:"org.eclipse.swt.dnd.ByteArrayTransfer")
+        
+        drag_source = Swt::DND::DragSource.new(tab_folder, operations)
+        drag_source.set_transfer(transfer_types)
+        drag_source.add_drag_listener(dnd_listener)
+        
+        drop_target = Swt::DND::DropTarget.new(tab_folder, operations)
+        drop_target.set_transfer(transfer_types)
+        drop_target.add_drop_listener(dnd_listener)
       end
       
       def style_tab_folder

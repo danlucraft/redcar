@@ -71,9 +71,19 @@ module Swt
   end
   
   module DND
+    import org.eclipse.swt.dnd.DND
     import org.eclipse.swt.dnd.Clipboard
     import org.eclipse.swt.dnd.Transfer
     import org.eclipse.swt.dnd.TextTransfer
+    import org.eclipse.swt.dnd.ByteArrayTransfer
+    
+    import org.eclipse.swt.dnd.DropTarget
+    import org.eclipse.swt.dnd.DropTargetEvent
+    import org.eclipse.swt.dnd.DropTargetListener
+    
+    import org.eclipse.swt.dnd.DragSource
+    import org.eclipse.swt.dnd.DragSourceEvent
+    import org.eclipse.swt.dnd.DragSourceListener
   end
   
   module Layout
