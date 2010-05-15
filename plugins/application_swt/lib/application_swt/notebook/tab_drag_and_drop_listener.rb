@@ -45,13 +45,20 @@ module Redcar
             tab_controller.move_to_position(tab_folder.index_of(item2))
           end
         end
+        
+        def dragOver(event)
+          if @dragging
+            target_tab_item = (tab_folder.item(tab_folder.to_control(event.x, event.y)) ||
+                tab_folder.items[tab_folder.item_count - 1])
+            tab_folder.set_insert_mark(target_tab_item, true)
+          end
+        end
 
         # Must implement the java interface
         def dragSetData(dsEvent); end
         def dragEnter(event); end
         def dragLeave(event); end
         def dragOperationChanged(event); end
-        def dragOver(event); end
         def drop(event); end
       end
     end
