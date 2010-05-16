@@ -615,6 +615,12 @@ module Redcar
         EditView.show_invisibles = !EditView.show_invisibles?
       end
     end
+    
+    class SelectNewFont < Command
+      def execute
+        Redcar::EditView::SelectFontDialog.new.open
+      end
+    end
 
     
     def self.keymaps
@@ -756,6 +762,7 @@ module Redcar
         end
         sub_menu "Edit" do
           item "Tab Info",  EditView::InfoSpeedbarCommand
+          item "Font", SelectNewFont
           separator
           item "Undo", UndoCommand
           item "Redo", RedoCommand

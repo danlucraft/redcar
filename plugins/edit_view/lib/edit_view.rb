@@ -13,6 +13,7 @@ require "edit_view/edit_tab"
 require "edit_view/modified_tabs_checker"
 require "edit_view/tab_settings"
 require "edit_view/info_speedbar"
+require "edit_view/select_font_dialog"
 
 module Redcar
   class EditView
@@ -185,8 +186,10 @@ module Redcar
         default_font = "Courier New"
         default_font_size = 9
       end
-      [ ARGV.option("font") || default_font, 
-        (ARGV.option("font-size") || default_font_size).to_i ]
+#      [ ARGV.option("font") || default_font, 
+#        (ARGV.option("font-size") || default_font_size).to_i ]
+      [ EditView.storage["font"] || default_font, 
+        EditView.storage["font-size"] || default_font_size ]
     end
     
     def self.font
@@ -195,6 +198,20 @@ module Redcar
     
     def self.font_size
       font_info[1]
+    end
+    
+    def self.font=(font)
+      EditView.storage["font"] = font
+      all_edit_views.each {|ev| ev.refresh_font }
+    end
+    
+    def refresh_font      
+      notify_listeners(:font_changed)
+    end
+    
+    def self.font_size=(size)
+      EditView.storage["font-size"] = size
+      all_edit_views.each {|ev| ev.refresh_font }
     end
     
     def self.theme
