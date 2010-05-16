@@ -8,7 +8,6 @@ Features still to port
   * Tests passing on 3 platforms
   * Full project support
   * Text/Source/Ruby bundle commands ported
-  * Drag and drop of tabs
   * Packaged for one-click install on 3 platforms
   * Ruby on Rails/HTML/CSS/YAML bundle commands ported
   
