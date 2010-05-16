@@ -5,6 +5,7 @@ Version 0.3.6dev (TBA)
 Enhancements:
 
   * Folders open in the project view on a double click
+  * Drag and drop to change order of tabs (within a notebook)
 
 New contributors:
 
