@@ -1,35 +1,54 @@
 module Redcar
   class ApplicationSWT
     class Tab
-      attr_reader :item, :model, :notebook, :widget
+      attr_reader :model, :notebook
+      attr_accessor :item
       
       FILE_ICON = File.join(Redcar.root, %w(plugins application lib application assets file.png))
       
-      def initialize(model, notebook)
+      def initialize(model, notebook, position = nil)
         @model, @notebook = model, notebook
-        create_item_widget
+        create_item_widget(position || @notebook.tab_folder.item_count)
         create_tab_widget
         attach_listeners
       end
       
-      def create_item_widget
+      def move_to_position(position)
+        # CTabItem state
+        state_variables = [:control, :font, :tool_tip_text, :text, :image]
+        view_state = state_variables.collect {|var| @item.send(var)}
+        create_item_widget(position)
+        state_variables.each_with_index {|var, idx| @item.send(:"#{var}=", view_state[idx])}
+        @notebook.recalculate_tab_order
+        focus
+      end
+      
+      def create_item_widget(position)
         if @item
           @item.dispose
         end
-        @item = Swt::Custom::CTabItem.new(notebook.tab_folder, Swt::SWT::CLOSE)
-        @icon = Swt::Graphics::Image.new(ApplicationSWT.display, FILE_ICON)
-        @item.image = @icon
+        @item = Swt::Custom::CTabItem.new(notebook.tab_folder, Swt::SWT::CLOSE, position)
+        icon = Swt::Graphics::Image.new(ApplicationSWT.display, FILE_ICON)
+        @item.image = icon
       end
       
       def create_tab_widget
-        @widget = Swt::Widgets::Text.new(notebook.tab_folder, Swt::SWT::MULTI)
-        @widget.text = "Example of a tab"
-        @item.control = @widget
+        widget = Swt::Widgets::Text.new(notebook.tab_folder, Swt::SWT::MULTI)
+        widget.text = "Example of a tab"
+        @item.control = widget
+      end
+      
+      def widget
+        item.control
+      end
+      
+      def icon
+        item.image
       end
       
       def move_tab_widget_to_current_notebook
-        @widget.setParent(notebook.tab_folder)
-        @item.control = @widget
+        widget.setParent(notebook.tab_folder)
+        @item.control = widget
       end
       
       def set_notebook(notebook_controller)
@@ -51,9 +70,7 @@ module Redcar
       
       def close
         @item.dispose
-        @icon.dispose
       end
     end
   end
 end
-

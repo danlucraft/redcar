@@ -5,7 +5,7 @@ module Redcar
       
       attr_reader :item, :edit_view
       
-      def initialize(model, notebook)
+      def initialize(*args)
         super
         @model.add_listener(:changed_title) { |title| @item.text = title }
       end

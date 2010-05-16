@@ -199,3 +199,9 @@
 [submodule "plugins/redcar_debug/vendor/jruby-prof"]
 	path = plugins/redcar_debug/vendor/jruby-prof
 	url = git://github.com/danlucraft/jruby-prof.git
+[submodule "textmate/Bundles/Smalltalk.tmbundle"]
+	path = textmate/Bundles/Smalltalk.tmbundle
+	url = http://github.com/indeyets/smalltalk.tmbundle.git
+[submodule "textmate/Bundles/Palm-WebOS-Development.tmbundle"]
+	path = textmate/Bundles/Palm-WebOS-Development.tmbundle
+	url = http://github.com/devilx/palm-webos-development-tmbundle.git

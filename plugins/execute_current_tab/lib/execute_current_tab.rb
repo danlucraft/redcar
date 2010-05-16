@@ -21,6 +21,8 @@ module Redcar
 
     class Execute < EditTabCommand
 
+      TITLE = "Output"
+
       def execute
         path = doc.path
         if path
@@ -32,14 +34,21 @@ module Redcar
           FileUtils.rm(path)
         end
       end
+      
+      def output_tab
+        tabs = win.notebooks.map {|nb| nb.tabs }.flatten
+        tabs.detect {|t| t.title == TITLE} || Top::NewCommand.new.run
+      end
 
       def execute_file(path)
-        command = "ruby \"#{path}\" 2>&1"
-        output = `#{command}`
-        new_tab = Top::NewCommand.new.run          
-        title = "Output from #{command}"
-        new_tab.document.text = title + "\n" + "="*title.length + "\n\n" + output
-        new_tab.title = 'Output'
+        command = "ruby \"#{path}\""
+        output = `#{command} 2>&1`
+        tab = output_tab
+        title = "[#{DateTime.now}]$ #{command}"
+        tab.document.text = "#{tab.document.to_s}" +
+          "#{"="*title.length}\n#{title}\n#{"="*title.length}\n\n#{output}"
+        tab.title = TITLE
+        tab.focus
       end
     end
 

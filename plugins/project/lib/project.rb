@@ -21,17 +21,19 @@ module Redcar
     attr_reader :window, :tree, :path
 
     def initialize(path)
-      path = File.expand_path(path)
-      if !File.directory?(path)
-      	raise 'Not a directory: ' + path
+      @path   = File.expand_path(path)
+      dir_mirror = Project::DirMirror.new(path)
+      if dir_mirror.exists?
+        @tree   = Tree.new(dir_mirror, Project::DirController.new)
+        @window = nil
+        file_list_resource.compute
       end
-      @path   = path
-      @tree   = Tree.new(Project::DirMirror.new(path),
-                         Project::DirController.new)
-      @window = nil
-      file_list_resource.compute
     end
     
+    def ready?
+      @tree && @path
+    end
+
     def inspect
       "<Project #{path}>"
     end
