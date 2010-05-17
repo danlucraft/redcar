@@ -5,8 +5,20 @@ module Redcar
         include org.eclipse.swt.dnd.DragSourceListener
         include org.eclipse.swt.dnd.DropTargetListener
         
+        class TabPaintListener
+          include org.eclipse.swt.events.PaintListener    
+          attr_writer :item
+      
+          def paintControl(event)
+            if @item
+              event.gc.draw_rectangle @item.bounds
+            end
+          end
+        end
+        
         def initialize(notebook)
           @notebook = notebook
+          @paint_listener = TabPaintListener.new
         end
         
         def tab_folder
@@ -16,19 +28,19 @@ module Redcar
         def dragStart(event)
           @dragging = true
           @source_item = tab_folder.selection
+          tab_folder.add_paint_listener(@paint_listener)
         end
         
         def dragFinished(event)
           @dragging = @source_item = nil
+          tab_folder.remove_paint_listener(@paint_listener)
+          tab_folder.redraw
         end
         
         def dropAccept(event)
           event.detail = Swt::DND::DND::DROP_NONE # Don't actually accept the drop as native DnD
           if @dragging && @source_item
-            target_tab_item = tab_folder.item(tab_folder.to_control(event.x, event.y))
-            unless target_tab_item # drop happened behing the tabs
-              target_tab_item = tab_folder.items[tab_folder.item_count - 1]
-            end
+            target_tab_item = event_to_tab_item(event)
             unless target_tab_item == @source_item # items need to be moved
               move_behind(@source_item, target_tab_item)
             end
@@ -42,13 +54,22 @@ module Redcar
             tab_controller.move_to_position(tab_folder.index_of(item2))
           end
         end
+        
+        def dragOver(event)
+          @paint_listener.item = event_to_tab_item(event)
+          tab_folder.redraw
+        end
+        
+        def event_to_tab_item(event)
+          tab_folder.item(tab_folder.to_control(event.x, event.y)) or 
+          tab_folder.items[tab_folder.item_count - 1]
+        end
 
         # Must implement the java interface
         def dragSetData(dsEvent); end
         def dragEnter(event); end
         def dragLeave(event); end
         def dragOperationChanged(event); end
-        def dragOver(event); end
         def drop(event); end
       end
     end
