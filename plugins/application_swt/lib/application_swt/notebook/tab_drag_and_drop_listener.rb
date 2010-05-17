@@ -5,11 +5,8 @@ module Redcar
         include org.eclipse.swt.dnd.DragSourceListener
         include org.eclipse.swt.dnd.DropTargetListener
         
-        # CTabItem state
-        STATE_VARIABLES = [:control, :font, :tool_tip_text, :text, :image]
-        
         def initialize(notebook)
-          @notebook   = notebook
+          @notebook = notebook
         end
         
         def tab_folder
@@ -57,3 +54,4 @@ module Redcar
     end
   end
 end
+
