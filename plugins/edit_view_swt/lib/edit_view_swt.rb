@@ -111,12 +111,15 @@ module Redcar
       h6 = @model.add_listener(:font_changed) do
         @mate_text.set_font(EditView.font, EditView.font_size)
       end
+      h7 = @model.add_listener(:theme_changed) do
+        @mate_text.set_theme_by_name(EditView.theme)
+      end
       @mate_text.getTextWidget.addFocusListener(FocusListener.new(self))
       @mate_text.getTextWidget.addVerifyListener(VerifyListener.new(@model.document, self))
       @mate_text.getTextWidget.addModifyListener(ModifyListener.new(@model.document, self))
       @mate_text.get_control.add_verify_key_listener(VerifyKeyListener.new(self))
       @mate_text.get_control.add_key_listener(KeyListener.new(self))
-      @handlers << [@model.document, h1] << [@model, h2] << [@model, h3] << [@model, h4] << [@model, h5] << [@model, h6]
+      @handlers << [@model.document, h1] << [@model, h2] << [@model, h3] << [@model, h4] << [@model, h5] << [@model, h6] << [@model, h7]
     end
     
     class VerifyKeyListener

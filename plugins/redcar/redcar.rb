@@ -622,6 +622,11 @@ module Redcar
       end
     end
 
+    class SelectTheme < Command
+      def execute
+        Redcar::EditView::SelectThemeDialog.new.open
+      end
+    end
     
     def self.keymaps
       osx = Redcar::Keymap.build("main", :osx) do
@@ -763,6 +768,7 @@ module Redcar
         sub_menu "Edit" do
           item "Tab Info",  EditView::InfoSpeedbarCommand
           item "Font", SelectNewFont
+          item "Theme", SelectTheme
           separator
           item "Undo", UndoCommand
           item "Redo", RedoCommand
