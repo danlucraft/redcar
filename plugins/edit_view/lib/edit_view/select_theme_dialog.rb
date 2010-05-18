@@ -9,6 +9,7 @@ module Redcar
         files.each do |name|
           file_name = name.split("/").last
           @matches << file_name.split(".").first
+          @matches.sort!
         end
       end
 

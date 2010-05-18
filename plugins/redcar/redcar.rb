@@ -628,6 +628,19 @@ module Redcar
       end
     end
     
+    class SelectFontSize < Command
+      def execute
+        result = Application::Dialog.input("Font Size", "Please enter new font size", Redcar::EditView.font_size.to_s) do |text|
+          if text.to_i  > 1 and text.to_i < 25
+            nil
+          else
+            "the font size must be > 1 and < 25"
+          end
+      	end
+        Redcar::EditView.font_size = result[:value].to_i if result[:button ] == :ok
+      end
+    end
+    
     def self.keymaps
       osx = Redcar::Keymap.build("main", :osx) do
         link "Cmd+N",       NewCommand
@@ -768,6 +781,7 @@ module Redcar
         sub_menu "Edit" do
           item "Tab Info",  EditView::InfoSpeedbarCommand
           item "Font", SelectNewFont
+          item "Font Size", SelectFontSize
           item "Theme", SelectTheme
           separator
           item "Undo", UndoCommand

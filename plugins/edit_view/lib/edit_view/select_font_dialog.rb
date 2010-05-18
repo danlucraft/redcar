@@ -8,7 +8,8 @@ module Redcar
         @matches = []
         (0..(fontdata.length-1)).each do |i|
           @matches << fontdata[i].get_name unless @matches.include?(fontdata[i].get_name)
-        end        
+        end
+        @matches.sort!
       end
 
       def close
