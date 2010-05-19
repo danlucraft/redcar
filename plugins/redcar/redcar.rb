@@ -616,7 +616,6 @@ module Redcar
       end
     end
 
-    
     def self.keymaps
       osx = Redcar::Keymap.build("main", :osx) do
         link "Cmd+N",       NewCommand

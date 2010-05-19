@@ -108,6 +108,9 @@ module Redcar
       h5 = @model.add_listener(:invisibles_changed) do |new_bool|
         @mate_text.showInvisibles(new_bool)
       end
+      h6 = @model.add_listener(:word_wrap_changed) do |new_bool|
+        @mate_text.set_word_wrap(new_bool)
+      end
       @mate_text.getTextWidget.addFocusListener(FocusListener.new(self))
       @mate_text.getTextWidget.addVerifyListener(VerifyListener.new(@model.document, self))
       @mate_text.getTextWidget.addModifyListener(ModifyListener.new(@model.document, self))

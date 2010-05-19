@@ -248,6 +248,7 @@ module Redcar
       @grammar = name
       self.tab_width = EditView.tab_settings.width_for(name)
       self.soft_tabs = EditView.tab_settings.softness_for(name)
+      self.word_wrap = EditView.tab_settings.word_wrap_for(name)
       refresh_show_invisibles
     end
     
@@ -277,6 +278,16 @@ module Redcar
       @soft_tabs = bool
       EditView.tab_settings.set_softness_for(grammar, bool)
       notify_listeners(:softness_changed, bool)
+    end
+    
+    def word_wrap?
+      @word_wrap
+    end
+    
+    def word_wrap=(bool)
+      @word_wrap = bool
+      EditView.tab_settings.set_word_wrap_for(grammar, bool)
+      notify_listeners(:word_wrap_changed, bool)
     end
     
     def show_invisibles?
