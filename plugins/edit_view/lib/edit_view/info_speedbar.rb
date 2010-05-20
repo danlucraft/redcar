@@ -19,6 +19,10 @@ module Redcar
         @tab.edit_view.soft_tabs = new_value
       end
       
+      toggle :word_wrap, "Word Wrap", nil, false do |new_value|
+        @tab.edit_view.word_wrap = new_value
+      end
+      
       def initialize(command, tab)
         @command = command
         tab_changed(tab)
