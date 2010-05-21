@@ -42,10 +42,9 @@ module Redcar
     
     class OpenCommand < Redcar::Command
 
-      def execute
-        controller = Controller.new
-        tab = find_open_instance        
-        if tab.nil?
+      def execute        
+        unless tab = find_open_instance
+          controller = Controller.new
           tab =  win.new_tab(HtmlTab)
           tab.html_view.controller = controller
         end
@@ -112,9 +111,9 @@ module Redcar
         def open_file(file, line)                    
           Project::Manager.open_file(File.join(Project::Manager.focussed_project.path, file))
           doc = Redcar.app.focussed_window.focussed_notebook_tab.edit_view.document          
-          doc.scroll_to_line(line.to_i-10)          
           doc.cursor_offset = doc.offset_at_line(line.to_i - 1)
           doc.set_selection_range(doc.cursor_line_start_offset, doc.cursor_line_end_offset)
+          doc.scroll_to_line(line.to_i)
           1
         end        
         
