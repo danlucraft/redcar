@@ -53,41 +53,40 @@
 
 <script language="javascript">
 
-  $('#form').submit(function() {
-    var query = $("#query").val();
-    var search = $("#search");
-    var files = $("#files").val();
-    var dirs = $("#dirs").val();
-    var includes = $("#includes").val();
-    var lines = $("#lines").val();
-    var match_case = "false"    
-    if ($('#match_case').attr('checked')) {
-     match_case = "true";
+  $(document).ready(function() {
+    $('#form').submit(function() {
+      var query = $("#query").val();
+      var search = $("#search");
+      var files = $("#files").val();
+      var dirs = $("#dirs").val();
+      var includes = $("#includes").val();
+      var lines = $("#lines").val();
+      var match_case = "false"    
+      if ($('#match_case').attr('checked')) {
+       match_case = "true";
     }    
     try {
-      Controller.find(query, files, dirs, includes, lines, match_case);
-    } catch(e) {
-      alert(e.message);
-    }
-    return false;
-  });
-
-  $("table a").click(function(e) {
-    e.preventDefault(); 
-    try {
-      Controller.openFile($(this).attr('href'), $(this).attr('line'));
-    } catch(e) {
-      alert(e.message);
-    }
-  });
-
-  $("#show_options a").click(function(e) {
-    e.preventDefault(); 
-    $("#advanced_options").show();
-    $(this).hide();
-  });
-
-  $(document).ready(function() {
+        Controller.find(query, files, dirs, includes, lines, match_case);
+      } catch(e) {
+        alert(e.message);
+      }
+      return false;
+    });
+    
+    $("table a").click(function(e) {
+      e.preventDefault(); 
+      try {
+        Controller.openFile($(this).attr('href'), $(this).attr('line'));
+      } catch(e) {
+        alert(e.message);
+      }
+    });
+    
+    $("#show_options a").click(function(e) {
+      e.preventDefault(); 
+      $("#advanced_options").show();
+      $(this).hide();
+    });
     $("#query").focus().select();
   });
 

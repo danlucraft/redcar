@@ -44,8 +44,11 @@ module Redcar
 
       def execute
         controller = Controller.new
-        tab = win.new_tab(HtmlTab)
-        tab.html_view.controller = controller
+        tab = find_open_instance        
+        if tab.nil?
+          tab =  win.new_tab(HtmlTab)
+          tab.html_view.controller = controller
+        end
         tab.focus
       end
       
@@ -106,20 +109,26 @@ module Redcar
           1
         end  
         
-        def open_file(file, line)          
-          tab  = Redcar.app.focussed_window.new_tab(Redcar::EditTab)
-          mirror = Project::FileMirror.new(File.join(Project::Manager.focussed_project.path, file))
-          tab.edit_view.document.mirror = mirror        
-          tab.edit_view.reset_undo          
-          doc = tab.edit_view.document
-          doc.scroll_to_line(line.to_i-5)          
+        def open_file(file, line)                    
+          Project::Manager.open_file(File.join(Project::Manager.focussed_project.path, file))
+          doc = Redcar.app.focussed_window.focussed_notebook_tab.edit_view.document          
+          doc.scroll_to_line(line.to_i-10)          
           doc.cursor_offset = doc.offset_at_line(line.to_i - 1)
           doc.set_selection_range(doc.cursor_line_start_offset, doc.cursor_line_end_offset)
-          tab.focus           
           1
-        end
+        end        
         
-      end    
+      end       
+      
+      private
+      
+      def find_open_instance
+        all_tabs = Redcar.app.focussed_window.notebooks.map{|nb| nb.tabs }.flatten
+        all_tabs.find do |t| 
+          t.is_a?(Redcar::HtmlTab) and
+          t.title == 'Find in project'
+        end
+      end
       
     end
     
