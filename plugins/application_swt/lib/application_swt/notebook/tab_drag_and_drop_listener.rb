@@ -5,6 +5,8 @@ module Redcar
         include org.eclipse.swt.dnd.DragSourceListener
         include org.eclipse.swt.dnd.DropTargetListener
                 
+        # A TabPaintListener allows clients to draw 
+        # indicators next to a tab in the tab folder
         class TabPaintListener
           include org.eclipse.swt.events.PaintListener    
           attr_writer :item
@@ -25,31 +27,51 @@ module Redcar
         def initialize(notebook)
           @notebook = notebook
           @paint_listener = TabPaintListener.new
-          tab_folder.add_paint_listener(@paint_listener)
         end
         
         def tab_folder
           @notebook.tab_folder
         end
         
+        # DragSourceListener interface implementation
+        # When a drag starts, the dragged tab is marked
         def dragStart(event)
           @dragged_tab_controller = @notebook.tab_widget_to_tab_model(tab_folder.selection).controller
           @dragged_tab_controller.dragging = true
         end
         
+        # DragSourceListener interface implementation
+        # When a drag finishes, the dragged tab is unmarked and released
         def dragFinished(event)
+          @dragged_tab_controller.dragging = false
           @dragged_tab_controller = @paint_listener.item = nil
-          Redcar.app.all_tabs.each {|t| t.controller.dragging = false}
           tab_folder.redraw
         end
         
+        # DropTargetListener interface implementation
+        # A @link{TabPaintListener} is added to the tab folder when dragging into it
+        # to indicate where the drop would happen
+        def dragEnter(event)
+          tab_folder.add_paint_listener(@paint_listener)
+        end
+        
+        # DropTargetListener interface implementation
+        # If a drag leaves the tab folder, remove the @link{TabPaintListener}
         def dragLeave(event)
-          @paint_listener.item = nil
+          tab_folder.remove_paint_listener(@paint_listener)
           tab_folder.redraw
         end
-        
-        def dropAccept(event)
-          event.detail = Swt::DND::DND::DROP_NONE # Don't actually accept the drop as native DnD
+
+        # DropTargetListener interface implementation
+        # While dragging, update the @link{TabPaintListener} to show drop indicators
+        def dragOver(event)
+          @paint_listener.item = event_to_tab_widget(event)
+          tab_folder.redraw
+        end
+
+        # DropTargetListener interface implementation
+        # Drop the dragged tab on the notebook at the target position
+        def drop(event)
           target_tab_widget = event_to_tab_widget(event)
           unless @dragged_tab_controller && target_tab_widget == @dragged_tab_controller.item
             dragged_tab_model = @dragged_tab_controller.model if @dragged_tab_controller
@@ -57,19 +79,17 @@ module Redcar
             @notebook.model.grab_tab_from(dragged_tab_model.notebook, dragged_tab_model)
             move_behind(dragged_tab_model.controller, target_tab_widget)
           end
-          dragFinished(event)
         end
-                
+
+        # Move the tab controlled by the given controller in behind the indicated tab
+        # @param [Redcar::ApplicationSWT::Tab] the dragged tab's controller
+        # @param [SWT::Custom::CTabItem] the item to drop behind
         def move_behind(tab_controller, tab_widget)
           position = (tab_folder.index_of(tab_widget) if tab_widget) || 0
           tab_controller.move_tab_widget_to_position(position)
         end
         
-        def dragOver(event)
-          @paint_listener.item = event_to_tab_widget(event)
-          tab_folder.redraw
-        end
-        
+        # Find the CTabItem targeted by a given event        
         def event_to_tab_widget(event)
           if tab_folder.item_count > 0          
             tab_folder.item(tab_folder.to_control(event.x, event.y)) or 
@@ -77,11 +97,10 @@ module Redcar
           end
         end
 
-        # Must implement the java interface
-        def dragSetData(dsEvent); end
-        def dragEnter(event); end
+        # Unimplemented interface methods
+        def dragSetData(event); end
         def dragOperationChanged(event); end
-        def drop(event); end
+        def dropAccept(event); end
       end
     end
   end
