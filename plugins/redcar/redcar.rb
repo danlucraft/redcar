@@ -616,6 +616,18 @@ module Redcar
       end
     end
     
+    class ToggleLineNumbers < Redcar::EditTabCommand
+      def execute
+        EditView.show_line_numbers = !EditView.show_line_numbers?
+      end
+    end
+    
+    class ToggleAnnotations < Redcar::EditTabCommand
+      def execute
+        EditView.show_annotations = !EditView.show_annotations?
+      end
+    end
+    
     class SelectNewFont < Command
       def execute
         Redcar::EditView::SelectFontDialog.new.open
@@ -829,7 +841,9 @@ module Redcar
              end
           end
           separator
-          item "Show/Hide Invisibles", ToggleInvisibles
+          item "Toggle Invisibles", ToggleInvisibles
+          item "Toggle Line Numbers", ToggleLineNumbers
+          item "Toggle Annotations", ToggleAnnotations
         end
         sub_menu "Plugins" do
           item "Plugin Manager", PluginManagerUi::OpenCommand

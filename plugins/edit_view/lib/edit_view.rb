@@ -187,8 +187,6 @@ module Redcar
         default_font = "Courier New"
         default_font_size = 9
       end
-#      [ ARGV.option("font") || default_font, 
-#        (ARGV.option("font-size") || default_font_size).to_i ]
       [ EditView.storage["font"] || default_font, 
         EditView.storage["font-size"] || default_font_size ]
     end
@@ -277,6 +275,8 @@ module Redcar
       self.soft_tabs = EditView.tab_settings.softness_for(name)
       self.word_wrap = EditView.tab_settings.word_wrap_for(name)
       refresh_show_invisibles
+      refresh_show_line_numbers
+      refresh_show_annotations
     end
     
     def focus
@@ -333,6 +333,42 @@ module Redcar
     def refresh_show_invisibles
       @show_invisibles = EditView.tab_settings.show_invisibles?
       notify_listeners(:invisibles_changed, @show_invisibles)
+    end
+
+    def show_line_numbers?
+      @show_line_numbers
+    end
+
+    def self.show_line_numbers?
+      EditView.tab_settings.show_line_numbers?
+    end
+
+    def self.show_line_numbers=(bool)
+      EditView.tab_settings.set_show_line_numbers(bool)
+      all_edit_views.each {|ev| ev.refresh_show_line_numbers }
+    end
+    
+    def refresh_show_line_numbers
+      @show_line_numbers = EditView.tab_settings.show_line_numbers?
+      notify_listeners(:line_number_visibility_changed, @show_line_numbers)
+    end
+
+    def show_annotations?
+      @show_annotations
+    end
+
+    def self.show_annotations?
+      EditView.tab_settings.show_annotations?
+    end
+
+    def self.show_annotations=(bool)
+      EditView.tab_settings.set_show_annotations(bool)
+      all_edit_views.each {|ev| ev.refresh_show_annotations }
+    end
+    
+    def refresh_show_annotations
+      @show_annotations = EditView.tab_settings.show_annotations?
+      notify_listeners(:annotations_visibility_changed, @show_annotations)
     end
 
     def title=(title)

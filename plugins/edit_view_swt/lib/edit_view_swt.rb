@@ -117,12 +117,20 @@ module Redcar
       h8 = @model.add_listener(:theme_changed) do
         @mate_text.set_theme_by_name(EditView.theme)
       end
+      h9 = @model.add_listener(:line_number_visibility_changed) do |new_bool|
+        @mate_text.set_line_numbers_visible(new_bool)
+      end
+      h10 = @model.add_listener(:annotations_visibility_changed) do |new_bool|
+        @mate_text.set_annotations_visible(new_bool)
+      end
       @mate_text.getTextWidget.addFocusListener(FocusListener.new(self))
       @mate_text.getTextWidget.addVerifyListener(VerifyListener.new(@model.document, self))
       @mate_text.getTextWidget.addModifyListener(ModifyListener.new(@model.document, self))
       @mate_text.get_control.add_verify_key_listener(VerifyKeyListener.new(self))
       @mate_text.get_control.add_key_listener(KeyListener.new(self))
-      @handlers << [@model.document, h1] << [@model, h2] << [@model, h3] << [@model, h4] << [@model, h5] << [@model, h6] << [@model, h7] << [@model, h8]
+      @handlers << [@model.document, h1] << [@model, h2] << [@model, h3] << [@model, h4] << 
+        [@model, h5] << [@model, h6] << [@model, h7] << [@model, h8] <<
+        [@model, h9] << [@model, h10]
     end
     
     class VerifyKeyListener
