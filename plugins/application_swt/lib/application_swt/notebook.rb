@@ -59,7 +59,6 @@ module Redcar
         @tab_folder = Swt::Custom::CTabFolder.new(sash, folder_style)
         grid_data = Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH)
         @tab_folder.set_layout_data(grid_data)
-        @tab_folder.simple = false
         @tab_folder.pack
         register_tab_dnd(@tab_folder)
       end
