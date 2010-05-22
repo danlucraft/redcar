@@ -4,11 +4,11 @@ Version 0.3.6dev (TBA)
 
 Enhancements:
 
-  * Folders open in the project view on a double click
-  * Drag and drop to change order of tabs (within a notebook)
-  * Change font and theme commands
-  * Word wrap option
-
+  * Folders open in the project view on a double click (Nizar Jouini)
+  * Drag and drop tabs (Tim Felgentreff)
+  * Change font and theme commands (Sam Clopton)
+  * Word wrap option (Dan Lucraft)
+  
 New contributors:
 
   * Nizar Jouini

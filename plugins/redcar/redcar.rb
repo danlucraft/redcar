@@ -754,7 +754,6 @@ module Redcar
       Menu::Builder.build do
         sub_menu "File" do
           item "New", NewCommand
-          item "New Notebook", NewNotebookCommand
           item "New Window", NewWindowCommand
           item "Open", Project::FileOpenCommand
           item "Open Directory", Project::DirectoryOpenCommand
@@ -767,12 +766,6 @@ module Redcar
           item "Save As", Project::FileSaveAsCommand
           separator
           item "Close Tab", CloseTabCommand
-          sub_menu "Switch Tab" do
-             (1..9).each do |num|
-               item "Tab #{num}", Top.const_get("SelectTab#{num}Command")
-             end
-          end
-          item "Close Notebook", CloseNotebookCommand
           item "Close Window", CloseWindowCommand
           item "Close Directory", Project::DirectoryCloseCommand
           separator
@@ -822,12 +815,19 @@ module Redcar
           item "Print Scope at Cursor", PrintScopeCommand
         end
         sub_menu "View" do
+          item "New Notebook", NewNotebookCommand
+          item "Close Notebook", CloseNotebookCommand
           item "Rotate Notebooks", RotateNotebooksCommand
           item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
           item "Switch Notebooks", SwitchNotebookCommand
           separator
           item "Previous Tab", SwitchTabDownCommand
           item "Next Tab", SwitchTabUpCommand
+          sub_menu "Switch Tab" do
+             (1..9).each do |num|
+               item "Tab #{num}", Top.const_get("SelectTab#{num}Command")
+             end
+          end
           separator
           item "Show/Hide Invisibles", ToggleInvisibles
         end
