@@ -4,7 +4,7 @@ module Redcar
       class TabDragAndDropListener
         include org.eclipse.swt.dnd.DragSourceListener
         include org.eclipse.swt.dnd.DropTargetListener
-        
+                
         class TabPaintListener
           include org.eclipse.swt.events.PaintListener    
           attr_writer :item
@@ -21,7 +21,7 @@ module Redcar
             end
           end
         end
-        
+
         def initialize(notebook)
           @notebook = notebook
           @paint_listener = TabPaintListener.new
@@ -57,7 +57,7 @@ module Redcar
         def move_behind(item1, item2)
           tab_controller = @notebook.tab_widget_to_tab_model(item1).controller
           if tab_controller
-            tab_controller.move_to_position(tab_folder.index_of(item2))
+            tab_controller.move_tab_widget_to_position(tab_folder.index_of(item2))
           end
         end
         

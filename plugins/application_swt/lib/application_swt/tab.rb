@@ -1,8 +1,8 @@
 module Redcar
   class ApplicationSWT
     class Tab
-      attr_reader :model, :notebook
-      attr_accessor :item
+      
+      attr_reader :item, :model, :notebook, :widget
       
       FILE_ICON = File.join(Redcar.root, %w(plugins application lib application assets file.png))
       
@@ -13,44 +13,37 @@ module Redcar
         attach_listeners
       end
       
-      def move_to_position(position)
-        # CTabItem state
-        state_variables = [:control, :font, :tool_tip_text, :text, :image]
-        view_state = state_variables.collect {|var| @item.send(var)}
-        create_item_widget(position)
-        state_variables.each_with_index {|var, idx| @item.send(:"#{var}=", view_state[idx])}
-        @notebook.recalculate_tab_order
-        focus
-      end
-      
       def create_item_widget(position)
         if @item
           @item.dispose
-        end
+        end        
         @item = Swt::Custom::CTabItem.new(notebook.tab_folder, Swt::SWT::CLOSE, position)
-        icon = Swt::Graphics::Image.new(ApplicationSWT.display, FILE_ICON)
-        @item.image = icon
+        @icon = Swt::Graphics::Image.new(ApplicationSWT.display, FILE_ICON)
+        @item.image = @icon
       end
       
       def create_tab_widget
-        widget = Swt::Widgets::Text.new(notebook.tab_folder, Swt::SWT::MULTI)
-        widget.text = "Example of a tab"
-        @item.control = widget
-      end
-      
-      def widget
-        item.control
-      end
-      
-      def icon
-        item.image
+        @widget = Swt::Widgets::Text.new(notebook.tab_folder, Swt::SWT::MULTI)
+        @widget.text = "Example of a tab"
+        @item.control = @widget
       end
       
       def move_tab_widget_to_current_notebook
-        widget.setParent(notebook.tab_folder)
-        @item.control = widget
+        @widget.setParent(notebook.tab_folder)
+        @item.control = @widget
       end
-      
+
+      def move_tab_widget_to_position(position)
+        # CTabItem state
+        state_variables = [:font, :tool_tip_text, :text, :image]
+        view_state = state_variables.collect {|var| @item.send(var)}
+        create_item_widget(position)
+        state_variables.each_with_index {|var, idx| @item.send(:"#{var}=", view_state[idx])}
+        @item.control = @widget
+        @notebook.recalculate_tab_order
+        focus
+      end
+
       def set_notebook(notebook_controller)
         @notebook = notebook_controller
       end
@@ -70,7 +63,9 @@ module Redcar
       
       def close
         @item.dispose
+        @icon.dispose
       end
     end
   end
 end
+
