@@ -17,22 +17,47 @@ module Redcar
           @@instance || TabTransfer.new
         end
         
-        def java_to_native(types, transfer_data)
-          return if (types == null || types.empty? || (types.first.class != TabType))
-       	
-          if (is_supported_type(transfer_data))
-            super(TAB_TYPE.to_java(:string), transfer_data)
+        def javaToNative(types, transfer_data)
+          return if (types.nil? || types.empty? || (types.first.class != TabType))
+   
+          begin
+            # write data to a byte array and then ask super to convert to
+            out = java.io.ByteArrayOutputStream.new
+            write_out = java.io.DataOutputStream.new(out)
+            types.length.times do |i|
+              buffer = TAB_TYPE.to_java_bytes
+              write_out.write_int(buffer.length)
+              write_out.write(buffer)
+            end
+            buffer = out.to_byte_array
+            write_out.close
+            super(buffer, transfer_data)
+          rescue java.io.IOException => e
           end
         end
         
-        def native_to_java(transfer_data)
+        def nativeToJava(transfer_data)
           if (is_supported_type(transfer_data))
-            buffer = super(transferData)
+            buffer = super
             return nil unless buffer
        		
-            if String.from_java_bytes buffer == TAB_TYPE
-              return [TabType.new]
+            data = []
+            begin
+              input = java.io.ByteArrayInputStream.new(buffer)
+              read_in = java.io.DataInputStream.new(input)
+              while (read_in.available > 20) do
+                datum = TabType.new
+                int size = read_in.read_int
+                name = Java::byte[size].new
+                read_in.read(name)
+                tab_type_name = String.from_java_bytes(name);
+                data << datum
+              end
+              read_in.close
+            rescue java.io.IOException => e
+              return null;
             end
+            return data.to_java
           end
           return nil
         end
