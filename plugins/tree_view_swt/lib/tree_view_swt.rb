@@ -134,12 +134,7 @@ module Redcar
         when :directory
           dir_image
         when :file
-          program = org::eclipse::swt::program::Program.findProgram File.extname(tree_node.text)
-          unless program && program.image_data
-            file_image
-          else
-            org::eclipse::swt::graphics::Image.new(tree_node.display, program.image_data)
-          end
+          file_image
         end
       end
 
