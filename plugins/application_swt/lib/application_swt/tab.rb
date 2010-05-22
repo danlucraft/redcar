@@ -13,7 +13,8 @@ module Redcar
         attach_listeners
       end
       
-      def create_item_widget(position)
+      def create_item_widget(position = nil)
+        position ||= notebook.tab_folder.item_count
         if @item
           @item.dispose
         end        
@@ -28,6 +29,14 @@ module Redcar
         @item.control = @widget
       end
       
+      def dragging?
+        @dragging
+      end
+      
+      def dragging= boolean
+        @dragging = boolean
+      end
+      
       def move_tab_widget_to_current_notebook
         @widget.setParent(notebook.tab_folder)
         @item.control = @widget
@@ -35,11 +44,12 @@ module Redcar
 
       def move_tab_widget_to_position(position)
         # CTabItem state
-        state_variables = [:font, :tool_tip_text, :text, :image]
+        state_variables = [:font, :tool_tip_text, :text]
         view_state = state_variables.collect {|var| @item.send(var)}
         create_item_widget(position)
         state_variables.each_with_index {|var, idx| @item.send(:"#{var}=", view_state[idx])}
         @item.control = @widget
+        @item.image = @icon
         @notebook.recalculate_tab_order
         focus
       end

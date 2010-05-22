@@ -3,7 +3,7 @@ module Redcar
     class Notebook
       include Redcar::Observable
       
-      attr_reader :tab_folder
+      attr_reader :tab_folder, :model
       
       class CTabFolder2Listener
         def initialize(controller)

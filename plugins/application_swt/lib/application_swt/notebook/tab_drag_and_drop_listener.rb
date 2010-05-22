@@ -10,7 +10,7 @@ module Redcar
           attr_writer :item
       
           def paintControl(event)
-            if @item
+            if @item && @item.bounds
               bounds = @item.bounds
               side_length = bounds.height / 3
               triangle = [bounds.x + 2, bounds.y + side_length,
@@ -25,6 +25,7 @@ module Redcar
         def initialize(notebook)
           @notebook = notebook
           @paint_listener = TabPaintListener.new
+          tab_folder.add_paint_listener(@paint_listener)
         end
         
         def tab_folder
@@ -32,49 +33,53 @@ module Redcar
         end
         
         def dragStart(event)
-          @dragging = true
-          @source_item = tab_folder.selection
-          tab_folder.add_paint_listener(@paint_listener)
+          @dragged_tab_controller = @notebook.tab_widget_to_tab_model(tab_folder.selection).controller
+          @dragged_tab_controller.dragging = true
         end
         
         def dragFinished(event)
-          @dragging = @source_item = nil
-          tab_folder.remove_paint_listener(@paint_listener)
+          @dragged_tab_controller = @paint_listener.item = nil
+          Redcar.app.all_tabs.each {|t| t.controller.dragging = false}
+          tab_folder.redraw
+        end
+        
+        def dragLeave(event)
+          @paint_listener.item = nil
           tab_folder.redraw
         end
         
         def dropAccept(event)
           event.detail = Swt::DND::DND::DROP_NONE # Don't actually accept the drop as native DnD
-          if @dragging && @source_item
-            target_tab_item = event_to_tab_item(event)
-            unless target_tab_item == @source_item # items need to be moved
-              move_behind(@source_item, target_tab_item)
-            end
+          target_tab_widget = event_to_tab_widget(event)
+          unless @dragged_tab_controller && target_tab_widget == @dragged_tab_controller.item
+            dragged_tab_model = @dragged_tab_controller.model if @dragged_tab_controller
+            dragged_tab_model ||= Redcar.app.all_tabs.detect {|t| t.controller.dragging?}
+            @notebook.model.grab_tab_from(dragged_tab_model.notebook, dragged_tab_model)
+            move_behind(dragged_tab_model.controller, target_tab_widget)
           end
           dragFinished(event)
         end
-        
-        def move_behind(item1, item2)
-          tab_controller = @notebook.tab_widget_to_tab_model(item1).controller
-          if tab_controller
-            tab_controller.move_tab_widget_to_position(tab_folder.index_of(item2))
-          end
+                
+        def move_behind(tab_controller, tab_widget)
+          position = (tab_folder.index_of(tab_widget) if tab_widget) || 0
+          tab_controller.move_tab_widget_to_position(position)
         end
         
         def dragOver(event)
-          @paint_listener.item = event_to_tab_item(event)
+          @paint_listener.item = event_to_tab_widget(event)
           tab_folder.redraw
         end
         
-        def event_to_tab_item(event)
-          tab_folder.item(tab_folder.to_control(event.x, event.y)) or 
-          tab_folder.items[tab_folder.item_count - 1]
+        def event_to_tab_widget(event)
+          if tab_folder.item_count > 0          
+            tab_folder.item(tab_folder.to_control(event.x, event.y)) or 
+            tab_folder.items[tab_folder.item_count - 1]
+          end
         end
 
         # Must implement the java interface
         def dragSetData(dsEvent); end
         def dragEnter(event); end
-        def dragLeave(event); end
         def dragOperationChanged(event); end
         def drop(event); end
       end

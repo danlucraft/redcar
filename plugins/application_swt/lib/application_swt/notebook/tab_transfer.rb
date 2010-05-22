@@ -21,7 +21,7 @@ module Redcar
           return if (types == null || types.empty? || (types.first.class != TabType))
        	
           if (is_supported_type(transfer_data))
-            super(TAB_TYPE.to_java_bytes, transfer_data)
+            super(TAB_TYPE.to_java(:string), transfer_data)
           end
         end
         
