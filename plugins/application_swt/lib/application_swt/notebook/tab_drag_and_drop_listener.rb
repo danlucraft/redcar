@@ -11,7 +11,13 @@ module Redcar
       
           def paintControl(event)
             if @item
-              event.gc.draw_rectangle @item.bounds
+              bounds = @item.bounds
+              side_length = bounds.height / 3
+              triangle = [bounds.x + 2, bounds.y + side_length,
+                bounds.x + side_length + 2, bounds.y,
+                bounds.x - side_length + 2, bounds.y]
+              event.gc.background = ApplicationSWT.display.system_color Swt::SWT::COLOR_DARK_GRAY
+              event.gc.fill_polygon(triangle.to_java(:int))
             end
           end
         end
