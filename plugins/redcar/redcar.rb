@@ -785,9 +785,6 @@ module Redcar
         end
         sub_menu "Edit" do
           item "Tab Info",  EditView::InfoSpeedbarCommand
-          item "Font", SelectNewFont
-          item "Font Size", SelectFontSize
-          item "Theme", SelectTheme
           separator
           item "Undo", UndoCommand
           item "Redo", RedoCommand
@@ -827,6 +824,12 @@ module Redcar
           item "Print Scope at Cursor", PrintScopeCommand
         end
         sub_menu "View" do
+          sub_menu "Appearance" do
+            item "Font", SelectNewFont
+            item "Font Size", SelectFontSize
+            item "Theme", SelectTheme
+          end
+          separator
           item "New Notebook", NewNotebookCommand
           item "Close Notebook", CloseNotebookCommand
           item "Rotate Notebooks", RotateNotebooksCommand
