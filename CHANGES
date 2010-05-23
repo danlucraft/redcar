@@ -8,6 +8,11 @@ Enhancements:
   * Drag and drop tabs (Tim Felgentreff)
   * Change font and theme commands (Sam Clopton)
   * Word wrap option (Dan Lucraft)
+  * Toggle line numbers (Dan Lucraft)
+
+New APIs:
+
+  * Annotations column (Dan Lucraft)
   
 New contributors:
 
