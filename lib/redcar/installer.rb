@@ -67,6 +67,8 @@ module Redcar
       /jface/org.eclipse.jface.text_3.5.0.jar
       /jface/org.eclipse.osgi.jar
       /jface/org.eclipse.text_3.5.0.v20090513-2000.jar
+      /jface/org.eclipse.core.resources.jar
+      /jface/org.eclipse.core.jobs.jar
     )
     
     JRUBY_JAR_DIR = File.expand_path(File.join(File.dirname(__FILE__), ".."))
