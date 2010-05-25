@@ -39,8 +39,12 @@ module Redcar
         # DragSourceListener interface implementation
         # When a drag starts, the dragged tab is marked
         def dragStart(event)
-          @dragged_tab_controller = @notebook.tab_widget_to_tab_model(tab_folder.selection).controller
-          @dragged_tab_controller.dragging = true
+          if tab_folder.item_count > 0
+            @dragged_tab_controller = @notebook.tab_widget_to_tab_model(tab_folder.selection).controller
+            @dragged_tab_controller.dragging = true
+          else
+            event.doit = false
+          end
         end
         
         # DragSourceListener interface implementation
