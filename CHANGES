@@ -9,6 +9,7 @@ Enhancements:
   * Change font and theme commands (Sam Clopton)
   * Word wrap option (Dan Lucraft)
   * Toggle line numbers (Dan Lucraft)
+  * Can put TM themes and bundles into .redcar/{Bundles,Themes} (Dan Lucraft)
 
 New APIs:
 
