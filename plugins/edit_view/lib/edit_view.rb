@@ -221,6 +221,10 @@ module Redcar
       EditView.storage["theme"] = theme
       all_edit_views.each {|ev| ev.refresh_theme }
     end
+
+    def self.themes
+      @themes ||= []
+    end
     
     def refresh_theme
       notify_listeners(:theme_changed)

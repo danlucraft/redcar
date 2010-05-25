@@ -20,8 +20,18 @@ module Redcar
     end
     
     def self.load_textmate_assets
-      JavaMateView::Bundle.load_bundles(Redcar.root + "/textmate/")
-      JavaMateView::ThemeManager.load_themes(Redcar.root + "/textmate/")
+      load_textmate_assets_from_dir(Redcar.root + "/textmate/")
+      Redcar.plugin_manager.loaded_plugins.each do |plugin|
+        load_textmate_assets_from_dir(File.dirname(plugin.definition_file) + "/")
+      end
+      load_textmate_assets_from_dir(Redcar.user_dir + "/")
+      
+      EditView.themes.unshift(*JavaMateView::ThemeManager.themes.to_a.map {|th| th.name })
+    end
+    
+    def self.load_textmate_assets_from_dir(dir)
+      JavaMateView::Bundle.load_bundles(dir)
+      JavaMateView::ThemeManager.load_themes(dir)
     end
     
     attr_reader :mate_text, :widget, :model
