@@ -10,6 +10,7 @@ Enhancements:
   * Word wrap option (Dan Lucraft)
   * Toggle line numbers (Dan Lucraft)
   * Can put TM themes and bundles into .redcar/{Bundles,Themes} (Dan Lucraft)
+  * Home command goes to start of text first then start of line. (Dan Lucraft)
 
 New APIs:
 
