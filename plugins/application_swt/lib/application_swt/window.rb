@@ -192,7 +192,7 @@ module Redcar
       private
       
       SASH_WIDTH = 5
-      TREEBOOK_WIDTH = 100
+      TREEBOOK_WIDTH = 200
       
       def create_shell
         @shell = Swt::Widgets::Shell.new(ApplicationSWT.display)
