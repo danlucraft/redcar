@@ -42,6 +42,10 @@ module Redcar
         @result
       end
       
+      def move(x, y)
+        @menu_bar.setLocation(x, y)
+      end
+      
       private
       
       def use_numbers?

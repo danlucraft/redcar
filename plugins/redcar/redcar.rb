@@ -193,10 +193,10 @@ module Redcar
             case result
             when :yes
               tab.edit_view.document.save!
-              tab.close
             when :no
-              tab.close
+              close_tab
             when :cancel
+              close_tab
             end
           else
             tab.close
@@ -205,6 +205,13 @@ module Redcar
           tab.close
         end
         @tab = nil
+      end
+      
+      private
+      
+      def close_tab
+        tab.close
+        
       end
     end
     
