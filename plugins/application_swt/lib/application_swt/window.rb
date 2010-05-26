@@ -191,6 +191,8 @@ module Redcar
         
       private
       
+      attr_reader :right_composite
+      
       SASH_WIDTH = 5
       TREEBOOK_WIDTH = 200
       
@@ -217,25 +219,27 @@ module Redcar
         
         @sash = Swt::Widgets::Sash.new(@shell, Swt::SWT::VERTICAL)
         @right_composite = Swt::Widgets::Composite.new(@shell, Swt::SWT::NONE)
-        grid_layout = Swt::Layout::GridLayout.new(1, false)
-        grid_layout.verticalSpacing = 0
-        grid_layout.marginHeight = 0
-        grid_layout.horizontalSpacing = 0
-        grid_layout.marginWidth = 0
-        @right_composite.layout = grid_layout
         
-        tree_composite_data = Swt::Layout::FormData.new
-        tree_composite_data.left = Swt::Layout::FormAttachment.new(0, 0)
-        tree_composite_data.right = Swt::Layout::FormAttachment.new(@sash, 0)
-        tree_composite_data.top = Swt::Layout::FormAttachment.new(0, 0)
-        tree_composite_data.bottom = Swt::Layout::FormAttachment.new(100, 0)
-        @tree_composite.layout_data = tree_composite_data
+        @right_composite.layout = Swt::Layout::GridLayout.new(1, false).tap do |l|
+          l.verticalSpacing = 0
+          l.marginHeight = 0
+          l.horizontalSpacing = 0
+          l.marginWidth = 0
+        end
         
-        sash_data = Swt::Layout::FormData.new
-        sash_data.left = Swt::Layout::FormAttachment.new(0, 0)
-        sash_data.top =  Swt::Layout::FormAttachment.new(0, 0)
-        sash_data.bottom = Swt::Layout::FormAttachment.new(100, 0)
-        @sash.layout_data = sash_data
+        @tree_composite.layout_data = Swt::Layout::FormData.new.tap do |l|
+          l.left = Swt::Layout::FormAttachment.new(0, 0)
+          l.right = Swt::Layout::FormAttachment.new(@sash, 0)
+          l.top = Swt::Layout::FormAttachment.new(0, 0)
+          l.bottom = Swt::Layout::FormAttachment.new(100, 0)
+        end
+        
+        @sash.layout_data = Swt::Layout::FormData.new.tap do |d|
+          d.left = Swt::Layout::FormAttachment.new(0, 0)
+          d.top =  Swt::Layout::FormAttachment.new(0, 0)
+          d.bottom = Swt::Layout::FormAttachment.new(100, 0)
+        end
+        
         @sash.add_selection_listener do |e|
           sash_rect = @sash.bounds
           shell_rect = @shell.client_area
@@ -251,20 +255,18 @@ module Redcar
           end
         end
         
-        right_composite_data = Swt::Layout::FormData.new
-        right_composite_data.left = Swt::Layout::FormAttachment.new(@sash, 0)
-        right_composite_data.right = Swt::Layout::FormAttachment.new(100, 0)
-        right_composite_data.top = Swt::Layout::FormAttachment.new(0, 0)
-        right_composite_data.bottom = Swt::Layout::FormAttachment.new(100, 0)
-        @right_composite.layout_data = right_composite_data
-        
+        @right_composite.layout_data = Swt::Layout::FormData.new.tap do |d|
+          d.left = Swt::Layout::FormAttachment.new(@sash, 0)
+          d.right = Swt::Layout::FormAttachment.new(100, 0)
+          d.top = Swt::Layout::FormAttachment.new(0, 0)
+          d.bottom = Swt::Layout::FormAttachment.new(100, 0)
+        end
+                
         @notebook_sash = Swt::Custom::SashForm.new(@right_composite, orientation)
         grid_data = Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH)
         @notebook_sash.layout_data = grid_data
         @notebook_sash.sash_width = SASH_WIDTH
       end
-
-      attr_reader :right_composite
       
       def horizontal_vertical(symbol)
         case symbol
