@@ -2,7 +2,7 @@
 module Redcar
   class ApplicationSWT
     class Window
-      attr_reader :shell, :window, :shell_listener
+      attr_reader :shell, :window
       
       class ShellListener
         include org.eclipse.swt.events.ShellListener
@@ -199,8 +199,7 @@ module Redcar
       def create_shell
         @shell = Swt::Widgets::Shell.new(ApplicationSWT.display)
         @shell.layout = Swt::Layout::FormLayout.new
-      	@shell_listener = ShellListener.new(self)
-        @shell.add_shell_listener(@shell_listener)
+        @shell.add_shell_listener(ShellListener.new(self))
         @shell.add_listener Swt::SWT::Resize do |e|
           client_area = @shell.client_area
           if client_area.width < @sash.bounds.x

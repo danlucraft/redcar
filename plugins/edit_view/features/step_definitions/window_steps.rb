@@ -26,7 +26,15 @@ When /I open a new window(?: with title "(.*)")?/ do |title|
 end
 
 class FakeEvent
-  attr_accessor :doit
+  def initialize(event_type, widget)
+    untyped_event = Swt::Widgets::Event.new.tap do |e|
+      e.display = Swt.display
+      e.widget = widget
+      e.x = 0
+      e.y = 0
+    end
+    widget.notify_listeners(event_type, untyped_event)
+  end
 end
 
 When /I close the window(?: "(.*)")?( with a command| through the gui)?/ do |title, how|
@@ -43,8 +51,8 @@ When /I close the window(?: "(.*)")?( with a command| through the gui)?/ do |tit
       shell = display.get_active_shell
       win = Redcar.app.windows.detect {|w| w.controller.shell == shell }
     end
-    win.controller.shell_listener.shell_closed(FakeEvent.new)
-  end    
+    FakeEvent.new(Swt::SWT::Close, win.controller.shell)
+  end
 end
 
 When /^I focus the window "([^\"]*)" with a command$/ do |title|
@@ -54,7 +62,7 @@ end
 
 When /^I focus the window "([^\"]*)" through the gui$/ do |title|
   win = Redcar.app.windows.detect{|win| win.title == title }
-  win.controller.shell_listener.shell_activated(FakeEvent.new)
+  FakeEvent.new(Swt::SWT::Activate, win.controller.shell)
 end
 
 Then /^the window should be titled "([^\"]*)"$/ do |title|
