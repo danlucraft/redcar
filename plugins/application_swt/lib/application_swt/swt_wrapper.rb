@@ -45,6 +45,7 @@ module Swt
     import org.eclipse.swt.widgets.Menu
     import org.eclipse.swt.widgets.MenuItem
     import org.eclipse.swt.widgets.MessageBox
+    import org.eclipse.swt.widgets.Sash
     import org.eclipse.swt.widgets.Shell
     import org.eclipse.swt.widgets.TabFolder
     import org.eclipse.swt.widgets.TabItem
@@ -88,6 +89,9 @@ module Swt
   
   module Layout
     import org.eclipse.swt.layout.FillLayout
+    import org.eclipse.swt.layout.FormAttachment
+    import org.eclipse.swt.layout.FormLayout
+    import org.eclipse.swt.layout.FormData
     import org.eclipse.swt.layout.GridLayout
     import org.eclipse.swt.layout.GridData
     import org.eclipse.swt.layout.RowLayout

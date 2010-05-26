@@ -190,50 +190,79 @@ module Redcar
       private
       
       SASH_WIDTH = 5
-      TREEBOOK_WIDTH = 20
+      TREEBOOK_WIDTH = 100
       
       def create_shell
         @shell = Swt::Widgets::Shell.new(ApplicationSWT.display)
-        @shell.layout = Swt::Layout::GridLayout.new(1, false)
+        @shell.layout = Swt::Layout::FormLayout.new
       	@shell_listener = ShellListener.new(self)
         @shell.add_shell_listener(@shell_listener)
+        @shell.add_listener Swt::SWT::Resize do |e|
+          client_area = @shell.client_area
+          if client_area.width < @sash.bounds.x
+            @sash.layout_data.left = Swt::Layout::FormAttachment.new(0, client_area.width - SASH_WIDTH)
+          end
+        end
         ApplicationSWT.register_shell(@shell)
       end
       
       def create_sashes(window_model)
         orientation = horizontal_vertical(window_model.notebook_orientation)
-        @sash     = Swt::Custom::SashForm.new(@shell, orientation)
+        
+        @tree_composite = Swt::Widgets::Composite.new(@shell, Swt::SWT::NONE)
+        @tree_layout = Swt::Custom::StackLayout.new
+        @tree_composite.setLayout(@tree_layout)
+        
+        @sash = Swt::Widgets::Sash.new(@shell, Swt::SWT::VERTICAL)
+        @right_composite = Swt::Widgets::Composite.new(@shell, Swt::SWT::NONE)
+        grid_layout = Swt::Layout::GridLayout.new(1, false)
+        grid_layout.verticalSpacing = 0
+        grid_layout.marginHeight = 0
+        grid_layout.horizontalSpacing = 0
+        grid_layout.marginWidth = 0
+        @right_composite.layout = grid_layout
+        
+        tree_composite_data = Swt::Layout::FormData.new
+        tree_composite_data.left = Swt::Layout::FormAttachment.new(0, 0)
+        tree_composite_data.right = Swt::Layout::FormAttachment.new(@sash, 0)
+        tree_composite_data.top = Swt::Layout::FormAttachment.new(0, 0)
+        tree_composite_data.bottom = Swt::Layout::FormAttachment.new(100, 0)
+        @tree_composite.layout_data = tree_composite_data
+        
+        sash_data = Swt::Layout::FormData.new
+        sash_data.left = Swt::Layout::FormAttachment.new(0, 0)
+        sash_data.top =  Swt::Layout::FormAttachment.new(0, 0)
+        sash_data.bottom = Swt::Layout::FormAttachment.new(100, 0)
+        @sash.layout_data = sash_data
+        @sash.add_selection_listener do |e|
+          sash_rect = @sash.bounds
+          shell_rect = @shell.client_area
+          right = shell_rect.width - sash_rect.width - SASH_WIDTH
+          e.x = [[e.x, right].min, SASH_WIDTH].max
+          if (e.x != sash_rect.x)
+            if @window.treebook.trees.any?
+              sash_data.left = Swt::Layout::FormAttachment.new(0, e.x)
+            else
+              sash_data.left = Swt::Layout::FormAttachment.new(0, 0)
+            end
+            @shell.layout
+          end
+        end
+        
+        right_composite_data = Swt::Layout::FormData.new
+        right_composite_data.left = Swt::Layout::FormAttachment.new(@sash, 0)
+        right_composite_data.right = Swt::Layout::FormAttachment.new(100, 0)
+        right_composite_data.top = Swt::Layout::FormAttachment.new(0, 0)
+        right_composite_data.bottom = Swt::Layout::FormAttachment.new(100, 0)
+        @right_composite.layout_data = right_composite_data
+        
+        @notebook_sash = Swt::Custom::SashForm.new(@right_composite, orientation)
         grid_data = Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH)
-      	@sash.setLayoutData(grid_data)
-      	@sash.setSashWidth(0)
-      	
-      	@tree_composite = Swt::Widgets::Composite.new(@sash, Swt::SWT::NONE)
-      	@tree_layout = Swt::Custom::StackLayout.new
-      	@tree_composite.setLayout(@tree_layout)
-      	button = Swt::Widgets::Button.new(@tree_composite, Swt::SWT::PUSH)
-      	button.setText("Button in pane2")
-      	@tree_layout.topControl = button
-      	
-      	@right_composite = Swt::Widgets::Composite.new(@sash, Swt::SWT::NONE)
-      	@grid_layout = Swt::Layout::GridLayout.new(1, false)
-        @grid_layout.verticalSpacing = 0
-        @grid_layout.marginHeight = 0
-        @grid_layout.horizontalSpacing = 0
-        @grid_layout.marginWidth = 0
-      	@right_composite.setLayout(@grid_layout)
-      	
-        @notebook_sash     = Swt::Custom::SashForm.new(@right_composite, orientation)
-        #grid_data = Swt::Layout::GridData.new
-        #grid_data.grabExcessHorizontalSpace = true
-        #grid_data.horizontalAlignment = Swt::Layout::GridData::FILL
-        #grid_data.grabExcessVerticalSpace = true
-        #grid_data.verticalAlignment = Swt::Layout::GridData::FILL
-        grid_data = Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH)
-      	@notebook_sash.setLayoutData(grid_data)
-      	@notebook_sash.setSashWidth(SASH_WIDTH)
+        @notebook_sash.layout_data = grid_data
+        @notebook_sash.sash_width = SASH_WIDTH
       end
 
-      attr_reader :right_composite      
+      attr_reader :right_composite
       
       def horizontal_vertical(symbol)
         case symbol
@@ -245,14 +274,13 @@ module Redcar
       end
       
       def reset_sash_widths
+        @treebook_unopened = !@window.treebook.trees.any?
         if @window.treebook.trees.any?
-          @sash.setWeights([TREEBOOK_WIDTH, 100 - TREEBOOK_WIDTH].to_java(:int))
-          @sash.setSashWidth(SASH_WIDTH)
+          @sash.layout_data.left = Swt::Layout::FormAttachment.new(0, TREEBOOK_WIDTH + SASH_WIDTH)
         else
-          @sash.setWeights([0,100].to_java(:int))
-          @sash.setSashWidth(0)
-          @treebook_unopened = true
+          @sash.layout_data.left = Swt::Layout::FormAttachment.new(0, 0)
         end
+        @shell.layout
       end
       
       def reset_notebook_sash_widths
