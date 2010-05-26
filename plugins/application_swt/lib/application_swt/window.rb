@@ -5,6 +5,8 @@ module Redcar
       attr_reader :shell, :window, :shell_listener
       
       class ShellListener
+        include org.eclipse.swt.events.ShellListener
+
         def initialize(controller)
           @win = controller.window
         end
