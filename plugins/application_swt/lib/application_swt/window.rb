@@ -4,6 +4,9 @@ module Redcar
     class Window
       attr_reader :shell, :window
       
+      SASH_WIDTH = 5
+      TREEBOOK_WIDTH = 200
+      
       class ShellListener
         include org.eclipse.swt.events.ShellListener
 
@@ -192,9 +195,6 @@ module Redcar
       private
       
       attr_reader :right_composite
-      
-      SASH_WIDTH = 5
-      TREEBOOK_WIDTH = 200
       
       def create_shell
         @shell = Swt::Widgets::Shell.new(ApplicationSWT.display)

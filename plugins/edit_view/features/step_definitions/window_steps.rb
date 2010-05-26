@@ -36,6 +36,14 @@ class FakeEvent
     widget.notify_listeners(event_type, untyped_event)
   end
 end
+                                                                                                                                             
+When /^I maximize the window size$/ do
+  Redcar.app.focussed_window.controller.shell.maximized = true
+end
+
+When /^I restore the window size$/ do
+  Redcar.app.focussed_window.controller.shell.maximized = false
+end
 
 When /I close the window(?: "(.*)")?( with a command| through the gui)?/ do |title, how|
   if title

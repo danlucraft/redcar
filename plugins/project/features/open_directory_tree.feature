@@ -23,3 +23,13 @@ Feature: Open directory tree
     Then the window should have title "myproject"
     When I close the directory
     Then the window should have title "Redcar"
+
+  Scenario: Directory keeps the same width if maximized
+    Given I will choose "plugins/project/spec/fixtures/myproject" from the "open_directory" dialog
+    When I open a directory
+    Then the directory tree width should be the default
+    When I maximize the window size
+    Then the directory tree width should be the default
+    When I restore the window size
+    Then the directory tree width should be the default
+    
