@@ -246,9 +246,9 @@ module Redcar
           e.x = [[e.x, right].min, SASH_WIDTH].max
           if (e.x != sash_rect.x)
             if @window.treebook.trees.any?
-              sash_data.left = Swt::Layout::FormAttachment.new(0, e.x)
+              @sash.layout_data.left = Swt::Layout::FormAttachment.new(0, e.x)
             else
-              sash_data.left = Swt::Layout::FormAttachment.new(0, 0)
+              @sash.layout_data.left = Swt::Layout::FormAttachment.new(0, 0)
             end
             @shell.layout
           end
