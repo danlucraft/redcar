@@ -28,3 +28,14 @@ And then for 1.0...
   * Recently opened files
   * more ... ?
 
+
+Notes on features
+=================
+
+Macros
+------
+
+ * Cursor movement keys are not commands:
+   - alt left/right
+   - shift alt left/right
+   - cmd left/right

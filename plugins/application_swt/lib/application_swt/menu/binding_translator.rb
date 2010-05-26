@@ -36,6 +36,10 @@ module Redcar
             value += Swt::SWT::PAGE_UP
           elsif key_string =~ /Page Down$/
             value += Swt::SWT::PAGE_DOWN
+          elsif key_string =~ /Home$/
+            value += Swt::SWT::HOME
+          elsif key_string =~ /End$/
+            value += Swt::SWT::END
           else
             value += key_string[-1]
           end

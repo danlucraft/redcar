@@ -95,6 +95,28 @@ module Redcar
         tool_tip.set_visible(true)
       end
       
+      def popup_menu(menu, location)
+        window = Redcar.app.focussed_window
+        menu   = ApplicationSWT::Menu.new(window.controller, menu, nil, Swt::SWT::POP_UP)
+        edit_view = EditView.focussed_tab_edit_view
+        if location == :cursor and not edit_view
+          location = :pointer
+        end
+        case location
+        when :cursor
+          location = edit_view.controller.mate_text.viewer.get_text_widget.get_location_at_offset(edit_view.cursor_offset)
+          x, y = location.x, location.y
+          widget_offset = edit_view.controller.mate_text.viewer.get_text_widget.to_display(0,0)
+          x += widget_offset.x
+          y += widget_offset.y
+        when :pointer
+          location = ApplicationSWT.display.get_cursor_location
+          x, y = location.x, location.y
+        end
+        menu.move(x, y)
+        menu.show
+      end
+      
       private
       
       def file_dialog(type, options)

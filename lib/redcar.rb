@@ -57,6 +57,7 @@ module Redcar
   end
   
   def self.environment
+    raise "no environment set" unless @environment
     @environment
   end
 

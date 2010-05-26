@@ -42,6 +42,17 @@ describe BindingTranslator do
       check("Tab", Swt::SWT::TAB)
     end
 
+    it "translates home" do
+      check("Home", Swt::SWT::HOME)
+      check("Alt+Home", Swt::SWT::ALT + Swt::SWT::HOME)
+      check("Shift+Home", Swt::SWT::SHIFT + Swt::SWT::HOME)
+    end
+    
+    it "translates end" do
+      check("End", Swt::SWT::END)
+      check("Ctrl+End", Swt::SWT::CTRL + Swt::SWT::END)
+      check("Cmd+End", Swt::SWT::COMMAND + Swt::SWT::END)
+    end
   end
 
   describe "multiple modifiers" do

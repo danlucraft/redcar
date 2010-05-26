@@ -1,14 +1,4 @@
 
-module Redcar
-  class ApplicationSWT
-    class Menu
-      def move(x, y)
-        @menu_bar.setLocation(x, y)
-      end
-    end
-  end
-end
-
 require 'auto_completer/current_document_completion_source'
 require 'auto_completer/document_controller'
 require 'auto_completer/word_iterator'
@@ -144,18 +134,11 @@ module Redcar
             end
           end
           
-          window = Redcar.app.focussed_window
-          location = window.focussed_notebook.focussed_tab.controller.edit_view.mate_text.viewer.getTextWidget.getLocationAtOffset(window.focussed_notebook.focussed_tab.controller.edit_view.cursor_offset)
-          absolute_x = location.x
-          absolute_y = location.y
-          location = window.focussed_notebook.focussed_tab.controller.edit_view.mate_text.viewer.getTextWidget.toDisplay(0,0)
-          absolute_x += location.x
-          absolute_y += location.y
-          menu = ApplicationSWT::Menu.new(window.controller, builder.menu, nil, Swt::SWT::POP_UP)
-          menu.move(absolute_x, absolute_y)
-          menu.show
+          Application::Dialog.popup_menu(builder.menu, :cursor)
         end
       end
     end
   end
 end
+
+

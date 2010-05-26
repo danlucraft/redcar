@@ -193,10 +193,10 @@ module Redcar
             case result
             when :yes
               tab.edit_view.document.save!
-              tab.close
             when :no
-              tab.close
+              close_tab
             when :cancel
+              close_tab
             end
           else
             tab.close
@@ -205,6 +205,13 @@ module Redcar
           tab.close
         end
         @tab = nil
+      end
+      
+      private
+      
+      def close_tab
+        tab.close
+        
       end
     end
     
@@ -241,10 +248,32 @@ module Redcar
     class MoveHomeCommand < EditTabCommand
       
       def execute
-        doc = tab.edit_view.document
+        doc     = tab.edit_view.document
         line_ix = doc.line_at_offset(doc.cursor_offset)
-        doc.cursor_offset = doc.offset_at_line(line_ix)
+        line    = doc.get_line(line_ix)
+        prefix  = line[0...doc.cursor_line_offset]
+        
+        if prefix =~ /^\s*$/
+          # move to start of line
+          new_offset = doc.offset_at_line(line_ix)
+        else
+          # move to start of text
+          new_offset = doc.offset_at_line(line_ix)
+          prefix =~ /^(\s*)[^\s].*$/
+          whitespace_prefix_length = $1 ? $1.length : 0
+          new_offset += whitespace_prefix_length
+        end
+        doc.cursor_offset = new_offset
         doc.ensure_visible(doc.cursor_offset)
+      end
+    end
+    
+    class MoveTopCommand < EditTabCommand
+      
+      def execute
+        doc = tab.edit_view.document
+        doc.cursor_offset = 0
+        doc.ensure_visible(0)
       end
     end
     
@@ -259,6 +288,15 @@ module Redcar
           doc.cursor_offset = doc.offset_at_line(line_ix + 1) - 1
         end
         doc.ensure_visible(doc.cursor_offset)
+      end
+    end
+    
+    class MoveBottomCommand < EditTabCommand
+      
+      def execute
+        doc = tab.edit_view.document
+        doc.cursor_offset = doc.length
+        doc.ensure_visible(doc.length)
       end
     end
     
@@ -673,8 +711,12 @@ module Redcar
         link "Cmd+C",       CopyCommand
         link "Cmd+V",       PasteCommand
         link "Cmd+D",       DuplicateCommand        
+        
+        link "Home",        MoveTopCommand
         link "Ctrl+A",      MoveHomeCommand
         link "Ctrl+E",      MoveEndCommand
+        link "End",         MoveBottomCommand
+        
         link "Cmd+[",       DecreaseIndentCommand
         link "Cmd+]",       IncreaseIndentCommand
         link "Cmd+Shift+I", AutoIndenter::IndentCommand
@@ -725,8 +767,12 @@ module Redcar
         link "Ctrl+C",       CopyCommand
         link "Ctrl+V",       PasteCommand
         link "Ctrl+D",       DuplicateCommand
-        link "Ctrl+A",       MoveHomeCommand
-        link "Ctrl+E",       MoveEndCommand
+        
+        link "Shift+Home",   MoveTopCommand
+        link "Home",         MoveHomeCommand
+        link "End",          MoveEndCommand
+        link "Shift+End",    MoveBottomCommand
+        
         link "Ctrl+[",       DecreaseIndentCommand
         link "Ctrl+]",       IncreaseIndentCommand
         link "Ctrl+Shift+[", AutoIndenter::IndentCommand
@@ -794,8 +840,10 @@ module Redcar
           item "Paste", PasteCommand
           item "Duplicate Region", DuplicateCommand
           separator
-          item "Home", MoveHomeCommand
-          item "End", MoveEndCommand
+          item "Top",     MoveTopCommand
+          item "Home",    MoveHomeCommand
+          item "End",     MoveEndCommand
+          item "Bottom",  MoveBottomCommand
           separator
           item "Increase Indent", IncreaseIndentCommand
           item "Decrease Indent", DecreaseIndentCommand
