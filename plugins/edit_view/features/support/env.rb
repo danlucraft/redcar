@@ -1,12 +1,17 @@
 RequireSupportFiles File.dirname(__FILE__) + "/../../../application/features/"
 
 module SwtTabHelpers
+  def get_tab_folders(shell=active_shell)
+    right_composite = shell.children.to_a.last
+    notebook_sash_form = right_composite.children.to_a[0]
+    tab_folders = notebook_sash_form.children.to_a.select do |c| 
+      c.class == Java::OrgEclipseSwtCustom::CTabFolder
+    end
+  end
+  
   def get_tab_folder
-    display = Redcar::ApplicationSWT.display
-    sash_form = active_shell.children.to_a.first
-    tab_folders = sash_form.children.to_a[1].children.to_a[0].children.to_a
-    tab_folders.length.should == 1
-    tab_folders.first
+    get_tab_folders.length.should == 1
+    get_tab_folders.first
   end
 
   def get_tab(tab_folder)
@@ -19,10 +24,7 @@ module SwtTabHelpers
   end
   
   def get_tabs
-    display = Redcar::ApplicationSWT.display
-    sash_form = active_shell.children.to_a.first
-    tab_folders = sash_form.children.to_a[1].children.to_a[0].children.to_a.select{|c| c.is_a? Swt::Custom::CTabFolder}
-    items = tab_folders.map{|f| f.getItems.to_a}.flatten
+    items = get_tab_folders.map{|f| f.getItems.to_a}.flatten
     items.map {|i| model_tab_for_item(i)}
   end
   

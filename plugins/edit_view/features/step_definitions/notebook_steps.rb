@@ -1,11 +1,11 @@
 
 module NotebookSwtHelper
-  def sash
-    sash = active_shell.children.to_a.first
+  def notebook_sash
+    active_shell.children.to_a.last.children.to_a[0]
   end
   
   def ctab_folders
-    sash.children.to_a[1].children.to_a[0].children.to_a.select do |c| 
+    notebook_sash.children.to_a.select do |c| 
       c.class == Java::OrgEclipseSwtCustom::CTabFolder
     end
   end

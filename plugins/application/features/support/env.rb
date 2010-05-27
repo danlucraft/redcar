@@ -24,16 +24,12 @@ module SwtHelper
     end.compact
   end
   
-  def sash_form 
-    active_shell.getChildren.to_a.first
-  end
-  
   def tree_book
-    sash_form.getChildren.to_a.first
+    active_shell.children.to_a.first.children.to_a.first
   end
   
   def top_tree
-    r = tree_book.getLayout.topControl
+    r = tree_book
     r.extend(TreeHelpers)
     r
   end

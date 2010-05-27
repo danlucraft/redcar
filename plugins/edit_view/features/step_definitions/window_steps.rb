@@ -91,10 +91,9 @@ Then /the window "(.*)" should have (\d+) tabs?/ do |win_title, tab_num|
   
   # in the GUI
   display = Swt::Widgets::Display.get_current
-  shells  = display.get_shells.to_a
-  shell   = shells.detect {|s| s.text == win_title}
-  sash_form = shell.children.to_a.first
-  tab_folders = sash_form.children.to_a[1].children.to_a[0].children.to_a.select{|c| c.is_a? Swt::Custom::CTabFolder}
-  items = tab_folders.map{|f| f.getItems.to_a}.flatten
+  shells = display.get_shells.to_a
+  shell = shells.detect {|s| s.text == win_title }
+  items = get_tab_folders(shell).map{|f| f.getItems.to_a}.flatten
+  
   items.map {|i| model_tab_for_item(i)}.length.should == tab_num
 end
