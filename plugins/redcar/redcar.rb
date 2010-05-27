@@ -196,7 +196,6 @@ module Redcar
             when :no
               close_tab
             when :cancel
-              close_tab
             end
           else
             tab.close
