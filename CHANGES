@@ -10,7 +10,8 @@ Enhancements:
   * Word wrap option (Dan Lucraft)
   * Toggle line numbers (Dan Lucraft)
   * Can put TM themes and bundles into .redcar/{Bundles,Themes} (Dan Lucraft)
-  * Home command goes to start of text first then start of line. (Dan Lucraft)
+  * Home command goes to start of text first then start of line (Dan Lucraft)
+  * The project view has a fixed width that doesn't change if you resize the main window (Tim Felgentreff)
 
 New APIs:
 
