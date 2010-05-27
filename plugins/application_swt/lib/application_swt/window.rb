@@ -219,18 +219,19 @@ module Redcar
         @sash = Swt::Widgets::Sash.new(@shell, Swt::SWT::VERTICAL)
         @right_composite = Swt::Widgets::Composite.new(@shell, Swt::SWT::NONE)
         
+        
+        @tree_composite.layout_data = Swt::Layout::FormData.new.tap do |l|
+          l.left = Swt::Layout::FormAttachment.new(0, 5)
+          l.right = Swt::Layout::FormAttachment.new(@sash, 0)
+          l.top = Swt::Layout::FormAttachment.new(0, 5)
+          l.bottom = Swt::Layout::FormAttachment.new(100, -5)
+        end
+        
         @right_composite.layout = Swt::Layout::GridLayout.new(1, false).tap do |l|
           l.verticalSpacing = 0
           l.marginHeight = 0
           l.horizontalSpacing = 0
           l.marginWidth = 0
-        end
-        
-        @tree_composite.layout_data = Swt::Layout::FormData.new.tap do |l|
-          l.left = Swt::Layout::FormAttachment.new(0, 0)
-          l.right = Swt::Layout::FormAttachment.new(@sash, 0)
-          l.top = Swt::Layout::FormAttachment.new(0, 0)
-          l.bottom = Swt::Layout::FormAttachment.new(100, 0)
         end
         
         @sash.layout_data = Swt::Layout::FormData.new.tap do |d|
@@ -256,9 +257,9 @@ module Redcar
         
         @right_composite.layout_data = Swt::Layout::FormData.new.tap do |d|
           d.left = Swt::Layout::FormAttachment.new(@sash, 0)
-          d.right = Swt::Layout::FormAttachment.new(100, 0)
-          d.top = Swt::Layout::FormAttachment.new(0, 0)
-          d.bottom = Swt::Layout::FormAttachment.new(100, 0)
+          d.right = Swt::Layout::FormAttachment.new(100, -5)
+          d.top = Swt::Layout::FormAttachment.new(0, 5)
+          d.bottom = Swt::Layout::FormAttachment.new(100, -5)
         end
                 
         @notebook_sash = Swt::Custom::SashForm.new(@right_composite, orientation)
