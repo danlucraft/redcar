@@ -16,7 +16,7 @@ module Redcar
   - regex:    "^[^#]*(class|module)\\s+(?:\\w*::)*(\\w+)(?:$|\\s|<)"
     capture:  2
     type:     id
-  - regex:    "^[^#]*def (self\\.)?(\\w+)"
+  - regex:    "^[^#]*def (self\\.)?(\\w+[?!]?)"
     capture:  2
     type:     id
   - regex:    "^[^#]*attr(_reader|_accessor|_writer)(.*)$"
@@ -25,7 +25,7 @@ module Redcar
   - regex:    "^[^#]*alias\s+:(\\w+)"
     capture:  1
     type:     id
-  - regex:    "^[^#]*alias_method\s+:(\\w+)"
+  - regex:    "^[^#]*alias_method\s+:(\\w+[?!]?)"
     capture:  1
     type:     id
   - regex:    "^\\s*([A-Z]\\w*)\\s*="
