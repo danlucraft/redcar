@@ -38,7 +38,7 @@
   <% out = line.split(':', 3) %>
   <tr>
     <td class="location">
-      <a href="<%= out[0] %>" line="<%= out[1] %>"><%= out[0] %></a>
+    <a href="<%= out[0] %>" line="<%= out[1] %>" regex="<%= @query.gsub("/", "\\/").gsub("\"", "\\\"") %>"><%= out[0] %></a>
     </td>
     <td class="lines">
       <%= out[1] %>
@@ -76,7 +76,7 @@
     $("table a").click(function(e) {
       e.preventDefault(); 
       try {
-        Controller.openFile($(this).attr('href'), $(this).attr('line'));
+        Controller.openFile($(this).attr('href'), $(this).attr('line'), $(this).attr('regex'), <%= @match_case ? 'true' : 'false' %>);
       } catch(e) {
         alert(e.message);
       }

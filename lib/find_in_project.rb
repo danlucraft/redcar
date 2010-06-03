@@ -5,11 +5,11 @@ module Redcar
   class FindInProject 
     
     def self.keymaps
-      osx = Keymap.build("main", :osx) do
+      osx = Keymap.build('main', :osx) do
         link "Cmd+Shift+F", FindInProject::OpenCommand        
       end
       
-      linwin = Keymap.build("main", [:linux, :windows]) do        
+      linwin = Keymap.build('main', [:linux, :windows]) do        
         link "Ctrl+Shift+F", FindInProject::OpenCommand        
       end
       
@@ -104,15 +104,23 @@ module Redcar
           path = Project::Manager.focussed_project.path                    
           @output = `cd #{path}; grep "#{query}" #{options} . #{head}`
           @outputs = @output.split("\n")            
-          Redcar.app.focussed_window.focussed_notebook_tab.html_view.controller = self                      
+          Redcar.app.focussed_window.focussed_notebook_tab.html_view.controller = self
           1
         end  
         
-        def open_file(file, line)                    
+        def open_file(file, line, regex, match_case)                    
           Project::Manager.open_file(File.join(Project::Manager.focussed_project.path, file))
           doc = Redcar.app.focussed_window.focussed_notebook_tab.edit_view.document          
           doc.cursor_offset = doc.offset_at_line(line.to_i - 1)
-          doc.set_selection_range(doc.cursor_line_start_offset, doc.cursor_line_end_offset)
+          if match_case
+            index = doc.get_line(line.to_i - 1).index(/#{regex.gsub("\\\"", "\"")}/)
+            length = doc.get_line(line.to_i - 1).match(/(#{regex.gsub("\\\"", "\"")})[^\n]*\n$/)[1].length
+          else
+            index = doc.get_line(line.to_i - 1).index(/#{regex.gsub("\\\"", "\"")}/i)
+            length = doc.get_line(line.to_i - 1).match(/(#{regex.gsub("\\\"", "\"")})[^\n]*\n$/i)[1].length            
+          end          
+          
+          doc.set_selection_range(doc.cursor_line_start_offset + index, doc.cursor_line_start_offset + index + length)
           doc.scroll_to_line(line.to_i)
           1
         end        
