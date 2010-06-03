@@ -47,6 +47,7 @@ module Redcar
       @mate_text.set_grammar_by_name("Plain Text")
       @model.set_grammar("Plain Text")
       @mate_text.set_theme_by_name(EditView.theme)
+      @mate_text.set_margin_column(80)
       create_undo_manager
       @document.attach_modification_listeners # comes after undo manager
       remove_control_keybindings

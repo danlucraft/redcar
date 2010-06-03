@@ -22,14 +22,22 @@ module Redcar
           result = @command_instance.execute
         rescue Object => e
           @command_instance.error = e
+          print_command_error(e)
         rescue java.lang.StackOverflowError => e
           @command_instance.error = e
+          print_command_error(e)
         end
         record
         result
       end
       
       private
+
+      def print_command_error(e)
+        puts "Error in command #{@command_instance.class}"
+        puts e.class.to_s + ": " + e.message
+        puts e.backtrace
+      end
       
       def record
         if Redcar.app.history
