@@ -50,6 +50,13 @@ To run on OSX:
 
 You may also need to install the rake, rspec and cucumber gems.
 
+## UPDATING A SOURCE BUILD
+
+If you are running a source version of Redcar and you have pulled changes from master, then you may have to update your jars by updating and rebuilding:
+
+  $ git submodule update
+  $ jruby -S rake build
+
 ## PROBLEMS?
 
 * Irc at #redcar on irc.freenode.net
