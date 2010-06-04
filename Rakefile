@@ -132,6 +132,65 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
+desc "Build a MacOS X App bundle"
+task :app_bundle do
+  require 'erb'
+
+  redcar_icon = "redcar_icon_beta.png"
+
+  bundle_contents = File.join("pkg", "Redcar.app", "Contents")
+  macos_dir = File.join(bundle_contents, "MacOS")
+  resources_dir = File.join(bundle_contents, "Resources")
+  FileUtils.mkdir_p macos_dir
+  FileUtils.mkdir_p resources_dir
+
+  info_plist_template = ERB.new <<-PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleExecutable</key>
+	<string>redcar</string>
+	<key>CFBundleIconFile</key>
+	<string><%= redcar_icon %></string>
+	<key>CFBundleIdentifier</key>
+	<string>com.redcareditor.Redcar</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string><%= spec.version %></string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.5</string>
+</dict>
+</plist>
+  PLIST
+  File.open(File.join(bundle_contents, "Info.plist"), "w") do |f|
+    f << info_plist_template.result(binding)
+  end
+
+  File.open(File.join(macos_dir, "redcar"), "w") do |f|
+    f << '#!/bin/sh
+          DIR=$(cd "$(dirname "$0")"; pwd)
+          REDCAR=$(cd "$(dirname "${DIR}/../Resources/bin/redcar")"; pwd)
+          ruby $REDCAR/redcar $@'
+  end
+  File.chmod 0777, File.join(macos_dir, "redcar")
+
+  spec.files.each do |f|
+    FileUtils.mkdir_p File.join(resources_dir, File.dirname(f))
+    FileUtils.cp_r f, File.join(resources_dir, f), :remove_destination => true
+  end
+
+  system "#{File.join(macos_dir, "redcar")} install"
+
+  FileUtils.cp_r File.join(resources_dir, "plugins", "application", "icons", redcar_icon), 
+      resources_dir, :remove_destination => true
+end
+
 desc 'Clean up (sanitize) the Textmate files for packaging'
 task :clean_textmate do
   # rename files to be x-platform safe
