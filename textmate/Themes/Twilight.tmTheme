@@ -23,6 +23,10 @@
 				<string>#FFFFFF08</string>
 				<key>selection</key>
 				<string>#DDF0FF33</string>
+				<key>marginForeground</key>
+				<string>#AAAAAA</string>
+				<key>marginBackground</key>
+				<string>#222222</string>
 			</dict>
 		</dict>
 		<dict>
