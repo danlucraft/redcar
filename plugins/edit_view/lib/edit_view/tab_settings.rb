@@ -6,9 +6,11 @@ module Redcar
       DEFAULT_WORD_WRAP = false
       DEFAULT_SETTING_NAME = "Default"
       TAB_WIDTHS        = %w(2 3 4 5 6 8)
-      
-      attr_reader :tab_widths, :softnesses, :show_invisibles, :word_wraps, :show_line_numbers, :show_annotations
-    
+      DEFAULT_MARGIN_COLUMN = 500
+
+      attr_reader :tab_widths, :softnesses, :word_wraps, :margin_columns
+      attr_reader :show_invisibles, :show_line_numbers, :show_annotations
+
       def initialize
         @tab_widths =
             {DEFAULT_SETTING_NAME => DEFAULT_TAB_WIDTH}.merge(
@@ -19,6 +21,9 @@ module Redcar
         @word_wraps =
             {DEFAULT_SETTING_NAME => DEFAULT_WORD_WRAP}.merge(
               EditView.storage['word_wraps'] || {})
+        @margin_columns = 
+            {DEFAULT_SETTING_NAME => DEFAULT_MARGIN_COLUMN}.merge(
+              EditView.storage['margin_columns'] || {})
         @show_invisibles   = !!EditView.storage['show_invisibles']
         @show_line_numbers = !!EditView.storage['show_line_numbers']
         @show_annotations  = !!EditView.storage['show_annotations']
@@ -57,6 +62,17 @@ module Redcar
         if word_wraps[grammar_name] != boolean
           word_wraps[grammar_name] = boolean
           EditView.storage['word_wraps'] = word_wraps
+        end
+      end
+      
+      def margin_column_for(grammar_name)
+        margin_columns[grammar_name] || margin_columns[DEFAULT_SETTING_NAME]
+      end
+      
+      def set_margin_column_for(grammar_name, column)
+        if margin_columns[grammar_name] != column
+          margin_columns[grammar_name] = column
+          EditView.storage['margin_columns'] = margin_columns
         end
       end
       

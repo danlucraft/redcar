@@ -275,9 +275,10 @@ module Redcar
     
     def set_grammar(name)
       @grammar = name
-      self.tab_width = EditView.tab_settings.width_for(name)
-      self.soft_tabs = EditView.tab_settings.softness_for(name)
-      self.word_wrap = EditView.tab_settings.word_wrap_for(name)
+      self.tab_width     = EditView.tab_settings.width_for(name)
+      self.soft_tabs     = EditView.tab_settings.softness_for(name)
+      self.word_wrap     = EditView.tab_settings.word_wrap_for(name)
+      self.margin_column = EditView.tab_settings.margin_column_for(name)
       refresh_show_invisibles
       refresh_show_line_numbers
       refresh_show_annotations
@@ -319,6 +320,16 @@ module Redcar
       @word_wrap = bool
       EditView.tab_settings.set_word_wrap_for(grammar, bool)
       notify_listeners(:word_wrap_changed, bool)
+    end
+    
+    def margin_column
+      @margin_column
+    end
+    
+    def margin_column=(val)
+      @margin_column = val
+      EditView.tab_settings.set_margin_column_for(grammar, val)
+      notify_listeners(:margin_column_changed, val)
     end
     
     def show_invisibles?

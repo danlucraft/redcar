@@ -47,7 +47,6 @@ module Redcar
       @mate_text.set_grammar_by_name("Plain Text")
       @model.set_grammar("Plain Text")
       @mate_text.set_theme_by_name(EditView.theme)
-      @mate_text.set_margin_column(80)
       create_undo_manager
       @document.attach_modification_listeners # comes after undo manager
       remove_control_keybindings
@@ -134,6 +133,9 @@ module Redcar
       h10 = @model.add_listener(:annotations_visibility_changed) do |new_bool|
         @mate_text.set_annotations_visible(new_bool)
       end
+      h11 = @model.add_listener(:margin_column_changed) do |new_column|
+        @mate_text.set_margin_column(new_column)
+      end
       @mate_text.getTextWidget.addFocusListener(FocusListener.new(self))
       @mate_text.getTextWidget.addVerifyListener(VerifyListener.new(@model.document, self))
       @mate_text.getTextWidget.addModifyListener(ModifyListener.new(@model.document, self))
@@ -141,7 +143,7 @@ module Redcar
       @mate_text.get_control.add_key_listener(KeyListener.new(self))
       @handlers << [@model.document, h1] << [@model, h2] << [@model, h3] << [@model, h4] << 
         [@model, h5] << [@model, h6] << [@model, h7] << [@model, h8] <<
-        [@model, h9] << [@model, h10]
+        [@model, h9] << [@model, h10] << [@model, h11]
     end
     
     class VerifyKeyListener
