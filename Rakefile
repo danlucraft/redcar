@@ -197,7 +197,7 @@ task :clean_textmate do
   Dir["textmate/Bundles/*.tmbundle/*/**/*"].each do |fn|
     if File.file?(fn)
       bits = fn.split("/").last.split(".")[0..-2].join("_")
-      new_basename = bits.gsub(" ", "_").gsub(/[^\w_]/, "__") + File.extname(fn)
+      new_basename = bits.gsub(" ", "_").gsub(/[^\w_]/, "__").gsub(/\\./, "__") + File.extname(fn)
       new_fn = File.join(File.dirname(fn), new_basename)
       # p [fn,new_fn]
       next if new_fn == fn
