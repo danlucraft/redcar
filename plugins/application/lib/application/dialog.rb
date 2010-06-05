@@ -75,8 +75,17 @@ module Redcar
       end
       
       # Shows a tool tip to the user, at the cursor location.
-      def self.tool_tip(message)
-        Redcar.gui.dialog_adapter.tool_tip(message)
+      #
+      # Allowed locations:
+      #  * :cursor - the location of the text cursor in the focussed text widget
+      #  * :pointer - the location of the mouse pointer
+      #
+      # If :cursor is specified with no open tab, it will default to :pointer.
+      #
+      # @param [String] message
+      # @param [Symbol] location
+      def self.tool_tip(message, location)
+        Redcar.gui.dialog_adapter.tool_tip(message, location)
       end
       
       # Shows a popup menu to the user.

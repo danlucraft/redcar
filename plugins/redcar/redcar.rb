@@ -170,7 +170,7 @@ module Redcar
 
     class PrintScopeCommand < Command
       def execute
-        Application::Dialog.tool_tip(tab.edit_view.document.cursor_scope.gsub(" ", "\n"))
+        Application::Dialog.tool_tip(tab.edit_view.document.cursor_scope.gsub(" ", "\n"), :cursor)
       end
     end
     

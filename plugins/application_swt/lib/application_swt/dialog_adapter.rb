@@ -89,15 +89,23 @@ module Redcar
         {:button => button, :value => dialog.getValue}
       end
       
-      def tool_tip(message)
+      def tool_tip(message, location)
         tool_tip = Swt::Widgets::ToolTip.new(parent_shell, Swt::SWT::ICON_INFORMATION)
         tool_tip.set_message(message)
         tool_tip.set_visible(true)
+        tool_tip.set_location(*get_coordinates(location))
       end
       
       def popup_menu(menu, location)
         window = Redcar.app.focussed_window
         menu   = ApplicationSWT::Menu.new(window.controller, menu, nil, Swt::SWT::POP_UP)
+        menu.move(*get_coordinates(location))
+        menu.show
+      end
+      
+      private
+      
+      def get_coordinates(location)
         edit_view = EditView.focussed_tab_edit_view
         if location == :cursor and not edit_view
           location = :pointer
@@ -113,11 +121,8 @@ module Redcar
           location = ApplicationSWT.display.get_cursor_location
           x, y = location.x, location.y
         end
-        menu.move(x, y)
-        menu.show
+        [x, y]
       end
-      
-      private
       
       def file_dialog(type, options)
         dialog = Swt::Widgets::FileDialog.new(parent_shell, type)
