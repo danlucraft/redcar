@@ -14,6 +14,7 @@ Enhancements:
   * The project view has a fixed width that doesn't change if you resize the main window (Tim Felgentreff)
   * Optional margin that colours text differently past a configurable column. (Dan Lucraft)
   * Experimental app bundle for Mac OSX. (Tim Felgentreff)
+  * Moved to JRuby 1.5 (Dan Lucraft)
 
 New APIs:
 
