@@ -24,6 +24,11 @@ module Redcar
       end
       
       label :margin_column_label, "Margin:"
+      
+      toggle :show_margin, "", nil, TabSettings::DEFAULT_MARGIN_PRESENT do |new_value|
+        @tab.edit_view.show_margin = new_value
+      end
+      
       textbox :margin_column, TabSettings::DEFAULT_MARGIN_COLUMN.to_s do |new_value|
         @tab.edit_view.margin_column = [new_value.to_i, 5].max
       end
@@ -44,6 +49,7 @@ module Redcar
           tab_width.value = @tab.edit_view.tab_width.to_s
           soft_tabs.value = @tab.edit_view.soft_tabs?
           word_wrap.value = @tab.edit_view.word_wrap?
+          show_margin.value = @tab.edit_view.show_margin?
           margin_column.value = @tab.edit_view.margin_column.to_s
           @width_handler = @tab.edit_view.add_listener(:tab_width_changed) do |new_value|
             tab_width.value = new_value.to_s
@@ -60,6 +66,9 @@ module Redcar
           @grammar_handler = @tab.edit_view.add_listener(:grammar_changed) do |new_grammar|
             grammar.value = new_grammar
           end
+          @show_margin_handler = @tab.edit_view.add_listener(:show_margin_changed) do |new_value|
+            show_margin.value = new_value
+          end
         end
       end
       
@@ -69,7 +78,8 @@ module Redcar
         @tab.edit_view.remove_listener(@softness_handler)
         @tab.edit_view.remove_listener(@word_wrap_handler)
         @tab.edit_view.remove_listener(@margin_column_handler)
-      end        
+        @tab.edit_view.remove_listener(@show_margin_handler)
+      end
       
       def close
         if @tab

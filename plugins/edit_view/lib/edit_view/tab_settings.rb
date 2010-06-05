@@ -6,9 +6,11 @@ module Redcar
       DEFAULT_WORD_WRAP = false
       DEFAULT_SETTING_NAME = "Default"
       TAB_WIDTHS        = %w(2 3 4 5 6 8)
-      DEFAULT_MARGIN_COLUMN = 500
+      DEFAULT_MARGIN_COLUMN = 80
+      DEFAULT_MARGIN_PRESENT = false
 
       attr_reader :tab_widths, :softnesses, :word_wraps, :margin_columns
+      attr_reader :show_margins
       attr_reader :show_invisibles, :show_line_numbers, :show_annotations
 
       def initialize
@@ -24,6 +26,9 @@ module Redcar
         @margin_columns = 
             {DEFAULT_SETTING_NAME => DEFAULT_MARGIN_COLUMN}.merge(
               EditView.storage['margin_columns'] || {})
+        @show_margins =
+            {DEFAULT_SETTING_NAME => DEFAULT_MARGIN_PRESENT}.merge(
+              EditView.storage['show_margins'] || {})
         @show_invisibles   = !!EditView.storage['show_invisibles']
         @show_line_numbers = !!EditView.storage['show_line_numbers']
         @show_annotations  = !!EditView.storage['show_annotations']
@@ -42,7 +47,11 @@ module Redcar
       end
       
       def softness_for(grammar_name)
-        softnesses[grammar_name] || softnesses[DEFAULT_SETTING_NAME]
+        if softnesses[grammar_name] == nil
+          softnesses[DEFAULT_SETTING_NAME]
+        else
+          softnesses[grammar_name]
+        end
       end
       
       def set_softness_for(grammar_name, boolean)
@@ -54,7 +63,11 @@ module Redcar
       end
       
       def word_wrap_for(grammar_name)
-        word_wraps[grammar_name] || word_wraps[DEFAULT_SETTING_NAME]
+        if word_wraps[grammar_name] == nil
+          word_wraps[DEFAULT_SETTING_NAME]
+        else
+          word_wraps[grammar_name]
+        end
       end
       
       def set_word_wrap_for(grammar_name, boolean)
@@ -73,6 +86,22 @@ module Redcar
         if margin_columns[grammar_name] != column
           margin_columns[grammar_name] = column
           EditView.storage['margin_columns'] = margin_columns
+        end
+      end
+      
+      def show_margin_for(grammar_name)
+        if show_margins[grammar_name] == nil
+          show_margins[DEFAULT_SETTING_NAME]
+        else
+          show_margins[grammar_name]
+        end
+      end
+      
+      def set_show_margin_for(grammar_name, boolean)
+        boolean = !!boolean
+        if show_margins[grammar_name] != boolean
+          show_margins[grammar_name] = boolean
+          EditView.storage['show_margins'] = show_margins
         end
       end
       
@@ -101,6 +130,15 @@ module Redcar
       def set_show_annotations(bool)
         @show_annotations = bool
         EditView.storage['show_annotations'] = bool
+      end
+      
+      def show_margin?
+        show_margin
+      end
+      
+      def set_show_margin(bool)
+        @show_margin = bool
+        EditView.storage['show_margin'] = bool
       end
     end
   end

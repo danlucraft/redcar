@@ -136,6 +136,13 @@ module Redcar
       h11 = @model.add_listener(:margin_column_changed) do |new_column|
         @mate_text.set_margin_column(new_column)
       end
+      h12 = @model.add_listener(:show_margin_changed) do |new_bool|
+        if new_bool
+          @mate_text.set_margin_column(@model.margin_column)
+        else
+          @mate_text.set_margin_column(-1)
+        end
+      end
       @mate_text.getTextWidget.addFocusListener(FocusListener.new(self))
       @mate_text.getTextWidget.addVerifyListener(VerifyListener.new(@model.document, self))
       @mate_text.getTextWidget.addModifyListener(ModifyListener.new(@model.document, self))

@@ -279,6 +279,7 @@ module Redcar
       self.soft_tabs     = EditView.tab_settings.softness_for(name)
       self.word_wrap     = EditView.tab_settings.word_wrap_for(name)
       self.margin_column = EditView.tab_settings.margin_column_for(name)
+      self.show_margin   = EditView.tab_settings.show_margin_for(name)
       refresh_show_invisibles
       refresh_show_line_numbers
       refresh_show_annotations
@@ -310,6 +311,16 @@ module Redcar
       @soft_tabs = bool
       EditView.tab_settings.set_softness_for(grammar, bool)
       notify_listeners(:softness_changed, bool)
+    end
+    
+    def show_margin?
+      @show_margin
+    end
+    
+    def show_margin=(bool)
+      @show_margin = bool
+      EditView.tab_settings.set_show_margin_for(grammar, bool)
+      notify_listeners(:show_margin_changed, bool)
     end
     
     def word_wrap?
