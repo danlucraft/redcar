@@ -210,5 +210,9 @@ module Redcar
         tab.focus
       end
     end
+    
+    def all_tabs
+      notebooks.map {|nb| nb.tabs }.flatten
+    end
   end
 end

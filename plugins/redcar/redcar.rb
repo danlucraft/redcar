@@ -193,15 +193,16 @@ module Redcar
             case result
             when :yes
               tab.edit_view.document.save!
+              close_tab
             when :no
               close_tab
             when :cancel
             end
           else
-            tab.close
+            close_tab
           end
         else
-          tab.close
+          close_tab
         end
         @tab = nil
       end
@@ -209,8 +210,12 @@ module Redcar
       private
       
       def close_tab
+        win = tab.notebook.window
         tab.close
-        
+        # this will break a lot of features:
+        #if win.all_tabs.empty? and not Project::Manager.in_window(win)
+        #  win.close
+        #end
       end
     end
     
