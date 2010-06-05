@@ -78,7 +78,7 @@ end
 
 spec = Gem::Specification.new do |s|
   s.name              = "redcar"
-  s.version           = "0.3.6dev"
+  s.version           = "0.3.6"
   s.summary           = "A JRuby text editor."
   s.author            = "Daniel Lucraft"
   s.email             = "dan@fluentradical.com"
