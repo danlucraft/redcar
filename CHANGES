@@ -15,6 +15,7 @@ Enhancements:
   * Optional margin that colours text differently past a configurable column. (Dan Lucraft)
   * Experimental app bundle for Mac OSX. (Tim Felgentreff)
   * Moved to JRuby 1.5 (Dan Lucraft)
+  * Opens content from standard in (Dan Lucraft)
 
 New APIs:
 

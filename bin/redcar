@@ -14,6 +14,7 @@ elsif ARGV.first == '--associate_with_any_right_click'
   installer = Redcar::Installer.new
   installer.associate_with_any_right_click
 else
+  Redcar.read_stdin
   exit if Redcar.try_to_load_via_drb
   require File.join(File.dirname(__FILE__), %w(.. lib redcar))
   Redcar.spin_up

@@ -111,6 +111,14 @@ module Redcar
         window.focus
       end
       
+      def self.open_tab_with_content(text)
+        win = Redcar.app.focussed_window || Redcar.app.new_window
+        tab = win.new_tab(Redcar::EditTab)
+        tab.edit_view.document.text = text
+        tab.edit_view.reset_undo
+        tab.focus
+      end
+      
       # Opens a new Tree with a DirMirror and DirController for the given
       # path, in a new window.
       #
@@ -154,7 +162,26 @@ module Redcar
             open_file(arg)
           end
         end
+        args.each do |arg|
+          if arg =~ /--untitled-file=(.*)/
+            path = $1
+            found_path_args = true
+            open_untitled_path(path)
+          end
+        end
         found_path_args
+      end
+      
+      def self.open_untitled_path(path)
+        begin
+          if File.file?(path) and contents = File.read(path)
+            open_tab_with_content(contents)
+          end
+        rescue => e
+          puts "Error opening untitled file #{path}"
+          puts e.class.to_s + ":" + e.message
+          puts e.backtrace
+        end
       end
       
       # Attaches a new listener to tab focus change events, so we can 

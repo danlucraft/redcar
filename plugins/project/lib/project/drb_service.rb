@@ -10,6 +10,22 @@ module Redcar
         end
       end
     
+      def open_item_untitled(path)
+        begin
+          puts 'drb opening untitled ' + full_path if $VERBOSE
+          if File.file?(path)
+            Redcar::ApplicationSWT.sync_exec do
+              Project::Manager.open_untitled_path(path)
+              Redcar.app.focussed_window.controller.bring_to_front
+            end
+          end
+          'ok'
+        rescue Exception => e
+          puts 'drb got exception:' + e.class + " " + e.message, e.backtrace
+          raise e
+        end 
+      end
+      
       def open_item_drb(full_path)
         begin
           puts 'drb opening ' + full_path if $VERBOSE

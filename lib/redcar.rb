@@ -151,7 +151,7 @@ module Redcar
     attr_accessor :app
     attr_reader :gui
   end
-
+  
   # Set the application GUI.
   def self.gui=(gui)
     raise "can't set gui twice" if @gui

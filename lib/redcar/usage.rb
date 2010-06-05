@@ -19,13 +19,10 @@ module Redcar
         puts
         puts "Usage: redcar [OPTIONS] [FILE|DIR]*"
         puts
-        puts "        --font=FONT  Choose font"
-        puts "   --font-size=SIZE  Choose font point size"
-        puts "      --theme=THEME  Choose Textmate theme"
-        puts "--multiple-instance  Don't attempt to run from an existing instance"
-        puts "          --verbose  Set $VERBOSE to true"
-        puts "            --debug  JRuby debugging mode: activates the profiling commands in the Debug menu"
-        puts ""
+        puts " --multiple-instance  Don't attempt to open files and dirs in an already running instance"
+        puts "             --debug  JRuby debugging mode: activates the profiling commands in the Debug menu"
+        puts "--untitled-file=PATH  Open the given file as an untitled tab."
+        puts "      --ignore-stdin  Ignore stdin"
         #puts "To associate with right click in windows explorer:"
         #puts
         #puts "  C:> redcar --associate_with_any_right_click"
