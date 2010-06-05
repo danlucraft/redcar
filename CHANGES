@@ -16,6 +16,7 @@ Enhancements:
   * Experimental app bundle for Mac OSX. (Tim Felgentreff)
   * Moved to JRuby 1.5 (Dan Lucraft)
   * Opens content from standard in (Dan Lucraft)
+  * Dev versions of Redcar have a blue icon (Dan Lucraft)
 
 New APIs:
 

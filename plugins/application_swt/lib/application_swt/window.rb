@@ -122,17 +122,21 @@ module Redcar
       end
       
       def set_icon
-        if Redcar::VERSION =~ /dev$/
-          path = File.join(icon_dir, "redcar_icon_beta_dev.png")
-        else
-          path = File.join(icon_dir, "redcar_icon_beta.png")
-        end
+        path = File.join(icon_dir, icon_file)
         icon = Swt::Graphics::Image.new(ApplicationSWT.display, path)
         shell.image = icon
       end
       
       def icon_dir
         File.join(Redcar.root, %w(plugins application icons))
+      end
+      
+      def icon_file
+        if Redcar::VERSION =~ /dev$/
+          "redcar_icon_beta_dev.png"
+        else
+          "redcar_icon_beta.png"
+        end
       end
 
       def bring_to_front
