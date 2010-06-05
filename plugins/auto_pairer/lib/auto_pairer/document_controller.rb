@@ -71,7 +71,7 @@ module Redcar
           # Type over ends
           if @rules = PairsForScope.pairs_for_scope(cursor_scope)
             inverse_rules = @rules.invert
-            if inverse_rules.include?(text) and !@ignore_insert
+            if !@ignore_insert
               end_mark_pair = find_mark_pair_by_end(start_offset)
               if end_mark_pair and end_mark_pair.text == text
                 @type_over_end = true
