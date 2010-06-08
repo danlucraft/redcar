@@ -17,6 +17,14 @@ module Redcar
     def refresh
       notify_listeners(:refresh)
     end
+    
+    def edit(element, select_from=nil, select_to=nil)
+      notify_listeners(:edit_element, element, select_from, select_to)
+    end
+    
+    def expand(element)
+      notify_listeners(:expand_element, element)
+    end
   end
 end
 

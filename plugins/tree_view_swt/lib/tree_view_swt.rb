@@ -1,7 +1,7 @@
 
 module Redcar
   class TreeViewSWT
-    attr_reader :viewer
+    attr_reader :viewer, :model
     
     def self.storage
       @storage ||= begin
@@ -22,21 +22,81 @@ module Redcar
       if @model.tree_controller
         @viewer.add_tree_listener(@viewer.getControl, TreeListener.new)
         @viewer.add_double_click_listener(DoubleClickListener.new)
-        @viewer.add_open_listener(OpenListener.new(@model.tree_controller))
+        @viewer.add_open_listener(OpenListener.new(@model))
         control.add_mouse_listener(MouseListener.new(self))
       end
       
-      @model.add_listener(:refresh) do
-        s = Time.now
-        begin
-          @viewer.refresh if TreeViewSWT.storage['refresh_trees_on_refocus']
-        rescue => e
-          # Don't know why the @viewer sometimes throws these:
-          # "undefined method `getParent' for #<Redcar::TreeViewSWT::TreeMirrorContentProvider:0x44655c8c> (NoMethodError)"
-          # It looks like it is expecting a ILazyTreeViewContentProvider, because getParent
-          # is in the API for that.
-          puts e.message
-          puts e.backtrace
+      @model.add_listener(:refresh) { @viewer.refresh }
+      
+      @editor = Swt::Custom::TreeEditor.new(control)
+      
+      @editor.horizontalAlignment = Swt::SWT::LEFT
+      @editor.grabHorizontal = true
+      
+      @model.add_listener(:edit_element, &method(:edit_element))
+      @model.add_listener(:expand_element, &method(:expand_element))
+    end
+    
+    def edit_element(element, select_from, select_to)
+      item = element_to_item(element)
+      unless item
+        puts "ERROR: when trying to edit, no visible item for #{element.inspect}"
+        return
+      end
+      
+      text = Swt::Widgets::Text.new(control, Swt::SWT::NONE)
+      text.set_text(item.get_text)
+      colour = ApplicationSWT.display.get_system_color(Swt::SWT::COLOR_GRAY)
+      text.set_background(colour)
+      
+      @editor.set_editor(text, item)
+      text.set_selection(select_from || 0, select_to || text.get_text.length)
+      listener = EditorListener.new(self, element, text)
+      text.add_listener(Swt::SWT::FocusOut, listener)
+      text.add_listener(Swt::SWT::Traverse, listener)
+
+      text.set_focus
+    end
+    
+    def edited_element(element, text)
+      if @model.tree_controller and @model.tree_controller.respond_to?(:edited)
+        @model.tree_controller.edited(@model, element, text)
+      end
+    end
+    
+    def expand_element(element)
+      item = element_to_item(element)
+      @viewer.expandToLevel(element, 1)
+    end
+    
+    def element_to_item(element)
+      @viewer.test_find_item(element)
+    end
+    
+    class EditorListener
+      def initialize(tree_view_swt, element, text_widget)
+        @tree_view_swt = tree_view_swt
+        @element = element
+        @text = text_widget
+      end
+      
+      def handle_event(e)
+        case e.type
+        when Swt::SWT::FocusOut
+          new_text = @text.get_text
+          @text.dispose
+          @tree_view_swt.edited_element(@element, new_text)
+        when Swt::SWT::Traverse
+          case e.detail
+          when Swt::SWT::TRAVERSE_RETURN
+            new_text = @text.get_text
+            @text.dispose
+            e.doit = false
+            @tree_view_swt.edited_element(@element, new_text)
+          when Swt::SWT::TRAVERSE_ESCAPE
+            @text.dispose
+            e.doit = false
+          end
         end
       end
     end
@@ -55,7 +115,7 @@ module Redcar
         item = @viewer.get_item_at(point)
         element = @viewer.getViewerRowFromItem(item).get_element
         if @model.tree_controller.respond_to?(:right_click)
-          @model.tree_controller.right_click(element)
+          @model.tree_controller.right_click(@model, element)
         end
       end
     end
@@ -112,13 +172,12 @@ module Redcar
     end
     
     class OpenListener
-      def initialize(controller)
-        @controller = controller
+      def initialize(tree_model)
+        @tree_model = tree_model
       end
       
       def open(e)
-        p e.getSelection.toArray.to_a.first
-        @controller.activated(e.getSelection.toArray.to_a.first)
+        @tree_model.tree_controller.activated(@tree_model, e.getSelection.toArray.to_a.first)
       end
     end
     
@@ -139,6 +198,10 @@ module Redcar
 
       def get_children(tree_node)
         tree_node.children.to_java
+      end
+      
+      def get_parent(tree_node)
+        # not sure why this is necessary
       end
 
       def dispose

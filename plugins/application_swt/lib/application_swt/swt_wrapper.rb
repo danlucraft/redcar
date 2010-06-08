@@ -69,6 +69,7 @@ module Swt
     import org.eclipse.swt.custom.StackLayout
     import org.eclipse.swt.custom.ST
     import org.eclipse.swt.custom.StyledText
+    import org.eclipse.swt.custom.TreeEditor
   end
   
   module DND
@@ -140,6 +141,7 @@ module JFace
     import org.eclipse.jface.viewers.ILabelProvider
     import org.eclipse.jface.viewers.ILazyTreeContentProvider
     import org.eclipse.jface.viewers.ILabelProvider
+    import org.eclipse.jface.viewers.TextCellEditor
   end
   
   module Text
