@@ -1,6 +1,6 @@
 
-Version 0.3.7 (8 Jun 2010)
-==========================
+Version 0.3.7 (TBA)
+===================
 
 Enhancements:
  
@@ -9,6 +9,7 @@ Enhancements:
 New APIS:
 
   * Context menu callback for trees (Dan Lucraft)
+  * Tree gained new methods for editing and expanding rows. (Dan Lucraft)
 
 New contributors:
 
