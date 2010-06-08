@@ -23,6 +23,7 @@ module Redcar
         @viewer.add_tree_listener(@viewer.getControl, TreeListener.new)
         @viewer.add_double_click_listener(DoubleClickListener.new)
         @viewer.add_open_listener(OpenListener.new(@model.tree_controller))
+        control.add_mouse_listener(MouseListener.new(self))
       end
       
       @model.add_listener(:refresh) do
@@ -41,11 +42,22 @@ module Redcar
     end
     
     def control
-      @viewer.getControl
+      @viewer.get_control
     end
     
     def close
       @viewer.getControl.dispose
+    end
+    
+    def right_click(mouse_event)
+      if @model.tree_controller
+        point = Swt::Graphics::Point.new(mouse_event.x, mouse_event.y)
+        item = @viewer.get_item_at(point)
+        element = @viewer.getViewerRowFromItem(item).get_element
+        if @model.tree_controller.respond_to?(:right_click)
+          @model.tree_controller.right_click(element)
+        end
+      end
     end
     
     class TreeListener
@@ -61,6 +73,22 @@ module Redcar
       end
       
       def widget_selected(e)
+      end
+    end
+    
+    class MouseListener
+      def initialize(tree_view_swt)
+        @tree_view_swt = tree_view_swt
+      end
+      
+      def mouse_double_click(_); end
+      def mouse_up(_)
+      end
+      
+      def mouse_down(e)
+        if e.button == 3
+          @tree_view_swt.right_click(e)
+        end
       end
     end
     
@@ -89,6 +117,7 @@ module Redcar
       end
       
       def open(e)
+        p e.getSelection.toArray.to_a.first
         @controller.activated(e.getSelection.toArray.to_a.first)
       end
     end

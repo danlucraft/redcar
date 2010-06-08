@@ -7,6 +7,10 @@ module Redcar
       def activated(node)
         raise "not implemented"
       end
+      
+      def right_click(node=nil)
+        raise "not implemented"
+      end
     end
   end
 end
