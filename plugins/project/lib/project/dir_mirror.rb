@@ -70,7 +70,15 @@ module Redcar
         end
         
         def leaf?
+          file?
+        end
+        
+        def file?
           File.file?(@path)
+        end
+        
+        def directory?
+          File.directory?(@path)
         end
         
         def children

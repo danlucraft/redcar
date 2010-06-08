@@ -3,6 +3,8 @@ Version 0.3.7 (8 Jun 2010)
 ==========================
 
 Enhancements:
+ 
+  * Can create new files and directories, rename and delete files in the Project pane (Dan Lucraft)
 
 New APIS:
 
