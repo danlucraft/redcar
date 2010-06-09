@@ -60,7 +60,9 @@ module Redcar
     
     def edited_element(element, text)
       if @model.tree_controller and @model.tree_controller.respond_to?(:edited)
-        @model.tree_controller.edited(@model, element, text)
+        Redcar.safely("edit element") do
+          @model.tree_controller.edited(@model, element, text)
+        end
       end
     end
     
@@ -115,7 +117,9 @@ module Redcar
         item = @viewer.get_item_at(point)
         element = @viewer.getViewerRowFromItem(item).get_element
         if @model.tree_controller.respond_to?(:right_click)
-          @model.tree_controller.right_click(@model, element)
+          Redcar.safely("right click on tree") do
+            @model.tree_controller.right_click(@model, element)
+          end
         end
       end
     end
@@ -177,7 +181,9 @@ module Redcar
       end
       
       def open(e)
-        @tree_model.tree_controller.activated(@tree_model, e.getSelection.toArray.to_a.first)
+        Redcar.safely("tree row activation") do
+          @tree_model.tree_controller.activated(@tree_model, e.getSelection.toArray.to_a.first)
+        end
       end
     end
     

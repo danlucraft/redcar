@@ -90,7 +90,9 @@ module Redcar
         end
         
         def widget_selected(e)
-          @entry.command.call
+          Redcar.safely("menu item '#{@entry.text}'") do
+            @entry.command.call
+          end
         end
         
         alias :widget_default_selected :widget_selected

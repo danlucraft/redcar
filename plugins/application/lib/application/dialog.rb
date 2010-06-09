@@ -27,7 +27,7 @@ module Redcar
       # For example:
       #
       # >> Application::Dialog.message_box("YO!", :type => :info, 
-      # >>                                             :buttons => :yes_no_cancel)
+      # >>                                        :buttons => :yes_no_cancel)
       # => :yes
       def self.message_box(text, options={})
         if buttons = options[:buttons] and !available_message_box_button_combos.include?(buttons)

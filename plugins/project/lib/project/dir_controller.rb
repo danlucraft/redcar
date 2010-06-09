@@ -45,6 +45,7 @@ module Redcar
             tree.refresh
           end
         end
+        
         Application::Dialog.popup_menu(menu, :pointer)
       end
       
