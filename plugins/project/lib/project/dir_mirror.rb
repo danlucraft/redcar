@@ -81,6 +81,10 @@ module Redcar
           File.directory?(@path)
         end
         
+        def directory
+          File.dirname(@path)
+        end
+        
         def children
           Node.create_all_from_path(@path)
         end
