@@ -783,10 +783,10 @@ module Redcar
         link "Ctrl+V",       PasteCommand
         link "Ctrl+D",       DuplicateCommand
         
-        link "Shift+Home",   MoveTopCommand
+        link "Ctrl+Home",    MoveTopCommand
         link "Home",         MoveHomeCommand
         link "End",          MoveEndCommand
-        link "Shift+End",    MoveBottomCommand
+        link "Ctrl+End",     MoveBottomCommand
         
         link "Ctrl+[",       DecreaseIndentCommand
         link "Ctrl+]",       IncreaseIndentCommand
