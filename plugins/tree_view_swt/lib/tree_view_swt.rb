@@ -115,7 +115,7 @@ module Redcar
       if @model.tree_controller
         point = Swt::Graphics::Point.new(mouse_event.x, mouse_event.y)
         item = @viewer.get_item_at(point)
-        element = @viewer.getViewerRowFromItem(item).get_element
+        element = item ? @viewer.getViewerRowFromItem(item).get_element : nil
         if @model.tree_controller.respond_to?(:right_click)
           Redcar.safely("right click on tree") do
             @model.tree_controller.right_click(@model, element)
