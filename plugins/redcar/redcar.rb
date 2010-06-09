@@ -1,4 +1,15 @@
+
 module Redcar
+  def self.safely(text)
+    begin
+      yield
+    rescue => e
+      Application::Dialog.message_box(
+        "Error in: " + text, 
+        :type => :error, :buttons => :ok)
+    end
+  end
+  
   module Top
     class QuitCommand < Command
       
