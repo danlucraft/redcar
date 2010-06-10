@@ -1,3 +1,5 @@
+REDCAR_VERSION = "0.3.7dev"
+
 require 'rubygems'
 require 'fileutils'
 require 'spec/rake/spectask'
@@ -78,7 +80,7 @@ end
 
 spec = Gem::Specification.new do |s|
   s.name              = "redcar"
-  s.version           = "0.3.7dev"
+  s.version           = REDCAR_VERSION
   s.summary           = "A JRuby text editor."
   s.author            = "Daniel Lucraft"
   s.email             = "dan@fluentradical.com"
@@ -240,4 +242,27 @@ task :run_ci do
   contrl = Watchr::Controller.new(script, Watchr.handler.new)
   contrl.run
 end
+
+desc "Release gem"
+task :release => :gem do
+  require 'aws/s3'
+  credentials = YAML.load(File.read("/Users/danlucraft/.s3-creds.yaml"))
+  AWS::S3::Base.establish_connection!(
+    :access_key_id     => credentials['access_key_id'],
+    :secret_access_key => credentials["secret_access_key"]
+  )
+  
+  redcar_bucket = AWS::S3::Bucket.find('redcar')
+  
+  file = "plugins/edit_view_swt/vendor/java-mateview.jar"
+  AWS::S3::S3Object.store("java-mateview-#{REDCAR_VERSION}.jar", open(file), 'redcar', :access => :public_read)
+  
+  file = "plugins/application_swt/lib/dist/application_swt.jar"
+  AWS::S3::S3Object.store("application_swt-#{REDCAR_VERSION}.jar", open(file), 'redcar', :access => :public_read)
+  
+  file = "pkg/redcar-#{REDCAR_VERSION}.gem"
+  AWS::S3::S3Object.store("redcar-#{REDCAR_VERSION}.gem", open(file), 'redcar', :access => :public_read)
+end
+
+
 
