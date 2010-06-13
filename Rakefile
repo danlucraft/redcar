@@ -178,7 +178,7 @@ task :app_bundle do
     f << '#!/bin/sh
           DIR=$(cd "$(dirname "$0")"; pwd)
           REDCAR=$(cd "$(dirname "${DIR}/../Resources/bin/redcar")"; pwd)
-          ruby $REDCAR/redcar $@'
+          ruby $REDCAR/redcar --ignore-stdin $@'
   end
   File.chmod 0777, File.join(macos_dir, "redcar")
 
