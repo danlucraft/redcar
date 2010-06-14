@@ -25,6 +25,10 @@ module Redcar
     def expand(element)
       notify_listeners(:expand_element, element)
     end
+    
+    def select(element)
+      notify_listeners(:select_element, element)
+    end
   end
 end
 

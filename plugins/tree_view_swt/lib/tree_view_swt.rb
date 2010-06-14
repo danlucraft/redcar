@@ -35,6 +35,7 @@ module Redcar
       
       @model.add_listener(:edit_element, &method(:edit_element))
       @model.add_listener(:expand_element, &method(:expand_element))
+      @model.add_listener(:select_element, &method(:select_element))
     end
     
     def edit_element(element, select_from, select_to)
@@ -67,10 +68,17 @@ module Redcar
     end
     
     def expand_element(element)
-      item = element_to_item(element)
-      @viewer.expandToLevel(element, 1)
+      if item = element_to_item(element)
+        @viewer.expandToLevel(element, 1)
+      end
     end
-    
+
+    def select_element(element)
+      if item = element_to_item(element)
+        @viewer.get_tree.set_selection(item)
+      end
+    end
+
     def element_to_item(element)
       @viewer.test_find_item(element)
     end

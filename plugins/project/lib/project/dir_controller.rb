@@ -54,8 +54,11 @@ module Redcar
       end
       
       def edited(tree, node, text)
-        FileUtils.mv(node.path, File.join(File.dirname(node.path), text))
+        new_path = File.join(File.dirname(node.path), text)
+        FileUtils.mv(node.path, new_path)
         tree.refresh
+        new_node = DirMirror::Node.create_from_path(new_path)
+        tree.select(new_node)
       end
     end
   end
