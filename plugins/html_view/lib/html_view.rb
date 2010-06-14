@@ -67,7 +67,7 @@ module Redcar
       (controller.methods - Object.new.methods).each do |method_name|
         method = []
         method << "  #{method_name.gsub(/_(\w)/) { |a| $1.upcase}}: function() {"
-        method << "    rubyCall(\"#{method_name}\", Array.prototype.slice.call(arguments));"
+        method << "    return rubyCall(\"#{method_name}\", Array.prototype.slice.call(arguments));"
         method << "  }"
         methods << method.join("\n")
       end
