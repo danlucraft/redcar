@@ -29,6 +29,10 @@ module Redcar
     def select(element)
       notify_listeners(:select_element, element)
     end
+    
+    def selection
+      controller.selection
+    end
   end
 end
 

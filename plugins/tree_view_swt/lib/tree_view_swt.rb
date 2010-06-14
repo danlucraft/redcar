@@ -10,11 +10,11 @@ module Redcar
          storage
       end
     end
-
     
     def initialize(composite, model)
       @composite, @model = composite, model
-      @viewer = JFace::Viewers::TreeViewer.new(@composite, Swt::SWT::VIRTUAL)
+      tree_style = Swt::SWT::VIRTUAL | Swt::SWT::MULTI
+      @viewer = JFace::Viewers::TreeViewer.new(@composite, tree_style)
       @viewer.set_content_provider(TreeMirrorContentProvider.new)
       @viewer.set_input(@model.tree_mirror)
       @viewer.set_label_provider(TreeMirrorLabelProvider.new)
@@ -81,6 +81,12 @@ module Redcar
 
     def element_to_item(element)
       @viewer.test_find_item(element)
+    end
+    
+    def selection
+      @viewer.get_tree.get_selection.map do |item|
+        @viewer.getViewerRowFromItem(item).get_element
+      end
     end
     
     class EditorListener
