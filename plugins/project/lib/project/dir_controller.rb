@@ -59,7 +59,7 @@ module Redcar
         result = Application::Dialog.message_box(msg, :type => :question, :buttons => :yes_no)
         if result == :yes
           nodes.each do |node|
-            FileUtils.rm(node.path)
+            FileUtils.rm_rf(node.path)
           end
           tree.refresh
         end
