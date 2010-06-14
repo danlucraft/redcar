@@ -3,6 +3,14 @@ require 'html_view/html_tab'
 
 module Redcar
   class HtmlView
+    def self.default_css_path
+      File.expand_path(File.join(Redcar.root, %w(plugins html_view assets redcar.css)))
+    end
+    
+    def self.jquery_path
+      File.expand_path(File.join(Redcar.root, %w(plugins html_view assets jquery-1.4.min.js)))
+    end
+    
     attr_reader :controller
   
     def initialize(html_tab)
