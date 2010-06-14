@@ -4,9 +4,13 @@ module Redcar
     begin
       yield
     rescue => e
+      message = "Error in: " + text
       Application::Dialog.message_box(
-        "Error in: " + text, 
+        message,
         :type => :error, :buttons => :ok)
+      puts message
+      puts e.class.to_s + ": " + e.message
+      puts e.backtrace
     end
   end
   
