@@ -52,11 +52,15 @@ module Redcar
         end
       end
       
-      def delete(tree, node)
-        msg = "Really delete #{File.basename(node.path)}?"
+      def delete(tree, _)
+        nodes = tree.selection
+        basenames = nodes.map {|node| File.basename(node.path) }
+        msg = "Really delete #{basenames.join(", ")}?"
         result = Application::Dialog.message_box(msg, :type => :question, :buttons => :yes_no)
         if result == :yes
-          FileUtils.rm(node.path)
+          nodes.each do |node|
+            FileUtils.rm(node.path)
+          end
           tree.refresh
         end
       end
