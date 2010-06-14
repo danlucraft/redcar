@@ -40,9 +40,13 @@ module Redcar
             end
           end
           
-          item("Delete") do 
-            FileUtils.rm(node.path)
-            tree.refresh
+          item("Delete") do
+            msg = "Really delete #{File.basename(node.path)}?"
+            result = Application::Dialog.message_box(msg, :type => :question, :buttons => :yes_no)
+            if result == :yes
+              FileUtils.rm(node.path)
+              tree.refresh
+            end
           end
         end
         
