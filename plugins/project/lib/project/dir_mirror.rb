@@ -82,7 +82,7 @@ module Redcar
         end
         
         def directory
-          File.dirname(@path)
+          directory? ? @path : File.dirname(@path)
         end
         
         def children
