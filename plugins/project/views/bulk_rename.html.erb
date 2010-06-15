@@ -1,0 +1,141 @@
+
+<script type="text/javascript" src="file://<%= Redcar::HtmlView.jquery_path %>"></script>
+<link rel="stylesheet" href="file://<%= Redcar::HtmlView.default_css_path %>" type="text/css" media="screen">
+
+<h3>Bulk Rename</h3>
+<form id="refresh-form" action="controller/submit">
+  <table>
+    <tr>
+      <td>Match:</td><td> <input name="match-pattern" id="match-pattern" value="<%= match_pattern %>" /></td>
+      <td>Replace:</td><td> <input name="replace-pattern" id="replace-pattern" value="<%= replace_pattern %>" /></td>
+      <td><input type="submit" id="refresh"></td>
+    </tr>
+  </table>
+</form>
+
+<br />
+
+<table>
+  <tr>
+    <th>Old</th>
+    <th>New</th>
+  </tr>
+  <% pairs.each do |node, new_name| %>
+    <tr>
+      <td><%= File.basename(node.path) %></td>
+      <td class="name-slot"><%= new_name %></td>
+      <td class="extra-info"></td>
+    </tr>
+  <% end %>
+</table>
+
+<script language="javascript">
+jQuery.fn.watch = function( id, fn ) {
+ 
+    return this.each(function(){
+ 
+        var self = this;
+ 
+        var oldVal = self[id];
+        $(self).data(
+            'watch_timer',
+            setInterval(function(){
+                if (self[id] !== oldVal) {
+                    fn.call(self, id, oldVal, self[id]);
+                    oldVal = self[id];
+                }
+            }, 100)
+        );
+ 
+    });
+ 
+    return self;
+};
+ 
+jQuery.fn.unwatch = function( id ) {
+ 
+    return this.each(function(){
+        clearInterval( $(this).data('watch_timer') );
+    });
+ 
+};
+ jQuery.fn.valuechange = function(fn) {
+    return this.bind('valuechange', fn);
+};
+ 
+jQuery.event.special.valuechange = {
+ 
+    setup: function() {
+ 
+        jQuery(this).watch('value', function(){
+            jQuery.event.handle.call(this, {type:'valuechange'});
+        });
+ 
+    },
+ 
+    teardown: function() {
+        jQuery(this).unwatch('value');
+    }
+ 
+};
+
+BulkRename = {
+  disableForm: function() {
+    $("input#refresh").attr("disabled", true);
+  },
+  
+  enableForm: function() {
+    $("input#refresh").attr("disabled", false);
+  },
+  
+  updateNames: function(newNames) {
+    BulkRename.enableForm();
+    var nameSlots = $(".name-slot");
+    var extraSlots = $(".extra-info");
+    $.each(newNames, function(ix, a) {
+      var name = a[0];
+      var exists = a[1];
+      var legal = a[2];
+      $(nameSlots[ix]).html(name);
+      if (!legal) {
+        $(extraSlots[ix]).html("illegal filename");
+        BulkRename.disableForm();
+      }
+      else {
+        if (exists) {
+          $(extraSlots[ix]).html("conflicts");
+          BulkRename.disableForm();
+        }
+        else {
+          $(extraSlots[ix]).html("");
+        }
+      }
+    });
+  },
+  
+  init: function() {
+    $("#match-pattern").bind("valuechange", function(propName, oldVal, newVal) {
+      try {
+        var newNames = Controller.refresh($("#match-pattern").attr("value"), $("#replace-pattern").attr("value"));
+        BulkRename.updateNames(newNames);
+      } catch(e) {
+        alert(e.message);
+      };
+    });
+    $("#replace-pattern").bind("valuechange", function(propName, oldVal, newVal) {
+      try {
+        var newNames = Controller.refresh($("#match-pattern").attr("value"), $("#replace-pattern").attr("value"));
+        BulkRename.updateNames(newNames);
+      } catch(e) {
+        alert(e.message);
+      };
+    });
+  }
+};
+
+BulkRename.init();
+
+</script>
+
+
+
