@@ -81,6 +81,10 @@ module Redcar
           File.directory?(@path)
         end
         
+        def parent_dir
+          File.dirname(@path)
+        end
+        
         def directory
           directory? ? @path : File.dirname(@path)
         end
