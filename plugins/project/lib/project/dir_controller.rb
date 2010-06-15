@@ -90,7 +90,11 @@ module Redcar
         end
         
         def refresh(new_match_pattern, new_replace_pattern)
-          @match_pattern   = new_match_pattern
+          begin
+            @match_pattern   = /#{new_match_pattern}/
+          rescue
+            return []
+          end
           @replace_pattern = new_replace_pattern
           result = @pairs.map do |node, _|
             old_name = File.basename(node.path)
@@ -108,6 +112,7 @@ module Redcar
           @pairs.each do |node, _|
             old_name = File.basename(node.path)
             new_name = transform_name(old_name)
+            next if old_name == new_name
             new_path = File.join(File.dirname(node.path), new_name)
             FileUtils.mv(node.path, new_path)
           end
@@ -118,7 +123,7 @@ module Redcar
         private
         
         def transform_name(old_name)
-          old_name.sub(/#{match_pattern}/, replace_pattern)
+          old_name.sub(match_pattern, replace_pattern)
         end
         
         def legal_path?(path)
