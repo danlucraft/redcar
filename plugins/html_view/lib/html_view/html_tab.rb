@@ -13,8 +13,8 @@ module Redcar
       @html_view = HtmlView.new(self)
     end
     
-    def controller_action(action, path)
-      notify_listeners(:controller_action, action, path)
+    def controller_action(action, params)
+      notify_listeners(:controller_action, action, params)
     end
   end
 end
