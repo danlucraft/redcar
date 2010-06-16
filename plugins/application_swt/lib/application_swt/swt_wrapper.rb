@@ -142,6 +142,7 @@ module JFace
     import org.eclipse.jface.viewers.ILazyTreeContentProvider
     import org.eclipse.jface.viewers.ILabelProvider
     import org.eclipse.jface.viewers.TextCellEditor
+    import org.eclipse.jface.viewers.ViewerDropAdapter
   end
   
   module Text

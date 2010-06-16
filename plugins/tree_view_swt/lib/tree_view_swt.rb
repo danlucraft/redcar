@@ -52,7 +52,7 @@ module Redcar
       
       def drag_start(event)
         selection = tree.get_selection
-        if (selection.length > 0 and selection[0].get_item_count == 0)
+        if selection.length > 0
           event.doit = true
           @drag_source_item[0] = selection[0]
         else
@@ -104,6 +104,15 @@ module Redcar
       end
     end
     
+    class DropAdapter < JFace::Viewers::ViewerDropAdapter
+      def validateDrop(target, operation, transfer_type)
+        true
+      end
+      
+      def performDrop(data)
+      end
+    end
+    
     def register_dnd
       types = [Swt::DND::TextTransfer.getInstance()].to_java(:"org.eclipse.swt.dnd.TextTransfer")
       operations = Swt::DND::DND::DROP_MOVE | Swt::DND::DND::DROP_COPY
@@ -111,7 +120,7 @@ module Redcar
       drag_source_item = [nil]
       
       @viewer.add_drag_support(operations, types, DragSourceListener.new(@viewer.get_tree, drag_source_item));
-      @viewer.add_drop_support(operations, types, DragTargetListener.new(drag_source_item))
+      @viewer.add_drop_support(operations, types, DropAdapter.new(@viewer))
     end
     
     def edit_element(element, select_from, select_to)
