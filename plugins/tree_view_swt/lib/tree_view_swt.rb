@@ -108,6 +108,8 @@ module Redcar
       types = [Swt::DND::TextTransfer.getInstance()].to_java(:"org.eclipse.swt.dnd.TextTransfer")
       operations = Swt::DND::DND::DROP_MOVE | Swt::DND::DND::DROP_COPY
       
+      drag_source_item = [nil]
+      
       @viewer.add_drag_support(operations, types, DragSourceListener.new(@viewer.get_tree, drag_source_item));
       @viewer.add_drop_support(operations, types, DragTargetListener.new(drag_source_item))
     end
