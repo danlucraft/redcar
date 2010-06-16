@@ -26,6 +26,8 @@ module Redcar
         control.add_mouse_listener(MouseListener.new(self))
       end
       
+      register_dnd
+      
       @model.add_listener(:refresh) { @viewer.refresh }
       
       @editor = Swt::Custom::TreeEditor.new(control)
@@ -36,6 +38,147 @@ module Redcar
       @model.add_listener(:edit_element, &method(:edit_element))
       @model.add_listener(:expand_element, &method(:expand_element))
       @model.add_listener(:select_element, &method(:select_element))
+    end
+    
+    class DragSourceListener
+      attr_reader :tree
+      
+      def initialize(tree, drag_source_item)
+        @tree = tree
+        @drag_source_item = drag_source_item
+      end
+      
+      # DragSourceListener
+      
+      def drag_start(event)
+        selection = tree.get_selection
+        if (selection.length > 0 and selection[0].get_item_count == 0)
+          event.doit = true
+          @drag_source_item[0] = selection[0]
+        else
+          event.doit = false
+        end
+      end
+      
+      def drag_set_data(event)
+        event.data = @drag_source_item[0].get_text
+      end
+      
+      def drag_finished(*_); end
+      
+      #public void dragFinished(DragSourceEvent event) {
+      #  if (event.detail == DND.DROP_MOVE)
+      #    dragSourceItem[0].dispose();
+      #  dragSourceItem[0] = null;
+      #}
+      #
+    end
+    
+    class DragTargetListener
+      def initialize(drag_source_item)
+        @drag_source_item = drag_source_item
+      end
+      
+      def drag_enter(*_); end
+      def drag_leave(*_); end
+      
+      def drop_accept(*_); end
+      
+      def drag_over(*_); end
+      #public void dragOver(DropTargetEvent event) {
+      #  event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL;
+      #  if (event.item != null) {
+      #    TreeItem item = (TreeItem) event.item;
+      #    Point pt = display.map(null, tree, event.x, event.y);
+      #    Rectangle bounds = item.getBounds();
+      #    if (pt.y < bounds.y + bounds.height / 3) {
+      #      event.feedback |= DND.FEEDBACK_INSERT_BEFORE;
+      #    } else if (pt.y > bounds.y + 2 * bounds.height / 3) {
+      #      event.feedback |= DND.FEEDBACK_INSERT_AFTER;
+      #    } else {
+      #      event.feedback |= DND.FEEDBACK_SELECT;
+      #    }
+      #  }
+      #}
+      #
+      def drop(*_); end
+      #public void drop(DropTargetEvent event) {
+      #  if (event.data == null) {
+      #    event.detail = DND.DROP_NONE;
+      #    return;
+      #  }
+      #  String text = (String) event.data;
+      #  if (event.item == null) {
+      #    TreeItem item = new TreeItem(tree, SWT.NONE);
+      #    item.setText(text);
+      #  } else {
+      #    TreeItem item = (TreeItem) event.item;
+      #    Point pt = display.map(null, tree, event.x, event.y);
+      #    Rectangle bounds = item.getBounds();
+      #    TreeItem parent = item.getParentItem();
+      #    if (parent != null) {
+      #      TreeItem[] items = parent.getItems();
+      #      int index = 0;
+      #      for (int i = 0; i < items.length; i++) {
+      #        if (items[i] == item) {
+      #          index = i;
+      #          break;
+      #        }
+      #      }
+      #      if (pt.y < bounds.y + bounds.height / 3) {
+      #        TreeItem newItem = new TreeItem(parent, SWT.NONE,
+      #            index);
+      #        newItem.setText(text);
+      #      } else if (pt.y > bounds.y + 2 * bounds.height / 3) {
+      #        TreeItem newItem = new TreeItem(parent, SWT.NONE,
+      #            index + 1);
+      #        newItem.setText(text);
+      #      } else {
+      #        TreeItem newItem = new TreeItem(item, SWT.NONE);
+      #        newItem.setText(text);
+      #      }
+      #
+      #    } else {
+      #      TreeItem[] items = tree.getItems();
+      #      int index = 0;
+      #      for (int i = 0; i < items.length; i++) {
+      #        if (items[i] == item) {
+      #          index = i;
+      #          break;
+      #        }
+      #      }
+      #      if (pt.y < bounds.y + bounds.height / 3) {
+      #        TreeItem newItem = new TreeItem(tree, SWT.NONE,
+      #            index);
+      #        newItem.setText(text);
+      #      } else if (pt.y > bounds.y + 2 * bounds.height / 3) {
+      #        TreeItem newItem = new TreeItem(tree, SWT.NONE,
+      #            index + 1);
+      #        newItem.setText(text);
+      #      } else {
+      #        TreeItem newItem = new TreeItem(item, SWT.NONE);
+      #        newItem.setText(text);
+      #      }
+      #    }
+      #
+      #  }
+      #}
+
+    end
+    
+    def register_dnd
+      types = [Swt::DND::TextTransfer.getInstance()].to_java(:"org.eclipse.swt.dnd.TextTransfer")
+      operations = Swt::DND::DND::DROP_MOVE | Swt::DND::DND::DROP_COPY | Swt::DND::DND::DROP_LINK
+      
+      drag_source_item = []
+      
+      drag_source = Swt::DND::DragSource.new(@viewer.get_tree, operations)
+      drag_source.set_transfer(types)
+      drag_source.add_drag_listener(DragSourceListener.new(@viewer.get_tree, drag_source_item))
+      
+      drag_target = Swt::DND::DropTarget.new(@viewer.get_tree, operations)
+      drag_target.setTransfer(types);
+      drag_target.add_drop_listener(DragTargetListener.new(drag_source_item))
     end
     
     def edit_element(element, select_from, select_to)
