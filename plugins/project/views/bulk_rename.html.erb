@@ -13,8 +13,6 @@
   </table>
 </form>
 
-<br />
-
 <table>
   <tr>
     <th>Old</th>
@@ -28,6 +26,24 @@
     </tr>
   <% end %>
 </table>
+<br />
+<hr />
+<br />
+<small><a class="show-examples">Show examples</a></small>
+<div id="examples" style="display:none;" class="example-box">
+  <small><a class="hide-examples">Hide examples</a></small>
+  <br /><br />
+  <p>E.g.</p>
+  <table>
+    <tr>
+      <td>Match</td><td>Replace</td><td>From</td><td>To</td>
+    </tr>
+    <tr><td>E</td><td>XXXXX</td><td>README</td><td>RXXXXXADME</td></tr>
+    <tr><td>$</td><td>.md</td><td>README</td><td>README.md</td></tr>
+  </table>
+</div>
+<br />
+
 
 <script language="javascript">
 jQuery.fn.watch = function( id, fn ) {
@@ -45,19 +61,15 @@ jQuery.fn.watch = function( id, fn ) {
                     oldVal = self[id];
                 }
             }, 100)
-        );
- 
-    });
- 
+          );
+      });
     return self;
 };
  
 jQuery.fn.unwatch = function( id ) {
- 
     return this.each(function(){
         clearInterval( $(this).data('watch_timer') );
-    });
- 
+      });
 };
  jQuery.fn.valuechange = function(fn) {
     return this.bind('valuechange', fn);
@@ -129,6 +141,15 @@ BulkRename = {
       } catch(e) {
         alert(e.message);
       };
+    });
+    
+    $(".show-examples").click(function() {
+      $("#examples").slideDown();
+      $(".show-examples").slideUp();
+    });
+    $(".hide-examples").click(function() {
+      $("#examples").slideUp();
+      $(".show-examples").slideDown();
     });
   }
 };
