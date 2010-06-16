@@ -43,12 +43,11 @@ module Redcar
     class DragSourceListener
       attr_reader :tree
       
-      def initialize(tree, drag_source_item)
+      def initialize(tree_view_swt, tree, drag_source_item)
+        @tree_view_swt = tree_view_swt
         @tree = tree
         @drag_source_item = drag_source_item
       end
-      
-      # DragSourceListener
       
       def drag_start(event)
         selection = tree.get_selection
@@ -61,65 +60,30 @@ module Redcar
       end
       
       def drag_set_data(event)
-        event.data = @drag_source_item[0].get_text
+        event.data = [@tree_view_swt.item_to_element(@drag_source_item[0]).path].to_java(:string)
       end
       
       def drag_finished(*_); end
-      
-      #public void dragFinished(DragSourceEvent event) {
-      #  if (event.detail == DND.DROP_MOVE)
-      #    dragSourceItem[0].dispose();
-      #  dragSourceItem[0] = null;
-      #}
-      #
-    end
-    
-    class DragTargetListener
-      def initialize(drag_source_item)
-        @drag_source_item = drag_source_item
-      end
-      
-      def drag_over(*_)
-        p [:drag_over, _]
-      end
-      
-      def drag_enter(*_)
-        p [:drag_enter, _]
-      end
-      
-      def drag_leave(*_)
-        p [:drag_leave, _]
-      end
-      
-      def drop_accept(*_)
-        p [:drop_accept, _]
-      end
-      
-      def drop(*_)
-        p [:drop, _]
-      end
-
-      def drag_operation_changed(*_)
-        p [:drag_operation_changed, _]
-      end
     end
     
     class DropAdapter < JFace::Viewers::ViewerDropAdapter
       def validateDrop(target, operation, transfer_type)
+        p [:validateDrop, target, operation, transfer_type]
         true
       end
       
       def performDrop(data)
+        p [:performDrop, data, data.to_a]
       end
     end
     
     def register_dnd
-      types = [Swt::DND::TextTransfer.getInstance()].to_java(:"org.eclipse.swt.dnd.TextTransfer")
+      types = [Swt::DND::FileTransfer.getInstance()].to_java(:"org.eclipse.swt.dnd.FileTransfer")
       operations = Swt::DND::DND::DROP_MOVE | Swt::DND::DND::DROP_COPY
       
       drag_source_item = [nil]
       
-      @viewer.add_drag_support(operations, types, DragSourceListener.new(@viewer.get_tree, drag_source_item));
+      @viewer.add_drag_support(operations, types, DragSourceListener.new(self, @viewer.get_tree, drag_source_item));
       @viewer.add_drop_support(operations, types, DropAdapter.new(@viewer))
     end
     
@@ -168,10 +132,12 @@ module Redcar
       @viewer.test_find_item(element)
     end
     
+    def item_to_element(item)
+      @viewer.getViewerRowFromItem(item).get_element
+    end
+    
     def selection
-      @viewer.get_tree.get_selection.map do |item|
-        @viewer.getViewerRowFromItem(item).get_element
-      end
+      @viewer.get_tree.get_selection.map {|i| item_to_element(i) }
     end
     
     class EditorListener
