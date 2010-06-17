@@ -60,7 +60,14 @@ module Redcar
       end
       
       def drag_set_data(event)
-        event.data = [@tree_view_swt.item_to_element(@drag_source_item[0]).path].to_java(:string)
+        case @tree_view_swt.model.tree_mirror.data_type
+        when :file
+          event.data = [@tree_view_swt.item_to_element(@drag_source_item[0]).to_data].to_java(:string)
+        when :text
+          event.data = @tree_view_swt.item_to_element(@drag_source_item[0]).to_data
+        else
+          raise "unknown tree data_type #{tree.tree_mirror.data_type}"
+        end
       end
       
       def drag_finished(*_); end
@@ -78,7 +85,14 @@ module Redcar
     end
     
     def register_dnd
-      types = [Swt::DND::FileTransfer.getInstance()].to_java(:"org.eclipse.swt.dnd.FileTransfer")
+      case @model.tree_mirror.data_type
+      when :file
+        types = [Swt::DND::FileTransfer.getInstance()].to_java(:"org.eclipse.swt.dnd.FileTransfer")
+      when :text
+        types = [Swt::DND::TextTransfer.getInstance()].to_java(:"org.eclipse.swt.dnd.TextTransfer")
+      else
+        raise "unknown tree data_type #{tree.tree_mirror.data_type}"
+      end
       operations = Swt::DND::DND::DROP_MOVE | Swt::DND::DND::DROP_COPY
       
       drag_source_item = [nil]

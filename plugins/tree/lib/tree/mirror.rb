@@ -29,6 +29,14 @@ module Redcar
       def exist?
         raise "not implemented"
       end
+      
+      # What type of data does the tree contain? If Node#to_data returns an
+      # absolute path to a file, then :file may be specified for OS integration.
+      #
+      # @return [Symbol] either :file or :text
+      def data_type
+        raise "not implemented"
+      end
 
       # Has the top nodes changed since the last time `top` 
       # were was called? (E.g. have the contents of the top level dir changed)
@@ -38,9 +46,26 @@ module Redcar
         raise "not implemented"
       end
       
+      # Create a Node from a string created by to_data. See NodeMirror#to_data
+      # for details
+      #
+      # @return [NodeMirror]
+      def from_data(string)
+        raise "not implemented"
+      end
+      
       # This is the abstract representation of a ROW in a TreeView.
       module NodeMirror
         include Redcar::Observable
+        
+        # A complete representation of this node as a string. 
+        # This must be implemented (along with a static from_data method)
+        # in order to allow drag and drop and copy and paste within the tree.
+        #
+        # @return [String]
+        def to_data
+          raise "not implemented"
+        end
         
         # Which text to show in the tree
         #

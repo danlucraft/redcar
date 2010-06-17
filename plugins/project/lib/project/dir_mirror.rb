@@ -31,8 +31,19 @@ module Redcar
         Node.create_all_from_path(@path)
       end
       
+      # We specify a :file data type to take advantage of OS integration.
+      def data_type
+        :file
+      end
+      
+      # Return the Node for this path.
+      #
+      # @return [Node]
+      def from_data(path)
+        Node.create_from_path(path)
+      end
+      
       class Node
-
         include Redcar::Tree::Mirror::NodeMirror
 
         attr_reader :path
@@ -59,6 +70,10 @@ module Redcar
         
         def text
           File.basename(@path)
+        end
+        
+        def to_data
+          @path
         end
         
         def icon
