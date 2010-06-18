@@ -55,7 +55,9 @@ module Redcar
           @dragged_elements = selection.map do |item|
             @tree_view_swt.item_to_element(item)
           end
-          @tree_view_swt.drag_controller.drag_start(@dragged_elements)
+          Redcar.safely do
+            @tree_view_swt.drag_controller.drag_start(@dragged_elements)
+          end
         else
           event.doit = false
         end
@@ -64,10 +66,14 @@ module Redcar
       def drag_set_data(event)
         case tree_mirror.data_type
         when :file
-          @data = tree_mirror.to_data(dragged_elements).to_java(:string)
+          Redcar.safely do
+            @data = tree_mirror.to_data(dragged_elements).to_java(:string)
+          end
           event.data = @data
         when :text
-          @data = tree_mirror.to_data(dragged_elements)
+          Redcar.safely do
+            @data = tree_mirror.to_data(dragged_elements)
+          end
           event.data = @data
         else
           raise "unknown tree data_type #{tree.tree_mirror.data_type}"
@@ -90,19 +96,24 @@ module Redcar
       
       def validateDrop(target, operation, transfer_data_type)
         pos = location_to_position(get_current_location)
-        @tree_view_swt.drag_controller.can_drop?(@drag_source_listener.dragged_elements, target, pos)
+        Redcar.safely do
+          @tree_view_swt.drag_controller.can_drop?(@drag_source_listener.dragged_elements, target, pos)
+        end
       end
       
       def performDrop(data)
         elements = data.to_a.map {|datum| @tree_view_swt.model.tree_mirror.from_data(datum) }
         pos = location_to_position(get_current_location)
-        @tree_view_swt.drag_controller.do_drop(elements, get_current_target, pos)
+        Redcar.safely do
+          @tree_view_swt.drag_controller.do_drop(elements, get_current_target, pos)
+        end
+        true
       end
       
       private
       
       def location_to_position(location)
-        if @tree_view_swt.drag_controller.reorderable?
+        if Redcar.safely { @tree_view_swt.drag_controller.reorderable? }
           {1 => :before, 2 => :after, 3 => :onto}[location]
         else
           :onto
@@ -111,13 +122,13 @@ module Redcar
     end
     
     def register_dnd
-      case @model.tree_mirror.data_type
+      case Redcar.safely { @model.tree_mirror.data_type }
       when :file
         types = [Swt::DND::FileTransfer.getInstance()].to_java(:"org.eclipse.swt.dnd.FileTransfer")
       when :text
         types = [Swt::DND::TextTransfer.getInstance()].to_java(:"org.eclipse.swt.dnd.TextTransfer")
       else
-        raise "unknown tree data_type #{tree.tree_mirror.data_type}"
+        raise "unknown tree data_type #{Redcar.safely { tree.tree_mirror.data_type }}"
       end
       operations = Swt::DND::DND::DROP_MOVE | Swt::DND::DND::DROP_COPY
       

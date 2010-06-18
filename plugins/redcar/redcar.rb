@@ -1,6 +1,9 @@
 
 module Redcar
-  def self.safely(text)
+  def self.safely(text=nil)
+    if text == nil
+      text = caller[1]
+    end
     begin
       yield
     rescue => e

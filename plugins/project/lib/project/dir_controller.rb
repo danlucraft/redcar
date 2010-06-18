@@ -24,12 +24,49 @@ module Redcar
         end
         
         def can_drop?(nodes, target, position)
-          p [:can_drop?, nodes, target, position]
-          true
+          nodes.all? {|node| droppable?(node, target)}
         end
         
         def do_drop(nodes, target, position)
-          p [:do_drop, nodes, target, position]
+          paths = nodes.map {|node| node.path }
+          non_nested_paths = remove_nested_paths(paths)
+          non_nested_paths.each do |path|
+            dir = target ? target.directory : tree.tree_mirror.path
+            unless File.dirname(path) == dir
+              FileUtils.mv(path, dir)
+            end
+          end
+          tree.refresh
+        end
+        
+        private
+        
+        def droppable?(from_node, target_node)
+          # you can always drop into the top level of the tree
+          return true if target_node == nil
+          
+          # can't drop a file/dir onto itself
+          return false if from_node.path == target_node.path
+          
+          # can't drop a directory into its children
+          !child_of?(from_node.path, target_node.path)
+        end
+        
+        def child_of?(path, possible_child_path)
+          possible_child_path =~ /^#{Regexp.escape(path)}\//
+        end
+        
+        # Removes paths which are children of higher level paths also being
+        # dragged.
+        def remove_nested_paths(paths)
+          sorted = paths.sort
+          keep = [sorted.first]
+          sorted[1..-1].each do |path|
+            unless child_of?(keep.last, path)
+              keep << path
+            end
+          end
+          keep
         end
       end
       
