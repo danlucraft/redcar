@@ -41,46 +41,72 @@ module Redcar
     end
     
     class DragSourceListener
-      attr_reader :tree
+      attr_reader :tree, :dragged_elements
       
-      def initialize(tree_view_swt, tree, drag_source_item)
+      def initialize(tree_view_swt, tree)
         @tree_view_swt = tree_view_swt
         @tree = tree
-        @drag_source_item = drag_source_item
       end
       
       def drag_start(event)
         selection = tree.get_selection
         if selection.length > 0
           event.doit = true
-          @drag_source_item[0] = selection[0]
+          @dragged_elements = selection.map do |item|
+            @tree_view_swt.item_to_element(item)
+          end
+          @tree_view_swt.drag_controller.drag_start(@dragged_elements)
         else
           event.doit = false
         end
       end
       
       def drag_set_data(event)
-        case @tree_view_swt.model.tree_mirror.data_type
+        case tree_mirror.data_type
         when :file
-          event.data = [@tree_view_swt.item_to_element(@drag_source_item[0]).to_data].to_java(:string)
+          @data = tree_mirror.to_data(dragged_elements).to_java(:string)
+          event.data = @data
         when :text
-          event.data = @tree_view_swt.item_to_element(@drag_source_item[0]).to_data
+          @data = tree_mirror.to_data(dragged_elements)
+          event.data = @data
         else
           raise "unknown tree data_type #{tree.tree_mirror.data_type}"
         end
       end
       
       def drag_finished(*_); end
+      
+      def tree_mirror
+        @tree_view_swt.model.tree_mirror
+      end
     end
     
     class DropAdapter < JFace::Viewers::ViewerDropAdapter
-      def validateDrop(target, operation, transfer_type)
-        p [:validateDrop, target, operation, transfer_type]
-        true
+      def initialize(tree_view_swt, drag_source_listener, viewer)
+        @tree_view_swt = tree_view_swt
+        @drag_source_listener = drag_source_listener
+        super(viewer)
+      end
+      
+      def validateDrop(target, operation, transfer_data_type)
+        pos = location_to_position(get_current_location)
+        @tree_view_swt.drag_controller.can_drop?(@drag_source_listener.dragged_elements, target, pos)
       end
       
       def performDrop(data)
-        p [:performDrop, data, data.to_a]
+        elements = data.to_a.map {|datum| @tree_view_swt.model.tree_mirror.from_data(datum) }
+        pos = location_to_position(get_current_location)
+        @tree_view_swt.drag_controller.do_drop(elements, get_current_target, pos)
+      end
+      
+      private
+      
+      def location_to_position(location)
+        if @tree_view_swt.drag_controller.reorderable?
+          {1 => :before, 2 => :after, 3 => :onto}[location]
+        else
+          :onto
+        end
       end
     end
     
@@ -95,10 +121,16 @@ module Redcar
       end
       operations = Swt::DND::DND::DROP_MOVE | Swt::DND::DND::DROP_COPY
       
-      drag_source_item = [nil]
+      source_listener = DragSourceListener.new(self, @viewer.get_tree)
+      drop_adapter = DropAdapter.new(self, source_listener, @viewer)
+      drop_adapter.set_feedback_enabled(drag_controller.reorderable?)
       
-      @viewer.add_drag_support(operations, types, DragSourceListener.new(self, @viewer.get_tree, drag_source_item));
-      @viewer.add_drop_support(operations, types, DropAdapter.new(@viewer))
+      @viewer.add_drag_support(operations, types, source_listener)
+      @viewer.add_drop_support(operations, types, drop_adapter)
+    end
+    
+    def drag_controller
+      @model.tree_controller.drag_controller(@model)
     end
     
     def edit_element(element, select_from, select_to)

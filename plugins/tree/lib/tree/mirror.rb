@@ -13,21 +13,21 @@ module Redcar
       #
       # @return [String]
       def title
-        raise "not implemented"
+        "Tree"
       end
       
       # Return the top entries in the Tree. (e.g. the files in the top dir)
       #
       # @return [Array<NodeMirror>]
       def top
-        raise "not implemented"
+        []
       end
       
       # Does the resource still exist (e.g. does the dir exist?)
       #
       # @return [Boolean]
       def exist?
-        raise "not implemented"
+        true
       end
       
       # What type of data does the tree contain? If Node#to_data returns an
@@ -35,7 +35,7 @@ module Redcar
       #
       # @return [Symbol] either :file or :text
       def data_type
-        raise "not implemented"
+        :text
       end
 
       # Has the top nodes changed since the last time `top` 
@@ -43,7 +43,7 @@ module Redcar
       #
       # @return [Boolean]
       def changed?
-        raise "not implemented"
+        false
       end
       
       # Create a Node from a string created by to_data. See NodeMirror#to_data
@@ -76,14 +76,14 @@ module Redcar
         
         # Which icon to show next to the text
         def icon
-          raise "not implemented"
+          nil
         end
 
         # This node's children
         #
         # @return [Array<NodeMirror>]
         def children
-          raise "not implemented"
+          []
         end
 
         # Whether this node is a leaf node or not (different to whether or
@@ -91,7 +91,7 @@ module Redcar
         #
         # @return [Boolean]
         def leaf?
-          raise "not implemented"
+          true
         end
       end
     end

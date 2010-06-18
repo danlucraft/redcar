@@ -6,10 +6,13 @@ module Redcar
   class Tree
     include Redcar::Model
     include Redcar::Observable
+    include Redcar::HasSPI
     
     attr_reader :tree_mirror, :tree_controller
     
     def initialize(tree_mirror, tree_controller=nil)
+      assert_interface(tree_mirror,     Redcar::Tree::Mirror)
+      assert_interface(tree_controller, Redcar::Tree::Controller)
       @tree_mirror     = tree_mirror
       @tree_controller = tree_controller
     end
