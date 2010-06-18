@@ -88,6 +88,9 @@ module Redcar
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "plugin_manager", "lib"))
     require 'plugin_manager'
     
+    $:.push File.expand_path(File.join(File.dirname(__FILE__), "json", "lib"))
+    require 'json'
+    
     plugin_manager.load
     if plugin_manager.unreadable_definitions.any?
       puts "Couldn't read definition files: "
@@ -103,7 +106,6 @@ module Redcar
       puts
       puts "Unloaded plugins:"
       puts plugin_manager.unloaded_plugins.map {|d| "  * " + d.name}
-
     end
   end
 

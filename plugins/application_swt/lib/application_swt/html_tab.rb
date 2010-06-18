@@ -42,9 +42,11 @@ module Redcar
         end
         
         def changing(event)
-          if event.location =~ %r{file:///controller/([^/]*)(/(.*))?}
+          uri = URI.parse(event.location)
+          if uri.path =~ %r{/controller/([^/]*)}
             event.doit = false
-            @html_tab.controller_action($1, $2)
+            params = uri.query ? CGI.parse(uri.query) : nil
+            @html_tab.controller_action($1, params)
           end
         end
 

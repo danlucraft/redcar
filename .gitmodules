@@ -205,3 +205,6 @@
 [submodule "textmate/Bundles/Palm-WebOS-Development.tmbundle"]
 	path = textmate/Bundles/Palm-WebOS-Development.tmbundle
 	url = http://github.com/devilx/palm-webos-development-tmbundle.git
+[submodule "lib/json"]
+	path = lib/json
+	url = http://github.com/flori/json.git

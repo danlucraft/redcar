@@ -77,6 +77,7 @@ module Swt
     import org.eclipse.swt.dnd.Clipboard
     import org.eclipse.swt.dnd.Transfer
     import org.eclipse.swt.dnd.TextTransfer
+    import org.eclipse.swt.dnd.FileTransfer
     import org.eclipse.swt.dnd.ByteArrayTransfer
     
     import org.eclipse.swt.dnd.DropTarget
@@ -142,6 +143,7 @@ module JFace
     import org.eclipse.jface.viewers.ILazyTreeContentProvider
     import org.eclipse.jface.viewers.ILabelProvider
     import org.eclipse.jface.viewers.TextCellEditor
+    import org.eclipse.jface.viewers.ViewerDropAdapter
   end
   
   module Text
