@@ -2,10 +2,39 @@
 module Redcar
   class Project
     class DirController
+      include Redcar::Tree::Controller
+      
       def activated(tree, node)
         if node.leaf?
           FileOpenCommand.new(node.path).run
         end
+      end
+      
+      class DragController
+        include Redcar::Tree::Controller::DragController
+        
+        attr_reader :tree
+        
+        def initialize(tree)
+          @tree = tree
+        end
+        
+        def reorderable?
+          false
+        end
+        
+        def can_drop?(nodes, target, position)
+          p [:can_drop?, nodes, target, position]
+          true
+        end
+        
+        def do_drop(nodes, target, position)
+          p [:do_drop, nodes, target, position]
+        end
+      end
+      
+      def drag_controller(tree)
+        DragController.new(tree)
       end
       
       def right_click(tree, node)

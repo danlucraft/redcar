@@ -43,6 +43,10 @@ module Redcar
         Node.create_from_path(path)
       end
       
+      def to_data(nodes)
+        nodes.map {|node| node.path }
+      end
+      
       class Node
         include Redcar::Tree::Mirror::NodeMirror
 
@@ -70,10 +74,6 @@ module Redcar
         
         def text
           File.basename(@path)
-        end
-        
-        def to_data
-          @path
         end
         
         def icon
