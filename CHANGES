@@ -5,15 +5,13 @@ Version 0.3.7 (TBA)
 Enhancements:
  
   * Can create new files and directories, rename and delete files in the Project pane (Dan Lucraft)
+  * Can drag and drop files and directories in the Project pane (Dan Lucraft)
 
 New APIS:
 
   * Context menu callback for trees (Dan Lucraft)
   * Tree gained new methods for editing and expanding rows. (Dan Lucraft)
-
-New contributors:
-
-
+  * new Tree DragController SPI for responding to drag and drop events (Dan Lucraft)
 
 Version 0.3.6 (5 Jun 2010)
 ==========================
