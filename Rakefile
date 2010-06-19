@@ -33,6 +33,30 @@ begin
 rescue LoadError
 end
 
+### CI
+task :ci => [:specs_ci, :cucumber_ci]
+
+def find_ci_reporter(filename)
+  jruby_gem_path = %x[jruby -rubygems -e "p Gem.path.first"].gsub("\n", "").gsub('"', "")
+  result = Dir.glob("#{jruby_gem_path}/gems/ci_reporter-*/lib/ci/reporter/rake/#{filename}.rb").reverse.first
+  result || raise("Could not find ci_reporter gem in #{jruby_gem_path}")
+end
+
+task :specs_ci do
+  rspec_loader = find_ci_reporter "rspec_loader"  
+  files = Dir['plugins/*/spec/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*/*_spec.rb']
+  opts = "-J-XstartOnFirstThread" if Config::CONFIG["host_os"] =~ /darwin/
+  opts = "#{opts} -S spec --require #{rspec_loader} --format CI::Reporter::RSpec -c #{files.join(" ")}"
+  sh("jruby #{opts} && echo 'done'")
+end
+
+task :cucumber_ci do
+  cucumber_loader = find_ci_reporter "cucumber_loader"
+  opts = "-J-XstartOnFirstThread" if Config::CONFIG["host_os"] =~ /darwin/
+  opts = "#{opts} -r #{cucumber_loader} -S bin/cucumber --format CI::Reporter::Cucumber plugins/*/features"
+  sh("jruby #{opts} && echo 'done'")
+end
+
 ### TESTS
 
 desc "Run all specs and features"
