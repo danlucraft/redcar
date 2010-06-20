@@ -195,7 +195,7 @@
 	url = git://github.com/deanwampler/Scala.tmbundle.git
 [submodule "lib/openssl"]
 	path = lib/openssl
-	url = git://github.com/jruby/jruby-openssl.git
+	url = git://github.com/jruby/jruby-ossl.git
 [submodule "plugins/redcar_debug/vendor/jruby-prof"]
 	path = plugins/redcar_debug/vendor/jruby-prof
 	url = git://github.com/danlucraft/jruby-prof.git
