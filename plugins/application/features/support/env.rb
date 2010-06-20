@@ -11,7 +11,7 @@ module SwtHelper
   end
   
   def active_shell
-    Redcar::ApplicationSWT.display.get_active_shell
+    Redcar.app.focussed_window.controller.shell
   end
   
   def dialog(type)
