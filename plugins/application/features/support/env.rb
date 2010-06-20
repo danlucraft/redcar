@@ -125,6 +125,11 @@ end
 
 After do
   close_everything
+  errors = Redcar.app.history.select {|command| command.error }
+  if errors.any?
+    raise "Command errors #{errors.inspect}"
+  end
+  Redcar.app.history.clear
 end
 
 at_exit {

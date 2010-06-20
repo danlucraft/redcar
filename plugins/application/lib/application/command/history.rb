@@ -8,6 +8,11 @@ module Redcar
         @max       = 500
       end
     
+      # Clear the command history
+      def clear
+        super
+      end
+      
       # Add a command to the command history if CommandHistory.recording is
       # true.
       def record(command)
