@@ -5,7 +5,7 @@ module Redcar
     private
     
     def doc
-      EditView.focussed_edit_view.document
+      EditView.current.document
     end
   end
 end

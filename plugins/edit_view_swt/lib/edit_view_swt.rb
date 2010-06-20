@@ -211,6 +211,10 @@ module Redcar
       @mate_text.get_control.set_focus
     end
     
+    def is_current?
+      EditView.current == @mate_text.get_control
+    end
+    
     def has_focus?
       focus_control = ApplicationSWT.display.get_focus_control
       focus_control == @mate_text.get_control

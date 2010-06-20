@@ -76,7 +76,7 @@ end
 
 Then /^the tab should have the keyboard focus$/ do
   tab = get_tab(get_tab_folder)
-  tab.controller.edit_view.has_focus?.should be_true
+  tab.controller.edit_view.is_current?.should be_true
 end
 
 Then /^I should (not )?see "(.*)" in the edit tab$/ do |bool, content|

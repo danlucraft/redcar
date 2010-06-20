@@ -140,10 +140,23 @@ module Redcar
     
     # Called by the GUI whenever an EditView is focussed or
     # loses focus. Sends :focussed_edit_view event.
+    #
+    # Will return nil if the application is not focussed or if
+    # no edit view is focussed.
     def self.focussed_edit_view=(edit_view)
+      if edit_view
+        @last_focussed_edit_view = edit_view
+      end
       @focussed_edit_view = edit_view
       edit_view.check_for_updated_document if edit_view
       notify_listeners(:focussed_edit_view, edit_view)
+    end
+    
+    def self.current
+      tab = Redcar.app.focussed_window.focussed_notebook.focussed_tab
+      if tab.is_a?(Redcar::EditTab)
+        tab.edit_view
+      end
     end
     
     def self.sensitivities
