@@ -26,7 +26,7 @@ module Redcar
         control.add_mouse_listener(MouseListener.new(self))
       end
       
-      register_dnd
+      register_dnd if @model.tree_mirror.drag_and_drop?
       
       @model.add_listener(:refresh) { @viewer.refresh }
       

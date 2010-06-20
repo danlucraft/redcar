@@ -1,29 +1,28 @@
 
 module Redcar
   class Tree
-    # Abstract interface. A Mirror allows an TreeView contents to reflect 
-    # some other resource, for example a directory tree on disk.
-    # They have methods for loading the contents from the resource.
-    #
-    # Events: changed
+    
+    # SPI specification. Implement a class including this module and
+    # pass an instance to Tree#new to populate the contents of a Tree.
     module Mirror
       include Redcar::Observable
       
-      # Return the title of the resource. (e.g. the name of the directory)
+      # Return the title of the tree.
       #
       # @return [String]
       def title
         "Tree"
       end
       
-      # Return the top entries in the Tree. (e.g. the files in the top dir)
+      # Return the top level entries in the Tree. Each element should
+      # be an instance of a class implementing Redcar::Tree::Mirror::NodeMirror
       #
       # @return [Array<NodeMirror>]
       def top
         []
       end
       
-      # Does the resource still exist (e.g. does the dir exist?)
+      # Does the resource still exist
       #
       # @return [Boolean]
       def exist?
@@ -39,33 +38,49 @@ module Redcar
       end
 
       # Has the top nodes changed since the last time `top` 
-      # were was called? (E.g. have the contents of the top level dir changed)
+      # was called?
       #
       # @return [Boolean]
       def changed?
         false
       end
       
-      # Create a Node from a string created by to_data. See NodeMirror#to_data
-      # for details
+      # Should drag and drop be permitted?
+      #
+      # @return [Boolean]
+      def drag_and_drop?
+        false
+      end
+      
+      # Create a node from the data created by to_data. This is the reverse
+      # operation to #to_data, and should turn the String (in case data_type
+      # if :text) or Array of Strings (in case data_type is :file) into an 
+      # array of nodes
       #
       # @return [NodeMirror]
-      def from_data(string)
+      def from_data(data)
+        raise "not implemented"
+      end
+    
+      # This must be implemented (along with a from_data method)
+      # in order to allow drag and drop and copy and paste within the tree.
+      #
+      # If the Tree::Mirror data_type is :text (the default), this must
+      # return a String. The string should be a *complete* representation
+      # of the data in the nodes, so that the from_data method can turn the
+      # string back into nodes
+      #
+      # If the Tree::Mirror data_type is :file, this must return an
+      # array of Strings, where each string is the absolute path to the file.
+      #
+      # @return [String or Array<String>]
+      def to_data(nodes)
         raise "not implemented"
       end
       
-      # This is the abstract representation of a ROW in a TreeView.
+      # This is the required interface of a ROW in a TreeView.
       module NodeMirror
         include Redcar::Observable
-        
-        # A complete representation of this node as a string. 
-        # This must be implemented (along with a static from_data method)
-        # in order to allow drag and drop and copy and paste within the tree.
-        #
-        # @return [String]
-        def to_data
-          raise "not implemented"
-        end
         
         # Which text to show in the tree
         #

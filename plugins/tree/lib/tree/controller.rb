@@ -1,22 +1,32 @@
 
 module Redcar
   class Tree
-    # SPI specification
+    # SPI specification. Implement a class including this module
+    # and pass an instance to Tree#new to respond to tree events.
     module Controller
       
-      # Called with the node that was activated.
-      def activated(node);   end
+      # Called when a node in a tree is activated (e.g double clicked). 
+      # ONLY called when that node is a leaf node. If the node is not a 
+      # leaf node then the tree will expand the node instead and query
+      # for its children.
+      def activated(tree, node);   end
       
-      # Called with the node that was right clicked on
-      def right_click(node); end
-
+      # Called when a node in a tree is right clicked on. node may be nil
+      # if the right click happened over the tree but not on a node.
+      def right_click(tree, node); end
+      
+      # Called after an edit operation with the new text of the
+      # node. See Tree#edit
+      def edited(tree, node, text); end
+      
       # Called when a drag operation begins. Should return
       # a Redcar::Tree::Controller::DragController.
       def drag_controller(tree)
         DragController::Fake.new
       end
       
-      # SPI for Tree drag and drop
+      # SPI for Tree drag and drop. Implement this class to support drag and
+      # drop in your tree.
       module DragController
         class Fake; include DragController; end
 

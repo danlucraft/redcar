@@ -23,9 +23,12 @@ module Redcar
         @changed
       end
       
-      # Get the top-level nodes
-      #
-      # @return [Array<Node>]
+      # Drag and drop is allowed in Dir trees
+      def drag_and_drop?
+        true
+      end
+      
+      # The files and directories in the top of the directory.
       def top
         @changed = false
         Node.create_all_from_path(@path)
@@ -43,6 +46,7 @@ module Redcar
         Node.create_from_path(path)
       end
       
+      # Turn the nodes into data.
       def to_data(nodes)
         nodes.map {|node| node.path }
       end
