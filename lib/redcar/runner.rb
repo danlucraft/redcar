@@ -1,10 +1,6 @@
-
-
 module Redcar
-  
   # Cribbed from ruby-processing. Many thanks!
   class Runner
-    
     # Trade in this Ruby instance for a JRuby instance, loading in a 
     # starter script and passing it some arguments.
     # If --jruby is passed, use the installed version of jruby, instead of 
@@ -17,7 +13,8 @@ module Redcar
         exit 1
       end
       ENV['RUBYOPT'] = nil # disable other native args
-      command = "java #{java_args} -Xmx500m -Xss1024k -Djruby.memory.max=500m -Djruby.stack.max=1024k -cp \"#{jruby_complete}\" org.jruby.Main #{"--debug" if debug_mode?} \"#{bin}\" #{cleaned_args} --no-sub-jruby"
+      command = "java #{java_args} -Xmx500m -Xss1024k -Djruby.memory.max=500m -Djruby.stack.max=1024k -cp \"#{jruby_complete}\"
+      org.jruby.Main #{"--debug" if debug_mode?} \"#{bin}\" #{cleaned_args} --no-sub-jruby --ignore-stdin"
       puts command
       exec(command)
     end
