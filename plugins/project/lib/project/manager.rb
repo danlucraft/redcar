@@ -8,6 +8,9 @@ module Redcar
         Project.window_projects.values
       end
       
+      # Returns the project in the given window
+      # @param [Window] window
+      # @return Project or nil
       def self.in_window(window)
         Project.window_projects[window]
       end
@@ -124,7 +127,8 @@ module Redcar
       #
       # @param [String] path  the path of the directory to view
       def self.open_project_for_path(path)
-        win     = Redcar.app.new_window
+        win = Redcar.app.focussed_window
+        win = Redcar.app.new_window if Manager.in_window(win) 
         project = Project.new(path).tap do |p|
           p.open(win) if p.ready?
         end
