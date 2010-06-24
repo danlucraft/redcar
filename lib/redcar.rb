@@ -40,7 +40,7 @@ require 'yaml'
 #
 # and so on.
 module Redcar
-  VERSION         = '0.3.7dev'
+  VERSION         = '0.3.7'
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 3
   VERSION_RELEASE = 7
