@@ -41,7 +41,7 @@ require 'uri'
 #
 # and so on.
 module Redcar
-  VERSION         = '0.3.7'
+  VERSION         = '0.3.7.1'
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 3
   VERSION_RELEASE = 7

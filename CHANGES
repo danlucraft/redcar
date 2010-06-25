@@ -1,4 +1,9 @@
 
+Version 0.3.7.1 (25 Jun 2010)
+=============================
+
+ * Fixed bug: URI class not found. (Dan Lucraft)
+
 Version 0.3.7 (24 Jun 2010)
 ===========================
 
