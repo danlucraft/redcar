@@ -12,6 +12,7 @@ require 'regex_replace'
 
 require 'forwardable'
 require 'yaml'
+require 'uri'
 
 # ## Loading and Initialization
 #
