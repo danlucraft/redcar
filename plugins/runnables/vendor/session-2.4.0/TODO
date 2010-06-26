@@ -1,0 +1,3 @@
+TODO: 
+  - factor out err/out methods from send_command so subclassing is safer
+  - determine non-system call method of doing 'mkfifo', possibly c extension?

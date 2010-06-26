@@ -17,6 +17,14 @@ module Redcar
     end
   end
   
+  def self.update_gui
+    ApplicationSWT.sync_exec do
+      safely do
+        yield
+      end
+    end
+  end
+  
   module Top
     class QuitCommand < Command
       
@@ -886,8 +894,8 @@ module Redcar
         sub_menu "Project" do
           item "Find File", Project::FindFileCommand
           item "Refresh Directory", Project::RefreshDirectoryCommand
-          #separator
-          #item "Runnables", Runnables::ShowRunnables
+          separator
+          item "Runnables", Runnables::ShowRunnables
         end
         sub_menu "Debug" do
           item "Task Manager", TaskManager::OpenCommand
