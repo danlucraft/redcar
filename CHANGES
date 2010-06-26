@@ -1,17 +1,32 @@
 
-Version 0.3.7 (TBA)
-===================
+Version 0.3.7.1 (25 Jun 2010)
+=============================
+
+ * Fixed bug: URI class not found. (Dan Lucraft)
+
+Version 0.3.7 (24 Jun 2010)
+===========================
 
 Enhancements:
  
   * Can create new files and directories, rename and delete files in the Project pane (Dan Lucraft)
+  * Can Bulk Rename files in projects with regular expression replacement (Dan Lucraft)
   * Can drag and drop files and directories in the Project pane (Dan Lucraft)
+  * Won't leave an empty window open when you open a project (Aaron McLeod)
+  * Optionally show hidden files in the project pane (Dan Lucraft)
+
+Fixes:
+
+  * Fixed Shift+End on Linux to highlight to end of line rather than go to end of file (Dan Lucraft)
+  * Fixed launching redcar with "jruby" command (Aaron McLeod)
 
 New APIS:
 
   * Context menu callback for trees (Dan Lucraft)
   * Tree gained new methods for editing and expanding rows. (Dan Lucraft)
   * new Tree DragController SPI for responding to drag and drop events (Dan Lucraft)
+  * Improvements to the HtmlView for interacting between Ruby controllers and JavaScript events (Dan Lucraft)
+  * In HtmlViews form submissions can go to the Ruby controller (Dan Lucraft)
 
 Version 0.3.6 (5 Jun 2010)
 ==========================

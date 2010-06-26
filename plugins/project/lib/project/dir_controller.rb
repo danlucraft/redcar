@@ -90,6 +90,18 @@ module Redcar
             item("Rename")      { controller.rename(tree, node)   }
           end
           item("Delete")        { controller.delete(tree, node)   }
+          separator
+          if DirMirror.show_hidden_files?
+            item("Hide Hidden Files") do
+              DirMirror.show_hidden_files = false
+              tree.refresh
+            end
+          else
+            item("Show Hidden Files") do
+              DirMirror.show_hidden_files = true
+              tree.refresh
+            end
+          end
         end
         
         Application::Dialog.popup_menu(menu, :pointer)

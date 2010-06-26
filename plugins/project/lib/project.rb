@@ -124,5 +124,16 @@ module Redcar
       end
       @lost_application_focus = nil
     end
+    
+    def config_dir
+      File.join(path, ".redcar")
+    end
+    
+    def config_file(name)
+      file_path = File.join(config_dir, name.to_s)
+      if File.exist?(file_path)
+        YAML.load(File.read(file_path))
+      end
+    end
   end
 end

@@ -1,4 +1,4 @@
-REDCAR_VERSION = "0.3.7dev"
+REDCAR_VERSION = "0.3.7.1"
 
 require 'rubygems'
 require 'fileutils'
@@ -288,6 +288,40 @@ task :release => :gem do
   file = "pkg/redcar-#{REDCAR_VERSION}.gem"
   AWS::S3::S3Object.store("redcar-#{REDCAR_VERSION}.gem", open(file), 'redcar', :access => :public_read)
 end
+
+def hash_with_hash_default
+  Hash.new {|h,k| h[k] = hash_with_hash_default }
+end
+
+namespace :redcar do
+  desc "Redcar Integration: output runnable info"
+  task :runnables do
+    mkdir_p(".redcar")
+    puts "Creating runnables"
+    
+    tasks = Rake::Task.tasks
+    bin = File.join(Config::CONFIG["bindir"], "rake")
+    runnables = hash_with_hash_default
+    tasks.each do |task|
+      bits = task.name.split(":")
+      namespace = runnables
+      while bits.length > 1
+        namespace = namespace[bits.shift]
+      end
+      command = bin + " " + task.name
+      namespace[bits.shift] = {:command => command, :desc => task.comment}
+    end
+    p runnables
+    File.open(".redcar/runnables", "w") do |f|
+      f.puts runnables.to_yaml
+    end
+  end
+end
+
+
+
+
+
 
 
 

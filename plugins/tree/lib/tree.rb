@@ -44,7 +44,9 @@ module Redcar
     # @param [Tree::Controller] an instance of a class including Tree::Controller
     def initialize(tree_mirror, tree_controller=nil)
       assert_interface(tree_mirror,     Redcar::Tree::Mirror)
-      assert_interface(tree_controller, Redcar::Tree::Controller)
+      if tree_controller
+        assert_interface(tree_controller, Redcar::Tree::Controller)
+      end
       @tree_mirror     = tree_mirror
       @tree_controller = tree_controller
     end

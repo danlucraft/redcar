@@ -2,6 +2,14 @@
 module Redcar
   class Project
     class DirMirror
+      class << self
+        attr_accessor :show_hidden_files
+        
+        def show_hidden_files?
+          show_hidden_files
+        end
+      end
+        
       include Redcar::Tree::Mirror
       attr_reader :path
       
@@ -57,7 +65,12 @@ module Redcar
         attr_reader :path
 
         def self.create_all_from_path(path)
-          Dir[path + "/*"].sort_by do |fn|
+          fs = Dir.glob(path + "/*", File::FNM_DOTMATCH)
+          fs = fs.reject {|f| [".", ".."].include?(File.basename(f))}
+          unless DirMirror.show_hidden_files?
+            fs = fs.reject {|f| File.basename(f) =~ /^\./ }
+          end
+          fs.sort_by do |fn|
             File.basename(fn).downcase
           end.sort_by do |path|
             File.directory?(path) ? -1 : 1

@@ -350,11 +350,13 @@ module Redcar
       end
 
       def get_image(tree_node)
-        case tree_node.icon
+        case icon = tree_node.icon
         when :directory
           dir_image
         when :file
           file_image
+        when String
+          image(icon)
         end
       end
 
@@ -363,17 +365,21 @@ module Redcar
       
       private
       
+      def image(path)
+        Swt::Graphics::Image.new(ApplicationSWT.display, path)
+      end
+      
       def dir_image
         @dir_image ||= begin
           path = File.join(Redcar.root, %w(plugins application icons darwin-folder.png))
-          Swt::Graphics::Image.new(ApplicationSWT.display, path)
+          image(path)
         end
       end
       
       def file_image
         @file_image ||= begin
           path = File.join(Redcar.root, %w(plugins application icons darwin-file.png))
-          Swt::Graphics::Image.new(ApplicationSWT.display, path)
+          image(path)
         end
       end
     end

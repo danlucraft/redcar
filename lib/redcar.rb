@@ -12,6 +12,7 @@ require 'regex_replace'
 
 require 'forwardable'
 require 'yaml'
+require 'uri'
 
 # ## Loading and Initialization
 #
@@ -40,7 +41,7 @@ require 'yaml'
 #
 # and so on.
 module Redcar
-  VERSION         = '0.3.7dev'
+  VERSION         = '0.3.7.1'
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 3
   VERSION_RELEASE = 7

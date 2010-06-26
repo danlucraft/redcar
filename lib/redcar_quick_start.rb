@@ -8,14 +8,9 @@ module Redcar
     if not $stdin.tty? and not ARGV.include?(DONT_READ_STDIN_ARG)
       data = ""
       begin
-        chunk = $stdin.read_nonblock(1024)
-        data << chunk
-        while chunk
-          chunk = $stdin.read_nonblock(1024)
-          data << chunk
-        end
+      data = $stdin.read
       rescue Errno::EAGAIN
-        retry
+      #  retry
       rescue EOFError
       end
       
