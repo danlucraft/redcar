@@ -301,6 +301,10 @@ module Redcar
     def focus
       notify_listeners(:focussed)
     end
+    
+    def exists?
+      controller.exists?
+    end
 
     def tab_width
       @tab_width

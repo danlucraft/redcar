@@ -71,6 +71,10 @@ module Redcar
       end
     end
     
+    def exists?
+      edit_view.exists?
+    end
+    
     def mirror=(new_mirror)
       notify_listeners(:new_mirror, new_mirror) do
         @mirror = new_mirror

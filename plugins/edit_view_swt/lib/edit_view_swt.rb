@@ -219,6 +219,10 @@ module Redcar
       focus_control = ApplicationSWT.display.get_focus_control
       focus_control == @mate_text.get_control
     end
+    
+    def exists?
+      @mate_text.get_control and !@mate_text.get_control.disposed
+    end
   
     def attach_listeners
       # h = @document.add_listener(:set_text, &method(:reparse))
