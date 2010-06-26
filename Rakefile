@@ -202,7 +202,7 @@ task :app_bundle do
     f << '#!/bin/sh
           DIR=$(cd "$(dirname "$0")"; pwd)
           REDCAR=$(cd "$(dirname "${DIR}/../Resources/bin/redcar")"; pwd)
-          ruby $REDCAR/redcar --ignore-stdin $@'
+          $REDCAR/redcar --ignore-stdin $@'
   end
   File.chmod 0777, File.join(macos_dir, "redcar")
 
@@ -211,7 +211,8 @@ task :app_bundle do
     FileUtils.cp_r f, File.join(resources_dir, f), :remove_destination => true
   end
 
-  system "#{File.join(macos_dir, "redcar")} install"
+  p "Running #{File.join(resources_dir, "bin", "redcar")} install"
+  system "#{File.join(resources_dir, "bin", "redcar")} install"
 
   FileUtils.cp_r File.join(resources_dir, "plugins", "application", "icons", redcar_icon), 
       resources_dir, :remove_destination => true
