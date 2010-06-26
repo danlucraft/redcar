@@ -108,6 +108,13 @@ module Redcar
         def leaf?
           true
         end
+        
+        # The text for the tooltip, or nil if no tooltip
+        #
+        # @return [String or nil]
+        def tooltip_text
+          nil
+        end
       end
     end
   end

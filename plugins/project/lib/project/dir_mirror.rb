@@ -124,6 +124,11 @@ module Redcar
         def children
           Node.create_all_from_path(@path)
         end
+        
+        def tooltip_text
+          p [:tooltip_text, File.basename(@path)]
+          File.basename(@path)
+        end
       end
     end
   end

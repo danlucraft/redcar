@@ -137,6 +137,7 @@ module JFace
   end
   
   module Viewers
+    import org.eclipse.jface.viewers.ColumnViewerToolTipSupport
     import org.eclipse.jface.viewers.TreeViewer
     import org.eclipse.jface.viewers.ITreeContentProvider
     import org.eclipse.jface.viewers.ILabelProvider
