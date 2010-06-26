@@ -159,12 +159,13 @@ Rake::GemPackageTask.new(spec) do |pkg|
 end
 
 desc "Build a MacOS X App bundle"
-task :app_bundle do
+task :app_bundle => :build do
   require 'erb'
 
   redcar_icon = "redcar_icon_beta.png"
 
   bundle_contents = File.join("pkg", "Redcar.app", "Contents")
+  FileUtils.rm_rf bundle_contents if File.exist? bundle_contents
   macos_dir = File.join(bundle_contents, "MacOS")
   resources_dir = File.join(bundle_contents, "Resources")
   FileUtils.mkdir_p macos_dir
