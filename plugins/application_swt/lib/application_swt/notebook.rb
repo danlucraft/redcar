@@ -57,7 +57,9 @@ module Redcar
       def create_tab_folder(sash)
         folder_style = Swt::SWT::BORDER + Swt::SWT::CLOSE
         @tab_folder = Swt::Custom::CTabFolder.new(sash, folder_style)
-        grid_data = Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH)
+        grid_data = Swt::Layout::GridData.new
+        grid_data.grabExcessHorizontalSpace = true
+        grid_data.horizontalAlignment = Swt::Layout::GridData::FILL
         @tab_folder.set_layout_data(grid_data)
         @tab_folder.pack
         register_tab_dnd(@tab_folder)

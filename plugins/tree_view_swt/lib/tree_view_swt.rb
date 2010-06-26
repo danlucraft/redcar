@@ -15,6 +15,13 @@ module Redcar
       @composite, @model = composite, model
       tree_style = Swt::SWT::MULTI
       @viewer = JFace::Viewers::TreeViewer.new(@composite, tree_style)
+      grid_data = Swt::Layout::GridData.new
+      grid_data.grabExcessHorizontalSpace = true
+      grid_data.horizontalAlignment = Swt::Layout::GridData::FILL
+      grid_data.grabExcessVerticalSpace = true
+      grid_data.verticalAlignment = Swt::Layout::GridData::FILL
+      @viewer.get_tree.set_layout_data(grid_data)
+      @composite.layout
       JFace::Viewers::ColumnViewerToolTipSupport.enableFor(@viewer)
       @viewer.set_content_provider(TreeMirrorContentProvider.new)
       #@viewer.getTree.setLinesVisible(true)

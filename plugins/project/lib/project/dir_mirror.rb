@@ -19,6 +19,10 @@ module Redcar
         @changed = true
       end
       
+      def title
+        File.basename(@path) + "/"
+      end
+      
       # Does the directory exist?
       def exists?
         File.exist?(@path) && File.directory?(@path)
