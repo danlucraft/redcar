@@ -1,0 +1,30 @@
+{
+  "commands":[
+    {
+      "name":        "gem",
+      "command":     "/Users/danlucraft/Programs/jruby/bin/rake gem",
+      "description": "Build the gem file redcar-0.3.8dev.gem",
+      "type":        "task/ruby/rake"
+    },
+    {
+      "name":        "redcar/runnables",
+      "command":     "/Users/danlucraft/Programs/jruby/bin/rake redcar:runnables",
+      "description": "Redcar Integration: output runnable info",
+      "type":        "task/ruby/rake"
+    }
+  ],
+  "run-file":[
+    {
+      "regex":   ".*_spec.rb",
+      "name":    "Run as spec",
+      "command": "jruby -J-XstartOnFirstThread spec __PATH__",
+      "type":    "test/ruby/spec"
+    },
+    {
+      "regex":   "*.rb",
+      "name":    "Run as ruby",
+      "command": "ruby __PATH__",
+      "type":    "script/ruby"
+    }
+  ]
+}
