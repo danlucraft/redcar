@@ -1,4 +1,4 @@
-REDCAR_VERSION = "0.3.7.1"
+REDCAR_VERSION = "0.3.8dev"
 
 require 'rubygems'
 require 'fileutils'
