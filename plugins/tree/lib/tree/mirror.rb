@@ -7,7 +7,7 @@ module Redcar
     module Mirror
       include Redcar::Observable
       
-      # Return the title of the tree.
+      # Return the title of the tree. It should NOT change.
       #
       # @return [String]
       def title

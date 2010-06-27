@@ -16,7 +16,9 @@ module Redcar
       def tree_added(tree)
         tree_view = TreeViewSWT.new(@tree_composite, tree)
         tree.controller = tree_view
-        @tree_combo.add(tree.tree_mirror.title)
+        title = tree.tree_mirror.title
+        @tree_combo.add(title)
+        @tree_combo.select(@tree_combo.get_items.to_a.index(title))
         @tree_layout.topControl = tree_view.control
         @tree_composite.layout
       end
@@ -36,6 +38,12 @@ module Redcar
         grid_data.horizontalAlignment = Swt::Layout::GridData::FILL
         grid_data.grabExcessVerticalSpace = false
       	@tree_combo.setLayoutData(grid_data)
+        @tree_combo.add_selection_listener do
+          selected_tree = @model.trees.detect {|t| t.tree_mirror.title == @tree_combo.text}
+          @tree_layout.topControl = selected_tree.controller.control
+          @tree_composite.layout
+          @tree_combo.select(@tree_combo.get_items.to_a.index(selected_tree.tree_mirror.title))
+        end
         
         @tree_composite.layout
         @window.left_composite.layout
