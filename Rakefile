@@ -159,12 +159,13 @@ Rake::GemPackageTask.new(spec) do |pkg|
 end
 
 desc "Build a MacOS X App bundle"
-task :app_bundle do
+task :app_bundle => :build do
   require 'erb'
 
   redcar_icon = "redcar_icon_beta.png"
 
   bundle_contents = File.join("pkg", "Redcar.app", "Contents")
+  FileUtils.rm_rf bundle_contents if File.exist? bundle_contents
   macos_dir = File.join(bundle_contents, "MacOS")
   resources_dir = File.join(bundle_contents, "Resources")
   FileUtils.mkdir_p macos_dir
@@ -202,7 +203,7 @@ task :app_bundle do
     f << '#!/bin/sh
           DIR=$(cd "$(dirname "$0")"; pwd)
           REDCAR=$(cd "$(dirname "${DIR}/../Resources/bin/redcar")"; pwd)
-          ruby $REDCAR/redcar --ignore-stdin $@'
+          $REDCAR/redcar --ignore-stdin $@'
   end
   File.chmod 0777, File.join(macos_dir, "redcar")
 
@@ -211,7 +212,8 @@ task :app_bundle do
     FileUtils.cp_r f, File.join(resources_dir, f), :remove_destination => true
   end
 
-  system "#{File.join(macos_dir, "redcar")} install"
+  p "Running #{File.join(resources_dir, "bin", "redcar")} install"
+  system "#{File.join(resources_dir, "bin", "redcar")} install"
 
   FileUtils.cp_r File.join(resources_dir, "plugins", "application", "icons", redcar_icon), 
       resources_dir, :remove_destination => true
