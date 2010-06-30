@@ -38,3 +38,10 @@ Feature: Line delimiter
     And I press the Backspace key in the edit tab
     Then the contents should be "foobar\nbaz\n"
     
+  Scenario: End goes to end of line (Windows)
+    When I open a new edit tab
+    And I replace the contents with "foo\r\nbar\r\nbaz\r\n"
+    And I move the cursor to 0
+    And I run the command Redcar::Top::MoveEndCommand
+    Then the cursor should be at 3
+    
