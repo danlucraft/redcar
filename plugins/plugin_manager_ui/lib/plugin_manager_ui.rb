@@ -32,7 +32,7 @@ module Redcar
           plugin.load
           Redcar.app.refresh_menu!
           PluginManagerUi.last_reloaded = plugin
-          1
+          nil
         end
         
         private

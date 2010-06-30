@@ -58,7 +58,11 @@ module Redcar
       def function(args)
         func_name = args.to_a.first
         func_args = args.to_a.last.to_a
-        JSON(controller.send(func_name.to_sym, *func_args))
+        begin
+          JSON(controller.send(func_name.to_sym, *func_args))
+        rescue JSON::GeneratorError => e
+          nil
+        end
       end
       
       attr_accessor :controller
