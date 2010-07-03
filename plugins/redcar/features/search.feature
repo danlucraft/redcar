@@ -109,3 +109,40 @@ Feature: Search in file
     Then the selected text should be "Foo"
     And line number 100 should be visible
 
+  Scenario: Should reopen with the same text as the previous search
+    When I run the command Redcar::Top::SearchForwardCommand
+    And I type "foo" into the "Search" field in the speedbar
+    And I press "Search" in the speedbar
+    And I close the speedbar
+    And I run the command Redcar::Top::SearchForwardCommand
+    Then the "Search" field in the speedbar should have text "foo"
+    
+  Scenario: Should reopen with the same value of Regex as the previous search
+    When I run the command Redcar::Top::SearchForwardCommand
+    And I check "Regex" in the speedbar
+    And I press "Search" in the speedbar
+    And I close the speedbar
+    And I run the command Redcar::Top::SearchForwardCommand
+    Then "Regex" should be checked in the speedbar
+
+  Scenario: Should reopen with the same value of Regex as the previous search 2
+    When I run the command Redcar::Top::SearchForwardCommand
+    And I check "Regex" in the speedbar
+    And I press "Search" in the speedbar
+    And I close the speedbar
+    And I run the command Redcar::Top::SearchForwardCommand
+    And I uncheck "Regex" in the speedbar
+    And I press "Search" in the speedbar
+    And I close the speedbar
+    And I run the command Redcar::Top::SearchForwardCommand
+    Then "Regex" should not be checked in the speedbar
+
+  Scenario: Should reopen with the same value of Match case as the previous search
+    When I run the command Redcar::Top::SearchForwardCommand
+    And I check "Match case" in the speedbar
+    And I press "Search" in the speedbar
+    And I close the speedbar
+    And I run the command Redcar::Top::SearchForwardCommand
+    Then "Match case" should be checked in the speedbar
+
+    
