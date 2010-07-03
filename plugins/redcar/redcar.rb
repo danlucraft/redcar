@@ -164,6 +164,14 @@ module Redcar
       end
     end
     
+    class CloseTreeCommand < Command
+      def execute
+        treebook = Redcar.app.focussed_window.treebook
+        tree = treebook.focussed_tree
+        treebook.remove_tree(tree)
+      end
+    end
+    
     class AboutCommand < Command
       def execute
         new_tab = Top::NewCommand.new.run          
@@ -744,6 +752,7 @@ module Redcar
           item "Save As", Project::FileSaveAsCommand
           separator
           item "Close Tab", CloseTabCommand
+          item "Close Tree", CloseTreeCommand
           item "Close Window", CloseWindowCommand
           item "Close Directory", Project::DirectoryCloseCommand
           separator
