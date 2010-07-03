@@ -114,6 +114,7 @@ def close_everything
     end
   end
   Redcar::ApplicationSWT.sync_exec do
+    Redcar.app.focussed_window.close_speedbar if Redcar.app.focussed_window.speedbar
     Redcar.app.windows.first.title = Redcar::Window::DEFAULT_TITLE
   end
 end
