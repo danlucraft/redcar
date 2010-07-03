@@ -168,20 +168,18 @@ end
 
 When /^I replace the contents with "([^\"]*)"$/ do |contents|
   contents = unescape_text(contents)
-  win = Redcar.app.windows.first
-  tab = win.focussed_notebook.focussed_tab
+  doc = Redcar::EditView.focussed_edit_view_document
   cursor_offset = (contents =~ /<c>/)
   contents = contents.gsub("<c>", "")
-  tab.edit_view.document.text = contents
-  tab.edit_view.document.cursor_offset = cursor_offset
+  doc.text = contents
+  doc.cursor_offset = cursor_offset
 end
 
 When /^I replace the contents with 100 lines of "([^"]*)" then "([^"]*)"$/ do |contents1, contents2|
   contents1 = unescape_text(contents1)
   contents2 = unescape_text(contents2)
-  win = Redcar.app.windows.first
-  tab = win.focussed_notebook.focussed_tab
-  tab.edit_view.document.text = (contents1 + "\n")*100 + contents2
+  doc = Redcar::EditView.focussed_edit_view_document
+  doc.text = (contents1 + "\n")*100 + contents2
 end
 
 When /^I scroll to the top of the document$/ do

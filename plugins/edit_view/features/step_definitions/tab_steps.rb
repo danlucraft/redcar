@@ -35,7 +35,7 @@ Then /^there should be (one|\d+) (.*) tabs?$/ do |num, tab_type|
   end
   
   # in the model
-  tabs = Redcar.app.windows.first.notebooks.map {|nb| nb.tabs }.flatten
+  tabs = Redcar.app.focussed_window.notebooks.map {|nb| nb.tabs }.flatten
   tabs.length.should == num
   
   # in the GUI
