@@ -18,16 +18,6 @@ When /^I close the focussed tab$/ do
   Redcar::Top::CloseTabCommand.new.run
 end
 
-When /^I replace the contents with "([^\"]*)"$/ do |contents|
-  contents = unescape_text(contents)
-  win = Redcar.app.windows.first
-  tab = win.focussed_notebook.focussed_tab
-  cursor_offset = (contents =~ /<c>/)
-  contents = contents.gsub("<c>", "")
-  tab.edit_view.document.text = contents
-  tab.edit_view.document.cursor_offset = cursor_offset
-end
-
 When /I move (up|down) a tab/ do |type|
   case type
   when "down"
