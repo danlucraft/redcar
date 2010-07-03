@@ -325,10 +325,12 @@ module Redcar
       get_range(selection_range.begin, selection_range.count)
     end
     
+    # Is the document in block selection mode.
     def block_selection_mode?
       controller.block_selection_mode?
     end
     
+    # Turn the block selection mode on or off.
     def block_selection_mode=(boolean)
       controller.block_selection_mode = !!boolean
     end
