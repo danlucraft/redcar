@@ -46,10 +46,8 @@ module Redcar
       @__items ||= self.class.items.map {|i| i.clone }
     end
     
-    def __get_button(name)
-      __items.detect do |i| 
-        i.is_a?(ButtonItem) and (i.text == name or i.name == name)
-      end
+    def __get_item_by_text_or_name(name)
+      __items.detect {|i| (i.respond_to?(:text) and i.text == name) or i.name == name }
     end
     
     def self.label(name, text)

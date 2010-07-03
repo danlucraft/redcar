@@ -68,7 +68,7 @@ Feature: Search in file
     And I move the cursor to 0
     And I run the command Redcar::Top::SearchForwardCommand
     And I type "Ba." into the "query" field in the speedbar
-    And I check "is_regex" in the speedbar
+    And I check "Regex" in the speedbar
     And I press "Search" in the speedbar
     Then the selected text should be "Bar"
   
@@ -77,7 +77,7 @@ Feature: Search in file
     And I move the cursor to 0
     And I run the command Redcar::Top::SearchForwardCommand
     And I type "Ba." into the "query" field in the speedbar
-    And I check "is_regex" in the speedbar
+    And I check "Regex" in the speedbar
     And I press "Search" in the speedbar
     And I press "Search" in the speedbar
     Then the selected text should be "Baz"
@@ -95,7 +95,7 @@ Feature: Search in file
     And I move the cursor to 0
     And I run the command Redcar::Top::SearchForwardCommand
     And I type "foo" into the "query" field in the speedbar
-    And I check "match_case" in the speedbar
+    And I check "Match case" in the speedbar
     And I press "Search" in the speedbar
     Then there should not be any text selected
 
