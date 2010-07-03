@@ -76,6 +76,16 @@ module Redcar
 	    label.add_mouse_listener(MouseListener.new(self))
 	  end
 	  
+    def execute_listener_in_model(item, *args)
+      if item.listener
+        begin
+          @model.instance_exec(*args, &item.listener)
+        rescue => err
+          error_in_listener(err)
+        end
+      end
+    end
+    
 	  def create_item_widgets
         @model.__items.each do |item|
           case item
@@ -102,13 +112,7 @@ module Redcar
             edit_view.document.add_listener(:changed) do
               ignore(item.name) do
                 item.value = edit_view.document.to_s
-                if item.listener
-                  begin
-                    @model.instance_exec(item.value, &item.listener)
-                  rescue => err
-                    error_in_listener(err)
-                  end
-                end
+                execute_listener_in_model(item, item.value)
               end
             end
             item.add_listener(:changed_value) do |new_value|
@@ -121,14 +125,8 @@ module Redcar
           when Redcar::Speedbar::ButtonItem
             button = Swt::Widgets::Button.new(@composite, 0)
             button.set_text(item.text)
-            if item.listener
-              button.add_selection_listener do
-                begin
-                  @model.instance_exec(&item.listener)
-                rescue => err
-                  error_in_listener(err)
-                end
-              end
+            button.add_selection_listener do
+              execute_listener_in_model(item)
             end
             item.add_listener(:changed_text) do |new_text|
               button.set_text(item.text)
@@ -144,11 +142,7 @@ module Redcar
             combo.add_selection_listener do
               ignore(item.name) do
                 item.value = combo.text
-                if item.listener
-                  rescue_speedbar_errors do
-                    @model.instance_exec(item.value, &item.listener)
-                  end
-                end
+                execute_listener_in_model(item, item.value)
               end
             end
             item.add_listener(:changed_items) do |new_items|
@@ -174,13 +168,7 @@ module Redcar
             button.set_selection(!!item.value)
             button.add_selection_listener do
               item.value = button.get_selection
-              if item.listener
-                begin
-                  @model.instance_exec(item.value, &item.listener)
-                rescue => err
-                  error_in_listener(err)
-                end
-              end
+              execute_listener_in_model(item, item.value)
             end
             item.add_listener(:changed_text) do |new_text|
               rescue_speedbar_errors do
