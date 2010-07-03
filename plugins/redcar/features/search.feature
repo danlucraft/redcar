@@ -16,7 +16,7 @@ Feature: Search in file
     And I move the cursor to 0
     And I run the command Redcar::Top::SearchForwardCommand
     And I type "Bar" into the "query" field in the speedbar
-    And I press "search" in the speedbar
+    And I press "Search" in the speedbar
     Then the selected text should be "Bar"
 
   Scenario: Search twice should move to the next occurrence
@@ -24,8 +24,8 @@ Feature: Search in file
     And I move the cursor to 0
     And I run the command Redcar::Top::SearchForwardCommand
     And I type "Foo" into the "query" field in the speedbar
-    And I press "search" in the speedbar
-    And I press "search" in the speedbar
+    And I press "Search" in the speedbar
+    And I press "Search" in the speedbar
     Then the selected text should be "Foo"
     And the selection should be on line 2
 
@@ -34,7 +34,7 @@ Feature: Search in file
     And I move the cursor to 0
     And I run the command Redcar::Top::SearchForwardCommand
     And I type "Foo" into the "query" field in the speedbar
-    And I press "search" in the speedbar
+    And I press "Search" in the speedbar
     Then the selected text should be "Foo"
 
   Scenario: Search for a word should find occurrence after the cursor
@@ -42,7 +42,7 @@ Feature: Search in file
     And I move the cursor to 1
     And I run the command Redcar::Top::SearchForwardCommand
     And I type "Foo" into the "query" field in the speedbar
-    And I press "search" in the speedbar
+    And I press "Search" in the speedbar
     Then the selected text should be "Foo"
     And the selection should be on line 3
 
@@ -51,7 +51,7 @@ Feature: Search in file
     And I move the cursor to 1
     And I run the command Redcar::Top::SearchForwardCommand
     And I type "Foo" into the "query" field in the speedbar
-    And I press "search" in the speedbar
+    And I press "Search" in the speedbar
     Then the selected text should be "Foo"
     And the selection should be on line 0
 
@@ -60,7 +60,7 @@ Feature: Search in file
     And I move the cursor to 0
     And I run the command Redcar::Top::SearchForwardCommand
     And I type "Ba." into the "query" field in the speedbar
-    And I press "search" in the speedbar
+    And I press "Search" in the speedbar
     Then there should not be any text selected
   
   Scenario: Search for a regex
@@ -69,7 +69,7 @@ Feature: Search in file
     And I run the command Redcar::Top::SearchForwardCommand
     And I type "Ba." into the "query" field in the speedbar
     And I check "is_regex" in the speedbar
-    And I press "search" in the speedbar
+    And I press "Search" in the speedbar
     Then the selected text should be "Bar"
   
   Scenario: Search for a regex matches a second time
@@ -78,8 +78,8 @@ Feature: Search in file
     And I run the command Redcar::Top::SearchForwardCommand
     And I type "Ba." into the "query" field in the speedbar
     And I check "is_regex" in the speedbar
-    And I press "search" in the speedbar
-    And I press "search" in the speedbar
+    And I press "Search" in the speedbar
+    And I press "Search" in the speedbar
     Then the selected text should be "Baz"
   
   Scenario: Should not match case by default
@@ -87,7 +87,7 @@ Feature: Search in file
     And I move the cursor to 0
     And I run the command Redcar::Top::SearchForwardCommand
     And I type "foo" into the "query" field in the speedbar
-    And I press "search" in the speedbar
+    And I press "Search" in the speedbar
     Then the selected text should be "Foo"
 
   Scenario: Should match case if requested
@@ -96,7 +96,7 @@ Feature: Search in file
     And I run the command Redcar::Top::SearchForwardCommand
     And I type "foo" into the "query" field in the speedbar
     And I check "match_case" in the speedbar
-    And I press "search" in the speedbar
+    And I press "Search" in the speedbar
     Then there should not be any text selected
 
   Scenario: Should scroll to the match
@@ -105,7 +105,7 @@ Feature: Search in file
     And I move the cursor to 0
     And I run the command Redcar::Top::SearchForwardCommand
     And I type "Foo" into the "query" field in the speedbar
-    And I press "search" in the speedbar
+    And I press "Search" in the speedbar
     Then the selected text should be "Foo"
     And line number 100 should be visible
 

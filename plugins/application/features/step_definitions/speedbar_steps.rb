@@ -10,7 +10,7 @@ end
 
 When /^I press "([^"]*)" in the speedbar$/ do |button_name|
   speedbar = Redcar.app.focussed_window.speedbar
-  speedbar.controller.execute_listener_in_model(speedbar.send(button_name))
+  speedbar.controller.execute_listener_in_model(speedbar.__get_button(button_name))
 end
 
 When /^I check "([^"]*)" in the speedbar$/ do |checkbox_name|
