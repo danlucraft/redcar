@@ -25,7 +25,7 @@ module SwtHelper
   end
   
   def tree_book
-    active_shell.children.to_a.first.children.to_a.first
+    active_shell.children.to_a.first.children.to_a.first.children.to_a.first.children.to_a.first
   end
   
   def top_tree
