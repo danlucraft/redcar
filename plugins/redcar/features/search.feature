@@ -15,7 +15,7 @@ Feature: Search in file
     When I replace the contents with "Foo\nBar\nBaz"
     And I move the cursor to 0
     And I run the command Redcar::Top::SearchForwardCommand
-    And I type "Bar" into the "query" field in the speedbar
+    And I type "Bar" into the "Search" field in the speedbar
     And I press "Search" in the speedbar
     Then the selected text should be "Bar"
 
@@ -23,7 +23,7 @@ Feature: Search in file
     When I replace the contents with "Foo\nBar\nFoo"
     And I move the cursor to 0
     And I run the command Redcar::Top::SearchForwardCommand
-    And I type "Foo" into the "query" field in the speedbar
+    And I type "Foo" into the "Search" field in the speedbar
     And I press "Search" in the speedbar
     And I press "Search" in the speedbar
     Then the selected text should be "Foo"
@@ -33,7 +33,7 @@ Feature: Search in file
     When I replace the contents with "Foo\nBar\nBaz"
     And I move the cursor to 0
     And I run the command Redcar::Top::SearchForwardCommand
-    And I type "Foo" into the "query" field in the speedbar
+    And I type "Foo" into the "Search" field in the speedbar
     And I press "Search" in the speedbar
     Then the selected text should be "Foo"
 
@@ -41,7 +41,7 @@ Feature: Search in file
     When I replace the contents with "Foo\nBar\nBaz\nFoo"
     And I move the cursor to 1
     And I run the command Redcar::Top::SearchForwardCommand
-    And I type "Foo" into the "query" field in the speedbar
+    And I type "Foo" into the "Search" field in the speedbar
     And I press "Search" in the speedbar
     Then the selected text should be "Foo"
     And the selection should be on line 3
@@ -50,7 +50,7 @@ Feature: Search in file
     When I replace the contents with "Foo\nBar\nBaz"
     And I move the cursor to 1
     And I run the command Redcar::Top::SearchForwardCommand
-    And I type "Foo" into the "query" field in the speedbar
+    And I type "Foo" into the "Search" field in the speedbar
     And I press "Search" in the speedbar
     Then the selected text should be "Foo"
     And the selection should be on line 0
@@ -59,7 +59,7 @@ Feature: Search in file
     When I replace the contents with "Foo\nBar\nBaz"
     And I move the cursor to 0
     And I run the command Redcar::Top::SearchForwardCommand
-    And I type "Ba." into the "query" field in the speedbar
+    And I type "Ba." into the "Search" field in the speedbar
     And I press "Search" in the speedbar
     Then there should not be any text selected
   
@@ -67,7 +67,7 @@ Feature: Search in file
     When I replace the contents with "Foo\nBar\nBaz"
     And I move the cursor to 0
     And I run the command Redcar::Top::SearchForwardCommand
-    And I type "Ba." into the "query" field in the speedbar
+    And I type "Ba." into the "Search" field in the speedbar
     And I check "Regex" in the speedbar
     And I press "Search" in the speedbar
     Then the selected text should be "Bar"
@@ -76,7 +76,7 @@ Feature: Search in file
     When I replace the contents with "Foo\nBar\nBaz"
     And I move the cursor to 0
     And I run the command Redcar::Top::SearchForwardCommand
-    And I type "Ba." into the "query" field in the speedbar
+    And I type "Ba." into the "Search" field in the speedbar
     And I check "Regex" in the speedbar
     And I press "Search" in the speedbar
     And I press "Search" in the speedbar
@@ -86,7 +86,7 @@ Feature: Search in file
     When I replace the contents with "Foo\nBar\nBaz"
     And I move the cursor to 0
     And I run the command Redcar::Top::SearchForwardCommand
-    And I type "foo" into the "query" field in the speedbar
+    And I type "foo" into the "Search" field in the speedbar
     And I press "Search" in the speedbar
     Then the selected text should be "Foo"
 
@@ -94,7 +94,7 @@ Feature: Search in file
     When I replace the contents with "Foo\nBar\nBaz"
     And I move the cursor to 0
     And I run the command Redcar::Top::SearchForwardCommand
-    And I type "foo" into the "query" field in the speedbar
+    And I type "foo" into the "Search" field in the speedbar
     And I check "Match case" in the speedbar
     And I press "Search" in the speedbar
     Then there should not be any text selected
@@ -104,7 +104,7 @@ Feature: Search in file
     And I scroll to the top of the document
     And I move the cursor to 0
     And I run the command Redcar::Top::SearchForwardCommand
-    And I type "Foo" into the "query" field in the speedbar
+    And I type "Foo" into the "Search" field in the speedbar
     And I press "Search" in the speedbar
     Then the selected text should be "Foo"
     And line number 100 should be visible

@@ -47,7 +47,15 @@ module Redcar
     end
     
     def __get_item_by_text_or_name(name)
-      __items.detect {|i| (i.respond_to?(:text) and i.text == name) or i.name == name }
+      __items.detect {|i| (i.respond_to?(:text) and i.text == name) or i.name.to_s == name.to_s }
+    end
+    
+    def __get_item_by_label(name)
+      label = __items.detect {|i| i.is_a?(LabelItem) and (i.text == name or i.name.to_s == name.to_s)}
+      if label
+        index_of_label = __items.index(label)
+        __items[index_of_label + 1]
+      end
     end
     
     def self.label(name, text)

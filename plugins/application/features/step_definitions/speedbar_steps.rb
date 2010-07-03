@@ -5,7 +5,14 @@ end
 
 When /^I type "([^"]*)" into the "([^"]*)" field in the speedbar$/ do |text, field_name|
   speedbar = Redcar.app.focussed_window.speedbar
-  speedbar.send(field_name).edit_view.document.text = text
+  item = speedbar.__get_item_by_label(field_name) || 
+          speedbar.__get_item_by_label(field_name + ":") || 
+          speedbar.__get_item(field_name)
+  expected_klass = Redcar::Speedbar::TextBoxItem
+  unless item.is_a?(expected_klass)
+    raise "expected #{item} to be a #{expected_klass}"
+  end
+  item.edit_view.document.text = text
 end
 
 When /^I press "([^"]*)" in the speedbar$/ do |button_name|
