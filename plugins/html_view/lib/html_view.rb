@@ -32,7 +32,12 @@ module Redcar
       @controller.add_listener(:execute_script) do |script|
         begin
           Redcar.update_gui do
-            @html_tab.controller.browser.execute(script)
+            begin
+              @html_tab.controller.browser.execute(script)
+            rescue => e
+              puts e.message
+              puts e.backtrace
+            end
           end
         rescue => e
           puts e.message
