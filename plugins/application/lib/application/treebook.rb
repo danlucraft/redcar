@@ -35,7 +35,7 @@ module Redcar
         @trees.delete(tree)
         notify_listeners(:tree_removed, tree)
         if tree == focussed_tree
-          focus_tree(trees.first)
+          focus_tree(trees.first) if trees.any?
         end
       end
     end
