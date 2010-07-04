@@ -1,5 +1,6 @@
 
 require 'html_view/html_tab'
+require 'html_controller'
 
 module Redcar
   class HtmlView
@@ -24,6 +25,20 @@ module Redcar
       func = RubyFunc.new(@html_tab.controller.browser, "rubyCall")
       func.controller = @controller
       controller_action("index")
+      attach_controller_listeners
+    end
+    
+    def attach_controller_listeners
+      @controller.add_listener(:execute_script) do |script|
+        begin
+          Redcar.update_gui do
+            @html_tab.controller.browser.execute(script)
+          end
+        rescue => e
+          puts e.message
+          puts e.backtrace
+        end
+      end
     end
     
     def controller_action(action_name, params=nil)

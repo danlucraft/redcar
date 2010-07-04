@@ -154,6 +154,8 @@ module Redcar
       end
       
       class BulkRenameController
+        include Redcar::HtmlController
+        
         attr_reader :pairs, :match_pattern, :replace_pattern
         
         def initialize(tab, tree, nodes)
@@ -192,7 +194,6 @@ module Redcar
         end
         
         def submit(params)
-          p [:submit, params]
           @pairs.each do |node, _|
             old_name = File.basename(node.path)
             new_name = transform_name(old_name)
