@@ -2,6 +2,8 @@
 require File.dirname(__FILE__) + "/../vendor/session-2.4.0/lib/session"
 Session.use_open3 = true
 
+require 'runnables/command_output_controller'
+
 module Redcar
   class Runnables
     
@@ -80,28 +82,11 @@ module Redcar
       
       def activated(tree, node)
         command = node.command
-        tab = Redcar.app.focussed_window.new_tab(EditTab)
-        tab.title = node.text
+        tab = Redcar.app.focussed_window.new_tab(HtmlTab)
+        controller = CommandOutputController.new(command)
+        tab.html_view.controller = controller
         tab.focus
-        doc = tab.edit_view.document
-        doc.text = "### #{command}\n"
-        Thread.new do
-          shell = Session::Shell.new
-          shell.outproc = lambda do |out|
-            Redcar.update_gui do
-              doc.text = doc.to_s + "[stdout] #{out}" if doc.exists?
-            end
-          end
-          shell.errproc = lambda do |err|
-            Redcar.update_gui do
-              doc.text = doc.to_s + "[stderr] #{err}" if doc.exists?
-            end
-          end
-          shell.execute(command)
-          Redcar.update_gui do
-            doc.insert(doc.length, "### process finished") if doc.exists?
-          end
-        end
+        return
       end
     end
     

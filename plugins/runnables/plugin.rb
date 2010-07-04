@@ -5,5 +5,6 @@ Plugin.define do
   file    "lib", "runnables"
   object  "Redcar::Runnables"
   dependencies "tree",        ">0",
-               "application", ">0"
+               "application", ">0",
+               "HTML View",   ">0"
 end
