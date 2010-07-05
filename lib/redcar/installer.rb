@@ -177,21 +177,25 @@ module Redcar
     
     def setup_resource(name, path, url, save_as)
       target = File.join(path, save_as)
-      if File.exist?(target)
-        # puts "  file #{File.basename(target)} already present, skipping..."
-        return
-      end
+      return if File.exist?(target)
       
       cached = File.join(REDCAR_JARS_DIR, name, save_as)
       unless File.exists?(cached)
-        print "  downloading #{File.basename(cached)}..."
+        print "  downloading #{File.basename(cached)}... "
         download(url, cached)
-        puts " done!"
+        puts "done!"
       end
 
-      puts "  linking #{File.basename(cached)}..."
       FileUtils.mkdir_p path
-      FileUtils.ln_sf cached, target
+      
+      # Windoze doesn't support FileUtils.ln_sf, so we copy the files
+      if Config::CONFIG["host_os"] =~ /windows|mswin|mingw/i
+        puts "  copying #{File.basename(cached)}..."
+        FileUtils.cp cached, target
+      else
+        puts "  linking #{File.basename(cached)}..."
+        FileUtils.ln_sf cached, target
+      end
     end
     
     # unzip a .zip file into the directory it is located
