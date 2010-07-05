@@ -186,7 +186,7 @@ module Redcar
         puts "done!"
       end
 
-      FileUtils.mkdir_p path
+      FileUtils.mkdir_p File.dirname(target)
       
       # Windoze doesn't support FileUtils.ln_sf, so we copy the files
       if Config::CONFIG["host_os"] =~ /windows|mswin|mingw/i
