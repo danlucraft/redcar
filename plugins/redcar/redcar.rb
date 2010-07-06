@@ -409,7 +409,7 @@ module Redcar
     class SelectAllCommand < Redcar::EditTabCommand
     
       def execute
-        doc.set_selection_range(doc.length, 0)
+        doc.select_all
       end
     end
     
@@ -418,6 +418,32 @@ module Redcar
       def execute
         doc.set_selection_range(
           doc.cursor_line_start_offset, doc.cursor_line_end_offset)
+      end
+    end
+    
+    class SelectWordCommand < Redcar::EditTabCommand
+      WORD = /\w|_/
+
+      def execute
+        cur_offset = doc.cursor_offset
+        line = doc.get_line(doc.cursor_line)
+        left_range = 0
+        right_range = 0
+        left = doc.cursor_line_offset - 1
+        right = doc.cursor_line_offset        
+        
+        until left == -1 || (line[left].chr !~ WORD)
+          left -= 1
+          left_range -= 1
+        end
+        
+        until right == doc.length || (line[right].chr !~ WORD)
+          right += 1
+          right_range += 1
+        end
+        
+        doc.set_selection_range(cur_offset + left_range, cur_offset + right_range)
+        
       end
     end
     
@@ -785,6 +811,7 @@ module Redcar
           sub_menu "Select" do
             item "All", SelectAllCommand
             item "Line", SelectLineCommand
+            item "Current Word", SelectWordCommand
           end
           item "Toggle Block Selection", ToggleBlockSelectionCommand
           item "Auto Complete",          AutoCompleter::AutoCompleteCommand
