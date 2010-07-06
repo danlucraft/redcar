@@ -436,28 +436,10 @@ module Redcar
     end
     
     class SelectWordCommand < Redcar::EditTabCommand
-      WORD = /\w|_/
 
       def execute
-        cur_offset = doc.cursor_offset
-        line = doc.get_line(doc.cursor_line)
-        left_range = 0
-        right_range = 0
-        left = doc.cursor_line_offset - 1
-        right = doc.cursor_line_offset        
-        
-        until left == -1 || (line[left].chr !~ WORD)
-          left -= 1
-          left_range -= 1
-        end
-        
-        until right == doc.length || (line[right].chr !~ WORD)
-          right += 1
-          right_range += 1
-        end
-        
-        doc.set_selection_range(cur_offset + left_range, cur_offset + right_range)
-        
+        range = doc.current_word_range
+        doc.set_selection_range(range.first, range.last)
       end
     end
     
