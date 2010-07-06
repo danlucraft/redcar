@@ -21,10 +21,10 @@ class ObservableStruct
     end
     accessors.each do |accessor|
       klass.class_eval %Q{
-        alias_method :real_#{accessor}=, :#{accessor}=
+        alias_method :set_#{accessor}, :#{accessor}=
         def #{accessor}=(val)
           notify_listeners(:changed_#{accessor}, val) do
-            self.real_#{accessor} = val
+            self.set_#{accessor}(val)
           end
         end
       }

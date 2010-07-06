@@ -2,24 +2,22 @@
 Redcar JRuby Port Roadmap
 =========================
 
-Features still to port
------------------------
-
-  * Tests passing on 3 platforms
-  * Full project support
-  * Text/Source/Ruby bundle commands ported
-  * Packaged for one-click install on 3 platforms
-  * Ruby on Rails/HTML/CSS/YAML bundle commands ported
-  
 Version 0.4.0
 -------------
 
 Feature parity with Redcar 0.2.
 
+Remaining:
+  * Text/Source/Ruby bundle commands ported
+  * Ruby on Rails/HTML/CSS/YAML bundle commands ported
+  
+
 And then for 1.0...
 -------------------
 
   * Incremental search
+  * Tests passing on 3 platforms
+  * Packaged for one-click install on 3 platforms
   * Find/Replace
   * Go to symbol
   * Command browser

@@ -25,7 +25,7 @@ module SwtHelper
   end
   
   def tree_book
-    active_shell.children.to_a.first.children.to_a.first
+    active_shell.children.to_a.first.children.to_a.first.children.to_a.first.children.to_a.first
   end
   
   def top_tree
@@ -114,6 +114,7 @@ def close_everything
     end
   end
   Redcar::ApplicationSWT.sync_exec do
+    Redcar.app.focussed_window.close_speedbar if Redcar.app.focussed_window.speedbar
     Redcar.app.windows.first.title = Redcar::Window::DEFAULT_TITLE
   end
 end

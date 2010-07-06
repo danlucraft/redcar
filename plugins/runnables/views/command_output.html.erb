@@ -1,0 +1,32 @@
+
+<script type="text/javascript" src="file://<%= Redcar::HtmlView.jquery_path %>"></script>
+<link rel="stylesheet" href="file://<%= Redcar::HtmlView.default_css_path %>" type="text/css" media="screen">
+
+<style>
+  .stdout {
+    padding: 0px;
+    margin: 0px;
+  }
+
+  .stderr {
+    padding: 0px;
+    margin: 0px;
+    color: #FF0000;
+  }
+
+  .stdout pre {
+      padding: 0px;
+      margin: 0px;
+  }
+  .stderr pre {
+      padding: 0px;
+      margin: 0px;
+  }
+</style>
+
+<h3><pre>
+<%= command %>
+</pre></h3>
+
+<div id="output">
+</div>

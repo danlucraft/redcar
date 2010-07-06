@@ -132,7 +132,25 @@ Then /^the selection range should be from (\d+) to (\d+)$/ do |from_str, to_str|
   r.begin.should == from_str.to_i
   r.end.should == to_str.to_i
 end
+
+Then /^the selection should be on line (.*)$/ do |line_num|
+  line_num = line_num.to_i
+  doc = Redcar::EditView.focussed_edit_view_document
+  r = doc.selection_range
+  doc.line_at_offset(r.begin).should == line_num
+  doc.line_at_offset(r.end).should == line_num
+end
  
+Then /^there should not be any text selected$/ do
+  doc = Redcar::EditView.focussed_edit_view_document
+  doc.selected_text.should == ""
+end
+
+Then /^the selected text should be "([^"]*)"$/ do |selected_text|
+  doc = Redcar::EditView.focussed_edit_view_document
+  doc.selected_text.should == selected_text
+end
+
 Then /the line delimiter should be "(.*)"/ do |delim|
   doc = Redcar::EditView.focussed_edit_view_document
   doc.delim.should == unescape_text(delim)
@@ -148,4 +166,34 @@ Then /^the cursor should be on line (\d+)$/ do |num|
   doc.cursor_line.should == num.to_i
 end
 
- 
+When /^I replace the contents with "([^\"]*)"$/ do |contents|
+  contents = unescape_text(contents)
+  doc = Redcar::EditView.focussed_edit_view_document
+  cursor_offset = (contents =~ /<c>/)
+  contents = contents.gsub("<c>", "")
+  doc.text = contents
+  doc.cursor_offset = cursor_offset
+end
+
+When /^I replace the contents with 100 lines of "([^"]*)" then "([^"]*)"$/ do |contents1, contents2|
+  contents1 = unescape_text(contents1)
+  contents2 = unescape_text(contents2)
+  doc = Redcar::EditView.focussed_edit_view_document
+  doc.text = (contents1 + "\n")*100 + contents2
+end
+
+When /^I scroll to the top of the document$/ do
+  doc = Redcar::EditView.focussed_edit_view_document
+  doc.scroll_to_line(0)
+end
+
+Then /^line number (\d+) should be visible$/ do |line_num|
+  line_num = line_num.to_i
+  doc = Redcar::EditView.focussed_edit_view_document
+  (doc.biggest_visible_line >= line_num).should be_true
+  (doc.smallest_visible_line <= line_num).should be_true
+end
+
+
+
+

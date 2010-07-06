@@ -18,6 +18,8 @@ module Redcar
     
     class OpenCommand < Redcar::Command
       class Controller
+        include Redcar::HtmlController
+        
         def title
           "Plugins"
         end

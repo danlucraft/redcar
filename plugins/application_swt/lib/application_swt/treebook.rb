@@ -11,6 +11,7 @@ module Redcar
       def add_listeners
         @model.add_listener(:tree_added,   &method(:tree_added))
         @model.add_listener(:tree_removed, &method(:tree_removed))
+        @model.add_listener(:tree_focussed, &method(:tree_focussed))
       end
 
       def tree_added(tree)
@@ -25,6 +26,13 @@ module Redcar
       
       def tree_removed(tree)
         tree.controller.close
+        @tree_combo.remove(tree.tree_mirror.title)
+      end
+      
+      def tree_focussed(tree)
+        @tree_layout.topControl = tree.controller.control
+        @tree_composite.layout
+        @tree_combo.select(@tree_combo.get_items.to_a.index(tree.tree_mirror.title))
       end
 
       def create_tree_view
@@ -40,9 +48,7 @@ module Redcar
       	@tree_combo.setLayoutData(grid_data)
         @tree_combo.add_selection_listener do
           selected_tree = @model.trees.detect {|t| t.tree_mirror.title == @tree_combo.text}
-          @tree_layout.topControl = selected_tree.controller.control
-          @tree_composite.layout
-          @tree_combo.select(@tree_combo.get_items.to_a.index(selected_tree.tree_mirror.title))
+          @model.focus_tree(selected_tree)
         end
         
         @tree_composite.layout

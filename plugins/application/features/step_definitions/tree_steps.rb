@@ -17,8 +17,8 @@ Then /^I should (not )?see "([^\"]*)" in the tree$/ do |bool, rows|
   end
 end
 
-Then /^the directory tree width should be the default$/ do
+Then /^the tree width should be the default$/ do
   width = Redcar.app.focussed_window.treebook.trees.last.controller.viewer.control.bounds.width
-  default = Redcar::ApplicationSWT::Window::TREEBOOK_WIDTH + Redcar::ApplicationSWT::Window::SASH_WIDTH
-  raise "The directory tree width was #{width}, expected #{default}" unless width == default
+  default = Redcar::ApplicationSWT::Window::TREEBOOK_WIDTH + Redcar::ApplicationSWT::Window::SASH_WIDTH - 5
+  raise "The tree width was #{width}, expected #{default}" unless width == default
 end

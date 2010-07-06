@@ -1,9 +1,10 @@
+
 Version 0.3.8 (TBA)
 ===================
 
  * Can switch between open trees in a window (Dan Lucraft)
  * Runnables: extensible runnable tasks/build items/tests/generators for projects. (Dan Lucraft)
-
+ * Fix bug: end key not working in documents with Windows-style line endings (Dan Lucraft)
 
 Version 0.3.7.1 (25 Jun 2010)
 =============================
