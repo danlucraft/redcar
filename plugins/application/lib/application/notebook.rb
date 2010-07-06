@@ -72,7 +72,7 @@ module Redcar
     def switch_up
       current_ix = @tabs.index(@focussed_tab)
       unless current_ix == @tabs.length - 1 or current_ix == nil
-        @tabs[current_ix+1].focus
+        @tabs[current_ix + 1].focus
       end
     end
     
@@ -83,6 +83,39 @@ module Redcar
       unless current_ix == 0 or current_ix == nil
         @tabs[current_ix - 1].focus
       end
+    end
+    
+    # Moves the currently focussed tab to the right.
+    # Does wrap.
+    def move_up
+      swap_active_tab_with(@tabs.index(@focussed_tab) + 1)      
+    end
+    
+    # Moves the currently focussed tab to the left.
+    # Does wrap.
+    def move_down
+      swap_active_tab_with(@tabs.index(@focussed_tab) - 1)      
+    end
+    
+    # Swaps the currently focussed tab with the tab at a 
+    # given position. If that position is currently not 
+    # in use, the index will be wrapped.
+    #    
+    def swap_active_tab_with(position)
+      current_ix = @tabs.index(@focussed_tab)
+      tab_to_be_swapped = @tabs[position]
+      unless @tabs[position] == @focussed_tab
+        position = wrap_index(position)
+        @tabs[current_ix], @tabs[position] = @tabs[position], @tabs[current_ix]
+        @focussed_tab.move_to_position(position)
+      end
+    end
+    
+    def wrap_index(position)
+      until (0..@tabs.size - 1).include?(position)
+        position = position > 0 ? position - @tabs.size : @tabs.size + position
+      end
+      position
     end
     
     def inspect

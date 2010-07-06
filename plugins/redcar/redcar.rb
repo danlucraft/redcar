@@ -267,6 +267,20 @@ module Redcar
       end
     end
     
+    class MoveTabUpCommand < Command
+      
+      def execute
+        win.focussed_notebook.move_up
+      end
+    end
+    
+    class MoveTabDownCommand < Command
+      
+      def execute
+        win.focussed_notebook.move_down
+      end
+    end
+    
     class UndoCommand < EditTabCommand
       sensitize :undoable
       
@@ -687,6 +701,8 @@ module Redcar
         link "Cmd+Alt+O",       SwitchNotebookCommand
         link "Cmd+Shift+[",     SwitchTabDownCommand
         link "Cmd+Shift+]",     SwitchTabUpCommand
+        link "Ctrl+Shift+[",    MoveTabDownCommand
+        link "Ctrl+Shift+]",    MoveTabUpCommand
 
         link "Ctrl+Shift+P",    PrintScopeCommand
         
@@ -745,8 +761,10 @@ module Redcar
 
         link "Ctrl+Alt+O",       SwitchNotebookCommand
         
-        link "Ctrl+Page Up",       SwitchTabDownCommand
-        link "Ctrl+Page Down",     SwitchTabUpCommand
+        link "Ctrl+Page Up",         SwitchTabDownCommand
+        link "Ctrl+Page Down",       SwitchTabUpCommand
+        link "Ctrl+Shift+Page Up",   MoveTabDownCommand
+        link "Ctrl+Shift+Page Down", MoveTabUpCommand
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
         
         link "Ctrl+Alt+S", Snippets::OpenSnippetExplorer
@@ -844,6 +862,8 @@ module Redcar
           separator
           item "Previous Tab", SwitchTabDownCommand
           item "Next Tab", SwitchTabUpCommand
+          item "Move Tab Left", MoveTabDownCommand
+          item "Move Tab Right", MoveTabUpCommand
           sub_menu "Switch Tab" do
              (1..9).each do |num|
                item "Tab #{num}", Top.const_get("SelectTab#{num}Command")

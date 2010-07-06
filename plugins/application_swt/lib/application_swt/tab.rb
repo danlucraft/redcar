@@ -53,6 +53,10 @@ module Redcar
         @notebook.recalculate_tab_order
         focus
       end
+      
+      def moved(position)        
+        move_tab_widget_to_position(position)
+      end
 
       def set_notebook(notebook_controller)
         @notebook = notebook_controller
@@ -65,6 +69,7 @@ module Redcar
       def attach_listeners
         @model.add_listener(:focus, &method(:focus))
         @model.add_listener(:close, &method(:close))
+        @model.add_listener(:moved, &method(:moved))
       end
       
       def focus
