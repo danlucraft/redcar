@@ -7,6 +7,7 @@ require 'runnables/running_process_checker'
 
 module Redcar
   class Runnables
+    TREE_TITLE = "Runnables"
     
     class TreeMirror
       include Redcar::Tree::Mirror
@@ -23,7 +24,7 @@ module Redcar
       end
       
       def title
-        "Runnables"
+        TREE_TITLE
       end
       
       def top
@@ -95,12 +96,16 @@ module Redcar
     
     class ShowRunnables < Redcar::Command
       def execute
-        project = Project::Manager.in_window(win)
-        tree = Tree.new(
-            TreeMirror.new(project),
-            TreeController.new(project)
-          )
-        win.treebook.add_tree(tree)
+        if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
+          win.treebook.focus_tree(tree)
+        else
+          project = Project::Manager.in_window(win)
+          tree = Tree.new(
+              TreeMirror.new(project),
+              TreeController.new(project)
+            )
+          win.treebook.add_tree(tree)
+        end
       end
     end
   end
