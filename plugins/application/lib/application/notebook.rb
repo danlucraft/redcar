@@ -108,7 +108,6 @@ module Redcar
       tab_to_be_swapped = @tabs[position]
       unless @tabs[position] == @focussed_tab || current_ix.nil?
         position = wrap_index(position)
-        @tabs[current_ix], @tabs[position] = @tabs[position], @tabs[current_ix]
         @focussed_tab.move_to_position(position)
       end
     end
