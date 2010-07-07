@@ -33,7 +33,10 @@ module Redcar
         begin
           Redcar.update_gui do
             begin
-              @html_tab.controller.browser.execute(script)
+              browser = @html_tab.controller.browser
+              unless browser.is_disposed
+                browser.execute(script)
+              end
             rescue => e
               puts e.message
               puts e.backtrace
