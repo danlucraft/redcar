@@ -9,6 +9,11 @@ module Redcar
       create_html_view
     end
     
+    def close
+      html_view.controller.close
+      super
+    end
+    
     def create_html_view
       @html_view = HtmlView.new(self)
     end
