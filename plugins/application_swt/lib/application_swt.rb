@@ -69,7 +69,9 @@ module Redcar
           puts e.backtrace
         end
       end
-      Redcar::ApplicationSWT.display.syncExec(runnable)
+      unless Redcar::ApplicationSWT.display.is_disposed
+        Redcar::ApplicationSWT.display.syncExec(runnable)
+      end
     end
     
     # Runs the given block in the SWT Event thread after
