@@ -29,9 +29,25 @@ module Redcar
     class QuitCommand < Command
       
       def execute
+        check_for_modified_tabs_and_quit
+      end
+      
+      private
+
+      def check_for_modified_tabs_and_quit
         EditView::ModifiedTabsChecker.new(
           Redcar.app.all_tabs.select {|t| t.is_a?(EditTab)},
           "Save all before quitting?",
+          :none     => lambda { check_for_running_processes_and_quit },
+          :continue => lambda { check_for_running_processes_and_quit },
+          :cancel   => nil
+        ).check
+      end        
+      
+      def check_for_running_processes_and_quit
+        Runnables::RunningProcessChecker.new(
+          Redcar.app.all_tabs.select {|t| t.is_a?(HtmlTab)},
+          "Kill all and quit?",
           :none     => lambda { Redcar.app.quit },
           :continue => lambda { Redcar.app.quit },
           :cancel   => nil
@@ -98,6 +114,16 @@ module Redcar
         EditView::ModifiedTabsChecker.new(
           win.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(EditTab)}, 
           "Save all before closing the window?",
+          :none     => lambda { check_for_running_processes_and_close_window },
+          :continue => lambda { check_for_running_processes_and_close_window },
+          :cancel   => nil
+        ).check
+      end
+      
+      def check_for_running_processes_and_close_window
+        Runnables::RunningProcessChecker.new(
+          win.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(HtmlTab)}, 
+          "Kill them and close the window?",
           :none     => lambda { win.close },
           :continue => lambda { win.close },
           :cancel   => nil
@@ -227,6 +253,22 @@ module Redcar
             case result
             when :yes
               tab.edit_view.document.save!
+              close_tab
+            when :no
+              close_tab
+            when :cancel
+            end
+          else
+            close_tab
+          end
+        elsif tab.is_a?(HtmlTab)
+          if message = tab.html_view.controller.ask_before_closing
+            result = Application::Dialog.message_box(
+              message,
+              :buttons => :yes_no_cancel
+            )
+            case result
+            when :yes
               close_tab
             when :no
               close_tab

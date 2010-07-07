@@ -1,8 +1,9 @@
 
 require File.dirname(__FILE__) + "/../vendor/session-2.4.0/lib/session"
-Session.use_open3 = true
+Session.use_open4 = true
 
 require 'runnables/command_output_controller'
+require 'runnables/running_process_checker'
 
 module Redcar
   class Runnables
@@ -57,6 +58,8 @@ module Redcar
       def icon
         if leaf?
           File.dirname(__FILE__) + "/../icons/cog.png"
+        else
+          :dir
         end
       end
       

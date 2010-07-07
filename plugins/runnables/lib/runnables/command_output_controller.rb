@@ -12,10 +12,22 @@ module Redcar
         "Process"
       end
       
+      def ask_before_closing
+        if @shell
+          "This tab contains an unfinished process. \n\nKill the process and close?"
+        end
+      end
+      
+      def close
+        if @shell
+          Process.kill(9, @shell.pid.to_i + 1)
+        end
+      end
+      
       def run
-        Thread.new do
-          shell = Session::Shell.new
-          shell.outproc = lambda do |out|
+        @thread = Thread.new do
+          @shell = Session::Shell.new
+          @shell.outproc = lambda do |out|
             html=<<-HTML
               <div class="stdout">
                 <pre>#{out}</pre>
@@ -25,19 +37,23 @@ module Redcar
               $("#output").append(#{html.inspect});
             JAVASCRIPT
           end
-          shell.errproc = lambda do |err|
-            p err
+          @shell.errproc = lambda do |err|
             html=<<-HTML
               <div class="stderr">
                 <pre>#{err}</pre>
               </div>
             HTML
-            p html
             execute(<<-JAVASCRIPT)
               $("#output").append(#{html.inspect});
             JAVASCRIPT
           end
-          shell.execute(@cmd)
+          begin
+            @shell.execute(@cmd)
+          rescue => e
+            puts e.class
+            puts e.message
+            puts e.backtrace
+          end
           html=<<-HTML
           <hr />
           <small><strong>Process finished</strong></small>
@@ -45,6 +61,8 @@ module Redcar
           execute(<<-JAVASCRIPT)
             $("#output").append(#{html.inspect});
           JAVASCRIPT
+          @shell = nil
+          @thread = nil
         end
       end        
       
