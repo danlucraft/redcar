@@ -83,7 +83,7 @@ module Redcar
       path = match[:file]
       Project::Manager.open_file(path)
       regexp = Regexp.new(Regexp.escape(match[:match]))
-      Redcar::Top::FindNextRegex.new(regexp, true).run
+      DocumentSearch::FindNextRegex.new(regexp, true).run
     end
 
     class GoToTagCommand < EditTabCommand

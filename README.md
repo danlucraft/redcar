@@ -30,6 +30,11 @@ for a list of options.
 ## INSTALLING FROM SOURCE
 
 If you want to contribute to Redcar, you can install it from the source code.
+
+If you're running Windows, as a prerequisite, you'll need to install the rubyzip gem:
+
+    $ gem install rubyzip
+
 Download from github, checkout the submodules and build JavaMateView. You will need Ant 
 installed, and RSpec and Cucumber installed as JRuby gems.
 

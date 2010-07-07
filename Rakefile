@@ -318,14 +318,13 @@ namespace :redcar do
   end
   
   task :sample do
-    puts "out1"
-sleep 1
-$stderr.puts "err1"
-sleep 1
-puts "out2"
-sleep 1
-$stderr.puts "err2"
-sleep 1
+    5.times do |i|
+      puts "out#{i}"
+      sleep 1
+      $stderr.puts "err#{i}"
+      sleep 1
+    end
+    FileUtils.touch("finished_process")
   end
 end
 

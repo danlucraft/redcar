@@ -66,6 +66,8 @@ module Redcar
       end
         
       class Controller
+        include Redcar::HtmlController
+        
         def title
           "History"
         end

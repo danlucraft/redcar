@@ -71,6 +71,7 @@ module Redcar
       /jface/org.eclipse.core.jobs.jar
     )
     
+    REDCAR_JARS_DIR = File.expand_path(File.join(ENV['HOME'], ".redcar", "jars"))
     JRUBY_JAR_DIR = File.expand_path(File.join(File.dirname(__FILE__), ".."))
     
     JRUBY = [
@@ -81,10 +82,11 @@ module Redcar
 
     JRUBY << "http://jruby.org.s3.amazonaws.com/downloads/1.5.0/jruby-complete-1.5.0.jar"
     
+    JOPENSSL_DIR = "lib/openssl/lib/"
     JOPENSSL = {
-      "/jruby/bcmail-jdk14-139-#{Redcar::VERSION}.jar" => "lib/openssl/lib/bcmail-jdk14-139.jar",
-      "/jruby/bcprov-jdk14-139-#{Redcar::VERSION}.jar" => "lib/openssl/lib/bcprov-jdk14-139.jar",
-      "/jruby/jopenssl-#{Redcar::VERSION}.jar"         => "lib/openssl/lib/jopenssl.jar",
+      "/jruby/bcmail-jdk14-139-#{Redcar::VERSION}.jar" => "bcmail-jdk14-139.jar",
+      "/jruby/bcprov-jdk14-139-#{Redcar::VERSION}.jar" => "bcprov-jdk14-139.jar",
+      "/jruby/jopenssl-#{Redcar::VERSION}.jar"         => "jopenssl.jar",
     }
 
     REDCAR_JARS = {
@@ -94,46 +96,51 @@ module Redcar
     
     XULRUNNER_URI = "http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.2/runtimes/xulrunner-1.9.2.en-US.win32.zip"
 
+    SWT_JARS = {
+      :osx     => {
+        "/swt/osx.jar"     => "osx/swt.jar",
+        "/swt/osx64.jar"   => "osx64/swt.jar"
+      },
+      :linux   => {
+        "/swt/linux.jar"   => "linux/swt.jar",
+        "/swt/linux64.jar" => "linux64/swt.jar"
+      },
+      :windows => {
+        "/swt/win32.jar"   => "win32/swt.jar",
+      }
+    }
+    
     def grab_jruby
-      puts "* Downloading JRuby"
-      JRUBY.each do |jar_url|
-        download(jar_url, File.join(JRUBY_JAR_DIR, File.basename(jar_url)))
-      end
-      JOPENSSL.each do |jar_url, relative_path|
-        download(jar_url, File.join(File.dirname(__FILE__), "..", "..", relative_path))
-      end
+      puts "* Checking JRuby dependencies"
+      
+      setup "jruby",    :resources => JRUBY,    :path => JRUBY_JAR_DIR
+      setup "jopenssl", :resources => JOPENSSL, :path => JOPENSSL_DIR
     end
     
     def grab_common_jars
-      puts "* Downloading common jars"
-      JFACE.each do |jar_url|
-        download(jar_url, File.join(plugins_dir, %w(application_swt vendor jface), File.basename(jar_url)))
-      end
+      puts "* Checking common jars"
+      
+      setup "jface", :resources => JFACE, :path => File.join(plugins_dir, %w(application_swt vendor jface))
     end
     
     def grab_platform_dependencies
-      puts "* Downloading platform-specific SWT jars"
+      puts "* Checking platform-specific SWT jars"
       case Config::CONFIG["host_os"]
       when /darwin/i
-        download("/swt/osx.jar", File.join(plugins_dir, %w(application_swt vendor swt osx swt.jar)))
-        download("/swt/osx64.jar", File.join(plugins_dir, %w(application_swt vendor swt osx64 swt.jar)))
-      when /linux/i
-        download("/swt/linux.jar", File.join(plugins_dir, %w(application_swt vendor swt linux swt.jar)))
-        download("/swt/linux64.jar", File.join(plugins_dir, %w(application_swt vendor swt linux64 swt.jar)))
-      when /windows|mswin|mingw/i
-        download("/swt/win32.jar", File.join(plugins_dir, %w(application_swt vendor swt win32 swt.jar)))
-        # download("/swt/win64.jar", File.join(plugins_dir, %w(application_swt vendor swt win64 swt.jar)))
-        vendor_dir = File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. vendor)))
+        setup "swt", :resources => SWT_JARS[:osx],     :path => File.join(plugins_dir, %w(application_swt vendor swt))
 
-        download(XULRUNNER_URI, File.join(vendor_dir, 'xulrunner.zip'))
+      when /linux/i
+        setup "swt", :resources => SWT_JARS[:linux],   :path => File.join(plugins_dir, %w(application_swt vendor swt))
+
+      when /windows|mswin|mingw/i
+        setup "swt", :resources => SWT_JARS[:windows], :path => File.join(plugins_dir, %w(application_swt vendor swt))
+        setup "swt", :resources => [XULRUNNER_URI],    :path => File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. vendor)))
       end
     end
     
     def grab_redcar_jars
-      puts "* Downloading Redcar jars"
-      REDCAR_JARS.each do |jar_url, relative_path|
-        download(jar_url, File.join(File.dirname(__FILE__), "..", "..", relative_path))
-      end
+      puts "* Checking Redcar jars"
+      setup "redcar", :resources => REDCAR_JARS, :path => File.join(File.dirname(__FILE__), "..", "..")
     end
     
     def download(uri, path)
@@ -150,7 +157,45 @@ module Redcar
       	Installer.unzip_file(path)
       end
 
-      puts "  downloaded #{uri}\n          to #{path}\n"
+      # puts "  downloaded #{uri}\n          to #{path}\n"
+    end
+    
+    def setup(name, options)
+      resources = options.delete(:resources)
+      path      = options.delete(:path)
+      
+      if resources.is_a?(Array)
+        resources.each do |resource|
+          setup_resource name, path, resource, File.basename(resource)
+        end
+      else
+        resources.each_pair do |url, save_as|
+          setup_resource name, path, url, save_as
+        end
+      end
+    end
+    
+    def setup_resource(name, path, url, save_as)
+      target = File.join(path, save_as)
+      return if File.exist?(target)
+      
+      cached = File.join(REDCAR_JARS_DIR, name, save_as)
+      unless File.exists?(cached)
+        print "  downloading #{File.basename(cached)}... "
+        download(url, cached)
+        puts "done!"
+      end
+
+      FileUtils.mkdir_p File.dirname(target)
+      
+      # Windoze doesn't support FileUtils.ln_sf, so we copy the files
+      if Config::CONFIG["host_os"] =~ /windows|mswin|mingw/i
+        puts "  copying #{File.basename(cached)}..."
+        FileUtils.cp cached, target
+      else
+        puts "  linking #{File.basename(cached)}..."
+        FileUtils.ln_sf cached, target
+      end
     end
     
     # unzip a .zip file into the directory it is located
