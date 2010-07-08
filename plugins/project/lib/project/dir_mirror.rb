@@ -130,7 +130,6 @@ module Redcar
         end
         
         def tooltip_text
-          p [:tooltip_text, File.basename(@path)]
           File.basename(@path)
         end
       end

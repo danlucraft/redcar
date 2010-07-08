@@ -1,5 +1,4 @@
 REDCAR_VERSION = "0.3.8dev"
-
 require 'rubygems'
 require 'fileutils'
 require 'spec/rake/spectask'
@@ -290,30 +289,32 @@ task :release => :gem do
   AWS::S3::S3Object.store("redcar-#{REDCAR_VERSION}.gem", open(file), 'redcar', :access => :public_read)
 end
 
-def hash_with_hash_default
-  Hash.new {|h,k| h[k] = hash_with_hash_default }
-end
-
 namespace :redcar do
+  def hash_with_hash_default
+    Hash.new {|h,k| h[k] = hash_with_hash_default }
+  end
+
+  require 'json'
+  
   desc "Redcar Integration: output runnable info"
   task :runnables do
-    mkdir_p(".redcar")
+    mkdir_p(".redcar/runnables")
     puts "Creating runnables"
     
     tasks = Rake::Task.tasks
-    bin = File.join(Config::CONFIG["bindir"], "rake")
-    runnables = hash_with_hash_default
+    runnables = []
     tasks.each do |task|
-      bits = task.name.split(":")
-      namespace = runnables
-      while bits.length > 1
-        namespace = namespace[bits.shift]
-      end
-      command = bin + " " + task.name
-      namespace[bits.shift] = {:command => command, :desc => task.comment}
+      name = task.name.gsub(":", "/")
+      command = Config::CONFIG["bindir"] + "/ruby -r/Users/danlucraft/Redcar/redcar/plugins/runnables/lib/runnables/sync_stdout.rb " + $0 + " " + task.name
+      runnables << {
+        "name"        => name,
+        "command"     => command, 
+        "description" => task.comment,
+        "type"        => "task/ruby/rake"
+      }
     end
-    File.open(".redcar/runnables", "w") do |f|
-      f.puts runnables.to_yaml
+    File.open(".redcar/runnables/rake.json", "w") do |f|
+      f.puts({"commands" => runnables}.to_json)
     end
   end
   

@@ -13,10 +13,18 @@ module Redcar
       include Redcar::Tree::Mirror
       
       def initialize(project)
-        runnables = project.config_file(:runnables)
-        if runnables
-          @top = runnables.map do |name, info|
-            Runnable.new(name, info)
+        runnable_file_paths = project.config_files("runnables/*.json")
+        
+        runnables = []
+        runnable_file_paths.each do |path|
+          json = File.read(path)
+          this_runnables = JSON(json)["commands"]
+          runnables += this_runnables || []
+        end
+
+        if runnables.any?
+          @top = runnables.map do |runnable|
+            Runnable.new(runnable["name"], runnable)
           end
         else
           @top = [HelpItem.new]
@@ -53,27 +61,23 @@ module Redcar
       end
       
       def leaf?
-        @info[:command]
+        @info["command"]
       end
       
       def icon
         if leaf?
           File.dirname(__FILE__) + "/../icons/cog.png"
         else
-          :dir
+          :directory
         end
       end
       
       def children
-        return [] if leaf?
-        
-        @info.map do |name, info|
-          Runnable.new(name, info)
-        end
+        []
       end
       
       def command
-        @info[:command]
+        @info["command"]
       end
     end
     
