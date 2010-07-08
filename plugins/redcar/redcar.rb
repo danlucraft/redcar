@@ -716,6 +716,7 @@ module Redcar
         link "Cmd+L",       GotoLineCommand
         link "Cmd+F",       DocumentSearch::SearchForwardCommand
         link "Cmd+A",       SelectAllCommand
+        link "Ctrl+W",      SelectWordCommand
         link "Cmd+B",       ToggleBlockSelectionCommand
         #link "Escape", AutoCompleter::AutoCompleteCommand
         link "Ctrl+Escape",  AutoCompleter::MenuAutoCompleterCommand
@@ -774,6 +775,7 @@ module Redcar
         link "Ctrl+F",       DocumentSearch::SearchForwardCommand
         link "F3",           DocumentSearch::RepeatPreviousSearchForwardCommand
         link "Ctrl+A",       SelectAllCommand
+        link "Ctrl+Alt+W",   SelectWordCommand
         link "Ctrl+B",       ToggleBlockSelectionCommand
         link "Ctrl+Space",       AutoCompleter::AutoCompleteCommand
         link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleterCommand
