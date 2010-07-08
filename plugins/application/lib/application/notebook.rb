@@ -90,13 +90,19 @@ module Redcar
     # Moves the currently focussed tab to the right.
     # Does wrap.
     def move_up
-      swap_active_tab_with(@tabs.index(@focussed_tab) + 1)      
+      current_ix = @tabs.index(@focussed_tab)
+      unless current_ix.nil?
+        swap_active_tab_with(current_ix + 1)
+      end
     end
     
     # Moves the currently focussed tab to the left.
     # Does wrap.
     def move_down
-      swap_active_tab_with(@tabs.index(@focussed_tab) - 1)      
+      current_ix = @tabs.index(@focussed_tab)
+      unless current_ix.nil?
+        swap_active_tab_with(current_ix - 1)
+      end
     end
     
     # Swaps the currently focussed tab with the tab at a 
