@@ -303,9 +303,10 @@ namespace :redcar do
     
     tasks = Rake::Task.tasks
     runnables = []
+    ruby_bin = Config::CONFIG["bindir"] + "/ruby -r/Users/danlucraft/Redcar/redcar/plugins/runnables/lib/runnables/sync_stdout.rb " 
     tasks.each do |task|
       name = task.name.gsub(":", "/")
-      command = Config::CONFIG["bindir"] + "/ruby -r/Users/danlucraft/Redcar/redcar/plugins/runnables/lib/runnables/sync_stdout.rb " + $0 + " " + task.name
+      command = ruby_bin + $0 + " " + task.name
       runnables << {
         "name"        => name,
         "command"     => command, 
@@ -314,7 +315,21 @@ namespace :redcar do
       }
     end
     File.open(".redcar/runnables/rake.json", "w") do |f|
-      f.puts({"commands" => runnables}.to_json)
+      data = {"commands" => runnables}
+      f.puts(JSON.pretty_generate(data))
+    end
+    File.open(".redcar/runnables/ruby.json", "w") do |f|
+      data = {"file_runners" => 
+        [
+          {
+            "regex" =>    ".*.rb$",
+            "name" =>     "Run as ruby",
+            "command" =>  ruby_bin + "__PATH__",
+            "type" =>     "script/ruby"
+          }
+        ]
+      }
+      f.puts(JSON.pretty_generate(data))
     end
   end
   

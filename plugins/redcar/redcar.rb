@@ -837,6 +837,7 @@ module Redcar
           item "Refresh Directory", Project::RefreshDirectoryCommand
           separator
           item "Runnables", Runnables::ShowRunnables
+          item "Run Tab",   Runnables::RunEditTab
         end
         sub_menu "Debug" do
           item "Task Manager", TaskManager::OpenCommand

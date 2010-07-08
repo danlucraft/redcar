@@ -17,7 +17,7 @@
       "type":        "task/ruby/rake"
     }
   ],
-  "run-file":[
+  "file_runners":[
     {
       "regex":   ".*_spec.rb",
       "name":    "Run as spec",

@@ -26,6 +26,7 @@ module Redcar
       
       def run
         @thread = Thread.new do
+          sleep 1
           @shell = Session::Shell.new
           @shell.outproc = lambda do |out|
             html=<<-HTML

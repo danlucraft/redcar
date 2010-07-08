@@ -9,6 +9,13 @@ module Redcar
   class Runnables
     TREE_TITLE = "Runnables"
     
+    def self.run_process(command)
+      tab = Redcar.app.focussed_window.new_tab(HtmlTab)
+      controller = CommandOutputController.new(command)
+      tab.html_view.controller = controller
+      tab.focus
+    end
+    
     class TreeMirror
       include Redcar::Tree::Mirror
       
@@ -89,12 +96,7 @@ module Redcar
       end
       
       def activated(tree, node)
-        command = node.command
-        tab = Redcar.app.focussed_window.new_tab(HtmlTab)
-        controller = CommandOutputController.new(command)
-        tab.html_view.controller = controller
-        tab.focus
-        return
+        Runnables.run_process(node.command)
       end
     end
     
@@ -112,5 +114,37 @@ module Redcar
         end
       end
     end
+    
+    class RunEditTab < Redcar::EditTabCommand
+      def file_mappings
+        project = Project::Manager.in_window(win)
+        runnable_file_paths = project.config_files("runnables/*.json")
+        
+        file_runners = []
+        runnable_file_paths.each do |path|
+          json = File.read(path)
+          this_file_runners = JSON(json)["file_runners"]
+          file_runners += this_file_runners || []
+        end
+        file_runners
+      end
+      
+      def execute
+        file_mappings.each do |file_mapping|
+          regex = Regexp.new(file_mapping["regex"])
+          p [:regex, regex, tab.edit_view.document.mirror.path]
+          if tab.edit_view.document.mirror.path =~ regex
+            p [:match]
+            command_schema = file_mapping["command"]
+            command = command_schema.gsub("__PATH__", tab.edit_view.document.mirror.path)
+            puts command
+            Runnables.run_process(command)
+          end
+        end
+      end
+    end
   end
 end
+
+
+
