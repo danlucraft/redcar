@@ -118,7 +118,7 @@ module Redcar
     # @param [Integer] the position
     def swap_tab_with(move_tab, position = 0)
       swap_tab = @tabs[position]
-      unless move_tab == tab_to_swap || [move_tab, swap_tab].include?(nil)
+      unless move_tab == swap_tab || [move_tab, swap_tab].include?(nil)
         move_tab.move_to_position(position)
       end
     end
