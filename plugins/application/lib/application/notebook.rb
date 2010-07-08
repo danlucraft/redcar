@@ -89,8 +89,8 @@ module Redcar
     # Wraps.
     def move_up
       focussed do |current_ix|
-        new_index = wrap_index(current_ix + 1)
-        swap_tab_with(@tabs[current_ix], new_index)
+        new_ix = wrap_index(current_ix + 1)
+        swap_tab_with(@tabs[current_ix], new_ix)
       end
     end
     
@@ -98,8 +98,8 @@ module Redcar
     # Wraps.
     def move_down
       focussed do |current_ix|
-        new_index = wrap_index(current_ix - 1)
-        swap_tab_with(@tabs[current_ix], new_index)
+        new_ix = wrap_index(current_ix - 1)
+        swap_tab_with(@tabs[current_ix], new_ix)
       end
     end
     
@@ -111,21 +111,24 @@ module Redcar
       end
     end
     
-    # Swaps a tab with another one at a given position.
-    def swap_tab_with(tab_to_move, position = 0)
-      tab_to_swap = @tabs[position]
-      unless tab_to_move == tab_to_swap ||
-        [tab_to_move, tab_to_swap].include?(nil)
-        tab_to_move.move_to_position(position)
+    # Swaps a tab with another one at a certain position.
+    # If no position is specified, this will default to 0.
+    #
+    # @param [Redcar::Tab] the tab to be moved
+    # @param [Integer] the position
+    def swap_tab_with(move_tab, position = 0)
+      swap_tab = @tabs[position]
+      unless move_tab == tab_to_swap || [move_tab, swap_tab].include?(nil)
+        move_tab.move_to_position(position)
       end
     end
     
     # Wraps an index according to the current number of tabs.
-    def wrap_index(position)
-      until (0..@tabs.size - 1).include?(position)
-        position = position > 0 ? position - @tabs.size : @tabs.size + position
+    def wrap_index(index)
+      until (0..@tabs.size - 1).include?(index)
+        index = index > 0 ? index - @tabs.size : @tabs.size + index
       end
-      position
+      index
     end
     
     def inspect
