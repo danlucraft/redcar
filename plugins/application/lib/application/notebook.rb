@@ -68,53 +68,55 @@ module Redcar
     end
     
     # Focus the next tab to the right from the currently focussed tab.
-    # Does wrap.
+    # Wraps.
     def switch_up
-      current_ix = @tabs.index(@focussed_tab)
-      unless current_ix.nil?
+      focussed do |current_ix|
         current_ix = wrap_index(current_ix + 1)
         @tabs[current_ix].focus
       end
     end
     
     # Focus the next tab to the left from the currently focussed tab.
-    # Does wrap.
+    # Wraps.
     def switch_down
-      current_ix = @tabs.index(@focussed_tab)
-      unless current_ix.nil?
+      focussed do |current_ix|
         current_ix = wrap_index(current_ix - 1)
         @tabs[current_ix].focus
       end
     end
     
     # Moves the currently focussed tab to the right.
-    # Does wrap.
+    # Wraps.
     def move_up
-      current_ix = @tabs.index(@focussed_tab)
-      unless current_ix.nil?
-        swap_active_tab_with(current_ix + 1)
+      focussed do |current_ix|
+        new_index = wrap_index(current_ix + 1)
+        swap_tab_with(@tabs[current_ix], new_index)
       end
     end
     
     # Moves the currently focussed tab to the left.
-    # Does wrap.
+    # Wraps.
     def move_down
-      current_ix = @tabs.index(@focussed_tab)
-      unless current_ix.nil?
-        swap_active_tab_with(current_ix - 1)
+      focussed do |current_ix|
+        new_index = wrap_index(current_ix - 1)
+        swap_tab_with(@tabs[current_ix], new_index)
       end
     end
     
-    # Swaps the currently focussed tab with the tab at a 
-    # given position. If that position is currently not 
-    # in use, the index will be wrapped.
-    #    
-    def swap_active_tab_with(position)
+    # Yields the current index of the foccussed tab, if it exists.
+    def focussed(&block)
       current_ix = @tabs.index(@focussed_tab)
-      tab_to_be_swapped = @tabs[position]
-      unless @tabs[position] == @focussed_tab || current_ix.nil?
-        position = wrap_index(position)
-        @focussed_tab.move_to_position(position)
+      unless current_ix.nil?
+        yield(current_ix)
+      end
+    end
+    
+    # Swaps a tab with another one at a given position.
+    def swap_tab_with(tab_to_move, position = 0)
+      tab_to_swap = @tabs[position]
+      unless tab_to_move == tab_to_swap ||
+        [tab_to_move, tab_to_swap].include?(nil)
+        tab_to_move.move_to_position(position)
       end
     end
     
