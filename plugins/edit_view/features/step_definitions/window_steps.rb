@@ -73,6 +73,10 @@ When /^I focus the window "([^\"]*)" through the gui$/ do |title|
   FakeEvent.new(Swt::SWT::Activate, win.controller.shell)
 end
 
+When /^I focus the working directory window through the gui$/ do
+  When "I focus the window \"#{File.basename Dir.pwd}\" through the gui"
+end
+
 Then /^the window should be titled "([^\"]*)"$/ do |title|
   windows = Redcar.app.windows
   windows.length.should == 1
