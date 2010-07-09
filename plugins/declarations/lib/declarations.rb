@@ -92,22 +92,8 @@ module Redcar
         if doc.selection?
           handle_tag(doc.selected_text)
         else
-          line = doc.get_line(doc.cursor_line)
-          left = doc.cursor_line_offset - 1
-          right = doc.cursor_line_offset
-          left_range = 0
-          right_range = 0
-          offset = doc.cursor_offset
-          
-          until left == -1 || AutoCompleter::WORD_CHARACTERS !~ (line[left].chr)
-            left -= 1
-            left_range -= 1
-          end
-          until right == line.length || AutoCompleter::WORD_CHARACTERS !~ (line[right].chr)
-            right += 1
-            right_range += 1
-          end
-          handle_tag(doc.get_slice(doc.cursor_offset+left_range, doc.cursor_offset+right_range))
+          range = doc.current_word_range
+          handle_tag(doc.get_slice(range.first, range.last))
         end
       end
 
