@@ -115,7 +115,7 @@ module Redcar
       end
     end
     
-    class RunEditTab < Redcar::EditTabCommand
+    class RunEditTabCommand < Redcar::EditTabCommand
       def file_mappings
         project = Project::Manager.in_window(win)
         runnable_file_paths = project.config_files("runnables/*.json")
@@ -132,9 +132,7 @@ module Redcar
       def execute
         file_mappings.each do |file_mapping|
           regex = Regexp.new(file_mapping["regex"])
-          p [:regex, regex, tab.edit_view.document.mirror.path]
           if tab.edit_view.document.mirror.path =~ regex
-            p [:match]
             command_schema = file_mapping["command"]
             command = command_schema.gsub("__PATH__", tab.edit_view.document.mirror.path)
             puts command

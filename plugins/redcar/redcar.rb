@@ -728,6 +728,7 @@ module Redcar
         link "Cmd+Shift+]",     SwitchTabUpCommand
         link "Ctrl+Shift+[",    MoveTabDownCommand
         link "Ctrl+Shift+]",    MoveTabUpCommand
+        link "Ctrl+R",          Runnables::RunEditTabCommand
 
         link "Ctrl+Shift+P",    PrintScopeCommand
         
@@ -782,6 +783,7 @@ module Redcar
         
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
+        link "Ctrl+R",           Runnables::RunEditTabCommand
         
         link "Ctrl+Shift+P",    PrintScopeCommand
 
@@ -866,7 +868,7 @@ module Redcar
           item "Refresh Directory", Project::RefreshDirectoryCommand
           separator
           item "Runnables", Runnables::ShowRunnables
-          item "Run Tab",   Runnables::RunEditTab
+          item "Run Tab",   Runnables::RunEditTabCommand
         end
         sub_menu "Debug" do
           item "Task Manager", TaskManager::OpenCommand
