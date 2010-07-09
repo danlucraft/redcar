@@ -5,7 +5,7 @@ require 'auto_completer/word_iterator'
 require 'auto_completer/word_list'
 
 module Redcar
-  class AutoCompleter
+  class AutoCompleter    
     WORD_CHARACTERS = /\w|_/ # /(\s|\t|\.|\r|\(|\)|,|;)/
     
     def self.document_controller_types
@@ -82,30 +82,15 @@ module Redcar
         word_list
       end
       
-      # returns the prefix that is being touched by the cursor and an array 
-      # containing [left, right] document offsets of the prefix.
+      # returns the prefix that is being touched by the cursor and a range 
+      # containing offsets of the prefix.
       def touched_prefix
         line = doc.get_line(doc.cursor_line)
-        left, right = word_range(line)
+        cur_offset = doc.cursor_offset
+        left, right = doc.word_range_at_offset(cur_offset).first, cur_offset
         prefix = doc.get_range(left, right - left)
         return nil if prefix.length == 0
         return prefix, left, right
-      end
-      
-      # returns the range that holds the current word (depending on WORD_CHARACTERS)
-      def word_range(line)
-        left = doc.cursor_line_offset - 1
-        right = doc.cursor_line_offset
-        left_range = 0
-        right_range = 0
-        offset = doc.cursor_offset
-        
-        until left == -1 || WORD_CHARACTERS !~ (line[left].chr)
-          left -= 1
-          left_range -= 1
-        end
-        
-        return [offset+left_range, offset+right_range]
       end
     end
     

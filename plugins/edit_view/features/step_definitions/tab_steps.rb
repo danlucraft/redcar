@@ -18,12 +18,21 @@ When /^I close the focussed tab$/ do
   Redcar::Top::CloseTabCommand.new.run
 end
 
-When /I move (up|down) a tab/ do |type|
+When /I switch (up|down) a tab/ do |type|
   case type
   when "down"
     Redcar::Top::SwitchTabDownCommand.new.run
   when "up"
     Redcar::Top::SwitchTabUpCommand.new.run
+  end
+end
+
+When /I move (up|down) a tab/ do |type|
+  case type
+  when "down"
+    Redcar::Top::MoveTabDownCommand.new.run
+  when "up"
+    Redcar::Top::MoveTabUpCommand.new.run
   end
 end
 

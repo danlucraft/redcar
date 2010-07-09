@@ -28,23 +28,34 @@ module Redcar
         notify_listeners(:focus)
       end
     end
-    
+
     def title
       @title
     end
-    
+
     def title=(title)
       @title = title
       notify_listeners(:changed_title, title)
     end
-    
+
     def inspect
       "#<#{self.class.name} \"#{title}\">"
     end
-    
+
     # Sets the notebook of the tab. Should not be called from user code.
     def set_notebook(notebook)
       @notebook = notebook
+    end
+
+    # Moves the tab to a new position in the notebook, if said position 
+    # is currently occupied. Defaults to the first position, if none
+    # is passed.
+    #    
+    # Events: moved (position)
+    def move_to_position(position = 0)
+      if (0..@notebook.tabs.size - 1).include?(position)
+        notify_listeners(:moved, position)
+      end
     end
     
     def edit_tab?

@@ -309,6 +309,20 @@ module Redcar
       end
     end
     
+    class MoveTabUpCommand < Command
+      
+      def execute
+        win.focussed_notebook.move_up
+      end
+    end
+    
+    class MoveTabDownCommand < Command
+      
+      def execute
+        win.focussed_notebook.move_down
+      end
+    end
+    
     class UndoCommand < EditTabCommand
       sensitize :undoable
       
@@ -451,7 +465,7 @@ module Redcar
     class SelectAllCommand < Redcar::EditTabCommand
     
       def execute
-        doc.set_selection_range(doc.length, 0)
+        doc.select_all
       end
     end
     
@@ -460,6 +474,14 @@ module Redcar
       def execute
         doc.set_selection_range(
           doc.cursor_line_start_offset, doc.cursor_line_end_offset)
+      end
+    end
+    
+    class SelectWordCommand < Redcar::EditTabCommand
+
+      def execute
+        range = doc.current_word_range
+        doc.set_selection_range(range.first, range.last)
       end
     end
     
@@ -694,6 +716,7 @@ module Redcar
         link "Cmd+L",       GotoLineCommand
         link "Cmd+F",       DocumentSearch::SearchForwardCommand
         link "Cmd+A",       SelectAllCommand
+        link "Ctrl+W",      SelectWordCommand
         link "Cmd+B",       ToggleBlockSelectionCommand
         #link "Escape", AutoCompleter::AutoCompleteCommand
         link "Ctrl+Escape",  AutoCompleter::MenuAutoCompleterCommand
@@ -703,6 +726,8 @@ module Redcar
         link "Cmd+Alt+O",       SwitchNotebookCommand
         link "Cmd+Shift+[",     SwitchTabDownCommand
         link "Cmd+Shift+]",     SwitchTabUpCommand
+        link "Ctrl+Shift+[",    MoveTabDownCommand
+        link "Ctrl+Shift+]",    MoveTabUpCommand
 
         link "Ctrl+Shift+P",    PrintScopeCommand
         
@@ -750,6 +775,7 @@ module Redcar
         link "Ctrl+F",       DocumentSearch::SearchForwardCommand
         link "F3",           DocumentSearch::RepeatPreviousSearchForwardCommand
         link "Ctrl+A",       SelectAllCommand
+        link "Ctrl+Alt+W",   SelectWordCommand
         link "Ctrl+B",       ToggleBlockSelectionCommand
         link "Ctrl+Space",       AutoCompleter::AutoCompleteCommand
         link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleterCommand
@@ -761,8 +787,10 @@ module Redcar
 
         link "Ctrl+Alt+O",       SwitchNotebookCommand
         
-        link "Ctrl+Page Up",       SwitchTabDownCommand
-        link "Ctrl+Page Down",     SwitchTabUpCommand
+        link "Ctrl+Page Up",         SwitchTabDownCommand
+        link "Ctrl+Page Down",       SwitchTabUpCommand
+        link "Ctrl+Shift+Page Up",   MoveTabDownCommand
+        link "Ctrl+Shift+Page Down", MoveTabUpCommand
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
         
         link "Ctrl+Alt+S", Snippets::OpenSnippetExplorer
@@ -827,6 +855,7 @@ module Redcar
           sub_menu "Select" do
             item "All", SelectAllCommand
             item "Line", SelectLineCommand
+            item "Current Word", SelectWordCommand
           end
           item "Toggle Block Selection", ToggleBlockSelectionCommand
           item "Auto Complete",          AutoCompleter::AutoCompleteCommand
@@ -860,6 +889,8 @@ module Redcar
           separator
           item "Previous Tab", SwitchTabDownCommand
           item "Next Tab", SwitchTabUpCommand
+          item "Move Tab Left", MoveTabDownCommand
+          item "Move Tab Right", MoveTabUpCommand
           sub_menu "Switch Tab" do
              (1..9).each do |num|
                item "Tab #{num}", Top.const_get("SelectTab#{num}Command")

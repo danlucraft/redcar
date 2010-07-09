@@ -8,6 +8,8 @@ module Redcar
     include Redcar::Observable
     extend Forwardable
     
+    WORDCHARS = /\w|_/
+    
     def self.all_document_controller_types
       result = []
       Redcar.plugin_manager.objects_implementing(:document_controller_types).each do |object|
@@ -280,6 +282,54 @@ module Redcar
       else
         end_offset = offset_at_line(line_ix + 1)
       end
+    end
+    
+    # The word at an offset.
+    #
+    # @param [Integer] an offset
+    # @return [String] the text of the word
+    def word_at_offset(offset)
+      range = word_range_at_offset(offset)
+      get_range(range.first, range.last - range.first)
+    end
+    
+    # The word found at the current cursor offset.
+    #
+    # @return [String] the text of the word
+    def current_word
+      word_at_offset(cursor_offset)
+    end
+    
+    # The range of the word at an offset.
+    #
+    # @param [Integer] an offset
+    # @return [Range<Integer>] a range between two character offsets
+    def word_range_at_offset(offset)
+      line_index = line_at_offset(offset)
+      line_start_offset = offset_at_line(line_index)
+      line_chars = get_line(line_index)
+      left_range = 0
+      right_range = 0
+      left = offset - line_start_offset - 1
+      right = offset - line_start_offset
+      
+      until left == -1 || (line_chars[left].chr !~ WORDCHARS)
+        left -= 1
+        left_range -= 1
+      end
+      
+      until right == length || (line_chars[right].chr !~ WORDCHARS)
+        right += 1
+        right_range += 1
+      end
+      (offset + left_range..offset + right_range)
+    end
+    
+    # The range of the word at the current cursor position.
+    #
+    # @return [Range<Integer>] a range between two character offsets
+    def current_word_range
+      word_range_at_offset(cursor_offset)
     end
     
     # The range of text selected by the user.

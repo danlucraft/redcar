@@ -68,21 +68,67 @@ module Redcar
     end
     
     # Focus the next tab to the right from the currently focussed tab.
-    # Does not wrap.
+    # Wraps.
     def switch_up
-      current_ix = @tabs.index(@focussed_tab)
-      unless current_ix == @tabs.length - 1 or current_ix == nil
-        @tabs[current_ix+1].focus
+      focussed do |current_ix|
+        current_ix = wrap_index(current_ix + 1)
+        @tabs[current_ix].focus
       end
     end
     
     # Focus the next tab to the left from the currently focussed tab.
-    # Does not wrap.
+    # Wraps.
     def switch_down
-      current_ix = @tabs.index(@focussed_tab)
-      unless current_ix == 0 or current_ix == nil
-        @tabs[current_ix - 1].focus
+      focussed do |current_ix|
+        current_ix = wrap_index(current_ix - 1)
+        @tabs[current_ix].focus
       end
+    end
+    
+    # Moves the currently focussed tab to the right.
+    # Wraps.
+    def move_up
+      focussed do |current_ix|
+        new_ix = wrap_index(current_ix + 1)
+        swap_tab_with(@tabs[current_ix], new_ix)
+      end
+    end
+    
+    # Moves the currently focussed tab to the left.
+    # Wraps.
+    def move_down
+      focussed do |current_ix|
+        new_ix = wrap_index(current_ix - 1)
+        swap_tab_with(@tabs[current_ix], new_ix)
+      end
+    end
+    
+    # Yields the current index of the foccussed tab, if it exists.
+    def focussed(&block)
+      current_ix = @tabs.index(@focussed_tab)
+      unless current_ix.nil?
+        yield(current_ix)
+      end
+    end
+    
+    # Swaps a tab with another one at a certain position.
+    # If no position is specified, this will default to 0.
+    #
+    # @param [Redcar::Tab] the tab to be moved
+    # @param [Integer] the position
+    def swap_tab_with(move_tab, position = 0)
+      swap_tab = @tabs[position]
+      unless move_tab == swap_tab || [move_tab, swap_tab].include?(nil)
+        move_tab.move_to_position(position)
+      end
+    end
+    
+    # Wraps an index according to the current number of tabs.
+    def wrap_index(index)
+      until (0..@tabs.size - 1).include?(index)
+        index = index > 0 ? index - @tabs.size : @tabs.size + index
+      end
+      index
     end
     
     def inspect

@@ -65,6 +65,7 @@ module Redcar
       def attach_listeners
         @model.add_listener(:focus, &method(:focus))
         @model.add_listener(:close, &method(:close))
+        @model.add_listener(:moved, &method(:move_tab_widget_to_position))
       end
       
       def focus
