@@ -172,7 +172,9 @@ When /^I replace the contents with "([^\"]*)"$/ do |contents|
   cursor_offset = (contents =~ /<c>/)
   contents = contents.gsub("<c>", "")
   doc.text = contents
-  doc.cursor_offset = cursor_offset
+  if cursor_offset
+    doc.cursor_offset = cursor_offset
+  end
 end
 
 When /^I replace the contents with 100 lines of "([^"]*)" then "([^"]*)"$/ do |contents1, contents2|
