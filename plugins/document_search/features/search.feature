@@ -145,4 +145,19 @@ Feature: Search in file
     And I run the command DocumentSearch::SearchForwardCommand
     Then "Match case" should be checked in the speedbar
 
+  Scenario: Should initialize query with the currently selected text
+    When I replace the contents with "Foo\nBar\nFoo"
+    And I move the cursor to 0
+    And I select from 0 to 3
+    And I run the command DocumentSearch::SearchForwardCommand
+    Then the "Search" field in the speedbar should have text "Foo"
+
+  Scenario: Should match the next occurence of the currently selected text
+    When I replace the contents with "Foo\nBar\nFoo"
+    And I move the cursor to 0
+    And I select from 0 to 3
+    And I run the command DocumentSearch::SearchForwardCommand
+    And I press "Search" in the speedbar
+    Then the selected text should be "Foo"
+    And line number 2 should be visible
     

@@ -6,13 +6,19 @@ module DocumentSearch
       attr_accessor :previous_query
       attr_accessor :previous_is_regex
       attr_accessor :previous_match_case
+      attr_accessor :initial_query
     end
-    
+  
+    def initial_query=(text)
+      SearchSpeedbar.previous_query = text
+    end
+
     def after_draw
       self.query.value = SearchSpeedbar.previous_query || ""
       self.is_regex.value = SearchSpeedbar.previous_is_regex
       self.match_case.value = SearchSpeedbar.previous_match_case
       self.query.edit_view.document.select_all
+      initial_query = nil
     end
     
     label :label, "Search:"
@@ -47,11 +53,14 @@ module DocumentSearch
     
     def execute
       @speedbar = SearchSpeedbar.new
+      if doc.selection?
+        @speedbar.initial_query = doc.selected_text
+      end
       win.open_speedbar(@speedbar)
     end
   end
   
-  class RepeatPreviousSearchForwardCommand < Redcar::EditTabCommand      
+  class RepeatPreviousSearchForwardCommand < Redcar::EditTabCommand
     def execute
       SearchForwardCommand::SearchSpeedbar.repeat_query
     end
