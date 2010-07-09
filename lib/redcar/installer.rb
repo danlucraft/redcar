@@ -232,7 +232,7 @@ module Redcar
     def fix_user_dir_permissions
       desired_uid = File.stat(Redcar.home_dir).uid
       desired_gid = File.stat(Redcar.home_dir).gid
-      FileUtils.chown_R(desired_uid, desired_gid, Redcar.user_dir)
+      FileUtils.chown_R(desired_uid, desired_gid.to_s, Redcar.user_dir)
     end
   end
 end
