@@ -48,6 +48,10 @@ module Redcar
   	  grab_common_jars
   	  grab_platform_dependencies
   	  grab_redcar_jars
+      puts "Building textmate bundle cache"
+      s = Time.now
+      load_textmate_bundles
+      puts "... took #{Time.now - s}s"
   	  puts
   	  puts "Done! You're ready to run Redcar."
   	end
@@ -212,6 +216,16 @@ module Redcar
           end
         end
       end
+    end
+    
+    def load_textmate_bundles
+      $:.unshift("/Users/danlucraft/Redcar/redcar/plugins/core/lib")
+      $:.unshift("/Users/danlucraft/Redcar/redcar/plugins/textmate/lib")
+      require 'core'
+      Redcar.environment = :user
+      Core.loaded
+      require 'textmate'
+      Redcar::Textmate.all_bundles
     end
   end
 end
