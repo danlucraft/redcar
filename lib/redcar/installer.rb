@@ -18,6 +18,25 @@ module Redcar
       end
   	end
   	
+  	def install
+  	  unless File.writable?(JRUBY_JAR_DIR)
+  	    puts "Don't have permission to write to #{JRUBY_JAR_DIR}. Please rerun with sudo."
+  	    exit 1
+  	  end
+  	  puts "Downloading >10MB of jar files. This may take a while."
+  	  grab_jruby
+  	  grab_common_jars
+  	  grab_platform_dependencies
+  	  grab_redcar_jars
+      puts "Building textmate bundle cache"
+      s = Time.now
+      load_textmate_bundles
+      puts "... took #{Time.now - s}s"
+      fix_user_dir_permissions
+  	  puts
+  	  puts "Done! You're ready to run Redcar."
+  	end
+  
     def associate_with_any_right_click
       raise 'this is currently only for windows' unless Redcar.platform == :windows  	  
       require 'rbconfig'
@@ -38,24 +57,6 @@ module Redcar
       puts 'Associated.'
     end
 
-  	def install
-  	  unless File.writable?(JRUBY_JAR_DIR)
-  	    puts "Don't have permission to write to #{JRUBY_JAR_DIR}. Please rerun with sudo."
-  	    exit 1
-  	  end
-  	  puts "Downloading >10MB of jar files. This may take a while."
-  	  grab_jruby
-  	  grab_common_jars
-  	  grab_platform_dependencies
-  	  grab_redcar_jars
-      puts "Building textmate bundle cache"
-      s = Time.now
-      load_textmate_bundles
-      puts "... took #{Time.now - s}s"
-  	  puts
-  	  puts "Done! You're ready to run Redcar."
-  	end
-  
     def plugins_dir
       File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. plugins)))
     end
@@ -226,6 +227,12 @@ module Redcar
       Core.loaded
       require 'textmate'
       Redcar::Textmate.all_bundles
+    end
+    
+    def fix_user_dir_permissions
+      desired_uid = File.stat(Redcar.home_dir).uid
+      desired_gid = File.stat(Redcar.home_dir).gid
+      FileUtils.chown_R(desired_uid, desired_gid, Redcar.user_dir)
     end
   end
 end
