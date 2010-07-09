@@ -303,7 +303,7 @@ namespace :redcar do
     
     tasks = Rake::Task.tasks
     runnables = []
-    ruby_bin = Config::CONFIG["bindir"] + "/ruby -r/Users/danlucraft/Redcar/redcar/plugins/runnables/lib/runnables/sync_stdout.rb " 
+    ruby_bin = Config::CONFIG["bindir"] + "/ruby -r#{File.dirname(__FILE__)}/plugins/runnables/lib/runnables/sync_stdout.rb " 
     tasks.each do |task|
       name = task.name.gsub(":", "/")
       command = ruby_bin + $0 + " " + task.name
