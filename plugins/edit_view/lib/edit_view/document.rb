@@ -8,8 +8,6 @@ module Redcar
     include Redcar::Observable
     extend Forwardable
     
-    WORDCHARS = /\w|_/
-    
     def self.all_document_controller_types
       result = []
       Redcar.plugin_manager.objects_implementing(:document_controller_types).each do |object|
@@ -26,6 +24,7 @@ module Redcar
     
     def initialize(edit_view)
       @edit_view = edit_view
+	  @grammar = Redcar::Grammar.new(self)
       get_controllers
     end
     
@@ -284,6 +283,10 @@ module Redcar
       end
     end
     
+    def word_chars
+	  @grammar.word_chars
+	end
+
     # The word at an offset.
     #
     # @param [Integer] an offset
@@ -313,12 +316,12 @@ module Redcar
       left = offset - line_start_offset - 1
       right = offset - line_start_offset
       
-      until left == -1 || (line_chars[left].chr !~ WORDCHARS)
+      until left == -1 || (line_chars[left].chr !~ word_chars)
         left -= 1
         left_range -= 1
       end
       
-      until right == length || (line_chars[right].chr !~ WORDCHARS)
+      until right == length || (line_chars[right].chr !~ word_chars)
         right += 1
         right_range += 1
       end
