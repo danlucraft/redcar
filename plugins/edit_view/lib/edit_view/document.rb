@@ -283,9 +283,9 @@ module Redcar
       end
     end
     
-    def word_chars
-	  @grammar.word_chars
-	end
+    def word
+	    @grammar.word
+	  end
 
     # The word at an offset.
     #
@@ -316,12 +316,12 @@ module Redcar
       left = offset - line_start_offset - 1
       right = offset - line_start_offset
       
-      until left == -1 || (line_chars[left].chr !~ word_chars)
+      until left == -1 || (get_slice(offset + left_range - 1, offset) !~ word)
         left -= 1
         left_range -= 1
       end
       
-      until right == length || (line_chars[right].chr !~ word_chars)
+      until right == length || (get_slice(offset, offset + right_range + 1) !~ word)
         right += 1
         right_range += 1
       end

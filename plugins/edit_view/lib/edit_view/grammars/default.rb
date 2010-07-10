@@ -2,8 +2,8 @@ module Redcar
   class Grammar
     module Default
       
-      def word_chars
-        /\w|_/
+      def word
+        /^\w+$/
       end
     end
   end

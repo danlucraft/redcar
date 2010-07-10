@@ -2,8 +2,8 @@ module Redcar
   class Grammar
     module Ruby
 
-      def word_chars
-        /(\w|_)+("?"|"!")?/
+      def word
+        /^(\w)+(\?|\!)?$/
       end
     end
   end

@@ -20,11 +20,10 @@ module Redcar
         singleton.send(:define_method, method, grammar.instance_method(method))
       end
       self.extend grammar
-      puts word_chars
     end
     
-    def word_chars
-      /\w|_/
+    def word
+      /^\w+$/
     end
     
     def singleton
