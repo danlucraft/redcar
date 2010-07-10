@@ -124,5 +124,22 @@ module Redcar
       end
     end
     
+    class RevealInProjectCommand < ProjectCommand
+      def execute
+        tab = Redcar.app.focussed_window.focussed_notebook_tab
+        return unless tab.is_a?(EditTab)
+          
+        path = tab.edit_view.document.mirror.path
+        tree = project.tree
+        current = tree.tree_mirror.top
+        while current.any?
+          ancestor_node = current.detect {|node| path =~ /^#{node.path}($|\/)/}
+          tree.expand(ancestor_node)
+          current = ancestor_node.children
+        end
+        tree.select(ancestor_node)
+      end
+    end
+    
   end
 end

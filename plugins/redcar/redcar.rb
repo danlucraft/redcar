@@ -693,6 +693,7 @@ module Redcar
         link "Cmd+Shift+O", Project::DirectoryOpenCommand
         link "Cmd+S",       Project::FileSaveCommand
         link "Cmd+Shift+S", Project::FileSaveAsCommand
+        link "Cmd+Ctrl+R",  Project::RevealInProjectCommand
         link "Cmd+W",       CloseTabCommand
         link "Cmd+Shift+W", CloseWindowCommand
         link "Cmd+Q",       QuitCommand
@@ -753,6 +754,7 @@ module Redcar
         link "Ctrl+Shift+O", Project::DirectoryOpenCommand
         link "Ctrl+S",       Project::FileSaveCommand
         link "Ctrl+Shift+S", Project::FileSaveAsCommand
+        link "Ctrl+Shift+R", Project::RevealInProjectCommand
         link "Ctrl+W",       CloseTabCommand
         link "Ctrl+Shift+W", CloseWindowCommand
         link "Ctrl+Q",       QuitCommand
@@ -828,6 +830,7 @@ module Redcar
           item "Close Tree", CloseTreeCommand
           item "Close Window", CloseWindowCommand
           item "Close Directory", Project::DirectoryCloseCommand
+          item "Reveal in Project", Project::RevealInProjectCommand
           separator
           item "Quit", QuitCommand
         end
