@@ -12,7 +12,7 @@ module Redcar
       attr_reader :history, :results
       
       def initialize replEval
-        @history, @instance, @type = [], Main.new(replEval)
+        @history, @instance = [], Main.new(replEval)
       end
 
       def title
@@ -102,7 +102,7 @@ module Redcar
         end
         
         def execute(command)
-          @binding = @replEval.call(command)
+          @binding = @replEval.call command
         end
       end
     end

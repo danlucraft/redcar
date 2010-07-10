@@ -49,7 +49,7 @@ module Redcar
       def execute
         tab = win.new_tab(Redcar::EditTab)
         edit_view = tab.edit_view
-        edit_view.document.mirror = REPL::InternalMirror.new(Proc.new {|x| eval(x)})
+        edit_view.document.mirror = REPL::InternalMirror.new Proc.new { |x| eval(x) }
         edit_view.cursor_offset = edit_view.document.length
         tab.focus
       end
@@ -58,19 +58,19 @@ module Redcar
     class OpenClojureREPL < Command
       
       def execute
-	tab = win.new_tab(Redcar::EditTab)
+	      tab = win.new_tab(Redcar::EditTab)
         edit_view = tab.edit_view
 	
-	replEval = Proc.new do |x|
-	  load_string = RT.var("clojure.core", "load-string")
+	      replEval = Proc.new do |x|
+	        load_string = RT.var("clojure.core", "load-string")
           load_string.invoke(x)      
-	end
+	      end
 	
-	clojureREPL = REPL::InternalMirror.new(replEval)
-	edit_view.document.mirror = clojureREPL
-        edit_view.cursor_offset = edit_view.document.length
-        tab.focus
-      end
+	      clojureREPL = REPL::InternalMirror.new replEval
+	        edit_view.document.mirror = clojureREPL
+          edit_view.cursor_offset = edit_view.document.length
+          tab.focus
+        end
     end
     
     class ReplCommand < Command
