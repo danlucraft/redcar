@@ -220,8 +220,8 @@ module Redcar
     end
     
     def load_textmate_bundles
-      $:.unshift("/Users/danlucraft/Redcar/redcar/plugins/core/lib")
-      $:.unshift("/Users/danlucraft/Redcar/redcar/plugins/textmate/lib")
+      $:.unshift("#{File.dirname(__FILE__)}/../../plugins/core/lib")
+      $:.unshift("#{File.dirname(__FILE__)}/../../plugins/textmate/lib")
       require 'core'
       Redcar.environment = :user
       Core.loaded
