@@ -4,12 +4,12 @@ module Redcar
     def initialize(doc)
       @doc = doc
       doc.edit_view.add_listener(:grammar_changed, &method(:change_grammar))
-      singleton.loaded_files ||= []
+      Grammar.loaded_files ||= []
     end
       
     def change_grammar(name)
       grammar_name = singleton.sanitize_grammar_name(name)
-      singleton.load_grammar
+      Grammar.load_grammar
       if Grammar.const_defined?(grammar_name)
         grammar = Grammar.const_get(grammar_name)
       else
@@ -20,6 +20,7 @@ module Redcar
         singleton.send(:define_method, method, grammar.instance_method(method))
       end
       self.extend grammar
+      puts word_chars
     end
     
     def word_chars
@@ -30,7 +31,7 @@ module Redcar
       class << self; self; end
     end
 	
-	class << self
+	  class << self
       attr_accessor :loaded_files
       
       def load_grammar
