@@ -91,10 +91,10 @@ module Redcar
       class Main
         attr_reader :output
         
-        def initialize p
+        def initialize eval_proc
           @binding = binding
           @output = nil
-	  @replEval = p
+	  @eval_proc = eval_proc
         end
 
         def inspect
@@ -102,7 +102,7 @@ module Redcar
         end
         
         def execute(command)
-          @binding = @replEval.call command
+          @binding = @eval_proc.call command
         end
       end
     end
