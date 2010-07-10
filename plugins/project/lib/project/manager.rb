@@ -106,8 +106,10 @@ module Redcar
           return
         end
         if project = find_projects_containing_path(path).first
+          p [:found_containing_project, project.path]
           window = project.window
         else
+          p [:didn_t_find_containing_project]
           window = windows_without_projects.first || Redcar.app.new_window
         end
         open_file_in_window(path, window)

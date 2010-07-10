@@ -66,7 +66,7 @@ module Redcar
     end
     
     def contains_path?(path)
-      File.expand_path(path) =~ /^#{@path}/
+      File.expand_path(path) =~ /^#{@path}($|\/|\\)/
     end
     
     # A list of files previously opened in this session for this project

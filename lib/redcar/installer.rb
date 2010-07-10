@@ -76,7 +76,7 @@ module Redcar
       /jface/org.eclipse.core.jobs.jar
     )
     
-    REDCAR_JARS_DIR = File.expand_path(File.join(ENV['HOME'], ".redcar", "jars"))
+    REDCAR_JARS_DIR = File.expand_path(File.join(Redcar.user_dir, "jars"))
     JRUBY_JAR_DIR = File.expand_path(File.join(File.dirname(__FILE__), ".."))
     
     JRUBY = [
@@ -140,6 +140,8 @@ module Redcar
       when /windows|mswin|mingw/i
         setup "swt", :resources => SWT_JARS[:windows], :path => File.join(plugins_dir, %w(application_swt vendor swt))
         setup "swt", :resources => [XULRUNNER_URI],    :path => File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. vendor)))
+        link( File.join(REDCAR_JARS_DIR, name, File.basename(XULRUNNER_URI)),
+              File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. vendor xulrunner))))
       end
     end
     
@@ -192,7 +194,10 @@ module Redcar
       end
 
       FileUtils.mkdir_p File.dirname(target)
-      
+      link(cached, target)
+    end
+
+    def link(cached, target)
       # Windoze doesn't support FileUtils.ln_sf, so we copy the files
       if Config::CONFIG["host_os"] =~ /windows|mswin|mingw/i
         puts "  copying #{File.basename(cached)}..."
