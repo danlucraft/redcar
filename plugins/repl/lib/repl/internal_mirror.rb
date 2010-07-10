@@ -11,8 +11,8 @@ module Redcar
       
       attr_reader :history, :results
       
-      def initialize
-        @history, @instance = [], Main.new
+      def initialize replEval
+        @history, @instance, @type = [], Main.new(replEval)
       end
 
       def title
@@ -91,9 +91,10 @@ module Redcar
       class Main
         attr_reader :output
         
-        def initialize
+        def initialize p
           @binding = binding
           @output = nil
+	  @replEval = p
         end
 
         def inspect
@@ -101,7 +102,7 @@ module Redcar
         end
         
         def execute(command)
-          eval(command, @binding)
+          @binding = @replEval.call(command)
         end
       end
     end
