@@ -1,10 +1,7 @@
 module Redcar
   class Grammar
     module RubyOnRails
-
-      def word
-        /^(\w)+(\?|\!)?$/
-      end
+      include Ruby
     end
   end
 end
