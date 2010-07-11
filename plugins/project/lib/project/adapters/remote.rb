@@ -11,12 +11,10 @@ module Redcar
           attr_accessor :connections
 
           def init_connection(host, user, password)
-            puts ":: Remote.init_connection #{host} #{user}"
             Net::SSH.start(host, user, :password => password)
           end
           
           def connect(host, user, password)
-            puts ":: Remote.connect #{host} #{user}"
             self.connections||={}
             self.connections["#{host}-#{user}"] ||= init_connection(host, user, password)
           end
@@ -25,7 +23,6 @@ module Redcar
         attr_accessor :path, :host, :user, :password
 
         def initialize(host, user, password)
-          puts ":: Remote#new #{host} #{user}"
           @host = host
           @user = user
           @password = password
@@ -33,14 +30,11 @@ module Redcar
         end
         
         def connection
-          puts ":: Remote#connection"
           @connection ||= Remote.connect(@host, @user, @password)
         end
         
         def exec(what)
-          connection.exec!(what).tap do |c|
-            puts "Remote#exec #{what} == [#{c}]"
-          end
+          connection.exec!(what)
         end
         
         def cache(path)
@@ -48,7 +42,6 @@ module Redcar
         end
         
         def check_folder(path)
-          puts ":: Remote#check_folder #{path}"
           parent = File.dirname(path)
           if contents = cache(parent)
             result = contents.find { |f| f[:fullname] == path }
@@ -64,7 +57,6 @@ module Redcar
         end
         
         def dir_listing(path)
-          puts ":: Remote#dir_listing #{path}"
           raise PathDoesNotExist, "Path #{path} does not exist" unless check_folder(path)
           
           exec %Q(
@@ -76,7 +68,6 @@ module Redcar
         end
         
         def retrieve_dir_contents(path=@path)
-          puts ":: Remote#retrieve_dir_contents #{path}"
           return [] unless result = dir_listing(path) rescue []
           
           contents = []
@@ -91,15 +82,11 @@ module Redcar
         end
         
         def fetch(path=@path)
-          puts ":: Remote#fetch #{path}"
           @cache[path] ||= retrieve_dir_contents(path)
         end
         
         def fetch_contents(path)
-          puts ":: Remote#fetch_contents #{path}"
-          fetch(path).map { |f| f[:fullname] }.tap do |contents|
-            puts ":: fetch_contents #{path} = #{contents.inspect}"
-          end
+          fetch(path).map { |f| f[:fullname] }
         end
         
         def real_path
@@ -115,13 +102,10 @@ module Redcar
             end
           rescue PathDoesNotExist
             false
-          end.tap do |ret|
-            puts ":: Remote#exists? #{path} => #{ret}"
           end
         end
         
         def exist?
-          puts ":: Remote#exist? #{path}"
           fetch(@path)
           true
         rescue PathDoesNotExist
@@ -131,26 +115,19 @@ module Redcar
         def entry(file)
           path = File.dirname(file)
           contents = fetch(path)
-          contents.find { |f| f[:fullname] == "#{file}" }.tap do |entry|
-            puts ":: Remote#entry #{path} => #{entry}"
-          end
+          contents.find { |f| f[:fullname] == "#{file}" }
         end
         
         def file?(path=@path)
-          puts ":: Remote#file? #{path}"
           return false unless entry = entry(path)
-          (entry[:type] == 'file').tap do |ret|
-            puts ":: Remote#file? #{path} => #{entry.inspect} => #{ret}"
-          end
+          entry[:type] == 'file'
         end
         
         def directory?(path=@path)
           puts ":: Remote#directory? #{path}"
           return check_folder(path) if path == @path
           return false unless entry = entry(path)
-          (entry[:type] == 'dir').tap do |ret|
-            puts ":: Remote#directory? #{path} => #{entry.inspect} => #{ret}"
-          end
+          entry[:type] == 'dir'
         end
         
         def split_paths(file)
@@ -165,9 +142,7 @@ module Redcar
         end
         
         def stat(file)
-          connection.sftp.stat!(file).tap do |ret|
-            puts ":: Remote#stat #{file} => #{ret}"
-          end
+          connection.sftp.stat!(file)
         end
    
         def load(file)

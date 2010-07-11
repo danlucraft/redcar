@@ -106,8 +106,6 @@ module Redcar
             :file
           elsif @adapter.directory?(@path)
             :directory
-          end.tap do |icon|
-            puts ":: DirMirror#icon #{@path} => #{icon}"
           end
         end
         
