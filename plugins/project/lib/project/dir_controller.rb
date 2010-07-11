@@ -6,7 +6,8 @@ module Redcar
       
       def activated(tree, node)
         if node.leaf?
-          FileOpenCommand.new(node.path).run
+          puts "Opening file: #{node.path} with #{node.adapter.class.name}"
+          FileOpenCommand.new(node.path, node.adapter).run
         end
       end
       

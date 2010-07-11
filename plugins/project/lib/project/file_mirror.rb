@@ -10,11 +10,14 @@ module Redcar
     class FileMirror
       include Redcar::Document::Mirror
       
-      attr_reader :path
+      attr_reader :path, :adapter
       
       # @param [String] a path to a file
-      def initialize(path)
+      def initialize(path, adapter=Adapters::Local.new)
+        puts "New FileMirror: #{path} with #{adapter.class.name}"
+        
         @path = path
+        @adapter = adapter
       end
       
       # Load the contents of the file from disk
@@ -23,7 +26,7 @@ module Redcar
       def read
         return "" unless exists?
         contents = load_contents
-        @timestamp = File.stat(@path).mtime
+        @timestamp = @adapter.stat(@path).mtime
         contents
       end
       
@@ -31,7 +34,7 @@ module Redcar
       #
       # @return [Boolean]
       def exists?
-        File.exists?(@path)
+        @adapter.exists?(@path)
       end
       
       # Has the file changed since the last time it was read or commited?
@@ -40,7 +43,7 @@ module Redcar
       # @return [Boolean]
       def changed?
         begin
-          !@timestamp or @timestamp < File.stat(@path).mtime
+          !@timestamp or @timestamp < @adapter.stat(@path).mtime
         rescue Errno::ENOENT
           false
         end
@@ -73,11 +76,11 @@ module Redcar
       private
       
       def load_contents
-        File.open(@path, 'rb') do |f|; f.read; end
+        @adapter.load(@path)
       end
       
       def save_contents(contents)
-        File.open(@path, "wb") {|f| f.print contents }
+        @adapter.save(@path, contents)
       end
     end
   end

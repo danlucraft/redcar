@@ -753,6 +753,7 @@ module Redcar
         link "Ctrl+Alt+N",   NewWindowCommand
         link "Ctrl+O",       Project::FileOpenCommand
         link "Ctrl+Shift+O", Project::DirectoryOpenCommand
+        link "Alt+Shift+O",  Project::OpenRemoteCommand
         link "Ctrl+S",       Project::FileSaveCommand
         link "Ctrl+Shift+S", Project::FileSaveAsCommand
         link "Ctrl+Shift+R", Project::RevealInProjectCommand

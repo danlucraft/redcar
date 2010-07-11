@@ -9,14 +9,15 @@ module Redcar
 
   class Project
     class FileOpenCommand < Command
-      def initialize(path = nil)
+      def initialize(path = nil, adapter = Adapters::Local.new)
         @path = path
+        @adapter = adapter
       end
     
       def execute
         path = get_path
         if path
-          Manager.open_file(path)
+          Manager.open_file(path, @adapter)
         end
       end
       
@@ -43,14 +44,14 @@ module Redcar
       label :host_label, "Host:"
       textbox :host
 
-      label :path_label, "Path:"
-      textbox :path
-
       label :user_label, "User:"
       textbox :user
 
       label :password_label, "Password:"
       textbox :password
+
+      label :path_label, "Path:"
+      textbox :path
 
       button :connect, "Connect", "Return" do
         project = Manager.open_remote_project(host.value, user.value, password.value, path.value)

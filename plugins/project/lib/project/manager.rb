@@ -88,9 +88,9 @@ module Redcar
       #
       # @path  [String] path the path of the file to be edited
       # @param [Window] win  the Window to open the File in
-      def self.open_file_in_window(path, win)
+      def self.open_file_in_window(path, win, adapter)
         tab = win.new_tab(Redcar::EditTab)
-        mirror = FileMirror.new(path)
+        mirror = FileMirror.new(path, adapter)
         tab.edit_view.document.mirror = mirror
         tab.edit_view.reset_undo
         tab.focus
@@ -100,7 +100,7 @@ module Redcar
         open_projects.select {|project| project.contains_path?(path) }
       end
       
-      def self.open_file(path)
+      def self.open_file(path, adapter=Adapters::Local.new)
         if tab = find_open_file_tab(path)
           tab.focus
           return
@@ -112,7 +112,7 @@ module Redcar
           p [:didn_t_find_containing_project]
           window = windows_without_projects.first || Redcar.app.new_window
         end
-        open_file_in_window(path, window)
+        open_file_in_window(path, window, adapter)
         window.focus
       end
       
@@ -144,7 +144,7 @@ module Redcar
         puts "#{host} #{user} #{password} #{path}"
         win = Redcar.app.focussed_window
         win = Redcar.app.new_window if !win or Manager.in_window(win) 
-        project = Project.new(path).tap do |p|
+        project = Project.new(path, Adapters::Remote.new(host, user, password)).tap do |p|
           p.open(win) if p.ready?
         end
       end

@@ -14,8 +14,11 @@ module Redcar
       attr_reader :path
       
       # @param [String] a path to a directory
-      def initialize(path)
-        @path = File.expand_path(path)
+      def initialize(path, adapter=Adapters::Local.new)
+        @adapter = adapter
+        @adapter.path = path
+        
+        @path = @adapter.real_path
         @changed = true
       end
       
@@ -25,7 +28,7 @@ module Redcar
       
       # Does the directory exist?
       def exists?
-        File.exist?(@path) && File.directory?(@path)
+        @adapter.exist? && @adapter.directory?
       end
       
       # Have the toplevel nodes changed?
@@ -43,7 +46,7 @@ module Redcar
       # The files and directories in the top of the directory.
       def top
         @changed = false
-        Node.create_all_from_path(@path)
+        Node.create_all_from_path(@adapter, @path)
       end
       
       # We specify a :file data type to take advantage of OS integration.
@@ -55,7 +58,7 @@ module Redcar
       #
       # @return [Node]
       def from_data(path)
-        Node.create_from_path(path)
+        Node.create_from_path(@adapter, path)
       end
       
       # Turn the nodes into data.
@@ -66,10 +69,10 @@ module Redcar
       class Node
         include Redcar::Tree::Mirror::NodeMirror
 
-        attr_reader :path
+        attr_reader :path, :adapter
 
-        def self.create_all_from_path(path)
-          fs = Dir.glob(path + "/*", File::FNM_DOTMATCH)
+        def self.create_all_from_path(adapter, path)
+          fs = adapter.fetch_contents(path)
           fs = fs.reject {|f| [".", ".."].include?(File.basename(f))}
           unless DirMirror.show_hidden_files?
             fs = fs.reject {|f| File.basename(f) =~ /^\./ }
@@ -77,19 +80,20 @@ module Redcar
           fs.sort_by do |fn|
             File.basename(fn).downcase
           end.sort_by do |path|
-            File.directory?(path) ? -1 : 1
-          end.map {|fn| create_from_path(fn) }
+            adapter.directory?(path) ? -1 : 1
+          end.map {|fn| create_from_path(adapter, fn) }
         end
         
-        def self.create_from_path(path)
-          cache[path] ||= Node.new(path)
+        def self.create_from_path(adapter, path)
+          cache[path] ||= Node.new(adapter, path)
         end
         
         def self.cache
           @cache ||= {}
         end
         
-        def initialize(path)
+        def initialize(adapter, path)
+          @adapter = adapter
           @path = path
         end
         
@@ -98,10 +102,12 @@ module Redcar
         end
         
         def icon
-          if File.file?(@path)
+          if @adapter.file?(@path)
             :file
-          elsif File.directory?(@path)
+          elsif @adapter.directory?(@path)
             :directory
+          end.tap do |icon|
+            puts ":: DirMirror#icon #{@path} => #{icon}"
           end
         end
         
@@ -110,11 +116,11 @@ module Redcar
         end
         
         def file?
-          File.file?(@path)
+          @adapter.file?(@path)
         end
         
         def directory?
-          File.directory?(@path)
+          @adapter.directory?(@path)
         end
         
         def parent_dir
@@ -126,7 +132,7 @@ module Redcar
         end
         
         def children
-          Node.create_all_from_path(@path)
+          Node.create_all_from_path(@adapter, @path)
         end
         
         def tooltip_text
