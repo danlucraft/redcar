@@ -43,22 +43,29 @@ module Redcar
           end
         end
         
+        def cache(path)
+          @cache[path]
+        end
+        
         def check_folder(path)
           puts ":: Remote#check_folder #{path}"
-          result = exec(%Q(
-            test -d "#{path}" && echo y
-          )) 
+          parent = File.dirname(path)
+          if contents = cache(parent)
+            result = contents.find { |f| f[:fullname] == path }
+            return false unless result
+            result[:type] == 'dir'
+          else
+            result = exec(%Q(
+              test -d "#{path}" && echo y
+            )) 
           
-          result =~ /^y/ ? true : false
+            result =~ /^y/ ? true : false
+          end
         end
         
         def dir_listing(path)
           puts ":: Remote#dir_listing #{path}"
-          test = exec(%Q(
-            test -d "#{path}" && echo y
-          ))
-
-          raise PathDoesNotExist, "Path #{path} does not exist" unless test =~ /^y/
+          raise PathDoesNotExist, "Path #{path} does not exist" unless check_folder(path)
           
           exec %Q(
             for file in #{path}/*; do 

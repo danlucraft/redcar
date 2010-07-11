@@ -49,12 +49,8 @@ class Redcar::Project
     
     describe '#dir_listing' do
       it "retrieves all files and dirs on a given remote folder" do
-        conn = stub('connection')
-        subject.stub!(:connection).and_return(conn)
-        conn.should_receive(:exec!).with(%Q(
-            test -d "/home/fcoury" && echo y
-          )).and_return("y\n")
-        conn.should_receive(:exec!).with(%Q(
+        subject.should_receive(:check_folder).with('/home/fcoury').and_return(true)
+        subject.should_receive(:exec).with(%Q(
             for file in /home/fcoury/*; do 
               test -f "$file" && echo "file|$file"
               test -d "$file" && echo "dir|$file"
@@ -64,11 +60,7 @@ class Redcar::Project
       end
       
       it "raises an exception when the folder doesn't exist" do
-        conn = stub('connection')
-        subject.stub!(:connection).and_return(conn)
-        conn.should_receive(:exec!).with(%Q(
-            test -d "/home/fcoury" && echo y
-          )).and_return("n\n")
+        subject.should_receive(:check_folder).and_return(false)
         lambda { subject.dir_listing('/home/fcoury') }.should raise_error(Adapters::Remote::PathDoesNotExist)
       end
     end
@@ -123,12 +115,23 @@ class Redcar::Project
     end
     
     describe '#check_folder' do
-      it "returns true if it's a folder" do
+      it "tries to retrieve the parent folder from cache" do
+        subject.should_receive(:cache).with('/home/fcoury').and_return([
+          { :fullname => '/home/fcoury/hello_world.rb', :name => 'hello_world.rb', :type => 'file' },
+          { :fullname => '/home/fcoury/snippets',       :name => 'snippets',       :type => 'dir' }
+        ])
+        subject.should_receive(:exec).never
+        subject.check_folder('/home/fcoury/snippets').should be_true
+      end
+      
+      it "when parent folder isn't cached, retrieves from SSH" do
         conn = stub('connection')
         subject.stub!(:connection).and_return(conn)
+
+        subject.should_receive(:cache).with('/home').and_return(nil)
         conn.should_receive(:exec!).with(%Q(
-            test -d "/home/fcoury" && echo y
-          )).and_return("y\n")
+              test -d "/home/fcoury" && echo y
+            )).and_return("y\n")
         subject.check_folder('/home/fcoury').should be_true
       end
     end
