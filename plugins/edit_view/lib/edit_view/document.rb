@@ -311,18 +311,15 @@ module Redcar
       line_index = line_at_offset(offset)
       line_start_offset = offset_at_line(line_index)
       line_chars = get_line(line_index)
+      position = offset - line_start_offset
       left_range = 0
       right_range = 0
-      left = offset - line_start_offset - 1
-      right = offset - line_start_offset
       
-      until left == -1 || (get_slice(offset + left_range - 1, offset) !~ word)
-        left -= 1
+      until position + left_range == - 1 || word.match(line_chars[position + (left_range - 1)..position - 1]).nil?
         left_range -= 1
       end
       
-      until right == length || (get_slice(offset, offset + right_range + 1) !~ word)
-        right += 1
+      until position + right_range == line_chars.length - 1 || word.match(line_chars[position..position + right_range]).nil?
         right_range += 1
       end
       (offset + left_range..offset + right_range)
