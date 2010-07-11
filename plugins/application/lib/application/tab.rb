@@ -71,6 +71,6 @@ module Redcar
     # document, if applicable.
     def document_mirror
       document.mirror if document
-    end
+    end    
   end
 end

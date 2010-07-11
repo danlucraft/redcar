@@ -66,7 +66,7 @@ module Redcar
     end
     
     def contains_path?(path)
-      File.expand_path(path) =~ /^#{@path}/
+      File.expand_path(path) =~ /^#{@path}($|\/|\\)/
     end
     
     # A list of files previously opened in this session for this project
@@ -129,11 +129,9 @@ module Redcar
       File.join(path, ".redcar")
     end
     
-    def config_file(name)
-      file_path = File.join(config_dir, name.to_s)
-      if File.exist?(file_path)
-        YAML.load(File.read(file_path))
-      end
+    def config_files(glob)
+      file_glob = File.join(config_dir, glob)
+      Dir[file_glob]
     end
   end
 end

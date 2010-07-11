@@ -4,7 +4,15 @@ Version 0.3.8 (TBA)
 
  * Can switch between open trees in a window (Dan Lucraft)
  * Runnables: extensible runnable tasks/build items/tests/generators for projects. (Dan Lucraft)
- * Fix bug: end key not working in documents with Windows-style line endings (Dan Lucraft)
+ * Runnables: run scripts in edit tabs as processes. (Dan Lucraft)
+ * Fix for: end key not working in documents with Windows-style line endings (Dan Lucraft)
+ * Caches downloaded jar files so that installation is faster when updating versions. (Felipe Coury)
+ * Fix for: dragging and dropping HtmlTabs between notebooks and windows. (Dan Lucraft)
+ * Select Word command (Johannes Wollert)
+ * Move tab up/Move tab down commands (Johannes Wollert)
+ * New APIs: Document#current_word, Document#word_at_offset (Johannes Wollert)
+ * Made the first tab open for a new install MUCH faster by generating the textmate bundle cache in the install script (Dan Lucraft)
+ * Search speedbar is opened with selected text as the default search (Johannes Wollert)
 
 Version 0.3.7.1 (25 Jun 2010)
 =============================

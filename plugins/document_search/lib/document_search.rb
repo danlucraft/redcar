@@ -60,7 +60,7 @@ module DocumentSearch
   
   class RepeatPreviousSearchForwardCommand < Redcar::EditTabCommand
     def execute
-      SearchForwardCommand::SearchSpeedbar.repeat_query
+      SearchSpeedbar.repeat_query
     end
   end
   

@@ -1,5 +1,4 @@
 REDCAR_VERSION = "0.3.8dev"
-
 require 'rubygems'
 require 'fileutils'
 require 'spec/rake/spectask'
@@ -290,30 +289,47 @@ task :release => :gem do
   AWS::S3::S3Object.store("redcar-#{REDCAR_VERSION}.gem", open(file), 'redcar', :access => :public_read)
 end
 
-def hash_with_hash_default
-  Hash.new {|h,k| h[k] = hash_with_hash_default }
-end
-
 namespace :redcar do
+  def hash_with_hash_default
+    Hash.new {|h,k| h[k] = hash_with_hash_default }
+  end
+
+  require 'json'
+  
   desc "Redcar Integration: output runnable info"
   task :runnables do
-    mkdir_p(".redcar")
+    mkdir_p(".redcar/runnables")
     puts "Creating runnables"
     
     tasks = Rake::Task.tasks
-    bin = File.join(Config::CONFIG["bindir"], "rake")
-    runnables = hash_with_hash_default
+    runnables = []
+    ruby_bin = Config::CONFIG["bindir"] + "/ruby -r#{File.dirname(__FILE__)}/plugins/runnables/lib/runnables/sync_stdout.rb " 
     tasks.each do |task|
-      bits = task.name.split(":")
-      namespace = runnables
-      while bits.length > 1
-        namespace = namespace[bits.shift]
-      end
-      command = bin + " " + task.name
-      namespace[bits.shift] = {:command => command, :desc => task.comment}
+      name = task.name.gsub(":", "/")
+      command = ruby_bin + $0 + " " + task.name
+      runnables << {
+        "name"        => name,
+        "command"     => command, 
+        "description" => task.comment,
+        "type"        => "task/ruby/rake"
+      }
     end
-    File.open(".redcar/runnables", "w") do |f|
-      f.puts runnables.to_yaml
+    File.open(".redcar/runnables/rake.json", "w") do |f|
+      data = {"commands" => runnables}
+      f.puts(JSON.pretty_generate(data))
+    end
+    File.open(".redcar/runnables/ruby.json", "w") do |f|
+      data = {"file_runners" => 
+        [
+          {
+            "regex" =>    ".*.rb$",
+            "name" =>     "Run as ruby",
+            "command" =>  ruby_bin + "__PATH__",
+            "type" =>     "script/ruby"
+          }
+        ]
+      }
+      f.puts(JSON.pretty_generate(data))
     end
   end
   

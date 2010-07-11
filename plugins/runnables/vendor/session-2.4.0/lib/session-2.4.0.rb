@@ -3,7 +3,7 @@ require 'tmpdir'
 require 'thread'
 require 'yaml'
 require 'tempfile'
-p :session
+
 module Session 
 #--{{{
   VERSION = '2.4.0'
