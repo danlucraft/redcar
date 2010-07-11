@@ -1,5 +1,4 @@
 
-require 'java'
 require 'fileutils'
 
 require "core/logger"
@@ -15,9 +14,13 @@ require "core/persistent_cache"
 require "core/plugin"
 require "core/plugin/storage"
 
-require "core/task"
-require "core/task_queue"
-require "core/resource"
+begin
+  require 'java'
+  require "core/task"
+  require "core/task_queue"
+  require "core/resource"
+rescue LoadError => e
+end
 
 module Redcar
   def self.tmp_dir

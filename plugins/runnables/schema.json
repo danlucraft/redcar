@@ -1,3 +1,7 @@
+
+// I would like to move to a JSON schema like this. The idea of run-file is 
+// that you can specify a mapping of file types to the command used to run them.
+
 {
   "commands":[
     {
@@ -13,7 +17,7 @@
       "type":        "task/ruby/rake"
     }
   ],
-  "run-file":[
+  "file_runners":[
     {
       "regex":   ".*_spec.rb",
       "name":    "Run as spec",

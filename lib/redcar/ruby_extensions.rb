@@ -3,6 +3,25 @@ module Kernel
   alias fn lambda
 end
 
+class String
+  def camelize(first_letter_in_uppercase = true)
+    if first_letter_in_uppercase
+      gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase }
+    else
+      first.downcase + camelize(lower_case_and_underscored_word)[1..-1]
+    end
+  end
+  
+  def lower_case_underscore
+    gsub(/::/, '/').
+    gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
+    gsub(/([a-z\d])([A-Z])/,'\1_\2').
+    tr("-", "_").
+    downcase
+  end
+  
+end
+
 class Object
   def meta_class
     class << self; self; end

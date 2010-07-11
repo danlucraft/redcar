@@ -693,6 +693,7 @@ module Redcar
         link "Cmd+Shift+O", Project::DirectoryOpenCommand
         link "Cmd+S",       Project::FileSaveCommand
         link "Cmd+Shift+S", Project::FileSaveAsCommand
+        link "Cmd+Ctrl+R",  Project::RevealInProjectCommand
         link "Cmd+W",       CloseTabCommand
         link "Cmd+Shift+W", CloseWindowCommand
         link "Cmd+Q",       QuitCommand
@@ -715,6 +716,7 @@ module Redcar
         link "Cmd+Shift+I", AutoIndenter::IndentCommand
         link "Cmd+L",       GotoLineCommand
         link "Cmd+F",       DocumentSearch::SearchForwardCommand
+        link "Cmd+Shift+F",           DocumentSearch::RepeatPreviousSearchForwardCommand
         link "Cmd+A",       SelectAllCommand
         link "Ctrl+W",      SelectWordCommand
         link "Cmd+B",       ToggleBlockSelectionCommand
@@ -728,6 +730,7 @@ module Redcar
         link "Cmd+Shift+]",     SwitchTabUpCommand
         link "Ctrl+Shift+[",    MoveTabDownCommand
         link "Ctrl+Shift+]",    MoveTabUpCommand
+        link "Ctrl+R",          Runnables::RunEditTabCommand
 
         link "Ctrl+Shift+P",    PrintScopeCommand
         
@@ -751,6 +754,7 @@ module Redcar
         link "Ctrl+Shift+O", Project::DirectoryOpenCommand
         link "Ctrl+S",       Project::FileSaveCommand
         link "Ctrl+Shift+S", Project::FileSaveAsCommand
+        link "Ctrl+Shift+R", Project::RevealInProjectCommand
         link "Ctrl+W",       CloseTabCommand
         link "Ctrl+Shift+W", CloseWindowCommand
         link "Ctrl+Q",       QuitCommand
@@ -782,6 +786,7 @@ module Redcar
         
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
+        link "Ctrl+R",           Runnables::RunEditTabCommand
         
         link "Ctrl+Shift+P",    PrintScopeCommand
 
@@ -825,6 +830,7 @@ module Redcar
           item "Close Tree", CloseTreeCommand
           item "Close Window", CloseWindowCommand
           item "Close Directory", Project::DirectoryCloseCommand
+          item "Reveal in Project", Project::RevealInProjectCommand
           separator
           item "Quit", QuitCommand
         end
@@ -866,6 +872,7 @@ module Redcar
           item "Refresh Directory", Project::RefreshDirectoryCommand
           separator
           item "Runnables", Runnables::ShowRunnables
+          item "Run Tab",   Runnables::RunEditTabCommand
         end
         sub_menu "Debug" do
           item "Task Manager", TaskManager::OpenCommand

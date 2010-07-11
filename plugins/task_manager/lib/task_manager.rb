@@ -15,6 +15,8 @@ module Redcar
     end
     
     class Controller
+      include HtmlController
+      
       def title
         "Tasks"
       end
