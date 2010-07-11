@@ -691,6 +691,7 @@ module Redcar
         link "Cmd+Alt+N",   NewWindowCommand
         link "Cmd+O",       Project::FileOpenCommand
         link "Cmd+Shift+O", Project::DirectoryOpenCommand
+        link "Cmd+Ctrl+O",  Project::OpenRemoteCommand
         link "Cmd+S",       Project::FileSaveCommand
         link "Cmd+Shift+S", Project::FileSaveAsCommand
         link "Cmd+Ctrl+R",  Project::RevealInProjectCommand
@@ -818,6 +819,7 @@ module Redcar
           item "New Window", NewWindowCommand
           item "Open", Project::FileOpenCommand
           item "Open Directory", Project::DirectoryOpenCommand
+          item "Open Remote...", Project::OpenRemoteCommand
           lazy_sub_menu "Open Recent" do
             Project::RecentDirectories.generate_menu(self)
           end

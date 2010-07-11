@@ -32,6 +32,45 @@ module Redcar
       end
     end
     
+    class OpenRemoteSpeedbar < Redcar::Speedbar
+      class << self
+        attr_accessor :host
+        attr_accessor :user
+        attr_accessor :password
+        attr_accessor :path
+      end
+      
+      label :host_label, "Host:"
+      textbox :host
+
+      label :path_label, "Path:"
+      textbox :path
+
+      label :user_label, "User:"
+      textbox :user
+
+      label :password_label, "Password:"
+      textbox :password
+
+      button :connect, "Connect", "Return" do
+        project = Manager.open_remote_project(host.value, user.value, password.value, path.value)
+        project.refresh
+      end
+    end
+    
+    class OpenRemoteCommand < Command
+      def initialize(url=nil)
+        @url = url
+      end
+      
+      def execute
+        unless @url
+          @speedbar = OpenRemoteSpeedbar.new
+          win.open_speedbar(@speedbar)
+        end
+      end
+    end
+    
     class FileSaveCommand < EditTabCommand
       def initialize(tab=nil)
         @tab = tab

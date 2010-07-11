@@ -136,6 +136,19 @@ module Redcar
         end
       end
       
+      # Opens a new Tree with a DirMirror and DirController for the given
+      # path, in a new window.
+      #
+      # @param [String] path  the path of the directory to view
+      def self.open_remote_project(host, user, password, path)
+        puts "#{host} #{user} #{password} #{path}"
+        win = Redcar.app.focussed_window
+        win = Redcar.app.new_window if !win or Manager.in_window(win) 
+        project = Project.new(path).tap do |p|
+          p.open(win) if p.ready?
+        end
+      end
+      
       # The currently focussed Project, or nil if none.
       #
       # @return [Project]
