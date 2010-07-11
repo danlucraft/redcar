@@ -23,6 +23,7 @@ module Redcar
   	    puts "Don't have permission to write to #{JRUBY_JAR_DIR}. Please rerun with sudo."
   	    exit 1
   	  end
+      
   	  puts "Downloading >10MB of jar files. This may take a while."
   	  grab_jruby
   	  grab_common_jars
@@ -76,7 +77,10 @@ module Redcar
       /jface/org.eclipse.core.jobs.jar
     )
     
-    REDCAR_JARS_DIR = File.expand_path(File.join(Redcar.user_dir, "jars"))
+    def redcar_jars_dir
+      File.expand_path(File.join(Redcar.user_dir, "jars"))
+    end
+    
     JRUBY_JAR_DIR = File.expand_path(File.join(File.dirname(__FILE__), ".."))
     
     JRUBY = [
@@ -140,7 +144,7 @@ module Redcar
       when /windows|mswin|mingw/i
         setup "swt", :resources => SWT_JARS[:windows], :path => File.join(plugins_dir, %w(application_swt vendor swt))
         setup "swt", :resources => [XULRUNNER_URI],    :path => File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. vendor)))
-        link( File.join(REDCAR_JARS_DIR, name, File.basename(XULRUNNER_URI)),
+        link( File.join(redcar_jars_dir, name, File.basename(XULRUNNER_URI)),
               File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. vendor xulrunner))))
       end
     end
@@ -186,7 +190,7 @@ module Redcar
       target = File.join(path, save_as)
       return if File.exist?(target)
       
-      cached = File.join(REDCAR_JARS_DIR, name, save_as)
+      cached = File.join(redcar_jars_dir, name, save_as)
       unless File.exists?(cached)
         print "  downloading #{File.basename(cached)}... "
         download(url, cached)
