@@ -23,7 +23,9 @@ module Redcar
     end
     
     def word
-      /^\w+$/
+      # No Grammar loaded, but apparently some kind of document present
+      change_grammar(@doc.edit_view.grammar)
+      word
     end
     
     def singleton
@@ -45,7 +47,10 @@ module Redcar
       end
     
       def sanitize_grammar_name(name)
-        return name.strip.gsub("+", "Plus").gsub("#", "Sharp").gsub(/\W/, "").camelize
+        name = name.strip.gsub("+", "Plus").gsub("#", "Sharp").split(" ").inject do |result, word|
+          result << word.capitalize
+        end
+        name.gsub(/\W/, "").camelize
       end
     end
   end
