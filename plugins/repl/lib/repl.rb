@@ -37,7 +37,7 @@ module Redcar
         sub_menu "Plugins" do
           sub_menu "REPL" do
             item "Open Ruby REPL",    REPL::OpenInternalREPL
-	    item "Open Clojure REPL", REPL::OpenClojureREPL
+            item "Open Clojure REPL", REPL::OpenClojureREPL
             item "Execute", REPL::CommitREPL
           end
         end
@@ -57,7 +57,7 @@ module Redcar
     
     class OpenInternalREPL < OpenREPL
       def execute
-	open_repl Proc.new { |x| eval(x) }
+	      open_repl Proc.new { |expr,binding| eval(expr, binding) }
       end
     end
     
@@ -65,12 +65,12 @@ module Redcar
       
       def execute
 	
-	eval_proc = Proc.new do |x|
-	  load_string = RT.var("clojure.core", "load-string")
-	  load_string.invoke(x)      
-	end
+        eval_proc = Proc.new do |expr, binding|
+	        load_string = RT.var("clojure.core", "load-string")
+	        load_string.invoke(expr)      
+	      end
 	
-	open_repl eval_proc
+	      open_repl eval_proc
       end
     end
     

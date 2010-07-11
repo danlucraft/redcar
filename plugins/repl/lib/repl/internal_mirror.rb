@@ -94,7 +94,7 @@ module Redcar
         def initialize eval_proc
           @binding = binding
           @output = nil
-	  @eval_proc = eval_proc
+          @eval_proc = eval_proc
         end
 
         def inspect
@@ -102,7 +102,7 @@ module Redcar
         end
         
         def execute(command)
-          @binding = @eval_proc.call command
+          @eval_proc.call command, @binding
         end
       end
     end
