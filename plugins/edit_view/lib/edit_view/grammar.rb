@@ -16,8 +16,10 @@ module Redcar
         grammar = Grammar.const_get(:Default)
       end
       grammar.instance_methods.each do |method|
-        singleton.send(:undef_method, method)
-        singleton.send(:define_method, method, grammar.instance_method(method))
+        if self.methods.include?(method)
+          singleton.send(:undef_method, method)
+          singleton.send(:define_method, method, grammar.instance_method(method))
+		end
       end
       self.extend grammar
     end
