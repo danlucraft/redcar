@@ -314,11 +314,11 @@ module Redcar
       left = -1
       right = 0
       
-      right_stuck, left_stuck = false, false
+      stuck = false
       matched_offsets = [offset, offset]       
       match_left = offset == 0 ? false : !/\s/.match(get_slice(offset - 1, offset))
       match_right = offset == length ? false : !/\s/.match(get_slice(offset, offset + 1))
-      until left_stuck && right_stuck
+      until stuck
         if match_left
           matched_left = false
           until /\s/.match(get_slice(offset + left + 1, offset)) || offset + left == line_start_offset - 1
@@ -327,18 +327,15 @@ module Redcar
             if word.match(current_text) && current_offsets[1] - current_offsets[0] > matched_offsets[1] - matched_offsets[0]
               matched_offsets = current_offsets
               matched_left = true
-              left_stuck = false
             elsif matched_left
-              left_stuck = true
               break
             end
             left -= 1            
           end
-          left_stuck = true
           left = -1
           right += 1
           if !match_right || /\s/.match(get_slice(offset, offset + right)) || offset + right == line_end_offset
-            right_stuck = true
+            stuck = true
           end
         elsif match_right
           until /\s/.match(get_slice(offset, offset + right)) || offset + right == line_end_offset
@@ -347,9 +344,9 @@ module Redcar
             end
             right += 1            
           end
-          right_stuck = left_stuck = true
+          stuck = true
         else
-          right_stuck = left_stuck = true
+          stuck = true
         end
       end      
       matched_offsets[0]..matched_offsets[1]
