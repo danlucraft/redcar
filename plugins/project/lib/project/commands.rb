@@ -39,7 +39,10 @@ module Redcar
         attr_accessor :user
         attr_accessor :password
         attr_accessor :path
+        attr_accessor :protocol
       end
+
+      combo :protocol, %w(SFTP FTP), 'SFTP'
       
       label :host_label, "Host:"
       textbox :host
@@ -54,7 +57,7 @@ module Redcar
       textbox :path
 
       button :connect, "Connect", "Return" do
-        project = Manager.open_remote_project(host.value, user.value, password.value, path.value)
+        project = Manager.open_remote_project(protocol.value, host.value, user.value, password.value, path.value)
         project.refresh
       end
     end

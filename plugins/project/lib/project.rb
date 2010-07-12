@@ -6,6 +6,10 @@ end
 
 require 'drb/drb'
 
+require "project/adapters/remote_protocols/protocol"
+require "project/adapters/remote_protocols/sftp"
+require "project/adapters/remote_protocols/ftp"
+
 require "project/adapters/local"
 require "project/adapters/remote"
 

@@ -4,14 +4,16 @@ require 'net/sftp'
 module Redcar
   class Project
     module Adapters
-      module RemoteProviders
-        class SFTP
+      module RemoteProtocols
+        class Protocol
           attr_accessor :path, :host, :user, :password
           
-          def initialize(host, user, password)
+          def initialize(host, user, password, path)
             @host = host
             @user = user
             @password = password
+            @path = path
+            @cache = {}
           end
           
           def exist?
@@ -32,6 +34,10 @@ module Redcar
             entry[:type] == 'file'
           end
           
+          def exist?
+            is_folder(@path)
+          end
+          
           def fetch_contents(path)
             fetch(path).map { |f| f[:fullname] }
           end
@@ -41,7 +47,7 @@ module Redcar
 
             print "Downloading: #{file} as: #{local_file}... "
             FileUtils.mkdir_p local_path
-            connection.sftp.download! file, local_file
+            download file, local_file
             puts "done"
             File.open(local_file, 'rb') do |f|; f.read; end
           end
@@ -51,13 +57,28 @@ module Redcar
 
             ret = File.open(local_file, "wb") {|f| f.print contents }
             print "Uploading: #{local_file} as #{file}... "
-            connection.sftp.upload! local_file, file
+            upload local_file, file
             puts "done"
             
             ret
           end
 
           private
+          
+          def cache(path)
+            @cache[path]
+          end
+
+          def check_folder(path)
+            parent = File.dirname(path)
+            if contents = cache(parent)
+              result = contents.find { |f| f[:fullname] == path }
+              return false unless result
+              result[:type] == 'dir'
+            else
+              is_folder(path)
+            end
+          end
           
           def split_paths(file)
             base_temp = '/tmp'
@@ -70,10 +91,6 @@ module Redcar
             [local_path, local_file]
           end
 
-          def connection
-            @connection ||= Net::SSH.start(host, user, :password => password)
-          end
-          
           def entry(file)
             path = File.dirname(file)
             contents = fetch(path)
@@ -97,37 +114,6 @@ module Redcar
 
             contents
           end
-
-          def dir_listing(path)
-            raise Adapters::Remote::PathDoesNotExist, "Path #{path} does not exist" unless check_folder(path)
-
-            exec %Q(
-              for file in #{path}/*; do 
-                test -f "$file" && echo "file|$file"
-                test -d "$file" && echo "dir|$file"
-              done
-            )
-          end
-          
-          def exec(what)
-            connection.exec!(what)
-          end
-
-          def check_folder(path)
-            parent = File.dirname(path)
-            if contents = cache(parent)
-              result = contents.find { |f| f[:fullname] == path }
-              return false unless result
-              result[:type] == 'dir'
-            else
-              result = exec(%Q(
-                test -d "#{path}" && echo y
-              )) 
-
-              result =~ /^y/ ? true : false
-            end
-          end
-
         end
       end
     end

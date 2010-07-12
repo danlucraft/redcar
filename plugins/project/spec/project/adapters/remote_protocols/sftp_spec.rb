@@ -1,32 +1,27 @@
 require File.join(File.dirname(__FILE__), "..", "..", "..", "spec_helper")
 
 class Redcar::Project
-  describe Adapters::RemoteProviders::SFTP do
-    let(:conn) { double('connection') }
+  describe Adapters::RemoteProtocols::SFTP do
+    let(:conn) { double('connection').as_null_object }
     subject do
-      Adapters::RemoteProviders::SFTP.new('server', 'user', 'secret')
+      Adapters::RemoteProtocols::SFTP.new('server', 'user', 'secret', '/home/fcoury')
     end
     
     before(:each) do
-      Net::SSH.stub!(:start).with('server', 'user', hash_including(:password => 'secret'))
+      Net::SSH.stub!(:start).with('server', 'user', hash_including(:password => 'secret')).and_return(conn)
     end
     
     context "Public methods" do
       describe '#exist?' do
         it "returns true if fetch throws exception (path does not exist)" do
           subject.path = '/home/fcoury'
-          subject.should_receive(:fetch).with("/home/fcoury").and_raise(Adapters::Remote::PathDoesNotExist)
+          subject.should_receive(:exec).with(/test -d "\/home\/fcoury"/).and_return("n\n")
           subject.exist?.should be_false
         end
 
         it "returns true if fetch runs" do
           subject.path = '/home/fcoury'
-          subject.should_receive(:fetch).with("/home/fcoury").and_return([
-            'file|.bashrc',
-            'dir|.vimrc',
-            'file|hello_world.rb',
-            'dir|snippets'
-          ])
+          subject.should_receive(:exec).with(/test -d "\/home\/fcoury"/).and_return("y\n")
           subject.exist?.should be_true
         end
       end
@@ -74,9 +69,9 @@ class Redcar::Project
         let(:sftp) { double('sftp connection').as_null_object }
         
         subject do
-          Adapters::RemoteProviders::SFTP.new('server', 'user', 'secret').tap do |provider|
+          Adapters::RemoteProtocols::SFTP.new('server', 'user', 'secret', '/home/fcoury').tap do |protocol|
             conn.stub!(:sftp).and_return(sftp)
-            provider.stub!(:connection).and_return(conn)
+            protocol.stub!(:connection).and_return(conn)
           end
         end
         
@@ -108,9 +103,9 @@ class Redcar::Project
         let(:sftp) { double('sftp connection').as_null_object }
         
         subject do
-          Adapters::RemoteProviders::SFTP.new('server', 'user', 'secret').tap do |provider|
+          Adapters::RemoteProtocols::SFTP.new('server', 'user', 'secret', '/home/fcoury').tap do |protocol|
             conn.stub!(:sftp).and_return(sftp)
-            provider.stub!(:connection).and_return(conn)
+            protocol.stub!(:connection).and_return(conn)
           end
         end
         
