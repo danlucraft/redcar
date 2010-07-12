@@ -1,4 +1,3 @@
-
 module Redcar
   # This class controls access to the document text in an edit tab. 
   # There are methods to read, modify and register listeners
@@ -310,19 +309,50 @@ module Redcar
     def word_range_at_offset(offset)
       line_index = line_at_offset(offset)
       line_start_offset = offset_at_line(line_index)
-      line_chars = get_line(line_index)
-      position = offset - line_start_offset
-      left_range = 0
-      right_range = 0
+      line_end_offset = offset_at_line_end(line_index)
+      line = get_slice(line_start_offset, line_end_offset)
+      left = -1
+      right = 0
       
-      until position + left_range == - 1 || word.match(line_chars[position + (left_range - 1)..position - 1]).nil?
-        left_range -= 1
-      end
-      
-      until position + right_range == line_chars.length - 1 || word.match(line_chars[position..position + right_range]).nil?
-        right_range += 1
-      end
-      (offset + left_range..offset + right_range)
+      right_stuck, left_stuck = false, false
+      matched_offsets = [offset, offset]       
+      match_left = offset == 0 ? false : !/\s/.match(get_slice(offset - 1, offset))
+      match_right = offset == length ? false : !/\s/.match(get_slice(offset, offset + 1))
+      until left_stuck && right_stuck
+        if match_left
+          matched_left = false
+          until /\s/.match(get_slice(offset + left + 1, offset)) || offset + left == line_start_offset - 1
+            current_offsets = [offset + left, offset + right]
+            current_text = get_slice(current_offsets[0], current_offsets[1])
+            if word.match(current_text) && current_offsets[1] - current_offsets[0] > matched_offsets[1] - matched_offsets[0]
+              matched_offsets = current_offsets
+              matched_left = true
+              left_stuck = false
+            elsif matched_left
+              left_stuck = true
+              break
+            end
+            left -= 1            
+          end
+          left_stuck = true
+          left = -1
+          right += 1
+          if !match_right || /\s/.match(get_slice(offset, offset + right)) || offset + right == line_end_offset
+            right_stuck = true
+          end
+        elsif match_right
+          until /\s/.match(get_slice(offset, offset + right)) || offset + right == line_end_offset
+            if word.match(get_slice(offset, offset + right))
+              matched_offsets = [offset, offset + right]
+            end
+            right += 1            
+          end
+          right_stuck = left_stuck = true
+        else
+          right_stuck = left_stuck = true
+        end
+      end      
+      matched_offsets[0]..matched_offsets[1]
     end
     
     # The range of the word at the current cursor position.
@@ -387,8 +417,8 @@ module Redcar
     
     # Get a range of text from the document.
     #
-    # @param [String] start  the character offset of the start of the range
-    # @param [String] length  the length of the string to get
+    # @param [Integer] start  the character offset of the start of the range
+    # @param [Integer] length  the length of the string to get
     # @return [String] the text
     def get_range(start, length)
       controller.get_range(start, length)
@@ -396,8 +426,8 @@ module Redcar
     
     # Get a slice of text from the document.
     #
-    # @param [String] start_offset the character offset of the start of the slice
-    # @param [String] end_offset   the character offset of the end of the slice
+    # @param [Integer] start_offset the character offset of the start of the slice
+    # @param [Integer] end_offset   the character offset of the end of the slice
     # @return [String] the text
     def get_slice(start_offset, end_offset)
       get_range(start_offset, end_offset - start_offset)
@@ -564,5 +594,3 @@ module Redcar
     end
   end
 end
-
-
