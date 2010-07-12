@@ -300,10 +300,16 @@ namespace :redcar do
   task :runnables do
     mkdir_p(".redcar/runnables")
     puts "Creating runnables"
+    File.open(".redcar/runnables/sync_stdout.rb", "w") do |fout|
+      fout.puts <<-RUBY
+        $stdout.sync = true
+        $stderr.sync = true
+      RUBY
+    end
     
     tasks = Rake::Task.tasks
     runnables = []
-    ruby_bin = Config::CONFIG["bindir"] + "/ruby -r#{File.dirname(__FILE__)}/plugins/runnables/lib/runnables/sync_stdout.rb " 
+    ruby_bin = Config::CONFIG["bindir"] + "/ruby -r#{File.dirname(__FILE__)}/.redcar/runnables/sync_stdout.rb " 
     tasks.each do |task|
       name = task.name.gsub(":", "/")
       command = ruby_bin + $0 + " " + task.name
