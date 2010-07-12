@@ -13,6 +13,7 @@ Version 0.3.8 (TBA)
  * New APIs: Document#current_word, Document#word_at_offset (Johannes Wollert)
  * Made the first tab open for a new install MUCH faster by generating the textmate bundle cache in the install script (Dan Lucraft)
  * Search speedbar is opened with selected text as the default search (Johannes Wollert)
+ * Helper method for executing JavaScript in the browser during controller actions (Dan Lucraft)
 
 Version 0.3.7.1 (25 Jun 2010)
 =============================

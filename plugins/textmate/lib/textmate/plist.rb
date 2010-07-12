@@ -14,7 +14,7 @@ module Redcar
     def self.plist_from_xml(xml_string) # :nodoc:
       require 'rexml/document'
       xml = REXML::Document.new(xml_string)
-      plist_from_xml1(xml.root.elements.first)
+      plist_from_xml1(xml.root.elements.to_a.first)
     end
     
     def self.plist_from_xml1(element) # :nodoc:
