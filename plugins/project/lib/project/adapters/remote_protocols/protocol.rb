@@ -23,6 +23,10 @@ module Redcar
             false
           end
           
+          def exists?(path)
+            entry(path) ? true : false
+          end
+          
           def directory?(path=@path)
             return check_folder(path) if path == @path
             return false unless entry = entry(path)
@@ -98,21 +102,7 @@ module Redcar
           end
 
           def fetch(path=@path)
-            @cache[path] ||= retrieve_dir_contents(path)
-          end
-
-          def retrieve_dir_contents(path=@path)
-            return [] unless result = dir_listing(path) rescue []
-
-            contents = []
-            result.each do |line|
-              type, name = line.chomp.split('|')
-              unless ['.', '..'].include?(name)
-                contents << { :fullname => "#{name}", :name => File.basename(name), :type => type }
-              end
-            end
-
-            contents
+            @cache[path] ||= dir_listing(path)
           end
         end
       end

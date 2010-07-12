@@ -10,8 +10,10 @@ module Redcar
             @connection ||= Net::FTP.open(host, user, password)
           end
           
-          def stat(file)
-            connection.status(file)
+          def mtime(file)
+            if e = entry(file)
+              e[:mtime]
+            end
           end
           
           def download(remote, local)
@@ -23,13 +25,20 @@ module Redcar
           end
 
           def dir_listing(path)
-            result = []
+            contents = []
             connection.list(path) do |e|
               entry = Net::FTP::List.parse(e)
-              result << "dir|#{entry.basename}" if entry.dir?
-              result << "file|#{entry.basename}" if entry.file?
+              name = entry.basename
+              type = "unknown"
+              type = "file" if entry.file?
+              type = "dir" if entry.dir?
+              
+              unless ['.', '..'].include?(name)
+                contents << { :fullname => "#{path}/#{name}", :name => "#{name}", :type => type, :mtime => entry.mtime }
+              end
             end
-            result
+            
+            contents
           end
           
           def is_folder(path)

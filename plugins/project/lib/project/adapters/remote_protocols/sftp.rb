@@ -10,8 +10,8 @@ module Redcar
             @connection ||= Net::SSH.start(host, user, :password => password)
           end
           
-          def stat(file)
-            connection.sftp.stat!(file)
+          def mtime(file)
+            connection.sftp.stat!(file).mtime
           end
           
           def download(remote, local)
@@ -23,6 +23,20 @@ module Redcar
           end
           
           def dir_listing(path)
+            return [] unless result = retrieve_dir_listing(path) rescue []
+
+            contents = []
+            result.each do |line|
+              type, name = line.chomp.split('|')
+              unless ['.', '..'].include?(name)
+                contents << { :fullname => "#{name}", :name => File.basename(name), :type => type }
+              end
+            end
+
+            contents
+          end
+          
+          def retrieve_dir_listing(path)
             raise Adapters::Remote::PathDoesNotExist, "Path #{path} does not exist" unless check_folder(path)
 
             exec %Q(

@@ -43,6 +43,10 @@ module Redcar
         def exist?
           target.exist?
         end
+        
+        def mtime(file)
+          target.mtime(file)
+        end
 
         def file?(path)
           target.file?(path)

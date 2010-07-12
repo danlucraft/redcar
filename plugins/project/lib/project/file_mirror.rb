@@ -26,7 +26,7 @@ module Redcar
       def read
         return "" unless exists?
         contents = load_contents
-        @timestamp = @adapter.stat(@path).mtime
+        @timestamp = @adapter.mtime(@path)
         contents
       end
       
@@ -43,7 +43,7 @@ module Redcar
       # @return [Boolean]
       def changed?
         begin
-          !@timestamp or @timestamp < @adapter.stat(@path).mtime
+          !@timestamp or @timestamp < @adapter.mtime(@path)
         rescue Errno::ENOENT
           false
         end
@@ -51,7 +51,7 @@ module Redcar
       
       def changed_since?(time)
         begin
-          !@timestamp or (!time and changed?) or (time and time < File.stat(@path).mtime)
+          !@timestamp or (!time and changed?) or (time and time < File.mtime(@path))
         rescue Errno::ENOENT
           false
         end

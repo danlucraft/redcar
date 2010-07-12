@@ -32,10 +32,10 @@ module Redcar
           File.open(file, "wb") {|f| f.print contents }
         end
         
-        def stat(file)
-          File.stat(file)
+        def mtime(file)
+          File.stat(file).mtime
         end
-
+        
         def exists?(file)
           File.exists?(file)
         end
