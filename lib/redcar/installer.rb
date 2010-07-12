@@ -23,7 +23,7 @@ module Redcar
   	    puts "Don't have permission to write to #{JRUBY_JAR_DIR}. Please rerun with sudo."
   	    exit 1
   	  end
-      
+      Redcar.environment = :user
   	  puts "Downloading >10MB of jar files. This may take a while."
   	  grab_jruby
   	  grab_common_jars
@@ -144,7 +144,7 @@ module Redcar
       when /windows|mswin|mingw/i
         setup "swt", :resources => SWT_JARS[:windows], :path => File.join(plugins_dir, %w(application_swt vendor swt))
         setup "swt", :resources => [XULRUNNER_URI],    :path => File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. vendor)))
-        link( File.join(redcar_jars_dir, name, File.basename(XULRUNNER_URI)),
+        link( File.join(redcar_jars_dir, "swt", "xulrunner"),
               File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. vendor xulrunner))))
       end
     end
@@ -205,7 +205,7 @@ module Redcar
       # Windoze doesn't support FileUtils.ln_sf, so we copy the files
       if Config::CONFIG["host_os"] =~ /windows|mswin|mingw/i
         puts "  copying #{File.basename(cached)}..."
-        FileUtils.cp cached, target
+        FileUtils.cp_r cached, target
       else
         puts "  linking #{File.basename(cached)}..."
         FileUtils.ln_sf cached, target
