@@ -6,7 +6,7 @@ module Redcar
       end
       
       def check
-        tabs_with_running_processes = @tabs.select {|t| t.html_view.controller.ask_before_closing }
+        tabs_with_running_processes = @tabs.select {|t| t.html_view.controller and t.html_view.controller.ask_before_closing }
         if tabs_with_running_processes.any?
           result = Application::Dialog.message_box(
             "You have #{tabs_with_running_processes.length} running processes.\n\n" + 

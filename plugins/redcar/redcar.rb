@@ -262,7 +262,7 @@ module Redcar
             close_tab
           end
         elsif tab.is_a?(HtmlTab)
-          if message = tab.html_view.controller.ask_before_closing
+          if tab.html_view.controller and message = tab.html_view.controller.ask_before_closing
             result = Application::Dialog.message_box(
               message,
               :buttons => :yes_no_cancel

@@ -36,6 +36,10 @@ module Redcar
         super
       end
       
+      def go_to_location(url)
+        @browser.set_url(url)
+      end
+      
       class LocationListener
         def initialize(html_tab)
           @html_tab = html_tab
