@@ -24,6 +24,10 @@ module Redcar
         end
         
         attr_accessor :path, :protocol, :host, :user, :password
+        
+        def lazy?
+          true
+        end
 
         def initialize(protocol, host, user, password)
           @protocol = protocol

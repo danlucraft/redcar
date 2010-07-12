@@ -4,6 +4,10 @@ module Redcar
       class Local
         attr_accessor :path
         
+        def lazy?
+          false
+        end
+        
         def real_path
           File.expand_path(path)
         end

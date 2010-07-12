@@ -11,6 +11,9 @@ module Redcar
       # for its children.
       def activated(tree, node);   end
       
+      # Called when a node in a tree is selected. 
+      def selected(tree, node);    end
+
       # Called when a node in a tree is right clicked on. node may be nil
       # if the right click happened over the tree but not on a node.
       def right_click(tree, node); end

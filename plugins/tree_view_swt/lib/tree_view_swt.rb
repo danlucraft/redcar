@@ -33,6 +33,7 @@ module Redcar
         @viewer.add_tree_listener(@viewer.getControl, TreeListener.new)
         @viewer.add_double_click_listener(DoubleClickListener.new)
         @viewer.add_open_listener(OpenListener.new(@model))
+        @viewer.add_selection_changed_listener(SelectionChangedListener.new(@model, @viewer))
         control.add_mouse_listener(MouseListener.new(self))
       end
       
@@ -284,6 +285,22 @@ module Redcar
       def mouse_down(e)
         if e.button == 3
           @tree_view_swt.right_click(e)
+        end
+      end
+    end
+    
+    class SelectionChangedListener
+      def initialize(tree_model, viewer)
+        @tree_model = tree_model
+        @viewer = viewer
+      end
+      
+      def selection_changed(e)
+        Redcar.safely("selection changed") do
+          element = e.getSelection.toArray.to_a.first
+          if @tree_model.tree_controller.selected(@tree_model, element)
+            @viewer.expandToLevel(element, 1)
+          end
         end
       end
     end

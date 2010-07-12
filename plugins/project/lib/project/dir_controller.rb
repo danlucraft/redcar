@@ -6,9 +6,14 @@ module Redcar
       
       def activated(tree, node)
         if node.leaf?
-          puts "Opening file: #{node.path} with #{node.adapter.class.name}"
           FileOpenCommand.new(node.path, node.adapter).run
         end
+      end
+      
+      def selected(tree, node)
+        return unless node
+        node.calculate_children
+        true
       end
       
       class DragController

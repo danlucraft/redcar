@@ -95,6 +95,8 @@ module Redcar
         def initialize(adapter, path)
           @adapter = adapter
           @path = path
+          
+          @children = [] if adapter.lazy?
         end
         
         def text
@@ -129,8 +131,17 @@ module Redcar
           directory? ? @path : File.dirname(@path)
         end
         
+        def calculate_children
+          raise "Called calculate_children for non-lazy adapter: #{adapter}" unless adapter.lazy?
+          @children = Node.create_all_from_path(adapter, path)
+        end
+        
         def children
-          Node.create_all_from_path(@adapter, @path)
+          if @adapter.lazy?
+            @children
+          else
+            Node.create_all_from_path(adapter, path)
+          end
         end
         
         def tooltip_text
