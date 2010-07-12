@@ -6,6 +6,12 @@ module Redcar
     module Adapters
       module RemoteProtocols
         class SFTP < Protocol
+          class << self
+            def handle_error(e, host, user)
+              return "Authentication failed for user #{user} in sftp://#{host}" if e.is_a?(Net::SSH::AuthenticationFailed)
+            end
+          end
+
           def connection
             @connection ||= Net::SSH.start(host, user, :password => password)
           end

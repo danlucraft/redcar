@@ -6,7 +6,24 @@ module Redcar
     module Adapters
       module RemoteProtocols
         class FTP < Protocol
+          class << self
+            def handle_error(e, host, user)
+              return "Authentication failed for user #{user} in ftp://#{host}" if e.is_a?(Net::FTPPermError)
+            end
+          end
+          
           def connection
+            @connection = nil if @connection and @connection.closed?
+            
+            if @connection
+              begin
+                @connection.noop
+              rescue Net::FTPTempError
+                puts "Error: #{$!.message}"
+                @connection = nil
+              end
+            end
+            
             @connection ||= Net::FTP.open(host, user, password)
           end
           

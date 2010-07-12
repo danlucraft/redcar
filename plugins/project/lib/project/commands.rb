@@ -57,8 +57,31 @@ module Redcar
       textbox :path
 
       button :connect, "Connect", "Return" do
-        project = Manager.open_remote_project(protocol.value, host.value, user.value, password.value, path.value)
-        project.refresh
+        error = nil
+        error = "You must provide a host name" if host.value.empty? 
+  
+        unless error
+          Redcar.safely("Connecting to #{protocol.value} server #{host.value}") do
+            begin
+              project = Manager.open_remote_project(protocol.value, host.value, user.value, password.value, path.value)
+              project.refresh
+
+            rescue Errno::ECONNREFUSED
+              error = "Connection refused connecting to #{host.value}"
+
+            rescue SocketError
+              error = "Cannot connect to #{host.value}. Error: #{$!.message}."
+
+            rescue
+              # gives a chance to protocols to handle their specific errors
+              Project::Adapters::Remote::PROTOCOLS.values.each do |p|
+                break if error = p.handle_error($!, host.value, user.value)
+              end
+            end
+          end
+        end
+        
+        Application::Dialog.message_box(error, :type => :error, :buttons => :ok) if error
       end
     end
     
