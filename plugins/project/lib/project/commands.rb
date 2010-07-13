@@ -69,8 +69,11 @@ module Redcar
       class << self
         attr_accessor :connection
         
+        def storage
+          Redcar::Plugin::Storage.new('user_connections') || {}
+        end
+        
         def connections
-          storage = Redcar::Plugin::Storage.new('user_connections') || {}
           connections = storage[:connections]
         end
         
@@ -82,13 +85,21 @@ module Redcar
             ['Add a new connection...']
           end
         end
+        
+        def last_selected
+          storage[:last_selected] || 'Selected...'
+        end
       end
       
       label :connection_label, 'Connect to:'
-      combo :connection, connection_names, 'Select...'
+      combo :connection, connection_names, last_selected
       
       button :connect, "Connect", "Return" do
         selected = self.class.connections.find { |c| c[:name] == connection.value }
+        
+        self.class.storage[:last_selected] = connection.value
+        self.class.storage.save
+        
         connect_to_remote(
           selected[:protocol], 
           selected[:host],
@@ -110,7 +121,7 @@ module Redcar
       
       def after_draw
         connection.items = self.class.connection_names
-        connection.value = connection.items.first
+        connection.value = self.class.last_selected
       end
     end
     
