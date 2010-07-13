@@ -5,7 +5,7 @@ module DocumentSearch
     class << self
       attr_accessor :previous_query
       attr_accessor :previous_is_regex
-      attr_accessor :previous_match_case      
+      attr_accessor :previous_match_case
     end
 
     attr_accessor :initial_query
@@ -19,15 +19,15 @@ module DocumentSearch
     end
     
     label :label, "Search:"
-    textbox :query        
+    textbox :query
     
     toggle :is_regex, 'Regex', nil, false do |v|
       # v is true or false
-      SearchSpeedbar.previous_is_regex = v          
+      SearchSpeedbar.previous_is_regex = v
     end
     
     toggle :match_case, 'Match case', nil, false do |v|
-      SearchSpeedbar.previous_match_case = v          
+      SearchSpeedbar.previous_match_case = v
     end      
     
     button :search, "Search", "Return" do
