@@ -11,7 +11,7 @@ module Redcar
       end
         
       include Redcar::Tree::Mirror
-      attr_reader :path
+      attr_reader :path, :adapter
       
       # @param [String] a path to a directory
       def initialize(path, adapter=Adapters::Local.new)
