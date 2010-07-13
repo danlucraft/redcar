@@ -45,6 +45,7 @@ module Redcar
 
             contents = []
             result.each do |line|
+              next unless line.include?('|')
               type, name = line.chomp.split('|')
               unless ['.', '..'].include?(name)
                 contents << { :fullname => "#{name}", :name => File.basename(name), :type => type }
