@@ -306,50 +306,88 @@ module Redcar
     #
     # @param [Integer] an offset
     # @return [Range<Integer>] a range between two character offsets
-    def word_range_at_offset(offset)
-      line_index = line_at_offset(offset)
-      line_start_offset = offset_at_line(line_index)
-      line_end_offset = offset_at_line_end(line_index)
-      line = get_slice(line_start_offset, line_end_offset)
-      left = -1
-      right = 0
-      
-      stuck = false
-      matched_offsets = [offset, offset]       
+    def word_range_at_offset(offset)      
       match_left = offset == 0 ? false : !/\s/.match(get_slice(offset - 1, offset))
       match_right = offset == length ? false : !/\s/.match(get_slice(offset, offset + 1))
-      until stuck
-        if match_left
-          matched_left = false
-          until /\s/.match(get_slice(offset + left + 1, offset)) || offset + left == line_start_offset - 1
-            current_offsets = [offset + left, offset + right]
-            current_text = get_slice(current_offsets[0], current_offsets[1])
-            if word.match(current_text) && current_offsets[1] - current_offsets[0] > matched_offsets[1] - matched_offsets[0]
-              matched_offsets = current_offsets
-              matched_left = true
-            elsif matched_left
-              break
-            end
-            left -= 1            
-          end
-          left = -1
-          right += 1
-          if !match_right || /\s/.match(get_slice(offset, offset + right)) || offset + right == line_end_offset
-            stuck = true
-          end
-        elsif match_right
-          until /\s/.match(get_slice(offset, offset + right)) || offset + right == line_end_offset
-            if word.match(get_slice(offset, offset + right))
-              matched_offsets = [offset, offset + right]
-            end
-            right += 1            
-          end
-          stuck = true
-        else
-          stuck = true
+      if match_left && match_right
+        match_word_around(offset)
+      elsif match_left
+        match_word_left_of(offset)
+      elsif match_right
+        match_word_right_of(offset)
+      else 
+        offset..offset
+      end
+    end    
+    
+    # Returns the range of the word located around an offset.
+    # Before using this method, it's best to make sure there actually
+    # might be a word around the offset. This means we are not at the beginning
+    # or end of the file and there are no spaces left and right from the offset.
+    #
+    # @param [Integer] an offset
+    # @return [Range<Integer>] a range between two character offsets
+    def match_word_around(offset)
+      line_index = line_at_offset(offset)
+      line_end_offset = offset_at_line_end(line_index)
+      right = 0
+      matched_offsets = offset..offset
+      until false
+        new_match = match_word_left_of(offset + right)
+        matched_offsets = new_match if new_match.last - new_match.first > matched_offsets.last - matched_offsets.first
+        right += 1
+        if offset + right == length + 1 || /\s/.match(get_slice(offset, offset + right))
+          break
+        end        
+      end
+      matched_offsets
+    end
+    
+    # Returns the range of the word located left of an offset.
+    # Before using this method, it's best to make sure there actually
+    # might be a word left of the offset. This means we are not at the beginning
+    # of the file and there are no spaces left of the offset.
+    #
+    # @param [Integer] an offset
+    # @return [Range<Integer>] a range between two character offsets
+    def match_word_left_of(offset)
+      line_index = line_at_offset(offset)
+      line_start_offset = offset_at_line(line_index)
+      left = -1
+      matched_left = false
+      matched_offsets = offset..offset
+      until offset + left == line_start_offset - 1 || /\s/.match(get_slice(offset + left, offset))
+        current_offsets = offset + left..offset
+        if word.match(get_slice(current_offsets.first, current_offsets.last))
+          matched_offsets = current_offsets
+          matched_left = true
+        elsif matched_left
+          break
         end
+        left -= 1
+      end
+      matched_offsets
+    end
+    
+    # Returns the range of the word located right of an offset.
+    # Before using this method, it's best to make sure there actually
+    # might be a word right of the offset. This means we are not at the end of 
+    # the file and there are no spaces right of the offset.
+    #
+    # @param [Integer] an offset
+    # @return [Range<Integer>] a range between two character offsets
+    def match_word_right_of(offset)
+      line_index = line_at_offset(offset)
+      line_end_offset = offset_at_line_end(line_index)
+      right = 0
+      matched_offsets = offset..offset
+      until offset + right == length + 1 || /\s/.match(get_slice(offset, offset + right))
+        if word.match(get_slice(offset, offset + right))
+          matched_offsets = offset..offset + right
+        end
+        right += 1
       end      
-      matched_offsets[0]..matched_offsets[1]
+      matched_offsets
     end
     
     # The range of the word at the current cursor position.

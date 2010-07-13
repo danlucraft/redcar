@@ -196,6 +196,25 @@ Then /^line number (\d+) should be visible$/ do |line_num|
   (doc.smallest_visible_line <= line_num).should be_true
 end
 
+When /^I select the word (right of|left of|around|at) (\d+)$/ do |direction, offset|
+  offset = offset.to_i
+  doc = Redcar::EditView.focussed_edit_view_document
+  case direction
+  when "right of"
+    range = doc.match_word_right_of(offset)
+  when "left of"
+    range = doc.match_word_left_of(offset)
+  when "around"
+    range = doc.match_word_around(offset)
+  when "at"
+    range = doc.word_range_at_offset(offset)
+  else
+    warn "unrecognized direction"
+    range = offset..offset
+  end
+  doc.set_selection_range(range.first, range.last)
+end
+
 
 
 
