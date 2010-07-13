@@ -141,7 +141,6 @@ module Redcar
       #
       # @param [String] path  the path of the directory to view
       def self.open_remote_project(protocol, host, user, password, path)
-        puts "#{protocol} #{host} #{user} #{password} #{path}"
         win = Redcar.app.focussed_window
         win = Redcar.app.new_window if !win or Manager.in_window(win) 
         project = Project.new(path, Adapters::Remote.new(protocol.downcase.to_sym, host, user, password)).tap do |p|
