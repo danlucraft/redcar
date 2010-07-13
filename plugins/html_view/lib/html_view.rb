@@ -62,7 +62,10 @@ module Redcar
       rescue => e
         text = <<-HTML
           Sorry, there was an error.<br />
-          <pre><code>#{e.message}</code></pre>
+          <pre><code>
+            #{e.message}
+            #{e.backtrace}
+          </code></pre>
         HTML
       end
       if text
