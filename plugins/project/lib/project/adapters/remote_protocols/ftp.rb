@@ -27,6 +27,28 @@ module Redcar
             @connection ||= Net::FTP.open(host, user, password)
           end
           
+          def touch(file)
+            local_path, local_file = split_paths(file)
+
+            puts "Creating: #{file} as: #{local_file}... "
+            FileUtils.mkdir_p local_path
+            FileUtils.touch local_file
+
+            print "Uploading: #{local_file} as #{file}... "
+            upload local_file, file
+            puts "done"
+          end
+
+          def mkdir(new_dir_path)
+            connection.mkdir new_dir_path
+          end
+
+          def mv(path, new_path)
+            target = "#{new_path}/#{File.basename(path)}"
+            puts "Renaming: #{path} To: #{target}"
+            connection.rename path, target
+          end
+          
           def mtime(file)
             if e = entry(file)
               e[:mtime]

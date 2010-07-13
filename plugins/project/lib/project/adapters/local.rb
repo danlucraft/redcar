@@ -8,6 +8,18 @@ module Redcar
           false
         end
         
+        def touch(new_file_path)
+          FileUtils.touch(new_file_path)
+        end
+        
+        def mkdir(new_dir_path)
+          FileUtils.mkdir(new_dir_path)
+        end
+        
+        def mv(path, new_path)
+          FileUtils.mv(path, new_path)
+        end
+        
         def real_path
           File.expand_path(path)
         end
@@ -24,7 +36,7 @@ module Redcar
           File.directory?(path)
         end
         
-        def fetch_contents(path)
+        def fetch_contents(path, force=false)
           Dir.glob("#{path}/*", File::FNM_DOTMATCH)
         end
 

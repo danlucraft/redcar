@@ -16,6 +16,18 @@ module Redcar
             @connection ||= Net::SSH.start(host, user, :password => password)
           end
           
+          def touch(file)
+            connection.exec "touch #{file}"
+          end
+
+          def mkdir(new_dir_path)
+            connection.exec "mkdir -p #{new_dir_path}"
+          end
+
+          def mv(path, new_path)
+            connection.exec "mv #{path} #{new_path}"
+          end
+          
           def mtime(file)
             connection.sftp.stat!(file).mtime
           end

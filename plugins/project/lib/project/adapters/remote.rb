@@ -44,6 +44,18 @@ module Redcar
           path
         end
         
+        def touch(file)
+          target.touch(file)
+        end
+
+        def mkdir(new_dir_path)
+          target.mkdir(new_dir_path)
+        end
+
+        def mv(path, new_path)
+          target.mv(path, new_path)
+        end
+        
         def exist?
           target.exist?
         end
