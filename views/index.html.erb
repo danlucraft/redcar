@@ -44,7 +44,7 @@
       <%= out[1] %>
     </td>
     <td class="content">
-      <%= CGI.escapeHTML(out[2] || "").gsub(( @match_case ? /(#{@query.gsub("/", "\\/")})/ : /(#{@query.gsub("/", "\\/")})/i), '<b>\1</b>') %>
+      <%= CGI.escapeHTML(out[2] || "").gsub(( @match_case ? /(#{@query.gsub("/", "\\/")})/ : /(#{@query.gsub("/", "\\/")})/i), '<span>\1</span>') %>
     </td>
   </tr>
 <% end %>

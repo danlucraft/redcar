@@ -51,6 +51,6 @@ form label {
   white-space: nowrap;
 }
 
-#output table td b {
-  color: red;
+#output table td span {
+  background: yellow;
 }

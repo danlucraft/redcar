@@ -53,6 +53,7 @@ module Redcar
       
     
       class Controller
+        include Redcar::HtmlController
         
         def title
           "Find in project"
@@ -92,7 +93,7 @@ module Redcar
           end      
           
           if @lines
-            head = "| head -n#{lines.to_i}"
+            head = "| head -#{lines.to_i}"
           else
             head = ''
           end
@@ -101,11 +102,11 @@ module Redcar
             options << "-i "
           end
           
-          path = Project::Manager.focussed_project.path                    
+          path = Project::Manager.focussed_project.path                              
           @output = `cd #{path}; grep "#{query}" #{options} . #{head}`
           @outputs = @output.split("\n")            
           Redcar.app.focussed_window.focussed_notebook_tab.html_view.controller = self
-          1
+          nil
         end  
         
         def open_file(file, line, regex, match_case)                    
@@ -156,7 +157,7 @@ module Redcar
         mirror = Project::FileMirror.new(File.join(Redcar.user_dir, "storage", "find_in_project.yaml"))
         tab.edit_view.document.mirror = mirror        
         tab.edit_view.reset_undo
-        tab.focus
+        tab.focus        
       end
     end
     
