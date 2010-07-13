@@ -17,15 +17,17 @@
       <td>Host</td>
       <td>Port</td>
       <td>User</td>
+      <td>Remote Path</td>
     </tr>
     
     <% connections.each do |s| %>
       <tr id='row-<%= s[:name] %>'>
-        <td><%= s[:name] %></td>
+        <td><a href='javscript:void(0);' class='modify' data-name="<%= s[:name] %>"><%= s[:name] %></a></td>
         <td><%= s[:protocol] %></td>
         <td><%= s[:host] %></td>
         <td><%= s[:port] %></td>
         <td><%= s[:user] %></td>
+        <td><%= s[:path] %></td>
         <td>
           <a href='javascript:void(0);' class='delete' data-name="<%= s[:name] %>">Delete</a>
           <a href='javascript:void(0);' class='modify' data-name="<%= s[:name] %>">Modify</a>
@@ -62,10 +64,11 @@
             </select>
           </td>
         </tr>
-        <tr><td>Host:     </td><td><input size="30" type='text' name='host' id='host'></td></tr>
-        <tr><td>Port:     </td><td><input type='text' name='port' id='port' size=2></td></tr>
-        <tr><td>User:     </td><td><input size="30" type='text' name='user' id='user'></td></tr>
-        <tr><td>Password: </td><td><input size="30" type='password' name='password' id='password'></td></tr>
+        <tr><td>Host:        </td><td><input size="30" type='text' name='host' id='host'></td></tr>
+        <tr><td>Port:        </td><td><input type='text' name='port' id='port' size=2></td></tr>
+        <tr><td>User:        </td><td><input size="30" type='text' name='user' id='user'></td></tr>
+        <tr><td>Password:    </td><td><input size="30" type='password' name='password' id='password'></td></tr>
+        <tr><td>Remote Path: </td><td><input size="30" type='text' name='path' id='path'></td></tr>
         <tr>
           <td colspan=2>
             <input id='save' type='submit' value='Save'>
@@ -78,7 +81,7 @@
 </p>
 
 <p>
-  <input id='reload' type='button' value='Reload'>
+  <small><a href='javascript:void(0);' id='reload'>Reload</a></small>
 </p>
 
 <script type="text/javascript">
@@ -93,13 +96,6 @@ $(document).ready(function() {
     $('#add_div').hide();
     $('#show_div').show();
   }
-
-  // function addRow(name, protocol, host, port, user) {
-  //   alert('before showmain...');
-  //   showMain();
-  //   alert('before adding...');
-  //   alert('after adding...');
-  // }
 
   var PORTS = {
     'FTP': 21, 'SFTP': 22
@@ -121,6 +117,7 @@ $(document).ready(function() {
   $('.modify').live('click', function() {
     var name = $(this).attr('data-name');
 
+    $('#conn_name').text('Editing ' + name);
     $('#show_div').hide();
     $('#add_div').show();
     $('#protocol').focus();
@@ -135,6 +132,7 @@ $(document).ready(function() {
       $('#port').val(data.port);
       $('#user').val(data.user);
       $('#password').val(data.password);
+      $('#password').val(data.path);
     }
   });
 
@@ -143,6 +141,7 @@ $(document).ready(function() {
   });
 
   $('#add').click(function() {
+    $('#conn_name').text('New Connection');
     $('#operation').val('insert');
     $('#show_div').hide();
     $('#add_div').show();
@@ -162,12 +161,13 @@ $(document).ready(function() {
       var port = $('#port').val();
       var user = $('#user').val();
       var password = $('#password').val();
+      var path = $('#path').val();
 
       if ($('#operation').val() == 'insert') {
-        result = Controller.addConnection(name, protocol, host, port, user, password);
+        result = Controller.addConnection(name, protocol, host, port, user, password, path);
       }
       else {
-        result = Controller.updateConnection(name, protocol, host, port, user, password);
+        result = Controller.updateConnection(name, protocol, host, port, user, password, path);
       }
       
       if (result.success === false) {
@@ -184,11 +184,13 @@ $(document).ready(function() {
 
         showMain();
         $('#table tr:last').after('<tr id="row-' + name + '"><td>' + 
-          name + '</td><td>' + 
+          '<a href="javascript:void(0);" class="modify" data-name="' + name + '">' +
+          name + '</a></td><td>' + 
           protocol + '</td><td>' + 
           host + '</td><td>' + 
           port + '</td><td>' + 
           user + '</td><td>' +
+          path + '</td><td>' +
           '<a href="javascript:void(0);" class="delete" data-name="' + name + '">Delete</a> ' +
           '<a href="javascript:void(0);" class="modify" data-name="' + name + '">Modify</a>' +
           '</td>' +
