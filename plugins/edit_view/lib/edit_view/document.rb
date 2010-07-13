@@ -306,7 +306,7 @@ module Redcar
     #
     # @param [Integer] an offset
     # @return [Range<Integer>] a range between two character offsets
-    def word_range_at_offset(offset)      
+    def word_range_at_offset(offset)
       match_left = offset == 0 ? false : !/\s/.match(get_slice(offset - 1, offset))
       match_right = offset == length ? false : !/\s/.match(get_slice(offset, offset + 1))
       if match_left && match_right
@@ -315,10 +315,10 @@ module Redcar
         match_word_left_of(offset)
       elsif match_right
         match_word_right_of(offset)
-      else 
+      else
         offset..offset
       end
-    end    
+    end
     
     # Returns the range of the word located around an offset.
     # Before using this method, it's best to make sure there actually
@@ -338,7 +338,7 @@ module Redcar
         right += 1
         if offset + right == length + 1 || /\s/.match(get_slice(offset, offset + right))
           break
-        end        
+        end
       end
       matched_offsets
     end
@@ -386,7 +386,7 @@ module Redcar
           matched_offsets = offset..offset + right
         end
         right += 1
-      end      
+      end
       matched_offsets
     end
     
