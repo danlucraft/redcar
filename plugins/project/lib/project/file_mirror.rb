@@ -14,8 +14,6 @@ module Redcar
       
       # @param [String] a path to a file
       def initialize(path, adapter=Adapters::Local.new)
-        puts "New FileMirror: #{path} with #{adapter.class.name}"
-        
         @path = path
         @adapter = adapter
       end
