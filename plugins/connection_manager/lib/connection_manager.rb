@@ -62,7 +62,7 @@ module Redcar
 
           password = connection[:password] if password and password.empty?
           
-          storage[:connections] = storage[:connections] << { 
+          storage[:connections] = (storage[:connections]||[]) << { 
             :name => name,
             :protocol => protocol,
             :host => host,
@@ -73,7 +73,7 @@ module Redcar
         end
         
         def add_connection(name, protocol, host, port, user, password)
-          if find(name)
+          if (find(name)||[]).any?
             return { 
               'success' => false, 
               'error' => "Connection #{name} already exists. Choose another name and try again." 
@@ -95,7 +95,7 @@ module Redcar
             }
           end
           
-          storage[:connections] = storage[:connections] << { 
+          storage[:connections] = (storage[:connections]||[]) << { 
             :name => name,
             :protocol => protocol,
             :host => host,
@@ -118,6 +118,7 @@ module Redcar
         private
         
         def find(name)
+          return [] unless connections
           connections.find { |c| c[:name] == name }
         end
         
@@ -126,6 +127,7 @@ module Redcar
         end
         
         def connections
+          return unless storage[:connections]
           storage[:connections].sort_by { |e| e[:name] }
         end
       end

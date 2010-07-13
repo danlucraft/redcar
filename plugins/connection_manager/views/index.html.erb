@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
 
 <div id='show_div'>
-<% if connections.any? %>
+<% if connections and connections.any? %>
   <h4>Saved Connections</h4>
   
   <table id='table'>
@@ -33,6 +33,8 @@
       </tr>      
     <% end %>
   </table>
+<% else %>
+  <p><br/><br/><i>No connections yet</i><br/><br/></p>
 <% end %>
 
   <p>
