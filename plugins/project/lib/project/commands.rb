@@ -107,6 +107,11 @@ module Redcar
         Redcar.app.focussed_window.close_speedbar
         Redcar::ConnectionsManager::OpenCommand.new.run
       end
+      
+      def after_draw
+        connection.items = self.class.connection_names
+        connection.value = connection.items.first
+      end
     end
     
     class QuickOpenRemoteSpeedbar < Redcar::Speedbar
