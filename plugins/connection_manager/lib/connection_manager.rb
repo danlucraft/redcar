@@ -40,7 +40,7 @@ module Redcar
           find(name)
         end
         
-        def update_connection(name, protocol, host, port, user, password)
+        def update_connection(name, protocol, host, port, user, password, path)
           connection = find(name)
           
           val_errors = []
@@ -63,16 +63,17 @@ module Redcar
           password = connection[:password] if password and password.empty?
           
           storage[:connections] = (storage[:connections]||[]) << { 
-            :name => name,
-            :protocol => protocol,
-            :host => host,
-            :port => port,
-            :user => user,
-            :password => password
+            :name               => name,
+            :protocol           => protocol,
+            :host               => host,
+            :port               => port,
+            :user               => user,
+            :password           => password,
+            :path               => path
           }        
         end
         
-        def add_connection(name, protocol, host, port, user, password)
+        def add_connection(name, protocol, host, port, user, password, path)
           if (find(name)||[]).any?
             return { 
               'success' => false, 
@@ -96,12 +97,13 @@ module Redcar
           end
           
           storage[:connections] = (storage[:connections]||[]) << { 
-            :name => name,
-            :protocol => protocol,
-            :host => host,
-            :port => port,
-            :user => user,
-            :password => password
+            :name               => name,
+            :protocol           => protocol,
+            :host               => host,
+            :port               => port,
+            :user               => user,
+            :password           => password,
+            :path               => path
           }
           
           return { 'success' => true }

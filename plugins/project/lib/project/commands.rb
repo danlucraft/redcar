@@ -33,7 +33,85 @@ module Redcar
       end
     end
     
+    module OpenRemote
+      def connect_to_remote(protocol, host, user, password, path)
+        error = nil
+        error = "You must provide a host name" if host.empty? 
+  
+        unless error
+          Redcar.safely("Connecting to #{protocol} server #{host}") do
+            begin
+              project = Manager.open_remote_project(protocol, host, user, password, path)
+              project.refresh
+
+            rescue Errno::ECONNREFUSED
+              error = "Connection refused connecting to #{host}"
+
+            rescue SocketError
+              error = "Cannot connect to #{host}. Error: #{$!.message}."
+
+            rescue
+              # gives a chance to protocols to handle their specific errors
+              Project::Adapters::Remote::PROTOCOLS.values.each do |p|
+                break if error = p.handle_error($!, host, user)
+              end
+            end
+          end
+        end
+        
+        Application::Dialog.message_box(error, :type => :error, :buttons => :ok) if error
+      end
+    end
+    
     class OpenRemoteSpeedbar < Redcar::Speedbar
+      include OpenRemote
+      
+      class << self
+        attr_accessor :connection
+        
+        def connections
+          storage = Redcar::Plugin::Storage.new('user_connections') || {}
+          connections = storage[:connections]
+        end
+        
+        def connection_names
+          if connections && connections.any?
+            ['Select...', connections.map { |c| c[:name] }].flatten
+          else
+            # TODO
+            ['Add a new connection...']
+          end
+        end
+      end
+      
+      label :connection_label, 'Connect to:'
+      combo :connection, connection_names, 'Select...'
+      
+      button :connect, "Connect", "Return" do
+        selected = self.class.connections.find { |c| c[:name] == connection.value }
+        connect_to_remote(
+          selected[:protocol], 
+          selected[:host],
+          selected[:user],
+          selected[:password],
+          selected[:path]
+        )
+      end
+      
+      button :quick, "Quick Connection", "Ctrl+Q" do
+        @speedbar = QuickOpenRemoteSpeedbar.new
+        Redcar.app.focussed_window.open_speedbar(@speedbar)
+      end
+      
+      button :manage, "Connections Manager", "Ctrl+M" do
+        Redcar.app.focussed_window.close_speedbar
+        Redcar::ConnectionsManager::OpenCommand.new.run
+      end
+    end
+    
+    class QuickOpenRemoteSpeedbar < Redcar::Speedbar
+      include OpenRemote
+
       class << self
         attr_accessor :host
         attr_accessor :user
@@ -55,33 +133,9 @@ module Redcar
 
       label :path_label, "Path:"
       textbox :path
-
+      
       button :connect, "Connect", "Return" do
-        error = nil
-        error = "You must provide a host name" if host.value.empty? 
-  
-        unless error
-          Redcar.safely("Connecting to #{protocol.value} server #{host.value}") do
-            begin
-              project = Manager.open_remote_project(protocol.value, host.value, user.value, password.value, path.value)
-              project.refresh
-
-            rescue Errno::ECONNREFUSED
-              error = "Connection refused connecting to #{host.value}"
-
-            rescue SocketError
-              error = "Cannot connect to #{host.value}. Error: #{$!.message}."
-
-            rescue
-              # gives a chance to protocols to handle their specific errors
-              Project::Adapters::Remote::PROTOCOLS.values.each do |p|
-                break if error = p.handle_error($!, host.value, user.value)
-              end
-            end
-          end
-        end
-        
-        Application::Dialog.message_box(error, :type => :error, :buttons => :ok) if error
+        connect(protocol.value, host.value, user.value, password.value, path.value)
       end
     end
     
