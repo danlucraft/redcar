@@ -5,15 +5,14 @@ module DocumentSearch
     class << self
       attr_accessor :previous_query
       attr_accessor :previous_is_regex
-      attr_accessor :previous_match_case
-    end
-  
-    def initial_query=(text)
-      SearchSpeedbar.previous_query = text
+      attr_accessor :previous_match_case      
     end
 
+    attr_accessor :initial_query
+    
     def after_draw
-      self.query.value = SearchSpeedbar.previous_query || ""
+      SearchSpeedbar.previous_query ||= ""
+      self.query.value = @initial_query || SearchSpeedbar.previous_query
       self.is_regex.value = SearchSpeedbar.previous_is_regex
       self.match_case.value = SearchSpeedbar.previous_match_case
       self.query.edit_view.document.select_all
