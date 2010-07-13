@@ -12,6 +12,9 @@ module Redcar
       
       def selected(tree, node)
         return unless node
+        return unless node.adapter
+        return unless node.adapter.lazy?
+        
         node.calculate_children
         true
       end
