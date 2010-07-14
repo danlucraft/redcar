@@ -1,4 +1,17 @@
+# require all the gems in vendor
+Dir.glob(File.dirname(__FILE__) + "/../vendor/*").each do |path|
+  gem_name = File.basename(path.gsub(/-[\d\.]+$/, ''))
+  $LOAD_PATH << path + "/lib/"
+end
+
 require 'drb/drb'
+
+require "project/adapters/remote_protocols/protocol"
+require "project/adapters/remote_protocols/sftp"
+require "project/adapters/remote_protocols/ftp"
+
+require "project/adapters/local"
+require "project/adapters/remote"
 
 require "project/commands"
 require "project/dir_mirror"
@@ -18,11 +31,12 @@ module Redcar
       @window_projects ||= {}
     end
     
-    attr_reader :window, :tree, :path
+    attr_reader :window, :tree, :path, :adapter
 
-    def initialize(path)
+    def initialize(path, adapter=Adapters::Local.new)
+      @adapter = adapter
       @path   = File.expand_path(path)
-      dir_mirror = Project::DirMirror.new(path)
+      dir_mirror = Project::DirMirror.new(path, adapter)
       if dir_mirror.exists?
         @tree   = Tree.new(dir_mirror, Project::DirController.new)
         @window = nil

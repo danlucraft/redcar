@@ -4,10 +4,23 @@ module Redcar
     class DirController
       include Redcar::Tree::Controller
       
+      def self.adapter(node, tree=nil)
+        node ? node.adapter : tree.tree_mirror.adapter
+      end
+      
       def activated(tree, node)
         if node.leaf?
-          FileOpenCommand.new(node.path).run
+          FileOpenCommand.new(node.path, node.adapter).run
         end
+      end
+      
+      def selected(tree, node)
+        return unless node
+        return unless node.adapter
+        return unless node.adapter.lazy?
+        
+        node.calculate_children
+        true
       end
       
       class DragController
@@ -33,7 +46,8 @@ module Redcar
           non_nested_paths.each do |path|
             dir = target ? target.directory : tree.tree_mirror.path
             unless File.dirname(path) == dir
-              FileUtils.mv(path, dir)
+              adapter = DirController.adapter(target, tree)
+              adapter.mv(path, dir)
             end
           end
           tree.refresh
@@ -111,10 +125,12 @@ module Redcar
         enclosing_dir = node ? node.directory : tree.tree_mirror.path
         new_file_name = uniq_name(enclosing_dir, "New File")
         new_file_path = File.join(enclosing_dir, new_file_name)
-        FileUtils.touch(new_file_path)
+        
+        adapter = DirController.adapter(node, tree)
+        adapter.touch(new_file_path)
         tree.refresh
         tree.expand(node)
-        new_file_node = DirMirror::Node.create_from_path(new_file_path)
+        new_file_node = DirMirror::Node.create_from_path(adapter, new_file_path)
         tree.edit(new_file_node)
       end
       
@@ -122,10 +138,12 @@ module Redcar
         enclosing_dir = node ? node.directory : tree.tree_mirror.path
         new_dir_name = uniq_name(enclosing_dir, "New Directory")
         new_dir_path = File.join(enclosing_dir, new_dir_name)
-        FileUtils.mkdir(new_dir_path)
+
+        adapter = DirController.adapter(node, tree)
+        adapter.mkdir(new_dir_name)
         tree.refresh
         tree.expand(node)
-        new_dir_node = DirMirror::Node.create_from_path(new_dir_path)
+        new_dir_node = DirMirror::Node.create_from_path(adapter, new_dir_path)
         tree.edit(new_dir_node)
       end
       
@@ -240,10 +258,11 @@ module Redcar
       def edited(tree, node, text)
         new_path = File.expand_path(File.join(File.dirname(node.path), text))
         return if node.path == new_path
-        
-        FileUtils.mv(node.path, new_path)
+
+        adapter = DirController.adapter(node, tree)
+        adapter.mv(node.path, new_path)
         tree.refresh
-        new_node = DirMirror::Node.create_from_path(new_path)
+        new_node = DirMirror::Node.create_from_path(adapter, new_path)
         tree.select(new_node)
       end
       

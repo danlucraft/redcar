@@ -208,3 +208,12 @@
 [submodule "lib/json"]
 	path = lib/json
 	url = http://github.com/flori/json.git
+[submodule "plugins/project/vendor/net-ssh"]
+	path = plugins/project/vendor/net-ssh
+	url = http://github.com/net-ssh/net-ssh.git
+[submodule "plugins/project/vendor/net-sftp"]
+	path = plugins/project/vendor/net-sftp
+	url = http://github.com/net-ssh/net-sftp.git
+[submodule "plugins/project/vendor/net-ftp-list"]
+	path = plugins/project/vendor/net-ftp-list
+	url = http://github.com/fcoury/net-ftp-list.git
