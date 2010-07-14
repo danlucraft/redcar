@@ -1,7 +1,7 @@
 require 'java'
 require 'repl/internal_mirror'
 
-require 'clojure.jar'
+require File.dirname(__FILE__) + "/../vendor/clojure.jar"
 
 include_class 'clojure.lang.Var'
 include_class 'clojure.lang.RT'

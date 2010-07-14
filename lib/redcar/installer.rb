@@ -100,7 +100,8 @@ module Redcar
 
     REDCAR_JARS = {
       "/java-mateview-#{Redcar::VERSION}.jar" => "plugins/edit_view_swt/vendor/java-mateview.jar",
-      "/application_swt-#{Redcar::VERSION}.jar" => "plugins/application_swt/lib/dist/application_swt.jar"
+      "/application_swt-#{Redcar::VERSION}.jar" => "plugins/application_swt/lib/dist/application_swt.jar",
+      "/clojure.jar" => "plugins/repl/vendor/clojure.jar"
     }
     
     XULRUNNER_URI = "http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.2/runtimes/xulrunner-1.9.2.en-US.win32.zip"
