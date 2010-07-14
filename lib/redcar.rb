@@ -41,10 +41,10 @@ require 'uri'
 #
 # and so on.
 module Redcar
-  VERSION         = '0.3.8'
+  VERSION         = '0.3.9dev'
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 3
-  VERSION_RELEASE = 8
+  VERSION_RELEASE = 9
   
   ENVIRONMENTS = [:user, :debug, :test]
   
