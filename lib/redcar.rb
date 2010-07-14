@@ -92,6 +92,9 @@ module Redcar
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "json", "lib"))
     require 'json'
     
+    $:.push File.expand_path(File.join(File.dirname(__FILE__), "openssl", "lib"))
+    require 'openssl'
+
     plugin_manager.load
     if plugin_manager.unreadable_definitions.any?
       puts "Couldn't read definition files: "
