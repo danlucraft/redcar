@@ -17,6 +17,7 @@ module Redcar
         indentation = doc.indentation
         start_line.upto(end_line) do |line_ix|
           indentation.set_level(line_ix, analyzer.calculate_for_line(line_ix, false))
+          indentation.trim_trailing_whitespace(line_ix)
         end
         
         return unless selection
