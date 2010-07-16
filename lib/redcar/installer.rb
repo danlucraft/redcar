@@ -103,7 +103,7 @@ module Redcar
       "/application_swt-#{Redcar::VERSION}.jar" => "plugins/application_swt/lib/dist/application_swt.jar"
     }
     
-    XULRUNNER_URI = "http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.2/runtimes/xulrunner-1.9.2.en-US.win32.zip"
+    XULRUNNER_URI = "http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.2.6/runtimes/xulrunner-1.9.2.6.en-US.win32.zip"
 
     SWT_JARS = {
       :osx     => {
