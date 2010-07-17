@@ -4,12 +4,13 @@ module Redcar
     class CommandOutputController
       include Redcar::HtmlController
       
-      def initialize(cmd)
+      def initialize(cmd, title)
         @cmd = cmd
+        @title = title
       end
       
       def title
-        "Process"
+        "#{@title} Process"
       end
       
       def ask_before_closing
