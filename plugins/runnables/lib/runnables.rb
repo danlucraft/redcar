@@ -9,11 +9,19 @@ module Redcar
   class Runnables
     TREE_TITLE = "Runnables"
     
-    def self.run_process(command, name)
-      tab = Redcar.app.focussed_window.new_tab(HtmlTab)
+    def self.run_process(command, name, output)
       controller = CommandOutputController.new(command, name)
-      tab.html_view.controller = controller
-      tab.focus
+      if output == "window"
+        Project::Manager.open_project_for_path(".")
+        output = "tab"
+      end
+      if output == "none"
+        controller.run
+      else        
+        tab = Redcar.app.focussed_window.new_tab(HtmlTab)
+        tab.html_view.controller = controller
+        tab.focus
+      end
     end
     
     class TreeMirror
@@ -86,6 +94,18 @@ module Redcar
       def command
         @info["command"]
       end
+      
+      def out?
+        @info["output"]
+      end
+      
+      def output
+        if out?
+          @info["output"]
+        else
+          "tab"
+        end
+      end
     end
     
     class TreeController
@@ -98,7 +118,7 @@ module Redcar
       def activated(tree, node)
         case node
         when Runnable
-          Runnables.run_process(node.command, node.text)
+          Runnables.run_process(node.command, node.text, node.output)
         when HelpItem
           tab = Redcar.app.focussed_window.new_tab(HtmlTab)
           tab.go_to_location("http://wiki.github.com/danlucraft/redcar/users-guide-runnables")
