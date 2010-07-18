@@ -49,10 +49,9 @@ module Redcar
       end
     
       def sanitize_grammar_name(name)
-        name = name.strip.gsub("+", "Plus").gsub("#", "Sharp").split(" ").inject do |result, word|
-          result << word.capitalize
-        end
-        name.gsub(/\W/, "").camelize
+        name.strip.gsub("+", "Plus").gsub("#", "Sharp").split(" ").map do |word|
+          result << word.camelize
+        end.gsub(/\W/, "")
       end
     end
   end
