@@ -335,8 +335,9 @@ module Redcar
       matched_offsets = offset..offset
       until false
         new_match = match_word_left_of(offset + right)
-        matched_offsets = new_match if new_match.last - new_match.first > matched_offsets.last - matched_offsets.first &&
-          new_match.first <= offset
+        if new_match.last - new_match.first > matched_offsets.last - matched_offsets.first && new_match.first <= offset
+          matched_offsets = new_match
+        end
         right += 1
         if offset + right == length + 1 || /\s/.match(get_slice(offset, offset + right))
           break
