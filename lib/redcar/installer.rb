@@ -91,7 +91,7 @@ module Redcar
 
     JRUBY << "http://jruby.org.s3.amazonaws.com/downloads/1.5.0/jruby-complete-1.5.0.jar"
     
-    JOPENSSL_DIR = "lib/openssl/lib/"
+    JOPENSSL_DIR = File.expand_path(File.join(File.dirname(__FILE__), "..", "openssl/lib/")) 
     JOPENSSL = {
       "/jruby/bcmail-jdk14-139-#{Redcar::VERSION}.jar" => "bcmail-jdk14-139.jar",
       "/jruby/bcprov-jdk14-139-#{Redcar::VERSION}.jar" => "bcprov-jdk14-139.jar",
@@ -104,7 +104,7 @@ module Redcar
       "/clojure.jar" => "plugins/repl/vendor/clojure.jar"
     }
     
-    XULRUNNER_URI = "http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.2/runtimes/xulrunner-1.9.2.en-US.win32.zip"
+    XULRUNNER_URI = "http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.2.6/runtimes/xulrunner-1.9.2.6.en-US.win32.zip"
 
     SWT_JARS = {
       :osx     => {
