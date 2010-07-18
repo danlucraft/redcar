@@ -1,6 +1,13 @@
 
-Version 0.3.8 (TBA)
-===================
+Version 0.3.8.1 (18 July 2010)
+==============================
+
+ * Update xulrunner url to point to existing distribution. (huma-)
+ * Hack to make Rexml load invalid character correctly on 1.9.1. (huma-)
+ * Fix installer script to put openssl jar in the right place (Dan Lucraft)
+
+Version 0.3.8 (12 July 2010)
+============================
 
  * Can switch between open trees in a window (Dan Lucraft)
  * Runnables: extensible runnable tasks/build items/tests/generators for projects. (Dan Lucraft)
