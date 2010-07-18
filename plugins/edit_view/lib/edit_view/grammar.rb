@@ -50,7 +50,7 @@ module Redcar
     
       def sanitize_grammar_name(name)
         name.strip.gsub("+", "Plus").gsub("#", "Sharp").split(" ").map do |word|
-          result << word.camelize
+          word.camelize
         end.gsub(/\W/, "")
       end
     end
