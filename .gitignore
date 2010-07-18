@@ -36,6 +36,7 @@ plugins/application_swt/dist
 plugins/edit_view_swt/vendor/j*.jar
 plugins/dans
 plugins/*/lib/dist/
+plugins/repl/vendor/clojure.jar
 pkg
 
 textmate/Bundles/asciidoc.tmbundle

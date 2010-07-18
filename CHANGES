@@ -1,6 +1,22 @@
 
-Version 0.3.8 (TBA)
+Version 0.3.9 (TBA)
 ===================
+
+ * Clojure REPL (David Byrne)
+ * Remote edit files (Felipe Coury)
+ * Remote directory view (Felipe Coury)
+ * Connection manager (Felipe Coury)
+ * Fix crashing bug when exceptions have no message (Kieran Pilkington)
+
+Version 0.3.8.1 (18 July 2010)
+==============================
+
+ * Update xulrunner url to point to existing distribution. (huma- and akautm)
+ * Hack to make Rexml load invalid character correctly on 1.9.1. (huma-)
+ * Fix installer script to put openssl jar in the right place (Dan Lucraft)
+
+Version 0.3.8 (12 July 2010)
+============================
 
  * Can switch between open trees in a window (Dan Lucraft)
  * Runnables: extensible runnable tasks/build items/tests/generators for projects. (Dan Lucraft)
@@ -13,6 +29,7 @@ Version 0.3.8 (TBA)
  * New APIs: Document#current_word, Document#word_at_offset (Johannes Wollert)
  * Made the first tab open for a new install MUCH faster by generating the textmate bundle cache in the install script (Dan Lucraft)
  * Search speedbar is opened with selected text as the default search (Johannes Wollert)
+ * Helper method for executing JavaScript in the browser during controller actions (Dan Lucraft)
 
 Version 0.3.7.1 (25 Jun 2010)
 =============================

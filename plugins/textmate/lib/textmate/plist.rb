@@ -13,10 +13,11 @@ module Redcar
 
     def self.plist_from_xml(xml_string) # :nodoc:
       require 'rexml/document'
+      REXML::Text::VALID_CHAR << 0x3 if RUBY_VERSION >= '1.9.1'
       xml = REXML::Document.new(xml_string)
-      plist_from_xml1(xml.root.elements.first)
+      plist_from_xml1(xml.root.elements.to_a.first)
     end
-    
+
     def self.plist_from_xml1(element) # :nodoc:
       case element.name
       when "dict"

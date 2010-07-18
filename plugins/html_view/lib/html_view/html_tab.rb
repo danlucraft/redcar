@@ -10,7 +10,7 @@ module Redcar
     end
     
     def close
-      html_view.controller.close
+      html_view.controller.close if html_view.controller
       super
     end
     
@@ -20,6 +20,10 @@ module Redcar
     
     def controller_action(action, params)
       notify_listeners(:controller_action, action, params)
+    end
+    
+    def go_to_location(url)
+      controller.go_to_location(url)
     end
   end
 end

@@ -1,4 +1,10 @@
+require 'java'
 require 'repl/internal_mirror'
+
+require File.dirname(__FILE__) + "/../vendor/clojure.jar"
+
+include_class 'clojure.lang.Var'
+include_class 'clojure.lang.RT'
 
 module Redcar
   class REPL
@@ -30,21 +36,41 @@ module Redcar
       Menu::Builder.build do
         sub_menu "Plugins" do
           sub_menu "REPL" do
-            item "Open",    REPL::OpenInternalREPL
+            item "Open Ruby REPL",    REPL::OpenInternalREPL
+            item "Open Clojure REPL", REPL::OpenClojureREPL
             item "Execute", REPL::CommitREPL
           end
         end
       end
     end
     
-    class OpenInternalREPL < Command
+    class OpenREPL < Command
       
-      def execute
+      def open_repl eval_proc
         tab = win.new_tab(Redcar::EditTab)
         edit_view = tab.edit_view
-        edit_view.document.mirror = REPL::InternalMirror.new
+        edit_view.document.mirror = REPL::InternalMirror.new eval_proc
         edit_view.cursor_offset = edit_view.document.length
         tab.focus
+      end
+    end
+    
+    class OpenInternalREPL < OpenREPL
+      def execute
+	      open_repl Proc.new { |expr,binding| eval(expr, binding) }
+      end
+    end
+    
+    class OpenClojureREPL < OpenREPL
+      
+      def execute
+	
+        eval_proc = Proc.new do |expr, binding|
+	        load_string = RT.var("clojure.core", "load-string")
+	        load_string.invoke(expr)      
+	      end
+	
+	      open_repl eval_proc
       end
     end
     

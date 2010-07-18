@@ -23,7 +23,7 @@ module Redcar
   	    puts "Don't have permission to write to #{JRUBY_JAR_DIR}. Please rerun with sudo."
   	    exit 1
   	  end
-      
+      Redcar.environment = :user
   	  puts "Downloading >10MB of jar files. This may take a while."
   	  grab_jruby
   	  grab_common_jars
@@ -91,7 +91,7 @@ module Redcar
 
     JRUBY << "http://jruby.org.s3.amazonaws.com/downloads/1.5.0/jruby-complete-1.5.0.jar"
     
-    JOPENSSL_DIR = "lib/openssl/lib/"
+    JOPENSSL_DIR = File.expand_path(File.join(File.dirname(__FILE__), "..", "openssl/lib/")) 
     JOPENSSL = {
       "/jruby/bcmail-jdk14-139-#{Redcar::VERSION}.jar" => "bcmail-jdk14-139.jar",
       "/jruby/bcprov-jdk14-139-#{Redcar::VERSION}.jar" => "bcprov-jdk14-139.jar",
@@ -100,10 +100,11 @@ module Redcar
 
     REDCAR_JARS = {
       "/java-mateview-#{Redcar::VERSION}.jar" => "plugins/edit_view_swt/vendor/java-mateview.jar",
-      "/application_swt-#{Redcar::VERSION}.jar" => "plugins/application_swt/lib/dist/application_swt.jar"
+      "/application_swt-#{Redcar::VERSION}.jar" => "plugins/application_swt/lib/dist/application_swt.jar",
+      "/clojure.jar" => "plugins/repl/vendor/clojure.jar"
     }
     
-    XULRUNNER_URI = "http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.2/runtimes/xulrunner-1.9.2.en-US.win32.zip"
+    XULRUNNER_URI = "http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.2.6/runtimes/xulrunner-1.9.2.6.en-US.win32.zip"
 
     SWT_JARS = {
       :osx     => {
@@ -144,7 +145,7 @@ module Redcar
       when /windows|mswin|mingw/i
         setup "swt", :resources => SWT_JARS[:windows], :path => File.join(plugins_dir, %w(application_swt vendor swt))
         setup "swt", :resources => [XULRUNNER_URI],    :path => File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. vendor)))
-        link( File.join(redcar_jars_dir, name, File.basename(XULRUNNER_URI)),
+        link( File.join(redcar_jars_dir, "swt", "xulrunner"),
               File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. vendor xulrunner))))
       end
     end
@@ -205,7 +206,7 @@ module Redcar
       # Windoze doesn't support FileUtils.ln_sf, so we copy the files
       if Config::CONFIG["host_os"] =~ /windows|mswin|mingw/i
         puts "  copying #{File.basename(cached)}..."
-        FileUtils.cp cached, target
+        FileUtils.cp_r cached, target
       else
         puts "  linking #{File.basename(cached)}..."
         FileUtils.ln_sf cached, target

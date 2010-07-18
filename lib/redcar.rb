@@ -41,10 +41,10 @@ require 'uri'
 #
 # and so on.
 module Redcar
-  VERSION         = '0.3.8dev'
+  VERSION         = '0.3.9dev'
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 3
-  VERSION_RELEASE = 8
+  VERSION_RELEASE = 9
   
   ENVIRONMENTS = [:user, :debug, :test]
   
@@ -92,6 +92,9 @@ module Redcar
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "json", "lib"))
     require 'json'
     
+    $:.push File.expand_path(File.join(File.dirname(__FILE__), "openssl", "lib"))
+    require 'openssl'
+
     plugin_manager.load
     if plugin_manager.unreadable_definitions.any?
       puts "Couldn't read definition files: "

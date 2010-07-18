@@ -96,7 +96,15 @@ module Redcar
       end
       
       def activated(tree, node)
-        Runnables.run_process(node.command)
+        case node
+        when Runnable
+          Runnables.run_process(node.command)
+        when HelpItem
+          tab = Redcar.app.focussed_window.new_tab(HtmlTab)
+          tab.go_to_location("http://wiki.github.com/danlucraft/redcar/users-guide-runnables")
+          tab.title = "Runnables Help"
+          tab.focus
+        end
       end
     end
     

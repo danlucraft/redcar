@@ -35,7 +35,7 @@ module Redcar
 
       def print_command_error(e)
         puts "Error in command #{@command_instance.class}"
-        puts e.class.to_s + ": " + e.message
+        puts e.class.to_s + ": " + e.message.to_s
         puts e.backtrace
       end
       

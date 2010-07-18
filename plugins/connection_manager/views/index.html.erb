@@ -1,0 +1,216 @@
+<h3>Connection Manager</h3>
+
+<% jquery_path = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets jquery-1.4.min.js))) %>
+<script type="text/javascript" src="file://<%= jquery_path %>"></script>
+
+<% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets redcar.css))) %>
+<link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
+
+<div id='show_div'>
+<% if connections and connections.any? %>
+  <h4>Saved Connections</h4>
+  
+  <table id='table'>
+    <tr class='grey' style='font-weight:bold;'>
+      <td>Name</td>
+      <td>Protocol</td>
+      <td>Host</td>
+      <td>Port</td>
+      <td>User</td>
+      <td>Remote Path</td>
+    </tr>
+    
+    <% connections.each do |s| %>
+      <tr id='row-<%= s[:name] %>'>
+        <td><a href='javscript:void(0);' class='modify' data-name="<%= s[:name] %>"><%= s[:name] %></a></td>
+        <td><%= s[:protocol] %></td>
+        <td><%= s[:host] %></td>
+        <td><%= s[:port] %></td>
+        <td><%= s[:user] %></td>
+        <td><%= s[:path] %></td>
+        <td>
+          <a href='javascript:void(0);' class='delete' data-name="<%= s[:name] %>">Delete</a>
+          <a href='javascript:void(0);' class='modify' data-name="<%= s[:name] %>">Modify</a>
+        </td>
+      </tr>      
+    <% end %>
+  </table>
+<% else %>
+  <p><br/><br/><i>No connections yet</i><br/><br/></p>
+<% end %>
+
+  <p>
+    <input id='add' type='button' value='Add Connection'>
+  </p>
+</div>
+
+<p>
+  <div id='add_div' style='display:none;'>
+    <div id='error' style='display:none;color:red;text-weight:bold;margin-bottom:20px;'></div>
+    <form id='new_connection'>
+      <input type='hidden' name='operation' id='operation'>
+      <table>
+        <tr class='grey'>
+          <td colspan=2><b><span id='conn_name'>New Connection</span></b></td>
+        </tr>
+        <tr><td>Name:     </td><td><input size='30' type='text' name='name' id='name'></td></tr>
+        <tr>
+          <td>Protocol: </td>
+          <td>
+            <select name='protocol' id='protocol'>
+              <option></option>
+              <option>SFTP</option>
+              <option>FTP</option>
+            </select>
+          </td>
+        </tr>
+        <tr><td>Host:        </td><td><input size="30" type='text' name='host' id='host'></td></tr>
+        <tr><td>Port:        </td><td><input type='text' name='port' id='port' size=2></td></tr>
+        <tr><td>User:        </td><td><input size="30" type='text' name='user' id='user'></td></tr>
+        <tr><td>Password:    </td><td><input size="30" type='password' name='password' id='password'></td></tr>
+        <tr><td>Remote Path: </td><td><input size="30" type='text' name='path' id='path'></td></tr>
+        <tr>
+          <td colspan=2>
+            <input id='save' type='submit' value='Save'>
+            <input id='cancel' type='button' value='Cancel'>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+</p>
+
+<p>
+  <small><a href='javascript:void(0);' id='reload'>Reload</a></small>
+</p>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  function showMain() {
+    $(':input','#new_connection')
+      .not(':button, :submit, :reset, :hidden')
+      .val('')
+      .removeAttr('checked')
+      .removeAttr('selected');  
+
+    $('#add_div').hide();
+    $('#show_div').show();
+  }
+
+  var PORTS = {
+    'FTP': 21, 'SFTP': 22
+  };
+  
+  $('.delete').live('click', function() {
+    var name = $(this).attr('data-name');
+    try {
+      if (confirm('Do you really want to delete connection ' + name + '?')) {
+        Controller.deleteConnection(name);
+        $('#row-' + name.replace(' ', '_')).remove();
+      }
+    }
+    catch(err) {
+      alert("Error: " + err.message);
+    }
+  });
+  
+  $('.modify').live('click', function() {
+    var name = $(this).attr('data-name');
+
+    $('#conn_name').text('Editing ' + name);
+    $('#show_div').hide();
+    $('#add_div').show();
+    $('#protocol').focus();
+    $('#name').attr('disabled', 'disabled');
+
+    var data = Controller.getConnection(name);
+    if (data) {
+      $('#operation').val('update');
+      $('#name').val(name);
+      $('#protocol').val(data.protocol);
+      $('#host').val(data.host);
+      $('#port').val(data.port);
+      $('#user').val(data.user);
+      $('#password').val(data.password);
+      $('#path').val(data.path);
+    }
+  });
+
+  $('#protocol').change(function(e) {
+    $('#port').val(PORTS[$(this).val()]);
+  });
+
+  $('#add').click(function() {
+    $('#conn_name').text('New Connection');
+    $('#operation').val('insert');
+    $('#show_div').hide();
+    $('#add_div').show();
+    $('#name').focus();
+  });
+
+  $('#cancel').click(function() {
+    showMain();
+  });
+
+  $("#new_connection").submit(function(e) {
+    try {
+      $('#name').removeAttr('disabled');
+      var name = $('#name').val();
+      var protocol = $('#protocol').val();
+      var host = $('#host').val();
+      var port = $('#port').val();
+      var user = $('#user').val();
+      var password = $('#password').val();
+      var path = $('#path').val();
+
+      if ($('#operation').val() == 'insert') {
+        result = Controller.addConnection(name, protocol, host, port, user, password, path);
+      }
+      else {
+        result = Controller.updateConnection(name, protocol, host, port, user, password, path);
+      }
+      
+      if (result.success === false) {
+        $('#error').html(result.error);
+        $('#error').show();
+        $('#name').focus();
+      }
+      else {
+        $('#error').hide();
+
+        if ($('#operation').val() == 'update') {
+          $('#row-' + name.replace(' ', '_')).remove();
+        }
+
+        showMain();
+        $('#table tr:last').after('<tr id="row-' + name + '"><td>' + 
+          '<a href="javascript:void(0);" class="modify" data-name="' + name + '">' +
+          name + '</a></td><td>' + 
+          protocol + '</td><td>' + 
+          host + '</td><td>' + 
+          port + '</td><td>' + 
+          user + '</td><td>' +
+          path + '</td><td>' +
+          '<a href="javascript:void(0);" class="delete" data-name="' + name + '">Delete</a> ' +
+          '<a href="javascript:void(0);" class="modify" data-name="' + name + '">Modify</a>' +
+          '</td>' +
+          '</tr>');
+      }
+    }
+    catch(err) {
+      alert("Error: " + err.message);
+    }
+    return false;
+  });
+
+  $("#reload").click(function(e) {
+    e.preventDefault();
+    try {
+      Controller.reloadPlugin();
+    } catch(err) {
+      alert(err.message);
+    }
+  });
+});
+
+</script>

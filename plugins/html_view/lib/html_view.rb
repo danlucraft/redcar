@@ -1,6 +1,7 @@
 
 require 'html_view/html_tab'
 require 'html_controller'
+require 'json'
 
 module Redcar
   class HtmlView
@@ -61,7 +62,10 @@ module Redcar
       rescue => e
         text = <<-HTML
           Sorry, there was an error.<br />
-          #{e.message}
+          <pre><code>
+            #{e.message}
+            #{e.backtrace}
+          </code></pre>
         HTML
       end
       if text
@@ -82,7 +86,11 @@ module Redcar
         func_name = args.to_a.first
         func_args = args.to_a.last.to_a
         begin
-          JSON(controller.send(func_name.to_sym, *func_args))
+          if result = controller.send(func_name.to_sym, *func_args)
+            return JSON(result)
+          else
+            return "{}"
+          end
         rescue JSON::GeneratorError => e
           nil
         end
@@ -99,7 +107,7 @@ module Redcar
       (controller.methods - Object.new.methods).each do |method_name|
         method = []
         method << "  #{method_name.gsub(/_(\w)/) { |a| $1.upcase}}: function() {"
-        method << "    return eval(rubyCall(\"#{method_name}\", Array.prototype.slice.call(arguments)));"
+        method << "    return JSON.parse(rubyCall(\"#{method_name}\", Array.prototype.slice.call(arguments)));"
         method << "  }"
         methods << method.join("\n")
       end
