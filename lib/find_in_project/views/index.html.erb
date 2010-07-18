@@ -1,0 +1,82 @@
+<% jquery_path = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets jquery-1.4.min.js))) %>
+<script type="text/javascript" src="file://<%= jquery_path %>"></script>
+
+<% plugin_css = File.expand_path(File.join(@plugin_root, %w(lib find_in_project stylesheets style.css))) %>
+<link rel="stylesheet" href="file://<%= plugin_css %>" type="text/css" media="screen">
+
+<div id="search_container">
+  <form id="search_form">
+    <table>
+      <tr class="input">
+        <td class="label"><label for="query">Search Term</label></td>
+        <td class="field"><input id="query" type="text" value="<%= @query %>" /></td>
+      </tr>
+      <tr class="input">
+        <td class="label"><label for="options">Options</label></td>
+        <td class="field"><input id="options" type="text" value="<%= @options %>" /></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td class="controls">
+          <input id="search" type="submit" value="Search" />
+          <input type="checkbox" id="match_case" <%="checked=checked" if @match_case %>>
+          <label for="match_case">Match case</label>
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<% if @results.nil? %>
+  <div id="no_results">
+    Please provide a search term above.
+  </div>
+<% elsif @results.empty? %>
+  <div id="no_results">
+    No results were found using the search terms you provided.
+  </div>
+<% else %>
+  <div id="results">
+    <table>
+      <% @results.each_with_index do |result, index| %>
+        <% filename, matches = result[0].gsub(/^\.\//, ''), result[1] %>
+        <tr>
+          <td class='filename' colspan="2"><%= filename %></td>
+        </tr>
+        <% matches.each_with_index do |(line, text), index| %>
+          <% text = CGI.escapeHTML(text).gsub((@match_case ? /(#{@query})/ : /(#{@query})/i)) { "<em>#{$1}</em>" } %>
+          <tr class="result <%= (index % 2 == 0 ? 'even' : 'odd') %>" data-href='<%= filename %>' data-line_no='<%= line %>'>
+            <td class='line_no'><%= line %></td>
+            <td class='text'><pre><%= text %></pre></td>
+          </tr>
+        <% end %>
+        <tr><td class='break' colspan='2'></td></tr>
+      <% end %>
+    </table>
+  </div>
+<% end %>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#search_form').submit(function() {
+      try {
+        if ($("#match_case").attr('checked')) { var match_case = 'true'; } else { var match_case = 'false'; }
+        Controller.search($("#query").val(), $("#options").val(), match_case);
+      } catch(e) {
+        alert(e.message);
+      }
+      return false;
+    });
+
+    $('.result').each(function(i) {
+      $(this).click(function(ev) {
+        ev.preventDefault();
+        try {
+          Controller.openFile($(this).attr('data-href'), $(this).attr('data-line_no'), "<%= @query %>", <%= @match_case ? 'true' : 'false' %>);
+        } catch(e) {
+          alert(e.message);
+        }
+      });
+    });
+  });
+</script>

@@ -1,0 +1,86 @@
+#search_container {
+  background-color: #eee;
+  width: 100%;
+  margin: -8px 0px 20px -8px;
+  padding-right: 16px;
+}
+
+#search_container table {
+  width: 100%;
+}
+
+#search_container table td {
+  padding: 3px 10px;
+}
+
+#search_container .input .label {
+  width: 100px;
+  text-align: right;
+}
+
+#search_container .input .field input {
+  width: 100%;
+}
+
+#search_container .controls label {
+  font-size: 13px;
+}
+
+#search_container .controls #search {
+  float: right;
+}
+
+#no_results {
+  font-weight: bold;
+  font-size: 16px;
+  text-align: center;
+}
+
+#results * {
+  margin: 0;
+  padding: 0;
+}
+
+#results {
+  padding: 0 10px 10px 10px;
+}
+
+#results table {
+  width: 100%;
+  padding: 0px;
+  margin: 0px;
+  border-spacing: 0px;
+}
+
+#results .filename,
+#results .line_no {
+  background-color: #eee;
+  padding: 3px 10px;
+}
+
+#results .even {
+  background-color: #fff;
+}
+
+#results .odd {
+  background-color: #EDEDFD;
+}
+
+#results .line_no {
+  text-align: right;
+  padding: 0 5px;
+  min-width: 20px;
+}
+
+#results .text {
+  padding: 3px 10px;
+  width: 100%;
+}
+
+#results .text em {
+  background-color: yellow;
+}
+
+#results .break {
+  height: 20px;
+}

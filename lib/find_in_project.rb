@@ -1,165 +1,56 @@
-require 'erb'
-require "cgi"
+require 'find_in_project/controllers'
+require 'find_in_project/commands'
+require 'find_in_project/engines/ack'
+require 'find_in_project/engines/grep'
 
 module Redcar
-  class FindInProject 
-    
+  class FindInProject
     def self.keymaps
       osx = Keymap.build('main', :osx) do
-        link "Cmd+Shift+F", FindInProject::OpenCommand        
+        link "Cmd+Shift+F", FindInProject::OpenSearch
       end
-      
-      linwin = Keymap.build('main', [:linux, :windows]) do        
-        link "Ctrl+Shift+F", FindInProject::OpenCommand        
+
+      linwin = Keymap.build('main', [:linux, :windows]) do
+        link "Ctrl+Shift+F", FindInProject::OpenSearch
       end
-      
+
       [linwin, osx]
     end
-    
-    def self.menus      
+
+    def self.menus
       Menu::Builder.build do
         sub_menu "Plugins" do
-          sub_menu "Find in project" do
-            item "Find in project!", FindInProject::OpenCommand
-            item "Edit plugin", FindInProject::EditFindInProject
-            item "Edit preferences", FindInProject::EditPreferences
+          sub_menu "Find In Project" do
+            item "Find In Project!", Redcar::FindInProject::OpenSearch
+            item "Edit Preferences", Redcar::FindInProject::EditPreferences
           end
         end
       end
-    end    
-    
+    end
+
     def self.storage
       @storage ||= begin
         storage = Plugin::Storage.new('find_in_project')
-        storage.set_default('exclude_dirs', '.git .svn')
-        storage.set_default('exclude_files', '.gitignore tags *.log') 
-        storage.set_default('include_files', '*.*')
-        storage.set_default('number_of_results', '1000')
-        storage.set_default('match_case', false)
-        storage
-      end
-    end
-    
-    class OpenCommand < Redcar::Command
+        unless storage['search_engine']
+          engines = Array.new
 
-      def execute        
-        unless tab = find_open_instance
-          controller = Controller.new
-          tab =  win.new_tab(HtmlTab)
-          tab.html_view.controller = controller
-        end
-        tab.focus
-      end
-      
-    
-      class Controller
-        include Redcar::HtmlController
-        
-        def title
-          "Find in project"
-        end
-        
-        def index
-          @plugin_path = File.join(File.dirname(__FILE__), "..")
-          @files ||= FindInProject.storage['exclude_files']
-          @dirs ||= FindInProject.storage['exclude_dirs']
-          @includes ||= FindInProject.storage['include_files']
-          @lines ||= FindInProject.storage['number_of_results'].to_i
-          @match_case = FindInProject.storage['match_case'] if @match_case.nil?
-          rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "views", "index.html.erb")))
-          rhtml.result(binding)
-        end
-        
-        def find(query, files, dirs, includes, lines, match_case)
-          @query = query
-          @files = files
-          @dirs = dirs
-          @includes = includes
-          @lines = lines.to_i
-          @match_case = (match_case == "true" ? true : false)
-                  
-          options = "-r -n -H -E --binary-files='without-match' "
-          
-          files.split(' ').each do |file|
-            options << "--exclude=\"#{file}\" "
-          end
-          
-          dirs.split(' ').each do |dir|
-            options << "--exclude-dir=\"#{dir}\" "
-          end          
+          # TODO: Ack search engine is broken, don't auto detect it yet
+          #ack = Redcar::FindInProject::Engines::Ack.detect
+          #if ack
+          #  storage.set_default('ack_path', ack)
+          #  engines << 'ack'
+          #end
 
-          includes.split(' ').each do |inc|
-            options << "--include=\"#{inc}\" "
-          end      
-          
-          if @lines
-            head = "| head -#{lines.to_i}"
-          else
-            head = ''
+          grep = Redcar::FindInProject::Engines::Grep.detect
+          if grep
+            storage.set_default('grep_path', grep)
+            engines << 'grep'
           end
-          
-          if !@match_case
-            options << "-i "
-          end
-          
-          path = Project::Manager.focussed_project.path                              
-          @output = `cd #{path}; grep "#{query}" #{options} . #{head}`
-          @outputs = @output.split("\n")            
-          Redcar.app.focussed_window.focussed_notebook_tab.html_view.controller = self
-          nil
-        end  
-        
-        def open_file(file, line, regex, match_case)                    
-          Project::Manager.open_file(File.join(Project::Manager.focussed_project.path, file))
-          doc = Redcar.app.focussed_window.focussed_notebook_tab.edit_view.document          
-          doc.cursor_offset = doc.offset_at_line(line.to_i - 1)
-          if match_case
-            index = doc.get_line(line.to_i - 1).index(/#{regex.gsub("\\\"", "\"")}/)
-            length = doc.get_line(line.to_i - 1).match(/(#{regex.gsub("\\\"", "\"")})[^\n]*\n$/)[1].length
-          else
-            index = doc.get_line(line.to_i - 1).index(/#{regex.gsub("\\\"", "\"")}/i)
-            length = doc.get_line(line.to_i - 1).match(/(#{regex.gsub("\\\"", "\"")})[^\n]*\n$/i)[1].length            
-          end          
-          
-          doc.set_selection_range(doc.cursor_line_start_offset + index, doc.cursor_line_start_offset + index + length)
-          doc.scroll_to_line(line.to_i)
-          1
-        end        
-        
-      end       
-      
-      private
-      
-      def find_open_instance
-        all_tabs = Redcar.app.focussed_window.notebooks.map{|nb| nb.tabs }.flatten
-        all_tabs.find do |t| 
-          t.is_a?(Redcar::HtmlTab) and
-          t.title == 'Find in project'
+
+          storage.set_default('search_engine', engines.first)
         end
-      end
-      
-    end
-    
-    class EditFindInProject < Redcar::Command
-      def execute             
-        Project::Manager.open_project_for_path(File.join(Redcar.user_dir, "plugins", "find-in-project"))                
-        tab  = Redcar.app.focussed_window.new_tab(Redcar::EditTab)
-        mirror = Project::FileMirror.new(File.join(Redcar.user_dir, "plugins", "find-in-project", "lib", "find_in_project.rb"))
-        tab.edit_view.document.mirror = mirror        
-        tab.edit_view.reset_undo
-        tab.focus
+        storage.save
       end
     end
-    
-    class EditPreferences < Redcar::Command
-      def execute             
-        tab  = Redcar.app.focussed_window.new_tab(Redcar::EditTab)
-        mirror = Project::FileMirror.new(File.join(Redcar.user_dir, "storage", "find_in_project.yaml"))
-        tab.edit_view.document.mirror = mirror        
-        tab.edit_view.reset_undo
-        tab.focus        
-      end
-    end
-    
   end
 end
