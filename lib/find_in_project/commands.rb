@@ -2,11 +2,16 @@ module Redcar
   class FindInProject
     class OpenSearch < Redcar::Command
       def execute
-        unless tab = find_open_instance
-          tab = win.new_tab(Redcar::HtmlTab)
-          tab.html_view.controller = Redcar::FindInProject::Controller.new
+        if Project::Manager.focussed_project
+          unless tab = find_open_instance
+            tab = win.new_tab(Redcar::HtmlTab)
+            tab.html_view.controller = Redcar::FindInProject::Controller.new
+          end
+          tab.focus
+        else
+          # warning
+          Application::Dialog.message_box("You need an open project to be able to use Find In Project!", :type => :error)
         end
-        tab.focus
       end
 
       private
@@ -21,6 +26,8 @@ module Redcar
 
     class EditPreferences < Redcar::Command
       def execute
+        Redcar.app.make_sure_at_least_one_window_open # open a new window if needed
+
         Redcar::FindInProject.storage # populate the file if it isn't already
 
         tab  = Redcar.app.focussed_window.new_tab(Redcar::EditTab)
