@@ -278,15 +278,18 @@ task :release => :gem do
   )
   
   redcar_bucket = AWS::S3::Bucket.find('redcar')
+  s3_uploads = {
+    "plugins/edit_view_swt/vendor/java-mateview.jar"       => "java-mateview-#{REDCAR_VERSION}.jar",
+    "plugins/application_swt/lib/dist/application_swt.jar" => "application_swt-#{REDCAR_VERSION}.jar",
+    "lib/openssl/lib/bcmail-jdk14-139.jar"                 => "jruby/bcmail-jdk14-139-#{REDCAR_VERSION}.jar",
+    "lib/openssl/lib/bcprov-jdk14-139.jar"                 => "jruby/bcprov-jdk14-139-#{REDCAR_VERSION}.jar",
+    "lib/openssl/lib/jopenssl.jar"                         => "jruby/jopenssl-#{REDCAR_VERSION}.jar",
+    "pkg/redcar-#{REDCAR_VERSION}.gem"                     => "redcar-#{REDCAR_VERSION}.gem"
+  }
   
-  file = "plugins/edit_view_swt/vendor/java-mateview.jar"
-  AWS::S3::S3Object.store("java-mateview-#{REDCAR_VERSION}.jar", open(file), 'redcar', :access => :public_read)
-  
-  file = "plugins/application_swt/lib/dist/application_swt.jar"
-  AWS::S3::S3Object.store("application_swt-#{REDCAR_VERSION}.jar", open(file), 'redcar', :access => :public_read)
-  
-  file = "pkg/redcar-#{REDCAR_VERSION}.gem"
-  AWS::S3::S3Object.store("redcar-#{REDCAR_VERSION}.gem", open(file), 'redcar', :access => :public_read)
+  s3_uploads.each do |source, target|
+    AWS::S3::S3Object.store(target, open(source), 'redcar', :access => :public_read)
+  end
 end
 
 namespace :redcar do
