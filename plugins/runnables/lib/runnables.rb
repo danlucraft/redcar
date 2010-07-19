@@ -9,15 +9,15 @@ module Redcar
   class Runnables
     TREE_TITLE = "Runnables"
     
-    def self.run_process(command, name, output)
-      controller = CommandOutputController.new(command, name)
+    def self.run_process(command, title, output)
+      controller = CommandOutputController.new(command, title)
       if output == "window"
         Project::Manager.open_project_for_path(".")
         output = "tab"
       end
       if output == "none"
         controller.run
-      else        
+      else
         tab = Redcar.app.focussed_window.new_tab(HtmlTab)
         tab.html_view.controller = controller
         tab.focus
@@ -94,11 +94,11 @@ module Redcar
       def command
         @info["command"]
       end
-      
+
       def out?
         @info["output"]
       end
-      
+
       def output
         if out?
           @info["output"]
@@ -162,9 +162,13 @@ module Redcar
           regex = Regexp.new(file_mapping["regex"])
           if tab.edit_view.document.mirror.path =~ regex
             command_schema = file_mapping["command"]
+            output = file_mapping["output"]
+            if output.nil?
+	      output = "tab"
+            end
             command = command_schema.gsub("__PATH__", tab.edit_view.document.mirror.path)
             puts command
-            Runnables.run_process(command)
+            Runnables.run_process(command, "Run File", output)
           end
         end
       end
