@@ -68,6 +68,15 @@
       return false;
     });
 
+    $('#query').keyup(function(ev) {
+      if ($(this).val() == '') {
+        $('input[type=submit]').attr('disabled', 'disabled');
+      } else {
+        $('input[type=submit]').attr('disabled', '');
+      }
+    });
+    $('#query').trigger('keyup');
+
     $('.result').each(function(i) {
       $(this).click(function(ev) {
         ev.preventDefault();
