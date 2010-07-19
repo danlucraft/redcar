@@ -9,19 +9,44 @@
     <table>
       <tr class="input">
         <td class="label"><label for="query">Search Term</label></td>
-        <td class="field"><input id="query" type="text" value="<%= @query %>" /></td>
+        <td class="field">
+          <input id="query" type="text" value="<%= @query %>" />
+          <div id="recent_queries" style="display: none;">
+            <ul>
+              <% (@settings['recent_queries'] || []).each do |query| %>
+                <li><%= query %></li>
+              <% end %>
+            </ul>
+          </div>
+        </td>
+        <td class="expand">
+          <a href="#" title="Toggle Recent Queries" id="toggle_recent_queries">&darr;</a>
+        </td>
       </tr>
       <tr class="input">
         <td class="label"><label for="options">Options</label></td>
-        <td class="field"><input id="options" type="text" value="<%= @options %>" /></td>
+        <td class="field">
+          <input id="options" type="text" value="<%= @options %>" />
+          <div id="recent_options" style="display: none;">
+            <ul>
+              <% (@settings['recent_options'] || []).each do |option| %>
+                <li><%= option %></li>
+              <% end %>
+            </ul>
+          </div>
+        </td>
+        <td class="expand">
+          <a href="#" title="Toggle Recent Options" id="toggle_recent_options">&darr;</a>
+        </td>
       </tr>
       <tr>
         <td></td>
         <td class="controls">
-          <input id="search" type="submit" value="Search" />
+          <input id="search" type="submit" value="Find In Project" />
           <input type="checkbox" id="match_case" <%="checked=checked" if @match_case %>>
           <label for="match_case">Match case</label>
         </td>
+        <td></td>
       </tr>
     </table>
   </form>
@@ -58,14 +83,16 @@
 
 <script type="text/javascript">
   $(document).ready(function() {
-    $('#search_form').submit(function() {
+    $('#query').trigger('focus');
+
+    $('#search_form').submit(function(ev) {
+      ev.preventDefault();
       try {
         if ($("#match_case").attr('checked')) { var match_case = 'true'; } else { var match_case = 'false'; }
         Controller.search($("#query").val(), $("#options").val(), match_case);
       } catch(e) {
         alert(e.message);
       }
-      return false;
     });
 
     $('#query').keyup(function(ev) {
@@ -77,15 +104,44 @@
     });
     $('#query').trigger('keyup');
 
-    $('.result').each(function(i) {
-      $(this).click(function(ev) {
-        ev.preventDefault();
-        try {
-          Controller.openFile($(this).attr('data-href'), $(this).attr('data-line_no'), "<%= @query %>", <%= @match_case ? 'true' : 'false' %>);
-        } catch(e) {
-          alert(e.message);
-        }
-      });
+    $('#toggle_recent_queries').click(function(ev) {
+      ev.preventDefault();
+      if ($('#recent_queries').is(":visible")) {
+        $('#recent_queries').hide();
+      } else {
+        $('#recent_queries').show();
+      }
+    });
+
+    $('#recent_queries li').click(function(ev) {
+      ev.preventDefault();
+      $('#query').val($(this).html());
+      $('#query').trigger('keyup');
+      $('#recent_queries').hide();
+    });
+
+    $('#toggle_recent_options').click(function(ev) {
+      ev.preventDefault();
+      if ($('#recent_options').is(":visible")) {
+        $('#recent_options').hide();
+      } else {
+        $('#recent_options').show();
+      }
+    });
+
+    $('#recent_options li').click(function(ev) {
+      ev.preventDefault();
+      $('#options').val($(this).html());
+      $('#recent_options').hide();
+    });
+
+    $('.result').click(function(ev) {
+      ev.preventDefault();
+      try {
+        Controller.openFile($(this).attr('data-href'), $(this).attr('data-line_no'), "<%= @query %>", <%= @match_case ? 'true' : 'false' %>);
+      } catch(e) {
+        alert(e.message);
+      }
     });
   });
 </script>

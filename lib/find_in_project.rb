@@ -49,6 +49,8 @@ module Redcar
 
           storage.set_default('search_engine', engines.first)
         end
+        storage.set_default('recent_queries', %w{})
+        storage.set_default('recent_options', %w{})
         storage.save
       end
     end

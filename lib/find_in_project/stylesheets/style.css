@@ -1,8 +1,16 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  font-size: 14px;
+}
+
 #search_container {
   background-color: #eee;
   width: 100%;
   margin: -8px 0px 20px -8px;
-  padding-right: 16px;
+  padding: 16px 8px 10px 0;
+  border-bottom: 2px solid #ddd;
 }
 
 #search_container table {
@@ -10,7 +18,9 @@
 }
 
 #search_container table td {
-  padding: 3px 10px;
+  padding: 3px 0;
+  vertical-align: top;
+  padding-left: 10px;
 }
 
 #search_container .input .label {
@@ -20,6 +30,25 @@
 
 #search_container .input .field input {
   width: 100%;
+  height: 20px;
+}
+
+#search_container .input .expand {
+  width: 20px;
+  padding: 3px 0px;
+}
+
+#search_container .input .expand a {
+  color: black;
+  font-weight: bold;
+  text-decoration: none;
+  display: block;
+  width: 20px;
+  height: 18px;
+  background-color: #777;
+  border: 1px solid #000;
+  text-align: center;
+  color: #fff;
 }
 
 #search_container .controls label {
@@ -30,15 +59,34 @@
   float: right;
 }
 
+#recent_queries,
+#recent_options {
+  border: 1px solid #000;
+  background-color: #fff;
+}
+
+#recent_queries ul,
+#recent_options ul {
+  list-style: none;
+  height: 100px;
+  overflow: auto;
+}
+
+#recent_queries ul li,
+#recent_options ul li {
+  padding: 3px 10px;
+}
+
+#recent_queries ul li:hover,
+#recent_options ul li:hover {
+  background-color: #EDEDFD;
+  cursor: hand;
+}
+
 #no_results {
   font-weight: bold;
   font-size: 16px;
   text-align: center;
-}
-
-#results * {
-  margin: 0;
-  padding: 0;
 }
 
 #results {

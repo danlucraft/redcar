@@ -22,18 +22,26 @@ module Redcar
         @options = options
         @match_case = (match_case == 'true')
 
-        @results = nil
-        unless @query.empty?
-          @results = case Redcar::FindInProject.storage['search_engine']
-          when 'grep'
-            Redcar::FindInProject::Engines::Grep.search(query, options, @match_case)
-          when 'ack'
-            Redcar::FindInProject::Engines::Ack.search(query, options, @match_case)
-          end
+        Redcar::FindInProject.storage['recent_queries'] = add_or_move_to_top(@query, Redcar::FindInProject.storage['recent_queries'])
+
+        unless @options.strip.empty?
+          Redcar::FindInProject.storage['recent_options'] = add_or_move_to_top(@options, Redcar::FindInProject.storage['recent_options'])
+        end
+
+        @results = case Redcar::FindInProject.storage['search_engine']
+        when 'grep'
+          Redcar::FindInProject::Engines::Grep.search(@query, @options, @match_case)
+        when 'ack'
+          Redcar::FindInProject::Engines::Ack.search(@query, @options, @match_case)
         end
 
         Redcar.app.focussed_window.focussed_notebook_tab.html_view.controller = self
         nil
+      end
+
+      def add_or_move_to_top(item, array)
+        array.delete_at(array.index(item)) if array.include?(item)
+        array.unshift(item)
       end
 
       def open_file(file, line, query, match_case)
@@ -45,6 +53,7 @@ module Redcar
         length = doc.get_line(line.to_i - 1).match(regex)[1].length
         doc.set_selection_range(doc.cursor_line_start_offset + index, doc.cursor_line_start_offset + index + length)
         doc.scroll_to_line(line.to_i)
+        nil
       end
     end
   end
