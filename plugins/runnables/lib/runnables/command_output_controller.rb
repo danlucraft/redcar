@@ -4,7 +4,8 @@ module Redcar
     class CommandOutputController
       include Redcar::HtmlController
       
-      def initialize(cmd, title)
+      def initialize(path, cmd, title)
+        @path = path
         @cmd = cmd
         @title = title
       end
@@ -36,7 +37,7 @@ module Redcar
       
       def run_windows
         @thread = Thread.new do
-          output = `#{@cmd} 2>&1`
+          output = `cd #{@path} & #{@cmd} 2>&1`
           html=<<-HTML
           <div class="stdout">
             <pre>#{output}</pre>
@@ -73,7 +74,7 @@ module Redcar
             JAVASCRIPT
           end
           begin
-            @shell.execute(@cmd)
+            @shell.execute("cd #{@path}; " + @cmd)
           rescue => e
             puts e.class
             puts e.message

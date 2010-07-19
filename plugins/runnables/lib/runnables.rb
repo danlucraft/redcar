@@ -9,8 +9,8 @@ module Redcar
   class Runnables
     TREE_TITLE = "Runnables"
     
-    def self.run_process(command, title, output)
-      controller = CommandOutputController.new(command, title)
+    def self.run_process(path, command, title, output)
+      controller = CommandOutputController.new(path, command, title)
       if output == "window"
         Project::Manager.open_project_for_path(".")
         output = "tab"
@@ -118,7 +118,7 @@ module Redcar
       def activated(tree, node)
         case node
         when Runnable
-          Runnables.run_process(node.command, node.text, node.output)
+          Runnables.run_process(@project.home_dir, node.command, node.text, node.output)
         when HelpItem
           tab = Redcar.app.focussed_window.new_tab(HtmlTab)
           tab.go_to_location("http://wiki.github.com/danlucraft/redcar/users-guide-runnables")
