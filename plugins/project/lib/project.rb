@@ -142,6 +142,10 @@ module Redcar
     def config_dir
       File.join(path, ".redcar")
     end
+
+    def home_dir
+      @path
+    end
     
     def config_files(glob)
       file_glob = File.join(config_dir, glob)
