@@ -10,6 +10,7 @@ Version 0.3.9 (TBA)
  * Runnables tab shows name of process (Delisa)
  * Runnables can run in background without visible feedback (Delisa)
  * Runnables run with cwd of your project directory, rather than redcar's cwd (Delisa)
+ * Search and Replace in tab command (William Cherry)
 
 Version 0.3.8.1 (18 July 2010)
 ==============================
