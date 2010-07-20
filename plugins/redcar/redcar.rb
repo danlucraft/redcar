@@ -918,6 +918,7 @@ module Redcar
         end
         sub_menu "Bundles" do
           item "Find Snippet", Snippets::OpenSnippetExplorer
+          item "Installed Bundles", Textmate::InstalledBundles
           separator
           Textmate.attach_menus(self)
         end
