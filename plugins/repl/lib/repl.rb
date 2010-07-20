@@ -2,9 +2,13 @@ require 'java'
 require 'repl/internal_mirror'
 
 require File.dirname(__FILE__) + "/../vendor/clojure.jar"
+require File.dirname(__FILE__) + "/../vendor/clojure-contrib.jar"
+require File.dirname(__FILE__) + "/../vendor/org-enclojure-repl-server.jar"
+require File.dirname(__FILE__) + "/../vendor/enclojure-wrapper.jar"
 
 include_class 'clojure.lang.Var'
 include_class 'clojure.lang.RT'
+include_class 'redcar.repl.Wrapper'
 
 module Redcar
   class REPL
@@ -61,16 +65,18 @@ module Redcar
       end
     end
     
-    class OpenClojureREPL < OpenREPL
-      
+    class OpenClojureREPL < OpenREPL     
+
       def execute
+
+        repl_wrapper = Wrapper.new
 	
         eval_proc = Proc.new do |expr, binding|
-	        load_string = RT.var("clojure.core", "load-string")
-	        load_string.invoke(expr)      
-	      end
+          repl_wrapper.sendToRepl(expr)
+          repl_wrapper.getResult
+        end
 	
-	      open_repl eval_proc
+        open_repl eval_proc
       end
     end
     

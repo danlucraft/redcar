@@ -3,7 +3,8 @@ require File.join(File.dirname(__FILE__), "..", "spec_helper")
 class Redcar::REPL
   describe InternalMirror do
     before do
-      @mirror = InternalMirror.new
+      ruby_eval = Proc.new { |expr,binding| eval(expr, binding) }
+      @mirror = InternalMirror.new ruby_eval
       @changed_event = false
       @mirror.add_listener(:change) { @changed_event = true }
     end
