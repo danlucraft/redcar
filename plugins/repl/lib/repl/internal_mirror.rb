@@ -3,16 +3,10 @@ module Redcar
   class REPL
     class InternalMirror
       include Redcar::Document::Mirror
-      
-      POINTERS = {
-        :result => "=> ",
-        :error  => "x> "
-      }
-      
-      attr_reader :history, :results
-      
-      def initialize replEval
-        @history, @instance = [], Main.new(replEval)
+                  
+      def initialize send_receive
+        @send_receive = send_receive
+	@send_receive.set_parent self
       end
 
       def title
@@ -24,21 +18,7 @@ module Redcar
       #
       # @return [String]
       def read
-        str = message
-        
-        @history.each do |entry|
-          command = entry.first
-          results = entry.last
-          str << prompt.to_s + command.to_s + "\n"
-          results.each do |result|
-            text, entry_type = *result
-            str << POINTERS[entry_type]
-            text.scan(/.{1,80}/).each do |output_line|
-              str << output_line + "\n"
-            end
-          end
-        end
-        str << prompt
+        @send_receive.get_result
       end
 
       # Execute a new statement. Accepts the entire pretty formatted history,
@@ -46,19 +26,12 @@ module Redcar
       #
       # @param [String] a string with at least one prompt and statement in it
       def commit(contents)
-        if contents.split("\n").last =~ />>\s+$/
+        if contents.split("\n").last =~ /=>\s+$/
           command = ""
         else
-          command = contents.split(prompt).last
+          command = contents.split('=>').last.strip
         end
-        @history << [command, []]
-        begin
-          result, entry_type = @instance.execute(command).inspect, :result
-        rescue Object => e
-          result, entry_type = format_error(e), :error
-        end
-        @history.last[1] << [result, entry_type]
-        notify_listeners(:change)
+        @send_receive.send_to_repl command
       end
 
       # The Repl always exists because there is no external resource to 
@@ -76,35 +49,8 @@ module Redcar
       
       def message
         "# Redcar REPL\n\n"
-      end
-      
-      def prompt
-        ">> "
-      end
-      
-      def format_error(e)
-        backtrace = e.backtrace.reject{|l| l =~ /internal_mirror/}
-        backtrace.unshift("(repl):1")
-        "#{e.class}: #{e.message}\n        #{backtrace.join("\n        ")}"
-      end
-      
-      class Main
-        attr_reader :output
-        
-        def initialize eval_proc
-          @binding = binding
-          @output = nil
-          @eval_proc = eval_proc
-        end
-
-        def inspect
-          "main"
-        end
-        
-        def execute(command)
-          @eval_proc.call command, @binding
-        end
-      end
+      end      
+            
     end
   end
 end
