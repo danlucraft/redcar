@@ -2,25 +2,27 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>comment</key>
+	<string>Created by Jannis Leidel, based on djangoproject.com</string>
 	<key>name</key>
-	<string>Django</string>
+	<string>Django (Smoothy)</string>
 	<key>settings</key>
 	<array>
 		<dict>
 			<key>settings</key>
 			<dict>
 				<key>background</key>
-				<string>#0B2F20</string>
+				<string>#245032</string>
 				<key>caret</key>
 				<string>#336442</string>
 				<key>foreground</key>
 				<string>#F8F8F8</string>
 				<key>invisibles</key>
-				<string>#497958</string>
+				<string>#0B2F20</string>
 				<key>lineHighlight</key>
 				<string>#0000004A</string>
 				<key>selection</key>
-				<string>#245032</string>
+				<string>#336442</string>
 			</dict>
 		</dict>
 		<dict>
@@ -31,9 +33,9 @@
 			<key>settings</key>
 			<dict>
 				<key>fontStyle</key>
-				<string>italic</string>
+				<string></string>
 				<key>foreground</key>
-				<string>#245032</string>
+				<string>#FD6209</string>
 			</dict>
 		</dict>
 		<dict>
@@ -44,9 +46,9 @@
 			<key>settings</key>
 			<dict>
 				<key>fontStyle</key>
-				<string></string>
+				<string>bold italic</string>
 				<key>foreground</key>
-				<string>#497958</string>
+				<string>#9CF340</string>
 			</dict>
 		</dict>
 		<dict>
@@ -60,6 +62,17 @@
 				<string></string>
 				<key>foreground</key>
 				<string>#96DD3B</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Import Line</string>
+			<key>scope</key>
+			<string>keyword.control.import.python, keyword.control.import.from.python</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#FFB454</string>
 			</dict>
 		</dict>
 		<dict>
@@ -96,9 +109,9 @@
 			<key>settings</key>
 			<dict>
 				<key>fontStyle</key>
-				<string></string>
+				<string>italic</string>
 				<key>foreground</key>
-				<string>#91BB9E</string>
+				<string>#E1FFB8</string>
 			</dict>
 		</dict>
 		<dict>
@@ -122,7 +135,7 @@
 			<key>settings</key>
 			<dict>
 				<key>fontStyle</key>
-				<string>italic</string>
+				<string>bold italic</string>
 				<key>foreground</key>
 				<string>#FB9A4B</string>
 			</dict>
@@ -135,9 +148,7 @@
 			<key>settings</key>
 			<dict>
 				<key>background</key>
-				<string>#FD6209</string>
-				<key>foreground</key>
-				<string>#FFFFFF</string>
+				<string>#94DA3A</string>
 			</dict>
 		</dict>
 		<dict>
@@ -170,9 +181,9 @@
 			<key>settings</key>
 			<dict>
 				<key>fontStyle</key>
-				<string>underline</string>
+				<string>italic underline</string>
 				<key>foreground</key>
-				<string>#AA5507</string>
+				<string>#FFE862</string>
 			</dict>
 		</dict>
 		<dict>
@@ -208,6 +219,8 @@
 			<string>string.regexp</string>
 			<key>settings</key>
 			<dict>
+				<key>fontStyle</key>
+				<string></string>
 				<key>foreground</key>
 				<string>#FFB454</string>
 			</dict>
@@ -219,6 +232,8 @@
 			<string>string variable</string>
 			<key>settings</key>
 			<dict>
+				<key>fontStyle</key>
+				<string></string>
 				<key>foreground</key>
 				<string>#EDEF7D</string>
 			</dict>
@@ -233,7 +248,7 @@
 				<key>fontStyle</key>
 				<string></string>
 				<key>foreground</key>
-				<string>#FFB454</string>
+				<string>#FFE862</string>
 			</dict>
 		</dict>
 		<dict>
@@ -259,7 +274,7 @@
 				<key>fontStyle</key>
 				<string></string>
 				<key>foreground</key>
-				<string>#73817D</string>
+				<string>#989898</string>
 			</dict>
 		</dict>
 		<dict>
@@ -272,7 +287,7 @@
 				<key>fontStyle</key>
 				<string></string>
 				<key>foreground</key>
-				<string>#497958</string>
+				<string>#E8E8E7</string>
 			</dict>
 		</dict>
 		<dict>
@@ -282,6 +297,8 @@
 			<string>meta.selector.css entity.name.tag</string>
 			<key>settings</key>
 			<dict>
+				<key>background</key>
+				<string>#245032</string>
 				<key>fontStyle</key>
 				<string></string>
 				<key>foreground</key>
@@ -431,6 +448,6 @@
 		</dict>
 	</array>
 	<key>uuid</key>
-	<string>AC0A28C5-65E6-42A6-AD05-4D01735652EE</string>
+	<string>C8661A2D-26CD-47BC-9BDC-5CD9870B63C8</string>
 </dict>
 </plist>

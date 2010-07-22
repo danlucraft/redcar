@@ -3,14 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>name</key>
-	<string>Vibrant Ink</string>
+	<string>Vibrant Fin</string>
 	<key>settings</key>
 	<array>
 		<dict>
 			<key>settings</key>
 			<dict>
 				<key>background</key>
-				<string>#000000</string>
+				<string>#000000F2</string>
 				<key>caret</key>
 				<string>#FFFFFF</string>
 				<key>foreground</key>
@@ -18,9 +18,9 @@
 				<key>invisibles</key>
 				<string>#404040</string>
 				<key>lineHighlight</key>
-				<string>#333300</string>
+				<string>#33333145</string>
 				<key>selection</key>
-				<string>#35493CE0</string>
+				<string>#3833E3E0</string>
 			</dict>
 		</dict>
 		<dict>
@@ -31,7 +31,7 @@
 			<key>settings</key>
 			<dict>
 				<key>background</key>
-				<string>#0F0F0F</string>
+				<string>#0F0F0FED</string>
 				<key>foreground</key>
 				<string>#FFFFFF</string>
 			</dict>
@@ -87,7 +87,7 @@
 			<key>settings</key>
 			<dict>
 				<key>background</key>
-				<string>#000000</string>
+				<string>#000000F2</string>
 				<key>foreground</key>
 				<string>#FFFFFF</string>
 			</dict>
@@ -100,7 +100,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#9933CC</string>
+				<string>#634D70</string>
 			</dict>
 		</dict>
 		<dict>
@@ -442,6 +442,6 @@
 		</dict>
 	</array>
 	<key>uuid</key>
-	<string>4B7A9AA6-C472-4460-BA48-199E2624956B</string>
+	<string>4B7A9AA6-C472-4460-BA48-199E2624636B</string>
 </dict>
 </plist>

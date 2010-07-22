@@ -3,14 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>name</key>
-	<string>Monokai</string>
+	<string>Rails Envy</string>
 	<key>settings</key>
 	<array>
 		<dict>
 			<key>settings</key>
 			<dict>
 				<key>background</key>
-				<string>#272822</string>
+				<string>#121210</string>
 				<key>caret</key>
 				<string>#F8F8F0</string>
 				<key>foreground</key>
@@ -42,7 +42,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#E6DB74</string>
+				<string>#FFFF66</string>
 			</dict>
 		</dict>
 		<dict>
@@ -75,7 +75,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#AE81FF</string>
+				<string>#70FFE0</string>
 			</dict>
 		</dict>
 		<dict>
@@ -87,6 +87,8 @@
 			<dict>
 				<key>fontStyle</key>
 				<string></string>
+				<key>foreground</key>
+				<string>#00FFFF</string>
 			</dict>
 		</dict>
 		<dict>
@@ -97,8 +99,16 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#F92672</string>
+				<string>#40A187</string>
 			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>class name</string>
+			<key>scope</key>
+			<string>variable.other</string>
+			<key>settings</key>
+			<dict/>
 		</dict>
 		<dict>
 			<key>name</key>
@@ -123,7 +133,7 @@
 				<key>fontStyle</key>
 				<string>italic</string>
 				<key>foreground</key>
-				<string>#66D9EF</string>
+				<string>#8AE5EF</string>
 			</dict>
 		</dict>
 		<dict>
@@ -188,7 +198,7 @@
 				<key>fontStyle</key>
 				<string></string>
 				<key>foreground</key>
-				<string>#F92672</string>
+				<string>#52F9F9</string>
 			</dict>
 		</dict>
 		<dict>
@@ -227,7 +237,7 @@
 				<key>fontStyle</key>
 				<string></string>
 				<key>foreground</key>
-				<string>#66D9EF</string>
+				<string>#8FEFAE</string>
 			</dict>
 		</dict>
 		<dict>
@@ -240,7 +250,7 @@
 				<key>fontStyle</key>
 				<string>italic</string>
 				<key>foreground</key>
-				<string>#66D9EF</string>
+				<string>#56CF72</string>
 			</dict>
 		</dict>
 		<dict>
@@ -284,6 +294,6 @@
 		</dict>
 	</array>
 	<key>uuid</key>
-	<string>D8D5E82E-3D5B-46B5-B38E-8C841C21347D</string>
+	<string>A52CEF7A-209C-485F-8731-225FCE8389EA</string>
 </dict>
 </plist>

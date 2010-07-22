@@ -3,24 +3,24 @@
 <plist version="1.0">
 <dict>
 	<key>name</key>
-	<string>Vibrant Ink</string>
+	<string>Vibrant Tango</string>
 	<key>settings</key>
 	<array>
 		<dict>
 			<key>settings</key>
 			<dict>
 				<key>background</key>
-				<string>#000000</string>
+				<string>#191D1E</string>
 				<key>caret</key>
-				<string>#FFFFFF</string>
+				<string>#FBEC50</string>
 				<key>foreground</key>
 				<string>#FFFFFF</string>
 				<key>invisibles</key>
 				<string>#404040</string>
 				<key>lineHighlight</key>
-				<string>#333300</string>
+				<string>#131413</string>
 				<key>selection</key>
-				<string>#35493CE0</string>
+				<string>#434441</string>
 			</dict>
 		</dict>
 		<dict>
@@ -30,8 +30,6 @@
 			<string>text</string>
 			<key>settings</key>
 			<dict>
-				<key>background</key>
-				<string>#0F0F0F</string>
 				<key>foreground</key>
 				<string>#FFFFFF</string>
 			</dict>
@@ -42,10 +40,7 @@
 			<key>scope</key>
 			<string>source.ruby.rails.embedded.html</string>
 			<key>settings</key>
-			<dict>
-				<key>background</key>
-				<string>#000000</string>
-			</dict>
+			<dict/>
 		</dict>
 		<dict>
 			<key>name</key>
@@ -54,8 +49,6 @@
 			<string>text.html.ruby</string>
 			<key>settings</key>
 			<dict>
-				<key>background</key>
-				<string>#101010</string>
 				<key>foreground</key>
 				<string>#FFFFFF</string>
 			</dict>
@@ -68,7 +61,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#CCFF33</string>
+				<string>#8DE635</string>
 			</dict>
 		</dict>
 		<dict>
@@ -86,8 +79,6 @@
 			<string>source</string>
 			<key>settings</key>
 			<dict>
-				<key>background</key>
-				<string>#000000</string>
 				<key>foreground</key>
 				<string>#FFFFFF</string>
 			</dict>
@@ -100,7 +91,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#9933CC</string>
+				<string>#744E7B</string>
 			</dict>
 		</dict>
 		<dict>
@@ -111,7 +102,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#339999</string>
+				<string>#739FCF</string>
 			</dict>
 		</dict>
 		<dict>
@@ -124,7 +115,7 @@
 				<key>fontStyle</key>
 				<string></string>
 				<key>foreground</key>
-				<string>#FF6600</string>
+				<string>#F27709</string>
 			</dict>
 		</dict>
 		<dict>
@@ -163,7 +154,7 @@
 				<key>fontStyle</key>
 				<string></string>
 				<key>foreground</key>
-				<string>#FFCC00</string>
+				<string>#FBEB50</string>
 			</dict>
 		</dict>
 		<dict>
@@ -187,7 +178,7 @@
 				<key>background</key>
 				<string>#070707</string>
 				<key>foreground</key>
-				<string>#772CB7</string>
+				<string>#744E7B</string>
 			</dict>
 		</dict>
 		<dict>
@@ -211,7 +202,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#999966</string>
+				<string>#E8B96F</string>
 			</dict>
 		</dict>
 		<dict>
@@ -222,7 +213,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#66FF00</string>
+				<string>#8DE635</string>
 			</dict>
 		</dict>
 		<dict>
@@ -244,7 +235,7 @@
 			<key>settings</key>
 			<dict>
 				<key>background</key>
-				<string>#CCCC33</string>
+				<string>#FBEB50</string>
 				<key>foreground</key>
 				<string>#000000</string>
 			</dict>
@@ -257,7 +248,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#44B4CC</string>
+				<string>#739FCF</string>
 			</dict>
 		</dict>
 		<dict>
@@ -268,7 +259,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#CCCC33</string>
+				<string>#FBEB50</string>
 			</dict>
 		</dict>
 		<dict>
@@ -325,7 +316,7 @@
 				<key>fontStyle</key>
 				<string></string>
 				<key>foreground</key>
-				<string>#FF6600</string>
+				<string>#F27709</string>
 			</dict>
 		</dict>
 		<dict>
@@ -338,7 +329,7 @@
 				<key>fontStyle</key>
 				<string>italic</string>
 				<key>foreground</key>
-				<string>#99CC99</string>
+				<string>#8DE635</string>
 			</dict>
 		</dict>
 		<dict>
@@ -349,7 +340,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#DDE93D</string>
+				<string>#FBEB50</string>
 			</dict>
 		</dict>
 		<dict>
@@ -360,7 +351,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#FF6600</string>
+				<string>#F27709</string>
 			</dict>
 		</dict>
 		<dict>
@@ -371,7 +362,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#999966</string>
+				<string>#E8B96F</string>
 			</dict>
 		</dict>
 		<dict>
@@ -415,7 +406,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#CCCC66</string>
+				<string>#FBEB50</string>
 			</dict>
 		</dict>
 		<dict>
@@ -437,11 +428,11 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#FF6600</string>
+				<string>#F27709</string>
 			</dict>
 		</dict>
 	</array>
 	<key>uuid</key>
-	<string>4B7A9AA6-C472-4460-BA48-199E2624956B</string>
+	<string>289D5D3D-D53D-4908-84CB-ED8E3F24CF70</string>
 </dict>
 </plist>
