@@ -158,17 +158,18 @@ module Redcar
       end
       
       def execute
+        project = Project::Manager.in_window(win)        
         file_mappings.each do |file_mapping|
           regex = Regexp.new(file_mapping["regex"])
           if tab.edit_view.document.mirror.path =~ regex
             command_schema = file_mapping["command"]
             output = file_mapping["output"]
             if output.nil?
-	      output = "tab"
+	            output = "tab"
             end
             command = command_schema.gsub("__PATH__", tab.edit_view.document.mirror.path)
             puts command
-            Runnables.run_process(command, "Run File", output)
+            Runnables.run_process(project.home_dir,command, "Run File", output)
           end
         end
       end
