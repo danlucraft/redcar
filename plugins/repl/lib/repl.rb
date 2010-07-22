@@ -65,6 +65,10 @@ module Redcar
         @repl_wrapper = Wrapper.new 
         @mutex = Mutex.new
 	@history = ""
+      end
+      
+      def set_parent parent
+	@parent = parent
 	
 	@thread = Thread.new do
           loop do
@@ -73,14 +77,10 @@ module Redcar
             @mutex.synchronize do
               @history += "\n" + str
             end
-	    @parent.notify_listeners(:change) if !@parent.nil?
+	    puts "Status: " + @mutex.locked?.to_s
+	    @parent.notify_listeners(:change)
           end
         end
-      end
-      
-      def set_parent parent
-	@parent = parent
-	@parent.notify_listeners(:change)
       end
 
       def get_result
@@ -120,13 +120,14 @@ module Redcar
       end
 
       def send_to_repl expr
-        @history += expr
+        @history += expr + "\n"
         begin
-          @history += "\n" + eval(expr, @binding).inspect + "\n=> "
+          @history += eval(expr, @binding).inspect
         rescue Object => e
           @history += format_error(e)
         end
-	@parent.notify_listeners(:change) if !@parent.nil?
+	@history += "\n=> "
+	@parent.notify_listeners(:change)
       end
     end
 
