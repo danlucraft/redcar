@@ -2,7 +2,7 @@
 {Redcar}
 ========
 
-by Daniel Lucraft
+by Daniel Lucraft  
 http://RedcarEditor.com/
 
 ## DESCRIPTION
@@ -16,8 +16,8 @@ You must have Java installed.
     $ sudo gem install redcar
     $ sudo redcar install
     
-NB the install will take a minute or so to complete as it has to download about
-15MB of jar files.
+NB the install will take a minute or so to complete as it has to download 
+about 15MB of jar files.
 
 ## USAGE
 
@@ -31,12 +31,17 @@ for a list of options.
 
 If you want to contribute to Redcar, you can install it from the source code.
 
-If you're running Windows, as a prerequisite, you'll need to install the rubyzip gem:
+If you're running Windows, as a prerequisite, you'll need to install the 
+rubyzip gem:
 
     $ gem install rubyzip
 
-Download from github, checkout the submodules and build JavaMateView. You will need Ant 
-installed, and RSpec and Cucumber installed as JRuby gems.
+You will need Ant installed. You will also need RSpec, Cucumber and JSON-JRuby 
+installed as JRuby gems.
+
+    $ jruby -S gem install rspec cucumber json-jruby
+
+Download from github, checkout the submodules and build JavaMateView. 
 
     $ git clone git://github.com/danlucraft/redcar.git
     $ cd redcar
@@ -57,10 +62,11 @@ You may also need to install the rake, rspec and cucumber gems.
 
 ## UPDATING A SOURCE BUILD
 
-If you are running a source version of Redcar and you have pulled changes from master, then you may have to update your jars by updating and rebuilding:
+If you are running a source version of Redcar and you have pulled changes from 
+master, then you may have to update your jars by updating and rebuilding:
 
-  $ git submodule update
-  $ jruby -S rake build
+    $ git submodule update
+    $ jruby -S rake build
 
 ## PROBLEMS?
 
@@ -73,7 +79,9 @@ To run all specs and features:
 
     $ jruby -S rake
 
-NB. Features work with Cucumber version 0.4.2, you may have problems with other versions because for the moment we are patching Cucumber dynamically to support dependencies between sets of features.
+NB. Features work with Cucumber version 0.4.2, you may have problems with 
+other versions because for the moment we are patching Cucumber dynamically 
+to support dependencies between sets of features.
 
 ## TESTS (specs)
 
