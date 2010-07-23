@@ -55,20 +55,21 @@ module Redcar
             tab.edit_view.document.update_from_mirror
           end
         elsif tab.is_a?(HtmlTab)
-          if tab.html_view.controller and message = tab.html_view.controller.ask_before_closing
-            result = Application::Dialog.message_box(
-              message,
-              :buttons => :yes_no_cancel
-            )
-            case result
-            when :yes
-              tab.edit_view.document.update_from_mirror
-            when :no
-            when :cancel
-            end
-          else
-            tab.edit_view.document.update_from_mirror
-          end
+          return
+          #if tab.html_view.controller and message = tab.html_view.controller.ask_before_closing
+          #  result = Application::Dialog.message_box(
+          #    message,
+          #    :buttons => :yes_no_cancel
+          #  )
+          #  case result
+          #  when :yes
+          #    tab.edit_view.document.update_from_mirror
+          #  when :no
+          #  when :cancel
+          #  end
+          #else
+          #  tab.edit_view.document.update_from_mirror
+          #end
         else
           tab.edit_view.document.update_from_mirror
         end        
