@@ -8,8 +8,6 @@
 
 <div id='show_div'>
 <% if connections and connections.any? %>
-  <h4>Saved Connections</h4>
-  
   <table id='table'>
     <tr class='grey' style='font-weight:bold;'>
       <td>Name</td>
@@ -20,23 +18,23 @@
       <td>Remote Path</td>
     </tr>
     
-    <% connections.each do |s| %>
-      <tr id='row-<%= s[:name] %>'>
-        <td><a href='javscript:void(0);' class='modify' data-name="<%= s[:name] %>"><%= s[:name] %></a></td>
-        <td><%= s[:protocol] %></td>
-        <td><%= s[:host] %></td>
-        <td><%= s[:port] %></td>
-        <td><%= s[:user] %></td>
-        <td><%= s[:path] %></td>
+    <% connections.each do |c| %>
+      <tr id='row-<%= c.name %>'>
+        <td><a href='javscript:void(0);' class='modify' data-name="<%= c.name %>"><%= c.name %></a></td>
+        <td><%= c.protocol %></td>
+        <td><%= c.host %></td>
+        <td><%= c.port %></td>
+        <td><%= c.user %></td>
+        <td><%= c.path %></td>
         <td>
-          <a href='javascript:void(0);' class='delete' data-name="<%= s[:name] %>">Delete</a>
-          <a href='javascript:void(0);' class='modify' data-name="<%= s[:name] %>">Modify</a>
+          <a href='javascript:void(0);' class='delete' data-name="<%= c.name %>">Delete</a>
+          <a href='javascript:void(0);' class='modify' data-name="<%= c.name %>">Modify</a>
         </td>
       </tr>      
     <% end %>
   </table>
 <% else %>
-  <p><br/><br/><i>No connections yet</i><br/><br/></p>
+  <p><br/><br/><i>No connections</i><br/><br/></p>
 <% end %>
 
   <p>
@@ -67,7 +65,6 @@
         <tr><td>Host:        </td><td><input size="30" type='text' name='host' id='host'></td></tr>
         <tr><td>Port:        </td><td><input type='text' name='port' id='port' size=2></td></tr>
         <tr><td>User:        </td><td><input size="30" type='text' name='user' id='user'></td></tr>
-        <tr><td>Password:    </td><td><input size="30" type='password' name='password' id='password'></td></tr>
         <tr><td>Remote Path: </td><td><input size="30" type='text' name='path' id='path'></td></tr>
         <tr>
           <td colspan=2>
@@ -78,10 +75,6 @@
       </table>
     </form>
   </div>
-</p>
-
-<p>
-  <small><a href='javascript:void(0);' id='reload'>Reload</a></small>
 </p>
 
 <script type="text/javascript">
@@ -106,7 +99,7 @@ $(document).ready(function() {
     try {
       if (confirm('Do you really want to delete connection ' + name + '?')) {
         Controller.deleteConnection(name);
-        $('#row-' + name.replace(' ', '_')).remove();
+        Controller.reloadIndex();
       }
     }
     catch(err) {
@@ -132,7 +125,6 @@ $(document).ready(function() {
       $('#host').val(data.host);
       $('#port').val(data.port);
       $('#user').val(data.user);
-      $('#password').val(data.password);
       $('#path').val(data.path);
     }
   });
@@ -163,14 +155,13 @@ $(document).ready(function() {
       var host = $('#host').val();
       var port = $('#port').val();
       var user = $('#user').val();
-      var password = $('#password').val();
       var path = $('#path').val();
 
       if ($('#operation').val() == 'insert') {
-        result = Controller.addConnection(name, protocol, host, port, user, password, path);
+        result = Controller.addConnection(name, protocol, host, port, user, path);
       }
       else {
-        result = Controller.updateConnection(name, protocol, host, port, user, password, path);
+        result = Controller.updateConnection(name, protocol, host, port, user, path);
       }
       
       if (result.success === false) {
@@ -179,41 +170,13 @@ $(document).ready(function() {
         $('#name').focus();
       }
       else {
-        $('#error').html("");
-        $('#error').hide();
-
-        if ($('#operation').val() == 'update') {
-          $('#row-' + name.replace(' ', '_')).remove();
-        }
-
-        showMain();
-        $('#table tr:last').after('<tr id="row-' + name + '"><td>' + 
-          '<a href="javascript:void(0);" class="modify" data-name="' + name + '">' +
-          name + '</a></td><td>' + 
-          protocol + '</td><td>' + 
-          host + '</td><td>' + 
-          port + '</td><td>' + 
-          user + '</td><td>' +
-          path + '</td><td>' +
-          '<a href="javascript:void(0);" class="delete" data-name="' + name + '">Delete</a> ' +
-          '<a href="javascript:void(0);" class="modify" data-name="' + name + '">Modify</a>' +
-          '</td>' +
-          '</tr>');
+        Controller.reloadIndex();
       }
     }
     catch(err) {
-      alert("Error: " + err.message);
+      alert("Error: " + error.message);
     }
     return false;
-  });
-
-  $("#reload").click(function(e) {
-    e.preventDefault();
-    try {
-      Controller.reloadPlugin();
-    } catch(err) {
-      alert(err.message);
-    }
   });
 });
 
