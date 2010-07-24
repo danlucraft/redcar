@@ -1,3 +1,9 @@
+
+Version 0.3.8.4 (24 July 2010)
+==============================
+
+ * Parse the xulrunner releases page to determine the latest. (Dan Lucraft)
+
 Version 0.3.8.3 (24 July 2010)
 ==============================
 
