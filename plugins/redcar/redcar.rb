@@ -690,6 +690,7 @@ module Redcar
         link "Cmd+Shift+N", NewNotebookCommand
         link "Cmd+Alt+N",   NewWindowCommand
         link "Cmd+O",       Project::FileOpenCommand
+        link "Cmd+U",       Project::FileReloadCommand
         link "Cmd+Shift+O", Project::DirectoryOpenCommand
         link "Cmd+Ctrl+O",  Project::OpenRemoteCommand
         link "Cmd+S",       Project::FileSaveCommand
@@ -819,6 +820,7 @@ module Redcar
           item "New", NewCommand
           item "New Window", NewWindowCommand
           item "Open", Project::FileOpenCommand
+          item "Reload File", Project::FileReloadCommand
           item "Open Directory", Project::DirectoryOpenCommand
           item "Open Remote...", Project::OpenRemoteCommand
           lazy_sub_menu "Open Recent" do
