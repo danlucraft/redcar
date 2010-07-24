@@ -13,7 +13,7 @@ module Redcar
           end
 
           def connection
-            @connection ||= Net::SSH.start(host, user, :password => password)
+            @connection ||= Net::SSH.start(host, user, :password => password, :keys => private_key_files)
           end
           
           def touch(file)

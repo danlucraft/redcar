@@ -6,7 +6,8 @@
 <% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets redcar.css))) %>
 <link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
 
-<div id='show_div'>
+<h5>Connections</h5>
+<div id='connections'>
 <% if connections and connections.any? %>
   <table id='table'>
     <tr class='grey' style='font-weight:bold;'>
@@ -34,7 +35,7 @@
     <% end %>
   </table>
 <% else %>
-  <p><br/><br/><i>No connections</i><br/><br/></p>
+  <p>No connections</p>
 <% end %>
 
   <p>
@@ -77,6 +78,48 @@
   </div>
 </p>
 
+<h5>Private Keys</h5>
+<div id="private-keys">
+  <div class="list">
+    <% if private_key_files.any? %>
+      <table>
+      <% private_key_files.each do |private_key| %>
+        <tr>
+          <td><%= private_key %></td>
+          <td>
+            <a href='javascript:void(0);' class='delete-key' data-name="<%= private_key %>">Delete</a>
+          </td>
+        </tr>
+      <% end %>
+      </table>
+    <% else %>
+      No private keys.
+    <% end %>
+  </div>
+  <br />
+  <input id='add-private-key-button' type='button' value='Add Private Key'>
+
+  <div id='add-private-key' style='display:none;'>
+    <div class='error' style='display:none;color:red;text-weight:bold;margin-bottom:20px;'></div>
+    
+    <form id='add-private-key-form'>
+      <input type='hidden' name='operation' class='operation'>
+      <table>
+        <tr class='grey'>
+          <td colspan=2><b><span>New Private Key</span></b></td>
+        </tr>
+        <tr><td>Key file: </td><td><input size="30" type='text' class="path" name='path'></td></tr>
+        <tr>
+          <td colspan=2>
+            <input class='save' type='submit' value='Save'>
+            <input class='cancel' type='button' value='Cancel'>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+</div>
+
 <script type="text/javascript">
 $(document).ready(function() {
   function showMain() {
@@ -87,8 +130,8 @@ $(document).ready(function() {
       .removeAttr('selected');  
 
     $('#add_div').hide();
-    $('#show_div').show();
-  }
+    $('#connections').show();
+  };
 
   var PORTS = {
     'FTP': 21, 'SFTP': 22
@@ -112,7 +155,7 @@ $(document).ready(function() {
 
     $('#error').html("");
     $('#conn_name').text('Editing ' + name);
-    $('#show_div').hide();
+    $('#connections').hide();
     $('#add_div').show();
     $('#protocol').focus();
     $('#name').attr('disabled', 'disabled');
@@ -137,7 +180,7 @@ $(document).ready(function() {
     $('#error').html("");
     $('#conn_name').text('New Connection');
     $('#operation').val('insert');
-    $('#show_div').hide();
+    $('#connections').hide();
     $('#add_div').show();
     $('#name').focus();
   });
@@ -178,6 +221,49 @@ $(document).ready(function() {
     }
     return false;
   });
+  
+  $("#add-private-key-button").click(function() {
+    $("#add-private-key-button").hide();
+    $("#add-private-key").show();
+    $("#private-keys .list").hide();
+  });
+
+  $("#add-private-key-form .cancel").click(function() {
+    $("#add-private-key-button").show();
+    $("#add-private-key").hide();
+    $("#private-keys .list").show();
+  });
+
+  $("#add-private-key-form").submit(function(e) {
+    try {
+      var result = Controller.addPrivateKeyFile($("#add-private-key-form .path").val());
+
+      if (result.success === false) {
+        $('#add-private-key .error').html(result.error);
+        $('#add-private-key .error').show();
+        $('#add-private-key-form .path').focus();
+      }
+      else {
+        Controller.reloadIndex();
+      }
+    }
+    catch(err) {
+      alert("Error: " + error.message);
+    }
+    return false;
+  });
+
+  $("#private-keys .list .delete-key").click(function() {
+    var path = $(this).attr('data-name');
+    try {
+      Controller.removePrivateKeyFile(path);
+      Controller.reloadIndex();
+    }
+    catch(err) {
+      alert("Error: " + err.message);
+    }
+  });
+
 });
 
 </script>

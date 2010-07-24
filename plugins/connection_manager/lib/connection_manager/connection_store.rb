@@ -18,20 +18,6 @@ module Redcar
         @connections = load_connections
       end
 
-      def load_connections
-        (storage["connections"] || []).map do |h|
-          Connection.new(h["name"], h["protocol"], h["host"], h["port"], h["user"], h["path"])
-        end
-      end
-
-      def save_connections
-        storage["connections"] = connections.map { |c| c.to_hash }
-      end
-      
-      def storage
-        Redcar::Plugin::Storage.new('connection_manager')
-      end
-      
       def find(name)
         connections.detect { |c| c.name == name }
       end
@@ -81,6 +67,22 @@ module Redcar
         @connections.delete(find(name))
         
         save_connections
+      end
+      
+      private
+      
+      def load_connections
+        (storage["connections"] || []).map do |h|
+          Connection.new(h["name"], h["protocol"], h["host"], h["port"], h["user"], h["path"])
+        end
+      end
+
+      def save_connections
+        storage["connections"] = connections.map { |c| c.to_hash }
+      end
+      
+      def storage
+        Redcar::Plugin::Storage.new('connection_manager')
       end
     end
   end

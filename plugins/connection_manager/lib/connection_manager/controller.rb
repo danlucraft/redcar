@@ -5,10 +5,11 @@ module Redcar
     class Controller
       include Redcar::HtmlController
       
-      attr_reader :store
+      attr_reader :store, :private_key_store
       
       def initialize
         @store = ConnectionStore.new
+        @private_key_store = PrivateKeyStore.new
       end
       
       def title
@@ -50,11 +51,25 @@ module Redcar
       def get_connection(name)
         store.find(name).to_hash
       end
+      
+      def add_private_key_file(path)
+        private_key_store.add_private_key(path)
+      rescue PrivateKeyStore::ValidationError => e
+        validation_failed_response(e)
+      end
+
+      def remove_private_key_file(path)
+        private_key_store.remove_private_key(path)
+      end
 
       private
       
       def connections
         store.connections
+      end
+      
+      def private_key_files
+        private_key_store.paths
       end
       
       def success_response
@@ -67,7 +82,6 @@ module Redcar
           'error' => "Please fix the following errors:<ul>#{e.errors.map {|msg| "<li>#{msg}</li>"}}<ul>"
         }
       end
-      
     end
   end
 end

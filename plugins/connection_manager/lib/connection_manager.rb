@@ -3,6 +3,7 @@ require 'erb'
 require 'connection_manager/commands'
 require 'connection_manager/connection_store'
 require 'connection_manager/controller'
+require 'connection_manager/private_key_store'
 
 module Redcar
   class ConnectionManager
