@@ -33,46 +33,26 @@ module Redcar
       end
     end
     
-    class FileReloadCommand < Command
+    class FileReloadCommand < EditTabCommand
       def initialize(path = nil, adapter = Adapters::Local.new)
         @path = path      
       end      
       
       def execute
-        if tab.is_a?(EditTab)
-          if tab.edit_view.document.modified?
-            result = Application::Dialog.message_box(
-              "This tab has unsaved changes. \n\nReload?",
-              :buttons => :yes_no_cancel
-            )
-            case result
-            when :yes
-              tab.edit_view.document.update_from_mirror
-            when :no
-            when :cancel
-            end
-          else
+        if tab.edit_view.document.modified?
+          result = Application::Dialog.message_box(
+            "This tab has unsaved changes. \n\nReload?",
+            :buttons => :yes_no_cancel
+          )
+          case result
+          when :yes
             tab.edit_view.document.update_from_mirror
+          when :no
+          when :cancel
           end
-        elsif tab.is_a?(HtmlTab)
-          return
-          #if tab.html_view.controller and message = tab.html_view.controller.ask_before_closing
-          #  result = Application::Dialog.message_box(
-          #    message,
-          #    :buttons => :yes_no_cancel
-          #  )
-          #  case result
-          #  when :yes
-          #    tab.edit_view.document.update_from_mirror
-          #  when :no
-          #  when :cancel
-          #  end
-          #else
-          #  tab.edit_view.document.update_from_mirror
-          #end
         else
           tab.edit_view.document.update_from_mirror
-        end        
+        end
       end
     end
     
