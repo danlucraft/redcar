@@ -117,6 +117,7 @@ $(document).ready(function() {
   $('.modify').live('click', function() {
     var name = $(this).attr('data-name');
 
+    $('#error').html("");
     $('#conn_name').text('Editing ' + name);
     $('#show_div').hide();
     $('#add_div').show();
@@ -141,6 +142,7 @@ $(document).ready(function() {
   });
 
   $('#add').click(function() {
+    $('#error').html("");
     $('#conn_name').text('New Connection');
     $('#operation').val('insert');
     $('#show_div').hide();
@@ -149,6 +151,7 @@ $(document).ready(function() {
   });
 
   $('#cancel').click(function() {
+    $('#error').html("");
     showMain();
   });
 
@@ -176,6 +179,7 @@ $(document).ready(function() {
         $('#name').focus();
       }
       else {
+        $('#error').html("");
         $('#error').hide();
 
         if ($('#operation').val() == 'update') {
