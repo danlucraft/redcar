@@ -113,7 +113,7 @@ spec = Gem::Specification.new do |s|
   s.extra_rdoc_files  = %w(README.md)
   s.rdoc_options      = %w(--main README.md)
 
-  s.files             = %w(CHANGES LICENSE Rakefile README.md ROADMAP.md) + 
+  s.files             = %w(CHANGES LICENSE Rakefile README.md) + 
                           Dir.glob("bin/redcar") + 
                           Dir.glob("config/**/*") + 
                           remove_gitignored_files(Dir.glob("lib/**/*")) + 
