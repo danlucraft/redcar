@@ -13,6 +13,14 @@ module Redcar
           end
 
           def connection
+            if @connection
+              begin
+                @connection.exec! 'pwd'
+              rescue
+                @connection = nil
+              end
+            end
+            
             @connection ||= Net::SSH.start(host, user, :password => password)
           end
           
