@@ -16,7 +16,8 @@ module Redcar
       else
   	    @connection = Net::HTTP
       end
-  	end
+      puts "found latest XULRunner release version: #{xulrunner_version}" if Redcar.platform == :windows
+    end
   	
   	def install
   	  unless File.writable?(JRUBY_JAR_DIR)
@@ -104,7 +105,9 @@ module Redcar
       "/clojure.jar" => "plugins/repl/vendor/clojure.jar"
     }
     
-    XULRUNNER_URI = "http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.2.7/runtimes/xulrunner-1.9.2.7.en-US.win32.zip"
+    def xulrunner_uri
+      "http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/#{xulrunner_version}/runtimes/xulrunner-#{xulrunner_version}.en-US.win32.zip"
+    end
 
     SWT_JARS = {
       :osx     => {
@@ -144,8 +147,8 @@ module Redcar
 
       when /windows|mswin|mingw/i
         setup "swt", :resources => SWT_JARS[:windows], :path => File.join(plugins_dir, %w(application_swt vendor swt))
-        setup "swt", :resources => [XULRUNNER_URI],    :path => File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. vendor)))
-        link( File.join(redcar_jars_dir, "swt", "xulrunner"),
+        setup "swt", :resources => [xulrunner_uri],    :path => File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. vendor)))
+        link( File.join(redcar_jars_dir, "xulrunner"),
               File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. vendor xulrunner))))
       end
     end
@@ -250,6 +253,13 @@ module Redcar
       desired_uid = File.stat(Redcar.home_dir).uid
       desired_gid = File.stat(Redcar.home_dir).gid
       FileUtils.chown_R(desired_uid, desired_gid.to_s, Redcar.user_dir)
+    end
+    
+    def xulrunner_version
+      @xulrunner_version ||= begin
+        html = @connection.get(URI.parse("http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/"))
+        html.scan(/\d\.\d\.\d\.\d+/).sort.reverse.first
+      end
     end
   end
 end
