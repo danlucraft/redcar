@@ -174,7 +174,7 @@ module Redcar
       textbox :path
       
       button :connect, "Connect", "Return" do
-        connect(protocol.value, host.value, user.value, password.value, path.value)
+        connect_to_remote(protocol.value, host.value, user.value, password.value, path.value)
       end
     end
     
