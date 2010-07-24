@@ -95,6 +95,10 @@ module Redcar
           end
         rescue JSON::GeneratorError => e
           nil
+        rescue Object => e
+          puts "caught in controller"
+          puts e.message
+          puts e.backtrace
         end
       end
       
