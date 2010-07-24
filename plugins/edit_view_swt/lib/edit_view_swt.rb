@@ -20,7 +20,7 @@ module Redcar
     end
     
     def self.load_textmate_assets
-      load_textmate_assets_from_dir(Redcar.root + "/textmate/")
+      load_textmate_assets_from_dir(Redcar.root + "/plugins/textmate/vendor/redcar-bundles")
       Redcar.plugin_manager.loaded_plugins.each do |plugin|
         load_textmate_assets_from_dir(File.dirname(plugin.definition_file) + "/")
       end

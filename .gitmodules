@@ -22,3 +22,6 @@
 [submodule "plugins/project/vendor/net-ftp-list"]
 	path = plugins/project/vendor/net-ftp-list
 	url = http://github.com/fcoury/net-ftp-list.git
+[submodule "plugins/textmate/vendor/redcar-bundles"]
+	path = plugins/textmate/vendor/redcar-bundles
+	url = git://github.com/danlucraft/redcar-bundles.git
