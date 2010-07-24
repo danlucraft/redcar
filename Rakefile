@@ -146,7 +146,7 @@ to complete the installation.
 (If you installed the gem with 'sudo', you will need to run 'sudo redcar install').
 
 NB. This will download jars that Redcar needs to run from the internet. It will put
-them only into the Redcar gem directory.
+them into ~/.redcar/ and link to them in the Redcar gem.
 
 ------------------------------------------------------------------------------------
 
