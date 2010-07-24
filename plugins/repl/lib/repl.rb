@@ -61,6 +61,10 @@ module Redcar
     end
 
     class ClojureSendReceive
+      
+      Prompt = "=>"
+      Title = "Clojure REPL"
+      
       def initialize
         @repl_wrapper = Wrapper.new 
         @mutex = Mutex.new
@@ -73,12 +77,12 @@ module Redcar
 	@thread = Thread.new do
           loop do
             str = @repl_wrapper.getResult
-	    puts str
             @mutex.synchronize do
               @history += "\n" + str
             end
-	    puts "Status: " + @mutex.locked?.to_s
-	    @parent.notify_listeners(:change)
+	    Redcar.update_gui do
+	      @parent.notify_listeners(:change)
+	    end
           end
         end
       end
@@ -99,9 +103,12 @@ module Redcar
     end
 
     class InternalSendReceive
+      
+      Prompt = ">>"
+      Title = "Ruby REPL"
 
       def initialize
-        @history = "=> "
+        @history = Prompt + " "
 	@binding = binding
       end
       
@@ -122,11 +129,11 @@ module Redcar
       def send_to_repl expr
         @history += expr + "\n"
         begin
-          @history += eval(expr, @binding).inspect
+          @history += "=> " + eval(expr, @binding).inspect
         rescue Object => e
-          @history += format_error(e)
+          @history += "x> " + format_error(e)
         end
-	@history += "\n=> "
+	@history += "\n" + Prompt + " "
 	@parent.notify_listeners(:change)
       end
     end

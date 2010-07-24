@@ -10,7 +10,7 @@ module Redcar
       end
 
       def title
-        "(internal)"
+        @send_receive.class::Title
       end
       
       # Get the complete history of commands and results as a pretty formatted
@@ -26,10 +26,10 @@ module Redcar
       #
       # @param [String] a string with at least one prompt and statement in it
       def commit(contents)
-        if contents.split("\n").last =~ /=>\s+$/
+        if contents.split("\n").last =~ /#{@send_receive.class::Prompt}\s+$/
           command = ""
         else
-          command = contents.split('=>').last.strip
+          command = contents.split(@send_receive.class::Prompt).last.strip
         end
         @send_receive.send_to_repl command
       end

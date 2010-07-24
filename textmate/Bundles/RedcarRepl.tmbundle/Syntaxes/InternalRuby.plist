@@ -4,10 +4,10 @@
 <dict>
 	<key>fileTypes</key>
 	<array>
-		<string>(internal)</string>
+		<string>Ruby REPL</string>
 	</array>
 	<key>name</key>
-	<string>Redcar REPL</string>
+	<string>Ruby REPL</string>
 	<key>scopeName</key>
 	<string>repl.ruby</string>
 	<key>patterns</key>
