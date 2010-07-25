@@ -3,7 +3,9 @@ module Redcar
     class OpenSearch < Redcar::Command
       def execute
         if Project::Manager.focussed_project
-          unless tab = find_open_instance
+          if (tab = find_open_instance)
+            tab.html_view.controller = tab.html_view.controller # refresh
+          else
             tab = win.new_tab(Redcar::HtmlTab)
             tab.html_view.controller = Redcar::FindInProject::Controller.new
           end

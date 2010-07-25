@@ -118,11 +118,13 @@
   text-align: right;
   padding: 0 5px;
   min-width: 20px;
+  cursor: hand;
 }
 
 #results .text {
   padding: 3px 10px;
   width: 100%;
+  cursor: hand;
 }
 
 #results .text em {
