@@ -6,6 +6,10 @@ module Redcar
         def initialize
           super(nil, nil)
         end
+        
+        def is_unique?
+          true
+        end
       end
       
       attr_reader :text, :command
@@ -32,6 +36,10 @@ module Redcar
       
       def ==(other)
         text == other.text and command == other.command
+      end
+      
+      def is_unique?
+        false
       end
     end
   end

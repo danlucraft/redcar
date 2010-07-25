@@ -53,13 +53,18 @@ module Redcar
       true
     end
     
+    def is_unique?
+      false
+    end
+    
     # Merge two Menu trees together. Modifies this Menu.
     #
     # @param [Menu] another Menu
     def merge(other)
       other.entries.each do |other_entry|
-        if here = entry(other_entry.text)
+        if here = entry(other_entry.text) and not other_entry.is_unique?
           if here.class == other_entry.class
+            puts here.class
             here.merge(other_entry)
           else
             entries[entries.index(here)] = other_entry
