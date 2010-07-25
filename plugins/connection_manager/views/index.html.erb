@@ -81,8 +81,13 @@
 <h5>Private Keys</h5>
 <div id="private-keys">
   <div class="list">
-    <% if private_key_files.any? %>
+    <% if (private_key_files + auto_detected_private_key_files).any? %>
       <table>
+      <% auto_detected_private_key_files.each do |private_key| %>
+        <tr>
+          <td><%= private_key %></td>
+        </tr>
+      <% end %>
       <% private_key_files.each do |private_key| %>
         <tr>
           <td><%= private_key %></td>

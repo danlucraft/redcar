@@ -3,6 +3,23 @@ module Redcar
   class ConnectionManager
     
     class PrivateKeyStore
+      
+
+      def self.auto_detected_keys
+        paths = []
+        Dir[File.join(Redcar.home_dir, ".ssh", "*")].each do |filename|
+          first = File.open(filename).read(100)
+          if first =~ /PRIVATE KEY/
+            paths << filename
+          end
+        end
+        paths
+      end
+      
+      def self.store_keys
+        PrivateKeyStore.new.paths
+      end
+      
       class ValidationError < StandardError
         def errors
           @errors ||= []

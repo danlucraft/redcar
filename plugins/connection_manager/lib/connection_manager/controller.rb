@@ -68,6 +68,10 @@ module Redcar
         store.connections
       end
       
+      def auto_detected_private_key_files
+        PrivateKeyStore.auto_detected_keys
+      end
+      
       def private_key_files
         private_key_store.paths
       end

@@ -56,6 +56,7 @@ module Redcar
             edit_view = document.edit_view
             analyzer = Analyzer.new(rules, document, edit_view.tab_width, edit_view.soft_tabs?)
             increase_ignore
+            p :set_level
             document.indentation.set_level(start_line_ix, analyzer.calculate_for_line(start_line_ix, true))
             decrease_ignore
           end

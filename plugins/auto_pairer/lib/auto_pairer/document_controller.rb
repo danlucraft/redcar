@@ -62,6 +62,7 @@ module Redcar
       end
 
       def before_modify(start_offset, end_offset, text)
+        p [:before_modify, start_offset, end_offset, text]
         return if ignore?
         @start_offset  = start_offset
         @end_offset    = end_offset
@@ -120,7 +121,9 @@ module Redcar
           # Insert matching ends
           if @insert_end and !@ignore_insert
             @ignore_insert = true
+            p [@rules, @text]
             endtext = @rules[@text]
+            p [:pairinsert, @start_offset + 1, endtext]
             document.insert(@start_offset + 1, endtext)
             mark1 = document.create_mark(@start_offset - 1,     :right)
             mark2 = document.create_mark(@start_offset, :right)
