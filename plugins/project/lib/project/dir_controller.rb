@@ -91,31 +91,9 @@ module Redcar
       def right_click(tree, node)
         controller = self
         
-        menu = Menu::Builder.build do
-          item("New File")      { controller.new_file(tree, node) }
-          item("New Directory") { controller.new_dir(tree, node)  }
-          separator
-          if tree.selection.length > 1
-            dirs = tree.selection.map {|node| node.parent_dir }
-            if dirs.uniq.length == 1
-              item("Bulk Rename") { controller.rename(tree, node)   }
-            end
-          else
-            item("Rename")      { controller.rename(tree, node)   }
-          end
-          item("Delete")        { controller.delete(tree, node)   }
-          separator
-          if DirMirror.show_hidden_files?
-            item("Hide Hidden Files") do
-              DirMirror.show_hidden_files = false
-              tree.refresh
-            end
-          else
-            item("Show Hidden Files") do
-              DirMirror.show_hidden_files = true
-              tree.refresh
-            end
-          end
+        menu = Menu.new
+        Redcar.plugin_manager.objects_implementing(:project_context_menus).each do |object|
+          menu.merge(object.project_context_menus(tree, node, controller))
         end
         
         Application::Dialog.popup_menu(menu, :pointer)
