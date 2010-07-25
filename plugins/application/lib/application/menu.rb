@@ -64,7 +64,6 @@ module Redcar
       other.entries.each do |other_entry|
         if here = entry(other_entry.text) and not other_entry.is_unique?
           if here.class == other_entry.class
-            puts here.class
             here.merge(other_entry)
           else
             entries[entries.index(here)] = other_entry
