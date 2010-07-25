@@ -17,10 +17,13 @@ module Redcar
       include Redcar::REPL::ReplMirror
       
       def initialize
+	
+	# required by ReplMirror
 	@prompt = "=>"
-        @repl_wrapper = Wrapper.new 
+        
+	@repl_wrapper = Wrapper.new 
         @mutex = Mutex.new
-        @history = ""
+        @history = "# Clojure REPL\n"
 	
         @thread = Thread.new do
           loop do
