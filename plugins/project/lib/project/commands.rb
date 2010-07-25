@@ -33,6 +33,29 @@ module Redcar
       end
     end
     
+    class FileReloadCommand < EditTabCommand
+      def initialize(path = nil, adapter = Adapters::Local.new)
+        @path = path      
+      end      
+      
+      def execute
+        if tab.edit_view.document.modified?
+          result = Application::Dialog.message_box(
+            "This tab has unsaved changes. \n\nReload?",
+            :buttons => :yes_no_cancel
+          )
+          case result
+          when :yes
+            tab.edit_view.document.update_from_mirror
+          when :no
+          when :cancel
+          end
+        else
+          tab.edit_view.document.update_from_mirror
+        end
+      end
+    end
+    
     module OpenRemote
       def connect_to_remote(protocol, host, user, password, path)
         error = nil

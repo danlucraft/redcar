@@ -16,7 +16,8 @@ module Redcar
       else
   	    @connection = Net::HTTP
       end
-  	end
+      puts "found latest XULRunner release version: #{xulrunner_version}" if Redcar.platform == :windows
+    end
   	
   	def install
   	  unless File.writable?(JRUBY_JAR_DIR)
@@ -93,9 +94,9 @@ module Redcar
     
     JOPENSSL_DIR = File.expand_path(File.join(File.dirname(__FILE__), "..", "openssl/lib/")) 
     JOPENSSL = {
-      "/jruby/bcmail-jdk14-139-#{Redcar::VERSION}.jar" => "bcmail-jdk14-139.jar",
-      "/jruby/bcprov-jdk14-139-#{Redcar::VERSION}.jar" => "bcprov-jdk14-139.jar",
-      "/jruby/jopenssl-#{Redcar::VERSION}.jar"         => "jopenssl.jar",
+      "/jruby/bcmail-jdk14-139-redcar1.jar" => "bcmail-jdk14-139.jar",
+      "/jruby/bcprov-jdk14-139-redcar1.jar" => "bcprov-jdk14-139.jar",
+      "/jruby/jopenssl-redcar1.jar"         => "jopenssl.jar",
     }
 
     REDCAR_JARS = {
@@ -104,7 +105,9 @@ module Redcar
       "/clojure.jar" => "plugins/repl/vendor/clojure.jar"
     }
     
-    XULRUNNER_URI = "http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.2.6/runtimes/xulrunner-1.9.2.6.en-US.win32.zip"
+    def xulrunner_uri
+      "http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/#{xulrunner_version}/runtimes/xulrunner-#{xulrunner_version}.en-US.win32.zip"
+    end
 
     SWT_JARS = {
       :osx     => {
@@ -144,8 +147,8 @@ module Redcar
 
       when /windows|mswin|mingw/i
         setup "swt", :resources => SWT_JARS[:windows], :path => File.join(plugins_dir, %w(application_swt vendor swt))
-        setup "swt", :resources => [XULRUNNER_URI],    :path => File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. vendor)))
-        link( File.join(redcar_jars_dir, "swt", "xulrunner"),
+        setup "swt", :resources => [xulrunner_uri],    :path => File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. vendor)))
+        link( File.join(redcar_jars_dir, "xulrunner"),
               File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. vendor xulrunner))))
       end
     end
@@ -159,57 +162,64 @@ module Redcar
       if uri =~ /^\//
         uri = ASSET_HOST + uri
       end
+      print "  downloading #{uri}... "; $stdout.flush
       FileUtils.mkdir_p(File.dirname(path))
       File.open(path, "wb") do |write_out|
         write_out.print @connection.get(URI.parse(uri))
       end
       
+      if File.open(path).read(200) =~ /Access Denied/
+        puts "\n\n*** Error downloading #{uri}, got Access Denied from S3."
+        exit
+      end
+      
       if path =~ /.*\.zip$/
-      	puts '  unzipping  ' + path
+      	print "done!\n  unzipping  #{path}..."; $stdout.flush
       	Installer.unzip_file(path)
       end
-
-      # puts "  downloaded #{uri}\n          to #{path}\n"
+      puts "done!"
     end
     
     def setup(name, options)
-      resources = options.delete(:resources)
-      path      = options.delete(:path)
+      resources   = options.delete(:resources)
+      target_dir  = options.delete(:path)
       
       if resources.is_a?(Array)
         resources.each do |resource|
-          setup_resource name, path, resource, File.basename(resource)
+          setup_resource(name, target_dir, resource, File.basename(resource))
         end
       else
-        resources.each_pair do |url, save_as|
-          setup_resource name, path, url, save_as
+        resources.each do |url_path, target_path|
+          setup_resource(name, target_dir, url_path, target_path)
         end
       end
     end
     
-    def setup_resource(name, path, url, save_as)
-      target = File.join(path, save_as)
-      return if File.exist?(target)
+    def setup_resource(name, target_dir, url_path, target_path)
+      target_file = File.join(target_dir, target_path)
+      return if File.exist?(target_file)
       
-      cached = File.join(redcar_jars_dir, name, save_as)
+      cached = File.join(redcar_jars_dir, File.basename(url_path))
       unless File.exists?(cached)
-        print "  downloading #{File.basename(cached)}... "
-        download(url, cached)
-        puts "done!"
+        download(url_path, cached)
       end
 
-      FileUtils.mkdir_p File.dirname(target)
-      link(cached, target)
+      FileUtils.mkdir_p File.dirname(target_file)
+      link(cached, target_file)
     end
 
     def link(cached, target)
       # Windoze doesn't support FileUtils.ln_sf, so we copy the files
       if Config::CONFIG["host_os"] =~ /windows|mswin|mingw/i
-        puts "  copying #{File.basename(cached)}..."
+        print "  copying #{File.basename(cached)}... "
+        $stdout.flush
         FileUtils.cp_r cached, target
+        puts "done"
       else
-        puts "  linking #{File.basename(cached)}..."
+        print "  linking #{File.basename(cached)}... "
+        $stdout.flush
         FileUtils.ln_sf cached, target
+        puts "done"
       end
     end
     
@@ -243,6 +253,13 @@ module Redcar
       desired_uid = File.stat(Redcar.home_dir).uid
       desired_gid = File.stat(Redcar.home_dir).gid
       FileUtils.chown_R(desired_uid, desired_gid.to_s, Redcar.user_dir)
+    end
+    
+    def xulrunner_version
+      @xulrunner_version ||= begin
+        html = @connection.get(URI.parse("http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/"))
+        html.scan(/\d\.\d\.\d\.\d+/).sort.reverse.first
+      end
     end
   end
 end

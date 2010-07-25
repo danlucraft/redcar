@@ -43,4 +43,5 @@ textmate/Bundles/asciidoc.tmbundle
 tmp
 plugins/recent_directories/dirs.txt
 plugins/ctags/vendor
+plugins/repl/vendor/clojure.jar
 tags
