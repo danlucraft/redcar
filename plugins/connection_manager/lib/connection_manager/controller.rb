@@ -62,6 +62,15 @@ module Redcar
         private_key_store.remove_private_key(path)
       end
 
+      def activate_connection(name)
+        connection = store.find(name)
+        Project::Manager.connect_to_remote(
+            connection.protocol, connection.host,
+            connection.user, connection.path,
+            PrivateKeyStore.paths
+          )
+      end
+      
       private
       
       def connections

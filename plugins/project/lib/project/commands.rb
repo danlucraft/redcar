@@ -56,38 +56,7 @@ module Redcar
       end
     end
     
-    module OpenRemote
-      def connect_to_remote(protocol, host, user, password, path)
-        error = nil
-        error = "You must provide a host name" if host.empty? 
-  
-        unless error
-          Redcar.safely("Connecting to #{protocol} server #{host}") do
-            begin
-              project = Manager.open_remote_project(protocol, host, user, password, path)
-              project.refresh
-
-            rescue Errno::ECONNREFUSED
-              error = "Connection refused connecting to #{host}"
-
-            rescue SocketError
-              error = "Cannot connect to #{host}. Error: #{$!.message}."
-
-            rescue
-              # gives a chance to protocols to handle their specific errors
-              Project::Adapters::Remote::PROTOCOLS.values.each do |p|
-                break if error = p.handle_error($!, host, user)
-              end
-            end
-          end
-        end
-        
-        Application::Dialog.message_box(error, :type => :error, :buttons => :ok) if error
-      end
-    end
-    
     class OpenRemoteSpeedbar < Redcar::Speedbar
-      include OpenRemote
       
       class << self
         attr_accessor :connection
@@ -123,7 +92,7 @@ module Redcar
         self.class.storage[:last_selected] = connection.value
         self.class.storage.save
         
-        connect_to_remote(
+        Manager.connect_to_remote(
           selected[:protocol], 
           selected[:host],
           selected[:user],
@@ -149,8 +118,6 @@ module Redcar
     end
     
     class QuickOpenRemoteSpeedbar < Redcar::Speedbar
-      include OpenRemote
-
       class << self
         attr_accessor :host
         attr_accessor :user
@@ -174,7 +141,7 @@ module Redcar
       textbox :path
       
       button :connect, "Connect", "Return" do
-        connect_to_remote(protocol.value, host.value, user.value, password.value, path.value)
+        Manager.connect_to_remote(protocol.value, host.value, user.value, password.value, path.value)
       end
     end
     

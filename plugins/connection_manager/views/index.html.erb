@@ -21,15 +21,15 @@
     
     <% connections.each do |c| %>
       <tr id='row-<%= c.name %>'>
-        <td><a href='javscript:void(0);' class='modify' data-name="<%= c.name %>"><%= c.name %></a></td>
+        <td><a href='javscript:void(0);' class='activate connection-name'><%= c.name %></a></td>
         <td><%= c.protocol %></td>
         <td><%= c.host %></td>
         <td><%= c.port %></td>
         <td><%= c.user %></td>
         <td><%= c.path %></td>
         <td>
-          <a href='javascript:void(0);' class='delete' data-name="<%= c.name %>">Delete</a>
-          <a href='javascript:void(0);' class='modify' data-name="<%= c.name %>">Modify</a>
+          <a href='javascript:void(0);' class='delete'">Delete</a>
+          <a href='javascript:void(0);' class='modify'">Modify</a>
         </td>
       </tr>      
     <% end %>
@@ -143,7 +143,7 @@ $(document).ready(function() {
   };
   
   $('.delete').live('click', function() {
-    var name = $(this).attr('data-name');
+    var name = $(this).parent().parent().find(".connection-name").text();
     try {
       if (confirm('Do you really want to delete connection ' + name + '?')) {
         Controller.deleteConnection(name);
@@ -156,8 +156,7 @@ $(document).ready(function() {
   });
   
   $('.modify').live('click', function() {
-    var name = $(this).attr('data-name');
-
+    var name = $(this).parent().parent().find(".connection-name").text();
     $('#error').html("");
     $('#conn_name').text('Editing ' + name);
     $('#connections').hide();
@@ -225,6 +224,11 @@ $(document).ready(function() {
       alert("Error: " + error.message);
     }
     return false;
+  });
+  
+  $(".activate").click(function(e) {
+    var name = $(this).parent().parent().find(".connection-name").text();
+    Controller.activateConnection(name);
   });
   
   $("#add-private-key-button").click(function() {
