@@ -96,8 +96,8 @@ module Redcar
           selected[:protocol], 
           selected[:host],
           selected[:user],
-          selected[:password],
-          selected[:path]
+          selected[:path],
+          PrivateKeyStore.paths
         )
       end
       
@@ -141,7 +141,13 @@ module Redcar
       textbox :path
       
       button :connect, "Connect", "Return" do
-        Manager.connect_to_remote(protocol.value, host.value, user.value, password.value, path.value)
+        Manager.connect_to_remote(
+            protocol.value, 
+            host.value, 
+            user.value, 
+            path.value,
+            PrivateKeyStore.paths
+          )
       end
     end
     
