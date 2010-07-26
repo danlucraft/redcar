@@ -100,6 +100,7 @@
   border-spacing: 0px;
 }
 
+#results .expand,
 #results .filename,
 #results .line_no {
   background-color: #eee;
@@ -112,6 +113,15 @@
 
 #results .odd {
   background-color: #EDEDFD;
+}
+
+#results .expand_collapse {
+  width: 16px;
+  height: 16px;
+}
+
+#results .filename {
+  width: 100%;
 }
 
 #results .line_no {
