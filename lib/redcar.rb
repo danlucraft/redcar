@@ -66,15 +66,15 @@ module Redcar
     forking = ARGV.include?("--fork")
     no_runner = ARGV.include?("--no-sub-jruby")
     jruby = Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby"
-    osx = not [:linux, :windows].include?(platform)
-    
+    osx = ! [:linux, :windows].include?(platform)    
+
     if forking and not jruby
       # jRuby doesn't support fork() because of the runtime stuff...
       forking = false
       puts 'Forking failed, attempting to start anyway...' if (pid = fork) == -1
       exit unless pid.nil?
 
-      if pid
+      if pid.nil?
         # reopen the standard pipes to nothingness
         STDIN.reopen '/dev/null'
         STDOUT.reopen '/dev/null', 'a'
