@@ -19,7 +19,8 @@ module Redcar
     end
     
     def cleaned_args
-      ARGV.map do |arg|
+      # We should never pass --fork to a subprocess
+      ARGV.find_all {|arg| arg != '--fork'}.map do |arg|
         if arg =~ /--(.+)=(.+)/
           "--" + $1 + "=\"" + $2 + "\""
         else
