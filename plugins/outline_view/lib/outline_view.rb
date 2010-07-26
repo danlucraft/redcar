@@ -27,7 +27,7 @@ module Redcar
         re = make_regex(filter)
         @last_list.clear
         file.tags.each do |key, _, match|
-          @last_list[key] = match if key =~ re
+          @last_list[key] = make_regex(match) if key =~ re
         end
         @last_list.keys
       end
@@ -35,7 +35,7 @@ module Redcar
       def selected(text, ix, closing=false)
         if @last_list
           close
-          DocumentSearch::FindNextRegex.new(make_regex(@last_list[text]), true).run
+          DocumentSearch::FindNextRegex.new(@last_list[text], true).run
         end
       end
     end
