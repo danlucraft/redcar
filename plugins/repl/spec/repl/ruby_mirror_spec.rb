@@ -4,10 +4,6 @@ class Redcar::REPL
   describe RubyMirror do
     before do
       @mirror = RubyMirror.new
-=======
-      ruby_eval = Proc.new { |expr,binding| eval(expr, binding) }
-      @mirror = InternalMirror.new ruby_eval
->>>>>>> 00e30e3b35f15cfe0e571d784e60eef9f8e31800:plugins/repl/spec/repl/internal_mirror_spec.rb
       @changed_event = false
       @mirror.add_listener(:change) { @changed_event = true }
     end
@@ -32,7 +28,7 @@ RUBY
     end
 
     def commit_test_text2
-              text = <<-RUBY
+      text = <<-RUBY
 # Redcar REPL
 
 >> $internal_repl_test = 707
