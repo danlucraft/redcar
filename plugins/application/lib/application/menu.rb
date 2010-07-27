@@ -4,16 +4,30 @@ module Redcar
     include Enumerable
     include Redcar::Model
     
-    attr_reader :text, :entries
+    # Default priority for all menu's and items if they aren't explicitly provided
+    # TODO: We need to decide on a value for this before pushing to mainline
+    DEFAULT_PRIORITY = 25
+    
+    attr_reader :text, :entries, :priority
   
     # A Menu will initially have nothing in it.
-    def initialize(text=nil)
-      @text, @entries = text || "", []
+    def initialize(text=nil, options={})
+      @text, @entries, @priority = text || "", [], options[:priority] || Menu::DEFAULT_PRIORITY
     end
   
-    # Iterate over each entry
+    # Iterate over each entry, sorted by priority
     def each
-      entries.each {|e| yield e}
+      sorted = {:first => [], :last => []}
+      entries.each {|e| (sorted[e.priority] ||= []) << e}
+      
+      # Get the nasty Symbols out of the hash so we can sort it
+      first = sorted.delete(:first)
+      last = sorted.delete(:last)
+      
+      # Yield up the results
+      first.each {|val| yield val }
+      sorted.keys.sort.each {|i| sorted[i].each {|val| yield val }}
+      last.each {|val| yield val }
     end
   
     # Add a Redcar::MenuItem or a Redcar::Menu
@@ -45,6 +59,7 @@ module Redcar
     end
     
     def ==(other)
+      # FIXME: Should priority factor into equality?
       return false unless length == other.length
       return false unless text == other.text
       entries.zip(other.entries) do |here, there|

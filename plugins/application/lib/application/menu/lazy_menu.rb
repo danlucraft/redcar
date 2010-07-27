@@ -3,9 +3,10 @@ module Redcar
   class Menu
     class LazyMenu < Menu
       
-      def initialize(block, text=nil)
+      def initialize(block, text=nil, options={})
         @text = text
         @block = block
+        @priority = options[:priority] || Menu::DEFAULT_PRIORITY
       end
       
       def entries

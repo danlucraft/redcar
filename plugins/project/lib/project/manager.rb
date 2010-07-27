@@ -1,5 +1,4 @@
 
-
 module Redcar
   class Project
     class Manager
@@ -250,26 +249,26 @@ module Redcar
       # @return [Menu]
       def self.project_context_menus(tree, node, controller)
         Menu::Builder.build do
-          item("New File")      { controller.new_file(tree, node) }
-          item("New Directory") { controller.new_dir(tree, node)  }
-          separator
+          item("New File", :priority => :first)       { controller.new_file(tree, node) }
+          item("New Directory", :priority => :first)  { controller.new_dir(tree, node)  }
+          separator(:priority => 10)
           if tree.selection.length > 1
             dirs = tree.selection.map {|node| node.parent_dir }
             if dirs.uniq.length == 1
-              item("Bulk Rename") { controller.rename(tree, node)   }
+              item("Bulk Rename", :priority => 10) { controller.rename(tree, node)   }
             end
           else
-            item("Rename")      { controller.rename(tree, node)   }
+            item("Rename", :priority => 10)           { controller.rename(tree, node)   }
           end
-          item("Delete")        { controller.delete(tree, node)   }
-          separator
+          item("Delete", :priority => 10)              { controller.delete(tree, node)   }
+          separator(:priority => 40)
           if DirMirror.show_hidden_files?
-            item("Hide Hidden Files") do
+            item("Hide Hidden Files", :priority => 40) do
               DirMirror.show_hidden_files = false
               tree.refresh
             end
           else
-            item("Show Hidden Files") do
+            item("Show Hidden Files", :priority => 40) do
               DirMirror.show_hidden_files = true
               tree.refresh
             end

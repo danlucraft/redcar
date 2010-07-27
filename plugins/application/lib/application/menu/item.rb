@@ -3,8 +3,8 @@ module Redcar
   class Menu
     class Item
       class Separator < Item
-        def initialize
-          super(nil, nil)
+        def initialize(options={})
+          super(nil, options)
         end
         
         def is_unique?
@@ -12,17 +12,26 @@ module Redcar
         end
       end
       
-      attr_reader :text, :command
+      attr_reader :text, :command, :priority
   
       # Create a new Item, with the given text to display in the menu, and
       # either:
       #   the Redcar::Command that is run when the item is selected.
       #   or a block to run when the item is selected
-      def initialize(text, command=nil, &block)
-        @text, @command = text, command
-        if !command & block
-          @command = block
+      def initialize(text, options={}, &block)
+        @text = text
+        
+        if options.respond_to?('[]')
+          @command = options[:command] || block
+          @priority = options[:priority]
+        # This branch is for compatibility with old code. Please use :command 
+        # option in new code
+        # FIXME: Should this be removed at some point?
+        else
+          @command = options || block
         end
+        
+        @priority ||= Menu::DEFAULT_PRIORITY
       end
       
       # Call this to signal that the menu item has been selected by the user.
@@ -32,9 +41,11 @@ module Redcar
       
       def merge(other)
         @command = other.command
+        @priority = other.priority
       end
       
       def ==(other)
+        # FIXME: Should priority factor into equality?
         text == other.text and command == other.command
       end
       
