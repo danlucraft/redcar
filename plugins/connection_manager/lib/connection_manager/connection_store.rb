@@ -56,8 +56,6 @@ module Redcar
           validation_failed.errors << "#{property} cannot be blank" if !value || value.empty?
         end
         
-        validation_failed.errors << "Name must be alphanumeric" unless name =~ /^[a-zA-Z0-9_-]*$/
-        
         if validation_failed.errors.any?
           raise validation_failed
         end
