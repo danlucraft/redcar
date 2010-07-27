@@ -166,6 +166,7 @@ module Redcar
     # @param [Integer] offset  character offset from the start of the document
     # @param [String] text  text to insert
     def insert(offset, text)
+      return unless text and offset
       text = text.gsub(delim, "") if single_line?
       replace(offset, 0, text)
     end
