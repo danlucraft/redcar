@@ -45,7 +45,6 @@ module Redcar
       end
       
       def ==(other)
-        # FIXME: Should priority factor into equality?
         text == other.text and command == other.command
       end
       

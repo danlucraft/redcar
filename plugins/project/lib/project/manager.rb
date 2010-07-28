@@ -253,7 +253,7 @@ module Redcar
             item("New File")        { controller.new_file(tree, node) }
             item("New Directory")   { controller.new_dir(tree, node)  }
           }
-          group(:priority => 10) {
+          group(:priority => 15) {
             separator
             if tree.selection.length > 1
               dirs = tree.selection.map {|node| node.parent_dir }
@@ -265,7 +265,7 @@ module Redcar
             end
             item("Delete")          { controller.delete(tree, node)   }
           }
-          group(:priority => 40) {
+          group(:priority => 75) {
             separator
             if DirMirror.show_hidden_files?
               item("Hide Hidden Files") do
