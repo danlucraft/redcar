@@ -4,7 +4,9 @@ Dir.glob(File.dirname(__FILE__) + "/../vendor/*").each do |path|
   $LOAD_PATH << path + "/lib/"
 end
 
-require 'drb/drb'
+unless defined?(DRb)
+  require 'drb/drb'
+end
 
 require "project/adapters/remote_protocols/protocol"
 require "project/adapters/remote_protocols/sftp"

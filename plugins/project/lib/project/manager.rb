@@ -2,7 +2,54 @@
 module Redcar
   class Project
     class Manager
-    
+
+      def self.connect_to_remote(protocol, host, user, path, private_key_files = [])
+        if protocol == "SFTP" and private_key_files.any?
+          begin
+            adapter = open_adapter(protocol, host, user, nil, private_key_files)
+            open_remote_project(adapter, path)
+          rescue Net::SSH::AuthenticationFailed
+            if pw = get_password
+              adapter = open_adapter(protocol, host, user, pw, [])
+              open_remote_project(adapter, path)
+            end
+          end
+        else
+          if pw = get_password
+            adapter = open_adapter(protocol, host, user, password, [])
+            open_remote_project(adapter, path)
+          end
+        end
+      rescue => e
+        puts "Error connecting: #{e.class}: #{e.message}"
+        puts e.backtrace
+        Application::Dialog.message_box("Error connecting: #{e.message}", :type => :error)
+      end
+      
+      def self.get_password
+        result = Redcar::Application::Dialog.input("Password", "Enter password")
+        result[:value] if result
+      end
+
+      # Opens a new Tree with a DirMirror and DirController for the given
+      # path, in a new window.
+      #
+      # @param [String] path  the path of the directory to view
+      def self.open_remote_project(adapter, path)
+        win = Redcar.app.focussed_window
+        win = Redcar.app.new_window if !win or Manager.in_window(win) 
+        project = Project.new(path, adapter)
+        project.open(win) if project.ready?
+      end
+
+      def self.open_adapter(protocol, host, user, password, private_key_files)
+        Adapters::Remote.new(protocol.downcase.to_sym, host, user, password, private_key_files)
+      rescue Errno::ECONNREFUSED
+        raise "connection refused connecting to #{host}"
+      rescue SocketError
+        raise "Cannot connect to #{host}. Error: #{$!.message}."
+      end
+      
       def self.open_projects
         Project.window_projects.values
       end
@@ -131,18 +178,6 @@ module Redcar
         win = Redcar.app.focussed_window
         win = Redcar.app.new_window if !win or Manager.in_window(win) 
         project = Project.new(path).tap do |p|
-          p.open(win) if p.ready?
-        end
-      end
-      
-      # Opens a new Tree with a DirMirror and DirController for the given
-      # path, in a new window.
-      #
-      # @param [String] path  the path of the directory to view
-      def self.open_remote_project(protocol, host, user, password, path)
-        win = Redcar.app.focussed_window
-        win = Redcar.app.new_window if !win or Manager.in_window(win) 
-        project = Project.new(path, Adapters::Remote.new(protocol.downcase.to_sym, host, user, password)).tap do |p|
           p.open(win) if p.ready?
         end
       end
