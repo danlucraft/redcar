@@ -1,3 +1,4 @@
+
 module Redcar
   class Menu
     # A DSL for building menus simply. An example of usage
@@ -65,6 +66,10 @@ module Redcar
       def lazy_sub_menu(text, options={}, &block)
         new_menu = LazyMenu.new(block, text, options)
         @current_menu << new_menu
+      end
+      
+      def group(options={}, &block)
+        Builder::Group.new(self, options, &block)
       end
       
       def append(item)
