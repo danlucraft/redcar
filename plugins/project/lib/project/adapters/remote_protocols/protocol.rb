@@ -6,14 +6,15 @@ module Redcar
     module Adapters
       module RemoteProtocols
         class Protocol
-          attr_accessor :path, :host, :user, :password
+          attr_accessor :path, :host, :user, :password, :private_key_files
           
-          def initialize(host, user, password, path)
-            @host = host
-            @user = user
+          def initialize(host, user, password, private_key_files, path)
+            @host     = host
+            @user     = user
             @password = password
-            @path = path
-            @cache = {}
+            @path     = path
+            @cache    = {}
+            @private_key_files = private_key_files
           end
           
           def exist?

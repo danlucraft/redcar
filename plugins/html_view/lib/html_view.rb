@@ -30,6 +30,8 @@ module Redcar
     end
     
     def attach_controller_listeners
+      @controller.add_listener(:reload_index) { controller_action("index") }
+
       @controller.add_listener(:execute_script) do |script|
         begin
           Redcar.update_gui do
@@ -93,6 +95,10 @@ module Redcar
           end
         rescue JSON::GeneratorError => e
           nil
+        rescue Object => e
+          puts "caught in controller"
+          puts e.message
+          puts e.backtrace
         end
       end
       
