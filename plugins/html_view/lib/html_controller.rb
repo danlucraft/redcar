@@ -3,6 +3,11 @@ module Redcar
   module HtmlController
     include Redcar::Observable
     
+    # Reload the index page
+    def reload_index
+      notify_listeners(:reload_index)
+    end
+    
     # Override this to return a message if the user should be prompted
     # before closing the tab.
     def ask_before_closing

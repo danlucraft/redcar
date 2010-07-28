@@ -12,34 +12,24 @@ module Redcar
           :sftp => RemoteProtocols::SFTP
         }
           
-        class << self
-          attr_accessor :connections
-          
-          def resolve(protocol, host, user, password, path)
-            protocol_class = PROTOCOLS[protocol]
-            
-            self.connections||={}
-            self.connections["#{protocol}-#{host}-#{user}"] ||= protocol_class.new(host, user, password, path)
-          end
-        end
-        
-        attr_accessor :path, :protocol, :host, :user, :password
+        attr_accessor :path, :protocol, :host, :user, :password, :private_key_files
         
         def lazy?
           true
         end
 
-        def initialize(protocol, host, user, password)
+        def initialize(protocol, host, user, password, private_key_files)
           @protocol = protocol
           @host = host
           @user = user
           @password = password
+          @private_key_files = private_key_files
         end
         
         def target
-          self.class.resolve(protocol, host, user, password, path)
+          @target ||= PROTOCOLS[protocol].new(host, user, password, private_key_files, path)
         end
-        
+
         def real_path
           path
         end
