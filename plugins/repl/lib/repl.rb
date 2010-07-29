@@ -53,13 +53,13 @@ module Redcar
 
     class RubyOpenREPL < OpenREPL
       def execute
-	open_repl RubyMirror.new
+        open_repl RubyMirror.new win
       end
     end
     
     class ClojureOpenREPL < OpenREPL
       def execute
-	open_repl ClojureMirror.new
+        open_repl ClojureMirror.new win
       end
     end
     
@@ -72,8 +72,6 @@ module Redcar
       def execute
         edit_view = win.focussed_notebook.focussed_tab.edit_view
         edit_view.document.save!
-        edit_view.cursor_offset = edit_view.document.length
-        edit_view.scroll_to_line(edit_view.document.line_count)
       end
     end
   end

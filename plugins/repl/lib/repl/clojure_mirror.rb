@@ -16,12 +16,13 @@ module Redcar
     class ClojureMirror
       include Redcar::REPL::ReplMirror
       
-      def initialize
+      def initialize(win)
 	
-	# required by ReplMirror
-	@prompt = "=>"
+        # required by ReplMirror
+        @prompt = "=>"
+        @win = win
         
-	@repl_wrapper = Wrapper.new 
+        @repl_wrapper = Wrapper.new 
         @mutex = Mutex.new
         @history = "# Clojure REPL\n"
 	
@@ -29,12 +30,12 @@ module Redcar
           loop do
             str = @repl_wrapper.getResult
             @mutex.synchronize do
-	      @history += "\n" if @history != ""
+              @history += "\n" if @history != ""
               @history += str
             end
-	    Redcar.update_gui do
-	      notify_listeners(:change)
-	    end
+            Redcar.update_gui do
+              update_edit_view
+            end
           end
         end
 	

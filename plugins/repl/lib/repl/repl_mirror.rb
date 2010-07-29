@@ -14,7 +14,6 @@ module Redcar
           command = contents.split(@prompt).last.strip
         end
         send_to_repl command
-        notify_listeners(:change)
       end
 
       # REPLs always exist because there is no external resource to represent.
@@ -29,9 +28,16 @@ module Redcar
       
       private
       
+      def update_edit_view
+        notify_listeners(:change)
+        edit_view = @win.focussed_notebook.focussed_tab.edit_view
+        edit_view.cursor_offset = edit_view.document.length
+        edit_view.scroll_to_line(edit_view.document.line_count)
+      end
+      
       # Language-specific method for evaluating statements
       def send_to_repl expr
-	raise "not implemented"
+        raise "not implemented"
       end
       
     end
