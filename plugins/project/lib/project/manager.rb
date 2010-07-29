@@ -1,5 +1,4 @@
 
-
 module Redcar
   class Project
     class Manager
@@ -285,30 +284,36 @@ module Redcar
       # @return [Menu]
       def self.project_context_menus(tree, node, controller)
         Menu::Builder.build do
-          item("New File")      { controller.new_file(tree, node) }
-          item("New Directory") { controller.new_dir(tree, node)  }
-          separator
-          if tree.selection.length > 1
-            dirs = tree.selection.map {|node| node.parent_dir }
-            if dirs.uniq.length == 1
-              item("Bulk Rename") { controller.rename(tree, node)   }
+          group(:priority => :first) {
+            item("New File")        { controller.new_file(tree, node) }
+            item("New Directory")   { controller.new_dir(tree, node)  }
+          }
+          group(:priority => 15) {
+            separator
+            if tree.selection.length > 1
+              dirs = tree.selection.map {|node| node.parent_dir }
+              if dirs.uniq.length == 1
+                item("Bulk Rename") { controller.rename(tree, node)   }
+              end
+            else
+              item("Rename")        { controller.rename(tree, node)   }
             end
-          else
-            item("Rename")      { controller.rename(tree, node)   }
-          end
-          item("Delete")        { controller.delete(tree, node)   }
-          separator
-          if DirMirror.show_hidden_files?
-            item("Hide Hidden Files") do
-              DirMirror.show_hidden_files = false
-              tree.refresh
+            item("Delete")          { controller.delete(tree, node)   }
+          }
+          group(:priority => 75) {
+            separator
+            if DirMirror.show_hidden_files?
+              item("Hide Hidden Files") do
+                DirMirror.show_hidden_files = false
+                tree.refresh
+              end
+            else
+              item("Show Hidden Files") do
+                DirMirror.show_hidden_files = true
+                tree.refresh
+              end
             end
-          else
-            item("Show Hidden Files") do
-              DirMirror.show_hidden_files = true
-              tree.refresh
-            end
-          end
+          }
         end
       end
           

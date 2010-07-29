@@ -1,3 +1,4 @@
+
 module Redcar
   class Menu
     # A DSL for building menus simply. An example of usage
@@ -42,16 +43,16 @@ module Redcar
         end
       end
       
-      def item(text, command=nil, &block)
-        @current_menu << Item.new(text, command, &block)
+      def item(text, options={}, &block)
+        @current_menu << Item.new(text, options, &block)
       end
       
-      def separator
-        @current_menu << Item::Separator.new
+      def separator(options={})
+        @current_menu << Item::Separator.new(options)
       end
       
-      def sub_menu(text, &block)
-        new_menu = Menu.new(text)
+      def sub_menu(text, options={}, &block)
+        new_menu = Menu.new(text, options)
         @current_menu << new_menu
         old_menu, @current_menu = @current_menu, new_menu
         if block.arity == 1
@@ -62,9 +63,13 @@ module Redcar
         @current_menu = old_menu
       end
       
-      def lazy_sub_menu(text, &block)
-        new_menu = LazyMenu.new(block, text)
+      def lazy_sub_menu(text, options={}, &block)
+        new_menu = LazyMenu.new(block, text, options)
         @current_menu << new_menu
+      end
+      
+      def group(options={}, &block)
+        Builder::Group.new(self, options, &block)
       end
       
       def append(item)
