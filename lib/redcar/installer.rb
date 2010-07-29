@@ -102,7 +102,10 @@ module Redcar
     REDCAR_JARS = {
       "/java-mateview-#{Redcar::VERSION}.jar" => "plugins/edit_view_swt/vendor/java-mateview.jar",
       "/application_swt-#{Redcar::VERSION}.jar" => "plugins/application_swt/lib/dist/application_swt.jar",
-      "/clojure.jar" => "plugins/repl/vendor/clojure.jar"
+      "/clojure-1.2beta1.jar" => "plugins/repl/vendor/clojure.jar",
+      "/clojure-contrib-1.2beta1.jar" => "plugins/repl/vendor/clojure-contrib.jar",
+      "/org-enclojure-repl-server.jar" => "plugins/repl/vendor/org-enclojure-repl-server.jar"
+      
     }
     
     def xulrunner_uri
