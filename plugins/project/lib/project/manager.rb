@@ -288,17 +288,19 @@ module Redcar
             item("New File")        { controller.new_file(tree, node) }
             item("New Directory")   { controller.new_dir(tree, node)  }
           end
-          group(:priority => 15) do
-            separator
-            if tree.selection.length > 1
-              dirs = tree.selection.map {|node| node.parent_dir }
-              if dirs.uniq.length == 1
-                item("Bulk Rename") { controller.rename(tree, node)   }
+          if not node.nil?
+            group(:priority => 15) do
+              separator
+              if tree.selection.length > 1
+                dirs = tree.selection.map {|node| node.parent_dir }
+                if dirs.uniq.length == 1
+                  item("Bulk Rename") { controller.rename(tree, node)   }
+                end
+              else
+                item("Rename")        { controller.rename(tree, node)   }
               end
-            else
-              item("Rename")        { controller.rename(tree, node)   }
+              item("Delete")          { controller.delete(tree, node)   }
             end
-            item("Delete")          { controller.delete(tree, node)   }
           end
           group(:priority => 75) do
             separator
