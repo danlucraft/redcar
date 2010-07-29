@@ -11,7 +11,7 @@ module Redcar
       end
       
       def title
-        "#{@title} Process"
+        @title
       end
       
       def ask_before_closing
