@@ -1,10 +1,9 @@
 require File.join(File.dirname(__FILE__), "..", "spec_helper")
 
 class Redcar::REPL
-  describe InternalMirror do
+  describe RubyMirror do
     before do
-      ruby_eval = Proc.new { |expr,binding| eval(expr, binding) }
-      @mirror = InternalMirror.new ruby_eval
+      @mirror = RubyMirror.new
       @changed_event = false
       @mirror.add_listener(:change) { @changed_event = true }
     end
@@ -29,7 +28,7 @@ RUBY
     end
 
     def commit_test_text2
-              text = <<-RUBY
+      text = <<-RUBY
 # Redcar REPL
 
 >> $internal_repl_test = 707
@@ -54,7 +53,7 @@ RUBY
     
     
     def commit_no_input
-     text = <<-RUBY
+      text = <<-RUBY
 # Redcar REPL
 
 >> 
@@ -63,7 +62,7 @@ RUBY
     end
     
     def prompt     
-       "# Redcar REPL\n\n"
+      "# Redcar REPL\n\n"
     end
     
     describe "with no history" do
@@ -80,7 +79,7 @@ RUBY
       end
       
       it "should have a title" do
-        @mirror.title.should == "(internal)"
+        @mirror.title.should == "Ruby REPL"
       end
       
       it "should not be changed" do
@@ -158,14 +157,28 @@ RUBY
     describe "when executing" do
       it "should execute inside a main object" do
         @mirror.commit(prompt + ">> self")
-        @mirror.history.last.should == ["self", [["main", :result]] ]
+        @mirror.read.should == (<<-RUBY).chomp
+# Redcar REPL
+
+>> self
+=> main
+>> 
+RUBY
       end
-      
+
       it "should persist local variables" do
         sent = prompt + ">> a = 13"
         @mirror.commit(sent)
         @mirror.commit(sent + "\n>> a")
-        @mirror.history.last.should == ["a", [["13", :result]] ]
+        @mirror.read.should == (<<-RUBY).chomp
+# Redcar REPL
+
+>> a = 13
+=> 13
+>> a
+=> 13
+>> 
+RUBY
       end
     end
   end
