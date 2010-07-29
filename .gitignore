@@ -44,4 +44,6 @@ tmp
 plugins/recent_directories/dirs.txt
 plugins/ctags/vendor
 plugins/repl/vendor/clojure.jar
+plugins/repl/vendor/clojure-contrib.jar
+plugins/repl/vendor/org-enclojure-repl-server.jar
 tags
