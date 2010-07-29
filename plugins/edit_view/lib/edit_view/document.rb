@@ -23,7 +23,7 @@ module Redcar
     
     def initialize(edit_view)
       @edit_view = edit_view
-	  @grammar = Redcar::Grammar.new(self)
+      @grammar = Redcar::Grammar.new(self)
       get_controllers
     end
     
@@ -284,8 +284,8 @@ module Redcar
     end
     
     def word
-	    @grammar.word
-	  end
+      @grammar.word
+    end
 
     # The word at an offset.
     #
