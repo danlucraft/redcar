@@ -6,8 +6,8 @@ module Redcar
   class ViewShortcuts
     def self.menus
       Menu::Builder.build do
-        sub_menu "Plugins" do
-          item "View Shortcuts", ViewShortcuts::ViewCommand
+        sub_menu "Help" do
+          item "Keyboard Shortcuts", ViewShortcuts::ViewCommand
         end
       end
     end

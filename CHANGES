@@ -19,6 +19,7 @@ Version 0.3.9 (TBA)
  * Menu items can have a priority (Matthew Scharley)
  * --fork option to detach from console (Matthew Scharley)
  * Runnables are grouped by file (Delisa)
+ * View keyboard shortcuts (Delisa)
 
 Version 0.3.8.4 (24 July 2010)
 ==============================
