@@ -1,0 +1,25 @@
+<html>
+<% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets redcar.css))) %>
+    <link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
+    
+<h3>Keyboard Shortcuts</h3>
+<a href="controller/index">Refresh List</a>
+<table>
+  <tr>
+    <th>Action</th>
+    <th>Shortcut</th>
+  </tr>
+  <% Redcar.app.main_keymap.map.each do |key, command| %>
+    <% sant = command.to_s.sub("Command","") %>
+    <% pls = sant.rindex("::") %>
+    <% if !pls.nil? %>
+     <% sant = sant[pls+2,sant.length] %>
+    <% end %>
+    <% sant = sant.split(/(?=[A-Z])/).map{|w| w}.join(" ") %>
+    <tr>
+      <td><%= sant %></td>
+      <td><%= key%></td>
+    </tr>
+  <% end %>
+</table>
+</html>

@@ -30,16 +30,19 @@ module Redcar
       def initialize(project)
         runnable_file_paths = project.config_files("runnables/*.json")
         
-        runnables = []
+        groups = {}
         runnable_file_paths.each do |path|
+          runnables = []
+          name = File.basename(path,".json")
           json = File.read(path)
           this_runnables = JSON(json)["commands"]
           runnables += this_runnables || []
+          groups[name.to_s] = runnables.to_a
         end
 
-        if runnables.any?
-          @top = runnables.map do |runnable|
-            Runnable.new(runnable["name"], runnable)
+        if groups.any?
+          @top = groups.map do |name, runnables|
+            RunnableGroup.new(name,runnables)
           end
         else
           @top = [HelpItem.new]
@@ -52,6 +55,35 @@ module Redcar
       
       def top
         @top
+      end
+    end
+    
+    class RunnableGroup
+      include Redcar::Tree::Mirror::NodeMirror
+      
+      def initialize(name,runnables)
+        @name = name
+        if runnables.any?
+          @children = runnables.map do |runnable|
+            Runnable.new(runnable["name"], runnable)
+          end
+        end
+      end
+      
+      def leaf?
+        false
+      end
+      
+      def text
+        @name
+      end
+      
+      def icon
+        :file
+      end
+      
+      def children
+        @children
       end
     end
     
