@@ -63,8 +63,35 @@ module Redcar
   end
 
   def self.spin_up
-    return if ARGV.include?("--no-sub-jruby")
-    return if Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby" and [:linux, :windows].include?(platform)
+    forking = ARGV.include?("--fork")
+    no_runner = ARGV.include?("--no-sub-jruby")
+    jruby = Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby"
+    osx = ! [:linux, :windows].include?(platform)    
+
+    if forking and not jruby
+      # jRuby doesn't support fork() because of the runtime stuff...
+      forking = false
+      puts 'Forking failed, attempting to start anyway...' if (pid = fork) == -1
+      exit unless pid.nil?
+
+      if pid.nil?
+        # reopen the standard pipes to nothingness
+        STDIN.reopen '/dev/null'
+        STDOUT.reopen '/dev/null', 'a'
+        STDERR.reopen STDOUT
+      end
+    elsif forking
+      # so we need to try something different...
+      # Need to work out the vendoring stuff here.
+      # for now just blow up and do what we'd normally do.
+      #require 'spoon'
+      puts 'Attempting to fork from inside jRuby. jRuby doesn\'t support this.'
+      puts 'Continuing normally...'
+      forking = false
+    end
+    
+    return if no_runner
+    return if jruby and not osx
     
     require 'redcar/runner'
     runner = Redcar::Runner.new
