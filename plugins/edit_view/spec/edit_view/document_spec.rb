@@ -3,6 +3,8 @@ require File.join(File.dirname(__FILE__), "..", "spec_helper")
 describe Redcar::Document do
   class TestEditView
     attr_accessor :title
+
+	include Redcar::Observable
     
     def reset_last_checked
     end

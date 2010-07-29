@@ -85,9 +85,8 @@ module Redcar
       # returns the prefix that is being touched by the cursor and a range 
       # containing offsets of the prefix.
       def touched_prefix
-        line = doc.get_line(doc.cursor_line)
-        cur_offset = doc.cursor_offset
-        left, right = doc.word_range_at_offset(cur_offset).first, cur_offset
+        range = doc.current_word_range
+        left, right = range.first, doc.cursor_offset
         prefix = doc.get_range(left, right - left)
         return nil if prefix.length == 0
         return prefix, left, right

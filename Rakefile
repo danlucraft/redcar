@@ -49,10 +49,9 @@ task :specs_ci do
   sh("jruby #{opts} && echo 'done'")
 end
 
-task :cucumber_ci do
-  cucumber_loader = find_ci_reporter "cucumber_loader"
+task :cucumber_ci do  
   opts = "-J-XstartOnFirstThread" if Config::CONFIG["host_os"] =~ /darwin/
-  opts = "#{opts} -r #{cucumber_loader} -S bin/cucumber --format CI::Reporter::Cucumber plugins/*/features"
+  opts = "#{opts} bin/cucumber -f progress -f junit --out features/reports/ plugins/*/features"
   sh("jruby #{opts} && echo 'done'")
 end
 

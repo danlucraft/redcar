@@ -25,6 +25,11 @@ module Redcar
         end
       end
       
+      def trim_trailing_whitespace(ix)
+        # don't have to check on delimiter at the end, @doc does that
+        @doc.replace_line(ix, @doc.get_line(ix).rstrip)
+      end
+      
       private
       
       def indent_consuming_regex

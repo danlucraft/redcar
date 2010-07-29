@@ -1,4 +1,3 @@
-
 module Redcar
   # This class controls access to the document text in an edit tab. 
   # There are methods to read, modify and register listeners
@@ -7,8 +6,6 @@ module Redcar
     include Redcar::Model
     include Redcar::Observable
     extend Forwardable
-    
-    WORDCHARS = /\w|_/
     
     def self.all_document_controller_types
       result = []
@@ -26,6 +23,7 @@ module Redcar
     
     def initialize(edit_view)
       @edit_view = edit_view
+	  @grammar = Redcar::Grammar.new(self)
       get_controllers
     end
     
@@ -285,6 +283,10 @@ module Redcar
       end
     end
     
+    def word
+	    @grammar.word
+	  end
+
     # The word at an offset.
     #
     # @param [Integer] an offset
@@ -306,24 +308,90 @@ module Redcar
     # @param [Integer] an offset
     # @return [Range<Integer>] a range between two character offsets
     def word_range_at_offset(offset)
+      line_ix = line_at_offset(offset)      
+      match_left = offset == 0 ? false : !/\s/.match(get_slice(offset - 1, offset))
+      match_right = offset == length ? false : !/\s/.match(get_slice(offset, offset + 1))
+      if match_left && match_right
+        match_word_around(offset)
+      elsif match_left
+        match_word_left_of(offset)
+      elsif match_right
+        match_word_right_of(offset)
+      else
+        offset..offset
+      end
+    end
+    
+    # Returns the range of the word located around an offset.
+    # Before using this method, it's best to make sure there actually
+    # might be a word around the offset. This means we are not at the beginning
+    # or end of the file and there are no spaces left and right from the offset.
+    #
+    # @param [Integer] an offset
+    # @return [Range<Integer>] a range between two character offsets
+    def match_word_around(offset)
+      line_index = line_at_offset(offset)
+      line_end_offset = offset_at_line_end(line_index)
+      right = 0
+      matched_offsets = offset..offset
+      until false
+        new_match = match_word_left_of(offset + right)
+        if new_match.last - new_match.first > matched_offsets.last - matched_offsets.first && new_match.first <= offset
+          matched_offsets = new_match
+        end
+        right += 1
+        if offset + right == length + 1 || /\s/.match(get_slice(offset, offset + right))
+          break
+        end
+      end
+      matched_offsets
+    end
+    
+    # Returns the range of the word located left of an offset.
+    # Before using this method, it's best to make sure there actually
+    # might be a word left of the offset. This means we are not at the beginning
+    # of the file and there are no spaces left of the offset.
+    #
+    # @param [Integer] an offset
+    # @return [Range<Integer>] a range between two character offsets
+    def match_word_left_of(offset)
       line_index = line_at_offset(offset)
       line_start_offset = offset_at_line(line_index)
-      line_chars = get_line(line_index)
-      left_range = 0
-      right_range = 0
-      left = offset - line_start_offset - 1
-      right = offset - line_start_offset
-      
-      until left == -1 || (line_chars[left].chr !~ WORDCHARS)
+      left = -1
+      matched_left = false
+      matched_offsets = offset..offset
+      until offset + left == line_start_offset - 1 || /\s/.match(get_slice(offset + left, offset))
+        current_offsets = offset + left..offset
+        if word.match(get_slice(current_offsets.first, current_offsets.last))
+          matched_offsets = current_offsets
+          matched_left = true
+        elsif matched_left
+          break
+        end
         left -= 1
-        left_range -= 1
       end
-      
-      until right == length || (line_chars[right].chr !~ WORDCHARS)
+      matched_offsets
+    end
+    
+    # Returns the range of the word located right of an offset.
+    # Before using this method, it's best to make sure there actually
+    # might be a word right of the offset. This means we are not at the end of 
+    # the file and there are no spaces right of the offset.
+    #
+    # @param [Integer] an offset
+    # @return [Range<Integer>] a range between two character offsets
+    def match_word_right_of(offset)
+      line_index = line_at_offset(offset)
+      line_end_offset = offset_at_line_end(line_index)
+      right = 0
+      matched_offsets = offset..offset
+      until offset + right == length + 1 || /\s/.match(get_slice(offset, offset + right))
+        if word.match(get_slice(offset, offset + right))
+          matched_offsets = offset..offset + right
+        end
         right += 1
-        right_range += 1
       end
-      (offset + left_range..offset + right_range)
+      matched_offsets
     end
     
     # The range of the word at the current cursor position.
@@ -388,8 +456,8 @@ module Redcar
     
     # Get a range of text from the document.
     #
-    # @param [String] start  the character offset of the start of the range
-    # @param [String] length  the length of the string to get
+    # @param [Integer] start  the character offset of the start of the range
+    # @param [Integer] length  the length of the string to get
     # @return [String] the text
     def get_range(start, length)
       controller.get_range(start, length)
@@ -397,8 +465,8 @@ module Redcar
     
     # Get a slice of text from the document.
     #
-    # @param [String] start_offset the character offset of the start of the slice
-    # @param [String] end_offset   the character offset of the end of the slice
+    # @param [Integer] start_offset the character offset of the start of the slice
+    # @param [Integer] end_offset   the character offset of the end of the slice
     # @return [String] the text
     def get_slice(start_offset, end_offset)
       get_range(start_offset, end_offset - start_offset)
@@ -565,5 +633,3 @@ module Redcar
     end
   end
 end
-
-

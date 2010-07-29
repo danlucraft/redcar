@@ -6,31 +6,28 @@ module DocumentSearch
       attr_accessor :previous_query
       attr_accessor :previous_is_regex
       attr_accessor :previous_match_case
-      attr_accessor :initial_query
-    end
-  
-    def initial_query=(text)
-      SearchSpeedbar.previous_query = text
     end
 
+    attr_accessor :initial_query
+    
     def after_draw
-      self.query.value = SearchSpeedbar.previous_query || ""
+      SearchSpeedbar.previous_query ||= ""
+      self.query.value = @initial_query || SearchSpeedbar.previous_query
       self.is_regex.value = SearchSpeedbar.previous_is_regex
       self.match_case.value = SearchSpeedbar.previous_match_case
       self.query.edit_view.document.select_all
-      initial_query = nil
     end
     
     label :label, "Search:"
-    textbox :query        
+    textbox :query
     
     toggle :is_regex, 'Regex', nil, false do |v|
       # v is true or false
-      SearchSpeedbar.previous_is_regex = v          
+      SearchSpeedbar.previous_is_regex = v
     end
     
     toggle :match_case, 'Match case', nil, false do |v|
-      SearchSpeedbar.previous_match_case = v          
+      SearchSpeedbar.previous_match_case = v
     end      
     
     button :search, "Search", "Return" do

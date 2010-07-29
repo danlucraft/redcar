@@ -24,7 +24,7 @@ Feature: Refresh directory tree
     And I should not see "testyfile.txt" in the tree
     When I touch the file "./testyfile.txt"
     When I open a new window
-    And I focus the window "redcar" through the gui
+    And I focus the working directory window through the gui
     Then I should see "bin,config,lib,plugins,testyfile.txt" in the tree
     
   Scenario: Refreshing the tree leaves rows expanded as they were before
