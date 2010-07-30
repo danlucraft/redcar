@@ -22,6 +22,7 @@ module Redcar
         end
         
         def item(text, options={}, &block)
+          options = {:command => options} if not options.respond_to?('[]')
           @builder.item(text, @defaults.merge(options), &block)
         end
         
