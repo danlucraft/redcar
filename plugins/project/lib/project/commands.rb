@@ -97,7 +97,7 @@ module Redcar
           selected[:host],
           selected[:user],
           selected[:path],
-          PrivateKeyStore.paths
+          ConnectionManager::PrivateKeyStore.paths
         )
       end
       
@@ -134,9 +134,6 @@ module Redcar
       label :user_label, "User:"
       textbox :user
 
-      label :password_label, "Password:"
-      textbox :password
-
       label :path_label, "Path:"
       textbox :path
       
@@ -146,7 +143,7 @@ module Redcar
             host.value, 
             user.value, 
             path.value,
-            PrivateKeyStore.paths
+            ConnectionManager::PrivateKeyStore.paths
           )
       end
     end
