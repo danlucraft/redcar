@@ -73,6 +73,14 @@ module Redcar
       def self.input(title, message, initial_value="", &validator)
         Redcar.gui.dialog_adapter.input(title, message, initial_value, &validator)
       end
+
+      # Show a dialog containing a password entry box to the user, and blocks
+      # until they dismiss it.
+      #
+      # The return value is a hash containing :button and :value.
+      def self.password_input(title, message)
+        Redcar.gui.dialog_adapter.password_input(title, message)
+      end
       
       # Shows a tool tip to the user, at the cursor location.
       #
