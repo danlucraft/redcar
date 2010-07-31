@@ -1,4 +1,15 @@
+Dir["vendor/swtbot/*.jar"].each {|j| require j }
+
 module SwtHelper
+  
+  def self.bot
+    @bot ||= Redcarorg.eclipse.swtbot.swt.finder.SWTBot.new
+  end
+  
+  def bot
+    SwtHelper.bot
+  end
+  
   def main_menu
     display = Redcar::ApplicationSWT.display
     shell   = display.get_shells.to_a.first

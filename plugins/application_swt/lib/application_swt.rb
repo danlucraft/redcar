@@ -60,9 +60,10 @@ module Redcar
     
     # Runs the given block in the SWT Event thread
     def self.sync_exec(&block)
+      result = nil
       runnable = Swt::RRunnable.new do
         begin
-          block.call
+          result = block.call
         rescue => e
           puts "error in sync exec"
           puts e.message
@@ -72,6 +73,7 @@ module Redcar
       unless Redcar::ApplicationSWT.display.is_disposed
         Redcar::ApplicationSWT.display.syncExec(runnable)
       end
+      result
     end
     
     # Runs the given block in the SWT Event thread after

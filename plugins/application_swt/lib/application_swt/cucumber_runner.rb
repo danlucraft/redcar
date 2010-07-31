@@ -13,7 +13,9 @@ module Redcar
             sleep START_DELAY
             main = Cucumber::Cli::Main.new(args)
             main.execute!(Cucumber::StepMother.new)
+            Redcar.update_gui { Redcar::ApplicationSWT.display.dispose }
             Redcar.app.quit
+            java.lang.Runtime.getRuntime.exit(0)
           rescue Object => e
             puts e.message
             puts e.backtrace

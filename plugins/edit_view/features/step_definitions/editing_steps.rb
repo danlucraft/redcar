@@ -3,6 +3,10 @@ def unescape_text(text)
   text.gsub("\\t", "\t").gsub("\\n", "\n").gsub("\\r", "\r").gsub("\\\"", "\"")
 end
 
+When /^I type "(.*)"$/ do |text|
+  bot.styledText.setText(text)
+end
+
 When /^I undo$/ do
   Redcar::Top::UndoCommand.new.run
 end

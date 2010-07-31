@@ -9,9 +9,8 @@ Feature: Auto Complete
 
   Scenario: Autocomplete with one completions
     When I open a new edit tab
-    And I replace the contents with "Daly Da"
-    And I move the cursor to 7
-    And I auto-complete
+    And I type "Daly Da"
+    And I press Escape
     Then I should see "Daly Daly" in the edit tab
 
   Scenario: Autocomplete with one completions, twice
