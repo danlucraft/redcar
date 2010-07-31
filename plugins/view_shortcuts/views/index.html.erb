@@ -9,16 +9,9 @@
     <th>Action</th>
     <th>Shortcut</th>
   </tr>
-  <% Redcar.app.main_keymap.map.each do |key, command| 
-    name = command.to_s.sub("Command","")
-    idx = name.rindex("::")
-    unless idx.nil?
-      name = name[idx+2,name.length]
-    end
-    name = name.split(/(?=[A-Z])/).map{|w| w}.join(" ").sub("R E P L","REPL")
-  %>
+  <% Redcar.app.main_keymap.map.each do |key, command| %>
   <tr>
-    <td><%= name %></td>
+    <td><%= clean_name(command) %></td>
     <td><%= key %></td>
   </tr>
   <% end %>
