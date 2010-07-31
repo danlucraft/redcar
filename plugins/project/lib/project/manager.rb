@@ -27,7 +27,7 @@ module Redcar
       end
       
       def self.get_password
-        result = Redcar::Application::Dialog.input("Password", "Enter password")
+        result = Redcar::Application::Dialog.password_input("Remote Connection", "Enter password")
         result[:value] if result
       end
 
