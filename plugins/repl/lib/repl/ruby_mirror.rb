@@ -5,11 +5,10 @@ module Redcar
     class RubyMirror
       include Redcar::REPL::ReplMirror
       
-      def initialize(win)
+      def initialize
         
         # required by ReplMirror
         @prompt = ">>"
-        @win = win
 	
         @history = "# Redcar REPL\n\n#{@prompt} "
         @instance = Main.new
@@ -59,7 +58,7 @@ module Redcar
           @history += "x> " + format_error(e)
         end
         @history += "\n" + @prompt + " "
-        update_edit_view
+        notify_listeners(:change)
       end
             
     end

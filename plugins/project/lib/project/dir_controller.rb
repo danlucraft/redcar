@@ -93,7 +93,17 @@ module Redcar
         
         menu = Menu.new
         Redcar.plugin_manager.objects_implementing(:project_context_menus).each do |object|
-          menu.merge(object.project_context_menus(tree, node, controller))
+          # a lot of plugins will only really care about the node that was clicked
+          case object.method(:project_context_menus).arity
+          when 1
+            menu.merge(object.project_context_menus(node))
+          when 2
+            menu.merge(object.project_context_menus(tree, node))
+          when 3
+            menu.merge(object.project_context_menus(tree, node, controller))
+          else
+            puts("Invalid project_context_menus hook detected in "+object.class.name)
+          end
         end
         
         Application::Dialog.popup_menu(menu, :pointer)
