@@ -7,6 +7,7 @@ Plugin.define do
   file "lib", "plugin_manager_ui"
   
   dependencies "core",      ">0",
-               "HTML View", ">=0.3.2"
+               "HTML View", ">=0.3.2",
+               "application", ">=1.1"
   
 end

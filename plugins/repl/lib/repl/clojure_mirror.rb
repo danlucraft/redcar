@@ -16,11 +16,10 @@ module Redcar
     class ClojureMirror
       include Redcar::REPL::ReplMirror
       
-      def initialize(win)
+      def initialize
 	
         # required by ReplMirror
         @prompt = "=>"
-        @win = win
         
         @repl_wrapper = Wrapper.new 
         @mutex = Mutex.new
@@ -34,7 +33,7 @@ module Redcar
               @history += str
             end
             Redcar.update_gui do
-              update_edit_view
+              notify_listeners(:change)
             end
           end
         end

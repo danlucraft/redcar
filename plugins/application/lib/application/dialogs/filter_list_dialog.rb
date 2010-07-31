@@ -47,13 +47,13 @@ module Redcar
     # @param [Array<A>]     list        the list to filter
     # @param [String]       query       the fuzzy string to match on
     # @param [Integer]      max_length  the length of the resulting list (default 20)
-    # @block A -> String    turns an element from the list into a string to match on
+    # @block A -> String    optionally turns an element from the list into a string to match on
     def filter_and_rank_by(list, query, max_length=20)
       re = make_regex(query)
       score_match_pairs = []
       cutoff = 100000000
       results = list.each do |element|
-        bit = yield(element)
+        bit = block_given? ? yield(element) : element
         begin
           if m = bit.match(re)
             cs = []
