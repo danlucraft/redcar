@@ -29,7 +29,6 @@ describe FileList do
     it "should return a list of files in the directory" do
       @file_list.all_files.include?(relative_path("README")).should be_true
       @file_list.all_files.include?(relative_path("lib", "foo_lib.rb")).should be_true
-      @file_list.all_files.length.should == 3
     end
   end
   
