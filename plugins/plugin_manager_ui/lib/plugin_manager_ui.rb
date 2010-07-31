@@ -7,6 +7,19 @@ module Redcar
       attr_accessor :last_reloaded
     end
     
+    def self.menus
+      Menu::Builder.build do
+        sub_menu "Plugins", :priority => 40 do
+          group(:priority => :first) {
+            item "Plugin Manager", PluginManagerUi::OpenCommand
+            item "Reload Again", PluginManagerUi::ReloadLastReloadedCommand
+            item("Edit Preferences") { Project::Manager.open_project_for_path(Redcar::Plugin::Storage.storage_dir) }
+            separator
+          }
+        end
+      end
+    end
+    
     class ReloadLastReloadedCommand < Redcar::Command
       
       def execute
