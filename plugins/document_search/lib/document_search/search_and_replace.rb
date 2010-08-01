@@ -39,7 +39,6 @@ module DocumentSearch
     end
     
     def self.search_replace
-      puts "query = '#{@previous_query}', replace = '#{@previous_replace}', search_type = '#{@previous_search_type}', match_case = '#{@previous_match_case}' "
       current_query = @previous_query
       current_replace = @previous_replace
       case @previous_search_type
@@ -54,14 +53,12 @@ module DocumentSearch
       end
       adoc = Redcar.app.focussed_notebook_tab.document
       count = Replace.new(adoc).replace_next(current_query, current_replace, &search_method)
-      puts "count #{count}"
       if count == 0
         Redcar::Application::Dialog.message_box("No instance of the search string were found", {:type => :info, :buttons => :ok})
       end
     end
     
     def self.search_replace_all
-      puts "query = '#{@previous_query}', replace = '#{@previous_replace}', search_type = '#{@previous_search_type}', match_case = '#{@previous_match_case}' "
       current_query = @previous_query
       current_replace = @previous_replace
       case @previous_search_type

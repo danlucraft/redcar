@@ -2,11 +2,11 @@ module DocumentSearch
   class Search
     # An instance of a search type method: Regular expression
     def self.regex_search_method(line, query, replace)
-      if line =~ /#{query}/o
+      if line =~ /#{query}/
         startoff = $`.length
-        endoff   = (startoff + $&.length) -1
+        endoff   = (startoff + $&.length) - 1
         line[startoff..endoff] = replace
-        return line
+        return line, startoff, startoff + replace.length
       end
       return nil
     end
@@ -18,7 +18,7 @@ module DocumentSearch
         startoff = i
         endoff   = i + query.length - 1
         line[startoff..endoff] = replace
-        return line
+        return line, startoff, startoff + replace.length
       end
       return nil
     end
