@@ -245,15 +245,23 @@ module Redcar
         begin
           yield
         rescue Object => e
-          puts "*** Error in speedbar"
-          puts e.class.to_s + ": " + e.message
-          puts e.backtrace
+          if e.class.name == "TestingError"
+            raise e
+          else
+            puts "*** Error in speedbar"
+            puts e.class.to_s + ": " + e.message
+            puts e.backtrace
+          end
         end
       end
       
       def error_in_listener(e)
-        puts "*** Error in speedbar listener: #{e.message}"
-        puts e.backtrace.map {|l| "    " + l}
+        if e.class.name == "TestingError"
+          raise e
+        else
+          puts "*** Error in speedbar listener: #{e.message}"
+          puts e.backtrace.map {|l| "    " + l}
+        end
       end
     end
   end
