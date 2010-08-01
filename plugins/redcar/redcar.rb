@@ -718,7 +718,8 @@ module Redcar
         link "Cmd+Shift+I", AutoIndenter::IndentCommand
         link "Cmd+L",       GotoLineCommand
         link "Cmd+F",       DocumentSearch::SearchForwardCommand
-        link "Cmd+Shift+F",           DocumentSearch::RepeatPreviousSearchForwardCommand
+        link "Cmd+Shift+F", DocumentSearch::RepeatPreviousSearchForwardCommand
+        link "Cmd+Ctrl+F",  DocumentSearch::SearchAndReplaceCommand
         link "Cmd+A",       SelectAllCommand
         link "Ctrl+W",      SelectWordCommand
         link "Cmd+B",       ToggleBlockSelectionCommand

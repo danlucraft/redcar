@@ -25,7 +25,6 @@ module DocumentSearch
       start_line = @doc.cursor_line
       (start_line+1..@doc.line_count-1).each do |i|
         new_line = body.call(@doc.get_line(i), query, replace)
-        
         if new_line
           @doc.replace_line(i, new_line.chomp)
           @doc.ensure_visible(@doc.offset_at_line(i))
