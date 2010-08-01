@@ -303,7 +303,7 @@ module Redcar
             }
           end
           sub_menu "Project", :priority => 15 do
-            group (:priority => :first) {
+            group(:priority => :first) {
               item "Find File", Project::FindFileCommand
               item "Refresh Directory", Project::RefreshDirectoryCommand
             }
