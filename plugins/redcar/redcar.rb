@@ -855,8 +855,6 @@ module Redcar
           item "Indent",          AutoIndenter::IndentCommand
           separator
           item "Goto Line", GotoLineCommand
-          item "Regex Search",    DocumentSearch::SearchForwardCommand
-          item "Repeat Last Search", DocumentSearch::RepeatPreviousSearchForwardCommand
           separator
           sub_menu "Select" do
             item "All", SelectAllCommand

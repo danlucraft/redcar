@@ -1,5 +1,17 @@
+require "document_search/search"
+require "document_search/replace"
+require "document_search/search_and_replace"
 
 module DocumentSearch
+  def self.menus
+    Redcar::Menu::Builder.build do
+      sub_menu "Edit" do
+        item "Search and Replace", SearchAndReplaceCommand
+        item "Regex Search",       SearchForwardCommand
+        item "Repeat Last Search", RepeatPreviousSearchForwardCommand
+      end
+    end
+  end
 
   class SearchSpeedbar < Redcar::Speedbar
     class << self

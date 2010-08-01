@@ -1,4 +1,4 @@
-module Redcar
+module DocumentSearch
   class Search
     # An instance of a search type method: Regular expression
     def self.regex_search_method(line, query, replace)
