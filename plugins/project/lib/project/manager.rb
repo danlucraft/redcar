@@ -27,7 +27,7 @@ module Redcar
       end
       
       def self.get_password
-        result = Redcar::Application::Dialog.input("Password", "Enter password")
+        result = Redcar::Application::Dialog.password_input("Remote Connection", "Enter password")
         result[:value] if result
       end
 
@@ -277,6 +277,37 @@ module Redcar
         path = File.expand_path(path)
         find_projects_containing_path(path).each do |project|
           project.refresh_modified_file(path)
+        end
+      end
+      
+      def self.menus
+        Menu::Builder.build do
+          sub_menu "File", :priority => :first do
+            group(:priority => 0) {
+              item "Open", Project::FileOpenCommand
+              item "Reload File", Project::FileReloadCommand
+              item "Open Directory", Project::DirectoryOpenCommand
+              item "Open Remote...", Project::OpenRemoteCommand
+              lazy_sub_menu "Open Recent" do
+                Project::RecentDirectories.generate_menu(self)
+              end
+              
+              separator
+              item "Save", Project::FileSaveCommand
+              item "Save As", Project::FileSaveAsCommand
+            }
+            
+            group(:priority => 11) {
+              item "Close Directory", Project::DirectoryCloseCommand
+              item "Reveal in Project", Project::RevealInProjectCommand
+            }
+          end
+          sub_menu "Project", :priority => 15 do
+            group(:priority => :first) {
+              item "Find File", Project::FindFileCommand
+              item "Refresh Directory", Project::RefreshDirectoryCommand
+            }
+          end
         end
       end
       

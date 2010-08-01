@@ -10,16 +10,10 @@
     <th>Shortcut</th>
   </tr>
   <% Redcar.app.main_keymap.map.each do |key, command| %>
-    <% sant = command.to_s.sub("Command","") %>
-    <% pls = sant.rindex("::") %>
-    <% if !pls.nil? %>
-     <% sant = sant[pls+2,sant.length] %>
-    <% end %>
-    <% sant = sant.split(/(?=[A-Z])/).map{|w| w}.join(" ") %>
-    <tr>
-      <td><%= sant %></td>
-      <td><%= key%></td>
-    </tr>
+  <tr>
+    <td><%= clean_name(command) %></td>
+    <td><%= key %></td>
+  </tr>
   <% end %>
 </table>
 </html>

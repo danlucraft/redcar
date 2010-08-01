@@ -142,9 +142,11 @@ module Redcar
     end
     
     def config_dir
-      File.join(path, ".redcar")
+      dir = File.join(path, ".redcar")
+      FileUtils.mkdir_p(dir)
+      dir
     end
-
+    
     def home_dir
       @path
     end

@@ -718,7 +718,8 @@ module Redcar
         link "Cmd+Shift+I", AutoIndenter::IndentCommand
         link "Cmd+L",       GotoLineCommand
         link "Cmd+F",       DocumentSearch::SearchForwardCommand
-        link "Cmd+Shift+F",           DocumentSearch::RepeatPreviousSearchForwardCommand
+        link "Cmd+Shift+F", DocumentSearch::RepeatPreviousSearchForwardCommand
+        link "Cmd+Ctrl+F",  DocumentSearch::SearchAndReplaceCommand
         link "Cmd+A",       SelectAllCommand
         link "Ctrl+W",      SelectWordCommand
         link "Cmd+B",       ToggleBlockSelectionCommand
@@ -816,30 +817,25 @@ module Redcar
     
     def self.menus
       Menu::Builder.build do
-        sub_menu "File" do
-          item "New", NewCommand
-          item "New Window", NewWindowCommand
-          item "Open", Project::FileOpenCommand
-          item "Reload File", Project::FileReloadCommand
-          item "Open Directory", Project::DirectoryOpenCommand
-          item "Open Remote...", Project::OpenRemoteCommand
-          lazy_sub_menu "Open Recent" do
-            Project::RecentDirectories.generate_menu(self)
-          end
+        sub_menu "File", :priority => :first do
+          group(:priority => :first) {
+            item "New", NewCommand
+            item "New Window", NewWindowCommand
+          }
           
-          separator
-          item "Save", Project::FileSaveCommand
-          item "Save As", Project::FileSaveAsCommand
-          separator
-          item "Close Tab", CloseTabCommand
-          item "Close Tree", CloseTreeCommand
-          item "Close Window", CloseWindowCommand
-          item "Close Directory", Project::DirectoryCloseCommand
-          item "Reveal in Project", Project::RevealInProjectCommand
-          separator
-          item "Quit", QuitCommand
+          group(:priority => 10) {
+            separator
+            item "Close Tab", CloseTabCommand
+            item "Close Tree", CloseTreeCommand
+            item "Close Window", CloseWindowCommand
+          }
+          
+          group(:priority => :last) {
+            separator
+            item "Quit", QuitCommand
+          }
         end
-        sub_menu "Edit" do
+        sub_menu "Edit", :priority => 5 do
           item "Tab Info",  EditView::InfoSpeedbarCommand
           separator
           item "Undo", UndoCommand
@@ -860,8 +856,6 @@ module Redcar
           item "Indent",          AutoIndenter::IndentCommand
           separator
           item "Goto Line", GotoLineCommand
-          item "Regex Search",    DocumentSearch::SearchForwardCommand
-          item "Repeat Last Search", DocumentSearch::RepeatPreviousSearchForwardCommand
           separator
           sub_menu "Select" do
             item "All", SelectAllCommand
@@ -872,20 +866,13 @@ module Redcar
           item "Auto Complete",          AutoCompleter::AutoCompleteCommand
           item "Menu Auto Complete",     AutoCompleter::MenuAutoCompleterCommand
         end
-        sub_menu "Project" do
-          item "Find File", Project::FindFileCommand
-          item "Refresh Directory", Project::RefreshDirectoryCommand
-          separator
-          item "Runnables", Runnables::ShowRunnables
-          item "Run Tab",   Runnables::RunEditTabCommand
-        end
-        sub_menu "Debug" do
+        sub_menu "Debug", :priority => 20 do
           item "Task Manager", TaskManager::OpenCommand
           separator
           #item "Print Scope Tree", PrintScopeTreeCommand
           item "Print Scope at Cursor", PrintScopeCommand
         end
-        sub_menu "View" do
+        sub_menu "View", :priority => 30 do
           sub_menu "Appearance" do
             item "Font", SelectNewFont
             item "Font Size", SelectFontSize
@@ -912,21 +899,21 @@ module Redcar
           item "Toggle Line Numbers", ToggleLineNumbers
           item "Toggle Annotations", ToggleAnnotations
         end
-        sub_menu "Plugins" do
-          item "Plugin Manager", PluginManagerUi::OpenCommand
-          item "Reload Again", PluginManagerUi::ReloadLastReloadedCommand
-          item("Edit Preferences") { Project::Manager.open_project_for_path(Redcar::Plugin::Storage.storage_dir) }
-          separator
+        sub_menu "Bundles", :priority => 45 do
+          group(:priority => :first) {
+            item "Find Snippet", Snippets::OpenSnippetExplorer
+            item "Installed Bundles", Textmate::InstalledBundles
+          }
+          group(:priority => 15) {
+            separator
+            Textmate.attach_menus(self)
+          }
         end
-        sub_menu "Bundles" do
-          item "Find Snippet", Snippets::OpenSnippetExplorer
-          item "Installed Bundles", Textmate::InstalledBundles
-          separator
-          Textmate.attach_menus(self)
-        end
-        sub_menu "Help" do
-          item "About", AboutCommand
-          item "New In This Version", ChangelogCommand
+        sub_menu "Help", :priority => :last do
+          group(:priority => :first) {
+            item "About", AboutCommand
+            item "New In This Version", ChangelogCommand
+          }
         end
       end
     end
