@@ -72,21 +72,21 @@ module Redcar
         image = Swt::Graphics::Image.new(ApplicationSWT.display, Redcar::Speedbar.close_image_path)
         label = Swt::Widgets::Label.new(@composite, 0)
         label.set_image(image)
-	
-	    label.add_mouse_listener(MouseListener.new(self))
-	  end
-	  
-    def execute_listener_in_model(item, *args)
-      if item.listener
-        begin
-          @model.instance_exec(*args, &item.listener)
-        rescue => err
-          error_in_listener(err)
+
+        label.add_mouse_listener(MouseListener.new(self))
+      end
+      
+      def execute_listener_in_model(item, *args)
+        if item.listener
+          begin
+            @model.instance_exec(*args, &item.listener)
+          rescue => err
+            error_in_listener(err)
+          end
         end
       end
-    end
-    
-	  def create_item_widgets
+      
+      def create_item_widgets
         @model.__items.each do |item|
           case item
           when Redcar::Speedbar::LabelItem
@@ -192,10 +192,10 @@ module Redcar
         end
         
         def key_pressed(e)
+          @speedbar.key_press(e)
         end
         
         def key_released(e)
-          @speedbar.key_press(e)
         end
       end
       
@@ -224,6 +224,7 @@ module Redcar
       end
       
       def key_press(e)
+        return if Application::Dialog.in_dialog?
         key_string = Menu::BindingTranslator.key_string(e)
         if key_string == "\e"
           @window_model.close_speedbar
@@ -245,15 +246,23 @@ module Redcar
         begin
           yield
         rescue Object => e
-          puts "*** Error in speedbar"
-          puts e.class.to_s + ": " + e.message
-          puts e.backtrace
+          if e.class.name == "TestingError"
+            raise e
+          else
+            puts "*** Error in speedbar"
+            puts e.class.to_s + ": " + e.message
+            puts e.backtrace
+          end
         end
       end
       
       def error_in_listener(e)
-        puts "*** Error in speedbar listener: #{e.message}"
-        puts e.backtrace.map {|l| "    " + l}
+        if e.class.name == "TestingError"
+          raise e
+        else
+          puts "*** Error in speedbar listener: #{e.message}"
+          puts e.backtrace.map {|l| "    " + l}
+        end
       end
     end
   end

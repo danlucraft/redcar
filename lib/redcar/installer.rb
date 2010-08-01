@@ -90,7 +90,7 @@ module Redcar
       "/jruby/joni.jar"
     ]
 
-    JRUBY << "http://jruby.org.s3.amazonaws.com/downloads/1.5.0/jruby-complete-1.5.0.jar"
+    JRUBY << "http://jruby.org.s3.amazonaws.com/downloads/1.5.1/jruby-complete-1.5.1.jar"
     
     JOPENSSL_DIR = File.expand_path(File.join(File.dirname(__FILE__), "..", "openssl/lib/")) 
     JOPENSSL = {

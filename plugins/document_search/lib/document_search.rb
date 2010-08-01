@@ -1,6 +1,18 @@
+require "document_search/search"
+require "document_search/replace"
+require "document_search/search_and_replace"
 
 module DocumentSearch
-
+  def self.menus
+    Redcar::Menu::Builder.build do
+      sub_menu "Edit" do
+        item "Regex Search",       SearchForwardCommand
+        item "Repeat Last Search", RepeatPreviousSearchForwardCommand
+        item "Search and Replace", SearchAndReplaceCommand
+      end
+    end
+  end
+  
   class SearchSpeedbar < Redcar::Speedbar
     class << self
       attr_accessor :previous_query
@@ -63,6 +75,13 @@ module DocumentSearch
     end
   end
   
+  class SearchAndReplaceCommand < Redcar::EditTabCommand
+    def execute
+      @speedbar = SearchAndReplaceSpeedbar.new
+      win.open_speedbar(@speedbar)
+    end
+  end
+
   class FindNextRegex < Redcar::EditTabCommand
     def initialize(re, wrap=nil)
       @re = re

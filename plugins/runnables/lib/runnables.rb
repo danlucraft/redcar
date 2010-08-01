@@ -24,6 +24,18 @@ module Redcar
       end
     end
     
+    def self.menus
+      Menu::Builder.build do
+        sub_menu "Project", :priority => 15 do
+          group(:priority => 15) {
+          separator
+            item "Runnables", Runnables::ShowRunnables
+            item "Run Tab",   Runnables::RunEditTabCommand
+          }
+        end
+      end
+    end
+    
     class TreeMirror
       include Redcar::Tree::Mirror
       

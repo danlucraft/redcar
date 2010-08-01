@@ -68,12 +68,31 @@ module Redcar
         MESSAGE_BOX_BUTTON_COMBOS.keys
       end
       
-      class InputDialog < JFace::Dialogs::InputDialog
-        def initialize(parentShell, dialogTitle, dialogMessage, initialValue, &block)
-          super(parentShell, dialogTitle, dialogMessage, initialValue, block)
+      class PasswordDialog < JFace::Dialogs::Dialog
+        def initialize(parent_shell, title, message)
+          super(parent_shell)
+          @title, @message = title, message
         end
         
-        def createShell
+        def createDialogArea(parent)
+          composite = super(parent)
+          
+          passwordLabel = Swt::Widgets::Label.new(composite, Swt::SWT::RIGHT)
+          passwordLabel.setText(@message)
+          
+          @passwordField = Swt::Widgets::Text.new(composite, Swt::SWT::SINGLE | Swt::SWT::PASSWORD)
+          data = Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_HORIZONTAL)
+          @passwordField.setLayoutData(data)
+          
+          getShell.setText(@title)
+        end
+        
+        def value
+          @password
+        end
+        
+        def close
+          @password = @passwordField.getText
           super
         end
       end
@@ -87,6 +106,13 @@ module Redcar
         code = dialog.open
         button = (code == 0 ? :ok : :cancel)
         {:button => button, :value => dialog.getValue}
+      end
+      
+      def password_input(title, message)
+        dialog = PasswordDialog.new(parent_shell, title, message)
+        code = dialog.open
+        button = (code == 0 ? :ok : :cancel)
+        {:button => button, :value => dialog.value}
       end
       
       def tool_tip(message, location)

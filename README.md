@@ -79,9 +79,7 @@ To run all specs and features:
 
     $ jruby -S rake
 
-NB. Features work with Cucumber version 0.4.2, you may have problems with 
-other versions because for the moment we are patching Cucumber dynamically 
-to support dependencies between sets of features.
+NB. You must leave the test window focussed while the features run. Some of the tests will fail if the test process is in the background.
 
 ## TESTS (specs)
 

@@ -61,43 +61,33 @@ module Redcar
       class << self
         attr_accessor :connection
         
-        def storage
-          Redcar::Plugin::Storage.new('user_connections') || {}
-        end
-        
         def connections
-          connections = storage[:connections]
+          ConnectionManager::ConnectionStore.new.connections
         end
         
         def connection_names
           if connections && connections.any?
-            ['Select...', connections.map { |c| c[:name] }].flatten
-          else
-            # TODO
-            ['Add a new connection...']
+            ['Select...', connections.map { |c| c.name }].flatten
           end
-        end
-        
-        def last_selected
-          storage[:last_selected] || 'Selected...'
         end
       end
       
+      def initialize
+        connection.items = self.class.connection_names
+      end
+      
       label :connection_label, 'Connect to:'
-      combo :connection, connection_names, last_selected
+      combo :connection
       
       button :connect, "Connect", "Return" do
-        selected = self.class.connections.find { |c| c[:name] == connection.value }
-        
-        self.class.storage[:last_selected] = connection.value
-        self.class.storage.save
+        selected = self.class.connections.find { |c| c.name == connection.value }
         
         Manager.connect_to_remote(
           selected[:protocol], 
           selected[:host],
           selected[:user],
           selected[:path],
-          PrivateKeyStore.paths
+          ConnectionManager::PrivateKeyStore.paths
         )
       end
       
@@ -108,12 +98,7 @@ module Redcar
       
       button :manage, "Connections Manager", "Ctrl+M" do
         Redcar.app.focussed_window.close_speedbar
-        Redcar::ConnectionsManager::OpenCommand.new.run
-      end
-      
-      def after_draw
-        connection.items = self.class.connection_names
-        connection.value = self.class.last_selected
+        Redcar::ConnectionManager::OpenCommand.new.run
       end
     end
     
@@ -134,9 +119,6 @@ module Redcar
       label :user_label, "User:"
       textbox :user
 
-      label :password_label, "Password:"
-      textbox :password
-
       label :path_label, "Path:"
       textbox :path
       
@@ -146,7 +128,7 @@ module Redcar
             host.value, 
             user.value, 
             path.value,
-            PrivateKeyStore.paths
+            ConnectionManager::PrivateKeyStore.paths
           )
       end
     end

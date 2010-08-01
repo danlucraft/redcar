@@ -12,16 +12,16 @@
 	url = git://github.com/danlucraft/jruby-prof.git
 [submodule "lib/json"]
 	path = lib/json
-	url = http://github.com/flori/json.git
+	url = git://github.com/flori/json.git
 [submodule "plugins/project/vendor/net-ssh"]
 	path = plugins/project/vendor/net-ssh
-	url = http://github.com/net-ssh/net-ssh.git
+	url = git://github.com/net-ssh/net-ssh.git
 [submodule "plugins/project/vendor/net-sftp"]
 	path = plugins/project/vendor/net-sftp
-	url = http://github.com/net-ssh/net-sftp.git
+	url = git://github.com/net-ssh/net-sftp.git
 [submodule "plugins/project/vendor/net-ftp-list"]
 	path = plugins/project/vendor/net-ftp-list
-	url = http://github.com/fcoury/net-ftp-list.git
+	url = git://github.com/fcoury/net-ftp-list.git
 [submodule "plugins/textmate/vendor/redcar-bundles"]
 	path = plugins/textmate/vendor/redcar-bundles
 	url = git://github.com/danlucraft/redcar-bundles.git
