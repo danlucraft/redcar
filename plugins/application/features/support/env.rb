@@ -80,7 +80,7 @@ class FakeDialogAdapter
       end
       @message = nil
     else
-      raise TestingError.new("got a message box showing #{args.first} when I didn't expect one")
+      raise TestingError.new("got a message box showing #{args.first.inspect} when I didn't expect one")
     end
   end
   
