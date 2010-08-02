@@ -49,6 +49,13 @@ module Redcar
     end
     
     def save!
+      # Call the before_save callback on any plugins that need it
+      #
+      # Pass self as an argument since plugins that use before_save
+      # will most likely need access to the document being saved.
+      Redcar.plugin_manager.objects_implementing(:before_save).each do |object|
+        object.before_save(self)
+      end
       @mirror.commit(to_s)
       @edit_view.reset_last_checked
       set_modified(false)
