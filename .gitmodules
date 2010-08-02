@@ -25,3 +25,6 @@
 [submodule "plugins/textmate/vendor/redcar-bundles"]
 	path = plugins/textmate/vendor/redcar-bundles
 	url = git://github.com/danlucraft/redcar-bundles.git
+[submodule "plugins/scm-git/vendor/grit"]
+	path = plugins/scm-git/vendor/grit
+	url = git://github.com/mscharley/grit.git
