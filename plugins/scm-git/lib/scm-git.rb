@@ -7,16 +7,28 @@ $:.push(
 require 'grit'
 
 module Redcar
-  module SCM
+  module Scm
     module Git
       class Manager
-        def self.scm_modules
-          Redcar::SCM::Git::Manager
+        include Redcar::Scm::Model
+        
+        #######
+        ## SCM plugin hooks
+        #####
+        def self.scm_module
+          Redcar::Scm::Git::Manager
         end
         
         def self.supported?
           # TODO: detect the git binary
           true
+        end
+        
+        #######
+        ## SCM hooks
+        #####
+        def repo_type
+          "Git"
         end
       end
     end

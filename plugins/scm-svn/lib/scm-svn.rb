@@ -1,10 +1,10 @@
 
 module Redcar
-  module SCM
+  module Scm
     module Subversion
       class Manager
-        def self.scm_modules
-          Redcar::SCM::Subversion::Manager
+        def self.scm_module
+          Redcar::Scm::Subversion::Manager
         end
         
         def self.supported?

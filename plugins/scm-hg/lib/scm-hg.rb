@@ -1,10 +1,10 @@
 
 module Redcar
-  module SCM
+  module Scm
     module Mercurial
       class Manager
-        def self.scm_modules
-          Redcar::SCM::Mercurial::Manager
+        def self.scm_module
+          Redcar::Scm::Mercurial::Manager
         end
         
         def self.supported?
