@@ -42,6 +42,16 @@ module Redcar
           end
         end
       end
+      Redcar.plugin_manager.objects_implementing(:document_cursor_listener).each do |object|
+        controller = object.document_cursor_listener
+        controller.document = self
+        @controllers.each do |key, value|
+          if controller.is_a?(key)
+            value << controller
+          end
+        end
+      end
+
     end
     
     def controllers(klass)
