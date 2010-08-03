@@ -13,6 +13,11 @@ module Redcar
       def repo?(path)
         false
       end
+      
+      # Whether to print debugging messages. Default to whatever scm is using.
+      def debug
+        Redcar::Scm::Manager.debug
+      end
     end
   end
 end
