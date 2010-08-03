@@ -30,6 +30,10 @@ module Redcar
         def repo_type
           "Git"
         end
+        
+        def repo?(path)
+          File.exist?(File.join(path, %w{.git}))
+        end
       end
     end
   end

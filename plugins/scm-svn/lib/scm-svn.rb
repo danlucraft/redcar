@@ -3,6 +3,8 @@ module Redcar
   module Scm
     module Subversion
       class Manager
+        include Redcar::Scm::Model
+        
         def self.scm_module
           Redcar::Scm::Subversion::Manager
         end

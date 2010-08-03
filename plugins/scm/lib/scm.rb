@@ -20,15 +20,10 @@ module Redcar
             puts "  Found #{i.name}." if debug
             object = i.scm_module
             
-            begin
-              assert_interface(object, Redcar::Scm::Model)
-              if object.supported?
-                mods.push(object)
-              elsif debug
-                puts "    but discarding because it isn't supported on the current system."
-              end
-            rescue RuntimeError => e
-              puts "    but discarding because it doesn't implement the required interface."
+            if object.supported?
+              mods.push(object)
+            elsif debug
+              puts "    but discarding because it isn't supported on the current system."
             end
           end
           
@@ -37,16 +32,26 @@ module Redcar
       end
       
       def self.project_loaded(window, project)
+        # for now we only want to attempt to handle the local case
+        return if not project.adapter.is_a?(Project::Adapters::Local)
+        
         puts "Loaded #{modules.count} SCM modules." if debug
         
-        for m in modules
-          print "Checking if #{project.path} is a #{m.repo_type} repository... " if debug
-          
-          if m.repo?(project.path)
-            puts "Yes!"
+        repo = modules.map {|m| m.new}.find do |m|
+          begin
+            assert_interface(m, Redcar::Scm::Model)
+          rescue RuntimeError => e
+            puts "Skipping repo module #{m.name} because it has an invalid interface." if debug
+            false
           else
-            puts "No, lets try again..."
+            puts "Checking if #{project.path} is a #{m.repo_type} repository..." if debug
+            m.repo?(project.path)
           end
+        end
+        
+        if not repo.nil?
+          puts "  Yes it is!" if debug
+          # do stuff, like load the repo
         end
       end
     end
