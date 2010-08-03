@@ -1,7 +1,11 @@
 
+require 'scm/plugin.rb'
+
 module Redcar
   module SCM
     class Manager
+      
+      # should we print debugging messages? this can get pretty verbose
       def self.debug
         true
       end
