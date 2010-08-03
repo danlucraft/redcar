@@ -10,7 +10,14 @@ module Redcar
   module SCM
     module Git
       class Manager
-
+        def self.scm_modules
+          Redcar::SCM::Git::Manager
+        end
+        
+        def self.supported?
+          # TODO: detect the git binary
+          true
+        end
       end
     end
   end

@@ -62,6 +62,9 @@ module Redcar
       window.treebook.add_tree(@tree)
       window.title = File.basename(@tree.tree_mirror.path)
       Manager.open_project_sensitivity.recompute
+      Redcar.plugin_manager.objects_implementing(:project_loaded).each do |i|
+        i.project_loaded(window, self)
+      end
       RecentDirectories.store_path(path)
       Manager.storage['last_open_dir'] = path
       Project.window_projects[window] = self
@@ -72,6 +75,9 @@ module Redcar
       Project.window_projects.delete(window)
       window.title = Window::DEFAULT_TITLE
       Manager.open_project_sensitivity.recompute
+      Redcar.plugin_manager.objects_implementing(:project_closed).each do |i|
+        i.project_closed(window, self)
+      end
     end
     
     # Refresh the DirMirror Tree for the given Window, if 
