@@ -151,6 +151,12 @@ RUBY
           commit_test_text2
           @mirror.read.should == result_test_text2
         end
+        
+        it "should allow the history to be cleared" do
+          @mirror.clear_history
+          @mirror.read.should == ">> "
+        end
+        
       end
     end
     

@@ -24,6 +24,11 @@ module Redcar
       def read
         @history
       end
+      
+      def clear_history
+        @history = @history.split("\n").last
+        notify_listeners(:change)
+      end
 
       private
       

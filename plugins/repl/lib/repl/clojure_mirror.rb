@@ -52,6 +52,13 @@ module Redcar
           @history
         end
       end
+         
+      def clear_history
+        @mutex.synchronize do
+          @history = @history.split("\n").last
+        end
+        notify_listeners(:change)
+      end
 
       private
       
