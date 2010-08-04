@@ -31,21 +31,25 @@ module Redcar
         end
       end
       
+      def self.modules_with_init
+        @modules.map {|m| m.new}.find_all {|m| m.supported_commands.include? :init}
+      end
+      
       def self.project_loaded(window, project)
         # for now we only want to attempt to handle the local case
         return if not project.adapter.is_a?(Project::Adapters::Local)
         
-        puts "Loaded #{modules.count} SCM modules." if debug
+        puts "#{modules.count} SCM modules loaded." if debug
         
         repo = modules.map {|m| m.new}.find do |m|
           begin
             assert_interface(m, Redcar::Scm::Model)
           rescue RuntimeError => e
-            puts "Skipping repo module #{m.name} because it has an invalid interface." if debug
+            puts "Skipping SCM module #{m.name} because it has an invalid interface." if debug
             false
           else
-            puts "Checking if #{project.path} is a #{m.repo_type} repository..." if debug
-            m.repo?(project.path)
+            puts "Checking if #{project.path} is a #{m.repository_type} repository..." if debug
+            m.repository?(project.path)
           end
         end
         

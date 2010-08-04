@@ -20,18 +20,18 @@ module Redcar
         end
         
         def self.supported?
-          # TODO: detect the git binary
+          # TODO: detect the git binary, probably do a PATH search
           true
         end
         
         #######
         ## SCM hooks
         #####
-        def repo_type
+        def repository_type
           "Git"
         end
         
-        def repo?(path)
+        def repository?(path)
           File.exist?(File.join(path, %w{.git}))
         end
       end
