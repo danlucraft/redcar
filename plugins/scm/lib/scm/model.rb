@@ -43,10 +43,10 @@ module Redcar
       # provide names for all commands you support with supported_commands
       def command_names
         {
-          :init => "initialise",
+          :init => "initialise " + repository_type,
           :push => "push",
           :pull => "pull",
-          :commit => "commit",
+          :commit => "commit changes",
           :switch_branch => "switch branch"
         }
       end
@@ -65,8 +65,8 @@ module Redcar
         []
       end
       
-      # REQUIRED for :commit. Attempts to commit a set of changes. 
-      def commit!(changes)
+      # REQUIRED for :commit. Attempts to commit the currently staged changes. 
+      def commit!
         raise "Scm.commit! not implemented." if supported_commands.include?(:commit)
         nil
       end
@@ -86,6 +86,12 @@ module Redcar
       # REQUIRED for :pull. Attempts to pull remote changesets.
       def pull!
         raise "Scm.pull! not implemented." if supported_commands.include?(:pull)
+        nil
+      end
+      
+      # REQUIRED for :switch_branch. Returns an array of branch names.
+      def branches
+        raise "Scm.branches not implemented." if supported_commands.include?(:switch_branch)
         nil
       end
       

@@ -63,7 +63,7 @@ module Redcar
       window.title = File.basename(@tree.tree_mirror.path)
       Manager.open_project_sensitivity.recompute
       Redcar.plugin_manager.objects_implementing(:project_loaded).each do |i|
-        i.project_loaded(window, self)
+        i.project_loaded(self)
       end
       RecentDirectories.store_path(path)
       Manager.storage['last_open_dir'] = path
@@ -76,7 +76,7 @@ module Redcar
       window.title = Window::DEFAULT_TITLE
       Manager.open_project_sensitivity.recompute
       Redcar.plugin_manager.objects_implementing(:project_closed).each do |i|
-        i.project_closed(window, self)
+        i.project_closed(self)
       end
     end
     

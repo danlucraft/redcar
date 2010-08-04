@@ -28,11 +28,15 @@ module Redcar
         ## SCM hooks
         #####
         def repository_type
-          "Git"
+          "git"
         end
         
         def repository?(path)
           File.exist?(File.join(path, %w{.git}))
+        end
+        
+        def supported_commands
+          [:init, :commit]
         end
       end
     end
