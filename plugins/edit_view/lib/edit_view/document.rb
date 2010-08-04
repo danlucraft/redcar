@@ -531,6 +531,24 @@ module Redcar
       replace(start_offset, end_offset - start_offset, new_text)
     end
     
+    # Replace the current word. This has two modes. In the first, 
+    # you supply the replacement text as an argument:
+    #
+    #     replace_word_at_offset(offset, "new text")
+    #
+    # In the second, you supply a block. The block argument is the current
+    # word, and the return value of the block is the 
+    # replacement text:
+    #
+    #     replace_word_at_offset(offset) {|current_text| current_text.upcase }
+    def replace_word_at_offset(offset, new_text=nil)
+      wr = word_range_at_offset(offset)
+      start_offset    = wr.first
+      end_offset      = wr.last
+      new_text        = new_text || yield(word_at_offset(offset))
+      replace(start_offset, end_offset - start_offset, new_text)
+    end
+    
     # Get the offset at the end of a given line, *before* the line delimiter.
     #
     # @param [Integer] line_ix  a zero-based line index

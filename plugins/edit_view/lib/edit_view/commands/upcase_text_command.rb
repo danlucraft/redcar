@@ -4,7 +4,11 @@ module Redcar
     class UpcaseTextCommand < Redcar::DocumentCommand
       
       def execute
-        doc.replace_selection {|text| text.upcase }
+        if doc.selection?
+          doc.replace_selection {|text| text.upcase }
+        else
+          doc.replace_word_at_offset(doc.cursor_offset) {|text| text.upcase }
+        end
       end
     end
   end
