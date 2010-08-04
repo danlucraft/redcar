@@ -18,6 +18,7 @@ require "edit_view/select_font_dialog"
 require "edit_view/select_theme_dialog"
 
 require "edit_view/commands/upcase_text_command"
+require "edit_view/commands/downcase_text_command"
 
 module Redcar
   class EditView

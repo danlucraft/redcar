@@ -542,11 +542,16 @@ module Redcar
     #
     #     replace_word_at_offset(offset) {|current_text| current_text.upcase }
     def replace_word_at_offset(offset, new_text=nil)
+      previous_offset = cursor_offset
+      
       wr = word_range_at_offset(offset)
       start_offset    = wr.first
       end_offset      = wr.last
       new_text        = new_text || yield(word_at_offset(offset))
       replace(start_offset, end_offset - start_offset, new_text)
+      
+      # NOTE: this should work, but retest if you have a shorter replacement
+      self.cursor_offset = [previous_offset, start_offset + new_text.length].min
     end
     
     # Get the offset at the end of a given line, *before* the line delimiter.
