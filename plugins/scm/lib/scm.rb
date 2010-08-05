@@ -75,6 +75,9 @@ module Redcar
       end
       
       def self.prepare(project, repo)
+        # associate this repository with a project internally
+        project_repositories[project] = repo
+        
         # load the repository and inject adapter if there is one
         repo.load(project.path)
         adapter = repo.adapter(project.adapter)
@@ -83,8 +86,6 @@ module Redcar
           project.adapter = adapter
         end
         
-        # associate this repository with a project internally
-        project_repositories[project] = repo
         puts "Preparing the GUI for the current project."
       end
       
