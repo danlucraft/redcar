@@ -35,8 +35,24 @@ module Redcar
         end
       end
       
+      # Returns a list of instances of SCM modules. This list has already been
+      # filtered for invalid modules.
+      def self.modules_instance
+        modules.map {|m|
+          mod = m.new
+          begin
+            assert_interface(mod, Redcar::Scm::Model)
+          rescue RuntimeError => e
+            puts "Skipping SCM module #{m.name} because it has an invalid interface." if debug
+            nil
+          else
+            mod
+          end
+        }.find_all {|m| not m.nil?}
+      end
+      
       def self.modules_with_init
-        modules.map {|m| m.new}.find_all {|m| m.supported_commands.include? :init}
+        modules_instance.find_all {|m| m.supported_commands.include? :init}
       end
       
       def self.project_loaded(project)
@@ -45,16 +61,9 @@ module Redcar
         
         puts "#{modules.count} SCM modules loaded." if debug
         
-        repo = modules.map {|m| m.new}.find do |m|
-          begin
-            assert_interface(m, Redcar::Scm::Model)
-          rescue RuntimeError => e
-            puts "Skipping SCM module #{m.name} because it has an invalid interface." if debug
-            false
-          else
-            puts "Checking if #{project.path} is a #{m.repository_type} repository..." if debug
-            m.repository?(project.path)
-          end
+        repo = modules_instance.find do |m|
+          puts "Checking if #{project.path} is a #{m.repository_type} repository..." if debug
+          m.repository?(project.path)
         end
         
         # quit if we can't find something to handle this project
@@ -62,6 +71,10 @@ module Redcar
         
         puts "  Yes it is!" if debug
         
+        prepare(project, repo)
+      end
+      
+      def self.prepare(project, repo)
         # load the repository and inject adapter if there is one
         repo.load(project.path)
         adapter = repo.adapter(project.adapter)
@@ -70,10 +83,6 @@ module Redcar
           project.adapter = adapter
         end
         
-        prepare(project, repo)
-      end
-      
-      def self.prepare(project, repo)
         # associate this repository with a project internally
         project_repositories[project] = repo
         puts "Preparing the GUI for the current project."
@@ -86,7 +95,7 @@ module Redcar
       
       def self.project_context_menus(tree, node, controller)
         # Search for the current project
-        project = Redcar::Project.window_projects.values.find{|p| p.tree == tree}
+        project = Project::Manager.in_window(Redcar.app.focussed_window)
         repo = project_repositories[project]
         
         Menu::Builder.build do
@@ -96,9 +105,8 @@ module Redcar
               separator
               sub_menu "Create Repository From Project" do
                 Redcar::Scm::Manager.modules_with_init.sort {|a, b| a.repository_type <=> b.repository_type}.each do |m|
-                  item(m.command_names[:init].capitalize) do 
+                  item(m.command_names[:init].capitalize + m.repository_type.capitalize) do 
                     m.init!(project.path)
-                    m.load(project.path)
                     project.refresh
                     
                     Redcar::Scm::Manager.prepare(project, m)

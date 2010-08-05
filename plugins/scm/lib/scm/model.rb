@@ -43,7 +43,7 @@ module Redcar
       # provide names for all commands you support with supported_commands
       def command_names
         {
-          :init => "initialise " + repository_type,
+          :init => "initialise",
           :push => "push",
           :pull => "pull",
           :commit => "commit changes",
