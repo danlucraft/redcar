@@ -725,8 +725,11 @@ module Redcar
         link "Cmd+B",       ToggleBlockSelectionCommand
         #link "Escape", AutoCompleter::AutoCompleteCommand
         link "Ctrl+Escape",  AutoCompleter::MenuAutoCompleterCommand
+        
         link "Ctrl+U",       EditView::UpcaseTextCommand
         link "Ctrl+Shift+U", EditView::DowncaseTextCommand
+        link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
+        link "Ctrl+G",       EditView::OppositeCaseTextCommand
 
         link "Cmd+T",           Project::FindFileCommand
         link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
@@ -789,8 +792,11 @@ module Redcar
         link "Ctrl+B",       ToggleBlockSelectionCommand
         link "Ctrl+Space",       AutoCompleter::AutoCompleteCommand
         link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleterCommand
+        
         link "Ctrl+U",       EditView::UpcaseTextCommand
         link "Ctrl+Shift+U", EditView::DowncaseTextCommand
+        link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
+        link "Ctrl+G",       EditView::OppositeCaseTextCommand
 
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
@@ -870,8 +876,12 @@ module Redcar
           item "Auto Complete",          AutoCompleter::AutoCompleteCommand
           item "Menu Auto Complete",     AutoCompleter::MenuAutoCompleterCommand
           separator
-          item "Upcase Text",   EditView::UpcaseTextCommand
-          item "Downcase Text", EditView::DowncaseTextCommand
+          sub_menu "Convert Text" do
+            item "to Uppercase",     EditView::UpcaseTextCommand
+            item "to Lowercase",     EditView::DowncaseTextCommand
+            item "to Titlecase",     EditView::TitlizeTextCommand
+            item "to Opposite Case", EditView::OppositeCaseTextCommand
+          end
         end
         sub_menu "Debug", :priority => 20 do
           item "Task Manager", TaskManager::OpenCommand
