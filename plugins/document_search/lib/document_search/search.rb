@@ -2,10 +2,16 @@ module DocumentSearch
   class Search
     # An instance of a search type method: Regular expression
     def self.regex_search_method(line, query, replace)
-      if line =~ /#{query}/
-        startoff = $`.length
+      if match = line.match(/#{query}/)
+        startoff = match.pre_match.length
         endoff   = (startoff + $&.length) - 1
+        
+        match.captures.each_with_index do |capture, i|
+          replace = replace.gsub("$#{i + 1}", capture)
+        end
+        
         line[startoff..endoff] = replace
+        
         return line, startoff, startoff + replace.length
       end
       return nil
