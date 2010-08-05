@@ -38,6 +38,15 @@ module Redcar
         def supported_commands
           [:init, :commit]
         end
+        
+        def init!(path)
+          # Be nice and don't blow away another repository accidentally.
+          return nil if File.exist?(path + '/.git')
+          # Grit doesn't support this in the normal API, so make the call directly.
+          # One day I'll fill in the todo code on Grit::Repo.init(path)
+          Grit::GitRuby::Repository.init(path + '/.git', false)
+          true
+        end
       end
     end
   end

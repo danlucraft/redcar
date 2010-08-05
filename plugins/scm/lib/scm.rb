@@ -105,7 +105,7 @@ module Redcar
               separator
               sub_menu "Create Repository From Project" do
                 Redcar::Scm::Manager.modules_with_init.sort {|a, b| a.repository_type <=> b.repository_type}.each do |m|
-                  item(m.command_names[:init].capitalize + m.repository_type.capitalize) do 
+                  item(m.command_names[:init].capitalize + " " + m.repository_type.capitalize) do 
                     m.init!(project.path)
                     project.refresh
                     
