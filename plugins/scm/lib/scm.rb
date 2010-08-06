@@ -105,6 +105,7 @@ module Redcar
       def self.project_closed(project)
         # disassociate this project with any repositories
         info = project_repositories.delete project
+        return if info.nil?
         
         project.window.treebook.remove_tree(info['tree'])
       end
