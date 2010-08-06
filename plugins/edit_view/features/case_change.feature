@@ -44,3 +44,14 @@ Feature: Change Case
     And I move the cursor to 12
     And I run the command Redcar::EditView::UnderscoreTextCommand
     Then the contents should be "curry_chicken"
+    
+  Scenario: Pascal to Underscore to Camel Case rotation
+    When I replace the contents with "CurryChicken"
+    And I move the cursor to 12
+    And I run the command Redcar::EditView::CamelSnakePascalRotateTextCommand
+    Then the contents should be "curry_chicken"
+    When I run the command Redcar::EditView::CamelSnakePascalRotateTextCommand
+    Then the contents should be "curryChicken"
+    When I run the command Redcar::EditView::CamelSnakePascalRotateTextCommand
+    Then the contents should be "CurryChicken<c>"
+  

@@ -60,5 +60,39 @@ module Redcar
         replace_selection_or_word_at_cursor(&:lower_case_underscore)
       end
     end
+    
+    # Blantantly taken from the "Toggle camelCase / snake_case / PascalCase" Command
+    # in TextMate's Source bundle written by Allan Odgaard.
+    class CamelSnakePascalRotateTextCommand < TextConversionCommand
+      # HotFlamingCats -> hot_flaming_cats
+      def pascalcase_to_snakecase(word)
+        word.gsub(/\B([A-Z])(?=[a-z0-9])|([a-z0-9])([A-Z])/, '\2_\+').downcase
+      end
+      
+      # hot_flaming_cats -> hotFlamingCats
+      def snakecase_to_camelcase(word)
+        word.gsub(/_([^_]+)/) { $1.capitalize }
+      end
+      
+      # hotFlamingCats -> HotFlamingCats
+      def camelcase_to_pascalcase(word)
+        word.gsub(/^\w{1}/) {|c| c.upcase}
+      end      
+
+      def execute
+        replace_selection_or_word_at_cursor do |word|
+          is_pascal = word.match(/^[A-Z]{1}/) ? true : false
+          is_snake = word.match(/_/) ? true : false
+
+          if is_pascal then
+            pascalcase_to_snakecase(word)
+          elsif is_snake then
+  	        snakecase_to_camelcase(word)
+          else
+            camelcase_to_pascalcase(word) 
+          end
+        end
+      end
+    end
   end
 end

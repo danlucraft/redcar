@@ -730,6 +730,7 @@ module Redcar
         link "Ctrl+Shift+U", EditView::DowncaseTextCommand
         link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
         link "Ctrl+G",       EditView::OppositeCaseTextCommand
+        link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
 
         link "Cmd+T",           Project::FindFileCommand
         link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
@@ -797,6 +798,7 @@ module Redcar
         link "Ctrl+Shift+U", EditView::DowncaseTextCommand
         link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
         link "Ctrl+G",       EditView::OppositeCaseTextCommand
+        link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
 
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
@@ -882,8 +884,9 @@ module Redcar
             item "to Titlecase",     EditView::TitlizeTextCommand
             item "to Opposite Case", EditView::OppositeCaseTextCommand
             separator
-            item "to CamelCase",  EditView::CamelCaseTextCommand
-            item "to snake_case", EditView::UnderscoreTextCommand
+            item "to CamelCase",                           EditView::CamelCaseTextCommand
+            item "to snake_case",                          EditView::UnderscoreTextCommand
+            item "Toggle PascalCase-underscore-camelCase", EditView::CamelSnakePascalRotateTextCommand
           end
         end
         sub_menu "Debug", :priority => 20 do
