@@ -29,7 +29,12 @@ module Redcar
         @top ||= begin
           nodes = []
           
-          
+          if @repo.supported_commands.include?(:commit)
+            nodes.push(ScmMirror::ChangesNode.new(@repo))
+          end
+          if @repo.supported_commands.include?(:push)
+            nodes.push(ScmMirror::CommitsNode.new(@repo))
+          end
           
           nodes
         end

@@ -5,6 +5,7 @@ $:.push(
 )
 
 require 'grit'
+require 'scm-git/change'
 
 module Redcar
   module Scm
@@ -21,7 +22,7 @@ module Redcar
         
         def self.supported?
           # Even with grit, we do need the binary.
-          # TODO: detect the git binary, probably do a PATH search
+          # TODO: detect the git binary, do a PATH search?
           true
         end
         
@@ -31,8 +32,18 @@ module Redcar
         end
         
         #######
+        ## General stuff
+        #####
+        
+        def inspect
+          %Q{#<Scm::Git::Manager "#{@repo.path}">}
+        end
+        
+        #######
         ## SCM hooks
         #####
+        attr_accessor :repo
+        
         def repository_type
           "git"
         end
@@ -56,6 +67,13 @@ module Redcar
         
         def load(path)
           @repo = Grit::Repo.new(path)
+        end
+        
+        # @return [Array<Redcar::Scm::ScmMirror::Change>]
+        def uncommited_changes
+          # cache this for atleast this call, because it's *slow*
+          status = @repo.status
+          []
         end
       end
     end

@@ -41,13 +41,13 @@ module Redcar
       # respective worlds. ie, SVN calls :commit and :pull "checkin" and 
       # "checkout" respectively. If you overload this method, you need to
       # provide names for all commands you support with supported_commands
-      def command_names
+      def translations
         {
-          :init => "initialise",
-          :push => "push",
-          :pull => "pull",
-          :commit => "commit changes",
-          :switch_branch => "switch branch"
+          :init => "Initialise " + repository_type.capitalize,
+          :push => "Push Changesets",
+          :pull => "Pull Changesets",
+          :commit => "Commit Changes",
+          :switch_branch => "Switch Branch"
         }
       end
       
@@ -59,7 +59,9 @@ module Redcar
       end
       
       # REQUIRED for :commit. Returns an array of changes currently waiting
-      # for commit. 
+      # for commit.
+      #
+      # @return [Array<Redcar::Scm::ScmMirror::Change>]
       def uncommited_changes
         raise "Scm.uncommited_changes not implemented." if supported_commands.include?(:commit)
         []
