@@ -550,7 +550,6 @@ module Redcar
       new_text        = new_text || yield(word_at_offset(offset))
       replace(start_offset, end_offset - start_offset, new_text)
       
-      # NOTE: this should work, but retest if you have a shorter replacement
       self.cursor_offset = [previous_offset, start_offset + new_text.length].min
     end
     

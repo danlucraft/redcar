@@ -33,4 +33,14 @@ Feature: Change Case
     And I run the command Redcar::EditView::OppositeCaseTextCommand
     Then the contents should be "cURRY cHICKEN"
   
+  Scenario: Camel case
+    When I replace the contents with "curry_chicken"
+    And I move the cursor to 13
+    And I run the command Redcar::EditView::CamelCaseTextCommand
+    Then the contents should be "CurryChicken<c>"
   
+  Scenario: Underscore
+    When I replace the contents with "CurryChicken"
+    And I move the cursor to 12
+    And I run the command Redcar::EditView::UnderscoreTextCommand
+    Then the contents should be "curry_chicken"

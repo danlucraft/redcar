@@ -40,5 +40,25 @@ module Redcar
         end
       end
     end
+    
+    class OppositeCaseTextCommand < TextConversionCommand
+      def execute
+        replace_selection_or_word_at_cursor do |text|
+          text.tr('a-zA-Z', 'A-Za-z')
+        end
+      end
+    end
+
+    class CamelCaseTextCommand < TextConversionCommand
+      def execute
+        replace_selection_or_word_at_cursor(&:camelize)
+      end
+    end
+    
+    class UnderscoreTextCommand < TextConversionCommand
+      def execute
+        replace_selection_or_word_at_cursor(&:lower_case_underscore)
+      end
+    end
   end
 end
