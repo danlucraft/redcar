@@ -2,26 +2,23 @@ require 'auto_highlighter/document_controller'
 module Redcar
   class AutoHighlighter
 
-    def self.styledText_update(styledText)
-      if @styledText != styledText
-        styledText.add_key_listener(KeyListener.new)
-        styledText.addLineBackgroundListener(LineEventListener.new)
-        @styledText = styledText
+    def self.styledText_update(mate_text)
+      if @styledText != mate_text.get_text_widget
+        @styledText = mate_text.get_text_widget
+        @styledText.add_key_listener(KeyListener.new)
+        @styledText.addLineBackgroundListener(LineEventListener.new)
+	      @doc.mate_text = mate_text
         @doc.styledText = @styledText
-        @doc.gc = Swt::Graphics::GC.new(styledText)
+        @doc.gc = Swt::Graphics::GC.new(@styledText)
       end
     end
-
+    
     def self.document_cursor_listener
       @doc = DocumentController.new
     end
     
-    def	self.key_listener()
-      @key_listener = KeyListener.new()
-    end
-
-    def	self.line_listener()
-      @line_listener = LineEventListener.new()
+    def self.theme_changed_update()
+      @doc.set_highlight_colour
     end
     
     class KeyListener
@@ -29,13 +26,14 @@ module Redcar
           
         end
         def key_released(_)
+        
         end
-    end
+    end  
     
     class LineEventListener
-      def lineGetBackground(event)
-        
-      end
+    	def lineGetBackground(event)
+    	
+    	end
     end
   end 
 end

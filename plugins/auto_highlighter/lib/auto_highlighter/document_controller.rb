@@ -2,29 +2,43 @@ module Redcar
   class AutoHighlighter
     class DocumentController
 
-      attr_accessor :gc, :styledText, :document
+      attr_accessor :gc, :styledText, :document, :mate_text, :theme_name
       attr_accessor :height, :width, :highlighted
  
       include Redcar::Document::Controller
       include Redcar::Document::Controller::ModificationCallbacks
       include Redcar::Document::Controller::CursorCallbacks
 
-      #def before_modify(start_offset, end_offset, text)
-      #  puts "Call before!"
-	#@wait = true
-   #   end
+      def set_highlight_colour
+        
+        if @theme_name == EditView.theme
+          return @colour if @colour
+        end
+            
+        @theme_name = EditView.theme
+        @theme = @mate_text.colourer.getTheme()
+        @colour = @theme.globalSettings.get("pairHighlight")
+      	if @colour
+      	  @colour = JavaMateView::SwtColourer.getColour(@colour)
+      	else
+          @colour = ApplicationSWT.display.system_color Swt::SWT::COLOR_GRAY	      	  
+      	end
+      	@colour
+      end
 
-    #  def after_modify
-     #   puts "Call after!"
-	#@wait = false
-	#cursor_moved(styledText.getCaretOffset)
-   #   end
+      def before_modify(start_offset, end_offset, text)
+        @wait = @wait + 1
+      end
 
- 
+      def after_modify
+        @wait = @wait - 1
+	    end
+
       def initialize
         @i = 0
-        @highlighted_current = nil
-        @highlighted_pair = nil
+        @wait = 0
+        @theme_name = nil
+        @highlight = Highlighted.new
         @open_pair_chars = ["{", "(", "["]
         @close_pair_chars = ["}", ")", "]"]
         @pair_chars = @open_pair_chars + @close_pair_chars
@@ -35,7 +49,7 @@ module Redcar
         if current == nil or pair == nil
           clear
           return
-        elsif current == @highlighted_current || current == @highlighted_pair || pair == @highlighted_current || pair == @highlighted_pair
+        elsif current == @highlight.current || current == @highlight.pair || pair == @highlight.current || pair == @highlight.pair
           return
         end
 
@@ -43,27 +57,19 @@ module Redcar
         if document.length > 0
           clear
           #puts "Highligh on offset " + current.to_s() + " and its pair at " + pair.to_s()
-          @pos_current = styledText.getLocationAtOffset(current)
-          @pos_pair = styledText.getLocationAtOffset(pair)
-          gc.background = ApplicationSWT.display.system_color Swt::SWT::COLOR_GRAY
+          gc.setBackground(set_highlight_colour) 
           gc.setAlpha(98)
-          rectangle1 = styledText.getTextBounds(current, current)
-          rectangle2 = styledText.getTextBounds(pair, pair)
-          gc.fill_rectangle(rectangle1)
-          gc.fill_rectangle(rectangle2)          
-          @highlighted_current = current
-    	  @highlighted_pair = pair
-	      @highlighted = true
+          gc.fill_rectangle(styledText.getTextBounds(current, current))
+          gc.fill_rectangle(styledText.getTextBounds(pair, pair))          
+          @highlight.set_on(current, pair)
         end
       end
       
       def clear
-        if @highlighted
-	        styledText.redrawRange(@highlighted_current, 1, false) if @highlighted_current < document.length
-	        styledText.redrawRange(@highlighted_pair, 1, false) # if on the same line
-          @highlighted_current = nil
-          @highlighted_pair = nil
-          @highlighted = false
+        if @highlight.on?
+	        styledText.redrawRange(@highlight.current, 1, false) if @highlight.current < document.length
+	        styledText.redrawRange(@highlight.pair, 1, false) # if on the same line
+          @highlight.clear
         end
       end
       
@@ -75,7 +81,7 @@ module Redcar
         quotes = false
         doublequotes = false
         
-        while offset > 0 and offset < document.length
+        while offset > 0 and offset < document.length - 1
           offset = offset + step;
           @newchar = styledText.getTextRange(offset, 1)
           if @newchar == search_char and !quotes and !doublequotes
@@ -115,7 +121,7 @@ module Redcar
 
       def cursor_moved(offset)
         
-        if @wait
+        if @wait > 0
           return
         end
         
@@ -143,9 +149,40 @@ module Redcar
         end
         
         highlight_pair(offset, pair)
-        #puts "Highlight! " + @i.to_s
-        #@i = @i + 1
+        
       end
     end
+    
+    class Highlighted
+      attr_accessor :on, :current, :pair
+      
+      def initialize
+        clear
+      end
+      
+      def clear
+        @on = false
+        @current = nil
+        @pair = nil
+      end
+      
+      def on?
+        if @on
+          true
+        else
+          false
+        end
+      end
+      
+      def set_on(current, pair)
+        if current and pair
+          @on = true
+          @current = current
+          @pair = pair
+        end
+      end
+      
+    end
+    
   end
 end
