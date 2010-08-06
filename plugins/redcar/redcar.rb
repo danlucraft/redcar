@@ -881,6 +881,9 @@ module Redcar
             item "to Lowercase",     EditView::DowncaseTextCommand
             item "to Titlecase",     EditView::TitlizeTextCommand
             item "to Opposite Case", EditView::OppositeCaseTextCommand
+            separator
+            item "to CamelCase",  EditView::CamelCaseTextCommand
+            item "to snake_case", EditView::UnderscoreTextCommand
           end
         end
         sub_menu "Debug", :priority => 20 do
