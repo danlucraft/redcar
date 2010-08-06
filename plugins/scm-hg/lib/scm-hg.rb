@@ -14,6 +14,11 @@ module Redcar
           puts "    Mercurial support is currently unimplemented" if debug
           false
         end
+      
+        # Whether to print debugging messages. Default to whatever scm is using.
+        def self.debug
+          Redcar::Scm::Manager.debug
+        end
       end
     end
   end

@@ -20,8 +20,14 @@ module Redcar
         end
         
         def self.supported?
+          # Even with grit, we do need the binary.
           # TODO: detect the git binary, probably do a PATH search
           true
+        end
+        
+        # Whether to print debugging messages. Default to whatever scm is using.
+        def self.debug
+          Redcar::Scm::Manager.debug
         end
         
         #######
