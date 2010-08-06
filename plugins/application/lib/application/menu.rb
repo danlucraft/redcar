@@ -74,7 +74,7 @@ module Redcar
     #
     # @param [Menu] another Menu
     def merge(other)
-      @priority = other.priority || @priority
+      @priority = @priority || other.priority
       other.entries.each do |other_entry|
         if here = entry(other_entry.text) and not other_entry.is_unique?
           if here.class == other_entry.class
