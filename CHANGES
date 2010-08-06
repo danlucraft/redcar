@@ -21,6 +21,7 @@ Version 0.3.9 (TBA)
  * Runnables are grouped by file (Delisa Mason)
  * View keyboard shortcuts help command (Delisa Mason)
  * Clear REPL history command (David Byrne)
+ * Change case commands (to uppercase, to lowercase, to titlecase, to opposite case, toggle snake_case/CamelCase/pascalCase) (Mat Schaffer)
 
 Version 0.3.8.4 (24 July 2010)
 ==============================
