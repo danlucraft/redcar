@@ -13,7 +13,7 @@ module Redcar
     end
 
     def self.keymaps
-      [Keymap.build("main", [:osx, :linux, :windows]) { 
+      [Keymap.build("main", [:windows]) { 
         link "Ctrl+R", ExecuteCurrentTab::Execute 
         link "Ctrl+Shift+R", ExecuteCurrentTab::EmbeddedExecute 
       }]
