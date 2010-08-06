@@ -47,6 +47,10 @@ module Redcar
           Grit::GitRuby::Repository.init(path + '/.git', false)
           true
         end
+        
+        def load(path)
+          @repo = Grit::Repo.new(path)
+        end
       end
     end
   end
