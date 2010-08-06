@@ -11,6 +11,7 @@ module Redcar
         
         def self.supported?
           # not implemented, and hence never supported
+          puts "    Subversion support is currently unimplemented" if debug
           false
         end
       end
