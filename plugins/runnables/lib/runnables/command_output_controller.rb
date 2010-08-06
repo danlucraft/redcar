@@ -49,6 +49,20 @@ module Redcar
         end
       end
       
+      # From TextMate's Support/lib/escape.rb
+      # Make string suitable for display as HTML, preserve spaces. Set :no_newline_after_br => true
+      # to cause “\n” to be substituted by “<br>” instead of “<br>\n”
+      def htmlize(str, opts = {}) 
+        str = str.to_s.gsub("&", "&amp;").gsub("<", "&lt;")
+        str = str.gsub(/\t+/, '<span style="white-space:pre;">\0</span>')
+        str = str.reverse.gsub(/ (?= |$)/, ';psbn&').reverse
+        if opts[:no_newline_after_br].nil?
+          str.gsub("\n", "<br>\n")
+        else
+          str.gsub("\n", "<br>")
+        end 
+      end
+      
       def run_posix
         @thread = Thread.new do
           sleep 1
@@ -56,7 +70,7 @@ module Redcar
           @shell.outproc = lambda do |out|
             html=<<-HTML
               <div class="stdout">
-                <pre>#{out}</pre>
+                #{htmlize(out)}
               </div>
             HTML
             execute(<<-JAVASCRIPT)
