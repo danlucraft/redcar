@@ -40,7 +40,7 @@ module Redcar
           output = `cd #{@path} & #{@cmd} 2>&1`
           html=<<-HTML
           <div class="stdout">
-            <pre>#{output}</pre>
+            #{htmlize(output)}
           </div>
           HTML
           execute(<<-JAVASCRIPT)
