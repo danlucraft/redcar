@@ -1,5 +1,11 @@
 
-require 'scm/model.rb'
+require 'scm/model'
+require 'scm/scm_controller'
+require 'scm/scm_mirror'
+require 'scm/scm_mirror/changes_node'
+require 'scm/scm_mirror/change'
+require 'scm/scm_mirror/commits_node'
+require 'scm/scm_mirror/commit'
 
 module Redcar
   module Scm
@@ -76,7 +82,7 @@ module Redcar
       
       def self.prepare(project, repo)
         # associate this repository with a project internally
-        project_repositories[project] = repo
+        project_repositories[project] = {'repo' => repo}
         
         # load the repository and inject adapter if there is one
         repo.load(project.path)
@@ -87,20 +93,29 @@ module Redcar
         end
         
         puts "Preparing the GUI for the current project."
+        mirror = Scm::ScmMirror.new(repo)
+        tree = Tree.new(mirror, Scm::ScmController.new)
+        project_repositories[project]['tree'] = tree
+        project.window.treebook.add_tree(tree)
+        
+        # don't steal focus from the project module.
+        project.window.treebook.focus_tree(project.tree)
       end
       
       def self.project_closed(project)
         # disassociate this project with any repositories
-        project_repositories.delete project
+        info = project_repositories.delete project
+        
+        project.window.treebook.remove_tree(info['tree'])
       end
       
       def self.project_context_menus(tree, node, controller)
         # Search for the current project
         project = Project::Manager.in_window(Redcar.app.focussed_window)
-        repo = project_repositories[project]
+        repo_info = project_repositories[project]
         
         Menu::Builder.build do
-          if repo.nil?
+          if repo_info.nil?
             # no repository detected
             group :priority => 40 do
               separator
@@ -116,8 +131,10 @@ module Redcar
               end
             end
           else
-            # display repository commands for this node
-            
+            # TODO: display repository commands for this node here too
+            group :priority => 40 do
+              
+            end
           end
         end
       end
