@@ -1,6 +1,6 @@
+require 'repl/repl_mirror'
 require 'repl/ruby_mirror'
 require 'repl/clojure_mirror'
-require 'repl/repl_mirror'
 
 module Redcar
   class REPL

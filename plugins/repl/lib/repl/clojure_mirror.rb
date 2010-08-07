@@ -4,15 +4,13 @@ module Redcar
     class ClojureMirror
       def self.load_clojure_dependencies
         unless @loaded
-          require File.dirname(__FILE__) + "/repl_mirror.rb"
           require File.dirname(__FILE__) + "/../../vendor/clojure.jar"
           require File.dirname(__FILE__) + "/../../vendor/clojure-contrib.jar"
           require File.dirname(__FILE__) + "/../../vendor/org-enclojure-repl-server.jar"
           require File.dirname(__FILE__) + "/../../vendor/enclojure-wrapper.jar"
           
-          include_class 'clojure.lang.Var'
-          include_class 'clojure.lang.RT'
-          include_class 'redcar.repl.Wrapper'
+          import 'redcar.repl.Wrapper'
+          @loaded = true
         end
       end
       

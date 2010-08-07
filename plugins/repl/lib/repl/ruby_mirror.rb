@@ -1,4 +1,3 @@
-require File.dirname(__FILE__) + "/repl_mirror.rb"
 
 module Redcar
   class REPL
