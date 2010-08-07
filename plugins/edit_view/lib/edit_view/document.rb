@@ -530,12 +530,16 @@ module Redcar
       start_offset    = sr.first
       end_offset      = sr.last
       new_text        = new_text || yield(selected_text)
+
       replace(start_offset, end_offset - start_offset, new_text)
 
-      end_of_new_text = start_offset + new_text.length
+      new_end_offset = start_offset + new_text.length
       
-      self.cursor_offset = [previous_cursor_offset, end_of_new_text].min
-      self.set_selection_range(start_offset, end_of_new_text)
+      if previous_cursor_offset == end_offset
+        self.set_selection_range(new_end_offset, start_offset)
+      else
+        self.set_selection_range(start_offset, new_end_offset)
+      end
     end
     
     # Replace the current word. This has two modes. In the first, 
