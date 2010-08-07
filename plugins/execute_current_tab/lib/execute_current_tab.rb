@@ -4,7 +4,7 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Plugins" do
-          sub_menu "Execute" do
+          sub_menu "Execute", :priority => 59 do
             item "Execute Current Tab as Ruby File", ExecuteCurrentTab::Execute
             item "Eval Current Tab (within Redcar itself)", ExecuteCurrentTab::EmbeddedExecute
           end

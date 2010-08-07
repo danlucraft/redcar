@@ -296,7 +296,7 @@ module Redcar
       end
       
       def selection_changed(e)
-        Redcar.safely("selection changed") do
+        Redcar.safely do
           element = e.getSelection.toArray.to_a.first
           if @tree_model.tree_controller.selected(@tree_model, element)
             @viewer.expandToLevel(element, 1)

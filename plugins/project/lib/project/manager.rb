@@ -16,7 +16,7 @@ module Redcar
           end
         else
           if pw = get_password
-            adapter = open_adapter(protocol, host, user, password, [])
+            adapter = open_adapter(protocol, host, user, pw, [])
             open_remote_project(adapter, path)
           end
         end
@@ -70,7 +70,7 @@ module Redcar
       def self.start(args)
         unless handle_startup_arguments(args)
           unless Redcar.environment == :test
-            restore_last_session
+            #restore_last_session
           end
         end
         init_current_files_hooks
@@ -282,8 +282,8 @@ module Redcar
       
       def self.menus
         Menu::Builder.build do
-          sub_menu "File", :priority => :first do
-            group(:priority => 0) {
+          sub_menu "File" do
+            group(:priority => 0) do
               item "Open", Project::FileOpenCommand
               item "Reload File", Project::FileReloadCommand
               item "Open Directory", Project::DirectoryOpenCommand
@@ -295,18 +295,18 @@ module Redcar
               separator
               item "Save", Project::FileSaveCommand
               item "Save As", Project::FileSaveAsCommand
-            }
+            end
             
-            group(:priority => 11) {
+            group(:priority => 11) do
               item "Close Directory", Project::DirectoryCloseCommand
               item "Reveal in Project", Project::RevealInProjectCommand
-            }
+            end
           end
-          sub_menu "Project", :priority => 15 do
-            group(:priority => :first) {
+          sub_menu "Project" do
+            group(:priority => :first) do
               item "Find File", Project::FindFileCommand
               item "Refresh Directory", Project::RefreshDirectoryCommand
-            }
+            end
           end
         end
       end
