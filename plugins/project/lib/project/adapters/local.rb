@@ -67,6 +67,10 @@ module Redcar
         def save_contents(file)
           File.open(file, "wb") {|f| f.print contents }
         end
+        
+        def refresh_operation(tree)
+          yield
+        end
       end
     end
   end

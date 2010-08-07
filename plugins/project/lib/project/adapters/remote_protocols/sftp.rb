@@ -49,21 +49,19 @@ module Redcar
             sftp_exec(:remove, file)
           end
           
+          def use_cache?
+            @use_cache
+          end
+          
           def dir_listing(path)
-            return [] unless result = retrieve_dir_listing(path)
-            contents = []
-            result.each do |line|
-              next unless line.include?('|')
-              type, empty_flag, name = line.chomp.split('|')
-              unless ['.', '..'].include?(name)
-                hash = { :fullname => name, :name => File.basename(name), :type => type.to_sym }
-                if type == "dir"
-                  hash[:empty] = (empty_flag == "0")
-                end
-                contents << hash
+            if use_cache?
+              if @cached_dirs[path]
+                return @cached_dirs[path]
               end
             end
-            contents
+            
+            return [] unless result = retrieve_dir_listing(path)
+            process_dir_listing_response(result)
           end
           
           def retrieve_dir_listing(path)
@@ -78,12 +76,56 @@ module Redcar
             )
           end
           
+          def process_dir_listing_response(response)
+            contents = []
+            response.each do |line|
+              next unless line.include?('|')
+              type, empty_flag, name = line.chomp.split('|')
+              unless ['.', '..'].include?(name)
+                hash = { :fullname => name, :name => File.basename(name), :type => type.to_sym }
+                if type == "dir"
+                  hash[:empty] = (empty_flag == "0")
+                end
+                contents << hash
+              end
+            end
+            contents
+          end
+          
           def is_folder(path)
             result = exec(%Q(
               test -d "#{path}" && echo y
             )) 
 
             result =~ /^y/ ? true : false
+          end
+          
+          def with_cached_directories(dirs)
+            @cached_dirs = list_dirs(dirs)
+            @use_cache = true
+            yield
+          ensure
+            @use_cache = false
+          end
+          
+          def list_dirs(dirs)
+            cmd = ""
+            dirs.each do |dir|
+              cmd << <<-SH
+                for file in #{dir}/*; do 
+                  test -f "$file" && echo "file|na|$file"
+                  test -d "$file" && test $(find $file -maxdepth 1 | wc -l) == 1 && echo "dir|0|$file"
+                  test -d "$file" && test $(find $file -maxdepth 1 | wc -l) > 1 && echo "dir|1|$file"
+                done
+              SH
+            end
+            response = exec cmd
+            listings = process_dir_listing_response(response)
+            hash = {}
+            listings.each do |listing|
+              (hash[File.dirname(listing[:fullname])] ||= []) << listing
+            end
+            hash
           end
           
           private

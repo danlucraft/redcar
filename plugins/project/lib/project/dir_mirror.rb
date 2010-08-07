@@ -64,6 +64,12 @@ module Redcar
         nodes.map {|node| node.path }
       end
       
+      def refresh_operation(tree)
+        @adapter.refresh_operation(tree) do
+          yield
+        end
+      end
+      
       class Node
         include Redcar::Tree::Mirror::NodeMirror
 

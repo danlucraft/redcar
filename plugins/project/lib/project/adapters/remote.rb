@@ -82,6 +82,14 @@ module Redcar
         def save(file, contents)
           target.save(file, contents)
         end
+        
+        def refresh_operation(tree)
+          visible_paths = tree.visible_nodes.map {|n| n.path}
+          visible_dirs = visible_paths.map {|path| File.dirname(path) }.uniq
+          target.with_cached_directories(visible_dirs) do
+            yield
+          end
+        end
       end
     end
   end

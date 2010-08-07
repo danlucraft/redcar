@@ -39,7 +39,11 @@ module Redcar
       
       register_dnd if @model.tree_mirror.drag_and_drop?
       
-      @model.add_listener(:refresh) { @viewer.refresh }
+      @model.add_listener(:refresh) do
+        @model.tree_mirror.refresh_operation(@model) do
+          @viewer.refresh
+        end
+      end
       
       @editor = Swt::Custom::TreeEditor.new(control)
       
@@ -206,6 +210,21 @@ module Redcar
     
     def selection
       @viewer.get_tree.get_selection.map {|i| item_to_element(i) }
+    end
+    
+    def visible_nodes
+      items = @viewer.get_tree.get_items
+      all_items = items.map {|item| [item, visible_children_of(item)] }.flatten
+      all_items.map {|item| item_to_element(item) }
+    end
+    
+    def visible_children_of(item)
+      if item.get_expanded
+        items = item.get_items
+        items.map {|item| [item, visible_children_of(item) ]}.flatten
+      else
+        []
+      end
     end
     
     class EditorListener
