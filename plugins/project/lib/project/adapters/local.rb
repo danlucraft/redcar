@@ -23,7 +23,7 @@ module Redcar
         end
         
         def empty_directory?(path)
-          Dir.glob("#{path}/*", File::FNM_DOTMATCH).length > 2
+          Dir.glob("#{path}/*", File::FNM_DOTMATCH).length <= 2
         end
         
         def fetch_contents(path, force=false)
