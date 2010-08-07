@@ -5,7 +5,6 @@ module Redcar
       include Redcar::REPL::ReplMirror
       
       def initialize
-        
         # required by ReplMirror
         @prompt = ">>"
 	
@@ -14,6 +13,10 @@ module Redcar
       end
 
       def title
+        "Ruby REPL"
+      end
+      
+      def grammar_name
         "Ruby REPL"
       end
       

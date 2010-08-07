@@ -43,30 +43,30 @@ module Redcar
     
     class OpenREPL < Command
       
-      def open_repl mirror
+      def open_repl(mirror)
         tab = win.new_tab(Redcar::EditTab)
         edit_view = tab.edit_view  
         edit_view.document.mirror = mirror
         edit_view.cursor_offset = edit_view.document.length
+        edit_view.grammar = mirror.grammar_name
         tab.focus
         
         mirror.add_listener(:change) do
           edit_view.cursor_offset = edit_view.document.length
           edit_view.scroll_to_line(edit_view.document.line_count)
         end
-        
       end
     end
 
     class RubyOpenREPL < OpenREPL
       def execute
-        open_repl RubyMirror.new
+        open_repl(RubyMirror.new)
       end
     end
     
     class ClojureOpenREPL < OpenREPL
       def execute
-        open_repl ClojureMirror.new
+        open_repl(ClojureMirror.new)
       end
     end
     

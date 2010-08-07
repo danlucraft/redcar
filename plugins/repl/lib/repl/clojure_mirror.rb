@@ -44,6 +44,10 @@ module Redcar
         "Clojure REPL"
       end
       
+      def grammar_name
+        "Clojure REPL"
+      end
+      
       # Get the complete history as a pretty formatted string.
       #
       # @return [String]
