@@ -725,7 +725,12 @@ module Redcar
         link "Cmd+B",       ToggleBlockSelectionCommand
         #link "Escape", AutoCompleter::AutoCompleteCommand
         link "Ctrl+Escape",  AutoCompleter::MenuAutoCompleterCommand
-        link "Ctrl+U",      EditView::UpcaseTextCommand
+        
+        link "Ctrl+U",       EditView::UpcaseTextCommand
+        link "Ctrl+Shift+U", EditView::DowncaseTextCommand
+        link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
+        link "Ctrl+G",       EditView::OppositeCaseTextCommand
+        link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
 
         link "Cmd+T",           Project::FindFileCommand
         link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
@@ -788,7 +793,12 @@ module Redcar
         link "Ctrl+B",       ToggleBlockSelectionCommand
         link "Ctrl+Space",       AutoCompleter::AutoCompleteCommand
         link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleterCommand
-        link "Ctrl+U",      EditView::UpcaseTextCommand
+        
+        link "Ctrl+U",       EditView::UpcaseTextCommand
+        link "Ctrl+Shift+U", EditView::DowncaseTextCommand
+        link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
+        link "Ctrl+G",       EditView::OppositeCaseTextCommand
+        link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
 
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
@@ -868,7 +878,16 @@ module Redcar
           item "Auto Complete",          AutoCompleter::AutoCompleteCommand
           item "Menu Auto Complete",     AutoCompleter::MenuAutoCompleterCommand
           separator
-          item "Upcase Text", EditView::UpcaseTextCommand
+          sub_menu "Convert Text" do
+            item "to Uppercase",     EditView::UpcaseTextCommand
+            item "to Lowercase",     EditView::DowncaseTextCommand
+            item "to Titlecase",     EditView::TitlizeTextCommand
+            item "to Opposite Case", EditView::OppositeCaseTextCommand
+            separator
+            item "to CamelCase",                           EditView::CamelCaseTextCommand
+            item "to snake_case",                          EditView::UnderscoreTextCommand
+            item "Toggle PascalCase-underscore-camelCase", EditView::CamelSnakePascalRotateTextCommand
+          end
         end
         sub_menu "Debug", :priority => 20 do
           item "Task Manager", TaskManager::OpenCommand
