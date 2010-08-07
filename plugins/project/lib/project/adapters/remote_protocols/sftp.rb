@@ -21,8 +21,6 @@ module Redcar
             raise Net::SSH::AuthenticationFailed, "DSA key-based authentication failed."
           end
           
-          end
-          
           def touch(file)
             exec "touch #{file}"
           end
