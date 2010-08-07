@@ -94,7 +94,7 @@ module Redcar
         
         puts "Preparing the GUI for the current project."
         mirror = Scm::ScmMirror.new(repo)
-        tree = Tree.new(mirror, Scm::ScmController.new)
+        tree = Tree.new(mirror, Scm::ScmController.new(repo))
         project_repositories[project]['tree'] = tree
         project.window.treebook.add_tree(tree)
         

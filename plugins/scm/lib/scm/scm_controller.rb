@@ -4,6 +4,10 @@ module Redcar
     class ScmController
       include Redcar::Tree::Controller
       
+      def initialize(repo)
+        @repo = repo
+      end
+      
       def activated(tree, node)
         if node.respond_to?(:activated)
           node.activated
@@ -12,11 +16,7 @@ module Redcar
       
       def right_click(tree, node)
         menu = Menu::Builder.build do
-          item("Refresh", :priority => :first) { tree.refresh }
-        end
-        
-        if node.respond_to?(:right_click)
-          menu.merge(node.right_click)
+          item("Refresh", :priority => :last) { tree.refresh }
         end
         
         Application::Dialog.popup_menu(menu, :pointer)

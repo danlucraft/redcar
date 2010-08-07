@@ -6,9 +6,15 @@ module Redcar
         include Redcar::Scm::ScmMirror::Change
         
         STATUS_MAP = {
-          "M" => :changed,
-          "A" => :added,
-          "D" => :deleted
+          '??' => [:new],
+          'M ' => [:indexed],
+          'A ' => [:indexed],
+          'D ' => [:deleted],
+          'AM' => [:indexed, :changed],
+          'MM' => [:indexed, :changed],
+          'MD' => [:indexed, :missing],
+          ' M' => [:changed],
+          ' D' => [:missing],
         }
         
         def initialize(file, icon=:file)
@@ -21,11 +27,7 @@ module Redcar
         end
         
         def status
-          if @file.untracked
-            :new
-          else
-            STATUS_MAP[@file.type]
-          end
+          STATUS_MAP[@file.type_raw]
         end
         
         def text

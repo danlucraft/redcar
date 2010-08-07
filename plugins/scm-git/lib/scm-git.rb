@@ -62,6 +62,7 @@ module Redcar
         end
         
         def load(path)
+          raise "Already loaded repository" if @repo
           @repo = ::Git.open(path)
         end
         
