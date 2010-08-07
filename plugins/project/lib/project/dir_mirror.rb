@@ -16,10 +16,8 @@ module Redcar
       # @param [String] a path to a directory
       def initialize(path, adapter=Adapters::Local.new)
         @adapter = adapter
-        @adapter.path = path
-        
-        @path = @adapter.real_path
         @changed = true
+        @path = path
       end
       
       def title
@@ -28,7 +26,7 @@ module Redcar
       
       # Does the directory exist?
       def exists?
-        @adapter.exist? && @adapter.directory?
+        @adapter.exists?(@path) && @adapter.directory?(@path)
       end
       
       # Have the toplevel nodes changed?

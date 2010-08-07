@@ -12,7 +12,7 @@ module Redcar
           :sftp => RemoteProtocols::SFTP
         }
           
-        attr_accessor :path, :protocol, :host, :user, :password, :private_key_files
+        attr_accessor :protocol, :host, :user, :password, :private_key_files
         
         def lazy?
           true
@@ -27,13 +27,9 @@ module Redcar
         end
         
         def target
-          @target ||= PROTOCOLS[protocol].new(host, user, password, private_key_files, path)
+          @target ||= PROTOCOLS[protocol].new(host, user, password, private_key_files)
         end
 
-        def real_path
-          path
-        end
-        
         def touch(file)
           target.touch(file)
         end
@@ -46,10 +42,6 @@ module Redcar
           target.mv(path, new_path)
         end
         
-        def exist?
-          target.exist?
-        end
-        
         def mtime(file)
           target.mtime(file)
         end
@@ -58,7 +50,7 @@ module Redcar
           target.file?(path)
         end
         
-        def directory?(path=path)
+        def directory?(path)
           target.directory?(path)
         end
         
