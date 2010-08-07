@@ -24,6 +24,7 @@ module Redcar
           @user = user
           @password = password
           @private_key_files = private_key_files
+          target
         end
         
         def target
