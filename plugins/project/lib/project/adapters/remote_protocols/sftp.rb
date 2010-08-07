@@ -20,7 +20,13 @@ module Redcar
                 @connection = nil
               end
             end
-            @connection ||= Net::SSH.start(host, user, :password => password, :keys => private_key_files)
+            begin
+              @connection ||= Net::SSH.start(host, user, :password => @password, :keys => private_key_files)
+            rescue OpenSSL::PKey::DSAError => error
+              puts "*** Warning, DSA keys not supported."
+              # Error with DSA key. Throw us back to a password input
+              raise Net::SSH::AuthenticationFailed, "DSA key-based authentication failed."
+            end
           end
           
           def touch(file)
