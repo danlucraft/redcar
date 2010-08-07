@@ -100,6 +100,7 @@ module Redcar
         
         # don't steal focus from the project module.
         project.window.treebook.focus_tree(project.tree)
+        tree.tree_mirror.top.each {|n| tree.expand(n)}
       end
       
       def self.project_closed(project)
