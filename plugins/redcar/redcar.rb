@@ -1,13 +1,10 @@
 
 module Redcar
   def self.safely(text=nil)
-    if text == nil
-      text = caller[1]
-    end
     begin
       yield
     rescue => e
-      message = "Error in: " + text
+      message = "Error in: " + (text || e.message)
       Application::Dialog.message_box(
         message,
         :type => :error, :buttons => :ok)
