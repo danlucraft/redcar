@@ -14,6 +14,13 @@ module Redcar
 
           def connection
             @connection ||= Net::SSH.start(host, user, :password => password, :keys => private_key_files)
+          rescue OpenSSL::PKey::DSAError => error
+            puts "*** Warning, DSA keys not supported."
+            # Error with DSA key. Throw us back to a password input. Think this is because jopenssl bugs
+            # out on valid dsa keys.
+            raise Net::SSH::AuthenticationFailed, "DSA key-based authentication failed."
+          end
+          
           end
           
           def touch(file)

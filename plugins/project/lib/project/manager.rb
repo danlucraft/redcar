@@ -16,7 +16,7 @@ module Redcar
           end
         else
           if pw = get_password
-            adapter = open_adapter(protocol, host, user, password, [])
+            adapter = open_adapter(protocol, host, user, pw, [])
             open_remote_project(adapter, path)
           end
         end
