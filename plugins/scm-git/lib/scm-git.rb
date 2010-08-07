@@ -1,10 +1,9 @@
 
 $:.push(
-  File.expand_path(File.join(File.dirname(__FILE__), %w{.. vendor grit lib})),
-  File.expand_path(File.join(File.dirname(__FILE__), %w{.. vendor mime-types lib}))
+  File.expand_path(File.join(File.dirname(__FILE__), %w{.. vendor ruby-git lib}))
 )
 
-require 'grit'
+require 'git'
 require 'scm-git/change'
 
 module Redcar
@@ -21,7 +20,6 @@ module Redcar
         end
         
         def self.supported?
-          # Even with grit, we do need the binary.
           # TODO: detect the git binary, do a PATH search?
           true
         end
@@ -41,7 +39,7 @@ module Redcar
         
         #######
         ## SCM hooks
-        #####
+        #####grit
         attr_accessor :repo
         
         def repository_type
@@ -59,27 +57,25 @@ module Redcar
         def init!(path)
           # Be nice and don't blow away another repository accidentally.
           return nil if File.exist?(path + '/.git')
-          # Grit doesn't support this in the normal API, so make the call directly.
-          # One day I'll fill in the todo code on Grit::Repo.init(path)
-          Grit::GitRuby::Repository.init(path + '/.git', false)
-          true
+          
+          Git.init(path)
         end
         
         def load(path)
-          @repo = Grit::Repo.new(path)
+          @repo = Git.open(path)
         end
         
         # @return [Array<Redcar::Scm::ScmMirror::Change>]
         def uncommited_changes
           # cache this for atleast this call, because it's *slow*
-          status = @repo.status
+          #status = @repo.status
           changes = []
           
           # f[0] is the path, and f[1] is the actual StatusFile
-          status.changed.each {|f| changes.push(Git::Change.new(f[1]))}
-          status.added.each {|f| changes.push(Git::Change.new(f[1]))}
-          status.deleted.each {|f| changes.push(Git::Change.new(f[1]))}
-          status.untracked.each {|f| changes.push(Git::Change.new(f[1]))}
+          #status.changed.each {|f| changes.push(Git::Change.new(f[1]))}
+          #status.added.each {|f| changes.push(Git::Change.new(f[1]))}
+          #status.deleted.each {|f| changes.push(Git::Change.new(f[1]))}
+          #status.untracked.each {|f| changes.push(Git::Change.new(f[1]))}
           
           changes.sort_by {|m| m.path}
         end
