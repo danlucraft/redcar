@@ -27,4 +27,4 @@
 	url = git://github.com/danlucraft/redcar-bundles.git
 [submodule "plugins/scm-git/vendor/ruby-git"]
 	path = plugins/scm-git/vendor/ruby-git
-	url = git://github.com/schacon/ruby-git.git
+	url = git://github.com/mscharley/ruby-git.git

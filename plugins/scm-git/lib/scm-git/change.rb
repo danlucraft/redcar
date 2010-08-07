@@ -26,6 +26,10 @@ module Redcar
             STATUS_MAP[@file.type]
           end
         end
+        
+        def text
+          @file.type_raw.sub(' ', '_') + ": " + @file.path
+        end
       end
     end
   end

@@ -34,7 +34,7 @@ module Redcar
         #####
         
         def inspect
-          %Q{#<Scm::Git::Manager "#{@repo.path}">}
+          %Q{#<Scm::Git::Manager "#{@repo.dir.path}">}
         end
         
         #######
@@ -58,24 +58,24 @@ module Redcar
           # Be nice and don't blow away another repository accidentally.
           return nil if File.exist?(path + '/.git')
           
-          Git.init(path)
+          ::Git.init(path)
         end
         
         def load(path)
-          @repo = Git.open(path)
+          @repo = ::Git.open(path)
         end
         
         # @return [Array<Redcar::Scm::ScmMirror::Change>]
         def uncommited_changes
           # cache this for atleast this call, because it's *slow*
-          #status = @repo.status
+          status = @repo.status
           changes = []
           
           # f[0] is the path, and f[1] is the actual StatusFile
-          #status.changed.each {|f| changes.push(Git::Change.new(f[1]))}
-          #status.added.each {|f| changes.push(Git::Change.new(f[1]))}
-          #status.deleted.each {|f| changes.push(Git::Change.new(f[1]))}
-          #status.untracked.each {|f| changes.push(Git::Change.new(f[1]))}
+          status.changed.each {|f| changes.push(Git::Change.new(f[1]))}
+          status.added.each {|f| changes.push(Git::Change.new(f[1]))}
+          status.deleted.each {|f| changes.push(Git::Change.new(f[1]))}
+          status.untracked.each {|f| changes.push(Git::Change.new(f[1]))}
           
           changes.sort_by {|m| m.path}
         end
