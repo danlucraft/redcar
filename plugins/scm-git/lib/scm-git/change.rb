@@ -11,8 +11,9 @@ module Redcar
           "D" => :deleted
         }
         
-        def initialize(file)
+        def initialize(file, icon=:file)
           @file = file
+          @icon = icon
         end
         
         def path
@@ -29,6 +30,10 @@ module Redcar
         
         def text
           @file.type_raw.sub(' ', '_') + ": " + @file.path
+        end
+        
+        def icon
+          @icon
         end
       end
     end

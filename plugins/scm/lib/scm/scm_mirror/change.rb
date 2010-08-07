@@ -34,6 +34,17 @@ module Redcar
         def path
           ''
         end
+        
+        def activated
+          diff = self.diff
+          if diff
+            # TODO: if we can provide a text diff of ourselves, then display it
+          end
+        end
+        
+        def diff
+          nil
+        end
       end
     end
   end

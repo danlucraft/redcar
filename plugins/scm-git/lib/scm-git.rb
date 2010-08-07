@@ -72,10 +72,10 @@ module Redcar
           changes = []
           
           # f[0] is the path, and f[1] is the actual StatusFile
-          status.changed.each {|f| changes.push(Git::Change.new(f[1]))}
-          status.added.each {|f| changes.push(Git::Change.new(f[1]))}
-          status.deleted.each {|f| changes.push(Git::Change.new(f[1]))}
-          status.untracked.each {|f| changes.push(Git::Change.new(f[1]))}
+          status.changed.each {|f| changes.push(Git::Change.new(f[1], File.file?(@repo.dir.path + '/' + f[1].path) ? :file : :directory))}
+          status.added.each {|f| changes.push(Git::Change.new(f[1], File.file?(@repo.dir.path + '/' + f[1].path) ? :file : :directory))}
+          status.deleted.each {|f| changes.push(Git::Change.new(f[1], File.file?(@repo.dir.path + '/' + f[1].path) ? :file : :directory))}
+          status.untracked.each {|f| changes.push(Git::Change.new(f[1], File.file?(@repo.dir.path + '/' + f[1].path) ? :file : :directory))}
           
           changes.sort_by {|m| m.path}
         end
