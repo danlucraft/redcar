@@ -31,7 +31,7 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Plugins" do
-          sub_menu "REPL" do
+          sub_menu "REPL", :priority => 180 do
             item "Open Ruby REPL",    REPL::RubyOpenREPL
             item "Open Clojure REPL", REPL::ClojureOpenREPL
             item "Execute", REPL::CommitREPL
