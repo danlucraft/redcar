@@ -14,15 +14,6 @@ module Redcar
         end
       end
       
-      def selected(tree, node)
-        return unless node
-        return unless node.adapter
-        return unless node.adapter.lazy?
-        
-        node.calculate_children
-        true
-      end
-      
       class DragController
         include Redcar::Tree::Controller::DragController
         
@@ -237,7 +228,7 @@ module Redcar
         result = Application::Dialog.message_box(msg, :type => :question, :buttons => :yes_no)
         if result == :yes
           nodes.each do |node|
-            FileUtils.rm_rf(node.path)
+            node.adapter.delete(node.path)
           end
           tree.refresh
         end

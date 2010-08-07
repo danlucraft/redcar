@@ -14,10 +14,6 @@ module Redcar
           
         attr_accessor :protocol, :host, :user, :password, :private_key_files
         
-        def lazy?
-          true
-        end
-
         def initialize(protocol, host, user, password, private_key_files)
           @protocol = protocol
           @host = host
@@ -69,6 +65,10 @@ module Redcar
         
         def stat(file)
           target.stat(file)
+        end
+        
+        def delete(file)
+          target.delete(file)
         end
 
         def exists?(path)

@@ -348,8 +348,12 @@ module Redcar
       end
 
       def has_children(tree_node)
-        children = tree_node.children
-        children.any? if children
+        if tree_node.respond_to?(:children?)
+          tree_node.children?
+        else
+          children = tree_node.children
+          children.any? if children
+        end
       end
 
       def get_children(tree_node)

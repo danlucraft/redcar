@@ -22,15 +22,15 @@ module Redcar
           end
           
           def touch(file)
-            exec "touch #{file}"
+            exec "touch \"#{escape(file)}\""
           end
 
           def mkdir(new_dir_path)
-            exec "mkdir -p #{new_dir_path}"
+            exec "mkdir -p \"#{escape(new_dir_path)}\""
           end
 
           def mv(path, new_path)
-            exec "mv #{path} #{new_path}"
+            exec "mv \"#{escape(path)}\" \"#{escape(new_path)}\""
           end
           
           def mtime(file)
@@ -45,18 +45,24 @@ module Redcar
             sftp_exec(:upload!, local, remote)
           end
           
+          def delete(file)
+            sftp_exec(:remove, file)
+          end
+          
           def dir_listing(path)
             return [] unless result = retrieve_dir_listing(path)
-
             contents = []
             result.each do |line|
               next unless line.include?('|')
-              type, name = line.chomp.split('|')
+              type, empty_flag, name = line.chomp.split('|')
               unless ['.', '..'].include?(name)
-                contents << { :fullname => "#{name}", :name => File.basename(name), :type => type }
+                hash = { :fullname => name, :name => File.basename(name), :type => type.to_sym }
+                if type == "dir"
+                  hash[:empty] = (empty_flag == "0")
+                end
+                contents << hash
               end
             end
-
             contents
           end
           
@@ -65,8 +71,9 @@ module Redcar
 
             exec %Q(
               for file in #{path}/*; do 
-                test -f "$file" && echo "file|$file"
-                test -d "$file" && echo "dir|$file"
+                test -f "$file" && echo "file|na|$file"
+                test -d "$file" && test $(find $file -maxdepth 1 | wc -l) == 1 && echo "dir|0|$file"
+                test -d "$file" && test $(find $file -maxdepth 1 | wc -l) > 1 && echo "dir|1|$file"
               done
             )
           end
@@ -81,7 +88,12 @@ module Redcar
           
           private
           
+          def escape(path)
+            path.gsub("\\", "\\\\").gsub("\"", "\\\"")
+          end
+          
           def exec(what)
+            puts "exec: #{what.inspect}"
             begin
               Redcar.timeout(10) do
                 connection.exec!(what)
@@ -94,6 +106,7 @@ module Redcar
           end
           
           def sftp_exec(method, *args)
+            puts "sftp_exec: #{method}, #{args.inspect}"
             begin
               Redcar.timeout(10) do
                 connection.sftp.send(method, *args)
