@@ -830,70 +830,76 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "File", :priority => :first do
-          group(:priority => :first) {
+          group(:priority => :first) do
             item "New", NewCommand
             item "New Window", NewWindowCommand
-          }
+          end
           
-          group(:priority => 10) {
+          group(:priority => 10) do
             separator
             item "Close Tab", CloseTabCommand
             item "Close Tree", CloseTreeCommand
             item "Close Window", CloseWindowCommand
-          }
+          end
           
-          group(:priority => :last) {
+          group(:priority => :last) do
             separator
             item "Quit", QuitCommand
-          }
+          end
         end
         sub_menu "Edit", :priority => 5 do
           item "Tab Info",  EditView::InfoSpeedbarCommand
-          separator
-          item "Undo", UndoCommand
-          item "Redo", RedoCommand
-          separator
-          item "Cut", CutCommand
-          item "Copy", CopyCommand
-          item "Paste", PasteCommand
-          item "Duplicate Region", DuplicateCommand
-          separator
-          item "Top",     MoveTopCommand
-          item "Home",    MoveHomeCommand
-          item "End",     MoveEndCommand
-          item "Bottom",  MoveBottomCommand
-          separator
-          item "Increase Indent", IncreaseIndentCommand
-          item "Decrease Indent", DecreaseIndentCommand
-          item "Indent",          AutoIndenter::IndentCommand
-          separator
-          item "Goto Line", GotoLineCommand
-          separator
-          sub_menu "Select" do
-            item "All", SelectAllCommand
-            item "Line", SelectLineCommand
-            item "Current Word", SelectWordCommand
-          end
-          item "Toggle Block Selection", ToggleBlockSelectionCommand
-          item "Auto Complete",          AutoCompleter::AutoCompleteCommand
-          item "Menu Auto Complete",     AutoCompleter::MenuAutoCompleterCommand
-          separator
-          sub_menu "Convert Text" do
-            item "to Uppercase",     EditView::UpcaseTextCommand
-            item "to Lowercase",     EditView::DowncaseTextCommand
-            item "to Titlecase",     EditView::TitlizeTextCommand
-            item "to Opposite Case", EditView::OppositeCaseTextCommand
+          
+          group(:priority => 10) do
             separator
-            item "to CamelCase",                           EditView::CamelCaseTextCommand
-            item "to snake_case",                          EditView::UnderscoreTextCommand
-            item "Toggle PascalCase-underscore-camelCase", EditView::CamelSnakePascalRotateTextCommand
+            item "Undo", UndoCommand
+            item "Redo", RedoCommand
+          end
+          
+          group(:priority => 15) do
+            separator
+            item "Cut", CutCommand
+            item "Copy", CopyCommand
+            item "Paste", PasteCommand
+            item "Duplicate Region", DuplicateCommand
+          end
+          
+          group(:priority => 25) do
+            separator
+            item "Top",     MoveTopCommand
+            item "Home",    MoveHomeCommand
+            item "End",     MoveEndCommand
+            item "Bottom",  MoveBottomCommand
+          end
+          
+          group(:priority => 60) do
+            separator
+            item "Increase Indent", IncreaseIndentCommand
+            item "Decrease Indent", DecreaseIndentCommand
+          end
+          
+          group(:priority => 70) do
+            separator
+            item "Goto Line", GotoLineCommand
+          end
+          
+          group(:priority => 80) do
+            separator
+            sub_menu "Select" do
+              item "All", SelectAllCommand
+              item "Line", SelectLineCommand
+              item "Current Word", SelectWordCommand
+            end
+            item "Toggle Block Selection", ToggleBlockSelectionCommand
           end
         end
         sub_menu "Debug", :priority => 20 do
-          item "Task Manager", TaskManager::OpenCommand
-          separator
-          #item "Print Scope Tree", PrintScopeTreeCommand
-          item "Print Scope at Cursor", PrintScopeCommand
+          group(:priority => 10) do
+            item "Task Manager", TaskManager::OpenCommand
+            separator
+            #item "Print Scope Tree", PrintScopeTreeCommand
+            item "Print Scope at Cursor", PrintScopeCommand
+          end
         end
         sub_menu "View", :priority => 30 do
           sub_menu "Appearance" do
@@ -923,20 +929,20 @@ module Redcar
           item "Toggle Annotations", ToggleAnnotations
         end
         sub_menu "Bundles", :priority => 45 do
-          group(:priority => :first) {
+          group(:priority => :first) do
             item "Find Snippet", Snippets::OpenSnippetExplorer
             item "Installed Bundles", Textmate::InstalledBundles
-          }
-          group(:priority => 15) {
+          end
+          group(:priority => 15) do
             separator
             Textmate.attach_menus(self)
-          }
+          end
         end
         sub_menu "Help", :priority => :last do
-          group(:priority => :first) {
+          group(:priority => :first) do
             item "About", AboutCommand
             item "New In This Version", ChangelogCommand
-          }
+          end
         end
       end
     end

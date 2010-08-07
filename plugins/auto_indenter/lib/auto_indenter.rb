@@ -19,6 +19,14 @@ module Redcar
       @cache ||= {}
     end
     
+    def self.menus
+      Menu::Builder.build do
+        sub_menu "Edit" do
+            item "Indent", :command => AutoIndenter::IndentCommand, :priority => 63
+        end
+      end
+    end
+    
     def self.best_match(hash, current_scope)
       matches = hash.map do |scope_name, value|
         if match = JavaMateView::ScopeMatcher.get_match(scope_name, current_scope)

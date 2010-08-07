@@ -6,7 +6,7 @@ module DocumentSearch
   def self.menus
     Redcar::Menu::Builder.build do
       sub_menu "Edit" do
-        group(:priority => 50) do
+        group(:priority => 20) do
           item "Regex Search",       SearchForwardCommand
           item "Repeat Last Search", RepeatPreviousSearchForwardCommand
           item "Search and Replace", SearchAndReplaceCommand
