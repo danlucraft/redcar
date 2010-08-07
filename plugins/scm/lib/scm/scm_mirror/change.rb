@@ -5,8 +5,15 @@ module Redcar
       module Change
         include Redcar::Tree::Mirror::NodeMirror
         
+        #####
+        # NodeMirror stuff
+        ###
         def text
-          path
+          status.to_s + ": " + path
+        end
+        
+        def tooltip_text
+          text
         end
         
         def icon
@@ -17,6 +24,9 @@ module Redcar
           true
         end
         
+        #####
+        # Change definition stuff
+        ###
         def status
           :new
         end

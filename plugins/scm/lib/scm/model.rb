@@ -27,7 +27,7 @@ module Redcar
       # common operations of a distributed CVS. 
       #
       # Supported values to date:
-      # :init, :push, :pull, :commit, :switch_branch
+      # :init, :push, :pull, :commit, :switch_branch, :index
       #
       # Note about non-distributed CVS's: If your CVS doesn't support local
       # commits, ie. subversion, then implement :commit and :pull, and then

@@ -73,7 +73,15 @@ module Redcar
         def uncommited_changes
           # cache this for atleast this call, because it's *slow*
           status = @repo.status
-          []
+          changes = []
+          
+          # f[0] is the path, and f[1] is the actual StatusFile
+          status.changed.each {|f| changes.push(Git::Change.new(f[1]))}
+          status.added.each {|f| changes.push(Git::Change.new(f[1]))}
+          status.deleted.each {|f| changes.push(Git::Change.new(f[1]))}
+          status.untracked.each {|f| changes.push(Git::Change.new(f[1]))}
+          
+          changes.sort_by {|m| m.path}
         end
       end
     end
