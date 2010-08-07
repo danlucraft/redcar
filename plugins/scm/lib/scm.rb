@@ -127,12 +127,17 @@ module Redcar
                     project.refresh
                     
                     Redcar::Scm::Manager.prepare(project, m)
+                    
+                    Application::Dialog.message_box("Created a new " + m.repository_type.capitalize + " repository in the root of your project.")
                   end
                 end
               end
             end
           else
             # TODO: display repository commands for this node here too
+            # Before that, need to work out a way of caching
+            # Scm#uncommited_changes as this will almost always be an
+            # expensive operation.
             group :priority => 40 do
               
             end
