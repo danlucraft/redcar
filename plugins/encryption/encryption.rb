@@ -12,7 +12,7 @@ module Encryption
   def self.menus
     Redcar::Menu::Builder.build do
       sub_menu "Plugins" do
-        sub_menu "Encryption" do
+        sub_menu "Encryption", :priority => 55 do
           item "Encrypt Document", EncryptDocumentCommand
           item "Decrypt Document", DecryptDocumentCommand
         end

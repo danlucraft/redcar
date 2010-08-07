@@ -10,7 +10,7 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Project" do
-          item "Go to declaration", Declarations::GoToTagCommand
+          item "Go to declaration", :command => Declarations::GoToTagCommand, :priority => 30
         end
       end
     end

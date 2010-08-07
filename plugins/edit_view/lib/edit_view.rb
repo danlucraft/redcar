@@ -47,6 +47,26 @@ module Redcar
     def self.storage
       @storage ||= Plugin::Storage.new('edit_view_plugin')
     end
+    
+    def self.menus
+      Menu::Builder.build do
+        sub_menu "Edit" do
+          group(:priority => 90) do
+            separator
+            sub_menu "Convert Text" do
+              item "to Uppercase",     EditView::UpcaseTextCommand
+              item "to Lowercase",     EditView::DowncaseTextCommand
+              item "to Titlecase",     EditView::TitlizeTextCommand
+              item "to Opposite Case", EditView::OppositeCaseTextCommand
+              separator
+              item "to CamelCase",                           EditView::CamelCaseTextCommand
+              item "to snake_case",                          EditView::UnderscoreTextCommand
+              item "Toggle PascalCase-underscore-camelCase", EditView::CamelSnakePascalRotateTextCommand
+            end
+          end
+        end
+      end
+    end
 
     def self.all_handlers(type)
       result = []
