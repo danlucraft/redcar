@@ -43,6 +43,8 @@ module Redcar
         @tree   = Tree.new(dir_mirror, Project::DirController.new)
         @window = nil
         file_list_resource.compute
+      else
+        raise "#{path} doesn't seem to exist"
       end
     end
     
