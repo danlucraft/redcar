@@ -109,7 +109,7 @@ module Redcar
         adapter.touch(new_file_path)
         tree.refresh
         tree.expand(node)
-        new_file_node = DirMirror::Node.create_from_path(adapter, new_file_path)
+        new_file_node = DirMirror::Node.cache[new_file_path]
         tree.edit(new_file_node)
       end
       
@@ -117,12 +117,11 @@ module Redcar
         enclosing_dir = node ? node.directory : tree.tree_mirror.path
         new_dir_name = uniq_name(enclosing_dir, "New Directory")
         new_dir_path = File.join(enclosing_dir, new_dir_name)
-                
         adapter = DirController.adapter(node, tree)
         adapter.mkdir(new_dir_path)
         tree.refresh
         tree.expand(node)
-        new_dir_node = DirMirror::Node.create_from_path(adapter, new_dir_path)
+        new_dir_node = DirMirror::Node.cache[new_dir_path]
         tree.edit(new_dir_node)
       end
       

@@ -74,6 +74,7 @@ module Redcar
         include Redcar::Tree::Mirror::NodeMirror
 
         attr_reader :path, :adapter
+        attr_accessor :type, :is_empty_directory
 
         def self.create_all_from_path(adapter, path)
           fs = adapter.fetch_contents(path)
@@ -89,9 +90,15 @@ module Redcar
         end
         
         def self.create_from_path(adapter, f)
-          cache[f[:fullname]] ||= Node.new(adapter, f[:fullname], f[:type], f[:empty])
+          if result = cache[f[:fullname]]
+            result.type               = f[:type]
+            result.is_empty_directory = f[:empty]
+            result
+          else
+            cache[f[:fullname]] = Node.new(adapter, f[:fullname], f[:type], f[:empty])
+          end
         end
-        
+
         def self.cache
           @cache ||= {}
         end
