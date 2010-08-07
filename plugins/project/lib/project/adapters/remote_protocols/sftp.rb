@@ -70,8 +70,8 @@ module Redcar
             exec %Q(
               for file in #{path}/*; do 
                 test -f "$file" && echo "file|na|$file"
-                test -d "$file" && test $(find $file -maxdepth 1 | wc -l) == 1 && echo "dir|0|$file"
-                test -d "$file" && test $(find $file -maxdepth 1 | wc -l) > 1 && echo "dir|1|$file"
+                test -d "$file" && test $(find $file -maxdepth 1 | wc -l) -eq 1 && echo "dir|0|$file"
+                test -d "$file" && test $(find $file -maxdepth 1 | wc -l) -gt 1 && echo "dir|1|$file"
               done
             )
           end
@@ -114,12 +114,12 @@ module Redcar
               cmd << <<-SH
                 for file in #{dir}/*; do 
                   test -f "$file" && echo "file|na|$file"
-                  test -d "$file" && test $(find $file -maxdepth 1 | wc -l) == 1 && echo "dir|0|$file"
-                  test -d "$file" && test $(find $file -maxdepth 1 | wc -l) > 1 && echo "dir|1|$file"
+                  test -d "$file" && test $(find "$file" -maxdepth 1 | wc -l) -eq 1 && echo "dir|0|$file"
+                  test -d "$file" && test $(find "$file" -maxdepth 1 | wc -l) -gt 1 && echo "dir|1|$file"
                 done
               SH
             end
-            response = exec cmd
+            response = exec(cmd)
             listings = process_dir_listing_response(response)
             hash = {}
             listings.each do |listing|
