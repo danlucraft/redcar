@@ -13,42 +13,35 @@ module Redcar
           end
 
           def connection
-            if @connection
-              begin
-                @connection.exec! 'pwd'
-              rescue
-                @connection = nil
-              end
-            end
             @connection ||= Net::SSH.start(host, user, :password => password, :keys => private_key_files)
           end
           
           def touch(file)
-            connection.exec "touch #{file}"
+            exec "touch #{file}"
           end
 
           def mkdir(new_dir_path)
-            connection.exec "mkdir -p #{new_dir_path}"
+            exec "mkdir -p #{new_dir_path}"
           end
 
           def mv(path, new_path)
-            connection.exec "mv #{path} #{new_path}"
+            exec "mv #{path} #{new_path}"
           end
           
           def mtime(file)
-            connection.sftp.stat!(file).mtime
+            sftp_exec(:stat!, file).mtime
           end
           
           def download(remote, local)
-            connection.sftp.download! remote, local
+            sftp_exec(:download!, remote, local)
           end
           
           def upload(local, remote)
-            connection.sftp.upload! local, remote
+            sftp_exec(:upload!, local, remote)
           end
           
           def dir_listing(path)
-            return [] unless result = retrieve_dir_listing(path) rescue []
+            return [] unless result = retrieve_dir_listing(path)
 
             contents = []
             result.each do |line|
@@ -73,16 +66,36 @@ module Redcar
             )
           end
           
-          def exec(what)
-            connection.exec!(what)
-          end
-
           def is_folder(path)
             result = exec(%Q(
               test -d "#{path}" && echo y
             )) 
 
             result =~ /^y/ ? true : false
+          end
+          
+          private
+          
+          def exec(what)
+            begin
+              Redcar.timeout(10) do
+                connection.exec!(what)
+              end
+            rescue Redcar::TimeoutError => e
+              puts "#{host} connection timed out"
+              puts caller
+              raise "#{host} connection timed out"
+            end
+          end
+          
+          def sftp_exec(method, *args)
+            begin
+              Redcar.timeout(10) do
+                connection.sftp.send(method, *args)
+              end
+            rescue Redcar::TimeoutError
+              raise "#{host} connection timed out"
+            end
           end
         end
       end
