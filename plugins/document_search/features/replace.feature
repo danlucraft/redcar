@@ -116,7 +116,7 @@ Feature: Replace in file
     And I move the cursor to 0
     And I run the command DocumentSearch::SearchAndReplaceCommand
     And I type "(\w+) chicken" into the "Search" field in the speedbar
-    And I type "$1 beef" into the "Replace" field in the speedbar
+    And I type "\1 beef" into the "Replace" field in the speedbar
     And I press "Replace" in the speedbar
     Then the contents should be "Curry beef"
 
