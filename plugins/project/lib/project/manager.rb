@@ -70,7 +70,7 @@ module Redcar
       def self.start(args)
         unless handle_startup_arguments(args)
           unless Redcar.environment == :test
-            restore_last_session
+            #restore_last_session
           end
         end
         init_current_files_hooks
