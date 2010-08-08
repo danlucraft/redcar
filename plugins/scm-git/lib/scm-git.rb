@@ -51,7 +51,7 @@ module Redcar
         end
         
         def supported_commands
-          [:init, :commit]
+          [:init, :commit, :index]
         end
         
         def init!(path)
@@ -84,13 +84,99 @@ module Redcar
                 project
               end
               
-              changes.push(Git::Change.new(f[1], type, @subprojects[full_path].uncommited_changes))
+              changes.push(Scm::Git::Change.new(f[1], self, type, @subprojects[full_path].uncommited_changes))
             else
-              changes.push(Git::Change.new(f[1], type))
+              changes.push(Scm::Git::Change.new(f[1], self, type))
             end
           end
           
           changes.sort_by {|m| m.path}
+        end
+        
+        # REQUIRED for :index. Adds a new file to the index.
+        def index_add(change)
+          # delegate to the proper submodule
+          if self != change.repo
+            change.repo.index_ignore(change)
+            return
+          end
+          
+        end
+        
+        # REQUIRED for :index. Ignores a new file so it won't show in changes.
+        def index_ignore(change)
+          # delegate to the proper submodule
+          if self != change.repo
+            change.repo.index_ignore(change)
+            return
+          end
+          
+          gitignore = File.new(repo.dir.path + '/.gitignore', 'a')
+          gitignore.syswrite(change.path + "\n")
+          gitignore.close
+        end
+        
+        # REQUIRED for :index. Reverts a file to its last commited state.
+        def index_revert(change)
+          # delegate to the proper submodule
+          if self != change.repo
+            change.repo.index_ignore(change)
+            return
+          end
+          
+        end
+        
+        # REQUIRED for :index. Reverts a file in the index back to it's 
+        # last commited state, but leaves the file intact.
+        def index_unsave(change)
+          # delegate to the proper submodule
+          if self != change.repo
+            change.repo.index_ignore(change)
+            return
+          end
+          
+        end
+        
+        # REQUIRED for :index. Saves changes made to a file in the index.
+        def index_save(change)
+          # delegate to the proper submodule
+          if self != change.repo
+            change.repo.index_ignore(change)
+            return
+          end
+          
+        end
+        
+        # REQUIRED for :index. Restores a file to the last known state of
+        # the file. This may be from the index, or the last commit.
+        def index_restore(change)
+          # delegate to the proper submodule
+          if self != change.repo
+            change.repo.index_ignore(change)
+            return
+          end
+          
+        end
+        
+        # REQUIRED for :index. Marks a file as deleted in the index.
+        def index_delete(change)
+          # delegate to the proper submodule
+          if self != change.repo
+            change.repo.index_ignore(change)
+            return
+          end
+          
+        end
+        
+        # REQUIRED for :commitable changes. Commits the currently staged 
+        # changes in the subproject.
+        def commit!(change)
+          # delegate to the proper submodule
+          if self != change.repo
+            change.repo.index_ignore(change)
+            return
+          end
+          
         end
         
         private

@@ -17,8 +17,11 @@ module Redcar
           ' D' => [:missing],
         }
         
-        def initialize(file, icon, children=[])
+        attr_reader :repo
+        
+        def initialize(file, repo, icon=:file, children=[])
           @file = file
+          @repo = repo
           @icon = icon
           @children = children
         end
@@ -28,7 +31,13 @@ module Redcar
         end
         
         def status
-          STATUS_MAP[@file.type_raw] + (icon == :directory && children.length > 0 ? [:commitable] : [])
+          # Subprojects should be commitable, but we can't update the
+          # current index while they are dirty.
+          if icon == :directory && children.length > 0
+            [:commitable]
+          else
+            STATUS_MAP[@file.type_raw]
+          end
         end
         
         def text
