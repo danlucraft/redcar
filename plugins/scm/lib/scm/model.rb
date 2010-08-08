@@ -47,8 +47,15 @@ module Redcar
           :push => "Push Changesets",
           :pull => "Pull Changesets",
           :commit => "Commit Changes",
+          :index_add => "Add File",
+          :index_ignore => "Ignore File",
+          :index_save => "Index Changes",
+          :index_unsave => "Revert Index",
+          :index_revert => "Revert Changes",
+          :index_restore => "Restore File",
+          :index_delete => "Mark as Deleted",
           :commitable => "Commit Changes to Subproject",
-          :switch_branch => "Switch Branch"
+          :switch_branch => "Switch Branch",
         }
       end
       

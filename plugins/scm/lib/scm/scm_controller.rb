@@ -4,6 +4,15 @@ module Redcar
     class ScmController
       include Redcar::Tree::Controller
       
+      COMMAND_MAP = {
+        :new => [:index_add, :index_ignore],
+        :indexed => [:index_revert, :index_unsave],
+        :deleted => [:index_restore, :index_unsave],
+        :missing => [:index_restore, :index_delete],
+        :changed => [:index_save, :index_revert],
+        :commitable => [:commit],
+      }
+      
       def initialize(repo)
         @repo = repo
       end
@@ -15,7 +24,39 @@ module Redcar
       end
       
       def right_click(tree, node)
+        repo = @repo
         menu = Menu::Builder.build do
+          if node.is_a?(Scm::ScmMirror::Change) and repo.supported_commands.include?(:index)
+            # commands may end up in the array twice, but include? doesn't care
+            commands = node.status.map {|s| COMMAND_MAP[s]}.flatten
+            
+            if (commands.include?(:commit))
+              item(repo.translations[:commitable]) { repo.commit!(node); tree.refresh }
+            end
+            if (commands.include?(:index_add))
+              item(repo.translations[:index_add]) { repo.index_add(node); tree.refresh }
+            end
+            if (commands.include?(:index_ignore))
+              item(repo.translations[:index_ignore]) { repo.index_ignore(node); tree.refresh }
+            end
+            if (commands.include?(:index_save))
+              item(repo.translations[:index_save]) { repo.index_save(node); tree.refresh }
+            end
+            if (commands.include?(:index_unsave))
+              item(repo.translations[:index_unsave]) { repo.index_unsave(node); tree.refresh }
+            end
+            if (commands.include?(:index_revert))
+              item(repo.translations[:index_revert]) { repo.index_revert(node); tree.refresh }
+            end
+            if (commands.include?(:index_restore))
+              item(repo.translations[:index_restore]) { repo.index_restore(node); tree.refresh }
+            end
+            if (commands.include?(:index_delete))
+              item(repo.translations[:index_delete]) { repo.index_delete(node); tree.refresh }
+            end
+            
+            separator
+          end
           item("Refresh", :priority => :last) { tree.refresh }
         end
         
