@@ -85,7 +85,7 @@ module Redcar
       # The purpose is so that a refresh operation can run against some cached
       # data, but then at the end of the method the mirror can discard the cache.
       # Because refreshes typically generate large numbers of queries.
-      def refresh_operation
+      def refresh_operation(tree)
         yield
       end
       
