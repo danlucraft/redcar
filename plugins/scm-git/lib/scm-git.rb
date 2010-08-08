@@ -56,7 +56,7 @@ module Redcar
         
         def init!(path)
           # Be nice and don't blow away another repository accidentally.
-          return nil if File.exist?(path + '/.git')
+          return nil if File.exist?(File.join(path, %w{.git}))
           
           ::Git.init(path)
         end
@@ -74,7 +74,7 @@ module Redcar
           
           # f[0] is the path, and f[1] is the actual StatusFile
           status.all_changes.each do |f| 
-            full_path = @repo.dir.path + '/' + f[0]
+            full_path = File.join(@repo.dir.path, f[0])
             type = File.file?(full_path) ? :file : :directory
             
             if type == :directory
@@ -111,7 +111,7 @@ module Redcar
             return
           end
           
-          gitignore = File.new(repo.dir.path + '/.gitignore', 'a')
+          gitignore = File.new(File.join(repo.dir.path, '.gitignore'), 'a')
           gitignore.syswrite(change.path + "\n")
           gitignore.close
         end

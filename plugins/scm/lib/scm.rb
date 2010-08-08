@@ -81,6 +81,7 @@ module Redcar
       end
       
       def self.prepare(project, repo)
+        start = Time.now
         # associate this repository with a project internally
         project_repositories[project] = {'repo' => repo}
         
@@ -92,7 +93,7 @@ module Redcar
           project.adapter = adapter
         end
         
-        puts "Preparing the GUI for the current project."
+        puts "Preparing the GUI for the current project's repository." if debug
         mirror = Scm::ScmMirror.new(repo)
         tree = Tree.new(mirror, Scm::ScmController.new(repo))
         project_repositories[project]['tree'] = tree
@@ -101,6 +102,8 @@ module Redcar
         # don't steal focus from the project module.
         project.window.treebook.focus_tree(project.tree)
         tree.tree_mirror.top.each {|n| tree.expand(n)}
+        
+        puts "scm start took #{Time.now - start}s (included in project start time)" if debug
       end
       
       def self.project_closed(project)
