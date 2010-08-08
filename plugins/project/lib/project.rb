@@ -38,11 +38,13 @@ module Redcar
     def initialize(path, adapter=Adapters::Local.new)
       @adapter = adapter
       @path   = File.expand_path(path)
-      dir_mirror = Project::DirMirror.new(path, adapter)
+      dir_mirror = Project::DirMirror.new(@path, adapter)
       if dir_mirror.exists?
         @tree   = Tree.new(dir_mirror, Project::DirController.new)
         @window = nil
         file_list_resource.compute
+      else
+        raise "#{path} doesn't seem to exist"
       end
     end
     

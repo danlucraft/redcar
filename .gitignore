@@ -1,4 +1,5 @@
 .redcar
+
 *~
 *.o
 *.so
@@ -8,22 +9,11 @@
 
 *.swp
 
-redcar.gemspec
-
 lib/*.jar
 
-custom/arrangements.yaml
-custom/preferences.yaml
-custom/appdata.yaml
-rdoc
 doc/
 doc/html
 doc/latex
-.yardoc
-yardoc
-vendor/gtksourceview2/Makefile
-vendor/gtksourceview2/src/Makefile
-vendor/gtksourceview2/src/rbgtksourceview2version.h
 plugins/application_swt/vendor/swt/osx64/swt.jar
 plugins/application_swt/vendor/swt/osx/swt.jar
 plugins/application_swt/vendor/swt/linux/swt.jar
@@ -33,18 +23,11 @@ plugins/application_swt/vendor/jface/
 plugins/application_swt/vendor/swtbot/
 plugins/application_swt/build/
 plugins/application_swt/dist
-plugins/edit_view_swt/vendor/j*.jar
+plugins/edit_view_swt/vendor/*.jar
 plugins/dans
 plugins/*/lib/dist/
-plugins/repl/vendor/clojure.jar
 pkg
 
-textmate/Bundles/asciidoc.tmbundle
 tmp
-plugins/recent_directories/dirs.txt
-plugins/ctags/vendor
-plugins/repl/vendor/clojure.jar
-plugins/repl/vendor/clojure-contrib.jar
-plugins/repl/vendor/org-enclojure-repl-server.jar
-tags
+plugins/repl/vendor/*.jar
 vendor/swtbot

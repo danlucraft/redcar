@@ -74,6 +74,10 @@ module Redcar
             exec(:pwd) == path
           end
           
+          def with_cached_directories
+            yield
+          end
+          
           private
           
           def exec(method, *args, &block)

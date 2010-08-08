@@ -14,10 +14,6 @@ module Redcar
           
         attr_accessor :protocol, :host, :user, :password, :private_key_files
         
-        def lazy?
-          true
-        end
-
         def initialize(protocol, host, user, password, private_key_files)
           @protocol = protocol
           @host = host
@@ -70,6 +66,10 @@ module Redcar
         def stat(file)
           target.stat(file)
         end
+        
+        def delete(file)
+          target.delete(file)
+        end
 
         def exists?(path)
           target.exists?(path)
@@ -81,6 +81,14 @@ module Redcar
         
         def save(file, contents)
           target.save(file, contents)
+        end
+        
+        def refresh_operation(tree)
+          visible_paths = tree.visible_nodes.map {|n| n.path}
+          visible_dirs = visible_paths.map {|path| File.dirname(path) }.uniq
+          target.with_cached_directories(visible_dirs) do
+            yield
+          end
         end
       end
     end
