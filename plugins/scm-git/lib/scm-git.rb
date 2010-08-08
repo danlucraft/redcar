@@ -73,12 +73,30 @@ module Redcar
           changes = []
           
           # f[0] is the path, and f[1] is the actual StatusFile
-          status.changed.each {|f| changes.push(Git::Change.new(f[1], File.file?(@repo.dir.path + '/' + f[1].path) ? :file : :directory))}
-          status.added.each {|f| changes.push(Git::Change.new(f[1], File.file?(@repo.dir.path + '/' + f[1].path) ? :file : :directory))}
-          status.deleted.each {|f| changes.push(Git::Change.new(f[1], File.file?(@repo.dir.path + '/' + f[1].path) ? :file : :directory))}
-          status.untracked.each {|f| changes.push(Git::Change.new(f[1], File.file?(@repo.dir.path + '/' + f[1].path) ? :file : :directory))}
+          status.all_changes.each do |f| 
+            full_path = @repo.dir.path + '/' + f[0]
+            type = File.file?(full_path) ? :file : :directory
+            
+            if type == :directory
+              subprojects[full_path] ||= begin
+                project = Scm::Git::Manager.new
+                project.load(full_path)
+                project
+              end
+              
+              changes.push(Git::Change.new(f[1], type, @subprojects[full_path].uncommited_changes))
+            else
+              changes.push(Git::Change.new(f[1], type))
+            end
+          end
           
           changes.sort_by {|m| m.path}
+        end
+        
+        private
+        
+        def subprojects
+          @subprojects ||= {}
         end
       end
     end

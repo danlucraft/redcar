@@ -17,9 +17,10 @@ module Redcar
           ' D' => [:missing],
         }
         
-        def initialize(file, icon=:file)
+        def initialize(file, icon, children=[])
           @file = file
           @icon = icon
+          @children = children
         end
         
         def path
@@ -36,6 +37,14 @@ module Redcar
         
         def icon
           @icon
+        end
+        
+        def leaf?
+          icon == :file
+        end
+        
+        def children
+          @children
         end
       end
     end
