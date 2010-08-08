@@ -47,6 +47,7 @@ module Redcar
           :push => "Push Changesets",
           :pull => "Pull Changesets",
           :commit => "Commit Changes",
+          :commitable => "Commit Changes to Subproject",
           :switch_branch => "Switch Branch"
         }
       end
@@ -70,6 +71,13 @@ module Redcar
       # REQUIRED for :commit. Attempts to commit the currently staged changes. 
       def commit!
         raise "Scm.commit! not implemented." if supported_commands.include?(:commit)
+        nil
+      end
+      
+      # REQUIRED for :commitable changes. Attempts to commit the currently
+      # staged changes in the subproject
+      def commit!(change, path)
+        raise "Scm.commit! not implemented." if supported_commands.include?(:index)
         nil
       end
       

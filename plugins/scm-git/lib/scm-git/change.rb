@@ -28,7 +28,7 @@ module Redcar
         end
         
         def status
-          STATUS_MAP[@file.type_raw]
+          STATUS_MAP[@file.type_raw] + (icon == :directory && children.length > 0 ? [:commitable] : [])
         end
         
         def text
