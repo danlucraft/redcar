@@ -52,8 +52,8 @@ module Redcar
         }
       end
       
-      # REQUIRED for :init. Attempts to initialise a repository in a given 
-      # path. Returns false on error.
+      # REQUIRED for :init. Initialise a repository in a given path. 
+      # Returns false on error.
       def init!(path)
         raise "Scm.init not implemented." if supported_commands.include?(:init)
         nil
@@ -68,16 +68,60 @@ module Redcar
         []
       end
       
-      # REQUIRED for :commit. Attempts to commit the currently staged changes. 
+      # REQUIRED for :commit. Commits the currently staged changes. 
       def commit!
         raise "Scm.commit! not implemented." if supported_commands.include?(:commit)
         nil
       end
       
-      # REQUIRED for :commitable changes. Attempts to commit the currently
-      # staged changes in the subproject
-      def commit!(change, path)
-        raise "Scm.commit! not implemented." if supported_commands.include?(:index)
+      # REQUIRED for :index. Adds a new file to the index.
+      def index_add(change)
+        raise "Scm.index_add not implemented" if supported_commands.include?(:index)
+        nil
+      end
+      
+      # REQUIRED for :index. Ignores a new file so it won't show in changes.
+      def index_ignore(change)
+        raise "Scm.index_ignore not implemented" if supported_commands.include?(:index)
+        nil
+      end
+      
+      # REQUIRED for :index. Reverts a file to its last commited state.
+      def index_revert(change)
+        raise "Scm.index_revert not implemented" if supported_commands.include?(:index)
+        nil
+      end
+      
+      # REQUIRED for :index. Reverts a file in the index back to it's 
+      # last commited state, but leaves the file intact.
+      def index_unsave(change)
+        raise "Scm.index_unsave not implemented" if supported_commands.include?(:index)
+        nil
+      end
+      
+      # REQUIRED for :index. Saves changes made to a file in the index.
+      def index_save(change)
+        raise "Scm.index_save not implemented" if supported_commands.include?(:index)
+        nil
+      end
+      
+      # REQUIRED for :index. Restores a file to the last known state of
+      # the file. This may be from the index, or the last commit.
+      def index_restore(change)
+        raise "Scm.index_restore not implemented" if supported_commands.include?(:index)
+        nil
+      end
+      
+      # REQUIRED for :index. Marks a file as deleted in the index.
+      def index_delete(change)
+        raise "Scm.index_delete not implemented" if supported_commands.include?(:index)
+        nil
+      end
+      
+      # REQUIRED for :commitable changes. Commits the currently staged 
+      # changes in the subproject.
+      def commit!(change)
+        raise "Scm.commit!(change) not implemented." if supported_commands.include?(:index)
         nil
       end
       
@@ -87,13 +131,15 @@ module Redcar
         nil
       end
       
-      # REQUIRED for :push. Attempts to push all current changesets.
+      # REQUIRED for :push. Pushes all current changesets to the remote
+      # repository.
       def push!
         raise "Scm.push! not implemented." if supported_commands.include?(:push)
         nil
       end
       
-      # REQUIRED for :pull. Attempts to pull remote changesets.
+      # REQUIRED for :pull. Pulls all remote changesets from the remote
+      # repository.
       def pull!
         raise "Scm.pull! not implemented." if supported_commands.include?(:pull)
         nil
@@ -105,7 +151,7 @@ module Redcar
         nil
       end
       
-      # REQUIRED for :switch_branch. Attempt to switch to the named branch.
+      # REQUIRED for :switch_branch. Switches to the named branch.
       def switch!(branch)
         raise "Scm.switch! not implemented." if supported_commands.include?(:switch_branch)
         nil
