@@ -3,13 +3,16 @@ Feature: Change Case
   Background:
     When I open a new edit tab
 
-  Scenario: Upcase text
+  Scenario: Upcase selected text
+    When I replace the contents with "Curry Chicken"
+    And I select from 5 to 0
+    And I run the command Redcar::EditView::UpcaseTextCommand
+    Then the contents should be "<s>CURRY<c> Chicken"
+
+  Scenario: Upcase selected text and preserve cursor position
     When I replace the contents with "Curry Chicken"
     And I select from 0 to 5
     And I run the command Redcar::EditView::UpcaseTextCommand
-    # Ideally this should be <s>..<c> but I'm not sure that's possible yet
-    # Check out org.eclipse.swt.custom.StyledText.setSelectionRange and
-    # setCaretOffset
     Then the contents should be "<c>CURRY<s> Chicken"
 
   Scenario: Upcase word if no selection
