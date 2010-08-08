@@ -31,3 +31,4 @@ pkg
 tmp
 plugins/repl/vendor/*.jar
 vendor/swtbot
+plugins/scm-git/vendor/ruby-git
