@@ -12,38 +12,21 @@ module Redcar
           :sftp => RemoteProtocols::SFTP
         }
           
-        class << self
-          attr_accessor :connections
-          
-          def resolve(protocol, host, user, password, path)
-            protocol_class = PROTOCOLS[protocol]
-            
-            self.connections||={}
-            self.connections["#{protocol}-#{host}-#{user}"] ||= protocol_class.new(host, user, password, path)
-          end
-        end
+        attr_accessor :protocol, :host, :user, :password, :private_key_files
         
-        attr_accessor :path, :protocol, :host, :user, :password
-        
-        def lazy?
-          true
-        end
-
-        def initialize(protocol, host, user, password)
+        def initialize(protocol, host, user, password, private_key_files)
           @protocol = protocol
           @host = host
           @user = user
           @password = password
+          @private_key_files = private_key_files
+          target
         end
         
         def target
-          self.class.resolve(protocol, host, user, password, path)
+          @target ||= PROTOCOLS[protocol].new(host, user, password, private_key_files)
         end
-        
-        def real_path
-          path
-        end
-        
+
         def touch(file)
           target.touch(file)
         end
@@ -56,10 +39,6 @@ module Redcar
           target.mv(path, new_path)
         end
         
-        def exist?
-          target.exist?
-        end
-        
         def mtime(file)
           target.mtime(file)
         end
@@ -68,7 +47,7 @@ module Redcar
           target.file?(path)
         end
         
-        def directory?(path=path)
+        def directory?(path)
           target.directory?(path)
         end
         
@@ -87,6 +66,10 @@ module Redcar
         def stat(file)
           target.stat(file)
         end
+        
+        def delete(file)
+          target.delete(file)
+        end
 
         def exists?(path)
           target.exists?(path)
@@ -98,6 +81,14 @@ module Redcar
         
         def save(file, contents)
           target.save(file, contents)
+        end
+        
+        def refresh_operation(tree)
+          visible_paths = tree.visible_nodes.map {|n| n.path}
+          visible_dirs = visible_paths.map {|path| File.dirname(path) }.uniq
+          target.with_cached_directories(visible_dirs) do
+            yield
+          end
         end
       end
     end

@@ -144,6 +144,25 @@ describe Redcar::Menu do
       end
 
     end
+    
+    it "uses the priority of whichever menu has one" do
+      menu  = build("Main"){ sub_menu("Project"){} }
+      menu2 = build("Main"){ sub_menu("Project", :priority => 10){} }
+      menu.merge(menu2)
+      menu.entries.first.priority.should == 10
+
+      menu  = build("Main"){ sub_menu("Project", :priority => 10){} }
+      menu2 = build("Main"){ sub_menu("Project"){} }
+      menu.merge(menu2)
+      menu.entries.first.priority.should == 10
+    end
+    
+    it "preserves own priority when merging" do
+      menu  = build("Main"){ sub_menu("Project", :priority => 10){} }
+      menu2 = build("Main"){ sub_menu("Project", :priority => 5){} }
+      menu.merge(menu2)
+      menu.entries.first.priority.should == 10      
+    end
   end
 end
 

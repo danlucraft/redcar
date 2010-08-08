@@ -1,13 +1,10 @@
 
 module Redcar
   def self.safely(text=nil)
-    if text == nil
-      text = caller[1]
-    end
     begin
       yield
     rescue => e
-      message = "Error in: " + text
+      message = "Error in: " + (text || e.message)
       Application::Dialog.message_box(
         message,
         :type => :error, :buttons => :ok)
@@ -23,6 +20,32 @@ module Redcar
         yield
       end
     end
+  end
+  
+  class TimeoutError < StandardError; end
+  
+  def self.timeout(limit)
+    x = Thread.current
+    result = nil
+    y = Thread.new do
+      begin
+        result = yield
+      rescue Object => e
+        x.raise e
+      end
+    end
+    s = Time.now
+    loop do
+      if not y.alive?
+        break
+      elsif Time.now - s > limit
+        y.kill
+        raise Redcar::TimeoutError, "timed out after #{Time.now - s}s"
+        break
+      end
+      sleep 0.1
+    end
+    result
   end
   
   module Top
@@ -690,6 +713,7 @@ module Redcar
         link "Cmd+Shift+N", NewNotebookCommand
         link "Cmd+Alt+N",   NewWindowCommand
         link "Cmd+O",       Project::FileOpenCommand
+        link "Cmd+U",       Project::FileReloadCommand
         link "Cmd+Shift+O", Project::DirectoryOpenCommand
         link "Cmd+Ctrl+O",  Project::OpenRemoteCommand
         link "Cmd+S",       Project::FileSaveCommand
@@ -717,13 +741,20 @@ module Redcar
         link "Cmd+Shift+I", AutoIndenter::IndentCommand
         link "Cmd+L",       GotoLineCommand
         link "Cmd+F",       DocumentSearch::SearchForwardCommand
-        link "Cmd+Shift+F",           DocumentSearch::RepeatPreviousSearchForwardCommand
+        link "Cmd+Shift+F", DocumentSearch::RepeatPreviousSearchForwardCommand
+        link "Cmd+Ctrl+F",  DocumentSearch::SearchAndReplaceCommand
         link "Cmd+A",       SelectAllCommand
         link "Ctrl+W",      SelectWordCommand
         link "Cmd+B",       ToggleBlockSelectionCommand
         #link "Escape", AutoCompleter::AutoCompleteCommand
         link "Ctrl+Escape",  AutoCompleter::MenuAutoCompleterCommand
         
+        link "Ctrl+U",       EditView::UpcaseTextCommand
+        link "Ctrl+Shift+U", EditView::DowncaseTextCommand
+        link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
+        link "Ctrl+G",       EditView::OppositeCaseTextCommand
+        link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
+
         link "Cmd+T",           Project::FindFileCommand
         link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
         link "Cmd+Alt+O",       SwitchNotebookCommand
@@ -786,6 +817,12 @@ module Redcar
         link "Ctrl+Space",       AutoCompleter::AutoCompleteCommand
         link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleterCommand
         
+        link "Ctrl+U",       EditView::UpcaseTextCommand
+        link "Ctrl+Shift+U", EditView::DowncaseTextCommand
+        link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
+        link "Ctrl+G",       EditView::OppositeCaseTextCommand
+        link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
+
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
         link "Ctrl+R",           Runnables::RunEditTabCommand
@@ -815,75 +852,79 @@ module Redcar
     
     def self.menus
       Menu::Builder.build do
-        sub_menu "File" do
-          item "New", NewCommand
-          item "New Window", NewWindowCommand
-          item "Open", Project::FileOpenCommand
-          item "Open Directory", Project::DirectoryOpenCommand
-          item "Open Remote...", Project::OpenRemoteCommand
-          lazy_sub_menu "Open Recent" do
-            Project::RecentDirectories.generate_menu(self)
+        sub_menu "File", :priority => :first do
+          group(:priority => :first) do
+            item "New", NewCommand
+            item "New Window", NewWindowCommand
           end
           
-          separator
-          item "Save", Project::FileSaveCommand
-          item "Save As", Project::FileSaveAsCommand
-          separator
-          item "Close Tab", CloseTabCommand
-          item "Close Tree", CloseTreeCommand
-          item "Close Window", CloseWindowCommand
-          item "Close Directory", Project::DirectoryCloseCommand
-          item "Reveal in Project", Project::RevealInProjectCommand
-          separator
-          item "Quit", QuitCommand
-        end
-        sub_menu "Edit" do
-          item "Tab Info",  EditView::InfoSpeedbarCommand
-          separator
-          item "Undo", UndoCommand
-          item "Redo", RedoCommand
-          separator
-          item "Cut", CutCommand
-          item "Copy", CopyCommand
-          item "Paste", PasteCommand
-          item "Duplicate Region", DuplicateCommand
-          separator
-          item "Top",     MoveTopCommand
-          item "Home",    MoveHomeCommand
-          item "End",     MoveEndCommand
-          item "Bottom",  MoveBottomCommand
-          separator
-          item "Increase Indent", IncreaseIndentCommand
-          item "Decrease Indent", DecreaseIndentCommand
-          item "Indent",          AutoIndenter::IndentCommand
-          separator
-          item "Goto Line", GotoLineCommand
-          item "Regex Search",    DocumentSearch::SearchForwardCommand
-          item "Repeat Last Search", DocumentSearch::RepeatPreviousSearchForwardCommand
-          separator
-          sub_menu "Select" do
-            item "All", SelectAllCommand
-            item "Line", SelectLineCommand
-            item "Current Word", SelectWordCommand
+          group(:priority => 10) do
+            separator
+            item "Close Tab", CloseTabCommand
+            item "Close Tree", CloseTreeCommand
+            item "Close Window", CloseWindowCommand
           end
-          item "Toggle Block Selection", ToggleBlockSelectionCommand
-          item "Auto Complete",          AutoCompleter::AutoCompleteCommand
-          item "Menu Auto Complete",     AutoCompleter::MenuAutoCompleterCommand
+          
+          group(:priority => :last) do
+            separator
+            item "Quit", QuitCommand
+          end
         end
-        sub_menu "Project" do
-          item "Find File", Project::FindFileCommand
-          item "Refresh Directory", Project::RefreshDirectoryCommand
-          separator
-          item "Runnables", Runnables::ShowRunnables
-          item "Run Tab",   Runnables::RunEditTabCommand
+        sub_menu "Edit", :priority => 5 do
+          item "Tab Info",  EditView::InfoSpeedbarCommand
+          
+          group(:priority => 10) do
+            separator
+            item "Undo", UndoCommand
+            item "Redo", RedoCommand
+          end
+          
+          group(:priority => 15) do
+            separator
+            item "Cut", CutCommand
+            item "Copy", CopyCommand
+            item "Paste", PasteCommand
+            item "Duplicate Region", DuplicateCommand
+          end
+          
+          group(:priority => 25) do
+            separator
+            item "Top",     MoveTopCommand
+            item "Home",    MoveHomeCommand
+            item "End",     MoveEndCommand
+            item "Bottom",  MoveBottomCommand
+          end
+          
+          group(:priority => 60) do
+            separator
+            item "Increase Indent", IncreaseIndentCommand
+            item "Decrease Indent", DecreaseIndentCommand
+          end
+          
+          group(:priority => 70) do
+            separator
+            item "Goto Line", GotoLineCommand
+          end
+          
+          group(:priority => 80) do
+            separator
+            sub_menu "Select" do
+              item "All", SelectAllCommand
+              item "Line", SelectLineCommand
+              item "Current Word", SelectWordCommand
+            end
+            item "Toggle Block Selection", ToggleBlockSelectionCommand
+          end
         end
-        sub_menu "Debug" do
-          item "Task Manager", TaskManager::OpenCommand
-          separator
-          #item "Print Scope Tree", PrintScopeTreeCommand
-          item "Print Scope at Cursor", PrintScopeCommand
+        sub_menu "Debug", :priority => 20 do
+          group(:priority => 10) do
+            item "Task Manager", TaskManager::OpenCommand
+            separator
+            #item "Print Scope Tree", PrintScopeTreeCommand
+            item "Print Scope at Cursor", PrintScopeCommand
+          end
         end
-        sub_menu "View" do
+        sub_menu "View", :priority => 30 do
           sub_menu "Appearance" do
             item "Font", SelectNewFont
             item "Font Size", SelectFontSize
@@ -910,20 +951,21 @@ module Redcar
           item "Toggle Line Numbers", ToggleLineNumbers
           item "Toggle Annotations", ToggleAnnotations
         end
-        sub_menu "Plugins" do
-          item "Plugin Manager", PluginManagerUi::OpenCommand
-          item "Reload Again", PluginManagerUi::ReloadLastReloadedCommand
-          item("Edit Preferences") { Project::Manager.open_project_for_path(Redcar::Plugin::Storage.storage_dir) }
-          separator
+        sub_menu "Bundles", :priority => 45 do
+          group(:priority => :first) do
+            item "Find Snippet", Snippets::OpenSnippetExplorer
+            item "Installed Bundles", Textmate::InstalledBundles
+          end
+          group(:priority => 15) do
+            separator
+            Textmate.attach_menus(self)
+          end
         end
-        sub_menu "Bundles" do
-          item "Find Snippet", Snippets::OpenSnippetExplorer
-          separator
-          Textmate.attach_menus(self)
-        end
-        sub_menu "Help" do
-          item "About", AboutCommand
-          item "New In This Version", ChangelogCommand
+        sub_menu "Help", :priority => :last do
+          group(:priority => :first) do
+            item "About", AboutCommand
+            item "New In This Version", ChangelogCommand
+          end
         end
       end
     end

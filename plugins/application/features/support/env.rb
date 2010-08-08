@@ -1,3 +1,6 @@
+class TestingError < StandardError
+end
+
 module SwtHelper
   def main_menu
     display = Redcar::ApplicationSWT.display
@@ -54,6 +57,10 @@ class FakeDialogAdapter
     @responses[method] = value
   end
   
+  def should_get_message(message)
+    @message = message
+  end
+  
   def open_file(*args)
     check_for_raise(@responses[:open_file])
   end
@@ -67,18 +74,29 @@ class FakeDialogAdapter
   end
   
   def message_box(*args)
-    check_for_raise(@responses[:message_box].to_sym)
+    if @message
+      unless @message == args.first
+        raise TestingError.new("expected the message #{@message.inspect} got #{args.first.inspect}")
+      end
+      @message = nil
+    else
+      raise TestingError.new("got a message box showing #{args.first.inspect} when I didn't expect one")
+    end
   end
   
   def check_for_raise(result)
     if result == :raise_error
-      raise "did not expect dialog"
+      raise TestingError.new("did not expect dialog")
     end
     result
   end
   
   def available_message_box_button_combos
     Redcar::ApplicationSWT::DialogAdapter.new.available_message_box_button_combos
+  end
+  
+  def available_message_box_types
+    Redcar::ApplicationSWT::DialogAdapter.new.available_message_box_types
   end
 end
 
@@ -122,6 +140,7 @@ end
 Before do
   close_everything
   Redcar::ApplicationSWT::FilterListDialogController.test_mode = true
+  Redcar.gui.register_dialog_adapter(FakeDialogAdapter.new)
 end
 
 After do

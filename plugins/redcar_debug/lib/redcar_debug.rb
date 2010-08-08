@@ -4,13 +4,15 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Debug" do
-          item "Command History", Debug::OpenHistoryCommand
-          sub_menu "Profile" do
-            item "Start Profiling", Debug::StartProfilingCommand
-            item "Stop Profiling", Debug::StopProfilingCommand
-            separator
-            item "Show Call Graph", Debug::ShowCallGraphCommand
-            item "Show Call Tree",  Debug::ShowCallTreeCommand
+          group(:priority => 30) do
+            item "Command History", Debug::OpenHistoryCommand
+            sub_menu "Profile" do
+              item "Start Profiling", Debug::StartProfilingCommand
+              item "Stop Profiling", Debug::StopProfilingCommand
+              separator
+              item "Show Call Graph", Debug::ShowCallGraphCommand
+              item "Show Call Tree",  Debug::ShowCallTreeCommand
+            end
           end
         end
       end

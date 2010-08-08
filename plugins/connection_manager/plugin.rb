@@ -1,9 +1,9 @@
 
 Plugin.define do
-  name "Connections Manager"
+  name "connection_manager"
   version "0.0.1"
   
-  object "Redcar::ConnectionsManager"
+  object "Redcar::ConnectionManager"
   file "lib", "connection_manager"
   
   dependencies "core", ">0",

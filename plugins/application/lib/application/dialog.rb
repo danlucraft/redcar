@@ -1,19 +1,32 @@
 module Redcar
   class Application
     class Dialog
+      # Is the application currently showing a modal dialog?
+      def self.in_dialog?
+        @in_dialog
+      end
+      
+      # Do not call
+      def self.in_dialog
+        @in_dialog = true
+        r = yield
+        @in_dialog = false
+        r
+      end
+      
       # Prompt the user with an open file dialog. Returns a path.
       def self.open_file(options)
-        Redcar.gui.dialog_adapter.open_file(options)
+        in_dialog { Redcar.gui.dialog_adapter.open_file(options) }
       end
       
       # Prompt the user with an open directory dialog. Returns a path.
       def self.open_directory(options)
-        Redcar.gui.dialog_adapter.open_directory(options)
+        in_dialog { Redcar.gui.dialog_adapter.open_directory(options) }
       end
 
       # Prompt the user with an save file dialog. Returns a path.
       def self.save_file(options)
-        Redcar.gui.dialog_adapter.save_file(options)
+        in_dialog { Redcar.gui.dialog_adapter.save_file(options) }
       end
       
       # Show a message to the user. Requires a message and
@@ -36,19 +49,19 @@ module Redcar
         if type = options[:type] and !available_message_box_types.include?(type)
           raise "option :type must be in #{available_message_box_button_types.inspect}"
         end
-        Redcar.gui.dialog_adapter.message_box(text, options)
+        in_dialog { Redcar.gui.dialog_adapter.message_box(text, options) }
       end
       
       # Returns the list of valid button combos that can be passed
       # as an option to message_box.
       def self.available_message_box_button_combos
-        Redcar.gui.dialog_adapter.available_message_box_button_combos
+        in_dialog { Redcar.gui.dialog_adapter.available_message_box_button_combos }
       end
       
       # Returns the list of valid message box types that can be passed
       # as an option to message_box
       def self.available_message_box_types
-        Redcar.gui.dialog_adapter.available_message_box_types
+        in_dialog { Redcar.gui.dialog_adapter.available_message_box_types }
       end
       
       # Show a dialog containing a text entry box to the user, and blocks
@@ -71,7 +84,15 @@ module Redcar
       #
       # The return value is a hash containing :button and :value.
       def self.input(title, message, initial_value="", &validator)
-        Redcar.gui.dialog_adapter.input(title, message, initial_value, &validator)
+        in_dialog { Redcar.gui.dialog_adapter.input(title, message, initial_value, &validator) }
+      end
+
+      # Show a dialog containing a password entry box to the user, and blocks
+      # until they dismiss it.
+      #
+      # The return value is a hash containing :button and :value.
+      def self.password_input(title, message)
+        in_dialog { Redcar.gui.dialog_adapter.password_input(title, message) }
       end
       
       # Shows a tool tip to the user, at the cursor location.

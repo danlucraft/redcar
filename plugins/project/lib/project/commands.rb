@@ -33,79 +33,61 @@ module Redcar
       end
     end
     
-    module OpenRemote
-      def connect_to_remote(protocol, host, user, password, path)
-        error = nil
-        error = "You must provide a host name" if host.empty? 
-  
-        unless error
-          Redcar.safely("Connecting to #{protocol} server #{host}") do
-            begin
-              project = Manager.open_remote_project(protocol, host, user, password, path)
-              project.refresh
-
-            rescue Errno::ECONNREFUSED
-              error = "Connection refused connecting to #{host}"
-
-            rescue SocketError
-              error = "Cannot connect to #{host}. Error: #{$!.message}."
-
-            rescue
-              # gives a chance to protocols to handle their specific errors
-              Project::Adapters::Remote::PROTOCOLS.values.each do |p|
-                break if error = p.handle_error($!, host, user)
-              end
-            end
+    class FileReloadCommand < EditTabCommand
+      def initialize(path = nil, adapter = Adapters::Local.new)
+        @path = path      
+      end      
+      
+      def execute
+        if tab.edit_view.document.modified?
+          result = Application::Dialog.message_box(
+            "This tab has unsaved changes. \n\nReload?",
+            :buttons => :yes_no_cancel
+          )
+          case result
+          when :yes
+            tab.edit_view.document.update_from_mirror
+          when :no
+          when :cancel
           end
+        else
+          tab.edit_view.document.update_from_mirror
         end
-        
-        Application::Dialog.message_box(error, :type => :error, :buttons => :ok) if error
       end
     end
     
     class OpenRemoteSpeedbar < Redcar::Speedbar
-      include OpenRemote
       
       class << self
         attr_accessor :connection
         
-        def storage
-          Redcar::Plugin::Storage.new('user_connections') || {}
-        end
-        
         def connections
-          connections = storage[:connections]
+          ConnectionManager::ConnectionStore.new.connections
         end
         
         def connection_names
           if connections && connections.any?
-            ['Select...', connections.map { |c| c[:name] }].flatten
-          else
-            # TODO
-            ['Add a new connection...']
+            ['Select...', connections.map { |c| c.name }].flatten
           end
-        end
-        
-        def last_selected
-          storage[:last_selected] || 'Selected...'
         end
       end
       
+      def initialize
+        connection.items = self.class.connection_names
+      end
+      
       label :connection_label, 'Connect to:'
-      combo :connection, connection_names, last_selected
+      combo :connection
       
       button :connect, "Connect", "Return" do
-        selected = self.class.connections.find { |c| c[:name] == connection.value }
+        selected = self.class.connections.find { |c| c.name == connection.value }
         
-        self.class.storage[:last_selected] = connection.value
-        self.class.storage.save
-        
-        connect_to_remote(
+        Manager.connect_to_remote(
           selected[:protocol], 
           selected[:host],
           selected[:user],
-          selected[:password],
-          selected[:path]
+          selected[:path],
+          ConnectionManager::PrivateKeyStore.paths
         )
       end
       
@@ -116,18 +98,11 @@ module Redcar
       
       button :manage, "Connections Manager", "Ctrl+M" do
         Redcar.app.focussed_window.close_speedbar
-        Redcar::ConnectionsManager::OpenCommand.new.run
-      end
-      
-      def after_draw
-        connection.items = self.class.connection_names
-        connection.value = self.class.last_selected
+        Redcar::ConnectionManager::OpenCommand.new.run
       end
     end
     
     class QuickOpenRemoteSpeedbar < Redcar::Speedbar
-      include OpenRemote
-
       class << self
         attr_accessor :host
         attr_accessor :user
@@ -144,14 +119,17 @@ module Redcar
       label :user_label, "User:"
       textbox :user
 
-      label :password_label, "Password:"
-      textbox :password
-
       label :path_label, "Path:"
       textbox :path
       
       button :connect, "Connect", "Return" do
-        connect(protocol.value, host.value, user.value, password.value, path.value)
+        Manager.connect_to_remote(
+            protocol.value, 
+            host.value, 
+            user.value, 
+            path.value,
+            ConnectionManager::PrivateKeyStore.paths
+          )
       end
     end
     

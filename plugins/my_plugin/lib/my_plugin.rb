@@ -9,7 +9,7 @@ module Redcar
       # items or sub_menus.
       Menu::Builder.build do
         sub_menu "Plugins" do
-          sub_menu "My Plugin" do
+          sub_menu "My Plugin", :priority => 139 do
             item "Hello World!", HelloWorldCommand
             item "Edit My Plugin", EditMyPluginCommand
           end

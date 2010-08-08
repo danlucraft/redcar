@@ -2,12 +2,6 @@ module Redcar
   class Project
     module Adapters
       class Local
-        attr_accessor :path
-        
-        def lazy?
-          false
-        end
-        
         def touch(new_file_path)
           FileUtils.touch(new_file_path)
         end
@@ -20,24 +14,30 @@ module Redcar
           FileUtils.mv(path, new_path)
         end
         
-        def real_path
-          File.expand_path(path)
-        end
-        
-        def exist?
-          File.exist?(@path)
-        end
-        
-        def file?(path=@path)
+        def file?(path)
           File.file?(path)
         end
         
-        def directory?(path=@path)
+        def directory?(path)
           File.directory?(path)
         end
         
+        def empty_directory?(path)
+          Dir.glob("#{path}/*", File::FNM_DOTMATCH).length <= 2
+        end
+        
         def fetch_contents(path, force=false)
-          Dir.glob("#{path}/*", File::FNM_DOTMATCH)
+          Dir.glob("#{path}/*", File::FNM_DOTMATCH).map do |fn|
+            is_dir = directory?(fn)
+            hash = {
+              :fullname => fn,
+              :type => (is_dir ? :dir : :file),
+            }
+            if is_dir
+              hash[:empty] = empty_directory?(fn)
+            end
+            hash
+          end
         end
 
         def load(file)
@@ -56,12 +56,20 @@ module Redcar
           File.exists?(file)
         end
         
+        def delete(file)
+          FileUtils.rm_rf(file)
+        end
+        
         def load_contents(file)
-          File.open(@path, 'rb') do |f|; f.read; end
+          File.open(file, 'rb') do |f|; f.read; end
         end
         
         def save_contents(file)
-          File.open(@path, "wb") {|f| f.print contents }
+          File.open(file, "wb") {|f| f.print contents }
+        end
+        
+        def refresh_operation(tree)
+          yield
         end
       end
     end

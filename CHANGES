@@ -6,7 +6,39 @@ Version 0.3.9 (TBA)
  * Remote edit files (Felipe Coury)
  * Remote directory view (Felipe Coury)
  * Connection manager (Felipe Coury)
+ * Added a truckload more Textmate themes (Dan Lucraft - thanks github.com/filmgirl !)
  * Fix crashing bug when exceptions have no message (Kieran Pilkington)
+ * Runnables tab shows name of process (Delisa Mason)
+ * Runnables can run in background without visible feedback (Delisa Mason)
+ * Runnables run with cwd of your project directory, rather than redcar's cwd (Delisa Mason)
+ * Search and Replace in tab command (William Cherry)
+ * Reload file command (Kurt Werle)
+ * Fixed dependency list in README.md (Matthew Scharley)
+ * Show Installed Bundles command (John Wells)
+ * New API for plugins to hook into the project pane context menu (Matthew Scharley)
+ * Auto-detects private keys for remote editing with SSH (Dan Lucraft)
+ * Menu items can have a priority (Matthew Scharley)
+ * --fork option to detach from console (Matthew Scharley)
+ * Runnables are grouped by file (Delisa Mason)
+ * View keyboard shortcuts help command (Delisa Mason)
+ * Clear REPL history command (David Byrne)
+ * Change case commands (to uppercase, to lowercase, to titlecase, to opposite case, toggle snake_case/CamelCase/pascalCase) (Mat Schaffer)
+ * Took 6.5 seconds off startup time (on my machine) (Dan Lucraft)
+
+Version 0.3.8.4 (24 July 2010)
+==============================
+
+ * Parse the xulrunner releases page to determine the latest. (Dan Lucraft)
+
+Version 0.3.8.3 (24 July 2010)
+==============================
+
+ * Fix installation (Dan Lucraft)
+
+Version 0.3.8.2 (22 July 2010)
+==============================
+
+ * Update xulrunner url AGAIN. (Dan Lucraft)
 
 Version 0.3.8.1 (18 July 2010)
 ==============================

@@ -4,7 +4,7 @@ class Redcar::Project
   describe Adapters::RemoteProtocols::SFTP do
     let(:conn) { double('connection').as_null_object }
     subject do
-      Adapters::RemoteProtocols::SFTP.new('server', 'user', 'secret', '/home/fcoury')
+      Adapters::RemoteProtocols::SFTP.new('server', 'user', 'secret', nil, '/home/fcoury')
     end
     
     before(:each) do
@@ -69,7 +69,7 @@ class Redcar::Project
         let(:sftp) { double('sftp connection').as_null_object }
         
         subject do
-          Adapters::RemoteProtocols::SFTP.new('server', 'user', 'secret', '/home/fcoury').tap do |protocol|
+          Adapters::RemoteProtocols::SFTP.new('server', 'user', 'secret', nil, '/home/fcoury').tap do |protocol|
             conn.stub!(:sftp).and_return(sftp)
             protocol.stub!(:connection).and_return(conn)
           end
@@ -103,7 +103,7 @@ class Redcar::Project
         let(:sftp) { double('sftp connection').as_null_object }
         
         subject do
-          Adapters::RemoteProtocols::SFTP.new('server', 'user', 'secret', '/home/fcoury').tap do |protocol|
+          Adapters::RemoteProtocols::SFTP.new('server', 'user', 'secret', nil, '/home/fcoury').tap do |protocol|
             conn.stub!(:sftp).and_return(sftp)
             protocol.stub!(:connection).and_return(conn)
           end

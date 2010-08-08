@@ -4,216 +4,24 @@
 [submodule "lib/plugin_manager"]
 	path = lib/plugin_manager
 	url = git://github.com/danlucraft/plugin_manager.git
-[submodule "textmate/Bundles/Apache.tmbundle"]
-	path = textmate/Bundles/Apache.tmbundle
-	url = git://github.com/textmate/apache.tmbundle.git
-[submodule "textmate/Bundles/Blogging.tmbundle"]
-	path = textmate/Bundles/Blogging.tmbundle
-	url = git://github.com/textmate/blogging.tmbundle.git
-[submodule "textmate/Bundles/Bundle Development.tmbundle"]
-	path = textmate/Bundles/Bundle Development.tmbundle
-	url = git://github.com/textmate/bundle-development.tmbundle.git
-[submodule "textmate/Bundles/C++ Qt.tmbundle"]
-	path = textmate/Bundles/C++ Qt.tmbundle
-	url = git://github.com/textmate/cpp-qt.tmbundle.git
-[submodule "textmate/Bundles/CSS.tmbundle"]
-	path = textmate/Bundles/CSS.tmbundle
-	url = git://github.com/textmate/css.tmbundle.git
-[submodule "textmate/Bundles/CTags.tmbundle"]
-	path = textmate/Bundles/CTags.tmbundle
-	url = git://github.com/textmate/ctags.tmbundle.git
-[submodule "textmate/Bundles/C.tmbundle"]
-	path = textmate/Bundles/C.tmbundle
-	url = git://github.com/textmate/c.tmbundle.git
-[submodule "textmate/Bundles/CVS.tmbundle"]
-	path = textmate/Bundles/CVS.tmbundle
-	url = git://github.com/textmate/cvs.tmbundle.git
-[submodule "textmate/Bundles/Diff.tmbundle"]
-	path = textmate/Bundles/Diff.tmbundle
-	url = git://github.com/textmate/diff.tmbundle.git
-[submodule "textmate/Bundles/DokuWiki.tmbundle"]
-	path = textmate/Bundles/DokuWiki.tmbundle
-	url = git://github.com/textmate/dokuwiki.tmbundle.git
-[submodule "textmate/Bundles/D.tmbundle"]
-	path = textmate/Bundles/D.tmbundle
-	url = git://github.com/textmate/d.tmbundle.git
-[submodule "textmate/Bundles/F-Script.tmbundle"]
-	path = textmate/Bundles/F-Script.tmbundle
-	url = git://github.com/textmate/f-script.tmbundle.git
-[submodule "textmate/Bundles/GetBundle.tmbundle"]
-	path = textmate/Bundles/GetBundle.tmbundle
-	url = git://github.com/textmate/getbundle.tmbundle.git
-[submodule "textmate/Bundles/Haskell.tmbundle"]
-	path = textmate/Bundles/Haskell.tmbundle
-	url = git://github.com/textmate/haskell.tmbundle.git
-[submodule "textmate/Bundles/HTML.tmbundle"]
-	path = textmate/Bundles/HTML.tmbundle
-	url = git://github.com/textmate/html.tmbundle.git
-[submodule "textmate/Bundles/Hyperlink Helper.tmbundle"]
-	path = textmate/Bundles/Hyperlink Helper.tmbundle
-	url = git://github.com/textmate/hyperlink-helper.tmbundle.git
-[submodule "textmate/Bundles/ImageBrowser.tmbundle"]
-	path = textmate/Bundles/ImageBrowser.tmbundle
-	url = git://github.com/textmate/imagebrowser.tmbundle.git
-[submodule "textmate/Bundles/Io.tmbundle"]
-	path = textmate/Bundles/Io.tmbundle
-	url = git://github.com/textmate/io.tmbundle.git
-[submodule "textmate/Bundles/JavaScript jQuery.tmbundle"]
-	path = textmate/Bundles/JavaScript jQuery.tmbundle
-	url = git://github.com/textmate/javascript-jquery.tmbundle.git
-[submodule "textmate/Bundles/JavaScript Prototype & Script_aculo_us.tmbundle"]
-	path = textmate/Bundles/JavaScript Prototype & Script_aculo_us.tmbundle
-	url = git://github.com/textmate/javascript-prototype-and-script.aculo.us.tmbundle.git
-[submodule "textmate/Bundles/JavaScript.tmbundle"]
-	path = textmate/Bundles/JavaScript.tmbundle
-	url = git://github.com/textmate/javascript.tmbundle.git
-[submodule "textmate/Bundles/Java.tmbundle"]
-	path = textmate/Bundles/Java.tmbundle
-	url = git://github.com/textmate/java.tmbundle.git
-[submodule "textmate/Bundles/JSON.tmbundle"]
-	path = textmate/Bundles/JSON.tmbundle
-	url = git://github.com/textmate/json.tmbundle.git
-[submodule "textmate/Bundles/Latex.tmbundle"]
-	path = textmate/Bundles/Latex.tmbundle
-	url = git://github.com/textmate/latex.tmbundle.git
-[submodule "textmate/Bundles/Lisp.tmbundle"]
-	path = textmate/Bundles/Lisp.tmbundle
-	url = git://github.com/textmate/lisp.tmbundle.git
-[submodule "textmate/Bundles/Makefile.tmbundle"]
-	path = textmate/Bundles/Makefile.tmbundle
-	url = git://github.com/textmate/make.tmbundle.git
-[submodule "textmate/Bundles/Markdown.tmbundle"]
-	path = textmate/Bundles/Markdown.tmbundle
-	url = git://github.com/textmate/markdown.tmbundle.git
-[submodule "textmate/Bundles/Math.tmbundle"]
-	path = textmate/Bundles/Math.tmbundle
-	url = git://github.com/textmate/math.tmbundle.git
-[submodule "textmate/Bundles/Navigation.tmbundle"]
-	path = textmate/Bundles/Navigation.tmbundle
-	url = git://github.com/textmate/navigation.tmbundle.git
-[submodule "textmate/Bundles/Outlines.tmbundle"]
-	path = textmate/Bundles/Outlines.tmbundle
-	url = git://github.com/textmate/outlines.tmbundle.git
-[submodule "textmate/Bundles/Perl HTML-Template.tmbundle"]
-	path = textmate/Bundles/Perl HTML-Template.tmbundle
-	url = git://github.com/textmate/perl-html-template.tmbundle.git
-[submodule "textmate/Bundles/Perl Template Toolkit.tmbundle"]
-	path = textmate/Bundles/Perl Template Toolkit.tmbundle
-	url = git://github.com/textmate/perl-template-toolkit.tmbundle.git
-[submodule "textmate/Bundles/Perl.tmbundle"]
-	path = textmate/Bundles/Perl.tmbundle
-	url = git://github.com/redcar-bundles/perl.tmbundle.git
-[submodule "textmate/Bundles/PHP.tmbundle"]
-	path = textmate/Bundles/PHP.tmbundle
-	url = git://github.com/textmate/php.tmbundle.git
-[submodule "textmate/Bundles/Postscript.tmbundle"]
-	path = textmate/Bundles/Postscript.tmbundle
-	url = git://github.com/textmate/postscript.tmbundle.git
-[submodule "textmate/Bundles/Processing.tmbundle"]
-	path = textmate/Bundles/Processing.tmbundle
-	url = git://github.com/textmate/processing.tmbundle.git
-[submodule "textmate/Bundles/Property List.tmbundle"]
-	path = textmate/Bundles/Property List.tmbundle
-	url = git://github.com/textmate/property-list.tmbundle.git
-[submodule "textmate/Bundles/Python Django Templates.tmbundle"]
-	path = textmate/Bundles/Python Django Templates.tmbundle
-	url = git://github.com/textmate/python-django-templates.tmbundle.git
-[submodule "textmate/Bundles/Python Django.tmbundle"]
-	path = textmate/Bundles/Python Django.tmbundle
-	url = git://github.com/textmate/python-django.tmbundle.git
-[submodule "textmate/Bundles/Python.tmbundle"]
-	path = textmate/Bundles/Python.tmbundle
-	url = git://github.com/textmate/python.tmbundle.git
-[submodule "textmate/Bundles/RegularExpressions.tmbundle"]
-	path = textmate/Bundles/RegularExpressions.tmbundle
-	url = git://github.com/textmate/regularexpressions.tmbundle.git
-[submodule "textmate/Bundles/Rez.tmbundle"]
-	path = textmate/Bundles/Rez.tmbundle
-	url = git://github.com/textmate/rez.tmbundle.git
-[submodule "textmate/Bundles/Ruby Haml.tmbundle"]
-	path = textmate/Bundles/Ruby Haml.tmbundle
-	url = git://github.com/textmate/ruby-haml.tmbundle.git
-[submodule "textmate/Bundles/Ruby on Rails.tmbundle"]
-	path = textmate/Bundles/Ruby on Rails.tmbundle
-	url = git://github.com/textmate/ruby-on-rails.tmbundle.git
-[submodule "textmate/Bundles/Ruby RSpec.tmbundle"]
-	path = textmate/Bundles/Ruby RSpec.tmbundle
-	url = git://github.com/textmate/ruby-rspec.tmbundle.git
-[submodule "textmate/Bundles/ShellScript.tmbundle"]
-	path = textmate/Bundles/ShellScript.tmbundle
-	url = git://github.com/textmate/shellscript.tmbundle.git
-[submodule "textmate/Bundles/Source.tmbundle"]
-	path = textmate/Bundles/Source.tmbundle
-	url = git://github.com/textmate/source.tmbundle.git
-[submodule "textmate/Bundles/SQL.tmbundle"]
-	path = textmate/Bundles/SQL.tmbundle
-	url = git://github.com/textmate/sql.tmbundle.git
-[submodule "textmate/Bundles/SSH-Config.tmbundle"]
-	path = textmate/Bundles/SSH-Config.tmbundle
-	url = git://github.com/textmate/ssh-config.tmbundle.git
-[submodule "textmate/Bundles/Tabular.tmbundle"]
-	path = textmate/Bundles/Tabular.tmbundle
-	url = git://github.com/textmate/tabular.tmbundle.git
-[submodule "textmate/Bundles/TerminalMate.tmbundle"]
-	path = textmate/Bundles/TerminalMate.tmbundle
-	url = git://github.com/textmate/terminalmate.tmbundle.git
-[submodule "textmate/Bundles/Text.tmbundle"]
-	path = textmate/Bundles/Text.tmbundle
-	url = git://github.com/textmate/text.tmbundle.git
-[submodule "textmate/Bundles/TextMate.tmbundle"]
-	path = textmate/Bundles/TextMate.tmbundle
-	url = git://github.com/textmate/textmate.tmbundle.git
-[submodule "textmate/Bundles/Thrift.tmbundle"]
-	path = textmate/Bundles/Thrift.tmbundle
-	url = git://github.com/textmate/thrift.tmbundle.git
-[submodule "textmate/Bundles/TODO.tmbundle"]
-	path = textmate/Bundles/TODO.tmbundle
-	url = git://github.com/textmate/todo.tmbundle.git
-[submodule "textmate/Bundles/XML.tmbundle"]
-	path = textmate/Bundles/XML.tmbundle
-	url = git://github.com/textmate/xml.tmbundle.git
-[submodule "textmate/Bundles/YAML.tmbundle"]
-	path = textmate/Bundles/YAML.tmbundle
-	url = git://github.com/textmate/yaml.tmbundle.git
-[submodule "textmate/Bundles/Clojure.tmbundle"]
-	path = textmate/Bundles/Clojure.tmbundle
-	url = git://github.com/nullstyle/clojure-tmbundle.git
-[submodule "textmate/Bundles/C Sharp.tmbundle"]
-	path = textmate/Bundles/C Sharp.tmbundle
-	url = git://github.com/stephendrew/csharp-tmbundle.git
-[submodule "textmate/Bundles/Cucumber.tmbundle"]
-	path = textmate/Bundles/Cucumber.tmbundle
-	url = git://github.com/bmabey/cucumber-tmbundle.git
-[submodule "textmate/Bundles/Ruby.tmbundle"]
-	path = textmate/Bundles/Ruby.tmbundle
-	url = git://github.com/textmate/ruby.tmbundle.git
-[submodule "textmate/Bundles/Textile.tmbundle"]
-	path = textmate/Bundles/Textile.tmbundle
-	url = git://github.com/textmate/textile.tmbundle.git
-[submodule "textmate/Bundles/Scala.tmbundle"]
-	path = textmate/Bundles/Scala.tmbundle
-	url = git://github.com/deanwampler/Scala.tmbundle.git
 [submodule "lib/openssl"]
 	path = lib/openssl
 	url = git://github.com/jruby/jruby-ossl.git
 [submodule "plugins/redcar_debug/vendor/jruby-prof"]
 	path = plugins/redcar_debug/vendor/jruby-prof
 	url = git://github.com/danlucraft/jruby-prof.git
-[submodule "textmate/Bundles/Smalltalk.tmbundle"]
-	path = textmate/Bundles/Smalltalk.tmbundle
-	url = http://github.com/indeyets/smalltalk.tmbundle.git
-[submodule "textmate/Bundles/Palm-WebOS-Development.tmbundle"]
-	path = textmate/Bundles/Palm-WebOS-Development.tmbundle
-	url = http://github.com/devilx/palm-webos-development-tmbundle.git
 [submodule "lib/json"]
 	path = lib/json
-	url = http://github.com/flori/json.git
+	url = git://github.com/flori/json.git
 [submodule "plugins/project/vendor/net-ssh"]
 	path = plugins/project/vendor/net-ssh
-	url = http://github.com/net-ssh/net-ssh.git
+	url = git://github.com/net-ssh/net-ssh.git
 [submodule "plugins/project/vendor/net-sftp"]
 	path = plugins/project/vendor/net-sftp
-	url = http://github.com/net-ssh/net-sftp.git
+	url = git://github.com/net-ssh/net-sftp.git
 [submodule "plugins/project/vendor/net-ftp-list"]
 	path = plugins/project/vendor/net-ftp-list
-	url = http://github.com/fcoury/net-ftp-list.git
+	url = git://github.com/fcoury/net-ftp-list.git
+[submodule "plugins/textmate/vendor/redcar-bundles"]
+	path = plugins/textmate/vendor/redcar-bundles
+	url = git://github.com/danlucraft/redcar-bundles.git

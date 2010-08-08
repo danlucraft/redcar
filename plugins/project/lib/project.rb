@@ -4,7 +4,9 @@ Dir.glob(File.dirname(__FILE__) + "/../vendor/*").each do |path|
   $LOAD_PATH << path + "/lib/"
 end
 
-require 'drb/drb'
+unless defined?(DRb)
+  require 'drb/drb'
+end
 
 require "project/adapters/remote_protocols/protocol"
 require "project/adapters/remote_protocols/sftp"
@@ -36,11 +38,13 @@ module Redcar
     def initialize(path, adapter=Adapters::Local.new)
       @adapter = adapter
       @path   = File.expand_path(path)
-      dir_mirror = Project::DirMirror.new(path, adapter)
+      dir_mirror = Project::DirMirror.new(@path, adapter)
       if dir_mirror.exists?
         @tree   = Tree.new(dir_mirror, Project::DirController.new)
         @window = nil
         file_list_resource.compute
+      else
+        raise "#{path} doesn't seem to exist"
       end
     end
     
@@ -140,7 +144,13 @@ module Redcar
     end
     
     def config_dir
-      File.join(path, ".redcar")
+      dir = File.join(path, ".redcar")
+      FileUtils.mkdir_p(dir)
+      dir
+    end
+    
+    def home_dir
+      @path
     end
     
     def config_files(glob)

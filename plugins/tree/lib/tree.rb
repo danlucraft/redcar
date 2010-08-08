@@ -78,6 +78,11 @@ module Redcar
     def selection
       controller.selection
     end
+    
+    # @return [Array<NodeMirror>] the visible nodes
+    def visible_nodes
+      controller.visible_nodes
+    end
   end
 end
 

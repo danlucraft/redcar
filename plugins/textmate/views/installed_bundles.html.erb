@@ -1,0 +1,21 @@
+<% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets redcar.css))) %>
+<link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
+
+<h3>Installed Bundles</h3>
+
+<a href="controller/index">Refresh</a>
+<br /><br />
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Description</th>    
+  </tr>
+  <% Redcar::Textmate.all_bundles.sort{|a, b| a.name.to_s <=> b.name.to_s}.each do |one| %>
+    <tr>
+      <td><%= one.name %></td>
+      <td><%= one.description %></td>
+    </tr>
+  <% end %>
+</table>
+
+
