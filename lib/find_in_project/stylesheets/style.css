@@ -11,6 +11,9 @@
   margin: -8px 0px 20px -8px;
   padding: 16px 8px 10px 0;
   border-bottom: 2px solid #ddd;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 #search_container table {
@@ -53,10 +56,25 @@
 
 #search_container .controls label {
   font-size: 13px;
+  margin-right: 10px;
 }
 
 #search_container .controls #search {
   float: right;
+}
+
+#recent_queries {
+  position: absolute;
+  top: 41px;
+  left: 124px;
+  right: 34px;
+}
+
+#recent_options {
+  position: absolute;
+  top: 69px;
+  left: 124px;
+  right: 34px;
 }
 
 #recent_queries,
@@ -83,6 +101,10 @@
   cursor: hand;
 }
 
+#results_container {
+  margin-top: 130px;
+}
+
 #no_results,
 #searching {
   font-weight: bold;
@@ -101,7 +123,6 @@
   border-spacing: 0px;
 }
 
-#results .expand,
 #results .filename,
 #results .line_no {
   background-color: #eee;
@@ -116,13 +137,23 @@
   background-color: #EDEDFD;
 }
 
-#results .expand_collapse {
-  width: 16px;
-  height: 16px;
+#results .file_heading {
+  background-color: #eee;
+  padding: 4px;
 }
 
-#results .filename {
-  width: 100%;
+#results .file_heading img {
+  float: left;
+  margin-right: 2px;
+}
+
+#results .file_heading a {
+  font-weight: bold;
+}
+
+#results .expand_collapse img {
+  width: 16px;
+  height: 16px;
 }
 
 #results .line_no {
@@ -130,6 +161,12 @@
   padding: 0 5px;
   min-width: 20px;
   cursor: hand;
+  font-size: 13px;
+}
+
+#results .divider .line_no {
+  text-align: center;
+  background-color: #fff;
 }
 
 #results .text {
@@ -138,8 +175,22 @@
   cursor: hand;
 }
 
-#results .text em {
+#results .text span {
   background-color: yellow;
+  font-weight: bold;
+}
+
+#results .text pre {
+  font-size: 13px;
+}
+
+#results .divider .text {
+  background-color: #fff;
+}
+
+#results .nomatch .line_no,
+#results .nomatch .text {
+  color: #aaa;
 }
 
 #results .break {
