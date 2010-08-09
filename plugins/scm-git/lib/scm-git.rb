@@ -39,7 +39,7 @@ module Redcar
         
         #######
         ## SCM hooks
-        #####grit
+        #####
         attr_accessor :repo
         
         def repository_type
@@ -158,6 +158,7 @@ module Redcar
             return
           end
           
+          @repo.add(change.path)
         end
         
         # REQUIRED for :index. Restores a file to the last known state of
@@ -169,6 +170,7 @@ module Redcar
             return
           end
           
+          @repo.checkout_file('HEAD', change.path)
         end
         
         # REQUIRED for :index. Marks a file as deleted in the index.
@@ -179,6 +181,7 @@ module Redcar
             return
           end
           
+          @repo.remove(change.path)
         end
         
         # REQUIRED for :commitable changes. Commits the currently staged 
