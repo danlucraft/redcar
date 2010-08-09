@@ -145,3 +145,10 @@
 #results .break {
   height: 20px;
 }
+
+#errors {
+  color: red;
+  border: 1px solid red;
+  margin: 0 30px;
+  padding: 15px;
+}

@@ -76,8 +76,11 @@ module Redcar
             @results = search_class.search(@query, @options, @match_case)
             render_results
           rescue => e
-            error = "Opps! Something went wrong when trying to search!<br />#{e.message}<br />#{e.backtrace}"
-            puts error
+            error = "<div id='errors'>
+              Opps! Something went wrong when trying to search!<br />
+              #{CGI.escapeHTML(e.message)}<br />
+              #{e.backtrace.collect { |b| CGI.escapeHTML(b) }.join('<br />')}
+            </div>"
             execute("$('#results_container').html(\"#{escape_javascript(error)}\");")
           end
           @thread = nil
