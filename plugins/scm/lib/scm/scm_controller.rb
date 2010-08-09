@@ -25,13 +25,20 @@ module Redcar
       
       def right_click(tree, node)
         repo = @repo
+        
+        # TODO: In lieu of actually supporting multi-select, make it obvious
+        # that we don't.
+        if tree.selection.length > 1
+          tree.select(node)
+        end
+        
         menu = Menu::Builder.build do
           if node.is_a?(Scm::ScmMirror::Change) and repo.supported_commands.include?(:index)
             # commands may end up in the array twice, but include? doesn't care
             commands = node.status.map {|s| COMMAND_MAP[s]}.flatten
             
             if (commands.include?(:commit))
-              item(repo.translations[:commitable]) { repo.commit!(node); tree.refresh }
+              item(repo.translations[:commitable]) { Scm::Manager.open_commit_tab(repo, node) }
             end
             if (commands.include?(:index_add))
               item(repo.translations[:index_add]) { repo.index_add(node); tree.refresh }
@@ -54,6 +61,10 @@ module Redcar
             if (commands.include?(:index_delete))
               item(repo.translations[:index_delete]) { repo.index_delete(node); tree.refresh }
             end
+            
+            separator
+          elsif node.is_a?(Scm::ScmMirror::ChangesNode)
+            item(repo.translations[:commit]) { Scm::Manager.open_commit_tab(repo) }
             
             separator
           end

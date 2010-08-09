@@ -81,6 +81,13 @@ module Redcar
         nil
       end
       
+      # REQUIRED for :commit. Provides a default commit message.
+      # This usually provides a summary of the changes made.
+      # Lines starting with a '#' are ignored.
+      def commit_message
+        "\n\n# Please enter your commit message above."
+      end
+      
       # REQUIRED for :index. Adds a new file to the index.
       def index_add(change)
         raise "Scm.index_add not implemented" if supported_commands.include?(:index)
@@ -130,6 +137,12 @@ module Redcar
       def commit!(change, message)
         raise "Scm.commit!(change) not implemented." if supported_commands.include?(:index)
         nil
+      end
+      
+      # REQUIRED for :commitable changes. Gets a commit message for the change
+      # to be commited.
+      def commit_message(change)
+        "\n\n# Please enter your commit message above."
       end
       
       # REQUIRED for :push. Returns an array of unpushed changesets.

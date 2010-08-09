@@ -197,6 +197,24 @@ module Redcar
           full_path = File.join(@repo.dir.path, change.path)
           subprojects[full_path].commit!(message)
         end
+      
+        # REQUIRED for :commitable changes. Gets a commit message for the change
+        # to be commited.
+        def commit_message(change)
+          # delegate to the proper submodule
+          if self != change.repo
+            change.repo.commit!(change)
+            return
+          end
+          
+          # redelegate the call to the subproject to handle
+          full_path = File.join(@repo.dir.path, change.path)
+          subprojects[full_path].commit_message
+        end
+        
+        def commit_message
+          "\n\n" + @repo.lib.command("status")
+        end
         
         private
         

@@ -1,5 +1,6 @@
 
 require 'scm/model'
+require 'scm/commit_mirror'
 require 'scm/scm_controller'
 require 'scm/scm_mirror'
 require 'scm/scm_mirror/changes_node'
@@ -11,6 +12,38 @@ module Redcar
   module Scm
     class Manager
       extend Redcar::HasSPI
+      
+      def self.sensitivities
+        [
+          Sensitivity.new(:open_commit_tab, Redcar.app, false, [:tab_focussed]) do |tab|
+            tab and 
+            tab.is_a?(EditTab) and 
+            tab.edit_view.document.mirror.is_a?(Scm::CommitMirror)
+          end
+        ]
+      end
+
+      def self.keymaps
+        osx = Keymap.build("main", :osx) do
+          link "Cmd+Shift+C", Scm::CommitMirror::SaveCommand
+        end
+        
+        linwin = Keymap.build("main", [:linux, :windows]) do
+          link "Ctrl+Shift+C", Scm::CommitMirror::SaveCommand
+        end
+        
+        [linwin, osx]
+      end
+      
+      def self.menus
+        Menu::Builder.build do
+          sub_menu "Project" do
+            sub_menu "Source Control", :priority => 180 do
+              item "Save Commit", Scm::CommitMirror::SaveCommand
+            end
+          end
+        end
+      end
       
       def self.project_repositories
         @project_repositories ||= {}
@@ -146,6 +179,24 @@ module Redcar
               
             end
           end
+        end
+      end
+      
+      def self.open_commit_tab(repo, change=nil)
+        tab = Redcar.app.focussed_window.new_tab(Redcar::EditTab)
+        edit_view = tab.edit_view  
+        mirror = Scm::CommitMirror.new(repo, change)
+        edit_view.document.mirror = mirror
+        edit_view.cursor_offset = edit_view.document.length
+        edit_view.grammar = "diff"
+        tab.focus
+        
+        mirror.add_listener(:change) do
+          tab.close
+          
+          project = Project::Manager.in_window(Redcar.app.focussed_window)
+          repo_info = project_repositories[project]
+          repo_info['tree'].refresh
         end
       end
     end
