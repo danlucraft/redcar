@@ -15,7 +15,7 @@ module Redcar
           `#{exe_path} --version`.split("\n")[0].split(' ').last
         end
 
-        def self.search(query, options, match_case)
+        def self.search(query, options, match_case, with_context)
           raise "Error: Trying to search using ack but ack has not been detected. Please edit the ack_path setting." if exe_path.empty?
 
           args = ["--nocolor --nopager --nogroup -RH"] # no color, recursive, with filename

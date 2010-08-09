@@ -15,11 +15,12 @@ module Redcar
           `#{exe_path} --version`.split("\n")[0].split(' ').last
         end
 
-        def self.search(query, options, match_case)
+        def self.search(query, options, match_case, with_context)
           raise "Error: Trying to search using grep but grep has not been detected. Please edit the grep_path setting." if exe_path.empty?
 
           args = ["-RHInE"] # recursive, with filename, no binaries, with line numbers, extended regex
           args[0] << 'i' unless match_case # case insensitive
+          args << '--before-context=2 --after-context=2' if with_context # 2 lines before and after each result
           args << options unless options.empty?
 
           path = Project::Manager.focussed_project.path
@@ -29,10 +30,24 @@ module Redcar
         def self.organise_results(raw)
           results = Hash.new
           raw.split("\n").each do |line|
-            parts = line.split(':')
-            file, line, text = parts.shift, parts.shift.to_i, parts.join(':')
-            results[file] ||= Array.new
-            results[file] << [line, text]
+            if line == '--'
+              @divide_next = true
+            else
+              if line =~ /\-\d+\-/
+                parts = line.split('-')
+                file, line, text = parts.shift, parts.shift.to_i, parts.join('-')
+              else
+                parts = line.split(':')
+                file, line, text = parts.shift, parts.shift.to_i, parts.join(':')
+              end
+              results[file] ||= Array.new
+              if @divide_next
+                results[file] << ['--', ''] if file == @last_file
+                @divide_next = false
+              end
+              results[file] << [line, text]
+              @last_file = file
+            end
           end
           results.sort
         end

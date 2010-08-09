@@ -17,10 +17,11 @@ module Redcar
         render('index')
       end
 
-      def search(query, options, match_case)
+      def search(query, options, match_case, with_context)
         @query = query
         @options = options
         @match_case = (match_case == 'true')
+        @with_context = (with_context == 'true')
         Redcar::FindInProject.storage['recent_queries'] = add_or_move_to_top(@query, Redcar::FindInProject.storage['recent_queries'])
         Redcar::FindInProject.storage['recent_options'] = add_or_move_to_top(@options, Redcar::FindInProject.storage['recent_options'])
         search_in_background
@@ -32,8 +33,10 @@ module Redcar
         doc.cursor_offset = doc.offset_at_line(line.to_i - 1)
         regex = match_case ? /(#{query})/ : /(#{query})/i
         index = doc.get_line(line.to_i - 1).index(regex)
-        length = doc.get_line(line.to_i - 1).match(regex)[1].length
-        doc.set_selection_range(doc.cursor_line_start_offset + index, doc.cursor_line_start_offset + index + length)
+        if index
+          length = doc.get_line(line.to_i - 1).match(regex)[1].length
+          doc.set_selection_range(doc.cursor_line_start_offset + index, doc.cursor_line_start_offset + index + length)
+        end
         doc.scroll_to_line(line.to_i)
         nil
       end
@@ -73,7 +76,7 @@ module Redcar
 
         @thread = Thread.new do
           begin
-            @results = search_class.search(@query, @options, @match_case)
+            @results = search_class.search(@query, @options, @match_case, @with_context)
             render_results
           rescue => e
             error = "<div id='errors'>

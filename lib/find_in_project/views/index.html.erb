@@ -47,6 +47,8 @@
           <input id="search" type="submit" value="Find In Project" />
           <input type="checkbox" id="match_case" <%="checked=checked" if @match_case %>>
           <label for="match_case">Match case</label>
+          <input type="checkbox" id="with_context" <%="checked=checked" if @with_context %>>
+          <label for="with_context">With context</label>
         </td>
         <td></td>
       </tr>
@@ -68,7 +70,8 @@
       ev.preventDefault();
       try {
         if ($("#match_case").attr('checked')) { var match_case = 'true'; } else { var match_case = 'false'; }
-        Controller.search($("#query").val(), $("#options").val(), match_case);
+        if ($("#with_context").attr('checked')) { var with_context = 'true'; } else { var with_context = 'false'; }
+        Controller.search($("#query").val(), $("#options").val(), match_case, with_context);
       } catch(e) {
         alert(e.message);
       }

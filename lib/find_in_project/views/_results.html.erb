@@ -9,7 +9,7 @@
       </tr>
       <% matches.each_with_index do |(line, text), line_index| %>
         <% text = CGI.escapeHTML(text).gsub((@match_case ? /(#{@query})/ : /(#{@query})/i)) { "<em>#{$1}</em>" } %>
-        <tr class="line_for_<%= file_index %> result <%= (line_index % 2 == 0 ? 'even' : 'odd') %>" data-href='<%= filename %>' data-line_no='<%= line %>'>
+        <tr class="line_for_<%= file_index %> <%= (line == '--' ? 'divider' : 'result') %> <%= (line_index % 2 == 0 ? 'even' : 'odd') %>" data-href='<%= filename %>' data-line_no='<%= line %>'>
           <td class='line_no'><%= line %></td>
           <td class='text'><pre><%= text %></pre></td>
         </tr>
