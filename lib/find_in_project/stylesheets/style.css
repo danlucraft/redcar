@@ -83,7 +83,8 @@
   cursor: hand;
 }
 
-#no_results {
+#no_results,
+#searching {
   font-weight: bold;
   font-size: 16px;
   text-align: center;

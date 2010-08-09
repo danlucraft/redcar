@@ -10,42 +10,21 @@ module Redcar
         "Find In Project"
       end
 
-      def doc
-        Redcar.app.focussed_window.focussed_notebook_tab.edit_view.document rescue false
-      end
-
       def index
         @plugin_root = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
         @settings = Redcar::FindInProject.storage
-
         @query = doc.selected_text if doc && doc.selection?
-        rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "views", "index.html.erb")))
-        rhtml.result(binding)
+        render('index')
       end
 
       def search(query, options, match_case)
         @query = query
         @options = options
         @match_case = (match_case == 'true')
-
         Redcar::FindInProject.storage['recent_queries'] = add_or_move_to_top(@query, Redcar::FindInProject.storage['recent_queries'])
         Redcar::FindInProject.storage['recent_options'] = add_or_move_to_top(@options, Redcar::FindInProject.storage['recent_options'])
-
-        @results = case Redcar::FindInProject.storage['search_engine']
-        when 'grep'
-          Redcar::FindInProject::Engines::Grep.search(@query, @options, @match_case)
-        when 'ack'
-          Redcar::FindInProject::Engines::Ack.search(@query, @options, @match_case)
-        end
-
-        Redcar.app.focussed_window.focussed_notebook_tab.html_view.controller = self
+        search_in_background
         nil
-      end
-
-      def add_or_move_to_top(item, array)
-        return array if item.strip.empty?
-        array.delete_at(array.index(item)) if array.include?(item)
-        array.unshift(item)
       end
 
       def open_file(file, line, query, match_case)
@@ -57,6 +36,66 @@ module Redcar
         doc.set_selection_range(doc.cursor_line_start_offset + index, doc.cursor_line_start_offset + index + length)
         doc.scroll_to_line(line.to_i)
         nil
+      end
+
+      def close
+        @thread = nil # stop ant running searches
+      end
+
+      private
+
+      def render(action)
+        rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "views", "#{action}.html.erb")))
+        rhtml.result(binding)
+      end
+
+      def doc
+        Redcar.app.focussed_window.focussed_notebook_tab.edit_view.document rescue false
+      end
+
+      def add_or_move_to_top(item, array)
+        return array if item.strip.empty?
+        array.delete_at(array.index(item)) if array.include?(item)
+        array.unshift(item)
+      end
+
+      def search_class
+        @search_class ||= case Redcar::FindInProject.storage['search_engine']
+        when 'grep'
+          Redcar::FindInProject::Engines::Grep
+        when 'ack'
+          Redcar::FindInProject::Engines::Ack
+        end
+      end
+
+      def search_in_background
+        execute("$('#results_container').html(\"<div id='searching'>Searching...</div>\");")
+
+        @thread = Thread.new do
+          begin
+            @results = search_class.search(@query, @options, @match_case)
+            render_results
+          rescue => e
+            error = "Opps! Something went wrong when trying to search!<br />#{e.message}<br />#{e.backtrace}"
+            puts error
+            execute("$('#results_container').html(\"#{escape_javascript(error)}\");")
+          end
+          @thread = nil
+        end
+      end
+
+      def render_results
+        if @results.nil? || @results.empty?
+          results = "<div id='no_results'>No results were found using the search terms you provided.</div>"
+        else
+          results = render('_results')
+        end
+        execute("$('#results_container').html(\"#{escape_javascript(results)}\");")
+      end
+
+      def escape_javascript(javascript)
+        escape_map = { '\\' => '\\\\', '</' => '<\/', "\r\n" => '\n', "\n" => '\n', "\r" => '\n', '"' => '\\"', "'" => "\\'" }
+        javascript.gsub(/(\\|<\/|\r\n|[\n\r"'])/) { escape_map[$1] }
       end
     end
   end

@@ -3,26 +3,32 @@ module Redcar
     class Engines
       class Ack
         def self.detect
-          ack_path = `which ack`.strip
-          (ack_path =~ /^\//) ? ack_path : false
+          exe_path = `which ack`.strip
+          (exe_path =~ /^\//) ? exe_path : false
         end
 
-        def self.ack_path
+        def self.exe_path
           Redcar::FindInProject.storage['ack_path']
         end
 
+        def self.version
+          `#{exe_path} --version`.split("\n")[0].split(' ').last
+        end
+
         def self.search(query, options, match_case)
-          raise "Error: Trying to search using ack but ack has not been detected. Please edit the ack_path setting." if ack_path.empty?
+          raise "Error: Trying to search using ack but ack has not been detected. Please edit the ack_path setting." if exe_path.empty?
 
           args = ["--nocolor --nopager --nogroup -RH"] # no color, recursive, with filename
-          args[0] << 'i' if match_case      # case insensitive
+          args[0] << 'i' unless match_case # case insensitive
           args << options unless options.empty?
 
           path = Project::Manager.focussed_project.path
-          output = `cd #{path}; ack #{args.join(' ')} "#{query}" .`
+          organise_results(`cd #{path}; #{exe_path} #{args.join(' ')} "#{query}" .`)
+        end
 
+        def self.organise_results(raw)
           results = Hash.new
-          output.split("\n").each do |line|
+          raw.split("\n").each do |line|
             parts = line.split(':')
             file, line, text = parts.shift, parts.shift.to_i, parts.join(':')
             results[file] ||= Array.new

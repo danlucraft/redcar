@@ -3,30 +3,32 @@ module Redcar
     class Engines
       class Grep
         def self.detect
-          grep_path = `which grep`.strip
-          (grep_path =~ /^\//) ? grep_path : false
+          exe_path = `which grep`.strip
+          (exe_path =~ /^\//) ? exe_path : false
         end
 
-        def self.grep_path
+        def self.exe_path
           Redcar::FindInProject.storage['grep_path']
         end
 
-        def self.grep_version
-          `#{grep_path} --version`.split("\n")[0].split(' ').last
+        def self.version
+          `#{exe_path} --version`.split("\n")[0].split(' ').last
         end
 
         def self.search(query, options, match_case)
-          raise "Error: Trying to search using grep but grep has not been detected. Please edit the grep_path setting." if grep_path.empty?
+          raise "Error: Trying to search using grep but grep has not been detected. Please edit the grep_path setting." if exe_path.empty?
 
           args = ["-RHInE"] # recursive, with filename, no binaries, with line numbers, extended regex
-          args[0] << 'i' unless match_case  # case insensitive
+          args[0] << 'i' unless match_case # case insensitive
           args << options unless options.empty?
 
           path = Project::Manager.focussed_project.path
-          output = `cd #{path}; grep #{args.join(' ')} "#{query}" .`
+          organise_results(`cd #{path}; #{exe_path} #{args.join(' ')} "#{query}" .`)
+        end
 
+        def self.organise_results(raw)
           results = Hash.new
-          output.split("\n").each do |line|
+          raw.split("\n").each do |line|
             parts = line.split(':')
             file, line, text = parts.shift, parts.shift.to_i, parts.join(':')
             results[file] ||= Array.new

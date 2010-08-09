@@ -54,35 +54,11 @@
   </form>
 </div>
 
-<% if @results.nil? %>
+<div id="results_container">
   <div id="no_results">
     Please provide a search term above.
   </div>
-<% elsif @results.empty? %>
-  <div id="no_results">
-    No results were found using the search terms you provided.
-  </div>
-<% else %>
-  <div id="results">
-    <table>
-      <% @results.each_with_index do |result, file_index| %>
-        <% filename, matches = result[0].gsub(/^\.\//, ''), result[1] %>
-        <tr>
-          <td class='expand'><img class="expand_collapse" src="<%= image_path %>/expanded.png" data-file_index="<%= file_index %>" /></td>
-          <td class='filename'><%= filename %></td>
-        </tr>
-        <% matches.each_with_index do |(line, text), line_index| %>
-          <% text = CGI.escapeHTML(text).gsub((@match_case ? /(#{@query})/ : /(#{@query})/i)) { "<em>#{$1}</em>" } %>
-          <tr class="line_for_<%= file_index %> result <%= (line_index % 2 == 0 ? 'even' : 'odd') %>" data-href='<%= filename %>' data-line_no='<%= line %>'>
-            <td class='line_no'><%= line %></td>
-            <td class='text'><pre><%= text %></pre></td>
-          </tr>
-        <% end %>
-        <tr><td class='break' colspan='2'></td></tr>
-      <% end %>
-    </table>
-  </div>
-<% end %>
+</div>
 
 <script type="text/javascript">
   $(document).ready(function() {
@@ -136,27 +112,6 @@
       ev.preventDefault();
       $('#options').val($(this).html());
       $('#recent_options').hide();
-    });
-
-    $('.result').click(function(ev) {
-      ev.preventDefault();
-      try {
-        Controller.openFile($(this).attr('data-href'), $(this).attr('data-line_no'), "<%= @query %>", <%= @match_case ? 'true' : 'false' %>);
-      } catch(e) {
-        alert(e.message);
-      }
-    });
-
-    $('.expand_collapse').click(function(ev) {
-      ev.preventDefault();
-      var file_index = $(this).attr('data-file_index');
-      if ($(".line_for_" + file_index).first().is(":visible")) {
-        $(this).attr('src', '<%= image_path %>/collapsed.png');
-        $(".line_for_" + file_index).hide();
-      } else {
-        $(this).attr('src', '<%= image_path %>/expanded.png');
-        $(".line_for_" + file_index).show();
-      }
     });
   });
 </script>
