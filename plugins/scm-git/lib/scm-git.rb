@@ -197,6 +197,11 @@ module Redcar
           full_path = File.join(@repo.dir.path, change.path)
           subprojects[full_path].commit!(message)
         end
+        
+        # REQUIRED for :commit.
+        def commit!
+          raise "Commit not implemented"
+        end
       
         # REQUIRED for :commitable changes. Gets a commit message for the change
         # to be commited.
@@ -213,7 +218,7 @@ module Redcar
         end
         
         def commit_message
-          "\n\n" + @repo.lib.command("status")
+          "\n\n# Please enter your commit message above."# + @repo.lib.command("status")
         end
         
         private

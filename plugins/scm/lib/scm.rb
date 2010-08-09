@@ -188,7 +188,7 @@ module Redcar
         mirror = Scm::CommitMirror.new(repo, change)
         edit_view.document.mirror = mirror
         edit_view.cursor_offset = edit_view.document.length
-        edit_view.grammar = "diff"
+        edit_view.grammar = "Diff"
         tab.focus
         
         mirror.add_listener(:change) do
