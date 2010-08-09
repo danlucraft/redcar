@@ -76,7 +76,7 @@ module Redcar
       end
       
       # REQUIRED for :commit. Commits the currently staged changes. 
-      def commit!
+      def commit!(message)
         raise "Scm.commit! not implemented." if supported_commands.include?(:commit)
         nil
       end
@@ -127,7 +127,7 @@ module Redcar
       
       # REQUIRED for :commitable changes. Commits the currently staged 
       # changes in the subproject.
-      def commit!(change)
+      def commit!(change, message)
         raise "Scm.commit!(change) not implemented." if supported_commands.include?(:index)
         nil
       end

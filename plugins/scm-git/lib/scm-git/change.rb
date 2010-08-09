@@ -30,6 +30,10 @@ module Redcar
           @file.path          
         end
         
+        def git_status
+          @file.type_raw
+        end
+        
         def status
           # Subprojects should be commitable, but we can't update the
           # current index while they are dirty.

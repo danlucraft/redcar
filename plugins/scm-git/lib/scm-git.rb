@@ -101,6 +101,7 @@ module Redcar
             return
           end
           
+          @repo.add(change.path)
         end
         
         # REQUIRED for :index. Ignores a new file so it won't show in changes.
@@ -124,6 +125,17 @@ module Redcar
             return
           end
           
+          if change.git_status[0,1] != ' '
+            # Git requires us to unindex any changes before we can revert them.
+            index_unsave(change)
+          end
+          if change.git_status[0,1] == 'A'
+            # if this was a new file, then revert it by deleting it
+            File.unlink(File.join(@repo.dir.path, change.path))
+          else
+            # otherwise checkout the old version
+            @repo.checkout_file('HEAD', change.path)
+          end
         end
         
         # REQUIRED for :index. Reverts a file in the index back to it's 
@@ -131,17 +143,18 @@ module Redcar
         def index_unsave(change)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.commit!(change)
+            change.repo.index_unsave(change)
             return
           end
           
+          @repo.reset('HEAD', :file => change.path)
         end
         
         # REQUIRED for :index. Saves changes made to a file in the index.
         def index_save(change)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.index_unsave(change)
+            change.repo.index_save(change)
             return
           end
           
@@ -152,7 +165,7 @@ module Redcar
         def index_restore(change)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.index_save(change)
+            change.repo.index_restore(change)
             return
           end
           
@@ -162,7 +175,7 @@ module Redcar
         def index_delete(change)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.index_restore(change)
+            change.repo.index_delete(change)
             return
           end
           
@@ -170,13 +183,16 @@ module Redcar
         
         # REQUIRED for :commitable changes. Commits the currently staged 
         # changes in the subproject.
-        def commit!(change)
+        def commit!(change, message)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.index_delete(change)
+            change.repo.commit!(change)
             return
           end
           
+          # redelegate the commit to the subproject to handle
+          full_path = File.join(@repo.dir.path, change.path)
+          subprojects[full_path].commit!(message)
         end
         
         private
