@@ -33,16 +33,11 @@ module Redcar
             if line == '--'
               @divide_next = true
             else
-              if line =~ /\-\d+\-/
-                parts = line.split('-')
-                file, line, text = parts.shift, parts.shift.to_i, parts.join('-')
-              else
-                parts = line.split(':')
-                file, line, text = parts.shift, parts.shift.to_i, parts.join(':')
-              end
+              line =~ /^(.*)[\:\-](\d+)[\:\-](.*)$/
+              file, line, text = $1, $2.to_i, $3
               results[file] ||= Array.new
               if @divide_next
-                results[file] << ['--', ''] if file == @last_file
+                results[file] << [:divide, ''] if file == @last_file
                 @divide_next = false
               end
               results[file] << [line, text]
