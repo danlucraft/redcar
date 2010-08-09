@@ -38,8 +38,11 @@ module Redcar
       def self.menus
         Menu::Builder.build do
           sub_menu "Project" do
-            sub_menu "Source Control", :priority => 180 do
-              item "Save Commit", Scm::CommitMirror::SaveCommand
+            group(:priority => 10) do
+              separator
+              sub_menu "Source Control" do
+                item "Save Commit", Scm::CommitMirror::SaveCommand
+              end
             end
           end
         end
