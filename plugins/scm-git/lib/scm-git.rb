@@ -97,7 +97,7 @@ module Redcar
         def index_add(change)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.index_ignore(change)
+            change.repo.index_add(change)
             return
           end
           
@@ -120,7 +120,7 @@ module Redcar
         def index_revert(change)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.index_ignore(change)
+            change.repo.index_revert(change)
             return
           end
           
@@ -131,7 +131,7 @@ module Redcar
         def index_unsave(change)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.index_ignore(change)
+            change.repo.commit!(change)
             return
           end
           
@@ -141,7 +141,7 @@ module Redcar
         def index_save(change)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.index_ignore(change)
+            change.repo.index_unsave(change)
             return
           end
           
@@ -152,7 +152,7 @@ module Redcar
         def index_restore(change)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.index_ignore(change)
+            change.repo.index_save(change)
             return
           end
           
@@ -162,7 +162,7 @@ module Redcar
         def index_delete(change)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.index_ignore(change)
+            change.repo.index_restore(change)
             return
           end
           
@@ -173,7 +173,7 @@ module Redcar
         def commit!(change)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.index_ignore(change)
+            change.repo.index_delete(change)
             return
           end
           
