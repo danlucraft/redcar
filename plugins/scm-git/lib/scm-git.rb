@@ -42,6 +42,7 @@ module Redcar
             c = Redcar::Scm::Cache.new
             c.add('branches', 15) { @repo.lib.branches_all }
             c.add('status', 5) { @repo.status }
+            c.add('full status', 5) { @repo.lib.full_status }
             c
           end
         end
@@ -241,8 +242,7 @@ module Redcar
             full_path = File.join(@repo.dir.path, change.path)
             subprojects[full_path].commit_message
           else
-            cache.refresh
-            "\n\n" + @repo.lib.full_status
+            "\n\n" + cache['full status']
           end
         end
         
