@@ -72,7 +72,9 @@ module Redcar
           elsif entry.is_a?(Redcar::Menu::Item::Separator)
             item = Swt::Widgets::MenuItem.new(menu, Swt::SWT::SEPARATOR)
           elsif entry.is_a?(Redcar::Menu::Item)
-            item = Swt::Widgets::MenuItem.new(menu, Swt::SWT::PUSH)
+            #p entry
+            item = Swt::Widgets::MenuItem.new(menu, entry.item_type || Swt::SWT::PUSH)
+            item.setSelection(entry.active)
             if entry.command.is_a?(Proc)
               connect_proc_to_item(item, entry)
             else
