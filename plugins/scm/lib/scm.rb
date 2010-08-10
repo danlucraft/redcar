@@ -1,5 +1,6 @@
 
 require 'scm/model'
+require 'scm/cache'
 require 'scm/commit_mirror'
 require 'scm/scm_controller'
 require 'scm/scm_mirror'

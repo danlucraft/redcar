@@ -37,6 +37,15 @@ module Redcar
           %Q{#<Scm::Git::Manager "#{@repo.dir.path}">}
         end
         
+        def cache
+          @cache ||= begin
+            c = Redcar::Scm::Cache.new
+            c.add('branches', 15) { @repo.lib.branches_all }
+            c.add('status', 5) { @repo.status }
+            c
+          end
+        end
+        
         #######
         ## SCM hooks
         #####
@@ -67,13 +76,11 @@ module Redcar
         end
         
         # @return [Array<Redcar::Scm::ScmMirror::Change>]
-        def uncommited_changes
-          # cache this for atleast this call, because it's *slow*
-          status = @repo.status
+        def uncommited_changes          
           changes = []
           
           # f[0] is the path, and f[1] is the actual StatusFile
-          status.all_changes.each do |f| 
+          cache['status'].all_changes.each do |f| 
             full_path = File.join(@repo.dir.path, f[0])
             type = (((not File.exist?(full_path)) or File.file?(full_path)) ? :file : :directory)
             
@@ -106,6 +113,7 @@ module Redcar
           end
           
           @repo.add(change.path)
+          cache.refresh
         end
         
         # REQUIRED for :index. Ignores a new file so it won't show in changes.
@@ -119,6 +127,7 @@ module Redcar
           gitignore = File.new(File.join(repo.dir.path, '.gitignore'), 'a')
           gitignore.syswrite(change.path + "\n")
           gitignore.close
+          cache.refresh
         end
         
         # REQUIRED for :index. Reverts a file to its last commited state.
@@ -140,6 +149,7 @@ module Redcar
             # otherwise checkout the old version
             @repo.checkout_file('HEAD', change.path)
           end
+          cache.refresh
         end
         
         # REQUIRED for :index. Reverts a file in the index back to it's 
@@ -152,6 +162,7 @@ module Redcar
           end
           
           @repo.reset('HEAD', :file => change.path)
+          cache.refresh
         end
         
         # REQUIRED for :index. Saves changes made to a file in the index.
@@ -163,6 +174,7 @@ module Redcar
           end
           
           @repo.add(change.path)
+          cache.refresh
         end
         
         # REQUIRED for :index. Restores a file to the last known state of
@@ -175,6 +187,7 @@ module Redcar
           end
           
           @repo.checkout_file('HEAD', change.path)
+          cache.refresh
         end
         
         # REQUIRED for :index. Marks a file as deleted in the index.
@@ -186,6 +199,7 @@ module Redcar
           end
           
           @repo.remove(change.path)
+          cache.refresh
         end
         
         # REQUIRED for :commit. Commits the currently indexed changes 
@@ -206,6 +220,7 @@ module Redcar
             subprojects[full_path].commit!(message)
           else
             @repo.commit(message)
+            cache.refresh
           end
         end
         
@@ -226,6 +241,7 @@ module Redcar
             full_path = File.join(@repo.dir.path, change.path)
             subprojects[full_path].commit_message
           else
+            cache.refresh
             "\n\n" + @repo.lib.full_status
           end
         end
@@ -234,12 +250,12 @@ module Redcar
         #
         # @return [Array<String>]
         def branches
-          @repo.branches.local.map {|b| b.to_s}
+          cache['branches'].map {|b| b[0]}.select {|b| not b.include? "/" }
         end
         
         # REQUIRED for :switch_branch. Returns the name of the current branch.
         def current_branch
-          @repo.lib.branch_current
+          cache['branches'].select { |b| b[1] }.first[0]
         end
         
         # REQUIRED for :switch_branch. Switches to the named branch.
