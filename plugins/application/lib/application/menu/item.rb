@@ -12,7 +12,7 @@ module Redcar
         end
       end
       
-      attr_reader :text, :command, :priority
+      attr_reader :text, :command, :priority, :value, :item_type, :active
   
       # Create a new Item, with the given text to display in the menu, and
       # either:
@@ -24,6 +24,8 @@ module Redcar
         if options.respond_to?('[]')
           @command = options[:command] || block
           @priority = options[:priority]
+          @item_type = options[:item_type]
+          @active = options[:active] ? true : false
         # This branch is for compatibility with old code. Please use :command 
         # option in new code
         # FIXME: Should this be removed at some point?

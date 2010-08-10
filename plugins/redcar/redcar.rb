@@ -947,9 +947,9 @@ module Redcar
              end
           end
           separator
-          item "Toggle Invisibles", ToggleInvisibles
-          item "Toggle Line Numbers", ToggleLineNumbers
-          item "Toggle Annotations", ToggleAnnotations
+          item "Toggle Invisibles", :command => ToggleInvisibles, :item_type => Swt::SWT::CHECK, :active => EditView.show_invisibles?
+          item "Toggle Line Numbers", :command => ToggleLineNumbers, :item_type => Swt::SWT::CHECK, :active => EditView.show_line_numbers?
+          item "Toggle Annotations", :command => ToggleAnnotations, :item_type => Swt::SWT::CHECK, :active => EditView.show_annotations?
         end
         sub_menu "Bundles", :priority => 45 do
           group(:priority => :first) do
