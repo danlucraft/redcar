@@ -197,7 +197,16 @@ module Redcar
                     current = repo.current_branch
                     repo.branches.sort.each do |branch|
                       action = lambda {
-                        puts "Attempting to change branches to #{branch}!"
+                        begin
+                          repo.switch!(branch)
+                          
+                          # refresh tree views
+                          project.tree.refresh
+                          repo_info['tree'].refresh
+                        rescue
+                          Redcar::Application::Dialog.message_box($!.message)
+                          puts $!.backtrace
+                        end
                       }
                       if branch == current
                         item branch, :item_type => Swt::SWT::RADIO, :active => true, &action

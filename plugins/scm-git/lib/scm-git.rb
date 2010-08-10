@@ -244,8 +244,7 @@ module Redcar
         
         # REQUIRED for :switch_branch. Switches to the named branch.
         def switch!(branch)
-          raise "Scm.switch! not implemented." if supported_commands.include?(:switch_branch)
-          nil
+          @repo.checkout(branch)
         end
         
         private
