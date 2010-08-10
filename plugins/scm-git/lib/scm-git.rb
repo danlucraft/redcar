@@ -51,7 +51,7 @@ module Redcar
         end
         
         def supported_commands
-          [:init, :commit, :index]
+          [:init, :commit, :index, :switch_branch]
         end
         
         def init!(path)
@@ -228,6 +228,24 @@ module Redcar
           else
             "\n\n" + @repo.lib.full_status
           end
+        end
+        
+        # REQUIRED for :switch_branch. Returns an array of branch names.
+        #
+        # @return [Array<String>]
+        def branches
+          @repo.branches.local.map {|b| b.to_s}
+        end
+        
+        # REQUIRED for :switch_branch. Returns the name of the current branch.
+        def current_branch
+          @repo.lib.branch_current
+        end
+        
+        # REQUIRED for :switch_branch. Switches to the named branch.
+        def switch!(branch)
+          raise "Scm.switch! not implemented." if supported_commands.include?(:switch_branch)
+          nil
         end
         
         private

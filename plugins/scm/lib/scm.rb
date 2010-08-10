@@ -190,7 +190,23 @@ module Redcar
               # Scm#uncommited_changes as this will almost always be an
               # expensive operation.
               group :priority => 40 do
-                
+                repo = repo_info['repo']
+                if repo.supported_commands.include?(:switch_branch)
+                  separator
+                  lazy_sub_menu repo.translations[:switch_branch] do
+                    current = repo.current_branch
+                    repo.branches.sort.each do |branch|
+                      action = lambda {
+                        puts "Attempting to change branches to #{branch}!"
+                      }
+                      if branch == current
+                        item branch, :item_type => Swt::SWT::RADIO, :active => true, &action
+                      else
+                        item branch, &action
+                      end
+                    end
+                  end
+                end
               end
             end
           end

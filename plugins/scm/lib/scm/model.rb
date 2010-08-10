@@ -159,8 +159,16 @@ module Redcar
       end
       
       # REQUIRED for :switch_branch. Returns an array of branch names.
+      #
+      # @return [Array<String>]
       def branches
         raise "Scm.branches not implemented." if supported_commands.include?(:switch_branch)
+        nil
+      end
+      
+      # REQUIRED for :switch_branch. Returns the name of the current branch.
+      def current_branch
+        raise "Scm.current_branch not implemented." if supported_commands.include?(:switch_branch)
         nil
       end
       
