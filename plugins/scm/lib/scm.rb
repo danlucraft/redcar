@@ -153,33 +153,38 @@ module Redcar
       def self.project_context_menus(tree, node, controller)
         # Search for the current project
         project = Project::Manager.in_window(Redcar.app.focussed_window)
+        if project.nil?
+          puts "Couldn't detect the project in the current window."
+        end
         repo_info = project_repositories[project]
         
         Menu::Builder.build do
-          if repo_info.nil?
-            # no repository detected
-            group :priority => 40 do
-              separator
-              sub_menu "Create Repository From Project" do
-                Redcar::Scm::Manager.modules_with_init.sort {|a, b| a.repository_type <=> b.repository_type}.each do |m|
-                  item(m.translations[:init]) do 
-                    m.init!(project.path)
-                    project.refresh
-                    
-                    Redcar::Scm::Manager.prepare(project, m)
-                    
-                    Application::Dialog.message_box("Created a new " + m.repository_type.capitalize + " repository in the root of your project.")
+          if not project.nil?
+            if repo_info.nil?
+              # no repository detected
+              group :priority => 40 do
+                separator
+                sub_menu "Create Repository From Project" do
+                  Redcar::Scm::Manager.modules_with_init.sort {|a, b| a.repository_type <=> b.repository_type}.each do |m|
+                    item(m.translations[:init]) do 
+                      m.init!(project.path)
+                      project.refresh
+                        
+                      Redcar::Scm::Manager.prepare(project, m)
+                      
+                      Application::Dialog.message_box("Created a new " + m.repository_type.capitalize + " repository in the root of your project.")
+                    end
                   end
                 end
               end
-            end
-          else
-            # TODO: display repository commands for this node here too
-            # Before that, need to work out a way of caching
-            # Scm#uncommited_changes as this will almost always be an
-            # expensive operation.
-            group :priority => 40 do
-              
+            else
+              # TODO: display repository commands for this node here too
+              # Before that, need to work out a way of caching
+              # Scm#uncommited_changes as this will almost always be an
+              # expensive operation.
+              group :priority => 40 do
+                
+              end
             end
           end
         end
