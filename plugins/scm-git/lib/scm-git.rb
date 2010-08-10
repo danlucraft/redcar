@@ -74,6 +74,7 @@ module Redcar
         def load(path)
           raise "Already loaded repository" if @repo
           @repo = ::Git.open(path)
+          cache.refresh
         end
         
         # @return [Array<Redcar::Scm::ScmMirror::Change>]
@@ -261,6 +262,7 @@ module Redcar
         # REQUIRED for :switch_branch. Switches to the named branch.
         def switch!(branch)
           @repo.checkout(branch)
+          cache.refresh
         end
         
         private

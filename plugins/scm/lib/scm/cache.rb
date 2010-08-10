@@ -41,7 +41,13 @@ module Redcar
         ctime = Time.now
         
         if (ctime - atime > @timeouts[name])
-          @values[name] = @blocks[name].call
+          begin
+            @values[name] = @blocks[name].call
+          rescue
+            # dump errors to the console, but otherwise, keep on trucking
+            puts $!.backtrace
+            @values[name] = @default_value
+          end
           
           @accessed[name] = ctime
         end
