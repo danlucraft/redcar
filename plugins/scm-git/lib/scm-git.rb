@@ -75,9 +75,13 @@ module Redcar
           # f[0] is the path, and f[1] is the actual StatusFile
           status.all_changes.each do |f| 
             full_path = File.join(@repo.dir.path, f[0])
-            type = File.file?(full_path) ? :file : :directory
+            type = (((not File.exist?(full_path)) or File.file?(full_path)) ? :file : :directory)
             
-            if type == :directory
+            if type == :directory and File.exist?(File.join(full_path, '.git'))
+              type = :sub_project
+            end
+            
+            if type == :sub_project
               subprojects[full_path] ||= begin
                 project = Scm::Git::Manager.new
                 project.load(full_path)

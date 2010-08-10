@@ -38,6 +38,7 @@ module Redcar
         menu = Menu::Builder.build do
           if node.is_a?(Scm::ScmMirror::Change) and repo.supported_commands.include?(:index)
             # commands may end up in the array twice, but include? doesn't care
+            p node.status
             commands = node.status.map {|s| COMMAND_MAP[s]}.flatten
             
             if (commands.include?(:commit))

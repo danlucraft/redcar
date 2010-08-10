@@ -12,6 +12,7 @@ module Redcar
           'D ' => [:deleted],
           'AM' => [:indexed, :changed],
           'MM' => [:indexed, :changed],
+          'AD' => [:indexed, :missing],
           'MD' => [:indexed, :missing],
           ' M' => [:changed],
           ' D' => [:missing],
@@ -19,10 +20,10 @@ module Redcar
         
         attr_reader :repo
         
-        def initialize(file, repo, icon=:file, children=[])
+        def initialize(file, repo, type=:file, children=[])
           @file = file
           @repo = repo
-          @icon = icon
+          @type = type
           @children = children
         end
         
@@ -37,10 +38,10 @@ module Redcar
         def status
           # Subprojects should be commitable, but we can't update the
           # current index while they are dirty.
-          if icon == :directory && children.length > 0
+          if @type == :sub_project && children.length > 0
             [:commitable]
           else
-            STATUS_MAP[@file.type_raw]
+            STATUS_MAP[@file.type_raw] || []
           end
         end
         
@@ -49,7 +50,7 @@ module Redcar
         end
         
         def icon
-          @icon
+          @type == :file ? :file : :directory
         end
         
         def leaf?
