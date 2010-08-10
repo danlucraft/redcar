@@ -18,8 +18,11 @@ module Redcar
       end
       
       def activated(tree, node)
-        if node.respond_to?(:activated)
-          node.activated
+        if node.respond_to?(:diff)
+          diff = node.diff
+          if diff
+            # TODO: if we can provide a text diff of ourselves, then display it
+          end
         end
       end
       
