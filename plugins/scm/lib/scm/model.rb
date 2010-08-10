@@ -22,6 +22,13 @@ module Redcar
         raise "Scm.load not implemented."
       end
       
+      # RECOMMENDED. If we call this method, than we expect the repository to
+      # return all fresh data for any subsequent calls. Any caching should be
+      # reset.
+      def refresh
+        nil
+      end
+      
       # REQUIRED to be useful. If no commands are supported, than the SCM will
       # will essentially be useless. These commands loosely translate to the
       # common operations of a distributed CVS. 

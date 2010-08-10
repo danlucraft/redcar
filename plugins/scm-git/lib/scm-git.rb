@@ -64,6 +64,11 @@ module Redcar
           [:init, :commit, :index, :switch_branch]
         end
         
+        def refresh
+          cache.refresh
+          subprojects.values.each {|p| p.refresh}
+        end
+        
         def init!(path)
           # Be nice and don't blow away another repository accidentally.
           return nil if File.exist?(File.join(path, %w{.git}))

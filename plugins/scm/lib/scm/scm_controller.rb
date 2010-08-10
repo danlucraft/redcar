@@ -71,7 +71,7 @@ module Redcar
             
             separator
           end
-          item("Refresh", :priority => :last) { tree.refresh }
+          item("Refresh", :priority => :last) { repo.refresh; tree.refresh }
         end
         
         Application::Dialog.popup_menu(menu, :pointer)
