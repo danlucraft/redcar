@@ -38,11 +38,7 @@ module Redcar
         # throw an error if our spring clean left nothing
         raise "Empty commit message. Commit aborted." if contents.empty?
         
-        if @change
-          @repo.commit!(@change, contents)
-        else
-          @repo.commit!(contents)
-        end
+        @repo.commit!(contents, @change)
         
         notify_listeners(:change)
       end
@@ -53,7 +49,8 @@ module Redcar
         def execute
           tab = Redcar.app.focussed_window.focussed_notebook.focussed_tab
           begin
-            tab.edit_view.document.save!
+            doc = tab.edit_view.document
+            doc.mirror.commit(doc.to_s)
           rescue
             Application::Dialog.message_box($!.message)
           end

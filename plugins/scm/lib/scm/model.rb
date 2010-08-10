@@ -75,19 +75,6 @@ module Redcar
         []
       end
       
-      # REQUIRED for :commit. Commits the currently staged changes. 
-      def commit!(message)
-        raise "Scm.commit! not implemented." if supported_commands.include?(:commit)
-        nil
-      end
-      
-      # REQUIRED for :commit. Provides a default commit message.
-      # This usually provides a summary of the changes made.
-      # Lines starting with a '#' are ignored.
-      def commit_message
-        "\n\n# Please enter your commit message above."
-      end
-      
       # REQUIRED for :index. Adds a new file to the index.
       def index_add(change)
         raise "Scm.index_add not implemented" if supported_commands.include?(:index)
@@ -132,16 +119,22 @@ module Redcar
         nil
       end
       
-      # REQUIRED for :commitable changes. Commits the currently staged 
-      # changes in the subproject.
-      def commit!(change, message)
-        raise "Scm.commit!(change) not implemented." if supported_commands.include?(:index)
+      # REQUIRED for :commit. Commits the currently indexed changes 
+      # in the subproject.
+      #
+      # @param change Required for :commitable changes. Ignore if
+      # you don't provide these.
+      def commit!(message, change=nil)
+        raise "Scm.commit! not implemented." if supported_commands.include?(:index)
         nil
       end
       
-      # REQUIRED for :commitable changes. Gets a commit message for the change
-      # to be commited.
-      def commit_message(change)
+      # REQUIRED for :commit. Gets a default commit message for the 
+      # currently indexed changes.
+      #
+      # @param change Required for :commitable changes. Ignore if
+      # you don't provide these.
+      def commit_message(change=nil)
         "\n\n# Please enter your commit message above."
       end
       

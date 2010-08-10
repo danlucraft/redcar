@@ -190,7 +190,6 @@ module Redcar
         edit_view = tab.edit_view  
         mirror = Scm::CommitMirror.new(repo, change)
         edit_view.document.mirror = mirror
-        edit_view.cursor_offset = edit_view.document.length
         edit_view.grammar = "Diff"
         tab.focus
         

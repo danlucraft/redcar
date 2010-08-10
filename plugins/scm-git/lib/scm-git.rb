@@ -184,41 +184,46 @@ module Redcar
           @repo.remove(change.path)
         end
         
-        # REQUIRED for :commitable changes. Commits the currently staged 
-        # changes in the subproject.
-        def commit!(change, message)
-          # delegate to the proper submodule
-          if self != change.repo
-            change.repo.commit!(change)
-            return
+        # REQUIRED for :commit. Commits the currently indexed changes 
+        # in the subproject.
+        #
+        # @param change Required for :commitable changes. Ignore if
+        # you don't provide these.
+        def commit!(message, change=nil)
+          if change
+            # delegate to the proper submodule
+            if self != change.repo
+              change.repo.commit!(change)
+              return
+            end
+            
+            # redelegate the commit to the subproject to handle
+            full_path = File.join(@repo.dir.path, change.path)
+            subprojects[full_path].commit!(message)
+          else
+            @repo.commit(message)
           end
-          
-          # redelegate the commit to the subproject to handle
-          full_path = File.join(@repo.dir.path, change.path)
-          subprojects[full_path].commit!(message)
         end
         
-        # REQUIRED for :commit.
-        def commit!
-          raise "Commit not implemented"
-        end
-      
-        # REQUIRED for :commitable changes. Gets a commit message for the change
-        # to be commited.
-        def commit_message(change)
-          # delegate to the proper submodule
-          if self != change.repo
-            change.repo.commit!(change)
-            return
-          end
+        # REQUIRED for :commit. Gets a default commit message for the 
+        # currently indexed changes.
+        #
+        # @param change Required for :commitable changes. Ignore if
+        # you don't provide these.
+        def commit_message(change=nil)
+          if change
+            # delegate to the proper submodule
+            if self != change.repo
+              change.repo.commit!(change)
+              return
+            end
           
-          # redelegate the call to the subproject to handle
-          full_path = File.join(@repo.dir.path, change.path)
-          subprojects[full_path].commit_message
-        end
-        
-        def commit_message
-          "\n\n# Please enter your commit message above."# + @repo.lib.command("status")
+            # redelegate the call to the subproject to handle
+            full_path = File.join(@repo.dir.path, change.path)
+            subprojects[full_path].commit_message
+          else
+            "\n\n" + @repo.lib.full_status
+          end
         end
         
         private
