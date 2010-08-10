@@ -100,7 +100,7 @@ module Redcar
       
       def self.project_loaded(project)
         # for now we only want to attempt to handle the local case
-        return if not project.adapter.is_a?(Project::Adapters::Local)
+        return if project.remote?
         
         puts "#{modules.count} SCM modules loaded." if debug
         
@@ -202,7 +202,7 @@ module Redcar
                           repo.switch!(branch)
                           
                           # refresh tree views
-                          project.tree.refresh
+                          project.refresh
                           repo_info['tree'].refresh
                         rescue
                           Redcar::Application::Dialog.message_box($!.message)
