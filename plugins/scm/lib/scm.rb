@@ -118,26 +118,33 @@ module Redcar
       
       def self.prepare(project, repo)
         start = Time.now
-        # associate this repository with a project internally
-        project_repositories[project] = {'repo' => repo}
+        begin
+          # associate this repository with a project internally
+          project_repositories[project] = {'repo' => repo}
+          
+          # load the repository and inject adapter if there is one
+          repo.load(project.path)
+          adapter = repo.adapter(project.adapter)
+          if not adapter.nil?
+            puts "Attaching a custom adapter to the project." if debug
+            project.adapter = adapter
+          end
+          
+          puts "Preparing the GUI for the current project's repository." if debug
+          mirror = Scm::ScmMirror.new(repo)
+          tree = Tree.new(mirror, Scm::ScmController.new(repo))
+          project_repositories[project]['tree'] = tree
+          project.window.treebook.add_tree(tree)
         
-        # load the repository and inject adapter if there is one
-        repo.load(project.path)
-        adapter = repo.adapter(project.adapter)
-        if not adapter.nil?
-          puts "Attaching a custom adapter to the project." if debug
-          project.adapter = adapter
+          # don't steal focus from the project module.
+          project.window.treebook.focus_tree(project.tree)
+          tree.tree_mirror.top.each {|n| tree.expand(n)}
+        rescue
+          # cleanup
+          project_repositories.delete project
+          
+          puts "*** Error loading SCM: " + $!.message
         end
-        
-        puts "Preparing the GUI for the current project's repository." if debug
-        mirror = Scm::ScmMirror.new(repo)
-        tree = Tree.new(mirror, Scm::ScmController.new(repo))
-        project_repositories[project]['tree'] = tree
-        project.window.treebook.add_tree(tree)
-        
-        # don't steal focus from the project module.
-        project.window.treebook.focus_tree(project.tree)
-        tree.tree_mirror.top.each {|n| tree.expand(n)}
         
         puts "scm start took #{Time.now - start}s (included in project start time)" if debug
       end
