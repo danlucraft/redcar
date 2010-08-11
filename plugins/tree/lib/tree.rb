@@ -83,6 +83,11 @@ module Redcar
     def visible_nodes
       controller.visible_nodes
     end
+    
+    # Close the tree (removes it from the Window's Treebook)
+    def close
+      Redcar.app.windows.detect {|win| win.treebook.trees.include?(self) }.treebook.remove_tree(self)
+    end
   end
 end
 
