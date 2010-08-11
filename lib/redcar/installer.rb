@@ -173,6 +173,7 @@ module Redcar
       
       if File.open(path).read(200) =~ /Access Denied/
         puts "\n\n*** Error downloading #{uri}, got Access Denied from S3."
+        FileUtils.rm_rf(path)
         exit
       end
       
