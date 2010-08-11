@@ -34,7 +34,14 @@ module Redcar
       # common operations of a distributed CVS. 
       #
       # Supported values to date:
-      # :init, :push, :pull, :commit, :switch_branch, :index
+      #  * :init
+      #  * :push
+      #  * :pull
+      #  * :pull_targeted
+      #  * :commit
+      #  * :index
+      #  * :switch_branch
+      #  * :merge
       #
       # Note about non-distributed CVS's: If your CVS doesn't support local
       # commits, ie. subversion, then implement :commit and :pull, and then
@@ -63,6 +70,7 @@ module Redcar
           :index_delete => "Mark as Deleted",
           :commitable => "Commit Changes to Subproject",
           :switch_branch => "Switch Branch",
+          :merge => "Merge Branch",
         }
       end
       
@@ -158,14 +166,23 @@ module Redcar
         nil
       end
       
-      # REQUIRED for :pull. Pulls all remote changesets from the remote
-      # repository.
-      def pull!
+      # REQUIRED for :pull and :pull_target. Pulls all remote changesets from the 
+      # remote repository.
+      # 
+      # Note: If you only support :pull, you can implement this without the
+      # argument. It will never be called with an explicit nil.
+      def pull!(remote=nil)
         raise "Scm.pull! not implemented." if supported_commands.include?(:pull)
         nil
       end
       
-      # REQUIRED for :switch_branch. Returns an array of branch names.
+      # REQUIRED for :pull_targeted. Returns an array of pull targets.
+      def pull_targets
+        raise "Scm.pull_targets not implemented." if supported_commands.include?(:pull_targeted)
+        []
+      end
+      
+      # REQUIRED for :switch_branch and :merge. Returns an array of branch names.
       #
       # @return [Array<String>]
       def branches
@@ -182,6 +199,12 @@ module Redcar
       # REQUIRED for :switch_branch. Switches to the named branch.
       def switch!(branch)
         raise "Scm.switch! not implemented." if supported_commands.include?(:switch_branch)
+        nil
+      end
+      
+      # REQUIRED for :switch_branch. Merges the target branch with the current one.
+      def merge!(branch)
+        raise "Scm.switch! not implemented." if supported_commands.include?(:merge)
         nil
       end
       
