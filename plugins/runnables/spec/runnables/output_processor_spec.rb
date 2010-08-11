@@ -20,6 +20,9 @@ describe Redcar::Runnables::OutputProcessor do
   it "should convert ANSI color to appropriate spans" do
     @input = "Some \e[31mred\e[0m text."
     processed.should == 'Some <span class="ansi-red">red</span> text.'
+    
+    @input = "Some \e[1;31mbold red\e[0m text."
+    processed.should == 'Some <span class="ansi-bold ansi-red">bold red</span> text.'
   end
   
   it "should preserve ANSI color between lines" do

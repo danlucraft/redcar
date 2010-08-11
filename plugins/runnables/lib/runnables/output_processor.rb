@@ -16,12 +16,24 @@ module Redcar
         end 
       end
       
+      def initialize
+        @ansi_stack = []
+        @ansi_colors = %w(black red green yellow blue purple cyan gray) 
+      end
+      
       def process_ansi(str)
-        str.gsub(/\e\[32m/,      '<span class="ansi-green">').
-            gsub(/\e\[90m/,      '<span class="ansi-gray">').
-            gsub(/\e\[(0;){0,1}31m/, '<span class="ansi-red">').
-            gsub(/\e\[1m/,       '<span class="ansi-bold">').
-            gsub(/\e\[0m/,       '</span>')
+        str.gsub(/\e\[(([0,1]);?)?((\d)(\d))?m/) do |m|
+          match = $~
+          if match[2] == "0"
+            "</span>"
+          else
+            style = ""          
+            style += "ansi-bold "       if match[2] == "1"
+            style += "ansi-light "      if match[4] == "9"
+            style += "ansi-#{@ansi_colors[match[5].to_i]}" if match[4] == "3"
+            %Q|<span class="#{style}">|
+          end
+        end
       end
     end
   end
