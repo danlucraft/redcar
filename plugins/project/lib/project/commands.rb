@@ -233,6 +233,10 @@ module Redcar
     class FindFileCommand < ProjectCommand
      
       def execute
+        if Manager.focussed_project.remote?
+          Application::Dialog.message_box("Find file doesn't work in remote projects yet :(")
+          return
+        end
         dialog = FindFileDialog.new(Manager.focussed_project)
         dialog.open
       end
