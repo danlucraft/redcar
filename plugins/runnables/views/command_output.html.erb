@@ -1,7 +1,7 @@
 
 <script type="text/javascript" src="file://<%= Redcar::HtmlView.jquery_path %>"></script>
 <link rel="stylesheet" href="file://<%= Redcar::HtmlView.default_css_path %>" type="text/css" media="screen">
-
+<%= stylesheet_link_tag :basic_ansi %>
 <style>
   .stdout {
     padding: 0px;
@@ -28,10 +28,6 @@
     font-size: 12px;
   }
   
-  .ansi-gray  { color: #666; }
-  .ansi-red   { color: #f00; }
-  .ansi-green { color: #0f0; }
-  .ansi-bold  { font-weight: bold; }
 </style>
 
 <h3><%= @title %></h3>

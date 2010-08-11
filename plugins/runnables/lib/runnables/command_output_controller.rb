@@ -35,6 +35,14 @@ module Redcar
         end
       end
       
+      def stylesheet_link_tag(*files)
+        files.map do |file|
+          path = File.join(Redcar.root, %w(plugins runnables views) + [file.to_s + ".css"])
+          url = "file://" + File.expand_path(path)
+          %Q|<link href="#{url}" rel="stylesheet" type="text/css" />|
+        end.join("\n")
+      end
+      
       def process(text)
         @processor ||= OutputProcessor.new
         @processor.process(text)
