@@ -202,7 +202,7 @@ module Redcar
         nil
       end
       
-      # REQUIRED for :switch_branch. Merges the target branch with the current one.
+      # REQUIRED for :merge. Merges the target branch with the current one.
       def merge!(branch)
         raise "Scm.switch! not implemented." if supported_commands.include?(:merge)
         nil
