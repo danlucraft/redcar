@@ -209,11 +209,8 @@ module Redcar
                           puts $!.backtrace
                         end
                       }
-                      if branch == current
-                        item branch, :item_type => Swt::SWT::RADIO, :active => true, &action
-                      else
-                        item branch, &action
-                      end
+                      
+                      item branch, :type => :radio, :active => (branch == current), &action
                     end
                   end
                 end
