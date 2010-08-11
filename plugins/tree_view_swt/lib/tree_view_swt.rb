@@ -23,10 +23,10 @@ module Redcar
       @viewer.get_tree.set_layout_data(grid_data)
       @composite.layout
       JFace::Viewers::ColumnViewerToolTipSupport.enableFor(@viewer)
-      @viewer.set_content_provider(TreeMirrorContentProvider.new)
+      @viewer.set_content_provider(TreeMirrorContentProvider.new(self))
       #@viewer.getTree.setLinesVisible(true)
 	    #@viewer.getTree.setHeaderVisible(true)
-      @viewer.set_label_provider(TreeMirrorLabelProvider.new)
+      @viewer.set_label_provider(TreeMirrorLabelProvider.new(self))
       @viewer.set_input(@model.tree_mirror)
       
       if @model.tree_controller
@@ -40,8 +40,12 @@ module Redcar
       register_dnd if @model.tree_mirror.drag_and_drop?
       
       @model.add_listener(:refresh) do
-        @model.tree_mirror.refresh_operation(@model) do
-          @viewer.refresh
+        begin
+          @model.tree_mirror.refresh_operation(@model) do
+            @viewer.refresh
+          end
+        rescue => e
+          handle_mirror_error(e)
         end
       end
       
@@ -276,6 +280,22 @@ module Redcar
       end
     end
     
+    def handle_mirror_error(e)
+      if @model.tree_controller.respond_to?(:handle_error)
+        begin
+          @model.tree_controller.handle_error(@model, e)
+        rescue => e
+          puts "error in error hander: #{e.class} #{e.message}"
+          puts e.backtrace
+        end
+      else
+        puts e.class
+        puts e.message
+        puts e.backtrace
+        Application::Dialog.message_box(e.message, :type => :error)
+      end
+    end
+    
     class TreeListener
       def tree_collapsed(e)
       end
@@ -340,6 +360,7 @@ module Redcar
         else
           viewer.expandToLevel(double_clicked_element, 1)
         end
+      rescue
       end
     end
     
@@ -357,6 +378,10 @@ module Redcar
     
     class TreeMirrorContentProvider
       include JFace::Viewers::ITreeContentProvider
+      
+      def initialize(tree_view_swt)
+        @tree_view_swt = tree_view_swt
+      end
 
       def input_changed(viewer, _, tree_mirror)
         @viewer, @tree_mirror = viewer, tree_mirror
@@ -364,6 +389,8 @@ module Redcar
 
       def get_elements(tree_mirror)
         tree_mirror.top.to_java
+      rescue => e
+        @tree_view_swt.handle_mirror_error(e)
       end
 
       def has_children(tree_node)
@@ -373,10 +400,14 @@ module Redcar
           children = tree_node.children
           children.any? if children
         end
+      rescue => e
+        @tree_view_swt.handle_mirror_error(e)
       end
 
       def get_children(tree_node)
         tree_node.children.to_java
+      rescue => e
+        @tree_view_swt.handle_mirror_error(e)
       end
       
       def get_parent(tree_node)
@@ -389,6 +420,10 @@ module Redcar
 
     class TreeMirrorLabelProvider
       include JFace::Viewers::ILabelProvider
+      
+      def initialize(tree_view_swt)
+        @tree_view_swt = tree_view_swt
+      end
 
       def add_listener(*_)
       end

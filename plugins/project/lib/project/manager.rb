@@ -287,7 +287,7 @@ module Redcar
               item "Open", Project::FileOpenCommand
               item "Reload File", Project::FileReloadCommand
               item "Open Directory", Project::DirectoryOpenCommand
-              item "Open Remote...", Project::OpenRemoteCommand
+              #item "Open Remote...", Project::OpenRemoteCommand
               lazy_sub_menu "Open Recent" do
                 Project::RecentDirectories.generate_menu(self)
               end

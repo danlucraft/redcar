@@ -14,6 +14,11 @@ module Redcar
         end
       end
       
+      def handle_error(tree, error)
+        tree.close
+        Application::Dialog.message_box(error.message, :type => :error)
+      end
+      
       class DragController
         include Redcar::Tree::Controller::DragController
         

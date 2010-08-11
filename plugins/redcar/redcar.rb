@@ -715,7 +715,7 @@ module Redcar
         link "Cmd+O",       Project::FileOpenCommand
         link "Cmd+U",       Project::FileReloadCommand
         link "Cmd+Shift+O", Project::DirectoryOpenCommand
-        link "Cmd+Ctrl+O",  Project::OpenRemoteCommand
+        #link "Cmd+Ctrl+O",  Project::OpenRemoteCommand
         link "Cmd+S",       Project::FileSaveCommand
         link "Cmd+Shift+S", Project::FileSaveAsCommand
         link "Cmd+Ctrl+R",  Project::RevealInProjectCommand
@@ -784,7 +784,7 @@ module Redcar
         link "Ctrl+Alt+N",   NewWindowCommand
         link "Ctrl+O",       Project::FileOpenCommand
         link "Ctrl+Shift+O", Project::DirectoryOpenCommand
-        link "Alt+Shift+O",  Project::OpenRemoteCommand
+        #link "Alt+Shift+O",  Project::OpenRemoteCommand
         link "Ctrl+S",       Project::FileSaveCommand
         link "Ctrl+Shift+S", Project::FileSaveAsCommand
         link "Ctrl+Shift+R", Project::RevealInProjectCommand
