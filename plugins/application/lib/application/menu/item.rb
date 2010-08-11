@@ -12,7 +12,7 @@ module Redcar
         end
       end
       
-      attr_reader :text, :command, :priority, :value, :item_type, :active
+      attr_reader :text, :command, :priority, :value, :type, :active
   
       # Create a new Item, with the given text to display in the menu, and
       # either:
@@ -24,7 +24,7 @@ module Redcar
         if options.respond_to?('[]')
           @command = options[:command] || block
           @priority = options[:priority]
-          @item_type = options[:item_type]
+          @type = options[:type]
           @active = options[:active] ? true : false
         # This branch is for compatibility with old code. Please use :command 
         # option in new code
@@ -39,6 +39,10 @@ module Redcar
       # Call this to signal that the menu item has been selected by the user.
       def selected(with_key=false)
         @command.new.run#(:with_key => with_key)
+      end
+      
+      def type
+        @type
       end
       
       def merge(other)
