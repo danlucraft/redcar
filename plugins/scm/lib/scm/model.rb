@@ -37,7 +37,7 @@ module Redcar
       #  * :init
       #  * :push
       #  * :pull
-      #  * :pull_targeted
+      #  * :pull_targetted
       #  * :commit
       #  * :index
       #  * :switch_branch
@@ -166,7 +166,7 @@ module Redcar
         nil
       end
       
-      # REQUIRED for :pull and :pull_target. Pulls all remote changesets from the 
+      # REQUIRED for :pull and :pull_targetted. Pulls all remote changesets from the 
       # remote repository.
       # 
       # Note: If you only support :pull, you can implement this without the
@@ -176,7 +176,7 @@ module Redcar
         nil
       end
       
-      # REQUIRED for :pull_targeted. Returns an array of pull targets.
+      # REQUIRED for :pull_targetted. Returns an array of pull targets.
       def pull_targets
         raise "Scm.pull_targets not implemented." if supported_commands.include?(:pull_targeted)
         []
