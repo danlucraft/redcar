@@ -133,18 +133,18 @@ module Redcar
       end
     end
     
-    class OpenRemoteCommand < Command
-      def initialize(url=nil)
-        @url = url
-      end
-      
-      def execute
-        unless @url
-          @speedbar = OpenRemoteSpeedbar.new
-          win.open_speedbar(@speedbar)
-        end
-      end
-    end
+    #class OpenRemoteCommand < Command
+    #  def initialize(url=nil)
+    #    @url = url
+    #  end
+    #  
+    #  def execute
+    #    unless @url
+    #      @speedbar = OpenRemoteSpeedbar.new
+    #      win.open_speedbar(@speedbar)
+    #    end
+    #  end
+    #end
     
     class FileSaveCommand < EditTabCommand
       def initialize(tab=nil)
