@@ -13,12 +13,16 @@ module Redcar
           end
 
           def connection
-            @connection ||= Net::SSH.start(host, user, :password => password, :keys => private_key_files)
+            Redcar.timeout(10) do
+              @connection ||= Net::SSH.start(host, user, :password => password, :keys => private_key_files)
+            end
           rescue OpenSSL::PKey::DSAError => error
             puts "*** Warning, DSA keys not supported."
             # Error with DSA key. Throw us back to a password input. Think this is because jopenssl bugs
             # out on valid dsa keys.
             raise Net::SSH::AuthenticationFailed, "DSA key-based authentication failed."
+          rescue Redcar::TimeoutError
+            raise "connection to #{host} timed out"
           end
           
           def touch(file)
@@ -141,8 +145,7 @@ module Redcar
                 connection.exec!(what)
               end
             rescue Redcar::TimeoutError => e
-              puts "#{host} connection timed out"
-              puts caller
+              connection.shutdown!
               raise "#{host} connection timed out"
             end
           end
@@ -154,6 +157,7 @@ module Redcar
                 connection.sftp.send(method, *args)
               end
             rescue Redcar::TimeoutError
+              connection.shutdown!
               raise "#{host} connection timed out"
             end
           end
