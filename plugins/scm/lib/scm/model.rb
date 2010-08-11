@@ -45,7 +45,7 @@ module Redcar
       #
       # Note about non-distributed CVS's: If your CVS doesn't support local
       # commits, ie. subversion, then implement :commit and :pull, and then
-      # provide translations via the command_names method.
+      # provide translations via the translations method.
       def supported_commands
         []
       end
@@ -59,8 +59,11 @@ module Redcar
         {
           :init => "Initialise " + repository_type.capitalize,
           :push => "Push Changesets",
+          :unpushed_commits => "Unpushed commits",
           :pull => "Pull Changesets",
+          :pull_targetted => "Pull...",
           :commit => "Commit Changes",
+          :uncommited_changes => "Uncommited changes",
           :index_add => "Add File",
           :index_ignore => "Ignore File",
           :index_save => "Index Changes",
@@ -70,7 +73,7 @@ module Redcar
           :index_delete => "Mark as Deleted",
           :commitable => "Commit Changes to Subproject",
           :switch_branch => "Switch Branch",
-          :merge => "Merge Branch",
+          :merge => "Merge...",
         }
       end
       
@@ -154,6 +157,8 @@ module Redcar
       end
       
       # REQUIRED for :push. Returns an array of unpushed changesets.
+      #
+      # @return [Array<Redcar::Scm::ScmMirror::Commit>]
       def unpushed_commits
         raise "Scm.unpushed_commits not implemented." if supported_commands.include?(:push)
         nil

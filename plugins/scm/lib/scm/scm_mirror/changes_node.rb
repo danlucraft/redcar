@@ -10,7 +10,7 @@ module Redcar
         end
         
         def text
-          "Uncommited changes"
+          @repo.translations[:uncommited_changes]
         end
         
         def icon
@@ -22,7 +22,7 @@ module Redcar
         end
         
         def children
-          @repo.uncommited_changes
+          @repo.unpushed_commits
         end
       end
     end

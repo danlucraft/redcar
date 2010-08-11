@@ -61,7 +61,7 @@ module Redcar
         end
         
         def supported_commands
-          [:init, :commit, :index, :switch_branch]
+          [:init, :commit, :index, :switch_branch, :push]
         end
         
         def refresh

@@ -9,6 +9,21 @@ module Redcar
           @repo = repo
         end
         
+        def text
+          @repo.translations[:unpushed_commits]
+        end
+        
+        def icon
+          :directory
+        end
+        
+        def leaf?
+          false
+        end
+        
+        def children
+          @repo.unpushed_commits
+        end
       end
     end
   end
