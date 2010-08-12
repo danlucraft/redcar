@@ -1,5 +1,6 @@
 
 Given /^I will choose "([^\"]*)" from the "([^\"]*)" dialog$/ do |path, type|
+  Redcar.gui.dialog_adapter.should_get_message(:any)
   Redcar.gui.dialog_adapter.set(type.to_sym, path)
 end
 

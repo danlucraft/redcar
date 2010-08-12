@@ -4,7 +4,7 @@ class Redcar::Project
   describe Adapters::RemoteProtocols::SFTP do
     let(:conn) { double('connection').as_null_object }
     subject do
-      Adapters::RemoteProtocols::SFTP.new('server', 'user', 'secret', nil, '/home/fcoury')
+      Adapters::RemoteProtocols::SFTP.new('server', 'user', 'secret', [])
     end
     
     before(:each) do
@@ -12,64 +12,35 @@ class Redcar::Project
     end
     
     context "Public methods" do
-      describe '#exist?' do
-        it "returns true if fetch throws exception (path does not exist)" do
-          subject.path = '/home/fcoury'
-          subject.should_receive(:exec).with(/test -d "\/home\/fcoury"/).and_return("n\n")
-          subject.exist?.should be_false
-        end
-
-        it "returns true if fetch runs" do
-          subject.path = '/home/fcoury'
-          subject.should_receive(:exec).with(/test -d "\/home\/fcoury"/).and_return("y\n")
-          subject.exist?.should be_true
-        end
-      end
-    
       describe '#directory?' do
         it "fetches the folder if it's not the base folder" do
           subject.stub!(:fetch).with("/home/fcoury").and_return([
-            { :fullname => '/home/fcoury/hello_world.rb', :name => 'hello_world.rb', :type => 'file' },
-            { :fullname => '/home/fcoury/snippets',       :name => 'snippets',       :type => 'dir' }
+            { :fullname => '/home/fcoury/hello_world.rb', :name => 'hello_world.rb', :type => :file },
+            { :fullname => '/home/fcoury/snippets',       :name => 'snippets',       :type => :dir }
           ])
           subject.directory?("/home/fcoury/hello_world.rb").should be_false
           subject.directory?("/home/fcoury/snippets").should be_true
-        end
-
-        it "checks for directory flag on the file if it's the base folder" do
-          subject.path = '/home/fcoury'
-          subject.stub!(:check_folder).with('/home/fcoury').and_return(true)
-          subject.directory?("/home/fcoury").should be_true
         end
       end
     
       describe '#file?' do
         it "fetches the folder for the file" do
           subject.stub!(:fetch).with("/home/fcoury").and_return([
-            { :fullname => '/home/fcoury/hello_world.rb', :name => 'hello_world.rb', :type => 'file' },
-            { :fullname => '/home/fcoury/snippets',       :name => 'snippets',       :type => 'dir' }
+            { :fullname => '/home/fcoury/hello_world.rb', :name => 'hello_world.rb', :type => :file },
+            { :fullname => '/home/fcoury/snippets',       :name => 'snippets',       :type => :dir }
           ])
           subject.file?("/home/fcoury/hello_world.rb").should be_true
           subject.file?("/home/fcoury/snippets").should be_false
         end
       end
     
-      describe '#fetch_contents' do
-        it "return the name for all files retrieved" do
-          subject.stub!(:fetch).with("/home/fcoury").and_return([
-            { :fullname => '/home/fcoury/hello_world.rb', :name => 'hello_world.rb', :type => 'file' },
-            { :fullname => '/home/fcoury/snippets',       :name => 'snippets',       :type => 'dir' }
-          ])
-          subject.fetch_contents("/home/fcoury").should == ['/home/fcoury/hello_world.rb', '/home/fcoury/snippets']
-        end
-      end
       
       describe '#load' do
         let(:conn) { double('connection').as_null_object }
         let(:sftp) { double('sftp connection').as_null_object }
         
         subject do
-          Adapters::RemoteProtocols::SFTP.new('server', 'user', 'secret', nil, '/home/fcoury').tap do |protocol|
+          Adapters::RemoteProtocols::SFTP.new('server', 'user', 'secret', []).tap do |protocol|
             conn.stub!(:sftp).and_return(sftp)
             protocol.stub!(:connection).and_return(conn)
           end
@@ -103,7 +74,7 @@ class Redcar::Project
         let(:sftp) { double('sftp connection').as_null_object }
         
         subject do
-          Adapters::RemoteProtocols::SFTP.new('server', 'user', 'secret', nil, '/home/fcoury').tap do |protocol|
+          Adapters::RemoteProtocols::SFTP.new('server', 'user', 'secret', []).tap do |protocol|
             conn.stub!(:sftp).and_return(sftp)
             protocol.stub!(:connection).and_return(conn)
           end
