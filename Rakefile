@@ -1,4 +1,4 @@
-REDCAR_VERSION = "0.3.9.0dev"
+REDCAR_VERSION = "0.3.9"
 require 'rubygems'
 require 'fileutils'
 require 'spec/rake/spectask'
