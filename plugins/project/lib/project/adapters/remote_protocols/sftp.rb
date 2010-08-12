@@ -96,9 +96,21 @@ module Redcar
             contents
           end
           
+          def exists?(path)
+            is_file(path) or is_folder(path)
+          end
+          
           def is_folder(path)
             result = exec(%Q(
               test -d "#{path}" && echo y
+            )) 
+
+            result =~ /^y/ ? true : false
+          end
+          
+          def is_file(path)
+            result = exec(%Q(
+              test -f "#{path}" && echo y
             )) 
 
             result =~ /^y/ ? true : false

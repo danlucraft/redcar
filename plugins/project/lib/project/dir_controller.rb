@@ -165,6 +165,7 @@ module Redcar
           @pairs = nodes.map {|node| [node, File.basename(node.path)] }
           @match_pattern = ""
           @replace_pattern = ""
+          @adapter = DirController.adapter(nodes.first, tree)
         end
         
         def title
@@ -187,11 +188,15 @@ module Redcar
             old_name = File.basename(node.path)
             new_name = transform_name(old_name)
             new_path = File.join(File.dirname(node.path), new_name)
-            conflicts = (File.exist?(new_path) and new_name != old_name)
+            conflicts = (@adapter.exists?(new_path) and new_name != old_name)
             legal     = (new_name != "" and legal_path?(new_path))
             [new_name, conflicts, legal]
           end
           result
+        rescue => e
+          puts e.class
+          puts e.message
+          puts e.backtrace
         end
         
         def submit(params)
@@ -200,7 +205,8 @@ module Redcar
             new_name = transform_name(old_name)
             next if old_name == new_name
             new_path = File.join(File.dirname(node.path), new_name)
-            FileUtils.mv(node.path, new_path)
+            
+            @adapter.mv(node.path, new_path)
           end
           @tab.close
           @tree.refresh
@@ -245,7 +251,7 @@ module Redcar
         adapter = DirController.adapter(node, tree)
         adapter.mv(node.path, new_path)
         tree.refresh
-        new_node = DirMirror::Node.create_from_path(adapter, new_path)
+        new_node = DirMirror::Node.create_from_path(adapter, {:fullname => new_path})
         tree.select(new_node)
       end
       

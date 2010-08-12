@@ -324,7 +324,7 @@ module Redcar
               separator
               if tree.selection.length > 1
                 dirs = tree.selection.map {|node| node.parent_dir }
-                if dirs.uniq.length == 1
+                if dirs.uniq.length == 1 and node.adapter.is_a?(Adapters::Local)
                   item("Bulk Rename") { controller.rename(tree, node)   }
                 end
               else
