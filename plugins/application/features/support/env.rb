@@ -74,7 +74,8 @@ class FakeDialogAdapter
   end
   
   def message_box(*args)
-    if @message
+    if @message == :any
+    elsif @message
       unless @message == args.first
         raise TestingError.new("expected the message #{@message.inspect} got #{args.first.inspect}")
       end
@@ -82,6 +83,7 @@ class FakeDialogAdapter
     else
       raise TestingError.new("got a message box showing #{args.first.inspect} when I didn't expect one")
     end
+    @responses[:message_box].to_sym if @responses[:message_box]
   end
   
   def check_for_raise(result)
