@@ -22,7 +22,7 @@ module Redcar
         end
         
         def children
-          @repo.unpushed_commits
+          @repo.uncommited_changes
         end
       end
     end

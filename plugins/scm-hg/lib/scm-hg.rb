@@ -19,6 +19,10 @@ module Redcar
         def self.debug
           Redcar::Scm::Manager.debug
         end
+        
+        def debug
+          Redcar::Scm::Mercurial::Manager.debug
+        end
       end
     end
   end

@@ -2,7 +2,7 @@
 module Redcar
   module Scm
     class ScmMirror
-      class ChangesNode
+      class CommitsNode
         include Redcar::Tree::Mirror::NodeMirror
         
         def initialize(repo)
