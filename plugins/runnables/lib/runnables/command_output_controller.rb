@@ -58,6 +58,7 @@ module Redcar
           HTML
           execute(<<-JAVASCRIPT)
             $("#output").append(#{html.inspect});
+            $("html, body").attr({ scrollTop: $("#output").attr("scrollHeight") }); 
           JAVASCRIPT
         end
       end
@@ -74,7 +75,8 @@ module Redcar
             HTML
             execute(<<-JAVASCRIPT)
               $("#output").append(#{html.inspect});
-            JAVASCRIPT
+              $("html, body").attr({ scrollTop: $("#output").attr("scrollHeight") }); 
+           JAVASCRIPT
           end
           @shell.errproc = lambda do |err|
             html=<<-HTML
@@ -84,6 +86,7 @@ module Redcar
             HTML
             execute(<<-JAVASCRIPT)
               $("#output").append(#{html.inspect});
+              $("html, body").attr({ scrollTop: $("#output").attr("scrollHeight") }); 
             JAVASCRIPT
           end
           begin
@@ -99,6 +102,7 @@ module Redcar
           HTML
           execute(<<-JAVASCRIPT)
             $("#output").append(#{html.inspect});
+            $("html, body").attr({ scrollTop: $("#output").attr("scrollHeight") }); 
           JAVASCRIPT
           @shell = nil
           @thread = nil
