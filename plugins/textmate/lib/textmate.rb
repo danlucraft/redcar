@@ -10,7 +10,7 @@ module Redcar
     def self.all_bundle_paths
       Dir[File.join(Redcar.root, "plugins", "textmate", "vendor", "redcar-bundles", "Bundles", "*")]
     end
-    
+
     def self.uuid_hash
       @uuid_hash ||= begin
         h = {}
@@ -22,18 +22,33 @@ module Redcar
         h
       end
     end
-    
-    def self.attach_menus(builder)
-      #@menus ||= begin
-      #  Menu::Builder.build do |a|
-      #    all_bundles.sort_by {|b| (b.name||"").downcase}.each do |bundle|
-      #      bundle.build_menu(a)
-      #    end
-      #  end
-      #end
-      #@menus.entries.each {|i| builder.append(i) }
+
+    def self.storage
+      @storage ||= begin
+        storage = Plugin::Storage.new('textmate')
+        storage.set_default('load_bundles_menu',true)
+        storage.set_default('select_loaded_bundles',true)
+        storage.set_default('loaded_bundles',['groovy','java','javascript','json','lisp','python','ruby','ruby on rails','todo','yaml'])
+        storage
+      end
     end
-    
+
+    def self.attach_menus(builder)
+      if Textmate.storage['load_bundles_menu']
+        @menus ||= begin
+          Menu::Builder.build do |a|
+            all_bundles.sort_by {|b| (b.name||"").downcase}.each do |bundle|
+              name = (bundle.name||"").downcase
+              unless @storage['select_loaded_bundles'] and !@storage['loaded_bundles'].to_a.include?(name)
+                bundle.build_menu(a)
+              end
+            end
+          end
+        end
+        @menus.entries.each {|i| builder.append(i) }
+      end
+    end
+
     def self.all_bundles
       @all_bundles ||= begin
         cache = PersistentCache.new("textmate_bundles")
@@ -42,25 +57,25 @@ module Redcar
         end
       end
     end
-    
+
     def self.all_snippets
       @all_snippets ||= begin
         all_bundles.map {|b| b.snippets }.flatten
       end
     end
-    
+
     def self.all_settings
       @all_settings ||= begin
         all_bundles.map {|b| b.preferences }.flatten.map {|p| p.settings}.flatten
       end
     end
-    
+
     def self.settings(type=nil)
       @all_settings_by_type ||= {}
       @all_settings_by_type[type] ||= all_settings.select {|s| s.is_a?(type) }
     end
 
-    # Translates a Textmate key equivalent into a Redcar keybinding. 
+    # Translates a Textmate key equivalent into a Redcar keybinding.
     def self.translate_key_equivalent(keyeq, name=nil)
       if keyeq
         key_str      = keyeq[-1..-1]
@@ -97,36 +112,31 @@ module Redcar
         res
       end
     end
-    
+
     begin
-      class InstalledBundles < Redcar::Command      
+      class InstalledBundles < Redcar::Command
         def execute
           controller = Controller.new
           tab = win.new_tab(HtmlTab)
           tab.html_view.controller = controller
           tab.focus
         end
-        
+
         class Controller
           include Redcar::HtmlController
-          
+
           def title
             "Installed Bundles"
           end
-          
+
           def index
             rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "views", "installed_bundles.html.erb")))
             rhtml.result(binding)
           end
         end
       end
-    rescue NameError => e    
+    rescue NameError => e
       puts "Delaying full textmate plugin while installing."
     end
   end
 end
-
-
-
-
-
