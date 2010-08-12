@@ -1,4 +1,5 @@
 .ansi-bold              { font-weight: bold; }
+.ansi-regular           { font-weight: normal; }
 
 .ansi-black             { color: #000; }
 .ansi-light.ansi-black  { color: #777; }

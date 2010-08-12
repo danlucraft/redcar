@@ -21,19 +21,42 @@ module Redcar
         @ansi_colors = %w(black red green yellow blue purple cyan gray) 
       end
       
+      def color(num)
+        @ansi_colors[num.to_i]
+      end
+
+      def close_ansi_spans(clear = false)
+        stack_length = @ansi_stack.size
+        @ansi_stack = [] if clear
+        "</span>" * stack_length
+      end
+
+      def ansi_span(style)
+        %Q|<span class="#{style}">|
+      end
+
+      def restart_ansi_spans
+        @ansi_stack.map do |style|
+          ansi_span(style)
+        end.join('')
+      end
+
       def process_ansi(str)
-        str.gsub(/\e\[(([0,1]);?)?((\d)(\d))?m/) do |m|
+        restart_ansi_spans + str.gsub(/\e\[(([0,1]);?)?((\d)(\d))?m/) do |m|
           match = $~
-          if match[2] == "0"
-            "</span>"
+          if match[2] == "0" && match[4].nil?
+            close_ansi_spans(:clear)
           else
             style = ""          
-            style += "ansi-bold "       if match[2] == "1"
-            style += "ansi-light "      if match[4] == "9"
-            style += "ansi-#{@ansi_colors[match[5].to_i]}" if match[4] == "3"
-            %Q|<span class="#{style}">|
+            style += "ansi-regular "               if match[2] == "0"
+            style += "ansi-bold "                  if match[2] == "1"
+            style += "ansi-light "                 if match[4] == "9"
+            style += "ansi-on-#{color(match[5])} " if match[4] == "4"
+            style += "ansi-#{color(match[5])}"     if match[4] == "3" || match[4] == "9"
+            @ansi_stack << style unless style.empty?
+            ansi_span(style)
           end
-        end
+        end + close_ansi_spans
       end
     end
   end
