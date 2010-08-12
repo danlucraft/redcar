@@ -4,6 +4,7 @@ Session.use_open4 = true
 
 require 'runnables/command_output_controller'
 require 'runnables/running_process_checker'
+require 'runnables/output_processor'
 
 module Redcar
   class Runnables

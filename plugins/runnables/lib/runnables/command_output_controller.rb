@@ -35,12 +35,25 @@ module Redcar
         end
       end
       
+      def stylesheet_link_tag(*files)
+        files.map do |file|
+          path = File.join(Redcar.root, %w(plugins runnables views) + [file.to_s + ".css"])
+          url = "file://" + File.expand_path(path)
+          %Q|<link href="#{url}" rel="stylesheet" type="text/css" />|
+        end.join("\n")
+      end
+      
+      def process(text)
+        @processor ||= OutputProcessor.new
+        @processor.process(text)
+      end
+      
       def run_windows
         @thread = Thread.new do
           output = `cd #{@path} & #{@cmd} 2>&1`
           html=<<-HTML
           <div class="stdout">
-            <pre>#{output}</pre>
+            #{process(output)}
           </div>
           HTML
           execute(<<-JAVASCRIPT)
@@ -56,7 +69,7 @@ module Redcar
           @shell.outproc = lambda do |out|
             html=<<-HTML
               <div class="stdout">
-                <pre>#{out}</pre>
+                #{process(out)}
               </div>
             HTML
             execute(<<-JAVASCRIPT)
