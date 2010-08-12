@@ -56,7 +56,7 @@ module Redcar
       #
       # @return [Node]
       def from_data(path)
-        Node.create_from_path(@adapter, path)
+        Node.create_from_path(@adapter, {:fullname => path})
       end
       
       # Turn the nodes into data.
