@@ -4,6 +4,7 @@ require 'textmate/environment'
 require 'textmate/plist'
 require 'textmate/preference'
 require 'textmate/snippet'
+require 'textmate/tree_mirror'
 
 module Redcar
   module Textmate
@@ -27,19 +28,21 @@ module Redcar
       @storage ||= begin
         storage = Plugin::Storage.new('textmate')
         storage.set_default('load_bundles_menu',true)
-        storage.set_default('select_loaded_bundles',true)
+        storage.set_default('select_bundles_for_menu',true)
+        storage.set_default('select_bundles_for_tree',false)
         storage.set_default('loaded_bundles',['groovy','java','javascript','json','lisp','python','ruby','ruby on rails','todo','yaml'])
         storage
       end
     end
 
+    #TODO: Add 'reload bundles' item to menu
     def self.attach_menus(builder)
       if Textmate.storage['load_bundles_menu']
         @menus ||= begin
           Menu::Builder.build do |a|
             all_bundles.sort_by {|b| (b.name||"").downcase}.each do |bundle|
               name = (bundle.name||"").downcase
-              unless @storage['select_loaded_bundles'] and !@storage['loaded_bundles'].to_a.include?(name)
+              unless @storage['select_bundles_for_menu'] and !@storage['loaded_bundles'].to_a.include?(name)
                 bundle.build_menu(a)
               end
             end
