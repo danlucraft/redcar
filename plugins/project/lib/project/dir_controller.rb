@@ -251,7 +251,7 @@ module Redcar
         adapter = DirController.adapter(node, tree)
         adapter.mv(node.path, new_path)
         tree.refresh
-        new_node = DirMirror::Node.create_from_path(adapter, new_path)
+        new_node = DirMirror::Node.create_from_path(adapter, {:fullname => new_path})
         tree.select(new_node)
       end
       
