@@ -2,7 +2,7 @@
 module Redcar
   module Scm
     class ScmMirror
-      module Change
+      module Commit
         include Redcar::Tree::Mirror::NodeMirror
         
         def text

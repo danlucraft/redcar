@@ -5,6 +5,7 @@ $:.push(
 
 require 'git'
 require 'scm-git/change'
+require 'scm-git/commit'
 
 module Redcar
   module Scm
@@ -48,7 +49,11 @@ module Redcar
             c.add('status', 5) { @repo.status }
             c.add('full status', 5) { @repo.lib.full_status }
             c.add('config', 30) { @repo.lib.config_list }
-            c.add('log', 500) {|start, finish| @repo.lib.log_commits(:between => [start, finish]) }
+            c.add('log', 500) do |start, finish| 
+              @repo.lib.log_commits(:between => [start, finish]).reverse.map do |c|
+                @repo.gcommit(c)
+              end
+            end
             c
           end
         end
@@ -298,8 +303,7 @@ module Redcar
           ref_file.close()
           
           # Hit `git log $R_REV..$L_REV` to get a list of commits that are unpushed.          
-          p cache['log', r_ref, l_ref]
-          [] # return an empty array to keep everyone happy
+          cache['log', r_ref, l_ref].map {|c| Scm::Git::Commit.new(c)}
         end
         
         # REQUIRED for :push. Pushes all current changesets to the remote
