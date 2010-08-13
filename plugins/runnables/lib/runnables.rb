@@ -41,7 +41,17 @@ module Redcar
       include Redcar::Tree::Mirror
       
       def initialize(project)
-        runnable_file_paths = project.config_files("runnables/*.json")
+        @project = project
+        load
+      end
+
+      def refresh_operation(tree)
+        load
+        yield
+      end
+
+      def load
+        runnable_file_paths = @project.config_files("runnables/*.json")
         
         groups = {}
         runnable_file_paths.each do |path|
@@ -176,6 +186,7 @@ module Redcar
     class ShowRunnables < Redcar::Command
       def execute
         if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
+          tree.refresh
           win.treebook.focus_tree(tree)
         else
           project = Project::Manager.in_window(win)
