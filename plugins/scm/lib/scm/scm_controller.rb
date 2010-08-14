@@ -10,6 +10,7 @@ module Redcar
         :deleted => [:index_restore, :index_unsave],
         :missing => [:index_restore, :index_delete],
         :changed => [:index_save, :index_revert],
+        :unmerged => [:index_save, :index_delete],
         :commitable => [:commit],
       }
       

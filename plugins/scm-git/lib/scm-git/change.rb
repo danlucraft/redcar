@@ -16,6 +16,7 @@ module Redcar
           'MD' => [:indexed, :missing],
           ' M' => [:changed],
           ' D' => [:missing],
+          'UU' => [:unmerged],
         }
         
         attr_reader :repo
