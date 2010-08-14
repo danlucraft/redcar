@@ -3,6 +3,8 @@ Version 0.3.10 (TBA)
 ====================
 
  * Fix for opening files with regex characters in. (Tom Murray)
+ * Colourful Runnables! (The output tab supports ANSI escape codes) (Mat Schaffer)
+ * Runnables scroll as the output gets longer (Delisa Mason)
 
 Version 0.3.9 (12 Aug 2010)
 ===========================
