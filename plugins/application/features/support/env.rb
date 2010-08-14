@@ -14,7 +14,15 @@ module SwtHelper
   end
   
   def active_shell
-    Redcar.app.focussed_window.controller.shell
+    focussed_window.controller.shell
+  end
+
+  def focussed_window
+    Redcar.app.focussed_window
+  end
+
+  def focussed_tree
+    focussed_window.treebook.focussed_tree
   end
   
   def dialog(type)
@@ -26,15 +34,11 @@ module SwtHelper
       Redcar::ApplicationSWT.shell_dialogs[s]
     end.compact
   end
-  
-  def tree_book
-    active_shell.children.to_a.first.children.to_a.first.children.to_a.first.children.to_a.first
-  end
-  
+
   def top_tree
-    r = tree_book
-    r.extend(TreeHelpers)
-    r
+    tree = focussed_tree.controller.viewer.get_tree
+    tree.extend(TreeHelpers)
+    tree
   end
   
   module TreeHelpers

@@ -1,7 +1,7 @@
 
 When /^I expand the tree row "([^\"]*)"$/ do |row|
   item = top_tree.items.detect {|item| item.getText == row }
-  viewer = Redcar.app.focussed_window.treebook.trees.last.controller.viewer
+  viewer = focussed_tree.controller.viewer
   node = viewer.getViewerRowFromItem(item).getElement
   viewer.expandToLevel(node, 1)
 end
