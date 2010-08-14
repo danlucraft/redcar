@@ -25,3 +25,6 @@
 [submodule "plugins/textmate/vendor/redcar-bundles"]
 	path = plugins/textmate/vendor/redcar-bundles
 	url = git://github.com/danlucraft/redcar-bundles.git
+[submodule "plugins/runnables/vendor/session"]
+	path = plugins/runnables/vendor/session
+	url = git://github.com/danlucraft/session.git
