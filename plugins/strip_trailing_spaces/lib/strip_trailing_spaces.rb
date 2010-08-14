@@ -13,9 +13,9 @@ module Redcar
         sub_menu "Plugins" do
           sub_menu "Strip Trailing Spaces" do
             if (Redcar::StripTrailingSpaces.storage['enabled'])
-              item "Disable", DisablePlugin
+              item "Disable Plugin", DisablePlugin
             else
-              item "Enable", EnablePlugin
+              item "Enable Plugin", EnablePlugin
             end
           end
         end
@@ -24,20 +24,14 @@ module Redcar
 
     def self.before_save(doc)
       if (doc.mirror.is_a?(Redcar::Project::FileMirror) && storage['enabled'])
-        # Read cursor position and adjust line offset
-        cursor_line = doc.cursor_line
-        top_line = doc.smallest_visible_line
-        line_offset = doc.cursor_line_offset
-        line = doc.get_line(cursor_line)
-        line_offset = line.rstrip.size if line_offset > line.rstrip.size
+        indenter = doc.controllers(Redcar::AutoIndenter::DocumentController)[0]
+        indenter = nil unless indenter.is_a?(Redcar::AutoIndenter::DocumentController)
 
-        doc.text = doc.to_s.split("\n").each{|s| s.rstrip!}.join("\n") + "\n"
-
-        # Adjust cursor offset and make visible
-        doc.scroll_to_line_at_top(top_line)
-        offset=doc.offset_at_line(cursor_line) + line_offset
-        doc.cursor_offset=offset
-        doc.ensure_visible(offset)
+        indenter.increase_ignore if indenter != nil
+        doc.line_count.times do |l|
+          doc.replace_line(l) { |line_text| line_text.rstrip }
+        end
+        indenter.decrease_ignore if indenter != nil
       end
     end
 
