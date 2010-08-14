@@ -1,0 +1,24 @@
+.stdout {
+  padding: 0px;
+  margin: 0px;
+}
+
+.stderr {
+  padding: 0px;
+  margin: 0px;
+  color: #FF0000;
+}
+
+.stdout pre {
+    padding: 0px;
+    margin: 0px;
+}
+.stderr pre {
+    padding: 0px;
+    margin: 0px;
+}
+
+#output {
+  font-family: Menlo, Consolas, fixed;
+  font-size: 12px;
+}
