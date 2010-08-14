@@ -1,9 +1,10 @@
 
-require File.dirname(__FILE__) + "/../vendor/session-2.4.0/lib/session"
+require File.dirname(__FILE__) + "/../vendor/session/lib/session"
 Session.use_open4 = true
 
 require 'runnables/command_output_controller'
 require 'runnables/running_process_checker'
+require 'runnables/output_processor'
 
 module Redcar
   class Runnables

@@ -1,0 +1,34 @@
+.ansi-bold              { font-weight: bold; }
+.ansi-regular           { font-weight: normal; }
+
+.ansi-black             { color: #000; }
+.ansi-light.ansi-black  { color: #777; }
+.ansi-on-black          { background-color: #000; }
+
+.ansi-red               { color: #c23621; }
+.ansi-light.ansi-red    { color: #f88; }
+.ansi-on-red            { background-color: #c23621; }
+
+.ansi-green             { color: #00bd00; }
+.ansi-light.ansi-green  { color: #8f8; }
+.ansi-on-green          { background-color: #00bd00; }
+
+.ansi-yellow            { color: #ffc800; }
+.ansi-light.ansi-yellow { color: #ffe78f; }
+.ansi-on-yellow         { background-color: #ffc800; }
+
+.ansi-blue              { color: #4c4cff; }
+.ansi-light.ansi-blue   { color: #88f; }
+.ansi-on-blue           { background-color: #4c4cff; }
+
+.ansi-purple            { color: #f0f; }
+.ansi-light.ansi-purple { color: #f8f; }
+.ansi-on-purple         { background-color: #f0f; }
+
+.ansi-cyan              { color: #0cc; }
+.ansi-light.ansi-cyan   { color: #69eded; }
+.ansi-on-cyan           { background-color: #0cc; }
+
+.ansi-gray              { color: #535353; }
+.ansi-light.ansi-gray   { color: #a6a6a6; }
+.ansi-on-gray           { background-color: #535353; }
