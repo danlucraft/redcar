@@ -34,11 +34,15 @@ module Redcar
     end
     
     def java_args
+      str = ""
       if Config::CONFIG["host_os"] =~ /darwin/
-        "-XstartOnFirstThread"
-      else
-        ""
+        str <<"-XstartOnFirstThread"
       end
+      
+      if ARGV.include?("--load-timings")
+        str << " -Djruby.debug.loadService.timing=true"
+      end
+      str
     end
   end
 end

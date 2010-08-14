@@ -28,3 +28,6 @@
 [submodule "plugins/scm-git/vendor/ruby-git"]
 	path = plugins/scm-git/vendor/ruby-git
 	url = git://github.com/mscharley/ruby-git.git
+[submodule "plugins/runnables/vendor/session"]
+	path = plugins/runnables/vendor/session
+	url = git://github.com/danlucraft/session.git
