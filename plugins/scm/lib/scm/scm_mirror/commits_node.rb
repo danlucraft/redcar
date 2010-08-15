@@ -5,6 +5,8 @@ module Redcar
       class CommitsNode
         include Redcar::Tree::Mirror::NodeMirror
         
+        attr_reader :repo
+        
         def initialize(repo, text=nil)
           @repo = repo
           @text = text || @repo.translations[:unpushed_commits]

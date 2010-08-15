@@ -333,13 +333,13 @@ module Redcar
           ref_file.close()
           
           # Check submodules for pushable changes on their current branch
-          submodules_commits = cache['submodules'].values.select {|m| not m.unpushed_commits.empty?}.map {|m| Redcar::Scm::ScmMirror::CommitsNode.new m, m.repo.path}
+          submodules_commits = cache['submodules'].values.select {|m| not m.unpushed_commits.empty?}.map {|m| Redcar::Scm::ScmMirror::CommitsNode.new m, m.repo.dir.path}
           
           # Hit `git log $R_REV..$L_REV` to get a list of commits that are unpushed.
           if r_ref != l_ref
-            cache['log', r_ref, l_ref].map {|c| Scm::Git::Commit.new(c)}
+            submodules_commits + cache['log', r_ref, l_ref].map {|c| Scm::Git::Commit.new(c)}
           else
-            []
+            submodules_commits + []
           end
         end
         

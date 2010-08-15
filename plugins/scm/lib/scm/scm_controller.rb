@@ -72,7 +72,7 @@ module Redcar
             
             separator
           elsif node.is_a?(Scm::ScmMirror::CommitsNode)
-            item(repo.translations[:push]) { repo.push!; tree.refresh }
+            item(repo.translations[:push]) { node.repo.push!; tree.refresh }
             
             separator
           end
