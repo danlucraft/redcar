@@ -71,6 +71,10 @@ module Redcar
             item(repo.translations[:commit]) { Scm::Manager.open_commit_tab(repo) }
             
             separator
+          elsif node.is_a?(Scm::ScmMirror::CommitsNode)
+            item(repo.translations[:push]) { repo.push! }
+            
+            separator
           end
           item("Refresh", :priority => :last) { repo.refresh; tree.refresh }
         end

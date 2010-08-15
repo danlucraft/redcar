@@ -287,11 +287,11 @@ module Redcar
         def unpushed_commits
           # Hit `git config -l` to figure out which remote/ref this branch uses for pushing.
           remote = cache['config']['branch.' + current_branch + '.remote']
-          merge = cache['config']['branch.' + current_branch + '.merge']
+          push_target = cache['config']['branch.' + current_branch + '.push'] || cache['config']['branch.' + current_branch + '.merge']
           
           # Hit .git/remotes/$REMOTE/$REF to find out which revision that ref is at.
-          merge.gsub!(/^refs\/heads\//, '')
-          ref_file = File.join(@repo.dir.path, '.git', 'refs', 'remotes', remote, merge)
+          push_target.gsub!(/^refs\/heads\//, '')
+          ref_file = File.join(@repo.dir.path, '.git', 'refs', 'remotes', remote, push_target)
           ref_file = File.new(ref_file, 'r');
           r_ref = ref_file.sysread(40)
           ref_file.close()
@@ -309,8 +309,10 @@ module Redcar
         # REQUIRED for :push. Pushes all current changesets to the remote
         # repository.
         def push!
-          raise "Scm.push! not implemented." if supported_commands.include?(:push)
-          nil
+          remote = cache['config']['branch.' + current_branch + '.remote']
+          push_target = cache['config']['branch.' + current_branch + '.push'] || cache['config']['branch.' + current_branch + '.merge']
+          
+          repo.push(remote, '+refs/heads/' + current_branch + ':' + push_target)
         end
         
         private

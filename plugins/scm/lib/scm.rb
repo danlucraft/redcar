@@ -192,8 +192,10 @@ module Redcar
               # expensive operation.
               group :priority => 40 do
                 repo = repo_info['repo']
-                if repo.supported_commands.include?(:switch_branch)
+                if repo.supported_commands.find {|i| [:switch_branch].include? i}
                   separator
+                end
+                if repo.supported_commands.include?(:switch_branch)
                   lazy_sub_menu repo.translations[:switch_branch] do
                     current = repo.current_branch
                     repo.branches.sort.each do |branch|
