@@ -54,7 +54,19 @@ module Redcar
             c.add('status', 5) { @repo.status }
             c.add('full status', 5) { @repo.lib.full_status }
             c.add('config', 30) do
-              @repo.lib.config_list
+              #@repo.lib.config_list
+              config = Scm::Git::ConfigFile.parse(File.join(@repo.dir.path, '.git', 'config'))
+              conf = {}
+              
+              config.each do |key, values|                
+                prefix = key.sub(/^([a-z]+) "(.+)"$/i, '\1.\2')
+                
+                values.each do |key2, value|
+                  conf[prefix + '.' + key2] = value
+                end
+              end
+              
+              conf
             end
             c.add('log', 60*60) do |start, finish| 
               @repo.lib.log_commits(:between => [start, finish]).reverse.map do |c|
