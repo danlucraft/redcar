@@ -8,6 +8,7 @@ Enhancements:
  * Runnables scroll as the output gets longer (Delisa Mason)
  * Option to save all tabs before running any Runnable (Delisa Mason)
  * Strip trailing spaces on save option (Steven Hancock)
+ * Search and replace supports backreferences (\1 \2 etc) (Mat Schaffer)
 
 Fixes:
 
