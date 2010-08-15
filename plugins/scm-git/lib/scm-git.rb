@@ -4,6 +4,7 @@ $:.push(
 )
 
 require 'git'
+require 'scm-git/config_file'
 require 'scm-git/change'
 require 'scm-git/commit'
 
@@ -39,7 +40,11 @@ module Redcar
         #####
         
         def inspect
-          %Q{#<Scm::Git::Manager "#{@repo.dir.path}">}
+          if @repo
+            %Q{#<Scm::Git::Manager "#{@repo.dir.path}">}
+          else
+            %Q{#<Scm::Git::Manager>}
+          end
         end
         
         def cache
@@ -49,9 +54,24 @@ module Redcar
             c.add('status', 5) { @repo.status }
             c.add('full status', 5) { @repo.lib.full_status }
             c.add('config', 30) { @repo.lib.config_list }
-            c.add('log', 500) do |start, finish| 
+            c.add('log', 60*60) do |start, finish| 
               @repo.lib.log_commits(:between => [start, finish]).reverse.map do |c|
                 @repo.gcommit(c)
+              end
+            end
+            c.add('submodules', 60*60) do
+              begin
+                modules = Scm::Git::ConfigFile.parse(File.join(@repo.dir.path, '.gitmodules'))
+                
+                mods = {}
+                modules.each {|k, v|
+                  mod = Scm::Git::Manager.new
+                  mod.load(File.join(@repo.dir.path, v['path']))
+                  mods[v['path']] = mod
+                }
+                mods
+              rescue Errno::ENOENT => e
+                {}
               end
             end
             c
@@ -77,7 +97,6 @@ module Redcar
         
         def refresh
           cache.refresh
-          subprojects.values.each {|p| p.refresh}
         end
         
         def init!(path)
@@ -107,13 +126,7 @@ module Redcar
             end
             
             if type == :sub_project
-              subprojects[full_path] ||= begin
-                project = Scm::Git::Manager.new
-                project.load(full_path)
-                project
-              end
-              
-              changes.push(Scm::Git::Change.new(f[1], self, type, @subprojects[full_path].uncommited_changes))
+              changes.push(Scm::Git::Change.new(f[1], self, type, cache['submodules'][f[0]].uncommited_changes))
             else
               changes.push(Scm::Git::Change.new(f[1], self, type))
             end
@@ -234,8 +247,7 @@ module Redcar
             end
             
             # redelegate the commit to the subproject to handle
-            full_path = File.join(@repo.dir.path, change.path)
-            subprojects[full_path].commit!(message)
+            cache['submodules'][change.path].commit!(message)
           else
             @repo.commit(message)
             cache.refresh
@@ -256,8 +268,7 @@ module Redcar
             end
           
             # redelegate the call to the subproject to handle
-            full_path = File.join(@repo.dir.path, change.path)
-            subprojects[full_path].commit_message
+            cache['submodules'][change.path].commit_message
           else
             "\n\n" + cache['full status']
           end
@@ -302,8 +313,12 @@ module Redcar
           l_ref = ref_file.sysread(40)
           ref_file.close()
           
-          # Hit `git log $R_REV..$L_REV` to get a list of commits that are unpushed.          
-          cache['log', r_ref, l_ref].map {|c| Scm::Git::Commit.new(c)}
+          # Hit `git log $R_REV..$L_REV` to get a list of commits that are unpushed.
+          if r_ref != l_ref
+            cache['log', r_ref, l_ref].map {|c| Scm::Git::Commit.new(c)}
+          else
+            []
+          end
         end
         
         # REQUIRED for :push. Pushes all current changesets to the remote
@@ -313,12 +328,6 @@ module Redcar
           push_target = cache['config']['branch.' + current_branch + '.push'] || cache['config']['branch.' + current_branch + '.merge']
           
           repo.push(remote, '+refs/heads/' + current_branch + ':' + push_target)
-        end
-        
-        private
-        
-        def subprojects
-          @subprojects ||= {}
         end
       end
     end

@@ -149,6 +149,7 @@ module Redcar
           project_repositories.delete project
           
           puts "*** Error loading SCM: " + $!.message
+          puts $!.backtrace
         end
         
         puts "scm start took #{Time.now - start}s (included in project start time)" if debug
