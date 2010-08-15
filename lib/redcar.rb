@@ -90,7 +90,7 @@ module Redcar
         #puts 'Continuing normally...'
         #forking = false
       end
-    rescue e => NotImplementedError
+    rescue NotImplementedError
       puts "Forking isn't supported on this system. Sorry."
       puts "Starting normally..."
     end
