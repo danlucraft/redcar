@@ -31,3 +31,6 @@
 [submodule "plugins/runnables/vendor/session"]
 	path = plugins/runnables/vendor/session
 	url = git://github.com/danlucraft/session.git
+[submodule "plugins/scm/vendor/ruby-blockcache"]
+	path = plugins/scm/vendor/ruby-blockcache
+	url = git://github.com/mscharley/ruby-blockcache.git

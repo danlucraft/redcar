@@ -44,7 +44,7 @@ module Redcar
         
         def cache
           @cache ||= begin
-            c = Redcar::Scm::Cache.new
+            c = ::BlockCache.new
             c.add('branches', 15) { @repo.lib.branches_all }
             c.add('status', 5) { @repo.status }
             c.add('full status', 5) { @repo.lib.full_status }
