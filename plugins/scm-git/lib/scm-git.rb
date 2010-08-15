@@ -50,11 +50,20 @@ module Redcar
         def cache
           @cache ||= begin
             c = ::BlockCache.new
-            c.add('branches', 15) { @repo.lib.branches_all }
+            c.add('branches', 15) do
+              #@repo.lib.branches_all
+              
+              head = File.read(File.join(@repo.dir.path, '.git', 'HEAD')).strip
+              branches = Dir.glob(File.join(@repo.dir.path, '.git', 'refs', 'heads', '*')).map {|f| File.basename(f)}
+              
+              branches.map {|b| [b, ('ref: refs/heads/' + b == head)]}
+            end
+            c.add('all branches', 15) do
+              raise "not implemented"
+            end
             c.add('status', 5) { @repo.status }
             c.add('full status', 5) { @repo.lib.full_status }
             c.add('config', 30) do
-              #@repo.lib.config_list
               config = Scm::Git::ConfigFile.parse(File.join(@repo.dir.path, '.git', 'config'))
               conf = {}
               
@@ -292,12 +301,14 @@ module Redcar
         #
         # @return [Array<String>]
         def branches
-          cache['branches'].map {|b| b[0]}.select {|b| not b.include? "/" }
+          cache['branches'].map {|b| b[0]}
         end
         
         # REQUIRED for :switch_branch. Returns the name of the current branch.
         def current_branch
-          cache['branches'].select { |b| b[1] }.first[0]
+          b = cache['branches'].select { |b| b[1] }.first
+          
+          b.nil? ? "" : b[0]
         end
         
         # REQUIRED for :switch_branch. Switches to the named branch.
@@ -321,16 +332,10 @@ module Redcar
           
           # Hit .git/remotes/$REMOTE/$REF to find out which revision that ref is at.
           push_target.gsub!(/^refs\/heads\//, '')
-          ref_file = File.join(@repo.dir.path, '.git', 'refs', 'remotes', remote, push_target)
-          ref_file = File.new(ref_file, 'r');
-          r_ref = ref_file.sysread(40)
-          ref_file.close()
+          r_ref = File.read(File.join(@repo.dir.path, '.git', 'refs', 'remotes', remote, push_target)).strip
           
           # Hit .git/refs/heads/$BRANCH to figure out which revision we're at locally.
-          ref_file = File.join(@repo.dir.path, '.git', 'refs', 'heads', current_branch)
-          ref_file = File.new(ref_file, 'r');
-          l_ref = ref_file.sysread(40)
-          ref_file.close()
+          l_ref = File.read(File.join(@repo.dir.path, '.git', 'refs', 'heads', current_branch)).strip
           
           # Check submodules for pushable changes on their current branch
           submodules_commits = cache['submodules'].values.select {|m| not m.unpushed_commits.empty?}.map {|m| Redcar::Scm::ScmMirror::CommitsNode.new m, m.repo.dir.path}
