@@ -35,6 +35,14 @@ module SwtHelper
     end.compact
   end
 
+  def visible_tree_items(tree, items = [])
+    tree.getItems.to_a.each do |item|
+      items << item.getText
+      visible_tree_items(item, items) if item.expanded?
+    end
+    return items
+  end
+
   def top_tree
     tree = focussed_tree.controller.viewer.get_tree
     tree.extend(TreeHelpers)
