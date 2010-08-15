@@ -1015,6 +1015,7 @@ module Redcar
       Redcar::Project::Manager.start(args)
       puts "project start took #{Time.now - s}s"
       Redcar.app.make_sure_at_least_one_window_open
+      puts "start time: #{Time.now - $redcar_process_start_time}"
     end
   end
 end
