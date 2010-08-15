@@ -5,12 +5,13 @@ module Redcar
       class CommitsNode
         include Redcar::Tree::Mirror::NodeMirror
         
-        def initialize(repo)
+        def initialize(repo, text=nil)
           @repo = repo
+          @text = text || @repo.translations[:unpushed_commits]
         end
         
         def text
-          @repo.translations[:unpushed_commits]
+          @text
         end
         
         def icon

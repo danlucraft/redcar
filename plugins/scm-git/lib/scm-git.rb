@@ -53,7 +53,9 @@ module Redcar
             c.add('branches', 15) { @repo.lib.branches_all }
             c.add('status', 5) { @repo.status }
             c.add('full status', 5) { @repo.lib.full_status }
-            c.add('config', 30) { @repo.lib.config_list }
+            c.add('config', 30) do
+              @repo.lib.config_list
+            end
             c.add('log', 60*60) do |start, finish| 
               @repo.lib.log_commits(:between => [start, finish]).reverse.map do |c|
                 @repo.gcommit(c)
@@ -81,7 +83,7 @@ module Redcar
         #######
         ## SCM hooks
         #####
-        attr_accessor :repo
+        attr_reader :repo
         
         def repository_type
           "git"
@@ -300,6 +302,11 @@ module Redcar
           remote = cache['config']['branch.' + current_branch + '.remote']
           push_target = cache['config']['branch.' + current_branch + '.push'] || cache['config']['branch.' + current_branch + '.merge']
           
+          # We don't have a remote setup for pushes, so we can't automatically push
+          if remote.nil?
+            return []
+          end
+          
           # Hit .git/remotes/$REMOTE/$REF to find out which revision that ref is at.
           push_target.gsub!(/^refs\/heads\//, '')
           ref_file = File.join(@repo.dir.path, '.git', 'refs', 'remotes', remote, push_target)
@@ -312,6 +319,9 @@ module Redcar
           ref_file = File.new(ref_file, 'r');
           l_ref = ref_file.sysread(40)
           ref_file.close()
+          
+          # Check submodules for pushable changes on their current branch
+          submodules_commits = cache['submodules'].values.select {|m| not m.unpushed_commits.empty?}.map {|m| Redcar::Scm::ScmMirror::CommitsNode.new m, m.repo.path}
           
           # Hit `git log $R_REV..$L_REV` to get a list of commits that are unpushed.
           if r_ref != l_ref
