@@ -9,6 +9,7 @@ Enhancements:
  * Option to save all tabs before running any Runnable (Delisa Mason)
  * Strip trailing spaces on save option (Steven Hancock)
  * Search and replace supports backreferences (\1 \2 etc) (Mat Schaffer)
+ * Uses client, 32bit jvm mode, for twice as fast startup. (Dan Lucraft)
 
 Fixes:
 
