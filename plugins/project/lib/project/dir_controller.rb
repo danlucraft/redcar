@@ -14,13 +14,9 @@ module Redcar
         end
       end
       
-      def selected(tree, node)
-        return unless node
-        return unless node.adapter
-        return unless node.adapter.lazy?
-        
-        node.calculate_children
-        true
+      def handle_error(tree, error)
+        tree.close
+        Application::Dialog.message_box(error.message, :type => :error)
       end
       
       class DragController
@@ -118,7 +114,7 @@ module Redcar
         adapter.touch(new_file_path)
         tree.refresh
         tree.expand(node)
-        new_file_node = DirMirror::Node.create_from_path(adapter, new_file_path)
+        new_file_node = DirMirror::Node.cache[new_file_path]
         tree.edit(new_file_node)
       end
       
@@ -126,12 +122,11 @@ module Redcar
         enclosing_dir = node ? node.directory : tree.tree_mirror.path
         new_dir_name = uniq_name(enclosing_dir, "New Directory")
         new_dir_path = File.join(enclosing_dir, new_dir_name)
-                
         adapter = DirController.adapter(node, tree)
         adapter.mkdir(new_dir_path)
         tree.refresh
         tree.expand(node)
-        new_dir_node = DirMirror::Node.create_from_path(adapter, new_dir_path)
+        new_dir_node = DirMirror::Node.cache[new_dir_path]
         tree.edit(new_dir_node)
       end
       
@@ -170,6 +165,7 @@ module Redcar
           @pairs = nodes.map {|node| [node, File.basename(node.path)] }
           @match_pattern = ""
           @replace_pattern = ""
+          @adapter = DirController.adapter(nodes.first, tree)
         end
         
         def title
@@ -192,11 +188,15 @@ module Redcar
             old_name = File.basename(node.path)
             new_name = transform_name(old_name)
             new_path = File.join(File.dirname(node.path), new_name)
-            conflicts = (File.exist?(new_path) and new_name != old_name)
+            conflicts = (@adapter.exists?(new_path) and new_name != old_name)
             legal     = (new_name != "" and legal_path?(new_path))
             [new_name, conflicts, legal]
           end
           result
+        rescue => e
+          puts e.class
+          puts e.message
+          puts e.backtrace
         end
         
         def submit(params)
@@ -205,7 +205,8 @@ module Redcar
             new_name = transform_name(old_name)
             next if old_name == new_name
             new_path = File.join(File.dirname(node.path), new_name)
-            FileUtils.mv(node.path, new_path)
+            
+            @adapter.mv(node.path, new_path)
           end
           @tab.close
           @tree.refresh
@@ -237,7 +238,7 @@ module Redcar
         result = Application::Dialog.message_box(msg, :type => :question, :buttons => :yes_no)
         if result == :yes
           nodes.each do |node|
-            FileUtils.rm_rf(node.path)
+            node.adapter.delete(node.path)
           end
           tree.refresh
         end
@@ -250,7 +251,7 @@ module Redcar
         adapter = DirController.adapter(node, tree)
         adapter.mv(node.path, new_path)
         tree.refresh
-        new_node = DirMirror::Node.create_from_path(adapter, new_path)
+        new_node = DirMirror::Node.create_from_path(adapter, {:fullname => new_path})
         tree.select(new_node)
       end
       

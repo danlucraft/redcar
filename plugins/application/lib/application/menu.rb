@@ -11,7 +11,7 @@ module Redcar
   
     # A Menu will initially have nothing in it.
     def initialize(text=nil, options={})
-      @text, @entries, @priority = text || "", [], options[:priority] || Menu::DEFAULT_PRIORITY
+      @text, @entries, @priority = text || "", [], options[:priority]
     end
   
     # Iterate over each entry, sorted by priority
@@ -74,6 +74,7 @@ module Redcar
     #
     # @param [Menu] another Menu
     def merge(other)
+      @priority = @priority || other.priority
       other.entries.each do |other_entry|
         if here = entry(other_entry.text) and not other_entry.is_unique?
           if here.class == other_entry.class

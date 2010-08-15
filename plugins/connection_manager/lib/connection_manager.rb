@@ -46,7 +46,7 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Plugins" do
-          sub_menu "Connections" do
+          sub_menu "Connections", :priority => 36 do
             item "Manage", OpenCommand
             item "Remote Filter", OpenRemoteFilter
           end

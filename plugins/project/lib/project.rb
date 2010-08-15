@@ -38,12 +38,18 @@ module Redcar
     def initialize(path, adapter=Adapters::Local.new)
       @adapter = adapter
       @path   = File.expand_path(path)
-      dir_mirror = Project::DirMirror.new(path, adapter)
+      dir_mirror = Project::DirMirror.new(@path, adapter)
       if dir_mirror.exists?
         @tree   = Tree.new(dir_mirror, Project::DirController.new)
         @window = nil
-        file_list_resource.compute
+        file_list_resource.compute unless remote?
+      else
+        raise "#{path} doesn't seem to exist"
       end
+    end
+    
+    def remote?
+      adapter.is_a?(Adapters::Remote)
     end
     
     def ready?
@@ -78,11 +84,11 @@ module Redcar
     # there is one.
     def refresh
       @tree.refresh
-      file_list_resource.compute
+      file_list_resource.compute unless remote?
     end
     
     def contains_path?(path)
-      File.expand_path(path) =~ /^#{@path}($|\/|\\)/
+      File.expand_path(path) =~ /^#{Regexp.escape(@path)}($|\/|\\)/
     end
     
     # A list of files previously opened in this session for this project
@@ -104,6 +110,7 @@ module Redcar
     end
     
     def file_list
+      raise "can't access a file list for a remote project" if remote?
       @file_list ||= FileList.new(path)
     end
     

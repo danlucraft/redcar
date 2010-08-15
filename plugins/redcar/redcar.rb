@@ -1,13 +1,10 @@
 
 module Redcar
   def self.safely(text=nil)
-    if text == nil
-      text = caller[1]
-    end
     begin
       yield
     rescue => e
-      message = "Error in: " + text
+      message = "Error in: " + (text || e.message)
       Application::Dialog.message_box(
         message,
         :type => :error, :buttons => :ok)
@@ -23,6 +20,32 @@ module Redcar
         yield
       end
     end
+  end
+  
+  class TimeoutError < StandardError; end
+  
+  def self.timeout(limit)
+    x = Thread.current
+    result = nil
+    y = Thread.new do
+      begin
+        result = yield
+      rescue Object => e
+        x.raise e
+      end
+    end
+    s = Time.now
+    loop do
+      if not y.alive?
+        break
+      elsif Time.now - s > limit
+        y.kill
+        raise Redcar::TimeoutError, "timed out after #{Time.now - s}s"
+        break
+      end
+      sleep 0.1
+    end
+    result
   end
   
   module Top
@@ -692,7 +715,7 @@ module Redcar
         link "Cmd+O",       Project::FileOpenCommand
         link "Cmd+U",       Project::FileReloadCommand
         link "Cmd+Shift+O", Project::DirectoryOpenCommand
-        link "Cmd+Ctrl+O",  Project::OpenRemoteCommand
+        #link "Cmd+Ctrl+O",  Project::OpenRemoteCommand
         link "Cmd+S",       Project::FileSaveCommand
         link "Cmd+Shift+S", Project::FileSaveAsCommand
         link "Cmd+Ctrl+R",  Project::RevealInProjectCommand
@@ -726,6 +749,12 @@ module Redcar
         #link "Escape", AutoCompleter::AutoCompleteCommand
         link "Ctrl+Escape",  AutoCompleter::MenuAutoCompleterCommand
         
+        link "Ctrl+U",       EditView::UpcaseTextCommand
+        link "Ctrl+Shift+U", EditView::DowncaseTextCommand
+        link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
+        link "Ctrl+G",       EditView::OppositeCaseTextCommand
+        link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
+
         link "Cmd+T",           Project::FindFileCommand
         link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
         link "Cmd+Alt+O",       SwitchNotebookCommand
@@ -734,6 +763,7 @@ module Redcar
         link "Ctrl+Shift+[",    MoveTabDownCommand
         link "Ctrl+Shift+]",    MoveTabUpCommand
         link "Ctrl+R",          Runnables::RunEditTabCommand
+        link "Cmd+Alt+I",       ToggleInvisibles
 
         link "Ctrl+Shift+P",    PrintScopeCommand
         
@@ -755,7 +785,7 @@ module Redcar
         link "Ctrl+Alt+N",   NewWindowCommand
         link "Ctrl+O",       Project::FileOpenCommand
         link "Ctrl+Shift+O", Project::DirectoryOpenCommand
-        link "Alt+Shift+O",  Project::OpenRemoteCommand
+        #link "Alt+Shift+O",  Project::OpenRemoteCommand
         link "Ctrl+S",       Project::FileSaveCommand
         link "Ctrl+Shift+S", Project::FileSaveAsCommand
         link "Ctrl+Shift+R", Project::RevealInProjectCommand
@@ -788,6 +818,12 @@ module Redcar
         link "Ctrl+Space",       AutoCompleter::AutoCompleteCommand
         link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleterCommand
         
+        link "Ctrl+U",       EditView::UpcaseTextCommand
+        link "Ctrl+Shift+U", EditView::DowncaseTextCommand
+        link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
+        link "Ctrl+G",       EditView::OppositeCaseTextCommand
+        link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
+
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
         link "Ctrl+R",           Runnables::RunEditTabCommand
@@ -801,7 +837,8 @@ module Redcar
         link "Ctrl+Shift+Page Up",   MoveTabDownCommand
         link "Ctrl+Shift+Page Down", MoveTabUpCommand
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
-        
+        link "Ctrl+Alt+I",       ToggleInvisibles
+
         link "Ctrl+Alt+S", Snippets::OpenSnippetExplorer
         #Textmate.attach_keybindings(self, :linux)
 
@@ -818,59 +855,76 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "File", :priority => :first do
-          group(:priority => :first) {
+          group(:priority => :first) do
             item "New", NewCommand
             item "New Window", NewWindowCommand
-          }
+          end
           
-          group(:priority => 10) {
+          group(:priority => 10) do
             separator
             item "Close Tab", CloseTabCommand
             item "Close Tree", CloseTreeCommand
             item "Close Window", CloseWindowCommand
-          }
+          end
           
-          group(:priority => :last) {
+          group(:priority => :last) do
             separator
             item "Quit", QuitCommand
-          }
+          end
         end
         sub_menu "Edit", :priority => 5 do
           item "Tab Info",  EditView::InfoSpeedbarCommand
-          separator
-          item "Undo", UndoCommand
-          item "Redo", RedoCommand
-          separator
-          item "Cut", CutCommand
-          item "Copy", CopyCommand
-          item "Paste", PasteCommand
-          item "Duplicate Region", DuplicateCommand
-          separator
-          item "Top",     MoveTopCommand
-          item "Home",    MoveHomeCommand
-          item "End",     MoveEndCommand
-          item "Bottom",  MoveBottomCommand
-          separator
-          item "Increase Indent", IncreaseIndentCommand
-          item "Decrease Indent", DecreaseIndentCommand
-          item "Indent",          AutoIndenter::IndentCommand
-          separator
-          item "Goto Line", GotoLineCommand
-          separator
-          sub_menu "Select" do
-            item "All", SelectAllCommand
-            item "Line", SelectLineCommand
-            item "Current Word", SelectWordCommand
+          
+          group(:priority => 10) do
+            separator
+            item "Undo", UndoCommand
+            item "Redo", RedoCommand
           end
-          item "Toggle Block Selection", ToggleBlockSelectionCommand
-          item "Auto Complete",          AutoCompleter::AutoCompleteCommand
-          item "Menu Auto Complete",     AutoCompleter::MenuAutoCompleterCommand
+          
+          group(:priority => 15) do
+            separator
+            item "Cut", CutCommand
+            item "Copy", CopyCommand
+            item "Paste", PasteCommand
+            item "Duplicate Region", DuplicateCommand
+          end
+          
+          group(:priority => 25) do
+            separator
+            item "Top",     MoveTopCommand
+            item "Home",    MoveHomeCommand
+            item "End",     MoveEndCommand
+            item "Bottom",  MoveBottomCommand
+          end
+          
+          group(:priority => 60) do
+            separator
+            item "Increase Indent", IncreaseIndentCommand
+            item "Decrease Indent", DecreaseIndentCommand
+          end
+          
+          group(:priority => 70) do
+            separator
+            item "Goto Line", GotoLineCommand
+          end
+          
+          group(:priority => 80) do
+            separator
+            sub_menu "Select" do
+              item "All", SelectAllCommand
+              item "Line", SelectLineCommand
+              item "Current Word", SelectWordCommand
+            end
+            item "Toggle Block Selection", ToggleBlockSelectionCommand
+          end
         end
         sub_menu "Debug", :priority => 20 do
-          item "Task Manager", TaskManager::OpenCommand
-          separator
-          #item "Print Scope Tree", PrintScopeTreeCommand
-          item "Print Scope at Cursor", PrintScopeCommand
+          group(:priority => 10) do
+            item "Task Manager", TaskManager::OpenCommand
+            separator
+            #item "Print Scope Tree", PrintScopeTreeCommand
+            item "Print Scope at Cursor", PrintScopeCommand
+          end
         end
         sub_menu "View", :priority => 30 do
           sub_menu "Appearance" do
@@ -900,20 +954,20 @@ module Redcar
           item "Toggle Annotations", ToggleAnnotations
         end
         sub_menu "Bundles", :priority => 45 do
-          group(:priority => :first) {
+          group(:priority => :first) do
             item "Find Snippet", Snippets::OpenSnippetExplorer
             item "Installed Bundles", Textmate::InstalledBundles
-          }
-          group(:priority => 15) {
+          end
+          group(:priority => 15) do
             separator
             Textmate.attach_menus(self)
-          }
+          end
         end
         sub_menu "Help", :priority => :last do
-          group(:priority => :first) {
+          group(:priority => :first) do
             item "About", AboutCommand
             item "New In This Version", ChangelogCommand
-          }
+          end
         end
       end
     end

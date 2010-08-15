@@ -7,7 +7,7 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Help" do
-          item "Keyboard Shortcuts", ViewShortcuts::ViewCommand
+          item "Keyboard Shortcuts", :command => ViewShortcuts::ViewCommand, :priority => 30
         end
       end
     end

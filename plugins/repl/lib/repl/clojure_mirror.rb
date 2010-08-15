@@ -1,23 +1,23 @@
-require 'java'
-require 'thread'
-
-require File.dirname(__FILE__) + "/repl_mirror.rb"
-require File.dirname(__FILE__) + "/../../vendor/clojure.jar"
-require File.dirname(__FILE__) + "/../../vendor/clojure-contrib.jar"
-require File.dirname(__FILE__) + "/../../vendor/org-enclojure-repl-server.jar"
-require File.dirname(__FILE__) + "/../../vendor/enclojure-wrapper.jar"
-
-include_class 'clojure.lang.Var'
-include_class 'clojure.lang.RT'
-include_class 'redcar.repl.Wrapper'
 
 module Redcar
   class REPL
     class ClojureMirror
+      def self.load_clojure_dependencies
+        unless @loaded
+          require File.dirname(__FILE__) + "/../../vendor/clojure.jar"
+          require File.dirname(__FILE__) + "/../../vendor/clojure-contrib.jar"
+          require File.dirname(__FILE__) + "/../../vendor/org-enclojure-repl-server.jar"
+          require File.dirname(__FILE__) + "/../../vendor/enclojure-wrapper.jar"
+          
+          import 'redcar.repl.Wrapper'
+          @loaded = true
+        end
+      end
+      
       include Redcar::REPL::ReplMirror
       
       def initialize
-	
+        ClojureMirror.load_clojure_dependencies
         # required by ReplMirror
         @prompt = "=>"
         
@@ -41,6 +41,10 @@ module Redcar
       end
 
       def title
+        "Clojure REPL"
+      end
+      
+      def grammar_name
         "Clojure REPL"
       end
       

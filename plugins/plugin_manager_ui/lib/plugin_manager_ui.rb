@@ -60,6 +60,14 @@ module Redcar
             name = plugin.is_a?(PluginManager::PluginDefinition) ? plugin.name : plugin
             str << "<tr class=\"#{highlight ? "grey" : ""}\">"
             str << "<td class=\"plugin\"><span class=\"plugin-name\">" + name + "</span></td>"
+            if plugin.load_time > 1
+              clss = "red"
+            elsif plugin.load_time > 0.1
+              clss = "yellow"
+            else
+              clss = ""
+            end
+            str << "<td class=#{ clss }>#{ plugin.load_time.to_s }</td>"
             str << "<td class=\"links\"><a href=\"#\">Reload</a>" + "</td>"
             str << "</tr>"
             highlight = !highlight

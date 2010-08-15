@@ -4,7 +4,7 @@ class Redcar::Project
   describe Adapters::RemoteProtocols::FTP do
     let(:conn) { double('connection') }
     subject do
-      Adapters::RemoteProtocols::FTP.new('server', 'user', 'secret', nil, '/creation')
+      Adapters::RemoteProtocols::FTP.new('server', 'user', 'secret', [])
     end
     
     before(:each) do
@@ -20,7 +20,7 @@ class Redcar::Project
     
     describe 'methods' do
       subject do
-        Adapters::RemoteProtocols::FTP.new('server', 'user', 'secret', nil, '/creation').tap do |ftp|
+        Adapters::RemoteProtocols::FTP.new('server', 'user', 'secret', []).tap do |ftp|
           ftp.stub!(:connection).and_return(conn)
         end
       end
@@ -30,8 +30,8 @@ class Redcar::Project
           mtime1 = stub('mtime1')
           mtime2 = stub('mtime2')
           subject.stub!(:fetch).with("/creation").and_return([
-            { :fullname => '/creation/first_file.txt', :name => 'first_file.txt', :type => 'file', :mtime => mtime1 },
-            { :fullname => '/creation/scripts',        :name => 'scripts',        :type => 'dir' , :mtime => mtime2 }
+            { :fullname => '/creation/first_file.txt', :name => 'first_file.txt', :type => :file, :mtime => mtime1 },
+            { :fullname => '/creation/scripts',        :name => 'scripts',        :type => :dir , :mtime => mtime2 }
           ])
           subject.mtime("/creation/first_file.txt").should == mtime1
           subject.mtime("/creation/scripts").should == mtime2

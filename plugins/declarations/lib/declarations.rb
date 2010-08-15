@@ -10,7 +10,7 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Project" do
-          item "Go to declaration", Declarations::GoToTagCommand
+          item "Go to declaration", :command => Declarations::GoToTagCommand, :priority => 30
         end
       end
     end
@@ -46,6 +46,7 @@ module Redcar
       end
       
       def execute
+        return if @project.remote?
         file = Declarations::File.new(Declarations.file_path(@project))
         file.update_files(@file_list)
         file.dump
@@ -89,6 +90,11 @@ module Redcar
     class GoToTagCommand < EditTabCommand
 
       def execute
+        if Project::Manager.focussed_project.remote?
+          Application::Dialog.message_box("Go to declaration doesn't work in remote projects yet :(")
+          return
+        end
+          
         if doc.selection?
           handle_tag(doc.selected_text)
         else

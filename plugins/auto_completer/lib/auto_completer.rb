@@ -24,6 +24,17 @@ module Redcar
       result
     end
     
+    def self.menus
+      Menu::Builder.build do
+        sub_menu "Edit" do
+          group(:priority => 83) do
+            item "Auto Complete",          AutoCompleter::AutoCompleteCommand
+            item "Menu Auto Complete",     AutoCompleter::MenuAutoCompleterCommand
+          end
+        end
+      end
+    end
+    
     class AutoCompleteCommand < Redcar::EditTabCommand
       
       def execute

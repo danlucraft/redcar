@@ -1,29 +1,39 @@
 
-require File.dirname(__FILE__) + "/../vendor/session-2.4.0/lib/session"
+require File.dirname(__FILE__) + "/../vendor/session/lib/session"
 Session.use_open4 = true
 
 require 'runnables/command_output_controller'
 require 'runnables/running_process_checker'
+require 'runnables/output_processor'
 
 module Redcar
   class Runnables
     TREE_TITLE = "Runnables"
-    
-    def self.run_process(path, command, title, output)
-      controller = CommandOutputController.new(path, command, title)
-      if output == "window"
-        Project::Manager.open_project_for_path(".")
-        output = "tab"
+
+    def self.run_process(path, command, title, output = "tab")
+      if Runnables.storage['save_project_before_running'] == true
+        Redcar.app.focussed_window.notebooks.each do |notebook|
+          notebook.tabs.each do |tab|
+            case tab
+            when EditTab
+              tab.edit_view.document.save!
+            end
+          end
+        end
       end
+      controller = CommandOutputController.new(path, command, title)
       if output == "none"
         controller.run
-      else
+      else #default to new tab
+        if output == "window"
+          Project::Manager.open_project_for_path(".")
+        end
         tab = Redcar.app.focussed_window.new_tab(HtmlTab)
         tab.html_view.controller = controller
         tab.focus
       end
     end
-    
+
     def self.menus
       Menu::Builder.build do
         sub_menu "Project", :priority => 15 do
@@ -67,6 +77,14 @@ module Redcar
       
       def top
         @top
+      end
+    end
+
+    def self.storage
+      @storage ||= begin
+        storage = Plugin::Storage.new('runnables')
+        storage.set_default('save_project_before_running', false)
+        storage
       end
     end
     
@@ -220,6 +238,3 @@ module Redcar
     end
   end
 end
-
-
-

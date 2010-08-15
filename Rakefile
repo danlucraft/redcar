@@ -1,4 +1,4 @@
-REDCAR_VERSION = "0.3.9dev"
+REDCAR_VERSION = "0.3.10dev"
 require 'rubygems'
 require 'fileutils'
 require 'spec/rake/spectask'
@@ -30,6 +30,14 @@ begin
     t.options = ['--markup', 'markdown']
   end  
 rescue LoadError
+end
+
+desc "upload the docs to redcareditor.com"
+task :release_docs do
+  port     = YAML.load(File.read(".server.yaml"))["port"]
+  docs_dir = YAML.load(File.read(".server.yaml"))["dir"]
+  sh "rsync -e 'ssh -p #{port}' -avz doc/ danlucraft.com:#{docs_dir}/#{REDCAR_VERSION}/"
+  sh "rsync -e 'ssh -p #{port}' -avz doc/ danlucraft.com:#{docs_dir}/latest/"
 end
 
 ### CI
@@ -100,6 +108,10 @@ def remove_gitignored_files(filelist)
   r.select {|fn| fn !~ /\.git/ }
 end
 
+def remove_matching_files(list, string)
+  list.reject {|entry| entry.include?(string)}
+end
+
 spec = Gem::Specification.new do |s|
   s.name              = "redcar"
   s.version           = REDCAR_VERSION
@@ -112,16 +124,18 @@ spec = Gem::Specification.new do |s|
   s.extra_rdoc_files  = %w(README.md)
   s.rdoc_options      = %w(--main README.md)
 
+  
+  
   s.files             = %w(CHANGES LICENSE Rakefile README.md) + 
                           Dir.glob("bin/redcar") + 
                           Dir.glob("config/**/*") + 
                           remove_gitignored_files(Dir.glob("lib/**/*")) + 
-                          remove_gitignored_files(Dir.glob("plugins/**/*")) + 
-                          Dir.glob("textmate/Bundles/*.tmbundle/Syntaxes/**/*") + 
-                          Dir.glob("textmate/Bundles/*.tmbundle/Preferences/**/*") + 
-                          Dir.glob("textmate/Bundles/*.tmbundle/Snippets/**/*") + 
-                          Dir.glob("textmate/Bundles/*.tmbundle/info.plist") + 
-                          Dir.glob("textmate/Themes/*.tmTheme")
+                          remove_matching_files(remove_gitignored_files(Dir.glob("plugins/**/*")), "redcar-bundles") + 
+                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Syntaxes/**/*") + 
+                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Preferences/**/*") + 
+                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Snippets/**/*") + 
+                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/info.plist") + 
+                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Themes/*.tmTheme")
   s.executables       = FileList["bin/redcar"].map { |f| File.basename(f) }
    
   s.require_paths     = ["lib"]
@@ -253,9 +267,6 @@ task :release => :gem do
   s3_uploads = {
     "plugins/edit_view_swt/vendor/java-mateview.jar"       => "java-mateview-#{REDCAR_VERSION}.jar",
     "plugins/application_swt/lib/dist/application_swt.jar" => "application_swt-#{REDCAR_VERSION}.jar",
-    "lib/openssl/lib/bcmail-jdk14-139.jar"                 => "jruby/bcmail-jdk14-139-#{REDCAR_VERSION}.jar",
-    "lib/openssl/lib/bcprov-jdk14-139.jar"                 => "jruby/bcprov-jdk14-139-#{REDCAR_VERSION}.jar",
-    "lib/openssl/lib/jopenssl.jar"                         => "jruby/jopenssl-#{REDCAR_VERSION}.jar",
     "pkg/redcar-#{REDCAR_VERSION}.gem"                     => "redcar-#{REDCAR_VERSION}.gem"
   }
   

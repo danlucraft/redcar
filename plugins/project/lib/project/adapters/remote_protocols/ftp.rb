@@ -13,17 +13,6 @@ module Redcar
           end
           
           def connection
-            @connection = nil if @connection and @connection.closed?
-            
-            if @connection
-              begin
-                @connection.noop
-              rescue Net::FTPTempError
-                puts "Error: #{$!.message}"
-                @connection = nil
-              end
-            end
-            
             @connection ||= Net::FTP.open(host, user, password)
           end
           
@@ -40,13 +29,13 @@ module Redcar
           end
 
           def mkdir(new_dir_path)
-            connection.mkdir new_dir_path
+            exec :mkdir, new_dir_path
           end
 
           def mv(path, new_path)
             target = "#{new_path}/#{File.basename(path)}"
             puts "Renaming: #{path} To: #{target}"
-            connection.rename path, target
+            exec :rename, path, target
           end
           
           def mtime(file)
@@ -56,16 +45,16 @@ module Redcar
           end
           
           def download(remote, local)
-            connection.get remote, local
+            exec :get, remote, local
           end
           
           def upload(local, remote)
-            connection.put local, remote
+            exec :put, local, remote
           end
 
           def dir_listing(path)
             contents = []
-            connection.list(path) do |e|
+            exec(:list, path) do |e|
               entry = Net::FTP::List.parse(e)
               name = entry.basename
               type = "unknown"
@@ -81,8 +70,24 @@ module Redcar
           end
           
           def is_folder(path)
-            connection.chdir(path)
-            connection.pwd == path
+            exec(:chdir, path)
+            exec(:pwd) == path
+          end
+          
+          def with_cached_directories
+            yield
+          end
+          
+          private
+          
+          def exec(method, *args, &block)
+            begin
+              Redcar.timeout(10) do
+                connection.send(method, *args, &block)
+              end
+            rescue Redcar::TimeoutError
+              raise "#{host} connection timed out"
+            end
           end
         end
       end

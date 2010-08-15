@@ -6,45 +6,33 @@ module Redcar
     module Adapters
       module RemoteProtocols
         class Protocol
-          attr_accessor :path, :host, :user, :password, :private_key_files
+          attr_accessor :host, :user, :password, :private_key_files
           
-          def initialize(host, user, password, private_key_files, path)
+          def initialize(host, user, password, private_key_files)
             @host     = host
             @user     = user
             @password = password
-            @path     = path
             @cache    = {}
             @private_key_files = private_key_files
-          end
-          
-          def exist?
-            fetch(@path)
-            true
-          rescue Adapters::Remote::PathDoesNotExist
-            false
+            connection
           end
           
           def exists?(path)
-            entry(path) ? true : false
+            !!entry(path)
           end
           
-          def directory?(path=@path)
-            return check_folder(path) if path == @path
+          def directory?(path)
             return false unless entry = entry(path)
-            entry[:type] == 'dir'
+            entry[:type] == :dir
           end
           
-          def file?(path=@path)
+          def file?(path)
             return false unless entry = entry(path)
-            entry[:type] == 'file'
-          end
-          
-          def exist?
-            is_folder(@path)
+            entry[:type] == :file
           end
           
           def fetch_contents(path)
-            fetch(path).map { |f| f[:fullname] }
+            fetch(path)
           end
           
           def load(file)
@@ -79,7 +67,7 @@ module Redcar
             if contents = cache(parent)
               result = contents.find { |f| f[:fullname] == path }
               return false unless result
-              result[:type] == 'dir'
+              result[:type] == :dir
             else
               is_folder(path)
             end
@@ -99,11 +87,11 @@ module Redcar
           def entry(file)
             path = File.dirname(file)
             contents = fetch(path)
-            contents.find { |f| f[:fullname] == "#{file}" }
+            contents.detect { |f| f[:fullname] == file }
           end
 
-          def fetch(path=@path)
-            @cache[path] ||= dir_listing(path)
+          def fetch(path)
+            dir_listing(path)
           end
         end
       end
