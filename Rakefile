@@ -32,6 +32,14 @@ begin
 rescue LoadError
 end
 
+desc "upload the docs to redcareditor.com"
+task :release_docs do
+  port     = YAML.load(File.read(".server.yaml"))["port"]
+  docs_dir = YAML.load(File.read(".server.yaml"))["dir"]
+  sh "rsync -e 'ssh -p #{port}' -avz doc/ danlucraft.com:#{docs_dir}/#{REDCAR_VERSION}/"
+  sh "rsync -e 'ssh -p #{port}' -avz doc/ danlucraft.com:#{docs_dir}/latest/"
+end
+
 ### CI
 task :ci => [:specs_ci, :cucumber_ci]
 
