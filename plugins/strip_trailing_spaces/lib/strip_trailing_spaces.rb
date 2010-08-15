@@ -1,3 +1,4 @@
+
 module Redcar
   class StripTrailingSpaces
     def self.storage
@@ -13,9 +14,9 @@ module Redcar
         sub_menu "Plugins" do
           sub_menu "Strip Trailing Spaces" do
             if (Redcar::StripTrailingSpaces.storage['enabled'])
-              item "Disable Plugin", DisablePlugin
+              item "Disable", DisablePlugin
             else
-              item "Enable Plugin", EnablePlugin
+              item "Enable", EnablePlugin
             end
           end
         end
