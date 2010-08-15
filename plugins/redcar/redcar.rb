@@ -1002,9 +1002,7 @@ module Redcar
       puts "loading plugins took #{Time.now - PROCESS_START_TIME}"
       Application.start
       ApplicationSWT.start
-      s = Time.now
       EditViewSWT.start
-      puts "EditViewSWT.start took #{Time.now - s}s"
       s = Time.now
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
