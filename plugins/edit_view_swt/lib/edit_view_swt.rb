@@ -43,8 +43,8 @@ module Redcar
       @handlers = []
       create_mate_text
       create_document
-      Redcar.plugin_manager.objects_implementing(:styledText_update).each do |object|
-        @cursor = object.styledText_update(@mate_text)
+      Redcar.plugin_manager.objects_implementing(:edit_view_gui_update).each do |object|
+        object.edit_view_gui_update(@mate_text)
       end
       attach_listeners
       @mate_text.set_grammar_by_name("Plain Text")

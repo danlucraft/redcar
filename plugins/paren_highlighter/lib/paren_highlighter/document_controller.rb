@@ -1,5 +1,5 @@
 module Redcar
-  class AutoHighlighter
+  class ParenHighlighter
     class DocumentController
 
       attr_accessor :gc, :styledText, :document, :mate_text, :theme_name

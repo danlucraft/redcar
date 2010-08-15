@@ -1,8 +1,8 @@
-require 'auto_highlighter/document_controller'
+require 'paren_highlighter/document_controller'
 module Redcar
-  class AutoHighlighter
+  class ParenHighlighter
 
-    def self.styledText_update(mate_text)
+    def self.edit_view_gui_update(mate_text)
       if @styledText != mate_text.get_text_widget
         @styledText = mate_text.get_text_widget
         @styledText.add_key_listener(KeyListener.new)
