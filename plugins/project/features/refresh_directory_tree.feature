@@ -17,17 +17,15 @@ Feature: Refresh directory tree
     And I refresh the directory tree
     Then I should see "bin,lib,plugins,testyfile.txt" in the tree
 
-  # Right now this flow doesn't refresh. The whole app has to lose
-  # focus, not just one window.
-  #Scenario: Changing windows refreshed the tree
-  #  Given I will choose "." from the "open_directory" dialog
-  #  When I open a directory
-  #  Then I should see "bin,lib,plugins" in the tree
-  #  And I should not see "testyfile.txt" in the tree
-  #  When I touch the file "./testyfile.txt"
-  #  When I open a new window
-  #  And I focus the working directory window through the gui
-  #  Then I should see "bin,lib,plugins,testyfile.txt" in the tree
+  Scenario: Changing windows refreshed the tree
+    Given I will choose "." from the "open_directory" dialog
+    When I open a directory
+    Then I should see "bin,lib,plugins" in the tree
+    And I should not see "testyfile.txt" in the tree
+    When I touch the file "./testyfile.txt"
+    When I open a new window
+    And I focus the working directory window through the gui
+    Then I should see "bin,lib,plugins,testyfile.txt" in the tree
     
   Scenario: Refreshing the tree leaves rows expanded as they were before
     Given I will choose "." from the "open_directory" dialog
