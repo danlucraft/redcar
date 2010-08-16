@@ -11,11 +11,13 @@ module Redcar
           'M ' => [:indexed],
           'A ' => [:indexed],
           'D ' => [:deleted],
-          'R ' => [:moved],
+          #'R ' => [:moved],
           'AM' => [:indexed, :changed],
           'MM' => [:indexed, :changed],
+          #'RM' => [:moved, :changed],
           'AD' => [:indexed, :missing],
-          'MD' => [:indexed, :missing],          
+          'MD' => [:indexed, :missing],
+          #'RD' => [:moved, :missing],
           ' M' => [:changed],
           ' D' => [:missing],
         }
@@ -30,7 +32,7 @@ module Redcar
         end
         
         def path
-          @file.path          
+          @file.path
         end
         
         def git_status
