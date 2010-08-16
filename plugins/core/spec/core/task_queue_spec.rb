@@ -3,13 +3,10 @@ require 'java'
 
 require File.join(File.dirname(__FILE__), *%w".. spec_helper")
 
-TaskQueue = Redcar::TaskQueue
-Task      = Redcar::Task
-
-describe TaskQueue do
+describe Redcar::TaskQueue do
   before do
     $started_tasks = []
-    @q = TaskQueue.new
+    @q = Redcar::TaskQueue.new
   end
   
   after do

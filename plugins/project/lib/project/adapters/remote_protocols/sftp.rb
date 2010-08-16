@@ -1,5 +1,3 @@
-require 'net/ssh'
-require 'net/sftp'
 
 module Redcar
   class Project
@@ -13,6 +11,8 @@ module Redcar
           end
 
           def connection
+            require 'net/ssh'
+            require 'net/sftp'
             Redcar.timeout(10) do
               @connection ||= Net::SSH.start(host, user, :password => password, :keys => private_key_files)
             end
@@ -163,7 +163,6 @@ module Redcar
           end
           
           def sftp_exec(method, *args)
-            puts "sftp_exec: #{method}, #{args.inspect}"
             begin
               Redcar.timeout(10) do
                 connection.sftp.send(method, *args)

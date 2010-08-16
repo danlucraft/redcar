@@ -20,12 +20,13 @@ module Redcar
     end
     
     def self.load_textmate_assets
+      s = Time.now
       load_textmate_assets_from_dir(Redcar.root + "/plugins/textmate/vendor/redcar-bundles")
       Redcar.plugin_manager.loaded_plugins.each do |plugin|
         load_textmate_assets_from_dir(File.dirname(plugin.definition_file) + "/")
       end
       load_textmate_assets_from_dir(Redcar.user_dir + "/")
-      
+      puts "took #{Time.now - s}s to load textmate assets"
       EditView.themes.unshift(*JavaMateView::ThemeManager.themes.to_a.map {|th| th.name })
     end
     
@@ -43,6 +44,9 @@ module Redcar
       @handlers = []
       create_mate_text
       create_document
+      Redcar.plugin_manager.objects_implementing(:edit_view_gui_update).each do |object|
+        object.edit_view_gui_update(@mate_text)
+      end
       attach_listeners
       @mate_text.set_grammar_by_name("Plain Text")
       @model.set_grammar("Plain Text")

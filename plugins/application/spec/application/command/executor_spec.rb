@@ -56,6 +56,11 @@ class Redcar::Command
       before do
         @command = MyErrorCommand.new
         @executor = Executor.new(@command)
+        $stdout = StringIO.new
+      end
+      
+      after do
+        $stdout = STDOUT
       end
 
       it "should capture the error" do

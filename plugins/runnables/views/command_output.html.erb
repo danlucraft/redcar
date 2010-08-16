@@ -1,37 +1,16 @@
-
-<script type="text/javascript" src="file://<%= Redcar::HtmlView.jquery_path %>"></script>
-<link rel="stylesheet" href="file://<%= Redcar::HtmlView.default_css_path %>" type="text/css" media="screen">
-<%= stylesheet_link_tag :basic_ansi %>
-<style>
-  .stdout {
-    padding: 0px;
-    margin: 0px;
-  }
-
-  .stderr {
-    padding: 0px;
-    margin: 0px;
-    color: #FF0000;
-  }
-
-  .stdout pre {
-      padding: 0px;
-      margin: 0px;
-  }
-  .stderr pre {
-      padding: 0px;
-      margin: 0px;
-  }
-  
-  #output {
-    font-family: Menlo, Consolas, fixed;
-    font-size: 12px;
-  }
-  
-</style>
-
-<h3><%= @title %></h3>
-<pre><%= command %></pre>
-<hr />
-<div id="output">
-</div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= @title %></title>
+    <%= stylesheet_link_tag :reset, :default, :basic_ansi %>
+  </head>
+  <body>
+    <script type="text/javascript" src="file://<%= Redcar::HtmlView.jquery_path %>"></script>
+    <h1><%= @title %></h1>
+    <div id="container">
+      <div class="command">
+        <%= @cmd %>
+      </div>
+    </div>
+  </body>
+</html>

@@ -13,6 +13,7 @@ module Redcar
         exit 1
       end
       ENV['RUBYOPT'] = nil # disable other native args
+      # add -d32 -client for faster startup if the jvm is defaulting to server/64bit mode
       command = "java #{java_args} -Xmx500m -Xss1024k -Djruby.memory.max=500m -Djruby.stack.max=1024k -cp \"#{jruby_complete}\" org.jruby.Main #{"--debug" if debug_mode?} \"#{bin}\" #{cleaned_args} --no-sub-jruby --ignore-stdin"
       puts command
       exec(command)
