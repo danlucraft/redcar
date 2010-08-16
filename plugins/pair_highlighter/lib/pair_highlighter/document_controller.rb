@@ -1,5 +1,6 @@
+
 module Redcar
-  class AutoHighlighter
+  class PairHighlighter
     class DocumentController
 
       attr_accessor :gc, :styledText, :document, :mate_text, :theme_name
@@ -10,7 +11,6 @@ module Redcar
       include Redcar::Document::Controller::CursorCallbacks
 
       def set_highlight_colour
-        
         if @theme_name == EditView.theme
           return @colour if @colour
         end
@@ -45,7 +45,6 @@ module Redcar
       end
 
       def highlight_pair(current, pair)
-        
         if current == nil or pair == nil
           clear
           return
@@ -120,7 +119,6 @@ module Redcar
       end
 
       def cursor_moved(offset)
-        
         if @wait > 0
           return
         end
@@ -149,7 +147,6 @@ module Redcar
         end
         
         highlight_pair(offset, pair)
-        
       end
     end
     
@@ -181,8 +178,6 @@ module Redcar
           @pair = pair
         end
       end
-      
     end
-    
   end
 end

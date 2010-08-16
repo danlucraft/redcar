@@ -1,9 +1,9 @@
 
 Plugin.define do
-  name    "auto_highlighter"
+  name    "pair_highlighter"
   version "1.0"
-  file    "lib", "auto_highlighter"
-  object  "Redcar::AutoHighlighter"
+  file    "lib", "pair_highlighter"
+  object  "Redcar::PairHighlighter"
   dependencies "edit_view", ">0",
                "textmate",  ">0"
 end

@@ -1,8 +1,10 @@
-require 'auto_highlighter/document_controller'
-module Redcar
-  class AutoHighlighter
 
-    def self.styledText_update(mate_text)
+require 'pair_highlighter/document_controller'
+
+module Redcar
+  class PairHighlighter
+
+    def self.edit_view_gui_update(mate_text)
       if @styledText != mate_text.get_text_widget
         @styledText = mate_text.get_text_widget
         @styledText.add_key_listener(KeyListener.new)
@@ -17,23 +19,17 @@ module Redcar
       @doc = DocumentController.new
     end
     
-    def self.theme_changed_update()
+    def self.theme_changed_update
       @doc.set_highlight_colour
     end
     
     class KeyListener
-        def key_pressed(_)
-          
-        end
-        def key_released(_)
-        
-        end
+      def key_pressed(_); end
+      def key_released(_); end
     end  
     
     class LineEventListener
-    	def lineGetBackground(event)
-    	
-    	end
+      def lineGetBackground(_); end
     end
   end 
 end

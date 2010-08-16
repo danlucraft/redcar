@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+$redcar_process_start_time = Time.now
 
 require 'rubygems'
 require File.join(File.dirname(__FILE__), %w(.. lib redcar_quick_start))

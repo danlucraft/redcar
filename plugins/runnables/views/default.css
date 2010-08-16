@@ -1,0 +1,38 @@
+h1 {
+  background: #5f282d url("redcar_small_icon.png") no-repeat 10px 10px;
+  color: #dcb663;
+  height: 30px;
+  line-height: 30px;
+  padding: 10px 10px 10px 52px;
+  font-family: Palatino, Times, serif;
+  letter-spacing: 3px;
+}
+
+.header, .complete {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  background: #ddd;
+  padding: 3px 10px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.header {
+  border-bottom: 1px solid #666;
+}
+
+.command, .output {
+  font-family: Menlo, Consolas, fixed;
+  font-size: 12px;
+  padding: 10px;
+  margin-left: 10px;
+}
+
+.stderr {
+  color: #f00;
+}
+
+.command {
+  color: #666;
+}

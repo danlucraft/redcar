@@ -148,9 +148,7 @@ module Redcar
     end
     
     def gained_focus
-      if @lost_application_focus
-        refresh
-      end
+      refresh
       @lost_application_focus = nil
     end
     
