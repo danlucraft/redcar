@@ -11,6 +11,7 @@ Enhancements:
  * Search and replace supports backreferences (\1 \2 etc) (Mat Schaffer)
  * Uses client, 32bit jvm mode, for twice as fast startup. (Dan Lucraft)
  * Bracket highlighting! (Alex Lourie)
+ * Todo list (find all occurrences of TODO etc in project) (Delisa Mason)
 
 Fixes:
 
