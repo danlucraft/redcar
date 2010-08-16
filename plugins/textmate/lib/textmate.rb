@@ -8,9 +8,10 @@ require 'textmate/snippet'
 module Redcar
   module Textmate
     def self.all_bundle_paths
-      Dir[File.join(Redcar.root, "plugins", "textmate", "vendor", "redcar-bundles", "Bundles", "*")]
+      Dir[File.join(Redcar.root, "plugins", "textmate", "vendor", "redcar-bundles", "Bundles", "*")] + 
+        Dir[File.join(Redcar.user_dir, "Bundles", "*")]
     end
-    
+
     def self.uuid_hash
       @uuid_hash ||= begin
         h = {}
