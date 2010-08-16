@@ -19,12 +19,20 @@ module Redcar
       if output == "none"
         controller.run
       else
-        tab = Redcar.app.focussed_window.new_tab(HtmlTab)
-        tab.html_view.controller = controller
-        tab.focus
+        if tab = previous_tab_for(command)
+          tab.html_view.controller.run
+          tab.focus
+        else
+          tab = Redcar.app.focussed_window.new_tab(HtmlTab)
+          tab.html_view.controller = controller
+          tab.focus
+        end
       end
     end
-    
+
+    def self.previous_tab_for(command)
+      Redcar.app.all_tabs.detect { |t| t.respond_to?(:html_view) && t.html_view.controller.cmd == command }
+    end
     def self.menus
       Menu::Builder.build do
         sub_menu "Project", :priority => 15 do

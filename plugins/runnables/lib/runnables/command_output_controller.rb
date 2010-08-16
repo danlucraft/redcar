@@ -4,10 +4,13 @@ module Redcar
     class CommandOutputController
       include Redcar::HtmlController
       
+      attr_accessor :cmd
+
       def initialize(path, cmd, title)
         @path = path
         @cmd = cmd
         @title = title
+        @output_id = 0
       end
       
       def title
@@ -27,6 +30,10 @@ module Redcar
       end
       
       def run
+        execute <<-JAVASCRIPT
+          $('.output').hide();
+        JAVASCRIPT
+
         case Redcar.platform
         when :osx, :linux
           run_posix
@@ -62,16 +69,17 @@ module Redcar
       end
       
       def format_time(time)
-        time.strftime("%I:%M%p").downcase
+        time.strftime("%I:%M:%S %p").downcase
       end
 
       def start_output_block
         @start = Time.now
+        @output_id += 1
         append_to_container <<-HTML
           <div class="header" onclick="$(this).next().slideToggle();">
-            Process started at #{format_time(@start)}
+            Process #{@output_id} started at #{format_time(@start)}
           </div>
-          <div id="output" class="output"></div>|
+          <div id="output#{@output_id}" class="output"></div>|
         HTML
       end
 
@@ -96,7 +104,7 @@ module Redcar
       end
 
       def append_output(output)
-        append_to("#output", output)
+        append_to("#output#{@output_id}", output)
       end
 
       def run_posix
