@@ -215,7 +215,14 @@ module Redcar
             return
           end
           
-          @repo.reset('HEAD', :file => change.path)
+          puts "setting change path"
+          change_path = change.path
+          if change.git_status == 'R '
+            puts "attempting to get proper path"
+            change_path = change_path.split(' -> ')[1]
+          end
+          
+          @repo.reset('HEAD', :file => change_path)
           cache.refresh
         end
         
