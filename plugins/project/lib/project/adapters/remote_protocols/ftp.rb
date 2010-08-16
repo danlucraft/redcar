@@ -1,5 +1,3 @@
-require 'net/ftp'
-require 'net/ftp/list'
 
 module Redcar
   class Project
@@ -13,6 +11,8 @@ module Redcar
           end
           
           def connection
+            require 'net/ftp'
+            require 'net/ftp/list'
             @connection ||= Net::FTP.open(host, user, password)
           end
           

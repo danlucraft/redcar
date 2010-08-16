@@ -1,0 +1,12 @@
+* 0.3
+  - Changed "Enable" and "Disable" to "Enable Plugin" and
+    "Disable Plugin" (stevenh512)
+  - Fixed jumping by stripping line-by-line instead of entire
+    file. (stevenh512)
+
+* 0.2
+  - Can be enabled/disabled from the Plugins menu (stevenh512)
+  - Always add a newline at the end of a file. (timfel)
+
+* 0.1
+  - Initial proof of concept (stevenh512)
