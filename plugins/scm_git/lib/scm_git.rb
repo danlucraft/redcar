@@ -4,9 +4,9 @@ $:.push(
 )
 
 require 'git'
-require 'scm-git/config_file'
-require 'scm-git/change'
-require 'scm-git/commit'
+require 'scm_git/config_file'
+require 'scm_git/change'
+require 'scm_git/commit'
 
 module Redcar
   module Scm
