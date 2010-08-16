@@ -40,19 +40,25 @@ module Redcar
     class TreeMirror
       include Redcar::Tree::Mirror
       
+      attr_accessor :last_loaded
+
       def initialize(project)
         @project = project
-        load
       end
 
-      def refresh_operation(tree)
-        load
-        yield
+      def runnable_file_paths
+        @project.config_files("runnables/*.json")
+      end
+
+      def last_updated
+        runnable_file_paths.map{ |p| File.mtime(p) }.max
+      end
+
+      def changed?
+        !last_loaded || last_loaded < last_updated
       end
 
       def load
-        runnable_file_paths = @project.config_files("runnables/*.json")
-        
         groups = {}
         runnable_file_paths.each do |path|
           runnables = []
@@ -64,20 +70,20 @@ module Redcar
         end
 
         if groups.any?
-          @top = groups.map do |name, runnables|
+          groups.map do |name, runnables|
             RunnableGroup.new(name,runnables)
           end
         else
-          @top = [HelpItem.new]
+          [HelpItem.new]
         end
       end
-      
+
       def title
         TREE_TITLE
       end
-      
+
       def top
-        @top
+        load
       end
     end
     
