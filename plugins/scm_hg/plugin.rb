@@ -1,7 +1,7 @@
 Plugin.define do
-  name    "scm-hg"
+  name    "scm_hg"
   version "0.1"
-  file    "lib", "scm-hg"
+  file    "lib", "scm_hg"
   object  "Redcar::Scm::Mercurial::Manager"
   dependencies "scm", ">0"
 end

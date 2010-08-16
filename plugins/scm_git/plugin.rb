@@ -1,7 +1,7 @@
 Plugin.define do
-  name    "scm-git"
+  name    "scm_git"
   version "0.1"
-  file    "lib", "scm-git"
+  file    "lib", "scm_git"
   object  "Redcar::Scm::Git::Manager"
   dependencies "scm", ">0"
 end
