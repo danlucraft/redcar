@@ -7,16 +7,17 @@ module Redcar
         
         STATUS_MAP = {
           '??' => [:new],
+          'UU' => [:unmerged],
           'M ' => [:indexed],
           'A ' => [:indexed],
           'D ' => [:deleted],
+          'R ' => [:moved],
           'AM' => [:indexed, :changed],
           'MM' => [:indexed, :changed],
           'AD' => [:indexed, :missing],
-          'MD' => [:indexed, :missing],
+          'MD' => [:indexed, :missing],          
           ' M' => [:changed],
           ' D' => [:missing],
-          'UU' => [:unmerged],
         }
         
         attr_reader :repo

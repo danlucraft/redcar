@@ -12,6 +12,7 @@ module Redcar
         :changed => [:index_save, :index_revert],
         :unmerged => [:index_save, :index_delete],
         :commitable => [:commit],
+        :moved => [:index_unsave],
       }
       
       def initialize(repo)
