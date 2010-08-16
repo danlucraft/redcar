@@ -42,7 +42,7 @@ module Redcar
       @model.add_listener(:refresh) do
         begin
           @model.tree_mirror.refresh_operation(@model) do
-            @viewer.refresh
+            @viewer.refresh unless @viewer.getTree.isDisposed
           end
         rescue => e
           handle_mirror_error(e)
