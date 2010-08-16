@@ -15,6 +15,7 @@ h1 {
   background: #ddd;
   padding: 3px 10px;
   margin-left: 10px;
+  cursor: pointer;
 }
 
 .header {

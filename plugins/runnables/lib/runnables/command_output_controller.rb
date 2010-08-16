@@ -50,18 +50,40 @@ module Redcar
       
       def run_windows
         @thread = Thread.new do
-          append_to_container(%Q|<div class="header" onclick="$(this).next().slideToggle();">Output started at #{Time.now}</div>|)
-          append_to_container(%Q|<div id="output" class="output"></div>|)
-
           output = `cd #{@path} & #{@cmd} 2>&1`
+          start_new_output_block
           append_output <<-HTML
             <div class="stdout">
               #{process(output)}
             </div>
           HTML
+          end_output_block
         end
       end
       
+      def format_time(time)
+        time.strftime("%I:%M%p").downcase
+      end
+
+      def start_output_block
+        @start = Time.now
+        append_to_container <<-HTML
+          <div class="header" onclick="$(this).next().slideToggle();">
+            Process started at #{format_time(@start)}
+          </div>
+          <div id="output" class="output"></div>|
+        HTML
+      end
+
+      def end_output_block
+        @end = Time.now
+        append_to_container <<-HTML
+          <div class="complete" onclick="$(this).prev().slideToggle();">
+            Process finished at #{format_time(@end)} (#{@end - @start} seconds)
+          </div>
+        HTML
+      end
+
       def append_to(container, html)
         execute(<<-JAVASCRIPT)
           $(#{html.inspect}).appendTo("#{container}");
@@ -95,8 +117,7 @@ module Redcar
               </div>
             HTML
           end
-          append_to_container(%Q|<div class="header" onclick="$(this).next().slideToggle();">Output started at #{Time.now}</div>|)
-          append_to_container(%Q|<div id="output" class="output"></div>|)
+          start_output_block
           begin
             @shell.execute("cd #{@path}; " + @cmd)
           rescue => e
@@ -104,9 +125,7 @@ module Redcar
             puts e.message
             puts e.backtrace
           end
-          append_to_container <<-HTML
-            <div class="complete">Process finished</div>
-          HTML
+          end_output_block
           @shell = nil
           @thread = nil
         end
