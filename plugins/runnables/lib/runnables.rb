@@ -33,6 +33,7 @@ module Redcar
     def self.previous_tab_for(command)
       Redcar.app.all_tabs.detect { |t| t.respond_to?(:html_view) && t.html_view.controller.cmd == command }
     end
+
     def self.menus
       Menu::Builder.build do
         sub_menu "Project", :priority => 15 do
@@ -220,9 +221,9 @@ module Redcar
             if output.nil?
 	            output = "tab"
             end
-            command = command_schema.gsub("__PATH__", tab.edit_view.document.mirror.path)
-            puts command
-            Runnables.run_process(project.home_dir,command, "Run File", output)
+            path = tab.edit_view.document.mirror.path
+            command = command_schema.gsub("__PATH__", path)
+            Runnables.run_process(project.home_dir,command, "Running #{File.basename(path)}", output)
           end
         end
       end
