@@ -30,7 +30,7 @@ module Redcar
         storage.set_default('load_bundles_menu',true)
         storage.set_default('select_bundles_for_menu',true)
         storage.set_default('select_bundles_for_tree',false)
-        storage.set_default('loaded_bundles',['groovy','java','javascript','json','lisp','python','ruby','ruby on rails','todo','yaml'])
+        storage.set_default('loaded_bundles',['groovy','java','javascript','lisp','python','ruby','ruby on rails','yaml'])
         storage
       end
     end

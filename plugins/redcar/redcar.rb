@@ -957,7 +957,7 @@ module Redcar
           group(:priority => :first) do
             item "Find Snippet", Snippets::OpenSnippetExplorer
             item "Installed Bundles", Textmate::InstalledBundles
-            item "View Bundle Tree", Textmate::ShowSnippetTree
+            item "View Bundles in Tree", Textmate::ShowSnippetTree
           end
           group(:priority => 15) do
             separator
