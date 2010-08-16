@@ -1,6 +1,8 @@
-require 'paren_highlighter/document_controller'
+
+require 'pair_highlighter/document_controller'
+
 module Redcar
-  class ParenHighlighter
+  class PairHighlighter
 
     def self.edit_view_gui_update(mate_text)
       if @styledText != mate_text.get_text_widget

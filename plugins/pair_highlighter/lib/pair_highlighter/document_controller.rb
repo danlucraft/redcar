@@ -1,5 +1,6 @@
+
 module Redcar
-  class ParenHighlighter
+  class PairHighlighter
     class DocumentController
 
       attr_accessor :gc, :styledText, :document, :mate_text, :theme_name
