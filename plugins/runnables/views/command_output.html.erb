@@ -2,18 +2,15 @@
 <html>
   <head>
     <title><%= @title %></title>
-    <%= stylesheet_link_tag :reset %>
-    <%= stylesheet_link_tag :default %>
-    <%= stylesheet_link_tag :basic_ansi %>
+    <%= stylesheet_link_tag :reset, :default, :basic_ansi %>
   </head>
   <body>
     <script type="text/javascript" src="file://<%= Redcar::HtmlView.jquery_path %>"></script>
     <h1><%= @title %></h1>
-    <div class="command">
-      jruby -S rake cucumber
-    </div>
-    <div class="header" onclick="$(this).next().slideToggle();">Output started at 12:34pm</div>
-    <div id="output" class="output">
+    <div id="container">
+      <div class="command">
+        <%= @cmd %>
+      </div>
     </div>
   </body>
 </html>

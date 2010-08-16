@@ -8,13 +8,16 @@ h1 {
   letter-spacing: 3px;
 }
 
-.header {
+.header, .complete {
   font-family: Helvetica, Arial, sans-serif;
   font-size: 10px;
   font-weight: bold;
   background: #ddd;
   padding: 3px 10px;
   margin-left: 10px;
+}
+
+.header {
   border-bottom: 1px solid #666;
 }
 

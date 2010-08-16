@@ -50,45 +50,53 @@ module Redcar
       
       def run_windows
         @thread = Thread.new do
+          append_to_container(%Q|<div class="header" onclick="$(this).next().slideToggle();">Output started at #{Time.now}</div>|)
+          append_to_container(%Q|<div id="output" class="output"></div>|)
+
           output = `cd #{@path} & #{@cmd} 2>&1`
-          html=<<-HTML
-          <div class="stdout">
-            #{process(output)}
-          </div>
+          append_output <<-HTML
+            <div class="stdout">
+              #{process(output)}
+            </div>
           HTML
-          execute(<<-JAVASCRIPT)
-            $("#output").append(#{html.inspect});
-            $("html, body").attr({ scrollTop: $("#output").attr("scrollHeight") }); 
-          JAVASCRIPT
         end
       end
       
+      def append_to(container, html)
+        execute(<<-JAVASCRIPT)
+          $(#{html.inspect}).appendTo("#{container}");
+          $("html, body").attr({ scrollTop: $("#{container}").attr("scrollHeight") });
+        JAVASCRIPT
+      end
+
+      def append_to_container(html)
+        append_to("#container", html)
+      end
+
+      def append_output(output)
+        append_to("#output", output)
+      end
+
       def run_posix
         @thread = Thread.new do
           sleep 1
           @shell = Session::Shell.new
           @shell.outproc = lambda do |out|
-            html=<<-HTML
+            append_output <<-HTML
               <div class="stdout">
                 #{process(out)}
               </div>
             HTML
-            execute(<<-JAVASCRIPT)
-              $("#output").append(#{html.inspect});
-              $("html, body").attr({ scrollTop: $("#output").attr("scrollHeight") }); 
-           JAVASCRIPT
           end
           @shell.errproc = lambda do |err|
-            html=<<-HTML
+            append_output <<-HTML
               <div class="stderr">
-                <pre>#{err}</pre>
+                #{process(err)}
               </div>
             HTML
-            execute(<<-JAVASCRIPT)
-              $("#output").append(#{html.inspect});
-              $("html, body").attr({ scrollTop: $("#output").attr("scrollHeight") }); 
-            JAVASCRIPT
           end
+          append_to_container(%Q|<div class="header" onclick="$(this).next().slideToggle();">Output started at #{Time.now}</div>|)
+          append_to_container(%Q|<div id="output" class="output"></div>|)
           begin
             @shell.execute("cd #{@path}; " + @cmd)
           rescue => e
@@ -96,14 +104,9 @@ module Redcar
             puts e.message
             puts e.backtrace
           end
-          html=<<-HTML
-          <hr />
-          <small><strong>Process finished</strong></small>
+          append_to_container <<-HTML
+            <div class="complete">Process finished</div>
           HTML
-          execute(<<-JAVASCRIPT)
-            $("#output").append(#{html.inspect});
-            $("html, body").attr({ scrollTop: $("#output").attr("scrollHeight") }); 
-          JAVASCRIPT
           @shell = nil
           @thread = nil
         end
