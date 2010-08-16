@@ -18,13 +18,11 @@ module Redcar
       def activated(tree, node)
         tab = Redcar.app.focussed_notebook_tab
         doc = tab.document
-        puts tab.edit_tab?
         if tab.edit_tab? and doc
           controller = doc.controllers(Snippets::DocumentController).first
           controller.start_snippet!(node.snippet)
           tab.focus
         end
-
       end
     end
 
