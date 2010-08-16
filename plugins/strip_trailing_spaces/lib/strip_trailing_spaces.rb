@@ -31,8 +31,10 @@ module Redcar
 
         pairer.ignore do
           indenter.increase_ignore if indenter != nil
-          doc.line_count.times do |l|
-            doc.replace_line(l) { |line_text| line_text.rstrip }
+          doc.compound do
+            doc.line_count.times do |l|
+              doc.replace_line(l) { |line_text| line_text.rstrip }
+            end
           end
           indenter.decrease_ignore if indenter != nil
         end
