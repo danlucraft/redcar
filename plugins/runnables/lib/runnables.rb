@@ -34,6 +34,13 @@ module Redcar
       Redcar.app.all_tabs.detect { |t| t.respond_to?(:html_view) && t.html_view.controller.cmd == command }
     end
 
+    def self.keymaps
+      map = Keymap.build("main", [:osx, :linux, :windows]) do
+        link "Ctrl+R",          Runnables::RunEditTabCommand
+      end
+      [map, map]
+    end
+
     def self.menus
       Menu::Builder.build do
         sub_menu "Project", :priority => 15 do
