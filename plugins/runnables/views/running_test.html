@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Testing Runnable Styles</title>
+    <link rel="stylesheet" href="file:///Users/mat/code/redcar/plugins/runnables/views/reset.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="file:///Users/mat/code/redcar/plugins/runnables/views/default.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="file:///Users/mat/code/redcar/plugins/runnables/views/basic_ansi.css" type="text/css" media="screen">
+  </head>
+  <body>
+    <script type="text/javascript" src="file:///Users/mat/code/redcar/plugins/html_view/assets/jquery-1.4.min.js"></script>
+    <h1>Run command</h1>
+    <div class="command">
+      jruby -S rake cucumber
+    </div>
+    <div class="header" onclick="$(this).next().slideToggle();">Output started at 12:34pm</div>
+    <div id="output1" class="output">
+              <div class="stderr">
+                #{err}
+              </div>
+      </div>
+              <span class="complete">Process finished</span>
+  </body>
+</html>
