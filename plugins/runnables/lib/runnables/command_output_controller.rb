@@ -30,9 +30,9 @@ module Redcar
       end
       
       def run
-        execute <<-JAVASCRIPT
+        execute <<-JS
           $('.output').slideUp().prev('.header').addClass('up');
-        JAVASCRIPT
+        JS
 
         case Redcar.platform
         when :osx, :linux
@@ -87,27 +87,42 @@ module Redcar
 
       def end_output_block
         @end = Time.now
-        append_to("#header#{@output_id}", <<-HTML)
+        append_to(header_container, <<-HTML)
           <span class="completed-message">Completed at #{format_time(@end)}. (Took #{@end - @start} seconds)</span>
         HTML
         execute <<-JS
-          $("#output#{@output_id}").parent().removeClass("running");
+          $("#{output_container}").parent().removeClass("running");
         JS
       end
 
-      def append_to(container, html)
-        execute(<<-JAVASCRIPT)
-          $(#{html.inspect}).appendTo("#{container}");
+      def scroll_to_end(container)
+        execute <<-JS
           $("html, body").attr({ scrollTop: $("#{container}").attr("scrollHeight") });
-        JAVASCRIPT
+        JS
+      end
+      
+      def append_to(container, html)
+        execute(<<-JS)
+          $(#{html.inspect}).appendTo("#{container}");
+        JS
       end
 
       def append_to_container(html)
         append_to("#container", html)
+        scroll_to_end("#container")
+      end
+
+      def header_container
+        "#header#{@output_id}"
+      end
+
+      def output_container
+        "#output#{@output_id}"
       end
 
       def append_output(output)
-        append_to("#output#{@output_id}", output)
+        append_to(output_container, output)
+        scroll_to_end(output_container)
       end
 
       def run_posix
