@@ -16,17 +16,12 @@ h1 {
   padding: 3px 0 3px 20px;
   margin-left: 10px;
   cursor: pointer;
-  margin-top: 10px;
   background: #ddd url("wedgeDown.png") no-repeat 8px 9px;
 }
 
 .header.up {
   background-image: url("wedgeRight.png");
   background-position: 8px 8px;
-}
-
-#header1 {
-  margin-top: 0px;
 }
 
 .command, .output {
@@ -39,6 +34,7 @@ h1 {
 .output {
   border-left: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
+  margin-bottom: 10px;
 }
 
 .stderr {
