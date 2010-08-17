@@ -1,0 +1,120 @@
+<% jquery_path = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets jquery-1.4.min.js))) %>
+<script type="text/javascript" src="file://<%= jquery_path %>"></script>
+
+<% plugin_css = File.expand_path(File.join(@plugin_root, %w(lib find_in_project stylesheets style.css))) %>
+<link rel="stylesheet" href="file://<%= plugin_css %>" type="text/css" media="screen">
+
+<% image_path = File.expand_path(File.join(@plugin_root, %w(lib find_in_project images))) %>
+
+<div id="search_container">
+  <form id="search_form">
+    <table>
+      <tr class="input">
+        <td class="label"><label for="query">Search Term</label></td>
+        <td class="field">
+          <input id="query" type="text" value="<%= @query %>" />
+          <div id="recent_queries" style="display: none;">
+            <ul>
+              <% (@settings['recent_queries'] || []).each do |query| %>
+                <li><%= query %></li>
+              <% end %>
+            </ul>
+          </div>
+        </td>
+        <td class="expand">
+          <a href="#" title="Toggle Recent Queries" id="toggle_recent_queries">&darr;</a>
+        </td>
+      </tr>
+      <tr class="input">
+        <td class="label"><label for="options">Options</label></td>
+        <td class="field">
+          <input id="options" type="text" value="<%= @options %>" />
+          <div id="recent_options" style="display: none;">
+            <ul>
+              <% (@settings['recent_options'] || []).each do |option| %>
+                <li><%= option %></li>
+              <% end %>
+            </ul>
+          </div>
+        </td>
+        <td class="expand">
+          <a href="#" title="Toggle Recent Options" id="toggle_recent_options">&darr;</a>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td class="controls">
+          <input id="search" type="submit" value="Find In Project" />
+          <input type="checkbox" id="match_case" <%="checked=checked" if @match_case %>>
+          <label for="match_case">Match case</label>
+          <input type="checkbox" id="with_context" <%="checked=checked" if @with_context %>>
+          <label for="with_context">With context</label>
+        </td>
+        <td></td>
+      </tr>
+    </table>
+  </form>
+</div>
+
+<div id="results_container">
+  <div id="no_results">
+    Please provide a search term above.
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#query').trigger('focus');
+
+    $('#search_form').submit(function(ev) {
+      ev.preventDefault();
+      try {
+        if ($("#match_case").attr('checked')) { var match_case = 'true'; } else { var match_case = 'false'; }
+        if ($("#with_context").attr('checked')) { var with_context = 'true'; } else { var with_context = 'false'; }
+        Controller.search($("#query").val(), $("#options").val(), match_case, with_context);
+      } catch(e) {
+        alert(e.message);
+      }
+    });
+
+    $('#query').keyup(function(ev) {
+      if ($(this).val() == '') {
+        $('input[type=submit]').attr('disabled', 'disabled');
+      } else {
+        $('input[type=submit]').attr('disabled', '');
+      }
+    });
+    $('#query').trigger('keyup');
+
+    $('#toggle_recent_queries').click(function(ev) {
+      ev.preventDefault();
+      if ($('#recent_queries').is(":visible")) {
+        $('#recent_queries').hide();
+      } else {
+        $('#recent_queries').show();
+      }
+    });
+
+    $('#recent_queries li').click(function(ev) {
+      ev.preventDefault();
+      $('#query').val($(this).html());
+      $('#query').trigger('keyup');
+      $('#recent_queries').hide();
+    });
+
+    $('#toggle_recent_options').click(function(ev) {
+      ev.preventDefault();
+      if ($('#recent_options').is(":visible")) {
+        $('#recent_options').hide();
+      } else {
+        $('#recent_options').show();
+      }
+    });
+
+    $('#recent_options li').click(function(ev) {
+      ev.preventDefault();
+      $('#options').val($(this).html());
+      $('#recent_options').hide();
+    });
+  });
+</script>

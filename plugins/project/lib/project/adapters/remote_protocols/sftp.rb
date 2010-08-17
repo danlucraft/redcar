@@ -163,7 +163,6 @@ module Redcar
           end
           
           def sftp_exec(method, *args)
-            puts "sftp_exec: #{method}, #{args.inspect}"
             begin
               Redcar.timeout(10) do
                 connection.sftp.send(method, *args)
