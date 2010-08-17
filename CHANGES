@@ -14,6 +14,7 @@ Enhancements:
  * Todo list (find all occurrences of TODO etc in project) (Delisa Mason)
  * Styled runnable tabs (Mat Schaffer)
  * See all snippets in a tree (Delisa Mason)
+ * Find in project plugin (uses grep and ack) (Kieran Pilkington and Krzysztof Jablonski)
 
 Fixes:
 
