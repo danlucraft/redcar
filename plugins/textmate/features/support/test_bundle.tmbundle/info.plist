@@ -9,7 +9,7 @@
 	<key>description</key>
 	<string>&lt;a href="http://html-template.sourceforge.net/"&gt;HTML::Template&lt;/a&gt; is a template processing system for Perl.</string>
 	<key>name</key>
-	<string>Perl HTML::Template</string>
+	<string>test_bundle</string>
 	<key>ordering</key>
 	<array>
 		<string>79287EAC-597A-480D-974C-837440298571</string>
