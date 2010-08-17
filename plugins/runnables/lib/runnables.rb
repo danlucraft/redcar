@@ -9,16 +9,25 @@ require 'runnables/output_processor'
 module Redcar
   class Runnables
     TREE_TITLE = "Runnables"
-    
-    def self.run_process(path, command, title, output)
-      controller = CommandOutputController.new(path, command, title)
-      if output == "window"
-        Project::Manager.open_project_for_path(".")
-        output = "tab"
+
+    def self.run_process(path, command, title, output = "tab")
+      if Runnables.storage['save_project_before_running'] == true
+        Redcar.app.focussed_window.notebooks.each do |notebook|
+          notebook.tabs.each do |tab|
+            case tab
+            when EditTab
+              tab.edit_view.document.save!
+            end
+          end
+        end
       end
+      controller = CommandOutputController.new(path, command, title)
       if output == "none"
-        controller.run
-      else
+        controller.run        
+      else #default to new tab
+        if output == "window"
+          Project::Manager.open_project_for_path(".")
+        end
         if tab = previous_tab_for(command)
           tab.html_view.controller.run
           tab.focus
@@ -26,10 +35,10 @@ module Redcar
           tab = Redcar.app.focussed_window.new_tab(HtmlTab)
           tab.html_view.controller = controller
           tab.focus
-        end
+        end        
       end
     end
-
+    
     def self.previous_tab_for(command)
       Redcar.app.all_tabs.detect do |t|
         t.respond_to?(:html_view) &&
@@ -60,9 +69,25 @@ module Redcar
     class TreeMirror
       include Redcar::Tree::Mirror
       
+      attr_accessor :last_loaded
+
       def initialize(project)
-        runnable_file_paths = project.config_files("runnables/*.json")
-        
+        @project = project
+      end
+
+      def runnable_file_paths
+        @project.config_files("runnables/*.json")
+      end
+
+      def last_updated
+        runnable_file_paths.map{ |p| File.mtime(p) }.max
+      end
+
+      def changed?
+        !last_loaded || last_loaded < last_updated
+      end
+
+      def load
         groups = {}
         runnable_file_paths.each do |path|
           runnables = []
@@ -74,20 +99,28 @@ module Redcar
         end
 
         if groups.any?
-          @top = groups.map do |name, runnables|
+          groups.map do |name, runnables|
             RunnableGroup.new(name,runnables)
           end
         else
-          @top = [HelpItem.new]
+          [HelpItem.new]
         end
       end
-      
+
       def title
         TREE_TITLE
       end
-      
+
       def top
-        @top
+        load
+      end
+    end
+
+    def self.storage
+      @storage ||= begin
+        storage = Plugin::Storage.new('runnables')
+        storage.set_default('save_project_before_running', false)
+        storage
       end
     end
     
@@ -196,6 +229,7 @@ module Redcar
     class ShowRunnables < Redcar::Command
       def execute
         if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
+          tree.refresh
           win.treebook.focus_tree(tree)
         else
           project = Project::Manager.in_window(win)
@@ -241,6 +275,3 @@ module Redcar
     end
   end
 end
-
-
-

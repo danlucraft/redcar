@@ -41,7 +41,7 @@ require 'uri'
 #
 # and so on.
 module Redcar
-  VERSION         = '0.3.10dev'
+  VERSION         = '0.3.10.1dev'
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 3
   VERSION_RELEASE = 10
@@ -68,26 +68,31 @@ module Redcar
     jruby = Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby"
     osx = ! [:linux, :windows].include?(platform)    
 
-    if forking and not jruby
-      # jRuby doesn't support fork() because of the runtime stuff...
-      forking = false
-      puts 'Forking failed, attempting to start anyway...' if (pid = fork) == -1
-      exit unless pid.nil?
-
-      if pid.nil?
-        # reopen the standard pipes to nothingness
-        STDIN.reopen '/dev/null'
-        STDOUT.reopen '/dev/null', 'a'
-        STDERR.reopen STDOUT
+    begin
+      if forking and not jruby
+        # jRuby doesn't support fork() because of the runtime stuff...
+        forking = false
+        puts 'Forking failed, attempting to start anyway...' if (pid = fork) == -1
+        exit unless pid.nil? # kill the parent process
+        
+        if pid.nil?
+          # reopen the standard pipes to nothingness
+          STDIN.reopen '/dev/null'
+          STDOUT.reopen '/dev/null', 'a'
+          STDERR.reopen STDOUT
+        end
+      elsif forking
+        # so we need to try something different...
+        # Need to work out the vendoring stuff here.
+        # for now just blow up and do what we'd normally do.
+        #require 'spoon'
+        raise NotImplementedError, 'Attempting to fork from inside jRuby. jRuby doesn\'t support this.'
+        #puts 'Continuing normally...'
+        #forking = false
       end
-    elsif forking
-      # so we need to try something different...
-      # Need to work out the vendoring stuff here.
-      # for now just blow up and do what we'd normally do.
-      #require 'spoon'
-      puts 'Attempting to fork from inside jRuby. jRuby doesn\'t support this.'
-      puts 'Continuing normally...'
-      forking = false
+    rescue NotImplementedError
+      puts "Forking isn't supported on this system. Sorry."
+      puts "Starting normally..."
     end
     
     return if no_runner

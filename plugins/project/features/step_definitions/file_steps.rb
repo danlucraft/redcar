@@ -34,7 +34,7 @@ end
 
 When /^I put a lot of lines into the file "([^\"]*)"$/ do |file|
   File.open(file, "w") do |f|
-    200.times { |i| f.puts (i*20).to_s }
+    200.times { |i| f.puts(i * 20) }
   end
 end
 

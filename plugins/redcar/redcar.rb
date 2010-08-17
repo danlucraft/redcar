@@ -1000,9 +1000,7 @@ module Redcar
       puts "loading plugins took #{Time.now - PROCESS_START_TIME}"
       Application.start
       ApplicationSWT.start
-      s = Time.now
       EditViewSWT.start
-      puts "EditViewSWT.start took #{Time.now - s}s"
       s = Time.now
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
@@ -1013,6 +1011,7 @@ module Redcar
       Redcar::Project::Manager.start(args)
       puts "project start took #{Time.now - s}s"
       Redcar.app.make_sure_at_least_one_window_open
+      puts "start time: #{Time.now - $redcar_process_start_time}"
     end
   end
 end

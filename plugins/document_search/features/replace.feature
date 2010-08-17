@@ -111,4 +111,13 @@ Feature: Replace in file
     Then the contents should be "THE\n* Speedbars have access to THE properties of THE widgets in THEm."
     And the selection range should be from 64 to 67
 
+  Scenario: Replace regex with back-references
+    When I replace the contents with "Curry chicken"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::SearchAndReplaceCommand
+    And I type "(\w+) chicken" into the "Search" field in the speedbar
+    And I type "\1 beef" into the "Replace" field in the speedbar
+    And I press "Replace" in the speedbar
+    Then the contents should be "Curry beef"
+
   

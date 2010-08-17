@@ -1,4 +1,4 @@
-REDCAR_VERSION = "0.3.10dev"
+REDCAR_VERSION = "0.3.10.1dev"
 require 'rubygems'
 require 'fileutils'
 require 'spec/rake/spectask'
@@ -30,6 +30,14 @@ begin
     t.options = ['--markup', 'markdown']
   end  
 rescue LoadError
+end
+
+desc "upload the docs to redcareditor.com"
+task :release_docs do
+  port     = YAML.load(File.read(".server.yaml"))["port"]
+  docs_dir = YAML.load(File.read(".server.yaml"))["dir"]
+  sh "rsync -e 'ssh -p #{port}' -avz doc/ danlucraft.com:#{docs_dir}/#{REDCAR_VERSION}/"
+  sh "rsync -e 'ssh -p #{port}' -avz doc/ danlucraft.com:#{docs_dir}/latest/"
 end
 
 ### CI
