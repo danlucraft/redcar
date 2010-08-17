@@ -31,7 +31,7 @@ module Redcar
       
       def run
         execute <<-JAVASCRIPT
-          $('.output').hide();
+          $('.output').slideUp();
         JAVASCRIPT
 
         case Redcar.platform
@@ -77,7 +77,7 @@ module Redcar
         @output_id += 1
         append_to_container <<-HTML
           <div class="process running">
-            <div id="header#{@output_id}" class="header" onclick="$(this).next().slideToggle();">
+            <div id="header#{@output_id}" class="header" onclick="$(this).toggleClass('up').next().slideToggle();">
               <span class="in-progress-message">Started at #{format_time(@start)}</span>
             </div>
             <div id="output#{@output_id}" class="output"></div>
