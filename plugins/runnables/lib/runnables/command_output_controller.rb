@@ -57,14 +57,20 @@ module Redcar
       
       def run_windows
         @thread = Thread.new do
-          start_output_block
-          output = `cd #{@path} & #{@cmd} 2>&1`
-          append_output <<-HTML
+          begin
+            start_output_block
+            output = `cd #{@path} & #{@cmd} 2>&1`
+            append_output <<-HTML
             <div class="stdout">
-              #{process(output)}
+            #{process(output)}
             </div>
-          HTML
-          end_output_block
+            HTML
+            end_output_block
+          rescue => e
+            puts e.class
+            puts e.message
+            puts e.backtrace
+          end
         end
       end
       
@@ -143,15 +149,15 @@ module Redcar
               </div>
             HTML
           end
-          start_output_block
           begin
+            start_output_block
             @shell.execute("cd #{@path}; " + @cmd)
+            end_output_block
           rescue => e
             puts e.class
             puts e.message
             puts e.backtrace
           end
-          end_output_block
           @shell = nil
           @thread = nil
         end
