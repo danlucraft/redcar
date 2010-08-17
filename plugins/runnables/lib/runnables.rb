@@ -31,7 +31,11 @@ module Redcar
     end
 
     def self.previous_tab_for(command)
-      Redcar.app.all_tabs.detect { |t| t.respond_to?(:html_view) && t.html_view.controller.cmd == command }
+      Redcar.app.all_tabs.detect do |t|
+        t.respond_to?(:html_view) &&
+        t.html_view.controller.is_a?(CommandOutputController) &&
+        t.html_view.controller.cmd == command
+      end
     end
 
     def self.keymaps
