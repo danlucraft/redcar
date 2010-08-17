@@ -76,20 +76,23 @@ module Redcar
         @start = Time.now
         @output_id += 1
         append_to_container <<-HTML
-          <div class="header" onclick="$(this).next().slideToggle();">
-            Process #{@output_id} started at #{format_time(@start)}
+          <div class="process running">
+            <div id="header#{@output_id}" class="header" onclick="$(this).next().slideToggle();">
+              <span class="in-progress-message">Processing since #{format_time(@start)}</span>
+            </div>
+            <div id="output#{@output_id}" class="output"></div>
           </div>
-          <div id="output#{@output_id}" class="output"></div>|
         HTML
       end
 
       def end_output_block
         @end = Time.now
-        append_to_container <<-HTML
-          <div class="complete" onclick="$(this).prev().slideToggle();">
-            Process finished at #{format_time(@end)} (#{@end - @start} seconds)
-          </div>
+        append_to("#header#{@output_id}", <<-HTML)
+          <span class="completed-message">Completed at #{format_time(@end)}. (Took #{@end - @start} seconds)</span>
         HTML
+        execute <<-JS
+          $("#output#{@output_id}").parent().removeClass("running");
+        JS
       end
 
       def append_to(container, html)

@@ -8,7 +8,7 @@ h1 {
   letter-spacing: 3px;
 }
 
-.header, .complete {
+.header {
   font-family: Helvetica, Arial, sans-serif;
   font-size: 10px;
   font-weight: bold;
@@ -16,15 +16,11 @@ h1 {
   padding: 3px 10px;
   margin-left: 10px;
   cursor: pointer;
+  margin-top: 10px;
 }
 
-.header {
-  border-bottom: 1px solid #666;
-}
-
-.complete {
-  margin-bottom: 10px;
-  border-top: 1px solid #666;
+#header1 {
+  margin-top: 0px;
 }
 
 .command, .output {
@@ -34,10 +30,33 @@ h1 {
   margin-left: 10px;
 }
 
+.output {
+  border-left: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+
 .stderr {
   color: #f00;
 }
 
 .command {
   color: #666;
+}
+
+.header .in-progress-message, .running .header .completed-message {
+  display: none;
+}
+
+.running .header .in-progress-message {
+  display: inline;
+}
+
+.running .header {
+  background: #666;
+  color: #fff;
+}
+
+.running .output {
+  border-left: 1px solid #666;
+  border-bottom: 1px solid #666;
 }
