@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;TMPL_LOOP NAME="$1"&gt;
+	$2
+&lt;/TMPL_LOOP&gt;</string>
+	<key>name</key>
+	<string>Loop</string>
+	<key>scope</key>
+	<string>text.html.html-template</string>
+	<key>tabTrigger</key>
+	<string>loop</string>
+	<key>uuid</key>
+	<string>857B0182-F407-4ADC-B166-463C47A0369B</string>
+</dict>
+</plist>
