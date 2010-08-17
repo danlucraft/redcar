@@ -57,8 +57,8 @@ module Redcar
       
       def run_windows
         @thread = Thread.new do
+          start_output_block
           output = `cd #{@path} & #{@cmd} 2>&1`
-          start_new_output_block
           append_output <<-HTML
             <div class="stdout">
               #{process(output)}
@@ -78,7 +78,7 @@ module Redcar
         append_to_container <<-HTML
           <div class="process running">
             <div id="header#{@output_id}" class="header" onclick="$(this).next().slideToggle();">
-              <span class="in-progress-message">Processing since #{format_time(@start)}</span>
+              <span class="in-progress-message">Started at #{format_time(@start)}</span>
             </div>
             <div id="output#{@output_id}" class="output"></div>
           </div>

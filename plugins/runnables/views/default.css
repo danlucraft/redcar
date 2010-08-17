@@ -11,6 +11,7 @@ h1 {
 .header {
   font-family: Helvetica, Arial, sans-serif;
   font-size: 10px;
+  line-height: 18px;
   font-weight: bold;
   background: #ddd;
   padding: 3px 10px;
@@ -52,7 +53,8 @@ h1 {
 }
 
 .running .header {
-  background: #666;
+  background: #666 url("indicator.gif") no-repeat 5px center;
+  padding-left: 25px;
   color: #fff;
 }
 
