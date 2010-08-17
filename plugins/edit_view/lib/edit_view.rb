@@ -18,6 +18,8 @@ require "edit_view/select_font_dialog"
 require "edit_view/select_theme_dialog"
 
 require "edit_view/commands/text_conversion_commands"
+require "edit_view/commands/align_assignment_command"
+
 
 module Redcar
   class EditView
