@@ -31,7 +31,7 @@ module Redcar
       
       def run
         execute <<-JAVASCRIPT
-          $('.output').slideUp();
+          $('.output').slideUp().prev('.header').addClass('up');
         JAVASCRIPT
 
         case Redcar.platform
