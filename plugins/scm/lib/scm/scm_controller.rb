@@ -46,25 +46,25 @@ module Redcar
               item(repo.translations[:commitable]) { Scm::Manager.open_commit_tab(repo, node) }
             end
             if (commands.include?(:index_add))
-              item(repo.translations[:index_add]) { repo.index_add(node); tree.refresh }
+              item(repo.translations[:index_add]) { if repo.index_add(node); tree.refresh; end }
             end
             if (commands.include?(:index_ignore))
-              item(repo.translations[:index_ignore]) { repo.index_ignore(node); tree.refresh }
+              item(repo.translations[:index_ignore]) { if repo.index_ignore(node); tree.refresh; end }
             end
             if (commands.include?(:index_save))
-              item(repo.translations[:index_save]) { repo.index_save(node); tree.refresh }
+              item(repo.translations[:index_save]) { if repo.index_save(node); tree.refresh; end }
             end
             if (commands.include?(:index_unsave))
-              item(repo.translations[:index_unsave]) { repo.index_unsave(node); tree.refresh }
+              item(repo.translations[:index_unsave]) { if repo.index_unsave(node); tree.refresh; end }
             end
             if (commands.include?(:index_revert))
-              item(repo.translations[:index_revert]) { repo.index_revert(node); tree.refresh }
+              item(repo.translations[:index_revert]) { if repo.index_revert(node); tree.refresh; end }
             end
             if (commands.include?(:index_restore))
-              item(repo.translations[:index_restore]) { repo.index_restore(node); tree.refresh }
+              item(repo.translations[:index_restore]) { if repo.index_restore(node); tree.refresh; end }
             end
             if (commands.include?(:index_delete))
-              item(repo.translations[:index_delete]) { repo.index_delete(node); tree.refresh }
+              item(repo.translations[:index_delete]) { if repo.index_delete(node); tree.refresh; end }
             end
             
             separator
@@ -73,7 +73,7 @@ module Redcar
             
             separator
           elsif node.is_a?(Scm::ScmMirror::CommitsNode)
-            item(repo.translations[:push]) { node.repo.push!; tree.refresh }
+            item(repo.translations[:push]) { if node.repo.push!; tree.refresh; end }
             
             separator
           end

@@ -163,6 +163,13 @@ module Redcar
         project.window.treebook.remove_tree(info['tree'])
       end
       
+      def self.refresh_trees
+        project_repositories.each do |project, info|
+          project.refresh
+          info['tree'].refresh
+        end
+      end
+      
       def self.project_context_menus(tree, node, controller)
         # Search for the current project
         project = Project::Manager.in_window(Redcar.app.focussed_window)

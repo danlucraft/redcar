@@ -168,6 +168,7 @@ module Redcar
           
           @repo.add(change.path)
           cache.refresh
+          true # refresh trees
         end
         
         # REQUIRED for :index. Ignores a new file so it won't show in changes.
@@ -182,6 +183,7 @@ module Redcar
           gitignore.syswrite(change.path + "\n")
           gitignore.close
           cache.refresh
+          true # refresh trees
         end
         
         # REQUIRED for :index. Reverts a file to its last commited state.
@@ -204,6 +206,7 @@ module Redcar
             @repo.checkout_file('HEAD', change.path)
           end
           cache.refresh
+          true # refresh trees
         end
         
         # REQUIRED for :index. Reverts a file in the index back to it's 
@@ -229,6 +232,7 @@ module Redcar
           end
           
           cache.refresh
+          true # refresh trees
         end
         
         # REQUIRED for :index. Saves changes made to a file in the index.
@@ -241,6 +245,7 @@ module Redcar
           
           @repo.add(change.path)
           cache.refresh
+          true # refresh trees
         end
         
         # REQUIRED for :index. Restores a file to the last known state of
@@ -254,6 +259,7 @@ module Redcar
           
           @repo.checkout_file('HEAD', change.path)
           cache.refresh
+          true # refresh trees
         end
         
         # REQUIRED for :index. Marks a file as deleted in the index.
@@ -266,6 +272,7 @@ module Redcar
           
           @repo.remove(change.path)
           cache.refresh
+          true # refresh trees
         end
         
         # REQUIRED for :commit. Commits the currently indexed changes 
@@ -366,7 +373,14 @@ module Redcar
           remote = cache['config']['branch.' + current_branch + '.remote']
           push_target = cache['config']['branch.' + current_branch + '.push'] || cache['config']['branch.' + current_branch + '.merge']
           
-          repo.push(remote, '+refs/heads/' + current_branch + ':' + push_target)
+          # don't block while trying to push changes
+          Thread.new do
+            repo.push(remote, '+refs/heads/' + current_branch + ':' + push_target)
+            
+            Redcar.update_gui { cache.refresh; Scm::Manager.refresh_trees }
+          end
+          
+          false # don't refresh trees
         end
       end
     end
