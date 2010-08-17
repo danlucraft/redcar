@@ -37,6 +37,10 @@ module Redcar
         def lazy_sub_menu(text, options={}, &block)
           @builder.lazy_sub_menu(text, @defaults.merge(options), &block)
         end
+
+        def append(item)
+          @builder.append(item)
+        end
       end
     end
   end

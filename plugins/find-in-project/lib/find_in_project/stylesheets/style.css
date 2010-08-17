@@ -1,0 +1,205 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  font-size: 14px;
+}
+
+#search_container {
+  background-color: #eee;
+  width: 100%;
+  margin: -8px 0px 20px -8px;
+  padding: 16px 8px 10px 0;
+  border-bottom: 2px solid #ddd;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+#search_container table {
+  width: 100%;
+}
+
+#search_container table td {
+  padding: 3px 0;
+  vertical-align: top;
+  padding-left: 10px;
+}
+
+#search_container .input .label {
+  width: 100px;
+  text-align: right;
+}
+
+#search_container .input .field input {
+  width: 100%;
+  height: 20px;
+}
+
+#search_container .input .expand {
+  width: 20px;
+  padding: 3px 0px;
+}
+
+#search_container .input .expand a {
+  color: black;
+  font-weight: bold;
+  text-decoration: none;
+  display: block;
+  width: 20px;
+  height: 18px;
+  background-color: #777;
+  border: 1px solid #000;
+  text-align: center;
+  color: #fff;
+}
+
+#search_container .controls label {
+  font-size: 13px;
+  margin-right: 10px;
+}
+
+#search_container .controls #search {
+  float: right;
+}
+
+#recent_queries {
+  position: absolute;
+  top: 41px;
+  left: 124px;
+  right: 34px;
+}
+
+#recent_options {
+  position: absolute;
+  top: 69px;
+  left: 124px;
+  right: 34px;
+}
+
+#recent_queries,
+#recent_options {
+  border: 1px solid #000;
+  background-color: #fff;
+}
+
+#recent_queries ul,
+#recent_options ul {
+  list-style: none;
+  height: 100px;
+  overflow: auto;
+}
+
+#recent_queries ul li,
+#recent_options ul li {
+  padding: 3px 10px;
+}
+
+#recent_queries ul li:hover,
+#recent_options ul li:hover {
+  background-color: #EDEDFD;
+  cursor: hand;
+}
+
+#results_container {
+  margin-top: 130px;
+}
+
+#no_results,
+#searching {
+  font-weight: bold;
+  font-size: 16px;
+  text-align: center;
+}
+
+#results {
+  padding: 0 10px 10px 10px;
+}
+
+#results table {
+  width: 100%;
+  padding: 0px;
+  margin: 0px;
+  border-spacing: 0px;
+}
+
+#results .filename,
+#results .line_no {
+  background-color: #eee;
+  padding: 3px 10px;
+}
+
+#results .even {
+  background-color: #fff;
+}
+
+#results .odd {
+  background-color: #EDEDFD;
+}
+
+#results .file_heading {
+  background-color: #eee;
+  padding: 4px;
+}
+
+#results .file_heading img {
+  float: left;
+  margin-right: 2px;
+}
+
+#results .file_heading a {
+  font-weight: bold;
+}
+
+#results .expand_collapse img {
+  width: 16px;
+  height: 16px;
+}
+
+#results .line_no {
+  text-align: right;
+  padding: 0 5px;
+  min-width: 20px;
+  cursor: hand;
+  font-size: 13px;
+}
+
+#results .divider .line_no {
+  text-align: center;
+  background-color: #fff;
+}
+
+#results .text {
+  padding: 3px 10px;
+  width: 100%;
+  cursor: hand;
+}
+
+#results .text span {
+  background-color: yellow;
+  font-weight: bold;
+}
+
+#results .text pre {
+  font-size: 13px;
+}
+
+#results .divider .text {
+  background-color: #fff;
+}
+
+#results .nomatch .line_no,
+#results .nomatch .text {
+  color: #aaa;
+}
+
+#results .break {
+  height: 20px;
+}
+
+#errors {
+  color: red;
+  border: 1px solid red;
+  margin: 0 30px;
+  padding: 15px;
+}
