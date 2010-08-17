@@ -30,7 +30,7 @@ h1 {
 }
 
 .command, .output {
-  font-family: Menlo, Consolas, fixed;
+  font-family: Menlo, Consolas, monospace;
   font-size: 12px;
   padding: 10px;
   margin-left: 10px;
