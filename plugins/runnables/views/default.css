@@ -13,8 +13,7 @@ h1 {
   font-size: 10px;
   line-height: 18px;
   font-weight: bold;
-  padding: 3px 0 3px 20px;
-  margin-left: 10px;
+  padding: 3px 0 2px 20px;
   cursor: pointer;
   background: #ddd url("wedgeDown.png") no-repeat 8px 9px;
 }
@@ -27,14 +26,19 @@ h1 {
 .command, .output {
   font-family: Menlo, Consolas, monospace;
   font-size: 12px;
-  padding: 10px;
-  margin-left: 10px;
+  padding: 5px;
+}
+
+.command {
+  margin: 0 5px;
 }
 
 .output {
-  border-left: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-  margin-bottom: 10px;
+  border: 1px solid #ddd;
+}
+
+.process {
+  padding: 0 5px 5px 5px;
 }
 
 .stderr {
@@ -60,6 +64,5 @@ h1 {
 }
 
 .running .output {
-  border-left: 1px solid #666;
-  border-bottom: 1px solid #666;
+  border: 1px solid #666;
 }
