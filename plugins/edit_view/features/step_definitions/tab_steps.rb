@@ -85,4 +85,8 @@ Then /^I should (not )?see "(.*)" in the edit tab$/ do |bool, content|
   focussed_tab.edit_view.document.to_s.include?(content).should matcher
 end
 
+Then /^my active tab should be "([^"]*)"$/ do |name|
+  focussed_tab.title.should == name
+end
+
 
