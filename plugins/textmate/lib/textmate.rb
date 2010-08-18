@@ -13,17 +13,27 @@ module Redcar
         Dir[File.join(Redcar.user_dir, "Bundles", "*")]
     end
     
+    def self.menus
+      Menu::Builder.build do
+        sub_menu "Bundles" do
+          if Textmate.storage['loaded_bundles'].size() > 0
+            item "Clear Bundle Menu", ClearBundleMenu
+          end
+        end
+      end
+    end
+    
     def self.bundle_context_menus(node)
       Menu::Builder.build do
         if not node.nil? and node.is_a?(Textmate::SnippetGroup)
           if Textmate.storage['loaded_bundles'].include?(node.text.downcase)
             item ("Remove from Bundles Menu") do
-              Textmate::RemovePinnedBundleCommand.new(node.text).run
+              RemovePinnedBundle.new(node.text).run
             end
           end
           if not Textmate.storage['loaded_bundles'].include?(node.text.downcase)
             item ("Pin to Bundles Menu") do
-              Textmate::PinBundleToMenuCommand.new(node.text).run  
+              PinBundleToMenu.new(node.text).run  
             end
           end
         end
@@ -134,7 +144,14 @@ module Redcar
       end
     end
     
-    class RemovePinnedBundleCommand < Redcar::Command
+    class ClearBundleMenu < Redcar::Command
+      def execute
+        Textmate.storage['loaded_bundles'] = []
+        Redcar.app.refresh_menu!
+      end
+    end
+    
+    class RemovePinnedBundle < Redcar::Command
       def initialize(bundle_name)
         @bundle_name = bundle_name.downcase
       end
@@ -149,7 +166,7 @@ module Redcar
       end
     end
     
-    class PinBundleToMenuCommand < Redcar::Command
+    class PinBundleToMenu < Redcar::Command
       def initialize(bundle_name)
         @bundle_name = bundle_name.downcase
       end
