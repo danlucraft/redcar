@@ -15,9 +15,16 @@ module Redcar
     
     def self.bundle_context_menus(node)
       Menu::Builder.build do
-        if not node.nil? and node.is_a?(Textmate::SnippetGroup)          
-          item ("Pin to Bundles Menu") do
-            Textmate::PinBundleCommand.new(node.text).run  
+        if not node.nil? and node.is_a?(Textmate::SnippetGroup)
+          if Textmate.storage['loaded_bundles'].include?(node.text.downcase)
+            item ("Remove from Bundles Menu") do
+              Textmate::RemovePinnedBundleCommand.new(node.text).run
+            end
+          end
+          if not Textmate.storage['loaded_bundles'].include?(node.text.downcase)
+            item ("Pin to Bundles Menu") do
+              Textmate::PinBundleToMenuCommand.new(node.text).run  
+            end
           end
         end
       end
@@ -48,7 +55,7 @@ module Redcar
 
     def self.attach_menus(builder)
       if Textmate.storage['load_bundles_menu']
-        @menus ||= begin
+        @menus = begin
           Menu::Builder.build do |a|
             #item "Refresh Bundles", Redcar.app.refresh_menu!
             all_bundles.sort_by {|b| (b.name||"").downcase}.each do |bundle|
@@ -127,12 +134,22 @@ module Redcar
       end
     end
     
-    def load_main_menu
+    class RemovePinnedBundleCommand < Redcar::Command
+      def initialize(bundle_name)
+        @bundle_name = bundle_name.downcase
+      end
       
+      def execute 
+        unless not Textmate.storage['loaded_bundles'].include?(@bundle_name)
+          bundles = Textmate.storage['loaded_bundles'] || []
+          bundles.delete(@bundle_name)
+          Textmate.storage['loaded_bundles'] = bundles
+          Redcar.app.refresh_menu!
+        end
+      end
     end
     
-    class PinBundleCommand < Redcar::Command
-      
+    class PinBundleToMenuCommand < Redcar::Command
       def initialize(bundle_name)
         @bundle_name = bundle_name.downcase
       end
