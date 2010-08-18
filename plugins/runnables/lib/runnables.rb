@@ -49,7 +49,7 @@ module Redcar
 
     def self.keymaps
       map = Keymap.build("main", [:osx, :linux, :windows]) do
-        link "Ctrl+R",          Runnables::RunEditTabCommand
+        link "Ctrl+R", Runnables::RunEditTabCommand
       end
       [map, map]
     end

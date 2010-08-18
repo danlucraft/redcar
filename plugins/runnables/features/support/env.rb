@@ -29,6 +29,14 @@ def reset_runnable_fixtures
             "description": "Runs the app",
             "type":        "task/ruby"
           }
+        ],
+        "file_runners":[
+          {
+            "regex":   ".*\\.rb",
+            "name":    "Run as ruby",
+            "command": "ruby __PATH__",
+            "type":    "app/ruby"
+          }
         ]
       }
     EOS
