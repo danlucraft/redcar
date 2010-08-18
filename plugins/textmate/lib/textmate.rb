@@ -12,6 +12,16 @@ module Redcar
       Dir[File.join(Redcar.root, "plugins", "textmate", "vendor", "redcar-bundles", "Bundles", "*")] +
         Dir[File.join(Redcar.user_dir, "Bundles", "*")]
     end
+    
+    def self.bundle_context_menus(node)
+      Menu::Builder.build do
+        if not node.nil? and node.is_a?(Textmate::SnippetGroup)          
+          item ("Pin to Bundles Menu") do
+            Textmate::PinBundleCommand.new(node.text).run  
+          end
+        end
+      end
+    end
 
     def self.uuid_hash
       @uuid_hash ||= begin
@@ -31,16 +41,16 @@ module Redcar
         storage.set_default('load_bundles_menu',true)
         storage.set_default('select_bundles_for_menu',true)
         storage.set_default('select_bundles_for_tree',false)
-        storage.set_default('loaded_bundles',['groovy','java','javascript','lisp','python','ruby','ruby on rails','yaml'])
+        storage.set_default('loaded_bundles',[])
         storage
       end
     end
 
-    #TODO: Add 'reload bundles' item to menu
     def self.attach_menus(builder)
       if Textmate.storage['load_bundles_menu']
         @menus ||= begin
           Menu::Builder.build do |a|
+            #item "Refresh Bundles", Redcar.app.refresh_menu!
             all_bundles.sort_by {|b| (b.name||"").downcase}.each do |bundle|
               name = (bundle.name||"").downcase
               unless @storage['select_bundles_for_menu'] and !@storage['loaded_bundles'].to_a.include?(name)
@@ -114,6 +124,26 @@ module Redcar
           modifiers.join("+") + "+" + (letter.length == 1 ? letter.upcase : letter)
         end
         res
+      end
+    end
+    
+    def load_main_menu
+      
+    end
+    
+    class PinBundleCommand < Redcar::Command
+      
+      def initialize(bundle_name)
+        @bundle_name = bundle_name.downcase
+      end
+      
+      def execute
+        unless Textmate.storage['loaded_bundles'].include?(@bundle_name)
+          bundles = Textmate.storage['loaded_bundles'] || []
+          bundles << @bundle_name
+          Textmate.storage['loaded_bundles'] = bundles
+          Redcar.app.refresh_menu!
+        end
       end
     end
 

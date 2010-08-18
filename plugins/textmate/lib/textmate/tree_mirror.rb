@@ -15,6 +15,24 @@ module Redcar
     class TreeController
       include Redcar::Tree::Controller
 
+      def right_click(tree, node)
+        controller = self
+        menu = Menu.new
+        Redcar.plugin_manager.objects_implementing(:bundle_context_menus).each do |object|
+          case object.method(:bundle_context_menus).arity
+          when 1
+            menu.merge(object.bundle_context_menus(node))
+          when 2
+            menu.merge(object.bundle_context_menus(tree, node))
+          when 3
+            menu.merge(object.bundle_context_menus(tree, node, controller))
+          else
+            puts("Invalid bundle_context_menus hook detected in "+object.class.name)
+          end
+        end
+        Application::Dialog.popup_menu(menu, :pointer)
+      end
+        
       def activated(tree, node)
         if node.leaf? and 
             tab = Redcar.app.focussed_notebook_tab and 
