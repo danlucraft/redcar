@@ -258,7 +258,7 @@ module Redcar
           
           project = Project::Manager.in_window(Redcar.app.focussed_window)
           repo_info = project_repositories[project]
-          repo_info['tree'].refresh
+          repo_info['trees'].each {|t| t.refresh}
         end
       end
     end
