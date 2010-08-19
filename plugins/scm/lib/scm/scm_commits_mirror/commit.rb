@@ -16,6 +16,10 @@ module Redcar
         def leaf?
           true
         end
+        
+        def log
+          nil
+        end
       end
     end
   end

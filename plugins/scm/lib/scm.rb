@@ -8,6 +8,7 @@ require 'scm/model'
 require 'scm/commit_mirror'
 require 'scm/scm_changes_controller'
 require 'scm/scm_changes_mirror'
+require 'scm/scm_changes_mirror/drag_controller'
 require 'scm/scm_changes_mirror/changes_node'
 require 'scm/scm_changes_mirror/change'
 require 'scm/scm_commits_controller'
@@ -146,12 +147,14 @@ module Redcar
             tree = Tree.new(mirror, Scm::ScmChangesController.new(repo))
             project.window.treebook.add_tree(tree)
             tree.tree_mirror.top.each {|n| tree.expand(n)}
+            project_repositories[project]['trees'].push tree
           end
           if repo.supported_commands.include? :push
             mirror = Scm::ScmCommitsMirror.new(repo)
             tree = Tree.new(mirror, Scm::ScmCommitsController.new(repo))
             project.window.treebook.add_tree(tree)
             tree.tree_mirror.top.each {|n| tree.expand(n)}
+            project_repositories[project]['trees'].push tree
           end
         
           # don't steal focus from the project module.

@@ -20,7 +20,7 @@ module Redcar
       def right_click(tree, node)
         repo = @repo
         
-        # TODO: In lieu of actually supporting multi-select, make it obvious
+        # In lieu of actually supporting multi-select, make it obvious
         # that we don't.
         if tree.selection.length > 1
           tree.select(node)

@@ -20,12 +20,18 @@ module Redcar
       end
       
       def activated(tree, node)
-        if node.respond_to?(:diff)
+        if node.status == [:unmerged]
+          # TODO: if we're unmerged, then we should open ourselves for editing
+        elsif node.respond_to?(:diff)
           diff = node.diff
           if diff
             # TODO: if we can provide a text diff of ourselves, then display it
           end
         end
+      end
+      
+      def drag_controller(tree)
+        DragController.new(tree, @repo)
       end
       
       def right_click(tree, node)

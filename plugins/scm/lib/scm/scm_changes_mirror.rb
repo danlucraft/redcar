@@ -22,7 +22,7 @@ module Redcar
       end
       
       def drag_and_drop?
-        false
+        @repo.supported_commands.include? :index
       end
       
       def top
