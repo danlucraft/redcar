@@ -178,7 +178,14 @@ module Redcar
             return
           end
           
-          gitignore = File.new(File.join(repo.dir.path, '.gitignore'), 'a')
+          gitignore = File.new(File.join(repo.dir.path, '.gitignore'), 'r+')
+          
+          # Check the last byte of the file for a newline
+          gitignore.seek(-1, IO::SEEK_END)
+          if gitignore.sysread(1) != "\n"
+            gitignore.syswrite("\n")
+          end
+          
           gitignore.syswrite(change.path + "\n")
           gitignore.close
           cache.refresh
