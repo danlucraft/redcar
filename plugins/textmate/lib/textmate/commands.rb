@@ -41,27 +41,5 @@ module Redcar
         end
       end
     end
-
-    class InstalledBundles < Redcar::Command
-      def execute
-        controller = Controller.new
-        tab = win.new_tab(HtmlTab)
-        tab.html_view.controller = controller
-        tab.focus
-      end
-
-      class Controller
-        include Redcar::HtmlController
-
-        def title
-          "Installed Bundles"
-        end
-
-        def index
-          rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "views", "installed_bundles.html.erb")))
-          rhtml.result(binding)
-        end
-      end
-    end
   end
 end

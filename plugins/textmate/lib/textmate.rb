@@ -8,6 +8,7 @@ begin
   require 'textmate/tree_mirror'
   require 'textmate/commands'
 rescue NameError => e
+  puts "Core loading not yet complete"
   # In the installer we don't have all of core loaded yet
 end
 
@@ -22,7 +23,9 @@ module Redcar
       Menu::Builder.build do
         sub_menu "Bundles" do
           if Textmate.storage['loaded_bundles'].size() > 0
-            item "Clear Bundle Menu", ClearBundleMenu
+            item "Clear Bundle Menu" do
+              ClearBundleMenu.new.run
+            end
           end
         end
       end
@@ -30,7 +33,7 @@ module Redcar
 
     def self.bundle_context_menus(node)
       Menu::Builder.build do
-        if not node.nil? and node.is_a?(Textmate::SnippetGroup)
+        if not node.nil? and node.is_a?(Textmate::BundleNode)
           if Textmate.storage['loaded_bundles'].include?(node.text.downcase)
             item ("Remove from Bundles Menu") do
               RemovePinnedBundle.new(node.text).run
@@ -145,6 +148,31 @@ module Redcar
         end
         res
       end
+    end
+    begin
+    class InstalledBundles < Redcar::Command
+      def execute
+        controller = Controller.new
+        tab = win.new_tab(HtmlTab)
+        tab.html_view.controller = controller
+        tab.focus
+      end
+
+      class Controller
+        include Redcar::HtmlController
+
+        def title
+          "Installed Bundles"
+        end
+
+        def index
+          rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "views", "installed_bundles.html.erb")))
+          rhtml.result(binding)
+        end
+      end
+    end
+    rescue  NameError => e
+      puts "Core loading not yet complete"
     end
   end
 end
