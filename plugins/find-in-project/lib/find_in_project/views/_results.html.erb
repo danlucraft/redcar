@@ -1,0 +1,50 @@
+<% image_path = File.expand_path(File.join(@plugin_root, %w(lib find_in_project images))) %>
+<div id="results">
+  <table>
+    <% @results.each_with_index do |result, file_index| %>
+      <% filename, matches = result[0].gsub(/^\.\//, ''), result[1] %>
+      <tr>
+        <td class="file_heading" colspan="2">
+          <a class="expand_collapse" data-file_index="<%= file_index %>">
+            <img src="<%= image_path %>/expanded.png" />
+            <%= filename %>
+          </a>
+        </td>
+      </tr>
+      <% matches.each_with_index do |(line, text), line_index| %>
+        <% text = CGI.escapeHTML(text).gsub((@match_case ? /(#{@query})/ : /(#{@query})/i)) { "<span>#{$1}</span>" } %>
+        <% divider = (line == :divide) %>
+        <tr class="line_for_<%= file_index %> <%= (divider ? 'divider' : 'result') %> <%= (line_index % 2 == 0 ? 'even' : 'odd') %>" data-href='<%= filename %>' data-line_no='<%= line %>'>
+          <td class='line_no'><%= (divider ? '. . .' : line) %></td>
+          <td class='text'><pre><%= text %></pre></td>
+        </tr>
+      <% end %>
+      <tr><td class='break' colspan='2'></td></tr>
+    <% end %>
+  </table>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('.result').click(function(ev) {
+      ev.preventDefault();
+      try {
+        Controller.openFile($(this).attr('data-href'), $(this).attr('data-line_no'), "<%= @query %>", <%= @match_case ? 'true' : 'false' %>);
+      } catch(e) {
+        alert(e.message);
+      }
+    });
+
+    $('.expand_collapse').click(function(ev) {
+      ev.preventDefault();
+      var file_index = $(this).attr('data-file_index');
+      if ($(".line_for_" + file_index).first().is(":visible")) {
+        $('img', this).attr('src', '<%= image_path %>/collapsed.png');
+        $(".line_for_" + file_index).hide();
+      } else {
+        $('img', this).attr('src', '<%= image_path %>/expanded.png');
+        $(".line_for_" + file_index).show();
+      }
+    });
+  });
+</script>

@@ -43,6 +43,10 @@ module Redcar
       if ARGV.include?("--load-timings")
         str << " -Djruby.debug.loadService.timing=true"
       end
+      
+      if ARGV.include?("--quick")
+        str << " -d32 -client"
+      end
       str
     end
   end
