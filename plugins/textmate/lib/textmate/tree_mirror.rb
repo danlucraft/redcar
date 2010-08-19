@@ -12,6 +12,18 @@ module Redcar
       end
     end
 
+    class ReloadSnippetTree < Redcar::Command
+      def execute
+        if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
+          win.treebook.remove_tree(tree)
+          tree = Tree.new(TreeMirror.new(Textmate.all_bundles),TreeController.new)
+          win.treebook.add_tree(tree)
+        else
+          ShowSnippetTree.new.run
+        end
+      end
+    end
+
     class TreeController
       include Redcar::Tree::Controller
 
@@ -32,10 +44,10 @@ module Redcar
         end
         Application::Dialog.popup_menu(menu, :pointer)
       end
-        
+
       def activated(tree, node)
-        if node.leaf? and 
-            tab = Redcar.app.focussed_notebook_tab and 
+        if node.leaf? and
+            tab = Redcar.app.focussed_notebook_tab and
             tab.is_a?(EditTab)
           doc = tab.document
           if tab.edit_tab? and doc
@@ -117,7 +129,19 @@ module Redcar
 
       def initialize(name)
         @children = []
-        @name = name
+        @text = name
+      end
+
+      def load_icon
+        if Textmate.storage['loaded_bundles'].include?(text.downcase)
+          File.dirname(__FILE__) + "/../../icons/ui-menu-blue.png"
+        else
+          nil
+        end
+      end
+
+      def icon
+        load_icon
       end
 
       def leaf?
@@ -125,7 +149,7 @@ module Redcar
       end
 
       def text
-        @name
+        @text
       end
 
       def children

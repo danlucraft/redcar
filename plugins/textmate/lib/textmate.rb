@@ -17,7 +17,7 @@ module Redcar
       Dir[File.join(Redcar.root, "plugins", "textmate", "vendor", "redcar-bundles", "Bundles", "*")] +
         Dir[File.join(Redcar.user_dir, "Bundles", "*")]
     end
-    
+
     def self.menus
       Menu::Builder.build do
         sub_menu "Bundles" do
@@ -27,7 +27,7 @@ module Redcar
         end
       end
     end
-    
+
     def self.bundle_context_menus(node)
       Menu::Builder.build do
         if not node.nil? and node.is_a?(Textmate::SnippetGroup)
@@ -37,7 +37,7 @@ module Redcar
             end
           else
             item("Pin to Bundles Menu") do
-              PinBundleToMenu.new(node.text).run  
+              PinBundleToMenu.new(node.text).run
             end
           end
         end
@@ -71,7 +71,6 @@ module Redcar
       if Textmate.storage['load_bundles_menu']
         @menus = begin
           Menu::Builder.build do |a|
-            #item "Refresh Bundles", Redcar.app.refresh_menu!
             all_bundles.sort_by {|b| (b.name||"").downcase}.each do |bundle|
               name = (bundle.name||"").downcase
               unless @storage['select_bundles_for_menu'] and !@storage['loaded_bundles'].to_a.include?(name)
