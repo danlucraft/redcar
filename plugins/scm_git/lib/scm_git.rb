@@ -162,8 +162,7 @@ module Redcar
         def index_add(change)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.index_add(change)
-            return
+            return change.repo.index_add(change)
           end
           
           @repo.add(change.path)
@@ -190,8 +189,7 @@ module Redcar
         def index_revert(change)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.index_revert(change)
-            return
+            return change.repo.index_revert(change)
           end
           
           if change.git_status[0,1] != ' '
@@ -214,8 +212,7 @@ module Redcar
         def index_unsave(change)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.index_unsave(change)
-            return
+            return change.repo.index_unsave(change)
           end
           
           if change.git_status == 'R '
@@ -239,8 +236,7 @@ module Redcar
         def index_save(change)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.index_save(change)
-            return
+            return change.repo.index_save(change)
           end
           
           @repo.add(change.path)
@@ -253,8 +249,7 @@ module Redcar
         def index_restore(change)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.index_restore(change)
-            return
+            return change.repo.index_restore(change)
           end
           
           @repo.checkout_file('HEAD', change.path)
@@ -266,8 +261,7 @@ module Redcar
         def index_delete(change)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.index_delete(change)
-            return
+            return change.repo.index_delete(change)
           end
           
           @repo.remove(change.path)
@@ -284,8 +278,7 @@ module Redcar
           if change
             # delegate to the proper submodule
             if self != change.repo
-              change.repo.commit!(change)
-              return
+              return change.repo.commit!(change)
             end
             
             # redelegate the commit to the subproject to handle
@@ -305,8 +298,7 @@ module Redcar
           if change
             # delegate to the proper submodule
             if self != change.repo
-              change.repo.commit!(change)
-              return
+              return change.repo.commit!(change)
             end
           
             # redelegate the call to the subproject to handle
