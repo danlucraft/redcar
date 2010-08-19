@@ -2,25 +2,17 @@ require 'ruby-debug'
 
 Then /^the HTML tab should say "([^"]*)"$/ do |needle|
   limit = 5
-  @thread = Thread.new(limit) do |limit|
+  contents = nil
+  
+  @thread = Thread.new do
     start = Time.now
-    
     contents = get_browser_contents
-    now = start
-    while !(match = contents.match(needle)) && now - start < limit
+    while !contents.match(needle) && Time.now - start < limit
       contents = get_browser_contents
       sleep 0.1
-      now = Time.now
-      puts "Looping at #{now}"
-    end
-    
-    puts "Unable to find #{needle} in #{limit} seconds in contents:\n #{contents}" if !match
-    puts "Found '#{needle}' in the browser" if match
-    
-    Redcar.gui.stop
+    end    
   end
 
-  Redcar.gui.stop
-  Redcar.gui.start
-  puts "cuke continued... sort of."
+  Redcar.gui.yield_until { !@thread.alive? }
+  contents.should match needle
 end
