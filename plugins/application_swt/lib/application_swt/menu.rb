@@ -1,6 +1,11 @@
 module Redcar
   class ApplicationSWT
     class Menu
+      
+      def self.types
+        @types = { :check => Swt::SWT::CHECK, :radio => Swt::SWT::RADIO }
+      end
+      
       def self.items
         @items ||= Hash.new {|h,k| h[k] = []}
       end
@@ -11,6 +16,8 @@ module Redcar
     
       attr_reader :menu_bar
       
+      
+
       def self.menu_types
         [Swt::SWT::BAR, Swt::SWT::POP_UP]
       end
@@ -53,6 +60,7 @@ module Redcar
       end
 
       def add_entries_to_menu(menu, menu_model)
+        
         menu_model.each do |entry|
           if entry.is_a?(Redcar::Menu::LazyMenu)
             menu_header = Swt::Widgets::MenuItem.new(menu, Swt::SWT::CASCADE)
@@ -72,7 +80,8 @@ module Redcar
           elsif entry.is_a?(Redcar::Menu::Item::Separator)
             item = Swt::Widgets::MenuItem.new(menu, Swt::SWT::SEPARATOR)
           elsif entry.is_a?(Redcar::Menu::Item)
-            item = Swt::Widgets::MenuItem.new(menu, Swt::SWT::PUSH)
+            item = Swt::Widgets::MenuItem.new(menu, Menu.types[entry.type] || Swt::SWT::PUSH)
+            item.setSelection(entry.active)
             if entry.command.is_a?(Proc)
               connect_proc_to_item(item, entry)
             else
