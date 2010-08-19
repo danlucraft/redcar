@@ -1,7 +1,7 @@
 
 module Redcar
   module Scm
-    class ScmChangesMirror
+    class ScmCommitsMirror
       include Redcar::Tree::Mirror
       
       def initialize(repo)
@@ -9,7 +9,7 @@ module Redcar
       end
       
       def title
-        @repo.translations[:uncommited_changes]
+        @repo.translations[:unpushed_commits]
       end
       
       def data_type
@@ -27,7 +27,7 @@ module Redcar
       
       def top
         @top ||= begin
-          [ScmChangesMirror::ChangesNode.new(@repo)]
+          [ScmCommitsMirror::CommitsNode.new(@repo)]
         end
       end
     end

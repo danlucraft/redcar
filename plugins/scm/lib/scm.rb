@@ -10,6 +10,8 @@ require 'scm/scm_changes_controller'
 require 'scm/scm_changes_mirror'
 require 'scm/scm_changes_mirror/changes_node'
 require 'scm/scm_changes_mirror/change'
+require 'scm/scm_commits_controller'
+require 'scm/scm_commits_mirror'
 require 'scm/scm_commits_mirror/commits_node'
 require 'scm/scm_commits_mirror/commit'
 
@@ -136,10 +138,19 @@ module Redcar
           end
           
           puts "Preparing the GUI for the current project's repository." if debug
-          mirror = Scm::ScmChangesMirror.new(repo)
-          tree = Tree.new(mirror, Scm::ScmChangesController.new(repo))
-          project_repositories[project]['tree'] = tree
-          project.window.treebook.add_tree(tree)
+          
+          project_repositories[project]['trees'] = []
+          
+          if repo.supported_commands.include? :commit
+            mirror = Scm::ScmChangesMirror.new(repo)
+            tree = Tree.new(mirror, Scm::ScmChangesController.new(repo))
+            project.window.treebook.add_tree(tree)
+          end
+          if repo.supported_commands.include? :push
+            mirror = Scm::ScmCommitsMirror.new(repo)
+            tree = Tree.new(mirror, Scm::ScmCommitsController.new(repo))
+            project.window.treebook.add_tree(tree)
+          end
         
           # don't steal focus from the project module.
           project.window.treebook.focus_tree(project.tree)
@@ -160,13 +171,13 @@ module Redcar
         info = project_repositories.delete project
         return if info.nil?
         
-        project.window.treebook.remove_tree(info['tree'])
+        info['trees'].each {|t| project.window.treebook.remove_tree(t)}
       end
       
       def self.refresh_trees
         project_repositories.each do |project, info|
           project.refresh
-          info['tree'].refresh
+          info['trees'].each {|t| t.refresh}
         end
       end
       
@@ -217,7 +228,7 @@ module Redcar
                           
                           # refresh tree views
                           project.refresh
-                          repo_info['tree'].refresh
+                          repo_info['trees'].each {|t| t.refresh}
                         rescue
                           Redcar::Application::Dialog.message_box($!.message)
                           puts $!.backtrace
