@@ -19,7 +19,11 @@ module Redcar
       def execute
         @command_instance.environment(Executor.current_environment)
         begin
-          result = @command_instance.execute
+          if not @options.empty?
+            result = @command_instance.execute(@options) 
+          else
+            result = @command_instance.execute
+          end
         rescue Object => e
           @command_instance.error = e
           print_command_error(e)
