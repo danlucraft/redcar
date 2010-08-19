@@ -4,7 +4,11 @@ require 'textmate/environment'
 require 'textmate/plist'
 require 'textmate/preference'
 require 'textmate/snippet'
-require 'textmate/tree_mirror'
+begin
+  require 'textmate/tree_mirror'
+rescue NameError => e
+  # In the installer we don't have all of core loaded yet
+end
 
 module Redcar
   module Textmate

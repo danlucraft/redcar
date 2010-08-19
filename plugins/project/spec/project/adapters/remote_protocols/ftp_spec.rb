@@ -1,5 +1,9 @@
 require File.join(File.dirname(__FILE__), "..", "..", "..", "spec_helper")
 
+require 'net/ssh'
+require 'net/ftp'
+require 'net/ftp/list'
+
 class Redcar::Project
   describe Adapters::RemoteProtocols::FTP do
     let(:conn) { double('connection') }

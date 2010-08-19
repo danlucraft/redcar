@@ -12,7 +12,7 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Plugins" do
-          sub_menu "Strip Trailing Spaces" do
+          sub_menu "Strip Trailing Spaces", :priority => 195 do
             if (Redcar::StripTrailingSpaces.storage['enabled'])
               item "Disable", DisablePlugin
             else

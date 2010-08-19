@@ -18,9 +18,9 @@ module Redcar
       end
       puts "found latest XULRunner release version: #{xulrunner_version}" if Redcar.platform == :windows
     end
-  	
+    
   	def install
-  	  unless File.writable?(JRUBY_JAR_DIR)
+      unless File.writable?(JRUBY_JAR_DIR)
   	    puts "Don't have permission to write to #{JRUBY_JAR_DIR}. Please rerun with sudo."
   	    exit 1
   	  end
