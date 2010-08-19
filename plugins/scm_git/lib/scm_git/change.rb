@@ -67,7 +67,7 @@ module Redcar
         end
         
         def text
-          @file.type_raw.sub(' ', '_') + ": " + @file.path
+          @file.type_raw.sub(' ', '_') + ": #{File.basename(@file.path)} (#{File.dirname(@file.path)})"
         end
         
         def icon
