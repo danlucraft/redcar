@@ -18,6 +18,13 @@ module Redcar
       end
     end
     
+    def self.loaded
+      if ARGV.include?('--profile')
+        # #run causes errors since we're still loading.
+        StartProfilingCommand.new.execute
+      end
+    end
+    
     class << self
       attr_accessor :profiling_result
     end
