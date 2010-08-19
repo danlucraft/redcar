@@ -16,7 +16,7 @@ Feature: Show snippets in a tree
     And I open bundle "PHP" in the tree
     Then I should see snippet group "Declarations" listed
 
-# Need to clear cache to make this work
+#TODO: add add/remove bundles from preferences
 #  Scenario: I can refresh the tree if loaded bundles change
 #    When I add a bundle
 #    And I click Show Bundles in Tree

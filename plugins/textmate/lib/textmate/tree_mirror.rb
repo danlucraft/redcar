@@ -1,3 +1,8 @@
+# Some Icons by Yusuke Kamiyamane.
+# http://p.yusukekamiyamane.com/
+#
+# Licensed under a Creative Commons Attribution 3.0 license.
+# http://creativecommons.org/licenses/by/3.0/
 module Redcar
   module Textmate
     TREE_TITLE = "Bundles"
@@ -12,12 +17,42 @@ module Redcar
       end
     end
 
+    class ReloadSnippetTree < Redcar::Command
+      def execute
+        if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
+          win.treebook.remove_tree(tree)
+          tree = Tree.new(TreeMirror.new(Textmate.all_bundles),TreeController.new)
+          win.treebook.add_tree(tree)
+        else
+          ShowSnippetTree.new.run
+        end
+      end
+    end
+
     class TreeController
       include Redcar::Tree::Controller
 
+      def right_click(tree, node)
+        controller = self
+        menu = Menu.new
+        Redcar.plugin_manager.objects_implementing(:bundle_context_menus).each do |object|
+          case object.method(:bundle_context_menus).arity
+          when 1
+            menu.merge(object.bundle_context_menus(node))
+          when 2
+            menu.merge(object.bundle_context_menus(tree, node))
+          when 3
+            menu.merge(object.bundle_context_menus(tree, node, controller))
+          else
+            puts("Invalid bundle_context_menus hook detected in "+object.class.name)
+          end
+        end
+        Application::Dialog.popup_menu(menu, :pointer)
+      end
+
       def activated(tree, node)
-        if node.leaf? and 
-            tab = Redcar.app.focussed_notebook_tab and 
+        if node.leaf? and
+            tab = Redcar.app.focussed_notebook_tab and
             tab.is_a?(EditTab)
           doc = tab.document
           if tab.edit_tab? and doc
@@ -51,7 +86,7 @@ module Redcar
       def build_tree(tree, bundle)
         if bundle.main_menu and bundle.main_menu["items"]
           main_menu = bundle.main_menu
-          group = SnippetGroup.new(bundle.name)
+          group = BundleNode.new(bundle.name)
           main_menu["items"].each do |item|
             build_tree_from_item(group.children, bundle, item)
           end
@@ -92,14 +127,13 @@ module Redcar
       end
     end
 
-    class SnippetGroup
+    class BundleNode
       include Redcar::Tree::Mirror::NodeMirror
-
       attr_writer :children
 
       def initialize(name)
         @children = []
-        @name = name
+        @text = name
       end
 
       def leaf?
@@ -107,7 +141,42 @@ module Redcar
       end
 
       def text
-        @name
+        @text
+      end
+
+      def children
+        @children
+      end
+
+      def icon
+        if Textmate.storage['loaded_bundles'].include?(text.downcase)
+          File.dirname(__FILE__) + "/../../icons/ui-menu-blue.png"
+        else
+          File.dirname(__FILE__) + "/../../icons/tree_mode.gif"
+        end
+      end
+    end
+
+    class SnippetGroup
+      include Redcar::Tree::Mirror::NodeMirror
+
+      attr_writer :children
+
+      def initialize(name)
+        @children = []
+        @text = name
+      end
+
+      def icon
+        File.dirname(__FILE__) + "/../../icons/tree_mode.gif"
+      end
+
+      def leaf?
+        false
+      end
+
+      def text
+        @text
       end
 
       def children
@@ -125,6 +194,10 @@ module Redcar
         if snippet.tab_trigger
           @name << " (#{snippet.tab_trigger})"
         end
+      end
+
+      def icon
+        File.dirname(__FILE__) + "/../../icons/document-snippet.png"
       end
 
       def text
