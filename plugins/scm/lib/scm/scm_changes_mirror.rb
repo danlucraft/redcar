@@ -27,7 +27,14 @@ module Redcar
       
       def top
         @top ||= begin
-          [ScmChangesMirror::ChangesNode.new(@repo)]
+          if @repo.supported_commands.include? :index
+            [
+              ScmChangesMirror::ChangesNode.new(@repo, :indexed),
+              ScmChangesMirror::ChangesNode.new(@repo, :unindexed)
+            ]
+          else
+            [ScmChangesMirror::ChangesNode.new(@repo, :all)]
+          end
         end
       end
     end

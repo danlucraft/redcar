@@ -5,29 +5,44 @@ module Redcar
       class Change
         include Redcar::Scm::ScmChangesMirror::Change
         
-        STATUS_MAP = {
-          '??' => [:new],
-          'UU' => [:unmerged],
+        STATUS_MAP_INDEXED = {
           'M ' => [:indexed],
           'A ' => [:indexed],
           'D ' => [:deleted],
           #'R ' => [:moved],
-          'AM' => [:indexed, :changed],
-          'MM' => [:indexed, :changed],
-          #'RM' => [:moved, :changed],
-          'AD' => [:indexed, :missing],
-          'MD' => [:indexed, :missing],
-          #'RD' => [:moved, :missing],
+          #'C ' => [:moved],
+          'AM' => [:indexed],
+          'MM' => [:indexed],
+          #'RM' => [:moved],
+          #'CM' => [:moved],
+          'AD' => [:indexed],
+          'MD' => [:indexed],
+          #'RD' => [:moved],
+          #'CD' => [:moved],
+        }
+        
+        STATUS_MAP_UNINDEXED = {
+          '??' => [:new],
+          'UU' => [:unmerged],
+          'AM' => [:changed],
+          'MM' => [:changed],
+          #'RM' => [:changed],
+          #'CM' => [:changed],
+          'AD' => [:missing],
+          'MD' => [:missing],
+          #'RD' => [:missing],
+          #'CD' => [:missing],
           ' M' => [:changed],
           ' D' => [:missing],
         }
         
         attr_reader :repo
         
-        def initialize(file, repo, type=:file, children=[])
+        def initialize(file, repo, type=:file, indexed=false, children=[])
           @file = file
           @repo = repo
           @type = type
+          @indexed = indexed
           @children = children
         end
         
@@ -44,8 +59,10 @@ module Redcar
           # current index while they are dirty.
           if @type == :sub_project && children.length > 0
             [:commitable]
+          elsif @indexed
+            STATUS_MAP_INDEXED[@file.type_raw] || []
           else
-            STATUS_MAP[@file.type_raw] || []
+            STATUS_MAP_UNINDEXED[@file.type_raw] || []
           end
         end
         

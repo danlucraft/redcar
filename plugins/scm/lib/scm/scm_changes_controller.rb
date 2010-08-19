@@ -68,7 +68,7 @@ module Redcar
             end
             
             separator
-          elsif node.is_a?(Scm::ScmChangesMirror::ChangesNode)
+          elsif node.is_a?(Scm::ScmChangesMirror::ChangesNode) and node.change_types != :unindexed
             item(repo.translations[:commit]) { Scm::Manager.open_commit_tab(repo) }
             
             separator

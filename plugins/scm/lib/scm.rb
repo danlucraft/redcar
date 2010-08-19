@@ -145,16 +145,17 @@ module Redcar
             mirror = Scm::ScmChangesMirror.new(repo)
             tree = Tree.new(mirror, Scm::ScmChangesController.new(repo))
             project.window.treebook.add_tree(tree)
+            tree.tree_mirror.top.each {|n| tree.expand(n)}
           end
           if repo.supported_commands.include? :push
             mirror = Scm::ScmCommitsMirror.new(repo)
             tree = Tree.new(mirror, Scm::ScmCommitsController.new(repo))
             project.window.treebook.add_tree(tree)
+            tree.tree_mirror.top.each {|n| tree.expand(n)}
           end
         
           # don't steal focus from the project module.
           project.window.treebook.focus_tree(project.tree)
-          tree.tree_mirror.top.each {|n| tree.expand(n)}
         rescue
           # cleanup
           project_repositories.delete project

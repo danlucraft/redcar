@@ -64,6 +64,8 @@ module Redcar
           :pull_targetted => "Pull...",
           :commit => "Commit Changes",
           :uncommited_changes => "Uncommited changes",
+          :indexed_changes => "Indexed changes",
+          :unindexed_changes => "Unindexed changes",
           :index_add => "Add File",
           :index_ignore => "Ignore File",
           :index_save => "Index Changes",
@@ -84,12 +86,30 @@ module Redcar
         nil
       end
       
-      # REQUIRED for :commit. Returns an array of changes currently waiting
-      # for commit.
+      # REQUIRED for :commit if :index is not supported. Returns an 
+      # array of changes currently waiting for commit.
       #
       # @return [Array<Redcar::Scm::ScmChangesMirror::Change>]
       def uncommited_changes
         raise "Scm.uncommited_changes not implemented." if supported_commands.include?(:commit)
+        []
+      end
+      
+      # REQUIRED for :commit if :index is supported. Returns an array
+      # of changes currently in the index.
+      #
+      # @return [Array<Redcar::Scm::ScmChangesMirror::Change>]
+      def indexed_changes
+        raise "Scm.indexed_changes not implemented." if supported_commands.include?(:commit)
+        []
+      end
+      
+      # REQUIRED for :commit if :index is supported. Returns an array
+      # of changes currently not in the index.
+      #
+      # @return [Array<Redcar::Scm::ScmChangesMirror::Change>]
+      def unindexed_changes
+        raise "Scm.unindexed_changes not implemented." if supported_commands.include?(:commit)
         []
       end
       

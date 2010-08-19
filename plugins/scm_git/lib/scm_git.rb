@@ -135,12 +135,21 @@ module Redcar
           cache.refresh
         end
         
-        # @return [Array<Redcar::Scm::ScmMirror::Change>]
-        def uncommited_changes          
-          changes = []
-          
+        # @return [Array<Redcar::Scm::ScmChangeMirror::Change>]
+        def indexed_changes
+          _prepare_changes(true)
+        end
+        
+        # @return [Array<Redcar::Scm::ScmChangeMirror::Change>]
+        def unindexed_changes
+          _prepare_changes(false)
+        end
+        
+        private 
+        
+        def _prepare_changes(indexed)
           # f[0] is the path, and f[1] is the actual StatusFile
-          cache['status'].all_changes.each do |f| 
+          cache['status'].all_changes.find_all {|c| c[1].type_raw[(indexed ? 0 : 1),1] != " "}.map do |f| 
             full_path = File.join(@repo.dir.path, f[0])
             type = (((not File.exist?(full_path)) or File.file?(full_path)) ? :file : :directory)
             
@@ -149,14 +158,14 @@ module Redcar
             end
             
             if type == :sub_project
-              changes.push(Scm::Git::Change.new(f[1], self, type, cache['submodules'][f[0]].uncommited_changes))
+              Scm::Git::Change.new(f[1], self, type, indexed, cache['submodules'][f[0]].uncommited_changes)
             else
-              changes.push(Scm::Git::Change.new(f[1], self, type))
+              Scm::Git::Change.new(f[1], self, type, indexed)
             end
-          end
-          
-          changes.sort_by {|m| m.path}
+          end.sort_by {|m| m.path}
         end
+        
+        public
         
         # REQUIRED for :index. Adds a new file to the index.
         def index_add(change)
