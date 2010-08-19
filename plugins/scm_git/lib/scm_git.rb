@@ -137,19 +137,19 @@ module Redcar
         
         # @return [Array<Redcar::Scm::ScmChangeMirror::Change>]
         def indexed_changes
-          _prepare_changes(true)
+          prepare_changes(true)
         end
         
         # @return [Array<Redcar::Scm::ScmChangeMirror::Change>]
         def unindexed_changes
-          _prepare_changes(false)
+          prepare_changes(false)
         end
         
         private 
         
-        def _prepare_changes(indexed)
+        def prepare_changes(indexed)
           # f[0] is the path, and f[1] is the actual StatusFile
-          cache['status'].all_changes.find_all {|c| c[1].type_raw[(indexed ? 0 : 1),1] != " "}.map do |f| 
+          cache['status'].all_changes.find_all {|c| valid_change?(c[1].type_raw, indexed)}.map do |f| 
             full_path = File.join(@repo.dir.path, f[0])
             type = (((not File.exist?(full_path)) or File.file?(full_path)) ? :file : :directory)
             
@@ -163,6 +163,16 @@ module Redcar
               Scm::Git::Change.new(f[1], self, type, indexed)
             end
           end.sort_by {|m| m.path}
+        end
+        
+        def valid_change?(type, indexed)
+          if (not indexed) and type[1,1] != " "
+            true
+          elsif indexed
+            not ([" ", "?", "U"].include? type[0,1])
+          else
+            false
+          end
         end
         
         public
