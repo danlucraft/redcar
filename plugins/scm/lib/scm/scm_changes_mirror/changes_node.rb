@@ -1,7 +1,7 @@
 
 module Redcar
   module Scm
-    class ScmMirror
+    class ScmChangesMirror
       class ChangesNode
         include Redcar::Tree::Mirror::NodeMirror
         

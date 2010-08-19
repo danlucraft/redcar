@@ -87,7 +87,7 @@ module Redcar
       # REQUIRED for :commit. Returns an array of changes currently waiting
       # for commit.
       #
-      # @return [Array<Redcar::Scm::ScmMirror::Change>]
+      # @return [Array<Redcar::Scm::ScmChangesMirror::Change>]
       def uncommited_changes
         raise "Scm.uncommited_changes not implemented." if supported_commands.include?(:commit)
         []
@@ -158,7 +158,7 @@ module Redcar
       
       # REQUIRED for :push. Returns an array of unpushed changesets.
       #
-      # @return [Array<Redcar::Scm::ScmMirror::Commit>]
+      # @return [Array<Redcar::Scm::ScmCommitsMirror::Commit>]
       def unpushed_commits
         raise "Scm.unpushed_commits not implemented." if supported_commands.include?(:push)
         nil

@@ -3,7 +3,7 @@ module Redcar
   module Scm
     module Git
       class Change
-        include Redcar::Scm::ScmMirror::Change
+        include Redcar::Scm::ScmChangesMirror::Change
         
         STATUS_MAP = {
           '??' => [:new],

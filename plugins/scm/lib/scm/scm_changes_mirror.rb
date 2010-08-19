@@ -1,7 +1,7 @@
 
 module Redcar
   module Scm
-    class ScmMirror
+    class ScmChangesMirror
       include Redcar::Tree::Mirror
       
       def initialize(repo)
@@ -30,10 +30,10 @@ module Redcar
           nodes = []
           
           if @repo.supported_commands.include?(:commit)
-            nodes.push(ScmMirror::ChangesNode.new(@repo))
+            nodes.push(ScmChangesMirror::ChangesNode.new(@repo))
           end
           if @repo.supported_commands.include?(:push)
-            nodes.push(ScmMirror::CommitsNode.new(@repo))
+            nodes.push(ScmCommitsMirror::CommitsNode.new(@repo))
           end
           
           nodes

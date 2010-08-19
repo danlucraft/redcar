@@ -1,7 +1,7 @@
 
 module Redcar
   module Scm
-    class ScmController
+    class ScmChangesController
       include Redcar::Tree::Controller
       
       COMMAND_MAP = {
@@ -38,7 +38,7 @@ module Redcar
         end
         
         menu = Menu::Builder.build do
-          if node.is_a?(Scm::ScmMirror::Change) and repo.supported_commands.include?(:index)
+          if node.is_a?(Scm::ScmChangesMirror::Change) and repo.supported_commands.include?(:index)
             # commands may end up in the array twice, but include? doesn't care
             commands = node.status.map {|s| COMMAND_MAP[s]}.flatten
             
@@ -68,11 +68,11 @@ module Redcar
             end
             
             separator
-          elsif node.is_a?(Scm::ScmMirror::ChangesNode)
+          elsif node.is_a?(Scm::ScmChangesMirror::ChangesNode)
             item(repo.translations[:commit]) { Scm::Manager.open_commit_tab(repo) }
             
             separator
-          elsif node.is_a?(Scm::ScmMirror::CommitsNode)
+          elsif node.is_a?(Scm::ScmCommitsMirror::CommitsNode)
             item(repo.translations[:push]) { if node.repo.push!; tree.refresh; end }
             
             separator

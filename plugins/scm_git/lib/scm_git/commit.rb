@@ -3,7 +3,7 @@ module Redcar
   module Scm
     module Git
       class Commit
-        include Redcar::Scm::ScmMirror::Commit
+        include Redcar::Scm::ScmCommitsMirror::Commit
         
         def initialize(commit)
           @commit = commit

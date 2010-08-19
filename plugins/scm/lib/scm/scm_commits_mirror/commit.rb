@@ -1,7 +1,7 @@
 
 module Redcar
   module Scm
-    class ScmMirror
+    class ScmCommitsMirror
       module Commit
         include Redcar::Tree::Mirror::NodeMirror
         
