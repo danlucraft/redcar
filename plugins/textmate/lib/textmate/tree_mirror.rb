@@ -65,6 +65,7 @@ module Redcar
         cache.concat(@top)
         @top = []
         @top.concat(cache)
+        cache = nil
       end
 
       def build_tree(tree, bundle)
