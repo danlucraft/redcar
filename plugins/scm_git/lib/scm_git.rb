@@ -369,10 +369,10 @@ module Redcar
         # REQUIRED for :push. Returns an array of unpushed changesets.
         #
         # @return [Array<Redcar::Scm::ScmMirror::Commit>]
-        def unpushed_commits
+        def unpushed_commits(branch=current_branch)
           # Hit `git config -l` to figure out which remote/ref this branch uses for pushing.
-          remote = cache['config']['branch.' + current_branch + '.remote']
-          push_target = cache['config']['branch.' + current_branch + '.push'] || cache['config']['branch.' + current_branch + '.merge']
+          remote = cache['config']['branch.' + branch + '.remote']
+          push_target = cache['config']['branch.' + branch + '.push'] || cache['config']['branch.' + branch + '.merge']
           
           # We don't have a remote setup for pushes, so we can't automatically push
           if remote.nil?
@@ -384,7 +384,7 @@ module Redcar
           r_ref = File.read(File.join(@repo.dir.path, '.git', 'refs', 'remotes', remote, push_target)).strip
           
           # Hit .git/refs/heads/$BRANCH to figure out which revision we're at locally.
-          l_ref = File.read(File.join(@repo.dir.path, '.git', 'refs', 'heads', current_branch)).strip
+          l_ref = File.read(File.join(@repo.dir.path, '.git', 'refs', 'heads', branch)).strip
           
           # Check submodules for pushable changes on their current branch
           submodules_commits = cache['submodules'].values.select {|m| not m.unpushed_commits.empty?}.map {|m| Redcar::Scm::ScmMirror::CommitsNode.new m, m.repo.dir.path}
@@ -399,13 +399,13 @@ module Redcar
         
         # REQUIRED for :push. Pushes all current changesets to the remote
         # repository.
-        def push!
-          remote = cache['config']['branch.' + current_branch + '.remote']
-          push_target = cache['config']['branch.' + current_branch + '.push'] || cache['config']['branch.' + current_branch + '.merge']
+        def push!(branch=current_branch)
+          remote = cache['config']['branch.' + branch + '.remote']
+          push_target = cache['config']['branch.' + branch + '.push'] || cache['config']['branch.' + branch + '.merge']
           
           # don't block while trying to push changes
           Thread.new do
-            repo.push(remote, '+refs/heads/' + current_branch + ':' + push_target)
+            repo.push(remote, '+refs/heads/' + branch + ':' + push_target)
             
             Redcar.update_gui { cache.refresh; Scm::Manager.refresh_trees }
           end

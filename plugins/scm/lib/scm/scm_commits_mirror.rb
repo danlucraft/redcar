@@ -27,7 +27,11 @@ module Redcar
       
       def top
         @top ||= begin
-          [ScmCommitsMirror::CommitsNode.new(@repo)]
+          if @repo.branches.count > 0
+            @repo.branches.map {|b| ScmCommitsMirror::CommitsNode.new(@repo, b)}
+          else
+            [ScmCommitsMirror::CommitsNode.new(@repo)]
+          end
         end
       end
     end

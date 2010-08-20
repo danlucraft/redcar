@@ -28,7 +28,14 @@ module Redcar
         
         menu = Menu::Builder.build do
           if node.is_a?(Scm::ScmCommitsMirror::CommitsNode)
-            item(repo.translations[:push]) { if node.repo.push!; tree.refresh; end }
+            item(repo.translations[:push]) { 
+              if node.branch
+                refresh = node.repo.push! branch
+              else
+                refresh = node.repo.push!
+              end
+              tree.refresh if refresh
+            }
             
             separator
           end

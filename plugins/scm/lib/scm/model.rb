@@ -176,17 +176,22 @@ module Redcar
         "\n\n# Please enter your commit message above."
       end
       
-      # REQUIRED for :push. Returns an array of unpushed changesets.
+      # REQUIRED for :push. Returns an array of unpushed changesets for
+      # a given branch. If you don't support branches, you can safely
+      # ignore this parameter and redefine this method without it for
+      # clarity.
       #
       # @return [Array<Redcar::Scm::ScmCommitsMirror::Commit>]
-      def unpushed_commits
+      def unpushed_commits(branch='')
         raise "Scm.unpushed_commits not implemented." if supported_commands.include?(:push)
         nil
       end
       
       # REQUIRED for :push. Pushes all current changesets to the remote
-      # repository.
-      def push!
+      # repository for the given branch only. If you don't support 
+      # branches, you can safely ignore this parameter and redefine
+      # this method without it for clarity.
+      def push!(branch='')
         raise "Scm.push! not implemented." if supported_commands.include?(:push)
         nil
       end
@@ -211,14 +216,14 @@ module Redcar
       #
       # @return [Array<String>]
       def branches
-        raise "Scm.branches not implemented." if supported_commands.include?(:switch_branch)
-        nil
+        raise "Scm.branches not implemented." if supported_commands.include?(:switch_branch) or supported_commands.include?(:merge)
+        []
       end
       
       # REQUIRED for :switch_branch. Returns the name of the current branch.
       def current_branch
         raise "Scm.current_branch not implemented." if supported_commands.include?(:switch_branch)
-        nil
+        ''
       end
       
       # REQUIRED for :switch_branch. Switches to the named branch.

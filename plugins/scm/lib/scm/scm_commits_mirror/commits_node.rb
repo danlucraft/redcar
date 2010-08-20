@@ -5,11 +5,12 @@ module Redcar
       class CommitsNode
         include Redcar::Tree::Mirror::NodeMirror
         
-        attr_reader :repo
+        attr_reader :repo, :branch
         
-        def initialize(repo, text=nil)
+        def initialize(repo, branch=nil)
           @repo = repo
-          @text = text || @repo.translations[:unpushed_commits]
+          @branch = branch
+          @text = branch || @repo.translations[:unpushed_commits]
         end
         
         def text
@@ -25,7 +26,11 @@ module Redcar
         end
         
         def children
-          @repo.unpushed_commits
+          if branch
+            @repo.unpushed_commits(branch)
+          else
+            @repo.unpushed_commits
+          end
         end
       end
     end
