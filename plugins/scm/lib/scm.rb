@@ -18,6 +18,8 @@ require 'scm/scm_commits_mirror/commit'
 
 module Redcar
   module Scm
+    ICONS_DIR = File.expand_path(File.join(File.dirname(__FILE__), %w{.. icons}))
+    
     class Manager
       extend Redcar::HasSPI
       

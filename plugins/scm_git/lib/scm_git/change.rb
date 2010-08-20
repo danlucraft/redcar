@@ -67,11 +67,24 @@ module Redcar
         end
         
         def text
-          @file.type_raw.sub(' ', '_') + ": #{File.basename(@file.path)} (#{File.dirname(@file.path)})"
+          "#{File.basename(@file.path)} (#{File.dirname(@file.path)})"
         end
         
         def icon
-          @type == :file ? :file : :directory
+          case
+          when ((@file.type_raw == "??") or (@file.type_raw[0,1] == "A" and @indexed))
+            File.join(Scm::ICONS_DIR, (@type == :file ? "notebook" : "folder") + "--plus.png")
+          when ((@file.type_raw[0,1] == "M" and @indexed) or (@file.type_raw[1,1] == "M" and (not @indexed)))
+            File.join(Scm::ICONS_DIR, (@type == :file ? "notebook" : "folder") + "--pencil.png")
+          when (['C', 'R'].include?(@file.type_raw[0,1]) and @indexed)
+            File.join(Scm::ICONS_DIR, (@type == :file ? "notebook" : "folder") + "--arrow.png")
+          when ((@file.type_raw[0,1] == "D" and @indexed) or (@file.type_raw[1,1] == "D" and (not @indexed)))
+            File.join(Scm::ICONS_DIR, (@type == :file ? "notebook" : "folder") + "--minus.png")
+          when (@file.type_raw[0,1] == "U" and (not @indexed))
+            File.join(Scm::ICONS_DIR, (@type == :file ? "notebook" : "folder") + "--exclamation.png")
+          else
+            @type == :file ? :file : :directory
+          end
         end
         
         def leaf?
