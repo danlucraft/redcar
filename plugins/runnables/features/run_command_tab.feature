@@ -31,11 +31,11 @@ Feature: Running commands in a tab
     Then I should see 2 windows
     And the HTML tab should say "hello world"
   
-  @wip
   Scenario: Re-running a command with windowed output
     Given I open the runnables tree
     And I expand the tree row "fixture_runnables"
     And I activate the "A windowed app" node in the tree
+    And I go back to the first window
     And I activate the "A windowed app" node in the tree
     Then I should see 2 windows
     And the HTML tab should say "hello world"

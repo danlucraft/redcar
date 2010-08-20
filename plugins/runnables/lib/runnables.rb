@@ -25,13 +25,13 @@ module Redcar
       if output == "none"
         controller.run        
       else #default to new tab
-        if output == "window"
-          Project::Manager.open_project_for_path(".")
-        end
         if tab = previous_tab_for(command)
           tab.html_view.controller.run
           tab.focus
         else
+          if output == "window"
+            Project::Manager.open_project_for_path(".")
+          end
           tab = Redcar.app.focussed_window.new_tab(HtmlTab)
           tab.html_view.controller = controller
           tab.focus
