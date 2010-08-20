@@ -1,11 +1,34 @@
 
 module Redcar
   module Textmate
+    class ShowSnippetTree < Redcar::Command
+      def execute
+        if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
+          win.treebook.focus_tree(tree)
+        else
+          tree = Tree.new(TreeMirror.new(Textmate.all_bundles),TreeController.new)
+          win.treebook.add_tree(tree)
+        end
+      end
+    end
+
+    class ReloadSnippetTree < Redcar::Command
+      def execute
+        if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
+          win.treebook.remove_tree(tree)
+          tree = Tree.new(TreeMirror.new(Textmate.all_bundles),TreeController.new)
+          win.treebook.add_tree(tree)
+        else
+          ShowSnippetTree.new.run
+        end
+      end
+    end
+
 
     class ClearBundleMenu < Redcar::Command
       def execute
         Textmate.storage['loaded_bundles'] = []
-        ReloadSnippetTree.new.run
+        Textmate.refresh_tree
         Redcar.app.refresh_menu!
       end
     end
@@ -20,7 +43,7 @@ module Redcar
           bundles = Textmate.storage['loaded_bundles'] || []
           bundles.delete(@bundle_name)
           Textmate.storage['loaded_bundles'] = bundles
-          ReloadSnippetTree.new.run
+          Textmate.refresh_tree
           Redcar.app.refresh_menu!
         end
       end
@@ -36,7 +59,7 @@ module Redcar
           bundles = Textmate.storage['loaded_bundles'] || []
           bundles << @bundle_name
           Textmate.storage['loaded_bundles'] = bundles
-          ReloadSnippetTree.new.run
+          Textmate.refresh_tree
           Redcar.app.refresh_menu!
         end
       end

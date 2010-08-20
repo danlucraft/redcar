@@ -8,7 +8,7 @@ begin
   require 'textmate/tree_mirror'
   require 'textmate/commands'
 rescue NameError => e
-  puts "Core loading not yet complete"
+  puts "Textmate plugin loading deferred until core loading is complete"
   # In the installer we don't have all of core loaded yet
 end
 
@@ -33,7 +33,7 @@ module Redcar
 
     def self.bundle_context_menus(node)
       Menu::Builder.build do
-        if not node.nil? and node.is_a?(Textmate::BundleNode)
+        if not node.nil? and node.is_a?(BundleNode)
           if Textmate.storage['loaded_bundles'].include?(node.text.downcase)
             item ("Remove from Bundles Menu") do
               RemovePinnedBundle.new(node.text).run
@@ -44,6 +44,13 @@ module Redcar
             end
           end
         end
+      end
+    end
+
+    def self.refresh_tree
+      win = Redcar.app.focussed_window
+      if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
+        tree.refresh
       end
     end
 
@@ -149,30 +156,31 @@ module Redcar
         res
       end
     end
+
     begin
-    class InstalledBundles < Redcar::Command
-      def execute
-        controller = Controller.new
-        tab = win.new_tab(HtmlTab)
-        tab.html_view.controller = controller
-        tab.focus
-      end
-
-      class Controller
-        include Redcar::HtmlController
-
-        def title
-          "Installed Bundles"
+      class InstalledBundles < Redcar::Command
+        def execute
+          controller = Controller.new
+          tab = win.new_tab(HtmlTab)
+          tab.html_view.controller = controller
+          tab.focus
         end
 
-        def index
-          rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "views", "installed_bundles.html.erb")))
-          rhtml.result(binding)
+        class Controller
+          include Redcar::HtmlController
+
+          def title
+            "Installed Bundles"
+          end
+
+          def index
+            rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "views", "installed_bundles.html.erb")))
+            rhtml.result(binding)
+          end
         end
       end
-    end
     rescue  NameError => e
-      puts "Core loading not yet complete"
+      puts "Textmate plugin loading deferred until core loading is complete"
     end
   end
 end

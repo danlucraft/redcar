@@ -6,29 +6,6 @@
 module Redcar
   module Textmate
     TREE_TITLE = "Bundles"
-    class ShowSnippetTree < Redcar::Command
-      def execute
-        if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
-          win.treebook.focus_tree(tree)
-        else
-          tree = Tree.new(TreeMirror.new(Textmate.all_bundles),TreeController.new)
-          win.treebook.add_tree(tree)
-        end
-      end
-    end
-
-    class ReloadSnippetTree < Redcar::Command
-      def execute
-        if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
-          win.treebook.remove_tree(tree)
-          tree = Tree.new(TreeMirror.new(Textmate.all_bundles),TreeController.new)
-          win.treebook.add_tree(tree)
-        else
-          ShowSnippetTree.new.run
-        end
-      end
-    end
-
     class TreeController
       include Redcar::Tree::Controller
 
@@ -81,6 +58,13 @@ module Redcar
         if @top.size() < 1
           @top = [EmptyTree.new]
         end
+      end
+
+      def refresh
+        cache = []
+        cache.concat(@top)
+        @top = []
+        @top.concat(cache)
       end
 
       def build_tree(tree, bundle)
