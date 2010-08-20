@@ -8,3 +8,7 @@ When /^I change the command to "([^"]*)"$/ do |name|
     f.print current.gsub("An app", name)
   end
 end
+
+Then /^I should see (\d+) windows?$/ do |window_count|
+  Redcar.app.windows.size.should == window_count.to_i
+end

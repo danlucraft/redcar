@@ -36,6 +36,13 @@ def reset_runnable_fixtures
             "description": "Runs the app silently",
             "type":        "task/ruby",
             "output":      "none"
+          },
+          {
+            "name":        "A windowed app",
+            "command":     "ruby runnable_app.rb",
+            "description": "Runs the app in a window",
+            "type":        "task/ruby",
+            "output":      "window"
           }
         ],
         "file_runners":[
