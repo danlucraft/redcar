@@ -53,7 +53,7 @@ module SwtHelper
     node = top.detect { |node| node.text == node_text }
     return node if node
     all_children = top.map{ |node| node.children }.flatten
-    find_node_with_text(all_children, node_text)
+    find_node_with_text(all_children, node_text) unless all_children.empty?
   end
 
   module TreeHelpers
