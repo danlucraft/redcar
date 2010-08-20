@@ -20,7 +20,7 @@ module Redcar
       end
       
       def activated(tree, node)
-        if node.status == [:unmerged]
+        if node.respond_to?(:status) and node.status == [:unmerged]
           # TODO: if we're unmerged, then we should open ourselves for editing
         elsif node.respond_to?(:diff)
           diff = node.diff
