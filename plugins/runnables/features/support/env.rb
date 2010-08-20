@@ -21,7 +21,7 @@ def reset_runnable_fixtures
   end
   
   File.open(runnable_config, 'w') do |f|
-    f.print <<-EOS.gsub(' ' * 6, '')
+    f.print <<-EOS
       {
         "commands":[
           {
@@ -29,6 +29,13 @@ def reset_runnable_fixtures
             "command":     "ruby runnable_app.rb",
             "description": "Runs the app",
             "type":        "task/ruby"
+            },
+          {
+            "name":        "A silent app",
+            "command":     "ruby runnable_app.rb",
+            "description": "Runs the app silently",
+            "type":        "task/ruby",
+            "output":      "none"
           }
         ],
         "file_runners":[
