@@ -25,6 +25,14 @@ module Redcar
         @repo.supported_commands.include? :index
       end
       
+      def from_data(data)
+        data.split('::').map {|n| @repo.from_data(n)}
+      end
+      
+      def to_data(nodes)
+        nodes.map {|n| n.to_data}.join('::')
+      end
+      
       def top
         @top ||= begin
           if @repo.supported_commands.include? :index

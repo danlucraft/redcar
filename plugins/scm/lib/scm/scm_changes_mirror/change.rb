@@ -9,7 +9,7 @@ module Redcar
         # NodeMirror stuff
         ###
         def text
-          path
+          "#{File.basename(path)} (#{File.dirname(path)})"
         end
         
         def tooltip_text
@@ -22,6 +22,10 @@ module Redcar
         
         def leaf?
           true
+        end
+        
+        def to_data
+          path
         end
         
         #####

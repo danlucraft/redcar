@@ -81,6 +81,10 @@ module Redcar
         def children
           @children
         end
+        
+        def to_data
+          raise "#to_data not implemented"
+        end
       end
     end
   end

@@ -35,6 +35,10 @@ module Redcar
           Redcar::Scm::Git::Manager.debug
         end
         
+        def from_data
+          raise "#from_data not implemented"
+        end
+        
         #######
         ## General stuff
         #####
@@ -50,6 +54,7 @@ module Redcar
         def cache
           @cache ||= begin
             c = ::BlockCache.new
+            
             c.add('branches', 15) do
               #@repo.lib.branches_all
               
@@ -58,11 +63,15 @@ module Redcar
               
               branches.map {|b| [b, ('ref: refs/heads/' + b == head)]}
             end
+            
             c.add('all branches', 15) do
               raise "not implemented"
             end
+            
             c.add('status', 5) { @repo.status }
+            
             c.add('full status', 5) { @repo.lib.full_status }
+            
             c.add('config', 30) do
               config = Scm::Git::ConfigFile.parse(File.join(@repo.dir.path, '.git', 'config'))
               conf = {}
@@ -77,11 +86,13 @@ module Redcar
               
               conf
             end
+            
             c.add('log', 60*60) do |start, finish| 
               @repo.lib.log_commits(:between => [start, finish]).reverse.map do |c|
                 @repo.gcommit(c)
               end
             end
+            
             c.add('submodules', 60*60) do
               begin
                 modules = Scm::Git::ConfigFile.parse(File.join(@repo.dir.path, '.gitmodules'))
@@ -97,6 +108,7 @@ module Redcar
                 {}
               end
             end
+            
             c
           end
         end
