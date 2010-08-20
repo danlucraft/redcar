@@ -21,18 +21,20 @@ module Redcar
 
     def self.menus
       Menu::Builder.build do
+        sub_menu "Debug" do
+          item "Refresh Menu Test", :command => RefreshMenuTenTimes, :priority => 20
+        end
         sub_menu "Bundles" do
           if Textmate.storage['loaded_bundles'].size() > 0
-            item "Clear Bundle Menu" do
-              ClearBundleMenu.new.run
-            end
+            item "Clear Bundle Menu", :command => ClearBundleMenu, :priority => 20
           end
         end
       end
     end
 
     def self.bundle_context_menus(node)
-      Menu::Builder.build do
+      @menus = nil
+      @menus = Menu::Builder.build do
         if not node.nil? and node.is_a?(BundleNode)
           if Textmate.storage['loaded_bundles'].include?(node.text.downcase)
             item ("Remove from Bundles Menu") do

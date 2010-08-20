@@ -1,6 +1,17 @@
 
 module Redcar
   module Textmate
+    # A test for leaks
+    class RefreshMenuTenTimes < Redcar::Command
+      def execute
+        puts "Refreshing menu ten times."
+        10.times do 
+	  Redcar.app.refresh_menu!
+          puts "Refreshing the menu!"
+        end
+      end
+    end
+    
     class ShowSnippetTree < Redcar::Command
       def execute
         if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
