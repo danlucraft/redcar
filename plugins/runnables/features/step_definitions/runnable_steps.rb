@@ -1,4 +1,4 @@
-When /I open the runnables tree/ do
+When /^I open the runnables tree$/ do
   Redcar::Runnables::ShowRunnables.new.run
 end
 
@@ -13,6 +13,10 @@ When /^I go back to the first window$/ do
   Redcar.app.windows.first.focus
 end
 
-Then /^I should see (\d+) windows?$/ do |window_count|
-  Redcar.app.windows.size.should == window_count.to_i
+When /^I note the number of windows$/ do
+  @windows = Redcar.app.windows.size
+end
+
+Then /^I should see (\d+) more windows?$/ do |window_count|
+  Redcar.app.windows.size.should == (@windows + window_count.to_i)
 end
