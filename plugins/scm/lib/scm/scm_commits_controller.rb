@@ -30,7 +30,7 @@ module Redcar
           if node.is_a?(Scm::ScmCommitsMirror::CommitsNode)
             item(repo.translations[:push]) { 
               if node.branch
-                refresh = node.repo.push! branch
+                refresh = node.repo.push! node.branch
               else
                 refresh = node.repo.push!
               end
