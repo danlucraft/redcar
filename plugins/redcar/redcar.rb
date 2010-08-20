@@ -957,7 +957,7 @@ module Redcar
           separator
           item "Toggle Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
           item "Toggle Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
-          item "Toggle Annotations", :command => ToggleAnnotations, :type => :check, :active => EditView.show_annotations?
+          item "Toggle Annotations", :command => ToggleAnnotations, :type => :check, :active => EditView.show_annotations?        
         end
         sub_menu "Bundles", :priority => 45 do
           group(:priority => :first) do

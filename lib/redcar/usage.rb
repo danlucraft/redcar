@@ -22,7 +22,8 @@ module Redcar
         puts " --multiple-instance  Don't attempt to open files and dirs in an already running instance"
         puts "             --debug  JRuby debugging mode: activates the profiling commands in the Debug menu"
         puts "--untitled-file=PATH  Open the given file as an untitled tab."
-        puts "      --ignore-stdin  Ignore stdin"
+        puts "      --ignore-stdin  Ignore stdin."
+        puts "              --fork  Detach from the console."
         #puts "To associate with right click in windows explorer:"
         #puts
         #puts "  C:> redcar --associate_with_any_right_click"

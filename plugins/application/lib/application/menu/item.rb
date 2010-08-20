@@ -24,6 +24,7 @@ module Redcar
         if options.respond_to?('[]')
           @command = options[:command] || block
           @priority = options[:priority]
+          @value = options[:value]
           @type = options[:type]
           @active = options[:active] ? true : false
         # This branch is for compatibility with old code. Please use :command 
@@ -38,7 +39,15 @@ module Redcar
       
       # Call this to signal that the menu item has been selected by the user.
       def selected(with_key=false)
-        @command.new.run#(:with_key => with_key)
+        if @value
+          @command.new.run(:value => @value)
+        else  
+          @command.new.run#(:with_key => with_key)
+        end
+      end
+      
+      def type
+        @type
       end
       
       def type

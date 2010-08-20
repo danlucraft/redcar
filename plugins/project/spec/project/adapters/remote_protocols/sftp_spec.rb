@@ -1,5 +1,8 @@
 require File.join(File.dirname(__FILE__), "..", "..", "..", "spec_helper")
 
+require 'net/ssh'
+require 'net/sftp'
+
 class Redcar::Project
   describe Adapters::RemoteProtocols::SFTP do
     let(:conn) { double('connection').as_null_object }
