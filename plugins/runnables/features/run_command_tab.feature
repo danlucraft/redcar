@@ -17,6 +17,6 @@ Feature: Running commands in a tab
     Then my active tab should be "Running runnable_app.rb"
     And the HTML tab should say "hello world"
 
-  Scenario: Running a command without output
-
-  Scenario: Running a command with windowed output
+  #Scenario: Running a command without output
+  #
+  #Scenario: Running a command with windowed output
