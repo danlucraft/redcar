@@ -9,16 +9,16 @@ module Redcar
           'M ' => [:indexed],
           'A ' => [:indexed],
           'D ' => [:deleted],
-          #'R ' => [:moved],
-          #'C ' => [:moved],
+          'R ' => [:moved],
+          'C ' => [:moved],
           'AM' => [:indexed],
           'MM' => [:indexed],
-          #'RM' => [:moved],
-          #'CM' => [:moved],
+          'RM' => [:moved],
+          'CM' => [:moved],
           'AD' => [:indexed],
           'MD' => [:indexed],
-          #'RD' => [:moved],
-          #'CD' => [:moved],
+          'RD' => [:moved],
+          'CD' => [:moved],
         }
         
         STATUS_MAP_UNINDEXED = {
@@ -26,12 +26,12 @@ module Redcar
           'UU' => [:unmerged],
           'AM' => [:changed],
           'MM' => [:changed],
-          #'RM' => [:changed],
-          #'CM' => [:changed],
+          'RM' => [:changed],
+          'CM' => [:changed],
           'AD' => [:missing],
           'MD' => [:missing],
-          #'RD' => [:missing],
-          #'CD' => [:missing],
+          'RD' => [:missing],
+          'CD' => [:missing],
           ' M' => [:changed],
           ' D' => [:missing],
         }
@@ -47,7 +47,12 @@ module Redcar
         end
         
         def path
-          @file.path
+          if @file.type_raw[0,1] == "R" or @file.type_raw[0,1] == "C"
+            paths = @file.path.split(' -> ')
+            paths[1]
+          else
+            @file.path
+          end
         end
         
         def git_status

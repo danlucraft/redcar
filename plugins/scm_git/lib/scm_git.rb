@@ -228,12 +228,19 @@ module Redcar
             return
           end
           
-          gitignore = File.new(File.join(repo.dir.path, '.gitignore'), 'r+')
+          gitignore = File.join(repo.dir.path, '.gitignore')
+          if not File.exist? gitignore
+            File.new(gitignore, "w").close
+          end
+          gitignore = File.new(gitignore, 'r+')
           
-          # Check the last byte of the file for a newline
-          gitignore.seek(-1, IO::SEEK_END)
-          if gitignore.sysread(1) != "\n"
-            gitignore.syswrite("\n")
+          # Make sure there's data in the file, otherwise we can't seek.
+          if File.size(gitignore) > 0
+            # Check the last byte of the file for a newline
+            gitignore.seek(-1, IO::SEEK_END)
+              if gitignore.sysread(1) != "\n"
+              gitignore.syswrite("\n")
+            end
           end
           
           gitignore.syswrite(change.path + "\n")
@@ -253,7 +260,7 @@ module Redcar
             # Git requires us to unindex any changes before we can revert them.
             index_unsave(change)
           end
-          if change.git_status[0,1] == 'A'
+          if change.git_status[0,1] == 'A' or change.git_status[0,1] == '?'
             # if this was a new file, then revert it by deleting it
             File.unlink(File.join(@repo.dir.path, change.path))
           else
@@ -272,18 +279,7 @@ module Redcar
             return change.repo.index_unsave(change)
           end
           
-          if change.git_status == 'R '
-            paths = change.path.split(' -> ')
-            paths.each do |p|
-              @repo.reset('HEAD', :file => p)
-            end
-            
-            Dir.chdir(@repo.dir.path) do
-              FileUtils.mv(paths[1], paths[0])
-            end
-          else
-            @repo.reset('HEAD', :file => change.path)
-          end
+          @repo.reset('HEAD', :file => change.path)
           
           cache.refresh
           true # refresh trees
@@ -321,7 +317,11 @@ module Redcar
             return change.repo.index_delete(change)
           end
           
-          @repo.remove(change.path)
+          if change.git_status[1,1] == '?'
+            FileUtils.rm(File.join(@repo.dir.path, change.path))
+          else
+            @repo.remove(change.path)
+          end
           cache.refresh
           true # refresh trees
         end

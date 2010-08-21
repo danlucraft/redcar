@@ -5,10 +5,10 @@ module Redcar
       include Redcar::Tree::Controller
       
       COMMAND_MAP = {
-        :new => [:index_add, :index_ignore],
+        :new => [:index_add, :index_ignore, :index_delete],
         :indexed => [:index_revert, :index_unsave],
-        :deleted => [:index_restore, :index_unsave],
-        :missing => [:index_restore, :index_delete],
+        :deleted => [:index_unsave, :index_restore],
+        :missing => [:index_delete, :index_restore],
         :changed => [:index_save, :index_revert],
         :unmerged => [:index_save, :index_delete],
         :commitable => [:commit],
@@ -63,14 +63,14 @@ module Redcar
             if (commands.include?(:index_unsave))
               item(repo.translations[:index_unsave]) { if repo.index_unsave(node); tree.refresh; end }
             end
+            if (commands.include?(:index_delete))
+              item(repo.translations[:index_delete]) { if repo.index_delete(node); tree.refresh; end }
+            end
             if (commands.include?(:index_revert))
               item(repo.translations[:index_revert]) { if repo.index_revert(node); tree.refresh; end }
             end
             if (commands.include?(:index_restore))
               item(repo.translations[:index_restore]) { if repo.index_restore(node); tree.refresh; end }
-            end
-            if (commands.include?(:index_delete))
-              item(repo.translations[:index_delete]) { if repo.index_delete(node); tree.refresh; end }
             end
             
             separator
