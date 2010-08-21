@@ -396,7 +396,18 @@ module Redcar
             targets += m[1].branches.map {|b| Scm::ScmCommitsMirror::CommitsNode.new(m[1], b, "#{b} (#{path})")}
           end
           
-          targets
+          # only return targets we can actually push to
+          targets.find_all do |t|
+            remote = t.repo.cache['config']['branch.' + t.branch + '.remote']
+            push_target = t.repo.cache['config']['branch.' + t.branch + '.push'] || t.repo.cache['config']['branch.' + t.branch + '.merge']
+            
+            return false if remote.nil?
+            
+            push_target.gsub!(/^refs\/heads\//, '')
+            r_ref_file = File.join(t.repo.repo.dir.path, '.git', 'refs', 'remotes', remote, push_target)
+            
+            File.exist?(r_ref_file)
+          end
         end
         
         # REQUIRED for :push. Returns an array of unpushed changesets.
@@ -408,9 +419,7 @@ module Redcar
           push_target = cache['config']['branch.' + branch + '.push'] || cache['config']['branch.' + branch + '.merge']
           
           # We don't have a remote setup for pushes, so we can't automatically push
-          if remote.nil?
-            return []
-          end
+          return [] if remote.nil?
           
           # Hit .git/remotes/$REMOTE/$REF to find out which revision that ref is at.
           push_target.gsub!(/^refs\/heads\//, '')
