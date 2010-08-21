@@ -36,7 +36,7 @@ module Redcar
           ' D' => [:missing],
         }
         
-        attr_reader :repo
+        attr_reader :repo, :type
         
         def initialize(file, repo, type=:file, indexed=false, children=[])
           @file = file
@@ -57,8 +57,10 @@ module Redcar
         def status
           # Subprojects should be commitable, but we can't update the
           # current index while they are dirty.
-          if @type == :sub_project && children.length > 0
+          if @type == :sub_project and @indexed and children.length > 0
             [:commitable]
+          elsif @type == :sub_project and @repo.cache['submodules'][path].uncommited_changes.length > 0
+            []
           elsif @indexed
             STATUS_MAP_INDEXED[@file.type_raw] || []
           else

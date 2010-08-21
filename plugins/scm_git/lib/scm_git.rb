@@ -145,6 +145,11 @@ module Redcar
           cache.refresh
         end
         
+        # Not used by scm, but we do use this internally.
+        def uncommited_changes
+          indexed_changes + unindexed_changes
+        end
+        
         # @return [Array<Redcar::Scm::ScmChangeMirror::Change>]
         def indexed_changes
           prepare_changes(true)
@@ -157,12 +162,14 @@ module Redcar
         
         private 
         
+        CHANGE_PRIORITIES = {:sub_project => 0, :directory => 1, :file => 2}
+        
         def prepare_changes(indexed)
           changes = cache['submodules'].find_all do |k,s| 
-            (indexed ? s.indexed_changes : s.unindexed_changes).length > 0
+            s.uncommited_changes.length > 0
           end.map do |k,s| 
             file = ::Git::Status::StatusFile.new(nil, {
-              :path => s.repo.dir.path,
+              :path => k,
               :type => "M",
               :type_raw => "MM"
             })
@@ -186,7 +193,7 @@ module Redcar
             else
               Scm::Git::Change.new(f[1], self, type, indexed)
             end
-          end.sort_by {|m| m.path}
+          end.sort_by {|m| m.path}.sort_by {|m| CHANGE_PRIORITIES[m.type]}
         end
         
         def valid_change?(type, indexed)
