@@ -385,6 +385,23 @@ module Redcar
           cache.refresh
         end
         
+        def push_targets
+          targets = branches.map {|b| Scm::ScmCommitsMirror::CommitsNode.new(self, b)}
+          modules = cache['submodules'].clone
+          
+          while m = modules.shift
+            path = m[0]
+            puts "Loading branches from #{path}" if debug
+            puts "  (#{m[1].branches.join(', ')})" if debug
+            m[1].cache['submodules'].each {|k,v| modules[File.join(path, k)] = v}
+            
+            targets += m[1].branches.map {|b| Scm::ScmCommitsMirror::CommitsNode.new(m[1], b, "#{b} (#{path})")}
+          end
+          
+          puts "Loaded #{targets.length} branches for pushing." if debug
+          targets
+        end
+        
         # REQUIRED for :push. Returns an array of unpushed changesets.
         #
         # @return [Array<Redcar::Scm::ScmMirror::Commit>]
@@ -400,20 +417,18 @@ module Redcar
           
           # Hit .git/remotes/$REMOTE/$REF to find out which revision that ref is at.
           push_target.gsub!(/^refs\/heads\//, '')
-          r_ref = File.read(File.join(@repo.dir.path, '.git', 'refs', 'remotes', remote, push_target)).strip
+          r_ref_file = File.join(@repo.dir.path, '.git', 'refs', 'remotes', remote, push_target)
+          return [] if not File.exist?(r_ref_file)
+          r_ref = File.read(r_ref_file).strip
           
           # Hit .git/refs/heads/$BRANCH to figure out which revision we're at locally.
           l_ref = File.read(File.join(@repo.dir.path, '.git', 'refs', 'heads', branch)).strip
           
-          # Check submodules for pushable changes on their current branch
-          submodules_commits = []
-          #submodules_commits = cache['submodules'].values.select {|m| not m.unpushed_commits.empty?}.map {|m| Redcar::Scm::ScmMirror::CommitsNode.new m, m.repo.dir.path}
-          
           # Hit `git log $R_REV..$L_REV` to get a list of commits that are unpushed.
           if r_ref != l_ref
-            submodules_commits + cache['log', r_ref, l_ref].map {|c| Scm::Git::Commit.new(c)}
+            cache['log', r_ref, l_ref].map {|c| Scm::Git::Commit.new(c)}
           else
-            submodules_commits + []
+            []
           end
         end
         
@@ -431,11 +446,6 @@ module Redcar
           end
           
           false # don't refresh trees
-        end
-        
-        def push_targets
-          # TODO: Add submodules to this list.
-          branches
         end
       end
     end

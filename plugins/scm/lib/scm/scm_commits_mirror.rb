@@ -16,9 +16,8 @@ module Redcar
         :text
       end
       
-      # Root items will never change
       def changed?
-        false
+        @repo.push_targets.count > 0
       end
       
       def drag_and_drop?
@@ -26,12 +25,10 @@ module Redcar
       end
       
       def top
-        @top ||= begin
-          if @repo.branches.count > 0
-            @repo.branches.map {|b| ScmCommitsMirror::CommitsNode.new(@repo, b)}
-          else
-            [ScmCommitsMirror::CommitsNode.new(@repo)]
-          end
+        if @repo.push_targets.count > 0
+          @repo.push_targets
+        else
+          @top ||= [ScmCommitsMirror::CommitsNode.new(@repo)]
         end
       end
     end

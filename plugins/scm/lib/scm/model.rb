@@ -194,6 +194,8 @@ module Redcar
       
       # RECOMMENDED for :push. Allows to provide a list of targets that
       # can be pushed.
+      #
+      # @return [Array<Redcar::Scm::ScmCommitsMirror::CommitsNode>]
       def push_targets
         []
       end

@@ -7,10 +7,10 @@ module Redcar
         
         attr_reader :repo, :branch
         
-        def initialize(repo, branch=nil)
+        def initialize(repo, branch=nil, text=nil)
           @repo = repo
           @branch = branch
-          @text = branch || @repo.translations[:unpushed_commits]
+          @text = text || branch || @repo.translations[:unpushed_commits]
         end
         
         def text
