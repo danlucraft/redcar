@@ -56,8 +56,6 @@ module Redcar
             c = ::BlockCache.new
             
             c.add('branches', 15) do
-              #@repo.lib.branches_all
-              
               head = File.read(File.join(@repo.dir.path, '.git', 'HEAD')).strip
               branches = Dir.glob(File.join(@repo.dir.path, '.git', 'refs', 'heads', '*')).map {|f| File.basename(f)}
               
@@ -160,8 +158,21 @@ module Redcar
         private 
         
         def prepare_changes(indexed)
+          changes = cache['submodules'].find_all do |k,s| 
+            (indexed ? s.indexed_changes : s.unindexed_changes).length > 0
+          end.map do |k,s| 
+            file = ::Git::Status::StatusFile.new(nil, {
+              :path => s.repo.dir.path,
+              :type => "M",
+              :type_raw => "MM"
+            })
+            [k, file]
+          end
+          
+          changes += cache['status'].all_changes.find_all {|c| not changes.find{|d| c[0] == d[0]}}
+          
           # f[0] is the path, and f[1] is the actual StatusFile
-          cache['status'].all_changes.find_all {|c| valid_change?(c[1].type_raw, indexed)}.map do |f| 
+          changes.find_all {|c| valid_change?(c[1].type_raw, indexed)}.map do |f| 
             full_path = File.join(@repo.dir.path, f[0])
             type = (((not File.exist?(full_path)) or File.file?(full_path)) ? :file : :directory)
             
@@ -170,7 +181,8 @@ module Redcar
             end
             
             if type == :sub_project
-              Scm::Git::Change.new(f[1], self, type, indexed, cache['submodules'][f[0]].uncommited_changes)
+              submodule = cache['submodules'][f[0]]
+              Scm::Git::Change.new(f[1], self, type, indexed, indexed ? submodule.indexed_changes : submodule.unindexed_changes)
             else
               Scm::Git::Change.new(f[1], self, type, indexed)
             end
@@ -387,7 +399,8 @@ module Redcar
           l_ref = File.read(File.join(@repo.dir.path, '.git', 'refs', 'heads', branch)).strip
           
           # Check submodules for pushable changes on their current branch
-          submodules_commits = cache['submodules'].values.select {|m| not m.unpushed_commits.empty?}.map {|m| Redcar::Scm::ScmMirror::CommitsNode.new m, m.repo.dir.path}
+          submodules_commits = []
+          #submodules_commits = cache['submodules'].values.select {|m| not m.unpushed_commits.empty?}.map {|m| Redcar::Scm::ScmMirror::CommitsNode.new m, m.repo.dir.path}
           
           # Hit `git log $R_REV..$L_REV` to get a list of commits that are unpushed.
           if r_ref != l_ref
@@ -411,6 +424,11 @@ module Redcar
           end
           
           false # don't refresh trees
+        end
+        
+        def push_targets
+          # TODO: Add submodules to this list.
+          branches
         end
       end
     end

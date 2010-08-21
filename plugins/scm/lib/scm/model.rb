@@ -177,23 +177,25 @@ module Redcar
       end
       
       # REQUIRED for :push. Returns an array of unpushed changesets for
-      # a given branch. If you don't support branches, you can safely
-      # ignore this parameter and redefine this method without it for
-      # clarity.
+      # a given target.
       #
       # @return [Array<Redcar::Scm::ScmCommitsMirror::Commit>]
-      def unpushed_commits(branch='')
+      def unpushed_commits(target='')
         raise "Scm.unpushed_commits not implemented." if supported_commands.include?(:push)
         nil
       end
       
       # REQUIRED for :push. Pushes all current changesets to the remote
-      # repository for the given branch only. If you don't support 
-      # branches, you can safely ignore this parameter and redefine
-      # this method without it for clarity.
-      def push!(branch='')
+      # repository for the given target only.
+      def push!(target='')
         raise "Scm.push! not implemented." if supported_commands.include?(:push)
         nil
+      end
+      
+      # RECOMMENDED for :push. Allows to provide a list of targets that
+      # can be pushed.
+      def push_targets
+        []
       end
       
       # REQUIRED for :pull and :pull_targetted. Pulls all remote changesets from the 
