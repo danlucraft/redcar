@@ -391,14 +391,11 @@ module Redcar
           
           while m = modules.shift
             path = m[0]
-            puts "Loading branches from #{path}" if debug
-            puts "  (#{m[1].branches.join(', ')})" if debug
             m[1].cache['submodules'].each {|k,v| modules[File.join(path, k)] = v}
             
             targets += m[1].branches.map {|b| Scm::ScmCommitsMirror::CommitsNode.new(m[1], b, "#{b} (#{path})")}
           end
           
-          puts "Loaded #{targets.length} branches for pushing." if debug
           targets
         end
         
