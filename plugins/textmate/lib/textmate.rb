@@ -4,6 +4,7 @@ require 'textmate/environment'
 require 'textmate/plist'
 require 'textmate/preference'
 require 'textmate/snippet'
+require 'textmate/menu_manager'
 begin
   require 'textmate/tree_mirror'
   require 'textmate/commands'
@@ -33,8 +34,7 @@ module Redcar
     end
 
     def self.bundle_context_menus(node)
-      @menus = nil
-      @menus = Menu::Builder.build do
+      Menu::Builder.build do
         if not node.nil? and node.is_a?(BundleNode)
           if Textmate.storage['loaded_bundles'].include?(node.text.downcase)
             item ("Remove from Bundles Menu") do
@@ -80,19 +80,8 @@ module Redcar
     end
 
     def self.attach_menus(builder)
-      if Textmate.storage['load_bundles_menu']
-        @menus = begin
-          Menu::Builder.build do |a|
-            all_bundles.sort_by {|b| (b.name||"").downcase}.each do |bundle|
-              name = (bundle.name||"").downcase
-              unless @storage['select_bundles_for_menu'] and !@storage['loaded_bundles'].to_a.include?(name)
-                bundle.build_menu(a)
-              end
-            end
-          end
-        end
-        @menus.entries.each {|i| builder.append(i) }
-      end
+      @menu_manager ||= MenuManager.new
+      @menu_manager.build_menu(builder)
     end
 
     def self.all_bundles
