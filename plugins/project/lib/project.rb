@@ -157,7 +157,7 @@ module Redcar
     end
     
     def config_files(glob)
-      file_glob = File.join(config_dir, glob)
+      file_glob = File.join("{#{config_dir},#{Redcar.user_dir}}", glob)
       Dir[file_glob]
     end
   end
