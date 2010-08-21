@@ -56,6 +56,7 @@ module Redcar
         if document.length > 0
           clear
           #puts "Highligh on offset " + current.to_s() + " and its pair at " + pair.to_s()
+          gc = Swt::Graphics::GC.new(@styledText)
           gc.setBackground(set_highlight_colour) 
           gc.setAlpha(98)
           gc.fill_rectangle(styledText.getTextBounds(current, current))
@@ -69,6 +70,7 @@ module Redcar
 	        styledText.redrawRange(@highlight.current, 1, false) if @highlight.current < document.length
 	        styledText.redrawRange(@highlight.pair, 1, false) # if on the same line
           @highlight.clear
+          gc.dispose() if gc
         end
       end
       

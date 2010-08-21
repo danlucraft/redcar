@@ -11,7 +11,6 @@ module Redcar
         @styledText.addLineBackgroundListener(LineEventListener.new)
 	      @doc.mate_text = mate_text
         @doc.styledText = @styledText
-        @doc.gc = Swt::Graphics::GC.new(@styledText)
       end
     end
     
