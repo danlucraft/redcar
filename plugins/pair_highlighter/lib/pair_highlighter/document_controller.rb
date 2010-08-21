@@ -62,6 +62,7 @@ module Redcar
           gc.fill_rectangle(styledText.getTextBounds(current, current))
           gc.fill_rectangle(styledText.getTextBounds(pair, pair))          
           @highlight.set_on(current, pair)
+          gc.dispose() if gc
         end
       end
       
@@ -70,7 +71,6 @@ module Redcar
 	        styledText.redrawRange(@highlight.current, 1, false) if @highlight.current < document.length
 	        styledText.redrawRange(@highlight.pair, 1, false) # if on the same line
           @highlight.clear
-          gc.dispose() if gc
         end
       end
       
