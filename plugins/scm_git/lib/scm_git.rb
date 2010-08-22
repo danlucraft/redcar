@@ -408,7 +408,7 @@ module Redcar
             remote = t.repo.cache['config']['branch.' + t.branch + '.remote']
             push_target = t.repo.cache['config']['branch.' + t.branch + '.push'] || t.repo.cache['config']['branch.' + t.branch + '.merge']
             
-            return false if remote.nil?
+            break false if remote.nil?
             
             push_target.gsub!(/^refs\/heads\//, '')
             r_ref_file = File.join(t.repo.repo.dir.path, '.git', 'refs', 'remotes', remote, push_target)
