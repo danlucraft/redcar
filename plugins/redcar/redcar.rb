@@ -694,6 +694,12 @@ module Redcar
       end
     end
     
+    class ShowTheme < Command
+      def execute
+        
+      end
+    end
+    
     class SelectFontSize < Command
       def execute
         result = Application::Dialog.input("Font Size", "Please enter new font size", Redcar::EditView.font_size.to_s) do |text|
