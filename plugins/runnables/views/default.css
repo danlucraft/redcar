@@ -8,25 +8,37 @@ h1 {
   letter-spacing: 3px;
 }
 
-.header, .complete {
+.header {
   font-family: Helvetica, Arial, sans-serif;
   font-size: 10px;
+  line-height: 18px;
   font-weight: bold;
-  background: #ddd;
-  padding: 3px 10px;
-  margin-left: 10px;
+  padding: 3px 0 2px 20px;
   cursor: pointer;
+  background: #ddd url("wedgeDown.png") no-repeat 8px 9px;
 }
 
-.header {
-  border-bottom: 1px solid #666;
+.header.up {
+  background-image: url("wedgeRight.png");
+  background-position: 8px 8px;
 }
 
 .command, .output {
-  font-family: Menlo, Consolas, fixed;
+  font-family: Menlo, Consolas, monospace;
   font-size: 12px;
-  padding: 10px;
-  margin-left: 10px;
+  padding: 5px;
+}
+
+.command {
+  margin: 0 5px;
+}
+
+.output {
+  border: 1px solid #ddd;
+}
+
+.process {
+  padding: 0 5px 5px 5px;
 }
 
 .stderr {
@@ -35,4 +47,22 @@ h1 {
 
 .command {
   color: #666;
+}
+
+.header .in-progress-message, .running .header .completed-message {
+  display: none;
+}
+
+.running .header .in-progress-message {
+  display: inline;
+}
+
+.running .header {
+  background: #666 url("indicator.gif") no-repeat 5px center;
+  padding-left: 25px;
+  color: #fff;
+}
+
+.running .output {
+  border: 1px solid #666;
 }

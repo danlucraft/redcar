@@ -15,6 +15,9 @@ Enhancements:
  * Styled runnable tabs (Mat Schaffer)
  * See all snippets in a tree (Delisa Mason)
  * Find in project plugin (uses grep and ack) (Kieran Pilkington and Krzysztof Jablonski)
+ * Runnables re-use an open tab. (Mat Schaffer)
+ * Can pin your choice of bundles to the bundles menu (Delisa Mason)
+ * Experimental git scm integration (Matthew Scharley)
 
 Fixes:
 

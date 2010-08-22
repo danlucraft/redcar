@@ -37,7 +37,7 @@ module SwtHelper
 
   def visible_tree_items(tree, items = [])
     tree.getItems.to_a.each do |item|
-      items << item.getText
+      items << item
       visible_tree_items(item, items) if item.expanded?
     end
     return items
@@ -49,6 +49,13 @@ module SwtHelper
     tree
   end
   
+  def find_node_with_text(top, node_text)
+    node = top.detect { |node| node.text == node_text }
+    return node if node
+    all_children = top.map{ |node| node.children }.flatten
+    find_node_with_text(all_children, node_text) unless all_children.empty?
+  end
+
   module TreeHelpers
     def items
       getItems.to_a

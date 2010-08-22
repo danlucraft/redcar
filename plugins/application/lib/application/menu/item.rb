@@ -50,6 +50,10 @@ module Redcar
         @type
       end
       
+      def type
+        @type
+      end
+      
       def merge(other)
         @command = other.command
         @priority = other.priority

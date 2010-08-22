@@ -123,6 +123,8 @@ module Redcar
       def performDrop(data)
         elements = data.to_a.map {|datum| @tree_view_swt.model.tree_mirror.from_data(datum) }
         pos = location_to_position(get_current_location)
+        # Map the single :text element back to it's proper state
+        elements = elements[0] if @tree_view_swt.model.tree_mirror.data_type == :text
         Redcar.safely do
           @tree_view_swt.drag_controller.do_drop(elements, get_current_target, pos)
         end

@@ -33,12 +33,13 @@ module Redcar
       @controller.add_listener(:reload_index) { controller_action("index") }
 
       @controller.add_listener(:execute_script) do |script|
+        result = nil
         begin
           Redcar.update_gui do
             begin
               browser = @html_tab.controller.browser
               unless browser.is_disposed
-                browser.execute(script)
+                result = browser.evaluate(script)
               end
             rescue => e
               puts e.message
@@ -49,6 +50,7 @@ module Redcar
           puts e.message
           puts e.backtrace
         end
+        result
       end
     end
     

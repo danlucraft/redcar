@@ -100,7 +100,7 @@ module Redcar
     
     def observable_run_blocks(event_name, aspect, args)
       blocks = observable_events(event_name.to_s)[ASPECTS[aspect]].clone
-      blocks.each {|b| b.call(*args) }
+      blocks.map {|b| b.call(*args) }
     end
     
     def observable_events(event_name)
