@@ -25,7 +25,12 @@ module Redcar
         elsif node.respond_to?(:diff)
           diff = node.diff
           if diff
-            # TODO: if we can provide a text diff of ourselves, then display it
+            tab = Redcar.app.focussed_window.new_tab(Redcar::EditTab)
+            edit_view = tab.edit_view  
+            mirror = Scm::DiffMirror.new(node, diff)
+            edit_view.document.mirror = mirror
+            edit_view.grammar = "Diff"
+            tab.focus
           end
         end
       end

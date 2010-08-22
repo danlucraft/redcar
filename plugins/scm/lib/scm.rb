@@ -6,6 +6,7 @@ $:.push(
 require 'blockcache'
 require 'scm/model'
 require 'scm/commit_mirror'
+require 'scm/diff_mirror'
 require 'scm/scm_changes_controller'
 require 'scm/scm_changes_mirror'
 require 'scm/scm_changes_mirror/drag_controller'

@@ -74,21 +74,26 @@ module Redcar
         end
         
         def text
-          "#{File.basename(@file.path)} (#{File.dirname(@file.path)})"
+          if @file.type_raw[0,1] == "R" or @file.type_raw[0,1] == "C"
+            @file.path
+          else
+            "#{File.basename(@file.path)} (#{File.dirname(@file.path)})"
+          end
         end
         
         def icon
+          type_prefix = (@type == :file ? "notebook" : "folder")
           case
           when ((@file.type_raw == "??") or (@file.type_raw[0,1] == "A" and @indexed))
-            File.join(Scm::ICONS_DIR, (@type == :file ? "notebook" : "folder") + "--plus.png")
+            File.join(Scm::ICONS_DIR, type_prefix + "--plus.png")
           when ((@file.type_raw[0,1] == "M" and @indexed) or (@file.type_raw[1,1] == "M" and (not @indexed)))
-            File.join(Scm::ICONS_DIR, (@type == :file ? "notebook" : "folder") + "--pencil.png")
+            File.join(Scm::ICONS_DIR, type_prefix + "--pencil.png")
           when (['C', 'R'].include?(@file.type_raw[0,1]) and @indexed)
-            File.join(Scm::ICONS_DIR, (@type == :file ? "notebook" : "folder") + "--arrow.png")
+            File.join(Scm::ICONS_DIR, type_prefix + "--arrow.png")
           when ((@file.type_raw[0,1] == "D" and @indexed) or (@file.type_raw[1,1] == "D" and (not @indexed)))
-            File.join(Scm::ICONS_DIR, (@type == :file ? "notebook" : "folder") + "--minus.png")
+            File.join(Scm::ICONS_DIR, type_prefix + "--minus.png")
           when (@file.type_raw[0,1] == "U" and (not @indexed))
-            File.join(Scm::ICONS_DIR, (@type == :file ? "notebook" : "folder") + "--exclamation.png")
+            File.join(Scm::ICONS_DIR, type_prefix + "--exclamation.png")
           else
             @type == :file ? :file : :directory
           end
@@ -100,6 +105,17 @@ module Redcar
         
         def children
           @children
+        end
+        
+        def diff
+          if (not @indexed) and @file.type_raw == "??"
+            # No diff available
+            nil
+          elsif @indexed
+            @repo.repo.lib.diff_full('HEAD', nil, {:path_limiter => path, :cached => true})
+          else
+            @repo.repo.lib.diff_full('HEAD', nil, {:path_limiter => path})
+          end
         end
         
         def to_data
