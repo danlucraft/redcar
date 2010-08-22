@@ -20,7 +20,7 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Plugins" do
-          sub_menu "Find In Project" do
+          sub_menu "Find In Project", :priority => 64 do
             item "Find In Project!", Redcar::FindInProject::OpenSearch
             item "Edit Preferences", Redcar::FindInProject::EditPreferences
           end
