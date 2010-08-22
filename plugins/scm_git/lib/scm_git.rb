@@ -3,7 +3,12 @@ $:.push(
   File.expand_path(File.join(File.dirname(__FILE__), %w{.. vendor ruby-git lib}))
 )
 
-require 'git'
+# Don't error if we don't have git installed
+begin
+  require 'git'
+rescue
+end
+
 require 'scm_git/config_file'
 require 'scm_git/change'
 require 'scm_git/commit'
@@ -22,8 +27,14 @@ module Redcar
         end
         
         def self.supported?
-          # TODO: detect the git binary, do a PATH search?
-          true
+          begin
+            if ::Git::Lib.new.meets_required_version?
+              return true
+            end
+          rescue
+            puts $!.class.name + ": " + $!.message
+          end
+          false
         end
         
         # Whether to print debugging messages. Default to whatever scm is using.
