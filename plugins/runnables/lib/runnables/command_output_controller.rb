@@ -4,10 +4,13 @@ module Redcar
     class CommandOutputController
       include Redcar::HtmlController
       
+      attr_accessor :cmd
+
       def initialize(path, cmd, title)
         @path = path
         @cmd = cmd
         @title = title
+        @output_id = 0
       end
       
       def title
@@ -27,6 +30,10 @@ module Redcar
       end
       
       def run
+        execute <<-JS
+          $('.output').slideUp().prev('.header').addClass('up');
+        JS
+
         case Redcar.platform
         when :osx, :linux
           run_posix
@@ -50,53 +57,78 @@ module Redcar
       
       def run_windows
         @thread = Thread.new do
-          output = `cd #{@path} & #{@cmd} 2>&1`
-          start_new_output_block
-          append_output <<-HTML
+          begin
+            start_output_block
+            output = `cd #{@path} & #{@cmd} 2>&1`
+            append_output <<-HTML
             <div class="stdout">
-              #{process(output)}
+            #{process(output)}
             </div>
-          HTML
-          end_output_block
+            HTML
+            end_output_block
+          rescue => e
+            puts e.class
+            puts e.message
+            puts e.backtrace
+          end
         end
       end
       
       def format_time(time)
-        time.strftime("%I:%M%p").downcase
+        time.strftime("%I:%M:%S %p").downcase
       end
 
       def start_output_block
         @start = Time.now
+        @output_id += 1
         append_to_container <<-HTML
-          <div class="header" onclick="$(this).next().slideToggle();">
-            Process started at #{format_time(@start)}
+          <div class="process running">
+            <div id="header#{@output_id}" class="header" onclick="$(this).toggleClass('up').next().slideToggle();">
+              <span class="in-progress-message">Started at #{format_time(@start)}</span>
+            </div>
+            <div id="output#{@output_id}" class="output"></div>
           </div>
-          <div id="output" class="output"></div>|
         HTML
       end
 
       def end_output_block
         @end = Time.now
-        append_to_container <<-HTML
-          <div class="complete" onclick="$(this).prev().slideToggle();">
-            Process finished at #{format_time(@end)} (#{@end - @start} seconds)
-          </div>
+        append_to(header_container, <<-HTML)
+          <span class="completed-message">Completed at #{format_time(@end)}. (Took #{@end - @start} seconds)</span>
         HTML
+        execute <<-JS
+          $("#{output_container}").parent().removeClass("running");
+        JS
       end
 
-      def append_to(container, html)
-        execute(<<-JAVASCRIPT)
-          $(#{html.inspect}).appendTo("#{container}");
+      def scroll_to_end(container)
+        execute <<-JS
           $("html, body").attr({ scrollTop: $("#{container}").attr("scrollHeight") });
-        JAVASCRIPT
+        JS
+      end
+      
+      def append_to(container, html)
+        execute(<<-JS)
+          $(#{html.inspect}).appendTo("#{container}");
+        JS
       end
 
       def append_to_container(html)
         append_to("#container", html)
+        scroll_to_end("#container")
+      end
+
+      def header_container
+        "#header#{@output_id}"
+      end
+
+      def output_container
+        "#output#{@output_id}"
       end
 
       def append_output(output)
-        append_to("#output", output)
+        append_to(output_container, output)
+        scroll_to_end(output_container)
       end
 
       def run_posix
@@ -117,15 +149,15 @@ module Redcar
               </div>
             HTML
           end
-          start_output_block
           begin
+            start_output_block
             @shell.execute("cd #{@path}; " + @cmd)
+            end_output_block
           rescue => e
             puts e.class
             puts e.message
             puts e.backtrace
           end
-          end_output_block
           @shell = nil
           @thread = nil
         end

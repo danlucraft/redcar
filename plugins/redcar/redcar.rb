@@ -762,7 +762,6 @@ module Redcar
         link "Cmd+Shift+]",     SwitchTabUpCommand
         link "Ctrl+Shift+[",    MoveTabDownCommand
         link "Ctrl+Shift+]",    MoveTabUpCommand
-        link "Ctrl+R",          Runnables::RunEditTabCommand
         link "Cmd+Alt+I",       ToggleInvisibles
 
         link "Ctrl+Shift+P",    PrintScopeCommand
@@ -826,7 +825,6 @@ module Redcar
 
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
-        link "Ctrl+R",           Runnables::RunEditTabCommand
         
         link "Ctrl+Shift+P",    PrintScopeCommand
 

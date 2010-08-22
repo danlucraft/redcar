@@ -7,12 +7,12 @@ When /^I expand the tree row "([^\"]*)"$/ do |row|
 end
 
 Then /^I should (not )?see "([^\"]*)" in the tree$/ do |negate, rows|
-  items = visible_tree_items(top_tree)
+  item_names = visible_tree_items(top_tree).map(&:get_text)
   rows.split(',').map(&:strip).each do |row|
     if negate
-      items.should_not include row
+      item_names.should_not include row
     else
-      items.should include row
+      item_names.should include row
     end
   end
 end
@@ -21,4 +21,15 @@ Then /^the tree width should be the default$/ do
   width = Redcar.app.focussed_window.treebook.trees.last.controller.viewer.control.bounds.width
   default = Redcar::ApplicationSWT::Window::TREEBOOK_WIDTH + Redcar::ApplicationSWT::Window::SASH_WIDTH - 5
   raise "The tree width was #{width}, expected #{default}" unless width == default
+end
+
+When /^I activate the "([^"]*)" node in the tree$/ do |node_text|
+  controller = focussed_tree.tree_controller
+  model      = focussed_tree.controller.model
+  mirror     = focussed_tree.tree_mirror
+  node       = find_node_with_text(mirror.top, node_text)
+
+  node.should_not be_nil
+  
+  controller.activated(model, node)
 end

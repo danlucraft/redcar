@@ -23,15 +23,35 @@ module Redcar
       end
       controller = CommandOutputController.new(path, command, title)
       if output == "none"
-        controller.run
-      else #default to new tab
-        if output == "window"
-          Project::Manager.open_project_for_path(".")
-        end
-        tab = Redcar.app.focussed_window.new_tab(HtmlTab)
-        tab.html_view.controller = controller
-        tab.focus
+        controller.run        
+      else
+        if tab = previous_tab_for(command)
+          tab.html_view.controller.run
+          tab.focus
+        else
+          if output == "window"
+            Redcar.app.new_window
+          end
+          tab = Redcar.app.focussed_window.new_tab(HtmlTab)
+          tab.html_view.controller = controller
+          tab.focus
+        end        
       end
+    end
+    
+    def self.previous_tab_for(command)
+      Redcar.app.all_tabs.detect do |t|
+        t.respond_to?(:html_view) &&
+        t.html_view.controller.is_a?(CommandOutputController) &&
+        t.html_view.controller.cmd == command
+      end
+    end
+
+    def self.keymaps
+      map = Keymap.build("main", [:osx, :linux, :windows]) do
+        link "Ctrl+R", Runnables::RunEditTabCommand
+      end
+      [map, map]
     end
 
     def self.menus
@@ -246,9 +266,9 @@ module Redcar
             if output.nil?
 	            output = "tab"
             end
-            command = command_schema.gsub("__PATH__", tab.edit_view.document.mirror.path)
-            puts command
-            Runnables.run_process(project.home_dir,command, "Run File", output)
+            path = tab.edit_view.document.mirror.path
+            command = command_schema.gsub("__PATH__", path)
+            Runnables.run_process(project.home_dir,command, "Running #{File.basename(path)}", output)
           end
         end
       end

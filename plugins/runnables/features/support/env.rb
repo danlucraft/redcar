@@ -1,5 +1,6 @@
 RequireSupportFiles File.dirname(__FILE__) + "/../../../edit_view/features/"
 RequireSupportFiles File.dirname(__FILE__) + "/../../../project/features/"
+RequireSupportFiles File.dirname(__FILE__) + "/../../../html_view/features/"
 
 def runnable_fixtures
   File.expand_path(File.dirname(__FILE__) + "/../fixtures")
@@ -20,7 +21,7 @@ def reset_runnable_fixtures
   end
   
   File.open(runnable_config, 'w') do |f|
-    f.print <<-EOS.gsub(' ' * 6, '')
+    f.print <<-EOS
       {
         "commands":[
           {
@@ -28,6 +29,28 @@ def reset_runnable_fixtures
             "command":     "ruby runnable_app.rb",
             "description": "Runs the app",
             "type":        "task/ruby"
+            },
+          {
+            "name":        "A silent app",
+            "command":     "ruby runnable_app.rb",
+            "description": "Runs the app silently",
+            "type":        "task/ruby",
+            "output":      "none"
+          },
+          {
+            "name":        "A windowed app",
+            "command":     "ruby runnable_app.rb",
+            "description": "Runs the app in a window",
+            "type":        "task/ruby",
+            "output":      "window"
+          }
+        ],
+        "file_runners":[
+          {
+            "regex":   ".*\\.rb",
+            "name":    "Run as ruby",
+            "command": "ruby __PATH__",
+            "type":    "app/ruby"
           }
         ]
       }
