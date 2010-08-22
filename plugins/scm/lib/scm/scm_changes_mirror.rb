@@ -22,7 +22,8 @@ module Redcar
       end
       
       def drag_and_drop?
-        @repo.supported_commands.include? :index
+        #@repo.supported_commands.include? :index
+        false
       end
       
       def from_data(data)
