@@ -406,14 +406,15 @@ module Redcar
           # only return targets we can actually push to
           targets.find_all do |t|
             remote = t.repo.cache['config']['branch.' + t.branch + '.remote']
-            push_target = t.repo.cache['config']['branch.' + t.branch + '.push'] || t.repo.cache['config']['branch.' + t.branch + '.merge']
             
-            break false if remote.nil?
-            
-            push_target.gsub!(/^refs\/heads\//, '')
-            r_ref_file = File.join(t.repo.repo.dir.path, '.git', 'refs', 'remotes', remote, push_target)
-            
-            File.exist?(r_ref_file)
+            if remote
+              push_target = t.repo.cache['config']['branch.' + t.branch + '.push'] || t.repo.cache['config']['branch.' + t.branch + '.merge']
+              
+              push_target.gsub!(/^refs\/heads\//, '')
+              r_ref_file = File.join(t.repo.repo.dir.path, '.git', 'refs', 'remotes', remote, push_target)
+              
+              File.exist?(r_ref_file)
+            end
           end
         end
         
