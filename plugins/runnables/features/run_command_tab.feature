@@ -37,7 +37,7 @@ Feature: Running commands in a tab
     And I expand the tree row "fixture_runnables"
     And I note the number of windows
     And I activate the "A windowed app" node in the tree
-    And I go back to the first window
+    And I go back to the "fixtures" window
     And I activate the "A windowed app" node in the tree
     Then I should see 1 more window
     And the HTML tab should say "hello world"
