@@ -119,7 +119,7 @@ module Redcar
         end
         
         def to_data
-          raise "#to_data not implemented"
+          "#{@file.type_raw}:#{@file.path}:#{@repo.repo.dir.path}:#{@type.to_s}:#{@indexed}"
         end
       end
     end

@@ -26,11 +26,11 @@ module Redcar
       end
       
       def from_data(data)
-        data.split('::').map {|n| @repo.from_data(n)}
+        data.split('::::').map {|n| @repo.from_data(n)}.find_all {|n| not n.nil?}
       end
       
       def to_data(nodes)
-        nodes.map {|n| n.to_data}.join('::')
+        nodes.find_all {|n| n.respond_to?(:to_data)}.map {|n| n.to_data}.join('::::')
       end
       
       def top

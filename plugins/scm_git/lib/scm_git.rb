@@ -35,8 +35,14 @@ module Redcar
           Redcar::Scm::Git::Manager.debug
         end
         
-        def from_data
-          raise "#from_data not implemented"
+        def from_data(data)
+          data = data.split(':')
+          file = ::Git::Status::StatusFile.new(nil, {
+            :type_raw => data[0],
+            :path => data[1],
+          })
+          repo = Scm::Git::Manager.new.load(data[2])
+          Scm::Git::Change.new(file, repo, :file, data[4] == "true")
         end
         
         #######
@@ -143,6 +149,7 @@ module Redcar
           raise "Already loaded repository" if @repo
           @repo = ::Git.open(path)
           cache.refresh
+          self
         end
         
         # Not used by scm, but we do use this internally.

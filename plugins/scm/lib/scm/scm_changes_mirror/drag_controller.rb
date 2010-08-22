@@ -7,7 +7,7 @@ module Redcar
         
         def initialize(tree, repo)
           @tree = tree
-          @repo = tree
+          @repo = repo
         end
         
         # Can elements in the tree be reordered by dragging and 
@@ -37,7 +37,7 @@ module Redcar
         #                   reorderable?)
         def do_drop(nodes, target, position)
           # Make sure we have a target, and that it is a top level item
-          target ||= tree.top[1]
+          target ||= @tree.tree_mirror.top[1]
           target = type? target
           
           nodes.find_all {|n| target != type?(n)}.each do |n|
@@ -45,26 +45,26 @@ module Redcar
             # to another, so just loop through the changes and do the first 
             # action that we can, which will always be the least destructive,
             # ie. will only affect the index.
-            
-            command = node.status.map {|s| COMMAND_MAP[s]}.flatten.find_all{|s| s != :commit}.first
+            command = n.status.map {|s| COMMAND_MAP[s]}.flatten.find_all{|s| s != :commit}.first
             
             if command
-              repo.method(command).call(n)
+              @repo.method(command).call(n)
             end
           end
+          
+          Redcar.update_gui { @tree.refresh }
         end
         
         private
         
         # Finds the top level item that this node belongs to.
         def type?(node)
-          tree.top.each do |top|
+          @tree.tree_mirror.top.each do |top|
             # Make sure we check the top level items themselves too.
-            children = top
+            children = [top]
             
-            while children.length > 0
-              c = children.shift
-              return true if c == node
+            while c = children.shift
+              return top if c == node
               children.push(*c.children)
             end
           end
