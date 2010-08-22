@@ -52,7 +52,7 @@ When /I close the window(?: "(.*)")?( with a command| through the gui)?/ do |tit
     win = nil
   end
   if how =~ /command/
-    Redcar::Top::CloseWindowCommand.new.run(win)
+    Redcar::Top::CloseWindowCommand.new(win).run
   else
     unless win
       display = Swt::Widgets::Display.get_current

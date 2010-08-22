@@ -9,8 +9,8 @@ When /^I change the command to "([^"]*)"$/ do |name|
   end
 end
 
-When /^I go back to the first window$/ do
-  Redcar.app.windows.first.focus
+When /^I go back to the "([^"]*)" window$/ do |title|
+  Redcar.app.windows.detect { |w| w.title == title }.focus
 end
 
 When /^I note the number of windows$/ do
