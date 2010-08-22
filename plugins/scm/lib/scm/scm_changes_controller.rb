@@ -21,7 +21,7 @@ module Redcar
       
       def activated(tree, node)
         if node.respond_to?(:status) and node.status == [:unmerged]
-          # TODO: if we're unmerged, then we should open ourselves for editing
+          Project::FileOpenCommand.new(node.path).run
         elsif node.respond_to?(:diff)
           diff = node.diff
           if diff
