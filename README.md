@@ -1,4 +1,3 @@
-
 {Redcar}
 ========
 
@@ -43,7 +42,7 @@ installed as JRuby gems.
 
 Download from github, checkout the submodules and build JavaMateView. 
 
-    $ git clone git://github.com/danlucraft/redcar.git
+    $ git clone git://github.com/redcar/redcar.git
     $ cd redcar
     $ git submodule init
     $ git submodule update
