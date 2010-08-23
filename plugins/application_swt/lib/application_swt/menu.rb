@@ -1,27 +1,27 @@
 module Redcar
   class ApplicationSWT
     class Menu
-      
+
       def self.types
         @types = { :check => Swt::SWT::CHECK, :radio => Swt::SWT::RADIO }
       end
-      
+
       def self.items
         @items ||= Hash.new {|h,k| h[k] = []}
       end
-      
+
       def self.disable_items(key_string)
         items[key_string].each {|i| p i.text; i.enabled = false}
       end
-    
+
       attr_reader :menu_bar
-      
-      
+
+
 
       def self.menu_types
         [Swt::SWT::BAR, Swt::SWT::POP_UP]
       end
-      
+
       def initialize(window, menu_model, keymap, type, options={})
         s = Time.now
         unless Menu.menu_types.include?(type)
@@ -38,7 +38,7 @@ module Redcar
         add_entries_to_menu(@menu_bar, menu_model)
         #puts "ApplicationSWT::Menu initialize took #{Time.now - s}s"
       end
-      
+
       def show
         @menu_bar.set_visible(true)
       end
@@ -48,24 +48,25 @@ module Redcar
         @menu_bar.dispose
         @result
       end
-      
+
       def move(x, y)
         @menu_bar.setLocation(x, y)
       end
-      
+
       private
-      
+
       def use_numbers?
         @use_numbers
       end
 
       def add_entries_to_menu(menu, menu_model)
-        
+
         menu_model.each do |entry|
           if entry.is_a?(Redcar::Menu::LazyMenu)
             menu_header = Swt::Widgets::MenuItem.new(menu, Swt::SWT::CASCADE)
             menu_header.text = entry.text
-            new_menu = Swt::Widgets::Menu.new(@window.shell, Swt::SWT::DROP_DOWN)
+            #new_menu = Swt::Widgets::Menu.new(@window.shell, Swt::SWT::DROP_DOWN)
+            new_menu = Swt::Widgets::Menu.new(menu)
             menu_header.menu = new_menu
             menu_header.add_arm_listener do
               new_menu.get_items.each {|i| i.dispose }
@@ -74,7 +75,8 @@ module Redcar
           elsif entry.is_a?(Redcar::Menu)
             menu_header = Swt::Widgets::MenuItem.new(menu, Swt::SWT::CASCADE)
             menu_header.text = entry.text
-            new_menu = Swt::Widgets::Menu.new(@window.shell, Swt::SWT::DROP_DOWN)
+            #new_menu = Swt::Widgets::Menu.new(@window.shell, Swt::SWT::DROP_DOWN)
+            new_menu = Swt::Widgets::Menu.new(menu)
             menu_header.menu = new_menu
             add_entries_to_menu(new_menu, entry)
           elsif entry.is_a?(Redcar::Menu::Item::Separator)
@@ -97,16 +99,16 @@ module Redcar
         def initialize(entry)
           @entry = entry
         end
-        
+
         def widget_selected(e)
           Redcar.safely("menu item '#{@entry.text}'") do
             @entry.command.call
           end
         end
-        
+
         alias :widget_default_selected :widget_selected
       end
-      
+
       def connect_proc_to_item(item, entry)
         if use_numbers? and Redcar.platform == :osx
           item.text = entry.text + "\t" + @number.to_s
@@ -116,21 +118,21 @@ module Redcar
         end
         item.addSelectionListener(ProcSelectionListener.new(entry))
       end
-      
+
       class SelectionListener
         def initialize(entry)
           @entry = entry
         end
-        
+
         def widget_selected(e)
           @entry.selected(e.stateMask != 0)
         end
-        
+
         def widget_default_selected(e)
           @entry.selected(e.stateMask != 0)
         end
       end
-      
+
       def connect_command_to_item(item, entry)
         if key_specifier = @keymap.command_to_key(entry.command)
           if key_string    = BindingTranslator.platform_key_string(key_specifier)
