@@ -5,7 +5,7 @@ module Redcar
     # some other resource. They have methods for loading the contents from the 
     # resource and commiting changes.
     #
-    # Events: changed
+    # Events: change
     module Mirror
       include Redcar::Observable
       

@@ -1,5 +1,3 @@
-require 'net/ssh'
-require 'net/sftp'
 
 module Redcar
   class Project

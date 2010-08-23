@@ -1,11 +1,37 @@
 
-Version 0.3.9 (TBA)
-===================
+Version 0.4 (23 Aug 2010)
+=========================
+
+Enhancements:
+
+ * Colourful Runnables! (The output tab supports ANSI escape codes) (Mat Schaffer)
+ * Runnables scroll as the output gets longer (Delisa Mason)
+ * Option to save all tabs before running any Runnable (Delisa Mason)
+ * Strip trailing spaces on save option (Steven Hancock)
+ * Search and replace supports backreferences (\1 \2 etc) (Mat Schaffer)
+ * Uses client, 32bit jvm mode, for twice as fast startup. (Dan Lucraft)
+ * Bracket highlighting! (Alex Lourie)
+ * Todo list (find all occurrences of TODO etc in project) (Delisa Mason)
+ * Styled runnable tabs (Mat Schaffer)
+ * See all snippets in a tree (Delisa Mason)
+ * Find in project plugin (uses grep and ack) (Kieran Pilkington and Krzysztof Jablonski)
+ * Runnables re-use an open tab. (Mat Schaffer)
+ * Can pin your choice of bundles to the bundles menu (Delisa Mason)
+ * Experimental git scm integration (Matthew Scharley)
+ * PHP jump to declaration support (Daniel Cestari)
+ * Outline view of document (jump to declaration in document) (Johannes Wollert)
+
+Fixes:
+
+ * Fix for opening files with regex characters in. (Tom Murray)
+
+Version 0.3.9 (12 Aug 2010)
+===========================
 
  * Clojure REPL (David Byrne)
- * Remote edit files (Felipe Coury)
- * Remote directory view (Felipe Coury)
- * Connection manager (Felipe Coury)
+ * Remote edit files (Felipe Coury & Dan Lucraft)
+ * Remote directory view (Felipe Coury & Dan Lucraft)
+ * Connection manager (Felipe Coury & Dan Lucraft)
  * Added a truckload more Textmate themes (Dan Lucraft - thanks github.com/filmgirl !)
  * Fix crashing bug when exceptions have no message (Kieran Pilkington)
  * Runnables tab shows name of process (Delisa Mason)
@@ -23,7 +49,7 @@ Version 0.3.9 (TBA)
  * View keyboard shortcuts help command (Delisa Mason)
  * Clear REPL history command (David Byrne)
  * Change case commands (to uppercase, to lowercase, to titlecase, to opposite case, toggle snake_case/CamelCase/pascalCase) (Mat Schaffer)
- * Took 6.5 seconds off startup time (on my machine) (Dan Lucraft)
+ * Smarter word matching for Ruby (and internal changes to support differing definitions of "words" across languages.) (Johannes Wollert)
 
 Version 0.3.8.4 (24 July 2010)
 ==============================

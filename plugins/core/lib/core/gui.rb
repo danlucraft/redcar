@@ -39,7 +39,12 @@ module Redcar
         @event_loop.start
       end
     end
-    
+
+    # Lets the even loop run until block returns false
+    def yield_until(&block)
+      @event_loop.yield_until(&block)
+    end
+
     # Stops the event loop for this gui.
     def stop
       @event_loop.stop

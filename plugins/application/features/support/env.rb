@@ -14,7 +14,15 @@ module SwtHelper
   end
   
   def active_shell
-    Redcar.app.focussed_window.controller.shell
+    focussed_window.controller.shell
+  end
+
+  def focussed_window
+    Redcar.app.focussed_window
+  end
+
+  def focussed_tree
+    focussed_window.treebook.focussed_tree
   end
   
   def dialog(type)
@@ -26,17 +34,28 @@ module SwtHelper
       Redcar::ApplicationSWT.shell_dialogs[s]
     end.compact
   end
-  
-  def tree_book
-    active_shell.children.to_a.first.children.to_a.first.children.to_a.first.children.to_a.first
+
+  def visible_tree_items(tree, items = [])
+    tree.getItems.to_a.each do |item|
+      items << item
+      visible_tree_items(item, items) if item.expanded?
+    end
+    return items
   end
-  
+
   def top_tree
-    r = tree_book
-    r.extend(TreeHelpers)
-    r
+    tree = focussed_tree.controller.viewer.get_tree
+    tree.extend(TreeHelpers)
+    tree
   end
   
+  def find_node_with_text(top, node_text)
+    node = top.detect { |node| node.text == node_text }
+    return node if node
+    all_children = top.map{ |node| node.children }.flatten
+    find_node_with_text(all_children, node_text) unless all_children.empty?
+  end
+
   module TreeHelpers
     def items
       getItems.to_a
@@ -74,7 +93,8 @@ class FakeDialogAdapter
   end
   
   def message_box(*args)
-    if @message
+    if @message == :any
+    elsif @message
       unless @message == args.first
         raise TestingError.new("expected the message #{@message.inspect} got #{args.first.inspect}")
       end
@@ -82,6 +102,7 @@ class FakeDialogAdapter
     else
       raise TestingError.new("got a message box showing #{args.first.inspect} when I didn't expect one")
     end
+    @responses[:message_box].to_sym if @responses[:message_box]
   end
   
   def check_for_raise(result)

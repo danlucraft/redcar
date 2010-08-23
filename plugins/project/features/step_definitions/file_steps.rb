@@ -8,7 +8,7 @@ When /^I open a file$/ do
 end
 
 Given /^I have opened "([^\"]*)"$/ do |arg1|
-  Redcar::Project::FileOpenCommand.new(arg1).run
+  Redcar::Project::FileOpenCommand.new(File.expand_path(arg1)).run
 end
 
 When /^I save the tab$/ do
@@ -34,7 +34,7 @@ end
 
 When /^I put a lot of lines into the file "([^\"]*)"$/ do |file|
   File.open(file, "w") do |f|
-    200.times { |i| f.puts (i*20).to_s }
+    200.times { |i| f.puts(i * 20) }
   end
 end
 

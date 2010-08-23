@@ -13,7 +13,7 @@ Spec::Runner.configure do |config|
 
   config.after(:each) do
   end
-  
+
   config.after(:suite) do
   end
 end

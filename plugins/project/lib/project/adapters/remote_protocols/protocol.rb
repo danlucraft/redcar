@@ -1,5 +1,3 @@
-require 'net/ssh'
-require 'net/sftp'
 
 module Redcar
   class Project
@@ -38,10 +36,8 @@ module Redcar
           def load(file)
             local_path, local_file = split_paths(file)
 
-            print "Downloading: #{file} as: #{local_file}... "
             FileUtils.mkdir_p local_path
             download file, local_file
-            puts "done"
             File.open(local_file, 'rb') do |f|; f.read; end
           end
           
@@ -49,9 +45,7 @@ module Redcar
             local_path, local_file = split_paths(file)
 
             ret = File.open(local_file, "wb") {|f| f.print contents }
-            print "Uploading: #{local_file} as #{file}... "
             upload local_file, file
-            puts "done"
             
             ret
           end

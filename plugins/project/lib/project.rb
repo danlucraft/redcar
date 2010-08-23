@@ -42,10 +42,14 @@ module Redcar
       if dir_mirror.exists?
         @tree   = Tree.new(dir_mirror, Project::DirController.new)
         @window = nil
-        file_list_resource.compute
+        file_list_resource.compute unless remote?
       else
         raise "#{path} doesn't seem to exist"
       end
+    end
+    
+    def remote?
+      adapter.is_a?(Adapters::Remote)
     end
     
     def ready?
@@ -64,6 +68,9 @@ module Redcar
       window.treebook.add_tree(@tree)
       window.title = File.basename(@tree.tree_mirror.path)
       Manager.open_project_sensitivity.recompute
+      Redcar.plugin_manager.objects_implementing(:project_loaded).each do |i|
+        i.project_loaded(self)
+      end
       RecentDirectories.store_path(path)
       Manager.storage['last_open_dir'] = path
       Project.window_projects[window] = self
@@ -74,17 +81,20 @@ module Redcar
       Project.window_projects.delete(window)
       window.title = Window::DEFAULT_TITLE
       Manager.open_project_sensitivity.recompute
+      Redcar.plugin_manager.objects_implementing(:project_closed).each do |i|
+        i.project_closed(self)
+      end
     end
     
     # Refresh the DirMirror Tree for the given Window, if 
     # there is one.
     def refresh
       @tree.refresh
-      file_list_resource.compute
+      file_list_resource.compute unless remote?
     end
     
     def contains_path?(path)
-      File.expand_path(path) =~ /^#{@path}($|\/|\\)/
+      File.expand_path(path) =~ /^#{Regexp.escape(@path)}($|\/|\\)/
     end
     
     # A list of files previously opened in this session for this project
@@ -106,6 +116,7 @@ module Redcar
     end
     
     def file_list
+      raise "can't access a file list for a remote project" if remote?
       @file_list ||= FileList.new(path)
     end
     
@@ -137,9 +148,7 @@ module Redcar
     end
     
     def gained_focus
-      if @lost_application_focus
-        refresh
-      end
+      refresh
       @lost_application_focus = nil
     end
     
@@ -154,7 +163,7 @@ module Redcar
     end
     
     def config_files(glob)
-      file_glob = File.join(config_dir, glob)
+      file_glob = File.join("{#{config_dir},#{Redcar.user_dir}}", glob)
       Dir[file_glob]
     end
   end

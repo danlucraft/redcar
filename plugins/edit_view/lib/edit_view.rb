@@ -256,6 +256,9 @@ module Redcar
     def self.theme=(theme)
       EditView.storage["theme"] = theme
       all_edit_views.each {|ev| ev.refresh_theme }
+      Redcar.plugin_manager.objects_implementing(:theme_changed_update).each do |object|
+        @cursor = object.theme_changed_update
+      end
     end
 
     def self.themes
@@ -478,7 +481,6 @@ module Redcar
             document.update_from_mirror
           end
         else
-          puts "updating document as has changed since #{@last_checked}"
           document.update_from_mirror
         end
       end

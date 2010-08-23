@@ -14,6 +14,11 @@ module SwtTabHelpers
     get_tab_folders.first
   end
 
+  def get_browser_contents
+    live_document = "document.getElementsByTagName('html')[0].innerHTML"
+    focussed_tab.html_view.controller.execute("return #{live_document};").join('')
+  end
+
   def get_tab(tab_folder)
     item1 = tab_folder.getItems.to_a.first
     tab = Redcar.app.windows.first.notebooks.map{|n| n.tabs}.flatten.detect{|t| t.controller.item == item1}

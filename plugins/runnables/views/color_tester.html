@@ -1,0 +1,50 @@
+<html>
+<head>
+  <title>Static color test page for Redcar Runnables</title>
+  <link href="basic_ansi.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+  <script type="text/javascript">
+    var i, j, k, w = function (s) { document.write(s) },
+        weights = ["", "bold", "light"],
+        colors  = ["", "black", "red", "green", "yellow", "blue", "purple", "cyan", "gray"]
+
+    function className(name, bg) {
+      if (name) {
+        if (bg) {
+          return "ansi-on-" + name;
+        } else {
+          return "ansi-" + name
+        }
+      } else {
+        return ""
+      }
+    }
+
+    function displayName(name) {
+      if (name) {
+        return name
+      } else {
+        return "regular"
+      }
+    }
+
+    for (k in colors) {
+      w('<p>On ' + displayName(colors[k]) + '</p>');
+      w('<table border="1">');
+      for (i in weights) {
+        w('<tr>');
+        for (j in colors) {
+          w('<td class="' + className(colors[k], true) +
+                      ' ' + className(weights[i]) + 
+                      ' ' + className(colors[j])  + '"> ' + 
+                            displayName(weights[i]) + 
+                      ' ' + displayName(colors[j])  + '</td>')
+        }
+        w('</tr>')
+      }
+      w('</table>')
+    }
+  </script>
+</body>
+</html>

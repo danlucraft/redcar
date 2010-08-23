@@ -37,12 +37,6 @@ module Redcar
         text.tr('a-zA-Z', 'A-Za-z')
       end
     end
-    
-    class OppositeCaseTextCommand < TextConversionCommand
-      def convert(text)
-        text.tr('a-zA-Z', 'A-Za-z')
-      end
-    end
 
     class CamelCaseTextCommand < TextConversionCommand
       def convert(text)

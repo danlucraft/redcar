@@ -51,6 +51,8 @@ module Swt
     import org.eclipse.swt.widgets.TabItem
     import org.eclipse.swt.widgets.Text
     import org.eclipse.swt.widgets.ToolTip
+    import org.eclipse.swt.widgets.Table
+    import org.eclipse.swt.widgets.TableItem
   end
   
   def self.display

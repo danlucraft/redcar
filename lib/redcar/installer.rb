@@ -18,9 +18,9 @@ module Redcar
       end
       puts "found latest XULRunner release version: #{xulrunner_version}" if Redcar.platform == :windows
     end
-  	
+    
   	def install
-  	  unless File.writable?(JRUBY_JAR_DIR)
+      unless File.writable?(JRUBY_JAR_DIR)
   	    puts "Don't have permission to write to #{JRUBY_JAR_DIR}. Please rerun with sudo."
   	    exit 1
   	  end
@@ -90,7 +90,7 @@ module Redcar
       "/jruby/joni.jar"
     ]
 
-    JRUBY << "http://jruby.org.s3.amazonaws.com/downloads/1.5.1/jruby-complete-1.5.1.jar"
+    JRUBY << "http://jruby.org.s3.amazonaws.com/downloads/1.5.2/jruby-complete-1.5.2.jar"
     
     JOPENSSL_DIR = File.expand_path(File.join(File.dirname(__FILE__), "..", "openssl/lib/")) 
     JOPENSSL = {
@@ -173,6 +173,7 @@ module Redcar
       
       if File.open(path).read(200) =~ /Access Denied/
         puts "\n\n*** Error downloading #{uri}, got Access Denied from S3."
+        FileUtils.rm_rf(path)
         exit
       end
       
