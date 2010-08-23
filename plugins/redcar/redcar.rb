@@ -833,7 +833,7 @@ module Redcar
 
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
-        
+
         link "Ctrl+R",           Runnables::RunEditTabCommand
 
         link "Ctrl+Shift+P",    PrintScopeCommand
