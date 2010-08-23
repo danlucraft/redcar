@@ -72,7 +72,7 @@ module Redcar
           :index_unsave => "Revert Index",
           :index_revert => "Revert Changes",
           :index_restore => "Restore File",
-          :index_delete => "Mark as Deleted",
+          :index_delete => "Delete File",
           :commitable => "Commit Changes to Subproject",
           :switch_branch => "Switch Branch",
           :merge => "Merge...",
