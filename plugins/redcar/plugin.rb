@@ -13,5 +13,5 @@ Plugin.define do
                "runnables",         ">0",
                "HTML View",         ">=0.3.2",
                "Plugin Manager UI", ">=0.3.2",
-               "Outline View",      ">0"
+               "outline_view",      ">0"
 end

@@ -46,6 +46,7 @@ module Redcar
       end
       
       def execute
+        return if @project.remote?
         file = Declarations::File.new(Declarations.file_path(@project))
         file.update_files(@file_list)
         file.dump
@@ -73,7 +74,11 @@ module Redcar
         {}
       end
     end
-    
+
+	def self.match_kind(path, regex)
+      Declarations::Parser.new.match_kind(path, regex)
+	end
+
     def self.clear_tags_for_path(path)
       @tags_for_path ||= {}
       @tags_for_path.delete(path)

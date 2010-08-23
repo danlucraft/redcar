@@ -2,19 +2,36 @@ require "outline_view/commands"
 
 module Redcar
   class OutlineView
+    
+    def self.menus
+      Menu::Builder.build do
+        sub_menu "View" do
+          item "Current Document Outline", OutlineView::OpenOutlineViewCommand
+        end
+      end
+    end
+    
+    def self.keymaps
+      linwin = Keymap.build("main", [:linux, :windows]) do
+        link "Ctrl+I", OutlineView::OpenOutlineViewCommand
+      end
+      osx = Keymap.build("main", [:osx]) do
+        link "Cmd+I", OutlineView::OpenOutlineViewCommand
+      end
+      [linwin, osx]
+    end
+    
     class OutlineViewDialog < FilterListDialog
+      include Redcar::Model
+      include Redcar::Observable
       
       attr_accessor :document
       attr_accessor :last_list
       
       def initialize(document)
-        super()
+        self.controller = Redcar::OutlineViewSWT.new(self)
         @document = document
         @last_list = Hash.new
-      end
-      
-      def get_tags_for_path(path)
-        Declarations.tags_for_path(path)
       end
       
       def close
@@ -26,16 +43,20 @@ module Redcar
         file.add_tags_for_paths([@document.path])
         re = make_regex(filter)
         @last_list.clear
+        result = {}
         file.tags.each do |key, _, match|
-          @last_list[key] = make_regex(match) if key =~ re
+          if key =~ re
+            @last_list[key] = make_regex(match)
+            result[match] = [key, Declarations.match_kind(@document.path, match)]
+          end
         end
-        @last_list.keys
+        result
       end
       
-      def selected(text, ix, closing=false)
+      def selected(item, ix, closing=true)
         if @last_list
-          close
-          DocumentSearch::FindNextRegex.new(@last_list[text], true).run
+          DocumentSearch::FindNextRegex.new(@last_list[item.text], true).run
+          close if closing
         end
       end
     end
