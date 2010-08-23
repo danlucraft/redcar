@@ -8,7 +8,7 @@ begin
   require 'textmate/tree_mirror'
   require 'textmate/commands'
 rescue NameError => e
-  puts "Core loading not yet complete"
+  puts "Textmate plugin loading deferred until core loading is complete"
   # In the installer we don't have all of core loaded yet
 end
 
@@ -21,11 +21,12 @@ module Redcar
 
     def self.menus
       Menu::Builder.build do
+        #sub_menu "Debug" do
+        #  item "Refresh Menu Test", :command => RefreshMenuTenTimes, :priority => 20
+        #end
         sub_menu "Bundles" do
-          if Textmate.storage['loaded_bundles'].size() > 0
-            item "Clear Bundle Menu" do
-              ClearBundleMenu.new.run
-            end
+          if Textmate.storage['loaded_bundles'].size() > 0 and Textmate.storage['load_bundles_menu']
+            item "Clear Bundle Menu", :command => ClearBundleMenu, :priority => 20
           end
         end
       end
@@ -33,17 +34,26 @@ module Redcar
 
     def self.bundle_context_menus(node)
       Menu::Builder.build do
-        if not node.nil? and node.is_a?(Textmate::BundleNode)
-          if Textmate.storage['loaded_bundles'].include?(node.text.downcase)
-            item ("Remove from Bundles Menu") do
-              RemovePinnedBundle.new(node.text).run
-            end
-          else
-            item("Pin to Bundles Menu") do
-              PinBundleToMenu.new(node.text).run
+        if not node.nil? and node.is_a?(BundleNode)
+          if Textmate.storage['load_bundles_menu']
+            if Textmate.storage['loaded_bundles'].include?(node.text.downcase)
+              item ("Remove from Bundles Menu") do
+                RemovePinnedBundle.new(node.text).run
+              end
+            else
+              item("Pin to Bundles Menu") do
+                PinBundleToMenu.new(node.text).run
+              end
             end
           end
         end
+      end
+    end
+
+    def self.refresh_tree
+      win = Redcar.app.focussed_window
+      if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
+        tree.refresh
       end
     end
 
@@ -62,7 +72,7 @@ module Redcar
     def self.storage
       @storage ||= begin
         storage = Plugin::Storage.new('textmate')
-        storage.set_default('load_bundles_menu',true)
+        storage.set_default('load_bundles_menu',false)
         storage.set_default('select_bundles_for_menu',true)
         storage.set_default('select_bundles_for_tree',false)
         storage.set_default('loaded_bundles',[])
@@ -72,17 +82,16 @@ module Redcar
 
     def self.attach_menus(builder)
       if Textmate.storage['load_bundles_menu']
-        @menus = begin
-          Menu::Builder.build do |a|
-            all_bundles.sort_by {|b| (b.name||"").downcase}.each do |bundle|
-              name = (bundle.name||"").downcase
-              unless @storage['select_bundles_for_menu'] and !@storage['loaded_bundles'].to_a.include?(name)
-                bundle.build_menu(a)
+        Menu::Builder.build do |a|
+          Textmate.all_bundles.sort_by {|b| (b.name||"").downcase}.each do |bundle|
+            name = (bundle.name||"").downcase
+            unless Textmate.storage['select_bundles_for_menu'] and not Textmate.storage['loaded_bundles'].to_a.include?(name)
+              bundle.build_menu(a).each do |c|
+                builder.append(c)
               end
             end
           end
         end
-        @menus.entries.each {|i| builder.append(i) }
       end
     end
 
@@ -149,30 +158,31 @@ module Redcar
         res
       end
     end
+
     begin
-    class InstalledBundles < Redcar::Command
-      def execute
-        controller = Controller.new
-        tab = win.new_tab(HtmlTab)
-        tab.html_view.controller = controller
-        tab.focus
-      end
-
-      class Controller
-        include Redcar::HtmlController
-
-        def title
-          "Installed Bundles"
+      class InstalledBundles < Redcar::Command
+        def execute
+          controller = Controller.new
+          tab = win.new_tab(HtmlTab)
+          tab.html_view.controller = controller
+          tab.focus
         end
 
-        def index
-          rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "views", "installed_bundles.html.erb")))
-          rhtml.result(binding)
+        class Controller
+          include Redcar::HtmlController
+
+          def title
+            "Installed Bundles"
+          end
+
+          def index
+            rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "views", "installed_bundles.html.erb")))
+            rhtml.result(binding)
+          end
         end
       end
-    end
     rescue  NameError => e
-      puts "Core loading not yet complete"
+      puts "Textmate plugin loading deferred until core loading is complete"
     end
   end
 end
