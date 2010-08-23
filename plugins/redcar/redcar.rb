@@ -769,7 +769,9 @@ module Redcar
         link "Ctrl+Shift+[",    MoveTabDownCommand
         link "Ctrl+Shift+]",    MoveTabUpCommand
         link "Cmd+Alt+I",       ToggleInvisibles
-
+        link "Ctrl+R",          Runnables::RunEditTabCommand
+        link "Cmd+I",           OutlineView::OpenOutlineViewCommand
+        
         link "Ctrl+Shift+P",    PrintScopeCommand
 
         link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
@@ -844,7 +846,8 @@ module Redcar
         link "Ctrl+Shift+Page Down", MoveTabUpCommand
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
         link "Ctrl+Alt+I",       ToggleInvisibles
-
+        link "Ctrl+I",           OutlineView::OpenOutlineViewCommand
+        
         link "Ctrl+Alt+S", Snippets::OpenSnippetExplorer
         #Textmate.attach_keybindings(self, :linux)
 
