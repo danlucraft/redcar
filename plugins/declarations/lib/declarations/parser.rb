@@ -41,12 +41,28 @@ module Redcar
     type:     id
     kind:     assignment
   YAML
+
+  PHP_YAML=<<-YAML
+  - regex:    "class\\s+(\\w+)"
+    capture:  1
+    type:     id
+    kind:     class
+  - regex:    "interface\\s+(\\w+)"
+    capture:  1
+    type:     id
+    kind:     interface
+  - regex:    "function\\s+(\\w+)\s*\\("
+    capture:  1
+    type:     id
+    kind:     method
+  YAML
   
   class Declarations
     class Parser
       DEFINITIONS = {
         /\.rb$/   => YAML.load(RUBY_YAML),
-        /\.java$/ => YAML.load(JAVA_YAML)
+        /\.java$/ => YAML.load(JAVA_YAML),
+        /\.php$/ => YAML.load(PHP_YAML)
       }
       
       attr_reader :tags
