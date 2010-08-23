@@ -4,7 +4,6 @@ require 'textmate/environment'
 require 'textmate/plist'
 require 'textmate/preference'
 require 'textmate/snippet'
-require 'textmate/menu_manager'
 begin
   require 'textmate/tree_mirror'
   require 'textmate/commands'
@@ -26,7 +25,7 @@ module Redcar
           item "Refresh Menu Test", :command => RefreshMenuTenTimes, :priority => 20
         end
         sub_menu "Bundles" do
-          if Textmate.storage['loaded_bundles'].size() > 0
+          if Textmate.storage['loaded_bundles'].size() > 0 and Textmate.storage['load_bundles_menu']
             item "Clear Bundle Menu", :command => ClearBundleMenu, :priority => 20
           end
         end
@@ -80,8 +79,18 @@ module Redcar
     end
 
     def self.attach_menus(builder)
-      @menu_manager ||= MenuManager.new
-      @menu_manager.build_menu(builder)
+      if Textmate.storage['load_bundles_menu']
+        Menu::Builder.build do |a|
+          Textmate.all_bundles.sort_by {|b| (b.name||"").downcase}.each do |bundle|
+            name = (bundle.name||"").downcase
+            unless Textmate.storage['select_bundles_for_menu'] and not Textmate.storage['loaded_bundles'].to_a.include?(name)
+              bundle.build_menu(a).each do |c|
+                builder.append(c)
+              end
+            end
+          end
+        end
+      end
     end
 
     def self.all_bundles
