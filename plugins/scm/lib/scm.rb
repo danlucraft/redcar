@@ -30,6 +30,10 @@ module Redcar
             tab and 
             tab.is_a?(EditTab) and 
             tab.edit_view.document.mirror.is_a?(Scm::CommitMirror)
+          end,
+          Sensitivity.new(:open_scm, Redcar.app, false, [:window_focussed]) do |window|
+            project = Project::Manager.focussed_project
+            not Scm::Manager.project_repositories[project].nil?
           end
         ]
       end
@@ -52,6 +56,7 @@ module Redcar
             group(:priority => 10) do
               separator
               sub_menu "Source Control" do
+                item "Create Commit", Scm::CommitMirror::OpenCommand
                 item "Save Commit", Scm::CommitMirror::SaveCommand
               end
             end
@@ -263,7 +268,7 @@ module Redcar
         mirror.add_listener(:change) do
           tab.close
           
-          project = Project::Manager.in_window(Redcar.app.focussed_window)
+          project = Project::Manager.focussed_project
           repo_info = project_repositories[project]
           repo_info['trees'].each {|t| t.refresh}
         end

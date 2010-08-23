@@ -56,6 +56,17 @@ module Redcar
           end
         end
       end
+      
+      class OpenCommand < Command
+        sensitize :open_scm
+        
+        def execute
+          project = Project::Manager.focussed_project
+          info = Scm::Manager.project_repositories[project]
+          
+          Scm::Manager.open_commit_tab(info['repo'])
+        end
+      end
     end
   end
 end
