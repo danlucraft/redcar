@@ -4,7 +4,7 @@ class Redcar::Project
   describe Adapters::RemoteProtocols::FTP do
     let(:conn) { double('connection') }
     subject do
-      Adapters::RemoteProtocols::FTP.new('server', 'user', 'secret', '/creation')
+      Adapters::RemoteProtocols::FTP.new('server', 'user', 'secret', nil, '/creation')
     end
     
     before(:each) do
@@ -20,7 +20,7 @@ class Redcar::Project
     
     describe 'methods' do
       subject do
-        Adapters::RemoteProtocols::FTP.new('server', 'user', 'secret', '/creation').tap do |ftp|
+        Adapters::RemoteProtocols::FTP.new('server', 'user', 'secret', nil, '/creation').tap do |ftp|
           ftp.stub!(:connection).and_return(conn)
         end
       end

@@ -5,7 +5,7 @@ Plugin.define do
   file    "redcar"
   object  "Redcar::Top"
   dependencies "core",              ">0", # includes Storage
-               "application",       ">0",
+               "application",       ">=1.1",
                "project",           ">0",
                "Auto Completer",    ">0",
                "auto_indenter",     ">0",

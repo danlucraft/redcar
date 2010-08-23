@@ -8,7 +8,7 @@ require 'textmate/snippet'
 module Redcar
   module Textmate
     def self.all_bundle_paths
-      Dir[File.join(Redcar.root, "textmate", "Bundles", "*")]
+      Dir[File.join(Redcar.root, "plugins", "textmate", "vendor", "redcar-bundles", "Bundles", "*")]
     end
     
     def self.uuid_hash
@@ -96,6 +96,32 @@ module Redcar
         end
         res
       end
+    end
+    
+    begin
+      class InstalledBundles < Redcar::Command      
+        def execute
+          controller = Controller.new
+          tab = win.new_tab(HtmlTab)
+          tab.html_view.controller = controller
+          tab.focus
+        end
+        
+        class Controller
+          include Redcar::HtmlController
+          
+          def title
+            "Installed Bundles"
+          end
+          
+          def index
+            rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "views", "installed_bundles.html.erb")))
+            rhtml.result(binding)
+          end
+        end
+      end
+    rescue NameError => e    
+      puts "Delaying full textmate plugin while installing."
     end
   end
 end

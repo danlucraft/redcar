@@ -14,7 +14,7 @@ describe FileList do
   
   before do
     @file_list = FileList.new(fixture_path)
-    FileUtils.rm_f(relative_path("tags"))
+    FileUtils.rm_f(relative_path(".redcar"))
   end
   
   it "should return an empty list initially" do
@@ -29,7 +29,6 @@ describe FileList do
     it "should return a list of files in the directory" do
       @file_list.all_files.include?(relative_path("README")).should be_true
       @file_list.all_files.include?(relative_path("lib", "foo_lib.rb")).should be_true
-      @file_list.all_files.length.should == 3
     end
   end
   

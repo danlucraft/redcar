@@ -14,15 +14,6 @@ module Redcar
         end
       end
       
-      def selected(tree, node)
-        return unless node
-        return unless node.adapter
-        return unless node.adapter.lazy?
-        
-        node.calculate_children
-        true
-      end
-      
       class DragController
         include Redcar::Tree::Controller::DragController
         
@@ -91,30 +82,18 @@ module Redcar
       def right_click(tree, node)
         controller = self
         
-        menu = Menu::Builder.build do
-          item("New File")      { controller.new_file(tree, node) }
-          item("New Directory") { controller.new_dir(tree, node)  }
-          separator
-          if tree.selection.length > 1
-            dirs = tree.selection.map {|node| node.parent_dir }
-            if dirs.uniq.length == 1
-              item("Bulk Rename") { controller.rename(tree, node)   }
-            end
+        menu = Menu.new
+        Redcar.plugin_manager.objects_implementing(:project_context_menus).each do |object|
+          # a lot of plugins will only really care about the node that was clicked
+          case object.method(:project_context_menus).arity
+          when 1
+            menu.merge(object.project_context_menus(node))
+          when 2
+            menu.merge(object.project_context_menus(tree, node))
+          when 3
+            menu.merge(object.project_context_menus(tree, node, controller))
           else
-            item("Rename")      { controller.rename(tree, node)   }
-          end
-          item("Delete")        { controller.delete(tree, node)   }
-          separator
-          if DirMirror.show_hidden_files?
-            item("Hide Hidden Files") do
-              DirMirror.show_hidden_files = false
-              tree.refresh
-            end
-          else
-            item("Show Hidden Files") do
-              DirMirror.show_hidden_files = true
-              tree.refresh
-            end
+            puts("Invalid project_context_menus hook detected in "+object.class.name)
           end
         end
         
@@ -130,7 +109,7 @@ module Redcar
         adapter.touch(new_file_path)
         tree.refresh
         tree.expand(node)
-        new_file_node = DirMirror::Node.create_from_path(adapter, new_file_path)
+        new_file_node = DirMirror::Node.cache[new_file_path]
         tree.edit(new_file_node)
       end
       
@@ -138,12 +117,11 @@ module Redcar
         enclosing_dir = node ? node.directory : tree.tree_mirror.path
         new_dir_name = uniq_name(enclosing_dir, "New Directory")
         new_dir_path = File.join(enclosing_dir, new_dir_name)
-
         adapter = DirController.adapter(node, tree)
-        adapter.mkdir(new_dir_name)
+        adapter.mkdir(new_dir_path)
         tree.refresh
         tree.expand(node)
-        new_dir_node = DirMirror::Node.create_from_path(adapter, new_dir_path)
+        new_dir_node = DirMirror::Node.cache[new_dir_path]
         tree.edit(new_dir_node)
       end
       
@@ -249,7 +227,7 @@ module Redcar
         result = Application::Dialog.message_box(msg, :type => :question, :buttons => :yes_no)
         if result == :yes
           nodes.each do |node|
-            FileUtils.rm_rf(node.path)
+            node.adapter.delete(node.path)
           end
           tree.refresh
         end

@@ -4,16 +4,29 @@ module Redcar
     include Enumerable
     include Redcar::Model
     
-    attr_reader :text, :entries
+    # Default priority for all menu's and items if they aren't explicitly provided
+    DEFAULT_PRIORITY = 50
+    
+    attr_reader :text, :entries, :priority
   
     # A Menu will initially have nothing in it.
-    def initialize(text=nil)
-      @text, @entries = text || "", []
+    def initialize(text=nil, options={})
+      @text, @entries, @priority = text || "", [], options[:priority]
     end
   
-    # Iterate over each entry
+    # Iterate over each entry, sorted by priority
     def each
-      entries.each {|e| yield e}
+      sorted = {:first => [], :last => []}
+      entries.each {|e| (sorted[e.priority || Menu::DEFAULT_PRIORITY] ||= []) << e}
+      
+      # Get the nasty Symbols out of the hash so we can sort it
+      first = sorted.delete(:first)
+      last = sorted.delete(:last)
+      
+      # Yield up the results
+      first.each {|val| yield val }
+      sorted.keys.sort.each {|i| sorted[i].each {|val| yield val }}
+      last.each {|val| yield val }
     end
   
     # Add a Redcar::MenuItem or a Redcar::Menu
@@ -53,12 +66,17 @@ module Redcar
       true
     end
     
+    def is_unique?
+      false
+    end
+    
     # Merge two Menu trees together. Modifies this Menu.
     #
     # @param [Menu] another Menu
     def merge(other)
+      @priority = @priority || other.priority
       other.entries.each do |other_entry|
-        if here = entry(other_entry.text)
+        if here = entry(other_entry.text) and not other_entry.is_unique?
           if here.class == other_entry.class
             here.merge(other_entry)
           else

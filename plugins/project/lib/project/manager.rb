@@ -1,9 +1,55 @@
 
-
 module Redcar
   class Project
     class Manager
-    
+
+      def self.connect_to_remote(protocol, host, user, path, private_key_files = [])
+        if protocol == "SFTP" and private_key_files.any?
+          begin
+            adapter = open_adapter(protocol, host, user, nil, private_key_files)
+            open_remote_project(adapter, path)
+          rescue Net::SSH::AuthenticationFailed
+            if pw = get_password
+              adapter = open_adapter(protocol, host, user, pw, [])
+              open_remote_project(adapter, path)
+            end
+          end
+        else
+          if pw = get_password
+            adapter = open_adapter(protocol, host, user, pw, [])
+            open_remote_project(adapter, path)
+          end
+        end
+      rescue => e
+        puts "Error connecting: #{e.class}: #{e.message}"
+        puts e.backtrace
+        Application::Dialog.message_box("Error connecting: #{e.message}", :type => :error)
+      end
+      
+      def self.get_password
+        result = Redcar::Application::Dialog.password_input("Remote Connection", "Enter password")
+        result[:value] if result
+      end
+
+      # Opens a new Tree with a DirMirror and DirController for the given
+      # path, in a new window.
+      #
+      # @param [String] path  the path of the directory to view
+      def self.open_remote_project(adapter, path)
+        win = Redcar.app.focussed_window
+        win = Redcar.app.new_window if !win or Manager.in_window(win) 
+        project = Project.new(path, adapter)
+        project.open(win) if project.ready?
+      end
+
+      def self.open_adapter(protocol, host, user, password, private_key_files)
+        Adapters::Remote.new(protocol.downcase.to_sym, host, user, password, private_key_files)
+      rescue Errno::ECONNREFUSED
+        raise "connection refused connecting to #{host}"
+      rescue SocketError
+        raise "Cannot connect to #{host}. Error: #{$!.message}."
+      end
+      
       def self.open_projects
         Project.window_projects.values
       end
@@ -24,7 +70,7 @@ module Redcar
       def self.start(args)
         unless handle_startup_arguments(args)
           unless Redcar.environment == :test
-            restore_last_session
+            #restore_last_session
           end
         end
         init_current_files_hooks
@@ -136,18 +182,6 @@ module Redcar
         end
       end
       
-      # Opens a new Tree with a DirMirror and DirController for the given
-      # path, in a new window.
-      #
-      # @param [String] path  the path of the directory to view
-      def self.open_remote_project(protocol, host, user, password, path)
-        win = Redcar.app.focussed_window
-        win = Redcar.app.new_window if !win or Manager.in_window(win) 
-        project = Project.new(path, Adapters::Remote.new(protocol.downcase.to_sym, host, user, password)).tap do |p|
-          p.open(win) if p.ready?
-        end
-      end
-      
       # The currently focussed Project, or nil if none.
       #
       # @return [Project]
@@ -243,6 +277,76 @@ module Redcar
         path = File.expand_path(path)
         find_projects_containing_path(path).each do |project|
           project.refresh_modified_file(path)
+        end
+      end
+      
+      def self.menus
+        Menu::Builder.build do
+          sub_menu "File" do
+            group(:priority => 0) do
+              item "Open", Project::FileOpenCommand
+              item "Reload File", Project::FileReloadCommand
+              item "Open Directory", Project::DirectoryOpenCommand
+              item "Open Remote...", Project::OpenRemoteCommand
+              lazy_sub_menu "Open Recent" do
+                Project::RecentDirectories.generate_menu(self)
+              end
+              
+              separator
+              item "Save", Project::FileSaveCommand
+              item "Save As", Project::FileSaveAsCommand
+            end
+            
+            group(:priority => 11) do
+              item "Close Directory", Project::DirectoryCloseCommand
+              item "Reveal in Project", Project::RevealInProjectCommand
+            end
+          end
+          sub_menu "Project" do
+            group(:priority => :first) do
+              item "Find File", Project::FindFileCommand
+              item "Refresh Directory", Project::RefreshDirectoryCommand
+            end
+          end
+        end
+      end
+      
+      # Uses our own context menu hook to provide context menu entries
+      # @return [Menu]
+      def self.project_context_menus(tree, node, controller)
+        Menu::Builder.build do
+          group(:priority => :first) do
+            item("New File")        { controller.new_file(tree, node) }
+            item("New Directory")   { controller.new_dir(tree, node)  }
+          end
+          if not node.nil?
+            group(:priority => 15) do
+              separator
+              if tree.selection.length > 1
+                dirs = tree.selection.map {|node| node.parent_dir }
+                if dirs.uniq.length == 1
+                  item("Bulk Rename") { controller.rename(tree, node)   }
+                end
+              else
+                item("Rename")        { controller.rename(tree, node)   }
+              end
+              item("Delete")          { controller.delete(tree, node)   }
+            end
+          end
+          group(:priority => 75) do
+            separator
+            if DirMirror.show_hidden_files?
+              item("Hide Hidden Files") do
+                DirMirror.show_hidden_files = false
+                tree.refresh
+              end
+            else
+              item("Show Hidden Files") do
+                DirMirror.show_hidden_files = true
+                tree.refresh
+              end
+            end
+          end
         end
       end
           

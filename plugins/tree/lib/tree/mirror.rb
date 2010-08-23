@@ -78,6 +78,17 @@ module Redcar
         raise "not implemented"
       end
       
+      # Called when the whole tree needs to be refreshed. Implementations
+      # should do whatever they need to do to fetch full tree data, and then
+      # yield.
+      #
+      # The purpose is so that a refresh operation can run against some cached
+      # data, but then at the end of the method the mirror can discard the cache.
+      # Because refreshes typically generate large numbers of queries.
+      def refresh_operation(tree)
+        yield
+      end
+      
       # This is the required interface of a ROW in a TreeView.
       module NodeMirror
         include Redcar::Observable
