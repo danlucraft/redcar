@@ -31,7 +31,7 @@ module Redcar
       def initialize(document)
         self.controller = Redcar::OutlineViewSWT.new(self)
         @document = document
-        @last_list = Hash.new
+        @last_list = {}
       end
       
       def close
@@ -44,18 +44,18 @@ module Redcar
         re = make_regex(filter)
         @last_list.clear
         result = {}
-        file.tags.each do |key, _, match|
-          if key =~ re
-            @last_list[key] = make_regex(match)
-            result[match] = [key, Declarations.match_kind(@document.path, match)]
+        file.tags.each do |name, _, match|
+          if name =~ re
+            @last_list[match] = name
+            result[match] = {:name => name, :kind => Declarations.match_kind(@document.path, match)}
           end
         end
         result
       end
       
-      def selected(item, ix, closing=true)
+      def selected(match, closing=true)
         if @last_list
-          DocumentSearch::FindNextRegex.new(@last_list[item.text], true).run
+          DocumentSearch::FindNextRegex.new(Regexp.new(match), true).run
           close if closing
         end
       end

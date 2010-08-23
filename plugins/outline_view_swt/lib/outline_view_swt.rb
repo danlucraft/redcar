@@ -9,7 +9,8 @@ module Redcar
       :class => File.join(ICON_PATH, "class.png"),
       :attribute => File.join(ICON_PATH, "attribute.png"),
       :alias => File.join(ICON_PATH, "alias.png"),
-      :assignment => File.join(ICON_PATH, "assignment.png")
+      :assignment => File.join(ICON_PATH, "assignment.png"),
+      :none => nil
     }
     
     class OutlineViewDialogSWT < Redcar::ApplicationSWT::FilterListDialogController::FilterListDialog
@@ -42,6 +43,7 @@ module Redcar
         @dialog.setShellStyle(Swt::SWT::DIALOG_TRIM)
       end
       attach_model_listeners
+      @associations = {}
     end
     
     def update_list_sync
@@ -54,14 +56,20 @@ module Redcar
       end
     end
     
+    def selected
+      @model.selected(@associations[@dialog.list.get_selection.first])
+    end
+    
     private
     
     def populate_table(hash = {})
-      @dialog.list.removeAll
-      hash.each do |_, props|
+      @dialog.list.removeAll; @associations.clear
+      hash.each do |match, props|
+        props = {:kind => :none, :name => ""}.merge(props)
         item = Swt::Widgets::TableItem.new(@dialog.list, Swt::SWT::NONE)
-        item.text = props[0]
-        icon = ICONS[props[1].to_sym]
+        @associations[item] = match
+        item.text = props[:name]
+        icon = ICONS[props[:kind].to_sym] if props[:kind]
         if icon
           image = Swt::Graphics::Image.new(ApplicationSWT.display, icon)
           item.image = image
