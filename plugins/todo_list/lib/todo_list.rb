@@ -28,6 +28,7 @@ module Redcar
     end
 
     class ViewListCommand < Redcar::Command
+      sensitize :open_project
       def execute
         project = Project::Manager.in_window(win)
         controller = TodoController.new(project.home_dir)
