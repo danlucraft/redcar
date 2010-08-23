@@ -18,6 +18,8 @@ Enhancements:
  * Runnables re-use an open tab. (Mat Schaffer)
  * Can pin your choice of bundles to the bundles menu (Delisa Mason)
  * Experimental git scm integration (Matthew Scharley)
+ * PHP jump to declaration support (Daniel Cestari)
+ * Outline view of document (jump to declaration in document) (Johannes Wollert)
 
 Fixes:
 
