@@ -13,7 +13,7 @@ module Redcar
       puts e.backtrace
     end
   end
-  
+
   def self.update_gui
     ApplicationSWT.sync_exec do
       safely do
@@ -21,9 +21,9 @@ module Redcar
       end
     end
   end
-  
+
   class TimeoutError < StandardError; end
-  
+
   def self.timeout(limit)
     x = Thread.current
     result = nil
@@ -47,14 +47,14 @@ module Redcar
     end
     result
   end
-  
+
   module Top
     class QuitCommand < Command
-      
+
       def execute
         check_for_modified_tabs_and_quit
       end
-      
+
       private
 
       def check_for_modified_tabs_and_quit
@@ -65,8 +65,8 @@ module Redcar
           :continue => lambda { check_for_running_processes_and_quit },
           :cancel   => nil
         ).check
-      end        
-      
+      end
+
       def check_for_running_processes_and_quit
         Runnables::RunningProcessChecker.new(
           Redcar.app.all_tabs.select {|t| t.is_a?(HtmlTab)},
@@ -77,9 +77,9 @@ module Redcar
         ).check
       end
     end
-    
+
     class NewCommand < Command
-      
+
       def execute
         tab = win.new_tab(Redcar::EditTab)
         tab.title = "untitled"
@@ -87,42 +87,42 @@ module Redcar
         tab
       end
     end
-    
+
     class NewNotebookCommand < Command
       sensitize :single_notebook
-      
+
       def execute
         unless win.notebooks.length > 1
           win.create_notebook
         end
       end
     end
-    
+
     class NewWindowCommand < Command
-      
+
       def initialize(title=nil)
         @title = title
       end
-      
+
       def execute
         window = Redcar.app.new_window
         window.title = @title if @title
       end
     end
-    
+
     class CloseWindowCommand < Command
       def initialize(window=nil)
         @window = window
       end
-    
+
       def execute
         check_for_modified_tabs_and_close_window
         quit_if_no_windows if [:linux, :windows].include?(Redcar.platform)
         @window = nil
       end
-      
+
       private
-      
+
       def quit_if_no_windows
         if Redcar.app.windows.length == 0
           if Application.storage['stay_resident_after_last_window_closed'] && !(ARGV.include?("--multiple-instance"))
@@ -132,68 +132,68 @@ module Redcar
           end
         end
       end
-      
+
       def check_for_modified_tabs_and_close_window
         EditView::ModifiedTabsChecker.new(
-          win.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(EditTab)}, 
+          win.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(EditTab)},
           "Save all before closing the window?",
           :none     => lambda { check_for_running_processes_and_close_window },
           :continue => lambda { check_for_running_processes_and_close_window },
           :cancel   => nil
         ).check
       end
-      
+
       def check_for_running_processes_and_close_window
         Runnables::RunningProcessChecker.new(
-          win.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(HtmlTab)}, 
+          win.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(HtmlTab)},
           "Kill them and close the window?",
           :none     => lambda { win.close },
           :continue => lambda { win.close },
           :cancel   => nil
         ).check
       end
-      
+
       def win
         @window || super
       end
     end
-    
+
     class FocusWindowCommand < Command
       def initialize(window=nil)
         @window = window
       end
-    
+
       def execute
         win.focus
         @window = nil
       end
-      
+
       def win
         @window || super
       end
     end
-    
+
     class RotateNotebooksCommand < Command
       sensitize :multiple_notebooks
-          
+
       def execute
         win.rotate_notebooks
       end
     end
-    
+
     class CloseNotebookCommand < Command
       sensitize :multiple_notebooks
-          
+
       def execute
         unless win.notebooks.length == 1
           win.close_notebook
         end
       end
     end
-    
+
     class SwitchNotebookCommand < Command
       sensitize :multiple_notebooks, :other_notebook_has_tab
-          
+
       def execute
         new_notebook = win.nonfocussed_notebook
         if new_notebook.focussed_tab
@@ -201,10 +201,10 @@ module Redcar
         end
       end
     end
-    
+
     class MoveTabToOtherNotebookCommand < Command
       sensitize :multiple_notebooks, :open_tab
-          
+
       def execute
         current_notebook = tab.notebook
         target_notebook = win.notebooks.detect {|nb| nb != current_notebook}
@@ -212,7 +212,7 @@ module Redcar
         tab.focus
       end
     end
-    
+
     class CloseTreeCommand < Command
       def execute
         treebook = Redcar.app.focussed_window.treebook
@@ -220,14 +220,14 @@ module Redcar
         treebook.remove_tree(tree)
       end
     end
-    
+
     class AboutCommand < Command
       def execute
-        new_tab = Top::NewCommand.new.run          
+        new_tab = Top::NewCommand.new.run
         new_tab.document.text = "About: Redcar\nVersion: #{Redcar::VERSION}\n" +
-          "Ruby Version: #{RUBY_VERSION}\n" + 
-          "Jruby version: #{JRUBY_VERSION}\n" + 
-          "Redcar.environment: #{Redcar.environment}\n" + 
+          "Ruby Version: #{RUBY_VERSION}\n" +
+          "Jruby version: #{JRUBY_VERSION}\n" +
+          "Redcar.environment: #{Redcar.environment}\n" +
           "http://redcareditor.com"
         new_tab.title= 'About'
         new_tab.edit_view.reset_undo
@@ -237,7 +237,7 @@ module Redcar
 
     class ChangelogCommand < Command
       def execute
-        new_tab = Top::NewCommand.new.run          
+        new_tab = Top::NewCommand.new.run
         new_tab.document.text = File.read(File.join(File.dirname(__FILE__), "..", "..", "CHANGES"))
         new_tab.title = 'Changes'
         new_tab.edit_view.reset_undo
@@ -256,16 +256,16 @@ module Redcar
         Application::Dialog.tool_tip(tab.edit_view.document.cursor_scope.gsub(" ", "\n"), :cursor)
       end
     end
-    
+
     class CloseTabCommand < TabCommand
       def initialize(tab=nil)
         @tab = tab
       end
-      
+
       def tab
         @tab || super
       end
-      
+
       def execute
         if tab.is_a?(EditTab)
           if tab.edit_view.document.modified?
@@ -305,9 +305,9 @@ module Redcar
         end
         @tab = nil
       end
-      
+
       private
-      
+
       def close_tab
         win = tab.notebook.window
         tab.close
@@ -317,59 +317,59 @@ module Redcar
         #end
       end
     end
-    
+
     class SwitchTabDownCommand < Command
-       
+
       def execute
         win.focussed_notebook.switch_down
       end
     end
-    
+
     class SwitchTabUpCommand < Command
-       
+
       def execute
         win.focussed_notebook.switch_up
       end
     end
-    
+
     class MoveTabUpCommand < Command
-      
+
       def execute
         win.focussed_notebook.move_up
       end
     end
-    
+
     class MoveTabDownCommand < Command
-      
+
       def execute
         win.focussed_notebook.move_down
       end
     end
-    
+
     class UndoCommand < EditTabCommand
       sensitize :undoable
-      
+
       def execute
         tab.edit_view.undo
       end
     end
-    
+
     class RedoCommand < EditTabCommand
       sensitize :redoable
-      
+
       def execute
         tab.edit_view.redo
       end
     end
-    
+
     class MoveHomeCommand < EditTabCommand
-      
+
       def execute
         doc     = tab.edit_view.document
         line_ix = doc.line_at_offset(doc.cursor_offset)
         line    = doc.get_line(line_ix)
         prefix  = line[0...doc.cursor_line_offset]
-        
+
         if prefix =~ /^\s*$/
           # move to start of line
           new_offset = doc.offset_at_line(line_ix)
@@ -384,18 +384,18 @@ module Redcar
         doc.ensure_visible(doc.cursor_offset)
       end
     end
-    
+
     class MoveTopCommand < EditTabCommand
-      
+
       def execute
         doc = tab.edit_view.document
         doc.cursor_offset = 0
         doc.ensure_visible(0)
       end
     end
-    
+
     class MoveEndCommand < EditTabCommand
-      
+
       def execute
         doc = tab.edit_view.document
         line_ix = doc.line_at_offset(doc.cursor_offset)
@@ -407,16 +407,16 @@ module Redcar
         doc.ensure_visible(doc.cursor_offset)
       end
     end
-    
+
     class MoveBottomCommand < EditTabCommand
-      
+
       def execute
         doc = tab.edit_view.document
         doc.cursor_offset = doc.length
         doc.ensure_visible(doc.length)
       end
     end
-    
+
     class ChangeIndentCommand < EditTabCommand
       def execute
         doc = tab.edit_view.document
@@ -445,9 +445,9 @@ module Redcar
         end
       end
     end
-    
+
     class DecreaseIndentCommand < ChangeIndentCommand
-      
+
       def indent_line(doc, line_ix)
         use_spaces = true
         num_spaces = 2
@@ -473,7 +473,7 @@ module Redcar
     end
 
     class IncreaseIndentCommand < ChangeIndentCommand
-      
+
       def indent_line(doc, line_ix)
         line            = doc.get_line(line_ix)
         if doc.edit_view.soft_tabs?
@@ -486,20 +486,20 @@ module Redcar
     end
 
     class SelectAllCommand < Redcar::EditTabCommand
-    
+
       def execute
         doc.select_all
       end
     end
-    
+
     class SelectLineCommand < Redcar::EditTabCommand
-    
+
       def execute
         doc.set_selection_range(
           doc.cursor_line_start_offset, doc.cursor_line_end_offset)
       end
     end
-    
+
     class SelectWordCommand < Redcar::EditTabCommand
 
       def execute
@@ -507,9 +507,9 @@ module Redcar
         doc.set_selection_range(range.first, range.last)
       end
     end
-    
+
     class CutCommand < Redcar::DocumentCommand
-    
+
       def execute
         if doc.selection?
           text = doc.selection_ranges.map do |range|
@@ -523,14 +523,14 @@ module Redcar
           end
         else
           Redcar.app.clipboard << doc.get_line(doc.cursor_line)
-          doc.delete(doc.cursor_line_start_offset, 
+          doc.delete(doc.cursor_line_start_offset,
                      doc.cursor_line_end_offset - doc.cursor_line_start_offset)
         end
       end
     end
-    
+
     class CopyCommand < Redcar::DocumentCommand
-    
+
       def execute
         if doc.selection?
           text = doc.selection_ranges.map do |range|
@@ -542,10 +542,10 @@ module Redcar
         end
       end
     end
-    
+
     class PasteCommand < Redcar::DocumentCommand
       sensitize :clipboard_not_empty
-      
+
       def execute
         start_offset = doc.selection_ranges.first.begin
         start_line   = doc.line_at_offset(start_offset)
@@ -579,9 +579,9 @@ module Redcar
         end
       end
     end
-    
+
     class DuplicateCommand < Redcar::DocumentCommand
-    
+
       def execute
         doc = tab.edit_view.document
         if doc.selection?
@@ -592,15 +592,15 @@ module Redcar
         else
           last_line_ix = doc.cursor_line
           text = doc.get_line(doc.cursor_line)
-        end          
+        end
         if last_line_ix == (doc.line_count - 1)
           text = "\n#{text}"
         end
         doc.insert(doc.offset_at_line_end(last_line_ix), text)
         doc.scroll_to_line(last_line_ix + 1)
-      end        
+      end
     end
-    
+
     class DialogExample < Redcar::Command
       def execute
       	builder = Menu::Builder.new do
@@ -616,14 +616,14 @@ module Redcar
       	win.popup_menu(builder.menu)
       end
     end
-    
+
     class GotoLineCommand < Redcar::EditTabCommand
-      
+
       class Speedbar < Redcar::Speedbar
         label :goto_label, "Goto line:"
-        
+
         textbox :line
-        
+
         button :go, "Go", "Return" do
           new_line_ix = line.value.to_i - 1
           if new_line_ix < doc.line_count and new_line_ix >= 0
@@ -632,28 +632,28 @@ module Redcar
             win.close_speedbar
           end
         end
-        
+
         def initialize(command)
           @command = command
         end
-        
+
         def doc; @command.doc; end
         def win; @command.send(:win); end
       end
-      
+
       def execute
         @speedbar = GotoLineCommand::Speedbar.new(self)
         win.open_speedbar(@speedbar)
       end
     end
-    
+
     class ToggleBlockSelectionCommand < Redcar::EditTabCommand
-      
+
       def execute
         doc.block_selection_mode = !doc.block_selection_mode?
       end
     end
-    
+
     # define commands from SelectTab1Command to SelectTab9Command
     (1..9).each do |tab_num|
       const_set("SelectTab#{tab_num}Command", Class.new(Redcar::Command)).class_eval do
@@ -663,25 +663,25 @@ module Redcar
         end
       end
     end
-    
+
     class ToggleInvisibles < Redcar::EditTabCommand
       def execute
         EditView.show_invisibles = !EditView.show_invisibles?
       end
     end
-    
+
     class ToggleLineNumbers < Redcar::EditTabCommand
       def execute
         EditView.show_line_numbers = !EditView.show_line_numbers?
       end
     end
-    
+
     class ToggleAnnotations < Redcar::EditTabCommand
       def execute
         EditView.show_annotations = !EditView.show_annotations?
       end
     end
-    
+
     class SelectNewFont < Command
       def execute
         Redcar::EditView::SelectFontDialog.new.open
@@ -712,7 +712,7 @@ module Redcar
         Redcar::EditView.font_size = result[:value].to_i if result[:button ] == :ok
       end
     end
-    
+
     def self.keymaps
       osx = Redcar::Keymap.build("main", :osx) do
         link "Cmd+N",       NewCommand
@@ -735,13 +735,13 @@ module Redcar
         link "Cmd+X",       CutCommand
         link "Cmd+C",       CopyCommand
         link "Cmd+V",       PasteCommand
-        link "Cmd+D",       DuplicateCommand        
-        
+        link "Cmd+D",       DuplicateCommand
+
         link "Home",        MoveTopCommand
         link "Ctrl+A",      MoveHomeCommand
         link "Ctrl+E",      MoveEndCommand
         link "End",         MoveBottomCommand
-        
+
         link "Cmd+[",       DecreaseIndentCommand
         link "Cmd+]",       IncreaseIndentCommand
         link "Cmd+Shift+I", AutoIndenter::IndentCommand
@@ -754,7 +754,7 @@ module Redcar
         link "Cmd+B",       ToggleBlockSelectionCommand
         #link "Escape", AutoCompleter::AutoCompleteCommand
         link "Ctrl+Escape",  AutoCompleter::MenuAutoCompleterCommand
-        
+
         link "Ctrl+U",       EditView::UpcaseTextCommand
         link "Ctrl+Shift+U", EditView::DowncaseTextCommand
         link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
@@ -771,9 +771,9 @@ module Redcar
         link "Cmd+Alt+I",       ToggleInvisibles
 
         link "Ctrl+Shift+P",    PrintScopeCommand
-        
+
         link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
-        
+
         link "Cmd+Alt+S", Snippets::OpenSnippetExplorer
         #Textmate.attach_keybindings(self, :osx)
 
@@ -805,12 +805,12 @@ module Redcar
         link "Ctrl+C",       CopyCommand
         link "Ctrl+V",       PasteCommand
         link "Ctrl+D",       DuplicateCommand
-        
+
         link "Ctrl+Home",    MoveTopCommand
         link "Home",         MoveHomeCommand
         link "End",          MoveEndCommand
         link "Ctrl+End",     MoveBottomCommand
-        
+
         link "Ctrl+[",       DecreaseIndentCommand
         link "Ctrl+]",       IncreaseIndentCommand
         link "Ctrl+Shift+[", AutoIndenter::IndentCommand
@@ -822,7 +822,7 @@ module Redcar
         link "Ctrl+B",       ToggleBlockSelectionCommand
         link "Ctrl+Space",       AutoCompleter::AutoCompleteCommand
         link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleterCommand
-        
+
         link "Ctrl+U",       EditView::UpcaseTextCommand
         link "Ctrl+Shift+U", EditView::DowncaseTextCommand
         link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
@@ -832,10 +832,12 @@ module Redcar
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
         
+        link "Ctrl+R",           Runnables::RunEditTabCommand
+
         link "Ctrl+Shift+P",    PrintScopeCommand
 
         link "Ctrl+Alt+O",       SwitchNotebookCommand
-        
+
         link "Ctrl+Page Up",         SwitchTabDownCommand
         link "Ctrl+Page Down",       SwitchTabUpCommand
         link "Ctrl+Shift+Page Up",   MoveTabDownCommand
@@ -852,10 +854,10 @@ module Redcar
         end
 
       end
-      
+
       [linwin, osx]
     end
-    
+
     def self.menus
       Menu::Builder.build do
         sub_menu "File", :priority => :first do
@@ -863,28 +865,29 @@ module Redcar
             item "New", NewCommand
             item "New Window", NewWindowCommand
           end
-          
+
           group(:priority => 10) do
             separator
             item "Close Tab", CloseTabCommand
             item "Close Tree", CloseTreeCommand
             item "Close Window", CloseWindowCommand
           end
-          
+
           group(:priority => :last) do
             separator
             item "Quit", QuitCommand
           end
         end
         sub_menu "Edit", :priority => 5 do
-          item "Tab Info",  EditView::InfoSpeedbarCommand
-          
+          group(:priority => :first) do
+            item "Tab Info",  EditView::InfoSpeedbarCommand
+          end
           group(:priority => 10) do
             separator
             item "Undo", UndoCommand
             item "Redo", RedoCommand
           end
-          
+
           group(:priority => 15) do
             separator
             item "Cut", CutCommand
@@ -892,7 +895,7 @@ module Redcar
             item "Paste", PasteCommand
             item "Duplicate Region", DuplicateCommand
           end
-          
+
           group(:priority => 25) do
             separator
             item "Top",     MoveTopCommand
@@ -900,18 +903,18 @@ module Redcar
             item "End",     MoveEndCommand
             item "Bottom",  MoveBottomCommand
           end
-          
+
           group(:priority => 60) do
             separator
             item "Increase Indent", IncreaseIndentCommand
             item "Decrease Indent", DecreaseIndentCommand
           end
-          
+
           group(:priority => 70) do
             separator
             item "Goto Line", GotoLineCommand
           end
-          
+
           group(:priority => 80) do
             separator
             sub_menu "Select" do
@@ -955,7 +958,7 @@ module Redcar
           separator
           item "Toggle Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
           item "Toggle Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
-          item "Toggle Annotations", :command => ToggleAnnotations, :type => :check, :active => EditView.show_annotations?        
+          item "Toggle Annotations", :command => ToggleAnnotations, :type => :check, :active => EditView.show_annotations?
         end
         sub_menu "Bundles", :priority => 45 do
           group(:priority => :first) do
@@ -976,33 +979,33 @@ module Redcar
         end
       end
     end
-    
+
     class ApplicationEventHandler
       def tab_focus(tab)
         tab.focus
       end
-    
+
       def tab_close(tab)
         CloseTabCommand.new(tab).run
       end
-      
+
       def window_close(win)
         CloseWindowCommand.new(win).run
       end
-      
+
       def application_close(app)
         QuitCommand.new.run
       end
-      
+
       def window_focus(win)
         FocusWindowCommand.new(win).run
       end
     end
-    
+
     def self.application_event_handler
       ApplicationEventHandler.new
     end
-    
+
     def self.start(args=[])
       puts "loading plugins took #{Time.now - PROCESS_START_TIME}"
       Application.start
