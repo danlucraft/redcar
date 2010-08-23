@@ -74,7 +74,11 @@ module Redcar
         {}
       end
     end
-    
+
+	def self.match_kind(path, regex)
+      Declarations::Parser.new.match_kind(path, regex)
+	end
+
     def self.clear_tags_for_path(path)
       @tags_for_path ||= {}
       @tags_for_path.delete(path)

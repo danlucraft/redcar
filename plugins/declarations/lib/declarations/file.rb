@@ -28,7 +28,7 @@ module Redcar
           end
         end
       end
-      
+
       def update_files(file_list)
         changed_files = file_list.changed_since(last_updated)
         changed_files.delete(@path)
