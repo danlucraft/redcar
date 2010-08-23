@@ -10,6 +10,7 @@ module Redcar
       :attribute => File.join(ICON_PATH, "attribute.png"),
       :alias => File.join(ICON_PATH, "alias.png"),
       :assignment => File.join(ICON_PATH, "assignment.png"),
+      :interface => File.join(ICON_PATH, "interface.png"),
       :none => nil
     }
     
@@ -70,6 +71,7 @@ module Redcar
         @associations[item] = match
         item.text = props[:name]
         icon = ICONS[props[:kind].to_sym] if props[:kind]
+        puts "text: #{item.text}, kind: #{props[:kind]}"
         if icon
           image = Swt::Graphics::Image.new(ApplicationSWT.display, icon)
           item.image = image
