@@ -16,6 +16,11 @@ When /^I select from (\d+) to (\d+)$/ do |start_offset, end_offset|
   doc.set_selection_range(start_offset.to_i, end_offset.to_i)
 end
 
+When /^I select all$/ do
+  doc = Redcar.app.focussed_window.focussed_notebook.focussed_tab.edit_view.document
+  doc.set_selection_range(0, doc.length)
+end
+
 When /^I copy text$/ do
   Redcar::Top::CopyCommand.new.run
 end
