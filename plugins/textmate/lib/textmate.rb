@@ -72,7 +72,7 @@ module Redcar
     def self.storage
       @storage ||= begin
         storage = Plugin::Storage.new('textmate')
-        storage.set_default('load_bundles_menu',true)
+        storage.set_default('load_bundles_menu',false)
         storage.set_default('select_bundles_for_menu',true)
         storage.set_default('select_bundles_for_tree',false)
         storage.set_default('loaded_bundles',[])
