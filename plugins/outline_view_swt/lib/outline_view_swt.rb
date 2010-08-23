@@ -10,6 +10,7 @@ module Redcar
       :attribute => File.join(ICON_PATH, "attribute.png"),
       :alias => File.join(ICON_PATH, "alias.png"),
       :assignment => File.join(ICON_PATH, "assignment.png"),
+      :interface => File.join(ICON_PATH, "interface.png"),
       :none => nil
     }
     
