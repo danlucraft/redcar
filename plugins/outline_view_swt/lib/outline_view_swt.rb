@@ -71,7 +71,6 @@ module Redcar
         @associations[item] = match
         item.text = props[:name]
         icon = ICONS[props[:kind].to_sym] if props[:kind]
-        puts "text: #{item.text}, kind: #{props[:kind]}"
         if icon
           image = Swt::Graphics::Image.new(ApplicationSWT.display, icon)
           item.image = image
