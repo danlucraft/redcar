@@ -82,21 +82,22 @@ module Redcar
         end
         
         def icon
-          type_prefix = (@type == :file ? "notebook" : "folder")
+          icon = (@type == :file ? "notebook" : "folder")
           case
           when ((@file.type_raw == "??") or (@file.type_raw[0,1] == "A" and @indexed))
-            File.join(Scm::ICONS_DIR, type_prefix + "--plus.png")
+            icon += "--plus"
           when ((@file.type_raw[0,1] == "M" and @indexed) or (@file.type_raw[1,1] == "M" and (not @indexed)))
-            File.join(Scm::ICONS_DIR, type_prefix + "--pencil.png")
+            icon += "--pencil"
           when (['C', 'R'].include?(@file.type_raw[0,1]) and @indexed)
-            File.join(Scm::ICONS_DIR, type_prefix + "--arrow.png")
+            icon += "--arrow"
           when ((@file.type_raw[0,1] == "D" and @indexed) or (@file.type_raw[1,1] == "D" and (not @indexed)))
-            File.join(Scm::ICONS_DIR, type_prefix + "--minus.png")
+            icon += "--minus"
           when (@file.type_raw[0,1] == "U" and (not @indexed))
-            File.join(Scm::ICONS_DIR, type_prefix + "--exclamation.png")
+            icon += "--exclamation"
           else
-            @type == :file ? :file : :directory
+            icon = (@type == :file ? :file : :directory)
           end
+          icon.to_sym
         end
         
         def leaf?

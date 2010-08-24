@@ -169,7 +169,11 @@ module Redcar
           project.window.treebook.focus_tree(project.tree)
         rescue
           # cleanup
-          project_repositories.delete project
+          info = project_repositories.delete project
+          
+          if info['trees']
+            info['trees'].each {|t| project.window.treebook.remove_tree(t)}
+          end
           
           puts "*** Error loading SCM: " + $!.message
           puts $!.backtrace

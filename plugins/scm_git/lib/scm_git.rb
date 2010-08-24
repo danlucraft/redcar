@@ -73,10 +73,24 @@ module Redcar
             c = ::BlockCache.new
             
             c.add('branches', 15) do
+              ref_path = File.join(@repo.dir.path, '.git', 'refs', 'heads');
               head = File.read(File.join(@repo.dir.path, '.git', 'HEAD')).strip
-              branches = Dir.glob(File.join(@repo.dir.path, '.git', 'refs', 'heads', '*')).map {|f| File.basename(f)}
+              branch_globs = Dir.glob(File.join(ref_path, '*'))
+              branches = []
               
-              branches.map {|b| [b, ('ref: refs/heads/' + b == head)]}
+              while branch = branch_globs.shift
+                if File.directory?(branch)
+                  branch_globs.push(*Dir.glob(File.join(branch, '*')))
+                else
+                  branches.push branch
+                end
+              end
+              
+              branches.map {|b| 
+                b[ref_path.length + 1, b.length - ref_path.length - 1]
+              }.map {|b| 
+                [b, ('ref: refs/heads/' + b == head)]
+              }
             end
             
             c.add('all branches', 15) do
@@ -114,9 +128,12 @@ module Redcar
                 
                 mods = {}
                 modules.each {|k, v|
-                  mod = Scm::Git::Manager.new
-                  mod.load(File.join(@repo.dir.path, v['path']))
-                  mods[v['path']] = mod
+                  path = File.join(@repo.dir.path, v['path'])
+                  if File.exist?(File.join(path, '.git'))
+                    mod = Scm::Git::Manager.new
+                    mod.load(path)
+                    mods[v['path']] = mod
+                  end
                 }
                 mods
               rescue Errno::ENOENT => e

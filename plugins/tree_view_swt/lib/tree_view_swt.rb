@@ -443,6 +443,8 @@ module Redcar
           dir_image
         when :file
           file_image
+        when Symbol
+          image(File.expand_path(File.join(Redcar::ICONS_DIRECTORY, icon.to_s + ".png")))
         when String
           image(icon)
         end
