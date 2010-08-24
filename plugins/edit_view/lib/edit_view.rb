@@ -254,6 +254,7 @@ module Redcar
     end
     
     def self.theme=(theme)
+      theme.gsub!(/ \(Current\)$/, '')
       EditView.storage["theme"] = theme
       all_edit_views.each {|ev| ev.refresh_theme }
       Redcar.plugin_manager.objects_implementing(:theme_changed_update).each do |object|
