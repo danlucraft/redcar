@@ -114,9 +114,12 @@ module Redcar
                 
                 mods = {}
                 modules.each {|k, v|
-                  mod = Scm::Git::Manager.new
-                  mod.load(File.join(@repo.dir.path, v['path']))
-                  mods[v['path']] = mod
+                  path = File.join(@repo.dir.path, v['path'])
+                  if File.exist?(File.join(path, '.git'))
+                    mod = Scm::Git::Manager.new
+                    mod.load(path)
+                    mods[v['path']] = mod
+                  end
                 }
                 mods
               rescue Errno::ENOENT => e
