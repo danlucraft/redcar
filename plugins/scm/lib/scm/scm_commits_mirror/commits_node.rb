@@ -18,7 +18,7 @@ module Redcar
         end
         
         def icon
-          File.join(Scm::ICONS_DIR, "folder--arrow.png")
+          :"folder--arrow"
         end
         
         def leaf?
