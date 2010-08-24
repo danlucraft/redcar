@@ -105,11 +105,3 @@ On Linux:
 
 Redcar is copyright 2007-2010 Daniel Lucraft and contributors. 
 It is licensed under the GPL2. See the included LICENSE file for details.
-
-## ATTRIBUTION
-
-Outline view, Snippet tree and Scm icons are by Yusuke Kamiyamane <http://p.yusukekamiyamane.com/>
-All rights reserved. Licensed under a Creative Commons Attribution 3.0 license. 
-
-For more information, please visit:
-<http://creativecommons.org/licenses/by/3.0/>
