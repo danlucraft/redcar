@@ -22,3 +22,17 @@ Feature: Indents Ruby code correctly
     And I move the cursor to 4
     And I insert "\n" at the cursor
     Then the contents should be "\tfoo\n\t"
+    
+  Scenario: It should autoindent correctly
+    When I insert "\tdef my_awesome_method\n\t\tfoo\n\tend" at the cursor
+    And I select from 0 to 33
+    And I auto-indent
+    Then the contents should be "def my_awesome_method\n\tfoo\nend"
+    
+  Scenario: It should autoindent correctly
+    When I insert "\tdef my_awesome_method\n\t\tfoo\n\tend" at the cursor
+    And I select from 0 to 33
+    And I auto-indent
+    Then the contents should be "def my_awesome_method\n\tfoo\nend"
+    When I undo
+    Then the contents should be "\tdef my_awesome_method\n\t\tfoo\n\tend"
