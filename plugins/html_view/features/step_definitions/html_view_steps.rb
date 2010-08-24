@@ -1,5 +1,3 @@
-require 'ruby-debug'
-
 Then /^the HTML tab (should say|says) "([^"]*)"$/ do |_, needle|
   limit = 5
   contents = nil
