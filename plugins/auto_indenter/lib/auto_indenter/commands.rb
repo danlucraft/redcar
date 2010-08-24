@@ -15,9 +15,11 @@ module Redcar
         rules = AutoIndenter.rules_for_scope(doc.cursor_scope)
         analyzer = Analyzer.new(rules, doc, doc.edit_view.tab_width, doc.edit_view.soft_tabs?)
         indentation = doc.indentation
-        start_line.upto(end_line) do |line_ix|
-          indentation.set_level(line_ix, analyzer.calculate_for_line(line_ix, false))
-          indentation.trim_trailing_whitespace(line_ix)
+        doc.edit_view.compound do
+          start_line.upto(end_line) do |line_ix|
+            indentation.set_level(line_ix, analyzer.calculate_for_line(line_ix, false))
+            indentation.trim_trailing_whitespace(line_ix)
+          end
         end
         
         return unless selection
