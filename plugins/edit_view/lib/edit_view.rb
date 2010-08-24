@@ -301,7 +301,8 @@ module Redcar
                                 :undoable?, :redoable?,
                                 :reset_undo,
                                 :cursor_offset, :cursor_offset=,
-                                :scroll_to_line
+                                :scroll_to_line, :compound,
+                                :begin_compound, :end_compound
     
     def grammar
       @grammar
