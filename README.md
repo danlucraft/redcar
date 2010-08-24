@@ -105,4 +105,3 @@ On Linux:
 
 Redcar is copyright 2007-2010 Daniel Lucraft and contributors. 
 It is licensed under the GPL2. See the included LICENSE file for details.
-

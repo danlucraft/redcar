@@ -1,3 +1,14 @@
+Version 0.5 (TBA)
+=================
+
+Version 0.4.1 (24 Aug 2010)
+===========================
+
+Fixes:
+
+ * Fix Clojure REPL (Dan Lucraft)
+ * Attribution for icons (Dan Lucraft)
+ * Use icon we have a license for in the snippet tree (Delisa Mason)
 
 Version 0.4 (23 Aug 2010)
 =========================
