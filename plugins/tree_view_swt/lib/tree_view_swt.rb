@@ -444,7 +444,7 @@ module Redcar
         when :file
           file_image
         when Symbol
-          image(File.expand_path(File.join(File.dirname(__FILE__), %w{.. .. .. share icons}, icon.to_s + ".png")))
+          image(File.expand_path(File.join(Redcar::ICONS_DIRECTORY, icon.to_s + ".png")))
         when String
           image(icon)
         end
