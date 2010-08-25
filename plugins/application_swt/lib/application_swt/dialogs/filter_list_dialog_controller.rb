@@ -136,7 +136,8 @@ module Redcar
         Swt::Widgets::Display.getCurrent.timerExec(pause_time*1000, Swt::RRunnable.new {
           if @last_keypress and (Time.now - @last_keypress + pause_time) > pause_time
             @last_keypress = nil
-            update_list_sync
+            @update_thread = Thread.new { update_list_sync }
+            @update_thread.value
           end
         })
       end
@@ -155,7 +156,16 @@ module Redcar
         @dialog.text.set_focus
       end
       
+      def wait_for_search
+        @update_thread.join unless @update_thread.nil?
+      end
+
+      def select_closest_match?
+        @dialog.list.get_selection_index == 0
+      end
+
       def selected
+        wait_for_search if select_closest_match?
         @model.selected(@dialog.list.get_selection.first, @dialog.list.get_selection_index)
       end
       

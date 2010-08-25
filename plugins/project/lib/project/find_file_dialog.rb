@@ -41,23 +41,19 @@ module Redcar
       end
 
       def update_list(filter)
-        @update_thread = Thread.new(filter) do |filter|
-          paths = paths_for filter
-          @last_list = paths
-          full_paths = paths
-          display_paths = full_paths.map { |path| display_path(path) }
-          if display_paths.uniq.length < full_paths.length
-            display_paths = expand_duplicates(display_paths, full_paths)
-          end
-          display_paths
+        paths = paths_for filter
+        @last_list = paths
+        full_paths = paths
+        display_paths = full_paths.map { |path| display_path(path) }
+        if display_paths.uniq.length < full_paths.length
+          display_paths = expand_duplicates(display_paths, full_paths)
         end
-        @update_thread.value
+        display_paths
       end
 
       def selected(text, ix, closing=false)
-        if @last_list || @update_thread
+        if @last_list
           close
-          @update_thread.join # Wait for final search to finish
           FileOpenCommand.new(@last_list[ix]).run
         end
       end
