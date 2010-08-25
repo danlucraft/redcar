@@ -13,7 +13,7 @@ end
 def reset_runnable_fixtures
   # Not sure why this is needed, perhaps next test is starting before full deletion?
   FileUtils.rm_rf runnable_fixtures
-  FileUtils.mkdir runnable_fixtures
+  FileUtils.mkdir_p runnable_fixtures
   FileUtils.mkdir_p File.dirname(runnable_config)
   
   File.open("#{runnable_fixtures}/runnable_app.rb", 'w') do |f|
