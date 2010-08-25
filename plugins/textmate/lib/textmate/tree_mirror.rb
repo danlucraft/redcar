@@ -135,9 +135,9 @@ module Redcar
 
       def icon
         if Textmate.storage['loaded_bundles'].include?(text.downcase)
-          File.dirname(__FILE__) + "/../../icons/ui-menu-blue.png"
+          :"ui-menu-blue"
         else
-          File.dirname(__FILE__) + "/../../icons/document-tree.png"
+          :"document-tree"
         end
       end
     end
@@ -153,7 +153,7 @@ module Redcar
       end
 
       def icon
-        File.dirname(__FILE__) + "/../../icons/document-tree.png"
+        :"document-tree"
       end
 
       def leaf?
@@ -182,7 +182,7 @@ module Redcar
       end
 
       def icon
-        File.dirname(__FILE__) + "/../../icons/document-snippet.png"
+        :"document-snippet"
       end
 
       def text

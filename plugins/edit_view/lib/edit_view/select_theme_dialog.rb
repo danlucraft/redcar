@@ -5,6 +5,8 @@ module Redcar
       def initialize
         super()
         @matches = EditView.themes.sort
+        @matches.delete(EditView.theme)
+        @matches.insert(0, EditView.theme + " (Current)")
       end
 
       def close

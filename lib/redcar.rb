@@ -49,6 +49,8 @@ module Redcar
   ENVIRONMENTS = [:user, :debug, :test]
   
   PROCESS_START_TIME = Time.now
+  
+  ICONS_DIRECTORY = File.expand_path(File.join(File.dirname(__FILE__), %w{.. share icons}))
 
   def self.environment=(env)
     unless ENVIRONMENTS.include?(env)

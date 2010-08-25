@@ -29,7 +29,9 @@ plugins/*/lib/dist/
 pkg
 
 tmp
-plugins/repl/vendor/*.jar
+plugins/repl/vendor/clojure-contrib.jar
+plugins/repl/vendor/clojure.jar
+plugins/repl/vendor/org-enclojure-repl-server.jar
 vendor/swtbot
 .server.yaml
 .yardoc

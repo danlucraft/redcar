@@ -254,6 +254,7 @@ module Redcar
     end
     
     def self.theme=(theme)
+      theme.gsub!(/ \(Current\)$/, '')
       EditView.storage["theme"] = theme
       all_edit_views.each {|ev| ev.refresh_theme }
       Redcar.plugin_manager.objects_implementing(:theme_changed_update).each do |object|
@@ -301,7 +302,8 @@ module Redcar
                                 :undoable?, :redoable?,
                                 :reset_undo,
                                 :cursor_offset, :cursor_offset=,
-                                :scroll_to_line
+                                :scroll_to_line, :compound,
+                                :begin_compound, :end_compound
     
     def grammar
       @grammar
