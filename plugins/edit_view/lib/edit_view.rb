@@ -64,6 +64,8 @@ module Redcar
               item "to CamelCase",                           EditView::CamelCaseTextCommand
               item "to snake_case",                          EditView::UnderscoreTextCommand
               item "Toggle PascalCase-underscore-camelCase", EditView::CamelSnakePascalRotateTextCommand
+              separator
+              item "Align Assignments", EditView::AlignAssignmentCommand
             end
           end
         end

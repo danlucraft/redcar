@@ -760,6 +760,7 @@ module Redcar
         link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
         link "Ctrl+G",       EditView::OppositeCaseTextCommand
         link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
+        link "Ctrl+=",       EditView::AlignAssignmentCommand
 
         link "Cmd+T",           Project::FindFileCommand
         link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
@@ -830,6 +831,7 @@ module Redcar
         link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
         link "Ctrl+G",       EditView::OppositeCaseTextCommand
         link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
+        link "Ctrl+=",       EditView::AlignAssignmentCommand
 
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
