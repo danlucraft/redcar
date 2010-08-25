@@ -861,6 +861,12 @@ module Redcar
       [linwin, osx]
     end
 
+    def self.toolbars
+      Toolbar::Builder.build do
+        item "NewFile", :command => NewCommand
+      end
+    end
+
     def self.menus
       Menu::Builder.build do
         sub_menu "File", :priority => :first do
@@ -1018,6 +1024,7 @@ module Redcar
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
       Redcar.app.refresh_menu!
+      Redcar.app.refresh_toolbar!
       Redcar.app.load_sensitivities
       puts "initializing gui took #{Time.now - s}s"
       s = Time.now

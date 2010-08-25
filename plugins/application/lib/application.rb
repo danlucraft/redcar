@@ -11,6 +11,11 @@ require 'application/dialogs/filter_list_dialog'
 require 'application/event_spewer'
 require 'application/keymap'
 require 'application/keymap/builder'
+require 'application/toolbar'
+require 'application/toolbar/item'
+require 'application/toolbar/lazy_toolbar'
+require 'application/toolbar/builder'
+require 'application/toolbar/builder/group'
 require 'application/menu'
 require 'application/menu/item'
 require 'application/menu/lazy_menu'
@@ -69,7 +74,7 @@ module Redcar
       ]
     end
     
-    attr_reader :clipboard, :keymap, :menu, :history, :task_queue
+    attr_reader :clipboard, :keymap, :menu, :toolbar, :history, :task_queue
     
     # Create an application instance with a Redcar::Clipboard and a Redcar::History.
     def initialize
@@ -107,6 +112,7 @@ module Redcar
       notify_listeners(:new_window, new_window)
       attach_window_listeners(new_window)
       new_window.refresh_menu
+      new_window.refresh_toolbar
       new_window.show
       set_focussed_window(new_window)
       #puts "App#new_window took #{Time.now - s}s"
@@ -185,16 +191,39 @@ module Redcar
       controller.refresh_menu
     end
     
+    # Redraw the main toolbar, reloading all the Toolbars and Keymaps from the plugins.
+    def refresh_toolbar!
+      @main_toolbar = nil
+      @main_keymap = nil
+      windows.each {|window| window.refresh_toolbar }
+      controller.refresh_toolbar
+    end
+    
     # Generate the main menu by combining menus from all plugins.
     #
     # @return [Redcar::Menu]
     def main_menu
       @main_menu ||= begin
         menu = Menu.new
+	p menu
         Redcar.plugin_manager.objects_implementing(:menus).each do |object|
           menu.merge(object.menus)
         end
         menu
+      end
+    end
+    
+    # Generate the toolbar combining toolbars from all plugins.
+    #
+    # @return [Redcar::Toolbar]
+    def main_toolbar
+      @main_toolbar ||= begin
+        toolbar = Toolbar.new
+	p toolbar
+        Redcar.plugin_manager.objects_implementing(:toolbars).each do |object|
+          toolbar.merge(object.toolbars)
+        end
+        toolbar
       end
     end
     

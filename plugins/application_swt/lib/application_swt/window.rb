@@ -49,6 +49,7 @@ module Redcar
       def add_listeners
         @window.add_listener(:show,          &method(:show))
         @window.add_listener(:refresh_menu,  &method(:refresh_menu))
+        @window.add_listener(:refresh_toolbar,  &method(:refresh_toolbar))
         @window.add_listener(:popup_menu,    &method(:popup_menu))
         @window.add_listener(:popup_menu_with_numbers, &method(:popup_menu_with_numbers))
         @window.add_listener(:title_changed, &method(:title_changed))
@@ -118,6 +119,15 @@ module Redcar
         @menu_controller = ApplicationSWT::Menu.new(self, Redcar.app.main_menu, Redcar.app.main_keymap, Swt::SWT::BAR)
         shell.menu_bar = @menu_controller.menu_bar
         old_menu_bar.dispose if old_menu_bar
+      end
+      
+      def refresh_toolbar
+	#p shell
+        #old_toolbar_bar = shell.toolbar_bar
+        @toolbar_controller = ApplicationSWT::Toolbar.new(self, Swt::SWT::FLAT)
+	p @toolbar_controller
+        #shell.toolbar_bar = @toolbar_controller.toolbar_bar
+        #old_toolbar_bar.dispose if old_toolbar_bar
       end
       
       def set_icon
@@ -197,11 +207,13 @@ module Redcar
       def closed(_)
         @shell.close
         @menu_controller.close
+        @toolbar_controller.close
       end
 
       def dispose
         @shell.dispose
         @menu_controller.close
+        @toolbar_controller.close
       end
 
       attr_reader :right_composite, :left_composite, :tree_composite, :tree_layout, :tree_sash

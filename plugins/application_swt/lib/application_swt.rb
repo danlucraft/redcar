@@ -14,6 +14,8 @@ require "application_swt/event_loop"
 require "application_swt/html_tab"
 require "application_swt/menu"
 require "application_swt/menu/binding_translator"
+require "application_swt/toolbar"
+require "application_swt/toolbar/binding_translator"
 require "application_swt/notebook"
 require "application_swt/notebook/tab_transfer"
 require "application_swt/notebook/tab_drag_and_drop_listener"
@@ -151,6 +153,15 @@ module Redcar
         fake_menu_controller = ApplicationSWT::Menu.new(FakeWindow.new(@fake_shell), Redcar.app.main_menu, Redcar.app.main_keymap, Swt::SWT::BAR)
         fake_shell.menu_bar = fake_menu_controller.menu_bar
         old_menu_bar.dispose if old_menu_bar
+      end
+    end
+
+    def refresh_toolbar
+      if Redcar.platform == :osx
+        old_toolbar_bar = @fake_shell.toolbar_bar
+        fake_toolbar_controller = ApplicationSWT::Toolbar.new(FakeWindow.new(@fake_shell), Redcar.app.main_toolbar, Redcar.app.main_keymap, Swt::SWT::BAR)
+        fake_shell.toolbar_bar = fake_toolbar_controller.toolbar_bar
+        old_toolbar_bar.dispose if old_toolbar_bar
       end
     end
 
