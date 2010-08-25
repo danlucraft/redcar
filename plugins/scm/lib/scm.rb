@@ -57,8 +57,8 @@ module Redcar
             group(:priority => 10) do
               separator
               sub_menu "Source Control" do
-                item "Toggle Changes Tree", :command => Scm::ToggleScmTree, :value => [:commit, [Scm::ScmChangesMirror, Scm::ScmChangesController]]
-                item "Toggle Commits Tree", :command => Scm::ToggleScmTree, :value => [:push, [Scm::ScmCommitsMirror, Scm::ScmCommitsController]]
+                item "Toggle Changes Tree", :command => Scm::ToggleScmTreeCommand, :value => [:commit, [Scm::ScmChangesMirror, Scm::ScmChangesController]]
+                item "Toggle Commits Tree", :command => Scm::ToggleScmTreeCommand, :value => [:push, [Scm::ScmCommitsMirror, Scm::ScmCommitsController]]
                 separator
                 item "Create Commit", :command => Scm::CommitMirror::OpenCommand
                 item "Save Commit", :command => Scm::CommitMirror::SaveCommand
