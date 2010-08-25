@@ -12,6 +12,7 @@ module Redcar
 
           #now replace the first token of the relevant lines
           old_text.lines.map do |line|
+            line.chomp!
             if line =~ relevant_line_pattern
               "%-#{length}s%s" % [$1, $2]
             else
