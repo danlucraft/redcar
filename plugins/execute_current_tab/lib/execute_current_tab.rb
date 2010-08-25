@@ -12,13 +12,6 @@ module Redcar
       end
     end
 
-    def self.keymaps
-      [Keymap.build("main", [:windows]) { 
-        link "Ctrl+R", ExecuteCurrentTab::Execute 
-        link "Ctrl+Shift+R", ExecuteCurrentTab::EmbeddedExecute 
-      }]
-    end
-
     class Execute < EditTabCommand
 
       TITLE = "Output"
