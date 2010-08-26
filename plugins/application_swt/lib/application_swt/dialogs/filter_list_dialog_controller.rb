@@ -136,8 +136,7 @@ module Redcar
         Swt::Widgets::Display.getCurrent.timerExec(pause_time*1000, Swt::RRunnable.new {
           if @last_keypress and (Time.now - @last_keypress + pause_time) > pause_time
             @last_keypress = nil
-            @update_thread = Thread.new { update_list_sync }
-            @update_thread.value
+            update_list_sync
           end
         })
       end
@@ -145,8 +144,10 @@ module Redcar
       def update_list_sync
         if @dialog
           s = Time.now
-          list = @model.update_list(@dialog.text.get_text)
-          populate_list(list)
+          @update_thread = Thread.new(@dialog.text.get_text) do |text|
+            @model.update_list(text)
+          end
+          populate_list(@update_thread.value)
           @dialog.list.set_selection(0)
           text_focus
         end
