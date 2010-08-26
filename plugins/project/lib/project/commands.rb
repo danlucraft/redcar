@@ -333,8 +333,8 @@ module Redcar
         when :linux
           app = {
             'xfce4-terminal' => ["--working-directory=#{path}"],
-            'gnome-terminal' => [path],
-            'konsole' => [path],
+            'gnome-terminal' => ["--working-directory=#{path}"],
+            'konsole' => ["--workdir", path],
           }
           
           run = app.keys.map {|a| command.find(a)}.find{|a| a}
