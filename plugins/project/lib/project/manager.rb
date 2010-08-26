@@ -330,6 +330,14 @@ module Redcar
               end
               item("Delete")          { controller.delete(tree, node)   }
             end
+            
+            if node.directory?
+              group(:priority => 30) do
+                separator
+                item "Open In File Browser", :command => Project::OpenDirectoryInExplorerCommand, :value => node.path
+                item "Open In Command Line", :command => Project::OpenDirectoryInCommandLineCommand, :value => node.path
+              end
+            end
           end
           group(:priority => 75) do
             separator

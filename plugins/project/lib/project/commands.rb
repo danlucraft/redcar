@@ -259,5 +259,80 @@ module Redcar
       end
     end
     
+    class OpenCommand < Command
+      def find(executable)
+        path = if Redcar.platform == :windows
+          ENV['PATH'].split(';')
+        else
+          ENV['PATH'].split(':')
+        end.find {|d| File.exist?(File.join(d, executable))}
+        
+        if path
+          File.join(path, executable)
+        else
+          nil
+        end
+      end
+      
+      def run_application(app, *options)
+        
+      end
+    end
+    
+    class OpenDirectoryInExplorerCommand < OpenCommand
+      def execute(options)
+        path = options[:value]
+        command = self
+        
+        case Redcar.platform
+        when :osx
+          run_application('open', '-a', 'finder', path)
+        when :windows
+          run_application('explorer.exe', path)
+        when :linux
+          app = [
+            'Thunar',
+            'nautilus',
+            'konqueror',
+            'kfm',
+          ]
+          
+          app = app.map {|a| command.find(a)}.find{|a| a}
+          if app
+            run_application(app, path)
+          else
+            Application::Dialog.message_box("Sorry, we couldn't find a file manager. Please let us know what file manager you use, so we can fix this!")
+          end
+        end
+      end
+    end
+    
+    class OpenDirectoryInCommandLineCommand < OpenCommand
+      def execute(options)
+        path = options[:value]
+        command = self
+        
+        case Redcar.platform
+        when :osx
+          run_application('open', path)
+        when :windows
+          run_application('cmd.exe', '/k', 'cd ' + path)
+        when :linux
+          app = [
+            'xfce4-terminal',
+            'gnome-terminal',
+            'konsole',
+          ]
+          
+          app = app.map {|a| command.find(a)}.find{|a| a}
+          if app
+            run_application(app, path)
+          else
+            Application::Dialog.message_box("Sorry, we couldn't find a file manager. Please let us know what file manager you use, so we can fix this!")
+          end
+        end
+      end
+    end
+    
   end
 end
