@@ -260,6 +260,12 @@ module Redcar
     end
     
     class OpenCommand < Command
+      attr_reader :path
+      
+      def initialize(path)
+        @path = path
+      end
+      
       def find(executable)
         path = if Redcar.platform == :windows
           ENV['PATH'].split(';')
@@ -275,13 +281,20 @@ module Redcar
       end
       
       def run_application(app, *options)
-        
+        # TODO: This really needs proper escaping.
+        options = options.map {|o| "\"#{o}\""}.join(' ')
+        puts "Running: #{app} #{options}"
+        # FIXME: This needs moving to the spoon gem so we can fork+exec
+        Thread.new {
+          system("#{app} #{options}")
+          puts "  Finished: #{app} #{options}"
+        }
       end
     end
     
     class OpenDirectoryInExplorerCommand < OpenCommand
-      def execute(options)
-        path = options[:value]
+      def execute(options=nil)
+        @path ||= options[:value]
         command = self
         
         case Redcar.platform
@@ -290,16 +303,16 @@ module Redcar
         when :windows
           run_application('explorer.exe', path)
         when :linux
-          app = [
-            'Thunar',
-            'nautilus',
-            'konqueror',
-            'kfm',
-          ]
+          app = {
+            'Thunar' => [path],
+            'nautilus' => [path],
+            'konqueror' => [path],
+            'kfm' => [path],
+          }
           
-          app = app.map {|a| command.find(a)}.find{|a| a}
-          if app
-            run_application(app, path)
+          run = app.keys.map {|a| command.find(a)}.find{|a| a}
+          if run
+            run_application(run, *app[File.basename(run)])
           else
             Application::Dialog.message_box("Sorry, we couldn't find a file manager. Please let us know what file manager you use, so we can fix this!")
           end
@@ -308,8 +321,8 @@ module Redcar
     end
     
     class OpenDirectoryInCommandLineCommand < OpenCommand
-      def execute(options)
-        path = options[:value]
+      def execute(options=nil)
+        @path ||= options[:value]
         command = self
         
         case Redcar.platform
@@ -318,15 +331,15 @@ module Redcar
         when :windows
           run_application('cmd.exe', '/k', 'cd ' + path)
         when :linux
-          app = [
-            'xfce4-terminal',
-            'gnome-terminal',
-            'konsole',
-          ]
+          app = {
+            'xfce4-terminal' => ["--working-directory=#{path}"],
+            'gnome-terminal' => [path],
+            'konsole' => [path],
+          }
           
-          app = app.map {|a| command.find(a)}.find{|a| a}
-          if app
-            run_application(app, path)
+          run = app.keys.map {|a| command.find(a)}.find{|a| a}
+          if run
+            run_application(run, *app[File.basename(run)])
           else
             Application::Dialog.message_box("Sorry, we couldn't find a file manager. Please let us know what file manager you use, so we can fix this!")
           end

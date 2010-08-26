@@ -334,8 +334,8 @@ module Redcar
             if node.directory?
               group(:priority => 30) do
                 separator
-                item "Open In File Browser", :command => Project::OpenDirectoryInExplorerCommand, :value => node.path
-                item "Open In Command Line", :command => Project::OpenDirectoryInCommandLineCommand, :value => node.path
+                item("Open In File Browser") { Project::OpenDirectoryInExplorerCommand.new(node.path).run }
+                item("Open In Command Line") { Project::OpenDirectoryInCommandLineCommand.new(node.path).run }
               end
             end
           end
