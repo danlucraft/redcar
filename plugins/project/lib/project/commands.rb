@@ -309,11 +309,11 @@ module Redcar
             'konqueror' => [path],
             'kfm' => [path],
           }
-          if preferred.nil? or preferred == ""
+          if preferred and app[preferred]
+            run = preferred
+          else
             run = app.keys.map {|a| command.find(a)}.find{|a| a}
             Manager.storage['preferred_file_browser'] = run
-          else
-            run = Manager.storage['preferred_file_browser']
           end
           if run
             run_application(run, *app[File.basename(run)])
@@ -340,11 +340,11 @@ module Redcar
             'gnome-terminal' => ["--working-directory=#{path}"],
             'konsole' => ["--workdir", path],
           }
-          if preferred.nil? or preferred == ""
+          if preferred and app[preferred]
+            run = preferred
+          else
             run = app.keys.map {|a| command.find(a)}.find{|a| a}
             Manager.storage['preferred_command_line'] = run
-          else
-            run = Manager.storage['preferred_command_line']
           end
           if run and app[File.basename(run)]
             run_application(run, *app[File.basename(run)])

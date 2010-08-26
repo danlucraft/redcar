@@ -92,12 +92,7 @@ module Redcar
       end
 
       def self.storage
-        @storage ||= begin
-          storage = Plugin::Storage.new('project_plugin')
-          storage.set_default('preferred_file_browser', "")
-          storage.set_default('preferred_command_line', "")
-          storage
-        end
+        @storage = Plugin::Storage.new('project_plugin')
       end
 
       def self.filter_path
@@ -317,7 +312,7 @@ module Redcar
       # Uses our own context menu hook to provide context menu entries
       # @return [Menu]
       def self.project_context_menus(tree, node, controller)
-        unless node.nil?
+        if node
           if node.directory?
             enclosing_dir = node.path
           else
