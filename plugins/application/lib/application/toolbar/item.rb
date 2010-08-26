@@ -1,6 +1,6 @@
 
 module Redcar
-  class Toolbar
+  class ToolBar
     class Item
       class Separator < Item
         def initialize(options={})
@@ -34,7 +34,7 @@ module Redcar
           @command = options || block
         end
         
-        @priority ||= Toolbar::DEFAULT_PRIORITY
+        @priority ||= ToolBar::DEFAULT_PRIORITY
       end
       
       # Call this to signal that the toolbar item has been selected by the user.

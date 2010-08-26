@@ -124,7 +124,7 @@ module Redcar
       def refresh_toolbar
 	#p shell
         #old_toolbar_bar = shell.toolbar_bar
-        @toolbar_controller = ApplicationSWT::Toolbar.new(self, Swt::SWT::FLAT)
+        @toolbar_controller = ApplicationSWT::ToolBar.new(self, Redcar.app.main_toolbar, Swt::SWT::FLAT)
 	p @toolbar_controller
         #shell.toolbar_bar = @toolbar_controller.toolbar_bar
         #old_toolbar_bar.dispose if old_toolbar_bar

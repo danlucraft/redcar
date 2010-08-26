@@ -45,6 +45,8 @@ module Swt
     import org.eclipse.swt.widgets.Menu
     import org.eclipse.swt.widgets.MenuItem
     import org.eclipse.swt.widgets.MessageBox
+    import org.eclipse.swt.widgets.ToolBar
+    import org.eclipse.swt.widgets.ToolItem
     import org.eclipse.swt.widgets.Sash
     import org.eclipse.swt.widgets.Shell
     import org.eclipse.swt.widgets.TabFolder

@@ -1,6 +1,6 @@
 module Redcar
   class ApplicationSWT
-    class Toolbar
+    class ToolBar
       module BindingTranslator
         MODIFIERS = %w(Cmd Ctrl Alt Shift)
         

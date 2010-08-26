@@ -1,6 +1,6 @@
 
 module Redcar
-  class Toolbar
+  class ToolBar
     include Enumerable
     include Redcar::Model
     
@@ -9,7 +9,7 @@ module Redcar
     
     attr_reader :text, :entries, :priority
   
-    # A Toolbar will initially have nothing in it.
+    # A ToolBar will initially have nothing in it.
     def initialize(text=nil, options={})
       @text, @entries, @priority = text || "", [], options[:priority]
     end
@@ -17,7 +17,7 @@ module Redcar
     # Iterate over each entry, sorted by priority
     def each
       sorted = {:first => [], :last => []}
-      entries.each {|e| (sorted[e.priority || Toolbar::DEFAULT_PRIORITY] ||= []) << e}
+      entries.each {|e| (sorted[e.priority || ToolBar::DEFAULT_PRIORITY] ||= []) << e}
       
       # Get the nasty Symbols out of the hash so we can sort it
       first = sorted.delete(:first)
@@ -29,7 +29,7 @@ module Redcar
       last.each {|val| yield val }
     end
   
-    # Add a Redcar::ToolbarItem or a Redcar::Toolbar
+    # Add a Redcar::ToolItem or a Redcar::ToolBar
     def <<(entry)
       entries << entry
       self
@@ -43,18 +43,18 @@ module Redcar
     # Fetch the sub_toolbar with the given name
     #
     # @param [String]
-    # @return [Toolbar]
+    # @return [ToolBar]
     def sub_toolbar(text)
-      detect {|e| e.text == text and e.is_a?(Toolbar) }
+      detect {|e| e.text == text and e.is_a?(ToolBar) }
     end
     
     def entry(text)
       detect {|e| e.text == text }
     end
     
-    # Append items and sub_toolbars using the same syntax as Toolbar::Builder
+    # Append items and sub_toolbars using the same syntax as ToolBar::Builder
     def build(&block)
-      Toolbar::Builder.new(self, &block)
+      ToolBar::Builder.new(self, &block)
     end
     
     def ==(other)
@@ -70,9 +70,9 @@ module Redcar
       false
     end
     
-    # Merge two Toolbar trees together. Modifies this Toolbar.
+    # Merge two ToolBar trees together. Modifies this ToolBar.
     #
-    # @param [Toolbar] another Toolbar
+    # @param [ToolBar] another ToolBar
     def merge(other)
       @priority = @priority || other.priority
       other.entries.each do |other_entry|

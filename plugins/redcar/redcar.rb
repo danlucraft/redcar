@@ -862,7 +862,7 @@ module Redcar
     end
 
     def self.toolbars
-      Toolbar::Builder.build do
+      ToolBar::Builder.build do
         item "NewFile", :command => NewCommand
       end
     end
@@ -1023,8 +1023,8 @@ module Redcar
       s = Time.now
       Redcar.gui = ApplicationSWT.gui
       Redcar.app.controller = ApplicationSWT.new(Redcar.app)
-      Redcar.app.refresh_menu!
       Redcar.app.refresh_toolbar!
+      Redcar.app.refresh_menu!
       Redcar.app.load_sensitivities
       puts "initializing gui took #{Time.now - s}s"
       s = Time.now

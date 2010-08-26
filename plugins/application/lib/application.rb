@@ -191,7 +191,7 @@ module Redcar
       controller.refresh_menu
     end
     
-    # Redraw the main toolbar, reloading all the Toolbars and Keymaps from the plugins.
+    # Redraw the main toolbar, reloading all the ToolBars and Keymaps from the plugins.
     def refresh_toolbar!
       @main_toolbar = nil
       @main_keymap = nil
@@ -205,7 +205,6 @@ module Redcar
     def main_menu
       @main_menu ||= begin
         menu = Menu.new
-	p menu
         Redcar.plugin_manager.objects_implementing(:menus).each do |object|
           menu.merge(object.menus)
         end
@@ -215,11 +214,10 @@ module Redcar
     
     # Generate the toolbar combining toolbars from all plugins.
     #
-    # @return [Redcar::Toolbar]
+    # @return [Redcar::ToolBar]
     def main_toolbar
       @main_toolbar ||= begin
-        toolbar = Toolbar.new
-	p toolbar
+        toolbar = ToolBar.new
         Redcar.plugin_manager.objects_implementing(:toolbars).each do |object|
           toolbar.merge(object.toolbars)
         end

@@ -1,6 +1,6 @@
 
 module Redcar
-  class Toolbar
+  class ToolBar
     class Builder
       # An extension to the Builder to allow groups of toolbar object to inherit options.
       #

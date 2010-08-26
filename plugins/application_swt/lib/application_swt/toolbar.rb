@@ -1,6 +1,6 @@
 module Redcar
   class ApplicationSWT
-    class Toolbar
+    class ToolBar
 
       def self.types
         @types = { :check => Swt::SWT::CHECK, :radio => Swt::SWT::RADIO }
@@ -22,21 +22,20 @@ module Redcar
         [Swt::SWT::FLAT]
       end
 
-      def initialize(window, options={})
+      def initialize(window, toolbar_model, options={})
         s = Time.now
-        unless Toolbar.toolbar_types.include?(type)
-          raise "type should be in #{Toolbar.toolbar_types.inspect}"
-        end
+        #unless ToolBar.toolbar_types.include?(self.class)
+        #  raise "type should be in #{ToolBar.toolbar_types.inspect}"
+        #end
         @window = window
-        @keymap = keymap
-        @toolbar_bar = Swt::Widgets::Toolbar.new(window.shell, type)
+        @toolbar_bar = Swt::Widgets::ToolBar.new(window.shell, Swt::SWT::FLAT)
         @toolbar_bar.set_visible(false)
         return unless toolbar_model
         @handlers = []
         @use_numbers = options[:numbers]
         @number = 1
         add_entries_to_toolbar(@toolbar_bar, toolbar_model)
-        #puts "ApplicationSWT::Toolbar initialize took #{Time.now - s}s"
+        #puts "ApplicationSWT::ToolBar initialize took #{Time.now - s}s"
       end
 
       def show
@@ -62,32 +61,31 @@ module Redcar
       def add_entries_to_toolbar(toolbar, toolbar_model)
 
         toolbar_model.each do |entry|
-          if entry.is_a?(Redcar::Toolbar::LazyToolbar)
-            toolbar_header = Swt::Widgets::ToolbarItem.new(toolbar, Swt::SWT::CASCADE)
+          if entry.is_a?(Redcar::ToolBar::LazyToolBar)
+            toolbar_header = Swt::Widgets::ToolItem.new(toolbar, Swt::SWT::CASCADE)
             toolbar_header.text = entry.text
-            #new_toolbar = Swt::Widgets::Toolbar.new(@window.shell, Swt::SWT::DROP_DOWN)
-            new_toolbar = Swt::Widgets::Toolbar.new(toolbar)
+            #new_toolbar = Swt::Widgets::ToolBar.new(@window.shell, Swt::SWT::DROP_DOWN)
+            new_toolbar = Swt::Widgets::ToolBar.new(toolbar)
             toolbar_header.toolbar = new_toolbar
             toolbar_header.add_arm_listener do
               new_toolbar.get_items.each {|i| i.dispose }
               add_entries_to_toolbar(new_toolbar, entry)
             end
-          elsif entry.is_a?(Redcar::Toolbar)
-            toolbar_header = Swt::Widgets::ToolbarItem.new(toolbar, Swt::SWT::CASCADE)
-            toolbar_header.text = entry.text
-            #new_toolbar = Swt::Widgets::Toolbar.new(@window.shell, Swt::SWT::DROP_DOWN)
-            new_toolbar = Swt::Widgets::Toolbar.new(toolbar)
+          elsif entry.is_a?(Redcar::ToolBar)
+            toolbar_header = Swt::Widgets::ToolItem.new(toolbar, Swt::SWT::CASCADE)
+            #toolbar_header.text = entry.text
+            toolbar_header.text = "Toolbar!"
+            #new_toolbar = Swt::Widgets::ToolBar.new(@window.shell, Swt::SWT::DROP_DOWN)
+            new_toolbar = Swt::Widgets::ToolBar.new(toolbar)
             toolbar_header.toolbar = new_toolbar
             add_entries_to_toolbar(new_toolbar, entry)
-          elsif entry.is_a?(Redcar::Toolbar::Item::Separator)
-            item = Swt::Widgets::ToolbarItem.new(toolbar, Swt::SWT::SEPARATOR)
-          elsif entry.is_a?(Redcar::Toolbar::Item)
-            item = Swt::Widgets::ToolbarItem.new(toolbar, Toolbar.types[entry.type] || Swt::SWT::PUSH)
+          elsif entry.is_a?(Redcar::ToolBar::Item::Separator)
+            item = Swt::Widgets::ToolItem.new(toolbar, Swt::SWT::SEPARATOR)
+          elsif entry.is_a?(Redcar::ToolBar::Item)
+            item = Swt::Widgets::ToolItem.new(toolbar, ToolBar.types[entry.type] || Swt::SWT::PUSH)
             item.setSelection(entry.active)
             if entry.command.is_a?(Proc)
               connect_proc_to_item(item, entry)
-            else
-              connect_command_to_item(item, entry)
             end
           else
             raise "unknown object of type #{entry.class} in toolbar"
@@ -138,7 +136,7 @@ module Redcar
           if key_string    = BindingTranslator.platform_key_string(key_specifier)
             item.text = entry.text + "\t" + key_string
             item.set_accelerator(BindingTranslator.key(key_string))
-            Toolbar.items[key_string] << item
+            ToolBar.items[key_string] << item
           else
             puts "you didn't specify a keybinding for this platform for #{entry.text}"
             item.text = entry.text

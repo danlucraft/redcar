@@ -1,16 +1,16 @@
 
 module Redcar
-  class Toolbar
-    class LazyToolbar < Toolbar
+  class ToolBar
+    class LazyToolBar < ToolBar
       
       def initialize(block, text=nil, options={})
         @text = text
         @block = block
-        @priority = options[:priority] || Toolbar::DEFAULT_PRIORITY
+        @priority = options[:priority] || ToolBar::DEFAULT_PRIORITY
       end
       
       def entries
-        Toolbar::Builder.build(&@block).entries
+        ToolBar::Builder.build(&@block).entries
       end
       
       def <<(*_)

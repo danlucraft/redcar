@@ -1,9 +1,9 @@
 
 module Redcar
-  class Toolbar
+  class ToolBar
     # A DSL for building toolbars simply. An example of usage
     #
-    #     builder = Toolbar::Builder.new "Edit" do
+    #     builder = ToolBar::Builder.new "Edit" do
     #       item "Select All", SelectAllCommand
     #       sub_toolbar "Indent" do
     #         item "Increase", IncreaseIndentCommand
@@ -13,11 +13,11 @@ module Redcar
     #
     # This is equivalent to:
     # 
-    #     toolbar = Redcar::Toolbar.new("Edit")
-    #     toolbar << Redcar::Toolbar::Item.new("Select All", SelectAllCommand)
-    #     indent_toolbar = Redcar::Toolbar.new("Indent") 
-    #     indent_toolbar << Redcar::Toolbar::Item.new("Increase", IncreaseIndentCommand)
-    #     indent_toolbar << Redcar::Toolbar::Item.new("Decrease") do
+    #     toolbar = Redcar::ToolBar.new("Edit")
+    #     toolbar << Redcar::ToolBar::Item.new("Select All", SelectAllCommand)
+    #     indent_toolbar = Redcar::ToolBar.new("Indent") 
+    #     indent_toolbar << Redcar::ToolBar::Item.new("Increase", IncreaseIndentCommand)
+    #     indent_toolbar << Redcar::ToolBar::Item.new("Decrease") do
     #       puts "decrease selected"
     #     end
     #     toolbar << indent_toolbar
@@ -31,8 +31,8 @@ module Redcar
       def initialize(toolbar_or_text=nil, &block)
         case toolbar_or_text
         when String, nil
-          @toolbar = Redcar::Toolbar.new(toolbar_or_text||"")
-        when Toolbar
+          @toolbar = Redcar::ToolBar.new(toolbar_or_text||"")
+        when ToolBar
           @toolbar = toolbar_or_text
         end
         @current_toolbar = @toolbar
@@ -52,7 +52,7 @@ module Redcar
       end
       
       def sub_toolbar(text, options={}, &block)
-        new_toolbar = Toolbar.new(text, options)
+        new_toolbar = ToolBar.new(text, options)
         @current_toolbar << new_toolbar
         old_toolbar, @current_toolbar = @current_toolbar, new_toolbar
         if block.arity == 1
@@ -64,7 +64,7 @@ module Redcar
       end
       
       def lazy_sub_toolbar(text, options={}, &block)
-        new_toolbar = LazyToolbar.new(block, text, options)
+        new_toolbar = LazyToolBar.new(block, text, options)
         @current_toolbar << new_toolbar
       end
       
