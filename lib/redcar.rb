@@ -5,8 +5,6 @@ $:.push(File.expand_path(File.join(File.dirname(__FILE__), %w{.. vendor ffi lib}
 
 require 'redcar/usage'
 
-require 'rbconfig'
-
 require 'redcar/ruby_extensions'
 require 'redcar/instance_exec'
 require 'redcar/usage'
@@ -21,7 +19,7 @@ begin
     require 'spoon'
     module Redcar; SPOON_AVAILABLE = true; end
   else
-    throw LoadError, "Only load spoon in jruby."
+    module Redcar; SPOON_AVAILABLE = false; end
   end
 rescue LoadError
   module Redcar; SPOON_AVAILABLE = false; end
@@ -92,8 +90,8 @@ module Redcar
         
         if pid.nil?
           # reopen the standard pipes to nothingness
-          STDIN.reopen '/dev/null'
-          STDOUT.reopen '/dev/null', 'a'
+          STDIN.reopen Redcar.null_device
+          STDOUT.reopen Redcar.null_device, 'a'
           STDERR.reopen STDOUT
         end
       elsif forking and SPOON_AVAILABLE and ::Spoon.supported?
@@ -171,20 +169,6 @@ module Redcar
   # Starts the GUI.
   def self.pump
     Redcar.gui.start
-  end
-
-  # Platform symbol
-  #
-  # @return [:osx/:windows/:linux]
-  def self.platform
-    case Config::CONFIG["target_os"]
-    when /darwin/
-      :osx
-    when /mswin|mingw/
-      :windows
-    when /linux/
-      :linux
-    end
   end
 
   # Platform specific ~/.redcar

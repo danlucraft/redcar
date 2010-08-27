@@ -5,8 +5,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), %w(.. lib redcar_quic
 
 if ARGV.include? '--silent'
   # reopen the standard pipes to nothingness if we were forked as part of jruby
-  STDIN.reopen '/dev/null'
-  STDOUT.reopen '/dev/null', 'a'
+  STDIN.reopen Redcar.null_device
+  STDOUT.reopen Redcar.null_device, 'a'
   STDERR.reopen STDOUT
 end
 
