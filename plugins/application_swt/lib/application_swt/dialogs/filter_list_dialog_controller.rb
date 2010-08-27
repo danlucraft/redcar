@@ -144,8 +144,10 @@ module Redcar
       def update_list_sync
         if @dialog
           s = Time.now
-          list = @model.update_list(@dialog.text.get_text)
-          populate_list(list)
+          @update_thread = Thread.new(@dialog.text.get_text) do |text|
+            @model.update_list(text)
+          end
+          populate_list(@update_thread.value)
           @dialog.list.set_selection(0)
           text_focus
         end
@@ -155,7 +157,16 @@ module Redcar
         @dialog.text.set_focus
       end
       
+      def wait_for_search
+        @update_thread.join unless @update_thread.nil?
+      end
+
+      def select_closest_match?
+        @dialog.list.get_selection_index == 0
+      end
+
       def selected
+        wait_for_search if select_closest_match?
         @model.selected(@dialog.list.get_selection.first, @dialog.list.get_selection_index)
       end
       
