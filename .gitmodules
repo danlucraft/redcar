@@ -34,3 +34,6 @@
 [submodule "plugins/scm_git/vendor/ruby-git"]
 	path = plugins/scm_git/vendor/ruby-git
 	url = git://github.com/mscharley/ruby-git.git
+[submodule "vendor/spoon"]
+	path = vendor/spoon
+	url = git://github.com/mscharley/spoon.git
