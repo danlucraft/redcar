@@ -103,7 +103,7 @@ module Redcar
         require 'redcar/runner'
         runner = Redcar::Runner.new
         runner.spin_up do |command|
-          command.push('--forked')
+          command.push('--silent')
           ::Spoon.spawnp(*command)
         end
         exit 0
