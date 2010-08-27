@@ -5,17 +5,17 @@ require 'auto_completer/word_iterator'
 require 'auto_completer/word_list'
 
 module Redcar
-  class AutoCompleter    
+  class AutoCompleter
     WORD_CHARACTERS = /\w|_/ # /(\s|\t|\.|\r|\(|\)|,|;)/
-    
+
     def self.document_controller_types
       [AutoCompleter::DocumentController]
     end
-    
+
     def self.autocompletion_source_types
       [AutoCompleter::CurrentDocumentCompletionSource]
     end
-    
+
     def self.all_autocompletion_source_types
       result = []
       Redcar.plugin_manager.objects_implementing(:autocompletion_source_types).each do |object|
@@ -23,7 +23,23 @@ module Redcar
       end
       result
     end
-    
+
+    def self.edit_view_context_menus
+      cmd = AutoCompleter::MenuAutoCompleterCommand.new
+      cmd.merge_menu
+      completions = cmd.run
+      Menu::Builder.build do
+        sub_menu "Auto Completion" do
+          if completions
+            completions.entries.each {|item| append item }
+          else
+            item "(No Suggestions)" do
+            end
+          end
+        end
+      end
+    end
+
     def self.menus
       Menu::Builder.build do
         sub_menu "Edit" do
@@ -34,13 +50,13 @@ module Redcar
         end
       end
     end
-    
+
     class AutoCompleteCommand < Redcar::EditTabCommand
-      
+
       def execute
         controller = doc.controllers(AutoCompleter::DocumentController).first
         controller.start_modification
-        
+
         if controller.in_completion?
           doc.delete(doc.cursor_offset - controller.length_of_previous, controller.length_of_previous)
           prefix = controller.prefix
@@ -57,7 +73,7 @@ module Redcar
             controller.right     = right
           end
         end
-        
+
         if prefix
           index = (controller.index || 0) + 1
           if word_list.completions.length == index
@@ -65,23 +81,23 @@ module Redcar
           end
           completion = word_list.completions[index]
           controller.index = index
-          
+
           start_offset = right
           doc.insert(right, completion[prefix.length..-1])
           word_end_offset = right + completion.length - prefix.length
           doc.cursor_offset = word_end_offset
-          
+
           controller.length_of_previous = completion.length - prefix.length
-          
+
           controller.start_completion
         end
         controller.end_modification
       end
-      
+
       private
-      
+
       def alternatives(prefix)
-        sources = AutoCompleter.all_autocompletion_source_types.map do |t| 
+        sources = AutoCompleter.all_autocompletion_source_types.map do |t|
           t.new(doc, Project::Manager.focussed_project)
         end
         word_list = WordList.new
@@ -92,8 +108,8 @@ module Redcar
         end
         word_list
       end
-      
-      # returns the prefix that is being touched by the cursor and a range 
+
+      # returns the prefix that is being touched by the cursor and a range
       # containing offsets of the prefix.
       def touched_prefix
         range = doc.current_word_range
@@ -103,9 +119,13 @@ module Redcar
         return prefix, left, right
       end
     end
-    
+
     class MenuAutoCompleterCommand < AutoCompleteCommand
-      
+
+      def merge_menu
+        @merge_menu = true
+      end
+
       def execute
         controller = doc.controllers(AutoCompleter::DocumentController).first
         input_word = ""
@@ -117,7 +137,7 @@ module Redcar
           controller.prefix    = prefix
           controller.left      = left
           controller.right     = right
-          
+
           cur_doc = doc
           builder = Menu::Builder.new do
             word_list.words.each do |current_word, word_distance|
@@ -128,12 +148,13 @@ module Redcar
               end
             end
           end
-          
-          Application::Dialog.popup_menu(builder.menu, :cursor)
+          if @merge_menu
+            builder.menu
+          else
+            Application::Dialog.popup_menu(builder.menu, :cursor)
+          end
         end
       end
     end
   end
 end
-
-
