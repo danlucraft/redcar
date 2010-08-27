@@ -281,14 +281,17 @@ module Redcar
       end
 
       def run_application(app, *options)
-        # TODO: This really needs proper escaping.
-        options = options.map {|o| "\"#{o}\""}.join(' ')
-        puts "Running: #{app} #{options}"
-        # FIXME: This needs moving to the spoon gem so we can fork+exec
-        Thread.new {
-          system("#{app} #{options}")
-          puts "  Finished: #{app} #{options}"
-        }
+        if SPOON_AVAILABLE and ::Spoon.supported?
+          ::Spoon.spawn(app, *options)
+        else
+          # TODO: This really needs proper escaping.
+          options = options.map {|o| "\"#{o}\""}.join(' ')
+          puts "Running: #{app} #{options}"
+          Thread.new do
+            system("#{app} #{options}")
+            puts "  Finished: #{app} #{options}"
+          end
+        end
       end
     end
 
