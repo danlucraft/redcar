@@ -218,7 +218,7 @@ module Redcar
             full_path = File.join(@repo.dir.path, f[0])
             type = (((not File.exist?(full_path)) or File.file?(full_path)) ? :file : :directory)
             
-            if type == :directory and File.exist?(File.join(full_path, '.git'))
+            if type == :directory and cache['submodules'][f[0]]
               type = :sub_project
             end
             
