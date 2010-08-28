@@ -601,44 +601,6 @@ module Redcar
       end
     end
 
-    class RaiseTextCommand < Redcar::DocumentCommand
-      def execute
-        doc = tab.edit_view.document
-        cursor_line_offset = doc.cursor_line_offset
-        if doc.selection?
-          first_line_ix = doc.line_at_offset(doc.selection_range.begin)
-          last_line_ix  = doc.line_at_offset(doc.selection_range.end)
-          text = doc.get_slice(doc.offset_at_line(first_line_ix),
-                               doc.offset_at_line_end(last_line_ix))
-          keep_selection = true
-        else
-          first_line_ix = doc.cursor_line
-          last_line_ix = doc.cursor_line
-          text = doc.get_line(doc.cursor_line)
-        end
-        if last_line_ix == (doc.line_count - 1)
-          text = "\n#{text}"
-        end
-        top = 0
-        if first_line_ix - 2 > top
-          top = first_line_ix - 2
-        end
-        doc.compound do
-          #delete current selection
-          doc.delete(doc.offset_at_line(first_line_ix), text.length)
-          #insert text above previous line
-          doc.insert(doc.offset_at_line_end(top), text)
-          #set cursor to same line offset in new section
-          doc.cursor_offset = doc.offset_at_line_end(top) + cursor_line_offset
-          if keep_selection
-            #select duplicated region of text
-            doc.set_selection_range(doc.cursor_offset, doc.cursor_offset + (text.length - 1))
-          end
-          doc.scroll_to_line(top)
-        end
-      end
-    end
-
     class DialogExample < Redcar::Command
       def execute
       	builder = Menu::Builder.new do
@@ -935,7 +897,6 @@ module Redcar
             item "Copy", CopyCommand
             item "Paste", PasteCommand
             item "Duplicate Region", DuplicateCommand
-            item "Raise Region", RaiseTextCommand
           end
 
           group(:priority => 25) do
