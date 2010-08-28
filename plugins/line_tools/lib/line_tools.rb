@@ -40,9 +40,6 @@ module Redcar
           last_line_ix = doc.cursor_line
           text = doc.get_line(doc.cursor_line)
         end
-        if last_line_ix == (doc.line_count - 1)
-          text = "\n#{text}"
-        end
         if first_line_ix > 0
           if first_line_ix == 1
             top = 0
@@ -53,12 +50,15 @@ module Redcar
           end
           doc.compound do
             doc.delete(doc.offset_at_line(first_line_ix), text.length)
+            #if last_line_ix == doc.line_count - 1 or not
+            unless /\n$/.match(text)
+              text = "#{text}\n"
+            end
             doc.insert(insert_idx, text)
             doc.cursor_offset = insert_idx + cursor_line_offset
             if keep_selection
               doc.set_selection_range(doc.offset_at_line(first_line_ix-1),
               doc.offset_at_line(last_line_ix-1) + doc.get_line(last_line_ix-1).length - 1)
-              #doc.set_selection_range(doc.cursor_offset, doc.cursor_offset + (text.length - 1))
             end
             doc.scroll_to_line(top)
           end
@@ -81,9 +81,9 @@ module Redcar
           last_line_ix = doc.cursor_line
           text = doc.get_line(doc.cursor_line)
         end
-        if last_line_ix == (doc.line_count - 1)
-          text = "\n#{text}"
-        end
+        #if last_line_ix == (doc.line_count - 1)
+        #  text = "\n#{text}"
+        #end
         if last_line_ix < doc.line_count - 1
           prev_line = doc.get_line(last_line_ix+1)
           swap_text = "#{text}#{prev_line}"

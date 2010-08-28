@@ -41,8 +41,8 @@ Scenario: The last line of a document cannot be lowered
   And I move the cursor to 12
   And I run the command Redcar::LineTools::LowerTextCommand
   Then I should see "foo\nbar\nbaz\nbonne" in the edit tab
+  And I should not see "foo\nbar\nbaz\n\nbonne" in the edit tab
 
-# Edge Cases - need extra handling
 Scenario: The second line should be able to be raised to become first
   When I open a new edit tab
   And I replace the contents with "foo\nbar\nbaz\nbonne"
@@ -62,14 +62,14 @@ Scenario: The second-to-last line should be able to be lowered to become last
   And I replace the contents with "foo\nbar\nbaz\nbonne"
   And I move the cursor to 8
   And I run the command Redcar::LineTools::LowerTextCommand
-  Then I should see "foo\nbar\nbonne\baz" in the edit tab
+  Then I should see "foo\nbar\nbonne\nbaz" in the edit tab
 
 Scenario: The last line should be able to be raised to become second-to-last
   When I open a new edit tab
   And I replace the contents with "foo\nbar\nbaz\nbonne"
   And I move the cursor to 12
   And I run the command Redcar::LineTools::RaiseTextCommand
-  Then I should see "foo\nbar\nbonne\baz" in the edit tab
+  Then I should see "foo\nbar\nbonne\nbaz" in the edit tab
 
 Scenario: A multi-line selection including the last line of a document cannot be lowered
   When I open a new edit tab
@@ -77,6 +77,7 @@ Scenario: A multi-line selection including the last line of a document cannot be
   And I select from 8 to 12
   And I run the command Redcar::LineTools::LowerTextCommand
   Then I should see "foo\nbar\nbaz\nbonne" in the edit tab
+  And I should not see "foo\nbar\n\nbaz\nbonne" in the edit tab
 
 Scenario: A multi-line selection including the first line of a document cannot be raised
   When I open a new edit tab
