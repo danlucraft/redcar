@@ -693,13 +693,13 @@ module Redcar
         Redcar::EditView::SelectThemeDialog.new.open
       end
     end
-
+    
     class ShowTheme < Command
       def execute
-
+        
       end
     end
-
+    
     class SelectFontSize < Command
       def execute
         result = Application::Dialog.input("Font Size", "Please enter new font size", Redcar::EditView.font_size.to_s) do |text|
@@ -771,7 +771,7 @@ module Redcar
         link "Cmd+Alt+I",       ToggleInvisibles
         link "Ctrl+R",          Runnables::RunEditTabCommand
         link "Cmd+I",           OutlineView::OpenOutlineViewCommand
-
+        
         link "Ctrl+Shift+P",    PrintScopeCommand
 
         link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
@@ -807,7 +807,7 @@ module Redcar
         link "Ctrl+C",       CopyCommand
         link "Ctrl+V",       PasteCommand
         link "Ctrl+D",       DuplicateCommand
-        
+
         link "Ctrl+Home",    MoveTopCommand
         link "Home",         MoveHomeCommand
         link "End",          MoveEndCommand
@@ -847,7 +847,7 @@ module Redcar
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
         link "Ctrl+Alt+I",       ToggleInvisibles
         link "Ctrl+I",           OutlineView::OpenOutlineViewCommand
-
+        
         link "Ctrl+Alt+S", Snippets::OpenSnippetExplorer
         #Textmate.attach_keybindings(self, :linux)
 
