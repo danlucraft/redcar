@@ -13,15 +13,14 @@ module Redcar
       end
     end
 
-    #TODO: add proper keymapping
     def self.keymaps
       osx = Redcar::Keymap.build("main", :osx) do
-        link "F5", RaiseTextCommand
-        link "F6", LowerTextCommand
+        link "Alt+Shift+Up", RaiseTextCommand
+        link "Alt+Shift+Down", LowerTextCommand
       end
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
-        link "F5", RaiseTextCommand
-        link "F6", LowerTextCommand
+        link "Alt+Shift+Up", RaiseTextCommand
+        link "Alt+Shift+Down", LowerTextCommand
       end
       [osx, linwin]
     end
@@ -85,23 +84,23 @@ module Redcar
         if last_line_ix == (doc.line_count - 1)
           text = "\n#{text}"
         end
-        prev_line = doc.get_line(last_line_ix+1)
-        swap_text = "#{text}#{prev_line}"
-        if last_line_ix == doc.line_count - 1
-          new_text  = "\n#{prev_line}\n#{text}"
-        elsif last_line_ix == doc.line_count - 2
-          new_text  = "#{prev_line}\n#{text}"
-        else
-          new_text  = "#{prev_line}#{text}"
-        end
-        doc.compound do
-          doc.replace(doc.offset_at_line(first_line_ix), swap_text.length, new_text)
-          doc.cursor_offset = doc.offset_at_line(last_line_ix+1) + cursor_line_offset
-          if keep_selection
-            doc.set_selection_range(doc.offset_at_line(first_line_ix+1),
-            doc.offset_at_line(last_line_ix+1) + doc.get_line(last_line_ix+1).length - 1)
+        if last_line_ix < doc.line_count - 1
+          prev_line = doc.get_line(last_line_ix+1)
+          swap_text = "#{text}#{prev_line}"
+          if last_line_ix == doc.line_count - 2
+            new_text  = "#{prev_line}\n#{text}"
+          else
+            new_text  = "#{prev_line}#{text}"
           end
-        doc.scroll_to_line(last_line_ix+1)
+          doc.compound do
+            doc.replace(doc.offset_at_line(first_line_ix), swap_text.length, new_text)
+            doc.cursor_offset = doc.offset_at_line(last_line_ix+1) + cursor_line_offset
+            if keep_selection
+              doc.set_selection_range(doc.offset_at_line(first_line_ix+1),
+              doc.offset_at_line(last_line_ix+1) + doc.get_line(last_line_ix+1).length - 1)
+            end
+            doc.scroll_to_line(last_line_ix+1)
+          end
         end
       end
     end
