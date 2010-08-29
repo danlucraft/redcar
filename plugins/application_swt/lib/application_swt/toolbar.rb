@@ -2,8 +2,25 @@ module Redcar
   class ApplicationSWT
     class ToolBar
 
+      
+      FILE_DIR = File.join(Redcar.root, %w(plugins shared icons))
+      DEFAULT_ICON = File.join(Redcar.root, %w(plugins shared icons file.png))
+
       def self.types
         @types = { :check => Swt::SWT::CHECK, :radio => Swt::SWT::RADIO }
+      end
+
+      def self.icons
+        @icons = {
+          :new => File.join(FILE_DIR, "new.png"),
+          :open => File.join(FILE_DIR, "open.png"),
+          :save => File.join(FILE_DIR, "save.png"),
+          :save_as => File.join(FILE_DIR, "save_as.png"),
+          :save_all => File.join(FILE_DIR, "save_all.png"),
+          :undo => File.join(FILE_DIR, "undo.png"),
+          :redo => File.join(FILE_DIR, "redo.png"),
+          :search => File.join(FILE_DIR, "search.png")
+        }
       end
 
       def self.items
@@ -16,8 +33,6 @@ module Redcar
 
       attr_reader :toolbar_bar
 
-
-
       def self.toolbar_types
         [Swt::SWT::FLAT]
       end
@@ -28,12 +43,10 @@ module Redcar
         #  raise "type should be in #{ToolBar.toolbar_types.inspect}"
         #end
         @window = window
-        @toolbar_bar = Swt::Widgets::ToolBar.new(window.shell, Swt::SWT::FLAT)
-        @toolbar_bar.set_visible(false)
+        @toolbar_bar = Swt::Widgets::ToolBar.new(window.shell, Swt::SWT::FLAT | Swt::SWT::BORDER)
+        @toolbar_bar.set_visible(true)
+	@toolbar_bar.setLayout(Swt::Layout::FormLayout.new)
         return unless toolbar_model
-        @handlers = []
-        @use_numbers = options[:numbers]
-        @number = 1
         add_entries_to_toolbar(@toolbar_bar, toolbar_model)
         #puts "ApplicationSWT::ToolBar initialize took #{Time.now - s}s"
       end
@@ -43,7 +56,7 @@ module Redcar
       end
 
       def close
-        @handlers.each {|obj, h| obj.remove_listener(h) }
+        #@handlers.each {|obj, h| obj.remove_listener(h) }
         @toolbar_bar.dispose
         @result
       end
@@ -72,18 +85,14 @@ module Redcar
               add_entries_to_toolbar(new_toolbar, entry)
             end
           elsif entry.is_a?(Redcar::ToolBar)
-            toolbar_header = Swt::Widgets::ToolItem.new(toolbar, Swt::SWT::CASCADE)
-            #toolbar_header.text = entry.text
-            toolbar_header.text = "Toolbar!"
-            #new_toolbar = Swt::Widgets::ToolBar.new(@window.shell, Swt::SWT::DROP_DOWN)
             new_toolbar = Swt::Widgets::ToolBar.new(toolbar)
-            toolbar_header.toolbar = new_toolbar
             add_entries_to_toolbar(new_toolbar, entry)
           elsif entry.is_a?(Redcar::ToolBar::Item::Separator)
             item = Swt::Widgets::ToolItem.new(toolbar, Swt::SWT::SEPARATOR)
           elsif entry.is_a?(Redcar::ToolBar::Item)
-            item = Swt::Widgets::ToolItem.new(toolbar, ToolBar.types[entry.type] || Swt::SWT::PUSH)
-            item.setSelection(entry.active)
+            item = Swt::Widgets::ToolItem.new(toolbar, Swt::SWT::PUSH)
+            item.setEnabled(true)
+            item.setImage(Swt::Graphics::Image.new(ApplicationSWT.display, @icons[:entry.image] || entry.image || DEFAULT_ICON))
             if entry.command.is_a?(Proc)
               connect_proc_to_item(item, entry)
             end
@@ -91,6 +100,7 @@ module Redcar
             raise "unknown object of type #{entry.class} in toolbar"
           end
         end
+	toolbar.pack
       end
 
       class ProcSelectionListener

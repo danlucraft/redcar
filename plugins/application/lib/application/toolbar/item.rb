@@ -12,7 +12,7 @@ module Redcar
         end
       end
       
-      attr_reader :text, :command, :priority, :value, :type, :active
+      attr_reader :text, :command, :value, :type, :image
   
       # Create a new Item, with the given text to display in the toolbar, and
       # either:
@@ -23,7 +23,7 @@ module Redcar
         
         if options.respond_to?('[]')
           @command = options[:command] || block
-          @priority = options[:priority]
+          @image = options[:image]
           @value = options[:value]
           @type = options[:type]
           @active = options[:active] ? true : false

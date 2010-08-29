@@ -11,13 +11,14 @@ module Redcar
   
     # A ToolBar will initially have nothing in it.
     def initialize(text=nil, options={})
-      @text, @entries, @priority = text || "", [], options[:priority]
+      #@text, @entries, @priority = text || "", [], options[:priority]
+      @text, @entries = text || "", []
     end
   
     # Iterate over each entry, sorted by priority
     def each
       sorted = {:first => [], :last => []}
-      entries.each {|e| (sorted[e.priority || ToolBar::DEFAULT_PRIORITY] ||= []) << e}
+      #entries.each {|e| (sorted[e.priority || ToolBar::DEFAULT_PRIORITY] ||= []) << e}
       
       # Get the nasty Symbols out of the hash so we can sort it
       first = sorted.delete(:first)
@@ -74,7 +75,7 @@ module Redcar
     #
     # @param [ToolBar] another ToolBar
     def merge(other)
-      @priority = @priority || other.priority
+      #@priority = @priority || other.priority
       other.entries.each do |other_entry|
         if here = entry(other_entry.text) and not other_entry.is_unique?
           if here.class == other_entry.class

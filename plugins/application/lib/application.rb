@@ -194,7 +194,6 @@ module Redcar
     # Redraw the main toolbar, reloading all the ToolBars and Keymaps from the plugins.
     def refresh_toolbar!
       @main_toolbar = nil
-      @main_keymap = nil
       windows.each {|window| window.refresh_toolbar }
       controller.refresh_toolbar
     end
