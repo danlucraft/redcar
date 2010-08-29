@@ -6,7 +6,7 @@ module Redcar
 
       SASH_WIDTH = 5
       TREEBOOK_WIDTH = 200
-      TOOLBAR_HEIGHT = 27
+      TOOLBAR_HEIGHT = 25
 
       class ShellListener
         include org.eclipse.swt.events.ShellListener

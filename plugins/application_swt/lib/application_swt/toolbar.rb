@@ -3,24 +3,25 @@ module Redcar
     class ToolBar
 
       
-      FILE_DIR = File.join(Redcar.root, %w(plugins shared icons))
-      DEFAULT_ICON = File.join(Redcar.root, %w(plugins shared icons file.png))
-
-      def self.types
-        @types = { :check => Swt::SWT::CHECK, :radio => Swt::SWT::RADIO }
-      end
+      FILE_DIR = File.join(Redcar.root, %w(share icons))
+      DEFAULT_ICON = File.join(Redcar.root, %w(share icons document.png))
 
       def self.icons
         @icons = {
-          :new => File.join(FILE_DIR, "new.png"),
-          :open => File.join(FILE_DIR, "open.png"),
-          :save => File.join(FILE_DIR, "save.png"),
-          :save_as => File.join(FILE_DIR, "save_as.png"),
-          :save_all => File.join(FILE_DIR, "save_all.png"),
-          :undo => File.join(FILE_DIR, "undo.png"),
-          :redo => File.join(FILE_DIR, "redo.png"),
-          :search => File.join(FILE_DIR, "search.png")
+          :new => File.join(FILE_DIR, "document-text.png"),
+          :open => File.join(FILE_DIR, "folder-open-document.png"),
+          :save => File.join(FILE_DIR, "document-import.png"),
+          #:save_as => File.join(FILE_DIR, "save_as.png"),
+          #:save_all => File.join(FILE_DIR, "save_all.png"),
+          :undo => File.join(FILE_DIR, "arrow-circle-225-left.png"),
+          :redo => File.join(FILE_DIR, "arrow-circle-315.png"),
+          :search => File.join(FILE_DIR, "binocular.png")
         }
+      end
+
+
+      def self.types
+        @types = { :check => Swt::SWT::CHECK, :radio => Swt::SWT::RADIO }
       end
 
       def self.items
@@ -43,9 +44,10 @@ module Redcar
         #  raise "type should be in #{ToolBar.toolbar_types.inspect}"
         #end
         @window = window
-        @toolbar_bar = Swt::Widgets::ToolBar.new(window.shell, Swt::SWT::FLAT | Swt::SWT::BORDER)
-        @toolbar_bar.set_visible(true)
-	@toolbar_bar.setLayout(Swt::Layout::FormLayout.new)
+        @toolbar_bar = Swt::Widgets::ToolBar.new(window.shell, Swt::SWT::FLAT + Swt::SWT::HORIZONTAL + Swt::SWT::SHADOW_OUT)
+        @toolbar_bar.set_visible(false)
+	      @toolbar_bar.setLayout(Swt::Layout::FormLayout.new)
+	      @toolbar_bar.pack
         return unless toolbar_model
         add_entries_to_toolbar(@toolbar_bar, toolbar_model)
         #puts "ApplicationSWT::ToolBar initialize took #{Time.now - s}s"
@@ -92,7 +94,7 @@ module Redcar
           elsif entry.is_a?(Redcar::ToolBar::Item)
             item = Swt::Widgets::ToolItem.new(toolbar, Swt::SWT::PUSH)
             item.setEnabled(true)
-            item.setImage(Swt::Graphics::Image.new(ApplicationSWT.display, @icons[:entry.image] || entry.image || DEFAULT_ICON))
+            item.setImage(Swt::Graphics::Image.new(ApplicationSWT.display, ToolBar.icons[entry.icon] || DEFAULT_ICON))
             if entry.command.is_a?(Proc)
               connect_proc_to_item(item, entry)
             end

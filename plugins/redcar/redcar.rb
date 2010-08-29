@@ -863,10 +863,11 @@ module Redcar
 
     def self.toolbars
       ToolBar::Builder.build do
-        item "NewFile", :command => NewCommand
-        item "NewView", :command => NewCommand
-        item "NewEdit", :command => NewCommand
-        item "NewClose", :command => NewCommand
+        item "New", :command => NewCommand, :icon => :new
+        item "Open", :command => NewCommand, :icon => :open
+        item "Save", :command => NewCommand, :icon => :save
+        item "Undo", :command => NewCommand, :icon => :undo
+        item "Redo", :command => NewCommand, :icon => :redo
       end
     end
 

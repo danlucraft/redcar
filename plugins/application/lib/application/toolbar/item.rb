@@ -11,9 +11,9 @@ module Redcar
           true
         end
       end
-      
-      attr_reader :text, :command, :value, :type, :image
-  
+
+      attr_reader :text, :command, :priority, :value, :type, :icon
+ 
       # Create a new Item, with the given text to display in the toolbar, and
       # either:
       #   the Redcar::Command that is run when the item is selected.
@@ -23,8 +23,9 @@ module Redcar
         
         if options.respond_to?('[]')
           @command = options[:command] || block
-          @image = options[:image]
+	  @icon = options[:icon]
           @value = options[:value]
+          @priority = options[:priority]
           @type = options[:type]
           @active = options[:active] ? true : false
         # This branch is for compatibility with old code. Please use :command 
