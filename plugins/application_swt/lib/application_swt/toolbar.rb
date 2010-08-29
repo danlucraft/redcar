@@ -35,22 +35,20 @@ module Redcar
       attr_reader :toolbar_bar
 
       def self.toolbar_types
-        [Swt::SWT::FLAT]
+        [Swt::SWT::FLAT, Swt::SWT::HORIZONTAL]
       end
 
       def initialize(window, toolbar_model, options={})
         s = Time.now
-        #unless ToolBar.toolbar_types.include?(self.class)
-        #  raise "type should be in #{ToolBar.toolbar_types.inspect}"
-        #end
         @window = window
-        @toolbar_bar = Swt::Widgets::ToolBar.new(window.shell, Swt::SWT::FLAT + Swt::SWT::HORIZONTAL + Swt::SWT::SHADOW_OUT)
+        @toolbar_bar = Swt::Widgets::ToolBar.new(window.shell, Swt::SWT::FLAT + Swt::SWT::SHADOW_OUT)
         @toolbar_bar.set_visible(false)
 	      @toolbar_bar.setLayout(Swt::Layout::FormLayout.new)
-	      @toolbar_bar.pack
+	      @toolbar_bar.setLayoutData(Swt::Layout::FormData.new)
         return unless toolbar_model
         add_entries_to_toolbar(@toolbar_bar, toolbar_model)
         #puts "ApplicationSWT::ToolBar initialize took #{Time.now - s}s"
+        @toolbar_bar.pack
       end
 
       def show
@@ -68,10 +66,6 @@ module Redcar
       end
 
       private
-
-      def use_numbers?
-        @use_numbers
-      end
 
       def add_entries_to_toolbar(toolbar, toolbar_model)
 
@@ -95,38 +89,11 @@ module Redcar
             item = Swt::Widgets::ToolItem.new(toolbar, Swt::SWT::PUSH)
             item.setEnabled(true)
             item.setImage(Swt::Graphics::Image.new(ApplicationSWT.display, ToolBar.icons[entry.icon] || DEFAULT_ICON))
-            if entry.command.is_a?(Proc)
-              connect_proc_to_item(item, entry)
-            end
+            connect_command_to_item(item, entry)
           else
             raise "unknown object of type #{entry.class} in toolbar"
           end
         end
-	toolbar.pack
-      end
-
-      class ProcSelectionListener
-        def initialize(entry)
-          @entry = entry
-        end
-
-        def widget_selected(e)
-          Redcar.safely("toolbar item '#{@entry.text}'") do
-            @entry.command.call
-          end
-        end
-
-        alias :widget_default_selected :widget_selected
-      end
-
-      def connect_proc_to_item(item, entry)
-        if use_numbers? and Redcar.platform == :osx
-          item.text = entry.text + "\t" + @number.to_s
-          @number += 1
-        else
-          item.text = entry.text
-        end
-        item.addSelectionListener(ProcSelectionListener.new(entry))
       end
 
       class SelectionListener
@@ -144,25 +111,14 @@ module Redcar
       end
 
       def connect_command_to_item(item, entry)
-        if key_specifier = @keymap.command_to_key(entry.command)
-          if key_string    = BindingTranslator.platform_key_string(key_specifier)
-            item.text = entry.text + "\t" + key_string
-            item.set_accelerator(BindingTranslator.key(key_string))
-            ToolBar.items[key_string] << item
-          else
-            puts "you didn't specify a keybinding for this platform for #{entry.text}"
-            item.text = entry.text
-          end
-        else
-          item.text = entry.text
-        end
+        item.setToolTipText(entry.text)
         item.add_selection_listener(SelectionListener.new(entry))
         h = entry.command.add_listener(:active_changed) do |value|
           unless item.disposed
             item.enabled = value
           end
         end
-        @handlers << [entry.command, h]
+        #@handlers << [entry.command, h]
         if not entry.command.active?
           item.enabled = false
         end
