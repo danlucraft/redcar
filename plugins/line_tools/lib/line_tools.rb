@@ -25,6 +25,24 @@ module Redcar
       [osx, linwin]
     end
 
+    class ReplaceLineCommand < Redcar::DocumentCommand
+      def execute
+        #TODO: implement me!
+      end
+    end
+
+    class TrimLineAfterCursorCommand < Redcar::DocumentCommand
+      def execute
+        #TODO: implement me!
+      end
+    end
+
+    class KillLineCommand < Redcar::DocumentCommand
+      def execute
+        #TODO: implement me!
+      end
+    end
+
     class RaiseTextCommand < Redcar::DocumentCommand
       def execute
         doc = tab.edit_view.document
