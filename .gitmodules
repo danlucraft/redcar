@@ -34,6 +34,3 @@
 [submodule "plugins/scm_git/vendor/ruby-git"]
 	path = plugins/scm_git/vendor/ruby-git
 	url = git://github.com/mscharley/ruby-git.git
-[submodule "plugins/scm_svn/vendor/svn_wc"]
-	path = plugins/scm_svn/vendor/svn_wc
-	url = http://github.com/dvwright/svn_wc.git
