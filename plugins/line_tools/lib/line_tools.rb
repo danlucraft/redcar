@@ -5,9 +5,14 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Edit" do
-          group(:priority => 22) do
-            item "Raise Region", LineTools::RaiseTextCommand
-            item "Lower Region", LineTools::LowerTextCommand
+          group(:priority => 80) do
+            sub_menu "Line Tools" do
+              item "Raise Region", LineTools::RaiseTextCommand
+              item "Lower Region", LineTools::LowerTextCommand
+              item "Trim Line", LineTools::TrimLineAfterCursorCommand
+              item "Kill Line", LineTools::KillLineCommand
+              item "Replace Line", LineTools::ReplaceLineCommand
+            end
           end
         end
       end
@@ -26,6 +31,12 @@ module Redcar
     end
 
     class ReplaceLineCommand < Redcar::DocumentCommand
+      def execute
+        #TODO: implement me!
+      end
+    end
+
+    class ClearLineCommand < Redcar::DocumentCommand
       def execute
         #TODO: implement me!
       end

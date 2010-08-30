@@ -14,4 +14,4 @@ Scenario: Trimming a selection
   And I select from 5 to 9
   And I trim the line
   Then I should see "Once " in the edit tab
-  And I shold not see "upon a time" in the edit tab
+  And I should not see "upon a time" in the edit tab
