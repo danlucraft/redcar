@@ -1,7 +1,7 @@
 
 module Redcar
   module Scm
-    class ToggleScmTree < Command
+    class ToggleScmTreeCommand < Command
       sensitize :open_scm
       
       def execute(options)
@@ -21,8 +21,7 @@ module Redcar
           # return focus to the project module if we were currently focussed
           project.window.treebook.focus_tree(project.tree) if focussed
         elsif info['repo'].supported_commands.include? command
-          mirror = klass[0].new(info['repo'])
-          tree = Tree.new(mirror, klass[1].new(info['repo']))
+          tree = Tree.new(*klass.map{|k| k.new(info['repo'])})
           project.window.treebook.add_tree(tree)
           tree.tree_mirror.top.each {|n| tree.expand(n)}
           info['trees'].push tree
