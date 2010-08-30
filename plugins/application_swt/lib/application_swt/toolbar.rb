@@ -55,6 +55,12 @@ module Redcar
         @toolbar_bar.set_visible(true)
       end
 
+      def hide
+        #@toolbar_bar.set_visible(false)
+	#@toolbar_bar.setRedraw(true)
+	@toolbar_bar.dispose()
+      end
+
       def close
         #@handlers.each {|obj, h| obj.remove_listener(h) }
         @toolbar_bar.dispose
@@ -88,7 +94,7 @@ module Redcar
           elsif entry.is_a?(Redcar::ToolBar::Item)
             item = Swt::Widgets::ToolItem.new(toolbar, Swt::SWT::PUSH)
             item.setEnabled(true)
-            item.setImage(Swt::Graphics::Image.new(ApplicationSWT.display, ToolBar.icons[entry.icon] || DEFAULT_ICON))
+            item.setImage(Swt::Graphics::Image.new(ApplicationSWT.display, ToolBar.icons[entry.icon] || entry.icon || DEFAULT_ICON))
             connect_command_to_item(item, entry)
           else
             raise "unknown object of type #{entry.class} in toolbar"

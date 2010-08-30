@@ -74,7 +74,7 @@ module Redcar
       ]
     end
     
-    attr_reader :clipboard, :keymap, :menu, :toolbar, :history, :task_queue
+    attr_reader :clipboard, :keymap, :menu, :toolbar, :history, :task_queue, :show_toolbar
     
     # Create an application instance with a Redcar::Clipboard and a Redcar::History.
     def initialize
@@ -84,6 +84,7 @@ module Redcar
       create_history
       @event_spewer = EventSpewer.new
       @task_queue   = TaskQueue.new
+      @show_toolbar = !!Application.storage['show_toolbar']
     end
     
     def events
@@ -141,6 +142,7 @@ module Redcar
       @storage ||= begin
          storage = Plugin::Storage.new('application_plugin')
          storage.set_default('stay_resident_after_last_window_closed', false)
+         storage.set_default('show_toolbar', true)
          storage
       end
     end
@@ -324,6 +326,20 @@ module Redcar
     
     def create_history
       @history = Command::History.new
+    end
+
+    public 
+
+    def show_toolbar?
+      @show_toolbar
+    end
+
+    def show_toolbar=(bool)
+      Application.storage['show_toobar'] = @show_toolbar = bool
+    end
+
+    def toggle_show_toolbar
+      Application.storage['show_toolbar'] = @show_toolbar = !Application.storage['show_toolbar']
     end
   end
 end

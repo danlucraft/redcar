@@ -7,6 +7,7 @@ module Redcar
       SASH_WIDTH = 5
       TREEBOOK_WIDTH = 200
       TOOLBAR_HEIGHT = 25
+      @toolbar_height = 25
 
       class ShellListener
         include org.eclipse.swt.events.ShellListener
@@ -123,8 +124,17 @@ module Redcar
       end
       
       def refresh_toolbar
-        @toolbar_controller = ApplicationSWT::ToolBar.new(self, Redcar.app.main_toolbar, Swt::SWT::HORIZONTAL | Swt::SWT::BORDER)
-        @toolbar_controller.show()
+	if Redcar.app.show_toolbar?
+		@toolbar_controller = ApplicationSWT::ToolBar.new(self, Redcar.app.main_toolbar, Swt::SWT::HORIZONTAL | Swt::SWT::BORDER)
+	        @toolbar_controller.show()
+		puts "Show toolbar"
+		@toolbar_height = 25
+	else
+		@toolbar_controller.hide() if @toolbar_controller
+		puts "Hide toolbar"
+		@toolbar_height = 0
+	end
+	reset_sash_height
       end
       
       def set_icon
@@ -323,26 +333,11 @@ module Redcar
       
       def reset_sash_height
 
-        @sash.layout_data = Swt::Layout::FormData.new.tap do |d|
-          d.left = Swt::Layout::FormAttachment.new(0, 0)
-          d.top =  Swt::Layout::FormAttachment.new(0, TOOLBAR_HEIGHT)
-          d.bottom = Swt::Layout::FormAttachment.new(100, 0)
-        end
-        
-        @left_composite.layout_data = Swt::Layout::FormData.new.tap do |l|
-          l.left = Swt::Layout::FormAttachment.new(0, 5)
-          l.right = Swt::Layout::FormAttachment.new(@sash, 0)
-          l.top = Swt::Layout::FormAttachment.new(0, 5 + TOOLBAR_HEIGHT)
-          l.bottom = Swt::Layout::FormAttachment.new(100, -5)
-        end
-
-        @right_composite.layout_data = Swt::Layout::FormData.new.tap do |d|
-          d.left = Swt::Layout::FormAttachment.new(@sash, 0)
-          d.right = Swt::Layout::FormAttachment.new(100, -5)
-          d.top = Swt::Layout::FormAttachment.new(0, 5 + TOOLBAR_HEIGHT)
-          d.bottom = Swt::Layout::FormAttachment.new(100, -5)
-        end
-        
+        @sash.layout_data.top =  Swt::Layout::FormAttachment.new(0, @toolbar_height.to_i)
+        @left_composite.layout_data.top = Swt::Layout::FormAttachment.new(0, 5 + @toolbar_height.to_i)
+        @right_composite.layout_data.top = Swt::Layout::FormAttachment.new(0, 5 + @toolbar_height.to_i)
+	@shell.layout        
+        @shell.redraw
       end
       
     end
