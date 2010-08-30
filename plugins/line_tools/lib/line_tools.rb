@@ -5,12 +5,12 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Edit" do
-          group(:priority => 80) do
+          group(:priority => 110) do
             sub_menu "Line Tools" do
               item "Raise Region", LineTools::RaiseTextCommand
               item "Lower Region", LineTools::LowerTextCommand
-              item "Trim Line", LineTools::TrimLineAfterCursorCommand
-              item "Kill Line", LineTools::KillLineCommand
+              item "Trim Line"   , LineTools::TrimLineAfterCursorCommand
+              item "Kill Line"   , LineTools::KillLineCommand
               item "Replace Line", LineTools::ReplaceLineCommand
             end
           end
@@ -18,14 +18,21 @@ module Redcar
       end
     end
 
+    #TODO: map instead to Super key (or ctrl on mac)?
     def self.keymaps
       osx = Redcar::Keymap.build("main", :osx) do
-        link "Alt+Shift+Up", RaiseTextCommand
+        link "Alt+Shift+Up"  , RaiseTextCommand
         link "Alt+Shift+Down", LowerTextCommand
+        link "Alt+Shift+K"   , KillLineCommand
+        link "Alt+Shift+R"   , ReplaceLineCommand
+        link "Alt+Shift+T"   , TrimLineAfterCursorCommand
       end
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
-        link "Alt+Shift+Up", RaiseTextCommand
+        link "Alt+Shift+Up"  , RaiseTextCommand
         link "Alt+Shift+Down", LowerTextCommand
+        link "Alt+Shift+K"   , KillLineCommand
+        link "Alt+Shift+R"   , ReplaceLineCommand
+        link "Alt+Shift+T"   , TrimLineAfterCursorCommand
       end
       [osx, linwin]
     end
@@ -78,12 +85,13 @@ module Redcar
             insert_idx = doc.offset_at_line_end(top)
           end
           doc.compound do
-            doc.delete(doc.offset_at_line(first_line_ix), text.length)
-            #if last_line_ix == doc.line_count - 1 or not
+            prev_line = doc.get_line(first_line_ix-1)
+            swap_text = "#{prev_line}#{text}"
+            new_text  = "#{text}#{prev_line}"
             unless /\n$/.match(text)
-              text = "#{text}\n"
+              new_text = "#{text}\n#{prev_line}"
             end
-            doc.insert(insert_idx, text)
+            doc.replace(doc.offset_at_line(first_line_ix-1), swap_text.length, new_text)
             doc.cursor_offset = insert_idx + cursor_line_offset
             if keep_selection
               doc.set_selection_range(doc.offset_at_line(first_line_ix-1),
@@ -114,12 +122,12 @@ module Redcar
         #  text = "\n#{text}"
         #end
         if last_line_ix < doc.line_count - 1
-          prev_line = doc.get_line(last_line_ix+1)
-          swap_text = "#{text}#{prev_line}"
+          next_line = doc.get_line(last_line_ix+1)
+          swap_text = "#{text}#{next_line}"
           if last_line_ix == doc.line_count - 2
-            new_text  = "#{prev_line}\n#{text}"
+            new_text  = "#{next_line}\n#{text}"
           else
-            new_text  = "#{prev_line}#{text}"
+            new_text  = "#{next_line}#{text}"
           end
           doc.compound do
             doc.replace(doc.offset_at_line(first_line_ix), swap_text.length, new_text)
