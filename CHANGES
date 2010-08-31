@@ -1,6 +1,27 @@
 Version 0.5 (TBA)
 =================
 
+Enhancements
+
+ * Indenting a block of text is now a single undo operation (Johannes Wollert)
+ * SCM trees are only loaded when you need them - speeds up project opening a lot (Matthew Scharley)
+ * Checkbox menu items for tab view togglables (Alex Lourie)
+ * Checkbox menu item for strip trailing spaces (Steven Hancock)
+ * Runnables work on Windows (Mat Schaffer)
+ * Open directory in command line / os directory viewer (Delisa Mason)
+ * Can press enter really fast in the FindFileDialog and it will open the correct file (Tim Felgentreff)
+ * Use spoon for forking on Linux, OSX (Matthew Scharley)
+ * Find in project streams (Kieran Pilkington)
+
+New internal APIs
+
+ * FileParser for reading over all files in a project (Kieran Pilkington)
+ * Checkbox menu items (Alex Lourie)
+
+Fixes:
+
+ * Fix for autocomplete, which was randomly broken due to a load order error (Anko painting)
+
 Version 0.4.1 (24 Aug 2010)
 ===========================
 
