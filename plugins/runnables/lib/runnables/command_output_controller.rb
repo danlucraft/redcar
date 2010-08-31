@@ -36,10 +36,12 @@ module Redcar
 
         case Redcar.platform
         when :osx, :linux
-          run_posix
+          cmd = "cd #{@path}; " + @cmd
         when :windows
-          run_windows
+          cmd = "cd \"#{@path.gsub('/', '\\')}\" & #{@cmd}"
         end
+        
+        run_command(cmd)
       end
       
       def stylesheet_link_tag(*files)
@@ -74,12 +76,11 @@ module Redcar
         end
       end
       
-      def run_windows
+      def run_command(cmd)
         Thread.new do
           # TODO: Find browser's onload rather than sleeping
           sleep 1
           start_output_block
-          cmd = "cd \"#{@path.gsub('/', '\\')}\" & #{@cmd}"
           Redcar.logger.info "Running: #{cmd}"
           
           # JRuby-specific
@@ -152,38 +153,6 @@ module Redcar
         scroll_to_end(output_container)
       end
 
-      def run_posix
-        @thread = Thread.new do
-          sleep 1
-          @shell = Session::Shell.new
-          @shell.outproc = lambda do |out|
-            append_output <<-HTML
-              <div class="stdout">
-                #{process(out)}
-              </div>
-            HTML
-          end
-          @shell.errproc = lambda do |err|
-            append_output <<-HTML
-              <div class="stderr">
-                #{process(err)}
-              </div>
-            HTML
-          end
-          begin
-            start_output_block
-            @shell.execute("cd #{@path}; " + @cmd)
-            end_output_block
-          rescue => e
-            puts e.class
-            puts e.message
-            puts e.backtrace
-          end
-          @shell = nil
-          @thread = nil
-        end
-      end        
-      
       def index
         rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "..", "views", "command_output.html.erb")))
         command = @cmd
