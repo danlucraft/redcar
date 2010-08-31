@@ -126,12 +126,10 @@ module Redcar
       def refresh_toolbar
 	if Redcar.app.show_toolbar?
 		@toolbar_controller = ApplicationSWT::ToolBar.new(self, Redcar.app.main_toolbar, Swt::SWT::HORIZONTAL | Swt::SWT::BORDER)
-	        @toolbar_controller.show()
-		puts "Show toolbar"
+    @toolbar_controller.show()
 		@toolbar_height = 25
 	else
-		@toolbar_controller.hide() if @toolbar_controller
-		puts "Hide toolbar"
+    @toolbar_controller.hide() if @toolbar_controller
 		@toolbar_height = 0
 	end
 	reset_sash_height
