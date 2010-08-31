@@ -32,7 +32,7 @@ module Redcar
         items[key_string].each {|i| p i.text; i.enabled = false}
       end
 
-      attr_reader :toolbar_bar
+      attr_reader :coolbar, :toolbar_bar
 
       def self.toolbar_types
         [Swt::SWT::FLAT, Swt::SWT::HORIZONTAL]
@@ -41,29 +41,57 @@ module Redcar
       def initialize(window, toolbar_model, options={})
         s = Time.now
         @window = window
-        @toolbar_bar = Swt::Widgets::ToolBar.new(window.shell, Swt::SWT::FLAT + Swt::SWT::SHADOW_OUT)
-        @toolbar_bar.set_visible(false)
-	      @toolbar_bar.setLayout(Swt::Layout::FormLayout.new)
-	      @toolbar_bar.setLayoutData(Swt::Layout::FormData.new)
+        @coolbar = Swt::Widgets::CoolBar.new(window.shell, Swt::SWT::NONE | Swt::SWT::HORIZONTAL)
+	      @coolbar_item1 = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::NONE)
+        @coolbar_item2 = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::NONE)
+        @toolbar_bar1 = create_toolbar(@coolbar_item1)
+        @toolbar_bar2 = create_toolbar(@coolbar_item2)
         return unless toolbar_model
-        add_entries_to_toolbar(@toolbar_bar, toolbar_model)
+        add_entries_to_toolbar(@toolbar_bar1, toolbar_model)
+        item = Swt::Widgets::ToolItem.new(@toolbar_bar2, Swt::SWT::PUSH)
+        item.setText("Test")
+        item.setEnabled(true)
+	
         #puts "ApplicationSWT::ToolBar initialize took #{Time.now - s}s"
-        @toolbar_bar.pack
+        @toolbar_bar1.pack
+        @toolbar_bar2.pack
+	      @coolbar_item1.setControl(@toolbar_bar1)
+        @coolbar_item2.setControl(@toolbar_bar2)
+        
+        # TESTING!!!!
+        @ctrl = @coolbar_item1.getControl()
+        @pt = @ctrl.computeSize(Swt::SWT::DEFAULT, Swt::SWT::DEFAULT)
+        @coolbar_item1.setSize(@pt)
+        @coolbar_item2.setSize(@pt)
+        # END TESTING!!!!
       end
 
+      def create_toolbar(composite)
+        @toolbar = Swt::Widgets::ToolBar.new(@coolbar, Swt::SWT::FLAT | Swt::SWT::BORDER)
+        @toolbar.set_visible(false)
+	      @toolbar.setLayout(Swt::Layout::FormLayout.new)
+	      @toolbar.setLayoutData(Swt::Layout::FormData.new)
+        @toolbar
+      end
+      
       def show
-        @toolbar_bar.set_visible(true)
+        @toolbar_bar1.set_visible(true)
+        @toolbar_bar2.set_visible(true)
+        @coolbar.set_visible(true)
       end
 
       def hide
         #@toolbar_bar.set_visible(false)
 	#@toolbar_bar.setRedraw(true)
-	@toolbar_bar.dispose()
+	@toolbar_bar1.dispose()
+	@toolbar_bar2.dispose()
+  @coolbar.dispose()
       end
 
       def close
         #@handlers.each {|obj, h| obj.remove_listener(h) }
-        @toolbar_bar.dispose
+	@toolbar_bar1.dispose()
+	@toolbar_bar2.dispose()
         @result
       end
 
