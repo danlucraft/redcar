@@ -1,9 +1,9 @@
 
-$:.push File.expand_path(File.join(File.dirname(__FILE__)))
+$:.push(File.expand_path(File.join(File.dirname(__FILE__))))
+$:.push(File.expand_path(File.join(File.dirname(__FILE__), %w{.. vendor spoon lib})))
+$:.push(File.expand_path(File.join(File.dirname(__FILE__), %w{.. vendor ffi lib})))
 
 require 'redcar/usage'
-
-require 'rbconfig'
 
 require 'redcar/ruby_extensions'
 require 'redcar/instance_exec'
@@ -13,6 +13,17 @@ require 'regex_replace'
 require 'forwardable'
 require 'yaml'
 require 'uri'
+
+begin
+  if Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby"
+    require 'spoon'
+    module Redcar; SPOON_AVAILABLE = true; end
+  else
+    module Redcar; SPOON_AVAILABLE = false; end
+  end
+rescue LoadError
+  module Redcar; SPOON_AVAILABLE = false; end
+end
 
 # ## Loading and Initialization
 #
@@ -68,7 +79,7 @@ module Redcar
     forking = ARGV.include?("--fork")
     no_runner = ARGV.include?("--no-sub-jruby")
     jruby = Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby"
-    osx = ! [:linux, :windows].include?(platform)    
+    osx = (not [:linux, :windows].include?(platform))
 
     begin
       if forking and not jruby
@@ -79,20 +90,26 @@ module Redcar
         
         if pid.nil?
           # reopen the standard pipes to nothingness
-          STDIN.reopen '/dev/null'
-          STDOUT.reopen '/dev/null', 'a'
+          STDIN.reopen Redcar.null_device
+          STDOUT.reopen Redcar.null_device, 'a'
           STDERR.reopen STDOUT
         end
-      elsif forking
+      elsif forking and SPOON_AVAILABLE and ::Spoon.supported?
         # so we need to try something different...
-        # Need to work out the vendoring stuff here.
-        # for now just blow up and do what we'd normally do.
-        #require 'spoon'
-        raise NotImplementedError, 'Attempting to fork from inside jRuby. jRuby doesn\'t support this.'
-        #puts 'Continuing normally...'
-        #forking = false
+        
+        forking = false
+        require 'redcar/runner'
+        runner = Redcar::Runner.new
+        runner.spin_up do |command|
+          command.push('--silent')
+          ::Spoon.spawnp(*command)
+        end
+        exit 0
+      elsif forking
+        raise NotImplementedError, "Something weird has happened. Please contact us."
       end
     rescue NotImplementedError
+      puts $!.class.name + ": " + $!.message
       puts "Forking isn't supported on this system. Sorry."
       puts "Starting normally..."
     end
@@ -102,7 +119,9 @@ module Redcar
     
     require 'redcar/runner'
     runner = Redcar::Runner.new
-    runner.spin_up
+    runner.spin_up do |command|
+      exec(*command)
+    end
   end
 
   def self.root
@@ -150,20 +169,6 @@ module Redcar
   # Starts the GUI.
   def self.pump
     Redcar.gui.start
-  end
-
-  # Platform symbol
-  #
-  # @return [:osx/:windows/:linux]
-  def self.platform
-    case Config::CONFIG["target_os"]
-    when /darwin/
-      :osx
-    when /mswin|mingw/
-      :windows
-    when /linux/
-      :linux
-    end
   end
 
   # Platform specific ~/.redcar

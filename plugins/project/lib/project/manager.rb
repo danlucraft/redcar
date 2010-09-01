@@ -25,7 +25,7 @@ module Redcar
         puts e.backtrace
         Application::Dialog.message_box("Error connecting: #{e.message}", :type => :error)
       end
-      
+
       def self.get_password
         result = Redcar::Application::Dialog.password_input("Remote Connection", "Enter password")
         result[:value] if result
@@ -37,7 +37,7 @@ module Redcar
       # @param [String] path  the path of the directory to view
       def self.open_remote_project(adapter, path)
         win = Redcar.app.focussed_window
-        win = Redcar.app.new_window if !win or Manager.in_window(win) 
+        win = Redcar.app.new_window if !win or Manager.in_window(win)
         project = Project.new(path, adapter)
         project.open(win) if project.ready?
       end
@@ -49,22 +49,22 @@ module Redcar
       rescue SocketError
         raise "Cannot connect to #{host}. Error: #{$!.message}."
       end
-      
+
       def self.open_projects
         Project.window_projects.values
       end
-      
+
       # Returns the project in the given window
       # @param [Window] window
       # @return Project or nil
       def self.in_window(window)
         Project.window_projects[window]
       end
-      
+
       def self.windows_without_projects
         Redcar.app.windows.reject {|w| in_window(w) }
       end
-      
+
       # this will restore open files unless other files or dirs were passed
       # as command line parameters
       def self.start(args)
@@ -77,7 +77,7 @@ module Redcar
         init_window_closed_hooks
         init_drb_listener
       end
-      
+
       def self.init_window_closed_hooks
         Redcar.app.add_listener(:window_about_to_close) do |win|
           project = in_window(win)
@@ -85,28 +85,28 @@ module Redcar
           self.save_file_list(win)
         end
       end
-      
+
       def self.init_drb_listener
         return if ARGV.include?("--multiple-instance")
         @drb_service = DrbService.new
       end
-      
+
       def self.storage
-        @storage ||= Plugin::Storage.new('project_plugin')
+        @storage = Plugin::Storage.new('project_plugin')
       end
-      
+
       def self.filter_path
         if Redcar.app.focussed_notebook_tab
           if mirror = EditView.focussed_document_mirror and mirror.is_a?(FileMirror)
             dir = File.dirname(mirror.path)
             return dir
           end
-        end      
+        end
         storage['last_dir'] || File.expand_path(Dir.pwd)
       end
-    
+
       def self.sensitivities
-        [ @open_project_sensitivity = 
+        [ @open_project_sensitivity =
             Sensitivity.new(:open_project, Redcar.app, false, [:focussed_window]) do
               if win = Redcar.app.focussed_window
                 win.treebook.trees.detect {|t| t.tree_mirror.is_a?(DirMirror) }
@@ -114,7 +114,7 @@ module Redcar
             end
         ]
       end
-      
+
       # Finds an EditTab with a mirror for the given path.
       #
       # @param [String] path  the path of the file being edited
@@ -122,14 +122,14 @@ module Redcar
       def self.find_open_file_tab(path)
         path = File.expand_path(path)
         all_tabs = Redcar.app.windows.map {|win| win.notebooks}.flatten.map {|nb| nb.tabs }.flatten
-        all_tabs.find do |t| 
-          t.is_a?(Redcar::EditTab) and 
-          t.edit_view.document.mirror and 
-          t.edit_view.document.mirror.is_a?(FileMirror) and 
-          File.expand_path(t.edit_view.document.mirror.path) == path 
+        all_tabs.find do |t|
+          t.is_a?(Redcar::EditTab) and
+          t.edit_view.document.mirror and
+          t.edit_view.document.mirror.is_a?(FileMirror) and
+          File.expand_path(t.edit_view.document.mirror.path) == path
         end
       end
-      
+
       # Opens a new EditTab with a FileMirror for the given path.
       #
       # @path  [String] path the path of the file to be edited
@@ -141,11 +141,11 @@ module Redcar
         tab.edit_view.reset_undo
         tab.focus
       end
-      
+
       def self.find_projects_containing_path(path)
         open_projects.select {|project| project.contains_path?(path) }
       end
-      
+
       def self.open_file(path, adapter=Adapters::Local.new)
         if tab = find_open_file_tab(path)
           tab.focus
@@ -159,7 +159,7 @@ module Redcar
         open_file_in_window(path, window, adapter)
         window.focus
       end
-      
+
       def self.open_tab_with_content(text)
         win = Redcar.app.focussed_window || Redcar.app.new_window
         tab = win.new_tab(Redcar::EditTab)
@@ -167,26 +167,26 @@ module Redcar
         tab.edit_view.reset_undo
         tab.focus
       end
-      
+
       # Opens a new Tree with a DirMirror and DirController for the given
       # path, in a new window.
       #
       # @param [String] path  the path of the directory to view
       def self.open_project_for_path(path)
         win = Redcar.app.focussed_window
-        win = Redcar.app.new_window if !win or Manager.in_window(win) 
+        win = Redcar.app.new_window if !win or Manager.in_window(win)
         project = Project.new(path).tap do |p|
           p.open(win) if p.ready?
         end
       end
-      
+
       # The currently focussed Project, or nil if none.
       #
       # @return [Project]
       def self.focussed_project
         in_window(Redcar.app.focussed_window)
       end
-      
+
       # saves away a list of the currently open files in
       # @param [win]
       def self.save_file_list(win)
@@ -197,9 +197,9 @@ module Redcar
             file_list << tab.document.path
           end
         end
-        storage['files_open_last_session'] = file_list      
+        storage['files_open_last_session'] = file_list
       end
-      
+
       # handles files and/or dirs passed as command line arguments
       def self.handle_startup_arguments(args)
         found_path_args = false
@@ -221,7 +221,7 @@ module Redcar
         end
         found_path_args
       end
-      
+
       def self.open_untitled_path(path)
         begin
           if File.file?(path) and contents = File.read(path)
@@ -233,8 +233,8 @@ module Redcar
           puts e.backtrace
         end
       end
-      
-      # Attaches a new listener to tab focus change events, so we can 
+
+      # Attaches a new listener to tab focus change events, so we can
       # keep the current_files list.
       def self.init_current_files_hooks
         Redcar.app.add_listener(:tab_focussed) do |tab|
@@ -246,24 +246,24 @@ module Redcar
         end
         attach_app_listeners
       end
-      
+
       def self.attach_app_listeners
         Redcar.app.add_listener(:lost_focus) do
           Manager.open_projects.each {|project| project.lost_application_focus }
         end
-        
+
         Redcar.app.add_listener(:window_focussed) do |win|
           Manager.in_window(win).andand.gained_focus
         end
       end
-      
+
       # restores the directory/files in the last open window
       def self.restore_last_session
         if path = storage['last_open_dir']
           s = Time.now
           open_project_for_path(path)
         end
-        
+
         if files = storage['files_open_last_session']
           files.each do |path|
             open_file(path)
@@ -277,7 +277,7 @@ module Redcar
           project.refresh_modified_file(path)
         end
       end
-      
+
       def self.menus
         Menu::Builder.build do
           sub_menu "File" do
@@ -289,12 +289,12 @@ module Redcar
               lazy_sub_menu "Open Recent" do
                 Project::RecentDirectories.generate_menu(self)
               end
-              
+
               separator
               item "Save", Project::FileSaveCommand
               item "Save As", Project::FileSaveAsCommand
             end
-            
+
             group(:priority => 11) do
               item "Close Directory", Project::DirectoryCloseCommand
               item "Reveal in Project", Project::RevealInProjectCommand
@@ -308,14 +308,30 @@ module Redcar
           end
         end
       end
-      
+
       # Uses our own context menu hook to provide context menu entries
       # @return [Menu]
       def self.project_context_menus(tree, node, controller)
+        if node
+          if node.directory?
+            enclosing_dir = node.path
+          else
+            enclosing_dir = node.directory
+          end
+        else
+          enclosing_dir = tree.tree_mirror.path
+        end
         Menu::Builder.build do
           group(:priority => :first) do
             item("New File")        { controller.new_file(tree, node) }
             item("New Directory")   { controller.new_dir(tree, node)  }
+          end
+          separator
+          sub_menu "Open Directory" do
+            group(:priority => 30) do
+              item("in File Browser") { Project::OpenDirectoryInExplorerCommand.new(enclosing_dir).run }
+              item("in Command Line") { Project::OpenDirectoryInCommandLineCommand.new(enclosing_dir).run }
+            end
           end
           if not node.nil?
             group(:priority => 15) do
@@ -330,6 +346,8 @@ module Redcar
               end
               item("Delete")          { controller.delete(tree, node)   }
             end
+
+
           end
           group(:priority => 75) do
             separator
@@ -347,7 +365,7 @@ module Redcar
           end
         end
       end
-          
+
       class << self
         attr_reader :open_project_sensitivity
       end

@@ -1,4 +1,5 @@
 require 'socket'
+require 'rbconfig'
 
 module Redcar
   DRB_PORT = 10021
@@ -54,7 +55,7 @@ module Redcar
           end
         end
       else
-       return unless drb.open_item_drb('just_bring_to_front')
+        return unless drb.open_item_drb('just_bring_to_front')
       end
       puts 'Success' if $VERBOSE
       true
@@ -62,6 +63,29 @@ module Redcar
       puts e.class.to_s + ": " + e.message
       puts e.backtrace
       false
+    end
+  end
+
+  # Platform symbol
+  #
+  # @return [:osx/:windows/:linux]
+  def self.platform
+    case Config::CONFIG["target_os"]
+    when /darwin/
+      :osx
+    when /mswin|mingw/
+      :windows
+    when /linux/
+      :linux
+    end
+  end
+  
+  def self.null_device
+    case platform
+    when :windows
+      'nul'
+    else
+      '/dev/null'
     end
   end
 end

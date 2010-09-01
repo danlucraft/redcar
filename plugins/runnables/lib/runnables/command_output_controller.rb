@@ -55,21 +55,42 @@ module Redcar
         @processor.process(text)
       end
       
-      def run_windows
-        @thread = Thread.new do
+      def output_thread(type, output)
+        Thread.new(output) do
+          instance_variable_set("@#{type}_thread_started", true)
           begin
-            start_output_block
-            output = `cd #{@path} & #{@cmd} 2>&1`
-            append_output <<-HTML
-            <div class="stdout">
-            #{process(output)}
-            </div>
-            HTML
-            end_output_block
+            while line = output.gets
+              append_output <<-HTML
+                <div class="#{type}">
+                  #{process(line)}
+                </div>
+              HTML
+            end
           rescue => e
             puts e.class
             puts e.message
             puts e.backtrace
+          end
+        end
+      end
+      
+      def run_windows
+        Thread.new do
+          # TODO: Find browser's onload rather than sleeping
+          sleep 1
+          start_output_block
+          cmd = "cd \"#{@path.gsub('/', '\\')}\" & #{@cmd}"
+          Redcar.logger.info "Running: #{cmd}"
+          
+          # JRuby-specific
+          pid, input, output, error = IO.popen4(cmd)
+          @stdout_thread = output_thread(:stdout, output)
+          @stderr_thread = output_thread(:stderr, error)
+          
+          Thread.new do
+            sleep 0.1 until @stdout_thread_started && @stderr_thread_started &&
+                            !@stdout_thread.alive? && !@stderr_thread.alive?
+            end_output_block
           end
         end
       end

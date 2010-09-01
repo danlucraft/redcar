@@ -5,6 +5,7 @@ $:.push(
 
 require 'blockcache'
 require 'scm/model'
+require 'scm/commands'
 require 'scm/commit_mirror'
 require 'scm/diff_mirror'
 require 'scm/scm_changes_controller'
@@ -56,8 +57,11 @@ module Redcar
             group(:priority => 10) do
               separator
               sub_menu "Source Control" do
-                item "Create Commit", Scm::CommitMirror::OpenCommand
-                item "Save Commit", Scm::CommitMirror::SaveCommand
+                item "Toggle Changes Tree", :command => Scm::ToggleScmTreeCommand, :value => [:commit, [Scm::ScmChangesMirror, Scm::ScmChangesController]]
+                item "Toggle Commits Tree", :command => Scm::ToggleScmTreeCommand, :value => [:push, [Scm::ScmCommitsMirror, Scm::ScmCommitsController]]
+                separator
+                item "Create Commit", :command => Scm::CommitMirror::OpenCommand
+                item "Save Commit", :command => Scm::CommitMirror::SaveCommand
               end
             end
           end
@@ -146,34 +150,10 @@ module Redcar
             project.adapter = adapter
           end
           
-          puts "Preparing the GUI for the current project's repository." if debug
-          
           project_repositories[project]['trees'] = []
-          
-          if repo.supported_commands.include? :commit
-            mirror = Scm::ScmChangesMirror.new(repo)
-            tree = Tree.new(mirror, Scm::ScmChangesController.new(repo))
-            project.window.treebook.add_tree(tree)
-            tree.tree_mirror.top.each {|n| tree.expand(n)}
-            project_repositories[project]['trees'].push tree
-          end
-          if repo.supported_commands.include? :push
-            mirror = Scm::ScmCommitsMirror.new(repo)
-            tree = Tree.new(mirror, Scm::ScmCommitsController.new(repo))
-            project.window.treebook.add_tree(tree)
-            tree.tree_mirror.top.each {|n| tree.expand(n)}
-            project_repositories[project]['trees'].push tree
-          end
-        
-          # don't steal focus from the project module.
-          project.window.treebook.focus_tree(project.tree)
         rescue
           # cleanup
           info = project_repositories.delete project
-          
-          if info['trees']
-            info['trees'].each {|t| project.window.treebook.remove_tree(t)}
-          end
           
           puts "*** Error loading SCM: " + $!.message
           puts $!.backtrace

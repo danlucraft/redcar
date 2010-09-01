@@ -13,7 +13,7 @@ end
 def reset_runnable_fixtures
   # Not sure why this is needed, perhaps next test is starting before full deletion?
   FileUtils.rm_rf runnable_fixtures
-  FileUtils.mkdir runnable_fixtures
+  FileUtils.mkdir_p runnable_fixtures
   FileUtils.mkdir_p File.dirname(runnable_config)
   
   File.open("#{runnable_fixtures}/runnable_app.rb", 'w') do |f|
@@ -26,20 +26,20 @@ def reset_runnable_fixtures
         "commands":[
           {
             "name":        "An app",
-            "command":     "ruby runnable_app.rb",
+            "command":     "jruby runnable_app.rb",
             "description": "Runs the app",
             "type":        "task/ruby"
             },
           {
             "name":        "A silent app",
-            "command":     "ruby runnable_app.rb",
+            "command":     "jruby runnable_app.rb",
             "description": "Runs the app silently",
             "type":        "task/ruby",
             "output":      "none"
           },
           {
             "name":        "A windowed app",
-            "command":     "ruby runnable_app.rb",
+            "command":     "jruby runnable_app.rb",
             "description": "Runs the app in a window",
             "type":        "task/ruby",
             "output":      "window"
@@ -47,9 +47,9 @@ def reset_runnable_fixtures
         ],
         "file_runners":[
           {
-            "regex":   ".*\\.rb",
+            "regex":   ".*\\\\.rb",
             "name":    "Run as ruby",
-            "command": "ruby __PATH__",
+            "command": "jruby \\"__PATH__\\"",
             "type":    "app/ruby"
           }
         ]
