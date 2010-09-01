@@ -8,7 +8,7 @@ Enhancements
  * Checkbox menu items for tab view togglables (Alex Lourie)
  * Checkbox menu item for strip trailing spaces (Steven Hancock)
  * Runnables work on Windows (Mat Schaffer)
- * Open directory in command line / os directory viewer (Delisa Mason)
+ * Open directory in command line / os directory viewer (Matthew Scharley, Delisa Mason)
  * Can press enter really fast in the FindFileDialog and it will open the correct file (Tim Felgentreff)
  * Use spoon for forking on Linux, OSX (Matthew Scharley)
  * Find in project streams (Kieran Pilkington)
