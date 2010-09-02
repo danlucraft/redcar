@@ -693,13 +693,13 @@ module Redcar
         Redcar::EditView::SelectThemeDialog.new.open
       end
     end
-    
+
     class ShowTheme < Command
       def execute
-        
+
       end
     end
-    
+
     class SelectFontSize < Command
       def execute
         result = Application::Dialog.input("Font Size", "Please enter new font size", Redcar::EditView.font_size.to_s) do |text|
@@ -747,8 +747,9 @@ module Redcar
         link "Cmd+Shift+I", AutoIndenter::IndentCommand
         link "Cmd+L",       GotoLineCommand
         link "Cmd+F",       DocumentSearch::SearchForwardCommand
-        link "Cmd+Shift+F", DocumentSearch::RepeatPreviousSearchForwardCommand
+        #link "Cmd+Shift+F", DocumentSearch::RepeatPreviousSearchForwardCommand
         link "Cmd+Ctrl+F",  DocumentSearch::SearchAndReplaceCommand
+        link "Cmd+Shift+F", Redcar::FindInProject::OpenSearch
         link "Cmd+A",       SelectAllCommand
         link "Ctrl+W",      SelectWordCommand
         link "Cmd+B",       ToggleBlockSelectionCommand
@@ -771,7 +772,7 @@ module Redcar
         link "Cmd+Alt+I",       ToggleInvisibles
         link "Ctrl+R",          Runnables::RunEditTabCommand
         link "Cmd+I",           OutlineView::OpenOutlineViewCommand
-        
+
         link "Ctrl+Shift+P",    PrintScopeCommand
 
         link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
@@ -819,6 +820,7 @@ module Redcar
         link "Ctrl+L",       GotoLineCommand
         link "Ctrl+F",       DocumentSearch::SearchForwardCommand
         link "F3",           DocumentSearch::RepeatPreviousSearchForwardCommand
+        link "Ctrl+Shift+F", Redcar::FindInProject::OpenSearch
         link "Ctrl+A",       SelectAllCommand
         link "Ctrl+Alt+W",   SelectWordCommand
         link "Ctrl+B",       ToggleBlockSelectionCommand
@@ -847,7 +849,7 @@ module Redcar
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
         link "Ctrl+Alt+I",       ToggleInvisibles
         link "Ctrl+I",           OutlineView::OpenOutlineViewCommand
-        
+
         link "Ctrl+Alt+S", Snippets::OpenSnippetExplorer
         #Textmate.attach_keybindings(self, :linux)
 
@@ -959,15 +961,15 @@ module Redcar
              end
           end
           separator
-          item "Toggle Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
-          item "Toggle Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
-          item "Toggle Annotations", :command => ToggleAnnotations, :type => :check, :active => EditView.show_annotations?
+          item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
+          item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
+          item "Show Annotations", :command => ToggleAnnotations, :type => :check, :active => EditView.show_annotations?
         end
         sub_menu "Bundles", :priority => 45 do
           group(:priority => :first) do
             item "Find Snippet", Snippets::OpenSnippetExplorer
             item "Installed Bundles", Textmate::InstalledBundles
-            item "View Bundles in Tree", Textmate::ShowSnippetTree
+            item "Browse Snippets", Textmate::ShowSnippetTree
           end
           group(:priority => 15) do
             separator

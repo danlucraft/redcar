@@ -13,10 +13,14 @@
         <td class="label"><label for="query">Search Term</label></td>
         <td class="field">
           <input id="query" type="text" value="<%= @query %>" />
+
+          <!-- keeps a cache of the current query so if the user changes the query field, this remains the same as the results -->
+          <input id="cached_query" type="hidden" />
+
           <div id="recent_queries" style="display: none;">
             <ul>
               <% (@settings['recent_queries'] || []).each do |query| %>
-                <li><%= query %></li>
+                <li><%= CGI::escapeHTML(query) %></li>
               <% end %>
             </ul>
           </div>
@@ -25,30 +29,16 @@
           <a href="#" title="Toggle Recent Queries" id="toggle_recent_queries">&darr;</a>
         </td>
       </tr>
-      <tr class="input">
-        <td class="label"><label for="options">Options</label></td>
-        <td class="field">
-          <input id="options" type="text" value="<%= @options %>" />
-          <div id="recent_options" style="display: none;">
-            <ul>
-              <% (@settings['recent_options'] || []).each do |option| %>
-                <li><%= option %></li>
-              <% end %>
-            </ul>
-          </div>
-        </td>
-        <td class="expand">
-          <a href="#" title="Toggle Recent Options" id="toggle_recent_options">&darr;</a>
-        </td>
-      </tr>
       <tr>
         <td></td>
         <td class="controls">
           <input id="search" type="submit" value="Find In Project" />
+          <input type="checkbox" id="literal_match" <%="checked=checked" if @literal_match %>>
+          <label for="literal_match">Literal Match</label>
           <input type="checkbox" id="match_case" <%="checked=checked" if @match_case %>>
           <label for="match_case">Match case</label>
-          <input type="checkbox" id="with_context" <%="checked=checked" if @with_context %>>
-          <label for="with_context">With context</label>
+          <!-- <input type="checkbox" id="with_context" <%="checked=checked" if @with_context %>>
+          <label for="with_context">With context</label> -->
         </td>
         <td></td>
       </tr>
@@ -57,8 +47,10 @@
 </div>
 
 <div id="results_container">
-  <div id="no_results">
-    Please provide a search term above.
+  <div id="results">
+    <div id="no_results">
+      Please provide a search term above.
+    </div>
   </div>
 </div>
 
@@ -69,9 +61,10 @@
     $('#search_form').submit(function(ev) {
       ev.preventDefault();
       try {
+        if ($("#literal_match").attr('checked')) { var literal_match = 'true'; } else { var literal_match = 'false'; }
         if ($("#match_case").attr('checked')) { var match_case = 'true'; } else { var match_case = 'false'; }
         if ($("#with_context").attr('checked')) { var with_context = 'true'; } else { var with_context = 'false'; }
-        Controller.search($("#query").val(), $("#options").val(), match_case, with_context);
+        Controller.search($("#query").val(), literal_match, match_case, with_context);
       } catch(e) {
         alert(e.message);
       }
@@ -95,26 +88,43 @@
       }
     });
 
+    // in the case the user wants to search for things like <table>, we need to unescape the entities
+    String.prototype.unescapeHTML = function() {
+      var t = document.createElement('div');
+      t.innerHTML = this;
+      return t.firstChild.nodeValue;
+    }
+
     $('#recent_queries li').click(function(ev) {
       ev.preventDefault();
-      $('#query').val($(this).html());
+      $('#query').val($(this).html().unescapeHTML());
       $('#query').trigger('keyup');
       $('#recent_queries').hide();
     });
 
-    $('#toggle_recent_options').click(function(ev) {
+    // need to use live here so that results added will be caught
+    $('.result').live('click', function(ev) {
       ev.preventDefault();
-      if ($('#recent_options').is(":visible")) {
-        $('#recent_options').hide();
-      } else {
-        $('#recent_options').show();
+      try {
+        if ($("#literal_match").attr('checked')) { var literal_match = 'true'; } else { var literal_match = 'false'; }
+        if ($("#match_case").attr('checked')) { var match_case = 'true'; } else { var match_case = 'false'; }
+        Controller.openFile($(this).attr('data-href'), $(this).attr('data-line_no'), $("#cached_query").val(), literal_match, match_case);
+      } catch(e) {
+        alert(e.message);
       }
     });
 
-    $('#recent_options li').click(function(ev) {
+    // need to use live here so that results added will be caught
+    $('.expand_collapse').live('click', function(ev) {
       ev.preventDefault();
-      $('#options').val($(this).html());
-      $('#recent_options').hide();
+      var file_index = $(this).attr('data-file_index');
+      if ($(".line_for_" + file_index).first().is(":visible")) {
+        $('img', this).attr('src', '<%= image_path %>/collapsed.png');
+        $(".line_for_" + file_index).hide();
+      } else {
+        $('img', this).attr('src', '<%= image_path %>/expanded.png');
+        $(".line_for_" + file_index).show();
+      }
     });
   });
 </script>
