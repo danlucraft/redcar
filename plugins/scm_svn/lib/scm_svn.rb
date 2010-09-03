@@ -114,17 +114,17 @@ module Redcar
         def commit!(message,change=nil)
           committer = client_manager.getCommitClient()
           if change
-            paths = [change.path]
+            paths = [Java::JavaIo::File.new(change.path)]
           else
             paths = []
-            uncommited_changes.each { |c| paths << c.path }
+            indexed_changes.each { |c| paths << Java::JavaIo::File.new(c.path) }
           end
           packet = committer.doCollectCommitItems(
-                    paths,
+                    paths.to_java(Java::JavaIo::File),
                     true,  # keep locks
                     false, # true to force
                     SVNDepth::INFINITY, # tree depth
-                    [] # changelist names array
+                    [].to_java(:string) # changelist names array
                    )
           committer.doCommit(packet, true, message)
           true
