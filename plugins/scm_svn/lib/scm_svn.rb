@@ -59,7 +59,7 @@ module Redcar
           if repository?(@path)
             client_manager.getUpdateClient().doUpdate(
               Java::JavaIo::File.new(path),
-              SVNRevision.HEAD,
+              SVNRevision::HEAD,
               true, # allow unversioned files to exist in directory
               false # store depth in directory
             )
@@ -67,8 +67,8 @@ module Redcar
             client_manager.getUpdateClient().doCheckout(
               SVNURL.parseURIEncoded(path),
               Java::JavaIo::File.new(@path),
-              SVNRevision.HEAD,
-              SVNDepth.INFINITY,
+              SVNRevision::HEAD,
+              SVNDepth::INFINITY,
               true # allow unversioned files to exist already in directory
             )
           end
@@ -105,7 +105,11 @@ module Redcar
           Dir.glob(files).each do |file_path|
             if File.file?(file_path)
               status = check_file_status(file_path,indexed)
-              nodes << Scm::Subversion::Change.new(file_path,status,[]) if status
+              if status
+                diff = file_diff(file_path) unless status == :new
+                puts "diff: #{diff}"
+                nodes << Scm::Subversion::Change.new(file_path,status,[],diff)
+              end
             end
           end
         end
@@ -127,7 +131,20 @@ module Redcar
             end
             s
           end
-          puts "Final status: #{s} Path: #{path}" if debug and s
+        end
+
+        def file_diff(path)
+          differ = client_manager.getDiffClient()
+          stream = Java::JavaIo::ByteArrayOutputStream.new
+          file = Java::JavaIo::File.new(path)
+          change_lists = Java::JavaUtil::ArrayList.new
+          differ.doDiff(file, SVNRevision::BASE,
+                        file, SVNRevision::WORKING,
+                        SVNDepth::IMMEDIATES,
+                        false,
+                        stream,
+                        change_lists)
+          stream.toString()
         end
 
         def translations

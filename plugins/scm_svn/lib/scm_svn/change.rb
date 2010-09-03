@@ -4,10 +4,11 @@ module Redcar
       class Change
         include Redcar::Scm::ScmChangesMirror::Change
 
-        def initialize(path,status,children)
+        def initialize(path,status,children,diff)
           @path = path
           @status = status
           @children = children
+          @diff = diff
         end
 
         def text
@@ -31,8 +32,7 @@ module Redcar
         end
 
         def diff
-          nil
-          #TODO: implement me!
+          @diff
         end
       end
     end
