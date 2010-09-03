@@ -23,6 +23,11 @@ module Redcar
           @status
         end
 
+        def log_status
+          c = log_codes[@status] || ""
+          "#{c} #{path}"
+        end
+
         def path
           @path
         end
@@ -33,6 +38,15 @@ module Redcar
 
         def diff
           @diff
+        end
+
+        def log_codes
+          {
+            :indexed => "A",
+            :changed => "M",
+            :deleted => "D",
+            :missing => "?"
+          }
         end
       end
     end

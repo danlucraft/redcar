@@ -37,7 +37,6 @@ module Redcar
         def load(path)
           raise "Already loaded repository" if @path
           @path = path
-          puts "loaded repository at #{path}" if debug
         end
 
         def repository?(path)
@@ -50,8 +49,7 @@ module Redcar
         def supported_commands
           [
             :pull, :commit,:index_delete, :index_add,
-            :index_ignore ,:index_revert, :index_restore,
-            :index_save   ,:index_unsave, :index
+            :index_ignore ,:index_revert
           ]
         end
 
@@ -74,7 +72,80 @@ module Redcar
           end
         end
 
-        #TODO: commit! and commit_message
+        def index_add(change)
+          client_manager.getWCClient().doAdd(
+                    Java::JavaIo::File.new(change.path), #wc item file
+                    false, # if true, this method does not throw exceptions on already-versioned items
+                    false, # if true, create a directory also at path
+                    false, # not used; make use of makeParents instead
+                    SVNDepth::INFINITY, #tree depth
+                    false, # if true, does not apply ignore patterns to paths being added
+                    true)  # if true, climb upper and schedule also all unversioned paths in the way
+          true # refresh tree
+        end
+
+        def index_ignore(change)
+          status = client_manager.getStatusClient().doStatus(
+                        Java::JavaIo::File.new(change.path),
+                        false) #don't use remote
+                        status.setContentsStatus(SVNStatusType::STATUS_IGNORED)
+          true # refresh tree
+        end
+
+        def index_revert(change)
+          change_lists = Java::JavaUtil::ArrayList.new
+          client_manager.getWCClient().doRevert(
+            Java::JavaIo::File.new(change.path),
+            SVNDepth::INFINITY,
+            change_lists # might be useful later
+          )
+          true # refresh tree
+        end
+
+        def index_delete(change)
+          client_manager.getWCClient().doDelete(
+            Java::JavaIo::File.new(change.path),
+            false, # true to force operation to run
+            false, # true to delete files from filesystem
+            false  # true to do a dry run
+          )
+        end
+
+        def commit!(message,change=nil)
+          committer = client_manager.getCommitClient()
+          if change
+            paths = [change.path]
+          else
+            paths = []
+            uncommited_changes.each { |c| paths << c.path }
+          end
+          packet = committer.doCollectCommitItems(
+                    paths,
+                    true,  # keep locks
+                    false, # true to force
+                    SVNDepth::INFINITY, # tree depth
+                    [] # changelist names array
+                   )
+          committer.doCommit(packet, true, message)
+          true
+        end
+
+        def commit_message(change=nil)
+          msg = log_divider
+          if change
+            msg << change.log_status + "\n"
+          else
+            indexed_changes.each do |c|
+              msg << c.log_status + "\n"
+            end
+          end
+          msg
+        end
+
+        def log_divider
+          "\n\n--This line, and those below, will be ignored--\n\n"
+        end
+
         def uncommited_changes
           indexed_changes + unindexed_changes
         end
@@ -107,7 +178,6 @@ module Redcar
               status = check_file_status(file_path,indexed)
               if status
                 diff = file_diff(file_path) unless status == :new
-                puts "diff: #{diff}"
                 nodes << Scm::Subversion::Change.new(file_path,status,[],diff)
               end
             end
@@ -136,7 +206,7 @@ module Redcar
         def file_diff(path)
           differ = client_manager.getDiffClient()
           stream = Java::JavaIo::ByteArrayOutputStream.new
-          file = Java::JavaIo::File.new(path)
+          file   = Java::JavaIo::File.new(path)
           change_lists = Java::JavaUtil::ArrayList.new
           differ.doDiff(file, SVNRevision::BASE,
                         file, SVNRevision::WORKING,
