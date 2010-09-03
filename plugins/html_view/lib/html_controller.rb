@@ -24,5 +24,26 @@ module Redcar
     def execute(script)
       notify_listeners(:execute_script, script)
     end
+
+    def javascript_controller_actions
+      methods = self.methods - Object.methods
+      <<-JS
+        <script type="text/javascript">
+          var makeController = function (methods) {
+            var method, jsMethod, controller = {};
+            for (i in methods) {
+              method = methods[i];
+              jsMethod = method.replace(/_(.)/g, function () { return arguments[1].toUpperCase(); });
+              controller[jsMethod] = function () {
+                var args = [method].concat(Array.prototype.slice.call(arguments));
+                return JSON.parse(rubyCall.apply(this, args));
+              };
+            }
+            return controller;
+          };
+          Controller = makeController(#{methods.inspect});
+        </script>
+      JS
+    end
   end
 end
