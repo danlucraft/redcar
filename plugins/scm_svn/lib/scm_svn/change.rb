@@ -31,7 +31,7 @@ module Redcar
         end
 
         def diff
-          ''
+          nil
           #TODO: implement me!
         end
       end

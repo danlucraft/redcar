@@ -1,6 +1,7 @@
 $:.push(File.expand_path(File.join(File.dirname(__FILE__), %w{.. vendor})))
 
 require 'java'
+require 'scm_svn/change'
 begin
   require 'svnkit.jar'
 rescue
@@ -36,6 +37,7 @@ module Redcar
         def load(path)
           raise "Already loaded repository" if @path
           @path = path
+          puts "loaded repository at #{path}" if debug
         end
 
         def repository?(path)
@@ -87,8 +89,30 @@ module Redcar
 
         def populate_changes(path,indexed)
           nodes = []
+          find_dirs(path,indexed,nodes)
+          nodes
+        end
+
+        def find_dirs(path,indexed,nodes=[])
+          Dir["#{path.to_s}/*/"].map do |a|
+            find_dirs(a,indexed,nodes)
+          end
+          check_files(path,indexed,nodes)
+        end
+
+        def check_files(path,indexed,nodes)
+          files = File.join(path.to_s, "*")
+          Dir.glob(files).each do |file_path|
+            if File.file?(file_path)
+              status = check_file_status(file_path,indexed)
+              nodes << Scm::Subversion::Change.new(file_path,status,[]) if status
+            end
+          end
+        end
+
+        def check_file_status(path,indexed)
           status_client = client_manager.getStatusClient()
-          status = status_client.doStatus(Java::JavaIo::File.new(path),false)
+          status = status_client.doStatus(Java::JavaIo::File.new(path),false).getContentsStatus()
           if indexed
             s = case status
             when SVNStatusType::STATUS_MODIFIED then :changed
@@ -96,35 +120,26 @@ module Redcar
             when SVNStatusType::STATUS_DELETED  then :deleted
             when SVNStatusType::STATUS_ADDED    then :indexed
             end
+            s
           else
             s = case status
             when SVNStatusType::STATUS_UNVERSIONED then :new
             end
+            s
           end
-          if s
-            children = []
-            unless File.file?(path) or not File.exist?(path)
-              Dir["#{path.to_s}/*/"].map do |sub_path|
-                children = populate_changes(sub_path, indexed) || []
-              end
-            end
-            nodes << Scm::Subversion::Change.new(path,s,children)
-          end
-          nodes.sort_by {|node| node.path}
+          puts "Final status: #{s} Path: #{path}" if debug and s
         end
 
         def translations
+          t = super
           if repository?(@path)
-            {
-              :push => "Commit Changes",
-              :pull => "Update Working Copy"
-            }
+            t[:push] = "Commit Changes",
+            t[:pull] = "Update Working Copy"
           else
-            {
-              :push => "Commit Changes",
-              :pull => "Checkout Repository"
-            }
+            t[:push] = "Commit Changes",
+            t[:pull] = "Checkout Repository"
           end
+          t
         end
 
         def self.debug
@@ -133,6 +148,14 @@ module Redcar
 
         def debug
           Redcar::Scm::Subversion::Manager.debug
+        end
+
+        def inspect
+          if @path
+            %Q{#<Scm::Subversion::Manager "#{@path}">}
+          else
+            %Q{#<Scm::Subversion::Manager>}
+          end
         end
       end
     end
