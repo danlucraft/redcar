@@ -265,9 +265,9 @@ task :release => :gem do
   
   redcar_bucket = AWS::S3::Bucket.find('redcar')
   s3_uploads = {
-    "plugins/edit_view_swt/vendor/java-mateview.jar"       => "java-mateview-#{REDCAR_VERSION}.jar",
-    "plugins/application_swt/lib/dist/application_swt.jar" => "application_swt-#{REDCAR_VERSION}.jar",
-    "pkg/redcar-#{REDCAR_VERSION}.gem"                     => "redcar-#{REDCAR_VERSION}.gem"
+    "vendor/java-mateview/release/java-mateview.jar" => "java-mateview-#{REDCAR_VERSION}.jar",
+    "plugins/application_swt/lib/dist/application_swt.jar"   => "application_swt-#{REDCAR_VERSION}.jar",
+    "pkg/redcar-#{REDCAR_VERSION}.gem"                       => "redcar-#{REDCAR_VERSION}.gem"
   }
   
   s3_uploads.each do |source, target|

@@ -22,7 +22,7 @@ require "application_swt/treebook"
 require "application_swt/window"
 require "application_swt/swt/grid_data"
 
-require "dist/application_swt"
+require "application_swt-#{Redcar::VERSION}"
 
 module Redcar
   class ApplicationSWT

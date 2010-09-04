@@ -19,8 +19,8 @@ else
   Redcar.read_stdin
   exit if Redcar.try_to_load_via_drb
   require File.expand_path(File.join(File.dirname(__FILE__), %w(.. lib redcar)))
-  Redcar.spin_up
   Redcar.environment = :user
+  Redcar.spin_up
   Redcar.load
   Redcar::Top.start(ARGV)
   Redcar.pump

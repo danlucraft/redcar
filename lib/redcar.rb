@@ -145,6 +145,8 @@ module Redcar
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "json", "lib"))
     require 'json'
     
+    $:.push File.expand_path(File.join(Redcar.asset_dir))
+    
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "openssl", "lib"))
     require 'openssl'
 
@@ -184,7 +186,7 @@ module Redcar
   end
   
   # Platform specific ~/.redcar/assets
-  def self.plugin_assets_dir
+  def self.asset_dir
     File.join(user_dir, "assets")
   end
   
