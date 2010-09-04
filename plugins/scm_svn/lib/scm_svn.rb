@@ -48,12 +48,13 @@ module Redcar
 
         def supported_commands
           [
-            :pull, :commit,:index_delete, :index_add,
-            :index_ignore ,:index_revert
+            :pull,:commit ,:index_delete, :index_add,
+            :index_ignore ,:index_revert, :index_save,
+            :index_unsave ,:index
           ]
         end
 
-        def pull!(path)
+        def pull!(path=nil)
           if repository?(@path)
             client_manager.getUpdateClient().doUpdate(
               Java::JavaIo::File.new(path),
@@ -95,7 +96,7 @@ module Redcar
         def index_revert(change)
           change_lists = Java::JavaUtil::ArrayList.new
           client_manager.getWCClient().doRevert(
-            Java::JavaIo::File.new(change.path),
+            [Java::JavaIo::File.new(change.path)].to_java(Java::JavaIo::File),
             SVNDepth::INFINITY,
             change_lists # might be useful later
           )
@@ -103,12 +104,39 @@ module Redcar
         end
 
         def index_delete(change)
-          client_manager.getWCClient().doDelete(
+          if change.status[0] == :new
+            File.delete(change.path)
+          elsif change.status[0] == :added
+            index_unsave(change)
+            File.delete(Fle.new(change.path))
+          else
+            client_manager.getWCClient().doDelete(
             Java::JavaIo::File.new(change.path),
-            false, # true to force operation to run
-            false, # true to delete files from filesystem
-            false  # true to do a dry run
-          )
+              false, # true to force operation to run
+              false, # true to delete files from filesystem
+              false  # true to do a dry run
+            )
+          end
+        end
+
+        def index_save(change)
+          #TODO: what to do here? Maybe cache?
+        end
+
+        def index_restore(change)
+          #TODO: restore saved index
+        end
+
+        def index_unsave(change)
+          if change.status[0] == :new
+            # Do nothing, there's nothing to unsave
+          elsif change.status[0] == :added
+            status = client_manager.getStatusClient().doStatus(Java::JavaIo::File.new(change.path))
+            status.setContentsStatus(SVNStatusType::STATUS_UNVERSIONED)
+          else
+            Application::Dialog.message_box("#{change.path} is already in the repository. Use 'delete' to remove.")
+          end
+          true # refresh tree
         end
 
         def commit!(message,change=nil)
@@ -126,12 +154,14 @@ module Redcar
                     SVNDepth::INFINITY, # tree depth
                     [].to_java(:string) # changelist names array
                    )
+          idx = message.index(log_divider_message)
+          message = message[0,idx] if idx
           committer.doCommit(packet, true, message)
           true
         end
 
         def commit_message(change=nil)
-          msg = log_divider
+          msg = "\n\n#{log_divider_message}\n\n"
           if change
             msg << change.log_status + "\n"
           else
@@ -142,8 +172,8 @@ module Redcar
           msg
         end
 
-        def log_divider
-          "\n\n--This line, and those below, will be ignored--\n\n"
+        def log_divider_message
+          "--This line, and those below, will be ignored--"
         end
 
         def uncommited_changes

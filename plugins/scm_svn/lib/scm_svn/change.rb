@@ -20,11 +20,11 @@ module Redcar
         end
 
         def status
-          @status
+          [@status]
         end
 
         def log_status
-          c = log_codes[@status] || ""
+          c = log_codes[status] || ""
           "#{c} #{path}"
         end
 
@@ -42,10 +42,10 @@ module Redcar
 
         def log_codes
           {
-            :indexed => "A",
-            :changed => "M",
-            :deleted => "D",
-            :missing => "?"
+            [:indexed] => "A",
+            [:changed] => "M",
+            [:deleted] => "D",
+            [:missing] => "?"
           }
         end
       end
