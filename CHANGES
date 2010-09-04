@@ -27,6 +27,7 @@ Fixes:
  * [Bug 302] Search/replace won't infinitely recurse when the search string is a prefixed substring of the replace text. (Dan Lucraft)
  * [Bug 293] Select Word works correctly on such un-American words as: "können" (Dan Lucraft)
  * [Bug 286] The paste command no longer inserts in the wrong location when the autoindenter tries to run during the command (Dan Lucraft)
+ * [Bug 270] The "Go to declaration" fuzzy finder chooses the right file when you have refined the list (Dan Lucraft)
 
 
 Version 0.4.1 (24 Aug 2010)
