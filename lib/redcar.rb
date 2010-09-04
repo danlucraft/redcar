@@ -52,7 +52,7 @@ end
 #
 # and so on.
 module Redcar
-  VERSION         = '0.5.0dev'
+  VERSION         = '0.5.1dev'
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 5
   VERSION_RELEASE = 0
