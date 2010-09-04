@@ -44,6 +44,13 @@ module Redcar
         end
 
         def refresh
+          cache.refresh
+        end
+
+        def cache
+          @cache ||= begin
+            c = BlockCache.new
+          end
         end
 
         def supported_commands
@@ -75,13 +82,13 @@ module Redcar
 
         def index_add(change)
           client_manager.getWCClient().doAdd(
-                    Java::JavaIo::File.new(change.path), #wc item file
-                    false, # if true, this method does not throw exceptions on already-versioned items
-                    false, # if true, create a directory also at path
-                    false, # not used; make use of makeParents instead
-                    SVNDepth::INFINITY, #tree depth
-                    false, # if true, does not apply ignore patterns to paths being added
-                    true)  # if true, climb upper and schedule also all unversioned paths in the way
+            Java::JavaIo::File.new(change.path), #wc item file
+            false, # if true, this method does not throw exceptions on already-versioned items
+            false, # if true, create a directory also at path
+            false, # not used; make use of makeParents instead
+            SVNDepth::INFINITY, #tree depth
+            false, # if true, does not apply ignore patterns to paths being added
+            true)  # if true, climb upper and schedule also all unversioned paths in the way
           true # refresh tree
         end
 
@@ -89,7 +96,7 @@ module Redcar
           status = client_manager.getStatusClient().doStatus(
                         Java::JavaIo::File.new(change.path),
                         false) #don't use remote
-                        status.setContentsStatus(SVNStatusType::STATUS_IGNORED)
+          status.setContentsStatus(SVNStatusType::STATUS_IGNORED)
           true # refresh tree
         end
 
