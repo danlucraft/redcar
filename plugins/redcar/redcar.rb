@@ -553,29 +553,31 @@ module Redcar
         cursor_line  = doc.cursor_line
         cursor_line_offset = doc.cursor_line_offset
         diff = 0
-        doc.selection_ranges.each do |range|
-          doc.delete(range.begin - diff, range.count)
-          diff += range.count
-        end
-        texts = Redcar.app.clipboard.last.dup
-        texts.each_with_index do |text, i|
-          line_ix = start_line + i
-          if line_ix == doc.line_count
-            doc.insert(doc.length, "\n" + " "*line_offset)
-          else
-            line = doc.get_line(line_ix).chomp
-            if line.length < line_offset
-              doc.insert(
+        doc.controllers(AutoIndenter::DocumentController).first.disable do
+          doc.selection_ranges.each do |range|
+            doc.delete(range.begin - diff, range.count)
+            diff += range.count
+          end
+          texts = Redcar.app.clipboard.last.dup
+          texts.each_with_index do |text, i|
+            line_ix = start_line + i
+            if line_ix == doc.line_count
+              doc.insert(doc.length, "\n" + " "*line_offset)
+            else
+              line = doc.get_line(line_ix).chomp
+              if line.length < line_offset
+                doc.insert(
                 doc.offset_at_inner_end_of_line(line_ix),
                 " "*(line_offset - line.length)
-              )
+                )
+              end
             end
-          end
-          doc.insert(
+            doc.insert(
             doc.offset_at_line(line_ix) + line_offset,
             text
-          )
-          doc.cursor_offset = doc.offset_at_line(line_ix) + line_offset + text.length
+            )
+            doc.cursor_offset = doc.offset_at_line(line_ix) + line_offset + text.length
+          end
         end
       end
     end
@@ -961,15 +963,15 @@ module Redcar
              end
           end
           separator
-          item "Toggle Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
-          item "Toggle Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
-          item "Toggle Annotations", :command => ToggleAnnotations, :type => :check, :active => EditView.show_annotations?
+          item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
+          item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
+          item "Show Annotations", :command => ToggleAnnotations, :type => :check, :active => EditView.show_annotations?
         end
         sub_menu "Bundles", :priority => 45 do
           group(:priority => :first) do
             item "Find Snippet", Snippets::OpenSnippetExplorer
             item "Installed Bundles", Textmate::InstalledBundles
-            item "View Bundles in Tree", Textmate::ShowSnippetTree
+            item "Browse Snippets", Textmate::ShowSnippetTree
           end
           group(:priority => 15) do
             separator

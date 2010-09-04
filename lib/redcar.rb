@@ -52,7 +52,7 @@ end
 #
 # and so on.
 module Redcar
-  VERSION         = '0.5.0dev'
+  VERSION         = '0.5.2dev' # also change in the Rakefile!
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 5
   VERSION_RELEASE = 0
@@ -145,6 +145,8 @@ module Redcar
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "json", "lib"))
     require 'json'
     
+    $:.push File.expand_path(File.join(Redcar.asset_dir))
+    
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "openssl", "lib"))
     require 'openssl'
 
@@ -181,6 +183,11 @@ module Redcar
       :debug => ".redcar_debug"
     }[Redcar.environment]
     File.expand_path(File.join(home_dir, dirname))
+  end
+  
+  # Platform specific ~/.redcar/assets
+  def self.asset_dir
+    File.join(home_dir, ".redcar", "assets")
   end
   
   # Platform specific ~/

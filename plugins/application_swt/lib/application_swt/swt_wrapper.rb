@@ -5,30 +5,23 @@ module Swt
     case Config::CONFIG["host_os"]
     when /darwin/i
       if Config::CONFIG["host_cpu"] == "x86_64"
-        'osx64/swt'
+        'osx64'
       else
-        'osx/swt'
+        'osx'
       end
     when /linux/i
       if %w(amd64 x84_64).include? Config::CONFIG["host_cpu"]
-        'linux64/swt'
+        'linux64'
       else
-        'linux/swt'
+        'linux'
       end
     when /windows|mswin/i
-      'win32/swt'
+      'win32'
     end
   end
 
-  path = File.expand_path(File.dirname(__FILE__) + "/../../vendor/swt/" + Swt.jar_path)
-  if File.exist?(path + ".jar")
-    puts "loading #{Swt.jar_path}"
-    require path
-  else
-    puts "SWT jar file required: #{path}.jar"
-    exit
-  end
-
+  require File.join(Redcar.asset_dir, "swt/" + Swt.jar_path)
+    
   import org.eclipse.swt.SWT
   
   module Widgets
@@ -134,7 +127,7 @@ module Swt
 end
 
 module JFace
-  Dir[File.dirname(__FILE__) + "/../../vendor/jface/*.jar"].each do |jar_fn|
+  Dir[Redcar.asset_dir + "/jface/*.jar"].each do |jar_fn|
     require jar_fn
   end
   
