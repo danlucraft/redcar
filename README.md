@@ -12,7 +12,7 @@ A pure Ruby text editor running on JRuby.
 
 You must have Java installed. You will also need to run these commands for each user on your computer that needs access to Redcar.
 
-    $ gem install redcar
+    $ sudo gem install redcar
     $ redcar install
     
 NB the install will take a minute or so to complete as it has to download 
