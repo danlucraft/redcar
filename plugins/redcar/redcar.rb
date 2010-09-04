@@ -553,29 +553,31 @@ module Redcar
         cursor_line  = doc.cursor_line
         cursor_line_offset = doc.cursor_line_offset
         diff = 0
-        doc.selection_ranges.each do |range|
-          doc.delete(range.begin - diff, range.count)
-          diff += range.count
-        end
-        texts = Redcar.app.clipboard.last.dup
-        texts.each_with_index do |text, i|
-          line_ix = start_line + i
-          if line_ix == doc.line_count
-            doc.insert(doc.length, "\n" + " "*line_offset)
-          else
-            line = doc.get_line(line_ix).chomp
-            if line.length < line_offset
-              doc.insert(
+        doc.controllers(AutoIndenter::DocumentController).first.disable do
+          doc.selection_ranges.each do |range|
+            doc.delete(range.begin - diff, range.count)
+            diff += range.count
+          end
+          texts = Redcar.app.clipboard.last.dup
+          texts.each_with_index do |text, i|
+            line_ix = start_line + i
+            if line_ix == doc.line_count
+              doc.insert(doc.length, "\n" + " "*line_offset)
+            else
+              line = doc.get_line(line_ix).chomp
+              if line.length < line_offset
+                doc.insert(
                 doc.offset_at_inner_end_of_line(line_ix),
                 " "*(line_offset - line.length)
-              )
+                )
+              end
             end
-          end
-          doc.insert(
+            doc.insert(
             doc.offset_at_line(line_ix) + line_offset,
             text
-          )
-          doc.cursor_offset = doc.offset_at_line(line_ix) + line_offset + text.length
+            )
+            doc.cursor_offset = doc.offset_at_line(line_ix) + line_offset + text.length
+          end
         end
       end
     end
