@@ -187,7 +187,7 @@ module Redcar
   
   # Platform specific ~/.redcar/assets
   def self.asset_dir
-    File.join(user_dir, "assets")
+    File.join(home_dir, ".redcar", "assets")
   end
   
   # Platform specific ~/
