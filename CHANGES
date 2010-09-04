@@ -22,9 +22,12 @@ New internal APIs
 Fixes:
 
  * Fix for autocomplete, which was randomly broken due to a load order error (Anko painting)
- * Remove duplicate snippets (requires deleting your Textmate cache file)(Dan Lucraft)
- * [Bug 297] New files can be immediately opened again (Dan Lucraft)
+ * [Bug 300] Remove duplicate snippets (requires deleting your Textmate cache file)(Dan Lucraft)
+ * [Bug 297] New files can be immediately opened from the directory tree again (Dan Lucraft)
  * [Bug 302] Search/replace won't infinitely recurse when the search string is a prefixed substring of the replace text. (Dan Lucraft)
+ * [Bug 293] Select Word works correctly on such un-American words as: "können" (Dan Lucraft)
+ * [Bug 286] The paste command no longer inserts in the wrong location when the autoindenter tries to run during the command (Dan Lucraft)
+
 
 Version 0.4.1 (24 Aug 2010)
 ===========================
@@ -134,7 +137,7 @@ Version 0.3.7 (24 Jun 2010)
 ===========================
 
 Enhancements:
- 
+
   * Can create new files and directories, rename and delete files in the Project pane (Dan Lucraft)
   * Can Bulk Rename files in projects with regular expression replacement (Dan Lucraft)
   * Can drag and drop files and directories in the Project pane (Dan Lucraft)
@@ -177,7 +180,7 @@ New APIs:
 
   * Annotations column (Dan Lucraft)
   * Open popup menu and tooltips at cursor/pointer locations (Dan Lucraft)
-  
+
 New contributors:
 
   * Nizar Jouini
@@ -186,7 +189,7 @@ Version 0.3.5dev (1 May 2010)
 =============================
 
 Enhancements:
-  
+
   * Jump to declaration support for Ruby and Java
   * Double click respects word boundaries
   * Window title reflects project name
@@ -211,14 +214,14 @@ Enhancements:
   * Add profiling commands to the Debug menu (uses jruby-prof)
   * Lazy menus API
   * Commands to profile Redcar with jruby-prof.
-  
+
 Fixes:
 
   * Fix delete at end of line when using "\r\n" delimiter
   * Increase and decrease indent commands respect soft tabs and tab width settings
   * Directory tree sorts correctly
   * Speed up opening a project (about 1s faster)
-  
+
 New contributors:
 
   * Antono Vasiljev
@@ -236,18 +239,18 @@ New features:
   * Snippets
   * Recent directories menu
   * Uses Gecko for HTMLTabs on Windows.
-  
+
 Internal changes:
 
   * New API for creating text Marks, to tag a position in a Document.
   * new PersistentCache class for plugins to simply cache stuff.
   * Textmate plugin for dealing with Textmate bundles.
   * Application focus in/out events.
-  
+
 Fixes:
 
   * Respects Windows style line delimiters
-  
+
 New contributors:
 
   * Aaron McLeod
@@ -291,7 +294,7 @@ Fixes:
   * Search searches last line in doc.
   * Doesn't die on Windows-1252 encodings.
   * Plugin Manager UI works on Linux and Windows.
-  
+
 New contributors:
 
   * Mat Schaffer
@@ -350,7 +353,7 @@ Enhancements:
   * Added Java, Perl and Ruby on Rails bundles.
   * New simpler way for bundles to add commands to menus (used in repl.rb)
   * New "redcar install" command to download jars.
-  
+
 Fixes:
 
   * Change key logic in JavaMateView - should fix a bunch of subtle highlighting bugs.
@@ -363,7 +366,7 @@ Version 0.3.0dev (25 Dec 2009)
 Rewritten in JRuby/SWT.
 
 Enhancements:
-  
+
   * _Much_ simpler installation: packaged as a gem.
   * Faster highlighter
   * Fewer bugs
@@ -408,7 +411,7 @@ Version 0.1 (6 April 2009)
 ==========================
 http://redcareditor.com/releases/redcar-0.1.tar.gz
 
-First release. 
+First release.
 
 Features:
 
