@@ -23,6 +23,8 @@ Fixes:
 
  * Fix for autocomplete, which was randomly broken due to a load order error (Anko painting)
  * Remove duplicate snippets (Dan Lucraft)
+ * [Bug 297] New files can be immediately opened again (Dan Lucraft)
+ * [Bug 302] Search/replace won't infinitely recurse when the search string is a prefixed substring of the replace text. (Dan Lucraft)
 
 Version 0.4.1 (24 Aug 2010)
 ===========================
