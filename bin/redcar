@@ -15,11 +15,6 @@ if ARGV.first == "install"
   require 'redcar/installer'
   installer = Redcar::Installer.new
   installer.install
-elsif ARGV.first == '--associate_with_any_right_click'
-  require File.expand_path(File.join(File.dirname(__FILE__), %w(.. lib redcar)))
-  require 'redcar/installer'
-  installer = Redcar::Installer.new
-  installer.associate_with_any_right_click
 else
   Redcar.read_stdin
   exit if Redcar.try_to_load_via_drb

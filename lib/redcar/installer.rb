@@ -9,56 +9,36 @@ end
 
 module Redcar
   class Installer
-  	def initialize
-  	  if ENV['http_proxy']
-  	    proxy = URI.parse(ENV['http_proxy'])
+    def initialize
+    	  if ENV['http_proxy']
+        proxy = URI.parse(ENV['http_proxy'])
         @connection = Net::HTTP::Proxy(proxy.host, proxy.port, proxy.user, proxy.password)
       else
-  	    @connection = Net::HTTP
+        @connection = Net::HTTP
       end
       puts "found latest XULRunner release version: #{xulrunner_version}" if Redcar.platform == :windows
     end
-    
-  	def install
+      
+    	def install
       unless File.writable?(JRUBY_JAR_DIR)
-  	    puts "Don't have permission to write to #{JRUBY_JAR_DIR}. Please rerun with sudo."
-  	    exit 1
-  	  end
+        puts "Don't have permission to write to #{JRUBY_JAR_DIR}. Please rerun with sudo."
+        exit 1
+      end
       Redcar.environment = :user
-  	  puts "Downloading >10MB of jar files. This may take a while."
-  	  grab_jruby
-  	  grab_common_jars
-  	  grab_platform_dependencies
-  	  grab_redcar_jars
+      puts "Downloading >10MB of jar files. This may take a while."
+      grab_jruby
+      grab_common_jars
+      grab_platform_dependencies
+      grab_redcar_jars
       puts "Building textmate bundle cache"
       s = Time.now
       load_textmate_bundles
       puts "... took #{Time.now - s}s"
       fix_user_dir_permissions
-  	  puts
-  	  puts "Done! You're ready to run Redcar."
-  	end
-  
-    def associate_with_any_right_click
-      raise 'this is currently only for windows' unless Redcar.platform == :windows  	  
-      require 'rbconfig'
-      require 'win32/registry'
-      # associate it with the current rubyw.exe
-      rubyw_bin = File.join([Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name']]) << 'w' << Config::CONFIG['EXEEXT']
-      if rubyw_bin.include? 'file'
-        raise 'this must be run from a ruby exe, not a java -cpjruby.jar command'
-      end
-      rubyw_bin.gsub!('/', '\\') # executable names wants back slashes
-      for type, english_text  in {'*' => 'Open with Redcar', 'Directory' => 'Open with Redcar (dir)'}
-        name = Win32::Registry::HKEY_LOCAL_MACHINE.create "Software\\classes\\#{type}\\shell\\open_with_redcar"
-        name.write_s nil, english_text
-        dir = Win32::Registry::HKEY_LOCAL_MACHINE.create "Software\\classes\\#{type}\\shell\\open_with_redcar\\command"
-        command = %!"#{rubyw_bin}" "#{File.expand_path($0)}" "%1"!
-        dir.write_s nil, command
-      end
-      puts 'Associated.'
+      puts
+      puts "Done! You're ready to run Redcar."
     end
-
+  
     def plugins_dir
       File.expand_path(File.join(File.dirname(__FILE__), %w(.. .. plugins)))
     end

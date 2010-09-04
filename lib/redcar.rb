@@ -183,6 +183,11 @@ module Redcar
     File.expand_path(File.join(home_dir, dirname))
   end
   
+  # Platform specific ~/.redcar/assets
+  def self.plugin_assets_dir
+    File.join(user_dir, "assets")
+  end
+  
   # Platform specific ~/
   #
   # @return [String] expanded path
