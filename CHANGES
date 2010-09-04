@@ -11,7 +11,8 @@ Enhancements
  * Open directory in command line / os directory viewer (Matthew Scharley, Delisa Mason)
  * Can press enter really fast in the FindFileDialog and it will open the correct file (Tim Felgentreff)
  * Use spoon for forking on Linux, OSX (Matthew Scharley)
- * Find in project streams (Kieran Pilkington)
+ * Find-in-project streams as it finds results (Kieran Pilkington)
+ * Installer doesn't need to be run as root anymore. (Dan Lucraft)
 
 New internal APIs
 
@@ -21,6 +22,7 @@ New internal APIs
 Fixes:
 
  * Fix for autocomplete, which was randomly broken due to a load order error (Anko painting)
+ * [Bug 297] New files can be immediately opened again (Dan Lucraft)
 
 Version 0.4.1 (24 Aug 2010)
 ===========================
