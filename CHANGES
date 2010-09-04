@@ -22,7 +22,7 @@ New internal APIs
 Fixes:
 
  * Fix for autocomplete, which was randomly broken due to a load order error (Anko painting)
- * [Bug 297] New files can be immediately opened again (Dan Lucraft)
+ * Remove duplicate snippets (Dan Lucraft)
 
 Version 0.4.1 (24 Aug 2010)
 ===========================
