@@ -137,8 +137,11 @@ module Redcar
     end
   end
 
-  # Tells the plugin manager to load plugins, and prints debug output.
-  def self.load
+  def self.load_prerequisites
+    exit if ARGV.include?("--quit-immediately")
+    
+    require 'redcar_quick_start'
+    
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "plugin_manager", "lib"))
     require 'plugin_manager'
     
@@ -149,26 +152,58 @@ module Redcar
     
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "openssl", "lib"))
     require 'openssl'
+    
+    plugin_manager.load("swt")
+  end
 
-    plugin_manager.load
-    if plugin_manager.unreadable_definitions.any?
-      puts "Couldn't read definition files: "
-      puts plugin_manager.unreadable_definitions.map {|d| "  * " + d}
+  def self.load_plugins
+    begin
+      plugin_manager.load
+      if plugin_manager.unreadable_definitions.any?
+        puts "Couldn't read definition files: "
+        puts plugin_manager.unreadable_definitions.map {|d| "  * " + d}
+      end
+      if plugin_manager.plugins_with_errors.any?
+        puts "There was an error loading plugins: "
+        puts plugin_manager.plugins_with_errors.map {|d| "  * " + d.name}
+      end
+      if ENV["PLUGIN_DEBUG"]
+        puts "Loaded plugins:"
+        puts plugin_manager.loaded_plugins.map {|d| "  * " + d.name}
+        puts
+        puts "Unloaded plugins:"
+        puts plugin_manager.unloaded_plugins.map {|d| "  * " + d.name}
+      end
+    rescue => e
+      puts e.message
+      puts e.backtrace
     end
-    if plugin_manager.plugins_with_errors.any?
-      puts "There was an error loading plugins: "
-      puts plugin_manager.plugins_with_errors.map {|d| "  * " + d.name}
+  end
+  
+  # Tells the plugin manager to load plugins, and prints debug output.
+  def self.load_threaded
+    load_prerequisites
+    Thread.new do
+      load_plugins
+      Redcar::Top.start(ARGV)
     end
-    if ENV["PLUGIN_DEBUG"]
-      puts "Loaded plugins:"
-      puts plugin_manager.loaded_plugins.map {|d| "  * " + d.name}
-      puts
-      puts "Unloaded plugins:"
-      puts plugin_manager.unloaded_plugins.map {|d| "  * " + d.name}
+  end
+  
+  def self.load_unthreaded
+    load_prerequisites
+    load_plugins
+  end
+  
+  def self.show_splash
+    Swt.create_splash_screen(plugin_manager.plugins.length + 10)
+    plugin_manager.on_load do |plugin|
+      Swt.sync_exec do
+        Swt.splash_screen.inc
+      end
     end
   end
 
-  # Starts the GUI.
+  ## Starts the GUI.
   def self.pump
     Redcar.gui.start
   end

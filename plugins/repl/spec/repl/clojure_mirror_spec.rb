@@ -1,3 +1,5 @@
+require File.join(File.dirname(__FILE__), '..', 'spec_helper')
+
 class Redcar::REPL
   describe ClojureMirror do
     before(:all) do

@@ -5,17 +5,17 @@ module Redcar
       yield
     rescue => e
       message = "Error in: " + (text || e.message)
-      Application::Dialog.message_box(
-        message,
-        :type => :error, :buttons => :ok)
       puts message
       puts e.class.to_s + ": " + e.message
       puts e.backtrace
+      Application::Dialog.message_box(
+        message,
+        :type => :error, :buttons => :ok)
     end
   end
 
   def self.update_gui
-    ApplicationSWT.sync_exec do
+    Swt.sync_exec do
       safely do
         yield
       end
@@ -1015,19 +1015,28 @@ module Redcar
 
     def self.start(args=[])
       puts "loading plugins took #{Time.now - PROCESS_START_TIME}"
-      Application.start
-      ApplicationSWT.start
-      EditViewSWT.start
-      s = Time.now
-      Redcar.gui = ApplicationSWT.gui
-      Redcar.app.controller = ApplicationSWT.new(Redcar.app)
-      Redcar.app.refresh_menu!
-      Redcar.app.load_sensitivities
-      puts "initializing gui took #{Time.now - s}s"
-      s = Time.now
-      Redcar::Project::Manager.start(args)
-      puts "project start took #{Time.now - s}s"
-      Redcar.app.make_sure_at_least_one_window_open
+      Redcar.update_gui do
+        Application.start
+        ApplicationSWT.start
+        Swt.splash_screen.inc(1) if Swt.splash_screen
+        EditViewSWT.start
+        Swt.splash_screen.inc(7) if Swt.splash_screen
+        s = Time.now
+        Redcar.app.controller = ApplicationSWT.new(Redcar.app)
+        Redcar.app.refresh_menu!
+        Redcar.app.load_sensitivities
+        puts "initializing gui took #{Time.now - s}s"
+      end
+      Redcar.update_gui do
+        Swt.splash_screen.inc(2) if Swt.splash_screen
+        s = Time.now
+        Redcar::Project::Manager.start(args)
+        puts "project start took #{Time.now - s}s"
+        Redcar.app.make_sure_at_least_one_window_open
+      end
+      Redcar.update_gui do
+        Swt.splash_screen.close if Swt.splash_screen
+      end
       puts "start time: #{Time.now - $redcar_process_start_time}"
     end
   end

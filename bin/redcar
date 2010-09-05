@@ -21,7 +21,7 @@ else
   require File.expand_path(File.join(File.dirname(__FILE__), %w(.. lib redcar)))
   Redcar.environment = :user
   Redcar.spin_up
-  Redcar.load
-  Redcar::Top.start(ARGV)
+  Redcar.load_threaded
+  Redcar.show_splash
   Redcar.pump
 end
