@@ -14,6 +14,7 @@ Enhancements
  * Find-in-project streams as it finds results (Kieran Pilkington)
  * Installer doesn't need to be run as root anymore. (Dan Lucraft)
  * Splash screen (Dan Lucraft)
+ * Installer loads Redcar, therefore putting all the Redcar files in the OS disk cache (Dan Lucraft)
 
 New internal APIs
 
@@ -29,6 +30,8 @@ Fixes:
  * [Bug 293] Select Word works correctly on such un-American words as: "können" (Dan Lucraft)
  * [Bug 286] The paste command no longer inserts in the wrong location when the autoindenter tries to run during the command (Dan Lucraft)
  * [Bug 270] The "Go to declaration" fuzzy finder chooses the right file when you have refined the list (Dan Lucraft)
+ * Precaching textmate bundles is now more robust (Dan Lucraft)
+ * [Bug 209] Gives visual feedback during startup (Dan Lucraft)
 
 
 Version 0.4.1 (24 Aug 2010)
