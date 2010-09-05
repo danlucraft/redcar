@@ -48,7 +48,7 @@ module Swt
     end
     
     def show
-      @image = Swt::Graphics::Image.new(Swt.display, 300, 300)
+      @image = Swt::Graphics::Image.new(Swt.display, File.dirname(__FILE__) + "/../../application/icons/redcar-splash.png")
       @splash = Swt::Widgets::Shell.new(Swt::SWT::ON_TOP)
       @bar = Swt::Widgets::ProgressBar.new(@splash, Swt::SWT::NONE)
       @bar.setMaximum(max)
