@@ -74,7 +74,7 @@ module Redcar
       
       # should we print debugging messages? this can get pretty verbose
       def self.debug
-        true
+        ARGV.include?('--debug')
       end
       
       def self.modules
