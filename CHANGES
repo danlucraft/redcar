@@ -15,6 +15,7 @@ Enhancements
  * Installer doesn't need to be run as root anymore. (Dan Lucraft)
  * Splash screen (Dan Lucraft)
  * Installer loads Redcar, therefore putting all the Redcar files in the OS disk cache (Dan Lucraft)
+ * Read installed JVM options and use 32bit client vm if available (Dan Lucraft)
 
 New internal APIs
 
@@ -32,7 +33,6 @@ Fixes:
  * [Bug 270] The "Go to declaration" fuzzy finder chooses the right file when you have refined the list (Dan Lucraft)
  * Precaching textmate bundles is now more robust (Dan Lucraft)
  * [Bug 209] Gives visual feedback during startup (Dan Lucraft)
-
 
 Version 0.4.1 (24 Aug 2010)
 ===========================
