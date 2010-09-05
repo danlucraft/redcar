@@ -1040,6 +1040,10 @@ module Redcar
         Swt.splash_screen.close if Swt.splash_screen
       end
       puts "start time: #{Time.now - $redcar_process_start_time}"
+      if args.include?("--compute-textmate-cache-and-quit")
+        Redcar::Textmate.all_bundles
+        exit
+      end
     end
   end
 end

@@ -5,7 +5,7 @@ module Redcar
     # starter script and passing it some arguments.
     # If --jruby is passed, use the installed version of jruby, instead of 
     # our vendored jarred one (useful for gems).
-    def spin_up
+    def spin_up(args="")
       bin = File.expand_path(File.join(File.dirname(__FILE__), %w{.. .. bin redcar}))
       jruby_complete = File.expand_path(File.join(Redcar.asset_dir, "jruby-complete-1.5.2.jar"))
       unless File.exist?(jruby_complete)
@@ -22,6 +22,7 @@ module Redcar
       command.push(bin)
       command.push(*cleaned_args)
       command.push("--no-sub-jruby", "--ignore-stdin")
+      command.push(*args)
       
       puts command.join(' ')
       yield command
@@ -29,13 +30,15 @@ module Redcar
     
     def cleaned_args
       # We should never pass --fork to a subprocess
-      ARGV.find_all {|arg| arg != '--fork'}.map do |arg|
+      result = ARGV.find_all {|arg| arg != '--fork'}.map do |arg|
         if arg =~ /--(.+)=(.+)/
           "--" + $1 + "=\"" + $2 + "\""
         else
           arg
         end
       end
+      result.delete("install")
+      result
     end
     
     def debug_mode?

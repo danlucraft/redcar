@@ -23,6 +23,7 @@ module Redcar
       Redcar.environment = :user
       puts "Downloading >10MB of binary assets. This may take a while the first time."
       fetch_all_assets
+      precache_textmate_bundles
       puts "Done! You're ready to run Redcar."
     end
   
@@ -122,14 +123,11 @@ module Redcar
       end
     end
     
-    def load_textmate_bundles
-      $:.unshift("#{File.dirname(__FILE__)}/../../plugins/core/lib")
-      $:.unshift("#{File.dirname(__FILE__)}/../../plugins/textmate/lib")
-      require 'core'
-      Redcar.environment = :user
-      Core.loaded
-      require 'textmate'
-      Redcar::Textmate.all_bundles
+    def precache_textmate_bundles
+      puts "Precaching textmate bundles..."
+      Runner.new.spin_up(["--no-gui", "--compute-textmate-cache-and-quit", "--multiple-instance"]) do |cmd|
+        %x{#{cmd.join(' ')}}
+      end
     end
     
     # Xulrunner releases don't hang around very long, so we scrape their site to figure out 
