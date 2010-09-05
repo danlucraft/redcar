@@ -5,9 +5,11 @@ module DocumentSearch
     end
     
     def replace_next(query, replace, &body)
-      # Get the current line and then get the line segment from the cursor to the end of the line
-      curr_line = @doc.get_line(@doc.cursor_line)
-      cursor_line_offset = @doc.cursor_offset - @doc.offset_at_line(@doc.cursor_line)
+      # Get the current line and then get the line segment from the cursor or selection to the end of the line
+      latest_point = [@doc.cursor_offset, @doc.selection_offset].max
+      curr_line_number = @doc.line_at_offset(latest_point)
+      cursor_line_offset = latest_point - @doc.offset_at_line(curr_line_number)
+      curr_line = @doc.get_line(curr_line_number)
       line_seg = curr_line[cursor_line_offset..-1]
       
       # Call the search method passed by the caller

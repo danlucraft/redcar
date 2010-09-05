@@ -5,17 +5,17 @@ module Redcar
       yield
     rescue => e
       message = "Error in: " + (text || e.message)
-      Application::Dialog.message_box(
-        message,
-        :type => :error, :buttons => :ok)
       puts message
       puts e.class.to_s + ": " + e.message
       puts e.backtrace
+      Application::Dialog.message_box(
+        message,
+        :type => :error, :buttons => :ok)
     end
   end
 
   def self.update_gui
-    ApplicationSWT.sync_exec do
+    Swt.sync_exec do
       safely do
         yield
       end
@@ -224,11 +224,12 @@ module Redcar
     class AboutCommand < Command
       def execute
         new_tab = Top::NewCommand.new.run
-        new_tab.document.text = "About: Redcar\nVersion: #{Redcar::VERSION}\n" +
-          "Ruby Version: #{RUBY_VERSION}\n" +
-          "Jruby version: #{JRUBY_VERSION}\n" +
-          "Redcar.environment: #{Redcar.environment}\n" +
-          "http://redcareditor.com"
+        new_tab.document.text = <<-TXT
+About: Redcar\nVersion: #{Redcar::VERSION}
+Ruby Version: #{RUBY_VERSION}
+Jruby version: #{JRUBY_VERSION}
+Redcar.environment: #{Redcar.environment}
+        TXT
         new_tab.title= 'About'
         new_tab.edit_view.reset_undo
         new_tab.document.set_modified(false)
@@ -553,29 +554,31 @@ module Redcar
         cursor_line  = doc.cursor_line
         cursor_line_offset = doc.cursor_line_offset
         diff = 0
-        doc.selection_ranges.each do |range|
-          doc.delete(range.begin - diff, range.count)
-          diff += range.count
-        end
-        texts = Redcar.app.clipboard.last.dup
-        texts.each_with_index do |text, i|
-          line_ix = start_line + i
-          if line_ix == doc.line_count
-            doc.insert(doc.length, "\n" + " "*line_offset)
-          else
-            line = doc.get_line(line_ix).chomp
-            if line.length < line_offset
-              doc.insert(
+        doc.controllers(AutoIndenter::DocumentController).first.disable do
+          doc.selection_ranges.each do |range|
+            doc.delete(range.begin - diff, range.count)
+            diff += range.count
+          end
+          texts = Redcar.app.clipboard.last.dup
+          texts.each_with_index do |text, i|
+            line_ix = start_line + i
+            if line_ix == doc.line_count
+              doc.insert(doc.length, "\n" + " "*line_offset)
+            else
+              line = doc.get_line(line_ix).chomp
+              if line.length < line_offset
+                doc.insert(
                 doc.offset_at_inner_end_of_line(line_ix),
                 " "*(line_offset - line.length)
-              )
+                )
+              end
             end
-          end
-          doc.insert(
+            doc.insert(
             doc.offset_at_line(line_ix) + line_offset,
             text
-          )
-          doc.cursor_offset = doc.offset_at_line(line_ix) + line_offset + text.length
+            )
+            doc.cursor_offset = doc.offset_at_line(line_ix) + line_offset + text.length
+          end
         end
       end
     end
@@ -1013,20 +1016,35 @@ module Redcar
 
     def self.start(args=[])
       puts "loading plugins took #{Time.now - PROCESS_START_TIME}"
-      Application.start
-      ApplicationSWT.start
-      EditViewSWT.start
-      s = Time.now
-      Redcar.gui = ApplicationSWT.gui
-      Redcar.app.controller = ApplicationSWT.new(Redcar.app)
-      Redcar.app.refresh_menu!
-      Redcar.app.load_sensitivities
-      puts "initializing gui took #{Time.now - s}s"
-      s = Time.now
-      Redcar::Project::Manager.start(args)
-      puts "project start took #{Time.now - s}s"
-      Redcar.app.make_sure_at_least_one_window_open
+      Redcar.update_gui do
+        Application.start
+        ApplicationSWT.start
+        Swt.splash_screen.inc(1) if Swt.splash_screen
+        EditViewSWT.start
+        Swt.splash_screen.inc(7) if Swt.splash_screen
+        s = Time.now
+        if Redcar.gui
+          Redcar.app.controller = ApplicationSWT.new(Redcar.app)
+        end
+        Redcar.app.refresh_menu!
+        Redcar.app.load_sensitivities
+        puts "initializing gui took #{Time.now - s}s"
+      end
+      Redcar.update_gui do
+        Swt.splash_screen.inc(2) if Swt.splash_screen
+        s = Time.now
+        Redcar::Project::Manager.start(args)
+        puts "project start took #{Time.now - s}s"
+        Redcar.app.make_sure_at_least_one_window_open
+      end
+      Redcar.update_gui do
+        Swt.splash_screen.close if Swt.splash_screen
+      end
       puts "start time: #{Time.now - $redcar_process_start_time}"
+      if args.include?("--compute-textmate-cache-and-quit")
+        Redcar::Textmate.all_bundles
+        exit
+      end
     end
   end
 end

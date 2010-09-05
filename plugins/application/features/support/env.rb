@@ -125,34 +125,34 @@ World(SwtHelper)
 
 def close_everything
   Redcar.app.task_queue.cancel_all
-  Redcar::ApplicationSWT.sync_exec do
+  Swt.sync_exec do
     dialogs.each {|d| d.controller.model.close }
   end
   Redcar.app.windows.each do |win|
     while tree = win.treebook.trees.first
-      Redcar::ApplicationSWT.sync_exec do
+      Swt.sync_exec do
         win.treebook.remove_tree(tree)
       end
     end
     win.notebooks.each do |notebook|
       while tab = notebook.tabs.first
-        Redcar::ApplicationSWT.sync_exec do
+        Swt.sync_exec do
           tab.close
         end
       end
     end
     if win.notebooks.length == 2
-      Redcar::ApplicationSWT.sync_exec do
+      Swt.sync_exec do
         win.close_notebook
       end
     end
   end
   while Redcar.app.windows.length > 1
-    Redcar::ApplicationSWT.sync_exec do
+    Swt.sync_exec do
       Redcar.app.windows.last.close
     end
   end
-  Redcar::ApplicationSWT.sync_exec do
+  Swt.sync_exec do
     Redcar.app.focussed_window.close_speedbar if Redcar.app.focussed_window.speedbar
     Redcar.app.windows.first.title = Redcar::Window::DEFAULT_TITLE
   end
