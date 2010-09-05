@@ -1022,7 +1022,9 @@ module Redcar
         EditViewSWT.start
         Swt.splash_screen.inc(7) if Swt.splash_screen
         s = Time.now
-        Redcar.app.controller = ApplicationSWT.new(Redcar.app)
+        if Redcar.gui
+          Redcar.app.controller = ApplicationSWT.new(Redcar.app)
+        end
         Redcar.app.refresh_menu!
         Redcar.app.load_sensitivities
         puts "initializing gui took #{Time.now - s}s"

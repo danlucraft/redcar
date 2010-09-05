@@ -158,6 +158,8 @@ module Redcar
 
   def self.load_plugins
     begin
+      exit if ARGV.include?("--quit-after-splash")
+      
       plugin_manager.load
       if plugin_manager.unreadable_definitions.any?
         puts "Couldn't read definition files: "
@@ -183,9 +185,12 @@ module Redcar
   # Tells the plugin manager to load plugins, and prints debug output.
   def self.load_threaded
     load_prerequisites
-    Thread.new do
+    thread = Thread.new do
       load_plugins
       Redcar::Top.start(ARGV)
+    end
+    if no_gui_mode?
+      thread.join
     end
   end
   
@@ -194,7 +199,13 @@ module Redcar
     load_plugins
   end
   
+  def self.no_gui_mode?
+    ARGV.include?("--no-gui")
+  end
+  
   def self.show_splash
+    return if Redcar.no_gui_mode?
+    
     Swt.create_splash_screen(plugin_manager.plugins.length + 10)
     plugin_manager.on_load do |plugin|
       Swt.sync_exec do
@@ -205,6 +216,8 @@ module Redcar
 
   ## Starts the GUI.
   def self.pump
+    return if Redcar.no_gui_mode?
+    
     Redcar.gui.start
   end
 
@@ -248,6 +261,7 @@ module Redcar
   # Set the application GUI.
   def self.gui=(gui)
     raise "can't set gui twice" if @gui
+    return if Redcar.no_gui_mode?
     @gui = gui
   end
 end

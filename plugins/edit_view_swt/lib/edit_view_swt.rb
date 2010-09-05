@@ -13,8 +13,9 @@ module Redcar
     include Redcar::Observable
     
     def self.start
-      gui = ApplicationSWT.gui
-      gui.register_controllers(Redcar::EditTab => EditViewSWT::Tab)
+      if gui = Redcar.gui
+        gui.register_controllers(Redcar::EditTab => EditViewSWT::Tab)
+      end
       load_textmate_assets
     end
     

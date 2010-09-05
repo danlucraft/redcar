@@ -182,7 +182,7 @@ module Redcar
       @main_menu = nil
       @main_keymap = nil
       windows.each {|window| window.refresh_menu }
-      controller.refresh_menu
+      notify_listeners(:refresh_menu)
     end
     
     # Generate the main menu by combining menus from all plugins.

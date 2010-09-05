@@ -100,6 +100,7 @@ module Swt
   
   # Runs the given block in the SWT Event thread
   def self.sync_exec(&block)
+    return block.call if Redcar.no_gui_mode?
     runnable = Swt::RRunnable.new do
       begin
         block.call
@@ -117,6 +118,10 @@ module Swt
   # Runs the given block in the SWT Event thread after
   # the given number of milliseconds
   def self.timer_exec(ms, &block)
+    if Redcar.no_gui_mode?
+      sleep ms.to_f/1000
+      return block.call
+    end
     runnable = Swt::RRunnable.new(&block)
     display.timerExec(ms, runnable)
   end
@@ -147,13 +152,16 @@ module Swt
   end
   
   def self.display
+    return nil if Redcar.no_gui_mode?
     if defined?(SWT_APP_NAME)
       Swt::Widgets::Display.app_name = SWT_APP_NAME
     end
     @display ||= (Swt::Widgets::Display.getCurrent || Swt::Widgets::Display.new)
   end
 
-  display # must be created before we import the Clipboard class.
+  unless Redcar.no_gui_mode?
+    display # must be created before we import the Clipboard class.
+  end
 
   module Custom
     import org.eclipse.swt.custom.CTabFolder

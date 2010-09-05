@@ -28,12 +28,14 @@ module Redcar
     end
 
     def self.start
-      Redcar.gui.register_controllers(
-          Redcar::Tab              => ApplicationSWT::Tab,
-          Redcar::HtmlTab          => ApplicationSWT::HtmlTab,
-          Redcar::FilterListDialog => ApplicationSWT::FilterListDialogController
-        )
-      Redcar.gui.register_dialog_adapter(ApplicationSWT::DialogAdapter.new)
+      if Redcar.gui
+        Redcar.gui.register_controllers(
+            Redcar::Tab              => ApplicationSWT::Tab,
+            Redcar::HtmlTab          => ApplicationSWT::HtmlTab,
+            Redcar::FilterListDialog => ApplicationSWT::FilterListDialogController
+          )
+        Redcar.gui.register_dialog_adapter(ApplicationSWT::DialogAdapter.new)
+      end
     end
     
     def self.add_debug_key_filters
@@ -124,6 +126,7 @@ module Redcar
 
     def add_listeners
       @model.add_listener(:new_window, &method(:new_window))
+      @model.add_listener(:refresh_menu, &method(:refresh_menu))
     end
     
     class Listener
