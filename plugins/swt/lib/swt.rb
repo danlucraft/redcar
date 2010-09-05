@@ -3,7 +3,6 @@ require 'rbconfig'
 
 require 'swt/cucumber_runner'
 require 'swt/event_loop'
-require 'swt/grid_data'
 require 'swt/listener_helpers'
 
 module Swt
@@ -257,3 +256,5 @@ module JFace
     import org.eclipse.jface.dialogs.InputDialog
   end
 end
+
+require 'swt/grid_data'
