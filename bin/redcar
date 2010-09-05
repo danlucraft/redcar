@@ -1,7 +1,9 @@
 #!/usr/bin/env ruby
 $redcar_process_start_time = Time.now
 $VERBOSE = true if ARGV.find{|arg| arg == '--verbose'}
-require File.expand_path(File.join(File.dirname(__FILE__), %w(.. lib redcar_quick_start)))
+
+$:.push(File.join(File.dirname(__FILE__), %w(.. lib)))
+require "redcar_quick_start"
 
 if ARGV.include? '--silent'
   # reopen the standard pipes to nothingness if we were forked as part of jruby
