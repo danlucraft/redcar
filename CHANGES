@@ -13,6 +13,7 @@ Enhancements
  * Use spoon for forking on Linux, OSX (Matthew Scharley)
  * Find-in-project streams as it finds results (Kieran Pilkington)
  * Installer doesn't need to be run as root anymore. (Dan Lucraft)
+ * Splash screen (Dan Lucraft)
 
 New internal APIs
 
