@@ -76,52 +76,9 @@ module Redcar
   end
 
   def self.spin_up
-    forking = ARGV.include?("--fork")
-    no_runner = ARGV.include?("--no-sub-jruby")
-    jruby = Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby"
-    osx = (not [:linux, :windows].include?(platform))
-
-    begin
-      if forking and not jruby
-        # jRuby doesn't support fork() because of the runtime stuff...
-        forking = false
-        puts 'Forking failed, attempting to start anyway...' if (pid = fork) == -1
-        exit unless pid.nil? # kill the parent process
-        
-        if pid.nil?
-          # reopen the standard pipes to nothingness
-          STDIN.reopen Redcar.null_device
-          STDOUT.reopen Redcar.null_device, 'a'
-          STDERR.reopen STDOUT
-        end
-      elsif forking and SPOON_AVAILABLE and ::Spoon.supported?
-        # so we need to try something different...
-        
-        forking = false
-        require 'redcar/runner'
-        runner = Redcar::Runner.new
-        runner.spin_up do |command|
-          command.push('--silent')
-          ::Spoon.spawnp(*command)
-        end
-        exit 0
-      elsif forking
-        raise NotImplementedError, "Something weird has happened. Please contact us."
-      end
-    rescue NotImplementedError
-      puts $!.class.name + ": " + $!.message
-      puts "Forking isn't supported on this system. Sorry."
-      puts "Starting normally..."
-    end
-    
-    return if no_runner
-    return if jruby and not osx
-    
     require 'redcar/runner'
     runner = Redcar::Runner.new
-    runner.spin_up do |command|
-      exec(*command)
-    end
+    runner.run
   end
 
   def self.root

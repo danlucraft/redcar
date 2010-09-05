@@ -1,11 +1,55 @@
 module Redcar
   # Cribbed from ruby-processing. Many thanks!
   class Runner
+    def run
+      forking = ARGV.include?("--fork")
+      no_runner = ARGV.include?("--no-sub-jruby")
+      jruby = Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby"
+      osx = (not [:linux, :windows].include?(Redcar.platform))
+      begin
+        if forking and not jruby
+          # jRuby doesn't support fork() because of the runtime stuff...
+          forking = false
+          puts 'Forking failed, attempting to start anyway...' if (pid = fork) == -1
+          exit unless pid.nil? # kill the parent process
+          
+          if pid.nil?
+            # reopen the standard pipes to nothingness
+            STDIN.reopen Redcar.null_device
+            STDOUT.reopen Redcar.null_device, 'a'
+            STDERR.reopen STDOUT
+          end
+        elsif forking and SPOON_AVAILABLE and ::Spoon.supported?
+          # so we need to try something different...
+          
+          forking = false
+          construct_command do |command|
+            command.push('--silent')
+            ::Spoon.spawnp(*command)
+          end
+          exit 0
+        elsif forking
+          raise NotImplementedError, "Something weird has happened. Please contact us."
+        end
+      rescue NotImplementedError
+        puts $!.class.name + ": " + $!.message
+        puts "Forking isn't supported on this system. Sorry."
+        puts "Starting normally..."
+      end
+      
+      return if no_runner
+      return if jruby and not osx
+      
+      construct_command do |command|
+        exec(*command)
+      end
+    end
+    
     # Trade in this Ruby instance for a JRuby instance, loading in a 
     # starter script and passing it some arguments.
     # If --jruby is passed, use the installed version of jruby, instead of 
     # our vendored jarred one (useful for gems).
-    def spin_up(args="")
+    def construct_command(args="")
       bin = File.expand_path(File.join(File.dirname(__FILE__), %w{.. .. bin redcar}))
       jruby_complete = File.expand_path(File.join(Redcar.asset_dir, "jruby-complete-1.5.2.jar"))
       unless File.exist?(jruby_complete)
@@ -51,12 +95,16 @@ module Redcar
         str.push "-XstartOnFirstThread"
       end
       
+      if ARGV.include?("--quick")
+        str.push "-d32"
+      end
+
       if ARGV.include?("--load-timings")
         str.push "-Djruby.debug.loadService.timing=true"
       end
       
       if ARGV.include?("--quick")
-        str.push "-d32 -client"
+        str.push "-client"
       end
       
       str
