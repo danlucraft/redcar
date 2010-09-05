@@ -95,17 +95,16 @@ module Redcar
         str.push "-XstartOnFirstThread"
       end
       
-      if ARGV.include?("--quick")
-        str.push "-d32"
-      end
-
       if ARGV.include?("--load-timings")
         str.push "-Djruby.debug.loadService.timing=true"
       end
+
+      require 'redcar/jvm_options_probe'
       
-      if ARGV.include?("--quick")
-        str.push "-client"
-      end
+      jvm_options_probe = JvmOptionsProbe.new
+      
+      str.push "-d32" if jvm_options_probe.can_use_d32?
+      str.push "-client" if jvm_options_probe.can_use_client?
       
       str
     end

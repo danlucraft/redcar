@@ -224,11 +224,12 @@ module Redcar
     class AboutCommand < Command
       def execute
         new_tab = Top::NewCommand.new.run
-        new_tab.document.text = "About: Redcar\nVersion: #{Redcar::VERSION}\n" +
-          "Ruby Version: #{RUBY_VERSION}\n" +
-          "Jruby version: #{JRUBY_VERSION}\n" +
-          "Redcar.environment: #{Redcar.environment}\n" +
-          "http://redcareditor.com"
+        new_tab.document.text = <<-TXT
+About: Redcar\nVersion: #{Redcar::VERSION}
+Ruby Version: #{RUBY_VERSION}
+Jruby version: #{JRUBY_VERSION}
+Redcar.environment: #{Redcar.environment}
+        TXT
         new_tab.title= 'About'
         new_tab.edit_view.reset_undo
         new_tab.document.set_modified(false)
