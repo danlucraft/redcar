@@ -23,10 +23,6 @@ module Redcar
       Redcar.environment = :user
       puts "Downloading >10MB of binary assets. This may take a while the first time."
       fetch_all_assets
-      puts "Building textmate bundle cache"
-      s = Time.now
-      load_textmate_bundles
-      puts "... took #{Time.now - s}s"
       puts "Done! You're ready to run Redcar."
     end
   
