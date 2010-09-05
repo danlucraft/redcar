@@ -102,7 +102,8 @@ module Redcar
         exit
       end
       
-      FileUtils.mv(temporary_target, destination_file)
+      FileUtils.cp(temporary_target, destination_file)
+      FileUtils.rm_rf(temporary_target)
       puts "done!"
     end
     
