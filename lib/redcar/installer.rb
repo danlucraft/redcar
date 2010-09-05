@@ -125,7 +125,7 @@ module Redcar
     
     def precache_textmate_bundles
       puts "Precaching textmate bundles..."
-      Runner.new.spin_up(["--no-gui", "--compute-textmate-cache-and-quit", "--multiple-instance"]) do |cmd|
+      Runner.new.construct_command(["--no-gui", "--compute-textmate-cache-and-quit", "--multiple-instance"]) do |cmd|
         %x{#{cmd.join(' ')}}
       end
     end
