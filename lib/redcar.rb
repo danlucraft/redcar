@@ -11,7 +11,6 @@ require 'redcar/usage'
 require 'regex_replace'
 
 require 'forwardable'
-require 'yaml'
 require 'uri'
 
 begin
@@ -108,7 +107,6 @@ module Redcar
     $:.push File.expand_path(File.join(Redcar.asset_dir))
     
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "openssl", "lib"))
-    require 'openssl'
     
     plugin_manager.load("swt")
   end

@@ -1,5 +1,5 @@
 
-SWT_APP_NAME = "Redcar"
+require 'swt/full_swt'
 
 require "application_swt/tab"
 
