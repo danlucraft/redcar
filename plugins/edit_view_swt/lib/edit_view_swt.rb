@@ -153,15 +153,17 @@ module Redcar
       @mate_text.getTextWidget.addModifyListener(ModifyListener.new(@model.document, self))
       @mate_text.get_control.add_verify_key_listener(VerifyKeyListener.new(self))
       @mate_text.get_control.add_key_listener(KeyListener.new(self))
-      @handlers << [@model.document, h1] << [@model, h2] << [@model, h3] << [@model, h4] << 
+      @handlers << [@model.document, h1] << [@model, h2] << [@model, h3] << [@model, h4] <<
         [@model, h5] << [@model, h6] << [@model, h7] << [@model, h8] <<
         [@model, h9] << [@model, h10] << [@model, h11]
     end
 
     def right_click(mouse_event)
       if @model.document.controller and @model.document.controller.respond_to?(:right_click)
+        location = ApplicationSWT.display.get_cursor_location
+        offset = @mate_text.parser.styledText.get_offset_at_location(location)
         Redcar.safely("right click on edit view") do
-          @model.document.controller.right_click(@model)
+          @model.document.controller.right_click(@model,offset)
         end
       end
     end

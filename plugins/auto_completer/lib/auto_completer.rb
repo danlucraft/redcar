@@ -24,9 +24,9 @@ module Redcar
       result
     end
 
-    def self.edit_view_context_menus
+    def self.edit_view_context_menus(offset)
       cmd = AutoCompleter::MenuAutoCompleterCommand.new
-      cmd.merge_menu
+      cmd.merge_menu(offset)
       completions = cmd.run
       Menu::Builder.build do
         sub_menu "Auto Completion" do
@@ -122,11 +122,12 @@ module Redcar
 
     class MenuAutoCompleterCommand < AutoCompleteCommand
 
-      def merge_menu
-        @merge_menu = true
+      def merge_menu(offset)
+        @merge_menu = offset
       end
 
       def execute
+        #TODO: something with offset?
         controller = doc.controllers(AutoCompleter::DocumentController).first
         input_word = ""
         word_list = controller.word_list
