@@ -9,9 +9,10 @@ module Redcar
             sub_menu "Line Tools" do
               item "Raise Region", LineTools::RaiseTextCommand
               item "Lower Region", LineTools::LowerTextCommand
-              item "Trim Line"   , LineTools::TrimLineAfterCursorCommand
               item "Kill Line"   , LineTools::KillLineCommand
               item "Replace Line", LineTools::ReplaceLineCommand
+              item "Clear Line"  , LineTools::ClearLineCommand
+              item "Trim Line"   , LineTools::TrimLineAfterCursorCommand
             end
           end
         end
@@ -25,6 +26,7 @@ module Redcar
         link "Alt+Shift+Down", LowerTextCommand
         link "Alt+Shift+K"   , KillLineCommand
         link "Alt+Shift+R"   , ReplaceLineCommand
+        link "Alt+Shift+C"   , ClearLineCommand
         link "Alt+Shift+T"   , TrimLineAfterCursorCommand
       end
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
@@ -32,32 +34,81 @@ module Redcar
         link "Alt+Shift+Down", LowerTextCommand
         link "Alt+Shift+K"   , KillLineCommand
         link "Alt+Shift+R"   , ReplaceLineCommand
+        link "Alt+Shift+C"   , ClearLineCommand
         link "Alt+Shift+T"   , TrimLineAfterCursorCommand
       end
       [osx, linwin]
     end
 
     class ReplaceLineCommand < Redcar::DocumentCommand
+      sensitize :clipboard_not_empty
       def execute
-        #TODO: implement me!
+        doc = tab.edit_view.document
+        if doc.selection?
+          first_line_ix = doc.line_at_offset(doc.selection_range.begin)
+          last_line_ix  = doc.line_at_offset(doc.selection_range.end)
+          text = doc.get_slice(doc.offset_at_line(first_line_ix),
+                               doc.offset_at_line_end(last_line_ix))
+        else
+          first_line_ix = doc.cursor_line
+          text = doc.get_line(first_line_ix)
+        end
+        doc.replace(doc.offset_at_line(first_line_ix),text.length,"")
+        Redcar::Top::PasteCommand.new.run
+        puts doc.get_all_text
       end
     end
 
     class ClearLineCommand < Redcar::DocumentCommand
       def execute
-        #TODO: implement me!
+        doc = tab.edit_view.document
+        if doc.selection?
+          line_ix = doc.line_at_offset(doc.selection_range.begin)
+          last_line_ix  = doc.line_at_offset(doc.selection_range.end)
+          text = doc.get_slice(doc.offset_at_line(line_ix),
+                               doc.offset_at_line_end(last_line_ix))
+          lines = (last_line_ix - line_ix) + 1
+        else
+          line_ix = doc.cursor_line
+          text = doc.get_line(line_ix)
+          lines = 1
+        end
+        doc.replace(doc.offset_at_line(line_ix), text.length, "\n" * lines)
+        doc.cursor_offset = doc.cursor_offset - 1
       end
     end
 
     class TrimLineAfterCursorCommand < Redcar::DocumentCommand
       def execute
-        #TODO: implement me!
+        doc = tab.edit_view.document
+        if doc.selection?
+          offset = doc.selection_range.begin
+          line_ix = doc.line_at_offset(offset)
+          last_line_ix  = doc.line_at_offset(doc.selection_range.end)
+          text = doc.get_slice(offset,doc.offset_at_line_end(last_line_ix))
+        else
+          offset = doc.cursor_offset
+          line_ix = doc.line_at_offset(offset)
+          text = doc.get_slice(offset, doc.offset_at_line_end(line_ix))
+        end
+        doc.replace(offset, text.length, "\n")
+        doc.cursor_offset = doc.cursor_offset - 1
       end
     end
 
     class KillLineCommand < Redcar::DocumentCommand
       def execute
-        #TODO: implement me!
+        doc = tab.edit_view.document
+        if doc.selection?
+          line_ix = doc.line_at_offset(doc.selection_range.begin)
+          last_line_ix  = doc.line_at_offset(doc.selection_range.end)
+          text = doc.get_slice(doc.offset_at_line(line_ix),
+                               doc.offset_at_line_end(last_line_ix))
+        else
+          line_ix = doc.cursor_line
+          text = doc.get_line(line_ix)
+        end
+        doc.replace(doc.offset_at_line(line_ix), text.length,"")
       end
     end
 
@@ -73,7 +124,7 @@ module Redcar
           keep_selection = true
         else
           first_line_ix = doc.cursor_line
-          last_line_ix = doc.cursor_line
+          last_line_ix = first_line_ix
           text = doc.get_line(doc.cursor_line)
         end
         if first_line_ix > 0
@@ -115,7 +166,7 @@ module Redcar
           keep_selection = true
         else
           first_line_ix = doc.cursor_line
-          last_line_ix = doc.cursor_line
+          last_line_ix = first_line_ix
           text = doc.get_line(doc.cursor_line)
         end
         #if last_line_ix == (doc.line_count - 1)
