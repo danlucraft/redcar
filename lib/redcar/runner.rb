@@ -41,7 +41,7 @@ module Redcar
       return if jruby and not osx
       
       construct_command do |command|
-        exec(*command)
+        exec(command.join(" "))
       end
     end
     
