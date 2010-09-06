@@ -1,5 +1,5 @@
 
-require "java-mateview-#{Redcar::VERSION}"
+Dir[File.dirname(__FILE__) + "/*.jar"].each {|fn| require fn }
 
 module JavaMateView
   import com.redcareditor.mate.Bundle

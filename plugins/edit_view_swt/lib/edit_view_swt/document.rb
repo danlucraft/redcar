@@ -11,16 +11,14 @@ module Redcar
         @jface_document = swt_mate_document.mateText.get_document
       end
 
-      def right_click(edit_view, offset)
+      def right_click(edit_view)
         menu = Menu.new
         Redcar.plugin_manager.objects_implementing(:edit_view_context_menus).each do |object|
           case object.method(:edit_view_context_menus).arity
           when 0
             menu.merge(object.edit_view_context_menus)
           when 1
-            menu.merge(object.edit_view_context_menus(offset))
-          when 2
-            menu.merge(object.edit_view_context_menus(offset, edit_view))
+            menu.merge(object.edit_view_context_menus(edit_view))
           else
             puts("Invalid edit_view_context_menus hook detected in "+object.class.name)
           end

@@ -161,9 +161,9 @@ module Redcar
     def right_click(mouse_event)
       if @model.document.controller and @model.document.controller.respond_to?(:right_click)
         location = ApplicationSWT.display.get_cursor_location
-        offset = @mate_text.parser.styledText.get_offset_at_location(location)
+        #offset = @mate_text.parser.styledText.get_offset_at_location(location)
         Redcar.safely("right click on edit view") do
-          @model.document.controller.right_click(@model,offset)
+          @model.document.controller.right_click(@model)
         end
       end
     end
