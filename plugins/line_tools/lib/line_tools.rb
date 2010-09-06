@@ -19,7 +19,6 @@ module Redcar
       end
     end
 
-    #TODO: map instead to Super key (or ctrl on mac)?
     def self.keymaps
       osx = Redcar::Keymap.build("main", :osx) do
         link "Alt+Shift+Up"  , RaiseTextCommand
@@ -27,7 +26,7 @@ module Redcar
         link "Alt+Shift+K"   , KillLineCommand
         link "Alt+Shift+R"   , ReplaceLineCommand
         link "Alt+Shift+C"   , ClearLineCommand
-        link "Alt+Shift+T"   , TrimLineAfterCursorCommand
+        link "Cmd+K"        , TrimLineAfterCursorCommand
       end
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
         link "Alt+Shift+Up"  , RaiseTextCommand
@@ -35,7 +34,7 @@ module Redcar
         link "Alt+Shift+K"   , KillLineCommand
         link "Alt+Shift+R"   , ReplaceLineCommand
         link "Alt+Shift+C"   , ClearLineCommand
-        link "Alt+Shift+T"   , TrimLineAfterCursorCommand
+        link "Ctrl+K"        , TrimLineAfterCursorCommand
       end
       [osx, linwin]
     end
