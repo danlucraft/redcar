@@ -10,7 +10,7 @@ end
 module Redcar
   class Installer
     def initialize
-    	  if ENV['http_proxy']
+      if ENV['http_proxy']
         proxy = URI.parse(ENV['http_proxy'])
         @connection = Net::HTTP::Proxy(proxy.host, proxy.port, proxy.user, proxy.password)
       else
@@ -19,7 +19,7 @@ module Redcar
       puts "found latest XULRunner release version: #{xulrunner_version}" if Redcar.platform == :windows
     end
       
-    	def install
+    def install
       Redcar.environment = :user
       puts "Downloading >10MB of binary assets. This may take a while the first time."
       fetch_all_assets
