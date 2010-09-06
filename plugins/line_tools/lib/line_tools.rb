@@ -54,7 +54,6 @@ module Redcar
         end
         doc.replace(doc.offset_at_line(first_line_ix),text.length,"")
         Redcar::Top::PasteCommand.new.run
-        puts doc.get_all_text
       end
     end
 
