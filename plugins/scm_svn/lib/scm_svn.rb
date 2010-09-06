@@ -14,8 +14,7 @@ module Redcar
       class Manager
         include Redcar::Scm::Model
         include_package 'org.tmatesoft.svn.core.wc'
-        import 'org.tmatesoft.svn.core.SVNURL'
-        import 'org.tmatesoft.svn.core.SVNDepth'
+        include_package 'org.tmatesoft.svn.core'
         import 'org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory'
         import 'org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl'
         import 'org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory'
@@ -102,10 +101,9 @@ module Redcar
         end
 
         def index_ignore(change)
-          status = client_manager.getStatusClient().doStatus(
-                        Java::JavaIo::File.new(change.path),
-                        false) #don't use remote
-          status.setContentsStatus(SVNStatusType::STATUS_IGNORED)
+          dir = Java::JavaIo::File.new(change.path).getParentFile().getAbsoluteFile()
+          client_manager.getWCClient().doSetProperty(dir, SVNProperty::IGNORE,
+            SVNPropertyValue.create(File.basename(change.path)), false, false, nil)
           true # refresh tree
         end
 
@@ -122,7 +120,7 @@ module Redcar
         def index_delete(change)
           if change.status[0] == :new
             File.delete(change.path)
-          elsif change.status[0] == :added
+          elsif change.status[0] == :indexed
             index_unsave(change)
             File.delete(Fle.new(change.path))
           else
@@ -140,19 +138,26 @@ module Redcar
         end
 
         def index_restore(change)
-          #TODO: restore saved index
+          if change.status[0] == :missing
+            client_manager.getUpdateClient().doUpdate(
+              Java::JavaIo::File.new(change.path),
+              SVNRevision::HEAD,
+              SVNDepth::INFINITY,
+              true,
+              false
+            )
+          end
         end
 
         def index_unsave(change)
+          puts change.status
           if change.status[0] == :new
             # Do nothing, there's nothing to unsave
-          elsif change.status[0] == :added
-            status = client_manager.getStatusClient().doStatus(Java::JavaIo::File.new(change.path))
-            status.setContentsStatus(SVNStatusType::STATUS_UNVERSIONED)
+          elsif change.status[0] == :indexed
+            index_revert(change)
           else
             Application::Dialog.message_box("#{change.path} is already in the repository. Use 'delete' to remove.")
           end
-          true # refresh tree
         end
 
         def commit!(message,change=nil)
@@ -235,10 +240,11 @@ module Redcar
           status = status_client.doStatus(Java::JavaIo::File.new(path),false).getContentsStatus()
           if indexed
             s = case status
-            when SVNStatusType::STATUS_MODIFIED then :changed
-            when SVNStatusType::STATUS_MISSING  then :missing
-            when SVNStatusType::STATUS_DELETED  then :deleted
-            when SVNStatusType::STATUS_ADDED    then :indexed
+            when SVNStatusType::STATUS_MODIFIED   then :changed
+            when SVNStatusType::STATUS_MISSING    then :missing
+            when SVNStatusType::STATUS_DELETED    then :deleted
+            when SVNStatusType::STATUS_ADDED      then :indexed
+            when SVNStatusType::STATUS_CONFLICTED then :conflicted
             end
             s
           else
@@ -246,6 +252,18 @@ module Redcar
             when SVNStatusType::STATUS_UNVERSIONED then :new
             end
             s
+          end
+        end
+
+        # Mark resolved files as dirty but no longer conflicted
+        def resolved(change)
+          #TODO: find a way to handle this directly instead of manual status editing
+          if change.status[0] == :conflicted
+            status = client_manager.getStatusClient().doStatus(
+                        Java::JavaIo::File.new(change.path),
+                        false) #don't use remote
+            status.setContentsStatus(SVNStatusType::STATUS_MODIFIED)
+            true # refresh tree
           end
         end
 

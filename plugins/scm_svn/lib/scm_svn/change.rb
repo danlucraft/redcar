@@ -15,6 +15,27 @@ module Redcar
          File.basename(@path)
         end
 
+        def tooltip_text
+          @path
+        end
+
+        def icon
+          case @status
+          when :conflicted
+            File.join(Redcar::ICONS_DIRECTORY, "blue-document--exclamation.png")
+          when :indexed
+            File.join(Redcar::ICONS_DIRECTORY, "blue-document--plus.png")
+          when :deleted
+            File.join(Redcar::ICONS_DIRECTORY, "blue-document-shred.png")
+          when :changed
+            File.join(Redcar::ICONS_DIRECTORY, "blue-document--pencil.png")
+          when :missing
+            File.join(Redcar::ICONS_DIRECTORY, "question-white.png")
+          else
+            :file
+          end
+        end
+
         def leaf?
           File.file?(@path)
         end
@@ -45,7 +66,8 @@ module Redcar
             [:indexed] => "A",
             [:changed] => "M",
             [:deleted] => "D",
-            [:missing] => "?"
+            [:missing] => "?",
+            [:conflicted] => "G"
           }
         end
       end
