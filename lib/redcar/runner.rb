@@ -57,13 +57,19 @@ module Redcar
         exit 1
       end
       ENV['RUBYOPT'] = nil # disable other native args
-      
+
+      # Windows XP updates
+      if [:windows].include?(Redcar.platform)
+	bin = "\"#{bin}\""
+	jruby_complete = "\"#{jruby_complete}\""
+      end      
+
       # unfortuanately, ruby doesn't support [a, *b, c]
       command = ["java"]
       command.push(*java_args)
-      command.push("-Xmx500m", "-Xss1024k", "-Djruby.memory.max=500m", "-Djruby.stack.max=1024k", "-cp", "\"#{jruby_complete}\"", "org.jruby.Main")
+      command.push("-Xmx500m", "-Xss1024k", "-Djruby.memory.max=500m", "-Djruby.stack.max=1024k", "-cp", jruby_complete, "org.jruby.Main")
       command.push "--debug" if debug_mode?
-      command.push("\"#{bin}\"")
+      command.push(bin)
       command.push(*cleaned_args)
       command.push("--no-sub-jruby", "--ignore-stdin")
       command.push(*args)
