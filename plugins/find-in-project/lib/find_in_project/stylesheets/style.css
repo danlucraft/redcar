@@ -70,39 +70,28 @@
   right: 34px;
 }
 
-#recent_options {
-  position: absolute;
-  top: 69px;
-  left: 124px;
-  right: 34px;
-}
-
-#recent_queries,
-#recent_options {
+#recent_queries {
   border: 1px solid #000;
   background-color: #fff;
 }
 
-#recent_queries ul,
-#recent_options ul {
+#recent_queries ul {
   list-style: none;
   height: 100px;
   overflow: auto;
 }
 
-#recent_queries ul li,
-#recent_options ul li {
+#recent_queries ul li {
   padding: 3px 10px;
 }
 
-#recent_queries ul li:hover,
-#recent_options ul li:hover {
+#recent_queries ul li:hover {
   background-color: #EDEDFD;
   cursor: hand;
 }
 
 #results_container {
-  margin-top: 130px;
+  margin-top: 95px;
 }
 
 #no_results,
@@ -130,11 +119,11 @@
 }
 
 #results .even {
-  background-color: #fff;
+  background-color: #EDEDFD;
 }
 
 #results .odd {
-  background-color: #EDEDFD;
+  background-color: #fff;
 }
 
 #results .file_heading {
@@ -194,7 +183,7 @@
 }
 
 #results .break {
-  height: 20px;
+  height: 12px;
 }
 
 #errors {

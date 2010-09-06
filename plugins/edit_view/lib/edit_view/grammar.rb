@@ -39,7 +39,7 @@ module Redcar
       
       def load_grammar
         grammar_dir = File.expand_path(File.dirname(__FILE__) + "/grammars")
-        Dir.new(grammar_dir).entries.reject {|item| item[-3..-1] != ".rb"}.each do |grammar|
+        Dir.new(grammar_dir).entries.reject {|item| item[-3..-1] != ".rb"}.sort.each do |grammar|
           unless loaded_files.include? grammar
             if require grammar_dir + "/" + grammar[0..-4]
               loaded_files << grammar

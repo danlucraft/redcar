@@ -17,21 +17,25 @@ module Redcar
         render('index')
       end
 
-      def search(query, options, match_case, with_context)
+      def search(query, literal_match, match_case, with_context)
         @query = query
-        @options = options
+        @literal_match = (literal_match == 'true')
         @match_case = (match_case == 'true')
         @with_context = (with_context == 'true')
-        Redcar::FindInProject.storage['recent_queries'] = add_or_move_to_top(@query, Redcar::FindInProject.storage['recent_queries'])
-        Redcar::FindInProject.storage['recent_options'] = add_or_move_to_top(@options, Redcar::FindInProject.storage['recent_options'])
+        Redcar::FindInProject.storage['recent_queries'] = add_or_move_to_top(query, Redcar::FindInProject.storage['recent_queries'])
+
+        execute("$('#cached_query').val(\"#{escape_javascript(@query)}\");")
+        execute("$('#results').html(\"<div id='no_results'>Searching...</div>\");")
         search_in_background
+
         nil
       end
 
-      def open_file(file, line, query, match_case)
+      def open_file(file, line, query, literal_match, match_case)
         Project::Manager.open_file(File.join(Project::Manager.focussed_project.path, file))
         doc.cursor_offset = doc.offset_at_line(line.to_i - 1)
-        regex = match_case ? /(#{query})/ : /(#{query})/i
+        regexp_text = literal_match ? Regexp.escape(query) : query
+        regex = match_case ? /(#{regexp_text})/ : /(#{regexp_text})/i
         index = doc.get_line(line.to_i - 1).index(regex)
         if index
           length = doc.get_line(line.to_i - 1).match(regex)[1].length
@@ -42,13 +46,15 @@ module Redcar
       end
 
       def close
-        @thread = nil # stop ant running searches
+        Thread.kill(@thread) if @thread
+        @thread = nil
+        super
       end
 
       private
 
-      def render(action)
-        rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "views", "#{action}.html.erb")))
+      def render(view)
+        rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "views", "#{view.to_s}.html.erb")))
         rhtml.result(binding)
       end
 
@@ -62,46 +68,64 @@ module Redcar
         array.unshift(item)
       end
 
-      def search_class
-        @search_class ||= case Redcar::FindInProject.storage['search_engine']
-        when 'grep'
-          Redcar::FindInProject::Engines::Grep
-        when 'ack'
-          Redcar::FindInProject::Engines::Ack
-        end
-      end
-
       def search_in_background
-        execute("$('#results_container').html(\"<div id='searching'>Searching...</div>\");")
+        @plugin_root = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
+        @settings = Redcar::FindInProject.storage
+        @project_path = Project::Manager.focussed_project.path
+
+        # kill any existing running search to prevent memory bloat
+        Thread.kill(@thread) if @thread
+        @thread = nil
 
         @thread = Thread.new do
-          begin
-            @results = search_class.search(@query, @options, @match_case, @with_context)
-            render_results
-          rescue => e
-            error = "<div id='errors'>
-              Opps! Something went wrong when trying to search!<br />
-              #{CGI.escapeHTML(e.message)}<br />
-              #{e.backtrace.collect { |b| CGI.escapeHTML(b) }.join('<br />')}
-            </div>"
-            execute("$('#results_container').html(\"#{escape_javascript(error)}\");")
+          found_lines = false
+          last_file = nil
+
+          @file_index, @line_index = 0, 0
+
+          Redcar::FileParser.new(@project_path, @settings).each_line do |line, line_no, file, file_no|
+            next unless matching_line?(line)
+
+            # Add an initial <tr></tr>  so that tr:last can be used
+            execute("if ($('#results table').size() == 0) { $('#results').html(\"<table><tr></tr></table>\"); }")
+
+            if last_file != file # new file
+              file_name = file.realpath.to_s.gsub("#{@project_path}/", '')
+              @file_index, @file_name = ((@file_index || 0) + 1), file_name
+              execute("$('#results table tr:last').after(\"<tr><td class='break' colspan='2'></td></tr>\");") unless last_file.nil?
+              execute("$('#results table tr:last').after(\"#{escape_javascript(render('_file_heading'))}\");")
+              @line_index = 0 # reset line row styling
+            end
+
+            @line_index, @line_no, @line = ((@line_index || 0) + 1), line_no, line
+            execute("$('#results table tr:last').after(\"#{escape_javascript(render('_file_line'))}\");")
+
+            found_lines = true
+            last_file = file
           end
+
+          if found_lines
+            # Remove the blank tr we added initially
+            execute("$('#results table tr:first').remove();")
+          else
+            result = "<div id='no_results'>No results were found using the search terms you provided.</div>"
+            execute("$('#results').html(\"#{escape_javascript(result)}\");")
+          end
+
+          Thread.kill(@thread) if @thread
           @thread = nil
         end
       end
 
-      def render_results
-        if @results.nil? || @results.empty?
-          results = "<div id='no_results'>No results were found using the search terms you provided.</div>"
-        else
-          results = render('_results')
-        end
-        execute("$('#results_container').html(\"#{escape_javascript(results)}\");")
+      def matching_line?(line)
+        regexp_text = @literal_match ? Regexp.escape(@query) : @query
+        regexp = @match_case ? /#{regexp_text}/ : /#{regexp_text}/i
+        line =~ regexp
       end
 
       def escape_javascript(javascript)
         escape_map = { '\\' => '\\\\', '</' => '<\/', "\r\n" => '\n', "\n" => '\n', "\r" => '\n', '"' => '\\"', "'" => "\\'" }
-        javascript.gsub(/(\\|<\/|\r\n|[\n\r"'])/) { escape_map[$1] }
+        javascript.to_s.gsub(/(\\|<\/|\r\n|[\n\r"'])/) { escape_map[$1] }
       end
     end
   end

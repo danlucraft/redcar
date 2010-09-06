@@ -2,7 +2,7 @@ $:.push File.join(File.dirname(__FILE__), '..', '..', '..', 'lib')
 
 require 'redcar'
 Redcar.environment = :test
-Redcar.load
+Redcar.load_unthreaded
 
 Spec::Runner.configure do |config|
   config.before(:suite) do

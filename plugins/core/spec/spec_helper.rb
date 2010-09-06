@@ -2,7 +2,7 @@ $:.push File.join(File.dirname(__FILE__), '..', '..', '..', 'lib')
 
 require 'redcar'
 Redcar.environment = :test
-Redcar.load
+Redcar.load_unthreaded
 
 class QuickTask < Redcar::Task
   def initialize(id=nil)

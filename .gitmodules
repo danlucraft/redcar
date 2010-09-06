@@ -3,7 +3,7 @@
 	url = git://github.com/danlucraft/java-mateview.git
 [submodule "lib/plugin_manager"]
 	path = lib/plugin_manager
-	url = git://github.com/danlucraft/plugin_manager.git
+	url = git://github.com/redcar/plugin_manager.git
 [submodule "lib/openssl"]
 	path = lib/openssl
 	url = git://github.com/jruby/jruby-ossl.git
