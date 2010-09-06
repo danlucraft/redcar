@@ -16,9 +16,18 @@ module Redcar
         include_package 'org.tmatesoft.svn.core.wc'
         import 'org.tmatesoft.svn.core.SVNURL'
         import 'org.tmatesoft.svn.core.SVNDepth'
+        import 'org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory'
+        import 'org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl'
+        import 'org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory'
 
         def client_manager
-          @manager ||= SVNClientManager.newInstance()
+          @manager ||= begin
+            m = SVNClientManager.newInstance()
+            DAVRepositoryFactory.setup()
+            SVNRepositoryFactoryImpl.setup()
+            FSRepositoryFactory.setup()
+            m
+          end
         end
 
         def repository_type
@@ -256,6 +265,9 @@ module Redcar
 
         def translations
           t = super
+          t[:index_unsave] = "Remove from commit"
+          t[:indexed_changes] = "Uncommitted Changes"
+          t[:unindexed_changes] = "Unversioned Files"
           if repository?(@path)
             t[:push] = "Commit Changes",
             t[:pull] = "Update Working Copy"
