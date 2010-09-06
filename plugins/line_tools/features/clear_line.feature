@@ -5,7 +5,7 @@ Scenario: Clearing a single line
   And I replace the contents with "foo\nbar\nbonne\nbaz"
   And I move the cursor to 5
   And I clear the line
-  Then I should see "foo\n\nbonne\nbaz" in the edit tab
+  Then I should see "foo\n\n\nbonne\nbaz" in the edit tab
   And I should not see "bar" in the edit tab
 
 Scenario: Clearing a multi-line selection
