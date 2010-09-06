@@ -5,6 +5,7 @@ Plugin.define do
   object  "Redcar::FindInProject"
   file    "lib", "find_in_project"
 
-  dependencies "core",      ">0",
-               "HTML View", ">=0.3.2"
+  dependencies "core",        ">0",
+               "HTML View",   ">=0.3.2",
+               "file_parser", "=0.1.0"
 end

@@ -2,14 +2,16 @@
 $redcar_process_start_time = Time.now
 
 require 'rubygems'
-require File.join(File.dirname(__FILE__), %w(.. lib redcar_quick_start))
+
+$:.push(File.join(File.dirname(__FILE__), %w(.. lib)))
+require "redcar_quick_start"
 
 process_start_time = Time.now
 $:.push File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'redcar'
 Redcar.environment = :test
-Redcar.load
+Redcar.load_unthreaded
 Redcar::Top.start
 Redcar.gui.run_features(ARGV)
 Redcar.pump

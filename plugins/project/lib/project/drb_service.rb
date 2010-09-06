@@ -14,7 +14,7 @@ module Redcar
         begin
           puts 'drb opening untitled ' + full_path if $VERBOSE
           if File.file?(path)
-            Redcar::ApplicationSWT.sync_exec do
+            Swt.sync_exec do
               Project::Manager.open_untitled_path(path)
               Redcar.app.focussed_window.controller.bring_to_front
             end
@@ -30,7 +30,7 @@ module Redcar
         begin
           puts 'drb opening ' + full_path if $VERBOSE
           if File.directory? full_path
-            Redcar::ApplicationSWT.sync_exec do
+            Swt.sync_exec do
               if Redcar.app.windows.length == 0 and Application.storage['last_open_dir'] == full_path
                 Project::Manager.restore_last_session
               end
@@ -48,7 +48,7 @@ module Redcar
             end
             'ok'
           elsif full_path == 'just_bring_to_front'          
-            Redcar::ApplicationSWT.sync_exec do
+            Swt.sync_exec do
               if Redcar.app.windows.length == 0
                 Project::Manager.restore_last_session
               end
@@ -56,7 +56,7 @@ module Redcar
             end
             'ok'
           elsif File.file?(full_path)
-            Redcar::ApplicationSWT.sync_exec do
+            Swt.sync_exec do
               if Redcar.app.windows.length == 0
                 Project::Manager.restore_last_session
               end
