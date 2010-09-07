@@ -16,6 +16,7 @@ Enhancements
  * Splash screen (Dan Lucraft)
  * Installer loads Redcar, therefore putting all the Redcar files in the OS disk cache (Dan Lucraft)
  * Read installed JVM options and use 32bit client vm if available (Dan Lucraft)
+ * Edit views now have right-click menu, with hooks for plugins (Delisa Mason)
 
 New internal APIs
 
