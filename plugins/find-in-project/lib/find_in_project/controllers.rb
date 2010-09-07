@@ -26,6 +26,9 @@ module Redcar
 
         execute("$('#cached_query').val(\"#{escape_javascript(@query)}\");")
         execute("$('#results').html(\"<div id='no_results'>Searching...</div>\");")
+        execute("$('#results_summary').hide();")
+        execute("$('#file_results_count').html(0);")
+        execute("$('#line_results_count').html(0);")
         search_in_background
 
         nil
@@ -86,10 +89,12 @@ module Redcar
 
             # Add an initial <tr></tr>  so that tr:last can be used
             execute("if ($('#results table').size() == 0) { $('#results').html(\"<table><tr></tr></table>\"); }")
+            execute("if ($('#results_summary').first().is(':hidden')) { $('#results_summary').show(); }")
 
             parsing_new_file = (!last_matching_line || last_matching_line.file != line.file)
 
             if parsing_new_file
+              execute("$('#file_results_count').html(parseInt($('#file_results_count').html()) + 1);")
               execute("$('#results table tr:last').after(\"<tr><td class='break' colspan='2'></td></tr>\");") if matched_lines
               @file = line.file
               execute("$('#results table tr:last').after(\"#{escape_javascript(render('_file_heading'))}\");")
@@ -105,6 +110,8 @@ module Redcar
             context[:before].each { |b_line| render_line(b_line) } if @with_context
             render_line(line)
             context[:after].each { |a_line| render_line(a_line) } if @with_context
+
+            execute("$('#line_results_count').html(parseInt($('#line_results_count').html()) + 1);")
 
             matched_lines = true
             last_matching_line = line
