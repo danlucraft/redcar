@@ -3,7 +3,7 @@ $:.push(File.expand_path(File.join(File.dirname(__FILE__), %w{.. vendor})))
 require 'java'
 require 'scm_svn/change'
 begin
-  require 'svnkit.jar'
+  require 'svnkit'
 rescue
   #Subversion Libraries not found
 end
@@ -90,20 +90,28 @@ module Redcar
 
         def index_add(change)
           client_manager.getWCClient().doAdd(
-            Java::JavaIo::File.new(change.path), #wc item file
+          Java::JavaIo::File.new(change.path), #wc item file
             false, # if true, this method does not throw exceptions on already-versioned items
             false, # if true, create a directory also at path
             false, # not used; make use of makeParents instead
             SVNDepth::INFINITY, #tree depth
             false, # if true, does not apply ignore patterns to paths being added
-            true)  # if true, climb upper and schedule also all unversioned paths in the way
+            true   # if true, climb upper and schedule also all unversioned paths in the way
+          )
           true # refresh tree
         end
 
         def index_ignore(change)
           dir = Java::JavaIo::File.new(change.path).getParentFile().getAbsoluteFile()
+          prop = client_manager.getWCClient().doGetProperty(dir, SVNProperty::IGNORE,
+            SVNRevision::BASE, SVNRevision::WORKING)
+          if prop and not prop.getValue().toString().strip.empty?
+            prop = prop.getValue().toString() + "\n#{File.basename(change.path)}"
+          else
+            prop = File.basename(change.path)
+          end
           client_manager.getWCClient().doSetProperty(dir, SVNProperty::IGNORE,
-            SVNPropertyValue.create(File.basename(change.path)), false, false, nil)
+            SVNPropertyValue.create(prop), false, false, nil)
           true # refresh tree
         end
 
@@ -134,7 +142,9 @@ module Redcar
         end
 
         def index_save(change)
-          #TODO: what to do here? Maybe cache?
+          if change.status[0] == :unmerged
+            resolve_conflict(change)
+          end
         end
 
         def index_restore(change)
@@ -150,7 +160,6 @@ module Redcar
         end
 
         def index_unsave(change)
-          puts change.status
           if change.status[0] == :new
             # Do nothing, there's nothing to unsave
           elsif change.status[0] == :indexed
@@ -217,7 +226,19 @@ module Redcar
 
         def find_dirs(path,indexed,nodes=[])
           Dir["#{path.to_s}/*/"].map do |a|
-            find_dirs(a,indexed,nodes)
+            #FIXME: find dirs beneath iff 'a' is not ignored
+            status = client_manager.getStatusClient().doStatus(
+              Java::JavaIo::File.new(a),false).getContentsStatus()
+            if versioned_statuses.include?(status)
+              find_dirs(a,indexed,nodes)
+            else
+              unless indexed
+                if status == SVNStatusType::STATUS_UNVERSIONED
+                  diff_client = client_manager.getDiffClient()
+                  nodes << Scm::Subversion::Change.new(a,:new,[],diff_client)
+                end
+              end
+            end
           end
           check_files(path,indexed,nodes)
         end
@@ -228,8 +249,8 @@ module Redcar
             if File.file?(file_path)
               status = check_file_status(file_path,indexed)
               if status
-                diff = file_diff(file_path) unless status == :new
-                nodes << Scm::Subversion::Change.new(file_path,status,[],diff)
+                diff_client = client_manager.getDiffClient()
+                nodes << Scm::Subversion::Change.new(file_path,status,[],diff_client)
               end
             end
           end
@@ -244,7 +265,7 @@ module Redcar
             when SVNStatusType::STATUS_MISSING    then :missing
             when SVNStatusType::STATUS_DELETED    then :deleted
             when SVNStatusType::STATUS_ADDED      then :indexed
-            when SVNStatusType::STATUS_CONFLICTED then :conflicted
+            when SVNStatusType::STATUS_CONFLICTED then :unmerged
             end
             s
           else
@@ -255,16 +276,26 @@ module Redcar
           end
         end
 
-        # Mark resolved files as dirty but no longer conflicted
-        def resolved(change)
-          #TODO: find a way to handle this directly instead of manual status editing
-          if change.status[0] == :conflicted
-            status = client_manager.getStatusClient().doStatus(
-                        Java::JavaIo::File.new(change.path),
-                        false) #don't use remote
-            status.setContentsStatus(SVNStatusType::STATUS_MODIFIED)
-            true # refresh tree
-          end
+        def versioned_statuses
+          [
+          SVNStatusType::STATUS_MODIFIED,
+          SVNStatusType::STATUS_MISSING,
+          SVNStatusType::STATUS_DELETED,
+          SVNStatusType::STATUS_ADDED,
+          SVNStatusType::STATUS_CONFLICTED,
+          SVNStatusType::STATUS_NORMAL
+          ]
+        end
+
+        def resolve_conflict(change)
+          client_manager.getWCClient().doResolve(
+            Java::JavaIo::File.new(change.path),
+            SVNDepth::IMMEDIATES, # change and files beneath
+            true, # resolve contents conflict
+            true, # resolve property conflict
+            true, # resolve tree conflict -- man, I hate those
+            SVNConflictChoice::MINE_FULL # choose file as edited and resolved
+          )
         end
 
         def file_diff(path)
@@ -284,14 +315,14 @@ module Redcar
         def translations
           t = super
           t[:index_unsave] = "Remove from commit"
-          t[:indexed_changes] = "Uncommitted Changes"
-          t[:unindexed_changes] = "Unversioned Files"
+          t[:indexed_changes] = "Uncommitted changes"
+          t[:unindexed_changes] = "External files"
           if repository?(@path)
-            t[:push] = "Commit Changes",
-            t[:pull] = "Update Working Copy"
+            t[:push] = "Commit changes",
+            t[:pull] = "Update working copy"
           else
-            t[:push] = "Commit Changes",
-            t[:pull] = "Checkout Repository"
+            t[:push] = "Commit changes",
+            t[:pull] = "Checkout repository"
           end
           t
         end

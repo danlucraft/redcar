@@ -3,12 +3,19 @@ module Redcar
     module Subversion
       class Change
         include Redcar::Scm::ScmChangesMirror::Change
+        include_package 'org.tmatesoft.svn.core.wc'
+        include_package 'org.tmatesoft.svn.core'
 
-        def initialize(path,status,children,diff)
-          @path = path
+        def initialize(path,status,children,diff_client)
+          case Redcar.platform
+          when :osx, :linux
+            @path = path.gsub("//","/")
+          when :windows
+            @path = path.gsub("//","\\")
+          end
           @status = status
           @children = children
-          @diff = diff
+          @diff_client = diff_client
         end
 
         def text
@@ -21,7 +28,7 @@ module Redcar
 
         def icon
           case @status
-          when :conflicted
+          when :unmerged
             File.join(Redcar::ICONS_DIRECTORY, "blue-document--exclamation.png")
           when :indexed
             File.join(Redcar::ICONS_DIRECTORY, "blue-document--plus.png")
@@ -31,6 +38,12 @@ module Redcar
             File.join(Redcar::ICONS_DIRECTORY, "blue-document--pencil.png")
           when :missing
             File.join(Redcar::ICONS_DIRECTORY, "question-white.png")
+          when :new
+            if File.directory?(@path.to_s)
+              :directory
+            else
+              :file
+            end
           else
             :file
           end
@@ -45,8 +58,7 @@ module Redcar
         end
 
         def log_status
-          c = log_codes[status] || ""
-          "#{c} #{path}"
+          "#{log_codes[status] || ''} #{path}"
         end
 
         def path
@@ -58,16 +70,28 @@ module Redcar
         end
 
         def diff
-          @diff
+          unless @status == :new
+            stream = Java::JavaIo::ByteArrayOutputStream.new
+            file   = Java::JavaIo::File.new(path)
+            @diff_client.doDiff(
+              file, SVNRevision::BASE,
+              file, SVNRevision::WORKING,
+              SVNDepth::IMMEDIATES,
+              false,
+              stream,
+              Java::JavaUtil::ArrayList.new
+            )
+            stream.toString()
+          end
         end
 
         def log_codes
           {
-            [:indexed] => "A",
-            [:changed] => "M",
-            [:deleted] => "D",
-            [:missing] => "?",
-            [:conflicted] => "G"
+            [:indexed]  => "A",
+            [:changed]  => "M",
+            [:deleted]  => "D",
+            [:missing]  => "!",
+            [:unmerged] => "C"
           }
         end
       end
