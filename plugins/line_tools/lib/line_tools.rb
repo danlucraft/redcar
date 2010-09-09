@@ -21,20 +21,20 @@ module Redcar
 
     def self.keymaps
       osx = Redcar::Keymap.build("main", :osx) do
-        link "Alt+Shift+Up"  , RaiseTextCommand
-        link "Alt+Shift+Down", LowerTextCommand
-        link "Alt+Shift+K"   , KillLineCommand
-        link "Alt+Shift+R"   , ReplaceLineCommand
-        link "Alt+Shift+C"   , ClearLineCommand
-        link "Cmd+K"        , TrimLineAfterCursorCommand
+        link "Alt+Up"     , RaiseTextCommand
+        link "Alt+Down"   , LowerTextCommand
+        link "Alt+Shift+K", KillLineCommand
+        link "Alt+R"      , ReplaceLineCommand
+        link "Alt+C"      , ClearLineCommand
+        link "Ctrl+K"     , TrimLineAfterCursorCommand
       end
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
-        link "Alt+Shift+Up"  , RaiseTextCommand
-        link "Alt+Shift+Down", LowerTextCommand
-        link "Alt+Shift+K"   , KillLineCommand
-        link "Alt+Shift+R"   , ReplaceLineCommand
-        link "Alt+Shift+C"   , ClearLineCommand
-        link "Ctrl+K"        , TrimLineAfterCursorCommand
+        link "Alt+Up"     , RaiseTextCommand
+        link "Alt+Down"   , LowerTextCommand
+        link "Alt+Shift+K", KillLineCommand
+        link "Alt+R"      , ReplaceLineCommand
+        link "Alt+C"      , ClearLineCommand
+        link "Ctrl+K"     , TrimLineAfterCursorCommand
       end
       [osx, linwin]
     end
@@ -52,8 +52,10 @@ module Redcar
           first_line_ix = doc.cursor_line
           text = doc.get_line(first_line_ix)
         end
-        doc.replace(doc.offset_at_line(first_line_ix),text.length,"")
-        Redcar::Top::PasteCommand.new.run
+        doc.controllers(Redcar::AutoIndenter::DocumentController).first.disable do
+          doc.replace(doc.offset_at_line(first_line_ix),text.length,"")
+          Redcar::Top::PasteCommand.new.run
+        end
       end
     end
 
@@ -71,7 +73,9 @@ module Redcar
           text = doc.get_line(line_ix)
           lines = 1
         end
-        doc.replace(doc.offset_at_line(line_ix), text.length, "\n" * lines)
+        doc.controllers(Redcar::AutoIndenter::DocumentController).first.disable do
+          doc.replace(doc.offset_at_line(line_ix), text.length, "\n" * lines)
+        end
         doc.cursor_offset = doc.cursor_offset - 1
       end
     end
@@ -89,8 +93,10 @@ module Redcar
           line_ix = doc.line_at_offset(offset)
           text = doc.get_slice(offset, doc.offset_at_line_end(line_ix))
         end
-        doc.replace(offset, text.length, "\n")
-        doc.cursor_offset = doc.cursor_offset - 1
+        doc.controllers(Redcar::AutoIndenter::DocumentController).first.disable do
+          doc.replace(offset, text.length, "\n")
+        end
+        #doc.cursor_offset = doc.cursor_offset - 1
       end
     end
 
@@ -106,7 +112,9 @@ module Redcar
           line_ix = doc.cursor_line
           text = doc.get_line(line_ix)
         end
-        doc.replace(doc.offset_at_line(line_ix), text.length,"")
+        doc.controllers(Redcar::AutoIndenter::DocumentController).first.disable do
+          doc.replace(doc.offset_at_line(line_ix), text.length,"")
+        end
       end
     end
 
@@ -133,20 +141,22 @@ module Redcar
             top = first_line_ix - 2
             insert_idx = doc.offset_at_line_end(top)
           end
-          doc.compound do
-            prev_line = doc.get_line(first_line_ix-1)
-            swap_text = "#{prev_line}#{text}"
-            new_text  = "#{text}#{prev_line}"
-            unless /\n$/.match(text)
-              new_text = "#{text}\n#{prev_line}"
+          doc.controllers(Redcar::AutoIndenter::DocumentController).first.disable do
+            doc.compound do
+              prev_line = doc.get_line(first_line_ix-1)
+              swap_text = "#{prev_line}#{text}"
+              new_text  = "#{text}#{prev_line}"
+              unless /\n$/.match(text)
+                new_text = "#{text}\n#{prev_line}"
+              end
+              doc.replace(doc.offset_at_line(first_line_ix-1), swap_text.length, new_text)
+              doc.cursor_offset = insert_idx + cursor_line_offset
+              if keep_selection
+                doc.set_selection_range(doc.offset_at_line(first_line_ix-1),
+                doc.offset_at_line(last_line_ix-1) + doc.get_line(last_line_ix-1).length - 1)
+              end
+              doc.scroll_to_line(top)
             end
-            doc.replace(doc.offset_at_line(first_line_ix-1), swap_text.length, new_text)
-            doc.cursor_offset = insert_idx + cursor_line_offset
-            if keep_selection
-              doc.set_selection_range(doc.offset_at_line(first_line_ix-1),
-              doc.offset_at_line(last_line_ix-1) + doc.get_line(last_line_ix-1).length - 1)
-            end
-            doc.scroll_to_line(top)
           end
         end
       end
@@ -178,14 +188,16 @@ module Redcar
           else
             new_text  = "#{next_line}#{text}"
           end
-          doc.compound do
-            doc.replace(doc.offset_at_line(first_line_ix), swap_text.length, new_text)
-            doc.cursor_offset = doc.offset_at_line(last_line_ix+1) + cursor_line_offset
-            if keep_selection
-              doc.set_selection_range(doc.offset_at_line(first_line_ix+1),
-              doc.offset_at_line(last_line_ix+1) + doc.get_line(last_line_ix+1).length - 1)
+          doc.controllers(Redcar::AutoIndenter::DocumentController).first.disable do
+            doc.compound do
+              doc.replace(doc.offset_at_line(first_line_ix), swap_text.length, new_text)
+              doc.cursor_offset = doc.offset_at_line(last_line_ix+1) + cursor_line_offset
+              if keep_selection
+                doc.set_selection_range(doc.offset_at_line(first_line_ix+1),
+                doc.offset_at_line(last_line_ix+1) + doc.get_line(last_line_ix+1).length - 1)
+              end
+              doc.scroll_to_line(last_line_ix+1)
             end
-            doc.scroll_to_line(last_line_ix+1)
           end
         end
       end
