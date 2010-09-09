@@ -23,11 +23,11 @@ module Redcar
         if path.directory?
           Find.prune if excluded_dirs.include?(path.basename.to_s) || is_excluded_pattern
         else
-          if path.readable? && !skip_types.find { |st| path.send("#{st}?") }
-            unless path.read.is_binary_data? || excluded_files.include?(path.basename.to_s) || is_excluded_pattern
-              yield(FileResult.new(path, file_index))
-              file_index += 1
-            end
+          skipped = skip_types.find { |st| path.send("#{st}?") }
+          excluded = excluded_files.include?(path.basename.to_s) || is_excluded_pattern
+          unless !path.readable? || path.read.is_binary_data? || skipped || excluded
+            yield(FileResult.new(path, file_index))
+            file_index += 1
           end
         end
       end
@@ -65,6 +65,10 @@ module Redcar
         end
       end
 
+      def inspect
+        "#<FileResult path=#{path.to_s} index=#{index} lines=#{lines.size}>"
+      end
+
     end
 
     class LineResult
@@ -93,6 +97,10 @@ module Redcar
           after = ((index + 1)..(to)).collect { |a_index| LineResult.new(file, a_index, file.lines[a_index]) }
         end
         { :before => before, :after => after }
+      end
+
+      def inspect
+        "#<LineResult index=#{index} file=#{file.to_s}>"
       end
 
     end

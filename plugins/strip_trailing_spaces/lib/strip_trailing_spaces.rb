@@ -30,18 +30,15 @@ module Redcar
     def self.before_save(doc)
       if (doc.mirror.is_a?(Redcar::Project::FileMirror) && StripTrailingSpaces.enabled?)
         cursor = CursorHandler.new(doc)
-        indenter = doc.controllers(Redcar::AutoIndenter::DocumentController)[0]
-        pairer = doc.controllers(Redcar::AutoPairer::DocumentController)[0]
-        indenter = nil unless indenter.is_a?(Redcar::AutoIndenter::DocumentController)
 
-        pairer.ignore do
-          indenter.increase_ignore if indenter != nil
-          doc.compound do
-            doc.line_count.times do |l|
-              doc.replace_line(l) { |line_text| line_text.rstrip }
+        doc.controllers(Redcar::AutoPairer::DocumentController).first.ignore do
+          doc.controllers(Redcar::AutoIndenter::DocumentController).first.ignore do
+            doc.compound do
+              doc.line_count.times do |l|
+                doc.replace_line(l) { |line_text| line_text.rstrip }
+              end
             end
           end
-          indenter.decrease_ignore if indenter != nil
         end
 
         cursor.adjust
