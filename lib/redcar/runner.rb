@@ -2,7 +2,7 @@ module Redcar
   # Cribbed from ruby-processing. Many thanks!
   class Runner
     def run
-      forking = ARGV.include?("--fork")
+      forking = ARGV.include?("--fork") and ARGV.first != "install"
       no_runner = ARGV.include?("--no-sub-jruby")
       jruby = Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby"
       osx = (not [:linux, :windows].include?(Redcar.platform))

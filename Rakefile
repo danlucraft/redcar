@@ -1,4 +1,4 @@
-REDCAR_VERSION = "0.5.4dev" # also change in lib/redcar.rb!
+REDCAR_VERSION = "0.5.1" # also change in lib/redcar.rb!
 require 'rubygems'
 require 'fileutils'
 require 'spec/rake/spectask'
@@ -129,6 +129,7 @@ spec = Gem::Specification.new do |s|
   s.files             = %w(CHANGES LICENSE Rakefile README.md) + 
                           Dir.glob("bin/redcar") + 
                           Dir.glob("config/**/*") + 
+                          Dir.glob("share/**/*") + 
                           remove_gitignored_files(Dir.glob("lib/**/*")) + 
                           remove_matching_files(remove_gitignored_files(Dir.glob("plugins/**/*")), "redcar-bundles") + 
                           Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Syntaxes/**/*") + 
