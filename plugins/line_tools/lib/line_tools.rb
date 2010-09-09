@@ -23,7 +23,7 @@ module Redcar
       osx = Redcar::Keymap.build("main", :osx) do
         link "Alt+Up"     , RaiseTextCommand
         link "Alt+Down"   , LowerTextCommand
-        link "Alt+Shift+K", KillLineCommand
+        link "Alt+K"      , KillLineCommand
         link "Alt+R"      , ReplaceLineCommand
         link "Alt+C"      , ClearLineCommand
         link "Ctrl+K"     , TrimLineAfterCursorCommand
@@ -31,7 +31,7 @@ module Redcar
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
         link "Alt+Up"     , RaiseTextCommand
         link "Alt+Down"   , LowerTextCommand
-        link "Alt+Shift+K", KillLineCommand
+        link "Alt+K"      , KillLineCommand
         link "Alt+R"      , ReplaceLineCommand
         link "Alt+C"      , ClearLineCommand
         link "Ctrl+K"     , TrimLineAfterCursorCommand
