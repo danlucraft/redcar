@@ -108,24 +108,7 @@ module Redcar
     # TODO: remove this method once we have a default layout that
     #       has <%= javascript_controller_actions %>
     def setup_javascript_listeners
-      methods = controller.methods - Object.methods
-      <<-JS
-        <script type="text/javascript">
-          var makeController = function (methods) {
-            var method, jsMethod, controller = {};
-            for (i in methods) {
-              method = methods[i];
-              jsMethod = method.replace(/_(.)/g, function () { return arguments[1].toUpperCase(); });
-              controller[jsMethod] = function () {
-                var args = [method].concat(Array.prototype.slice.call(arguments));
-                return JSON.parse(rubyCall.apply(this, args));
-              };
-            }
-            return controller;
-          };
-          Controller = makeController(#{methods.inspect});
-        </script>
-      JS
+      controller.javascript_controller_actions
     end
   end
 end
