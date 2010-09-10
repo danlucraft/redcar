@@ -41,7 +41,7 @@ module Redcar
       return if jruby and not osx
       
       construct_command do |command|
-        exec(*command)
+        exec(command.join(" "))
       end
     end
     
@@ -57,7 +57,13 @@ module Redcar
         exit 1
       end
       ENV['RUBYOPT'] = nil # disable other native args
-      
+
+      # Windows XP updates
+      if [:windows].include?(Redcar.platform)
+	bin = "\"#{bin}\""
+	jruby_complete = "\"#{jruby_complete}\""
+      end      
+
       # unfortuanately, ruby doesn't support [a, *b, c]
       command = ["java"]
       command.push(*java_args)

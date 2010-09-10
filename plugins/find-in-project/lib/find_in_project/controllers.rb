@@ -81,12 +81,10 @@ module Redcar
         @thread = nil
 
         @thread = Thread.new do
-          found_lines = false
-          last_file = nil
+          matched_lines = false
+          last_matching_line = nil
 
-          @file_index, @line_index = 0, 0
-
-          Redcar::FileParser.new(@project_path, @settings).each_line do |line, line_no, file, file_no|
+          Redcar::FileParser.new(@project_path, @settings).each_line do |line|
             next unless matching_line?(line)
 
             # Add an initial <tr></tr>  so that tr:last can be used
@@ -103,21 +101,23 @@ module Redcar
               @line_index = 0 # reset line row styling
             end
 
-            @line_index, @line_no, @line = ((@line_index || 0) + 1), line_no, line
-            execute("$('#results table tr:last').after(\"#{escape_javascript(render('_file_line'))}\");")
+            if @with_context && !parsing_new_file && (line.num - last_matching_line.num) > (@settings['context_lines'] * 2)
+              divider = "<tr class='divider'><td class='line_num file_#{@line.file.num}'>...</td><td></td></tr>"
+              execute("$('#results table tr:last').after(\"#{divider}\");")
+            end
 
-<<<<<<< HEAD
-            found_lines = true
-            last_file = file
-=======
+            context = line.context(@settings['context_lines']) if @with_context
+            context[:before].each { |b_line| render_line(b_line) } if @with_context
+            render_line(line)
+            context[:after].each { |a_line| render_line(a_line) } if @with_context
+
             execute("$('#line_results_count').html(parseInt($('#line_results_count').html()) + 1);")
 
             matched_lines = true
             last_matching_line = line
->>>>>>> 1c916706eb5f9da332209afba0cf443081b71a16
           end
 
-          if found_lines
+          if matched_lines
             # Remove the blank tr we added initially
             execute("$('#results table tr:first').remove();")
           else
@@ -133,12 +133,20 @@ module Redcar
       def matching_line?(line)
         regexp_text = @literal_match ? Regexp.escape(@query) : @query
         regexp = @match_case ? /#{regexp_text}/ : /#{regexp_text}/i
-        line =~ regexp
+        line.text =~ regexp
       end
 
-      def escape_javascript(javascript)
+      def escape_javascript(text)
         escape_map = { '\\' => '\\\\', '</' => '<\/', "\r\n" => '\n', "\n" => '\n', "\r" => '\n', '"' => '\\"', "'" => "\\'" }
-        javascript.to_s.gsub(/(\\|<\/|\r\n|[\n\r"'])/) { escape_map[$1] }
+        text.to_s.gsub(/(\\|<\/|\r\n|[\n\r"'])/) { escape_map[$1] }
+      end
+
+      def render_line(line)
+        @line_index += 1
+        @line, @file = line, line.file
+        execute("if ($('#results tr.file_#{@file.num}.line_#{@line.num}').size() == 0) {
+          $('#results table tr:last').after(\"#{escape_javascript(render('_file_line'))}\");
+        }")
       end
     end
   end

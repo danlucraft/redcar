@@ -38,6 +38,8 @@ module Redcar
         #
         # Possible values and their implications:
         #   :new - can be passed to index_add, index_ignore
+        #   :unmerged - The file is in a conflicted state. 
+        #               Can be passed to index_save or index_delete
         #   :indexed - can be passed to index_revert, index_unsave
         #   :deleted - can be passed to index_restore, index_unsave
         #   :missing - can be passed to index_restore, index_delete

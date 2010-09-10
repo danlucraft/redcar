@@ -15,6 +15,7 @@ module Redcar
     end
 
     def each_file(&block)
+      file_index = 0
       Find.find(root_path) do |path|
         fullpath = File.expand_path(path)
         path = Pathname.new(fullpath)
@@ -33,19 +34,13 @@ module Redcar
     end
 
     def each_line(&block)
-      file_no = 0
       each_file do |file|
-        file_no += 1
-        line_no = 0
         file.each_line do |line|
-          line_no += 1
-          yield(line, line_no, file, file_no)
+          yield(line)
         end
       end
     end
 
-<<<<<<< HEAD
-=======
     class FileResult
 
       attr_reader :path, :index, :lines
@@ -110,6 +105,5 @@ module Redcar
 
     end
 
->>>>>>> 1c916706eb5f9da332209afba0cf443081b71a16
   end
 end

@@ -114,7 +114,7 @@
 }
 
 #results .filename,
-#results .line_no {
+#results .line_num {
   background-color: #eee;
   padding: 3px 10px;
 }
@@ -146,7 +146,7 @@
   height: 16px;
 }
 
-#results .line_no {
+#results .line_num {
   text-align: right;
   padding: 0 5px;
   min-width: 20px;
@@ -154,7 +154,11 @@
   font-size: 13px;
 }
 
-#results .divider .line_no {
+#results .divider .line_num {
+  cursor: default;
+}
+
+#results .divider .line_num {
   text-align: center;
   background-color: #fff;
 }
@@ -174,11 +178,7 @@
   font-size: 13px;
 }
 
-#results .divider .text {
-  background-color: #fff;
-}
-
-#results .nomatch .line_no,
+#results .nomatch .line_num,
 #results .nomatch .text {
   color: #aaa;
 }
