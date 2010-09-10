@@ -4,9 +4,9 @@ module Redcar
     class ClojureMirror
       def self.load_clojure_dependencies
         unless @loaded
-          require File.dirname(__FILE__) + "/../../vendor/clojure.jar"
-          require File.dirname(__FILE__) + "/../../vendor/clojure-contrib.jar"
-          require File.dirname(__FILE__) + "/../../vendor/org-enclojure-repl-server.jar"
+          require File.join(Redcar.asset_dir, "clojure.jar")
+          require File.join(Redcar.asset_dir, "clojure-contrib.jar")
+          require File.join(Redcar.asset_dir, "org-enclojure-repl-server.jar")
           require File.dirname(__FILE__) + "/../../vendor/enclojure-wrapper.jar"
           
           import 'redcar.repl.Wrapper'

@@ -57,8 +57,8 @@ module Redcar
           "http://redcar.s3.amazonaws.com/jruby/jopenssl-redcar1.jar"         => "/jopenssl.jar",
           "http://redcar.s3.amazonaws.com/java-mateview-#{Redcar::VERSION}.jar" => nil,
           "http://redcar.s3.amazonaws.com/application_swt-#{Redcar::VERSION}.jar" => nil,
-          "http://redcar.s3.amazonaws.com/clojure-1.2beta1.jar" => nil,
-          "http://redcar.s3.amazonaws.com/clojure-contrib-1.2beta1.jar" => nil,
+          "http://redcar.s3.amazonaws.com/clojure-1.2beta1.jar" => "/clojure.jar",
+          "http://redcar.s3.amazonaws.com/clojure-contrib-1.2beta1.jar" => "/clojure-contrib.jar",
           "http://redcar.s3.amazonaws.com/org-enclojure-repl-server.jar" => nil
         },
         :windows => {
