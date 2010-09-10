@@ -4,38 +4,48 @@ module Redcar
       include Redcar::Document::Controller
       include Redcar::Document::Controller::ModificationCallbacks
       include Redcar::Document::Controller::CursorCallbacks
-      
+
       MarkPair ||= Struct.new(:start_mark, :end_mark, :text, :endtext)
-      
+
       class MarkPair
         def inspect
           "<MarkPair start:#{start_mark.inspect} end:#{end_mark.inspect}>"
         end
       end
-      
+
       def initialize
         @mark_pairs = []
       end
-      
-      def ignore
-        @ignore ||= 0 
-        @ignore += 1
+
+      def disable
+        increase_ignore
         yield
-        @ignore -= 1
-        @ignore = nil if @ignore == 0
+        decrease_ignore
       end
-      
+
+      alias_method :ignore, :disable
+
       def ignore?
         @ignore
       end
-      
+
+      def increase_ignore
+        @ignore ||= 0
+        @ignore += 1
+      end
+
+      def decrease_ignore
+        @ignore -= 1
+        @ignore = nil if @ignore == 0
+      end
+
       def add_mark_pair(pair)
         @mark_pairs << pair
         if @mark_pairs.length > 10
           p :Whoah_many_pairs
         end
       end
-  
+
       # Forget about pairs if the cursor moves from within them
       def invalidate_pairs(offset)
         @mark_pairs.reject! do |mp|
@@ -48,13 +58,13 @@ module Redcar
           end
         end
       end
-  
+
       def find_mark_pair_by_start(offset)
         @mark_pairs.find do |mp|
           mp.start_mark.get_offset == offset
         end
       end
-  
+
       def find_mark_pair_by_end(offset)
         @mark_pairs.find do |mp|
           mp.end_mark.get_offset == offset
@@ -89,7 +99,7 @@ module Redcar
           end
         end
       end
-      
+
       def after_modify
         return if ignore?
         @done = nil
@@ -105,7 +115,7 @@ module Redcar
               @deletion = nil
             end
           end
-          
+
           # Type over ends
           if @type_over_end
             @type_over_end = false
@@ -116,7 +126,7 @@ module Redcar
             #@buffer.parser.start_parsing
             @done = true
           end
-          
+
           # Insert matching ends
           if @insert_end and !@ignore_insert
             @ignore_insert = true
@@ -129,7 +139,7 @@ module Redcar
             #@buffer.parser.start_parsing
             @insert_end = false
           end
-          
+
           if @selected_text and !@ignore_insert
             @ignore_insert = true
             offset = document.cursor_offset
@@ -141,10 +151,10 @@ module Redcar
         end
         false
       end
-      
+
       def cursor_moved(offset)
         return if ignore?
-        if !@ignore_mark 
+        if !@ignore_mark
           invalidate_pairs(offset)
         end
       end

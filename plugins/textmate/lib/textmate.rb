@@ -4,14 +4,9 @@ require 'textmate/environment'
 require 'textmate/plist'
 require 'textmate/preference'
 require 'textmate/snippet'
-begin
-  require 'textmate/tree_mirror'
-  require 'textmate/commands'
-rescue NameError => e
-  puts "Textmate plugin loading deferred until core loading is complete"
-  # In the installer we don't have all of core loaded yet
-end
-
+require 'textmate/tree_mirror'
+require 'textmate/commands'
+  
 module Redcar
   module Textmate
     def self.all_bundle_paths
@@ -159,30 +154,26 @@ module Redcar
       end
     end
 
-    begin
-      class InstalledBundles < Redcar::Command
-        def execute
-          controller = Controller.new
-          tab = win.new_tab(HtmlTab)
-          tab.html_view.controller = controller
-          tab.focus
+    class InstalledBundles < Redcar::Command
+      def execute
+        controller = Controller.new
+        tab = win.new_tab(HtmlTab)
+        tab.html_view.controller = controller
+        tab.focus
+      end
+
+      class Controller
+        include Redcar::HtmlController
+
+        def title
+          "Installed Bundles"
         end
 
-        class Controller
-          include Redcar::HtmlController
-
-          def title
-            "Installed Bundles"
-          end
-
-          def index
-            rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "views", "installed_bundles.html.erb")))
-            rhtml.result(binding)
-          end
+        def index
+          rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "views", "installed_bundles.html.erb")))
+          rhtml.result(binding)
         end
       end
-    rescue  NameError => e
-      puts "Textmate plugin loading deferred until core loading is complete"
     end
   end
 end

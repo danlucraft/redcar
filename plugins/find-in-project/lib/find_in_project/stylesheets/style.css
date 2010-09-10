@@ -92,6 +92,7 @@
 
 #results_container {
   margin-top: 95px;
+  margin-bottom: 25px;
 }
 
 #no_results,
@@ -113,7 +114,7 @@
 }
 
 #results .filename,
-#results .line_no {
+#results .line_num {
   background-color: #eee;
   padding: 3px 10px;
 }
@@ -145,7 +146,7 @@
   height: 16px;
 }
 
-#results .line_no {
+#results .line_num {
   text-align: right;
   padding: 0 5px;
   min-width: 20px;
@@ -153,7 +154,11 @@
   font-size: 13px;
 }
 
-#results .divider .line_no {
+#results .divider .line_num {
+  cursor: default;
+}
+
+#results .divider .line_num {
   text-align: center;
   background-color: #fff;
 }
@@ -173,11 +178,7 @@
   font-size: 13px;
 }
 
-#results .divider .text {
-  background-color: #fff;
-}
-
-#results .nomatch .line_no,
+#results .nomatch .line_num,
 #results .nomatch .text {
   color: #aaa;
 }
@@ -191,4 +192,22 @@
   border: 1px solid red;
   margin: 0 30px;
   padding: 15px;
+}
+
+#results_summary {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+#results_summary .text {
+  width: 300px;
+  margin: 0 auto;
+  background-color: #eee;
+  border: 1px solid #ddd;
+  text-align: center;
+  border-top-left-radius: 1em;
+  border-top-right-radius: 1em;
+  padding: 3px 5px;
 }

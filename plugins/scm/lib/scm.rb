@@ -74,7 +74,7 @@ module Redcar
       
       # should we print debugging messages? this can get pretty verbose
       def self.debug
-        true
+        ARGV.include?('--debug')
       end
       
       def self.modules
@@ -184,15 +184,16 @@ module Redcar
           puts "Couldn't detect the project in the current window."
         end
         repo_info = project_repositories[project]
+        init_modules = Redcar::Scm::Manager.modules_with_init
         
         Menu::Builder.build do
           if not project.nil?
-            if repo_info.nil?
+            if repo_info.nil? and init_modules.length > 0
               # no repository detected
               group :priority => 40 do
                 separator
                 sub_menu "Create Repository From Project" do
-                  Redcar::Scm::Manager.modules_with_init.sort {|a, b| a.repository_type <=> b.repository_type}.each do |m|
+                  init_modules.sort {|a, b| a.repository_type <=> b.repository_type}.each do |m|
                     item(m.translations[:init]) do 
                       m.init!(project.path)
                       project.refresh
@@ -204,7 +205,7 @@ module Redcar
                   end
                 end
               end
-            else
+            elsif repo_info
               # TODO: display repository commands for this node here too
               # Before that, need to work out a way of caching
               # Scm#uncommited_changes as this will almost always be an

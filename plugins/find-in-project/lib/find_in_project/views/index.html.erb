@@ -37,8 +37,8 @@
           <label for="literal_match">Literal Match</label>
           <input type="checkbox" id="match_case" <%="checked=checked" if @match_case %>>
           <label for="match_case">Match case</label>
-          <!-- <input type="checkbox" id="with_context" <%="checked=checked" if @with_context %>>
-          <label for="with_context">With context</label> -->
+          <input type="checkbox" id="with_context" <%="checked=checked" if @with_context %>>
+          <label for="with_context">With context</label>
         </td>
         <td></td>
       </tr>
@@ -51,6 +51,12 @@
     <div id="no_results">
       Please provide a search term above.
     </div>
+  </div>
+</div>
+
+<div id="results_summary" style="display: none;">
+  <div class="text">
+    <span id="line_results_count">0</span> lines matched in <span id="file_results_count">0</span> files
   </div>
 </div>
 
@@ -108,7 +114,7 @@
       try {
         if ($("#literal_match").attr('checked')) { var literal_match = 'true'; } else { var literal_match = 'false'; }
         if ($("#match_case").attr('checked')) { var match_case = 'true'; } else { var match_case = 'false'; }
-        Controller.openFile($(this).attr('data-href'), $(this).attr('data-line_no'), $("#cached_query").val(), literal_match, match_case);
+        Controller.openFile($(this).attr('data-href'), $(this).attr('data-line_num'), $("#cached_query").val(), literal_match, match_case);
       } catch(e) {
         alert(e.message);
       }
@@ -117,13 +123,13 @@
     // need to use live here so that results added will be caught
     $('.expand_collapse').live('click', function(ev) {
       ev.preventDefault();
-      var file_index = $(this).attr('data-file_index');
-      if ($(".line_for_" + file_index).first().is(":visible")) {
+      var file_num = $(this).attr('data-file_num');
+      if ($(".file_" + file_num).first().is(":visible")) {
         $('img', this).attr('src', '<%= image_path %>/collapsed.png');
-        $(".line_for_" + file_index).hide();
+        $(".file_" + file_num).hide();
       } else {
         $('img', this).attr('src', '<%= image_path %>/expanded.png');
-        $(".line_for_" + file_index).show();
+        $(".file_" + file_num).show();
       }
     });
   });
