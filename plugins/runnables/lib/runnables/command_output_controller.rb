@@ -31,6 +31,7 @@ module Redcar
       
       def run
         execute <<-JS
+          $('.run-again').hide();
           $('.output').slideUp().prev('.header').addClass('up');
         JS
 
@@ -120,6 +121,7 @@ module Redcar
         HTML
         execute <<-JS
           $("#{output_container}").parent().removeClass("running");
+          $('.run-again').show();
         JS
       end
 

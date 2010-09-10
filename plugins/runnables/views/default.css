@@ -29,7 +29,7 @@ h1 {
   padding: 5px;
 }
 
-.command {
+.command, .run-again {
   margin: 0 5px;
 }
 
@@ -49,7 +49,7 @@ h1 {
   color: #666;
 }
 
-.header .in-progress-message, .running .header .completed-message {
+.header .in-progress-message, .running .header .completed-message, .run-again {
   display: none;
 }
 
