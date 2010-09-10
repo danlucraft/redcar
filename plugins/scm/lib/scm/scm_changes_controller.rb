@@ -5,7 +5,7 @@ module Redcar
       include Redcar::Tree::Controller
       
       COMMAND_MAP = {
-        :new => [:index_add, :index_ignore, :index_delete],
+        :new => [:index_add, :index_ignore, :index_ignore_all, :index_delete],
         :indexed => [:index_revert, :index_unsave],
         :deleted => [:index_unsave, :index_restore],
         :missing => [:index_delete, :index_restore],
@@ -52,6 +52,12 @@ module Redcar
           if node.is_a?(Scm::ScmChangesMirror::Change) and repo.supported_commands.include?(:index)
             # commands may end up in the array twice, but include? doesn't care
             commands = node.status.map {|s| COMMAND_MAP[s]}.flatten
+            file_extension = File.extname(node.path)
+            if file_extension.length > 0
+              file_extension = file_extension[1, file_extension.length-1]
+            else
+              file_extension = nil
+            end
             
             if (commands.include?(:commit))
               item(repo.translations[:commitable]) { Scm::Manager.open_commit_tab(repo, node) }
@@ -61,6 +67,13 @@ module Redcar
             end
             if (commands.include?(:index_ignore))
               item(repo.translations[:index_ignore]) { if repo.index_ignore(node); tree.refresh; end }
+            end
+            if (file_extension and commands.include?(:index_ignore_all))
+              item(repo.translations[:index_ignore_all] % file_extension) { 
+                if repo.index_ignore_all(file_extension, node)
+                  tree.refresh
+                end
+              }
             end
             if (commands.include?(:index_save))
               item(repo.translations[:index_save]) { if repo.index_save(node); tree.refresh; end }
