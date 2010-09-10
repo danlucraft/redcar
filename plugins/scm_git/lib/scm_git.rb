@@ -259,10 +259,32 @@ module Redcar
         def index_ignore(change)
           # delegate to the proper submodule
           if self != change.repo
-            change.repo.index_ignore(change)
-            return
+            return change.repo.index_ignore(change)
           end
           
+          add_to_gitignore(change.path)
+          
+          cache.refresh
+          true # refresh trees
+        end
+        
+        # REQUIRED for :index. Ignores all files with a certain extension so they
+        # won't show in changes.
+        def index_ignore_all(extension, change)
+          # delegate to the proper submodule
+          if self != change.repo
+            return change.repo.index_ignore(change)
+          end
+          
+          add_to_gitignore("*." + extension)
+          
+          cache.refresh
+          true # refresh trees
+        end
+        
+        private
+        
+        def add_to_gitignore(line)
           gitignore = File.join(repo.dir.path, '.gitignore')
           if not File.exist? gitignore
             File.new(gitignore, "w").close
@@ -278,11 +300,11 @@ module Redcar
             end
           end
           
-          gitignore.syswrite(change.path + "\n")
+          gitignore.syswrite(line + "\n")
           gitignore.close
-          cache.refresh
-          true # refresh trees
         end
+        
+        public
         
         # REQUIRED for :index. Reverts a file to its last commited state.
         def index_revert(change)
