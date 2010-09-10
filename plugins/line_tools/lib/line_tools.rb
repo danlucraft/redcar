@@ -9,10 +9,10 @@ module Redcar
             sub_menu "Line Tools" do
               item "Raise Region", LineTools::RaiseTextCommand
               item "Lower Region", LineTools::LowerTextCommand
-              item "Kill Line"   , LineTools::KillLineCommand
               item "Replace Line", LineTools::ReplaceLineCommand
               item "Clear Line"  , LineTools::ClearLineCommand
               item "Trim Line"   , LineTools::TrimLineAfterCursorCommand
+              item "Kill Line"   , LineTools::KillLineCommand
             end
           end
         end
@@ -21,20 +21,20 @@ module Redcar
 
     def self.keymaps
       osx = Redcar::Keymap.build("main", :osx) do
-        link "Alt+Up"     , RaiseTextCommand
-        link "Alt+Down"   , LowerTextCommand
-        link "Alt+K"      , KillLineCommand
-        link "Alt+R"      , ReplaceLineCommand
-        link "Alt+C"      , ClearLineCommand
-        link "Ctrl+K"     , TrimLineAfterCursorCommand
+        link "Alt+Up"      , RaiseTextCommand
+        link "Alt+Down"    , LowerTextCommand
+        link "Alt+Shift+R" , ReplaceLineCommand
+        link "Alt+Shift+C" , ClearLineCommand
+        link "Ctrl+Shift+K", KillLineCommand
+        link "Ctrl+K"      , TrimLineAfterCursorCommand
       end
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
-        link "Alt+Up"     , RaiseTextCommand
-        link "Alt+Down"   , LowerTextCommand
-        link "Alt+K"      , KillLineCommand
-        link "Alt+R"      , ReplaceLineCommand
-        link "Alt+C"      , ClearLineCommand
-        link "Ctrl+K"     , TrimLineAfterCursorCommand
+        link "Alt+Up"      , RaiseTextCommand
+        link "Alt+Down"    , LowerTextCommand
+        link "Alt+Shift+R" , ReplaceLineCommand
+        link "Alt+Shift+C" , ClearLineCommand
+        link "Ctrl+K"      , TrimLineAfterCursorCommand
+        link "Ctrl+Shift+K", KillLineCommand
       end
       [osx, linwin]
     end
