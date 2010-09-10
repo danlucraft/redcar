@@ -29,18 +29,19 @@ module Redcar
       methods = self.methods - Object.methods
       <<-JS
         <script type="text/javascript">
-          var makeController = function (methods) {
-            var method, jsMethod, controller = {};
-            for (i in methods) {
-              method = methods[i];
-              jsMethod = method.replace(/_(.)/g, function () { return arguments[1].toUpperCase(); });
+          function makeController (methods) {
+            var controller = {};
+            methods.map(function (method) {
+              var jsMethod = method.replace(/_(.)/g, function () {
+                    return arguments[1].toUpperCase();
+                  });
               controller[jsMethod] = function () {
-                var args = [method].concat(Array.prototype.slice.call(arguments));
-                return JSON.parse(rubyCall.apply(this, args));
+                var args = Array.prototype.slice.call(arguments),
+                return JSON.parse(rubyCall.apply(this, [method].concat(args)));
               };
-            }
+            });
             return controller;
-          };
+          }
           Controller = makeController(#{methods.inspect});
         </script>
       JS
