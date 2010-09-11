@@ -44,7 +44,6 @@ Feature: Clear Line
     Then the contents should be "foXofoXo"
     
   Scenario: Macro with typing, movement and commands
-    When I open a new edit tab
     When I replace the contents with "foo\nbar\nbaz\n"
     And I move the cursor to 1
     And I start recording a macro
@@ -56,7 +55,6 @@ Feature: Clear Line
     And the cursor should be at 5
 
  Scenario: Should be able to run the last macro twice
-    When I open a new edit tab
     When I replace the contents with "foo\nbar\nbaz\nqux\nquux"
     And I move the cursor to 1
     And I start recording a macro
@@ -67,6 +65,3 @@ Feature: Clear Line
     And I run the last recorded macro
     Then the contents should be "f\nb\nb\nqux\nquux"
     And the cursor should be at 7
-    
-    
-    
