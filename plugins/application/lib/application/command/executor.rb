@@ -4,6 +4,8 @@ module Redcar
     class Executor
       include Redcar::Core::HasLogger
       
+      attr_reader :options, :command_instance
+      
       def self.current_environment
         if Redcar.app
           win = Redcar.app.focussed_window        
@@ -44,7 +46,10 @@ module Redcar
       private
       
       def set_environment
-        @command_instance.environment(Executor.current_environment)
+        env = Executor.current_environment
+        env = env.merge(options.delete(:env) || {})
+        
+        @command_instance.environment(env)
       end
       
       def clear_environment
