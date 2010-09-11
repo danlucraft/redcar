@@ -10,6 +10,53 @@ require File.dirname(__FILE__) + '/../vendor/java-mateview'
 
 module Redcar
   class EditViewSWT
+    NAVIGATION_COMMANDS = {
+      :LINE_UP                => 16777217,
+      :LINE_DOWN              => 16777218,
+      :LINE_START             => 16777223,
+      :LINE_END               => 16777224,
+      :COLUMN_PREVIOUS        => 16777219,
+      :COLUMN_NEXT            => 16777220,
+      :PAGE_UP                => 16777221,
+      :PAGE_DOWN              => 16777222,
+      :WORD_PREVIOUS          => 17039363,
+      :WORD_NEXT              => 17039364,
+      :TEXT_START             => 17039367,
+      :TEXT_END               => 17039368,
+      :WINDOW_START           => 17039365,
+      :WINDOW_END             => 17039366
+    }
+    
+    SELECTION_COMMANDS = {
+      :SELECT_ALL             => 262209,
+      :SELECT_LINE_UP         => 16908289,
+      :SELECT_LINE_DOWN       => 16908290,
+      :SELECT_LINE_START      => 16908295,
+      :SELECT_LINE_END        => 16908296,
+      :SELECT_COLUMN_PREVIOUS => 16908291,
+      :SELECT_COLUMN_NEXT     => 16908292,
+      :SELECT_PAGE_UP         => 16908293,
+      :SELECT_PAGE_DOWN       => 16908294,
+      :SELECT_WORD_PREVIOUS   => 17170435,
+      :SELECT_WORD_NEXT       => 17170436,
+      :SELECT_TEXT_START      => 17170439,
+      :SELECT_TEXT_END        => 17170440,
+      :SELECT_WINDOW_START    => 17170437,
+      :SELECT_WINDOW_END      => 17170438
+    }
+    
+    MODIFICATION_COMMANDS = {
+      :CUT                    => 131199,
+      :COPY                   => 17039369,
+      :PASTE                  => 16908297,
+      :DELETE_PREVIOUS        => '\b',
+      :DELETE_NEXT            => 0x7F,
+      :DELETE_WORD_PREVIOUS   => 262152,
+      :DELETE_WORD_NEXT       => 262271
+    }
+    
+    ALL_ACTIONS = NAVIGATION_COMMANDS.merge(SELECTION_COMMANDS).merge(MODIFICATION_COMMANDS)
+
     include Redcar::Observable
 
     def self.start
@@ -64,6 +111,82 @@ module Redcar
       @mate_text.set_font(EditView.font, EditView.font_size)
 
       @model.controller = self
+      
+      add_styled_text_command_key_listeners
+    end
+    
+    class CommandKeyListener
+      
+      attr_reader :st
+      
+      def initialize(styled_text, edit_view)
+        @edit_view = edit_view
+        @st = styled_text
+      end
+      
+      def key_pressed(event)
+      end
+      
+      def key_released(event)
+        record_action(event)
+      end
+      
+      # This pile of crap is copied from StyledText#handleKey. Wouldn't
+      # it be great if this logic was accessible on StyledText somehow?
+      def record_action(event)
+        if (event.keyCode != 0)
+          # special key pressed (e.g., F1)
+          action = st.getKeyBinding(event.keyCode | event.stateMask)
+        else 
+          # character key pressed
+          action = st.getKeyBinding(event.character | event.stateMask)
+          if (action == Swt::SWT::NULL)
+            # see if we have a control character
+            if ((event.stateMask & SWT.CTRL) != 0 && event.character <= 31)
+              # get the character from the CTRL+char sequence, the control
+              # key subtracts 64 from the value of the key that it modifies
+              c = event.character + 64
+              action = st.getKeyBinding(c | event.stateMask)
+            end
+          end
+        end
+        
+        if (action == Swt::SWT::NULL)
+		      ignore = false
+		
+          if (Redcar.platform == :osx)
+            # Ignore accelerator key combinations (we do not want to 
+            # insert a character in the text in this instance). Do not  
+            # ignore COMMAND+ALT combinations since that key sequence
+            # produces characters on the mac.
+            ignore = (event.stateMask ^ Swt::SWT::COMMAND) == 0 ||
+                (event.stateMask ^ (Swt::SWT::COMMAND | Swt::SWT::SHIFT)) == 0
+          else
+    			  # Ignore accelerator key combinations (we do not want to 
+            # insert a character in the text in this instance). Don't  
+            # ignore CTRL+ALT combinations since that is the Alt Gr 
+            # key on some keyboards.  See bug 20953. 
+            ignore = (event.stateMask ^ Swt::SWT::ALT) == 0 || 
+              (event.stateMask ^ Swt::SWT::CTRL) == 0 ||
+              (event.stateMask ^ (Swt::SWT::ALT | Swt::SWT::SHIFT)) == 0 ||
+              (event.stateMask ^ (Swt::SWT::CTRL | Swt::SWT::SHIFT)) == 0
+          end
+          # -ignore anything below SPACE except for line delimiter keys and tab.
+          # -ignore DEL 
+          if (!ignore && event.character > 31 && event.character != Swt::SWT::DEL || 
+            event.character == Swt::SWT::CR || event.character == Swt::SWT::LF || 
+                event.character == Swt::SWT::TAB)
+            @edit_view.history.record(event.character)
+          end
+        else
+          @edit_view.history.record(EditViewSWT::ALL_ACTIONS.invert[action])
+        end
+      end
+    end
+    
+    def add_styled_text_command_key_listeners
+      st = @mate_text.get_text_widget
+      st.add_key_listener(CommandKeyListener.new(st, @model))
     end
 
     def create_undo_manager

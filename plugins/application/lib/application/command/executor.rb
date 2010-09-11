@@ -19,26 +19,41 @@ module Redcar
       end
       
       def execute
-        @command_instance.environment(Executor.current_environment)
+        set_environment
         begin
           if not @options.empty?
             result = @command_instance.execute(@options) 
           else
             result = @command_instance.execute
           end
+          clear_environment
           finish
         rescue Object => e
-          @command_instance.error = e
+          set_error(e)
           print_command_error(e)
         rescue java.lang.StackOverflowError => e
-          @command_instance.error = e
+          set_error(e)
           print_command_error(e)
         end
         record
         result
+      ensure
+        clear_environment
       end
       
       private
+      
+      def set_environment
+        @command_instance.environment(Executor.current_environment)
+      end
+      
+      def clear_environment
+        @command_instance.environment(nil)
+      end
+      
+      def set_error(e)
+        @command_instance.error = e
+      end
       
       def finish
         if @command_instance.respond_to?(:_finished)

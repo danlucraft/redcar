@@ -7,6 +7,7 @@ require "edit_view/command"
 require "edit_view/document"
 require "edit_view/document/command"
 require "edit_view/document/controller"
+require "edit_view/document/history"
 require "edit_view/document/indentation"
 require "edit_view/document/mirror"
 require "edit_view/grammar"
@@ -309,12 +310,16 @@ module Redcar
       Redcar.app.windows.map {|w| w.notebooks.map {|n| n.tabs}.flatten }.flatten.select {|t| t.is_a?(EditTab)}.map {|t| t.edit_view}
     end
 
-    attr_reader :document
+    attr_reader :document, :history
 
     def initialize
       create_document
       @grammar = nil
       @focussed = nil
+      @history = Document::History.new(500)
+      @history.subscribe do |action|
+        puts "action: #{action.inspect}"
+      end
     end
 
     def create_document

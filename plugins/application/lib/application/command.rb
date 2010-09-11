@@ -76,7 +76,9 @@ module Redcar
     
     def run(opts = {})
       @executor = Executor.new(self, opts)
-      @executor.execute
+      result = @executor.execute
+      @executor = nil
+      result
     end
     
     private
