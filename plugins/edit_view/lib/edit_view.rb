@@ -317,9 +317,6 @@ module Redcar
       @grammar = nil
       @focussed = nil
       @history = Document::History.new(500)
-      @history.subscribe do |action|
-        puts "action: #{action.inspect}"
-      end
     end
 
     def create_document
