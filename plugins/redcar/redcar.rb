@@ -364,10 +364,9 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class MoveHomeCommand < EditTabCommand
+    class MoveHomeCommand < DocumentCommand
 
       def execute
-        doc     = tab.edit_view.document
         line_ix = doc.line_at_offset(doc.cursor_offset)
         line    = doc.get_line(line_ix)
         prefix  = line[0...doc.cursor_line_offset]
@@ -387,19 +386,17 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class MoveTopCommand < EditTabCommand
+    class MoveTopCommand < DocumentCommand
 
       def execute
-        doc = tab.edit_view.document
         doc.cursor_offset = 0
         doc.ensure_visible(0)
       end
     end
 
-    class MoveEndCommand < EditTabCommand
+    class MoveEndCommand < DocumentCommand
 
       def execute
-        doc = tab.edit_view.document
         line_ix = doc.line_at_offset(doc.cursor_offset)
         if line_ix == doc.line_count - 1
           doc.cursor_offset = doc.length
@@ -410,18 +407,16 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class MoveBottomCommand < EditTabCommand
+    class MoveBottomCommand < DocumentCommand
 
       def execute
-        doc = tab.edit_view.document
         doc.cursor_offset = doc.length
         doc.ensure_visible(doc.length)
       end
     end
 
-    class ChangeIndentCommand < EditTabCommand
+    class ChangeIndentCommand < DocumentCommand
       def execute
-        doc = tab.edit_view.document
         doc.compound do
           doc.edit_view.delay_parsing do
             if doc.selection?
@@ -487,14 +482,14 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class SelectAllCommand < Redcar::EditTabCommand
+    class SelectAllCommand < Redcar::DocumentCommand
 
       def execute
         doc.select_all
       end
     end
 
-    class SelectLineCommand < Redcar::EditTabCommand
+    class SelectLineCommand < Redcar::DocumentCommand
 
       def execute
         doc.set_selection_range(
@@ -502,7 +497,7 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class SelectWordCommand < Redcar::EditTabCommand
+    class SelectWordCommand < Redcar::DocumentCommand
 
       def execute
         range = doc.current_word_range
