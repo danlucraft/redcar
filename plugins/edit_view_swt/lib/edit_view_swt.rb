@@ -160,7 +160,6 @@ module Redcar
             # ignore COMMAND+ALT combinations since that key sequence
             # produces characters on the mac.
             ignore = (event.stateMask & Swt::SWT::COMMAND) != 0 ||
-              (event.stateMask & Swt::SWT::ALT) != 0 ||
               (event.stateMask & Swt::SWT::CTRL) != 0
           else
     			  # Ignore accelerator key combinations (we do not want to 
