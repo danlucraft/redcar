@@ -8,6 +8,10 @@ module Redcar
     
     private
     
+    def edit_view
+      EditView.focussed_edit_view
+    end
+    
     def doc
       EditView.focussed_edit_view.document
     end
