@@ -16,13 +16,13 @@ module Redcar
 
     def self.keymaps
       osx = Keymap.build("main", :osx) do
-        link "Cmd+Shift+M", REPL::RubyOpenREPL
-        link "Cmd+M",       REPL::CommitREPL
+        link "Cmd+Shift+R", REPL::RubyOpenREPL
+        link "Cmd+R",       REPL::CommitREPL
       end
       
       linwin = Keymap.build("main", [:linux, :windows]) do
-        link "Ctrl+Shift+M", REPL::RubyOpenREPL
-        link "Ctrl+M",       REPL::CommitREPL
+        link "Ctrl+Shift+R", REPL::RubyOpenREPL
+        link "Ctrl+R",       REPL::CommitREPL
       end
       
       [linwin, osx]
