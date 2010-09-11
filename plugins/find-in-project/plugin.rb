@@ -7,5 +7,5 @@ Plugin.define do
 
   dependencies "core",        ">0",
                "HTML View",   ">=0.3.2",
-               "file_parser", "=0.1.0"
+               "file_parser", "=0.2.0"
 end
