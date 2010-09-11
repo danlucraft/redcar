@@ -1,9 +1,9 @@
 
-$:.push File.expand_path(File.join(File.dirname(__FILE__)))
+$:.push(File.expand_path(File.join(File.dirname(__FILE__))))
+$:.push(File.expand_path(File.join(File.dirname(__FILE__), %w{.. vendor spoon lib})))
+$:.push(File.expand_path(File.join(File.dirname(__FILE__), %w{.. vendor ffi lib})))
 
 require 'redcar/usage'
-
-require 'rbconfig'
 
 require 'redcar/ruby_extensions'
 require 'redcar/instance_exec'
@@ -11,8 +11,18 @@ require 'redcar/usage'
 require 'regex_replace'
 
 require 'forwardable'
-require 'yaml'
 require 'uri'
+
+begin
+  if Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby"
+    require 'spoon'
+    module Redcar; SPOON_AVAILABLE = true; end
+  else
+    module Redcar; SPOON_AVAILABLE = false; end
+  end
+rescue LoadError
+  module Redcar; SPOON_AVAILABLE = false; end
+end
 
 # ## Loading and Initialization
 #
@@ -41,10 +51,10 @@ require 'uri'
 #
 # and so on.
 module Redcar
-  VERSION         = '0.5.0dev'
+  VERSION         = '0.5.1' # also change in the Rakefile!
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 5
-  VERSION_RELEASE = 0
+  VERSION_RELEASE = 1
   
   ENVIRONMENTS = [:user, :debug, :test]
   
@@ -65,44 +75,9 @@ module Redcar
   end
 
   def self.spin_up
-    forking = ARGV.include?("--fork")
-    no_runner = ARGV.include?("--no-sub-jruby")
-    jruby = Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby"
-    osx = ! [:linux, :windows].include?(platform)    
-
-    begin
-      if forking and not jruby
-        # jRuby doesn't support fork() because of the runtime stuff...
-        forking = false
-        puts 'Forking failed, attempting to start anyway...' if (pid = fork) == -1
-        exit unless pid.nil? # kill the parent process
-        
-        if pid.nil?
-          # reopen the standard pipes to nothingness
-          STDIN.reopen '/dev/null'
-          STDOUT.reopen '/dev/null', 'a'
-          STDERR.reopen STDOUT
-        end
-      elsif forking
-        # so we need to try something different...
-        # Need to work out the vendoring stuff here.
-        # for now just blow up and do what we'd normally do.
-        #require 'spoon'
-        raise NotImplementedError, 'Attempting to fork from inside jRuby. jRuby doesn\'t support this.'
-        #puts 'Continuing normally...'
-        #forking = false
-      end
-    rescue NotImplementedError
-      puts "Forking isn't supported on this system. Sorry."
-      puts "Starting normally..."
-    end
-    
-    return if no_runner
-    return if jruby and not osx
-    
     require 'redcar/runner'
     runner = Redcar::Runner.new
-    runner.spin_up
+    runner.run
   end
 
   def self.root
@@ -118,52 +93,87 @@ module Redcar
     end
   end
 
-  # Tells the plugin manager to load plugins, and prints debug output.
-  def self.load
+  def self.load_prerequisites
+    exit if ARGV.include?("--quit-immediately")
+    
+    require 'redcar_quick_start'
+    
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "plugin_manager", "lib"))
     require 'plugin_manager'
     
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "json", "lib"))
     require 'json'
     
+    $:.push File.expand_path(File.join(Redcar.asset_dir))
+    
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "openssl", "lib"))
-    require 'openssl'
+    
+    plugin_manager.load("swt")
+  end
 
-    plugin_manager.load
-    if plugin_manager.unreadable_definitions.any?
-      puts "Couldn't read definition files: "
-      puts plugin_manager.unreadable_definitions.map {|d| "  * " + d}
+  def self.load_plugins
+    begin
+      exit if ARGV.include?("--quit-after-splash")
+      
+      plugin_manager.load
+      if plugin_manager.unreadable_definitions.any?
+        puts "Couldn't read definition files: "
+        puts plugin_manager.unreadable_definitions.map {|d| "  * " + d}
+      end
+      if plugin_manager.plugins_with_errors.any?
+        puts "There was an error loading plugins: "
+        puts plugin_manager.plugins_with_errors.map {|d| "  * " + d.name}
+      end
+      if ENV["PLUGIN_DEBUG"]
+        puts "Loaded plugins:"
+        puts plugin_manager.loaded_plugins.map {|d| "  * " + d.name}
+        puts
+        puts "Unloaded plugins:"
+        puts plugin_manager.unloaded_plugins.map {|d| "  * " + d.name}
+      end
+    rescue => e
+      puts e.message
+      puts e.backtrace
     end
-    if plugin_manager.plugins_with_errors.any?
-      puts "There was an error loading plugins: "
-      puts plugin_manager.plugins_with_errors.map {|d| "  * " + d.name}
+  end
+  
+  # Tells the plugin manager to load plugins, and prints debug output.
+  def self.load_threaded
+    load_prerequisites
+    thread = Thread.new do
+      load_plugins
+      Redcar::Top.start(ARGV)
     end
-    if ENV["PLUGIN_DEBUG"]
-      puts "Loaded plugins:"
-      puts plugin_manager.loaded_plugins.map {|d| "  * " + d.name}
-      puts
-      puts "Unloaded plugins:"
-      puts plugin_manager.unloaded_plugins.map {|d| "  * " + d.name}
+    if no_gui_mode?
+      thread.join
+    end
+  end
+  
+  def self.load_unthreaded
+    load_prerequisites
+    load_plugins
+  end
+  
+  def self.no_gui_mode?
+    ARGV.include?("--no-gui")
+  end
+  
+  def self.show_splash
+    return if Redcar.no_gui_mode?
+    
+    Swt.create_splash_screen(plugin_manager.plugins.length + 10)
+    plugin_manager.on_load do |plugin|
+      Swt.sync_exec do
+        Swt.splash_screen.inc
+      end
     end
   end
 
-  # Starts the GUI.
+  ## Starts the GUI.
   def self.pump
+    return if Redcar.no_gui_mode?
+    
     Redcar.gui.start
-  end
-
-  # Platform symbol
-  #
-  # @return [:osx/:windows/:linux]
-  def self.platform
-    case Config::CONFIG["target_os"]
-    when /darwin/
-      :osx
-    when /mswin|mingw/
-      :windows
-    when /linux/
-      :linux
-    end
   end
 
   # Platform specific ~/.redcar
@@ -176,6 +186,11 @@ module Redcar
       :debug => ".redcar_debug"
     }[Redcar.environment]
     File.expand_path(File.join(home_dir, dirname))
+  end
+  
+  # Platform specific ~/.redcar/assets
+  def self.asset_dir
+    File.join(home_dir, ".redcar", "assets")
   end
   
   # Platform specific ~/
@@ -201,6 +216,7 @@ module Redcar
   # Set the application GUI.
   def self.gui=(gui)
     raise "can't set gui twice" if @gui
+    return if Redcar.no_gui_mode?
     @gui = gui
   end
 end

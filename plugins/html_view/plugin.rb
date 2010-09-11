@@ -7,6 +7,7 @@ Plugin.define do
   file "lib", "html_view"
   
   dependencies "core", ">0",
-               "application", ">0"
+               "application", ">0",
+               "application_swt", ">0"
   
 end

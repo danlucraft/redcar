@@ -1,6 +1,6 @@
 * 0.3
-  - Changed "Enable" and "Disable" to "Enable Plugin" and
-    "Disable Plugin" (stevenh512)
+  - Use checkbox menu item to enable/disable plugin, this avoids
+    the SWT memory leak caused by app.refresh_menu! (stevenh512)
   - Fixed jumping by stripping line-by-line instead of entire
     file. (stevenh512)
 

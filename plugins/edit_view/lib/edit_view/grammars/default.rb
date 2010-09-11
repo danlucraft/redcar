@@ -3,7 +3,7 @@ module Redcar
     module Default
       
       def word
-        /^\w+$/
+        /^\w+$/u
       end
     end
   end

@@ -5,46 +5,48 @@ module Redcar
       include Redcar::Document::Controller
       include Redcar::Document::Controller::ModificationCallbacks
       include Redcar::Document::Controller::NewlineCallback
-      
+
       def disable
         increase_ignore
         result = yield
         decrease_ignore
         result
       end
-      
+
+      alias_method :ignore, :disable
+
       def ignore?
         @ignore
       end
-      
+
       def increase_ignore
         @ignore ||= 0
         @ignore += 1
       end
-      
+
       def decrease_ignore
         @ignore -= 1
         @ignore = nil if @ignore == 0
       end
-      
+
       def before_modify(start_offset, end_offset, text)
         return if ignore? or in_snippet?
-        
+
         @start_offset, @end_offset, @text = start_offset, end_offset, text
         line = document.get_line(document.cursor_line)
         rules = AutoIndenter.rules_for_scope(document.cursor_scope)
         @flags = get_flags(line, rules)
       end
-      
+
       def in_snippet?
         snippet_controller = document.controllers(Snippets::DocumentController).first and
          snippet_controller.in_snippet?
       end
-      
+
       def get_flags(line, rules)
         [rules.increase_indent?(line), rules.decrease_indent?(line), rules.indent_next_line?(line), rules.unindented_line?(line)]
       end
-      
+
       def after_modify
         return if ignore? or in_snippet?
         start_line_ix = document.line_at_offset(@start_offset)
@@ -61,7 +63,7 @@ module Redcar
           end
         end
       end
-      
+
       def after_newline(line_ix)
         return if ignore? or in_snippet?
         rules = AutoIndenter.rules_for_scope(document.cursor_scope)

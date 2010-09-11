@@ -8,6 +8,8 @@ unless defined?(DRb)
   require 'drb/drb'
 end
 
+require 'openssl'
+
 require "project/adapters/remote_protocols/protocol"
 require "project/adapters/remote_protocols/sftp"
 require "project/adapters/remote_protocols/ftp"

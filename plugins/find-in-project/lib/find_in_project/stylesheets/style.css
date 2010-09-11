@@ -70,39 +70,29 @@
   right: 34px;
 }
 
-#recent_options {
-  position: absolute;
-  top: 69px;
-  left: 124px;
-  right: 34px;
-}
-
-#recent_queries,
-#recent_options {
+#recent_queries {
   border: 1px solid #000;
   background-color: #fff;
 }
 
-#recent_queries ul,
-#recent_options ul {
+#recent_queries ul {
   list-style: none;
   height: 100px;
   overflow: auto;
 }
 
-#recent_queries ul li,
-#recent_options ul li {
+#recent_queries ul li {
   padding: 3px 10px;
 }
 
-#recent_queries ul li:hover,
-#recent_options ul li:hover {
+#recent_queries ul li:hover {
   background-color: #EDEDFD;
   cursor: hand;
 }
 
 #results_container {
-  margin-top: 130px;
+  margin-top: 95px;
+  margin-bottom: 25px;
 }
 
 #no_results,
@@ -124,17 +114,17 @@
 }
 
 #results .filename,
-#results .line_no {
+#results .line_num {
   background-color: #eee;
   padding: 3px 10px;
 }
 
 #results .even {
-  background-color: #fff;
+  background-color: #EDEDFD;
 }
 
 #results .odd {
-  background-color: #EDEDFD;
+  background-color: #fff;
 }
 
 #results .file_heading {
@@ -156,7 +146,7 @@
   height: 16px;
 }
 
-#results .line_no {
+#results .line_num {
   text-align: right;
   padding: 0 5px;
   min-width: 20px;
@@ -164,7 +154,11 @@
   font-size: 13px;
 }
 
-#results .divider .line_no {
+#results .divider .line_num {
+  cursor: default;
+}
+
+#results .divider .line_num {
   text-align: center;
   background-color: #fff;
 }
@@ -184,17 +178,13 @@
   font-size: 13px;
 }
 
-#results .divider .text {
-  background-color: #fff;
-}
-
-#results .nomatch .line_no,
+#results .nomatch .line_num,
 #results .nomatch .text {
   color: #aaa;
 }
 
 #results .break {
-  height: 20px;
+  height: 12px;
 }
 
 #errors {
@@ -202,4 +192,22 @@
   border: 1px solid red;
   margin: 0 30px;
   padding: 15px;
+}
+
+#results_summary {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+#results_summary .text {
+  width: 300px;
+  margin: 0 auto;
+  background-color: #eee;
+  border: 1px solid #ddd;
+  text-align: center;
+  border-top-left-radius: 1em;
+  border-top-right-radius: 1em;
+  padding: 3px 5px;
 }

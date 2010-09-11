@@ -1,4 +1,4 @@
-REDCAR_VERSION = "0.5.0dev"
+REDCAR_VERSION = "0.5.1" # also change in lib/redcar.rb!
 require 'rubygems'
 require 'fileutils'
 require 'spec/rake/spectask'
@@ -129,6 +129,7 @@ spec = Gem::Specification.new do |s|
   s.files             = %w(CHANGES LICENSE Rakefile README.md) + 
                           Dir.glob("bin/redcar") + 
                           Dir.glob("config/**/*") + 
+                          Dir.glob("share/**/*") + 
                           remove_gitignored_files(Dir.glob("lib/**/*")) + 
                           remove_matching_files(remove_gitignored_files(Dir.glob("plugins/**/*")), "redcar-bundles") + 
                           Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Syntaxes/**/*") + 
@@ -154,12 +155,11 @@ Please now run:
 
   $ redcar install
 
-to complete the installation. 
-
-(If you installed the gem with 'sudo', you will need to run 'sudo redcar install').
+to complete the installation. (NB do NOT use sudo. In previous versions, sudo was 
+required for this step, but now it should be run as the user.)
 
 NB. This will download jars that Redcar needs to run from the internet. It will put
-them into ~/.redcar/ and link to them in the Redcar gem.
+them into ~/.redcar/assets.
 
 ------------------------------------------------------------------------------------
 
@@ -215,6 +215,7 @@ task :app_bundle => :build do
     f << '#!/bin/sh
           DIR=$(cd "$(dirname "$0")"; pwd)
           REDCAR=$(cd "$(dirname "${DIR}/../Resources/bin/redcar")"; pwd)
+          $REDCAR/redcar install
           $REDCAR/redcar --ignore-stdin $@'
   end
   File.chmod 0777, File.join(macos_dir, "redcar")
@@ -223,9 +224,6 @@ task :app_bundle => :build do
     FileUtils.mkdir_p File.join(resources_dir, File.dirname(f))
     FileUtils.cp_r f, File.join(resources_dir, f), :remove_destination => true
   end
-
-  p "Running #{File.join(resources_dir, "bin", "redcar")} install"
-  system "#{File.join(resources_dir, "bin", "redcar")} install"
 
   FileUtils.cp_r File.join(resources_dir, "plugins", "application", "icons", redcar_icon), 
       resources_dir, :remove_destination => true
@@ -265,9 +263,9 @@ task :release => :gem do
   
   redcar_bucket = AWS::S3::Bucket.find('redcar')
   s3_uploads = {
-    "plugins/edit_view_swt/vendor/java-mateview.jar"       => "java-mateview-#{REDCAR_VERSION}.jar",
-    "plugins/application_swt/lib/dist/application_swt.jar" => "application_swt-#{REDCAR_VERSION}.jar",
-    "pkg/redcar-#{REDCAR_VERSION}.gem"                     => "redcar-#{REDCAR_VERSION}.gem"
+    "vendor/java-mateview/release/java-mateview.jar" => "java-mateview-#{REDCAR_VERSION}.jar",
+    "plugins/application_swt/lib/dist/application_swt.jar"   => "application_swt-#{REDCAR_VERSION}.jar",
+    "pkg/redcar-#{REDCAR_VERSION}.gem"                       => "redcar-#{REDCAR_VERSION}.gem"
   }
   
   s3_uploads.each do |source, target|

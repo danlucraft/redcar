@@ -1,5 +1,39 @@
-Version 0.5 (TBA)
-=================
+Version 0.5 (7 September 2010)
+==============================
+
+Enhancements
+
+ * Indenting a block of text is now a single undo operation (Johannes Wollert)
+ * SCM trees are only loaded when you need them - speeds up project opening a lot (Matthew Scharley)
+ * Checkbox menu items for tab view togglables (Alex Lourie)
+ * Checkbox menu item for strip trailing spaces (Steven Hancock)
+ * Runnables work on Windows (Mat Schaffer)
+ * Open directory in command line / os directory viewer (Matthew Scharley, Delisa Mason)
+ * Can press enter really fast in the FindFileDialog and it will open the correct file (Tim Felgentreff)
+ * Use spoon for forking on Linux, OSX (Matthew Scharley)
+ * Find-in-project streams as it finds results (Kieran Pilkington)
+ * Installer doesn't need to be run as root anymore. (Dan Lucraft)
+ * Splash screen (Dan Lucraft)
+ * Installer loads Redcar, therefore putting all the Redcar files in the OS disk cache (Dan Lucraft)
+ * Read installed JVM options and use 32bit client vm if available (Dan Lucraft & Alex Lourie)
+ * Edit views now have right-click menu, with hooks for plugins (Delisa Mason)
+
+New internal APIs
+
+ * FileParser for reading over all files in a project (Kieran Pilkington)
+ * Checkbox menu items (Alex Lourie)
+
+Fixes:
+
+ * Fix for autocomplete, which was randomly broken due to a load order error (Anko painting)
+ * [Bug 300] Remove duplicate snippets (requires deleting your Textmate cache file)(Dan Lucraft)
+ * [Bug 297] New files can be immediately opened from the directory tree again (Dan Lucraft)
+ * [Bug 302] Search/replace won't infinitely recurse when the search string is a prefixed substring of the replace text. (Dan Lucraft)
+ * [Bug 293] Select Word works correctly on such un-American words as: "können" (Dan Lucraft)
+ * [Bug 286] The paste command no longer inserts in the wrong location when the autoindenter tries to run during the command (Dan Lucraft)
+ * [Bug 270] The "Go to declaration" fuzzy finder chooses the right file when you have refined the list (Dan Lucraft)
+ * Precaching textmate bundles is now more robust (Dan Lucraft)
+ * [Bug 209] Gives visual feedback during startup (Dan Lucraft)
 
 Version 0.4.1 (24 Aug 2010)
 ===========================
@@ -109,7 +143,7 @@ Version 0.3.7 (24 Jun 2010)
 ===========================
 
 Enhancements:
- 
+
   * Can create new files and directories, rename and delete files in the Project pane (Dan Lucraft)
   * Can Bulk Rename files in projects with regular expression replacement (Dan Lucraft)
   * Can drag and drop files and directories in the Project pane (Dan Lucraft)
@@ -152,7 +186,7 @@ New APIs:
 
   * Annotations column (Dan Lucraft)
   * Open popup menu and tooltips at cursor/pointer locations (Dan Lucraft)
-  
+
 New contributors:
 
   * Nizar Jouini
@@ -161,7 +195,7 @@ Version 0.3.5dev (1 May 2010)
 =============================
 
 Enhancements:
-  
+
   * Jump to declaration support for Ruby and Java
   * Double click respects word boundaries
   * Window title reflects project name
@@ -186,14 +220,14 @@ Enhancements:
   * Add profiling commands to the Debug menu (uses jruby-prof)
   * Lazy menus API
   * Commands to profile Redcar with jruby-prof.
-  
+
 Fixes:
 
   * Fix delete at end of line when using "\r\n" delimiter
   * Increase and decrease indent commands respect soft tabs and tab width settings
   * Directory tree sorts correctly
   * Speed up opening a project (about 1s faster)
-  
+
 New contributors:
 
   * Antono Vasiljev
@@ -211,18 +245,18 @@ New features:
   * Snippets
   * Recent directories menu
   * Uses Gecko for HTMLTabs on Windows.
-  
+
 Internal changes:
 
   * New API for creating text Marks, to tag a position in a Document.
   * new PersistentCache class for plugins to simply cache stuff.
   * Textmate plugin for dealing with Textmate bundles.
   * Application focus in/out events.
-  
+
 Fixes:
 
   * Respects Windows style line delimiters
-  
+
 New contributors:
 
   * Aaron McLeod
@@ -266,7 +300,7 @@ Fixes:
   * Search searches last line in doc.
   * Doesn't die on Windows-1252 encodings.
   * Plugin Manager UI works on Linux and Windows.
-  
+
 New contributors:
 
   * Mat Schaffer
@@ -325,7 +359,7 @@ Enhancements:
   * Added Java, Perl and Ruby on Rails bundles.
   * New simpler way for bundles to add commands to menus (used in repl.rb)
   * New "redcar install" command to download jars.
-  
+
 Fixes:
 
   * Change key logic in JavaMateView - should fix a bunch of subtle highlighting bugs.
@@ -338,7 +372,7 @@ Version 0.3.0dev (25 Dec 2009)
 Rewritten in JRuby/SWT.
 
 Enhancements:
-  
+
   * _Much_ simpler installation: packaged as a gem.
   * Faster highlighter
   * Fewer bugs
@@ -383,7 +417,7 @@ Version 0.1 (6 April 2009)
 ==========================
 http://redcareditor.com/releases/redcar-0.1.tar.gz
 
-First release. 
+First release.
 
 Features:
 

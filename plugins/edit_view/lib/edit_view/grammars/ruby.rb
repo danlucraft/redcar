@@ -3,7 +3,7 @@ module Redcar
     module Ruby
 
       def word
-        /^(\w)+(\?|\!)?$/
+        /^(\w)+(\?|\!)?$/u
       end
     end
   end
