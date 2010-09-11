@@ -7,11 +7,7 @@ module Redcar
       def self.load_groovy_dependencies
         unless @loaded
           require File.dirname(__FILE__) + "/../../vendor/groovy"
-          require File.dirname(__FILE__) + "/../../vendor/jansi" #more magic
-          import 'org.codehaus.groovy.tools.shell.Groovysh'
-          import 'org.codehaus.groovy.tools.shell.IO'
-          import 'java.io.ByteArrayOutputStream'
-          import 'java.io.ByteArrayInputStream'
+          import 'groovy.lang.GroovyShell'
           @loaded = true
         end
       end
@@ -19,17 +15,17 @@ module Redcar
 
       def initialize
         GroovyMirror.load_groovy_dependencies
-        @prompt = "groovy>"
+        @prompt = "groovy:>"
         @history = "// Groovy REPL\n\n#{@prompt} "
         @instance = Main.new
       end
 
       def title
-        "Groovysh"
+        "Groovy REPL"
       end
 
       def grammar_name
-        "Groovy"
+        "Groovy REPL"
       end
 
       def read
@@ -42,12 +38,8 @@ module Redcar
       end
 
       class Main
-        #attr_reader :out
         def initialize
-          @out   = ByteArrayOutputStream.new
-          @err   = ByteArrayOutputStream.new
-          @input = ByteArrayInputStream.new(Java::byte[1024].new)
-          @shell = Groovysh.new(IO.new(@input,@out,@err))
+          @shell = GroovyShell.new
         end
 
         def inspect
@@ -55,7 +47,7 @@ module Redcar
         end
 
         def execute(cmd)
-          @shell.execute(cmd)
+          @shell.evaluate(cmd).to_s
         end
       end
 
