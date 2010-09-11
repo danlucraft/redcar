@@ -28,7 +28,21 @@ module Redcar
         result = Application::Dialog.input("Macro Name", 
           "Assign a name to the last recorded macro:", "Nameless Macro :(")
         if result[:button] == :ok
-          Macros.session_macros.last.name = result[:value]
+          macro = Macros.session_macros.last
+          macro.name = result[:value]
+          Macros.session_macros.delete(macro)
+          Macros.save_macro(macro)
+        end
+      end
+    end
+    
+    class ShowMacrosCommand < Redcar::Command
+      def execute
+        Macros.session_macros.each do |macro|
+          puts "#{macro.name}: "
+          macro.actions.each do |action|
+            puts "  * #{action.inspect}"
+          end
         end
       end
     end

@@ -5,7 +5,7 @@ module Redcar
     attr_writer :name
     
     def initialize(actions, name=nil)
-      @actions = actions
+      @actions = actions.reject {|action| action.is_a?(Redcar::Macros::StartStopRecordingCommand)}
       @name = name
     end
     
@@ -18,7 +18,7 @@ module Redcar
     end
 
     def run_in(edit_view)
-      actions[1..-1].each do |action|
+      actions.each do |action|
         case action
         when Fixnum
           edit_view.type_character(action)
@@ -30,5 +30,4 @@ module Redcar
       end
     end
   end
-  
 end
