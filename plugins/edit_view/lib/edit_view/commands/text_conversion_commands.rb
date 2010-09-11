@@ -5,11 +5,11 @@ module Redcar
       # Calls Document#replace_selection if something is highlighted
       # otherwise calls Document#replace_word_at_offset passing
       # Document#cursor_offset as the offset
-      def execute(new_text=nil, &block)
+      def execute
         if doc.selection?
-          doc.replace_selection(new_text, &method(:convert))
+          doc.replace_selection(&method(:convert))
         else
-          doc.replace_word_at_offset(doc.cursor_offset, new_text, &method(:convert))
+          doc.replace_word_at_offset(doc.cursor_offset, &method(:convert))
         end
       end      
     end
