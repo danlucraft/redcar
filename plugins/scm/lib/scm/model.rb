@@ -68,6 +68,7 @@ module Redcar
           :unindexed_changes => "Unindexed changes",
           :index_add => "Add File",
           :index_ignore => "Ignore File",
+          :index_ignore_all => "Ignore All %s Files",
           :index_save => "Index Changes",
           :index_unsave => "Revert Index",
           :index_revert => "Revert Changes",
@@ -122,6 +123,13 @@ module Redcar
       # REQUIRED for :index. Ignores a new file so it won't show in changes.
       def index_ignore(change)
         raise "Scm.index_ignore not implemented" if supported_commands.include?(:index)
+        nil
+      end
+      
+      # REQUIRED for :index. Ignores all files with a certain extension so they
+      # won't show in changes.
+      def index_ignore_all(extension, change)
+        raise "Scm.index_ignore_all not implemented" if supported_commands.include?(:index)
         nil
       end
       
