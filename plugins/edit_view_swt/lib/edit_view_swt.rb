@@ -159,8 +159,9 @@ module Redcar
             # insert a character in the text in this instance). Do not  
             # ignore COMMAND+ALT combinations since that key sequence
             # produces characters on the mac.
-            ignore = (event.stateMask ^ Swt::SWT::COMMAND) == 0 ||
-                (event.stateMask ^ (Swt::SWT::COMMAND | Swt::SWT::SHIFT)) == 0
+            ignore = (event.stateMask & Swt::SWT::COMMAND) != 0 ||
+              (event.stateMask & Swt::SWT::ALT) != 0 ||
+              (event.stateMask & Swt::SWT::CTRL) != 0
           else
     			  # Ignore accelerator key combinations (we do not want to 
             # insert a character in the text in this instance). Don't  
