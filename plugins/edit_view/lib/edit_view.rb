@@ -513,5 +513,19 @@ module Redcar
       end
       @last_checked = Time.now
     end
+    
+    def type_character(character)
+      controller.mate_text.get_text_widget.doContent(character)
+      controller.mate_text.get_text_widget.update
+      history.record(character)
+    end
+    
+    def invoke_action(action_symbol)
+      const = EditViewSWT::ALL_ACTIONS[action_symbol]
+      controller.mate_text.get_text_widget.invokeAction(const)
+      history.record(action_symbol)
+    end
   end
 end
+
+
