@@ -20,7 +20,8 @@ module Redcar
     class RunLastCommand < Redcar::DocumentCommand
       def execute
         p :RunLastCommand
-        p Macros.session_macros.last
+        macro = Macros.session_macros.last
+        macro.run_in(edit_view)
       end
     end
   end
