@@ -1,4 +1,3 @@
-require 'find'
 require 'pathname'
 
 module Redcar
@@ -15,13 +14,15 @@ module Redcar
     end
 
     def each_file(&block)
-      file_index = 0
-      Find.find(root_path) do |path|
+      file_index, excluded_paths = 0, []
+      structure = Dir.glob("#{root_path}/**/*", File::FNM_DOTMATCH)
+      structure.sort.each do |path|
         fullpath = File.expand_path(path)
+        next if excluded_paths.any? { |ep| fullpath =~ /^#{Regexp.escape(ep)}(\/|$)/ }
         path = Pathname.new(fullpath)
         is_excluded_pattern = excluded_patterns.any? { |pattern| fullpath =~ pattern }
         if path.directory?
-          Find.prune if excluded_dirs.include?(path.basename.to_s) || is_excluded_pattern
+          excluded_paths << path if excluded_dirs.include?(path.basename.to_s) || is_excluded_pattern
         else
           skipped = skip_types.find { |st| path.send("#{st}?") }
           excluded = excluded_files.include?(path.basename.to_s) || is_excluded_pattern
