@@ -5,10 +5,12 @@ module Redcar
       include Redcar::Core::HasLogger
       
       def self.current_environment
-        win = Redcar.app.focussed_window        
-        tab = Redcar.app.focussed_notebook_tab
-        { :win => win,
-          :tab => tab }
+        if Redcar.app
+          win = Redcar.app.focussed_window        
+          tab = Redcar.app.focussed_notebook_tab
+          { :win => win,
+            :tab => tab }
+        end
       end
       
       def initialize(command_instance, options={})
@@ -24,6 +26,7 @@ module Redcar
           else
             result = @command_instance.execute
           end
+          finish
         rescue Object => e
           @command_instance.error = e
           print_command_error(e)
@@ -36,6 +39,12 @@ module Redcar
       end
       
       private
+      
+      def finish
+        if @command_instance.respond_to?(:_finished)
+          @command_instance._finished
+        end
+      end
 
       def print_command_error(e)
         puts "Error in command #{@command_instance.class}"
@@ -44,7 +53,7 @@ module Redcar
       end
       
       def record
-        if Redcar.app.history
+        if Redcar.app.andand.history
           Redcar.app.history.record(@command_instance)
         end
       end
