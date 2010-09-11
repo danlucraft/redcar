@@ -232,11 +232,11 @@ module Redcar
             if versioned_statuses.include?(status)
               find_dirs(a,indexed,nodes)
             else
-              unless indexed
-                if status == SVNStatusType::STATUS_UNVERSIONED
-                  diff_client = client_manager.getDiffClient()
-                  nodes << Scm::Subversion::Change.new(a,:new,[],diff_client)
-                end
+              diff_client = client_manager.getDiffClient()
+              if indexed and status == SVNStatusType::STATUS_ADDED
+                nodes << Scm::Subversion::Change.new(a,:indexed,[],diff_client)
+              elsif not indexed and status == SVNStatusType::STATUS_UNVERSIONED
+                nodes << Scm::Subversion::Change.new(a,:new,[],diff_client)
               end
             end
           end
