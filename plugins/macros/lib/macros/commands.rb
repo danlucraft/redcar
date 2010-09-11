@@ -22,5 +22,15 @@ module Redcar
         macro.run_in(edit_view)
       end
     end
+    
+    class NameLastMacroCommand < Redcar::Command
+      def execute
+        result = Application::Dialog.input("Macro Name", 
+          "Assign a name to the last recorded macro:", "Nameless Macro :(")
+        if result[:button] == :ok
+          Macros.session_macros.last.name = result[:value]
+        end
+      end
+    end
   end
 end

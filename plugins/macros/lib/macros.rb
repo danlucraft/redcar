@@ -17,6 +17,12 @@ module Redcar
           sub_menu "Macros" do
             item "Start/Stop Recording", StartStopRecordingCommand
             item "Run Last", RunLastCommand
+            item "Name Last", NameLastMacroCommand
+            lazy_sub_menu "Recent" do
+              Macros.session_macros.reverse.each do |macro|
+                item(macro.name) { macro.run }
+              end
+            end
           end
         end
       end
@@ -26,10 +32,12 @@ module Redcar
       osx = Redcar::Keymap.build("main", :osx) do
         link "Cmd+Alt+M", StartStopRecordingCommand
         link "Cmd+Shift+M", RunLastCommand
+        link "Cmd+Alt+Shift+M", NameLastMacroCommand
       end
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
         link "Ctrl+Alt+M", StartStopRecordingCommand
         link "Ctrl+Shift+M", RunLastCommand
+        link "Ctrl+Alt+Shift+M", NameLastMacroCommand
       end
       [osx, linwin]
     end

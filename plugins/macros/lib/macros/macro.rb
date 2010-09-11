@@ -1,11 +1,20 @@
 
 module Redcar
   class Macro
-    attr_accessor :actions, :name
+    attr_reader :actions
+    attr_writer :name
     
-    def initialize(actions, name="Nameless Macro :(")
+    def initialize(actions, name=nil)
       @actions = actions
       @name = name
+    end
+    
+    def name
+      @name || "Nameless Macro :("
+    end
+    
+    def run
+      run_in EditView.focussed_edit_view
     end
 
     def run_in(edit_view)
