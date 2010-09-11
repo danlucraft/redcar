@@ -9,7 +9,6 @@ module Redcar
           Macros.recording[edit_view] = nil
         else
           h = edit_view.history.subscribe do |action|
-            p [:record, action]
             Macros.recording[edit_view][:actions] << action
           end
           Macros.recording[edit_view] = {:subscriber => h, :actions => []}
@@ -19,7 +18,6 @@ module Redcar
     
     class RunLastCommand < Redcar::DocumentCommand
       def execute
-        p :RunLastCommand
         macro = Macros.session_macros.last
         macro.run_in(edit_view)
       end
