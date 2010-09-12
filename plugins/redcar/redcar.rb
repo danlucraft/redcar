@@ -605,6 +605,22 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
+    class SortLinesCommand < Redcar::DocumentCommand
+
+      def execute
+        doc = tab.edit_view.document
+        cursor_ix = doc.cursor_offset
+        if doc.selection?
+          start_ix = doc.selection_range.begin
+          text = doc.selected_text                              
+    
+          sorted_text = text.split("\n").sort().join("\n")
+          doc.replace_selection(sorted_text)
+          doc.cursor_offset = cursor_ix
+        end
+      end
+    end
+    
     class DialogExample < Redcar::Command
       def execute
       	builder = Menu::Builder.new do
@@ -903,6 +919,7 @@ Redcar.environment: #{Redcar.environment}
             item "Copy", CopyCommand
             item "Paste", PasteCommand
             item "Duplicate Region", DuplicateCommand
+            item "Sort Lines Region", SortLinesCommand
           end
 
           group(:priority => 25) do
