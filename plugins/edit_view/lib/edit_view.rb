@@ -520,10 +520,30 @@ module Redcar
       history.record(character)
     end
     
+    # These actions have custom Redcar implementations that
+    # override the default StyledText implementation. (Mainly for
+    # soft tabs purposes.)
+    OVERRIDDEN_ACTIONS = {
+      :COLUMN_PREVIOUS        => Actions::ArrowLeftHandler,
+      :COLUMN_NEXT            => Actions::ArrowRightHandler,
+      :SELECT_COLUMN_PREVIOUS => Actions::ArrowLeftHandler,
+      :SELECT_COLUMN_NEXT     => Actions::ArrowRightHandler,
+      :DELETE_PREVIOUS        => Actions::BackspaceHandler,
+      :DELETE_NEXT            => Actions::DeleteHandler
+    }
+    
+    def invoke_overridden_action(action_symbol)
+      if handler = OVERRIDDEN_ACTIONS[action_symbol]
+        handler.send(action_symbol.to_s.downcase, self)
+      end
+    end
+    
     def invoke_action(action_symbol)
-      const = EditViewSWT::ALL_ACTIONS[action_symbol]
-      controller.mate_text.get_text_widget.invokeAction(const)
-      history.record(action_symbol)
+      unless invoke_overridden_action(action_symbol)
+        const = EditViewSWT::ALL_ACTIONS[action_symbol]
+        controller.mate_text.get_text_widget.invokeAction(const)
+        history.record(action_symbol)
+      end
     end
   end
 end

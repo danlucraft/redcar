@@ -5,6 +5,10 @@ module Redcar
       class DeleteHandler
         def self.handle(edit_view, modifiers)
           return if modifiers.any?
+          delete_next(edit_view)
+        end
+        
+        def self.delete_next(edit_view)
           return if edit_view.document.selection?
           return if edit_view.document.block_selection_mode?
           doc = edit_view.document
@@ -17,6 +21,10 @@ module Redcar
       class BackspaceHandler
         def self.handle(edit_view, modifiers)
           return if modifiers.any?
+          delete_previous(edit_view)
+        end
+        
+        def self.delete_previous(edit_view)
           return if edit_view.document.selection?
           return if edit_view.document.block_selection_mode?
           doc = edit_view.document
