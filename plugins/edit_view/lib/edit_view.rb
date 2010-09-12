@@ -523,8 +523,8 @@ module Redcar
       unless custom_character_handle(character)
         controller.mate_text.get_text_widget.doContent(character)
         controller.mate_text.get_text_widget.update
-        history.record(character)
       end
+      history.record(character)
     end
     
     def custom_character_handle(character)
@@ -555,8 +555,8 @@ module Redcar
       unless invoke_overridden_action(action_symbol)
         const = EditViewSWT::ALL_ACTIONS[action_symbol]
         controller.mate_text.get_text_widget.invokeAction(const)
-        history.record(action_symbol)
       end
+      history.record(action_symbol)
     end
   end
 end
