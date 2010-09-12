@@ -44,11 +44,12 @@ module Redcar
 
     class FileResult
 
-      attr_reader :path, :index, :lines
+      attr_reader :path, :index, :lines, :lines_size
 
       def initialize(path, index)
         @path, @index = path, index
         @lines = @path.read.split("\n")
+        @lines_size = @lines.size
       end
 
       def num
@@ -85,18 +86,19 @@ module Redcar
       end
 
       def context(amount = 5)
-        before, after = Array.new, Array.new
-        if index > 0
-          from = (index - amount)
-          from = 0 if from < 0
-          before = ((from)..(index - 1)).collect { |b_index| LineResult.new(file, b_index, file.lines[b_index]) }
+        from, to = (index - amount), (index + amount)
+        from = 0 if from < 0
+        last_line_index = (file.lines_size - 1)
+        to = last_line_index if to > last_line_index
+
+        before, after, range = Array.new, Array.new, (from..to)
+        lines = file.lines[range]
+        range.each_with_index do |ri, li|
+          next if ri == index
+          line = LineResult.new(file, ri, lines[li])
+          (ri < index) ? (before << line) : (after << line)
         end
-        last_line_index = (file.lines.size - 1)
-        if index < last_line_index
-          to = (index + amount)
-          to = last_line_index if to > last_line_index
-          after = ((index + 1)..(to)).collect { |a_index| LineResult.new(file, a_index, file.lines[a_index]) }
-        end
+
         { :before => before, :after => after }
       end
 
