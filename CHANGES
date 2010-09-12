@@ -1,8 +1,14 @@
 Version 0.6 (TBA)
 =================
 
+Enhancements:
+
+ * Record and run macros (Dan Lucraft)
+ * Name and save macros (Dan Lucraft)
+
 New internal APIs:
 
+ * DocumentHistory stream of changes to text (Dan Lucraft)
  * Menus can have lazy text that is generated when you look at them (Dan Lucraft)
 
 Version 0.5 (7 September 2010)
