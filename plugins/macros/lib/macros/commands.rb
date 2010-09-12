@@ -2,10 +2,16 @@
 module Redcar
   module Macros
     class StartStopRecordingCommand < Redcar::DocumentCommand
+      def self.unique_session_id
+        @unique_id ||= 0
+        @unique_id += 1
+        @unique_id
+      end
+      
       def execute
         if info = Macros.recording[edit_view]
           edit_view.history.unsubscribe(info[:subscriber])
-          macro = Macro.new(info[:actions])
+          macro = Macro.new("Nameless Macro #{StartStopRecordingCommand.unique_session_id} :(", info[:actions])
           Macros.session_macros << macro
           Macros.recording[edit_view] = nil
           Macros.last_run_or_recorded = macro
@@ -32,26 +38,17 @@ module Redcar
       sensitize :any_macros_recorded_this_session
       
       def execute
-        result = Application::Dialog.input("Macro Name", 
-          "Assign a name to the last recorded macro:", "Nameless Macro :(")
-        if result[:button] == :ok
-          macro = Macros.session_macros.last
-          macro.name = result[:value]
-          Macros.session_macros.delete(macro)
-          Macros.save_macro(macro)
-          Redcar.app.repeat_event(:macro_named)
-        end
+        Macros.name_macro(Macros.session_macros.last.name, 
+          "Assign a name to the last recorded macro:")
       end
     end
     
-    class ShowMacrosCommand < Redcar::Command
+    class MacroManagerCommand < Redcar::Command
       def execute
-        Macros.session_macros.each do |macro|
-          puts "#{macro.name}: "
-          macro.actions.each do |action|
-            puts "  * #{action.inspect}"
-          end
-        end
+        controller = ManagerController.new
+        tab = win.new_tab(HtmlTab)
+        tab.html_view.controller = controller
+        tab.focus
       end
     end
   end

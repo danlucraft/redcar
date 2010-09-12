@@ -1,5 +1,6 @@
 require 'macros/commands'
 require 'macros/macro'
+require 'macros/manager_controller'
 
 module Redcar
   module Macros
@@ -19,6 +20,10 @@ module Redcar
     
     def self.save_macro(macro)
       saved_macros << macro
+      update_storage
+    end
+    
+    def self.update_storage
       storage['saved_macros'] = saved_macros
     end
     
@@ -35,6 +40,40 @@ module Redcar
       end
     end
     
+    def self.name_macro(macro_name, msg)
+      if macro = Macros.session_macros.detect {|m| m.name == macro_name }
+        result = Application::Dialog.input("Macro Name", 
+              msg, macro.name)
+        if result[:button] == :ok
+          macro.name = result[:value]
+          Macros.session_macros.delete(macro)
+          Macros.save_macro(macro)
+          Redcar.app.repeat_event(:macro_named)
+        end
+      end
+    end
+    
+    def self.rename_macro(macro_name)
+      if macro = Macros.saved_macros.detect {|m| m.name == macro_name }
+        result = Application::Dialog.input("Macro Name", 
+              "Rename macro:", macro.name)
+        if result[:button] == :ok
+          macro.name = result[:value]
+          update_storage
+          Redcar.app.repeat_event(:macro_named)
+        end
+      end
+    end
+    
+    def self.delete_macro(macro_name)
+      if macro = Macros.saved_macros.detect {|m| m.name == macro_name }
+        Macros.saved_macros.delete(macro)
+        update_storage
+      elsif macro = Macros.session_macros.detect {|m| m.name == macro_name }
+        Macros.session_macros.delete(macro)
+      end
+    end
+    
     def self.menus
       Menu::Builder.build do
         sub_menu "Plugins" do
@@ -48,7 +87,7 @@ module Redcar
               }, StartStopRecordingCommand
             item "Run Last", RunLastCommand
             item "Name and Save Last Recorded", NameLastMacroCommand
-            item "Show Macros", ShowMacrosCommand
+            item "Macro Manager", MacroManagerCommand
             lazy_sub_menu "New" do
               Macros.session_macros.reverse.each do |macro|
                 item(macro.name) { macro.run }

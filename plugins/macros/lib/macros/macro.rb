@@ -4,13 +4,13 @@ module Redcar
     attr_reader :actions
     attr_writer :name
     
-    def initialize(actions, name=nil)
+    def initialize(name, actions)
       @actions = actions.reject {|action| action.is_a?(Redcar::Macros::StartStopRecordingCommand)}
       @name = name
     end
     
     def name
-      @name || "Nameless Macro :("
+      @name
     end
     
     def run
