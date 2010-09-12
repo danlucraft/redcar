@@ -3,7 +3,7 @@ module Redcar
     sensitize :edit_view_focussed
     
     def _finished
-      EditView.focussed_edit_view.history.record(self)
+      edit_view.history.record(self)
     end
     
     private
