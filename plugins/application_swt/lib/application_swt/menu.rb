@@ -68,7 +68,6 @@ module Redcar
             menu_header.menu = new_menu
             menu_header.add_arm_listener do
               new_menu.get_items.each {|i| i.dispose }
-              menu_header.enabled = (entry.length > 0)
               add_entries_to_menu(new_menu, entry)
             end
           elsif entry.is_a?(Redcar::Menu)

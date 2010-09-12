@@ -4,7 +4,6 @@ Version 0.6 (TBA)
 New internal APIs:
 
  * Menus can have lazy text that is generated when you look at them (Dan Lucraft)
- * Lazy sub menus are disabled if they are empty (Dan Lucraft)
 
 Version 0.5 (7 September 2010)
 ==============================
