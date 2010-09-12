@@ -20,10 +20,12 @@ module Redcar
       
       def rename_macro(macro_name)
         Macros.rename_macro(macro_name)
+        nil
       end
       
       def delete_macro(macro_name)
         Macros.delete_macro(macro_name)
+        nil
       end
       
       def macro_steps(macro)
