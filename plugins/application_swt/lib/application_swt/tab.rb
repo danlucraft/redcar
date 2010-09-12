@@ -19,8 +19,11 @@ module Redcar
           @item.dispose
         end        
         @item = Swt::Custom::CTabItem.new(notebook.tab_folder, Swt::SWT::CLOSE, position)
-        @icon = Swt::Graphics::Image.new(ApplicationSWT.display, FILE_ICON)
-        @item.image = @icon
+        set_icon(@model.icon)
+      end
+      
+      def set_icon(icon)
+        @item.image = ApplicationSWT::Icon.swt_image(icon)
       end
       
       def create_tab_widget
@@ -66,6 +69,7 @@ module Redcar
         @model.add_listener(:focus, &method(:focus))
         @model.add_listener(:close, &method(:close))
         @model.add_listener(:moved, &method(:move_tab_widget_to_position))
+        @model.add_listener(:changed_icon, &method(:set_icon))
       end
       
       def focus
@@ -74,7 +78,6 @@ module Redcar
       
       def close
         @item.dispose
-        @icon.dispose
       end
     end
   end
