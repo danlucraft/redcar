@@ -11,6 +11,7 @@ When /I run the last recorded macro/ do
 end
 
 When /I type "(.*)"/ do |text|
+  text = text.gsub("\\t", "\t").gsub("\\n", "\n")
   text.split(//).each do |letter|
     edit_view = Redcar::EditView.focussed_edit_view
     edit_view.type_character(letter[0])
