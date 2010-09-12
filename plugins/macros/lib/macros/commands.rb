@@ -17,12 +17,14 @@ module Redcar
             Macros.last_run_or_recorded = macro
           end
           Macros.recording[edit_view] = nil
+          tab.icon = Redcar::Tab::DEFAULT_ICON
         else
           ev = edit_view
           h = ev.history.subscribe do |action|
             Macros.recording[ev][:actions] << action
           end
           Macros.recording[ev] = {:subscriber => h, :actions => []}
+          tab.icon = :"control-record"
         end
         Redcar.app.repeat_event(:macro_record_changed)
       end
