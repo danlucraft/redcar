@@ -12,7 +12,7 @@ module Redcar
         end
       end
       
-      attr_reader :text, :command, :priority, :value, :type, :active
+      attr_reader :command, :priority, :value, :type, :active
   
       # Create a new Item, with the given text to display in the menu, and
       # either:
@@ -52,6 +52,14 @@ module Redcar
       
       def type
         @type
+      end
+      
+      def text
+        @text.is_a?(Proc) ? @text.call : @text
+      end
+      
+      def lazy_text?
+        @text.is_a?(Proc)
       end
       
       def merge(other)

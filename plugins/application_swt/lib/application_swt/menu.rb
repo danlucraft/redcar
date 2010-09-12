@@ -60,25 +60,31 @@ module Redcar
       end
 
       def add_entries_to_menu(menu, menu_model)
-
         menu_model.each do |entry|
           if entry.is_a?(Redcar::Menu::LazyMenu)
             menu_header = Swt::Widgets::MenuItem.new(menu, Swt::SWT::CASCADE)
             menu_header.text = entry.text
-            #new_menu = Swt::Widgets::Menu.new(@window.shell, Swt::SWT::DROP_DOWN)
             new_menu = Swt::Widgets::Menu.new(menu)
             menu_header.menu = new_menu
             menu_header.add_arm_listener do
               new_menu.get_items.each {|i| i.dispose }
+              menu_header.enabled = (entry.length > 0)
               add_entries_to_menu(new_menu, entry)
             end
           elsif entry.is_a?(Redcar::Menu)
             menu_header = Swt::Widgets::MenuItem.new(menu, Swt::SWT::CASCADE)
             menu_header.text = entry.text
-            #new_menu = Swt::Widgets::Menu.new(@window.shell, Swt::SWT::DROP_DOWN)
             new_menu = Swt::Widgets::Menu.new(menu)
             menu_header.menu = new_menu
+            menu_header.enabled = (entry.length > 0)
             add_entries_to_menu(new_menu, entry)
+            menu_header.add_arm_listener do
+              entry.entries.zip(new_menu.get_items) do |sub_entry, swt_item|
+                if sub_entry.lazy_text?
+                  swt_item.text = sub_entry.text
+                end
+              end
+            end
           elsif entry.is_a?(Redcar::Menu::Item::Separator)
             item = Swt::Widgets::MenuItem.new(menu, Swt::SWT::SEPARATOR)
           elsif entry.is_a?(Redcar::Menu::Item)
