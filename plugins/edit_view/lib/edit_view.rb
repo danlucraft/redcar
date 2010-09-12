@@ -514,10 +514,23 @@ module Redcar
       @last_checked = Time.now
     end
     
+    # This characters have custom Redcar behaviour.
+    OVERRIDDEN_CHARACTERS = {
+      9 => [:tab_pressed, []]
+    }
+    
     def type_character(character)
-      controller.mate_text.get_text_widget.doContent(character)
-      controller.mate_text.get_text_widget.update
-      history.record(character)
+      unless custom_character_handle(character)
+        controller.mate_text.get_text_widget.doContent(character)
+        controller.mate_text.get_text_widget.update
+        history.record(character)
+      end
+    end
+    
+    def custom_character_handle(character)
+      if method_call = OVERRIDDEN_CHARACTERS[character]
+        send(*method_call)
+      end
     end
     
     # These actions have custom Redcar implementations that
