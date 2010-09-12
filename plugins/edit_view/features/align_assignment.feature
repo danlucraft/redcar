@@ -53,21 +53,21 @@ Feature: Align Assignment
         end
         """
 
-#  Scenario: align the right hand side of the operator
-#    Given the content is:
-#        """
-#        def foo
-#        <c>  a = 1
-#          bb =     2
-#          ccc = 3<s>
-#        end
-#        """
-#    When I run the command Redcar::EditView::AlignAssignmentCommand
-#    Then the content should be:
-#        """
-#        def foo
-#        <c>  a   = 1
-#          bb  = 2
-#          ccc = 3<s>
-#        end
-#        """
+  Scenario: align the right hand side of the operator
+    Given the content is:
+        """
+        def foo
+        <c>  a = 1
+          bb =     2
+          ccc = 3<s>
+        end
+        """
+    When I run the command Redcar::EditView::AlignAssignmentCommand
+    Then the content should be:
+        """
+        def foo
+        <c>  a   = 1
+          bb  = 2
+          ccc = 3<s>
+        end
+        """

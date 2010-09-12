@@ -3,7 +3,7 @@ module Redcar
 
     class AlignAssignmentCommand < Redcar::DocumentCommand
       def execute
-        relevant_line_pattern = /^([^=]+)([^-+<>=!%\/|&*^]=(?!=|~).*$)/
+        relevant_line_pattern = /^([^=]+)([^-+<>=!%\/|&*^]=(?!=|~))(.*$)/
         operators = /[^-+<>=!%\/|&*^]=(?!=|~)/
 
         #fix the selection. this command operates on whole lines
@@ -19,7 +19,7 @@ module Redcar
           old_text.lines.map do |line|
             line.chomp!
             if line =~ relevant_line_pattern
-              "%-#{length}s%s" % [$1, $2]
+              "%-#{length}s%s %s" % [$1, $2, $3.strip]
             else
               line
             end
