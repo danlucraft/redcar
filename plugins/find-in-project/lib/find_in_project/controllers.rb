@@ -14,18 +14,22 @@ module Redcar
         @plugin_root = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
         @settings = Redcar::FindInProject.storage
         @query = doc.selected_text if doc && doc.selection?
+        @literal_match = Redcar::FindInProject.storage['literal_match']
+        @match_case = Redcar::FindInProject.storage['match_case']
+        @with_context = Redcar::FindInProject.storage['with_context']
         render('index')
       end
 
       def search(query, literal_match, match_case, with_context)
         @query = query
-        @literal_match = (literal_match == 'true')
-        @match_case = (match_case == 'true')
-        @with_context = (with_context == 'true')
-        Redcar::FindInProject.storage['recent_queries'] = add_or_move_to_top(query, Redcar::FindInProject.storage['recent_queries'])
+        Redcar::FindInProject.storage['recent_queries'] = add_or_move_to_top(@query, Redcar::FindInProject.storage['recent_queries'])
+        Redcar::FindInProject.storage['literal_match'] = (@literal_match = (literal_match == 'true'))
+        Redcar::FindInProject.storage['match_case'] = (@match_case = (match_case == 'true'))
+        Redcar::FindInProject.storage['with_context'] = (@with_context = (with_context == 'true'))
 
         execute("$('#cached_query').val(\"#{escape_javascript(@query)}\");")
         execute("$('#results').html(\"<div id='no_results'>Searching...</div>\");")
+        execute("$('#spinner').show();")
         execute("$('#results_summary').hide();")
         execute("$('#file_results_count').html(0);")
         execute("$('#line_results_count').html(0);")
@@ -102,8 +106,7 @@ module Redcar
             end
 
             if @with_context && !parsing_new_file && (line.num - last_matching_line.num) > (@settings['context_lines'] * 2)
-              divider = "<tr class='divider'><td class='line_num file_#{@line.file.num}'>...</td><td></td></tr>"
-              execute("$('#results table tr:last').after(\"#{divider}\");")
+              execute("$('#results table tr:last').after(\"#{escape_javascript(render('_divider'))}\");")
             end
 
             context = line.context(@settings['context_lines']) if @with_context
@@ -124,6 +127,8 @@ module Redcar
             result = "<div id='no_results'>No results were found using the search terms you provided.</div>"
             execute("$('#results').html(\"#{escape_javascript(result)}\");")
           end
+
+          execute("$('#spinner').hide();")
 
           Thread.kill(@thread) if @thread
           @thread = nil

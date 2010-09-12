@@ -6,7 +6,7 @@
 
 <% image_path = File.expand_path(File.join(@plugin_root, %w(lib find_in_project images))) %>
 
-<div id="search_container">
+<div id="search_form_container">
   <form id="search_form">
     <table>
       <tr class="input">
@@ -33,6 +33,7 @@
         <td></td>
         <td class="controls">
           <input id="search" type="submit" value="Find In Project" />
+          <img id="spinner" src="<%= image_path %>/spinner.gif" style="display:none;" />
           <input type="checkbox" id="literal_match" <%="checked=checked" if @literal_match %>>
           <label for="literal_match">Literal Match</label>
           <input type="checkbox" id="match_case" <%="checked=checked" if @match_case %>>
