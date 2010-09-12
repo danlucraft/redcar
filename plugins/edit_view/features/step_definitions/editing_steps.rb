@@ -3,6 +3,22 @@ def unescape_text(text)
   text.gsub("\\t", "\t").gsub("\\n", "\n").gsub("\\r", "\r").gsub("\\\"", "\"")
 end
 
+def escape_text(text)
+  text.gsub("\t", "\\t").gsub("\n", "\\n").gsub("\r", "\\r").gsub("\"", "\\\"")
+end
+
+Given /^the contents? is:$/ do |string|
+  start_index = string.index('<c>')
+  end_index = string.index('<s>') - 3
+  string.gsub!('<s>','')
+  When %{I replace the contents with "#{string}"}
+  When %{I select from #{start_index} to #{end_index}}
+end
+
+Then /^the content? should be:$/ do |string|
+  Then %{the contents should be "#{escape_text(string)}"}
+end
+
 When /^I undo$/ do
   Redcar::Top::UndoCommand.new.run
 end
