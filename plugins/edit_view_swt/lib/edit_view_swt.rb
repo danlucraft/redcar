@@ -49,7 +49,7 @@ module Redcar
       :CUT                    => 131199,
       :COPY                   => 17039369,
       :PASTE                  => 16908297,
-      :DELETE_PREVIOUS        => '\b',
+      :DELETE_PREVIOUS        => 8,
       :DELETE_NEXT            => 0x7F,
       :DELETE_WORD_PREVIOUS   => 262152,
       :DELETE_WORD_NEXT       => 262271
