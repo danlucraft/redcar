@@ -18,6 +18,8 @@ module Redcar
     end
 
     def run_in(edit_view)
+      Macros.last_run = self
+      Macros.last_run_or_recorded = self
       actions.each do |action|
         case action
         when Fixnum
@@ -28,6 +30,7 @@ module Redcar
           action.run(:env => {:edit_view => edit_view})
         end
       end
+      Redcar.app.repeat_event(:macro_ran)
     end
   end
 end
