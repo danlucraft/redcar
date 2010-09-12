@@ -1,7 +1,7 @@
 
 module Redcar
   module Macros
-    class StartStopRecordingCommand < Redcar::DocumentCommand
+    class StartStopRecordingCommand < Redcar::EditTabCommand
       def self.unique_session_id
         @unique_id ||= 0
         @unique_id += 1
@@ -16,10 +16,11 @@ module Redcar
           Macros.recording[edit_view] = nil
           Macros.last_run_or_recorded = macro
         else
-          h = edit_view.history.subscribe do |action|
-            Macros.recording[edit_view][:actions] << action
+          ev = edit_view
+          h = ev.history.subscribe do |action|
+            Macros.recording[ev][:actions] << action
           end
-          Macros.recording[edit_view] = {:subscriber => h, :actions => []}
+          Macros.recording[ev] = {:subscriber => h, :actions => []}
         end
         Redcar.app.repeat_event(:macro_record_changed)
       end
