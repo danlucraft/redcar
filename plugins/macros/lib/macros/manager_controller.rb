@@ -39,9 +39,9 @@ module Redcar
         macro.actions.each do |action|
           case action
           when Fixnum
-            s = "Insert:  "
-            s[8] = action
-            s
+            a = " "
+            a[0] = action
+            s = "Insert: #{a.inspect}"
           when Symbol
             s = "Navigation: #{action}"
           when DocumentCommand

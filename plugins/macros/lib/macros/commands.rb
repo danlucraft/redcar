@@ -11,10 +11,12 @@ module Redcar
       def execute
         if info = Macros.recording[edit_view]
           edit_view.history.unsubscribe(info[:subscriber])
-          macro = Macro.new("Nameless Macro #{StartStopRecordingCommand.unique_session_id} :(", info[:actions])
-          Macros.session_macros << macro
+          if info[:actions].any?
+            macro = Macro.new("Nameless Macro #{StartStopRecordingCommand.unique_session_id} :(", info[:actions])
+            Macros.session_macros << macro
+            Macros.last_run_or_recorded = macro
+          end
           Macros.recording[edit_view] = nil
-          Macros.last_run_or_recorded = macro
         else
           ev = edit_view
           h = ev.history.subscribe do |action|
