@@ -56,7 +56,8 @@ module DocumentSearch
       if !@previous_is_regex
         current_query = Regexp.escape(current_query)
       end
-      FindNextRegex.new(Regexp.new(current_query, !@previous_match_case), true).run
+      cmd = FindNextRegex.new(Regexp.new(current_query, !@previous_match_case), true)
+      cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
     end
   end
     
@@ -84,7 +85,7 @@ module DocumentSearch
     end
   end
 
-  class FindNextRegex < Redcar::EditTabCommand
+  class FindNextRegex < Redcar::DocumentCommand
     def initialize(re, wrap=nil)
       @re = re
       @wrap = wrap
