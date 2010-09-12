@@ -28,8 +28,8 @@ module Redcar
           else
             result = @command_instance.execute
           end
-          clear_environment
           finish
+          clear_environment
         rescue Object => e
           set_error(e)
           print_command_error(e)
