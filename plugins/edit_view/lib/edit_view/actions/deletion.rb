@@ -15,6 +15,7 @@ module Redcar
           old_offset = doc.cursor_offset
           new_offset = ArrowRightHandler.move_right_offset(edit_view)
           doc.delete(old_offset, new_offset - old_offset)
+          true
         end
       end
       
@@ -31,6 +32,7 @@ module Redcar
           old_offset = doc.cursor_offset
           new_offset = ArrowLeftHandler.move_left_offset(edit_view)
           doc.delete(new_offset, old_offset - new_offset)
+          true
         end
       end
     end
