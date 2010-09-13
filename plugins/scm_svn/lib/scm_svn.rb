@@ -221,7 +221,13 @@ module Redcar
         def populate_changes(path,indexed)
           nodes = []
           find_dirs(path,indexed,nodes)
-          nodes
+          nodes.sort_by{|node| node.path}.sort_by do |node|
+            if File.directory?(node.path)
+              0
+            else
+              1
+            end
+          end
         end
 
         def find_dirs(path,indexed,nodes=[])
@@ -229,15 +235,11 @@ module Redcar
             #FIXME: find dirs beneath iff 'a' is not ignored
             status = client_manager.getStatusClient().doStatus(
               Java::JavaIo::File.new(a),false).getContentsStatus()
-            if versioned_statuses.include?(status)
-              find_dirs(a,indexed,nodes)
-            else
+            find_dirs(a,indexed,nodes) if versioned_statuses.include?(status)
+            status = check_file_status(a,indexed)
+            if status
               diff_client = client_manager.getDiffClient()
-              if indexed and status == SVNStatusType::STATUS_ADDED
-                nodes << Scm::Subversion::Change.new(a,:indexed,[],diff_client)
-              elsif not indexed and status == SVNStatusType::STATUS_UNVERSIONED
-                nodes << Scm::Subversion::Change.new(a,:new,[],diff_client)
-              end
+              nodes << Scm::Subversion::Change.new(a,status,[],diff_client)
             end
           end
           check_files(path,indexed,nodes)

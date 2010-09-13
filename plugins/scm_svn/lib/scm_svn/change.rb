@@ -29,13 +29,29 @@ module Redcar
         def icon
           case @status
           when :unmerged
-            File.join(Redcar::ICONS_DIRECTORY, "blue-document--exclamation.png")
+            if File.file?(@path)
+              File.join(Redcar::ICONS_DIRECTORY, "blue-document--exclamation.png")
+            else
+              File.join(Redcar::ICONS_DIRECTORY, "blue-folder--exclamation.png")
+            end
           when :indexed
-            File.join(Redcar::ICONS_DIRECTORY, "blue-document--plus.png")
+            if File.file?(@path)
+              File.join(Redcar::ICONS_DIRECTORY, "blue-document--plus.png")
+            else
+              File.join(Redcar::ICONS_DIRECTORY, "blue-folder--plus.png")
+            end
           when :deleted
-            File.join(Redcar::ICONS_DIRECTORY, "blue-document-shred.png")
+            if File.file?(@path)
+              File.join(Redcar::ICONS_DIRECTORY, "blue-document-shred.png")
+            else
+              File.join(Redcar::ICONS_DIRECTORY, "blue-folder-shred.png")
+            end
           when :changed
-            File.join(Redcar::ICONS_DIRECTORY, "blue-document--pencil.png")
+            if File.file?(@path)
+              File.join(Redcar::ICONS_DIRECTORY, "blue-document--pencil.png")
+            else
+              File.join(Redcar::ICONS_DIRECTORY, "blue-folder--pencil.png")
+            end
           when :missing
             File.join(Redcar::ICONS_DIRECTORY, "question-white.png")
           when :new
