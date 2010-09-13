@@ -31,7 +31,7 @@ module Redcar
       
       def run
         execute <<-JS
-          $('.run-again').hide();
+          $('.actions').hide();
           $('.output').slideUp().prev('.header').addClass('up');
         JS
 
@@ -45,6 +45,10 @@ module Redcar
         run_command(cmd)
       end
       
+      def copy_output(text)
+        Redcar.app.clipboard << text
+      end
+
       def stylesheet_link_tag(*files)
         files.map do |file|
           path = File.join(Redcar.root, %w(plugins runnables views) + [file.to_s + ".css"])
@@ -63,11 +67,7 @@ module Redcar
           instance_variable_set("@#{type}_thread_started", true)
           begin
             while line = output.gets
-              append_output <<-HTML
-                <div class="#{type}">
-                  #{process(line)}
-                </div>
-              HTML
+              append_output %Q|<div class="#{type}">#{process(line)}</div>|
             end
           rescue => e
             puts e.class
@@ -117,17 +117,24 @@ module Redcar
       def end_output_block
         @end = Time.now
         append_to(header_container, <<-HTML)
-          <span class="completed-message">Completed at #{format_time(@end)}. (Took #{@end - @start} seconds)</span>
+          <span class="completed-message">
+            Completed at #{format_time(@end)}. (Took #{@end - @start} seconds)
+          </span>
         HTML
         execute <<-JS
+          $('<a href="#" class="copy">Copy output to clipboard</a>').click(function () {
+            Controller.copyOutput($("#{output_container}").text());
+            return false;
+          }).appendTo('#{header_container}');
           $("#{output_container}").parent().removeClass("running");
-          $('.run-again').show();
+          $('.actions').show();
+          $("body").attr({ scrollTop: $("body").attr("scrollHeight") });
         JS
       end
 
       def scroll_to_end(container)
         execute <<-JS
-          $("html, body").attr({ scrollTop: $("#{container}").attr("scrollHeight") });
+          $("body").attr({ scrollTop: $("body").attr("scrollHeight") });
         JS
       end
       

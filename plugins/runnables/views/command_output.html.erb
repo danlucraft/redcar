@@ -13,8 +13,8 @@
         <%= @cmd %>
       </div>
     </div>
-    <form class="run-again" action="javascript:Controller.run();">
-      <input type="submit" value="Run again" />
+    <form class="actions" action="javascript:return false;">
+      <input type="submit" value="Run again" onclick="Controller.run();"/>
     </form>
   </body>
 </html>
