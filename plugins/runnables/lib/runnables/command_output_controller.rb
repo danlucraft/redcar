@@ -67,7 +67,7 @@ module Redcar
           instance_variable_set("@#{type}_thread_started", true)
           begin
             while line = output.gets
-              append_output %Q|<div class="#{type}">#{process(line)}</div>|              
+              append_output %Q|<div class="#{type}">#{process(line)}</div>|
             end
           rescue => e
             puts e.class
@@ -128,12 +128,13 @@ module Redcar
           }).appendTo('#{header_container}');
           $("#{output_container}").parent().removeClass("running");
           $('.actions').show();
+          $("body").attr({ scrollTop: $("body").attr("scrollHeight") });
         JS
       end
 
       def scroll_to_end(container)
         execute <<-JS
-          $("html, body").attr({ scrollTop: $("#{container}").attr("scrollHeight") });
+          $("body").attr({ scrollTop: $("body").attr("scrollHeight") });
         JS
       end
       
