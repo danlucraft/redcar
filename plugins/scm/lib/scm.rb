@@ -206,14 +206,39 @@ module Redcar
                 end
               end
             elsif repo_info
-              # TODO: display repository commands for this node here too
-              # Before that, need to work out a way of caching
-              # Scm#uncommited_changes as this will almost always be an
-              # expensive operation.
               group :priority => 40 do
                 repo = repo_info['repo']
-                if repo.supported_commands.find {|i| [:switch_branch].include? i}
+                if repo.supported_commands.find {|i| [:switch_branch, :pull, :pull_targetted].include? i}
                   separator
+                end
+                if repo.supported_commands.include?(:pull) do
+                  item (repo.translations[:pull]) do
+                    repo.pull!
+                    
+                    # refresh tree views
+                    project.refresh
+                    repo_info['trees'].each {|t| t.refresh}
+                  end
+                end
+                if repo.supported_commands.include?(:pull_targetted) do
+                  lazy_sub_menu repo.translations[:pull_targetted] do
+                    repo.pull_targets.sort.each do |target|
+                      action = lambda do
+                        begin
+                          repo.pull!(target)
+                          
+                          # refresh tree views
+                          project.refresh
+                          repo_info['trees'].each {|t| t.refresh}
+                        rescue
+                          Redcar::Application::Dialog.message_box($!.message)
+                          puts $!.backtrace
+                        end
+                      end
+                      
+                      item target, &action
+                    end
+                  end
                 end
                 if repo.supported_commands.include?(:switch_branch)
                   lazy_sub_menu repo.translations[:switch_branch] do
