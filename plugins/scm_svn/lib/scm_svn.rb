@@ -70,6 +70,7 @@ module Redcar
         end
 
         def pull!(path=nil)
+          path = @path if not path
           if repository?(@path)
             client_manager.getUpdateClient().doUpdate(
               Java::JavaIo::File.new(path),
@@ -78,13 +79,14 @@ module Redcar
               false # store depth in directory
             )
           else
-            client_manager.getUpdateClient().doCheckout(
-              SVNURL.parseURIEncoded(path),
-              Java::JavaIo::File.new(@path),
-              SVNRevision::HEAD,
-              SVNDepth::INFINITY,
-              true # allow unversioned files to exist already in directory
-            )
+            Application::Dialog.message_box("#{@path} is not a working copy.")
+            #client_manager.getUpdateClient().doCheckout(
+            #  SVNURL.parseURIEncoded(path),
+            #  Java::JavaIo::File.new(@path),
+            #  SVNRevision::HEAD,
+            #  SVNDepth::INFINITY,
+            #  true # allow unversioned files to exist already in directory
+            #)
           end
         end
 
@@ -174,7 +176,7 @@ module Redcar
           elsif change.status[0] == :indexed
             index_revert(change)
           else
-            Application::Dialog.message_box("#{change.path} is already in the repository. Use 'delete' to remove.")
+            Application::Dialog.message_box("#{change.path} is already in the repository. Use 'delete' to remove or revert to cancel local changes.")
           end
         end
 
