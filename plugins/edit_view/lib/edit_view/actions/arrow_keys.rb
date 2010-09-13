@@ -41,7 +41,6 @@ module Redcar
           else
             column_previous(edit_view)
           end
-          true
         end
         
         def self.column_previous(edit_view)
@@ -100,7 +99,6 @@ module Redcar
           else
             column_next(edit_view)
           end
-          true
         end
         
         def self.column_next(edit_view)
