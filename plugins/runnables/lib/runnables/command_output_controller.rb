@@ -128,13 +128,13 @@ module Redcar
           }).appendTo('#{header_container}');
           $("#{output_container}").parent().removeClass("running");
           $('.actions').show();
-          $("body").attr({ scrollTop: $("body").attr("scrollHeight") });
+          $("html, body").attr({ scrollTop: $("body").attr("scrollHeight") });
         JS
       end
 
       def scroll_to_end(container)
         execute <<-JS
-          $("body").attr({ scrollTop: $("body").attr("scrollHeight") });
+          $("html, body").attr({ scrollTop: $("body").attr("scrollHeight") });
         JS
       end
       
