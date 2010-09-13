@@ -646,10 +646,12 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class ToggleBlockSelectionCommand < Redcar::EditTabCommand
+    class ToggleBlockSelectionCommand < Redcar::DocumentCommand
 
       def execute
-        doc.block_selection_mode = !doc.block_selection_mode?
+        unless doc.single_line?
+          doc.block_selection_mode = !doc.block_selection_mode?
+        end
       end
     end
 
