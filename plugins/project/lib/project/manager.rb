@@ -331,6 +331,9 @@ module Redcar
             group(:priority => 30) do
               item("in File Browser") { Project::OpenDirectoryInExplorerCommand.new(enclosing_dir).run }
               item("in Command Line") { Project::OpenDirectoryInCommandLineCommand.new(enclosing_dir).run }
+              unless enclosing_dir == tree.tree_mirror.path
+                item("as new Project")  { Manager.open_project_for_path(enclosing_dir) }
+              end
             end
           end
           if not node.nil?

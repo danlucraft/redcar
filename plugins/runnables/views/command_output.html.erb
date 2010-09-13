@@ -5,6 +5,7 @@
     <%= stylesheet_link_tag :reset, :default, :basic_ansi %>
   </head>
   <body>
+    <%= javascript_controller_actions %>
     <script type="text/javascript" src="file://<%= Redcar::HtmlView.jquery_path %>"></script>
     <h1><%= @title %></h1>
     <div id="container">
@@ -12,5 +13,8 @@
         <%= @cmd %>
       </div>
     </div>
+    <form class="actions" action="javascript:return false;">
+      <input type="submit" value="Run again" onclick="Controller.run();"/>
+    </form>
   </body>
 </html>

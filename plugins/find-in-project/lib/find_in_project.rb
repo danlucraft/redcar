@@ -21,6 +21,9 @@ module Redcar
         storage.set_default('excluded_dirs', ['.git', '.svn', '.redcar'])
         storage.set_default('excluded_files', [])
         storage.set_default('excluded_patterns', [/tags$/, /\.log$/])
+        storage.set_default('literal_match', false)
+        storage.set_default('match_case', false)
+        storage.set_default('with_context', false)
         storage.set_default('context_lines', 2)
         storage.save
       end
