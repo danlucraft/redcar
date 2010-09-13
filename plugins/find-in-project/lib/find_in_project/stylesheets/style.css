@@ -168,8 +168,8 @@
   padding: 3px 10px;
   width: 100%;
   cursor: hand;
-  font-size: 12px;
-  line-height: 12px;
+  font-size: 14px;
+  line-height: 17px;
 }
 
 #results .divider .text {
@@ -179,10 +179,6 @@
 #results .text span {
   background-color: yellow;
   font-weight: bold;
-}
-
-#results .text pre {
-  font-size: 12px;
 }
 
 #results .break {
