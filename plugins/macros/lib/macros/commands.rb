@@ -8,11 +8,17 @@ module Redcar
         @unique_id
       end
       
+      def self.new_macro_message
+        "Nameless Macro #{StartStopRecordingCommand.unique_session_id} :("
+      end
+      
       def execute
         if info = Macros.recording[edit_view]
           edit_view.history.unsubscribe(info[:subscriber])
           if info[:actions].any?
-            macro = Macro.new("Nameless Macro #{StartStopRecordingCommand.unique_session_id} :(", info[:actions])
+            macro = Macro.new(StartStopRecordingCommand.new_macro_message, 
+                      info[:actions],
+                      info[:start_in_block_selection_mode?])
             Macros.session_macros << macro
             Macros.last_run_or_recorded = macro
           end
@@ -23,7 +29,11 @@ module Redcar
           h = ev.history.subscribe do |action|
             Macros.recording[ev][:actions] << action
           end
-          Macros.recording[ev] = {:subscriber => h, :actions => []}
+          Macros.recording[ev] = {
+            :subscriber => h, 
+            :actions => [], 
+            :start_in_block_selection_mode? => ev.document.block_selection_mode?
+          }
           tab.icon = :"control-record"
         end
         Redcar.app.repeat_event(:macro_record_changed)

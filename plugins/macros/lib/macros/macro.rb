@@ -4,13 +4,18 @@ module Redcar
     attr_reader :actions
     attr_writer :name
     
-    def initialize(name, actions)
+    def initialize(name, actions, start_in_block_selection_mode)
       @actions = actions.reject {|action| action.is_a?(Redcar::Macros::StartStopRecordingCommand)}
-      @name = name
+      @name                          = name
+      @start_in_block_selection_mode = start_in_block_selection_mode
     end
     
     def name
       @name
+    end
+    
+    def start_in_block_selection_mode?
+      @start_in_block_selection_mode
     end
     
     def run
@@ -20,6 +25,9 @@ module Redcar
     def run_in(edit_view)
       Macros.last_run = self
       Macros.last_run_or_recorded = self
+      previous_block_selection_mode = edit_view.document.block_selection_mode?
+      edit_view.document.block_selection_mode = start_in_block_selection_mode?
+      
       actions.each do |action|
         case action
         when Fixnum
@@ -30,6 +38,8 @@ module Redcar
           action.run(:env => {:edit_view => edit_view})
         end
       end
+      
+      edit_view.document.block_selection_mode = previous_block_selection_mode
       Redcar.app.repeat_event(:macro_ran)
     end
   end
