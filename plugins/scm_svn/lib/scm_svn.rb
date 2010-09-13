@@ -102,17 +102,26 @@ module Redcar
         end
 
         def index_ignore(change)
-          dir = Java::JavaIo::File.new(change.path).getParentFile().getAbsoluteFile()
+          ignore_under_path(Java::JavaIo::File.new(change.path).getParentFile().getAbsolutePath(),change.path)
+          true # refresh tree
+        end
+
+        def index_ignore_all(extension,change)
+          ignore_under_path(@path,"*.#{extension}")
+          true
+        end
+
+        def ignore_under_path(path,pattern)
+          dir = Java::JavaIo::File.new(path)
           prop = client_manager.getWCClient().doGetProperty(dir, SVNProperty::IGNORE,
             SVNRevision::BASE, SVNRevision::WORKING)
           if prop and not prop.getValue().toString().strip.empty?
-            prop = prop.getValue().toString() + "\n#{File.basename(change.path)}"
+            prop = prop.getValue().toString() + "\n#{pattern}"
           else
-            prop = File.basename(change.path)
+            prop = pattern
           end
           client_manager.getWCClient().doSetProperty(dir, SVNProperty::IGNORE,
             SVNPropertyValue.create(prop), false, false, nil)
-          true # refresh tree
         end
 
         def index_revert(change)

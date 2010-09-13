@@ -211,7 +211,7 @@ module Redcar
                 if repo.supported_commands.find {|i| [:switch_branch, :pull, :pull_targetted].include? i}
                   separator
                 end
-                if repo.supported_commands.include?(:pull) do
+                if repo.supported_commands.include?(:pull)
                   item (repo.translations[:pull]) do
                     repo.pull!
                     
@@ -220,7 +220,7 @@ module Redcar
                     repo_info['trees'].each {|t| t.refresh}
                   end
                 end
-                if repo.supported_commands.include?(:pull_targetted) do
+                if repo.supported_commands.include?(:pull_targetted)
                   lazy_sub_menu repo.translations[:pull_targetted] do
                     repo.pull_targets.sort.each do |target|
                       action = lambda do
