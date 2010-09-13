@@ -5,7 +5,7 @@
   font-size: 14px;
 }
 
-#search_container {
+#search_form_container {
   background-color: #eee;
   width: 100%;
   margin: -8px 0px 20px -8px;
@@ -16,32 +16,32 @@
   left: 0;
 }
 
-#search_container table {
+#search_form_container table {
   width: 100%;
 }
 
-#search_container table td {
+#search_form_container table td {
   padding: 3px 0;
   vertical-align: top;
   padding-left: 10px;
 }
 
-#search_container .input .label {
+#search_form_container .input .label {
   width: 100px;
   text-align: right;
 }
 
-#search_container .input .field input {
+#search_form_container .input .field input {
   width: 100%;
   height: 20px;
 }
 
-#search_container .input .expand {
+#search_form_container .input .expand {
   width: 20px;
   padding: 3px 0px;
 }
 
-#search_container .input .expand a {
+#search_form_container .input .expand a {
   color: black;
   font-weight: bold;
   text-decoration: none;
@@ -54,13 +54,18 @@
   color: #fff;
 }
 
-#search_container .controls label {
+#search_form_container .controls label {
   font-size: 13px;
   margin-right: 10px;
 }
 
-#search_container .controls #search {
+#search_form_container .controls #search,
+#search_form_container .controls #spinner {
   float: right;
+}
+
+#search_form_container .controls #spinner {
+  margin-right: 7px;
 }
 
 #recent_queries {
@@ -68,9 +73,6 @@
   top: 41px;
   left: 124px;
   right: 34px;
-}
-
-#recent_queries {
   border: 1px solid #000;
   background-color: #fff;
 }
@@ -151,22 +153,27 @@
   padding: 0 5px;
   min-width: 20px;
   cursor: hand;
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 12px;
 }
 
 #results .divider .line_num {
   cursor: default;
-}
-
-#results .divider .line_num {
   text-align: center;
   background-color: #fff;
+  color: #555;
 }
 
 #results .text {
   padding: 3px 10px;
   width: 100%;
   cursor: hand;
+  font-size: 12px;
+  line-height: 12px;
+}
+
+#results .divider .text {
+  cursor: default;
 }
 
 #results .text span {
@@ -175,23 +182,11 @@
 }
 
 #results .text pre {
-  font-size: 13px;
-}
-
-#results .nomatch .line_num,
-#results .nomatch .text {
-  color: #aaa;
+  font-size: 12px;
 }
 
 #results .break {
   height: 12px;
-}
-
-#errors {
-  color: red;
-  border: 1px solid red;
-  margin: 0 30px;
-  padding: 15px;
 }
 
 #results_summary {

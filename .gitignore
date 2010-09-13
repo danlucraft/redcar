@@ -35,4 +35,3 @@ plugins/repl/vendor/org-enclojure-repl-server.jar
 vendor/swtbot
 .server.yaml
 .yardoc
-vendor/spoon/
