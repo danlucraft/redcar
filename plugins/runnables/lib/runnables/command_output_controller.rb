@@ -31,7 +31,7 @@ module Redcar
       
       def run
         execute <<-JS
-          $('.run-again').hide();
+          $('.actions').hide();
           $('.output').slideUp().prev('.header').addClass('up');
         JS
 
@@ -45,6 +45,10 @@ module Redcar
         run_command(cmd)
       end
       
+      def copy_output(text)
+        Redcar.app.clipboard << @last_output
+      end
+
       def stylesheet_link_tag(*files)
         files.map do |file|
           path = File.join(Redcar.root, %w(plugins runnables views) + [file.to_s + ".css"])
@@ -63,6 +67,7 @@ module Redcar
           instance_variable_set("@#{type}_thread_started", true)
           begin
             while line = output.gets
+              @last_output << line
               append_output <<-HTML
                 <div class="#{type}">
                   #{process(line)}
@@ -104,6 +109,7 @@ module Redcar
       def start_output_block
         @start = Time.now
         @output_id += 1
+        @last_output = ""
         append_to_container <<-HTML
           <div class="process running">
             <div id="header#{@output_id}" class="header" onclick="$(this).toggleClass('up').next().slideToggle();">
@@ -117,11 +123,13 @@ module Redcar
       def end_output_block
         @end = Time.now
         append_to(header_container, <<-HTML)
-          <span class="completed-message">Completed at #{format_time(@end)}. (Took #{@end - @start} seconds)</span>
+          <span class="completed-message">
+            Completed at #{format_time(@end)}. (Took #{@end - @start} seconds)
+          </span>
         HTML
         execute <<-JS
           $("#{output_container}").parent().removeClass("running");
-          $('.run-again').show();
+          $('.actions').show();
         JS
       end
 

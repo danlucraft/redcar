@@ -13,8 +13,9 @@
         <%= @cmd %>
       </div>
     </div>
-    <form class="run-again" action="javascript:Controller.run();">
-      <input type="submit" value="Run again" />
+    <form class="actions" action="javascript:return false;">
+      <input type="submit" value="Run again"        onclick="Controller.run();"/>
+      <input type="submit" value="Copy last output" onclick="Controller.copyOutput();">
     </form>
   </body>
 </html>
