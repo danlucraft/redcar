@@ -46,7 +46,7 @@ module Redcar
       end
       
       def copy_output(text)
-        Redcar.app.clipboard << @last_output
+        Redcar.app.clipboard << text
       end
 
       def stylesheet_link_tag(*files)
@@ -67,12 +67,7 @@ module Redcar
           instance_variable_set("@#{type}_thread_started", true)
           begin
             while line = output.gets
-              @last_output << line
-              append_output <<-HTML
-                <div class="#{type}">
-                  #{process(line)}
-                </div>
-              HTML
+              append_output %Q|<div class="#{type}">#{process(line)}</div>|              
             end
           rescue => e
             puts e.class
@@ -109,7 +104,6 @@ module Redcar
       def start_output_block
         @start = Time.now
         @output_id += 1
-        @last_output = ""
         append_to_container <<-HTML
           <div class="process running">
             <div id="header#{@output_id}" class="header" onclick="$(this).toggleClass('up').next().slideToggle();">
@@ -128,6 +122,10 @@ module Redcar
           </span>
         HTML
         execute <<-JS
+          $('<a href="#" class="copy">Copy output to clipboard</a>').click(function () {
+            Controller.copyOutput($("#{output_container}").text());
+            return false;
+          }).appendTo('#{header_container}');
           $("#{output_container}").parent().removeClass("running");
           $('.actions').show();
         JS
