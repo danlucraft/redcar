@@ -29,7 +29,7 @@ h1 {
   padding: 5px;
 }
 
-.command {
+.command, .actions {
   margin: 0 5px;
 }
 
@@ -49,8 +49,13 @@ h1 {
   color: #666;
 }
 
-.header .in-progress-message, .running .header .completed-message {
+.header .in-progress-message, .running .header .completed-message, .actions {
   display: none;
+}
+
+.header .copy {
+  float: right;
+  margin: 0 10px;
 }
 
 .running .header .in-progress-message {
