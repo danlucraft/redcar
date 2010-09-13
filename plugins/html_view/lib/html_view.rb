@@ -87,10 +87,8 @@ module Redcar
     
     class RubyFunc < Swt::Browser::BrowserFunction
       def function(args)
-        func_name = args.to_a.first
-        func_args = args.to_a.last.to_a
         begin
-          if result = controller.send(func_name.to_sym, *func_args)
+          if result = controller.send(*args.to_a)
             return JSON(result)
           else
             return "{}"
@@ -106,23 +104,11 @@ module Redcar
       
       attr_accessor :controller
     end
-        
+
+    # TODO: remove this method once we have a default layout that
+    #       has <%= javascript_controller_actions %>
     def setup_javascript_listeners
-      js = []
-      js << "<script type=\"text/javascript\">"
-      js << "Controller = {"
-      methods = []
-      (controller.methods - Object.new.methods).each do |method_name|
-        method = []
-        method << "  #{method_name.gsub(/_(\w)/) { |a| $1.upcase}}: function() {"
-        method << "    return JSON.parse(rubyCall(\"#{method_name}\", Array.prototype.slice.call(arguments)));"
-        method << "  }"
-        methods << method.join("\n")
-      end
-      js << methods.join(",\n")
-      js << "};"
-      js << "</script>"
-      js.join("\n")
+      controller.javascript_controller_actions
     end
   end
 end

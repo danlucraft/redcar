@@ -31,17 +31,24 @@ module Redcar
       
       def run
         execute <<-JS
+          $('.actions').hide();
           $('.output').slideUp().prev('.header').addClass('up');
         JS
 
         case Redcar.platform
         when :osx, :linux
-          run_posix
+          cmd = "cd #{@path}; " + @cmd
         when :windows
-          run_windows
+          cmd = "cd \"#{@path.gsub('/', '\\')}\" & #{@cmd}"
         end
+        
+        run_command(cmd)
       end
       
+      def copy_output(text)
+        Redcar.app.clipboard << text
+      end
+
       def stylesheet_link_tag(*files)
         files.map do |file|
           path = File.join(Redcar.root, %w(plugins runnables views) + [file.to_s + ".css"])
@@ -60,11 +67,7 @@ module Redcar
           instance_variable_set("@#{type}_thread_started", true)
           begin
             while line = output.gets
-              append_output <<-HTML
-                <div class="#{type}">
-                  #{process(line)}
-                </div>
-              HTML
+              append_output %Q|<div class="#{type}">#{process(line)}</div>|
             end
           rescue => e
             puts e.class
@@ -74,12 +77,11 @@ module Redcar
         end
       end
       
-      def run_windows
+      def run_command(cmd)
         Thread.new do
           # TODO: Find browser's onload rather than sleeping
           sleep 1
           start_output_block
-          cmd = "cd \"#{@path.gsub('/', '\\')}\" & #{@cmd}"
           Redcar.logger.info "Running: #{cmd}"
           
           # JRuby-specific
@@ -115,16 +117,24 @@ module Redcar
       def end_output_block
         @end = Time.now
         append_to(header_container, <<-HTML)
-          <span class="completed-message">Completed at #{format_time(@end)}. (Took #{@end - @start} seconds)</span>
+          <span class="completed-message">
+            Completed at #{format_time(@end)}. (Took #{@end - @start} seconds)
+          </span>
         HTML
         execute <<-JS
+          $('<a href="#" class="copy">Copy output to clipboard</a>').click(function () {
+            Controller.copyOutput($("#{output_container}").text());
+            return false;
+          }).appendTo('#{header_container}');
           $("#{output_container}").parent().removeClass("running");
+          $('.actions').show();
+          $("body").attr({ scrollTop: $("body").attr("scrollHeight") });
         JS
       end
 
       def scroll_to_end(container)
         execute <<-JS
-          $("html, body").attr({ scrollTop: $("#{container}").attr("scrollHeight") });
+          $("body").attr({ scrollTop: $("body").attr("scrollHeight") });
         JS
       end
       
@@ -152,38 +162,6 @@ module Redcar
         scroll_to_end(output_container)
       end
 
-      def run_posix
-        @thread = Thread.new do
-          sleep 1
-          @shell = Session::Shell.new
-          @shell.outproc = lambda do |out|
-            append_output <<-HTML
-              <div class="stdout">
-                #{process(out)}
-              </div>
-            HTML
-          end
-          @shell.errproc = lambda do |err|
-            append_output <<-HTML
-              <div class="stderr">
-                #{process(err)}
-              </div>
-            HTML
-          end
-          begin
-            start_output_block
-            @shell.execute("cd #{@path}; " + @cmd)
-            end_output_block
-          rescue => e
-            puts e.class
-            puts e.message
-            puts e.backtrace
-          end
-          @shell = nil
-          @thread = nil
-        end
-      end        
-      
       def index
         rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "..", "views", "command_output.html.erb")))
         command = @cmd
