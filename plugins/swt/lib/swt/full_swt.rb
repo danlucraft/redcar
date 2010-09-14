@@ -39,7 +39,10 @@ module Swt
   
   module DND
     import org.eclipse.swt.dnd.DND
-    import org.eclipse.swt.dnd.Clipboard
+    
+    # Only load Clipboard in full running mode.
+    import org.eclipse.swt.dnd.Clipboard unless Redcar.no_gui_mode?
+
     import org.eclipse.swt.dnd.Transfer
     import org.eclipse.swt.dnd.TextTransfer
     import org.eclipse.swt.dnd.FileTransfer

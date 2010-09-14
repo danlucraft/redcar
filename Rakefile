@@ -1,4 +1,4 @@
-REDCAR_VERSION = "0.5.5dev" # also change in lib/redcar.rb!
+REDCAR_VERSION = "0.6dev" # also change in lib/redcar.rb!
 require 'rubygems'
 require 'fileutils'
 require 'spec/rake/spectask'
@@ -129,6 +129,7 @@ spec = Gem::Specification.new do |s|
   s.files             = %w(CHANGES LICENSE Rakefile README.md) + 
                           Dir.glob("bin/redcar") + 
                           Dir.glob("config/**/*") + 
+                          Dir.glob("share/**/*") + 
                           remove_gitignored_files(Dir.glob("lib/**/*")) + 
                           remove_matching_files(remove_gitignored_files(Dir.glob("plugins/**/*")), "redcar-bundles") + 
                           Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Syntaxes/**/*") + 
@@ -214,6 +215,7 @@ task :app_bundle => :build do
     f << '#!/bin/sh
           DIR=$(cd "$(dirname "$0")"; pwd)
           REDCAR=$(cd "$(dirname "${DIR}/../Resources/bin/redcar")"; pwd)
+          $REDCAR/redcar install
           $REDCAR/redcar --ignore-stdin $@'
   end
   File.chmod 0777, File.join(macos_dir, "redcar")
@@ -222,9 +224,6 @@ task :app_bundle => :build do
     FileUtils.mkdir_p File.join(resources_dir, File.dirname(f))
     FileUtils.cp_r f, File.join(resources_dir, f), :remove_destination => true
   end
-
-  p "Running #{File.join(resources_dir, "bin", "redcar")} install"
-  system "#{File.join(resources_dir, "bin", "redcar")} install"
 
   FileUtils.cp_r File.join(resources_dir, "plugins", "application", "icons", redcar_icon), 
       resources_dir, :remove_destination => true

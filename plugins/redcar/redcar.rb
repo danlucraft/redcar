@@ -5,9 +5,10 @@ module Redcar
       yield
     rescue => e
       message = "Error in: " + (text || e.message)
-      puts message
-      puts e.class.to_s + ": " + e.message
-      puts e.backtrace
+      $stderr.puts message
+      $stderr.puts e.class.to_s + ": " + e.message
+      $stderr.puts e.backtrace
+      return if Redcar.no_gui_mode?
       Application::Dialog.message_box(
         message,
         :type => :error, :buttons => :ok)
