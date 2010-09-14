@@ -876,10 +876,11 @@ Redcar.environment: #{Redcar.environment}
 
     def self.toolbars
       ToolBar::Builder.build do
-        item "New", :command => NewCommand, :icon => :new
-        item "Open", :command => Project::FileOpenCommand, :icon => :open
-        item "Save", :command => Project::FileSaveCommand, :icon => :save
-        item "Save As", :command => Project::FileSaveAsCommand, :icon => :save_as
+        item "New File", :command => NewCommand, :icon => :new
+        item "Open File", :command => Project::FileOpenCommand, :icon => :open
+        item "Open Directory", :command => Project::DirectoryOpenCommand, :icon => :open_dir
+        item "Save File", :command => Project::FileSaveCommand, :icon => :save
+        item "Save File As", :command => Project::FileSaveAsCommand, :icon => :save_as
         item "Undo", :command => UndoCommand, :icon => :undo
         item "Redo", :command => RedoCommand, :icon => :redo
       end
