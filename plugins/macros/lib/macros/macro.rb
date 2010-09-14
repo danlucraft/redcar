@@ -40,7 +40,8 @@ module Redcar
         when DocumentCommand
           action.run(:env => {:edit_view => edit_view})
         end
-        sleep 0.5
+        p edit_view.document.selection_ranges
+        p [edit_view.document.to_s, edit_view.document.controller.styledText.text]
       end
       p edit_view.document.to_s
       edit_view.document.block_selection_mode = previous_block_selection_mode
