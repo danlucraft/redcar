@@ -12,7 +12,7 @@ module Redcar
         end
       end
 
-      attr_reader :text, :command, :priority, :value, :type, :icon, :barname
+      attr_reader :text, :command, :priority, :value, :icon, :barname
  
       # Create a new Item, with the given text to display in the toolbar, and
       # either:
@@ -23,12 +23,10 @@ module Redcar
         
         if options.respond_to?('[]')
           @command = options[:command] || block
-	  @icon = options[:icon]
+	        @priority = options[:priority] # Currently not utilized
           @value = options[:value]
-          @priority = options[:priority]
-          @type = options[:type]
-	  @barname = options[:barname]
-          @active = options[:active] ? true : false
+          @icon = options[:icon]
+          @barname = options[:barname]
         # This branch is for compatibility with old code. Please use :command 
         # option in new code
         # FIXME: Should this be removed at some point?

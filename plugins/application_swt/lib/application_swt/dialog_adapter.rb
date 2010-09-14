@@ -152,6 +152,7 @@ module Redcar
       
       def file_dialog(type, options)
         dialog = Swt::Widgets::FileDialog.new(parent_shell, type)
+        dialog.setText("Save File");
         if options[:filter_path]
           dialog.set_filter_path(options[:filter_path])
         end

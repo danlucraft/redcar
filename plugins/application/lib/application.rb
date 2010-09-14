@@ -86,6 +86,13 @@ module Redcar
       create_history
       @event_spewer = EventSpewer.new
       @task_queue   = TaskQueue.new
+      
+      # Don't show the toolbar by default on Mac OS X
+      if Redcar.platform == :osx
+        Application.storage['show_toolbar'] = false
+      end
+      
+      # Otherwise, use previous setting
       @show_toolbar = !!Application.storage['show_toolbar']
     end
     
