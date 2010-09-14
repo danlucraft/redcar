@@ -668,6 +668,12 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
+    class ToggleFullscreen < Command
+      def execute
+        Redcar.app.focussed_window.fullscreen = !Redcar.app.focussed_window.fullscreen
+      end
+    end
+
     class ToggleInvisibles < Redcar::EditTabCommand
       def execute
         EditView.show_invisibles = !EditView.show_invisibles?
@@ -773,6 +779,7 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+Shift+]",     SwitchTabUpCommand
         link "Ctrl+Shift+[",    MoveTabDownCommand
         link "Ctrl+Shift+]",    MoveTabUpCommand
+        link "F11",             ToggleFullscreen
         link "Cmd+Alt+I",       ToggleInvisibles
         link "Ctrl+R",          Runnables::RunEditTabCommand
         link "Cmd+I",           OutlineView::OpenOutlineViewCommand
@@ -851,10 +858,12 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+Page Up",   MoveTabDownCommand
         link "Ctrl+Shift+Page Down", MoveTabUpCommand
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
+        link "F11",              ToggleFullscreen
         link "Ctrl+Alt+I",       ToggleInvisibles
         link "Ctrl+I",           OutlineView::OpenOutlineViewCommand
 
         link "Ctrl+Alt+S", Snippets::OpenSnippetExplorer
+        
         #Textmate.attach_keybindings(self, :linux)
 
         # map SelectTab<number>Command
@@ -867,7 +876,7 @@ Redcar.environment: #{Redcar.environment}
       [linwin, osx]
     end
 
-    def self.menus
+    def self.menus(window)
       Menu::Builder.build do
         sub_menu "File", :priority => :first do
           group(:priority => :first) do
@@ -948,6 +957,7 @@ Redcar.environment: #{Redcar.environment}
             item "Font Size", SelectFontSize
             item "Theme", SelectTheme
           end
+          item "Toggle Fullscreen", :command => ToggleFullscreen, :type => :check, :active => window.fullscreen
           separator
           item "New Notebook", NewNotebookCommand
           item "Close Notebook", CloseNotebookCommand
