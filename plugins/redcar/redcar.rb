@@ -957,7 +957,7 @@ Redcar.environment: #{Redcar.environment}
             item "Font Size", SelectFontSize
             item "Theme", SelectTheme
           end
-          item "Toggle Fullscreen", :command => ToggleFullscreen, :type => :check, :active => window.fullscreen
+          item "Toggle Fullscreen", :command => ToggleFullscreen, :type => :check, :active => window ? window.fullscreen : false
           separator
           item "New Notebook", NewNotebookCommand
           item "Close Notebook", CloseNotebookCommand
