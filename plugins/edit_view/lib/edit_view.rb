@@ -554,6 +554,7 @@ module Redcar
     def invoke_action(action_symbol)
       unless invoke_overridden_action(action_symbol)
         const = EditViewSWT::ALL_ACTIONS[action_symbol]
+        p [:invoke_native, action_symbol, const]
         controller.mate_text.get_text_widget.invokeAction(const)
       end
       history.record(action_symbol)

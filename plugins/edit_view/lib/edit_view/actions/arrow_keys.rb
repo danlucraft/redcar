@@ -44,7 +44,7 @@ module Redcar
         end
         
         def self.column_previous(edit_view)
-          return if edit_view.document.block_selection_mode?
+          return false if edit_view.document.block_selection_mode?
           doc = edit_view.document
           doc.cursor_offset = move_left_offset(edit_view)
           ArrowHandler.ensure_cursor_in_view(edit_view)
@@ -52,7 +52,7 @@ module Redcar
         end
         
         def self.select_column_previous(edit_view)
-          return if edit_view.document.block_selection_mode?
+          return false if edit_view.document.block_selection_mode?
           doc = edit_view.document
           old_selection_offset = doc.selection_offset
           doc.set_selection_range(move_left_offset(edit_view), old_selection_offset)
@@ -102,7 +102,7 @@ module Redcar
         end
         
         def self.column_next(edit_view)
-          return if edit_view.document.block_selection_mode?
+          return false if edit_view.document.block_selection_mode?
           doc = edit_view.document
           doc.cursor_offset = move_right_offset(edit_view)
           ArrowHandler.ensure_cursor_in_view(edit_view)
@@ -110,7 +110,7 @@ module Redcar
         end
         
         def self.select_column_next(edit_view)
-          return if edit_view.document.block_selection_mode?
+          return false if edit_view.document.block_selection_mode?
           doc = edit_view.document
           old_selection_offset = doc.selection_offset
           doc.set_selection_range(move_right_offset(edit_view), old_selection_offset)

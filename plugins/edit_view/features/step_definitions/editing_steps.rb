@@ -211,6 +211,39 @@ When /^I select the word (right of|left of|around|at) (\d+)$/ do |direction, off
   doc.set_selection_range(range.first, range.last)
 end
 
+When /^I turn block selection on$/ do
+  Redcar::EditView.focussed_edit_view_document.block_selection_mode?.should == false
+  Redcar::Top::ToggleBlockSelectionCommand.new.run
+end
 
+When /^I turn block selection off$/ do
+  Redcar::EditView.focussed_edit_view_document.block_selection_mode?.should == true
+  Redcar::Top::ToggleBlockSelectionCommand.new.run
+end
 
+def escape_text(text)
+  text.gsub("\t", "\\t").gsub("\n", "\\n").gsub("\r", "\\r").gsub("\"", "\\\"")
+end
+
+Given /^the contents? is:$/ do |string|
+  cursor_index    = string.index('<c>')
+  selection_index = string.index('<s>')
+  string = string.gsub('<s>', '').gsub('<c>', '')
+  When %{I replace the contents with "#{string}"}
+  
+  if cursor_index and selection_index 
+    if cursor_index < selection_index
+      selection_index -= 3
+    else
+      cursor_index -= 3
+    end
+    When %{I select from #{selection_index} to #{cursor_index}}
+  elsif cursor_index
+    When "I move the cursor to #{cursor_index}"
+  end
+end
+
+Then /^the content? should be:$/ do |string|
+  Then %{the contents should be "#{escape_text(string)}"}
+end
 
