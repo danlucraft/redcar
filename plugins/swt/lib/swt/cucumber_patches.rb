@@ -27,7 +27,15 @@ module Cucumber
             end
           end
         end
+        
         Redcar::ApplicationSWT.display.syncExec(block)
+        flush = Swt::RRunnable.new do
+          true while Redcar::ApplicationSWT.display.readAndDispatch
+        end
+        Redcar::ApplicationSWT.display.asyncExec(flush)
+        Redcar::ApplicationSWT.display.asyncExec(flush)
+        Redcar::ApplicationSWT.display.asyncExec(flush)
+        Redcar::ApplicationSWT.display.asyncExec(flush)
         if ENV["SLOW_CUKES"]
           sleep ENV["SLOW_CUKES"].to_f
         end

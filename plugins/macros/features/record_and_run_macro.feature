@@ -74,7 +74,14 @@ Feature: Clear Line
     And I run the last recorded macro
     Then the contents should be "a   ba  b"
   
-  
-  
+  Scenario: Delete key in macro
+    When I replace the contents with "foo"
+    And I move the cursor to 0
+    And I start recording a macro
+    And I delete
+    And I stop recording a macro
+    And I run the last recorded macro
+    Then the contents should be "o"
+    And the cursor should be at 0
   
   

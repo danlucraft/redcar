@@ -22,9 +22,6 @@ Feature: Block selection in macros
     And I turn block selection off
     And I move to the start of the text
     And I run the last recorded macro
-    And I wait "1" seconds
-    And I wait "1" seconds
-    And I wait "1" seconds
     Then the content should be:
         """
         o
@@ -43,9 +40,6 @@ Feature: Block selection in macros
     And I turn block selection off
     And I move to the start of the text
     And I run the last recorded macro
-    And I wait "1" seconds
-    And I wait "1" seconds
-    And I wait "1" seconds
     Then the content should be:
         """
         o
