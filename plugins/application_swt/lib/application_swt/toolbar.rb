@@ -11,7 +11,8 @@ module Redcar
         @icons = {
           :new => File.join(FILE_DIR, "document-text.png"),
           :open => File.join(FILE_DIR, "folder-open-document.png"),
-          :open_dir => File.join(FILE_DIR, "folder-open.png"),
+          #:open_dir => File.join(FILE_DIR, "blue-folder-open.png"),
+          :open_dir => File.join(FILE_DIR, "blue-folder-horizontal-open.png"),
           :save => File.join(FILE_DIR, "disk.png"),
           :save_as => File.join(FILE_DIR, "disk--plus.png"),
           #:save_all => File.join(FILE_DIR, "save_all.png"),
