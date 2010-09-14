@@ -153,6 +153,7 @@ module Redcar
       def file_dialog(type, options)
         dialog = Swt::Widgets::FileDialog.new(parent_shell, type)
         if options[:filter_path]
+	  dialog.setText("Save File As")
           dialog.set_filter_path(options[:filter_path])
         end
         Redcar.app.protect_application_focus do
