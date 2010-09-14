@@ -30,11 +30,6 @@ module Redcar
       end
       
       def run
-        execute <<-JS
-          $('.actions').hide();
-          $('.output').slideUp().prev('.header').addClass('up');
-        JS
-
         case Redcar.platform
         when :osx, :linux
           cmd = "cd #{@path}; " + @cmd
@@ -79,6 +74,11 @@ module Redcar
       
       def run_command(cmd)
         Thread.new do
+          execute <<-JS
+            $('.actions').hide();
+            $('.output').slideUp().prev('.header').addClass('up');
+          JS
+          
           # TODO: Find browser's onload rather than sleeping
           sleep 1
           start_output_block
@@ -128,13 +128,13 @@ module Redcar
           }).appendTo('#{header_container}');
           $("#{output_container}").parent().removeClass("running");
           $('.actions').show();
-          $("body").attr({ scrollTop: $("body").attr("scrollHeight") });
+          $("html, body").attr({ scrollTop: $("body").attr("scrollHeight") });
         JS
       end
 
       def scroll_to_end(container)
         execute <<-JS
-          $("body").attr({ scrollTop: $("body").attr("scrollHeight") });
+          $("html, body").attr({ scrollTop: $("body").attr("scrollHeight") });
         JS
       end
       
