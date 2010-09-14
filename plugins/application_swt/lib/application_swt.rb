@@ -1,16 +1,12 @@
 
-SWT_APP_NAME = "Redcar"
+require 'swt/full_swt'
 
-require "application_swt/swt_wrapper"
-require "application_swt/swt/listener_helpers"
 require "application_swt/tab"
 
 require "application_swt/clipboard"
-require "application_swt/cucumber_runner"
 require "application_swt/dialog_adapter"
 require "application_swt/dialogs/no_buttons_dialog"
 require "application_swt/dialogs/filter_list_dialog_controller"
-require "application_swt/event_loop"
 require "application_swt/html_tab"
 require "application_swt/menu"
 require "application_swt/menu/binding_translator"
@@ -22,29 +18,26 @@ require "application_swt/notebook/tab_drag_and_drop_listener"
 require "application_swt/speedbar"
 require "application_swt/treebook"
 require "application_swt/window"
-require "application_swt/swt/grid_data"
 
-require "dist/application_swt"
+require "application_swt-#{Redcar::VERSION}"
 
 module Redcar
   class ApplicationSWT
     include Redcar::Controller
-    
+        
     def self.display
       @display ||= Swt.display 
     end
 
     def self.start
-      Swt::Widgets::Display.app_name = Redcar::Application::NAME
-      @gui = Redcar::Gui.new("swt")
-      @gui.register_event_loop(EventLoop.new)
-      @gui.register_features_runner(CucumberRunner.new)
-      @gui.register_controllers(
-          Redcar::Tab              => ApplicationSWT::Tab,
-          Redcar::HtmlTab          => ApplicationSWT::HtmlTab,
-          Redcar::FilterListDialog => ApplicationSWT::FilterListDialogController
-        )
-      @gui.register_dialog_adapter(ApplicationSWT::DialogAdapter.new)
+      if Redcar.gui
+        Redcar.gui.register_controllers(
+            Redcar::Tab              => ApplicationSWT::Tab,
+            Redcar::HtmlTab          => ApplicationSWT::HtmlTab,
+            Redcar::FilterListDialog => ApplicationSWT::FilterListDialogController
+          )
+        Redcar.gui.register_dialog_adapter(ApplicationSWT::DialogAdapter.new)
+      end
     end
     
     def self.add_debug_key_filters
@@ -57,35 +50,12 @@ module Redcar
     end
     
     def self.gui
-      @gui
+      Redcar.gui
     end
     
-    # Runs the given block in the SWT Event thread
-    def self.sync_exec(&block)
-      runnable = Swt::RRunnable.new do
-        begin
-          block.call
-        rescue => e
-          puts "error in sync exec"
-          puts e.message
-          puts e.backtrace
-        end
-      end
-      unless Redcar::ApplicationSWT.display.is_disposed
-        Redcar::ApplicationSWT.display.syncExec(runnable)
-      end
-    end
-    
-    # Runs the given block in the SWT Event thread after
-    # the given number of milliseconds
-    def self.timer_exec(ms, &block)
-      runnable = Swt::RRunnable.new(&block)
-      Redcar::ApplicationSWT.display.timerExec(ms, runnable)
-    end
-
     class ShellListener
       def shell_deactivated(_)
-        ApplicationSWT.timer_exec(100) do
+        Swt.timer_exec(100) do
           unless Swt::Widgets::Display.get_current.get_active_shell
             Redcar.app.lost_application_focus
           end
@@ -167,6 +137,7 @@ module Redcar
 
     def add_listeners
       @model.add_listener(:new_window, &method(:new_window))
+      @model.add_listener(:refresh_menu, &method(:refresh_menu))
     end
     
     class Listener

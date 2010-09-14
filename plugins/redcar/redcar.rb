@@ -5,17 +5,17 @@ module Redcar
       yield
     rescue => e
       message = "Error in: " + (text || e.message)
-      Application::Dialog.message_box(
-        message,
-        :type => :error, :buttons => :ok)
       puts message
       puts e.class.to_s + ": " + e.message
       puts e.backtrace
+      Application::Dialog.message_box(
+        message,
+        :type => :error, :buttons => :ok)
     end
   end
 
   def self.update_gui
-    ApplicationSWT.sync_exec do
+    Swt.sync_exec do
       safely do
         yield
       end
@@ -224,11 +224,12 @@ module Redcar
     class AboutCommand < Command
       def execute
         new_tab = Top::NewCommand.new.run
-        new_tab.document.text = "About: Redcar\nVersion: #{Redcar::VERSION}\n" +
-          "Ruby Version: #{RUBY_VERSION}\n" +
-          "Jruby version: #{JRUBY_VERSION}\n" +
-          "Redcar.environment: #{Redcar.environment}\n" +
-          "http://redcareditor.com"
+        new_tab.document.text = <<-TXT
+About: Redcar\nVersion: #{Redcar::VERSION}
+Ruby Version: #{RUBY_VERSION}
+Jruby version: #{JRUBY_VERSION}
+Redcar.environment: #{Redcar.environment}
+        TXT
         new_tab.title= 'About'
         new_tab.edit_view.reset_undo
         new_tab.document.set_modified(false)
@@ -553,29 +554,31 @@ module Redcar
         cursor_line  = doc.cursor_line
         cursor_line_offset = doc.cursor_line_offset
         diff = 0
-        doc.selection_ranges.each do |range|
-          doc.delete(range.begin - diff, range.count)
-          diff += range.count
-        end
-        texts = Redcar.app.clipboard.last.dup
-        texts.each_with_index do |text, i|
-          line_ix = start_line + i
-          if line_ix == doc.line_count
-            doc.insert(doc.length, "\n" + " "*line_offset)
-          else
-            line = doc.get_line(line_ix).chomp
-            if line.length < line_offset
-              doc.insert(
+        doc.controllers(AutoIndenter::DocumentController).first.disable do
+          doc.selection_ranges.each do |range|
+            doc.delete(range.begin - diff, range.count)
+            diff += range.count
+          end
+          texts = Redcar.app.clipboard.last.dup
+          texts.each_with_index do |text, i|
+            line_ix = start_line + i
+            if line_ix == doc.line_count
+              doc.insert(doc.length, "\n" + " "*line_offset)
+            else
+              line = doc.get_line(line_ix).chomp
+              if line.length < line_offset
+                doc.insert(
                 doc.offset_at_inner_end_of_line(line_ix),
                 " "*(line_offset - line.length)
-              )
+                )
+              end
             end
-          end
-          doc.insert(
+            doc.insert(
             doc.offset_at_line(line_ix) + line_offset,
             text
-          )
-          doc.cursor_offset = doc.offset_at_line(line_ix) + line_offset + text.length
+            )
+            doc.cursor_offset = doc.offset_at_line(line_ix) + line_offset + text.length
+          end
         end
       end
     end
@@ -700,13 +703,13 @@ module Redcar
         Redcar::EditView::SelectThemeDialog.new.open
       end
     end
-    
+
     class ShowTheme < Command
       def execute
-        
+
       end
     end
-    
+
     class SelectFontSize < Command
       def execute
         result = Application::Dialog.input("Font Size", "Please enter new font size", Redcar::EditView.font_size.to_s) do |text|
@@ -754,8 +757,9 @@ module Redcar
         link "Cmd+Shift+I", AutoIndenter::IndentCommand
         link "Cmd+L",       GotoLineCommand
         link "Cmd+F",       DocumentSearch::SearchForwardCommand
-        link "Cmd+Shift+F", DocumentSearch::RepeatPreviousSearchForwardCommand
+        #link "Cmd+Shift+F", DocumentSearch::RepeatPreviousSearchForwardCommand
         link "Cmd+Ctrl+F",  DocumentSearch::SearchAndReplaceCommand
+        link "Cmd+Shift+F", Redcar::FindInProject::OpenSearch
         link "Cmd+A",       SelectAllCommand
         link "Ctrl+W",      SelectWordCommand
         link "Cmd+B",       ToggleBlockSelectionCommand
@@ -778,7 +782,7 @@ module Redcar
         link "Cmd+Alt+I",       ToggleInvisibles
         link "Ctrl+R",          Runnables::RunEditTabCommand
         link "Cmd+I",           OutlineView::OpenOutlineViewCommand
-        
+
         link "Ctrl+Shift+P",    PrintScopeCommand
 
         link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
@@ -826,6 +830,7 @@ module Redcar
         link "Ctrl+L",       GotoLineCommand
         link "Ctrl+F",       DocumentSearch::SearchForwardCommand
         link "F3",           DocumentSearch::RepeatPreviousSearchForwardCommand
+        link "Ctrl+Shift+F", Redcar::FindInProject::OpenSearch
         link "Ctrl+A",       SelectAllCommand
         link "Ctrl+Alt+W",   SelectWordCommand
         link "Ctrl+B",       ToggleBlockSelectionCommand
@@ -854,7 +859,7 @@ module Redcar
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
         link "Ctrl+Alt+I",       ToggleInvisibles
         link "Ctrl+I",           OutlineView::OpenOutlineViewCommand
-        
+
         link "Ctrl+Alt+S", Snippets::OpenSnippetExplorer
         #Textmate.attach_keybindings(self, :linux)
 
@@ -870,12 +875,15 @@ module Redcar
 
     def self.toolbars
       ToolBar::Builder.build do
-        item "New", :command => NewCommand, :icon => :new
-        item "Open", :command => Project::FileOpenCommand, :icon => :open
-        item "Save", :command => Project::FileSaveCommand, :icon => :save
-        item "Undo", :command => UndoCommand, :icon => :undo
-        item "Redo", :command => RedoCommand, :icon => :redo
+	group( :priority => :first ) do
+          item "New", :command => NewCommand, :icon => :new
+          item "Open", :command => Project::FileOpenCommand, :icon => :open
+          item "Save", :command => Project::FileSaveCommand, :icon => :save
+          item "Undo", :command => UndoCommand, :icon => :undo
+          item "Redo", :command => RedoCommand, :icon => :redo
+	end
       end
+
     end
 
     def self.menus
@@ -976,16 +984,16 @@ module Redcar
              end
           end
           separator
-          item "Toggle Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
-          item "Toggle Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
-          item "Toggle Annotations", :command => ToggleAnnotations, :type => :check, :active => EditView.show_annotations?
           item "Show Toolbar", :command => ToggleToolbar, :type => :check, :active => Redcar.app.show_toolbar?
+          item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
+          item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
+          item "Show Annotations", :command => ToggleAnnotations, :type => :check, :active => EditView.show_annotations?
         end
         sub_menu "Bundles", :priority => 45 do
           group(:priority => :first) do
             item "Find Snippet", Snippets::OpenSnippetExplorer
             item "Installed Bundles", Textmate::InstalledBundles
-            item "View Bundles in Tree", Textmate::ShowSnippetTree
+            item "Browse Snippets", Textmate::ShowSnippetTree
           end
           group(:priority => 15) do
             separator
@@ -1029,21 +1037,35 @@ module Redcar
 
     def self.start(args=[])
       puts "loading plugins took #{Time.now - PROCESS_START_TIME}"
-      Application.start
-      ApplicationSWT.start
-      EditViewSWT.start
-      s = Time.now
-      Redcar.gui = ApplicationSWT.gui
-      Redcar.app.controller = ApplicationSWT.new(Redcar.app)
-      Redcar.app.refresh_toolbar!
-      Redcar.app.refresh_menu!
-      Redcar.app.load_sensitivities
-      puts "initializing gui took #{Time.now - s}s"
-      s = Time.now
-      Redcar::Project::Manager.start(args)
-      puts "project start took #{Time.now - s}s"
-      Redcar.app.make_sure_at_least_one_window_open
+      Redcar.update_gui do
+        Application.start
+        ApplicationSWT.start
+        Swt.splash_screen.inc(1) if Swt.splash_screen
+        EditViewSWT.start
+        Swt.splash_screen.inc(7) if Swt.splash_screen
+        s = Time.now
+        if Redcar.gui
+          Redcar.app.controller = ApplicationSWT.new(Redcar.app)
+        end
+        Redcar.app.refresh_menu!
+        Redcar.app.load_sensitivities
+        puts "initializing gui took #{Time.now - s}s"
+      end
+      Redcar.update_gui do
+        Swt.splash_screen.inc(2) if Swt.splash_screen
+        s = Time.now
+        Redcar::Project::Manager.start(args)
+        puts "project start took #{Time.now - s}s"
+        Redcar.app.make_sure_at_least_one_window_open
+      end
+      Redcar.update_gui do
+        Swt.splash_screen.close if Swt.splash_screen
+      end
       puts "start time: #{Time.now - $redcar_process_start_time}"
+      if args.include?("--compute-textmate-cache-and-quit")
+        Redcar::Textmate.all_bundles
+        exit
+      end
     end
   end
 end

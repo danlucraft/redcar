@@ -16,11 +16,11 @@ Feature: Replace in file
     And I move the cursor to 4
     And I run the command DocumentSearch::SearchAndReplaceCommand
     And I type "Rab" into the "Search" field in the speedbar
-    And I type "RAB" into the "Replace" field in the speedbar
+    And I type "RABBIT" into the "Replace" field in the speedbar
     And I press "Replace" in the speedbar
-    Then the contents should be "Foo\nBar RAB Rab\nBaz"
-    And the selected text should be "RAB"
-    And the selection range should be from 8 to 11 
+    Then the contents should be "Foo\nBar RABBIT Rab\nBaz"
+    And the selected text should be "RABBIT"
+    And the selection range should be from 8 to 14 
 
   Scenario: Replace next occurrence on the same line twice
     When I replace the contents with "Foo\nBar Rab Rab\nBaz"
@@ -120,4 +120,17 @@ Feature: Replace in file
     And I press "Replace" in the speedbar
     Then the contents should be "Curry beef"
 
+  Scenario: Replace should move past the current replacement if the query is a substring of the replacement
+    When I replace the contents with "foo\nfoo\nfoo"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::SearchAndReplaceCommand
+    And I type "foo" into the "Search" field in the speedbar
+    And I type "foobar" into the "Replace" field in the speedbar
+    And I press "Replace" in the speedbar
+    And I press "Replace" in the speedbar
+    And I press "Replace" in the speedbar
+    Then the contents should be "foobar\nfoobar\nfoobar"
+    And the selection range should be from 14 to 20
+  
+  
   

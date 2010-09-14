@@ -6,6 +6,7 @@ module Redcar
       FILE_DIR = File.join(Redcar.root, %w(share icons))
       DEFAULT_ICON = File.join(Redcar.root, %w(share icons document.png))
 
+
       def self.icons
         @icons = {
           :new => File.join(FILE_DIR, "document-text.png"),
@@ -32,7 +33,7 @@ module Redcar
         items[key_string].each {|i| p i.text; i.enabled = false}
       end
 
-      attr_reader :coolbar, :toolbar_bar
+      attr_reader :coolbar, :toolbar, :coolitem, :toolbars, :coolitems
 
       def self.toolbar_types
         [Swt::SWT::FLAT, Swt::SWT::HORIZONTAL]
@@ -40,64 +41,96 @@ module Redcar
 
       def initialize(window, toolbar_model, options={})
         s = Time.now
+	@x = @y = 0
+        @toolbars = {}
+        @coolitems = {}
+        @sizes = []
+	@entries = Hash.new{|hash, key| hash[key] = Array.new;}
         @window = window
-        @coolbar = Swt::Widgets::CoolBar.new(window.shell, Swt::SWT::NONE | Swt::SWT::HORIZONTAL)
-	      @coolbar_item1 = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::NONE)
-        @coolbar_item2 = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::NONE)
-        @toolbar_bar1 = create_toolbar(@coolbar_item1)
-        @toolbar_bar2 = create_toolbar(@coolbar_item2)
-        return unless toolbar_model
-        add_entries_to_toolbar(@toolbar_bar1, toolbar_model)
-        item = Swt::Widgets::ToolItem.new(@toolbar_bar2, Swt::SWT::PUSH)
-        item.setText("Test")
-        item.setEnabled(true)
+        @coolbar = Swt::Widgets::CoolBar.new(window.shell, Swt::SWT::FLAT | Swt::SWT::BORDER)
+	@coolbar.setLayout(Swt::Layout::FormLayout.new())
+	@layout_data = Swt::Layout::FormData.new.tap do |d|
+          d.left = Swt::Layout::FormAttachment.new(0, 0)
+	  d.right = Swt::Layout::FormAttachment.new(100, 0)
+	end
+	@coolbar.setLayoutData(@layout_data)
+	return unless toolbar_model
+	toolbar_model.each do |entry|
+          @name = entry.barname || :core
+          if not @toolbars[@name]
+            if @name == :core
+	      @coolitem = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::FLAT, 0)   	
+	    else
+   	      @coolitem = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::FLAT)   	
+            end
+            @toolbar = create_toolbar(@coolbar)
+            @toolbars[@name] = @toolbar
+            @coolitems[@name] = @coolitem
+	  else
+	    @toolbar = @toolbars[@name]
+	    @coolitem = @coolitems[@name]
+          end
+	  @entries[@name] << entry
+        end
+	
+	@x = @y = 0
+	
+	@toolbars.each_key { |key|
+          @toolbar = @toolbars[key]
+	  @coolitem = @coolitems[key]
+	  @toolbar_data = @entries[key]       
+          add_entries_to_toolbar(@toolbar, @toolbar_data)
+          @coolitem.setControl(@toolbar)	  	  
+          # TESTING!!!!
+          @p = @toolbar.computeSize(Swt::SWT::DEFAULT, Swt::SWT::DEFAULT)
+          @point = @coolitem.computeSize(@p.x, @p.y)
+          @coolitem.setPreferredSize(@point)
+          #p @coolitem.getBounds.to_s
+          @coolitem.setMinimumSize(@point)
+          p @coolitem.getBounds.to_s          
+          #@coolitem.setSize(@point.x, @point.y)
+          @sizes << @point
+          # END TESTING!!!!
+	}
 	
         #puts "ApplicationSWT::ToolBar initialize took #{Time.now - s}s"
-        @toolbar_bar1.pack
-        @toolbar_bar2.pack
-	      @coolbar_item1.setControl(@toolbar_bar1)
-        @coolbar_item2.setControl(@toolbar_bar2)
         
-        # TESTING!!!!
-        @ctrl = @coolbar_item1.getControl()
-        @pt = @ctrl.computeSize(Swt::SWT::DEFAULT, Swt::SWT::DEFAULT)
-        @coolbar_item1.setSize(@pt)
-        @coolbar_item2.setSize(@pt)
-        # END TESTING!!!!
+	#@coolbar.setLocked(true)
+	
+	p @sizes.to_s
+	@coolbar.setItemLayout([0,1], [nil], @sizes)
+	@coolbar.pack()
       end
 
       def create_toolbar(composite)
-        @toolbar = Swt::Widgets::ToolBar.new(@coolbar, Swt::SWT::FLAT | Swt::SWT::BORDER)
+        @toolbar = Swt::Widgets::ToolBar.new(composite, Swt::SWT::FLAT)
         @toolbar.set_visible(false)
-	      @toolbar.setLayout(Swt::Layout::FormLayout.new)
-	      @toolbar.setLayoutData(Swt::Layout::FormData.new)
+	@toolbar.setLayout(Swt::Layout::FormLayout.new)
+	@toolbar.setLayoutData(Swt::Layout::FormData.new)
         @toolbar
       end
       
       def show
-        @toolbar_bar1.set_visible(true)
-        @toolbar_bar2.set_visible(true)
+        @toolbars.each_value { |toolbar| toolbar.set_visible(true) }
         @coolbar.set_visible(true)
       end
 
       def hide
         #@toolbar_bar.set_visible(false)
 	#@toolbar_bar.setRedraw(true)
-	@toolbar_bar1.dispose()
-	@toolbar_bar2.dispose()
-  @coolbar.dispose()
+	@toolbars.each_value { |toolbar| toolbar.dispose() }
+        @coolbar.dispose()
       end
 
       def close
         #@handlers.each {|obj, h| obj.remove_listener(h) }
-	@toolbar_bar1.dispose()
-	@toolbar_bar2.dispose()
+	hide
         @result
       end
 
-      def move(x, y)
-        @toolbar_bar.setLocation(x, y)
-      end
+      #def move(x, y)
+      #  @toolbar_bar.setLocation(x, y)
+      #end
 
       private
 
@@ -122,12 +155,14 @@ module Redcar
           elsif entry.is_a?(Redcar::ToolBar::Item)
             item = Swt::Widgets::ToolItem.new(toolbar, Swt::SWT::PUSH)
             item.setEnabled(true)
-            item.setImage(Swt::Graphics::Image.new(ApplicationSWT.display, ToolBar.icons[entry.icon] || entry.icon || DEFAULT_ICON))
+#            item.setImage(Swt::Graphics::Image.new(ApplicationSWT.display, ToolBar.icons[entry.icon] || entry.icon || DEFAULT_ICON))
+            item.setImage(Swt::Graphics::Image.new(ApplicationSWT.display, ToolBar.icons[entry.icon] || entry.icon || ToolBar.icons[:search] ))
             connect_command_to_item(item, entry)
           else
             raise "unknown object of type #{entry.class} in toolbar"
           end
         end
+        toolbar.pack
       end
 
       class SelectionListener
