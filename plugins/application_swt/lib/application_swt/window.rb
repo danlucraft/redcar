@@ -127,7 +127,7 @@ module Redcar
 	if Redcar.app.show_toolbar?
 		@toolbar_controller = ApplicationSWT::ToolBar.new(self, Redcar.app.main_toolbar, Swt::SWT::HORIZONTAL | Swt::SWT::BORDER)
     @toolbar_controller.show()
-		@toolbar_height = 25
+		@toolbar_height = @toolbar_controller.height.to_i
 	else
     @toolbar_controller.hide() if @toolbar_controller
 		@toolbar_height = 0
@@ -261,7 +261,7 @@ module Redcar
 
         @sash.layout_data = Swt::Layout::FormData.new.tap do |d|
           d.left = Swt::Layout::FormAttachment.new(0, 0)
-          d.top =  Swt::Layout::FormAttachment.new(0, TOOLBAR_HEIGHT)
+          d.top =  Swt::Layout::FormAttachment.new(0, 5 + TOOLBAR_HEIGHT)
           d.bottom = Swt::Layout::FormAttachment.new(100, 0)
         end
 

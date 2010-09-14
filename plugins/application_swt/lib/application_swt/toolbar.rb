@@ -41,17 +41,17 @@ module Redcar
 
       def initialize(window, toolbar_model, options={})
         s = Time.now
-	@x = @y = 0
-        @toolbars = {}
+	      @toolbars = {}
         @coolitems = {}
         @sizes = []
 	@entries = Hash.new{|hash, key| hash[key] = Array.new;}
         @window = window
-        @coolbar = Swt::Widgets::CoolBar.new(window.shell, Swt::SWT::FLAT | Swt::SWT::BORDER)
-	@coolbar.setLayout(Swt::Layout::FormLayout.new())
+        @coolbar = Swt::Widgets::CoolBar.new(window.shell, Swt::SWT::FLAT | Swt::SWT::HORIZONTAL)
+	#@coolbar.setLayout(Swt::Layout::FormLayout.new())
 	@layout_data = Swt::Layout::FormData.new.tap do |d|
           d.left = Swt::Layout::FormAttachment.new(0, 0)
 	  d.right = Swt::Layout::FormAttachment.new(100, 0)
+	  d.top = Swt::Layout::FormAttachment.new(0, 0)
 	end
 	@coolbar.setLayoutData(@layout_data)
 	return unless toolbar_model
@@ -73,33 +73,28 @@ module Redcar
 	  @entries[@name] << entry
         end
 	
-	@x = @y = 0
-	
 	@toolbars.each_key { |key|
           @toolbar = @toolbars[key]
 	  @coolitem = @coolitems[key]
 	  @toolbar_data = @entries[key]       
+	  @coolitem.setControl(@toolbar)	  	  
+          
           add_entries_to_toolbar(@toolbar, @toolbar_data)
-          @coolitem.setControl(@toolbar)	  	  
           # TESTING!!!!
           @p = @toolbar.computeSize(Swt::SWT::DEFAULT, Swt::SWT::DEFAULT)
           @point = @coolitem.computeSize(@p.x, @p.y)
           @coolitem.setPreferredSize(@point)
-          #p @coolitem.getBounds.to_s
-          @coolitem.setMinimumSize(@point)
-          p @coolitem.getBounds.to_s          
-          #@coolitem.setSize(@point.x, @point.y)
+          #@coolitem.setMinimumSize(@point)
+          @coolitem.setSize(@point.x, @point.y)
           @sizes << @point
           # END TESTING!!!!
 	}
 	
         #puts "ApplicationSWT::ToolBar initialize took #{Time.now - s}s"
         
-	#@coolbar.setLocked(true)
-	
-	p @sizes.to_s
-	@coolbar.setItemLayout([0,1], [nil], @sizes)
-	@coolbar.pack()
+	    #@coolbar.setLocked(true)
+          #@coolbar.setItemLayout(@coolbar.getItemOrder, [nil], @sizes)
+        	@coolbar.pack()
       end
 
       def create_toolbar(composite)
@@ -131,6 +126,14 @@ module Redcar
       #def move(x, y)
       #  @toolbar_bar.setLocation(x, y)
       #end
+
+      def height
+        @h = 0
+        @coolbar.getItems.each do |i|
+          @h = ( @h > i.getSize.y ) ? @h : i.getSize.y
+        end
+        @h
+      end
 
       private
 
