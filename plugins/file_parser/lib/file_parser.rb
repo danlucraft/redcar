@@ -5,6 +5,14 @@ module Redcar
 
     attr_accessor :root_path, :excluded_dirs, :excluded_files, :excluded_patterns, :skip_types
 
+    def self.measure(message, &block)
+      require 'benchmark'
+      r = nil
+      b = Benchmark.measure { r = yield }
+      puts message + ": " + b.to_s
+      r
+    end
+
     def initialize(root_path, options = {})
       self.root_path = root_path.to_s
       self.excluded_dirs = options['excluded_dirs'] || ['.git', '.svn', '.redcar']
