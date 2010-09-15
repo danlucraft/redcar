@@ -4,6 +4,8 @@ Version 0.6 (TBD)
 Enhancements
 
  * Now we have a toolbar in the Redcar (Alex Lourie)
+ * Line Tools advanced editing commands (Delisa Mason)
+ * Added a 'Open Directory as new project' context menu item (Delisa Mason)
 
 New internal APIs
 
