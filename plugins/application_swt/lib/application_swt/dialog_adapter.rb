@@ -152,6 +152,7 @@ module Redcar
       
       def file_dialog(type, options)
         dialog = Swt::Widgets::FileDialog.new(parent_shell, type)
+        dialog.setText("Save File");
         if options[:filter_path]
 	  dialog.setText("Save File As") if type == Swt::SWT::SAVE
 	  dialog.setText("Open File") if type == Swt::SWT::OPEN

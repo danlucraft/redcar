@@ -4,7 +4,7 @@ module Redcar
     def self.enabled?
       Redcar::StripTrailingSpaces.storage['enabled']
     end
-
+    
     def self.enabled=(bool)
       Redcar::StripTrailingSpaces.storage['enabled'] = bool
     end
@@ -35,7 +35,10 @@ module Redcar
           doc.controllers(Redcar::AutoIndenter::DocumentController).first.ignore do
             doc.compound do
               doc.line_count.times do |l|
-                doc.replace_line(l) { |line_text| line_text.rstrip }
+                doc.replace_line(l) { |line_text|
+                  stripped = line_text.rstrip
+                  stripped.length > 0 ? stripped : line_text
+                }
               end
             end
           end
