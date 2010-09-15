@@ -13,6 +13,11 @@ require 'application/dialogs/filter_list_dialog'
 require 'application/event_spewer'
 require 'application/keymap'
 require 'application/keymap/builder'
+require 'application/toolbar'
+require 'application/toolbar/item'
+require 'application/toolbar/lazy_toolbar'
+require 'application/toolbar/builder'
+require 'application/toolbar/builder/group'
 require 'application/menu'
 require 'application/menu/item'
 require 'application/menu/lazy_menu'
@@ -71,7 +76,7 @@ module Redcar
       ]
     end
     
-    attr_reader :clipboard, :keymap, :menu, :history, :task_queue
+    attr_reader :clipboard, :keymap, :menu, :toolbar, :history, :task_queue, :show_toolbar
     
     # Create an application instance with a Redcar::Clipboard and a Redcar::History.
     def initialize
@@ -81,6 +86,14 @@ module Redcar
       create_history
       @event_spewer = EventSpewer.new
       @task_queue   = TaskQueue.new
+      
+      # Don't show the toolbar by default on Mac OS X
+      if Redcar.platform == :osx
+        Application.storage['show_toolbar'] = false
+      end
+      
+      # Otherwise, use previous setting
+      @show_toolbar = !!Application.storage['show_toolbar']
     end
     
     def events
@@ -109,6 +122,7 @@ module Redcar
       notify_listeners(:new_window, new_window)
       attach_window_listeners(new_window)
       new_window.refresh_menu
+      new_window.refresh_toolbar
       new_window.show
       set_focussed_window(new_window)
       #puts "App#new_window took #{Time.now - s}s"
@@ -137,6 +151,7 @@ module Redcar
       @storage ||= begin
          storage = Plugin::Storage.new('application_plugin')
          storage.set_default('stay_resident_after_last_window_closed', false)
+         storage.set_default('show_toolbar', true)
          storage
       end
     end
@@ -187,6 +202,13 @@ module Redcar
       notify_listeners(:refresh_menu)
     end
     
+    # Redraw the main toolbar, reloading all the ToolBars and Keymaps from the plugins.
+    def refresh_toolbar!
+      @main_toolbar = nil
+      windows.each {|window| window.refresh_toolbar }
+      controller.refresh_toolbar
+    end
+    
     # Generate the main menu by combining menus from all plugins.
     #
     # @return [Redcar::Menu]
@@ -197,6 +219,19 @@ module Redcar
           menu.merge(object.menus)
         end
         menu
+      end
+    end
+    
+    # Generate the toolbar combining toolbars from all plugins.
+    #
+    # @return [Redcar::ToolBar]
+    def main_toolbar
+      @main_toolbar ||= begin
+        toolbar = ToolBar.new
+        Redcar.plugin_manager.objects_implementing(:toolbars).each do |object|
+          toolbar.merge(object.toolbars)
+        end
+        toolbar
       end
     end
     
@@ -300,6 +335,20 @@ module Redcar
     
     def create_history
       @history = Command::History.new
+    end
+
+    public 
+
+    def show_toolbar?
+      @show_toolbar
+    end
+
+    def show_toolbar=(bool)
+      Application.storage['show_toobar'] = @show_toolbar = bool
+    end
+
+    def toggle_show_toolbar
+      Application.storage['show_toolbar'] = @show_toolbar = !Application.storage['show_toolbar']
     end
   end
 end
