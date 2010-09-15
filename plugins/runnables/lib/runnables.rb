@@ -9,7 +9,8 @@ module Redcar
     def self.run_process(path, command, title, output = "tab")
       window = Redcar.app.focussed_window
       if command.include?("__PARAMS__")
-        msg = command.gsub("__PARAMS__","____")
+        msg = command.gsub("__PARAMS__","__?__")
+        msg = "" if msg == "__?__"
         msg_title = "Enter Command Parameters"
         out = Redcar::Application::Dialog.input(msg_title,msg)
         params = out[:value] || ""
@@ -69,6 +70,16 @@ module Redcar
         end
       end
     end
+    
+    def self.runnables_context_menus(node)
+      Menu::Builder.build do
+        if not node.nil? and node.is_a?(Runnable)
+          item("Run with parameters") do
+            AppendParamsAndRunCommand.new(node).run
+          end
+        end
+      end
+    end
 
     class TreeMirror
       include Redcar::Tree::Mirror
@@ -90,6 +101,14 @@ module Redcar
       def changed?
         !last_loaded || last_loaded < last_updated
       end
+      
+      def custom_command
+        custom_info = {}
+        custom_info["command"] = '__PARAMS__'
+        custom_info["output"] = 'tab'
+        custom = Runnable.new("Custom Command",@project.path,custom_info)
+        [custom]
+      end
 
       def load
         groups = {}
@@ -104,7 +123,7 @@ module Redcar
 
         if groups.any?
           groups.map do |name, runnables|
-            RunnableGroup.new(name,runnables)
+            RunnableGroup.new(name,@project.path,runnables)
           end
         else
           [HelpItem.new]
@@ -116,7 +135,7 @@ module Redcar
       end
 
       def top
-        load
+        custom + load
       end
     end
 
@@ -131,11 +150,11 @@ module Redcar
     class RunnableGroup
       include Redcar::Tree::Mirror::NodeMirror
 
-      def initialize(name,runnables)
+      def initialize(name,path,runnables)
         @name = name
         if runnables.any?
           @children = runnables.map do |runnable|
-            Runnable.new(runnable["name"], runnable)
+            Runnable.new(runnable["name"],path,runnable)
           end
         end
       end
@@ -168,13 +187,18 @@ module Redcar
     class Runnable
       include Redcar::Tree::Mirror::NodeMirror
 
-      def initialize(name, info)
+      def initialize(name,path,info)
         @name = name
         @info = info
+        @path = path
       end
 
       def text
         @name
+      end
+      
+      def path
+        @path
       end
 
       def leaf?
@@ -216,6 +240,24 @@ module Redcar
       def initialize(project)
         @project = project
       end
+      
+      def right_click(tree, node)
+        controller = self
+        menu = Menu.new
+        Redcar.plugin_manager.objects_implementing(:runnables_context_menus).each do |object|
+          case object.method(:runnables_context_menus).arity
+          when 1
+            menu.merge(object.runnables_context_menus(node))
+          when 2
+            menu.merge(object.runnables_context_menus(tree, node))
+          when 3
+            menu.merge(object.runnables_context_menus(tree, node, controller))
+          else
+            puts("Invalid runnables_context_menus hook detected in "+object.class.name)
+          end
+        end
+        Application::Dialog.popup_menu(menu, :pointer)
+      end
 
       def activated(tree, node)
         case node
@@ -227,6 +269,18 @@ module Redcar
           tab.title = "Runnables Help"
           tab.focus
         end
+      end
+    end
+    
+    class AppendParamsAndRunCommand < Redcar::Command
+      def initialize(node)
+        @node = node
+      end
+      
+      def execute
+        command = @node.command
+        command = "#{command} __PARAMS__" unless command.include?('__PARAMS__')
+        Runnables.run_process(@node.path, command, @node.text, @node.output)
       end
     end
 
