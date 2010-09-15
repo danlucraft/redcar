@@ -1,3 +1,14 @@
+Version 0.6 (TBD)
+==============================
+
+Enhancements
+
+ * Now we have a toolbar in the Redcar (Alex Lourie)
+
+New internal APIs
+
+ * Toolbar items APIs (Alex Lourie)
+
 Version 0.5 (7 September 2010)
 ==============================
 
