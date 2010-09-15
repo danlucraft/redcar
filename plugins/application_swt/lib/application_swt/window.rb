@@ -330,9 +330,9 @@ module Redcar
       end
       
       def reset_sash_height
-        @sash.layout_data.top =  Swt::Layout::FormAttachment.new(0, 5 + @toolbar_height.to_i)
-        @left_composite.layout_data.top = Swt::Layout::FormAttachment.new(0, @toolbar_height.to_i)
-        @right_composite.layout_data.top = Swt::Layout::FormAttachment.new(0, @toolbar_height.to_i)
+        @sash.layout_data.top =  Swt::Layout::FormAttachment.new(0, @toolbar_height.to_i)
+        @left_composite.layout_data.top = Swt::Layout::FormAttachment.new(0, 5 + @toolbar_height.to_i)
+        @right_composite.layout_data.top = Swt::Layout::FormAttachment.new(0, 5 + @toolbar_height.to_i)
 	@shell.layout        
         @shell.redraw
       end
