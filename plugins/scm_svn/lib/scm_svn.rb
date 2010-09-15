@@ -65,7 +65,7 @@ module Redcar
           [
             :pull,:commit ,:index_delete, :index_add,
             :index_ignore ,:index_revert, :index_save,
-            :index_unsave ,:index
+            :index_unsave ,:remote_init , :index
           ]
         end
 
@@ -87,6 +87,21 @@ module Redcar
             #  SVNDepth::INFINITY,
             #  true # allow unversioned files to exist already in directory
             #)
+          end
+        end
+
+        def remote_init(path)
+          checkout_dir = Application::Dialog.open_directory({})
+          if checkout_dir
+            client_manager.getUpdateClient().doCheckout(
+              SVNURL.parseURIEncoded(path),
+              Java::JavaIo::File.new(checkout_dir),
+              SVNRevision::HEAD,
+              SVNRevision::HEAD,
+              SVNDepth::INFINITY,
+              true # allow unversioned files to exist already in directory
+            )
+            Project::Manager.open_project_for_path(checkout_dir)
           end
         end
 
@@ -330,13 +345,9 @@ module Redcar
           t[:index_unsave] = "Remove from commit"
           t[:indexed_changes] = "Uncommitted changes"
           t[:unindexed_changes] = "External files"
-          if repository?(@path)
-            t[:push] = "Commit changes",
-            t[:pull] = "Update working copy"
-          else
-            t[:push] = "Commit changes",
-            t[:pull] = "Checkout repository"
-          end
+          t[:remote_init] = "Checkout Subversion Repository"
+          t[:push] = "Commit changes",
+          t[:pull] = "Update working copy"
           t
         end
 

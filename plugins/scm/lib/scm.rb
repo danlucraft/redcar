@@ -21,15 +21,15 @@ require 'scm/scm_commits_mirror/commit'
 module Redcar
   module Scm
     ICONS_DIR = File.expand_path(File.join(File.dirname(__FILE__), %w{.. icons}))
-    
+
     class Manager
       extend Redcar::HasSPI
-      
+
       def self.sensitivities
         [
           Sensitivity.new(:open_commit_tab, Redcar.app, false, [:tab_focussed]) do |tab|
-            tab and 
-            tab.is_a?(EditTab) and 
+            tab and
+            tab.is_a?(EditTab) and
             tab.edit_view.document.mirror.is_a?(Scm::CommitMirror)
           end,
           Sensitivity.new(:open_scm, Redcar.app, false, [:window_focussed]) do |window|
@@ -43,20 +43,23 @@ module Redcar
         osx = Keymap.build("main", :osx) do
           link "Cmd+Shift+C", Scm::CommitMirror::SaveCommand
         end
-        
+
         linwin = Keymap.build("main", [:linux, :windows]) do
           link "Ctrl+Shift+C", Scm::CommitMirror::SaveCommand
         end
-        
+
         [linwin, osx]
       end
-      
+
       def self.menus
         Menu::Builder.build do
           sub_menu "Project" do
             group(:priority => 10) do
               separator
               sub_menu "Source Control" do
+                Scm::Manager.modules_with_remote_init.sort {|a, b| a.repository_type <=> b.repository_type}.each do |m|
+                  item (m.translations[:remote_init]) {Scm::RemoteInitCommand.new.run(:module => m)}
+                end
                 item "Toggle Changes Tree", :command => Scm::ToggleScmTreeCommand, :value => [:commit, [Scm::ScmChangesMirror, Scm::ScmChangesController]]
                 item "Toggle Commits Tree", :command => Scm::ToggleScmTreeCommand, :value => [:push, [Scm::ScmCommitsMirror, Scm::ScmCommitsController]]
                 separator
@@ -67,36 +70,36 @@ module Redcar
           end
         end
       end
-      
+
       def self.project_repositories
         @project_repositories ||= {}
       end
-      
+
       # should we print debugging messages? this can get pretty verbose
       def self.debug
         ARGV.include?('--debug')
       end
-      
+
       def self.modules
         @modules ||= begin
           mods = []
           puts "Loading Redcar SCM modules..." if debug
-          
+
           Redcar.plugin_manager.objects_implementing(:scm_module).each do |i|
             puts "  Found #{i.name}." if debug
             object = i.scm_module
-            
+
             if object.supported?
               mods.push(object)
             elsif debug
               puts "    but discarding because it isn't supported on the current system."
             end
           end
-          
+
           mods
         end
       end
-      
+
       # Returns a list of instances of SCM modules. This list has already been
       # filtered for invalid modules.
       def self.modules_instance
@@ -112,36 +115,40 @@ module Redcar
           end
         }.find_all {|m| not m.nil?}
       end
-      
+
       def self.modules_with_init
         modules_instance.find_all {|m| m.supported_commands.include? :init}
       end
-      
+
+      def self.modules_with_remote_init
+        modules_instance.find_all {|m| m.supported_commands.include? :remote_init}
+      end
+
       def self.project_loaded(project)
         # for now we only want to attempt to handle the local case
         return if project.remote?
-        
+
         puts "#{modules.count} SCM modules loaded." if debug
-        
+
         repo = modules_instance.find do |m|
           puts "Checking if #{project.path} is a #{m.repository_type} repository..." if debug
           m.repository?(project.path)
         end
-        
+
         # quit if we can't find something to handle this project
         return if repo.nil?
-        
+
         puts "  Yes it is!" if debug
-        
+
         prepare(project, repo)
       end
-      
+
       def self.prepare(project, repo)
         start = Time.now
         begin
           # associate this repository with a project internally
           project_repositories[project] = {'repo' => repo}
-          
+
           # load the repository and inject adapter if there is one
           repo.load(project.path)
           adapter = repo.adapter(project.adapter)
@@ -149,34 +156,34 @@ module Redcar
             puts "Attaching a custom adapter to the project." if debug
             project.adapter = adapter
           end
-          
+
           project_repositories[project]['trees'] = []
         rescue
           # cleanup
           info = project_repositories.delete project
-          
+
           puts "*** Error loading SCM: " + $!.message
           puts $!.backtrace
         end
-        
+
         puts "scm start took #{Time.now - start}s (included in project start time)" if debug
       end
-      
+
       def self.project_closed(project)
         # disassociate this project with any repositories
         info = project_repositories.delete project
         return if info.nil?
-        
+
         info['trees'].each {|t| project.window.treebook.remove_tree(t)}
       end
-      
+
       def self.refresh_trees
         project_repositories.each do |project, info|
           project.refresh
           info['trees'].each {|t| t.refresh}
         end
       end
-      
+
       def self.project_context_menus(tree, node, controller)
         # Search for the current project
         project = Project::Manager.in_window(Redcar.app.focussed_window)
@@ -185,7 +192,7 @@ module Redcar
         end
         repo_info = project_repositories[project]
         init_modules = Redcar::Scm::Manager.modules_with_init
-        
+
         Menu::Builder.build do
           if not project.nil?
             if repo_info.nil? and init_modules.length > 0
@@ -194,12 +201,12 @@ module Redcar
                 separator
                 sub_menu "Create Repository From Project" do
                   init_modules.sort {|a, b| a.repository_type <=> b.repository_type}.each do |m|
-                    item(m.translations[:init]) do 
+                    item(m.translations[:init]) do
                       m.init!(project.path)
                       project.refresh
-                        
+
                       Redcar::Scm::Manager.prepare(project, m)
-                      
+
                       Application::Dialog.message_box("Created a new " + m.repository_type.capitalize + " repository in the root of your project.")
                     end
                   end
@@ -214,7 +221,7 @@ module Redcar
                 if repo.supported_commands.include?(:pull)
                   item (repo.translations[:pull]) do
                     repo.pull!
-                    
+
                     # refresh tree views
                     project.refresh
                     repo_info['trees'].each {|t| t.refresh}
@@ -226,7 +233,7 @@ module Redcar
                       action = lambda do
                         begin
                           repo.pull!(target)
-                          
+
                           # refresh tree views
                           project.refresh
                           repo_info['trees'].each {|t| t.refresh}
@@ -235,7 +242,7 @@ module Redcar
                           puts $!.backtrace
                         end
                       end
-                      
+
                       item target, &action
                     end
                   end
@@ -247,7 +254,7 @@ module Redcar
                       action = lambda {
                         begin
                           repo.switch!(branch)
-                          
+
                           # refresh tree views
                           project.refresh
                           repo_info['trees'].each {|t| t.refresh}
@@ -256,7 +263,7 @@ module Redcar
                           puts $!.backtrace
                         end
                       }
-                      
+
                       item branch, :type => :radio, :active => (branch == current), &action
                     end
                   end
@@ -266,18 +273,18 @@ module Redcar
           end
         end
       end
-      
+
       def self.open_commit_tab(repo, change=nil)
         tab = Redcar.app.focussed_window.new_tab(Redcar::EditTab)
-        edit_view = tab.edit_view  
+        edit_view = tab.edit_view
         mirror = Scm::CommitMirror.new(repo, change)
         edit_view.document.mirror = mirror
         edit_view.grammar = "Diff"
         tab.focus
-        
+
         mirror.add_listener(:change) do
           tab.close
-          
+
           project = Project::Manager.focussed_project
           repo_info = project_repositories[project]
           repo_info['trees'].each {|t| t.refresh}
