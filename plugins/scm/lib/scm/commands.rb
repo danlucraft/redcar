@@ -33,8 +33,8 @@ module Redcar
 
     class RemoteInitCommand < Command
       def execute(options)
-        raise "No scm module given for remote init" unless options[:module]
-        m = options[:module]
+        raise "No scm module given for remote init" unless options[:value]
+        m = options[:value]
         result = Application::Dialog.input(m.translations[:remote_init],"Repository Path:")
         m.remote_init(result[:value]) if result[:value]
       end

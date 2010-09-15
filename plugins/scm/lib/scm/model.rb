@@ -60,7 +60,7 @@ module Redcar
       def translations
         {
           :init => "Initialise " + repository_type.capitalize,
-          :remote_init => "Initialize from remote repository",
+          :remote_init => "Initialize "+ repository_type.capitalize+" from remote repository",
           :push => "Push Changesets",
           :unpushed_commits => "Unpushed commits",
           :pull => "Pull Changesets",
@@ -90,8 +90,8 @@ module Redcar
         nil
       end
 
-      # REQUIRED for :remote_init. Initialize a non-distributed VCS from
-      # a url or file path
+      # REQUIRED for :remote_init. Initialize a repository from
+      # a url or file path, like SVN 'checkout' or git 'clone'
       # Returns false on error
       def remote_init(repo_path)
         raise "Scm.remote_init not implemented." if supported_commands.include?(:remote_init)

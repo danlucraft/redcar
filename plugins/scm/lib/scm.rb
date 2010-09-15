@@ -58,8 +58,9 @@ module Redcar
               separator
               sub_menu "Source Control" do
                 Scm::Manager.modules_with_remote_init.sort {|a, b| a.repository_type <=> b.repository_type}.each do |m|
-                  item (m.translations[:remote_init]) {Scm::RemoteInitCommand.new.run(:module => m)}
+                  item m.translations[:remote_init], :command => Scm::RemoteInitCommand, :value => m
                 end
+                separator
                 item "Toggle Changes Tree", :command => Scm::ToggleScmTreeCommand, :value => [:commit, [Scm::ScmChangesMirror, Scm::ScmChangesController]]
                 item "Toggle Commits Tree", :command => Scm::ToggleScmTreeCommand, :value => [:push, [Scm::ScmCommitsMirror, Scm::ScmCommitsController]]
                 separator
