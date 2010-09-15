@@ -686,7 +686,8 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class ToggleToolbar < Redcar::EditTabCommand
+    class ToggleToolbar < Command
+
       def execute
         Redcar.app.toggle_show_toolbar
         Redcar.app.refresh_toolbar!
@@ -876,13 +877,13 @@ Redcar.environment: #{Redcar.environment}
 
     def self.toolbars
       ToolBar::Builder.build do
-        item "New File", :command => NewCommand, :icon => :new
-        item "Open File", :command => Project::FileOpenCommand, :icon => :open
-        item "Open Directory", :command => Project::DirectoryOpenCommand, :icon => :open_dir
-        item "Save File", :command => Project::FileSaveCommand, :icon => :save
-        item "Save File As", :command => Project::FileSaveAsCommand, :icon => :save_as
-        item "Undo", :command => UndoCommand, :icon => :undo
-        item "Redo", :command => RedoCommand, :icon => :redo
+        item "New File", :command => NewCommand, :icon => :new, :barname => :core
+        item "Open File", :command => Project::FileOpenCommand, :icon => :open, :barname => :core
+        item "Open Directory", :command => Project::DirectoryOpenCommand, :icon => :open_dir, :barname => :core
+        item "Save File", :command => Project::FileSaveCommand, :icon => :save, :barname => :core
+        item "Save File As", :command => Project::FileSaveAsCommand, :icon => :save_as, :barname => :core
+        item "Undo", :command => UndoCommand, :icon => :undo, :barname => :core
+        item "Redo", :command => RedoCommand, :icon => :redo, :barname => :core
       end
 
     end

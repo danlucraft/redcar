@@ -40,19 +40,11 @@ module Redcar
       entries.length
     end
     
-    # Fetch the sub_toolbar with the given name
-    #
-    # @param [String]
-    # @return [ToolBar]
-    def sub_toolbar(text)
-      detect {|e| e.text == text and e.is_a?(ToolBar) }
-    end
-    
     def entry(text)
       detect {|e| e.text == text }
     end
     
-    # Append items and sub_toolbars using the same syntax as ToolBar::Builder
+    # Append items using the same syntax as ToolBar::Builder
     def build(&block)
       ToolBar::Builder.new(self, &block)
     end

@@ -128,10 +128,7 @@ module Redcar
 
     def refresh_toolbar
       if Redcar.platform == :osx
-        old_toolbar_bar = @fake_shell.toolbar_bar
         fake_toolbar_controller = ApplicationSWT::ToolBar.new(FakeWindow.new(@fake_shell), Redcar.app.main_toolbar, Swt::SWT::FLAT)
-        fake_shell.toolbar_bar = fake_toolbar_controller.toolbar_bar
-        old_toolbar_bar.dispose if old_toolbar_bar
       end
     end
 

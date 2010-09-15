@@ -3,28 +3,22 @@ module Redcar
   class ApplicationSWT
     class ToolBar
 
-      FILE_DIR = File.join(Redcar.root, %w(share icons))
+      ICONS_DIR = File.join(Redcar.root, %w(share icons))
       DEFAULT_ICON = File.join(Redcar.root, %w(share icons document.png))
 
 
       def self.icons
         @icons = {
-          :new => File.join(FILE_DIR, "document-text.png"),
-          :open => File.join(FILE_DIR, "folder-open-document.png"),
-          #:open_dir => File.join(FILE_DIR, "blue-folder-open.png"),
-          :open_dir => File.join(FILE_DIR, "blue-folder-horizontal-open.png"),
-          :save => File.join(FILE_DIR, "disk.png"),
-          :save_as => File.join(FILE_DIR, "disk--plus.png"),
-          #:save_all => File.join(FILE_DIR, "save_all.png"),
-          :undo => File.join(FILE_DIR, "arrow-circle-225-left.png"),
-          :redo => File.join(FILE_DIR, "arrow-circle-315.png"),
-          :search => File.join(FILE_DIR, "binocular.png")
+          :new => File.join(ICONS_DIR, "document-text.png"),
+          :open => File.join(ICONS_DIR, "folder-open-document.png"),
+          :open_dir => File.join(ICONS_DIR, "blue-folder-horizontal-open.png"),
+          :save => File.join(ICONS_DIR, "disk.png"),
+          :save_as => File.join(ICONS_DIR, "disk--plus.png"),
+          #:save_all => File.join(ICONS_DIR, "save_all.png"),
+          :undo => File.join(ICONS_DIR, "arrow-circle-225-left.png"),
+          :redo => File.join(ICONS_DIR, "arrow-circle-315.png"),
+          :search => File.join(ICONS_DIR, "binocular.png")
         }
-      end
-
-
-      def self.types
-        @types = { :check => Swt::SWT::CHECK, :radio => Swt::SWT::RADIO }
       end
 
       def self.items
@@ -37,19 +31,15 @@ module Redcar
 
       attr_reader :coolbar, :toolbar, :coolitem, :toolbars, :coolitems
 
-      def self.toolbar_types
-        [Swt::SWT::FLAT, Swt::SWT::HORIZONTAL]
-      end
-
       def initialize(window, toolbar_model, options={})
         s = Time.now
 	      @toolbars = {}
-        @coolitems = {}
-        @entries = Hash.new{|hash, key| hash[key] = Array.new;}
+ 	@coolitems = {} 
+        @entries = Hash.new{|hash, key| hash[key] = Array.new}
         @coolbar = Swt::Widgets::CoolBar.new(window.shell, Swt::SWT::FLAT | Swt::SWT::HORIZONTAL)
         return unless toolbar_model
       	toolbar_model.each do |entry|
-          @name = entry.barname || :core
+          @name = entry.barname || :new
           if not @toolbars[@name]
             if @name == :core
 	            @coolitem = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::FLAT, 0)   	
@@ -57,8 +47,7 @@ module Redcar
    	          @coolitem = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::FLAT)   	
             end
             
-            @toolbar = create_toolbar(@coolbar)
-            @toolbars[@name] = @toolbar
+            @toolbars[@name] = create_toolbar(@coolbar)
             @coolitems[@name] = @coolitem
 	        else
 	          @toolbar = @toolbars[@name]
@@ -171,7 +160,6 @@ module Redcar
             item.enabled = value
           end
         end
-        #@handlers << [entry.command, h]
         if not entry.command.active?
           item.enabled = false
         end
