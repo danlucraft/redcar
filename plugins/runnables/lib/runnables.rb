@@ -19,7 +19,7 @@ module Redcar
       end
       controller = CommandOutputController.new(path, command, title)
       if output == "none"
-        controller.run        
+        controller.run
       else
         if tab = previous_tab_for(command)
           tab.html_view.controller.run
@@ -31,7 +31,7 @@ module Redcar
           tab = Redcar.app.focussed_window.new_tab(HtmlTab)
           tab.html_view.controller = controller
           tab.focus
-        end        
+        end
       end
     end
     
@@ -59,6 +59,12 @@ module Redcar
             item "Run Tab",   Runnables::RunEditTabCommand
           }
         end
+      end
+    end
+    
+    def self.toolbars
+      ToolBar::Builder.build do
+        item "Execute File", :command => Runnables::RunEditTabCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "control.png"), :barname => :runnables
       end
     end
     
@@ -253,7 +259,7 @@ module Redcar
       end
       
       def execute
-        project = Project::Manager.in_window(win)        
+        project = Project::Manager.in_window(win)
         file_mappings.each do |file_mapping|
           regex = Regexp.new(file_mapping["regex"])
           if tab.edit_view.document.mirror.path =~ regex
