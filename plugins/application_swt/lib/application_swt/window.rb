@@ -6,6 +6,8 @@ module Redcar
 
       SASH_WIDTH = 5
       TREEBOOK_WIDTH = 200
+      TOOLBAR_HEIGHT = 25
+      @toolbar_height = 30
 
       class ShellListener
         include org.eclipse.swt.events.ShellListener
@@ -49,6 +51,7 @@ module Redcar
       def add_listeners
         @window.add_listener(:show,          &method(:show))
         @window.add_listener(:refresh_menu,  &method(:refresh_menu))
+        @window.add_listener(:refresh_toolbar,  &method(:refresh_toolbar))
         @window.add_listener(:popup_menu,    &method(:popup_menu))
         @window.add_listener(:popup_menu_with_numbers, &method(:popup_menu_with_numbers))
         @window.add_listener(:title_changed, &method(:title_changed))
@@ -118,6 +121,18 @@ module Redcar
         @menu_controller = ApplicationSWT::Menu.new(self, Redcar.app.main_menu, Redcar.app.main_keymap, Swt::SWT::BAR)
         shell.menu_bar = @menu_controller.menu_bar
         old_menu_bar.dispose if old_menu_bar
+      end
+      
+      def refresh_toolbar
+	if Redcar.app.show_toolbar?
+		@toolbar_controller = ApplicationSWT::ToolBar.new(self, Redcar.app.main_toolbar, Swt::SWT::HORIZONTAL | Swt::SWT::BORDER)
+    @toolbar_controller.show()
+		@toolbar_height = @toolbar_controller.height.to_i
+	else
+    @toolbar_controller.hide() if @toolbar_controller
+		@toolbar_height = 0
+	end
+	reset_sash_height
       end
       
       def set_icon
@@ -197,11 +212,13 @@ module Redcar
       def closed(_)
         @shell.close
         @menu_controller.close
+        @toolbar_controller.close
       end
 
       def dispose
         @shell.dispose
         @menu_controller.close
+        @toolbar_controller.close
       end
 
       attr_reader :right_composite, :left_composite, :tree_composite, :tree_layout, :tree_sash
@@ -244,7 +261,7 @@ module Redcar
 
         @sash.layout_data = Swt::Layout::FormData.new.tap do |d|
           d.left = Swt::Layout::FormAttachment.new(0, 0)
-          d.top =  Swt::Layout::FormAttachment.new(0, 0)
+          d.top =  Swt::Layout::FormAttachment.new(0, 5 + TOOLBAR_HEIGHT)
           d.bottom = Swt::Layout::FormAttachment.new(100, 0)
         end
 
@@ -266,14 +283,14 @@ module Redcar
         @left_composite.layout_data = Swt::Layout::FormData.new.tap do |l|
           l.left = Swt::Layout::FormAttachment.new(0, 5)
           l.right = Swt::Layout::FormAttachment.new(@sash, 0)
-          l.top = Swt::Layout::FormAttachment.new(0, 5)
+          l.top = Swt::Layout::FormAttachment.new(0, 5 + TOOLBAR_HEIGHT)
           l.bottom = Swt::Layout::FormAttachment.new(100, -5)
         end
 
         @right_composite.layout_data = Swt::Layout::FormData.new.tap do |d|
           d.left = Swt::Layout::FormAttachment.new(@sash, 0)
           d.right = Swt::Layout::FormAttachment.new(100, -5)
-          d.top = Swt::Layout::FormAttachment.new(0, 5)
+          d.top = Swt::Layout::FormAttachment.new(0, 5 + TOOLBAR_HEIGHT)
           d.bottom = Swt::Layout::FormAttachment.new(100, -5)
         end
 
@@ -311,6 +328,15 @@ module Redcar
         widths = [width]*@window.notebooks.length
       	@notebook_sash.setWeights(widths.to_java(:int))
       end
+      
+      def reset_sash_height
+        @sash.layout_data.top =  Swt::Layout::FormAttachment.new(0, @toolbar_height.to_i)
+        @left_composite.layout_data.top = Swt::Layout::FormAttachment.new(0, 5 + @toolbar_height.to_i)
+        @right_composite.layout_data.top = Swt::Layout::FormAttachment.new(0, 5 + @toolbar_height.to_i)
+	@shell.layout        
+        @shell.redraw
+      end
+      
     end
   end
 end
