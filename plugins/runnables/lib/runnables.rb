@@ -7,8 +7,16 @@ module Redcar
     TREE_TITLE = "Runnables"
 
     def self.run_process(path, command, title, output = "tab")
+      window = Redcar.app.focussed_window
+      if command.include?("__PARAMS__")
+        msg = command.gsub("__PARAMS__","____")
+        msg_title = "Enter Command Parameters"
+        out = Redcar::Application::Dialog.input(msg_title,msg)
+        params = out[:value] || ""
+        command = command.gsub("__PARAMS__",params)
+      end
       if Runnables.storage['save_project_before_running'] == true
-        Redcar.app.focussed_window.notebooks.each do |notebook|
+        window.notebooks.each do |notebook|
           notebook.tabs.each do |tab|
             case tab
             when EditTab
@@ -19,7 +27,7 @@ module Redcar
       end
       controller = CommandOutputController.new(path, command, title)
       if output == "none"
-        controller.run        
+        controller.run
       else
         if tab = previous_tab_for(command)
           tab.html_view.controller.run
@@ -28,13 +36,13 @@ module Redcar
           if output == "window"
             Redcar.app.new_window
           end
-          tab = Redcar.app.focussed_window.new_tab(HtmlTab)
+          tab = window.new_tab(HtmlTab)
           tab.html_view.controller = controller
           tab.focus
-        end        
+        end
       end
     end
-    
+
     def self.previous_tab_for(command)
       Redcar.app.all_tabs.detect do |t|
         t.respond_to?(:html_view) &&
@@ -61,10 +69,10 @@ module Redcar
         end
       end
     end
-    
+
     class TreeMirror
       include Redcar::Tree::Mirror
-      
+
       attr_accessor :last_loaded
 
       def initialize(project)
@@ -119,10 +127,10 @@ module Redcar
         storage
       end
     end
-    
+
     class RunnableGroup
       include Redcar::Tree::Mirror::NodeMirror
-      
+
       def initialize(name,runnables)
         @name = name
         if runnables.any?
@@ -131,48 +139,48 @@ module Redcar
           end
         end
       end
-      
+
       def leaf?
         false
       end
-      
+
       def text
         @name
       end
-      
+
       def icon
         :file
       end
-      
+
       def children
         @children
       end
     end
-    
+
     class HelpItem
       include Redcar::Tree::Mirror::NodeMirror
-      
+
       def text
         "No runnables (HELP)"
       end
     end
-    
+
     class Runnable
       include Redcar::Tree::Mirror::NodeMirror
-      
+
       def initialize(name, info)
         @name = name
         @info = info
       end
-      
+
       def text
         @name
       end
-      
+
       def leaf?
         @info["command"]
       end
-      
+
       def icon
         if leaf?
           File.dirname(__FILE__) + "/../icons/cog.png"
@@ -180,11 +188,11 @@ module Redcar
           :directory
         end
       end
-      
+
       def children
         []
       end
-      
+
       def command
         @info["command"]
       end
@@ -201,14 +209,14 @@ module Redcar
         end
       end
     end
-    
+
     class TreeController
       include Redcar::Tree::Controller
-      
+
       def initialize(project)
         @project = project
       end
-      
+
       def activated(tree, node)
         case node
         when Runnable
@@ -221,7 +229,7 @@ module Redcar
         end
       end
     end
-    
+
     class ShowRunnables < Redcar::Command
       def execute
         if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
@@ -237,12 +245,12 @@ module Redcar
         end
       end
     end
-    
+
     class RunEditTabCommand < Redcar::EditTabCommand
       def file_mappings
         project = Project::Manager.in_window(win)
         runnable_file_paths = project.config_files("runnables/*.json")
-        
+
         file_runners = []
         runnable_file_paths.each do |path|
           json = File.read(path)
@@ -251,9 +259,9 @@ module Redcar
         end
         file_runners
       end
-      
+
       def execute
-        project = Project::Manager.in_window(win)        
+        project = Project::Manager.in_window(win)
         file_mappings.each do |file_mapping|
           regex = Regexp.new(file_mapping["regex"])
           if tab.edit_view.document.mirror.path =~ regex
