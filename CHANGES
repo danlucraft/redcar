@@ -6,6 +6,7 @@ Enhancements
  * Now we have a toolbar in the Redcar (Alex Lourie)
  * Line Tools advanced editing commands (Delisa Mason)
  * Added a 'Open Directory as new project' context menu item (Delisa Mason)
+ * Added a 'Tidy File' menu option which will try to reindent complete file (Alex Lourie)
 
 New internal APIs
 
