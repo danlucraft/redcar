@@ -64,7 +64,8 @@ module Redcar
     
     def self.toolbars
       ToolBar::Builder.build do
-        item "Execute File", :command => Runnables::RunEditTabCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "control.png"), :barname => :runnables
+        item "Runnables", :command => Runnables::ShowRunnables, :icon => File.join(File.dirname(__FILE__),"/../icons/cog.png"), :barname => :runnables
+        item "Run Tab", :command => Runnables::RunEditTabCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "control.png"), :barname => :runnables
       end
     end
     
@@ -229,6 +230,7 @@ module Redcar
     end
     
     class ShowRunnables < Redcar::Command
+      sensitize :open_project
       def execute
         if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
           tree.refresh

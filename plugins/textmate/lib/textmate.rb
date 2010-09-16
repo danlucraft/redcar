@@ -26,6 +26,12 @@ module Redcar
         end
       end
     end
+    
+    def self.toolbars
+      Redcar::ToolBar::Builder.build do
+        item "Snippet Browser", :command => Textmate::ShowSnippetTree, :icon => File.join(Redcar::ICONS_DIRECTORY, "document-tree.png"), :barname => :help
+      end
+    end
 
     def self.bundle_context_menus(node)
       Menu::Builder.build do
