@@ -1,6 +1,7 @@
 module Redcar
   class FindInProject
     class OpenSearch < Redcar::Command
+      sensitize :open_project
       def execute
         if Project::Manager.focussed_project
           if (tab = find_open_instance)

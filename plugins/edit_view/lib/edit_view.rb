@@ -67,6 +67,14 @@ module Redcar
         end
       end
     end
+    
+    def self.toolbars
+      ToolBar::Builder.build do
+        item "Cut", :command => Redcar::Top::CutCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "scissors-blue.png"), :barname => :edit
+        item "Copy", :command => Redcar::Top::CopyCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "blue-document-copy.png"), :barname => :edit
+        item "Paste", :command => Redcar::Top::PasteCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "clipboard.png"), :barname => :edit
+      end
+    end
 
     def self.edit_view_context_menus
       Menu::Builder.build do
