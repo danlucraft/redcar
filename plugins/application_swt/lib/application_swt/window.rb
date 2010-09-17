@@ -212,7 +212,7 @@ module Redcar
       def closed(_)
         @shell.close
         @menu_controller.close
-        @toolbar_controller.close
+        @toolbar_controller.close if @toolbar_controller
       end
 
       def dispose

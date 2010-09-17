@@ -52,7 +52,7 @@ module Redcar
 
     def self.menus
       Menu::Builder.build do
-        sub_menu "Project", :priority => 15 do
+        sub_menu "Project" do
           group(:priority => 15) {
           separator
             item "Runnables", Runnables::ShowRunnables
