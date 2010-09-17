@@ -36,7 +36,7 @@ module Redcar
                     return arguments[1].toUpperCase();
                   });
               controller[jsMethod] = function () {
-                var args = Array.prototype.slice.call(arguments),
+                var args = Array.prototype.slice.call(arguments);
                 return JSON.parse(rubyCall.apply(this, [method].concat(args)));
               };
             });
