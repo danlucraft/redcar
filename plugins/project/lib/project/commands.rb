@@ -256,6 +256,7 @@ module Redcar
           current = ancestor_node.children
         end
         tree.select(ancestor_node)
+        project.window.treebook.focus_tree(project.tree)
       end
     end
 

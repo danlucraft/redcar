@@ -1,5 +1,5 @@
 module Redcar
-  # This class controls access to the document text in an edit tab. 
+  # This class controls access to the document text in an edit tab.
   # There are methods to read, modify and register listeners
   # for the document.
   class Document
@@ -501,6 +501,17 @@ module Redcar
       )
     end
     
+    # Get the text of a line by index.
+    #
+    # @param [Integer] line_ix  the zero-based line number
+    # @return [String] the text of the line
+    def get_line_without_end_of_line(line_ix)
+      controller.get_range(
+        offset_at_line(line_ix),
+        offset_at_inner_end_of_line(line_ix) - offset_at_line(line_ix)
+      )
+    end
+    
     # Get all text
     def get_all_text
       get_range(0, length)
@@ -517,7 +528,7 @@ module Redcar
     #
     #     replace_line(10) {|current_text| current_text.upcase }
     def replace_line(line_ix, text=nil)
-      text ||= yield(get_line(line_ix))
+      text ||= yield(get_line_without_end_of_line(line_ix))
       start_offset = offset_at_line(line_ix)
       end_offset   = offset_at_inner_end_of_line(line_ix)
       replace(start_offset, end_offset - start_offset, text)
