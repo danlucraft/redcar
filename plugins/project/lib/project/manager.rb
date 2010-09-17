@@ -300,7 +300,7 @@ module Redcar
               item "Reveal in Project", Project::RevealInProjectCommand
             end
           end
-          sub_menu "Project" do
+          sub_menu "Project", :priority => 15 do
             group(:priority => :first) do
               item "Find File", Project::FindFileCommand
               item "Refresh Directory", Project::RefreshDirectoryCommand
