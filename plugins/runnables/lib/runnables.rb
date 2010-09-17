@@ -61,7 +61,7 @@ module Redcar
 
     def self.menus
       Menu::Builder.build do
-        sub_menu "Project", :priority => 15 do
+        sub_menu "Project" do
           group(:priority => 15) {
           separator
             item "Runnables", Runnables::ShowRunnables
@@ -81,6 +81,13 @@ module Redcar
       end
     end
 
+    def self.toolbars
+      ToolBar::Builder.build do
+        item "Runnables", :command => Runnables::ShowRunnables, :icon => File.join(File.dirname(__FILE__),"/../icons/cog.png"), :barname => :runnables
+        item "Run Tab", :command => Runnables::RunEditTabCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "control.png"), :barname => :runnables
+      end
+    end
+    
     class TreeMirror
       include Redcar::Tree::Mirror
 
@@ -285,6 +292,7 @@ module Redcar
     end
 
     class ShowRunnables < Redcar::Command
+      sensitize :open_project
       def execute
         if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
           tree.refresh

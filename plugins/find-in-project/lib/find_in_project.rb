@@ -13,6 +13,12 @@ module Redcar
         end
       end
     end
+    
+  def self.toolbars
+    ToolBar::Builder.build do
+      item "Find in Project", :command => OpenSearch, :icon => File.join(Redcar::ICONS_DIRECTORY, "application-search-result.png"), :barname => :search
+    end
+  end
 
     def self.storage
       @storage ||= begin
