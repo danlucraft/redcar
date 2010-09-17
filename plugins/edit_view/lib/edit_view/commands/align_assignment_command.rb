@@ -28,11 +28,16 @@ module Redcar
       end
 
       def offsets_for_whole_lines(start_offset, end_offset)
-        start_index = doc.line_at_offset(doc.cursor_offset)
-        end_index = doc.line_at_offset(doc.selection_offset)
+        #are the selections in the right order?
+        if start_offset > end_offset
+          end_offset, start_offset = start_offset, end_offset
+        end
+
+        start_index = doc.line_at_offset(start_offset)
+        end_index = doc.line_at_offset(end_offset)
 
         #is the selection of the last line empty?
-        if doc.selection_offset == doc.offset_at_line(end_index)
+        if end_offset == doc.offset_at_line(end_index)
           end_index -= 1
         end
 
