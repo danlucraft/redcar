@@ -19,7 +19,7 @@ module Redcar
       end
       controller = CommandOutputController.new(path, command, title)
       if output == "none"
-        controller.run        
+        controller.run
       else
         if tab = previous_tab_for(command)
           tab.html_view.controller.run
@@ -31,7 +31,7 @@ module Redcar
           tab = Redcar.app.focussed_window.new_tab(HtmlTab)
           tab.html_view.controller = controller
           tab.focus
-        end        
+        end
       end
     end
     
@@ -52,13 +52,20 @@ module Redcar
 
     def self.menus
       Menu::Builder.build do
-        sub_menu "Project", :priority => 15 do
+        sub_menu "Project" do
           group(:priority => 15) {
           separator
             item "Runnables", Runnables::ShowRunnables
             item "Run Tab",   Runnables::RunEditTabCommand
           }
         end
+      end
+    end
+    
+    def self.toolbars
+      ToolBar::Builder.build do
+        item "Runnables", :command => Runnables::ShowRunnables, :icon => File.join(File.dirname(__FILE__),"/../icons/cog.png"), :barname => :runnables
+        item "Run Tab", :command => Runnables::RunEditTabCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "control.png"), :barname => :runnables
       end
     end
     
@@ -223,6 +230,7 @@ module Redcar
     end
     
     class ShowRunnables < Redcar::Command
+      sensitize :open_project
       def execute
         if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
           tree.refresh
@@ -253,7 +261,7 @@ module Redcar
       end
       
       def execute
-        project = Project::Manager.in_window(win)        
+        project = Project::Manager.in_window(win)
         file_mappings.each do |file_mapping|
           regex = Regexp.new(file_mapping["regex"])
           if tab.edit_view.document.mirror.path =~ regex

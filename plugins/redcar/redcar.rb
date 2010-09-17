@@ -884,6 +884,8 @@ Redcar.environment: #{Redcar.environment}
         item "Save File As", :command => Project::FileSaveAsCommand, :icon => :save_as, :barname => :core
         item "Undo", :command => UndoCommand, :icon => :undo, :barname => :core
         item "Redo", :command => RedoCommand, :icon => :redo, :barname => :core
+        item "New Notebook", :command => NewNotebookCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "book--plus.png"), :barname => :edit
+        item "Close Notebook", :command => CloseNotebookCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "book--minus.png"), :barname => :edit
       end
 
     end

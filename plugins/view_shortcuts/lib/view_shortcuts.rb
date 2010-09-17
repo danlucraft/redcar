@@ -11,6 +11,12 @@ module Redcar
         end
       end
     end
+    
+    def self.toolbars
+      ToolBar::Builder.build do
+        item "Keyboard Shortcuts", :command => ViewShortcuts::ViewCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "keyboard.png"), :barname => :help
+      end
+    end
   
     class ViewCommand < Redcar::Command
       def execute
