@@ -3,8 +3,8 @@ module Redcar
 
     class AlignAssignmentCommand < Redcar::DocumentCommand
       def execute
-        relevant_line_pattern = /^([^=]+)([^-+<>=!%\/|&*^]=(?!=|~))(.*$)/
-        operators = /[^-+<>=!%\/|&*^]=(?!=|~)/
+        operators = /(\|{0,2}[+-\/%*!]?={1,3}[>~]?)/
+        relevant_line_pattern = /^([^=]+?)#{operators}(.*$)/o
 
         #fix the selection. this command operates on whole lines
         start_offset, end_offset = offsets_for_whole_lines(doc.cursor_offset, doc.selection_offset)
@@ -12,14 +12,19 @@ module Redcar
         doc.set_selection_range(start_offset, end_offset)
 
         doc.replace_selection do |old_text|
-          #find the longest length of the relevant lines
-          length = old_text.lines.map{|line| line =~ operators }.compact.max
+
+          #get max left-hand and right-hand sides in 1 pass
+          lengths = old_text.lines.map do |line|
+            [line =~ operators || -1, $1 && $1.size || -1]
+          end
+          lhs_len = lengths.reduce(0){|memo, len| len.first > memo ? len.first : memo}
+          rhs_len = lengths.reduce(0){|memo, len| len.last > memo ? len.last : memo}
 
           #now replace the first token of the relevant lines
           old_text.lines.map do |line|
             line.chomp!
             if line =~ relevant_line_pattern
-              "%-#{length}s%s %s" % [$1, $2, $3.strip]
+              "%-#{lhs_len}s%#{rhs_len}s %s" % [$1, $2, $3.strip]
             else
               line
             end
