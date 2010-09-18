@@ -99,7 +99,7 @@ When /^I press the Backspace key in the edit tab$/ do
   edit_view.backspace_pressed([])
 end
 
-Then /^the contents should be "(.*)"$/ do |text|
+AsyncThen /^the contents should be "(.*)"$/ do |text|
   expected = unescape_text(text)
   doc = Redcar::EditView.focussed_edit_view_document
   actual = doc.to_s
@@ -211,12 +211,12 @@ When /^I select the word (right of|left of|around|at) (\d+)$/ do |direction, off
   doc.set_selection_range(range.first, range.last)
 end
 
-When /^I turn block selection on$/ do
+AsyncWhen /^I turn block selection on$/ do
   Redcar::EditView.focussed_edit_view_document.block_selection_mode?.should == false
   Redcar::Top::ToggleBlockSelectionCommand.new.run
 end
 
-When /^I turn block selection off$/ do
+AsyncWhen /^I turn block selection off$/ do
   Redcar::EditView.focussed_edit_view_document.block_selection_mode?.should == true
   Redcar::Top::ToggleBlockSelectionCommand.new.run
 end
@@ -225,11 +225,13 @@ def escape_text(text)
   text.gsub("\t", "\\t").gsub("\n", "\\n").gsub("\r", "\\r").gsub("\"", "\\\"")
 end
 
-Given /^the contents? is:$/ do |string|
+AsyncGiven /^the contents? is:$/ do |string|
   cursor_index    = string.index('<c>')
   selection_index = string.index('<s>')
   string = string.gsub('<s>', '').gsub('<c>', '')
-  When %{I replace the contents with "#{string}"}
+  contents = unescape_text(string)
+  doc = Redcar::EditView.focussed_edit_view_document
+  doc.text = contents
   
   if cursor_index and selection_index 
     if cursor_index < selection_index

@@ -7,7 +7,7 @@ module Cucumber
       end
       
       def invoke(step_mother, options)
-        block = Swt::RRunnable.new do
+        #block = Swt::RRunnable.new do
           find_step_match!(step_mother)
           unless @skip_invoke || options[:dry_run] || @exception || @step_collection.exception
             @skip_invoke = true
@@ -26,9 +26,11 @@ module Cucumber
               status!(:failed)
             end
           end
-        end
+          #end
         
-        Redcar::ApplicationSWT.display.syncExec(block)
+        #Redcar::ApplicationSWT.display.syncExec(block)
+        #empty_block = Swt::RRunnable.new { }
+        #Redcar::ApplicationSWT.display.syncExec(block)
 
         if ENV["SLOW_CUKES"]
           sleep ENV["SLOW_CUKES"].to_f

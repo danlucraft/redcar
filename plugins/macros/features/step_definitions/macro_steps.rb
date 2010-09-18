@@ -1,8 +1,8 @@
-When /I start recording a macro/ do
+AsyncWhen /I start recording a macro/ do
   Redcar::Macros::StartStopRecordingCommand.new.run
 end
 
-When /I stop recording a macro/ do
+AsyncWhen /I stop recording a macro/ do
   Redcar::Macros::StartStopRecordingCommand.new.run
 end
 
@@ -10,7 +10,7 @@ When /I run the last recorded macro/ do
   Redcar::Macros::RunLastCommand.new.run
 end
 
-When /I type "(.*)"/ do |text|
+AsyncWhen /I type "(.*)"/ do |text|
   text = text.gsub("\\t", "\t").gsub("\\n", "\n")
   text.split(//).each do |letter|
     edit_view = Redcar::EditView.focussed_edit_view
@@ -59,7 +59,17 @@ edit_view_action_steps = {
 
 edit_view_action_steps.each do |action_symbol, step_text|
   When step_text do
-    Redcar::EditView.focussed_edit_view.invoke_action(action_symbol)
+    runnable = Swt::RRunnable.new do
+      begin
+        Redcar::EditView.focussed_edit_view.invoke_action(action_symbol)
+      rescue => e
+        puts e.type
+        puts e.message
+        puts e.backtrace
+      end
+    end
+    Redcar::ApplicationSWT.display.asyncExec(runnable)
+    Redcar::ApplicationSWT.display.syncExec(empty_runnable)
   end
 end
 

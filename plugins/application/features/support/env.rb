@@ -178,3 +178,56 @@ at_exit {
 }
 
 
+def AsyncWhen(matcher, &block)
+  AsyncStep(:When, matcher, &block)
+end
+
+def AsyncGiven(matcher, &block)
+  AsyncStep(:Given, matcher, &block)
+end
+
+def AsyncThen(matcher, &block)
+  AsyncStep(:Then, matcher, &block)
+end
+
+def AsyncStep(method, matcher, &block)
+  p block.arity
+  case block.arity
+  when 0, -1
+    send(method, matcher) do
+      runnable = Swt::RRunnable.new do
+        begin
+          block.call
+        rescue => e
+          puts e.type
+          puts e.message
+          puts e.backtrace
+          raise e
+        end
+      end
+      Redcar::ApplicationSWT.display.asyncExec(runnable)
+      Redcar::ApplicationSWT.display.syncExec(empty_runnable)
+    end
+  when 1
+    send(method, matcher) do |arg1|
+      runnable = Swt::RRunnable.new do
+        begin
+          block.call(arg1)
+        rescue => e
+          puts e.type
+          puts e.message
+          puts e.backtrace
+          raise e
+        end
+      end
+      Redcar::ApplicationSWT.display.asyncExec(runnable)
+      Redcar::ApplicationSWT.display.syncExec(empty_runnable)
+    end
+  end
+end
+
+def empty_runnable
+  Swt::RRunnable.new {}
+end
+
+  

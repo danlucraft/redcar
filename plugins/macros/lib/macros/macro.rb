@@ -25,27 +25,47 @@ module Redcar
     def run_in(edit_view)
       Macros.last_run = self
       Macros.last_run_or_recorded = self
-      previous_block_selection_mode = edit_view.document.block_selection_mode?
-      p self
-      edit_view.document.block_selection_mode = start_in_block_selection_mode?
-      p edit_view.document.to_s
-      p edit_view.document.cursor_offset, edit_view.document.selection_offset
-      actions.each do |action|
-        p action
-        case action
-        when Fixnum
-          edit_view.type_character(action)
-        when Symbol
-          edit_view.invoke_action(action)
-        when DocumentCommand
-          action.run(:env => {:edit_view => edit_view})
-        end
-        ApplicationSWT.display.update
-        p [edit_view.document.to_s, edit_view.document.controller.styledText.text]
+      previous_block_selection_mode = Swt.sync_exec { edit_view.document.block_selection_mode? }
+      p [:start_in_block_selection_mode?, start_in_block_selection_mode?]
+      runnable = Swt::RRunnable.new do
+        edit_view.document.block_selection_mode = start_in_block_selection_mode?
       end
-      p edit_view.document.to_s
-      edit_view.document.block_selection_mode = previous_block_selection_mode
+      Redcar::ApplicationSWT.display.asyncExec(runnable)
+      Redcar::ApplicationSWT.display.syncExec(empty_runnable)
+
+      actions.each do |action|
+        runnable = Swt::RRunnable.new do
+          begin
+            p action
+            case action
+            when Fixnum
+              edit_view.type_character(action)
+            when Symbol
+              edit_view.invoke_action(action)
+            when DocumentCommand
+              action.run(:env => {:edit_view => edit_view})
+            end
+          rescue => e
+            puts e.type
+            puts e.message
+            puts e.backtrace
+            raise e
+          end
+        end
+        Redcar::ApplicationSWT.display.asyncExec(runnable)
+        Redcar::ApplicationSWT.display.syncExec(empty_runnable)
+      end
+      runnable = Swt::RRunnable.new do
+        edit_view.document.block_selection_mode = previous_block_selection_mode
+      end
+      Redcar::ApplicationSWT.display.asyncExec(runnable)
+      Redcar::ApplicationSWT.display.syncExec(empty_runnable)
       Redcar.app.repeat_event(:macro_ran)
     end
+    
+    def empty_runnable
+      Swt::RRunnable.new {}
+    end
+  
   end
 end

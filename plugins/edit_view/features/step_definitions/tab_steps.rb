@@ -10,7 +10,7 @@ Given /^there is an edit tab containing "([^\"]*)"$/ do |contents|
   end
 end
 
-When /^I open a new edit tab$/ do 
+AsyncWhen /^I open a new edit tab$/ do 
   Redcar::Top::NewCommand.new.run
 end
 
