@@ -71,3 +71,36 @@ Feature: Align Assignment
           ccc = 3<s>
         end
         """
+  Scenario: aligning different length operators
+    Given the content is:
+        """
+        Integer === 1
+        two =~ /2/
+        @three||= 3333
+        bits &= 0b101010
+        """
+    And I select all
+    When I run the command Redcar::EditView::AlignAssignmentCommand
+    Then the content should be:
+        """
+        <c>Integer === 1
+        two      =~ /2/
+        @three  ||= 3333
+        bits &    = 0b101010<s>
+        """
+
+  Scenario: aligning hashes
+    Given the content is:
+        """
+        {:one => 1,
+        :two => 22,
+        :threee => 333}
+        """
+    And I select all
+    When I run the command Redcar::EditView::AlignAssignmentCommand
+    Then the content should be:
+        """
+        <c>{:one   => 1,
+        :two    => 22,
+        :threee => 333}<s>
+        """

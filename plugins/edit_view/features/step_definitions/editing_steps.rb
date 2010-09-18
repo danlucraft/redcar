@@ -8,8 +8,8 @@ def escape_text(text)
 end
 
 Given /^the contents? is:$/ do |string|
-  start_index = string.index('<c>')
-  end_index = string.index('<s>') - 3
+  start_index = string.index('<c>') || 0
+  end_index = string.index('<s>') && string.index('<s>') - 3 || 0
   string.gsub!('<s>','')
   When %{I replace the contents with "#{string}"}
   When %{I select from #{start_index} to #{end_index}}
