@@ -6,6 +6,12 @@ module Redcar
       edit_view.history.record(self)
     end
     
+    def run_in_focussed_tab_edit_view
+      if edit_view = Redcar::EditView.focussed_tab_edit_view
+        run(:env => {:edit_view => edit_view})
+      end
+    end
+    
     private
     
     def edit_view
