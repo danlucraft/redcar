@@ -55,7 +55,7 @@ module Redcar
       
       def selected(match, closing=true)
         if @last_list
-          DocumentSearch::FindNextRegex.new(Regexp.new(Regexp.quote(match)), true).run
+          DocumentSearch::FindNextRegex.new(Regexp.new(Regexp.quote(match)), true).run_in_focussed_tab_edit_view
           close if closing
         end
       end

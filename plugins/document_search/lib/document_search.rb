@@ -57,7 +57,7 @@ module DocumentSearch
         current_query = Regexp.escape(current_query)
       end
       cmd = FindNextRegex.new(Regexp.new(current_query, !@previous_match_case), true)
-      cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
+      cmd.run_in_focussed_tab_edit_view
     end
   end
     
