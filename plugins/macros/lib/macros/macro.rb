@@ -26,12 +26,8 @@ module Redcar
       Macros.last_run = self
       Macros.last_run_or_recorded = self
       previous_block_selection_mode = edit_view.document.block_selection_mode?
-      p self
       edit_view.document.block_selection_mode = start_in_block_selection_mode?
-      p edit_view.document.to_s
-      p edit_view.document.cursor_offset, edit_view.document.selection_offset
       actions.each do |action|
-        p action
         case action
         when Fixnum
           edit_view.type_character(action)
@@ -40,10 +36,7 @@ module Redcar
         when DocumentCommand
           action.run(:env => {:edit_view => edit_view})
         end
-        ApplicationSWT.display.update
-        p [edit_view.document.to_s, edit_view.document.controller.styledText.text]
       end
-      p edit_view.document.to_s
       edit_view.document.block_selection_mode = previous_block_selection_mode
       Redcar.app.repeat_event(:macro_ran)
     end

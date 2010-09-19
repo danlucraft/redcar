@@ -27,7 +27,9 @@ module Redcar
         else
           ev = edit_view
           h = ev.history.subscribe do |action|
-            Macros.recording[ev][:actions] << action
+            if should_record_action?(action)
+              Macros.recording[ev][:actions] << action
+            end
           end
           Macros.recording[ev] = {
             :subscriber => h, 
@@ -37,6 +39,12 @@ module Redcar
           tab.icon = :"control-record"
         end
         Redcar.app.repeat_event(:macro_record_changed)
+      end
+      
+      private
+      
+      def should_record_action?(action)
+        !action.is_a?(Redcar::Command) or action.class.record?
       end
     end
     
