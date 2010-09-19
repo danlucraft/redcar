@@ -13,6 +13,7 @@ module Swt
           main = Cucumber::Cli::Main.new(args)
           main.execute!(Cucumber::StepMother.new)
           Redcar.app.quit
+          Redcar::ApplicationSWT.display.wake
         rescue Object => e
           puts e.message
           puts e.backtrace
