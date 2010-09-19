@@ -13,6 +13,7 @@ module Redcar
       end
       
       def execute
+        clear_recordings
         if info = Macros.recording[edit_view]
           edit_view.history.unsubscribe(info[:subscriber])
           if info[:actions].any?
@@ -22,7 +23,7 @@ module Redcar
             Macros.session_macros << macro
             Macros.last_run_or_recorded = macro
           end
-          Macros.recording[edit_view] = nil
+          Macros.recording.delete(edit_view)
           tab.icon = Redcar::Tab::DEFAULT_ICON
         else
           ev = edit_view
@@ -45,6 +46,14 @@ module Redcar
       
       def should_record_action?(action)
         !action.is_a?(Redcar::Command) or action.class.record?
+      end
+      
+      def clear_recordings
+        Macros.recording.keys.each do |ev|
+          unless ev.exists?
+            Macros.recording.delete(ev)
+          end
+        end
       end
     end
     
