@@ -23,7 +23,7 @@ module Redcar
       end
       
       def set_icon(icon)
-        @item.image = ApplicationSWT::Icon.swt_image(icon)
+        @item.image = @icon = ApplicationSWT::Icon.swt_image(icon)
       end
       
       def create_tab_widget
