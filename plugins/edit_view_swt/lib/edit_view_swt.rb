@@ -58,6 +58,7 @@ module Redcar
     ALL_ACTIONS = NAVIGATION_COMMANDS.merge(SELECTION_COMMANDS).merge(MODIFICATION_COMMANDS)
 
     include Redcar::Observable
+    include Redcar::Controller
 
     def self.start
       if gui = Redcar.gui
@@ -104,6 +105,8 @@ module Redcar
       mate_text.add_grammar_listener do |new_grammar|
         @model.set_grammar(new_grammar)
       end
+      
+      create_model_listeners
     end
 
     def create_mate_text
@@ -290,6 +293,20 @@ module Redcar
         end
       end
     end
+    
+    def type_character(character)
+      mate_text.get_text_widget.doContent(character)
+      mate_text.get_text_widget.update
+    end
+    
+    model_listener :type_character
+    
+    def invoke_action(action_symbol)
+      const = EditViewSWT::ALL_ACTIONS[action_symbol]
+      mate_text.get_text_widget.invokeAction(const)
+    end
+    
+    model_listener :invoke_action
 
     class VerifyKeyListener
       def initialize(edit_view_swt)

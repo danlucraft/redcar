@@ -22,6 +22,45 @@ require "edit_view/commands/text_conversion_commands"
 
 module Redcar
   class EditView
+    ACTIONS = [
+      :LINE_UP,
+      :LINE_DOWN,
+      :LINE_START,
+      :LINE_END,
+      :COLUMN_PREVIOUS,
+      :COLUMN_NEXT,
+      :PAGE_UP,
+      :PAGE_DOWN,
+      :WORD_PREVIOUS,
+      :WORD_NEXT,
+      :TEXT_START,
+      :TEXT_END,
+      :WINDOW_START,
+      :WINDOW_END,
+      :SELECT_ALL,
+      :SELECT_LINE_UP,
+      :SELECT_LINE_DOWN,
+      :SELECT_LINE_START,
+      :SELECT_LINE_END,
+      :SELECT_COLUMN_PREVIOUS,
+      :SELECT_COLUMN_NEXT,
+      :SELECT_PAGE_UP,
+      :SELECT_PAGE_DOWN,
+      :SELECT_WORD_PREVIOUS,
+      :SELECT_WORD_NEXT,
+      :SELECT_TEXT_START,
+      :SELECT_TEXT_END,
+      :SELECT_WINDOW_START,
+      :SELECT_WINDOW_END,
+      :CUT,
+      :COPY,
+      :PASTE,
+      :DELETE_PREVIOUS,
+      :DELETE_NEXT,
+      :DELETE_WORD_PREVIOUS,
+      :DELETE_WORD_NEXT
+    ]
+    
     include Redcar::Model
     extend Redcar::Observable
     include Redcar::Observable
@@ -521,8 +560,7 @@ module Redcar
     
     def type_character(character)
       unless custom_character_handle(character)
-        controller.mate_text.get_text_widget.doContent(character)
-        controller.mate_text.get_text_widget.update
+        notify_listeners(:type_character, character)
       end
       history.record(character)
     end
@@ -553,8 +591,7 @@ module Redcar
     
     def invoke_action(action_symbol)
       unless invoke_overridden_action(action_symbol)
-        const = EditViewSWT::ALL_ACTIONS[action_symbol]
-        controller.mate_text.get_text_widget.invokeAction(const)
+        notify_listeners(:invoke_action, action_symbol)
       end
       history.record(action_symbol)
     end
