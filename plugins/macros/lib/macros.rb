@@ -1,6 +1,9 @@
+
 require 'macros/commands'
 require 'macros/macro'
 require 'macros/manager_controller'
+
+require 'macros/predictive/sequence_finder'
 
 module Redcar
   module Macros
