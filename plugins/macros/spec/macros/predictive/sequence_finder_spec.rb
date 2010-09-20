@@ -6,60 +6,85 @@ describe Redcar::Macros::Predictive::SequenceFinder do
   
   describe "fully repeated sequences (XYXY)" do
     it "should return nil if there are no repeated sequences" do
-      SequenceFinder.new(%w(a b c)).first.should be_nil
+      SequenceFinder.new(%w(a b c)).next.should be_nil
     end
     
     it "should find repeated sequence of length 1" do
-      SequenceFinder.new(%w(a a)).first.actions.should == %w(a)
+      SequenceFinder.new(%w(a a)).next.actions.should == %w(a)
     end
     
     it "should find repeated sequence of length 2" do
-      SequenceFinder.new(%w(a b a b)).first.actions.should == %w(a b)
+      SequenceFinder.new(%w(a b a b)).next.actions.should == %w(a b)
     end
     
     it "should find repeated sequence of length 3" do
-      SequenceFinder.new(%w(a b c a b c)).first.actions.should == %w(a b c)
+      SequenceFinder.new(%w(a b c a b c)).next.actions.should == %w(a b c)
     end
     
     it "should find repeated sequence of length 3 with padding at the front" do
-      SequenceFinder.new(%w(x x a b c a b c)).first.actions.should == %w(a b c)
+      SequenceFinder.new(%w(x x a b c a b c)).next.actions.should == %w(a b c)
     end
     
     it "should choose the longest option when there are multiple options" do
-      SequenceFinder.new(%w(a b c c a b c c)).first.actions.should == %w(a b c c)
+      SequenceFinder.new(%w(a b c c a b c c)).next.actions.should == %w(a b c c)
+    end
+
+    it "should cycle through fully repeated options" do
+      seq_finder = SequenceFinder.new(%w(a b c c a b c c))
+      seq1 = seq_finder.next
+      seq1.actions.should == %w(a b c c)
+      
+      seq2 = seq_finder.next
+      seq2.actions.should == %w(c)
     end
   end
   
   describe "partially repeated sequences (XYX)" do
     it "should find partially repeated sequence of length 2, matched by 1" do
-      seq = SequenceFinder.new(%w(a b a)).first
+      seq = SequenceFinder.new(%w(a b a)).next
       seq.actions.should == %w(a b)
       seq.skip_length.should == 1
     end
     
     it "should find partially repeated sequence of length 3, matched by 1" do
-      seq = SequenceFinder.new(%w(a b c a)).first
+      seq = SequenceFinder.new(%w(a b c a)).next
       seq.actions.should == %w(a b c)
       seq.skip_length.should == 1
     end
 
     it "should find partially repeated sequence of length 3, matched by 2" do
-      seq = SequenceFinder.new(%w(a b c a b)).first
+      seq = SequenceFinder.new(%w(a b c a b)).next
       seq.actions.should == %w(a b c)
       seq.skip_length.should == 2
     end
     
     it "should find partially repeated sequence of length 3, matched by 2 with padding" do
-      seq = SequenceFinder.new(%w(x x X x X x a b c a b)).first
+      seq = SequenceFinder.new(%w(x x X x X x a b c a b)).next
       seq.actions.should == %w(a b c)
       seq.skip_length.should == 2
     end
     
     it "should choose the longest X and shortest Y" do
-      seq = SequenceFinder.new(%w(a b r a c a d a b r a)).first
+      seq = SequenceFinder.new(%w(a b r a c a d a b r a)).next
       seq.actions.should == %w(a b r a c a d)
       seq.skip_length.should == 4
     end
+    
+    it "should cycle through fully repeated options and partially repeated options" do
+      seq_finder = SequenceFinder.new(%w(a b c c a b c c))
+      seq1 = seq_finder.next
+      seq1.actions.should == %w(a b c c)
+      seq1.skip_length.should == 0
+      
+      seq2 = seq_finder.next
+      seq2.actions.should == %w(c)
+      seq2.skip_length.should == 0
+      
+      seq3 = seq_finder.next
+      seq3.actions.should == %w(b c c a)
+      seq3.skip_length.should == 3
+    end
+
   end
 end
 
