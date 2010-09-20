@@ -63,9 +63,7 @@ module Redcar
 
         def supported_commands
           [
-            :pull,:commit ,:index_delete, :index_add,
-            :index_ignore ,:index_revert, :index_save,
-            :index_unsave ,:remote_init , :index
+            :pull,:commit,:remote_init,:index
           ]
         end
 
@@ -80,29 +78,18 @@ module Redcar
             )
           else
             Application::Dialog.message_box("#{@path} is not a working copy.")
-            #client_manager.getUpdateClient().doCheckout(
-            #  SVNURL.parseURIEncoded(path),
-            #  Java::JavaIo::File.new(@path),
-            #  SVNRevision::HEAD,
-            #  SVNDepth::INFINITY,
-            #  true # allow unversioned files to exist already in directory
-            #)
           end
         end
 
-        def remote_init(path)
-          checkout_dir = Application::Dialog.open_directory({})
-          if checkout_dir
-            client_manager.getUpdateClient().doCheckout(
-              SVNURL.parseURIEncoded(path),
-              Java::JavaIo::File.new(checkout_dir),
-              SVNRevision::HEAD,
-              SVNRevision::HEAD,
-              SVNDepth::INFINITY,
-              true # allow unversioned files to exist already in directory
-            )
-            Project::Manager.open_project_for_path(checkout_dir)
-          end
+        def remote_init(path,target)
+          client_manager.getUpdateClient().doCheckout(
+            SVNURL.parseURIEncoded(path),
+            Java::JavaIo::File.new(target),
+            SVNRevision::HEAD,
+            SVNRevision::HEAD,
+            SVNDepth::INFINITY,
+            true # allow unversioned files to exist already in directory
+          )
         end
 
         def index_add(change)

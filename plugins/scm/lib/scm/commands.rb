@@ -35,8 +35,13 @@ module Redcar
       def execute(options)
         raise "No scm module given for remote init" unless options[:value]
         m = options[:value]
-        result = Application::Dialog.input(m.translations[:remote_init],"Repository Path:")
-        m.remote_init(result[:value]) if result[:value]
+        dialog = Redcar::ApplicationSWT::Dialogs::TextAndFileDialog.new(Redcar.app.focussed_window.controller.shell)
+        dialog.set_text(m.translations[:remote_init],m.translations[:remote_init_path],m.translations[:remote_init_target])
+        result = dialog.open
+        if result
+          Redcar::Project::Manager.open_project_for_path(result[:directory])
+          m.remote_init(result[:text].to_s,result[:directory].to_s)
+        end
       end
     end
   end

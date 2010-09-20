@@ -61,6 +61,8 @@ module Redcar
         {
           :init => "Initialise " + repository_type.capitalize,
           :remote_init => "Initialize "+ repository_type.capitalize+" from remote repository",
+          :remote_init_path => "Repository URL",
+          :remote_init_target => "Target Directory",
           :push => "Push Changesets",
           :unpushed_commits => "Unpushed commits",
           :pull => "Pull Changesets",
@@ -93,7 +95,7 @@ module Redcar
       # REQUIRED for :remote_init. Initialize a repository from
       # a url or file path, like SVN 'checkout' or git 'clone'
       # Returns false on error
-      def remote_init(repo_path)
+      def remote_init(repo_path,target_directory)
         raise "Scm.remote_init not implemented." if supported_commands.include?(:remote_init)
         nil
       end
