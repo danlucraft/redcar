@@ -15,6 +15,13 @@ module DocumentSearch
     end
   end
   
+  def self.toolbars
+    Redcar::ToolBar::Builder.build do
+      item "Search Document", :command => DocumentSearch::SearchForwardCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), :barname => :search
+      item "Repeat Last Search", :command => DocumentSearch::RepeatPreviousSearchForwardCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier--arrow.png"), :barname => :search
+    end
+  end
+  
   class SearchSpeedbar < Redcar::Speedbar
     class << self
       attr_accessor :previous_query
@@ -42,7 +49,7 @@ module DocumentSearch
     
     toggle :match_case, 'Match case', nil, false do |v|
       SearchSpeedbar.previous_match_case = v
-    end      
+    end
     
     button :search, "Search", "Return" do
       SearchSpeedbar.previous_query = query.value

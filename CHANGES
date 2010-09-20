@@ -1,4 +1,4 @@
-Version 0.6 (TBA)
+Version 0.7 (TBA)
 =================
 
 Enhancements:
@@ -11,6 +11,26 @@ New internal APIs:
 
  * DocumentHistory stream of changes to text (Dan Lucraft)
  * Menus can have lazy text that is generated when you look at them (Dan Lucraft)
+
+Version 0.6 (TBD)
+==============================
+
+Enhancements
+
+ * Now we have a toolbar in the Redcar (Alex Lourie)
+ * Line Tools advanced editing commands (Delisa Mason)
+ * Added a 'Open Directory as new project' context menu item (Delisa Mason)
+ * Added a 'Tidy File' menu option which will try to reindent complete file (Alex Lourie)
+ * find-in-project: Search spinner, remember search settings, wrap long lines, styling updates (Kieran Pilkington)
+ * Align assignments command (Stefan Natchev)
+
+Bugfixes:
+
+ * find-in-project: results are now sorted from a-z, instead of backwards (Kieran Pilkington)
+
+New internal APIs
+
+ * Toolbar items APIs (Alex Lourie)
 
 Version 0.5 (7 September 2010)
 ==============================

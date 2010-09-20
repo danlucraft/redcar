@@ -683,6 +683,14 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
+    class ToggleToolbar < Command
+
+      def execute
+        Redcar.app.toggle_show_toolbar
+        Redcar.app.refresh_toolbar!
+      end
+    end
+
     class SelectNewFont < Command
       def execute
         Redcar::EditView::SelectFontDialog.new.open
@@ -762,6 +770,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
         link "Ctrl+G",       EditView::OppositeCaseTextCommand
         link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
+        link "Ctrl+=",       EditView::AlignAssignmentCommand
 
         link "Cmd+T",           Project::FindFileCommand
         link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
@@ -833,6 +842,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
         link "Ctrl+G",       EditView::OppositeCaseTextCommand
         link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
+        link "Ctrl+=",       EditView::AlignAssignmentCommand
 
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
@@ -862,6 +872,21 @@ Redcar.environment: #{Redcar.environment}
       end
 
       [linwin, osx]
+    end
+
+    def self.toolbars
+      ToolBar::Builder.build do
+        item "New File", :command => NewCommand, :icon => :new, :barname => :core
+        item "Open File", :command => Project::FileOpenCommand, :icon => :open, :barname => :core
+        item "Open Directory", :command => Project::DirectoryOpenCommand, :icon => :open_dir, :barname => :core
+        item "Save File", :command => Project::FileSaveCommand, :icon => :save, :barname => :core
+        item "Save File As", :command => Project::FileSaveAsCommand, :icon => :save_as, :barname => :core
+        item "Undo", :command => UndoCommand, :icon => :undo, :barname => :core
+        item "Redo", :command => RedoCommand, :icon => :redo, :barname => :core
+        item "New Notebook", :command => NewNotebookCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "book--plus.png"), :barname => :edit
+        item "Close Notebook", :command => CloseNotebookCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "book--minus.png"), :barname => :edit
+      end
+
     end
 
     def self.menus
@@ -962,6 +987,7 @@ Redcar.environment: #{Redcar.environment}
              end
           end
           separator
+          item "Show Toolbar", :command => ToggleToolbar, :type => :check, :active => Redcar.app.show_toolbar?
           item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
           item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
           item "Show Annotations", :command => ToggleAnnotations, :type => :check, :active => EditView.show_annotations?

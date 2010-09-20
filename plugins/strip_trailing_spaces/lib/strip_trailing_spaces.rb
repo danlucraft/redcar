@@ -9,10 +9,19 @@ module Redcar
       Redcar::StripTrailingSpaces.storage['enabled'] = bool
     end
 
+    def self.strip_blank_lines?
+      Redcar::StripTrailingSpaces.storage['strip_blank_lines']
+    end
+
+    def self.strip_blank_lines=(bool)
+      Redcar::StripTrailingSpaces.storage['strip_blank_lines'] = bool
+    end
+
     def self.storage
       @storage ||= begin
         storage = Plugin::Storage.new('strip_trailing_spaces_plugin')
         storage.set_default('enabled', false)
+        storage.set_default('strip_blank_lines', false)
         storage
       end
     end
@@ -22,6 +31,7 @@ module Redcar
         sub_menu "Plugins" do
           sub_menu "Strip Trailing Spaces", :priority => 195 do
             item "Enabled", :command => ToggleStripTrailingSpaces, :type => :check, :active => StripTrailingSpaces.enabled?
+            item "Strip Blank Lines", :command => ToggleStripBlankLines, :type => :check, :active => StripTrailingSpaces.strip_blank_lines?
           end
         end
       end
@@ -35,7 +45,10 @@ module Redcar
           doc.controllers(Redcar::AutoIndenter::DocumentController).first.ignore do
             doc.compound do
               doc.line_count.times do |l|
-                doc.replace_line(l) { |line_text| line_text.rstrip }
+                doc.replace_line(l) do |line_text|
+                  stripped = line_text.rstrip
+                  (stripped.length > 0 || StripTrailingSpaces.strip_blank_lines?) ? stripped : line_text
+                end
               end
             end
           end
@@ -70,6 +83,12 @@ module Redcar
     class ToggleStripTrailingSpaces < Redcar::Command
       def execute
         StripTrailingSpaces.enabled = !StripTrailingSpaces.enabled?
+      end
+    end
+
+    class ToggleStripBlankLines < Redcar::Command
+      def execute
+        StripTrailingSpaces.strip_blank_lines = !StripTrailingSpaces.strip_blank_lines?
       end
     end
   end
