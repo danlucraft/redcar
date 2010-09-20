@@ -11,6 +11,8 @@ Enhancements
  * Align assignments command (Stefan Natchev)
  * Groovy REPL! (Delisa Mason)
  * Sort lines command (Erik Lundqvist)
+ * Runnables: copy output to clipboard (Mat Schaffer)
+ * Runnables: 'run again' button (Mat Schaffer)
 
 Bugfixes:
 
