@@ -5,16 +5,20 @@ require 'runnables/output_processor'
 module Redcar
   class Runnables
     TREE_TITLE = "Runnables"
+    PARAMS = "__PARAMS__"
+    DISPLAY_PARAMS = "__?__"
+    DISPLAY_NEXT_PARAMS = "_____"
 
     def self.run_process(path, command, title, output = "tab")
       window = Redcar.app.focussed_window
-      if command.include?("__PARAMS__")
-        msg = command.gsub("__PARAMS__","__?__")
-        msg = "" if msg == "__?__"
+      while command.include?(PARAMS)
+        msg = command.sub(PARAMS,DISPLAY_PARAMS)
+        msg = msg.gsub(PARAMS,DISPLAY_NEXT_PARAMS)
+        msg = "" if msg == DISPLAY_PARAMS
         msg_title = "Enter Command Parameters"
         out = Redcar::Application::Dialog.input(msg_title,msg)
         params = out[:value] || ""
-        command = command.gsub("__PARAMS__",params)
+        command = command.sub(PARAMS,params)
       end
       if Runnables.storage['save_project_before_running'] == true
         window.notebooks.each do |notebook|
@@ -111,7 +115,7 @@ module Redcar
 
       def custom_command
         custom_info = {}
-        custom_info["command"] = '__PARAMS__'
+        custom_info["command"] = PARAMS
         custom_info["output"] = 'tab'
         custom = Runnable.new("Custom Command",@project.path,custom_info)
         [custom]
@@ -286,7 +290,7 @@ module Redcar
 
       def execute
         command = @node.command
-        command = "#{command} __PARAMS__" unless command.include?('__PARAMS__')
+        command = "#{command} #{PARAMS}" unless command.include?(PARAMS)
         Runnables.run_process(@node.path, command, @node.text, @node.output)
       end
     end
