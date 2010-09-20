@@ -6,7 +6,7 @@ module Redcar
     class GroovyMirror
       def self.load_groovy_dependencies
         unless @loaded
-          require File.dirname(__FILE__) + "/../../vendor/groovy"
+          require File.join(Redcar.asset_dir,"groovy-all")
           import 'groovy.lang.GroovyShell'
           import 'java.io.PrintWriter'
           import 'java.io.StringWriter'
