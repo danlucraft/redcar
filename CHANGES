@@ -10,6 +10,7 @@ Enhancements
  * find-in-project: Search spinner, remember search settings, wrap long lines, styling updates (Kieran Pilkington)
  * Align assignments command (Stefan Natchev)
  * Groovy REPL! (Delisa Mason)
+ * Sort lines command (Erik Lundqvist)
 
 Bugfixes:
 
