@@ -70,7 +70,7 @@ module Redcar
         end
       end
     end
-    
+
     def self.runnables_context_menus(node)
       Menu::Builder.build do
         if not node.nil? and node.is_a?(Runnable)
@@ -87,7 +87,7 @@ module Redcar
         item "Run Tab", :command => Runnables::RunEditTabCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "control.png"), :barname => :runnables
       end
     end
-    
+
     class TreeMirror
       include Redcar::Tree::Mirror
 
@@ -108,7 +108,7 @@ module Redcar
       def changed?
         !last_loaded || last_loaded < last_updated
       end
-      
+
       def custom_command
         custom_info = {}
         custom_info["command"] = '__PARAMS__'
@@ -142,7 +142,7 @@ module Redcar
       end
 
       def top
-        custom + load
+        custom_command + load
       end
     end
 
@@ -203,7 +203,7 @@ module Redcar
       def text
         @name
       end
-      
+
       def path
         @path
       end
@@ -247,7 +247,7 @@ module Redcar
       def initialize(project)
         @project = project
       end
-      
+
       def right_click(tree, node)
         controller = self
         menu = Menu.new
@@ -278,12 +278,12 @@ module Redcar
         end
       end
     end
-    
+
     class AppendParamsAndRunCommand < Redcar::Command
       def initialize(node)
         @node = node
       end
-      
+
       def execute
         command = @node.command
         command = "#{command} __PARAMS__" unless command.include?('__PARAMS__')
