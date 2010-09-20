@@ -35,8 +35,7 @@ rubyzip gem:
 
     $ gem install rubyzip
 
-You will need Ant installed. You will also need RSpec, Cucumber and JSON-JRuby 
-installed as JRuby gems.
+You will need RSpec, Cucumber and JSON-JRuby installed as JRuby gems.
 
     $ jruby -S gem install rspec cucumber json-jruby
 
@@ -47,17 +46,15 @@ Download from github, checkout the submodules and build JavaMateView.
     $ git submodule init
     $ git submodule update
     $ jruby bin/redcar install
-    $ jruby -S rake build
 
 To run on Linux and Windows:
 
-    $ jruby bin/redcar
+    $ jruby bin/redcar --no-sub-jruby
 
 To run on OSX:
 
-    $ jruby -J-XstartOnFirstThread bin/redcar        
+    $ jruby -J-XstartOnFirstThread bin/redcar --no-sub-jruby
 
-You may also need to install the rake, rspec and cucumber gems.
 
 ## UPDATING A SOURCE BUILD
 
