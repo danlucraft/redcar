@@ -6,6 +6,8 @@ require 'edit_view_swt/word_movement'
 require 'joni'
 require 'jcodings'
 require 'jdom'
+
+require "java-mateview-#{Redcar::VERSION}"
 require File.dirname(__FILE__) + '/../vendor/java-mateview'
 
 module Redcar
