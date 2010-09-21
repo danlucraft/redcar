@@ -1,3 +1,7 @@
+Given /^I will set "([^"]*)" as a parameter$/ do |arg1|
+  Redcar.gui.dialog_adapter.add_input(arg1)
+end
+
 When /^I open the runnables tree$/ do
   Redcar::Runnables::ShowRunnables.new.run
 end

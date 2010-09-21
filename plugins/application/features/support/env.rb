@@ -8,11 +8,11 @@ module SwtHelper
     menu_bar = shell.get_menu_bar
     menu_bar
   end
-  
+
   def first_shell
     Redcar::ApplicationSWT.display.get_shells.to_a.first
   end
-  
+
   def active_shell
     focussed_window.controller.shell
   end
@@ -24,13 +24,13 @@ module SwtHelper
   def focussed_tree
     focussed_window.treebook.focussed_tree
   end
-  
+
   def dialog(type)
     dialogs.detect {|d| d.is_a?(type) }
   end
-  
+
   def dialogs
-    Redcar::ApplicationSWT.display.get_shells.to_a.map do |s| 
+    Redcar::ApplicationSWT.display.get_shells.to_a.map do |s|
       Redcar::ApplicationSWT.shell_dialogs[s]
     end.compact
   end
@@ -48,7 +48,7 @@ module SwtHelper
     tree.extend(TreeHelpers)
     tree
   end
-  
+
   def find_node_with_text(top, node_text)
     node = top.detect { |node| node.text == node_text }
     return node if node
@@ -60,38 +60,39 @@ module SwtHelper
     def items
       getItems.to_a
     end
-    
+
     def item_texts
       getItems.to_a.map {|item| item.getText}
     end
   end
 end
-    
+
 class FakeDialogAdapter
   def initialize
     @responses = {}
+    @inputs = []
   end
-  
+
   def set(method, value)
     @responses[method] = value
   end
-  
+
   def should_get_message(message)
     @message = message
   end
-  
+
   def open_file(*args)
     check_for_raise(@responses[:open_file])
   end
-  
+
   def open_directory(*args)
     check_for_raise(@responses[:open_directory])
   end
-  
+
   def save_file(*args)
     check_for_raise(@responses[:save_file])
   end
-  
+
   def message_box(*args)
     if @message == :any
     elsif @message
@@ -104,18 +105,35 @@ class FakeDialogAdapter
     end
     @responses[:message_box].to_sym if @responses[:message_box]
   end
-  
+
+  def input(*args)
+    if @inputs.length < 1
+      raise TestingError.new("No input added to complete this command.")
+    end
+    val = @inputs[0]
+    @inputs.delete_at(0)
+    {:value => val} # no button to speak of...
+  end
+
+  def add_input(value)
+    @inputs << value
+  end
+
+  def clear_input
+    @inputs = []
+  end
+
   def check_for_raise(result)
     if result == :raise_error
       raise TestingError.new("did not expect dialog")
     end
     result
   end
-  
+
   def available_message_box_button_combos
     Redcar::ApplicationSWT::DialogAdapter.new.available_message_box_button_combos
   end
-  
+
   def available_message_box_types
     Redcar::ApplicationSWT::DialogAdapter.new.available_message_box_types
   end

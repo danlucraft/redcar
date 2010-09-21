@@ -15,11 +15,15 @@ def reset_runnable_fixtures
   FileUtils.rm_rf runnable_fixtures
   FileUtils.mkdir_p runnable_fixtures
   FileUtils.mkdir_p File.dirname(runnable_config)
-  
+
   File.open("#{runnable_fixtures}/runnable_app.rb", 'w') do |f|
     f.puts %Q|puts "hello world"|
   end
-  
+
+  File.open("#{runnable_fixtures}/params_app.rb", 'w') do |f|
+    f.puts "puts ARGV[0] +' '+ ARGV[1]"
+  end
+
   File.open(runnable_config, 'w') do |f|
     f.print <<-EOS
       {
@@ -29,7 +33,7 @@ def reset_runnable_fixtures
             "command":     "jruby runnable_app.rb",
             "description": "Runs the app",
             "type":        "task/ruby"
-            },
+          },
           {
             "name":        "A silent app",
             "command":     "jruby runnable_app.rb",
@@ -43,6 +47,18 @@ def reset_runnable_fixtures
             "description": "Runs the app in a window",
             "type":        "task/ruby",
             "output":      "window"
+          },
+          {
+            "name":        "A params app",
+            "command":     "jruby __PARAMS__",
+            "description": "Runs the app with a parameter",
+            "type":        "task/ruby"
+          },
+          {
+            "name":        "A multi-params app",
+            "command":     "jruby params_app.rb __PARAMS__ __PARAMS__",
+            "description": "Runs the app with many parameters",
+            "type":        "task/ruby"
           }
         ],
         "file_runners":[
@@ -64,4 +80,5 @@ end
 
 After do
   FileUtils.rm_rf runnable_fixtures
+  Redcar.gui.dialog_adapter.clear_input
 end
