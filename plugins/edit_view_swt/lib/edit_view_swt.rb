@@ -69,7 +69,7 @@ module Redcar
     end
 
     def create_undo_manager
-      @undo_manager = JFace::Text::TextViewerUndoManager.new(100)
+      @undo_manager = JFace::Text::TextViewerUndoManager.new(500)
       @undo_manager.connect(@mate_text.viewer)
     end
 
