@@ -22,3 +22,9 @@ Feature: Predictive macros
     And I press predict
     Then the contents should be "abab"
     
+  Scenario: Should continue repeating same prediction even if a longer pattern is spotted
+    When I type "abab"
+    And I press predict
+    And I press predict
+    And I press predict
+    Then the contents should be "ababababab"
