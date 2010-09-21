@@ -6,6 +6,8 @@ require 'edit_view_swt/word_movement'
 require 'joni'
 require 'jcodings'
 require 'jdom'
+
+require "java-mateview-#{Redcar::VERSION}"
 require File.dirname(__FILE__) + '/../vendor/java-mateview'
 
 module Redcar
@@ -67,7 +69,7 @@ module Redcar
     end
 
     def create_undo_manager
-      @undo_manager = JFace::Text::TextViewerUndoManager.new(100)
+      @undo_manager = JFace::Text::TextViewerUndoManager.new(500)
       @undo_manager.connect(@mate_text.viewer)
     end
 
