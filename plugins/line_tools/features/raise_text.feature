@@ -41,3 +41,10 @@ Scenario: A multi-line selection including the first line of a document cannot b
   And I select from 0 to 5
   And I raise the text
   Then I should see "foo\nbar\nbaz\nbonne" in the edit tab
+  
+Scenario: Should work with unicode
+  When I open a new edit tab
+  And I replace the contents with "foo\nbść\nbaz\nbonne"
+  And I move the cursor to 5
+  And I raise the text
+  Then the contents should be "bść\nfoo\nbaz\nbonne"
