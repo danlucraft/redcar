@@ -1,5 +1,5 @@
-Given /^I will set "([^"]*)" as a parameter$/ do |arg1|
-  Redcar.gui.dialog_adapter.add_input(arg1)
+Given /^I will set "([^"]*)" as a parameter$/ do |params|
+  Redcar.gui.dialog_adapter.add_input(params)
 end
 
 When /^I open the runnables tree$/ do
@@ -24,3 +24,16 @@ end
 Then /^I should see (\d+) more windows?$/ do |window_count|
   Redcar.app.windows.size.should == (@windows + window_count.to_i)
 end
+
+When /^I append parameters to the "([^"]*)" node in the tree$/ do |node_text|
+  mirror     = Redcar.app.focussed_window.treebook.focussed_tree.tree_mirror
+  node       = find_node_with_text(mirror.top, node_text)
+  Redcar::Runnables::AppendParamsAndRunCommand.new(node).run
+end
+
+#  controller = focussed_tree.tree_controller
+#  model      = focussed_tree.controller.model
+#  mirror     = focussed_tree.tree_mirror
+#  node       = find_node_with_text(mirror.top, node_text)
+#
+#  node.should_not be_nil

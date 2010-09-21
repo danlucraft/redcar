@@ -1,6 +1,7 @@
+RequireSupportFiles File.dirname(__FILE__) + "/../../../application/features/"
 RequireSupportFiles File.dirname(__FILE__) + "/../../../edit_view/features/"
-RequireSupportFiles File.dirname(__FILE__) + "/../../../project/features/"
 RequireSupportFiles File.dirname(__FILE__) + "/../../../html_view/features/"
+RequireSupportFiles File.dirname(__FILE__) + "/../../../project/features/"
 
 def runnable_fixtures
   File.expand_path(File.dirname(__FILE__) + "/../fixtures")
@@ -21,7 +22,8 @@ def reset_runnable_fixtures
   end
 
   File.open("#{runnable_fixtures}/params_app.rb", 'w') do |f|
-    f.puts "puts ARGV[0] +' '+ ARGV[1]"
+    #f.puts "puts ARGV[0] +' '+ ARGV[1]"
+    f.puts "ARGV.each { |it| print it+' '}"
   end
 
   File.open(runnable_config, 'w') do |f|
@@ -59,6 +61,12 @@ def reset_runnable_fixtures
             "command":     "jruby params_app.rb __PARAMS__ __PARAMS__",
             "description": "Runs the app with many parameters",
             "type":        "task/ruby"
+          },
+          {
+            "name":        "An appendable app",
+            "command":     "jruby params_app.rb hello",
+            "description": "Runs an app that prints parameters",
+            "type":        "task/ruby"
           }
         ],
         "file_runners":[
@@ -76,6 +84,7 @@ end
 
 Before do
   reset_runnable_fixtures
+  Redcar.gui.dialog_adapter.clear_input
 end
 
 After do

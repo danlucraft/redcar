@@ -290,7 +290,7 @@ module Redcar
 
       def execute
         command = @node.command
-        command = "#{command} #{PARAMS}" unless command.include?(PARAMS)
+        command = "#{command} #{PARAMS}" unless command =~ /#{PARAMS}$/
         Runnables.run_process(@node.path, command, @node.text, @node.output)
       end
     end
