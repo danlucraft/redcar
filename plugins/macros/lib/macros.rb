@@ -91,6 +91,7 @@ module Redcar
               }, StartStopRecordingCommand
             item "Run Last", RunLastCommand
             item "Name and Save Last Recorded", NameLastMacroCommand
+            separator
             item "Macro Manager", MacroManagerCommand
             lazy_sub_menu "New" do
               Macros.session_macros.reverse.each do |macro|
@@ -102,6 +103,8 @@ module Redcar
                 item(macro.name) { macro.run }
               end
             end
+            separator
+            item "Predict", PredictCommand
           end
         end
       end
