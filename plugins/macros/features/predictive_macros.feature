@@ -16,3 +16,9 @@ Feature: Predictive macros
     And I press predict
     And I press predict
     Then the contents should be "abababab"
+
+  Scenario: Repeat simple command sequence that is partially repeated
+    When I type "aba"
+    And I press predict
+    Then the contents should be "abab"
+    

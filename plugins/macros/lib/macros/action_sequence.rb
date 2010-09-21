@@ -12,7 +12,7 @@ module Redcar
       
       def run_in(edit_view)
         edit_view.document.compound do
-          actions.each do |action|
+          actions[skip_length..-1].each do |action|
             case action
             when Fixnum
               edit_view.type_character(action)
