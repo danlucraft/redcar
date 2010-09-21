@@ -21,22 +21,15 @@ module Redcar
     def run
       run_in EditView.focussed_edit_view
     end
-
+    
     def run_in(edit_view)
       Macros.last_run = self
       Macros.last_run_or_recorded = self
       previous_block_selection_mode = edit_view.document.block_selection_mode?
       edit_view.document.block_selection_mode = start_in_block_selection_mode?
-      actions.each do |action|
-        case action
-        when Fixnum
-          edit_view.type_character(action)
-        when Symbol
-          edit_view.invoke_action(action)
-        when DocumentCommand
-          action.run(:env => {:edit_view => edit_view})
-        end
-      end
+      
+      Macros::ActionSequence.new(actions, 0).run_in(edit_view)
+      
       edit_view.document.block_selection_mode = previous_block_selection_mode
       Redcar.app.repeat_event(:macro_ran)
     end

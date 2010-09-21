@@ -1,9 +1,9 @@
 
+require 'macros/action_sequence'
 require 'macros/commands'
 require 'macros/macro'
 require 'macros/manager_controller'
 
-require 'macros/predictive/sequence'
 require 'macros/predictive/sequence_finder'
 
 module Redcar

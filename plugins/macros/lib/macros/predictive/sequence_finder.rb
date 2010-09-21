@@ -70,7 +70,7 @@ module Redcar
           candidate = super_sequence[0..(length - 1)]
           confirmation = super_sequence[length..(2*length - 1)]
           if candidate == confirmation
-            Sequence.new(candidate.reverse, 0)
+            ActionSequence.new(candidate.reverse, 0)
           end
         end
         
@@ -79,7 +79,7 @@ module Redcar
           candidate_y = super_sequence[length_x..(length_x + length_y - 1)]
           confirmation_x = super_sequence[(length_x + length_y)..(2*length_x + length_y - 1)]
           if candidate_x == confirmation_x
-            Sequence.new(candidate_x.reverse + candidate_y.reverse, candidate_x.length)
+            ActionSequence.new(candidate_x.reverse + candidate_y.reverse, candidate_x.length)
           end
         end
         
