@@ -1,4 +1,3 @@
-require "java-mateview-#{Redcar::VERSION}"
 
 module JavaMateView
   import com.redcareditor.mate.Bundle
