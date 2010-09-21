@@ -1,5 +1,5 @@
-Version 0.6 (TBD)
-==============================
+Version 0.6 (21 September 2010)
+===============================
 
 Enhancements
 
@@ -9,6 +9,10 @@ Enhancements
  * Added a 'Tidy File' menu option which will try to reindent complete file (Alex Lourie)
  * find-in-project: Search spinner, remember search settings, wrap long lines, styling updates (Kieran Pilkington)
  * Align assignments command (Stefan Natchev)
+ * Groovy REPL! (Delisa Mason)
+ * Sort lines command (Erik Lundqvist)
+ * Runnables: copy output to clipboard (Mat Schaffer)
+ * Runnables: 'run again' button (Mat Schaffer)
 
 Bugfixes:
 
