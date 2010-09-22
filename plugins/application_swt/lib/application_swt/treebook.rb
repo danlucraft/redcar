@@ -1,3 +1,6 @@
+require 'swt/vtab_folder'
+require 'swt/vtab_item'
+
 module Redcar
   class ApplicationSWT
     class Treebook
@@ -15,46 +18,37 @@ module Redcar
       end
 
       def tree_added(tree)
-        tree_view = TreeViewSWT.new(@tree_composite, tree)
-        tree.controller = tree_view
-        title = tree.tree_mirror.title
-        @tree_combo.add(title)
-        @tree_combo.select(@tree_combo.get_items.to_a.index(title))
-        @tree_layout.topControl = tree_view.control
-        @tree_composite.layout
+        i = Swt::Widgets::VTabItem.new(@treebook, Swt::SWT::NULL)
+        i.text = tree.tree_mirror.title
+        i.control = TreeViewSWT.new(@treebook, tree)
+        @treebook.silent_selection(i)
       end
 
       def tree_removed(tree)
-        tree.controller.close
-        @tree_combo.remove(tree.tree_mirror.title)
+        @treebook.remove_item(@treebook.get_item(tree.tree_mirror.title))
       end
 
       def tree_focussed(tree)
-        @tree_layout.topControl = tree.controller.control
-        @tree_composite.layout
-        @tree_combo.select(@tree_combo.get_items.to_a.index(tree.tree_mirror.title))
+        item = @treebook.get_item(tree.tree_mirror.title)
+        @treebook.silent_selection(item)
       end
 
       def create_tree_view
-        @tree_composite = Swt::Widgets::Composite.new(@window.tree_sash, Swt::SWT::NONE)
-        @tree_layout = Swt::Custom::StackLayout.new
-        @tree_composite.setLayout(@tree_layout)
+        @treebook = Swt::Widgets::VTabFolder.new(@window.tree_sash, Swt::SWT::NONE)
+        colors = [ Swt::Graphics::Color.new(display, 230, 240, 255),
+          Swt::Graphics::Color.new(display, 170, 199, 246),
+          Swt::Graphics::Color.new(display, 135, 178, 247) ]
+        percents = [60, 85]
+        @treebook.set_selection_background(colors, percents, true)
 
-        @tree_combo = Swt::Widgets::Combo.new(@window.left_composite, Swt::SWT::READ_ONLY)
-        grid_data = Swt::Layout::GridData.new
-        grid_data.grabExcessHorizontalSpace = true
-        grid_data.horizontalAlignment = Swt::Layout::GridData::FILL
-        grid_data.grabExcessVerticalSpace = false
-      	@tree_combo.setLayoutData(grid_data)
-        @tree_combo.add_selection_listener do
-          selected_tree = @model.trees.detect {|t| t.tree_mirror.title == @tree_combo.text}
+        @treebook.add_selection_listener do |event|
+          selected_tree = event.item.control
           @model.focus_tree(selected_tree)
         end
 
-        @tree_composite.layout
+        @treebook.layout
         @window.left_composite.layout
       end
-
     end
   end
 end
