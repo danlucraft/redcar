@@ -2,7 +2,7 @@ require File.expand_path("../graphics_utils", __FILE__)
 
 module Swt
   module Widgets
-    class VtabLabel
+    class VTabLabel
       attr_reader :active, :title
       attr_accessor :font
 
@@ -66,6 +66,10 @@ module Swt
       def redraw
         @dirty = true
         @label.image = label_image
+      end
+
+      def dispose
+        @label.dispose
       end
 
       def mouseUp(e)

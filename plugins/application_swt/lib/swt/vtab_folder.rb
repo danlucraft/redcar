@@ -1,10 +1,8 @@
-require File.expand_path("../vtab_item", __FILE__)
-
 module Swt
   module Widgets
-    class VerticalTabFolder < Swt::Widgets::Composite
+    class VTabFolder < Swt::Widgets::Composite
       attr_accessor :tab_area, :content_area
-      attr_reader :selection_color_options, :font
+      attr_reader :selection_color_options, :font, :items
 
       SelectionEvent = Struct.new("Event", :item, :doit)
 
@@ -46,8 +44,16 @@ module Swt
         layout
       end
 
-      def get_item(idx)
-        return @items[idx] if idx.respond_to? :to_int
+      def remove_item(tab)
+        @items.delete(tab)
+        tab.dispose
+        @items.first.active = true if tab.active?
+        layout
+      end
+
+      def get_item(selector)
+        return @items[selector] if selector.respond_to? :to_int
+        return @items.detect { |i| i.text == selector } if selector.respond_to? :to_str
         raise NotImplementedError, "Getting via Point not implemented"
       end
 
@@ -72,14 +78,18 @@ module Swt
           end
         end
         if evt.doit
-          selection.active = false
-          if tab.respond_to? :to_int
-            @items[tab].active = true
-          else
-            tab.active = true
-          end
-          layout
+          silent_selection(tab)
         end
+      end
+
+      def silent_selection(tab)
+        selection.active = false
+        if tab.respond_to? :to_int
+          @items[tab].active = true
+        else
+          tab.active = true
+        end
+        layout
       end
 
       def selection_index

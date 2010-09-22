@@ -2,7 +2,7 @@ require File.expand_path("../vtab_label", __FILE__)
 
 module Swt
   module Widgets
-    class VtabItem
+    class VTabItem
       attr_accessor :text, :control
 
       def initialize(parent, style)
@@ -57,6 +57,11 @@ module Swt
 
       def font
         @label.font
+      end
+
+      def dispose
+        @control.dispose
+        @label.dispose
       end
     end
   end
