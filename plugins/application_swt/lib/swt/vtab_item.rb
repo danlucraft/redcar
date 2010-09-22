@@ -22,6 +22,7 @@ module Swt
           l.horizontalAlignment = Swt::Layout::GridData::FILL
           l.verticalAlignment = Swt::Layout::GridData::FILL
           l.grabExcessHorizontalSpace = true
+          l.grabExcessVerticalSpace = true
           l.exclude = active?
         end
       end
