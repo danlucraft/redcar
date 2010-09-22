@@ -26,6 +26,7 @@ module Redcar
       end
 
       def tree_removed(tree)
+        tree.controller.close
         @treebook.remove_item(@treebook.get_item(tree.tree_mirror.title))
       end
 
