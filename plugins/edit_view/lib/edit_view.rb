@@ -53,9 +53,9 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Edit" do
-          group(:priority => 90) do
-            separator
-            sub_menu "Convert Text" do
+          sub_menu "Formatting" do
+            item "Align Assignments", EditView::AlignAssignmentCommand
+            sub_menu "Convert Text", :priority => 40 do
               item "to Uppercase",     EditView::UpcaseTextCommand
               item "to Lowercase",     EditView::DowncaseTextCommand
               item "to Titlecase",     EditView::TitlizeTextCommand
@@ -64,8 +64,6 @@ module Redcar
               item "to CamelCase",                           EditView::CamelCaseTextCommand
               item "to snake_case",                          EditView::UnderscoreTextCommand
               item "Toggle PascalCase-underscore-camelCase", EditView::CamelSnakePascalRotateTextCommand
-              separator
-              item "Align Assignments", EditView::AlignAssignmentCommand
             end
           end
         end
