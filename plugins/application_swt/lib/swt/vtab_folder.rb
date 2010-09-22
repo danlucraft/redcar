@@ -7,11 +7,12 @@ module Swt
       SelectionEvent = Struct.new("Event", :item, :doit)
 
       def initialize(parent, style)
-        super(parent, style)
+        super(parent, style | Swt::SWT::BORDER)
         self.layout = Swt::Layout::GridLayout.new(2, false).tap do |l|
           l.horizontalSpacing = -1
-          l.marginHeight = 0
-          l.marginWidth = 0
+          l.verticalSpacing = -1
+          l.marginHeight = -1
+          l.marginWidth = -1
         end
 
         @items = []
