@@ -69,6 +69,7 @@ module Swt
       end
 
       def selection=(tab)
+        return if tab.nil?
         evt = SelectionEvent.new.tap do |e|
           e.item = tab
           e.doit = true
@@ -86,7 +87,8 @@ module Swt
       end
 
       def silent_selection(tab)
-        selection.active = false
+        return if tab.nil?
+        selection.active = false if selection
         if tab.respond_to? :to_int
           @items[tab].active = true
         else
