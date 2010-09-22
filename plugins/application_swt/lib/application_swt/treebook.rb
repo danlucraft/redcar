@@ -21,6 +21,7 @@ module Redcar
         i = Swt::Widgets::VTabItem.new(@treebook, Swt::SWT::NULL)
         i.text = tree.tree_mirror.title
         i.control = TreeViewSWT.new(@treebook, tree)
+        tree.controller = i.control
         @treebook.silent_selection(i)
       end
 
