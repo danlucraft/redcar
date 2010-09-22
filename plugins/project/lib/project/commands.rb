@@ -337,7 +337,7 @@ module Redcar
         when :osx
           run_application('open', path)
         when :windows
-          run_application('cmd.exe', '/k', 'cd ' + path.gsub("/","\\"))
+          run_application('start cmd.exe', '/kcd ' + path.gsub("/","\\"))
         when :linux
           app = {
             'xfce4-terminal' => ["--working-directory=#{path}"],
