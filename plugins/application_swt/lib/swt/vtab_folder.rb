@@ -47,7 +47,7 @@ module Swt
       def remove_item(tab)
         @items.delete(tab)
         tab.dispose
-        @items.first.active = true if tab.active?
+        @items.first.active = true if tab.active? && @items.first
         layout
       end
 
