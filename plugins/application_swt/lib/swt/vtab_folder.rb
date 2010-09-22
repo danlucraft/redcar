@@ -10,6 +10,8 @@ module Swt
         super(parent, style)
         self.layout = Swt::Layout::GridLayout.new(2, false).tap do |l|
           l.horizontalSpacing = -1
+          l.marginHeight = 0
+          l.marginWidth = 0
         end
 
         @items = []
