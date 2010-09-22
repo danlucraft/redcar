@@ -1,13 +1,13 @@
 module Redcar
   class ApplicationSWT
     class Treebook
-      
+
       def initialize(window, model)
         @window, @model = window, model
         add_listeners
         create_tree_view
       end
-      
+
       def add_listeners
         @model.add_listener(:tree_added,   &method(:tree_added))
         @model.add_listener(:tree_removed, &method(:tree_removed))
@@ -23,12 +23,12 @@ module Redcar
         @tree_layout.topControl = tree_view.control
         @tree_composite.layout
       end
-      
+
       def tree_removed(tree)
         tree.controller.close
         @tree_combo.remove(tree.tree_mirror.title)
       end
-      
+
       def tree_focussed(tree)
         @tree_layout.topControl = tree.controller.control
         @tree_composite.layout
@@ -39,7 +39,7 @@ module Redcar
         @tree_composite = Swt::Widgets::Composite.new(@window.tree_sash, Swt::SWT::NONE)
         @tree_layout = Swt::Custom::StackLayout.new
         @tree_composite.setLayout(@tree_layout)
-        
+
         @tree_combo = Swt::Widgets::Combo.new(@window.left_composite, Swt::SWT::READ_ONLY)
         grid_data = Swt::Layout::GridData.new
         grid_data.grabExcessHorizontalSpace = true
@@ -50,11 +50,11 @@ module Redcar
           selected_tree = @model.trees.detect {|t| t.tree_mirror.title == @tree_combo.text}
           @model.focus_tree(selected_tree)
         end
-        
+
         @tree_composite.layout
         @window.left_composite.layout
       end
-      
+
     end
   end
 end
