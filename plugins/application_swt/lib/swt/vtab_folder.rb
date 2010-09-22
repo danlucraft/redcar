@@ -95,6 +95,7 @@ module Swt
           tab.active = true
         end
         layout
+        @tab_area.layout
       end
 
       def selection_index
