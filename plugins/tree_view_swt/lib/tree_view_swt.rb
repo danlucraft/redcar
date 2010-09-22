@@ -15,7 +15,7 @@ module Redcar
     
     def initialize(composite, model)
       @composite, @model = composite, model
-      tree_style = Swt::SWT::MULTI
+      tree_style = Swt::SWT::MULTI | Swt::SWT::H_SCROLL | Swt::SWT::V_SCROLL
       @viewer = JFace::Viewers::TreeViewer.new(@composite, tree_style)
       grid_data = Swt::Layout::GridData.new
       grid_data.grabExcessHorizontalSpace = true
