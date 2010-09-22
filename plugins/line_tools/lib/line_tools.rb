@@ -5,15 +5,13 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Edit" do
-          group(:priority => 110) do
-            sub_menu "Line Tools" do
-              item "Raise Region", LineTools::RaiseTextCommand
-              item "Lower Region", LineTools::LowerTextCommand
-              item "Replace Line", LineTools::ReplaceLineCommand
-              item "Clear Line"  , LineTools::ClearLineCommand
-              item "Trim Line"   , LineTools::TrimLineAfterCursorCommand
-              item "Kill Line"   , LineTools::KillLineCommand
-            end
+          sub_menu "Line Tools" do
+            item "Raise Region", LineTools::RaiseTextCommand
+            item "Lower Region", LineTools::LowerTextCommand
+            item "Replace Line", LineTools::ReplaceLineCommand
+            item "Clear Line"  , LineTools::ClearLineCommand
+            item "Trim Line"   , LineTools::TrimLineAfterCursorCommand
+            item "Kill Line"   , LineTools::KillLineCommand
           end
         end
       end
