@@ -44,8 +44,9 @@ module Redcar
         @treebook.set_selection_background(colors, percents, true)
 
         @treebook.add_selection_listener do |event|
-          selected_tree = event.item.control
-          @model.focus_tree(selected_tree)
+          tab_item = event.item
+          tree_view_swt = tab_item.control
+          @model.focus_tree(tree_view_swt.model)
         end
 
         @treebook.layout
