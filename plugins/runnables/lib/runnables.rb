@@ -131,6 +131,48 @@ module Redcar
       include Redcar::Tree::Mirror::NodeMirror
 
       def initialize(name,runnables)
+        @children = []
+        @name = name
+        if runnables.any?
+          group = []
+          type = nil
+          runnables.map.sort_by{|r|r["type"]}.each do |runnable|
+            if type.nil?
+              type = runnable["type"]
+              group << runnable
+            elsif type == runnable["type"]
+              group << runnable
+            else
+              @children << RunnableTypeGroup.new(type, group)
+              type = runnable["type"]
+              group = [runnable]
+            end
+            #Runnable.new(runnable["name"], runnable)
+          end
+        end
+      end
+
+      def leaf?
+        false
+      end
+
+      def text
+        @name
+      end
+
+      def icon
+        :file
+      end
+
+      def children
+        @children
+      end
+    end
+
+    class RunnableTypeGroup
+      include Redcar::Tree::Mirror::NodeMirror
+
+      def initialize(name,runnables)
         @name = name
         if runnables.any?
           @children = runnables.map do |runnable|
