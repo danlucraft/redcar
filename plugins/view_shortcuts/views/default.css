@@ -1,0 +1,66 @@
+h1 {
+  background: #5f282d url("redcar_small_icon.png") no-repeat 10px 10px;
+  color: #dcb663;
+  height: 30px;
+  line-height: 30px;
+  padding: 10px 10px 10px 52px;
+  font-family: Palatino, Times, serif;
+  letter-spacing: 3px;
+}
+
+.command, .output {
+  font-family: Menlo, Consolas, monospace;
+  font-size: 12px;
+  padding: 5px;
+}
+
+.command, .actions {
+  margin: 0 5px;
+}
+
+.output {
+  border: 1px solid #ddd;
+}
+
+.process {
+  padding: 0 5px 5px 5px;
+}
+
+.stderr {
+  color: #f00;
+}
+
+.command {
+  color: #666;
+}
+
+.header .in-progress-message, .running .header .completed-message, .actions {
+  display: none;
+}
+
+.header .copy {
+  float: right;
+  margin: 0 10px;
+}
+
+.running .header .in-progress-message {
+  display: inline;
+}
+
+.running .header {
+  background: #666 url("indicator.gif") no-repeat 5px center;
+  padding-left: 25px;
+  color: #fff;
+}
+
+.running .output {
+  border: 1px solid #666;
+}
+
+.even {
+    background-color: #ddd;
+}
+
+table {
+    border: 1px solid black;
+}
