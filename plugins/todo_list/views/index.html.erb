@@ -1,22 +1,11 @@
 
 <script type="text/javascript" src="file://<%= Redcar::HtmlView.jquery_path %>"></script>
-<link rel="stylesheet" href="file://<%= Redcar::HtmlView.default_css_path %>" type="text/css" media="screen">
-<style>
-  .status {
-    padding:3px;
-    margin:3px;
-    font-style:italic;
-  }
-  .final_status {
-    font-size:70%;
-    font-style:italic;
-    float:right;
-  }
-</style>
-<h3>Todo List</h3>
+<% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins todo_list views default.css))) %>
+<link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
+<h1>Todo List</h1>
 <div>
   <a class="status" id="status"></a>
-  <a id="refresh" href="controller/index"></a> 
+  <a id="refresh" href="controller/index"></a>
   <a class="final_status" id="final_status"></a>
 </div>
-<div id="tags"></div>
+<div class="content" id="tags"></div>

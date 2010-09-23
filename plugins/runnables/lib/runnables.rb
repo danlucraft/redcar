@@ -12,7 +12,7 @@ module Redcar
           notebook.tabs.each do |tab|
             case tab
             when EditTab
-              tab.edit_view.document.save!
+              tab.edit_view.document.save! if tab.edit_view.document.modified?
             end
           end
         end
@@ -34,7 +34,7 @@ module Redcar
         end
       end
     end
-    
+
     def self.previous_tab_for(command)
       Redcar.app.all_tabs.detect do |t|
         t.respond_to?(:html_view) &&
@@ -61,17 +61,17 @@ module Redcar
         end
       end
     end
-    
+
     def self.toolbars
       ToolBar::Builder.build do
         item "Runnables", :command => Runnables::ShowRunnables, :icon => File.join(File.dirname(__FILE__),"/../icons/cog.png"), :barname => :runnables
         item "Run Tab", :command => Runnables::RunEditTabCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "control.png"), :barname => :runnables
       end
     end
-    
+
     class TreeMirror
       include Redcar::Tree::Mirror
-      
+
       attr_accessor :last_loaded
 
       def initialize(project)
@@ -126,10 +126,10 @@ module Redcar
         storage
       end
     end
-    
+
     class RunnableGroup
       include Redcar::Tree::Mirror::NodeMirror
-      
+
       def initialize(name,runnables)
         @name = name
         if runnables.any?
@@ -138,48 +138,48 @@ module Redcar
           end
         end
       end
-      
+
       def leaf?
         false
       end
-      
+
       def text
         @name
       end
-      
+
       def icon
         :file
       end
-      
+
       def children
         @children
       end
     end
-    
+
     class HelpItem
       include Redcar::Tree::Mirror::NodeMirror
-      
+
       def text
         "No runnables (HELP)"
       end
     end
-    
+
     class Runnable
       include Redcar::Tree::Mirror::NodeMirror
-      
+
       def initialize(name, info)
         @name = name
         @info = info
       end
-      
+
       def text
         @name
       end
-      
+
       def leaf?
         @info["command"]
       end
-      
+
       def icon
         if leaf?
           File.dirname(__FILE__) + "/../icons/cog.png"
@@ -187,11 +187,11 @@ module Redcar
           :directory
         end
       end
-      
+
       def children
         []
       end
-      
+
       def command
         @info["command"]
       end
@@ -208,14 +208,14 @@ module Redcar
         end
       end
     end
-    
+
     class TreeController
       include Redcar::Tree::Controller
-      
+
       def initialize(project)
         @project = project
       end
-      
+
       def activated(tree, node)
         case node
         when Runnable
@@ -228,7 +228,7 @@ module Redcar
         end
       end
     end
-    
+
     class ShowRunnables < Redcar::Command
       sensitize :open_project
       def execute
@@ -245,12 +245,12 @@ module Redcar
         end
       end
     end
-    
+
     class RunEditTabCommand < Redcar::EditTabCommand
       def file_mappings
         project = Project::Manager.in_window(win)
         runnable_file_paths = project.config_files("runnables/*.json")
-        
+
         file_runners = []
         runnable_file_paths.each do |path|
           json = File.read(path)
@@ -259,7 +259,7 @@ module Redcar
         end
         file_runners
       end
-      
+
       def execute
         project = Project::Manager.in_window(win)
         file_mappings.each do |file_mapping|
