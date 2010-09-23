@@ -1,3 +1,4 @@
+
 h1 {
   background: #5f282d url("redcar_small_icon.png") no-repeat 10px 10px;
   color: #dcb663;
@@ -6,6 +7,7 @@ h1 {
   padding: 10px 10px 10px 52px;
   font-family: Palatino, Times, serif;
   letter-spacing: 3px;
+  font-size: 100%;
 }
 
 .command, .output {
@@ -63,4 +65,5 @@ h1 {
 
 table {
     border: 1px solid black;
+font-size: 80%;
 }
