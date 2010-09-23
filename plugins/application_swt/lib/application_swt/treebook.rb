@@ -4,6 +4,7 @@ require 'swt/vtab_item'
 module Redcar
   class ApplicationSWT
     class Treebook
+      attr_reader :tab_folder
 
       def initialize(window, model)
         @window, @model = window, model
@@ -18,38 +19,38 @@ module Redcar
       end
 
       def tree_added(tree)
-        i = Swt::Widgets::VTabItem.new(@treebook, Swt::SWT::NULL)
+        i = Swt::Widgets::VTabItem.new(@tab_folder, Swt::SWT::NULL)
         i.text = tree.tree_mirror.title
-        i.control = TreeViewSWT.new(@treebook, tree)
+        i.control = TreeViewSWT.new(@tab_folder, tree)
         tree.controller = i.control
-        @treebook.silent_selection(i)
+        @tab_folder.silent_selection(i)
       end
 
       def tree_removed(tree)
         tree.controller.close
-        @treebook.remove_item(@treebook.get_item(tree.tree_mirror.title))
+        @tab_folder.remove_item(@tab_folder.get_item(tree.tree_mirror.title))
       end
 
       def tree_focussed(tree)
-        item = @treebook.get_item(tree.tree_mirror.title)
-        @treebook.silent_selection(item)
+        item = @tab_folder.get_item(tree.tree_mirror.title)
+        @tab_folder.silent_selection(item)
       end
 
       def create_tree_view
-        @treebook = Swt::Widgets::VTabFolder.new(@window.tree_sash, Swt::SWT::NONE)
+        @tab_folder = Swt::Widgets::VTabFolder.new(@window.tree_sash, Swt::SWT::NONE)
         colors = [ Swt::Graphics::Color.new(display, 230, 240, 255),
           Swt::Graphics::Color.new(display, 170, 199, 246),
           Swt::Graphics::Color.new(display, 135, 178, 247) ]
         percents = [60, 85]
-        @treebook.set_selection_background(colors, percents, true)
+        @tab_folder.set_selection_background(colors, percents, true)
 
-        @treebook.add_selection_listener do |event|
+        @tab_folder.add_selection_listener do |event|
           tab_item = event.item
           tree_view_swt = tab_item.control
           @model.focus_tree(tree_view_swt.model)
         end
 
-        @treebook.layout
+        @tab_folder.layout
         @window.left_composite.layout
       end
     end
