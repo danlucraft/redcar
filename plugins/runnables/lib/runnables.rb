@@ -136,18 +136,28 @@ module Redcar
         if runnables.any?
           group = []
           type = nil
-          runnables.map.sort_by{|r|r["type"]}.each do |runnable|
-            if type.nil?
+          i = 0
+          runnables.map.sort_by{|r|r["type"]||""}.each do |runnable|
+            if runnable["type"] == nil
+              @children << Runnable.new(runnable["name"],runnable)
+            elsif type.nil?
               type = runnable["type"]
               group << runnable
             elsif type == runnable["type"]
               group << runnable
-            else
-              @children << RunnableTypeGroup.new(type, group)
+            end
+            if i == runnables.length - 1 or type != runnable["type"]
+              if type == name
+                group.each {|r| @children << Runnable.new(r["name"],r)}
+              else
+                type = type[name.length,type.length] if type =~ /^#{name}/
+                type = type[1,type.length] if type =~ /^\//
+                @children << RunnableTypeGroup.new(type, group)
+              end
               type = runnable["type"]
               group = [runnable]
             end
-            #Runnable.new(runnable["name"], runnable)
+            i = i + 1
           end
         end
       end
@@ -190,7 +200,7 @@ module Redcar
       end
 
       def icon
-        :file
+        File.join(Redcar::ICONS_DIRECTORY, "terminal.png")
       end
 
       def children
