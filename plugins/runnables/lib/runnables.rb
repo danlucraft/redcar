@@ -228,6 +228,10 @@ module Redcar
         @name
       end
 
+      def tooltip_text
+        @info["description"] || ""
+      end
+
       def leaf?
         @info["command"]
       end
