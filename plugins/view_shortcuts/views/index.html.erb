@@ -6,20 +6,24 @@
   </head>
   <body>
     <h1>Keyboard Shortcuts</h1>
-    <a href="controller/index">Refresh List</a>
-    <table>
-      <tr>
-        <th>Action</th>
-        <th>Shortcut</th>
-      </tr>
-      <% i = 0 %>
-      <% Redcar.app.main_keymap.map.sort_by{|key, command| clean_name(command)}.each do |key, command| %>
-      <tr class="<%= i % 2 == 0 ? 'even':'odd'%>">
-        <td><%= clean_name(command) %></td>
-        <td><%= key %></td>
-        <% i = i + 1%>
-      </tr>
-      <% end %>
-    </table>
+    <div class="content">
+      <div  class="refresh">
+        <a href="controller/index">Refresh List</a>
+      </div>
+      <table>
+        <tr>
+          <th>Action</th>
+          <th>Shortcut</th>
+        </tr>
+        <% i = 0 %>
+        <% Redcar.app.main_keymap.map.sort_by{|key, command| clean_name(command)}.each do |key, command| %>
+        <tr class="<%= i % 2 == 0 ? 'even':'odd'%>">
+          <td><%= clean_name(command) %></td>
+          <td><%= key %></td>
+          <% i = i + 1%>
+        </tr>
+        <% end %>
+      </table>
+    </div>
   </body>
 </html>
