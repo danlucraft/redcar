@@ -13,13 +13,14 @@ module Redcar
     module Subversion
       class Manager
         include Redcar::Scm::Model
+        attr_reader :path
         include_package 'org.tmatesoft.svn.core.wc'
         include_package 'org.tmatesoft.svn.core'
         import 'org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory'
         import 'org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl'
         import 'org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory'
         import 'org.tmatesoft.svn.core.io.SVNRepositoryFactory'
-        
+
         def client_manager
           @manager ||= begin
             m = SVNClientManager.newInstance()
@@ -144,7 +145,7 @@ module Redcar
             File.delete(change.path)
           elsif change.status[0] == :indexed
             index_unsave(change)
-            File.delete(Fle.new(change.path))
+            File.delete(File.new(change.path))
           else
             client_manager.getWCClient().doDelete(
             Java::JavaIo::File.new(change.path),
