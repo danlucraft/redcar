@@ -76,6 +76,7 @@ module Swt
   
   module Events
     import org.eclipse.swt.events.KeyEvent
+    import org.eclipse.swt.events.MouseListener
   end
   
   import org.eclipse.swt.browser.Browser
