@@ -18,7 +18,8 @@ module Redcar
         import 'org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory'
         import 'org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl'
         import 'org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory'
-
+        import 'org.tmatesoft.svn.core.io.SVNRepositoryFactory'
+        
         def client_manager
           @manager ||= begin
             m = SVNClientManager.newInstance()
