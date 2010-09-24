@@ -108,7 +108,7 @@ module Redcar
         end
 
         def index_ignore(change)
-          ignore_under_path(Java::JavaIo::File.new(change.path).getParentFile().getAbsolutePath(),change.path)
+          ignore_under_path(Java::JavaIo::File.new(File.dirname(change.path)).getAbsolutePath(),File.basename(change.path))
           true # refresh tree
         end
 
