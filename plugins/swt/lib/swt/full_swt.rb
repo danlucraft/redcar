@@ -71,6 +71,7 @@ module Swt
     import org.eclipse.swt.graphics.Font
     import org.eclipse.swt.graphics.GC
     import org.eclipse.swt.graphics.Point
+    import org.eclipse.swt.graphics.RGB
   end
   
   module Events

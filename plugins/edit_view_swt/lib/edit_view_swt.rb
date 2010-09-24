@@ -111,6 +111,15 @@ module Redcar
       @undo_manager.end_compound_change
     end
 
+    def add_annotation_type(name, image_path, rgb)
+      rgb = Swt::Graphics::RGB.new(rgb[0], rgb[1], rgb[2])
+      @mate_text.addAnnotationType(name, image_path, rgb)
+    end
+
+    def add_annotation(annotation_name, line, text, start, length)
+      @mate_text.addAnnotation(annotation_name, line, text, start, length)
+    end
+
     def create_document
       @document = EditViewSWT::Document.new(@model.document, @mate_text.mate_document)
       @model.document.controller = @document
