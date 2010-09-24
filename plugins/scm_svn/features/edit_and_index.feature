@@ -7,7 +7,6 @@ Feature: Editing and indexing files in a working copy
 
   Scenario: Editing a file and adding to the index
     When I checkout a local repository
-    And I create a wc file named "README"
-    And I create a wc file named "foo.rb"
+    And I create a wc file named "README,foo.rb"
     And I add "foo.rb" to the index
     Then there should be "1" unindexed files and "1" indexed files

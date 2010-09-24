@@ -1,13 +1,19 @@
-When /^I add "([^"]*)" to the index$/ do |file|
-  svn_module.index_add(File.new(get_dir(working_copy) + "/#{file}"))
+When /^I add "([^"]*)" to the index$/ do |files|
+  files.split(",").each do |file|
+    svn_module.index_add(File.new(get_dir(working_copy) + "/#{file}"))
+  end
 end
 
-When /^I create a wc file named "([^"]*)"$/ do |file|
-  FileUtils.touch(get_dir(working_copy) + "/#{file}")
+When /^I create a wc file named "([^"]*)"$/ do |files|
+  files.split(",").each do |file|
+    FileUtils.touch(get_dir(working_copy) + "/#{file}")
+  end
 end
 
-When /^I create a wc directory named "([^"]*)"$/ do |dir|
-  FileUtils.mkdir_p get_dir(working_copy) + "/#{dir}"
+When /^I create a wc directory named "([^"]*)"$/ do |dirs|
+  dirs.split(",").each do |dir|
+    FileUtils.mkdir_p get_dir(working_copy) + "/#{dir}"
+  end
 end
 
 Then /^there should be "([^"]*)" unindexed files and "([^"]*)" indexed files$/ do |ucount, count|
@@ -25,4 +31,8 @@ end
 
 Then /^the contents of wc file "([^"]*)" should be "([^"]*)"$/ do |file,text|
   File.read(get_dir(working_copy) + "/#{file}").rstrip.should == text
+end
+
+Then /^the contents of wc file "([^"]*)" in the new copy should be "([^"]*)"$/ do |file,text|
+  File.read(get_dir(working_copy_2) + "/#{file}").rstrip.should == text
 end

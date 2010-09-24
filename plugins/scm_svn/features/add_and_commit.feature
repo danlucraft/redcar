@@ -2,8 +2,7 @@ Feature: Adding and committing files in a working copy
 
   Scenario: Adding and committing new files to a repository
     When I checkout a local repository
-    And I create a wc file named "README"
-    And I create a wc file named "foo.rb"
+    And I create a wc file named "README,foo.rb"
     And I add "foo.rb" to the index
     And I commit my changes with message "Hark! This is a commit."
     Then there should be "1" unindexed files and "0" indexed files

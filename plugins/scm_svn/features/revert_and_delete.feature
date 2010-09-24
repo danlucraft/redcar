@@ -13,10 +13,8 @@ Feature: Reverting and deleting files in a working copy
 
   Scenario: Deleting a file from version control
     When I checkout a local repository
-    And I create a wc file named "foo.rb"
-    And I create a wc file named "bar.rb"
-    And I add "foo.rb" to the index
-    And I add "bar.rb" to the index
+    And I create a wc file named "foo.rb,bar.rb"
+    And I add "foo.rb,bar.rb" to the index
     And I commit my changes with message "Hark! This be a commit."
     And I wc delete "foo.rb"
     And I commit my changes with message "Yarr! Committin' I be!"
