@@ -20,3 +20,9 @@ end
 Then /^I should see (\d+) more windows?$/ do |window_count|
   Redcar.app.windows.size.should == (@windows + window_count.to_i)
 end
+
+When /^I append parameters to the "([^"]*)" node in the tree$/ do |node_text|
+  mirror     = Redcar.app.focussed_window.treebook.focussed_tree.tree_mirror
+  node       = find_node_with_text(mirror.top, node_text)
+  Redcar::Runnables::AppendParamsAndRunCommand.new(node).run
+end
