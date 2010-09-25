@@ -475,6 +475,14 @@ module Redcar
       notify_listeners(:annotations_visibility_changed, @show_annotations)
     end
 
+    def add_annotation(annotation_name, line, text, start, length)
+      controller.add_annotation(annotation_name, line, text, start, length)
+    end
+
+    def add_annotation_type(name, image, rgb)
+      controller.add_annotation_type(name, File.expand_path("#{image}.png", ICONS_DIRECTORY), rgb)
+    end
+
     def title=(title)
       notify_listeners(:title_changed, title)
     end

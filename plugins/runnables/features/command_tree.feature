@@ -7,7 +7,7 @@ Feature: Showing commands in a command tree
   Scenario: Shows grouped commands from .redcar/runnables/*.json in the project
     When I open the runnables tree
     Then I should see "fixture_runnables" in the tree
-  
+
   Scenario: Shows individual commands in groups
     When I open the runnables tree
     And I expand the tree row "fixture_runnables"

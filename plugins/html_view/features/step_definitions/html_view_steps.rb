@@ -7,7 +7,7 @@ Then /^the HTML tab (should say|says) "([^"]*)"$/ do |_, needle|
     started = true
     start = Time.now
     contents = get_browser_contents
-    while !contents.match(needle) && Time.now - start < limit
+    while !contents or (contents and !contents.match(needle)) && Time.now - start < limit
       contents = get_browser_contents
       sleep 0.1
     end    
