@@ -33,40 +33,34 @@ def reset_runnable_fixtures
           {
             "name":        "An app",
             "command":     "jruby runnable_app.rb",
-            "description": "Runs the app",
-            "type":        "task/ruby"
+            "description": "Runs the app"
           },
           {
             "name":        "A silent app",
             "command":     "jruby runnable_app.rb",
             "description": "Runs the app silently",
-            "type":        "task/ruby",
             "output":      "none"
           },
           {
             "name":        "A windowed app",
             "command":     "jruby runnable_app.rb",
             "description": "Runs the app in a window",
-            "type":        "task/ruby",
             "output":      "window"
           },
           {
             "name":        "A params app",
             "command":     "jruby __PARAMS__",
-            "description": "Runs the app with a parameter",
-            "type":        "task/ruby"
+            "description": "Runs the app with a parameter"
           },
           {
             "name":        "A multi-params app",
             "command":     "jruby params_app.rb __PARAMS__ __PARAMS__",
-            "description": "Runs the app with many parameters",
-            "type":        "task/ruby"
+            "description": "Runs the app with many parameters"
           },
           {
             "name":        "An appendable app",
             "command":     "jruby params_app.rb hello",
-            "description": "Runs an app that prints parameters",
-            "type":        "task/ruby"
+            "description": "Runs an app that prints parameters"
           }
         ],
         "file_runners":[
