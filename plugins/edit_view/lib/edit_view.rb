@@ -457,6 +457,7 @@ module Redcar
     end
 
     def add_annotation(annotation_name, line, text, start, length)
+      start += document.offset_at_line(line)
       controller.add_annotation(annotation_name, line, text, start, length)
     end
 
