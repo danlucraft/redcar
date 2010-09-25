@@ -2,7 +2,9 @@
 module Redcar
   class TreeViewSWT
     attr_reader :viewer, :model
-    
+
+    extend Forwardable
+
     def self.storage
       @storage ||= begin
          storage = Plugin::Storage.new('tree_view_swt_plugin')
@@ -13,7 +15,7 @@ module Redcar
     
     def initialize(composite, model)
       @composite, @model = composite, model
-      tree_style = Swt::SWT::MULTI
+      tree_style = Swt::SWT::MULTI | Swt::SWT::H_SCROLL | Swt::SWT::V_SCROLL
       @viewer = JFace::Viewers::TreeViewer.new(@composite, tree_style)
       grid_data = Swt::Layout::GridData.new
       grid_data.grabExcessHorizontalSpace = true
@@ -58,7 +60,13 @@ module Redcar
       @model.add_listener(:expand_element, &method(:expand_element))
       @model.add_listener(:select_element, &method(:select_element))
     end
-    
+
+    def tree_mirror
+      @model.tree_mirror
+    end
+
+    def_delegators :control, :layout_data, :layout_data=, :visible, :visible=
+
     class DragSourceListener
       attr_reader :tree, :dragged_elements
       
@@ -268,7 +276,8 @@ module Redcar
     def close
       @viewer.getControl.dispose
     end
-    
+    alias :dispose :close
+
     def right_click(mouse_event)
       if @model.tree_controller
         point = Swt::Graphics::Point.new(mouse_event.x, mouse_event.y)
