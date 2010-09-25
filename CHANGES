@@ -3,6 +3,10 @@ Version 0.7 (TBA)
 
 Enhancements:
 
+ * Vertical tabs for the tree book, to replace the combo box. (Tim Felgentreff)
+ * Runnables are grouped by type in the tree (Delisa Mason)
+ * Improved styling of the keyboard shortcuts help (Delisa Mason)
+ * Tidier Edit menu! (Delisa Mason)
  * Record and run macros (Dan Lucraft)
  * Name and save macros (Dan Lucraft)
  * Macro manager to save, rename and delete macros (Dan Lucraft)
@@ -11,6 +15,11 @@ New internal APIs:
 
  * DocumentHistory stream of changes to text (Dan Lucraft)
  * Menus can have lazy text that is generated when you look at them (Dan Lucraft)
+
+Bugfixes
+
+ * Open in file browser and command line now works on Windows (Jeremy Wentworth, Delisa Mason)
+
 
 Version 0.6 (21 September 2010)
 ===============================

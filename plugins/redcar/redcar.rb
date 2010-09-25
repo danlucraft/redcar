@@ -693,12 +693,6 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class ToggleAnnotations < Redcar::EditTabCommand
-      def execute
-        EditView.show_annotations = !EditView.show_annotations?
-      end
-    end
-
     class ToggleToolbar < Command
 
       def execute
@@ -940,38 +934,39 @@ Redcar.environment: #{Redcar.environment}
             item "Cut", CutCommand
             item "Copy", CopyCommand
             item "Paste", PasteCommand
-            item "Duplicate Region", DuplicateCommand
-            item "Sort Lines Region", SortLinesCommand
+            sub_menu "Line Tools", :priority => 20 do
+              item "Duplicate Region", DuplicateCommand
+              item "Sort Lines in Region", SortLinesCommand
+            end
           end
 
-          group(:priority => 25) do
+          group(:priority => 30) do
             separator
-            item "Top",     MoveTopCommand
-            item "Home",    MoveHomeCommand
-            item "End",     MoveEndCommand
-            item "Bottom",  MoveBottomCommand
-          end
-
-          group(:priority => 60) do
-            separator
-            item "Increase Indent", IncreaseIndentCommand
-            item "Decrease Indent", DecreaseIndentCommand
-          end
-
-          group(:priority => 70) do
-            separator
-            item "Goto Line", GotoLineCommand
-          end
-
-          group(:priority => 80) do
-            separator
-            sub_menu "Select" do
+            sub_menu "Selection" do
               item "All", SelectAllCommand
               item "Line", SelectLineCommand
               item "Current Word", SelectWordCommand
+              item "Toggle Block Selection", ToggleBlockSelectionCommand
             end
-            item "Toggle Block Selection", ToggleBlockSelectionCommand
           end
+          
+          group(:priority => 40) do
+            sub_menu "Document Navigation" do
+              item "Goto Line", GotoLineCommand
+              item "Top",     MoveTopCommand
+              item "Home",    MoveHomeCommand
+              item "End",     MoveEndCommand
+              item "Bottom",  MoveBottomCommand
+            end
+          end
+
+          group(:priority => 50) do
+            sub_menu "Formatting" do
+              item "Increase Indent", IncreaseIndentCommand
+              item "Decrease Indent", DecreaseIndentCommand
+            end
+          end
+
         end
         sub_menu "Debug", :priority => 20 do
           group(:priority => 10) do
@@ -1007,7 +1002,6 @@ Redcar.environment: #{Redcar.environment}
           item "Show Toolbar", :command => ToggleToolbar, :type => :check, :active => Redcar.app.show_toolbar?
           item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
           item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
-          item "Show Annotations", :command => ToggleAnnotations, :type => :check, :active => EditView.show_annotations?
         end
         sub_menu "Bundles", :priority => 45 do
           group(:priority => :first) do

@@ -93,9 +93,9 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Edit" do
-          group(:priority => 90) do
-            separator
-            sub_menu "Convert Text" do
+          sub_menu "Formatting" do
+            item "Align Assignments", EditView::AlignAssignmentCommand
+            sub_menu "Convert Text", :priority => 40 do
               item "to Uppercase",     EditView::UpcaseTextCommand
               item "to Lowercase",     EditView::DowncaseTextCommand
               item "to Titlecase",     EditView::TitlizeTextCommand
@@ -104,8 +104,6 @@ module Redcar
               item "to CamelCase",                           EditView::CamelCaseTextCommand
               item "to snake_case",                          EditView::UnderscoreTextCommand
               item "Toggle PascalCase-underscore-camelCase", EditView::CamelSnakePascalRotateTextCommand
-              separator
-              item "Align Assignments", EditView::AlignAssignmentCommand
             end
           end
         end
@@ -399,7 +397,6 @@ module Redcar
       self.show_margin   = EditView.tab_settings.show_margin_for(name)
       refresh_show_invisibles
       refresh_show_line_numbers
-      refresh_show_annotations
     end
 
     def focus
@@ -500,22 +497,12 @@ module Redcar
       notify_listeners(:line_number_visibility_changed, @show_line_numbers)
     end
 
-    def show_annotations?
-      @show_annotations
+    def add_annotation(annotation_name, line, text, start, length)
+      controller.add_annotation(annotation_name, line, text, start, length)
     end
 
-    def self.show_annotations?
-      EditView.tab_settings.show_annotations?
-    end
-
-    def self.show_annotations=(bool)
-      EditView.tab_settings.set_show_annotations(bool)
-      all_edit_views.each {|ev| ev.refresh_show_annotations }
-    end
-
-    def refresh_show_annotations
-      @show_annotations = EditView.tab_settings.show_annotations?
-      notify_listeners(:annotations_visibility_changed, @show_annotations)
+    def add_annotation_type(name, image, rgb)
+      controller.add_annotation_type(name, File.expand_path("#{image}.png", ICONS_DIRECTORY), rgb)
     end
 
     def title=(title)

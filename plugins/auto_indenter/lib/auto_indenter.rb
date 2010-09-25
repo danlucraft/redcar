@@ -22,8 +22,10 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Edit" do
-            item "Indent", :command => AutoIndenter::IndentCommand, :priority => 63
-            item "Tidy File", :command => AutoIndenter::TidyCommand, :priority => 64
+            sub_menu "Formatting" do
+              item "Indent", :command => AutoIndenter::IndentCommand, :priority => 63
+              item "Tidy File", :command => AutoIndenter::TidyCommand, :priority => 64
+            end
         end
       end
     end

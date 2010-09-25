@@ -11,7 +11,7 @@ module Redcar
 
       attr_reader :tab_widths, :softnesses, :word_wraps, :margin_columns
       attr_reader :show_margins
-      attr_reader :show_invisibles, :show_line_numbers, :show_annotations
+      attr_reader :show_invisibles, :show_line_numbers
 
       def initialize
         @tab_widths =
@@ -31,7 +31,6 @@ module Redcar
               EditView.storage['show_margins'] || {})
         @show_invisibles   = !!EditView.storage['show_invisibles']
         @show_line_numbers = !!EditView.storage['show_line_numbers']
-        @show_annotations  = !!EditView.storage['show_annotations']
       end
       
       def width_for(grammar_name)
@@ -123,15 +122,6 @@ module Redcar
         EditView.storage['show_line_numbers'] = bool
       end
 
-      def show_annotations?
-        show_annotations
-      end
-      
-      def set_show_annotations(bool)
-        @show_annotations = bool
-        EditView.storage['show_annotations'] = bool
-      end
-      
       def show_margin?
         show_margin
       end
