@@ -31,7 +31,8 @@ module Redcar
       @controllers = {
         Controller::ModificationCallbacks => [],
         Controller::NewlineCallback       => [],
-        Controller::CursorCallbacks       => []
+        Controller::CursorCallbacks       => [],
+        Controller                        => []
       }
       Document.all_document_controller_types.each do |type|
         controller = type.new
@@ -54,8 +55,12 @@ module Redcar
 
     end
     
-    def controllers(klass)
-      @controllers.values.flatten.uniq.select {|c| c.is_a?(klass) }
+    def controllers(klass=nil)
+      if klass
+        @controllers.values.flatten.uniq.select {|c| c.is_a?(klass) }
+      else
+        @controllers.values.flatten.uniq
+      end
     end
     
     def save!
