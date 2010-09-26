@@ -86,10 +86,8 @@ module Redcar
     
     class PredictCommand < Redcar::EditTabCommand
       def execute
-        if seq = Predictive::SequenceFinder.new(edit_view.history).next
-          p seq
-          seq.run_in(edit_view)
-        end
+        controller = doc.controllers(Macros::Predictive::DocumentController).first
+        controller.sequence.run_in(edit_view)
       end
     end
   end

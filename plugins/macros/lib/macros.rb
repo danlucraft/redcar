@@ -5,6 +5,7 @@ require 'macros/macro'
 require 'macros/manager_controller'
 
 require 'macros/predictive/sequence_finder'
+require 'macros/predictive/document_controller'
 
 module Redcar
   module Macros
@@ -123,6 +124,10 @@ module Redcar
         link "Ctrl+Alt+Shift+M", NameLastMacroCommand
       end
       [osx, linwin]
+    end
+    
+    def self.document_controller_types
+      [Macros::Predictive::DocumentController]
     end
     
     def self.sensitivities
