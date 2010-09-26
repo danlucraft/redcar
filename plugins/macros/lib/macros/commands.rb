@@ -87,7 +87,16 @@ module Redcar
     class PredictCommand < Redcar::EditTabCommand
       def execute
         controller = doc.controllers(Macros::Predictive::DocumentController).first
-        controller.sequence.run_in(edit_view)
+        controller.predict
+      end
+    end
+    
+    class AlternatePredictCommand < Redcar::EditTabCommand
+      sensitize :in_prediction_mode
+      
+      def execute
+        controller = doc.controllers(Macros::Predictive::DocumentController).first
+        controller.alternate_predict
       end
     end
   end

@@ -28,3 +28,52 @@ Feature: Predictive macros
     And I press predict
     And I press predict
     Then the contents should be "ababababab"
+
+  Scenario: Can define a new pattern after repeating
+    When I type "abab"
+    And I press predict
+    When I type "cdcd"
+    And I press predict
+    Then the contents should be "abababcdcdcd"
+  
+  Scenario: Can change prediction
+    When I type "abccabcc"
+    And I press predict
+    Then the contents should be "abccabccabcc"
+    When I press alternate predict
+    Then the contents should be "abccabccc"
+  
+  Scenario: Shouldn't raise an error when there are no predictions
+    When I type "abc"
+    And I press predict
+    Then the contents should be "abc"
+    
+  Scenario: Commenting example with full repeat
+    Given I replace the contents with "foo\nbar\nbaz\nqux\nquux\ncorge"
+    And I move the cursor to 0
+    And I type "# "
+    And I move down
+    And I move left
+    And I move left
+    And I type "# "
+    And I move down
+    And I move left
+    And I move left
+    And I press predict
+    And I press predict
+    Then the contents should be "# foo\n# bar\n# baz\n# qux\n<c>quux\ncorge"
+    
+  Scenario: Commenting example with partial repeat
+    Given I replace the contents with "foo\nbar\nbaz\nqux\nquux\ncorge"
+    And I move the cursor to 0
+    And I type "# "
+    And I move down
+    And I move left
+    And I move left
+    And I type "# "
+    And I press predict
+    And I press predict
+    Then the contents should be "# foo\n# bar\n# baz\n<c>qux\nquux\ncorge"
+    
+
+    

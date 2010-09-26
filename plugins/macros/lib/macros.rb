@@ -106,6 +106,7 @@ module Redcar
             end
             separator
             item "Predict", PredictCommand
+            item "Change Prediction", AlternatePredictCommand
           end
         end
       end
@@ -116,12 +117,16 @@ module Redcar
         link "Cmd+Alt+M", StartStopRecordingCommand
         link "Cmd+Shift+M", RunLastCommand
         link "Cmd+Alt+Shift+M", NameLastMacroCommand
+        link "Cmd+P", PredictCommand
+        link "Cmd+Alt+P", AlternatePredictCommand
       end
       
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
         link "Ctrl+Alt+M", StartStopRecordingCommand
         link "Ctrl+Shift+M", RunLastCommand
         link "Ctrl+Alt+Shift+M", NameLastMacroCommand
+        link "Ctrl+P", PredictCommand
+        link "Ctrl+Alt+P", AlternatePredictCommand
       end
       [osx, linwin]
     end
@@ -145,6 +150,14 @@ module Redcar
         end,
         Sensitivity.new(:any_macros_recorded_this_session, Redcar.app, false, [:macro_record_changed, :macro_named]) do
           Macros.session_macros.any?
+        end,
+        Sensitivity.new(:in_prediction_mode, Redcar.app, false, [:tab_focussed, :start_prediction_mode, :end_prediction_mode]) do
+          edit_view = EditView.focussed_edit_view
+          if edit_view
+            if controller = edit_view.document.controllers(Macros::Predictive::DocumentController).first
+              controller.in_prediction_mode?
+            end
+          end
         end
       ]
     end

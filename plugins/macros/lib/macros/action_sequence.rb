@@ -10,9 +10,10 @@ module Redcar
         @skip_length = skip_length
       end
       
-      def run_in(edit_view)
+      def run_in(edit_view, this_skip_length=nil)
+        this_skip_length ||= skip_length
         edit_view.document.compound do
-          actions[skip_length..-1].each do |action|
+          actions[this_skip_length..-1].each do |action|
             case action
             when Fixnum
               edit_view.type_character(action)
