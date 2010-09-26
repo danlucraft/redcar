@@ -10,6 +10,7 @@ Enhancements:
  * Record and run macros (Dan Lucraft)
  * Name and save macros (Dan Lucraft)
  * Macro manager to save, rename and delete macros (Dan Lucraft)
+ * Predictive macros that know what you want to do! (Dan Lucraft)
 
 New internal APIs:
 
