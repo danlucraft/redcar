@@ -365,7 +365,14 @@ module Redcar
       create_document
       @grammar = nil
       @focussed = nil
+      create_history
+    end
+    
+    def create_history
       @history = Document::History.new(500)
+      @history.subscribe do |action|
+        document.controllers.each {|c| c.after_action(action) }
+      end
     end
 
     def create_document
