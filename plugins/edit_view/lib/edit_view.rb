@@ -356,7 +356,6 @@ module Redcar
       self.show_margin   = EditView.tab_settings.show_margin_for(name)
       refresh_show_invisibles
       refresh_show_line_numbers
-      refresh_show_annotations
     end
 
     def focus
@@ -457,25 +456,8 @@ module Redcar
       notify_listeners(:line_number_visibility_changed, @show_line_numbers)
     end
 
-    def show_annotations?
-      @show_annotations
-    end
-
-    def self.show_annotations?
-      EditView.tab_settings.show_annotations?
-    end
-
-    def self.show_annotations=(bool)
-      EditView.tab_settings.set_show_annotations(bool)
-      all_edit_views.each {|ev| ev.refresh_show_annotations }
-    end
-
-    def refresh_show_annotations
-      @show_annotations = EditView.tab_settings.show_annotations?
-      notify_listeners(:annotations_visibility_changed, @show_annotations)
-    end
-
     def add_annotation(annotation_name, line, text, start, length)
+      start += document.offset_at_line(line)
       controller.add_annotation(annotation_name, line, text, start, length)
     end
 

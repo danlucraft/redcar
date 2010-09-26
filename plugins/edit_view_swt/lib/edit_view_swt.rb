@@ -145,9 +145,6 @@ module Redcar
       h9 = @model.add_listener(:line_number_visibility_changed) do |new_bool|
         @mate_text.set_line_numbers_visible(new_bool)
       end
-      h10 = @model.add_listener(:annotations_visibility_changed) do |new_bool|
-        @mate_text.set_annotations_visible(new_bool)
-      end
       h11 = @model.add_listener(:margin_column_changed) do |new_column|
         @mate_text.set_margin_column(new_column)
       end
@@ -166,7 +163,7 @@ module Redcar
       @mate_text.get_control.add_key_listener(KeyListener.new(self))
       @handlers << [@model.document, h1] << [@model, h2] << [@model, h3] << [@model, h4] <<
         [@model, h5] << [@model, h6] << [@model, h7] << [@model, h8] <<
-        [@model, h9] << [@model, h10] << [@model, h11]
+        [@model, h9] << [@model, h11]
     end
 
     def right_click(mouse_event)

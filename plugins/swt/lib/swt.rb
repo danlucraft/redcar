@@ -175,18 +175,3 @@ module Swt
     display # must be created before we import the Clipboard class.
   end
 end
-
-module JFace
-  Dir[Redcar.asset_dir + "/jface/*.jar"].each do |jar_fn|
-    require jar_fn
-  end
-  
-  module Viewers
-  end
-  
-  module Text
-  end
-  
-  module Dialogs
-  end
-end
