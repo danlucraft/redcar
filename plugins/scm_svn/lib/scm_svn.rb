@@ -64,9 +64,99 @@ module Redcar
         end
 
         def supported_commands
-          [
-            :pull,:commit,:remote_init,:index
-          ]
+          [:pull,:commit,:remote_init,:index,:switch_branch,:merge]
+        end
+
+        def trunk_path
+          if @path.include?('trunk')
+            trunk_path = @path[0,@path.index('trunk')] + 'trunk'
+          elsif @path.include?('branches')
+            trunk_path = @path[0,@path.index('branches')] + 'trunk'
+          else
+            trunk_path = @path + "/trunk"
+          end
+          trunk_path if repository?(trunk_path)
+        end
+
+        def branch_path
+          if trunk_path # no branches without a trunk
+            branch_path = trunk_path[0,trunk_path.index('trunk')] +'branches'
+          else
+            puts @path
+          end
+          branch_path if branch_path and repository?(branch_path)
+        end
+
+        def branches
+          if trunk_path
+            branch_list = ['trunk']
+            if branch_path
+              Dir["#{branch_path}/*/"].map do |path|
+                branch_list << File.basename(path) if repository?(path)
+              end
+            end
+          else
+            branch_list = [File.basename(@path)]
+          end
+          branch_list
+        end
+
+        def current_branch
+          branch = File.basename(@path)
+          if trunk_path
+            if @path.include?(trunk_path) and repository?(trunk_path)
+                branch = 'trunk'
+            elsif @path.include?(branch_path) and repository?(branch_path)
+              Dir["#{branch_path}/*/"].map do |path|
+                branch = File.basename(path) if @path.include?(path)
+              end
+            end
+          end
+          branch
+        end
+
+        def switch!(branch)
+          unless current_branch == branch
+            if branch == "trunk"
+              new_path = trunk_path
+            else
+              new_path = "#{branch_path}/#{branch}"
+            end
+            if new_path and File.exist?(new_path)
+              window = Redcar.app.windows.detect {|w| w.title == File.basename(new_path)}
+              if window
+                Redcar.app.set_focussed_window(window)
+              else
+                Project::DirectoryOpenCommand.new(new_path).run
+              end
+            else
+              Application::Dialog.message_box("Path not found: #{new_path}.")
+            end
+          end
+        end
+
+        def merge!(branch)
+          unless current_branch == branch
+            if branch == "trunk"
+              new_path = trunk_path
+            else
+              new_path = "#{branch_path}/#{branch}"
+            end
+            if new_path and File.exist?(new_path)
+              client_manager.getDiffClient().doMerge(
+                Java::JavaIo::File.new(path), # current branch
+                SVNRevision::HEAD,
+                Java::JavaIo::File.new(new_path), # other branch
+                SVNRevision::HEAD,
+                Java::JavaIo::File.new(path), # destination
+                SVNDepth::INFINITY,
+                true,  # useAncestry - if true then the paths ancestry will be noticed while calculating differences, otherwise not
+                false, # force - true to force the operation to run
+                false, # dryRun - if true then runs merge without any file changes
+                false  # recordOnly - if true, records only the rusult of merge - mergeinfo data
+              )
+            end
+          end
         end
 
         def pull!(path=nil)
@@ -336,7 +426,8 @@ module Redcar
           t[:unindexed_changes] = "External files"
           t[:remote_init] = "Checkout Subversion Repository"
           t[:push] = "Commit changes",
-          t[:pull] = "Update working copy"
+          t[:pull] = "Update working copy",
+          t[:switch_branches] = "Open branch"
           t
         end
 

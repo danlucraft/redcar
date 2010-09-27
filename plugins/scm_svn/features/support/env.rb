@@ -1,4 +1,5 @@
 RequireSupportFiles File.dirname(__FILE__) + "/../../../project/features/"
+RequireSupportFiles File.dirname(__FILE__) + "/../../../application/features/"
 require File.join(File.dirname(__FILE__), %w{.. .. vendor svnkit})
 require 'java'
 import 'org.tmatesoft.svn.core.io.SVNRepositoryFactory'
@@ -10,6 +11,14 @@ end
 # minus 3 for '.' and '..' and '.svn'
 def repo_file_count(path)
   (Dir.entries(path).size - 3).to_i
+end
+
+def parse_branch_path(branch_name)
+  if branch_name == 'trunk'
+    svn_module.trunk_path
+  else
+    svn_module.branch_path + "/#{branch_name}"
+  end
 end
 
 def svn_repository
