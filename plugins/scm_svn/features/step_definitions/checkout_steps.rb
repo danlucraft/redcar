@@ -1,4 +1,12 @@
 #TODO: find a way to test the http and svn protocols
+When /^I checkout "([^"]*)" in a local repository$/ do |subdirectory|
+  path = create_dir(working_copy)
+  path = path + "#{subdirectory}" if subdirectory
+  File.mkdir_p(path) unless File.exist?(path)
+  svn_module.load(path)
+  svn_module.remote_init(svn_repository_url,path)
+end
+
 When /^I checkout a local repository$/ do
   path = create_dir(working_copy)
   svn_module.load(path)
