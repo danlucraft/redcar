@@ -81,8 +81,6 @@ module Redcar
         def branch_path
           if trunk_path # no branches without a trunk
             branch_path = trunk_path[0,trunk_path.index('trunk')] +'branches'
-          else
-            puts @path
           end
           branch_path if branch_path and repository?(branch_path)
         end
