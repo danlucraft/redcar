@@ -21,18 +21,30 @@ Then /^there should be "([^"]*)" unindexed files and "([^"]*)" indexed files$/ d
     svn_module.indexed_changes.length.should   ==  count.to_i
 end
 
-When /^I replace "([^"]*)" contents with "([^"]*)"$/ do |file,text|
-  File.open(get_dir(working_copy) + "/#{file}", 'w') do |f|
-    f.rewind
-    f.truncate(0)
-    f.puts text
+When /^I replace "([^"]*)" contents(| in the new copy) with "([^"]*)"$/ do |file,repo,text|
+  if repo == ""
+    File.open(get_dir(working_copy) + "/#{file}", 'w') do |f|
+      f.rewind
+      f.truncate(0)
+      f.puts text
+    end
+  else
+    File.open(get_dir(working_copy_2) + "/#{file}", 'w') do |f|
+      f.rewind
+      f.truncate(0)
+      f.puts text
+    end
   end
 end
 
-Then /^the contents of wc file "([^"]*)" should be "([^"]*)"$/ do |file,text|
-  File.read(get_dir(working_copy) + "/#{file}").rstrip.should == text
+Then /^the contents of wc file "([^"]*)"(| in the new copy) should be "([^"]*)"$/ do |file,repo,text|
+  if repo == " in the new copy"
+    File.read(get_dir(working_copy_2) + "/#{file}").rstrip.should == text
+  else
+    File.read(get_dir(working_copy) + "/#{file}").rstrip.should == text
+  end
 end
 
-Then /^the contents of wc file "([^"]*)" in the new copy should be "([^"]*)"$/ do |file,text|
-  File.read(get_dir(working_copy_2) + "/#{file}").rstrip.should == text
-end
+#Then /^the contents of wc file "([^"]*)" in the new copy should be "([^"]*)"$/ do |file,text|
+#  File.read(get_dir(working_copy_2) + "/#{file}").rstrip.should == text
+#end

@@ -399,7 +399,7 @@ module Redcar
             true, # resolve contents conflict
             true, # resolve property conflict
             true, # resolve tree conflict -- man, I hate those
-            SVNConflictChoice::MINE_FULL # choose file as edited and resolved
+            SVNConflictChoice.MERGED # choose file as edited and resolved
           )
         end
 
