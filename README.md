@@ -47,7 +47,6 @@ Download from github, checkout the submodules and build JavaMateView.
     $ git submodule init
     $ git submodule update
     $ jruby bin/redcar install
-    $ jruby -S rake build
 
 To run on Linux and Windows:
 

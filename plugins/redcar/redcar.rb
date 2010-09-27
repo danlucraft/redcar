@@ -696,12 +696,6 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class ToggleAnnotations < Redcar::EditTabCommand
-      def execute
-        EditView.show_annotations = !EditView.show_annotations?
-      end
-    end
-
     class ToggleToolbar < Command
 
       def execute
@@ -1011,7 +1005,6 @@ Redcar.environment: #{Redcar.environment}
           item "Show Toolbar", :command => ToggleToolbar, :type => :check, :active => Redcar.app.show_toolbar?
           item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
           item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
-          item "Show Annotations", :command => ToggleAnnotations, :type => :check, :active => EditView.show_annotations?
         end
         sub_menu "Bundles", :priority => 45 do
           group(:priority => :first) do
