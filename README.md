@@ -3,12 +3,13 @@ Web Bookmarks
 
 A Webpage Viewer for the Redcar Text Editor
 
+![Screenshot](http://github.com/kattrali/redcar-web-bookmarks/raw/master/Screenshot.png "Example usage")
+
 Usage
 =====
 
  * Add bookmarks to a 'web_bookmarks.json' file in either the project .redcar directory or ~/.redcar (or both) in the following format:
 
-<code>
     {
         "bookmarks" : [
             {
@@ -27,7 +28,6 @@ Usage
                 "url"  : "www.javac.com/api/"
             }
     }
-</code>
 
  * Select Project > Web Bookmarks from the main menu or the globe icon in the toolbar
  * Go!
