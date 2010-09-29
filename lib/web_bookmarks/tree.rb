@@ -38,6 +38,7 @@ module Redcar
 
       def load
         bookmarks = []
+        spares = []
         groups = {}
         bookmarks_files_paths.each do |path|
           json = File.read(path)
@@ -46,17 +47,21 @@ module Redcar
 
         if bookmarks.any?
           bookmarks.sort_by {|b| b["name"]}.map do |b|
-            if groups[b["group"]]
-              group = groups[b["group"]]
-            else
-              group = Bookmark.new(b["group"],nil)
-              groups[group.text] = group
-            end
             prefix = b["protocol"] || "http"
             url = prefix + "://" + parse_url(b["url"])
-            group.add(Bookmark.new(b["name"],url))
+            if b["group"].nil?
+              spares << Bookmark.new(b["name"],url)
+            else
+              if groups[b["group"]]
+                group = groups[b["group"]]
+              else
+                group = Bookmark.new(b["group"],nil)
+                groups[group.text] = group
+              end
+              group.add(Bookmark.new(b["name"],url))
+            end
           end
-          groups.sort_by {|k,g| k}.map {|k,g| g}
+          spares.sort_by {|s| s.text} + groups.sort_by {|k,g| k}.map {|k,g| g}
         else
           []
         end
