@@ -155,7 +155,11 @@ module Redcar
   end
   
   def self.no_gui_mode?
-    ARGV.include?("--no-gui")
+    @no_gui_mode || ARGV.include?("--no-gui")
+  end
+  
+  def self.no_gui_mode!
+    @no_gui_mode = true
   end
   
   def self.show_splash

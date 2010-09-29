@@ -27,7 +27,9 @@ module Cucumber
             end
           end
         end
+        
         Redcar::ApplicationSWT.display.syncExec(block)
+
         if ENV["SLOW_CUKES"]
           sleep ENV["SLOW_CUKES"].to_f
         end
@@ -36,28 +38,6 @@ module Cucumber
       end
     end
   end
-
-    #   module Ast
-    #     class TreeWalker
-    #       def visit_steps(steps)
-    #         broadcast(steps) do
-    #           block = Swt::RRunnable.new do
-    #             steps.accept(self)
-    #           end
-    #           Redcar::ApplicationSWT.display.syncExec(block)
-    #         end
-    #       end
-    # 
-    #       def visit_step(step)
-    #         broadcast(step) do
-    #           block = Swt::RRunnable.new do
-    #             step.accept(self)
-    #           end
-    #           Redcar::ApplicationSWT.display.syncExec(block)
-    #         end
-    #       end
-    #     end
-    #   end
 
   module RbSupport
     class RbLanguage
@@ -78,21 +58,6 @@ module Cucumber
       end
     end
     
-    # class RbStepDefinition
-    #   def invoke(args)
-    #     args = args.map{|arg| Ast::PyString === arg ? arg.to_s : arg}
-    #     begin
-    #       args = @rb_language.execute_transforms(args)
-    #       block = Swt::RRunnable.new do
-    #         @rb_language.current_world.cucumber_instance_exec(true, regexp_source, *args, &@proc)
-    #       end
-    #       Redcar::ApplicationSWT.display.syncExec(block)
-    #     rescue Cucumber::ArityMismatchError => e
-    #       e.backtrace.unshift(self.backtrace_line)
-    #       raise e
-    #     end
-    #   end
-    # end
   end
   
   module Cli

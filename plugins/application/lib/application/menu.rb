@@ -70,6 +70,10 @@ module Redcar
       false
     end
     
+    def lazy_text?
+      false
+    end
+    
     # Merge two Menu trees together. Modifies this Menu.
     #
     # @param [Menu] another Menu

@@ -71,12 +71,18 @@ module Redcar
     end
     
     def environment(env)
-      @env = env
+      if env == nil
+        remove_instance_variable(:@env) if @env
+      else
+        @env = env
+      end
     end
     
     def run(opts = {})
       @executor = Executor.new(self, opts)
-      @executor.execute
+      result = @executor.execute
+      remove_instance_variable(:@executor)
+      result
     end
     
     private

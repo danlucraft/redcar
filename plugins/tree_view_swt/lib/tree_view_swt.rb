@@ -447,16 +447,7 @@ module Redcar
       end
 
       def get_image(tree_node)
-        case icon = tree_node.icon
-        when :directory
-          dir_image
-        when :file
-          file_image
-        when Symbol
-          image(File.expand_path(File.join(Redcar::ICONS_DIRECTORY, icon.to_s + ".png")))
-        when String
-          image(icon)
-        end
+        ApplicationSWT::Icon.swt_image(tree_node.icon)
       end
 
       def dispose
@@ -479,25 +470,6 @@ module Redcar
       #  5000
       #end
       
-      private
-      
-      def image(path)
-        Swt::Graphics::Image.new(ApplicationSWT.display, path)
-      end
-      
-      def dir_image
-        @dir_image ||= begin
-          path = File.join(Redcar.root, %w(plugins application icons darwin-folder.png))
-          image(path)
-        end
-      end
-      
-      def file_image
-        @file_image ||= begin
-          path = File.join(Redcar.root, %w(plugins application icons darwin-file.png))
-          image(path)
-        end
-      end
     end
   end
 end
