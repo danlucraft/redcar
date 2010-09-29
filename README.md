@@ -5,6 +5,12 @@ A Webpage Viewer for the Redcar Text Editor
 
 ![Screenshot](http://github.com/kattrali/redcar-web-bookmarks/raw/master/Screenshot.png "Example usage")
 
+Installation
+============
+
+    cd ~/.redcar/plugins
+    git clone git://github.com/kattrali/redcar-code-package-view.git code_package_view
+
 Usage
 =====
 
