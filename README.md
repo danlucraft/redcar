@@ -9,7 +9,7 @@ Installation
 ============
 
     cd ~/.redcar/plugins
-    git clone git://github.com/kattrali/redcar-code-package-view.git code_package_view
+    git clone git://github.com/kattrali/redcar-web-bookmarks.git web_bookmarks
 
 Usage
 =====
