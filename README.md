@@ -26,14 +26,17 @@ Usage
             {
                 "name" : "Groovy JDK",
                 "protocol" : "file",
-                "url"  : "/APIs/groovy/docs/api/index.html"
+                "url"  : "/APIs/groovy/docs/api/index.html",
+                "group" : "API"
             },
             {
                 "name" : "Java 6 API",
                 "protocol" : "http",
-                "url"  : "www.javac.com/api/"
+                "url"  : "www.javac.com/api/",
+                "group" : "API"
             }
     }
 
+ * Bookmarks without groups will be displayed at the top of the list.
  * Select Project > Web Bookmarks from the main menu or the globe icon in the toolbar
  * Go!
