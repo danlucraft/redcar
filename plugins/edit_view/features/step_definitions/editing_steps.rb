@@ -7,18 +7,6 @@ def escape_text(text)
   text.gsub("\t", "\\t").gsub("\n", "\\n").gsub("\r", "\\r").gsub("\"", "\\\"")
 end
 
-Given /^the contents? is:$/ do |string|
-  start_index = string.index('<c>') || 0
-  end_index = string.index('<s>') && string.index('<s>') - 3 || 0
-  string.gsub!('<s>','')
-  When %{I replace the contents with "#{string}"}
-  When %{I select from #{start_index} to #{end_index}}
-end
-
-Then /^the content? should be:$/ do |string|
-  Then %{the contents should be "#{escape_text(string)}"}
-end
-
 When /^I undo$/ do
   Redcar::Top::UndoCommand.new.run
 end
@@ -30,11 +18,6 @@ end
 When /^I select from (\d+) to (\d+)$/ do |start_offset, end_offset|
   doc = Redcar.app.focussed_window.focussed_notebook.focussed_tab.edit_view.document
   doc.set_selection_range(start_offset.to_i, end_offset.to_i)
-end
-
-When /^I select all$/ do
-  doc = Redcar.app.focussed_window.focussed_notebook.focussed_tab.edit_view.document
-  doc.set_selection_range(0, doc.length)
 end
 
 When /^I copy text$/ do

@@ -189,6 +189,9 @@ After do
     raise "Command errors #{errors.inspect}"
   end
   Redcar.app.history.clear
+  total_mem = java.lang.Runtime.getRuntime.totalMemory
+  free_mem  = java.lang.Runtime.getRuntime.freeMemory
+  p [:total, total_mem, :free, free_mem, :diff, total_mem - free_mem]
 end
 
 at_exit {
