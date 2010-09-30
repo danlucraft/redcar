@@ -32,7 +32,7 @@ module Redcar #TODO: Fix this!!!
             when "Ruby" then "#"
             when "Ruby on Rails" then "#"
             when "Java" then "//"
-            else "--"
+            else "//" #default to C-style comments
           end
           end_pos = comment.length() -1
           range = adoc.selection_range
