@@ -94,8 +94,8 @@ module Redcar
 
     def self.toolbars
       ToolBar::Builder.build do
-        item "Runnables", :command => Runnables::ShowRunnables, :icon => File.join(Redcar::ICONS_DIRECTORY,"cog.png"), :barname => :runnables
-        item "Run Tab", :command => Runnables::RunEditTabCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "control.png"), :barname => :runnables
+        item "Runnables", :command => Runnables::ShowRunnables, :icon => File.join(Redcar::ICONS_DIRECTORY,"cog.png"), :barname => :project
+        item "Run Tab", :command => Runnables::RunEditTabCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "control.png"), :barname => :project
       end
     end
 

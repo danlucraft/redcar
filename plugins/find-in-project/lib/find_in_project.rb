@@ -18,7 +18,7 @@ module Redcar
     
   def self.toolbars
     ToolBar::Builder.build do
-      item "Find in Project", :command => OpenSearch, :icon => File.join(Redcar::ICONS_DIRECTORY, "application-search-result.png"), :barname => :search
+      item "Find in Project", :command => OpenSearch, :icon => File.join(Redcar::ICONS_DIRECTORY, "application-search-result.png"), :barname => :project
     end
   end
 

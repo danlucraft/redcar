@@ -18,8 +18,8 @@ module DocumentSearch
   
   def self.toolbars
     Redcar::ToolBar::Builder.build do
-      item "Search Document", :command => DocumentSearch::SearchForwardCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), :barname => :search
-      item "Repeat Last Search", :command => DocumentSearch::RepeatPreviousSearchForwardCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier--arrow.png"), :barname => :search
+      item "Search Document", :command => DocumentSearch::SearchForwardCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), :barname => :edit
+      item "Repeat Last Search", :command => DocumentSearch::RepeatPreviousSearchForwardCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier--arrow.png"), :barname => :edit
     end
   end
   
