@@ -45,19 +45,19 @@ module Redcar
         end
       end
     end
-    
+
     # Replaces placeholders in commands with values, like __PATH__,
     # __LINE__, and __PARAMS__
     def self.substitute_variables(window,command)
       tab = window.focussed_notebook_tab
       if tab and tab.is_a?(EditTab)
-        if command.include?(LINE_HOLDER)
-          path = tab.edit_view.document.path
-          line = tab.edit_view.document.cursor_line + 1
-          command = command.gsub(LINE_HOLDER, line.to_s)
-        end
         if command.include?(PATH_HOLDER)
-          command = command.gsub(PATH_HOLDER, path)
+          if command.include?(LINE_HOLDER)
+            path = tab.edit_view.document.path
+            line = tab.edit_view.document.cursor_line + 1
+            command.gsub!(LINE_HOLDER, line.to_s)
+          end
+          command.gsub!(PATH_HOLDER, path)
         end
       end
       while command.include?(PARAMS)
@@ -68,11 +68,11 @@ module Redcar
         out = Redcar::Application::Dialog.input(msg_title,msg)
         params = out[:value] || ""
         return if out[:button] == :cancel
-        command = command.sub(PARAMS,params)
+        command.sub!(PARAMS,params)
       end
       command
     end
-    
+
     def self.file_mappings(project)
       runnable_file_paths = project.config_files("runnables/*.json")
 
@@ -98,7 +98,7 @@ module Redcar
         link "Ctrl+R", Runnables::RunEditTabCommand
         link "Ctrl+Alt+R", Runnables::RunAlternateEditTabCommand
       end
-      
+
       osx = Keymap.build("main", :osx) do
         link "Cmd+R", Runnables::RunEditTabCommand
         link "Cmd+Alt+R", Runnables::RunAlternateEditTabCommand
@@ -110,10 +110,11 @@ module Redcar
       Menu::Builder.build do
         sub_menu "Project" do
           group(:priority => 15) {
-          separator
+            separator
             item "Runnables", Runnables::ShowRunnables
             item "Run Tab",   Runnables::RunEditTabCommand
             item "Alternate Run Tab", Runnables::RunAlternateEditTabCommand
+            separator
           }
         end
       end
