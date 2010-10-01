@@ -35,7 +35,6 @@ module Redcar
         end
 
         def self.supported?
-          puts "    Subversion support is currently in progress" if debug
           true
         end
 
