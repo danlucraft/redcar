@@ -5,12 +5,13 @@ Enhancements:
 
  * Vertical tabs for the tree book on the left. (Tim Felgentreff)
  * Runnables are grouped by type in the tree (Delisa Mason)
- * Improved styling of the keyboard shortcuts help (Delisa Mason)
+ * Improved styling of the keyboard shortcuts help and todo list (Delisa Mason)
  * Tidier Edit menu! (Delisa Mason)
  * Record and run macros (Dan Lucraft)
  * Name and save macros (Dan Lucraft)
  * Macro manager to save, rename and delete macros (Dan Lucraft)
  * Predictive macros that know what you want to do! (Dan Lucraft)
+ * Experimental Subversion integration (Delisa Mason)
 
 New internal APIs:
 

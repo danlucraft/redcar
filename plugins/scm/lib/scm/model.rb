@@ -8,33 +8,34 @@ module Redcar
       def repository_type
         ""
       end
-      
-      # REQUIRED. Checks if a given directory is a repository supported by 
+
+      # REQUIRED. Checks if a given directory is a repository supported by
       # the SCM.
       def repository?(path)
         raise "Scm.repository? not implemented."
       end
-      
+
       # REQUIRED. Initialises the SCM with a path. This path should be used
       # for all future interactions. Repeated calls to load should be treated
       # as a breaking error.
       def load(path)
         raise "Scm.load not implemented."
       end
-      
+
       # RECOMMENDED. If we call this method, than we expect the repository to
       # return all fresh data for any subsequent calls. Any caching should be
       # reset.
       def refresh
         nil
       end
-      
+
       # REQUIRED to be useful. If no commands are supported, than the SCM will
       # will essentially be useless. These commands loosely translate to the
-      # common operations of a distributed CVS. 
+      # common operations of a distributed CVS.
       #
       # Supported values to date:
       #  * :init
+      #  * :remote_init
       #  * :push
       #  * :pull
       #  * :pull_targetted
@@ -45,19 +46,23 @@ module Redcar
       #
       # Note about non-distributed CVS's: If your CVS doesn't support local
       # commits, ie. subversion, then implement :commit and :pull, and then
-      # provide translations via the translations method.
+      # provide translations via the translations method. :remote_init can
+      # fill the gap for initializing a non-distributed VCS.
       def supported_commands
         []
       end
-      
+
       # This method allows SCM's to override the default names for different
       # commands and bring them into line with the normal vocabulary in their
-      # respective worlds. ie, SVN calls :commit and :pull "checkin" and 
+      # respective worlds. ie, SVN calls :commit and :pull "checkin" and
       # "checkout" respectively. If you overload this method, you need to
       # provide names for all commands you support with supported_commands
       def translations
         {
           :init => "Initialise " + repository_type.capitalize,
+          :remote_init => "Initialize "+ repository_type.capitalize+" from remote repository",
+          :remote_init_path => "Repository URL",
+          :remote_init_target => "Target Directory",
           :push => "Push Changesets",
           :unpushed_commits => "Unpushed commits",
           :pull => "Pull Changesets",
@@ -79,15 +84,23 @@ module Redcar
           :merge => "Merge...",
         }
       end
-      
-      # REQUIRED for :init. Initialise a repository in a given path. 
+
+      # REQUIRED for :init. Initialise a repository in a given path.
       # Returns false on error.
       def init!(path)
         raise "Scm.init not implemented." if supported_commands.include?(:init)
         nil
       end
-      
-      # REQUIRED for :commit if :index is not supported. Returns an 
+
+      # REQUIRED for :remote_init. Initialize a repository from
+      # a url or file path, like SVN 'checkout' or git 'clone'
+      # Returns false on error
+      def remote_init(repo_path,target_directory)
+        raise "Scm.remote_init not implemented." if supported_commands.include?(:remote_init)
+        nil
+      end
+
+      # REQUIRED for :commit if :index is not supported. Returns an
       # array of changes currently waiting for commit.
       #
       # @return [Array<Redcar::Scm::ScmChangesMirror::Change>]
@@ -95,7 +108,7 @@ module Redcar
         raise "Scm.uncommited_changes not implemented." if supported_commands.include?(:commit)
         []
       end
-      
+
       # REQUIRED for :commit if :index is supported. Returns an array
       # of changes currently in the index.
       #
@@ -104,7 +117,7 @@ module Redcar
         raise "Scm.indexed_changes not implemented." if supported_commands.include?(:commit)
         []
       end
-      
+
       # REQUIRED for :commit if :index is supported. Returns an array
       # of changes currently not in the index.
       #
@@ -113,59 +126,59 @@ module Redcar
         raise "Scm.unindexed_changes not implemented." if supported_commands.include?(:commit)
         []
       end
-      
+
       # REQUIRED for :index. Adds a new file to the index.
       def index_add(change)
         raise "Scm.index_add not implemented" if supported_commands.include?(:index)
         nil
       end
-      
+
       # REQUIRED for :index. Ignores a new file so it won't show in changes.
       def index_ignore(change)
         raise "Scm.index_ignore not implemented" if supported_commands.include?(:index)
         nil
       end
-      
+
       # REQUIRED for :index. Ignores all files with a certain extension so they
       # won't show in changes.
       def index_ignore_all(extension, change)
         raise "Scm.index_ignore_all not implemented" if supported_commands.include?(:index)
         nil
       end
-      
+
       # REQUIRED for :index. Reverts a file to its last commited state.
       def index_revert(change)
         raise "Scm.index_revert not implemented" if supported_commands.include?(:index)
         nil
       end
-      
-      # REQUIRED for :index. Reverts a file in the index back to it's 
+
+      # REQUIRED for :index. Reverts a file in the index back to it's
       # last commited state, but leaves the file intact.
       def index_unsave(change)
         raise "Scm.index_unsave not implemented" if supported_commands.include?(:index)
         nil
       end
-      
+
       # REQUIRED for :index. Saves changes made to a file in the index.
       def index_save(change)
         raise "Scm.index_save not implemented" if supported_commands.include?(:index)
         nil
       end
-      
+
       # REQUIRED for :index. Restores a file to the last known state of
       # the file. This may be from the index, or the last commit.
       def index_restore(change)
         raise "Scm.index_restore not implemented" if supported_commands.include?(:index)
         nil
       end
-      
+
       # REQUIRED for :index. Marks a file as deleted in the index.
       def index_delete(change)
         raise "Scm.index_delete not implemented" if supported_commands.include?(:index)
         nil
       end
-      
-      # REQUIRED for :commit. Commits the currently indexed changes 
+
+      # REQUIRED for :commit. Commits the currently indexed changes
       # in the subproject.
       #
       # @param change Required for :commitable changes. Ignore if
@@ -174,8 +187,8 @@ module Redcar
         raise "Scm.commit! not implemented." if supported_commands.include?(:index)
         nil
       end
-      
-      # REQUIRED for :commit. Gets a default commit message for the 
+
+      # REQUIRED for :commit. Gets a default commit message for the
       # currently indexed changes.
       #
       # @param change Required for :commitable changes. Ignore if
@@ -183,7 +196,7 @@ module Redcar
       def commit_message(change=nil)
         "\n\n# Please enter your commit message above."
       end
-      
+
       # REQUIRED for :push. Returns an array of unpushed changesets for
       # a given target.
       #
@@ -192,14 +205,14 @@ module Redcar
         raise "Scm.unpushed_commits not implemented." if supported_commands.include?(:push)
         nil
       end
-      
+
       # REQUIRED for :push. Pushes all current changesets to the remote
       # repository for the given target only.
       def push!(target='')
         raise "Scm.push! not implemented." if supported_commands.include?(:push)
         nil
       end
-      
+
       # RECOMMENDED for :push. Allows to provide a list of targets that
       # can be pushed.
       #
@@ -207,23 +220,23 @@ module Redcar
       def push_targets
         []
       end
-      
-      # REQUIRED for :pull and :pull_targetted. Pulls all remote changesets from the 
+
+      # REQUIRED for :pull and :pull_targetted. Pulls all remote changesets from the
       # remote repository.
-      # 
+      #
       # Note: If you only support :pull, you can implement this without the
       # argument. It will never be called with an explicit nil.
       def pull!(remote=nil)
         raise "Scm.pull! not implemented." if supported_commands.include?(:pull)
         nil
       end
-      
+
       # REQUIRED for :pull_targetted. Returns an array of pull targets.
       def pull_targets
         raise "Scm.pull_targets not implemented." if supported_commands.include?(:pull_targeted)
         []
       end
-      
+
       # REQUIRED for :switch_branch and :merge. Returns an array of branch names.
       #
       # @return [Array<String>]
@@ -231,27 +244,27 @@ module Redcar
         raise "Scm.branches not implemented." if supported_commands.include?(:switch_branch) or supported_commands.include?(:merge)
         []
       end
-      
+
       # REQUIRED for :switch_branch. Returns the name of the current branch.
       def current_branch
         raise "Scm.current_branch not implemented." if supported_commands.include?(:switch_branch)
         ''
       end
-      
+
       # REQUIRED for :switch_branch. Switches to the named branch.
       def switch!(branch)
         raise "Scm.switch! not implemented." if supported_commands.include?(:switch_branch)
         nil
       end
-      
+
       # REQUIRED for :merge. Merges the target branch with the current one.
       def merge!(branch)
         raise "Scm.switch! not implemented." if supported_commands.include?(:merge)
         nil
       end
-      
+
       # Allows the SCM to provide a custom adapter which is injected into the
-      # project instead of old_adapter. This allows interception of file 
+      # project instead of old_adapter. This allows interception of file
       # modifications such as move and copy, which you may wish to do via
       # your SCM instead of normal file system operations.
       def adapter(old_adapter)
