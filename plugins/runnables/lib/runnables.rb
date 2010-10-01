@@ -10,30 +10,21 @@ require 'runnables/tree_mirror/tree_mirror'
 
 module Redcar
   class Runnables
-    TREE_TITLE = "Runnables"
-    PARAMS = "__PARAMS__"
-    DISPLAY_PARAMS = "__?__"
+    TREE_TITLE          = "Runnables"
+    PARAMS              = "__PARAMS__"
+    DISPLAY_PARAMS      = "__?__"
     DISPLAY_NEXT_PARAMS = "_____"
+    LINE_HOLDER         = "__LINE__"
+    PATH_HOLDER         = "__PATH__"
 
     def self.run_process(path, command, title, output = "tab")
       window = Redcar.app.focussed_window
-      while command.include?(PARAMS)
-        msg = command.sub(PARAMS,DISPLAY_PARAMS)
-        msg = msg.gsub(PARAMS,DISPLAY_NEXT_PARAMS)
-        msg = "" if msg == DISPLAY_PARAMS
-        msg_title = "Enter Command Parameters"
-        out = Redcar::Application::Dialog.input(msg_title,msg)
-        params = out[:value] || ""
-        return if out[:button] == :cancel
-        command = command.sub(PARAMS,params)
-      end
+      command = Runnables.substitute_variables(window,command)
+      return unless command
       if Runnables.storage['save_project_before_running'] == true
         window.notebooks.each do |notebook|
           notebook.tabs.each do |tab|
-            case tab
-            when EditTab
-              tab.edit_view.document.save! if tab.edit_view.document.modified?
-            end
+            tab.edit_view.document.save! if tab.is_a?(EditTab) and tab.edit_view.document.modified?
           end
         end
       end
@@ -54,6 +45,45 @@ module Redcar
         end
       end
     end
+    
+    # Replaces placeholders in commands with values, like __PATH__,
+    # __LINE__, and __PARAMS__
+    def self.substitute_variables(window,command)
+      tab = window.focussed_notebook_tab
+      if tab and tab.is_a?(EditTab)
+        if command.include?(LINE_HOLDER)
+          path = tab.edit_view.document.path
+          line = tab.edit_view.document.cursor_line + 1
+          command = command.gsub(LINE_HOLDER, line.to_s)
+        end
+        if command.include?(PATH_HOLDER)
+          command = command.gsub(PATH_HOLDER, path)
+        end
+      end
+      while command.include?(PARAMS)
+        msg = command.sub(PARAMS,DISPLAY_PARAMS)
+        msg = msg.gsub(PARAMS,DISPLAY_NEXT_PARAMS)
+        msg = "" if msg == DISPLAY_PARAMS
+        msg_title = "Enter Command Parameters"
+        out = Redcar::Application::Dialog.input(msg_title,msg)
+        params = out[:value] || ""
+        return if out[:button] == :cancel
+        command = command.sub(PARAMS,params)
+      end
+      command
+    end
+    
+    def self.file_mappings(project)
+      runnable_file_paths = project.config_files("runnables/*.json")
+
+      file_runners = []
+      runnable_file_paths.each do |path|
+        json = File.read(path)
+        this_file_runners = JSON(json)["file_runners"]
+        file_runners += this_file_runners || []
+      end
+      file_runners
+    end
 
     def self.previous_tab_for(command)
       Redcar.app.all_tabs.detect do |t|
@@ -64,10 +94,16 @@ module Redcar
     end
 
     def self.keymaps
-      map = Keymap.build("main", [:osx, :linux, :windows]) do
+      linwin = Keymap.build("main", [:linux, :windows]) do
         link "Ctrl+R", Runnables::RunEditTabCommand
+        link "Ctrl+Alt+R", Runnables::RunAlternateEditTabCommand
       end
-      [map, map]
+      
+      osx = Keymap.build("main", :osx) do
+        link "Cmd+R", Runnables::RunEditTabCommand
+        link "Cmd+Alt+R", Runnables::RunAlternateEditTabCommand
+      end
+      [linwin,osx]
     end
 
     def self.menus
@@ -77,6 +113,7 @@ module Redcar
           separator
             item "Runnables", Runnables::ShowRunnables
             item "Run Tab",   Runnables::RunEditTabCommand
+            item "Alternate Run Tab", Runnables::RunAlternateEditTabCommand
           }
         end
       end
