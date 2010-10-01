@@ -8,8 +8,9 @@ Feature: Opening other branches as new projects
     And I commit my changes with message "Initial commit"
     Given I will open "trunk" branch as a new project
     When I open a directory
+    And I note the number of windows
     And I switch to "version1" branch
-    Then there should be 2 windows
+    Then I should see 1 more window
     And the window should have title "version1"
 
   Scenario: Opening a branch from another branch
@@ -20,9 +21,9 @@ Feature: Opening other branches as new projects
     And I commit my changes with message "Initial commit"
     Given I will open "version1" branch as a new project
     When I open a directory
+    And I note the number of windows
     And I switch to "version2" branch
-    # FIXME: There should be two, not sure why the first window can't be given a project again
-    Then there should be 2 windows
+    Then I should see 1 more window
     And the window should have title "version2"
 
   Scenario: Opening trunk from a branch
@@ -33,9 +34,9 @@ Feature: Opening other branches as new projects
     And I commit my changes with message "Initial commit"
     Given I will open "version1" branch as a new project
     When I open a directory
+    And I note the number of windows
     And I switch to "trunk" branch
-    # FIXME: There should be two, not sure why the first window can't be given a project again
-    Then there should be 2 windows
+    Then I should see 1 more window
     And the window should have title "trunk"
 
   Scenario: Attempting to open the same branch from the branching dialog
@@ -46,6 +47,7 @@ Feature: Opening other branches as new projects
     And I commit my changes with message "Initial commit"
     Given I will open "version1" branch as a new project
     When I open a directory
+    And I note the number of windows
     And I switch to "version1" branch
-    Then there should be 1 windows
+    Then I should see 0 more windows
     And the window should have title "version1"

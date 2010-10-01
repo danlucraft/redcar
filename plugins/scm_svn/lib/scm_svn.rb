@@ -1,12 +1,7 @@
-$:.push(File.expand_path(File.join(File.dirname(__FILE__), %w{.. vendor})))
 
 require 'java'
 require 'scm_svn/change'
-begin
-  require 'svnkit'
-rescue
-  #Subversion Libraries not found
-end
+require File.join(Redcar.asset_dir,"svnkit")
 
 module Redcar
   module Scm
