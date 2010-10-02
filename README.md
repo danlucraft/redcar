@@ -41,6 +41,7 @@ Usage
  * Select Project > Web Bookmarks from the main menu or the globe icon in the toolbar
  * Go!
 
-###Notes
- * The browser speedbar be disabled by default in Plugins > Edit Preferences > web_bookmarks
+###Notes on the Browser Navigation Bar
+ * The browser bar can be disabled by default in Plugins > Edit Preferences > web_bookmarks
  * To reopen a closed browser bar, open Edit > Document Navigation > Open Browser Bar
+ * Browser bar works on __any__ HtmlTab, not just bookmarks

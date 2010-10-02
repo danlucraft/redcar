@@ -42,7 +42,10 @@ module Redcar
       button :go_to_url, "Go!", "Enter" do
         @tab = html_tab
         if @tab
-          @tab.controller.go_to_location(new_url.value)
+          unless new_url.value == ""
+            @tab.title=new_url.value
+            @tab.controller.go_to_location(new_url.value)
+          end
         end
       end
     end
