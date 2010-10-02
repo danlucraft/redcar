@@ -22,14 +22,14 @@ module Redcar
         end
       end
 
-      button :stop, "Stop", "Ctrl+S" do
+      button :stop, "Stop", nil do
         @tab = html_tab
         if @tab
           @tab.controller.browser.stop
         end
       end
 
-      button :refresh, "Refresh", "Ctrl+R" do
+      button :refresh, "Refresh", "F5" do
         @tab = html_tab
         if @tab
           @tab.controller.browser.refresh
