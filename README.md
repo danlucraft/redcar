@@ -40,3 +40,7 @@ Usage
  * Bookmarks without groups will be displayed at the top of the list.
  * Select Project > Web Bookmarks from the main menu or the globe icon in the toolbar
  * Go!
+
+###Notes
+ * The browser speedbar be disabled by default in Plugins > Edit Preferences > web_bookmarks
+ * To reopen a closed browser bar, open Edit > Document Navigation > Open Browser Bar
