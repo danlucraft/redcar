@@ -16,5 +16,13 @@ module Redcar
         end
       end
     end
+
+    class OpenBrowserBar < Redcar::Command
+      def execute
+        window = Redcar.app.focussed_window
+        speedbar = Redcar::WebBookmarks::BrowserBar.new
+        window.open_speedbar(speedbar)
+      end
+    end
   end
 end
