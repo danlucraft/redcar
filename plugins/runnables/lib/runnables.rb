@@ -52,12 +52,12 @@ module Redcar
       tab = window.focussed_notebook_tab
       if tab and tab.is_a?(EditTab)
         if command.include?(PATH_HOLDER)
+          path = tab.edit_view.document.path
+          command.gsub!(PATH_HOLDER, path)
           if command.include?(LINE_HOLDER)
-            path = tab.edit_view.document.path
             line = tab.edit_view.document.cursor_line + 1
             command.gsub!(LINE_HOLDER, line.to_s)
           end
-          command.gsub!(PATH_HOLDER, path)
         end
       end
       while command.include?(PARAMS)
