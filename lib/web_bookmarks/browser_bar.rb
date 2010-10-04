@@ -27,7 +27,7 @@ module Redcar
       label :url_label, "New URL:"
       textbox :new_url
 
-      button :go_to_url, "Go!", "Enter" do
+      button :go_to_url, "Go!", "Return" do
         @tab = html_tab
         if @tab
           unless new_url.value == ""
