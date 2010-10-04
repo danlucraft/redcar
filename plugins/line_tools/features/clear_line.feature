@@ -16,3 +16,10 @@ Scenario: Clearing a multi-line selection
   Then I should see "foo\n\n\nbaz" in the edit tab
   And I should not see "bar" in the edit tab
   And I should not see "bonne" in the edit tab
+  
+Scenario: Clearing a single line with unicode
+  When I open a new edit tab
+  And I replace the contents with "foo\nbść\nbonne\nbaz"
+  And I move the cursor to 5
+  And I clear the line
+  Then the contents should be "foo\n\nbonne\nbaz"

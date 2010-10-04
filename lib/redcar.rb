@@ -51,9 +51,9 @@ end
 #
 # and so on.
 module Redcar
-  VERSION         = '0.6' # also change in the Rakefile!
+  VERSION         = '0.8.0' # also change in the Rakefile!
   VERSION_MAJOR   = 0
-  VERSION_MINOR   = 6
+  VERSION_MINOR   = 8
   VERSION_RELEASE = 0
   
   ENVIRONMENTS = [:user, :debug, :test]
@@ -155,7 +155,11 @@ module Redcar
   end
   
   def self.no_gui_mode?
-    ARGV.include?("--no-gui")
+    @no_gui_mode || ARGV.include?("--no-gui")
+  end
+  
+  def self.no_gui_mode!
+    @no_gui_mode = true
   end
   
   def self.show_splash

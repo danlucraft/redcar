@@ -36,14 +36,26 @@ module Redcar
       class ArrowLeftHandler < ArrowHandler
         def self.handle(edit_view, modifiers)
           return if (modifiers & %w(Alt Cmd Ctrl)).any?
-          return if edit_view.document.block_selection_mode?
-          doc = edit_view.document
           if modifiers.include?("Shift")
-            old_selection_offset = doc.selection_offset
-            doc.set_selection_range(move_left_offset(edit_view), old_selection_offset)
+            select_column_previous(edit_view)
           else
-            doc.cursor_offset = move_left_offset(edit_view)
+            column_previous(edit_view)
           end
+        end
+        
+        def self.column_previous(edit_view)
+          return false if edit_view.document.block_selection_mode?
+          doc = edit_view.document
+          doc.cursor_offset = move_left_offset(edit_view)
+          ArrowHandler.ensure_cursor_in_view(edit_view)
+          true
+        end
+        
+        def self.select_column_previous(edit_view)
+          return false if edit_view.document.block_selection_mode?
+          doc = edit_view.document
+          old_selection_offset = doc.selection_offset
+          doc.set_selection_range(move_left_offset(edit_view), old_selection_offset)
           ArrowHandler.ensure_cursor_in_view(edit_view)
           true
         end
@@ -82,15 +94,26 @@ module Redcar
       class ArrowRightHandler < ArrowHandler
         def self.handle(edit_view, modifiers)
           return if (modifiers & %w(Alt Cmd Ctrl)).any?
-          return if edit_view.document.block_selection_mode?
-          doc = edit_view.document
-          
           if modifiers.include?("Shift")
-            old_selection_offset = doc.selection_offset
-            doc.set_selection_range(move_right_offset(edit_view), old_selection_offset)
+            select_column_next(edit_view)
           else
-            doc.cursor_offset = move_right_offset(edit_view)
+            column_next(edit_view)
           end
+        end
+        
+        def self.column_next(edit_view)
+          return false if edit_view.document.block_selection_mode?
+          doc = edit_view.document
+          doc.cursor_offset = move_right_offset(edit_view)
+          ArrowHandler.ensure_cursor_in_view(edit_view)
+          true
+        end
+        
+        def self.select_column_next(edit_view)
+          return false if edit_view.document.block_selection_mode?
+          doc = edit_view.document
+          old_selection_offset = doc.selection_offset
+          doc.set_selection_range(move_right_offset(edit_view), old_selection_offset)
           ArrowHandler.ensure_cursor_in_view(edit_view)
           true
         end

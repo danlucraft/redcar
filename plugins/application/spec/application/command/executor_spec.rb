@@ -7,7 +7,7 @@ class Redcar::Command
     end
     
     before do
-      Executor.stub!(:current_environment).and_return(:current_environment)
+      Executor.stub!(:current_environment).and_return({:current_environment => 1})
       Redcar.app = FakeApp.new
       Redcar.app.history = History.new
     end
@@ -15,7 +15,7 @@ class Redcar::Command
     describe "executing a command" do
       class MyCommand < Redcar::Command
         def environment(env)
-          $spec_executor_env = env
+          $spec_executor_env = env if env
         end
 
         def execute
@@ -42,7 +42,7 @@ class Redcar::Command
     
       it "should set the command environment" do
         @executor.execute
-        $spec_executor_env.should == :current_environment
+        $spec_executor_env.should == {:current_environment => 1}
       end
     end
     

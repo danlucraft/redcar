@@ -5,10 +5,12 @@ module Redcar
   class FindInProject
     def self.menus
       Redcar::Menu::Builder.build do
-        sub_menu "Plugins" do
-          sub_menu "Find In Project", :priority => 64 do
-            item "Find In Project!", Redcar::FindInProject::OpenSearch
-            item "Edit Preferences", Redcar::FindInProject::EditPreferences
+        sub_menu "Edit" do
+          sub_menu "Search" do
+            sub_menu "Find In Project", :priority => 64 do
+              item "Find In Project!", Redcar::FindInProject::OpenSearch
+              item "Edit Preferences", Redcar::FindInProject::EditPreferences
+            end
           end
         end
       end
@@ -16,7 +18,7 @@ module Redcar
     
   def self.toolbars
     ToolBar::Builder.build do
-      item "Find in Project", :command => OpenSearch, :icon => File.join(Redcar::ICONS_DIRECTORY, "application-search-result.png"), :barname => :search
+      item "Find in Project", :command => OpenSearch, :icon => File.join(Redcar::ICONS_DIRECTORY, "application-search-result.png"), :barname => :project
     end
   end
 

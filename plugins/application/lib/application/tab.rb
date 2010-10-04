@@ -3,6 +3,8 @@ module Redcar
     include Redcar::Model
     include Redcar::Observable
     
+    DEFAULT_ICON = :file
+    
     attr_reader :notebook
     
     def initialize(notebook)
@@ -36,6 +38,15 @@ module Redcar
     def title=(title)
       @title = title
       notify_listeners(:changed_title, title)
+    end
+    
+    def icon
+      @icon || DEFAULT_ICON
+    end
+    
+    def icon=(value)
+      @icon = value
+      notify_listeners(:changed_icon, icon)
     end
 
     def inspect

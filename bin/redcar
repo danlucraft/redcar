@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+$KCODE='U' unless RUBY_VERSION > "1.9.0"
 $redcar_process_start_time = Time.now
 $VERBOSE = true if ARGV.find{|arg| arg == '--verbose'}
 

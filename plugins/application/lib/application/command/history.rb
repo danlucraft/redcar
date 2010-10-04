@@ -19,7 +19,7 @@ module Redcar
         if command.class.record?
           self << command
         end
-        prune
+        truncate
       end
     
       # Adds a command to the command history if CommandHistory.recording is
@@ -32,7 +32,7 @@ module Redcar
             self << command
           end
         end
-        prune
+        truncate
       end
     
       # Set the maximum length of the history
@@ -42,7 +42,7 @@ module Redcar
       
       private
       
-      def prune #:nodoc:
+      def truncate #:nodoc:
         (length - @max).times { delete_at(0) }
       end
     end

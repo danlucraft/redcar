@@ -5,15 +5,13 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Edit" do
-          group(:priority => 110) do
-            sub_menu "Line Tools" do
-              item "Raise Region", LineTools::RaiseTextCommand
-              item "Lower Region", LineTools::LowerTextCommand
-              item "Replace Line", LineTools::ReplaceLineCommand
-              item "Clear Line"  , LineTools::ClearLineCommand
-              item "Trim Line"   , LineTools::TrimLineAfterCursorCommand
-              item "Kill Line"   , LineTools::KillLineCommand
-            end
+          sub_menu "Line Tools" do
+            item "Raise Region", LineTools::RaiseTextCommand
+            item "Lower Region", LineTools::LowerTextCommand
+            item "Replace Line", LineTools::ReplaceLineCommand
+            item "Clear Line"  , LineTools::ClearLineCommand
+            item "Trim Line"   , LineTools::TrimLineAfterCursorCommand
+            item "Kill Line"   , LineTools::KillLineCommand
           end
         end
       end
@@ -53,7 +51,7 @@ module Redcar
           text = doc.get_line(first_line_ix)
         end
         doc.controllers(Redcar::AutoIndenter::DocumentController).first.disable do
-          doc.replace(doc.offset_at_line(first_line_ix),text.length,"")
+          doc.replace(doc.offset_at_line(first_line_ix), text.split(//).length, "")
           Redcar::Top::PasteCommand.new.run
         end
       end
@@ -74,7 +72,7 @@ module Redcar
           lines = 1
         end
         doc.controllers(Redcar::AutoIndenter::DocumentController).first.disable do
-          doc.replace(doc.offset_at_line(line_ix), text.length, "\n" * lines)
+          doc.replace(doc.offset_at_line(line_ix), text.split(//).length, "\n" * lines)
         end
         doc.cursor_offset = doc.cursor_offset - 1
       end
@@ -94,7 +92,7 @@ module Redcar
           text = doc.get_slice(offset, doc.offset_at_line_end(line_ix))
         end
         doc.controllers(Redcar::AutoIndenter::DocumentController).first.disable do
-          doc.replace(offset, text.length, "\n")
+          doc.replace(offset, text.split(//).length, "\n")
         end
         #doc.cursor_offset = doc.cursor_offset - 1
       end
@@ -113,7 +111,7 @@ module Redcar
           text = doc.get_line(line_ix)
         end
         doc.controllers(Redcar::AutoIndenter::DocumentController).first.disable do
-          doc.replace(doc.offset_at_line(line_ix), text.length,"")
+          doc.replace(doc.offset_at_line(line_ix), text.split(//).length, "")
         end
       end
     end
@@ -149,7 +147,7 @@ module Redcar
               unless /\n$/.match(text)
                 new_text = "#{text}\n#{prev_line}"
               end
-              doc.replace(doc.offset_at_line(first_line_ix-1), swap_text.length, new_text)
+              doc.replace(doc.offset_at_line(first_line_ix-1), swap_text.split(//).length, new_text)
               doc.cursor_offset = insert_idx + cursor_line_offset
               if keep_selection
                 doc.set_selection_range(doc.offset_at_line(first_line_ix-1),
@@ -190,7 +188,7 @@ module Redcar
           end
           doc.controllers(Redcar::AutoIndenter::DocumentController).first.disable do
             doc.compound do
-              doc.replace(doc.offset_at_line(first_line_ix), swap_text.length, new_text)
+              doc.replace(doc.offset_at_line(first_line_ix), swap_text.split(//).length, new_text)
               doc.cursor_offset = doc.offset_at_line(last_line_ix+1) + cursor_line_offset
               if keep_selection
                 doc.set_selection_range(doc.offset_at_line(first_line_ix+1),

@@ -25,7 +25,7 @@ module Redcar
         end
         Application::Dialog.popup_menu(menu, :pointer)
       end
-
+      
       def attach_modification_listeners
         jface_document.add_document_listener(DocumentListener.new(@model))
         styledText.add_selection_listener(SelectionListener.new(@model))

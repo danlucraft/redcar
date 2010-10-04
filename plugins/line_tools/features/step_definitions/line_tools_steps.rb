@@ -18,7 +18,6 @@ When /^I replace the line$/ do
   Redcar::LineTools::ReplaceLineCommand.new.run
 end
 
-
 When /^I clear the line$/ do
   Redcar::LineTools::ClearLineCommand.new.run
 end
