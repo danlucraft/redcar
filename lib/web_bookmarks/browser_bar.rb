@@ -9,31 +9,19 @@ module Redcar
       end
 
       button :back, "Back", "Ctrl+Left" do
-        @tab = html_tab
-        if @tab
-          @tab.controller.browser.back
-        end
+        html_tab.controller.browser.back if html_tab
       end
 
       button :forward, "Forward", "Ctrl+Right" do
-        @tab = html_tab
-        if @tab
-          @tab.controller.browser.forward
-        end
+        html_tab.controller.browser.forward if html_tab
       end
 
       button :stop, "Stop", nil do
-        @tab = html_tab
-        if @tab
-          @tab.controller.browser.stop
-        end
+        html_tab.controller.browser.stop if html_tab
       end
 
       button :refresh, "Refresh", "F5" do
-        @tab = html_tab
-        if @tab
-          @tab.controller.browser.refresh
-        end
+        html_tab.controller.browser.refresh if html_tab
       end
 
       label :url_label, "New URL:"
