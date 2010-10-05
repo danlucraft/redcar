@@ -16,6 +16,7 @@ module Redcar
     DISPLAY_NEXT_PARAMS = "_____"
     LINE_HOLDER         = "__LINE__"
     PATH_HOLDER         = "__PATH__"
+    NAME_HOLDER         = "__NAME__"
 
     def self.run_process(path, command, title, output = "tab")
       window = Redcar.app.focussed_window
@@ -47,7 +48,7 @@ module Redcar
     end
 
     # Replaces placeholders in commands with values, like __PATH__,
-    # __LINE__, and __PARAMS__
+    # __LINE__, __NAME__ and __PARAMS__
     def self.substitute_variables(window,command)
       tab = window.focussed_notebook_tab
       if tab and tab.is_a?(EditTab)
@@ -58,6 +59,12 @@ module Redcar
             line = tab.edit_view.document.cursor_line + 1
             command.gsub!(LINE_HOLDER, line.to_s)
           end
+        end
+        if command.include?(NAME_HOLDER)
+          name = File.basename(tab.edit_view.document.path)
+          idx  = name.rindex(".") if name.include?(".")
+          name = name[0,idx] if idx
+          command.gsub!(NAME_HOLDER, name.to_s)
         end
       end
       while command.include?(PARAMS)
