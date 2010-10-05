@@ -75,7 +75,7 @@ module Redcar
         out = Redcar::Application::Dialog.input(msg_title,msg)
         params = out[:value] || ""
         return if out[:button] == :cancel
-        command.sub!(PARAMS,params)
+        command = command.sub(PARAMS,params)
       end
       command
     end
