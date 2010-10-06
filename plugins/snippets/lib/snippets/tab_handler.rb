@@ -67,18 +67,18 @@ module Redcar
           activate_snippet(edit_view, snippets.first)
           true
         else
-        	builder = Menu::Builder.new do
-        	  snippets.group_by {|s| s.bundle_name }.each do |_, bsnippets|
-          	  bsnippets.each_with_index do |snippet, i|
+          builder = Menu::Builder.new do
+            snippets.group_by {|s| s.bundle_name }.each do |_, bsnippets|
+              bsnippets.each_with_index do |snippet, i|
                 item(snippet.name||"<untitled>") do
                   Snippets::TabHandler.activate_snippet(edit_view, snippet) 
                 end
-            	end
-            	separator
+              end
+              separator
             end
-        	end
-        	Redcar.app.focussed_window.popup_menu_with_numbers(builder.menu)
-        	true
+          end
+          Redcar.app.focussed_window.popup_menu_with_numbers(builder.menu)
+          true
         end
       end
 
