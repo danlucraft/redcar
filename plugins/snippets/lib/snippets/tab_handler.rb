@@ -23,12 +23,15 @@ module Redcar
           find_snippet(edit_view)
         end
       end
+
       
       def self.activate_snippet(edit_view, snippet)
         controller = edit_view.document.controllers(Snippets::DocumentController).first
         doc = edit_view.document
-        doc.delete(doc.cursor_offset - snippet.tab_trigger.length, snippet.tab_trigger.length)
-        controller.start_snippet!(snippet)
+        edit_view.compound do
+          doc.delete(doc.cursor_offset - snippet.tab_trigger.length, snippet.tab_trigger.length)
+          controller.start_snippet!(snippet)
+        end
       end
       
       # Decides whether a snippet can be inserted at this location. If so
