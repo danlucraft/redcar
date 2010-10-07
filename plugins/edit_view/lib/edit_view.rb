@@ -117,7 +117,7 @@ module Redcar
         item "Paste", :command => Redcar::Top::PasteCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "clipboard.png"), :barname => :edit
       end
     end
-
+    
     def self.edit_view_context_menus
       Menu::Builder.build do
         group(:priority => :first) do
