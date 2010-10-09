@@ -1,0 +1,32 @@
+{
+    "C": {
+        "line_comment"    : "//",
+        "start_selection" : "/*",
+        "end_selection"   : "*/"
+    },
+    "C++": {
+        "line_comment"    : "//",
+        "start_selection" : "/*",
+        "end_selection"   : "*/"
+    },
+    "Groovy": {
+        "line_comment"    : "//",
+        "start_selection" : "/*",
+        "end_selection"   : "*/"
+    },
+    "Java": {
+        "line_comment"    : "//",
+        "start_selection" : "/*",
+        "end_selection"   : "*/"
+    },
+    "Ruby": {
+        "line_comment"    : "#",
+        "start_selection" : "=begin",
+        "end_selection"   : "=end"
+    },
+    "Ruby on Rails": {
+        "line_comment"    : "#",
+        "start_selection" : "=begin",
+        "end_selection"   : "=end"
+    }
+}
