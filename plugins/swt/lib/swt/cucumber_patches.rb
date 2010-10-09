@@ -46,7 +46,7 @@ module Cucumber
   module RbSupport
     class RbLanguage
       def require_support_files(path)
-        #@step_mother.load_code_files(Cli::Configuration.code_files_in_paths([path]))
+        @step_mother.instance_variable_get(:@support_code).load_files!(Cli::Configuration.code_files_in_paths([path]))
       end
     end
     
