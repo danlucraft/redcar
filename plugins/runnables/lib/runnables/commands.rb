@@ -31,33 +31,48 @@ module Redcar
     end
 
     class RunEditTabCommand < Redcar::EditTabCommand
-      def file_mappings
-        project = Project::Manager.in_window(win)
-        runnable_file_paths = project.config_files("runnables/*.json")
-
-        file_runners = []
-        runnable_file_paths.each do |path|
-          json = File.read(path)
-          this_file_runners = JSON(json)["file_runners"]
-          file_runners += this_file_runners || []
-        end
-        file_runners
-      end
-
       def execute
         project = Project::Manager.in_window(win)
-        file_mappings.each do |file_mapping|
+        f = Runnables.file_mappings(project).detect do |file_mapping|
           regex = Regexp.new(file_mapping["regex"])
+          tab.edit_view.document.mirror.path =~ regex
+        end
+        run_tab(project.home_dir,tab, f) if f
+      end
+      
+      def run_tab(project_path,tab, file_mapping)
+        command = file_mapping["command"]
+        output = file_mapping["output"]
+        path = tab.edit_view.document.mirror.path
+        output = "tab" if output.nil?
+        Runnables.run_process(project_path,command, "Running #{File.basename(path)}", output)
+      end
+    end
+
+    class RunAlternateEditTabCommand < RunEditTabCommand
+      def initialize
+        @default   = nil
+        @alternate = nil
+      end
+      
+      def execute
+        project = Project::Manager.in_window(win)
+        i = 0
+        Runnables.file_mappings(project).each do |f|
+          regex = Regexp.new(f["regex"])
           if tab.edit_view.document.mirror.path =~ regex
-            command_schema = file_mapping["command"]
-            output = file_mapping["output"]
-            if output.nil?
-	            output = "tab"
+            if i == 0
+              @default = f
+            elsif i == 1
+              @alternate = f
             end
-            path = tab.edit_view.document.mirror.path
-            command = command_schema.gsub("__PATH__", path)
-            Runnables.run_process(project.home_dir,command, "Running #{File.basename(path)}", output)
+            i = i + 1 #increment only for matches
           end
+        end
+        if @alternate
+          run_tab(project.home_dir,tab, @alternate)
+        elsif @default
+          run_tab(project.home_dir,tab, @default)
         end
       end
     end
