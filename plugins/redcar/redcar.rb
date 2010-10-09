@@ -1,3 +1,4 @@
+
 module Redcar
   def self.safely(text=nil)
     begin
@@ -606,8 +607,8 @@ Redcar.environment: #{Redcar.environment}
         cursor_ix = doc.cursor_offset
         if doc.selection?
           start_ix = doc.selection_range.begin
-          text = doc.selected_text
-
+          text = doc.selected_text                              
+    
           sorted_text = text.split("\n").sort().join("\n")
           doc.replace_selection(sorted_text)
           doc.cursor_offset = cursor_ix
@@ -617,17 +618,17 @@ Redcar.environment: #{Redcar.environment}
     
     class DialogExample < Redcar::Command
       def execute
-        builder = Menu::Builder.new do
-          item("Foo") { p :foo }
-          item("Bar") { p :bar }
-          separator
-          sub_menu "Baz" do
-            item("Qux") { p :qx }
-            item("Quux") { p :quux }
-            item("Corge") { p :corge }
-          end
-        end
-        win.popup_menu(builder.menu)
+      	builder = Menu::Builder.new do
+      	  item("Foo") { p :foo }
+      	  item("Bar") { p :bar }
+      	  separator
+      	  sub_menu "Baz" do
+      	    item("Qux") { p :qx }
+      	    item("Quux") { p :quux }
+      	    item("Corge") { p :corge }
+      	  end
+      	end
+      	win.popup_menu(builder.menu)
       end
     end
 
@@ -647,16 +648,16 @@ Redcar.environment: #{Redcar.environment}
           end
         end
 
-        def initialize(win)
-          @win = win
+        def initialize(command)
+          @command = command
         end
 
-        def doc; @win.focussed_notebook_tab_document; end
-        def win; @win; end
+        def doc; @command.doc; end
+        def win; @command.send(:win); end
       end
 
       def execute
-        @speedbar = GotoLineCommand::Speedbar.new(win)
+        @speedbar = GotoLineCommand::Speedbar.new(self)
         win.open_speedbar(@speedbar)
       end
     end
