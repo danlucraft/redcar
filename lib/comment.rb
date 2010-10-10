@@ -143,10 +143,12 @@ module Redcar
           Comment.grammar_missing(tab.edit_view.grammar)
           comment = Comment.storage['default_line_comment']
         end
+        selected = doc.selection?
         end_pos = comment.length() -1
         range = doc.selection_range
         start_line = doc.line_at_offset(range.first)
         end_line = doc.line_at_offset(range.last)
+        total_text = "" if selected
         doc.controllers(Redcar::AutoIndenter::DocumentController).first.disable do
           doc.compound do
             (start_line..end_line).each do |line|
@@ -164,8 +166,10 @@ module Redcar
                   text = comment + text
                 end
               end
+              total_text += text
               doc.replace_line(line, text)
             end
+            doc.set_selection_range(doc.offset_at_line(start_line),doc.offset_at_line(start_line)+total_text.length)
           end
         end
       end
