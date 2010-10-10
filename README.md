@@ -9,12 +9,14 @@ A pure Ruby text editor running on JRuby.
 
 ## INSTALLATION
 
-You must have Java installed. You will also need to run these commands for each user on your computer that needs access to Redcar.
+You must have Java installed [1]. You will also need to run these commands for each user on your computer that needs access to Redcar.
 
     $ sudo gem install redcar
     $ redcar install
     
-NB the install will take a minute or so to complete as it has to download about 15MB of jar files.
+The install will take a minute or so to complete as it has to download about 15MB of jar files.
+
+[1] Sun Java or OpenJDK work. Gcj is known not to work.
 
 ## USAGE
 
