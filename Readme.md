@@ -50,4 +50,5 @@ and remember to send a pull request for any languages you want to add. :)
 
 ## Note ##
 
-*The RSense plugin has the same keymapping as Toggle Line Comment
+* The RSense plugin has the same keymapping as Toggle Line Comment (not sure how to handle this, yet)
+* An option to disable the warning when using default comment strings is in the plugin preferences, as well as settings for the defaults
