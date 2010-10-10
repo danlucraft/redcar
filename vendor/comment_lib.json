@@ -1,0 +1,45 @@
+{
+    "C": {
+        "line_comment"    : "//",
+        "start_block" : "/*",
+        "end_block"   : "*/"
+    },
+    "C++": {
+        "line_comment"    : "//",
+        "start_block" : "/*",
+        "end_block"   : "*/"
+    },
+    "Grails Server Page": {
+        "start_block" : "<%--",
+        "end_block"   : "--%>"
+    },
+    "Groovy": {
+        "line_comment"    : "//",
+        "start_block" : "/*",
+        "end_block"   : "*/"
+    },
+    "HTML": {
+        "start_block" : "<!--",
+        "end_block"   : "-->"
+    },
+    "Java": {
+        "line_comment"    : "//",
+        "start_block" : "/*",
+        "end_block"   : "*/"
+    },
+    "JavaScript": {
+        "line_comment"    : "//",
+        "start_block" : "/*",
+        "end_block"   : "*/"
+    },
+    "Ruby": {
+        "line_comment"    : "#",
+        "start_block" : "=begin",
+        "end_block"   : "=end"
+    },
+    "Ruby on Rails": {
+        "line_comment"    : "#",
+        "start_block" : "=begin",
+        "end_block"   : "=end"
+    }
+}

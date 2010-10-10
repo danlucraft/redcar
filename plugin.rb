@@ -1,7 +1,7 @@
 Plugin.define do
-  name    "text_utils"
+  name    "comment"
   version "0.1"
-  file    "lib", "text_utils"
-  object  "Redcar::TextUtils"
+  file    "lib", "comment"
+  object  "Redcar::Comment"
   dependencies "redcar", ">0"
 end
