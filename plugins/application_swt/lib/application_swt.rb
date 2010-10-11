@@ -140,36 +140,36 @@ module Redcar
       @model.add_listener(:refresh_menu, &method(:refresh_menu))
     end
 
-    class Listener
+    class CocoaUIListener
+
       def initialize(name)
         @name = name
       end
 
       def handle_event(e)
-        Application::Dialog.message_box("#{@name} menu is not hooked up yet")
-      end
-    end
-
-    class QuitListener
-      def handle_event(e)
-        unless Redcar.app.events.ignore?(:application_close, Redcar.app)
-          e.doit = false
-          Redcar.app.events.create(:application_close, Redcar.app)
+        if    @name == :prefs
+          Redcar::PluginManagerUi::OpenPreferencesCommand.new.run
+        elsif @name == :about
+          Redcar::Top::AboutCommand.new.run
+        elsif @name == :quit
+          unless Redcar.app.events.ignore?(:application_close, Redcar.app)
+            e.doit = false
+            Redcar.app.events.create(:application_close, Redcar.app)
+          end
+        else
+          Application::Dialog.message_box("#{@name} menu is not hooked up yet")
         end
       end
     end
 
     def add_swt_listeners
       if Redcar.platform == :osx
-        quit_listener  = Listener.new(:quit)
-        about_listener = Listener.new(:about)
-        prefs_listener = Listener.new(:prefs)
         enhancer = com.redcareditor.application_swt.CocoaUIEnhancer.new("Redcar")
         enhancer.hook_application_menu(
           ApplicationSWT.display,
-          QuitListener.new,
-          about_listener,
-          prefs_listener
+          CocoaUIListener.new(:quit),
+          CocoaUIListener.new(:about),
+          CocoaUIListener.new(:prefs)
         )
       end
     end
