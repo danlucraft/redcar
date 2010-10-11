@@ -15,9 +15,11 @@ module Redcar
     def self.storage
       @storage ||=begin
         storage = Plugin::Storage.new('comment_plugin')
-        storage.set_default('default_line_comment', "//")
-        storage.set_default('default_start_block' , "/*")
-        storage.set_default('default_end_block'   , "*/")
+        storage.set_default('default_line_comment'       , "//")
+        storage.set_default('default_start_block'        , "/*")
+        storage.set_default('default_end_block'          , "*/")
+        storage.set_default('insert_single_space'        , true)
+        storage.set_default('warning_for_using_defaults' , true)
         storage
       end
     end
@@ -64,8 +66,10 @@ module Redcar
     end
 
     def self.grammar_missing(grammar)
-      Application::Dialog.message_box("Comment type not found for #{grammar}. Using defaults instead.") unless @messaged
-      @messaged = true
+      if Comment.storage['warning_for_using_defaults']
+        Application::Dialog.message_box("Comment type not found for #{grammar}. Using defaults instead.") unless @messaged
+        @messaged = true
+      end
     end
 
     class ToggleSelectionCommentCommand < Redcar::EditTabCommand
@@ -84,29 +88,27 @@ module Redcar
           doc.compound do
             if doc.selection?
               text = doc.selected_text
-              if text[0,start.length] == start and text[text.length-ending.length,text.length] == ending
-                text = text[start.length,text.length]
-                text = text[0,text.length-ending.length]
+              if text[0,start.split(//).length] == start and
+                text[text.split(//).length-ending.split(//).length,text.split(//).length] == ending
+                text = text[start.split(//).length,text.split(//).length]
+                text = text[0,text.split(//).length-ending.split(//).length]
                 doc.replace_selection(text)
               else
                 doc.replace_selection("#{start}#{text}#{ending}")
               end
             else
-              line = doc.cursor_line
-              text = doc.get_line_without_end_of_line(line)
-              start_idx = text.index(start)
-              end_idx = text.rindex(ending)
-#              if start_idx and end_idx and end_idx > start_idx + start.length
-#                text[end_idx..end_idx+ending.length] == ""
-#                text[start_idx..start_idx+start.length] == ""
-#                end_idx = text.rindex(ending)
-#              else
-              if text[0,start.length] == start and text[text.length-ending.length,text.length] == ending
-                text = text[start.length,text.length]
-                text = text[0,text.length-ending.length]
+              line                = doc.cursor_line
+              text                = doc.get_line_without_end_of_line(line)
+              start_idx           = text.index(start)
+              end_idx             = text.rindex(ending)
+              start_length        = start.split(//).length
+              ending_start_offset = text.split(//).length-ending.split(//).length
+              if text[0,start_length] == start and text[ending_start_offset,text.split(//).length] == ending
+                text = text[start.length,text.split(//).length]
+                text = text[0,ending_start_offset]
                 doc.replace_line(line,text)
               else
-                replacement = "#{start}#{text}#{ending}"
+                replacement  = "#{start}#{text}#{ending}"
                 replacement += "\n" if doc.get_line(line) =~ /\n$/
                 doc.replace_line(line,replacement)
               end
@@ -117,6 +119,22 @@ module Redcar
     end
 
     class ToggleLineCommentCommand < Redcar::EditTabCommand
+
+      def uncomment_and_use_extra_space(end_pos,text)
+        f = text[end_pos+1,end_pos+1]
+        p = text[end_pos+2,end_pos+2]
+        text.split(//).length > end_pos+3   and
+        f   == " "                and
+        (p  != " " or p  != "\t") and
+        Comment.storage['insert_single_space_for_zero_indentation']
+      end
+
+      def comment_and_use_extra_space(text)
+        text.split(//).length > 2 and
+        not (text[0] == " " or text[0] == "\t") and
+        Comment.storage['insert_single_space_for_zero_indentation']
+      end
+
 	    def execute
         type = Comment.comment_map["#{tab.edit_view.grammar.gsub("\"","")}"]
         if type
@@ -126,17 +144,34 @@ module Redcar
           Comment.grammar_missing(tab.edit_view.grammar)
           comment = Comment.storage['default_line_comment']
         end
-        end_pos = comment.length() -1
-        range = doc.selection_range
+        selected   = doc.selection?
+        end_pos    = comment.split(//).length() -1
+        range      = doc.selection_range
         start_line = doc.line_at_offset(range.first)
-        end_line = doc.line_at_offset(range.last)
+        end_line   = doc.line_at_offset(range.last)
+        total_text = "" if selected
         doc.controllers(Redcar::AutoIndenter::DocumentController).first.disable do
           doc.compound do
             (start_line..end_line).each do |line|
               text = doc.get_line(line).chomp
-              if text[0..end_pos] == comment then text = text[end_pos+1..-1] else text = comment + text end
+              if text[0..end_pos] == comment
+                if uncomment_and_use_extra_space(end_pos,text)
+                  text = text[end_pos+2..-1]
+                else
+                  text = text[end_pos+1..-1]
+                end
+              else
+                if comment_and_use_extra_space(text)
+                  text = comment + " " + text
+                else
+                  text = comment + text
+                end
+              end
+              total_text += text if selected
               doc.replace_line(line, text)
             end
+            offset = doc.offset_at_line(start_line)
+            doc.set_selection_range(offset,offset+total_text.split(//).length) if selected
           end
         end
       end

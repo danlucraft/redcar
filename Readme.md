@@ -48,9 +48,7 @@ If a particular language isn't supported (yet), you can add support for it by de
 
 and remember to send a pull request for any languages you want to add. :)
 
-### TODO ###
-1. Probably needs to implement better bundle handling so that we can look up the comment characters from the bundles instead of having them referenced internally
+## Note ##
 
-
-
-
+* The RSense plugin has the same keymapping as Toggle Line Comment (not sure how to handle this, yet)
+* An option to disable the warning when using default comment strings is in the plugin preferences, as well as settings for the defaults
