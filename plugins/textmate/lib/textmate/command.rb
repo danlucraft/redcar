@@ -1,15 +1,19 @@
 module Redcar
   module Textmate
     class Command
-      attr_reader :bundle_name, :key_equivalent
+      attr_reader :key_equivalent
 
-      def initialize(path, bundle_name)
+      def initialize(path, bundle)
         @path = path
         @plist = Plist.xml_to_plist(File.read(path))
-        @bundle_name = bundle_name
+        @bundle = bundle
         if key = @plist["keyEquivalent"]
           @key_equivalent = Textmate.translate_key_equivalent(key)
         end
+      end
+
+      def bundle_name
+        @bundle.name
       end
 
       def name

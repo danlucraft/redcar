@@ -12,7 +12,7 @@ module Redcar
           @plist = Plist.xml_to_plist(File.read(info_path))
         end
         @snippets = snippet_paths.map {|path| Snippet.new(path, self.name) }
-        @commands = command_paths.map {|path| Command.new(path, self.name) }
+        @commands = command_paths.map {|path| Command.new(path, self) }
         @preferences = preference_paths.map {|path| Preference.new(path) }
       end
 
