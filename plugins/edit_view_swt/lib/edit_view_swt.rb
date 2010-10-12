@@ -147,7 +147,7 @@ module Redcar
           action = st.getKeyBinding(event.character | event.stateMask)
           if (action == Swt::SWT::NULL)
             # see if we have a control character
-            if ((event.stateMask & SWT.CTRL) != 0 && event.character <= 31)
+            if ((event.stateMask & Swt::SWT::CTRL) != 0 && event.character <= 31)
               # get the character from the CTRL+char sequence, the control
               # key subtracts 64 from the value of the key that it modifies
               c = event.character + 64
