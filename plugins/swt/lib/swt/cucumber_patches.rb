@@ -44,24 +44,11 @@ module Cucumber
   end
 
   module RbSupport
-    class RbLanguage
-      def require_support_files(path)
-        @step_mother.instance_variable_get(:@support_code).load_files!(Cli::Configuration.code_files_in_paths([path]))
-      end
-    end
-    
     module RbDsl
       def RequireSupportFiles(path)
-        RbDsl.require_support_files(path)
-      end
-      
-      class << self
-        def require_support_files(path)
-          @rb_language.require_support_files(path)
-        end
+	# FIXME: Remove this once all features have been adjusted
       end
     end
-    
   end
   
   module Cli
