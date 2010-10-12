@@ -4,6 +4,7 @@ require 'textmate/environment'
 require 'textmate/plist'
 require 'textmate/preference'
 require 'textmate/snippet'
+require 'textmate/command'
 require 'textmate/tree_mirror'
 require 'textmate/commands'
   
@@ -65,6 +66,7 @@ module Redcar
           h[b.uuid] = b
           b.snippets.each {|s| h[s.uuid] = s }
           b.preferences.each {|p| h[p.uuid] = p }
+          b.commands.each {|c| h[c.uuid] = c }
         end
         h
       end
@@ -114,6 +116,12 @@ module Redcar
     def self.all_settings
       @all_settings ||= begin
         all_bundles.map {|b| b.preferences }.flatten.map {|p| p.settings}.flatten
+      end
+    end
+
+    def self.all_commands
+      @all_commands ||= begin
+        all_bundles.map {|b| b.commands }.flatten
       end
     end
 

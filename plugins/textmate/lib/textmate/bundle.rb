@@ -3,7 +3,7 @@ module Redcar
   module Textmate
     class Bundle
       include Redcar::Observable
-      attr_reader :path, :snippets, :preferences
+      attr_reader :path, :snippets, :preferences, :commands
 
       def initialize(path)
         @path = File.expand_path(path)
@@ -12,6 +12,7 @@ module Redcar
           @plist = Plist.xml_to_plist(File.read(info_path))
         end
         @snippets = snippet_paths.map {|path| Snippet.new(path, self.name) }
+        @commands = command_paths.map {|path| Command.new(path, self.name) }
         @preferences = preference_paths.map {|path| Preference.new(path) }
       end
 
@@ -71,15 +72,24 @@ module Redcar
               build_menu_from_item(sub_builder, sub_item)
             end
           end
-        elsif Textmate.uuid_hash[item] #is a snippet
-          snippet = Textmate.uuid_hash[item]
-          if snippet.is_a?(Textmate::Snippet)
+        elsif Textmate.uuid_hash[item] #is a snippet or command
+          item = Textmate.uuid_hash[item]
+          if item.is_a?(Textmate::Snippet)
+            snippet = item
             return unless snippet.name and snippet.name != "" #has a name
             builder.item(snippet.to_menu_string) do
               doc = EditView.focussed_edit_view_document
               if doc
                 controller = doc.controllers(Snippets::DocumentController).first
                 controller.start_snippet!(snippet)
+              end
+            end
+          elsif item.is_a?(Textmate::Command)
+            command = item
+            return unless command.name and command.name != "" #has a name
+            builder.item(command.to_menu_string) do
+              if project = Project.window_projects[Redcar.app.focussed_window]
+                Runnables.run_process(project.home_dir, command.command, command.name)
               end
             end
           end
@@ -94,6 +104,10 @@ module Redcar
 
       def snippet_paths
         Dir[File.join(path, "Snippets", "*")]
+      end
+
+      def command_paths
+        Dir[File.join(path, "Commands", "*")]
       end
     end
   end
