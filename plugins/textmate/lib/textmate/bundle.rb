@@ -88,9 +88,7 @@ module Redcar
             command = item
             return unless command.name and command.name != "" #has a name
             builder.item(command.to_menu_string) do
-              if project = Project.window_projects[Redcar.app.focussed_window]
-                Runnables.run_process(project.home_dir, command.command, command.name)
-              end
+              command.run
             end
           end
         end

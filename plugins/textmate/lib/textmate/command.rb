@@ -35,6 +35,15 @@ module Redcar
         @plist["command"]
       end
 
+      def run
+        if project = Project.window_projects[Redcar.app.focussed_window]
+          out = ("tab" if output?) || "none"
+          environment = { "TM_PROJECT_DIRECTORY" => project.home_dir,
+              "PRJNAME" => File.basename(project.home_dir) }
+          Runnables.run_process(project.home_dir, command, name, out, environment)
+        end
+      end
+
       def input
         case @plist["input"]
         when "selection"
