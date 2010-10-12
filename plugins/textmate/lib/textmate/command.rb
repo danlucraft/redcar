@@ -43,7 +43,8 @@ module Redcar
         if project = Project.window_projects[Redcar.app.focussed_window]
           out = ("tab" if output?) || "none"
           environment = { "TM_PROJECT_DIRECTORY" => project.home_dir,
-              "PRJNAME" => File.basename(project.home_dir) }
+              "PRJNAME" => File.basename(project.home_dir),
+              "TM_BUNDLE_SUPPORT" => File.join(@bundle.path, "Support").gsub(" ", '\ ') }
           Runnables.run_process(project.home_dir, command, name, out, environment)
         end
       end
