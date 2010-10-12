@@ -59,7 +59,7 @@ end
 
 task :cucumber_ci do  
   opts = "-J-XstartOnFirstThread" if Config::CONFIG["host_os"] =~ /darwin/
-  opts = "#{opts} bin/cucumber -f progress -f junit --out features/reports/ plugins/*/features"
+  opts = "#{opts} bin/cucumber --guess -f progress -f junit --out features/reports/ plugins/*/features"
   sh("jruby #{opts} && echo 'done'")
 end
 
