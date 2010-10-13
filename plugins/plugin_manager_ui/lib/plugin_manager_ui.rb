@@ -12,14 +12,28 @@ module Redcar
         sub_menu "Plugins", :priority => 40 do
           group(:priority => :first) {
             item "Plugin Manager", PluginManagerUi::OpenCommand
-            item "Reload Again", PluginManagerUi::ReloadLastReloadedCommand
-            item("Edit Preferences") { Project::Manager.open_project_for_path(Redcar::Plugin::Storage.storage_dir) }
+            item "Reload Plugins", PluginManagerUi::ReloadLastReloadedCommand
             separator
           }
         end
+        if Redcar.platform == :linux or Redcar.platform == :windows
+          sub_menu "Edit" do
+            group(:priority => :last) do
+              separator
+              item "Preferences", PluginManagerUi::OpenPreferencesCommand
+            end
+          end
+        end
       end
     end
-    
+
+    class OpenPreferencesCommand < Redcar::Command
+      def execute
+        project = Project::Manager.open_project_for_path(Redcar::Plugin::Storage.storage_dir)
+        project.window.title = "Plugin Preferences"
+      end
+    end
+
     class ReloadLastReloadedCommand < Redcar::Command
       
       def execute

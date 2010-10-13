@@ -59,7 +59,7 @@ end
 
 task :cucumber_ci do  
   opts = "-J-XstartOnFirstThread" if Config::CONFIG["host_os"] =~ /darwin/
-  opts = "#{opts} bin/cucumber -f progress -f junit --out features/reports/ plugins/*/features"
+  opts = "#{opts} bin/cucumber --guess -f progress -f junit --out features/reports/ plugins/*/features"
   sh("jruby #{opts} && echo 'done'")
 end
 
@@ -149,19 +149,19 @@ spec = Gem::Specification.new do |s|
   
   s.post_install_message = <<TEXT
 
-------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 Please now run:
 
   $ redcar install
 
-to complete the installation. (NB do NOT use sudo. In previous versions, sudo was 
-required for this step, but now it should be run as the user.)
+to complete the installation. (NB. do NOT use sudo. In previous versions,
+sudo was required for this step, but now it should be run as the user.)
 
-NB. This will download jars that Redcar needs to run from the internet. It will put
-them into ~/.redcar/assets.
+NB. This will download jars that Redcar needs to run from the internet.
+It will put them into ~/.redcar/assets.
 
-------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 TEXT
 end
