@@ -3,6 +3,10 @@ When /^I click Show Bundles in Tree$/ do
     Redcar::Textmate::ShowSnippetTree.new.run
 end
 
+When /^I Reload Bundles in Tree$/ do
+    Redcar::Textmate::ReloadSnippetTree.new.run
+end
+
 Then /^I should see a tree mirror titled "([^"]*)"$/ do |arg1|
   val = Redcar.app.focussed_window.treebook.trees.detect do |t|
     t.tree_mirror.title == arg1
@@ -35,23 +39,13 @@ Then /^I should see snippet "([^"]*)" listed$/ do |arg1|
   val.should be_true
 end
 
- When /^I add a bundle$/ do
+When /^I add a bundle$/ do
   FileUtils.mkdir tmp_bundle_path_1
   FileUtils.cp_r(test_bundle, bundle_path)
- end
+end
 
-Then /^I should (see|not see) bundle "([^"]*)" in the tree$/ do |see,arg1|
-  val = Redcar.app.focussed_window.treebook.trees.detect do |t|
-    t.tree_mirror.top.detect do |child|
-      Redcar::Textmate.all_bundles.detect do |bundle|
-        bundle.name == arg1
-      end
-    end
-  end
-  case see
-  when "see"
-  val.should be_true
-  when "not see"
-    val.should be_nil
-  end
+Then /^I should (not )?see bundle "([^"]*)" in the tree$/ do |not_see, name|
+  Redcar.app.focussed_window.treebook.trees.first.tree_mirror.top.any? do |node|
+    node.text == name
+  end.should (not_see ? be_false : be_true)
 end
