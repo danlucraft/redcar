@@ -1,5 +1,12 @@
 module Redcar
   module Textmate
+    ##
+    # This class is responsible for running textmate bundle commands from their XML specification
+    # TODO: Complete environment variables (see: http://manual.macromates.com/en/environment_variables.html)
+    # TODO: Implement before commands
+    # TODO: Implement scope
+    # TODO: Honour output options (discard, showAsHTML, openAsNewDocument)
+    # TODO: Implement variable input
     class Command
       attr_reader :key_equivalent
 
