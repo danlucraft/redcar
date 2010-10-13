@@ -168,6 +168,11 @@ module Redcar
       end
     end
 
+    def self.clear_cached_bundles
+      instance_variables.each {|i| instance_variable_set(i, nil) }
+      PersistentCache.new("textmate_bundles").clear
+    end
+
     class InstalledBundles < Redcar::Command
       def execute
         controller = Controller.new
@@ -186,6 +191,11 @@ module Redcar
         def index
           rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "views", "installed_bundles.html.erb")))
           rhtml.result(binding)
+        end
+
+        def refresh
+          Textmate.clear_cached_bundles
+          index
         end
       end
     end
