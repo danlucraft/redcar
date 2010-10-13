@@ -49,6 +49,9 @@ module Redcar
             end
           end
         end
+        item("Reload bundles") do
+          ReloadSnippetTree.new.run
+        end
       end
     end
 
