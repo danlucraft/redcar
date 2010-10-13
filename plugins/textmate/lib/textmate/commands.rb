@@ -28,11 +28,8 @@ module Redcar
         Textmate.clear_cached_bundles
         if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
           win.treebook.remove_tree(tree)
-          tree = Tree.new(TreeMirror.new(Textmate.all_bundles),TreeController.new)
-          win.treebook.add_tree(tree)
-        else
-          ShowSnippetTree.new.run
         end
+        ShowSnippetTree.new.run
       end
     end
 
