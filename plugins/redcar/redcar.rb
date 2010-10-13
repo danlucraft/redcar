@@ -82,7 +82,12 @@ module Redcar
     class NewCommand < Command
 
       def execute
-        tab = win.new_tab(Redcar::EditTab)
+        unless win.nil?
+          tab = win.new_tab(Redcar::EditTab)
+        else
+          window = Redcar.app.new_window
+          tab = window.new_tab(Redcar::EditTab)          
+        end
         tab.title = "untitled"
         tab.focus
         tab
@@ -407,8 +412,22 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class MoveBottomCommand < DocumentCommand
+    class MoveNextLineCommand < DocumentCommand
+      def execute
+        doc = tab.edit_view.document
+        line_ix = doc.line_at_offset(doc.cursor_offset)
+        if line_ix == doc.line_count - 1
+          doc.cursor_offset = doc.length
+        else
+          doc.cursor_offset = doc.offset_at_line(line_ix + 1) - doc.delim.length
+        end
+        doc.ensure_visible(doc.cursor_offset)
+        doc.insert(doc.cursor_offset, "\n")
+        
+      end
+    end
 
+    class MoveBottomCommand < DocumentCommand
       def execute
         doc.cursor_offset = doc.length
         doc.ensure_visible(doc.length)
@@ -747,6 +766,8 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+W",       CloseTabCommand
         link "Cmd+Shift+W", CloseWindowCommand
         link "Cmd+Q",       QuitCommand
+        
+        #link "Cmd+Return",   MoveNextLineCommand
 
         link "Cmd+Shift+E", EditView::InfoSpeedbarCommand
         link "Cmd+Z",       UndoCommand
@@ -820,6 +841,8 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+W",       CloseTabCommand
         link "Ctrl+Shift+W", CloseWindowCommand
         link "Ctrl+Q",       QuitCommand
+        
+        link "Ctrl+Enter",   MoveNextLineCommand
 
         link "Ctrl+Shift+E", EditView::InfoSpeedbarCommand
         link "Ctrl+Z",       UndoCommand

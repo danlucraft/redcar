@@ -13,6 +13,15 @@ Feature: Snippets
     And I press the Tab key in the edit tab
     Then the contents should be "Daniel Benjamin Lucraft<c>"
 
+  Scenario: Snippet text preceded by non-word characters
+    Given there is a snippet with tab trigger "ewf" and scope "" and content
+      """
+        Earth, Wind, and Fire
+      """
+    When I replace the contents with "}}ewf<c>"
+    And I press the Tab key in the edit tab
+    Then the contents should be "}}Earth, Wind, and Fire<c>"
+
   Scenario: Simple content snippet in plain text scope
     Given there is a snippet with tab trigger "DBL" and scope "text.plain" and content
       """
@@ -75,7 +84,7 @@ Feature: Snippets
     When I replace the contents with "if<c>"
     And I press the Tab key in the edit tab
     Then the contents should be "if <c>\n\t\nend"
-    
+
   Scenario: Escapes dollars
     Given there is a snippet with tab trigger "DBL" and scope "text.plain" and content
       """
@@ -336,7 +345,7 @@ Feature: Snippets
     Then the contents should be "def <s>fname<c> docstring for fname\"\"\"\n"
     When I replace 4 to 9 with ""
     Then the contents should be "def <c> docstring for \"\"\"\n"
-    
+
   Scenario: Abutting dollars 2
     Given there is a snippet with tab trigger "def" and scope "text.plain" and content
       """

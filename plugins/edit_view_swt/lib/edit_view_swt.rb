@@ -322,6 +322,8 @@ module Redcar
       end
 
       def verify_key(key_event)
+        #uncomment this line for key debugging
+        #puts "got keyevent: #{key_event.character} #{key_event.stateMask}"
         if @edit_view_swt.model.document.block_selection_mode?
           @edit_view_swt.begin_compound
         end
@@ -337,6 +339,8 @@ module Redcar
           key_event.doit = !@edit_view_swt.model.delete_pressed(ApplicationSWT::Menu::BindingTranslator.modifiers(key_event))
         elsif key_event.character == Swt::SWT::BS
           key_event.doit = !@edit_view_swt.model.backspace_pressed(ApplicationSWT::Menu::BindingTranslator.modifiers(key_event))
+        elsif key_event.character == 13 and (key_event.stateMask == Swt::SWT::COMMAND or key_event.stateMask == Swt::SWT::CTRL)
+          key_event.doit = !@edit_view_swt.model.cmd_enter_pressed(ApplicationSWT::Menu::BindingTranslator.modifiers(key_event))
         end
       end
     end
