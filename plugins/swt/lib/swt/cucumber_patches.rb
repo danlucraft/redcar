@@ -6,31 +6,27 @@ module Cucumber
         attr_accessor :wait_time
       end
       
-      def invoke(step_mother, configuration)
+      def invoke(step_mother, options)
         block = Swt::RRunnable.new do
-            find_step_match!(step_mother, configuration)
-            unless @skip_invoke || configuration.dry_run? || @exception || @step_collection.exception
-              @skip_invoke = true
-              begin
-                @step_match.invoke(@multiline_arg)
-                step_mother.after_step
-                status!(:passed)
-              rescue Pending => e
-                failed(configuration, e, false)
-                status!(:pending)
-              rescue Undefined => e
-                failed(configuration, e, false)
-                status!(:undefined)
-              rescue Cucumber::Ast::Table::Different => e
-                @different_table = e.table
-                failed(configuration, e, false)
-                status!(:failed)
-              rescue Exception => e
-                failed(configuration, e, false)
-                status!(:failed)
-              end
+          find_step_match!(step_mother)
+          unless @skip_invoke || options[:dry_run] || @exception || @step_collection.exception
+            @skip_invoke = true
+            begin
+              @step_match.invoke(@multiline_arg)
+              step_mother.after_step
+              status!(:passed)
+            rescue Pending => e
+              failed(options, e, false)
+              status!(:pending)
+            rescue Undefined => e
+              failed(options, e, false)
+              status!(:undefined)
+            rescue Exception => e
+              failed(options, e, false)
+              status!(:failed)
             end
           end
+        end
         
         Redcar::ApplicationSWT.display.syncExec(block)
 
@@ -44,11 +40,24 @@ module Cucumber
   end
 
   module RbSupport
-    module RbDsl
-      def RequireSupportFiles(path)
-	# FIXME: Remove this once all features have been adjusted
+    class RbLanguage
+      def require_support_files(path)
+        @step_mother.load_code_files(Cli::Configuration.code_files_in_paths([path]))
       end
     end
+    
+    module RbDsl
+      def RequireSupportFiles(path)
+        RbDsl.require_support_files(path)
+      end
+      
+      class << self
+        def require_support_files(path)
+          @rb_language.require_support_files(path)
+        end
+      end
+    end
+    
   end
   
   module Cli
