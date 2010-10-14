@@ -7,7 +7,7 @@ module DocumentSearch
     Redcar::Menu::Builder.build do
       sub_menu "Edit" do
         sub_menu "Search", :priority => 50 do
-          item "Document Search",       SearchForwardCommand
+          item "Document Search",    SearchForwardCommand
           item "Repeat Last Search", RepeatPreviousSearchForwardCommand
           item "Search and Replace", SearchAndReplaceCommand
         end
@@ -89,6 +89,9 @@ module DocumentSearch
   class SearchAndReplaceCommand < Redcar::EditTabCommand
     def execute
       @speedbar = SearchAndReplaceSpeedbar.new
+      if doc.selection?
+        @speedbar.initial_query = doc.selected_text
+      end
       win.open_speedbar(@speedbar)
     end
   end

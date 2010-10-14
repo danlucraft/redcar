@@ -27,8 +27,10 @@ module Redcar
       def self.activate_snippet(edit_view, snippet)
         controller = edit_view.document.controllers(Snippets::DocumentController).first
         doc = edit_view.document
-        doc.delete(doc.cursor_offset - snippet.tab_trigger.length, snippet.tab_trigger.length)
-        controller.start_snippet!(snippet)
+        edit_view.compound do
+          doc.delete(doc.cursor_offset - snippet.tab_trigger.length, snippet.tab_trigger.length)
+          controller.start_snippet!(snippet)
+        end
       end
 
       # Decides whether a snippet can be inserted at this location. If so
@@ -75,18 +77,18 @@ module Redcar
           activate_snippet(edit_view, snippets.first)
           true
         else
-        	builder = Menu::Builder.new do
-        	  snippets.group_by {|s| s.bundle_name }.each do |_, bsnippets|
-          	  bsnippets.each_with_index do |snippet, i|
+          builder = Menu::Builder.new do
+            snippets.group_by {|s| s.bundle_name }.each do |_, bsnippets|
+              bsnippets.each_with_index do |snippet, i|
                 item(snippet.name||"<untitled>") do
                   Snippets::TabHandler.activate_snippet(edit_view, snippet)
                 end
-            	end
-            	separator
+              end
+              separator
             end
-        	end
-        	Redcar.app.focussed_window.popup_menu_with_numbers(builder.menu)
-        	true
+          end
+          Redcar.app.focussed_window.popup_menu_with_numbers(builder.menu)
+          true
         end
       end
 
