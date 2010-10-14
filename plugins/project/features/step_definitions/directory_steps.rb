@@ -16,3 +16,16 @@ When /^I move the myproject fixture away$/ do
                "plugins/project/spec/fixtures/myproject.bak")
   @put_myproject_fixture_back = true
 end
+
+When /^I open a "([^"]*)" as a subproject of the current directory$/ do |arg1|
+  path = Redcar::Project::Manager.focussed_project.path
+  Redcar::Project::Manager.open_subproject(path,path + arg1)
+end
+
+Then /^"([^"]*)" in the project configuration files$/ do |arg1|
+  project = Redcar::Project::Manager.focussed_project
+  project.config_files(arg1).each do |file|
+    File.exist?(file).should == true
+  end
+end
+

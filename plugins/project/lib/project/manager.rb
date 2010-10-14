@@ -182,6 +182,18 @@ module Redcar
         end
       end
 
+      # Opens a subproject in a new window
+      # @param [String] project_path  the project path to fork
+      # @param [String] path  the path of the directory to view
+      def self.open_subproject(project_path,path)
+        win = Redcar.app.focussed_window
+        win = Redcar.app.new_window if !win or Manager.in_window(win)
+        project = Redcar::Project::SubProject.new(project_path,path).tap do |p|
+          p.open(win) if p.ready?
+          win.title = "Subproject: #{File.basename(path)} in #{File.basename(project_path)}"
+        end
+      end
+
       # The currently focussed Project, or nil if none.
       #
       # @return [Project]
@@ -334,7 +346,8 @@ module Redcar
               item("in File Browser") { Project::OpenDirectoryInExplorerCommand.new(enclosing_dir).run }
               item("in Command Line") { Project::OpenDirectoryInCommandLineCommand.new(enclosing_dir).run }
               unless enclosing_dir == tree.tree_mirror.path
-                item("as new Project")  { Manager.open_project_for_path(enclosing_dir) }
+                item("as new Project") { Manager.open_project_for_path(enclosing_dir) }
+                item("as Subproject")  { Manager.open_subproject(tree.tree_mirror.path,enclosing_dir) }
               end
             end
           end
