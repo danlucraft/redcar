@@ -1,45 +1,8 @@
 
 module Redcar
   class REPL
-    class ClojureMirror
-      def self.load_clojure_dependencies
-        unless @loaded
-          require File.join(Redcar.asset_dir, "clojure.jar")
-          require File.join(Redcar.asset_dir, "clojure-contrib.jar")
-          require File.join(Redcar.asset_dir, "org-enclojure-repl-server.jar")
-          require File.dirname(__FILE__) + "/../../vendor/enclojure-wrapper.jar"
-          
-          import 'redcar.repl.Wrapper'
-          @loaded = true
-        end
-      end
+    class ClojureMirror < ReplMirror
       
-      include Redcar::REPL::ReplMirror
-      
-      def initialize
-        ClojureMirror.load_clojure_dependencies
-        # required by ReplMirror
-        @prompt = "=>"
-        
-        @repl_wrapper = Wrapper.new 
-        @mutex = Mutex.new
-        @history = "# Clojure REPL\n"
-	
-        @thread = Thread.new do
-          loop do
-            str = @repl_wrapper.getResult
-            @mutex.synchronize do
-              @history += "\n" if @history != ""
-              @history += str
-            end
-            Redcar.update_gui do
-              notify_listeners(:change)
-            end
-          end
-        end
-	
-      end
-
       def title
         "Clojure REPL"
       end
@@ -48,30 +11,71 @@ module Redcar
         "Clojure REPL"
       end
       
-      # Get the complete history as a pretty formatted string.
-      #
-      # @return [String]
-      def read
-        @mutex.synchronize do
-          @history
+      def initial_preamble
+        "# Clojure REPL\n\nuser=>"
+      end
+      
+      def prompt
+        "user=>"
+      end
+      
+      def evaluator
+        @evaluator ||= ClojureMirror::Evaluator.new(self)
+      end
+      
+      def entered_expression(contents)
+        if contents.split("\n").last =~ /=>\s+$/
+          ""
+        else
+          contents.split("=>").last.strip
         end
       end
-         
-      def clear_history
-        @mutex.synchronize do
-          @history = @history.split("\n").last
-        end
-        notify_listeners(:change)
+      
+      def format_error(e)
+        "ERROR: #{e.message}\n\n#{e.backtrace.join("\n")}"
       end
 
-      private
-      
-      def send_to_repl expr
-        @mutex.synchronize do
-          @history += expr
+      class Evaluator
+        attr_reader :wrapper
+        
+        def self.load_clojure_dependencies
+          unless @loaded
+            require File.join(Redcar.asset_dir, "clojure.jar")
+            require File.join(Redcar.asset_dir, "clojure-contrib.jar")
+            require File.join(Redcar.asset_dir, "org-enclojure-repl-server.jar")
+            require File.dirname(__FILE__) + "/../../vendor/enclojure-wrapper.jar"
+            
+            import 'redcar.repl.Wrapper'
+            @loaded = true
+          end
         end
-        @repl_wrapper.sendToRepl(expr)
-      end   
+
+        def initialize(mirror)
+          ClojureMirror::Evaluator.load_clojure_dependencies
+          @mirror = mirror
+          @wrapper ||= begin
+            wrapper = Wrapper.new 
+            
+            @thread = Thread.new do
+              loop do
+                output = wrapper.getResult
+                output =~ /^(.*)\nuser=> /
+                @result = $1
+              end
+            end
+            
+            wrapper
+          end
+        end
+        
+        def execute(expr)
+          wrapper.sendToRepl(expr)
+          true until @result
+          str = @result
+          @result = nil
+          str
+        end
+      end
     end
   end
 end
