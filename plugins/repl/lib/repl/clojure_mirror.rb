@@ -11,24 +11,12 @@ module Redcar
         "Clojure REPL"
       end
       
-      def initial_preamble
-        "# Clojure REPL\n\nuser=>"
-      end
-      
       def prompt
         "user=>"
       end
       
       def evaluator
         @evaluator ||= ClojureMirror::Evaluator.new(self)
-      end
-      
-      def entered_expression(contents)
-        if contents.split("\n").last =~ /=>\s+$/
-          ""
-        else
-          contents.split("=>").last.strip
-        end
       end
       
       def format_error(e)
