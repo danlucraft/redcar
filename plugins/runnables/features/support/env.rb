@@ -22,8 +22,19 @@ def reset_runnable_fixtures
   end
 
   File.open("#{runnable_fixtures}/params_app.rb", 'w') do |f|
-    #f.puts "puts ARGV[0] +' '+ ARGV[1]"
     f.puts "ARGV.each { |it| print it+' '}"
+  end
+
+  File.open("#{runnable_fixtures}/alternate.ruby", 'w') do |f|
+    f.puts "ARGV.each { |it| print it+' '}"
+  end
+
+  File.open("#{runnable_fixtures}/name_app.rb", 'w') do |f|
+    f.puts "ARGV.each { |it| println it}"
+  end
+
+  File.open("#{runnable_fixtures}/line_app.rb", 'w') do |f|
+    f.puts "ARGV.each { |it| println it}"
   end
 
   File.open(runnable_config, 'w') do |f|
@@ -65,9 +76,33 @@ def reset_runnable_fixtures
         ],
         "file_runners":[
           {
+            "regex":   ".*\\\\name_app.rb",
+            "name":    "Run as ruby",
+            "command": "jruby \\"__PATH__\\" __NAME__",
+            "type":    "app/ruby"
+          },
+          {
+            "regex":   ".*\\\\.ruby",
+            "name":    "Run as ruby",
+            "command": "jruby \\"__PATH__\\" 1 2 3",
+            "type":    "app/ruby"
+          },
+          {
+            "regex":   ".*\\\\line_app.rb",
+            "name":    "Run as ruby",
+            "command": "jruby \\"__PATH__\\" __LINE__",
+            "type":    "app/ruby"
+          },
+          {
             "regex":   ".*\\\\.rb",
             "name":    "Run as ruby",
             "command": "jruby \\"__PATH__\\"",
+            "type":    "app/ruby"
+          },
+          {
+            "regex":   ".*\\\\.ruby",
+            "name":    "Run as ruby",
+            "command": "jruby \\"__PATH__\\" hello world",
             "type":    "app/ruby"
           }
         ]

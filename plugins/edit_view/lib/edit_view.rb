@@ -3,6 +3,7 @@ require "edit_view/actions/arrow_keys"
 require "edit_view/actions/deletion"
 require "edit_view/actions/esc"
 require "edit_view/actions/tab"
+require "edit_view/actions/cmd_enter"
 require "edit_view/command"
 require "edit_view/document"
 require "edit_view/document/command"
@@ -173,6 +174,10 @@ module Redcar
     def self.esc_handlers
       [Actions::EscapeHandler]
     end
+    
+    def self.cmd_enter_handlers
+      [Actions::CmdEnterHandler]
+    end
 
     def self.all_tab_handlers
       all_handlers(:tab)
@@ -196,6 +201,10 @@ module Redcar
 
     def self.all_backspace_handlers
       all_handlers(:backspace)
+    end
+    
+    def self.all_cmd_enter_handlers
+      all_handlers(:cmd_enter)
     end
 
     def handle_key(handlers, modifiers)
@@ -232,6 +241,10 @@ module Redcar
 
     def backspace_pressed(modifiers)
       handle_key(EditView.all_backspace_handlers, modifiers)
+    end
+    
+    def cmd_enter_pressed(modifiers)
+      handle_key(EditView.all_cmd_enter_handlers, modifiers)
     end
 
     # Called by the GUI whenever an EditView is focussed or

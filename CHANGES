@@ -1,5 +1,13 @@
-Version 0.7 (TBA)
-=================
+Version 0.8 (TBA)
+============================
+
+Enhancements:
+
+ * Alternate Runnables File Runner command and shortcut (Delisa Mason)
+ * File runners now have access to line number and file names (Delisa Mason)
+
+Version 0.7 (4 October 2010)
+============================
 
 Enhancements:
 

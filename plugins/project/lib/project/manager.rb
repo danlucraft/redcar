@@ -143,7 +143,9 @@ module Redcar
       end
 
       def self.find_projects_containing_path(path)
-        open_projects.select {|project| project.contains_path?(path) }
+        open_projects.select {|p|
+          p.contains_path?(path)
+        }.sort_by {|p| path.split(//).length-p.path.split(//).length}
       end
 
       def self.open_file(path, adapter=Adapters::Local.new)
