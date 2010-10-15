@@ -66,7 +66,8 @@ module Redcar
             offset = -1
             while not options.any? and
             (offset * -1) < word.split(//).length and
-            char = word.index(/\w/,word.rindex(/\W/,offset))
+            symbol_idx = word.rindex(/\W/,offset) and
+            char = word.index(/\w/,symbol_idx)
               search_word   = word[char,word.split(//).length]
               options       = search_registry(scope, search_word)
               offset        = offset - 1
