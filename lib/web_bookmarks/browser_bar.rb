@@ -24,6 +24,15 @@ module Redcar
         html_tab.controller.browser.refresh if html_tab
       end
 
+      button :source, "Source", nil do
+        tab  = Redcar.app.focussed_window.new_tab(Redcar::EditTab)
+        tab.edit_view.document.text = html_tab.controller.browser.text
+        tab.edit_view.grammar = "HTML"
+        tab.edit_view.reset_undo
+        tab.title = "Page Source"
+        tab.focus
+      end
+
       label :url_label, "New URL:"
       textbox :new_url
 
