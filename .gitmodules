@@ -36,4 +36,4 @@
 	url = git://github.com/mscharley/spoon.git
 [submodule "plugins/textmate/vendor/redcar-bundles"]
 	path = plugins/textmate/vendor/redcar-bundles
-	url = git@github.com:redcar/redcar-bundles.git
+	url = git://github.com/redcar/redcar-bundles.git
