@@ -16,17 +16,6 @@ module Redcar
       end
     end
 
-    def self.display_content(name,url)
-      win = Redcar.app.focussed_window
-      controller = ViewController.new(name,url)
-      tab = win.new_tab(HtmlTab)
-      tab.html_view.controller = controller
-      tab.focus
-      if WebBookmarks.storage['show_browser_bar_on_start']
-        WebBookmarks::OpenBrowserBar.new.run
-      end
-    end
-
     def self.menus
       Redcar::Menu::Builder.build do
         sub_menu "Edit" do

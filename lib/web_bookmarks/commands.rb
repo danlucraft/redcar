@@ -1,5 +1,25 @@
 module Redcar
   class WebBookmarks
+
+    # Open a HtmlTab for displaying web content
+    class DisplayWebContent < Redcar::Command
+      def initialize(name,url)
+        @name = name
+        @url  = url
+      end
+
+      def execute
+        win = Redcar.app.focussed_window
+        controller = ViewController.new(@name,@url)
+        tab = win.new_tab(HtmlTab)
+        tab.html_view.controller = controller
+        tab.focus
+        if WebBookmarks.storage['show_browser_bar_on_start']
+          WebBookmarks::OpenBrowserBar.new.run
+        end
+      end
+    end
+
     class ShowTree < Redcar::Command
       sensitize :open_project
       def execute

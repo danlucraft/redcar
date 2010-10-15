@@ -9,7 +9,7 @@ module Redcar
       end
 
       def activated(tree, node)
-        WebBookmarks.display_content(node.text,node.url)
+        DisplayWebContent.new(node.text,node.url).run
       end
     end
 
