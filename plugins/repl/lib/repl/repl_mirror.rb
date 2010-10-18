@@ -56,9 +56,7 @@ module Redcar
       # @param [String] a string with at least one prompt and statement in it
       def commit(contents)
         command = entered_expression(contents)
-        unless command == ""
-          evaluate(command)
-        end
+        evaluate(command)
       end
       
       # What did the user just enter?
