@@ -5,6 +5,7 @@ require 'spec/rake/spectask'
 require 'cucumber/rake/task'
 require "rake/gempackagetask"
 require "rake/rdoctask"
+Dir[File.expand_path("../tasks/*.rake", __FILE__)].each { |f| load f }
 
 if RUBY_PLATFORM =~ /mswin|mingw/
   begin
