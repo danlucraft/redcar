@@ -59,9 +59,13 @@ task :specs_ci do
 end
 
 task :cucumber_ci do  
-  opts = "-J-XstartOnFirstThread" if Config::CONFIG["host_os"] =~ /darwin/
-  opts = "#{opts} bin/cucumber -f progress -f junit --out features/reports/ plugins/*/features"
-  sh("jruby #{opts} && echo 'done'")
+  FileUtils.rm_rf "features/reports" if File.exist? "features/reports"
+  cmd = "jruby "
+  cmd += "-J-XstartOnFirstThread " if Config::CONFIG["host_os"] == "darwin"
+  cmd += "bin/cucumber -f progress -f junit --out features/reports/"
+  Dir["plugins/*/features"].each do |f|
+    sh("#{cmd} #{f} && echo 'done'")
+  end
 end
 
 ### TESTS
