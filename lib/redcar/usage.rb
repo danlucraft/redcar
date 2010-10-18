@@ -25,6 +25,7 @@ module Redcar
         puts "      --ignore-stdin  Ignore stdin."
         puts "              --fork  Detach from the console."
         puts "         --no-window  Don't force opening a window on Redcar startup"
+        puts "     --home-dir=PATH  Use the specified directory as Redcar home directory"
         #puts "To associate with right click in windows explorer:"
         #puts
         #puts "  C:> redcar --associate_with_any_right_click"
