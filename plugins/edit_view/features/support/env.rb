@@ -1,4 +1,3 @@
-RequireSupportFiles File.dirname(__FILE__) + "/../../../application/features/"
 
 module SwtTabHelpers
   def get_tab_folders(shell=active_shell)
