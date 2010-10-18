@@ -13,7 +13,7 @@ if ARGV.include? '--silent'
   STDERR.reopen STDOUT
 end
 
-if ARGV.first == "install"
+if ARGV.include? "install"
   require File.expand_path(File.join(File.dirname(__FILE__), %w(.. lib redcar)))
   require 'redcar/installer'
   require 'redcar/runner'

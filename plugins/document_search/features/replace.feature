@@ -131,6 +131,15 @@ Feature: Replace in file
     And I press "Replace" in the speedbar
     Then the contents should be "foobar\nfoobar\nfoobar"
     And the selection range should be from 14 to 20
-  
-  
+
+  Scenario: The Search-and-Replace Speedbar should get initialized with the currently selected text
+    When I replace the contents with "Foo\nBar\nFoo"
+    And I move the cursor to 0
+    And I select from 4 to 6
+    And I run the command DocumentSearch::SearchAndReplaceCommand
+    Then the "Search" field in the speedbar should have text "Bar"
+    And I type "Foo" into the "Replace" field in the speedbar
+    And I press "Replace" in the speedbar
+    Then the contents should be "Foo\nFoo\nFoo"
+
   

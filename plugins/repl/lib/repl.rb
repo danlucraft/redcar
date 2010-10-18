@@ -5,14 +5,18 @@ require 'repl/groovy_mirror'
 
 module Redcar
   class REPL
-    def self.sensitivities
-      [
-        Sensitivity.new(:open_repl_tab, Redcar.app, false, [:tab_focussed]) do |tab|
-          tab and
-          tab.is_a?(EditTab) and
-          tab.edit_view.document.mirror.is_a?(REPL::ReplMirror)
+    def self.menus
+      Menu::Builder.build do
+        sub_menu "Plugins" do
+          sub_menu "REPL", :priority => 180 do
+            item "Open Ruby REPL",    REPL::RubyOpenREPL
+            item "Open Clojure REPL", REPL::ClojureOpenREPL
+            item "Open Groovy REPL", REPL::GroovyOpenREPL
+            item "Execute", REPL::CommitREPL
+            item "Clear History", REPL::ClearHistoryREPL
+          end
         end
-      ]
+      end
     end
 
     def self.keymaps
@@ -29,18 +33,14 @@ module Redcar
       [linwin, osx]
     end
 
-    def self.menus
-      Menu::Builder.build do
-        sub_menu "Plugins" do
-          sub_menu "REPL", :priority => 180 do
-            item "Open Ruby REPL",    REPL::RubyOpenREPL
-            item "Open Clojure REPL", REPL::ClojureOpenREPL
-            item "Open Groovy REPL", REPL::GroovyOpenREPL
-            item "Execute", REPL::CommitREPL
-            item "Clear History", REPL::ClearHistoryREPL
-          end
+    def self.sensitivities
+      [
+        Sensitivity.new(:open_repl_tab, Redcar.app, false, [:tab_focussed]) do |tab|
+          tab and
+          tab.is_a?(EditTab) and
+          tab.edit_view.document.mirror.is_a?(REPL::ReplMirror)
         end
-      end
+      ]
     end
 
     class OpenREPL < Command

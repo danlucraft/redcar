@@ -5,6 +5,7 @@ require 'spec/rake/spectask'
 require 'cucumber/rake/task'
 require "rake/gempackagetask"
 require "rake/rdoctask"
+Dir[File.expand_path("../tasks/*.rake", __FILE__)].each { |f| load f }
 
 if RUBY_PLATFORM =~ /mswin|mingw/
   begin
@@ -59,7 +60,7 @@ end
 
 task :cucumber_ci do  
   opts = "-J-XstartOnFirstThread" if Config::CONFIG["host_os"] =~ /darwin/
-  opts = "#{opts} bin/cucumber --guess -f progress -f junit --out features/reports/ plugins/*/features"
+  opts = "#{opts} bin/cucumber -f progress -f junit --out features/reports/ plugins/*/features"
   sh("jruby #{opts} && echo 'done'")
 end
 
@@ -112,7 +113,7 @@ def remove_matching_files(list, string)
   list.reject {|entry| entry.include?(string)}
 end
 
-spec = Gem::Specification.new do |s|
+Spec = spec = Gem::Specification.new do |s|
   s.name              = "redcar"
   s.version           = REDCAR_VERSION
   s.summary           = "A JRuby text editor."
@@ -168,65 +169,6 @@ end
 
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
-end
-
-desc "Build a MacOS X App bundle"
-task :app_bundle => :build do
-  require 'erb'
-
-  redcar_icon = "redcar_icon_beta.png"
-
-  bundle_contents = File.join("pkg", "Redcar.app", "Contents")
-  FileUtils.rm_rf bundle_contents if File.exist? bundle_contents
-  macos_dir = File.join(bundle_contents, "MacOS")
-  resources_dir = File.join(bundle_contents, "Resources")
-  FileUtils.mkdir_p macos_dir
-  FileUtils.mkdir_p resources_dir
-
-  info_plist_template = ERB.new <<-PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>CFBundleExecutable</key>
-	<string>redcar</string>
-	<key>CFBundleIconFile</key>
-	<string><%= redcar_icon %></string>
-	<key>CFBundleIdentifier</key>
-	<string>com.redcareditor.Redcar</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleVersion</key>
-	<string><%= spec.version %></string>
-	<key>LSMinimumSystemVersion</key>
-	<string>10.5</string>
-</dict>
-</plist>
-  PLIST
-  File.open(File.join(bundle_contents, "Info.plist"), "w") do |f|
-    f << info_plist_template.result(binding)
-  end
-
-  File.open(File.join(macos_dir, "redcar"), "w") do |f|
-    f << '#!/bin/sh
-          DIR=$(cd "$(dirname "$0")"; pwd)
-          REDCAR=$(cd "$(dirname "${DIR}/../Resources/bin/redcar")"; pwd)
-          $REDCAR/redcar install
-          $REDCAR/redcar --ignore-stdin $@'
-  end
-  File.chmod 0777, File.join(macos_dir, "redcar")
-
-  spec.files.each do |f|
-    FileUtils.mkdir_p File.join(resources_dir, File.dirname(f))
-    FileUtils.cp_r f, File.join(resources_dir, f), :remove_destination => true
-  end
-
-  FileUtils.cp_r File.join(resources_dir, "plugins", "application", "icons", redcar_icon), 
-      resources_dir, :remove_destination => true
 end
 
 desc 'Run a watchr continuous integration daemon for the specs'

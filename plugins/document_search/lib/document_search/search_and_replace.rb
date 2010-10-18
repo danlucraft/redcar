@@ -6,9 +6,12 @@ module DocumentSearch
       attr_accessor :previous_replace
       attr_accessor :previous_search_type
     end
-    
+
+    attr_accessor :initial_query
+
     def after_draw
-      self.query.value = SearchAndReplaceSpeedbar.previous_query || ""
+      SearchSpeedbar.previous_query ||= ""
+      self.query.value = @initial_query || SearchSpeedbar.previous_query
       self.replace.value = SearchAndReplaceSpeedbar.previous_replace || ""
       self.search_type.value = SearchAndReplaceSpeedbar.previous_search_type
       self.query.edit_view.document.select_all
