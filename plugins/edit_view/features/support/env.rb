@@ -1,6 +1,12 @@
 
 module SwtTabHelpers
+  def hide_toolbar
+    Redcar.app.show_toolbar = false
+    Redcar.app.refresh_toolbar!
+  end
+
   def get_tab_folders(shell=active_shell)
+    hide_toolbar
     right_composite = shell.children.to_a.last
     notebook_sash_form = right_composite.children.to_a[0]
     tab_folders = notebook_sash_form.children.to_a.select do |c| 
