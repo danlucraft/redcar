@@ -1093,7 +1093,8 @@ Redcar.environment: #{Redcar.environment}
         s = Time.now
         Redcar::Project::Manager.start(args)
         puts "project start took #{Time.now - s}s"
-        Redcar.app.make_sure_at_least_one_window_open
+        win = Redcar.app.make_sure_at_least_one_window_open
+        win.close if win and args.include?("--no-window")
       end
       Redcar.update_gui do
         Swt.splash_screen.close if Swt.splash_screen

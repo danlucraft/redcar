@@ -30,6 +30,10 @@ describe FileList do
       @file_list.all_files.include?(relative_path("README")).should be_true
       @file_list.all_files.include?(relative_path("lib", "foo_lib.rb")).should be_true
     end
+
+    it "should return a list of files in a symlinked directory" do
+      @file_list.all_files.include?(relative_path("lib_symlink", "foo_lib.rb")).should be_true
+    end
   end
   
   describe "update information" do

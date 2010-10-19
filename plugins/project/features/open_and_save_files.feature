@@ -14,7 +14,7 @@ Feature: Open and save files
     And I open a file
     Then there should be 2 edit tabs
     And I should see "Wintersmith" in the edit tab
-  
+
   Scenario: Save a file
     Given I have opened "plugins/project/spec/fixtures/winter.txt"
     When I replace the contents with "Hi!"
@@ -28,4 +28,13 @@ Feature: Open and save files
     And I save the tab as
     Then the file "plugins/project/spec/fixtures/winter2.txt" should contain "Wintersmith"
     And I should see "Wintersmith" in the edit tab
+
+  Scenario: Open file in nearest ancestor project window
+    Given I will choose "plugins/project/spec" from the "open_directory" dialog
+    When I open a directory
+    Given I will choose "plugins/project/spec/fixtures" from the "open_directory" dialog
+    When I open a directory
+    Given I will choose "plugins/project/spec/fixtures/winter.txt" from the "open_file" dialog
+    When I open a file
+    Then the window "fixtures" should have 1 tab
 

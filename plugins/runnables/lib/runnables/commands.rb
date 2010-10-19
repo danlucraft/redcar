@@ -31,6 +31,7 @@ module Redcar
     end
 
     class RunEditTabCommand < Redcar::EditTabCommand
+      sensitize :open_project
       def execute
         project = Project::Manager.in_window(win)
         f = Runnables.file_mappings(project).detect do |file_mapping|
@@ -39,7 +40,7 @@ module Redcar
         end
         run_tab(project.home_dir,tab, f) if f
       end
-      
+
       def run_tab(project_path,tab, file_mapping)
         command = file_mapping["command"]
         output = file_mapping["output"]
@@ -50,11 +51,12 @@ module Redcar
     end
 
     class RunAlternateEditTabCommand < RunEditTabCommand
+      sensitize :open_project
       def initialize
         @default   = nil
         @alternate = nil
       end
-      
+
       def execute
         project = Project::Manager.in_window(win)
         i = 0

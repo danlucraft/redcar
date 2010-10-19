@@ -1,79 +1,33 @@
 
 module Cucumber
   module Ast
-    class StepInvocation #:nodoc:# 
+    class StepInvocation #:nodoc:#
       class << self
         attr_accessor :wait_time
       end
-      
-      def invoke(step_mother, configuration)
-        block = Swt::RRunnable.new do
-            find_step_match!(step_mother, configuration)
-            unless @skip_invoke || configuration.dry_run? || @exception || @step_collection.exception
-              @skip_invoke = true
-              begin
-                @step_match.invoke(@multiline_arg)
-                step_mother.after_step
-                status!(:passed)
-              rescue Pending => e
-                failed(configuration, e, false)
-                status!(:pending)
-              rescue Undefined => e
-                failed(configuration, e, false)
-                status!(:undefined)
-              rescue Cucumber::Ast::Table::Different => e
-                @different_table = e.table
-                failed(configuration, e, false)
-                status!(:failed)
-              rescue Exception => e
-                failed(configuration, e, false)
-                status!(:failed)
-              end
-            end
-          end
-        
-        Redcar::ApplicationSWT.display.syncExec(block)
 
-        if ENV["SLOW_CUKES"]
-          sleep ENV["SLOW_CUKES"].to_f
-        end
+      def invoke_with_swt(step_mother, options)
+        block = Swt::RRunnable.new { invoke_without_swt(step_mother, options) }
+
+        Redcar::ApplicationSWT.display.syncExec(block)
+        sleep ENV["SLOW_CUKES"].to_f if ENV["SLOW_CUKES"]
         sleep(Cucumber::Ast::StepInvocation.wait_time || 0)
         Cucumber::Ast::StepInvocation.wait_time = nil
       end
+
+      alias_method :invoke_without_swt, :invoke
+      alias_method :invoke, :invoke_with_swt
     end
   end
 
-  module RbSupport
-    module RbDsl
-      def RequireSupportFiles(path)
-	# FIXME: Remove this once all features have been adjusted
-      end
-    end
-  end
-  
   module Cli
     class Configuration
-      def all_files_to_load
-        requires = @options[:require].empty? ? require_dirs : @options[:require]
-        files = Configuration.code_files_in_paths(requires)
-        remove_excluded_files_from(files)
-        files
+      def require_dirs_with_redcar_plugins
+        require_dirs_without_redcar_plugins + Dir['plugins/*/features']
       end
 
-      class << self
-        def code_files_in_paths(requires)
-          files = requires.map do |path|
-            path = path.gsub(/\\/, '/') # In case we're on windows. Globs don't work with backslashes.
-            path = path.gsub(/\/$/, '') # Strip trailing slash.
-            File.directory?(path) ? Dir["#{path}/**/*"] : path
-          end.flatten.uniq
-          files.map!    {|f| File.expand_path(f) }
-          files.reject! {|f| !File.file?(f)}
-          files.reject! {|f| File.extname(f) == '.feature' }
-          files.reject! {|f| f =~ /^http/}
-          files
-        end
-      end
+      alias_method :require_dirs_without_redcar_plugins, :require_dirs
+      alias_method :require_dirs, :require_dirs_with_redcar_plugins
     end
   end
 end

@@ -26,9 +26,10 @@ Feature: Find file
     When I run the command Redcar::Project::FindFileCommand
     And I set the filter to "foo"
     And I wait "0.4" seconds
-    Then the filter dialog should have 2 entries
+    Then the filter dialog should have 3 entries
     And I should see "foo_lib.rb (myproject/lib)" at 0 the filter dialog
-    And I should see "foo_spec.rb (myproject/spec)" at 1 the filter dialog
+    And I should see "foo_lib.rb (myproject/lib_symlink)" at 1 the filter dialog
+    And I should see "foo_spec.rb (myproject/spec)" at 2 the filter dialog
     
   Scenario: One matching file with arbitrary letters
     When I run the command Redcar::Project::FindFileCommand

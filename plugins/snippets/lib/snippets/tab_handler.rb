@@ -39,25 +39,45 @@ module Redcar
         document = edit_view.document
         @word, @offset, @start_word_offset = nil, nil, nil
         @word = word_before_cursor(edit_view)
-
         if @word
           @offset = document.cursor_offset
           @start_word_offset = document.cursor_offset - @word.length
           options = find_snippet_options(document.cursor_scope, @word)
-          if not options.any? and @word.match(/\W/) and @word.match(/\w/)
-            char = @word.index(/\w/,@word.index(/\W/)) || @word.index(".")
-            if char
-              @word   = @word[char,@word.length]
-              options = find_snippet_options(document.cursor_scope, @word)
-            end
-          end
           if options.any?
             choose_snippet(edit_view, options)
           end
         end
       end
 
+      #search for snippet matches inside a word block in an intelligent way
       def self.find_snippet_options(scope,word)
+        search_word = word
+        options = search_registry(scope,word)
+        if not options.any? and word.match(/\W/) and word.match(/\w/)
+
+          #most likely, there is just one symbol preceding the snippet
+          if not options.any? and char = word.index(/\w/,word.index(/\W/))
+            search_word   = word[char,word.split(//).length]
+            options = search_registry(scope, search_word)
+          end
+
+          #otherwise, search from the end
+          if not options.any?
+            offset = -1
+            while not options.any? and
+            (offset * -1) < word.split(//).length and
+            symbol_idx = word.rindex(/\W/,offset) and
+            char = word.index(/\w/,symbol_idx)
+              search_word   = word[char,word.split(//).length]
+              options       = search_registry(scope, search_word)
+              offset        = offset - 1
+            end
+          end
+        end
+        options
+      end
+
+      def self.search_registry(scope,word)
         Snippets.registry.find_by_scope_and_tab_trigger(scope,word)
       end
 

@@ -81,13 +81,14 @@ module Redcar
     end
 
     def self.file_mappings(project)
-      runnable_file_paths = project.config_files("runnables/*.json")
-
       file_runners = []
-      runnable_file_paths.each do |path|
-        json = File.read(path)
-        this_file_runners = JSON(json)["file_runners"]
-        file_runners += this_file_runners || []
+      if project
+        runnable_file_paths = project.config_files("runnables/*.json")
+        runnable_file_paths.each do |path|
+          json = File.read(path)
+          this_file_runners = JSON(json)["file_runners"]
+          file_runners += this_file_runners || []
+        end
       end
       file_runners
     end

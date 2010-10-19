@@ -5,6 +5,16 @@ Enhancements:
 
  * Alternate Runnables File Runner command and shortcut (Delisa Mason)
  * File runners now have access to line number and file names (Delisa Mason)
+ * Projects can have 'subproject' windows which share config files like Runnables (Delisa Mason)
+ * Symlinks to other directories are searched recursively (Tim Felgentreff)
+ * Redcar can be started without opening a window (for boot-time startup) (Tim Felgentreff)
+ * The Mac OS X app bundle comes with assets bundled (Tim Felgentreff)
+
+
+Bugfixes
+
+ * New files now open in the project window which is the closest ancestor (Delisa Mason)
+
 
 Version 0.7 (4 October 2010)
 ============================

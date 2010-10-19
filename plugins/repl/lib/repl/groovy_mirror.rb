@@ -3,25 +3,7 @@ require 'java'
 
 module Redcar
   class REPL
-    class GroovyMirror
-      def self.load_groovy_dependencies
-        unless @loaded
-          require File.join(Redcar.asset_dir,"groovy-all")
-          import 'groovy.lang.GroovyShell'
-          import 'java.io.PrintWriter'
-          import 'java.io.StringWriter'
-          @loaded = true
-        end
-      end
-      include Redcar::REPL::ReplMirror
-
-      def initialize
-        GroovyMirror.load_groovy_dependencies
-        @prompt = "groovy>"
-        @history = "// Groovy REPL\n\n#{@prompt} "
-        @instance = Main.new
-      end
-
+    class GroovyMirror < ReplMirror
       def title
         "Groovy REPL"
       end
@@ -29,18 +11,33 @@ module Redcar
       def grammar_name
         "Groovy REPL"
       end
+      
+      def prompt
+        "groovy>"
+      end      
 
-      def read
-        @history
+      def evaluator
+        @instance ||= GroovyMirror::Evaluator.new
       end
 
-      def clear_history
-        @history = @history.split("\n").last
-        notify_listeners(:change)
+      def format_error(e)
+        backtrace = e.backtrace
+        "ERROR #{e.class}:\n #{e.message}\n        #{backtrace.join("\n        ")}"
       end
 
-      class Main
+      class Evaluator
+        def self.load_groovy_dependencies
+          unless @loaded
+            require File.join(Redcar.asset_dir,"groovy-all")
+            import 'groovy.lang.GroovyShell'
+            import 'java.io.PrintWriter'
+            import 'java.io.StringWriter'
+            @loaded = true
+          end
+        end
+        
         def initialize
+          GroovyMirror::Evaluator.load_groovy_dependencies
           @out = StringWriter.new
           @shell = GroovyShell.new
           @shell.setProperty('out',@out)
@@ -62,22 +59,6 @@ module Redcar
           buf.delete(0,buf.length()) if buf.length() > 0
           console + "===> #{output}"
         end
-      end
-
-      def format_error(e)
-        backtrace = e.backtrace
-        "ERROR #{e.class}:\n #{e.message}\n        #{backtrace.join("\n        ")}"
-      end
-
-      def send_to_repl expr
-        @history += expr + "\n"
-        begin
-          @history += @instance.execute(expr)
-        rescue Object => e
-          @history += format_error(e)
-        end
-        @history += "\n" + @prompt + " "
-        notify_listeners(:change)
       end
     end
   end

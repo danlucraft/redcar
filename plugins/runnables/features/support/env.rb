@@ -1,7 +1,3 @@
-RequireSupportFiles File.dirname(__FILE__) + "/../../../application/features/"
-RequireSupportFiles File.dirname(__FILE__) + "/../../../edit_view/features/"
-RequireSupportFiles File.dirname(__FILE__) + "/../../../html_view/features/"
-RequireSupportFiles File.dirname(__FILE__) + "/../../../project/features/"
 
 def runnable_fixtures
   File.expand_path(File.dirname(__FILE__) + "/../fixtures")

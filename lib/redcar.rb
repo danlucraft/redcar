@@ -201,14 +201,17 @@ module Redcar
   #
   # @return [String] expanded path
   def self.home_dir
-    if platform == :windows
+    @userdir ||= if arg = ARGV.detect {|v| v.start_with? "--home-dir=" }
+      arg =~ /\-\-home\-dir=(.*)/
+      File.expand_path($1)
+    elsif platform == :windows
       if ENV['USERPROFILE'].nil?
-        userdir = "C:/My Documents/"
+        "C:/My Documents/"
       else
-        userdir = ENV['USERPROFILE']
+        ENV['USERPROFILE']
       end
     else
-      userdir = ENV['HOME'] unless ENV['HOME'].nil?
+      ENV['HOME'] unless ENV['HOME'].nil?
     end
   end
   
