@@ -26,10 +26,17 @@ module Redcar
 
       button :source, "Source", nil do
         tab  = Redcar.app.focussed_window.new_tab(Redcar::EditTab)
-        tab.edit_view.document.text = html_tab.controller.browser.text
+        url = html_tab.controller.browser.url.to_s
+        if url =~ /^file:\/\//
+          file_path = url[7,url.length]
+          mirror = Project::FileMirror.new(file_path)
+          tab.edit_view.document.mirror = mirror
+        else
+          tab.edit_view.document.text = html_tab.controller.browser.text
+          tab.title = "Page Source"
+        end
         tab.edit_view.grammar = "HTML"
         tab.edit_view.reset_undo
-        tab.title = "Page Source"
         tab.focus
       end
 

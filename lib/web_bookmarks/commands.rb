@@ -3,9 +3,10 @@ module Redcar
 
     # Open a HtmlTab for displaying web content
     class DisplayWebContent < Redcar::Command
-      def initialize(name,url)
+      def initialize(name,url,display_bar=true)
         @name = name
         @url  = url
+        @display_bar = display_bar
       end
 
       def execute
@@ -14,7 +15,8 @@ module Redcar
         tab = win.new_tab(HtmlTab)
         tab.html_view.controller = controller
         tab.focus
-        if WebBookmarks.storage['show_browser_bar_on_start']
+        if @display_bar and
+          WebBookmarks.storage['show_browser_bar_on_start']
           WebBookmarks::OpenBrowserBar.new.run
         end
       end
