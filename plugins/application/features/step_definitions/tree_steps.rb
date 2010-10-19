@@ -1,6 +1,6 @@
 
 When /^I expand the tree row "([^\"]*)"$/ do |row|
-  item = top_tree.items.detect {|item| item.getText == row }
+  item = visible_tree_items(top_tree).detect {|item| item.getText == row }
   viewer = focussed_tree.controller.viewer
   node = viewer.getViewerRowFromItem(item).getElement
   viewer.expandToLevel(node, 1)

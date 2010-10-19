@@ -13,6 +13,15 @@ Feature: Showing commands in a command tree
     And I expand the tree row "fixture_runnables"
     Then I should see "An app" in the tree
 
+  Scenario: Shows groups and subgroups by slash-separated type
+    When I open the runnables tree
+    And I expand the tree row "fixture_runnables"
+    Then I should see "first" in the tree
+    And I expand the tree row "first"
+    Then I should see "second" in the tree
+    And I expand the tree row "second"
+    Then I should see "A nested app" in the tree
+
   Scenario: I can manually refresh the tree
     When I open the runnables tree
     And I change the command to "A changed app"

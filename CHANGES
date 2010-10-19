@@ -9,6 +9,7 @@ Enhancements:
  * Symlinks to other directories are searched recursively (Tim Felgentreff)
  * Redcar can be started without opening a window (for boot-time startup) (Tim Felgentreff)
  * The Mac OS X app bundle comes with assets bundled (Tim Felgentreff)
+ * The Runnables tree now nests runnables depending on slashes in the type definition (Tim Felgentreff)
 
 
 Bugfixes

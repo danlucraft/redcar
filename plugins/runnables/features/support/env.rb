@@ -68,6 +68,12 @@ def reset_runnable_fixtures
             "name":        "An appendable app",
             "command":     "jruby params_app.rb hello",
             "description": "Runs an app that prints parameters"
+          },
+          {
+            "name": "A nested app",
+            "command": "echo 'lo'",
+            "description": "A test for nesting",
+            "type": "first/second"
           }
         ],
         "file_runners":[
