@@ -30,7 +30,8 @@ module SwtTabHelpers
   end
   
   def focussed_tab
-    Redcar.app.focussed_window.focussed_notebook.focussed_tab
+    # In case the focussed tab on the focussed window's notebook is empty, try another window
+    Redcar.app.focussed_window.focussed_notebook.focussed_tab or Redcar.app.windows.map {|w| w.focussed_notebook.focussed_tab}.first
   end
   
   def get_tabs
