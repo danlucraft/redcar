@@ -28,7 +28,7 @@ module Redcar
         # Move paths to FreeDesktop Trash can
         # See <http://www.ramendik.ru/docs/trashspec.html>
         def linux(file)
-          trashdir = File.expand_path("#{(ENV['XDG_DATA_HOME'] || "~/.local/share")}/Trash")
+          trashdir = File.expand_path("#{(ENV['XDG_DATA_HOME'] || '~/.local/share')}/Trash")
           FileUtils.mkdir_p("#{trashdir}/files")
           FileUtils.mkdir_p("#{trashdir}/info")
 
