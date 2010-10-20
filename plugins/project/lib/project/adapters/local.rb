@@ -57,7 +57,7 @@ module Redcar
         end
         
         def delete(file)
-          FileUtils.rm_rf(file)
+          FileUtils.rm_rf(file) unless Trash.recycle(file)
         end
         
         def load_contents(file)
