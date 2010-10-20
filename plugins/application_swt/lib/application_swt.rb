@@ -6,8 +6,11 @@ require "application_swt/tab"
 require "application_swt/clipboard"
 require "application_swt/dialog_adapter"
 require "application_swt/dialogs/no_buttons_dialog"
+require "application_swt/dialogs/text_and_file_dialog"
 require "application_swt/dialogs/filter_list_dialog_controller"
+require "application_swt/dialogs/input_dialog"
 require "application_swt/html_tab"
+require "application_swt/icon"
 require "application_swt/menu"
 require "application_swt/menu/binding_translator"
 require "application_swt/toolbar"
@@ -24,9 +27,9 @@ require "application_swt-#{Redcar::VERSION}"
 module Redcar
   class ApplicationSWT
     include Redcar::Controller
-        
+
     def self.display
-      @display ||= Swt.display 
+      @display ||= Swt.display
     end
 
     def self.start
@@ -39,7 +42,7 @@ module Redcar
         Redcar.gui.register_dialog_adapter(ApplicationSWT::DialogAdapter.new)
       end
     end
-    
+
     def self.add_debug_key_filters
       display.add_filter(Swt::SWT::KeyDown) do |a|
         puts "type: #{a.type}, keyCode: #{a.keyCode}, character: #{a.character}, statemask: #{a.stateMask}"
@@ -48,11 +51,11 @@ module Redcar
         puts "type: #{a.type}, keyCode: #{a.keyCode}, character: #{a.character}, statemask: #{a.stateMask}"
       end
     end
-    
+
     def self.gui
       Redcar.gui
     end
-    
+
     class ShellListener
       def shell_deactivated(_)
         Swt.timer_exec(100) do
@@ -61,11 +64,11 @@ module Redcar
           end
         end
       end
-      
+
       def shell_activated(_)
         Redcar.app.gained_application_focus
       end
-      
+
       def shell_closed(_);      end
       def shell_deiconified(_); end
       def shell_iconified(_);   end
@@ -76,19 +79,19 @@ module Redcar
     def self.register_shell(shell)
       shell.add_shell_listener(ShellListener.new)
     end
-    
+
     def self.shell_dialogs
       @shell_dialogs ||= {}
     end
-    
+
     def self.register_dialog(shell, dialog)
       shell_dialogs[shell] = dialog
     end
-    
+
     def self.unregister_dialog(dialog)
       shell_dialogs.delete(shell_dialogs.invert[dialog])
     end
-    
+
     def initialize(model)
       @model = model
       add_listeners
@@ -96,11 +99,11 @@ module Redcar
       create_clipboard
       create_fake_window
     end
-    
+
     def fake_shell
       @fake_shell
     end
-    
+
     def create_fake_window
       if Redcar.platform == :osx
         @fake_shell = Swt::Widgets::Shell.new(ApplicationSWT.display, Swt::SWT::NO_TRIM)
@@ -108,12 +111,12 @@ module Redcar
         @fake_shell.set_size(0, 0)
       end
     end
-      
+
     class FakeWindow
       def initialize(shell)
         @shell = shell
       end
-      
+
       attr_reader :shell
     end
 
@@ -136,49 +139,49 @@ module Redcar
       @model.add_listener(:new_window, &method(:new_window))
       @model.add_listener(:refresh_menu, &method(:refresh_menu))
     end
-    
-    class Listener
+
+    class CocoaUIListener
+
       def initialize(name)
         @name = name
       end
-      
+
       def handle_event(e)
-        Application::Dialog.message_box("#{@name} menu is not hooked up yet")
-      end
-    end
-    
-    class QuitListener
-      def handle_event(e)
-        unless Redcar.app.events.ignore?(:application_close, Redcar.app)
-          e.doit = false
-          Redcar.app.events.create(:application_close, Redcar.app)
+        if    @name == :prefs
+          Redcar::PluginManagerUi::OpenPreferencesCommand.new.run
+        elsif @name == :about
+          Redcar::Top::AboutCommand.new.run
+        elsif @name == :quit
+          unless Redcar.app.events.ignore?(:application_close, Redcar.app)
+            e.doit = false
+            Redcar.app.events.create(:application_close, Redcar.app)
+          end
+        else
+          Application::Dialog.message_box("#{@name} menu is not hooked up yet")
         end
       end
     end
-    
+
     def add_swt_listeners
       if Redcar.platform == :osx
-        quit_listener  = Listener.new(:quit)
-        about_listener = Listener.new(:about)
-        prefs_listener = Listener.new(:prefs)
         enhancer = com.redcareditor.application_swt.CocoaUIEnhancer.new("Redcar")
         enhancer.hook_application_menu(
           ApplicationSWT.display,
-          QuitListener.new, 
-          about_listener, 
-          prefs_listener
+          CocoaUIListener.new(:quit),
+          CocoaUIListener.new(:about),
+          CocoaUIListener.new(:prefs)
         )
       end
     end
-    
+
     def create_clipboard
       ApplicationSWT::Clipboard.new(@model.clipboard)
     end
-    
+
     def new_window(win)
       win.controller = ApplicationSWT::Window.new(win)
     end
-    
+
     def menu_changed
       Menu.new(self, @model.menu)
     end

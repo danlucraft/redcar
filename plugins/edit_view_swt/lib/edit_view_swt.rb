@@ -6,11 +6,61 @@ require 'edit_view_swt/word_movement'
 require 'joni'
 require 'jcodings'
 require 'jdom'
+
+require "java-mateview-#{Redcar::VERSION}"
 require File.dirname(__FILE__) + '/../vendor/java-mateview'
 
 module Redcar
   class EditViewSWT
+    NAVIGATION_COMMANDS = {
+      :LINE_UP                => 16777217,
+      :LINE_DOWN              => 16777218,
+      :LINE_START             => 16777223,
+      :LINE_END               => 16777224,
+      :COLUMN_PREVIOUS        => 16777219,
+      :COLUMN_NEXT            => 16777220,
+      :PAGE_UP                => 16777221,
+      :PAGE_DOWN              => 16777222,
+      :WORD_PREVIOUS          => 17039363,
+      :WORD_NEXT              => 17039364,
+      :TEXT_START             => 17039367,
+      :TEXT_END               => 17039368,
+      :WINDOW_START           => 17039365,
+      :WINDOW_END             => 17039366
+    }
+    
+    SELECTION_COMMANDS = {
+      :SELECT_ALL             => 262209,
+      :SELECT_LINE_UP         => 16908289,
+      :SELECT_LINE_DOWN       => 16908290,
+      :SELECT_LINE_START      => 16908295,
+      :SELECT_LINE_END        => 16908296,
+      :SELECT_COLUMN_PREVIOUS => 16908291,
+      :SELECT_COLUMN_NEXT     => 16908292,
+      :SELECT_PAGE_UP         => 16908293,
+      :SELECT_PAGE_DOWN       => 16908294,
+      :SELECT_WORD_PREVIOUS   => 17170435,
+      :SELECT_WORD_NEXT       => 17170436,
+      :SELECT_TEXT_START      => 17170439,
+      :SELECT_TEXT_END        => 17170440,
+      :SELECT_WINDOW_START    => 17170437,
+      :SELECT_WINDOW_END      => 17170438
+    }
+    
+    MODIFICATION_COMMANDS = {
+      :CUT                    => 131199,
+      :COPY                   => 17039369,
+      :PASTE                  => 16908297,
+      :DELETE_PREVIOUS        => 8,
+      :DELETE_NEXT            => 0x7F,
+      :DELETE_WORD_PREVIOUS   => 262152,
+      :DELETE_WORD_NEXT       => 262271
+    }
+    
+    ALL_ACTIONS = NAVIGATION_COMMANDS.merge(SELECTION_COMMANDS).merge(MODIFICATION_COMMANDS)
+
     include Redcar::Observable
+    include Redcar::Controller
 
     def self.start
       if gui = Redcar.gui
@@ -57,6 +107,8 @@ module Redcar
       mate_text.add_grammar_listener do |new_grammar|
         @model.set_grammar(new_grammar)
       end
+      
+      create_model_listeners
     end
 
     def create_mate_text
@@ -64,10 +116,86 @@ module Redcar
       @mate_text.set_font(EditView.font, EditView.font_size)
 
       @model.controller = self
+      
+      add_styled_text_command_key_listeners
+    end
+    
+    class CommandKeyListener
+      
+      attr_reader :st
+      
+      def initialize(styled_text, edit_view)
+        @edit_view = edit_view
+        @st = styled_text
+      end
+      
+      def key_pressed(event)
+      end
+      
+      def key_released(event)
+        record_action(event)
+      end
+      
+      # This pile of crap is copied from StyledText#handleKey. Wouldn't
+      # it be great if this logic was accessible on StyledText somehow?
+      def record_action(event)
+        if (event.keyCode != 0)
+          # special key pressed (e.g., F1)
+          action = st.getKeyBinding(event.keyCode | event.stateMask)
+        else 
+          # character key pressed
+          action = st.getKeyBinding(event.character | event.stateMask)
+          if (action == Swt::SWT::NULL)
+            # see if we have a control character
+            if ((event.stateMask & Swt::SWT::CTRL) != 0 && event.character <= 31)
+              # get the character from the CTRL+char sequence, the control
+              # key subtracts 64 from the value of the key that it modifies
+              c = event.character + 64
+              action = st.getKeyBinding(c | event.stateMask)
+            end
+          end
+        end
+        
+        if (action == Swt::SWT::NULL)
+		      ignore = false
+		
+          if (Redcar.platform == :osx)
+            # Ignore accelerator key combinations (we do not want to 
+            # insert a character in the text in this instance). Do not  
+            # ignore COMMAND+ALT combinations since that key sequence
+            # produces characters on the mac.
+            ignore = (event.stateMask & Swt::SWT::COMMAND) != 0 ||
+              (event.stateMask & Swt::SWT::CTRL) != 0
+          else
+    			  # Ignore accelerator key combinations (we do not want to 
+            # insert a character in the text in this instance). Don't  
+            # ignore CTRL+ALT combinations since that is the Alt Gr 
+            # key on some keyboards.  See bug 20953. 
+            ignore = (event.stateMask ^ Swt::SWT::ALT) == 0 || 
+              (event.stateMask ^ Swt::SWT::CTRL) == 0 ||
+              (event.stateMask ^ (Swt::SWT::ALT | Swt::SWT::SHIFT)) == 0 ||
+              (event.stateMask ^ (Swt::SWT::CTRL | Swt::SWT::SHIFT)) == 0
+          end
+          # -ignore anything below SPACE except for line delimiter keys and tab.
+          # -ignore DEL 
+          if (!ignore && event.character > 31 && event.character != Swt::SWT::DEL || 
+            event.character == Swt::SWT::CR || event.character == Swt::SWT::LF || 
+                event.character == Swt::SWT::TAB)
+            @edit_view.history.record(event.character)
+          end
+        else
+          @edit_view.history.record(EditViewSWT::ALL_ACTIONS.invert[action])
+        end
+      end
+    end
+    
+    def add_styled_text_command_key_listeners
+      st = @mate_text.get_text_widget
+      st.add_key_listener(CommandKeyListener.new(st, @model))
     end
 
     def create_undo_manager
-      @undo_manager = JFace::Text::TextViewerUndoManager.new(100)
+      @undo_manager = JFace::Text::TextViewerUndoManager.new(500)
       @undo_manager.connect(@mate_text.viewer)
     end
 
@@ -109,6 +237,15 @@ module Redcar
       @undo_manager.end_compound_change
     end
 
+    def add_annotation_type(name, image_path, rgb)
+      rgb = Swt::Graphics::RGB.new(rgb[0], rgb[1], rgb[2])
+      @mate_text.addAnnotationType(name, image_path, rgb)
+    end
+
+    def add_annotation(annotation_name, line, text, start, length)
+      @mate_text.addAnnotation(annotation_name, line, text, start, length)
+    end
+
     def create_document
       @document = EditViewSWT::Document.new(@model.document, @mate_text.mate_document)
       @model.document.controller = @document
@@ -134,9 +271,6 @@ module Redcar
       h9 = @model.add_listener(:line_number_visibility_changed) do |new_bool|
         @mate_text.set_line_numbers_visible(new_bool)
       end
-      h10 = @model.add_listener(:annotations_visibility_changed) do |new_bool|
-        @mate_text.set_annotations_visible(new_bool)
-      end
       h11 = @model.add_listener(:margin_column_changed) do |new_column|
         @mate_text.set_margin_column(new_column)
       end
@@ -155,7 +289,7 @@ module Redcar
       @mate_text.get_control.add_key_listener(KeyListener.new(self))
       @handlers << [@model.document, h1] << [@model, h2] << [@model, h3] << [@model, h4] <<
         [@model, h5] << [@model, h6] << [@model, h7] << [@model, h8] <<
-        [@model, h9] << [@model, h10] << [@model, h11]
+        [@model, h9] << [@model, h11]
     end
 
     def right_click(mouse_event)
@@ -167,6 +301,20 @@ module Redcar
         end
       end
     end
+    
+    def type_character(character)
+      mate_text.get_text_widget.doContent(character)
+      mate_text.get_text_widget.update
+    end
+    
+    model_listener :type_character
+    
+    def invoke_action(action_symbol)
+      const = EditViewSWT::ALL_ACTIONS[action_symbol]
+      mate_text.get_text_widget.invokeAction(const)
+    end
+    
+    model_listener :invoke_action
 
     class VerifyKeyListener
       def initialize(edit_view_swt)
@@ -174,6 +322,8 @@ module Redcar
       end
 
       def verify_key(key_event)
+        #uncomment this line for key debugging
+        #puts "got keyevent: #{key_event.character} #{key_event.stateMask}"
         if @edit_view_swt.model.document.block_selection_mode?
           @edit_view_swt.begin_compound
         end
@@ -189,6 +339,8 @@ module Redcar
           key_event.doit = !@edit_view_swt.model.delete_pressed(ApplicationSWT::Menu::BindingTranslator.modifiers(key_event))
         elsif key_event.character == Swt::SWT::BS
           key_event.doit = !@edit_view_swt.model.backspace_pressed(ApplicationSWT::Menu::BindingTranslator.modifiers(key_event))
+        elsif key_event.character == 13 and (key_event.stateMask == Swt::SWT::COMMAND or key_event.stateMask == Swt::SWT::CTRL)
+          key_event.doit = !@edit_view_swt.model.cmd_enter_pressed(ApplicationSWT::Menu::BindingTranslator.modifiers(key_event))
         end
       end
     end

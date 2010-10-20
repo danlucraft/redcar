@@ -102,7 +102,7 @@ module Redcar
                 html=<<-HTML
                   <tr>
                     <td  bgcolor="#ccffcc" width="40%"><a class="action">#{action}</a></td>
-                    <td><a class="file_path" href="controller/open_file?#{path}">#{display_path}</a></td>
+                    <td  bgcolor="#dddddd"><a class="file_path" href="controller/open_file?#{path}">#{display_path}</a></td>
                   </tr>
                 HTML
                 percentage = 100

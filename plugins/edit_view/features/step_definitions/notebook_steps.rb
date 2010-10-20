@@ -1,6 +1,8 @@
 
 module NotebookSwtHelper
   def notebook_sash
+    Redcar.app.show_toolbar = false
+    Redcar.app.refresh_toolbar!
     active_shell.children.to_a.last.children.to_a[0]
   end
   

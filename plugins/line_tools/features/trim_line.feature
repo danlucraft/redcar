@@ -15,3 +15,10 @@ Scenario: Trimming a selection
   And I trim the line
   Then I should see "Once " in the edit tab
   And I should not see "upon a time" in the edit tab
+
+Scenario: Trimming a line with unicode
+  When I open a new edit tab
+  And I replace the contents with "foo\nbść\nbaz"
+  And I move the cursor to 5
+  And I trim the line
+  Then the contents should be "foo\nb\nbaz"

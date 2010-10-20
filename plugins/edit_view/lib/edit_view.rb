@@ -3,10 +3,12 @@ require "edit_view/actions/arrow_keys"
 require "edit_view/actions/deletion"
 require "edit_view/actions/esc"
 require "edit_view/actions/tab"
+require "edit_view/actions/cmd_enter"
 require "edit_view/command"
 require "edit_view/document"
 require "edit_view/document/command"
 require "edit_view/document/controller"
+require "edit_view/document/history"
 require "edit_view/document/indentation"
 require "edit_view/document/mirror"
 require "edit_view/grammar"
@@ -18,9 +20,50 @@ require "edit_view/select_font_dialog"
 require "edit_view/select_theme_dialog"
 
 require "edit_view/commands/text_conversion_commands"
+require "edit_view/commands/align_assignment_command"
+
 
 module Redcar
   class EditView
+    ACTIONS = [
+      :LINE_UP,
+      :LINE_DOWN,
+      :LINE_START,
+      :LINE_END,
+      :COLUMN_PREVIOUS,
+      :COLUMN_NEXT,
+      :PAGE_UP,
+      :PAGE_DOWN,
+      :WORD_PREVIOUS,
+      :WORD_NEXT,
+      :TEXT_START,
+      :TEXT_END,
+      :WINDOW_START,
+      :WINDOW_END,
+      :SELECT_ALL,
+      :SELECT_LINE_UP,
+      :SELECT_LINE_DOWN,
+      :SELECT_LINE_START,
+      :SELECT_LINE_END,
+      :SELECT_COLUMN_PREVIOUS,
+      :SELECT_COLUMN_NEXT,
+      :SELECT_PAGE_UP,
+      :SELECT_PAGE_DOWN,
+      :SELECT_WORD_PREVIOUS,
+      :SELECT_WORD_NEXT,
+      :SELECT_TEXT_START,
+      :SELECT_TEXT_END,
+      :SELECT_WINDOW_START,
+      :SELECT_WINDOW_END,
+      :CUT,
+      :COPY,
+      :PASTE,
+      :DELETE_PREVIOUS,
+      :DELETE_NEXT,
+      :DELETE_WORD_PREVIOUS,
+      :DELETE_WORD_NEXT
+    ]
+    
     include Redcar::Model
     extend Redcar::Observable
     include Redcar::Observable
@@ -51,9 +94,9 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Edit" do
-          group(:priority => 90) do
-            separator
-            sub_menu "Convert Text" do
+          sub_menu "Formatting" do
+            item "Align Assignments", EditView::AlignAssignmentCommand
+            sub_menu "Convert Text", :priority => 40 do
               item "to Uppercase",     EditView::UpcaseTextCommand
               item "to Lowercase",     EditView::DowncaseTextCommand
               item "to Titlecase",     EditView::TitlizeTextCommand
@@ -65,6 +108,14 @@ module Redcar
             end
           end
         end
+      end
+    end
+    
+    def self.toolbars
+      ToolBar::Builder.build do
+        item "Cut", :command => Redcar::Top::CutCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "scissors-blue.png"), :barname => :edit
+        item "Copy", :command => Redcar::Top::CopyCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "blue-document-copy.png"), :barname => :edit
+        item "Paste", :command => Redcar::Top::PasteCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "clipboard.png"), :barname => :edit
       end
     end
 
@@ -123,6 +174,10 @@ module Redcar
     def self.esc_handlers
       [Actions::EscapeHandler]
     end
+    
+    def self.cmd_enter_handlers
+      [Actions::CmdEnterHandler]
+    end
 
     def self.all_tab_handlers
       all_handlers(:tab)
@@ -146,6 +201,10 @@ module Redcar
 
     def self.all_backspace_handlers
       all_handlers(:backspace)
+    end
+    
+    def self.all_cmd_enter_handlers
+      all_handlers(:cmd_enter)
     end
 
     def handle_key(handlers, modifiers)
@@ -182,6 +241,10 @@ module Redcar
 
     def backspace_pressed(modifiers)
       handle_key(EditView.all_backspace_handlers, modifiers)
+    end
+    
+    def cmd_enter_pressed(modifiers)
+      handle_key(EditView.all_cmd_enter_handlers, modifiers)
     end
 
     # Called by the GUI whenever an EditView is focussed or
@@ -309,12 +372,20 @@ module Redcar
       Redcar.app.windows.map {|w| w.notebooks.map {|n| n.tabs}.flatten }.flatten.select {|t| t.is_a?(EditTab)}.map {|t| t.edit_view}
     end
 
-    attr_reader :document
+    attr_reader :document, :history
 
     def initialize
       create_document
       @grammar = nil
       @focussed = nil
+      create_history
+    end
+    
+    def create_history
+      @history = Document::History.new(500)
+      @history.subscribe do |action|
+        document.controllers.each {|c| c.after_action(action) }
+      end
     end
 
     def create_document
@@ -346,7 +417,6 @@ module Redcar
       self.show_margin   = EditView.tab_settings.show_margin_for(name)
       refresh_show_invisibles
       refresh_show_line_numbers
-      refresh_show_annotations
     end
 
     def focus
@@ -447,22 +517,13 @@ module Redcar
       notify_listeners(:line_number_visibility_changed, @show_line_numbers)
     end
 
-    def show_annotations?
-      @show_annotations
+    def add_annotation(annotation_name, line, text, start, length)
+      start += document.offset_at_line(line)
+      controller.add_annotation(annotation_name, line, text, start, length)
     end
 
-    def self.show_annotations?
-      EditView.tab_settings.show_annotations?
-    end
-
-    def self.show_annotations=(bool)
-      EditView.tab_settings.set_show_annotations(bool)
-      all_edit_views.each {|ev| ev.refresh_show_annotations }
-    end
-
-    def refresh_show_annotations
-      @show_annotations = EditView.tab_settings.show_annotations?
-      notify_listeners(:annotations_visibility_changed, @show_annotations)
+    def add_annotation_type(name, image, rgb)
+      controller.add_annotation_type(name, File.expand_path("#{image}.png", ICONS_DIRECTORY), rgb)
     end
 
     def title=(title)
@@ -510,6 +571,49 @@ module Redcar
         end
       end
       @last_checked = Time.now
+    end
+    
+    # This characters have custom Redcar behaviour.
+    OVERRIDDEN_CHARACTERS = {
+      9 => [:tab_pressed, []]
+    }
+    
+    def type_character(character)
+      unless custom_character_handle(character)
+        notify_listeners(:type_character, character)
+      end
+      history.record(character)
+    end
+    
+    def custom_character_handle(character)
+      if method_call = OVERRIDDEN_CHARACTERS[character]
+        send(*method_call)
+      end
+    end
+    
+    # These actions have custom Redcar implementations that
+    # override the default StyledText implementation. (Mainly for
+    # soft tabs purposes.)
+    OVERRIDDEN_ACTIONS = {
+      :COLUMN_PREVIOUS        => Actions::ArrowLeftHandler,
+      :COLUMN_NEXT            => Actions::ArrowRightHandler,
+      :SELECT_COLUMN_PREVIOUS => Actions::ArrowLeftHandler,
+      :SELECT_COLUMN_NEXT     => Actions::ArrowRightHandler,
+      :DELETE_PREVIOUS        => Actions::BackspaceHandler,
+      :DELETE_NEXT            => Actions::DeleteHandler
+    }
+    
+    def invoke_overridden_action(action_symbol)
+      if handler = OVERRIDDEN_ACTIONS[action_symbol]
+        handler.send(action_symbol.to_s.downcase, self)
+      end
+    end
+    
+    def invoke_action(action_symbol)
+      unless invoke_overridden_action(action_symbol)
+        notify_listeners(:invoke_action, action_symbol)
+      end
+      history.record(action_symbol)
     end
   end
 end

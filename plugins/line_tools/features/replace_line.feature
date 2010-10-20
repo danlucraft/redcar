@@ -23,3 +23,11 @@ Scenario: Replacing the current selection
   And I move the cursor to 10
   And I replace the line
   Then I should see "21 eggs\n3 henhouses\n3 henhouses\n1 farmer" in the edit tab
+
+Scenario: Replacing the current line that has unicode
+  When I open a new edit tab
+  And I replace the contents with "21 eggs\n7 bść\n3 henhouses\n1 farmer"
+  And I copy text
+  And I move the cursor to 10
+  And I replace the line
+  Then the contents should be "21 eggs\n21 eggs\n3 henhouses\n1 farmer"

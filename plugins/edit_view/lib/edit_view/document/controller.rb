@@ -8,6 +8,15 @@ module Redcar
         "<#{self.class}>"
       end
       
+      # Called after every user action that modifies the document.
+      # E.g. typing "a", moving up, running a search. NOT included
+      # is modifications made by calling methods on Document, but they
+      # are usually implied by the Commands that make them.
+      #
+      # @param [String|Symbol|DocumentCommand] This is a document action.
+      def after_action(action)
+      end
+      
       module ModificationCallbacks
         def before_modify(start_offset, end_offset, text)
           raise "not implemented"

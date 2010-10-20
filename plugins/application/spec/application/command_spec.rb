@@ -48,6 +48,30 @@ describe Redcar::Command do
       SubSensitiveCommand.sensitivity_names.should == [:foo, :bar]
     end
   end
+  
+  describe "a command that implements _finished" do
+    class FinishableCommand < Redcar::Command
+      attr_reader :stuff
+      
+      def initialize
+        @stuff = []
+      end
+      
+      def execute
+        @stuff << :executed
+      end
+      
+      def _finished
+        @stuff << :finished
+      end
+    end
+    
+    it "should have _finished called after the command runs" do
+      command_instance = FinishableCommand.new
+      command_instance.run
+      command_instance.stuff.should == [:executed, :finished]
+    end
+  end
 end
 
 

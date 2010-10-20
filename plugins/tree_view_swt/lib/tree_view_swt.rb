@@ -2,7 +2,9 @@
 module Redcar
   class TreeViewSWT
     attr_reader :viewer, :model
-    
+
+    extend Forwardable
+
     def self.storage
       @storage ||= begin
          storage = Plugin::Storage.new('tree_view_swt_plugin')
@@ -13,7 +15,7 @@ module Redcar
     
     def initialize(composite, model)
       @composite, @model = composite, model
-      tree_style = Swt::SWT::MULTI
+      tree_style = Swt::SWT::MULTI | Swt::SWT::H_SCROLL | Swt::SWT::V_SCROLL
       @viewer = JFace::Viewers::TreeViewer.new(@composite, tree_style)
       grid_data = Swt::Layout::GridData.new
       grid_data.grabExcessHorizontalSpace = true
@@ -58,7 +60,13 @@ module Redcar
       @model.add_listener(:expand_element, &method(:expand_element))
       @model.add_listener(:select_element, &method(:select_element))
     end
-    
+
+    def tree_mirror
+      @model.tree_mirror
+    end
+
+    def_delegators :control, :layout_data, :layout_data=, :visible, :visible=
+
     class DragSourceListener
       attr_reader :tree, :dragged_elements
       
@@ -268,7 +276,8 @@ module Redcar
     def close
       @viewer.getControl.dispose
     end
-    
+    alias :dispose :close
+
     def right_click(mouse_event)
       if @model.tree_controller
         point = Swt::Graphics::Point.new(mouse_event.x, mouse_event.y)
@@ -438,16 +447,7 @@ module Redcar
       end
 
       def get_image(tree_node)
-        case icon = tree_node.icon
-        when :directory
-          dir_image
-        when :file
-          file_image
-        when Symbol
-          image(File.expand_path(File.join(Redcar::ICONS_DIRECTORY, icon.to_s + ".png")))
-        when String
-          image(icon)
-        end
+        ApplicationSWT::Icon.swt_image(tree_node.icon)
       end
 
       def dispose
@@ -470,25 +470,6 @@ module Redcar
       #  5000
       #end
       
-      private
-      
-      def image(path)
-        Swt::Graphics::Image.new(ApplicationSWT.display, path)
-      end
-      
-      def dir_image
-        @dir_image ||= begin
-          path = File.join(Redcar.root, %w(plugins application icons darwin-folder.png))
-          image(path)
-        end
-      end
-      
-      def file_image
-        @file_image ||= begin
-          path = File.join(Redcar.root, %w(plugins application icons darwin-file.png))
-          image(path)
-        end
-      end
     end
   end
 end

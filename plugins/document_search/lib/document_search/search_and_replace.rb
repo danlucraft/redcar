@@ -6,9 +6,12 @@ module DocumentSearch
       attr_accessor :previous_replace
       attr_accessor :previous_search_type
     end
-    
+
+    attr_accessor :initial_query
+
     def after_draw
-      self.query.value = SearchAndReplaceSpeedbar.previous_query || ""
+      SearchSpeedbar.previous_query ||= ""
+      self.query.value = @initial_query || SearchSpeedbar.previous_query
       self.replace.value = SearchAndReplaceSpeedbar.previous_replace || ""
       self.search_type.value = SearchAndReplaceSpeedbar.previous_search_type
       self.query.edit_view.document.select_all
@@ -43,16 +46,17 @@ module DocumentSearch
       current_replace = @previous_replace
       case @previous_search_type
       when "Regex"
-        search_method = Search.method(:regex_search_method)
+        search_method = :regex_search_method
       when "Plain"
-        search_method = Search.method(:plain_search_method)
+        search_method = :plain_search_method
       when "Glob"
-        search_method = Search.method(:glob_search_method)
+        search_method = :glob_search_method
       else
-        search_method = Search.method(:regex_search_method)
+        search_method = :regex_search_method
       end
       adoc = Redcar.app.focussed_notebook_tab.document
-      count = Replace.new(adoc).replace_next(current_query, current_replace, &search_method)
+      cmd = ReplaceNextCommand.new(current_query, current_replace, search_method)
+      count = cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
       if count == 0
         Redcar::Application::Dialog.message_box("No instance of the search string were found", {:type => :info, :buttons => :ok})
       end
@@ -63,16 +67,16 @@ module DocumentSearch
       current_replace = @previous_replace
       case @previous_search_type
       when "Regex"
-        search_method = Search.method(:regex_search_method)
+        search_method = :regex_search_method
       when "Plain"
-        search_method = Search.method(:plain_search_method)
+        search_method = :plain_search_method
       when "Glob"
-        search_method = Search.method(:glob_search_method)
+        search_method = :glob_search_method
       else
-        search_method = Search.method(:regex_search_method)
+        search_method = :regex_search_method
       end
-      adoc = Redcar.app.focussed_notebook_tab.document
-      count = Replace.new(adoc).replace_all(current_query, current_replace, &search_method)
+      cmd = ReplaceAllCommand.new(current_query, current_replace, search_method)
+      count = cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
       if count == 0 or count > 1
         message = "Replaced #{count} occurrences"
       else

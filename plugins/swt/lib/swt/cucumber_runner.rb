@@ -11,7 +11,7 @@ module Swt
         begin
           sleep START_DELAY
           main = Cucumber::Cli::Main.new(args)
-          main.execute!(Cucumber::StepMother.new)
+          main.execute!
           Redcar.app.quit
         rescue Object => e
           puts e.message

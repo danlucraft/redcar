@@ -1,5 +1,51 @@
-Version 0.6 (TBD)
-==============================
+Version 0.8 (TBA)
+============================
+
+Enhancements:
+
+ * Alternate Runnables File Runner command and shortcut (Delisa Mason)
+ * File runners now have access to line number and file names (Delisa Mason)
+ * Projects can have 'subproject' windows which share config files like Runnables (Delisa Mason)
+ * Symlinks to other directories are searched recursively (Tim Felgentreff)
+ * Redcar can be started without opening a window (for boot-time startup) (Tim Felgentreff)
+ * The Mac OS X app bundle comes with assets bundled (Tim Felgentreff)
+ * The Runnables tree now nests runnables depending on slashes in the type definition (Tim Felgentreff)
+
+
+Bugfixes
+
+ * New files now open in the project window which is the closest ancestor (Delisa Mason)
+ * Search-and-replace now operates on the user-selected text as well, not only after it (Tim Felgentreff)
+
+
+Version 0.7 (4 October 2010)
+============================
+
+Enhancements:
+
+ * Vertical tabs for the tree book on the left. (Tim Felgentreff)
+ * Runnables are grouped by type in the tree (Delisa Mason)
+ * Improved styling of the keyboard shortcuts help and todo list (Delisa Mason)
+ * Tidier Edit menu! (Delisa Mason)
+ * Record and run macros (Dan Lucraft)
+ * Name and save macros (Dan Lucraft)
+ * Macro manager to save, rename and delete macros (Dan Lucraft)
+ * Predictive macros that know what you want to do! (Dan Lucraft)
+ * Experimental Subversion integration (Delisa Mason)
+
+New internal APIs:
+
+ * DocumentHistory stream of changes to text (Dan Lucraft)
+ * Menus can have lazy text that is generated when you look at them (Dan Lucraft)
+ * Tab icons can change. (Dan Lucraft)
+
+Bugfixes
+
+ * Open in file browser and command line now works on Windows (Jeremy Wentworth, Delisa Mason)
+
+
+Version 0.6 (21 September 2010)
+===============================
 
 Enhancements
 
@@ -8,6 +54,11 @@ Enhancements
  * Added a 'Open Directory as new project' context menu item (Delisa Mason)
  * Added a 'Tidy File' menu option which will try to reindent complete file (Alex Lourie)
  * find-in-project: Search spinner, remember search settings, wrap long lines, styling updates (Kieran Pilkington)
+ * Align assignments command (Stefan Natchev)
+ * Groovy REPL! (Delisa Mason)
+ * Sort lines command (Erik Lundqvist)
+ * Runnables: copy output to clipboard (Mat Schaffer)
+ * Runnables: 'run again' button (Mat Schaffer)
 
 Bugfixes:
 

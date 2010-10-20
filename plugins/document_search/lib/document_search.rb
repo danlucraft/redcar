@@ -6,12 +6,20 @@ module DocumentSearch
   def self.menus
     Redcar::Menu::Builder.build do
       sub_menu "Edit" do
-        group(:priority => 20) do
-          item "Regex Search",       SearchForwardCommand
+        sub_menu "Search", :priority => 50 do
+          item "Document Search",    SearchForwardCommand
           item "Repeat Last Search", RepeatPreviousSearchForwardCommand
           item "Search and Replace", SearchAndReplaceCommand
         end
+        separator
       end
+    end
+  end
+  
+  def self.toolbars
+    Redcar::ToolBar::Builder.build do
+      item "Search Document", :command => DocumentSearch::SearchForwardCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), :barname => :edit
+      item "Repeat Last Search", :command => DocumentSearch::RepeatPreviousSearchForwardCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier--arrow.png"), :barname => :edit
     end
   end
   
@@ -42,7 +50,7 @@ module DocumentSearch
     
     toggle :match_case, 'Match case', nil, false do |v|
       SearchSpeedbar.previous_match_case = v
-    end      
+    end
     
     button :search, "Search", "Return" do
       SearchSpeedbar.previous_query = query.value
@@ -56,7 +64,8 @@ module DocumentSearch
       if !@previous_is_regex
         current_query = Regexp.escape(current_query)
       end
-      FindNextRegex.new(Regexp.new(current_query, !@previous_match_case), true).run
+      cmd = FindNextRegex.new(Regexp.new(current_query, !@previous_match_case), true)
+      cmd.run_in_focussed_tab_edit_view
     end
   end
     
@@ -80,11 +89,14 @@ module DocumentSearch
   class SearchAndReplaceCommand < Redcar::EditTabCommand
     def execute
       @speedbar = SearchAndReplaceSpeedbar.new
+      if doc.selection?
+        @speedbar.initial_query = doc.selected_text
+      end
       win.open_speedbar(@speedbar)
     end
   end
 
-  class FindNextRegex < Redcar::EditTabCommand
+  class FindNextRegex < Redcar::DocumentCommand
     def initialize(re, wrap=nil)
       @re = re
       @wrap = wrap

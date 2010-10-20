@@ -292,6 +292,10 @@ module Redcar
       r
     end
     
+    def repeat_event(type)
+      notify_listeners(type)
+    end
+    
     private
     
     def attach_window_listeners(window)

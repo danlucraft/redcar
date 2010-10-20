@@ -7,11 +7,20 @@ Feature: Showing commands in a command tree
   Scenario: Shows grouped commands from .redcar/runnables/*.json in the project
     When I open the runnables tree
     Then I should see "fixture_runnables" in the tree
-  
+
   Scenario: Shows individual commands in groups
     When I open the runnables tree
     And I expand the tree row "fixture_runnables"
     Then I should see "An app" in the tree
+
+  Scenario: Shows groups and subgroups by slash-separated type
+    When I open the runnables tree
+    And I expand the tree row "fixture_runnables"
+    Then I should see "first" in the tree
+    And I expand the tree row "first"
+    Then I should see "second" in the tree
+    And I expand the tree row "second"
+    Then I should see "A nested app" in the tree
 
   Scenario: I can manually refresh the tree
     When I open the runnables tree
