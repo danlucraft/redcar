@@ -44,6 +44,14 @@ module Redcar
       @visible
     end
     
+    def fullscreen
+      controller.fullscreen
+    end
+    
+    def fullscreen=(value)
+      controller.fullscreen = value
+    end
+    
     # Create a new notebook in this window.
     #
     # @events [(:new_notebook, notebook)]

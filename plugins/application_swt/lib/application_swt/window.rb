@@ -76,7 +76,15 @@ module Redcar
         end
         @shell.add_key_listener(KeyListener.new(self))
       end
-
+      
+      def fullscreen
+        @shell.fullScreen()
+      end
+      
+      def fullscreen=(value)
+        @shell.setFullScreen(value)
+      end
+      
       class KeyListener
         def initialize(edit_view_swt)
           @edit_view_swt = edit_view_swt
@@ -118,7 +126,7 @@ module Redcar
 
       def refresh_menu
         old_menu_bar = shell.menu_bar
-        @menu_controller = ApplicationSWT::Menu.new(self, Redcar.app.main_menu, Redcar.app.main_keymap, Swt::SWT::BAR)
+        @menu_controller = ApplicationSWT::Menu.new(self, Redcar.app.main_menu(@window), Redcar.app.main_keymap, Swt::SWT::BAR)
         shell.menu_bar = @menu_controller.menu_bar
         old_menu_bar.dispose if old_menu_bar
       end

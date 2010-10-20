@@ -212,11 +212,16 @@ module Redcar
     # Generate the main menu by combining menus from all plugins.
     #
     # @return [Redcar::Menu]
-    def main_menu
+    def main_menu(window=nil)
       @main_menu ||= begin
         menu = Menu.new
         Redcar.plugin_manager.objects_implementing(:menus).each do |object|
-          menu.merge(object.menus)
+          case object.method(:menus).arity
+          when 1
+            menu.merge(object.menus(window))
+          else
+            menu.merge(object.menus)
+          end
         end
         menu
       end
