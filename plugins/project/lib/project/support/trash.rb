@@ -13,10 +13,10 @@ module Redcar
           end
         end
 
-        def mac(file)
-          sh %{ osascript -e "tell application \"Finder\"
-                  move (POSIX file \"#{file}\") to the trash
-                end tell" }
+        def osx(file)
+          system %{ osascript -e "tell application \\"Finder\\"
+                      move (POSIX file \\"#{file}\\") to the trash
+                    end tell" }
           true
         end
 
