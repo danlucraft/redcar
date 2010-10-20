@@ -32,7 +32,7 @@ module Redcar
     end
 
     def self.file_path(project)
-      ::File.join(project.config_dir, 'tags')
+      ::File.join(project.config_dir, '.redcar')
     end
     
     class ProjectRefresh < Task
