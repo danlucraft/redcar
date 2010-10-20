@@ -37,3 +37,6 @@
 [submodule "vendor/spoon"]
 	path = vendor/spoon
 	url = git://github.com/mscharley/spoon.git
+[submodule "plugins/project_search/vendor/lucene"]
+	path = plugins/project_search/vendor/lucene
+	url = http://github.com/andreasronge/lucene.git
