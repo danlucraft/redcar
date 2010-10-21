@@ -51,7 +51,7 @@ def find_ci_reporter(filename)
 end
 
 def rcov_run(cmd, opts)
-  cmd = %{rcov -x "\.rb,spec,vendor/" -i "lib/plugin_manager/,lib/redcar,plugins/" #{cmd} -- #{opts}}
+  cmd = %{rcov -x "features/,spec/,vendor/,openssl/,yaml/,json/,yaml,gems,file:,(eval),(__FORWARDABLE__)" #{cmd} -- #{opts}}
   jruby_run(cmd)
 end
 
