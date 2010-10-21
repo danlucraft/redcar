@@ -12,8 +12,16 @@ module DocumentSearch
     end
     
     def execute
-      # Get the current line and then get the line segment from the cursor or selection to the end of the line
-      latest_point = [doc.cursor_offset, doc.selection_offset].max
+      # The current selection is usually not used for the next replacement, unless
+      # it matches the query string, in which case we assume that the user meant replace it, too
+      offsets = [doc.cursor_offset, doc.selection_offset]
+      if query == doc.selected_text
+        latest_point = offsets.min
+      else
+        latest_point = offsets.max
+      end
+
+      # Get the current line and then get the line segment from the cursor to the end of the line
       curr_line_number = doc.line_at_offset(latest_point)
       cursor_line_offset = latest_point - doc.offset_at_line(curr_line_number)
       curr_line = doc.get_line(curr_line_number)

@@ -1,31 +1,29 @@
 module Redcar
   class Runnables
-    class RunnableTypeGroup
-      include Redcar::Tree::Mirror::NodeMirror
-
-      def initialize(name,path,runnables)
-        @name = name
-        if runnables.any?
-          @children = runnables.map do |runnable|
-            Runnable.new(runnable["name"],path,runnable)
-          end
-        end
+    class RunnableTypeGroup < RunnableGroup
+      def initialize(name)
+        name_parts = name.split("/")
+        @text = name_parts.first
+        @runnables = []
+        @subgroups = {}
       end
 
-      def leaf?
-        false
+      # Return the type group that corresponds to the passed name-path, or self, if name is empty
+      # If a child with the specified path does not exist, create it and clear the children cache
+      def type_group(name)
+        return super unless name.empty?
+        self
       end
 
-      def text
-        @name
+      # Add a runnable to the children
+      # Tries to avoid re-building the children array
+      def add_runnable(runnable)
+        @children << runnable unless @children.nil?
+        return @runnables << runnable
       end
 
       def icon
         File.join(Redcar::ICONS_DIRECTORY, "folder-open-small-gears.png")
-      end
-
-      def children
-        @children
       end
     end
   end
