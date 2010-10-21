@@ -4,7 +4,7 @@ module Redcar
 
       def initialize(matches)
         super()
-        @matches = matches.uniq
+        @matches = matches
       end
 
       def close
