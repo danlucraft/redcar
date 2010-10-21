@@ -42,7 +42,12 @@ task :release_docs do
 end
 
 ### CI
-task :ci => [:specs_ci, :cucumber_ci]
+COVERAGE_DATA = "coverage.data"
+task :ci do
+  FileUtils.rm COVERAGE_DATA if File.exist?(COVERAGE_DATA)
+  Rake::Task["specs_ci"].invoke
+  Rake::Task["cucumber_ci"].invoke
+end
 
 def find_ci_reporter(filename)
   jruby_gem_path = %x[jruby -rubygems -e "p Gem.path.first"].gsub("\n", "").gsub('"', "")
@@ -51,7 +56,7 @@ def find_ci_reporter(filename)
 end
 
 def rcov_run(cmd, opts)
-  cmd = %{rcov -x "features/,spec/,vendor/,openssl/,yaml/,json/,yaml,gems,file:,(eval),(__FORWARDABLE__)" #{cmd} -- #{opts}}
+  cmd = %{rcov --aggregate #{COVERAGE_DATA} -x "features/,spec/,vendor/,openssl/,yaml/,json/,yaml,gems,file:,(eval),(__FORWARDABLE__)" #{cmd} -- #{opts}}
   jruby_run(cmd)
 end
 
@@ -68,8 +73,9 @@ task :specs_ci do
 end
 
 task :cucumber_ci do
-  FileUtils.rm_rf "features/reports" if File.exist? "features/reports"
-  rcov_run("bin/cucumber", "-f progress -f junit --out features/reports/ plugins/*/features")
+  reports_folder = "features/reports"
+  FileUtils.rm_rf reports_folder if File.exist? reports_folder
+  rcov_run("bin/cucumber", "-f progress -f junit --out #{reports_folder} plugins/*/features")
 end
 
 ### TESTS
