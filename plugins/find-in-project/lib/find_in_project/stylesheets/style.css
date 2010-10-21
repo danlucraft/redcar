@@ -3,6 +3,7 @@
   padding: 0;
   font-weight: normal;
   font-size: 14px;
+  font-family: sans-serif;
 }
 
 #search_form_container {
@@ -122,7 +123,7 @@
 }
 
 #results .even {
-  background-color: #EDEDFD;
+  background-color: #F4F4F4;
 }
 
 #results .odd {
@@ -193,6 +194,8 @@
   bottom: 0;
   left: 0;
   right: 0;
+  font-size: 1.5em;
+  font-family: sans-serif;
 }
 
 #results_summary .text {

@@ -28,13 +28,13 @@ class ProjectSearch
           contents = File.readlines(doc_id)
           contents.each_with_index do |line, line_num|
             if line.index(query)
-              puts "#{doc_id} @ #{line_num}"
-              render_line(file_num, line_num, doc_id, line)
+              render_line(file_num, line_num + 1, doc_id, line)
               increment_line_results_count
             end
           end
           file_num += 1
         end
+        remove_initial_blank_tr
       else
         render_no_results
       end

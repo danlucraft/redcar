@@ -34,7 +34,7 @@ module Redcar
       end
 
       def open_file(file, line, query, literal_match, match_case)
-        Project::Manager.open_file(File.join(Project::Manager.focussed_project.path, file))
+        Project::Manager.open_file(File.expand_path(file, Project::Manager.focussed_project.path))
         doc.cursor_offset = doc.offset_at_line(line.to_i - 1)
         regexp_text = literal_match ? Regexp.escape(query) : query
         regex = match_case ? /(#{regexp_text})/ : /(#{regexp_text})/i
