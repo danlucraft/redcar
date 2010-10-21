@@ -141,6 +141,7 @@
 
 #results .file_heading a {
   font-weight: bold;
+  font-family: sans-serif;
 }
 
 #results .expand_collapse img {
@@ -155,6 +156,7 @@
   cursor: hand;
   font-size: 12px;
   line-height: 12px;
+  font-family: sans-serif;
 }
 
 #results .divider .line_num {
@@ -170,6 +172,7 @@
   cursor: hand;
   font-size: 14px;
   line-height: 17px;
+  font-family: monospace;
 }
 
 #results .divider .text {
@@ -177,7 +180,7 @@
 }
 
 #results .text span {
-  background-color: yellow;
+  background-color: #FFCCCC;
   font-weight: bold;
 }
 
