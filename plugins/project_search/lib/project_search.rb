@@ -2,6 +2,8 @@
 $:.push(File.dirname(__FILE__) + "/../vendor/lucene/lib")
 require 'lucene'
 
+require 'project_search/controller'
+
 class ProjectSearch
   
   Lucene::Config.use do |config| 
@@ -29,7 +31,7 @@ class ProjectSearch
           (ProjectSearch.indexes[@project.path] ||= 
             Lucene::Index.new(File.join(@project.config_dir, "lucene")) )
         index.field_infos[:contents][:store] = true 
-        index.field_infos[:contents][:tokenized] = true        index.field_infos[:contents][:analyzer] = :whitespace        files.each do |fn|
+        index.field_infos[:contents][:tokenized] = true        files.each do |fn|
           if fn =~ /rb$/
             index << { :id => fn, :contents => File.read(fn) }
           end
@@ -43,25 +45,28 @@ class ProjectSearch
   end
   
   class SearchCommand < Redcar::Command
-    def execute
-      result = Redcar::Application::Dialog.input("Search for", "query: ")
-      query = result[:value]
-      bits = query.gsub(/[^\w]/, " ").gsub("_", " ").split(/\s/).map {|b| b.strip}
-      project = Redcar::Project::Manager.focussed_project
-      index   = ProjectSearch.indexes[project.path]
-      doc_ids = nil
-      bits.each do |bit|
-        puts "searching for #{bit}"
-        new_doc_ids = index.find(:contents => bit.downcase).map {|doc| doc.id }
-        doc_ids = doc_ids ? (doc_ids & new_doc_ids) : new_doc_ids
+    def find_open_instance
+      all_tabs = Redcar.app.focussed_window.notebooks.map { |nb| nb.tabs }.flatten
+      all_tabs.find do |t|
+        t.is_a?(Redcar::HtmlTab) && t.title == ProjectSearch::Controller.new.title
       end
+    end
       
-      doc_ids.each do |doc_id|
-        contents = File.read(doc_id)
-        if offset = contents.index(query)
-          puts "#{doc_id} @ #{offset}"
+    def execute
+      if Redcar::Project::Manager.focussed_project
+        if (tab = find_open_instance)
+          tab.html_view.controller = tab.html_view.controller # refresh
+        else
+          tab = win.new_tab(Redcar::HtmlTab)
+          tab.html_view.controller = ProjectSearch::Controller.new
         end
-      end    end
+        tab.focus
+      else
+        # warning
+        Application::Dialog.message_box("You need an open project to be able to use Find In Project!", :type => :error)
+      end
+      return
+    end
   end
 
   def self.menus
