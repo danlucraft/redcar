@@ -337,8 +337,8 @@ module Redcar
         when :osx
           run_application(
             "osascript",
-              "-e", "'tell application \"Terminal\"'"     ,
-              "-e", '"do script \"cd \\\"`#{path}`\\\"\""',
+              "-e", "'tell application \"Terminal\"'",
+              "-e", '"do script \"cd \"' + path + '\"""',
               "-e",
             "'end tell'"
           )
