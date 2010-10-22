@@ -14,8 +14,11 @@ Installation
 Usage
 =====
 
+ * Preview Markup files (HTML,etc) from the "Web Preview" option in the File menu
+ * View saved web and project links from the bookmarks menu
  * Add bookmarks to a 'web_bookmarks.json' file in either the project .redcar directory or ~/.redcar (or both) in the following format:
 
+<code>
     {
         "bookmarks" : [
             {
@@ -36,12 +39,16 @@ Usage
                 "group" : "API"
             }
     }
-
+</code>
+  
+ * Links can be relative to the project directory using \_\_PROJECT\_PATH__ variable in URLs
  * Bookmarks without groups will be displayed at the top of the list.
  * Select Project > Web Bookmarks from the main menu or the globe icon in the toolbar
  * Go!
 
-###Notes on the Browser Navigation Bar
+Using the Browser Navigation Bar
+================================
+
  * Bookmarks can be added by pressing the '+' button
  * The browser bar can be disabled by default in Plugins > Edit Preferences > web_bookmarks
  * To reopen a closed browser bar, open Edit > Document Navigation > Open Browser Bar
