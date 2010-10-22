@@ -3,6 +3,7 @@ $:.push(File.dirname(__FILE__) + "/../vendor/lucene/lib")
 require 'lucene'
 
 require 'project_search/controller'
+require 'project_search/lucene_index'
 
 class ProjectSearch
   
@@ -14,7 +15,6 @@ class ProjectSearch
   
   class LuceneRefresh < Redcar::Task
     def initialize(project)
-      @file_list   = project.file_list
       @project     = project
     end
     
@@ -24,19 +24,12 @@ class ProjectSearch
     
     def execute
       return if @project.remote?
-      files = @file_list.all_files
-      files.delete(::File.join(@project.config_dir, 'tags'))
-      Lucene::Transaction.run do 
-        index = 
-          (ProjectSearch.indexes[@project.path] ||= 
-            Lucene::Index.new(File.join(@project.config_dir, "lucene")) )
-        index.field_infos[:contents][:store] = true 
-        index.field_infos[:contents][:tokenized] = true        files.each do |fn|
-          if fn =~ /rb$/
-            index << { :id => fn, :contents => File.read(fn) }
-          end
-        end
+      unless index = ProjectSearch.indexes[@project.path]
+        p :creating_index
+        index = ProjectSearch::LuceneIndex.new(@project)
+        ProjectSearch.indexes[@project.path] = index
       end
+      index.update
     end
   end
   

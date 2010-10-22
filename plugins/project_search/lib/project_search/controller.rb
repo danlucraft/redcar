@@ -8,7 +8,7 @@ class ProjectSearch
       @query = query
       bits = query.gsub(/[^\w]/, " ").gsub("_", " ").split(/\s/).map {|b| b.strip}
       project = Redcar::Project::Manager.focussed_project
-      index   = ProjectSearch.indexes[project.path]
+      index   = ProjectSearch.indexes[project.path].lucene_index
       doc_ids = nil
       bits.each do |bit|
         puts "searching for #{bit}"
