@@ -6,5 +6,6 @@ Plugin.define do
   object  "Redcar::WebBookmarks"
   dependencies "tree",        ">0",
                "application", ">=1.1",
-               "HTML View",   ">0"
+               "project"    , ">=1.1",
+               "HTML View"  , ">0"
 end

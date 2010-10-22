@@ -46,5 +46,46 @@ module Redcar
         window.open_speedbar(speedbar)
       end
     end
+    
+    class AddBookmark < Redcar::ProjectCommand
+      def initialize(url)
+        @protocol = url.split("://")[0]
+        @url      = url.split("://")[1]
+      end
+      
+      def execute
+        @path = project.config_files(BOOKMARKS_FILE).detect { |pj|
+           not pj.include?(Redcar.user_dir)
+        }
+        if @path
+          json = File.read(@path)
+        else
+          @path = project.path + "/.redcar/#{BOOKMARKS_FILE}"
+          json = JSON.generate({"bookmarks"=>[]})
+        end
+        bookmarks = JSON(json)["bookmarks"]
+        if name = fill_field("Name")
+          group = fill_field("Group")
+          bookmark = {
+            "name"     => name,
+            "url"      => @url,
+            "protocol" => @protocol
+          }
+          bookmark["group"] = group unless group.nil? or group == ""
+          bookmarks << bookmark
+          File.open(@path,'w') do |f|
+            f.puts JSON.pretty_generate({"bookmarks"=>bookmarks})
+          end
+        end
+      end
+      
+      def fill_field(name)
+        title = "Add New Bookmark"
+        msg   = "Choose a #{name} for this Bookmark"
+        out   = Redcar::Application::Dialog.input(title,msg)
+        return if out[:button] == :cancel
+        name = out[:value]
+      end
+    end
   end
 end

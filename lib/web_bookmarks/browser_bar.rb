@@ -8,11 +8,11 @@ module Redcar
         tab if tab.is_a?(Redcar::HtmlTab)
       end
 
-      button :back, "Back", "Ctrl+Left" do
+      button :back, "<", "Ctrl+Left" do
         html_tab.controller.browser.back if html_tab
       end
 
-      button :forward, "Forward", "Ctrl+Right" do
+      button :forward, ">", "Ctrl+Right" do
         html_tab.controller.browser.forward if html_tab
       end
 
@@ -38,6 +38,13 @@ module Redcar
         tab.edit_view.grammar = "HTML"
         tab.edit_view.reset_undo
         tab.focus
+      end
+      
+      button :add, "+", nil do
+        if tab = html_tab and 
+          url = tab.controller.browser.url.to_s
+          WebBookmarks::AddBookmark.new(url).run
+        end
       end
 
       label :url_label, "New URL:"

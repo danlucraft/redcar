@@ -42,6 +42,7 @@ Usage
  * Go!
 
 ###Notes on the Browser Navigation Bar
+ * Bookmarks can be added by pressing the '+' button
  * The browser bar can be disabled by default in Plugins > Edit Preferences > web_bookmarks
  * To reopen a closed browser bar, open Edit > Document Navigation > Open Browser Bar
  * Browser bar works on __any__ HtmlTab, not just bookmarks

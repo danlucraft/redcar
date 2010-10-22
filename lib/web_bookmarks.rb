@@ -7,6 +7,7 @@ require 'web_bookmarks/view_controller'
 module Redcar
   class WebBookmarks
     TREE_TITLE = "Web Bookmarks"
+    BOOKMARKS_FILE = "web_bookmarks.json"
 
     def self.storage
       @storage ||= begin
