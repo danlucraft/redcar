@@ -286,8 +286,11 @@ module Redcar
           ::Spoon.spawn(app, *options)
         else
           # TODO: This really needs proper escaping.
-          options = options.map {|o| "\"#{o}\""}.join(' ')
-          puts "Running: #{app} #{options}"
+          if options
+            options = options.map {|o| "\"#{o}\""}.join(' ')
+          else
+            options = "" 
+          end
           Thread.new do
             system("#{app} #{options}")
             puts "  Finished: #{app} #{options}"
@@ -336,11 +339,7 @@ module Redcar
         case Redcar.platform
         when :osx
           run_application(
-            "osascript",
-              "-e", "'tell application \"Terminal\"'",
-              "-e", '"do script \"cd \"' + path + '\"""',
-              "-e",
-            "'end tell'"
+            "osascript <<END\ntell application \"Terminal\"\n do script \"cd \"" + path + "\"\"\nend tell\nEND"
           )
         when :windows
           run_application('start cmd.exe', '/kcd ' + path.gsub("/","\\"))
