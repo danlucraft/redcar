@@ -171,6 +171,9 @@
   padding: 3px 10px;
   width: 100%;
   cursor: hand;
+}
+
+#results .text pre {
   font-size: 14px;
   line-height: 17px;
   font-family: monospace;

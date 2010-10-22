@@ -2,5 +2,5 @@
   <td class='line_num'><%= @line_num %></td>
   <% regexp_text = CGI.escapeHTML((@literal_match ? Regexp.escape(@query) : @query)) %>
   <% text = CGI.escapeHTML(@line_text).gsub((@match_case ? /(#{regexp_text})/ : /(#{regexp_text})/i)) { "<span>#{$1}</span>" } %>
-  <td class='text'><%= text %>&nbsp;</td> <!-- extra space to ensure line-height is respected -->
+  <td class='text'><pre><%= text.chomp + " " %></pre></td> <!-- extra space to ensure line-height is respected -->
 </tr>

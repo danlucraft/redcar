@@ -85,7 +85,7 @@ module Redcar
             last_matching_line = nil
             
             Redcar::FileParser.new(@project_path, @settings).each_line do |line|
-              next unless matching_line?(line)
+              next unless matching_line?(line.text)
               add_initial_table
               parsing_new_file = (!last_matching_line || last_matching_line.file != line.file)
               
@@ -180,10 +180,10 @@ module Redcar
         execute("$('#spinner').hide();")
       end
 
-      def matching_line?(line)
+      def matching_line?(line_text)
         regexp_text = @literal_match ? Regexp.escape(@query) : @query
         regexp = @match_case ? /#{regexp_text}/ : /#{regexp_text}/i
-        line.text =~ regexp
+        line_text =~ regexp
       end
 
       def escape_javascript(text)
