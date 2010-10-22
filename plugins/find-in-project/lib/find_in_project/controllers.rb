@@ -181,9 +181,11 @@ module Redcar
       end
 
       def matching_line?(line_text)
-        regexp_text = @literal_match ? Regexp.escape(@query) : @query
-        regexp = @match_case ? /#{regexp_text}/ : /#{regexp_text}/i
-        line_text =~ regexp
+        @regexp ||= begin
+          regexp_text = @literal_match ? Regexp.escape(@query) : @query
+          @match_case ? /#{regexp_text}/ : /#{regexp_text}/i
+        end
+        line_text =~ @regexp
       end
 
       def escape_javascript(text)

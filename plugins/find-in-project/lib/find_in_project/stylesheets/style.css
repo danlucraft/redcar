@@ -183,9 +183,10 @@
   cursor: default;
 }
 
-#results .text span {
+#results .text pre span {
   background-color: #FFCCCC;
   font-weight: bold;
+  font-family: monospace;
 }
 
 #results .break {
