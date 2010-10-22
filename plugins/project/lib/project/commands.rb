@@ -335,7 +335,13 @@ module Redcar
         preferred = Manager.storage['preferred_command_line']
         case Redcar.platform
         when :osx
-          run_application('open', '-a', 'Terminal.app','cd '+path)
+          run_application(
+            "osascript",
+              "-e", "'tell application \"Terminal\"'"     ,
+              "-e", '"do script \"cd \\\"`#{path}`\\\"\""',
+              "-e",
+            "'end tell'"
+          )
         when :windows
           run_application('start cmd.exe', '/kcd ' + path.gsub("/","\\"))
         when :linux
