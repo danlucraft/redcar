@@ -121,18 +121,24 @@ module Redcar
     class ToggleLineCommentCommand < Redcar::EditTabCommand
 
       def uncomment_and_use_extra_space(end_pos,text)
-        f = text[end_pos+1,end_pos+1]
-        p = text[end_pos+2,end_pos+2]
-        text.split(//).length > end_pos+3   and
-        f   == " "                and
-        (p  != " " or p  != "\t") and
-        Comment.storage['insert_single_space_for_zero_indentation']
+        if text.split(//).length() >= end_pos+2
+          f = text[end_pos+1,end_pos+1]
+          p = text[end_pos+2,end_pos+2]
+          Comment.storage['insert_single_space'] and
+          f =~ /^ / and p !=~ /^ /
+        else
+          false
+        end
       end
 
       def comment_and_use_extra_space(text)
-        text.split(//).length > 2 and
-        not (text[0] == " " or text[0] == "\t") and
-        Comment.storage['insert_single_space_for_zero_indentation']
+        unless text.split(//).length() < 1 or
+          text[0] == " " or text[0] == "\t"
+          Comment.storage['insert_single_space'] and
+          text.split(//).length() > 2
+        else
+          false
+        end
       end
 
 	    def execute
@@ -167,11 +173,14 @@ module Redcar
                   text = comment + text
                 end
               end
-              total_text += text if selected
+              total_text += text + " " if selected
               doc.replace_line(line, text)
             end
-            offset = doc.offset_at_line(start_line)
-            doc.set_selection_range(offset,offset+total_text.split(//).length) if selected
+            if selected
+              tlength    = total_text.split(//).length() - 1
+              offset     = doc.offset_at_line(start_line)
+              doc.set_selection_range(offset,offset+tlength)
+            end
           end
         end
       end
