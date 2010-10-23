@@ -17,12 +17,10 @@ module Redcar
           system %{ osascript -e "tell application \\"Finder\\"
                       move (POSIX file \\"#{file}\\") to the trash
                     end tell" }
-          true
         end
 
         def windows(file)
           system %{ cscript //nologo #{WINDOWS_SUPPORT_JS} "#{file}" }
-          true
         end
 
         # Move paths to FreeDesktop Trash can
