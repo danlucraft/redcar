@@ -205,7 +205,6 @@ module Redcar
             new_name = transform_name(old_name)
             next if old_name == new_name
             new_path = File.join(File.dirname(node.path), new_name)
-
             @adapter.mv(node.path, new_path)
           end
           @tab.close

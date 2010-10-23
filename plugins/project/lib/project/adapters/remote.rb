@@ -35,6 +35,7 @@ module Redcar
 
         def mv(path, new_path)
           target.mv(path, new_path)
+          Manager.update_tab_for_path(path,new_path)
         end
 
         def mtime(file)

@@ -12,6 +12,7 @@ module Redcar
 
         def mv(path, new_path)
           FileUtils.mv(path, new_path)
+          Manager.update_tab_for_path(path,new_path)
         end
 
         def file?(path)

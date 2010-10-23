@@ -236,6 +236,13 @@ module Redcar
         found_path_args
       end
 
+      def self.update_tab_for_path(path,new_path)
+        if tab = Manager.find_open_file_tab(path)
+          mirror = Project::FileMirror.new(new_path)
+          tab.edit_view.document.mirror = mirror
+        end
+      end
+
       def self.open_untitled_path(path)
         begin
           if File.file?(path) and contents = File.read(path)
