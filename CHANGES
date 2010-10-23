@@ -16,6 +16,7 @@ Bugfixes
 
  * New files now open in the project window which is the closest ancestor (Delisa Mason)
  * Search-and-replace now operates on the user-selected text as well, not only after it (Tim Felgentreff)
+ * Word back/forward movement is not confused by multi-byte characters. (Dan Lucraft)
 
 
 Version 0.7 (4 October 2010)
