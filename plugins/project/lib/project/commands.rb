@@ -306,7 +306,8 @@ module Redcar
         preferred = Manager.storage['preferred_file_browser']
         case Redcar.platform
         when :osx
-          run_application('open', '-a', 'finder', path)
+          # Spoon doesn't seem to like `open`
+          system('open', '-a', 'Finder', path)
         when :windows
           run_application('explorer.exe', path.gsub("/","\\"))
         when :linux
@@ -342,11 +343,16 @@ module Redcar
             preferred = "Terminal"
             Manager.storage['preferred_command_line'] = preferred
           end
-          run_application(
-            'osascript ' +
-            "<<END\ntell application \""+ preferred +"\"\n do script \"cd \\\"" + path +
-            "\\\"\"\n activate\nend tell\nEND"
-          )
+          command = <<-BASH.gsub(/^\s{12}/, '')
+            osascript <<END
+              tell application "#{preferred}"
+                do script "cd \\\"#{path}\\\""
+                activate
+              end tell
+            END
+          BASH
+          # Spoon doesn't seem to work with `osascript`
+          system(command)
         when :windows
           run_application('start cmd.exe', '/kcd ' + path.gsub("/","\\"))
         when :linux
