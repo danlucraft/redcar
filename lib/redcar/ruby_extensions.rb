@@ -29,11 +29,11 @@ class String
   end
   
   def byte_offset_to_char_offset(byte_offset)
-    self[0..(byte_offset-1)].chars.length
+    self[0...byte_offset].chars.length
   end
   
   def char_offset_to_byte_offset(char_offset)
-    self.chars[0..(char_offset-1)].to_s.length
+    self.chars[0...char_offset].to_s.length
   end
 end
 
