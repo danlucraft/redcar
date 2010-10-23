@@ -37,14 +37,34 @@ module Redcar
           end
 
           # Write trashinfo
-          File.open("#{trashdir}/info/#{File.basename(deleted_path)}.trashinfo", 'w') do |f|
+          trashinfo = "#{trashdir}/info/#{File.basename(deleted_path)}.trashinfo"
+          File.open(trashinfo, 'w') do |f|
             f << "[Trash Info]\n"
             f << "Path=#{file}\n"
             f << "DeletionDate=#{DateTime.now.strftime('%Y%m%dT%H:%M:%S')}\n"
           end
 
-          FileUtils.mv(file, deleted_path)
-          true
+          begin
+            FileUtils.mv(file, deleted_path)
+          rescue SystemCallError
+            # We cannot move - this usually happens if the file is on another partition
+            # The proper way to go would be to check for a partition-topdir .Trash directory
+            # We do not support this right now - the spec allows us to copy-and-remove in this case
+            if File.directory? file
+              # FileUtils.cp_r copies src-dir always _into_ dest-dir
+              # But we want src-dir's contents to be the contents of dest-dir
+              File.mkdir_p deleted_path
+              FileUtils.cp_r("#{file}/.", deleted_path)
+            else
+              FileUtils.cp(file, deleted_path)
+            end
+            FileUtils.rm_rf(file)
+          end
+
+          return true
+        rescue SystemCallError
+          FileUtils.rm(trashinfo) if File.exist? trashinfo
+          return false
         end
       end
     end
