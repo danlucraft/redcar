@@ -20,6 +20,21 @@ class String
     downcase
   end
   
+  def chars
+    r = split(//)
+    def r.to_s
+      join("")
+    end
+    r
+  end
+  
+  def byte_offset_to_char_offset(byte_offset)
+    self[0..(byte_offset-1)].chars.length
+  end
+  
+  def char_offset_to_byte_offset(char_offset)
+    self.chars[0..(char_offset-1)].to_s.length
+  end
 end
 
 class Object
