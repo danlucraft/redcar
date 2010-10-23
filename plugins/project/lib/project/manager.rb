@@ -243,6 +243,12 @@ module Redcar
         end
       end
 
+      def self.delete_tab_for_path(path)
+        if tab = Manager.find_open_file_tab(path)
+          tab.update_for_file_changes
+        end
+      end
+
       def self.open_untitled_path(path)
         begin
           if File.file?(path) and contents = File.read(path)

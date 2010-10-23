@@ -12,6 +12,7 @@ module Redcar
 
         def mv(path, new_path)
           FileUtils.mv(path, new_path)
+          new_path = File.join(new_path, File.basename(path)) unless File.file?(new_path)
           Manager.update_tab_for_path(path,new_path)
         end
 
@@ -59,6 +60,7 @@ module Redcar
 
         def delete(file)
           FileUtils.rm_rf(file) unless Trash.recycle(file)
+          Manager.delete_tab_for_path(file)
         end
 
         def load_contents(file)

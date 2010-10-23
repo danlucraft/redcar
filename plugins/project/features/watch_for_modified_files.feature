@@ -76,14 +76,26 @@ Feature: Watch for modified files
     Then the cursor should be on line 0
 
   Scenario: The file being mirrored by the current unmodified tab is externally deleted
-    When "plugins/project/spec/fixtures/winter.txt" goes missing
+    Then there should be one edit tab
+    And I should see "Wintersmith" in the edit tab
+    When I open a new window
     And I wait "2" seconds
+    And "plugins/project/spec/fixtures/winter.txt" goes missing
+    And I close the window "Redcar" through the gui
+    And I focus the window "Redcar" through the gui
     Then there should be 0 edit tabs
 
   Scenario: The file being mirrored by the current modified tab is externally deleted
+    Then there should be one edit tab
+    And I should see "Wintersmith" in the edit tab
     When I replace the contents with "Jenny Green Eyes"
-    And "plugins/project/spec/fixtures/winter.txt" goes missing
+    And I open a new window
     And I wait "2" seconds
-    Then the focussed tab should have an "exclamation" icon
+    And "plugins/project/spec/fixtures/winter.txt" goes missing
+    And I close the window "Redcar" through the gui
+    And I focus the window "Redcar" through the gui
+    Then my active tab should have an "exclamation" icon
+    When I save the tab
+    Then my active tab should have an "file" icon
 
 
