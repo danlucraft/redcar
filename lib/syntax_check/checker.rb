@@ -27,7 +27,10 @@ module Redcar
       def manifest_path(doc = @doc)
         path = doc.path
         unless path and File.exist? path
-          raise ArgumentError, "Non-local documents not supported at this time"
+          Tempfile.open(doc.title) do |f|
+            f << doc.get_all_text
+            path = f.path
+          end
         end
         path
       end
