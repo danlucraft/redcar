@@ -289,7 +289,7 @@ module Redcar
           if options
             options = options.map {|o| "\"#{o}\""}.join(' ')
           else
-            options = "" 
+            options = ""
           end
           Thread.new do
             system("#{app} #{options}")
@@ -338,8 +338,14 @@ module Redcar
         preferred = Manager.storage['preferred_command_line']
         case Redcar.platform
         when :osx
+          unless preferred
+            preferred = "Terminal"
+            Manager.storage['preferred_command_line'] = preferred
+          end
           run_application(
-            "osascript <<END\ntell application \"Terminal\"\n do script \"cd \"" + path + "\"\"\nend tell\nEND"
+            'osascript ' +
+            "<<END\ntell application \""+ preferred +"\"\n do script \"cd \\\"" + path +
+            "\\\"\"\n activate\nend tell\nEND"
           )
         when :windows
           run_application('start cmd.exe', '/kcd ' + path.gsub("/","\\"))
