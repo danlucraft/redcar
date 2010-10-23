@@ -95,7 +95,30 @@ module Redcar
     # there is one.
     def refresh
       @tree.refresh
-      file_list_resource.compute unless remote?
+      unless remote?
+        refresh_tabs
+        file_list_resource.compute
+      end
+    end
+
+    # Check all tabs for underlying files
+    def refresh_tabs
+      window.all_tabs.each do |tab|
+        p "checking for changes"
+        if tab.is_a(Redcar::EditTab)
+          doc = tab.edit_view.document
+          if doc.mirror and not doc.exists?
+            p "file missing"
+            if doc.modified?
+              p "updating modified"
+              tab.icon = File.expand_path(File.join(Redcar::ICONS_DIRECTORY, "exclamation.png"))
+            else
+              p "closing tab"
+              tab.close
+            end
+          end
+        end
+      end
     end
 
     def contains_path?(path)

@@ -37,3 +37,11 @@ Then /^"([^"]*)" in the project configuration files$/ do |arg1|
   end
 end
 
+When /^"([^"]*)" goes missing$/ do |arg1|
+  FileUtils.rm(arg1)
+end
+
+Then /^the focussed tab should have an "([^"]*)" icon$/ do |arg1|
+  tab = Redcar.app.focussed_window.focussed_notebook_tab
+  tab.icon.should == File.expand_path(File.join(Redcar::ICONS_DIRECTORY, "#{arg1}.png"))
+end
