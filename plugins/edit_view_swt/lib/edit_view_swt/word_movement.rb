@@ -12,24 +12,25 @@ module Redcar
         if [Swt::SWT::MOVEMENT_WORD, Swt::SWT::MOVEMENT_WORD_END].include? e.movement
           e.newOffset = next_offset(e.offset, e.lineOffset, e.lineText)
           # SWT gets pissy without this:
-          if e.newOffset == e.lineOffset + e.lineText.length + 1
+          if e.newOffset == e.lineOffset + e.lineText.chars.length + 1
             e.newOffset += 1
           end
         end
       end
       
-      def next_offset(offset, line_offset, line_text)
-        if offset == line_offset + line_text.length
-          offset + 1
+      def next_offset(chars_offset, chars_line_offset, line_text)
+        if chars_offset == chars_line_offset + line_text.chars.length
+          chars_offset + 1
         else
-          future_text = line_text[(offset - line_offset)..-1]
+          future_text = line_text.chars[(chars_offset - chars_line_offset)..-1].to_s
           if future_text == nil or future_text == ""
-            line_offset + line_text.length
+            chars_line_offset + line_text.chars.length
           else
             if md = future_text.match(MOVE_FORWARD_RE)
-              offset + md.end(0)
+              chars_match_end = future_text.byte_offset_to_char_offset(md.end(0))
+              chars_offset + chars_match_end
             else
-              line_offset + line_text.length
+              chars_line_offset + line_text.chars.length
             end
           end
         end
@@ -45,18 +46,19 @@ module Redcar
         end
       end
       
-      def previous_offset(offset, line_offset, line_text)
-        if offset == line_offset
-          offset - 1
+      def previous_offset(chars_offset, chars_line_offset, line_text)
+        if chars_offset == chars_line_offset
+          chars_offset - 1
         else
-          future_text = line_text[0..(offset - line_offset - 1)].reverse
+          future_text = line_text.chars[0..(chars_offset - chars_line_offset - 1)].reverse.to_s
           if future_text == nil or future_text == ""
-            line_offset
+            chars_line_offset
           else
             if md = future_text.match(MOVE_FORWARD_RE)
-              offset - md.end(0)
+              chars_match_end = future_text.byte_offset_to_char_offset(md.end(0))
+              chars_offset - chars_match_end
             else
-              line_offset
+              chars_line_offset
             end
           end
         end
