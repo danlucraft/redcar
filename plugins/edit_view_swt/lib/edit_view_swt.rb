@@ -201,11 +201,11 @@ module Redcar
 
     def undo
       @undo_manager.undo
-      EditView.undo_sensitivity.recompute
-      EditView.redo_sensitivity.recompute
       unless @undo_manager.undoable?
         @undoable_override = false
       end
+      EditView.undo_sensitivity.recompute
+      EditView.redo_sensitivity.recompute
     end
 
     def undoable?
