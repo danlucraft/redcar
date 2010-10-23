@@ -237,6 +237,19 @@ module Redcar
       @undo_manager.end_compound_change
     end
 
+    def annotations(options = nil)
+      return @mate_text.annotations unless options
+      if options[:line]
+        @mate_text.annotationsOnLine(line + 1)
+      elsif options[:type]
+        annotations_of_type(options[:type])
+      end
+    end
+
+    def annotations_of_type(type)
+      annotations.select {|a| a.type == type }
+    end
+
     def add_annotation_type(name, image_path, rgb)
       rgb = Swt::Graphics::RGB.new(rgb[0], rgb[1], rgb[2])
       @mate_text.addAnnotationType(name, image_path, rgb)
@@ -244,6 +257,17 @@ module Redcar
 
     def add_annotation(annotation_name, line, text, start, length)
       @mate_text.addAnnotation(annotation_name, line, text, start, length)
+    end
+
+    def remove_annotation(mate_annotation)
+      @mate_text.removeAnnotation(mate_annotation)
+    end
+
+    def remove_all_annotations(options = nil)
+      return @mate_text.remove_all_annotations unless options
+      annotations(options).each do |ann|
+        remove_annotation(ann)
+      end
     end
 
     def create_document

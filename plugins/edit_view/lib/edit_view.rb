@@ -397,7 +397,9 @@ module Redcar
                                 :reset_undo,
                                 :cursor_offset, :cursor_offset=,
                                 :scroll_to_line, :compound,
-                                :begin_compound, :end_compound
+                                :begin_compound, :end_compound,
+                                :annotations, :remove_annotation,
+                                :remove_all_annotations
 
     def grammar
       @grammar
