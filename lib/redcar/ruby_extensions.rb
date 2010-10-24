@@ -35,6 +35,10 @@ class String
   def char_offset_to_byte_offset(char_offset)
     self.chars[0...char_offset].to_s.length
   end
+  
+  def to_java
+    java.lang.String.new(to_java_bytes, "UTF8")
+  end
 end
 
 class Object
