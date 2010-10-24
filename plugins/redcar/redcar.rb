@@ -660,23 +660,22 @@ Redcar.environment: #{Redcar.environment}
 
         button :go, "Go", "Return" do
           new_line_ix = line.value.to_i - 1
-          if new_line_ix < doc.line_count and new_line_ix >= 0
-            doc.cursor_offset = doc.offset_at_line(new_line_ix)
-            doc.scroll_to_line(new_line_ix)
-            win.close_speedbar
+          if new_line_ix < @doc.line_count and new_line_ix >= 0
+            @doc.cursor_offset = @doc.offset_at_line(new_line_ix)
+            @doc.scroll_to_line(new_line_ix)
+            @win.close_speedbar
           end
         end
 
-        def initialize(command)
+        def initialize(command, win)
           @command = command
+          @doc     = command.doc
+          @win     = win
         end
-
-        def doc; @command.doc; end
-        def win; @command.send(:win); end
       end
 
       def execute
-        @speedbar = GotoLineCommand::Speedbar.new(self)
+        @speedbar = GotoLineCommand::Speedbar.new(self, win)
         win.open_speedbar(@speedbar)
       end
     end
