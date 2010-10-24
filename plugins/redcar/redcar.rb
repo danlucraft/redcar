@@ -86,7 +86,7 @@ module Redcar
           tab = win.new_tab(Redcar::EditTab)
         else
           window = Redcar.app.new_window
-          tab = window.new_tab(Redcar::EditTab)          
+          tab = window.new_tab(Redcar::EditTab)
         end
         tab.title = "untitled"
         tab.focus
@@ -423,7 +423,7 @@ Redcar.environment: #{Redcar.environment}
         end
         doc.ensure_visible(doc.cursor_offset)
         doc.insert(doc.cursor_offset, "\n")
-        
+
       end
     end
 
@@ -626,15 +626,15 @@ Redcar.environment: #{Redcar.environment}
         cursor_ix = doc.cursor_offset
         if doc.selection?
           start_ix = doc.selection_range.begin
-          text = doc.selected_text                              
-    
+          text = doc.selected_text
+
           sorted_text = text.split("\n").sort().join("\n")
           doc.replace_selection(sorted_text)
           doc.cursor_offset = cursor_ix
         end
       end
     end
-    
+
     class DialogExample < Redcar::Command
       def execute
       	builder = Menu::Builder.new do
@@ -772,7 +772,7 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+W",       CloseTabCommand
         link "Cmd+Shift+W", CloseWindowCommand
         link "Cmd+Q",       QuitCommand
-        
+
         #link "Cmd+Return",   MoveNextLineCommand
 
         link "Cmd+Shift+E", EditView::InfoSpeedbarCommand
@@ -848,7 +848,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+W",       CloseTabCommand
         link "Ctrl+Shift+W", CloseWindowCommand
         link "Ctrl+Q",       QuitCommand
-        
+
         link "Ctrl+Enter",   MoveNextLineCommand
 
         link "Ctrl+Shift+E", EditView::InfoSpeedbarCommand
@@ -903,7 +903,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+I",           OutlineView::OpenOutlineViewCommand
 
         link "Ctrl+Alt+S", Snippets::OpenSnippetExplorer
-        
+
         #Textmate.attach_keybindings(self, :linux)
 
         # map SelectTab<number>Command
@@ -980,7 +980,7 @@ Redcar.environment: #{Redcar.environment}
               item "Toggle Block Selection", ToggleBlockSelectionCommand
             end
           end
-          
+
           group(:priority => 40) do
             sub_menu "Document Navigation" do
               item "Goto Line", GotoLineCommand
