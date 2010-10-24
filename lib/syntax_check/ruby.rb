@@ -7,12 +7,13 @@ module Redcar
 
       def check(*args)
         path    = manifest_path(doc)
+        file    = File.basename(path)
         runtime = org.jruby.Ruby.global_runtime
         io      = java.io.FileInputStream.new(java.io.File.new(path))
         begin
-          runtime.parse_from_main(io, File.basename(path))
+          runtime.parse_from_main(io, file)
         rescue SyntaxError => e
-          create_syntax_error(doc, e.exception.message, File.basename(path)).annotate
+          create_syntax_error(doc, e.exception.message, file).annotate
         end
       end
 
