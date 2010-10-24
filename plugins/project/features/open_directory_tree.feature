@@ -32,4 +32,10 @@ Feature: Open directory tree
     Then the tree width should be the default
     When I restore the window size
     Then the tree width should be the default
-    
+ 
+# RSpec matchers have trouble with the multibyte string
+#  Scenario: Multibyte files and directories
+#    Given I will choose "plugins/project/spec/fixtures/multi-byte-files" from the "open_directory" dialog
+#    When I open a directory
+#    Then the window should have title "multi-byte-files"
+#    Then I should see "a경로,테스트.py" in the tree
