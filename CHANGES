@@ -23,6 +23,7 @@ Bugfixes:
  * Can load files with multi-byte characters and see them in the tree (Dan Lucraft)
  * Open in command line now works correctly with Terminal.app (Delisa Mason, Mat Schaffer)
  * Search-and-replace won't loop forever over a document anymore if it still finds the search string (Tim Felgentreff)
+ * Goto line command works again (Dan Lucraft)
 
 New APIs:
  * after_save can be implemented by plugins to run code after an edit view was saved (Tim Felgentreff)
