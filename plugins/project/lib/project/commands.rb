@@ -158,6 +158,7 @@ module Redcar
         else
           FileSaveAsCommand.new.run
         end
+        tab.update_for_file_changes
       end
     end
 
@@ -286,8 +287,11 @@ module Redcar
           ::Spoon.spawn(app, *options)
         else
           # TODO: This really needs proper escaping.
-          options = options.map {|o| "\"#{o}\""}.join(' ')
-          puts "Running: #{app} #{options}"
+          if options
+            options = options.map {|o| "\"#{o}\""}.join(' ')
+          else
+            options = ""
+          end
           Thread.new do
             system("#{app} #{options}")
             puts "  Finished: #{app} #{options}"
@@ -303,7 +307,8 @@ module Redcar
         preferred = Manager.storage['preferred_file_browser']
         case Redcar.platform
         when :osx
-          run_application('open', '-a', 'finder', path)
+          # Spoon doesn't seem to like `open`
+          system('open', '-a', 'Finder', path)
         when :windows
           run_application('explorer.exe', path.gsub("/","\\"))
         when :linux
@@ -335,7 +340,20 @@ module Redcar
         preferred = Manager.storage['preferred_command_line']
         case Redcar.platform
         when :osx
-          run_application('open', path)
+          unless preferred
+            preferred = "Terminal"
+            Manager.storage['preferred_command_line'] = preferred
+          end
+          command = <<-BASH.gsub(/^\s{12}/, '')
+            osascript <<END
+              tell application "#{preferred}"
+                do script "cd \\\"#{path}\\\""
+                activate
+              end tell
+            END
+          BASH
+          # Spoon doesn't seem to work with `osascript`
+          system(command)
         when :windows
           run_application('start cmd.exe', '/kcd ' + path.gsub("/","\\"))
         when :linux

@@ -10,7 +10,7 @@ Given /^there is an edit tab containing "([^\"]*)"$/ do |contents|
   end
 end
 
-When /^I open a new edit tab$/ do 
+When /^I open a new edit tab$/ do
   Redcar::Top::NewCommand.new.run
 end
 
@@ -42,17 +42,17 @@ Then /^there should be (one|\d+) (.*) tabs?$/ do |num, tab_type|
   else
     num = num.to_i
   end
-  
+
   # in the model
   tabs = Redcar.app.focussed_window.notebooks.map {|nb| nb.tabs }.flatten
   tabs.length.should == num
-  
+
   # in the GUI
   case tab_type
   when "edit"
     tab_class = Redcar::EditTab
   end
-  
+
   tabs = get_tabs
   tabs.length.should == num
 end
@@ -64,7 +64,7 @@ Then /^the edit tab should have the focus$/ do
   edit_tabs.first.controller.edit_view.mate_text.get_text_widget.is_focus_control?.should be_true
 end
 
-Then /^there should be no open tabs$/ do 
+Then /^there should be no open tabs$/ do
   get_tab_folder.getItems.to_a.length.should == 0
 end
 
@@ -89,4 +89,7 @@ Then /^my active tab should be "([^"]*)"$/ do |name|
   focussed_tab.title.should == name
 end
 
+Then /^my active tab should have an "([^"]*)" icon$/ do |arg1|
+  focussed_tab.icon.should == :"#{arg1}"
+end
 

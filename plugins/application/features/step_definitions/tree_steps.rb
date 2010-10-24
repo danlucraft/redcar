@@ -30,6 +30,15 @@ When /^I activate the "([^"]*)" node in the tree$/ do |node_text|
   node       = find_node_with_text(mirror.top, node_text)
 
   node.should_not be_nil
-  
+
   controller.activated(model, node)
+end
+
+When /^I rename the "([^"]*)" node in the tree$/ do |node_text|
+  controller = focussed_tree.tree_controller
+  mirror     = focussed_tree.tree_mirror
+  node       = find_node_with_text(mirror.top, node_text)
+
+  node.should_not be_nil
+  controller.single_rename(focussed_tree, node)
 end
