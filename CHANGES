@@ -11,6 +11,7 @@ Enhancements:
  * The Mac OS X app bundle comes with assets bundled (Tim Felgentreff)
  * The Runnables tree now nests runnables depending on slashes in the type definition (Tim Felgentreff)
  * Deleting or moving a file updates the tab title correctly. (Delisa Mason)
+ * Paired characters are not inserted if it looks like you are closing a pair (Dan Lucraft)
 
 Bugfixes
 
