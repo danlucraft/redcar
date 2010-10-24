@@ -9,6 +9,7 @@ module Redcar
     end
 
     def update_for_file_changes
+      old_icon = @icon
       doc = @edit_view.document
       if File.exists?(doc.path)
         @icon = :file if icon != :file
@@ -19,6 +20,7 @@ module Redcar
           close
         end
       end
+      notify_listeners(:changed_icon, @icon) if old_icon != @icon
     end
 
     def create_edit_view
