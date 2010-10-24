@@ -793,6 +793,7 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+Shift+I", AutoIndenter::IndentCommand
         link "Cmd+L",       GotoLineCommand
         link "Cmd+F",       DocumentSearch::SearchForwardCommand
+        link "Cmd+H",       DocumentSearch::SearchAndReplaceCommand
         #link "Cmd+Shift+F", DocumentSearch::RepeatPreviousSearchForwardCommand
         link "Cmd+Ctrl+F",  DocumentSearch::SearchAndReplaceCommand
         link "Cmd+Shift+F", Redcar::FindInProject::OpenSearch
@@ -869,6 +870,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+[", AutoIndenter::IndentCommand
         link "Ctrl+L",       GotoLineCommand
         link "Ctrl+F",       DocumentSearch::SearchForwardCommand
+        link "Ctrl+H",       DocumentSearch::SearchAndReplaceCommand
         link "F3",           DocumentSearch::RepeatPreviousSearchForwardCommand
         link "Ctrl+Shift+F", Redcar::FindInProject::OpenSearch
         link "Ctrl+A",       SelectAllCommand
