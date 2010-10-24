@@ -252,8 +252,8 @@ Then /^the content? should be:$/ do |string|
 end
 
 
-When /^I type "([^"]*)"$/ do |text|
-  text = text.gsub("\\t", "\t").gsub("\\n", "\n")
+When /^I type "((?:[^"]|\\")*)"$/ do |text|
+  text = text.gsub("\\t", "\t").gsub("\\n", "\n").gsub("\\\"", "\"")
   text.split(//).each do |letter|
     edit_view = Redcar::EditView.focussed_edit_view
     edit_view.type_character(letter[0])
