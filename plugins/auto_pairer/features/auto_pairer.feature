@@ -5,6 +5,14 @@ Feature: Automatically insert paired characters
     And I type "\""
     Then the contents should be "\"<c>\""
     
+  Scenario: Don't insert quote mark if we're already open
+    When I open a new edit tab
+    And I replace the contents with "foo \" bár q"
+    And I move to the end of the line
+    And I move left
+    When I type "\""
+    Then the contents should be "foo \" bár \"q"
+    
   Scenario: Inserts parentheses
     When I open a new edit tab
     And I type "("
