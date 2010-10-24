@@ -11,13 +11,15 @@ module Redcar
     def update_for_file_changes
       old_icon = @icon
       doc = @edit_view.document
-      if doc and doc.path and File.exists?(doc.path)
-        @icon = :file if icon != :file
-      else
-        if doc.modified?
-          @icon = :"exclamation"
+      if doc and doc.path
+        if File.exists?(doc.path)
+          @icon = :file if icon == :exclamation
         else
-          close
+          if doc.modified?
+            @icon = :exclamation
+          else
+            close
+          end
         end
       end
       notify_listeners(:changed_icon, @icon) if old_icon != @icon
