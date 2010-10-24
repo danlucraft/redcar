@@ -19,6 +19,9 @@ module Redcar
 
     def self.menus
       Redcar::Menu::Builder.build do
+        sub_menu "File" do
+          item "Web Preview", :command => WebBookmarks::FileWebPreview, :priority => 8
+        end
         sub_menu "Edit" do
           sub_menu "Document Navigation" do
             item "Open Browser Bar", :command => WebBookmarks::OpenBrowserBar, :priority => 5

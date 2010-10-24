@@ -21,20 +21,16 @@ module Redcar
       end
 
       def bookmarks_files_paths
-         @project.config_files("web_bookmarks.json")
+         @project.config_files(BOOKMARKS_FILE)
       end
 
       def parse_url(url)
         url.gsub("__PROJECT_PATH__",@project.path)
       end
 
-      def title
-        TREE_TITLE
-      end
+      def title; TREE_TITLE; end
 
-      def top
-        load
-      end
+      def top; load; end
 
       def load
         bookmarks = []

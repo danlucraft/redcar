@@ -1,3 +1,4 @@
+
 module Redcar
   class WebBookmarks
 
@@ -18,6 +19,17 @@ module Redcar
         if @display_bar and
           WebBookmarks.storage['show_browser_bar_on_start']
           WebBookmarks::OpenBrowserBar.new.run
+        end
+      end
+    end
+    
+    class FileWebPreview < Redcar::EditTabCommand
+      def execute
+        path  = doc.mirror.path
+        if File.exists?(path)
+          name = "Preview: " +File.basename(path)
+          url  = "file://" + path
+          DisplayWebContent.new(name,url).run
         end
       end
     end
