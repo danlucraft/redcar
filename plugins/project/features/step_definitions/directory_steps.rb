@@ -11,14 +11,6 @@ When /^I refresh the directory tree$/ do
   Redcar::Project::Manager.focussed_project.refresh
 end
 
-When /^I rename "([^"]*)" to "([^"]*)" in the project tree$/ do |node_text, new_name|
-  tree       = Redcar.app.focussed_window.treebook.focussed_tree
-  controller = tree.tree_controller
-  mirror     = tree.tree_mirror
-  node       = find_node_with_text(mirror.top, node_text)
-  controller.rename(tree,node)
-end
-
 When /^I move the myproject fixture away$/ do
   FileUtils.mv("plugins/project/spec/fixtures/myproject",
                "plugins/project/spec/fixtures/myproject.bak")
