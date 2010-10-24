@@ -11,7 +11,7 @@ module Redcar
     def update_for_file_changes
       old_icon = @icon
       doc = @edit_view.document
-      if File.exists?(doc.path)
+      if doc and doc.path and File.exists?(doc.path)
         @icon = :file if icon != :file
       else
         if doc.modified?
