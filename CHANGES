@@ -10,14 +10,16 @@ Enhancements:
  * Redcar can be started without opening a window (for boot-time startup) (Tim Felgentreff)
  * The Mac OS X app bundle comes with assets bundled (Tim Felgentreff)
  * The Runnables tree now nests runnables depending on slashes in the type definition (Tim Felgentreff)
-
+ * Deleting or moving a file updates the tab title correctly. (Delisa Mason)
+ * Paired characters are not inserted if it looks like you are closing a pair (Dan Lucraft)
 
 Bugfixes
 
  * New files now open in the project window which is the closest ancestor (Delisa Mason)
  * Search-and-replace now operates on the user-selected text as well, not only after it (Tim Felgentreff)
  * Word back/forward movement is not confused by multi-byte characters. (Dan Lucraft)
-
+ * Can load files with multi-byte characters and see them in the tree (Dan Lucraft)
+ * Open in command line now works correctly with Terminal.app (Delisa Mason, Mat Schaffer)
 
 Version 0.7 (4 October 2010)
 ============================

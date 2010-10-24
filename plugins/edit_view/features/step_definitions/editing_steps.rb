@@ -169,7 +169,7 @@ Then /^the cursor should be on line (\d+)$/ do |num|
   doc.cursor_line.should == num.to_i
 end
 
-When /^I replace the contents with "([^\"]*)"$/ do |contents|
+When /^I replace the contents with "((?:[^\"]|\\")*)"$/ do |contents|
   contents = unescape_text(contents)
   doc = Redcar::EditView.focussed_edit_view_document
   cursor_offset = (contents =~ /<c>/)
@@ -252,8 +252,8 @@ Then /^the content? should be:$/ do |string|
 end
 
 
-When /^I type "([^"]*)"$/ do |text|
-  text = text.gsub("\\t", "\t").gsub("\\n", "\n")
+When /^I type "((?:[^"]|\\")*)"$/ do |text|
+  text = text.gsub("\\t", "\t").gsub("\\n", "\n").gsub("\\\"", "\"")
   text.split(//).each do |letter|
     edit_view = Redcar::EditView.focussed_edit_view
     edit_view.type_character(letter[0])
