@@ -158,6 +158,7 @@ module Redcar
         else
           FileSaveAsCommand.new.run
         end
+        tab.update_for_file_changes
       end
     end
 

@@ -2,10 +2,10 @@
 module Redcar
   class Window
     DEFAULT_TITLE = "Redcar"
-    
+
     include Redcar::Model
     include Redcar::Observable
-    
+
     # All instantiated windows
     def self.all
       @all ||= []
@@ -14,7 +14,7 @@ module Redcar
     attr_reader :notebooks, :notebook_orientation
     attr_reader :treebook
     attr_reader :speedbar
-    
+
     def initialize
       Window.all << self
       @visible   = false
@@ -43,15 +43,15 @@ module Redcar
     def visible?
       @visible
     end
-    
+
     def fullscreen
       controller.fullscreen
     end
-    
+
     def fullscreen=(value)
       controller.fullscreen = value
     end
-    
+
     # Create a new notebook in this window.
     #
     # @events [(:new_notebook, notebook)]
@@ -65,7 +65,7 @@ module Redcar
       attach_notebook_listeners(notebook)
       notify_listeners(:new_notebook, notebook)
     end
-    
+
     def attach_notebook_listeners(notebook)
       notebook.add_listener(:tab_focussed) do |tab|
         notify_listeners(:tab_focussed, tab)
@@ -95,7 +95,7 @@ module Redcar
         end
       end
     end
-    
+
     def close_notebook
       return if @notebooks.length == 1
       first_notebook, second_notebook = *@notebooks
@@ -106,42 +106,42 @@ module Redcar
       self.focussed_notebook = first_notebook
       notify_listeners(:notebook_removed, second_notebook)
     end
-    
+
     def focussed_notebook
       @focussed_notebook
     end
-    
+
     def focussed_notebook_tab
       @focussed_notebook.focussed_tab
     end
-    
+
     def focussed_notebook_tab_document
       focussed_notebook_tab.document if focussed_notebook_tab
-    end    
-    
+    end
+
     def focussed_notebook=(notebook)
       if notebook != @focussed_notebook
         set_focussed_notebook(notebook)
         notify_listeners(:notebook_focussed, notebook)
       end
     end
-    
+
     def set_focussed_notebook(notebook)
       @focussed_notebook = notebook
     end
-    
+
     def nonfocussed_notebook
       @notebooks.find {|nb| nb != @focussed_notebook }
     end
-    
+
     # Sets the orientation of the notebooks.
     #
-    # @param [:horizontal, :vertical] 
+    # @param [:horizontal, :vertical]
     def notebook_orientation=(key)
       @notebook_orientation = key
       notify_listeners(:notebook_orientation_changed, key)
     end
-    
+
     # Sets the orientation of the notebooks to whatever it is not currently.
     def rotate_notebooks
       if notebook_orientation == :horizontal
@@ -150,12 +150,12 @@ module Redcar
         self.notebook_orientation = :horizontal
       end
     end
-    
+
     # Delegates to the new_tab method in the Window's active Notebook.
     def new_tab(*args, &block)
       focussed_notebook.new_tab(*args, &block)
     end
-    
+
     attr_reader :menu, :toolbar, :keymap
 
     def menu=(menu)
@@ -173,30 +173,41 @@ module Redcar
     def popup_menu(menu)
       notify_listeners(:popup_menu, menu)
     end
-    
+
     def popup_menu_with_numbers(menu)
       notify_listeners(:popup_menu_with_numbers, menu)
     end
-    
+
     def refresh_menu
       notify_listeners(:refresh_menu)
     end
-    
+
     def refresh_toolbar
       notify_listeners(:refresh_toolbar)
     end
-    
+
     # Focus the Window.
     def focus
       Redcar.app.events.ignore(:window_focus, self) do
         notify_listeners(:focussed, self)
+        refresh_tabs
+      end
+    end
+
+    # Check all tabs for underlying files; mark if missing,
+    # Close if unmodified
+    def refresh_tabs
+      all_tabs.each do |tab|
+        if tab.is_a?(Redcar::EditTab)
+          tab.update_for_file_changes
+        end
       end
     end
 
     def close
       Redcar.app.events.ignore(:window_close, self) do
         notify_listeners(:about_to_close, self)
-        notebooks.each do |notebook| 
+        notebooks.each do |notebook|
           notebook.tabs.each {|tab| tab.close }
         end
         if notebooks.length > 1
@@ -205,11 +216,11 @@ module Redcar
         notify_listeners(:closed, self)
       end
     end
-    
+
     def inspect
       "#<Redcar::Window \"#{title}\">"
     end
-    
+
     def open_speedbar(speedbar)
       if @speedbar
         close_speedbar
@@ -217,7 +228,7 @@ module Redcar
       @speedbar = speedbar
       notify_listeners(:speedbar_opened, speedbar)
     end
-    
+
     def close_speedbar
       notify_listeners(:speedbar_closed, @speedbar)
       @speedbar.close if @speedbar.respond_to?(:close)
@@ -226,7 +237,7 @@ module Redcar
         tab.focus
       end
     end
-    
+
     def all_tabs
       notebooks.map {|nb| nb.tabs }.flatten
     end
