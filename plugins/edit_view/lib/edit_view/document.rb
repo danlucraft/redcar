@@ -62,20 +62,29 @@ module Redcar
         @controllers.values.flatten.uniq
       end
     end
-    
-    def save!
-      # Call the before_save callback on any plugins that need it
-      #
-      # Pass self as an argument since plugins that use before_save
-      # will most likely need access to the document being saved.
+
+    # Call the before_save and after_save callbacks on any plugins that need it
+    #
+    # Pass self as an argument since plugins that use before_save
+    # will most likely need access to the document being saved.
+    def between_save_hooks
       Redcar.plugin_manager.objects_implementing(:before_save).each do |object|
         object.before_save(self)
       end
-      @mirror.commit(to_s)
-      @edit_view.reset_last_checked
-      set_modified(false)
+      yield
+      Redcar.plugin_manager.objects_implementing(:after_save).each do |object|
+        object.after_save(self)
+      end
     end
-    
+
+    def save!
+      between_save_hooks do
+        @mirror.commit(to_s)
+        @edit_view.reset_last_checked
+        set_modified(false)
+      end
+    end
+
     def modified?
       @modified
     end

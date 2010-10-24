@@ -134,11 +134,10 @@ Feature: Replace in file
 
   Scenario: The Search-and-Replace Speedbar should get initialized with the currently selected text
     When I replace the contents with "Foo\nBar\nFoo"
-    And I move the cursor to 0
-    And I select from 4 to 6
-    And I run the command DocumentSearch::SearchAndReplaceCommand
+    And I select from 4 to 7
+    When I run the command DocumentSearch::SearchAndReplaceCommand
     Then the "Search" field in the speedbar should have text "Bar"
-    And I type "Foo" into the "Replace" field in the speedbar
+    When I type "Foo" into the "Replace" field in the speedbar
     And I press "Replace" in the speedbar
     Then the contents should be "Foo\nFoo\nFoo"
 

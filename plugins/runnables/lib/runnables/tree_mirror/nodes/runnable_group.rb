@@ -2,39 +2,17 @@ module Redcar
   class Runnables
     class RunnableGroup
       include Redcar::Tree::Mirror::NodeMirror
+      attr_reader :text
 
-      def initialize(name,path,runnables)
-        @children = []
-        @name = name
-        if runnables.any?
-          group = []
-          type = nil
-          i = 0
-          runnables.map.sort_by{|r|r["type"]||""}.each do |runnable|
-            if runnable["type"] == nil or runnable["type"] == ""
-              @children << Runnable.new(runnable["name"],path,runnable)
-            elsif type.nil?
-              type = runnable["type"]
-              group << runnable
-            elsif type == runnable["type"]
-              group << runnable
-            end
-            if i == runnables.length - 1 or type != runnable["type"]
-              if type == name
-                group.each {|r| @children << Runnable.new(r["name"],path,r)}
-              else
-                type = type[name.length,type.length] if type =~ /^#{name}/
-                type = type[1,type.length] if type =~ /^\//
-                if type == ""
-                  @children << Runnable.new(runnable["name"],path,runnable)
-                else
-                  @children << RunnableTypeGroup.new(type,path,group) unless group.size == 0
-                end
-              end
-              type = runnable["type"]
-              group = [runnable]
-            end
-            i = i + 1
+      def initialize(name, path, runnables)
+        @text      = name
+        @runnables = []
+        @subgroups = {}
+        runnables.each do |runnable|
+          if runnable["type"].nil? or runnable["type"].empty?
+            @runnables << Runnable.new(runnable["name"], path, runnable)
+          else
+            type_group(runnable["type"]).add_runnable Runnable.new(runnable["name"], path, runnable)
           end
         end
       end
@@ -43,16 +21,24 @@ module Redcar
         false
       end
 
-      def text
-        @name
-      end
-
       def icon
         :file
       end
 
+      # Sort the subgroups first, the runnables after that
       def children
-        @children
+        @children ||= (@subgroups.sort_by(&:first).collect(&:last) + @runnables.sort_by(&:text))
+      end
+
+      # Return the type group that corresponds to the passed name-path, or self, if name is empty
+      # If a child with the specified path does not exist, create it and clear the children cache
+      def type_group(name)
+        names = name.split("/")
+        unless @subgroups[names.first]
+          @children = nil
+          @subgroups[names.first] = RunnableTypeGroup.new(names.first)
+        end
+        @subgroups[names.first].type_group(names[1..-1].join)
       end
     end
   end

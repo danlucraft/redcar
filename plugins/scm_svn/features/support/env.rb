@@ -1,6 +1,3 @@
-RequireSupportFiles File.dirname(__FILE__) + "/../../../application/features/"
-RequireSupportFiles File.dirname(__FILE__) + "/../../../project/features/"
-RequireSupportFiles File.dirname(__FILE__) + "/../../../runnables/features/"
 require File.join(Redcar.asset_dir, "svnkit")
 require 'java'
 import 'org.tmatesoft.svn.core.io.SVNRepositoryFactory'

@@ -113,7 +113,7 @@ module Redcar
           Application::Dialog.message_box("The declarations file 'tags' has not been generated yet.")
           return
         end
-        matches = find_tag(tags_path, token)
+        matches = find_tag(tags_path, token).uniq
         case matches.size
         when 0
           Application::Dialog.message_box("There is no declaration for '#{token}' in the 'tags' file.")

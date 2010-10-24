@@ -85,16 +85,21 @@ module Redcar
               end_mark_pair = find_mark_pair_by_end(start_offset)
               if end_mark_pair and end_mark_pair.text == text
                 @type_over_end = true
-                #@buffer.parser.stop_parsing
               end
             end
             # Insert matching ends
-            if !@type_over_end and @rules.include?(text) and !@ignore_insert and !@done
-              @insert_end = true
-              if document.selection?
-                @selected_text = document.selected_text
+            if !@type_over_end and @rules.include?(text) and !@ignore_insert and !@done and
+              line_num = document.line_at_offset(start_offset)
+              line = document.get_line(line_num)
+              offset_of_line = document.offset_at_line(line_num)
+              pre_text = line.chars[0..(start_offset-offset_of_line)].to_s
+              equal_ends = (@rules[text] == text)
+              if !equal_ends or pre_text.scan(text).length % 2 == 0
+                @insert_end = true
+                if document.selection?
+                  @selected_text = document.selected_text
+                end
               end
-#              @buffer.parser.stop_parsing
             end
           end
         end

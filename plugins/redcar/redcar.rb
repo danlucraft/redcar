@@ -86,7 +86,7 @@ module Redcar
           tab = win.new_tab(Redcar::EditTab)
         else
           window = Redcar.app.new_window
-          tab = window.new_tab(Redcar::EditTab)          
+          tab = window.new_tab(Redcar::EditTab)
         end
         tab.title = "untitled"
         tab.focus
@@ -423,7 +423,7 @@ Redcar.environment: #{Redcar.environment}
         end
         doc.ensure_visible(doc.cursor_offset)
         doc.insert(doc.cursor_offset, "\n")
-        
+
       end
     end
 
@@ -626,15 +626,15 @@ Redcar.environment: #{Redcar.environment}
         cursor_ix = doc.cursor_offset
         if doc.selection?
           start_ix = doc.selection_range.begin
-          text = doc.selected_text                              
-    
+          text = doc.selected_text
+
           sorted_text = text.split("\n").sort().join("\n")
           doc.replace_selection(sorted_text)
           doc.cursor_offset = cursor_ix
         end
       end
     end
-    
+
     class DialogExample < Redcar::Command
       def execute
       	builder = Menu::Builder.new do
@@ -697,6 +697,12 @@ Redcar.environment: #{Redcar.environment}
           notebook = Redcar.app.focussed_window_notebook
           notebook.tabs[tab_num-1].focus if notebook.tabs[tab_num-1]
         end
+      end
+    end
+
+    class ToggleFullscreen < Command
+      def execute
+        Redcar.app.focussed_window.fullscreen = !Redcar.app.focussed_window.fullscreen
       end
     end
 
@@ -766,7 +772,7 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+W",       CloseTabCommand
         link "Cmd+Shift+W", CloseWindowCommand
         link "Cmd+Q",       QuitCommand
-        
+
         #link "Cmd+Return",   MoveNextLineCommand
 
         link "Cmd+Shift+E", EditView::InfoSpeedbarCommand
@@ -787,6 +793,7 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+Shift+I", AutoIndenter::IndentCommand
         link "Cmd+L",       GotoLineCommand
         link "Cmd+F",       DocumentSearch::SearchForwardCommand
+        link "Cmd+H",       DocumentSearch::SearchAndReplaceCommand
         #link "Cmd+Shift+F", DocumentSearch::RepeatPreviousSearchForwardCommand
         link "Cmd+Ctrl+F",  DocumentSearch::SearchAndReplaceCommand
         link "Cmd+Shift+F", Redcar::FindInProject::OpenSearch
@@ -810,6 +817,7 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+Shift+]",     SwitchTabUpCommand
         link "Ctrl+Shift+[",    MoveTabDownCommand
         link "Ctrl+Shift+]",    MoveTabUpCommand
+        link "F11",             ToggleFullscreen
         link "Cmd+Alt+I",       ToggleInvisibles
         link "Ctrl+R",          Runnables::RunEditTabCommand
         link "Cmd+I",           OutlineView::OpenOutlineViewCommand
@@ -841,7 +849,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+W",       CloseTabCommand
         link "Ctrl+Shift+W", CloseWindowCommand
         link "Ctrl+Q",       QuitCommand
-        
+
         link "Ctrl+Enter",   MoveNextLineCommand
 
         link "Ctrl+Shift+E", EditView::InfoSpeedbarCommand
@@ -862,6 +870,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+[", AutoIndenter::IndentCommand
         link "Ctrl+L",       GotoLineCommand
         link "Ctrl+F",       DocumentSearch::SearchForwardCommand
+        link "Ctrl+H",       DocumentSearch::SearchAndReplaceCommand
         link "F3",           DocumentSearch::RepeatPreviousSearchForwardCommand
         link "Ctrl+Shift+F", Redcar::FindInProject::OpenSearch
         link "Ctrl+A",       SelectAllCommand
@@ -891,10 +900,12 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+Page Up",   MoveTabDownCommand
         link "Ctrl+Shift+Page Down", MoveTabUpCommand
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
+        link "F11",              ToggleFullscreen
         link "Ctrl+Alt+I",       ToggleInvisibles
         link "Ctrl+I",           OutlineView::OpenOutlineViewCommand
 
         link "Ctrl+Alt+S", Snippets::OpenSnippetExplorer
+
         #Textmate.attach_keybindings(self, :linux)
 
         # map SelectTab<number>Command
@@ -919,10 +930,9 @@ Redcar.environment: #{Redcar.environment}
         item "New Notebook", :command => NewNotebookCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "book--plus.png"), :barname => :edit
         item "Close Notebook", :command => CloseNotebookCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "book--minus.png"), :barname => :edit
       end
-
     end
 
-    def self.menus
+    def self.menus(window)
       Menu::Builder.build do
         sub_menu "File", :priority => :first do
           group(:priority => :first) do
@@ -972,7 +982,7 @@ Redcar.environment: #{Redcar.environment}
               item "Toggle Block Selection", ToggleBlockSelectionCommand
             end
           end
-          
+
           group(:priority => 40) do
             sub_menu "Document Navigation" do
               item "Goto Line", GotoLineCommand
@@ -1005,6 +1015,7 @@ Redcar.environment: #{Redcar.environment}
             item "Font Size", SelectFontSize
             item "Theme", SelectTheme
           end
+          item "Toggle Fullscreen", :command => ToggleFullscreen, :type => :check, :active => window ? window.fullscreen : false
           separator
           item "New Notebook", NewNotebookCommand
           item "Close Notebook", CloseNotebookCommand

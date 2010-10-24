@@ -17,6 +17,8 @@ require "project/adapters/remote_protocols/ftp"
 require "project/adapters/local"
 require "project/adapters/remote"
 
+require "project/support/trash"
+
 require "project/commands"
 require "project/dir_mirror"
 require "project/dir_controller"
