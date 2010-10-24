@@ -1,5 +1,4 @@
 require 'java'
-require 'ruby_syntax_error'
 
 module Redcar
   module SyntaxCheck
@@ -13,12 +12,15 @@ module Redcar
         begin
           runtime.parse_from_main(io, File.basename(path))
         rescue SyntaxError => e
-          @error = e.exception.message
+          create_syntax_error(doc, e.exception.message, File.basename(path)).annotate
         end
+      end
 
-        if @error
-          RubySyntaxError.new(doc, :message => @error, :file => File.basename(path)).annotate
-        end
+      def create_syntax_error(doc, message, file)
+        message  =~ /#{Regexp.escape(file)}:(\d+):(.*)/
+        line     = $1.to_i - 1
+        message  = $2
+        SyntaxCheck::Error.new(doc, line, message)
       end
     end
   end
