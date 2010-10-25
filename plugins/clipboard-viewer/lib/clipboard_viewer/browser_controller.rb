@@ -5,7 +5,7 @@ module Redcar
       include HtmlController
 
       def initialize(list)
-        @list = list
+        @list = list.to_a.reverse
       end
 
       def title

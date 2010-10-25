@@ -15,6 +15,11 @@ h1 {
 
 .content {
   margin: 10px;
+  font-size: 1.2em;
+}
+
+td.copied-item pre {
+  font-family: monospace;
 }
 
 .refresh {
