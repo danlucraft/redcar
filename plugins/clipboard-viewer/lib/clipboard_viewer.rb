@@ -35,8 +35,8 @@ module Redcar
 
     class OpenClipboardBrowser < Redcar::Command
 
-      def initialize(list)
-        @list = list
+      def initialize(list=Redcar.app.clipboard)
+        @list = list || []
       end
 
       def execute
