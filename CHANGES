@@ -33,6 +33,7 @@ Bugfixes:
 
 New APIs:
  * after_save can be implemented by plugins to run code after an edit view was saved (Tim Felgentreff)
+ * before_web_refresh can be implemented by plugins to run code before a HtmlTab is refreshed (Delisa Mason)
 
 Version 0.7 (4 October 2010)
 ============================
