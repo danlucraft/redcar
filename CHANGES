@@ -19,6 +19,7 @@ Enhancements:
  * Clipboard History Viewer and Paster (Delisa Mason)
  * Web Preview files and Bookmarks (Delisa Mason)
  * -w commandline switch to block the prompt when piping into or opening files on an existing Redcar instance (Tim Felgentreff)
+ * 'Open Default App' project context menu item for opening any type of file (Jeremy Wentworth)
 
 Bugfixes:
 
