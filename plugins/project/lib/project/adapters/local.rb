@@ -62,7 +62,7 @@ module Redcar
 
         def delete(file)
           FileUtils.rm_rf(file) unless Trash.recycle(file)
-          Manager.delete_tab_for_path(file)
+          Manager.update_tab_for_path(file)
         end
 
         def load_contents(file)
