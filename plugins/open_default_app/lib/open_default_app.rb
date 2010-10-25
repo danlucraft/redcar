@@ -21,9 +21,13 @@ module Redcar
 
       def execute(options=nil)
         @path ||= options[:value]
+        begin
 		    file  = java::io::File.new(path)
         desktop = Desktop.get_desktop
     		desktop.open(file)
+        rescue Object => e
+          Application::Dialog.message_box("A default application could not be found for this type of file.")
+        end
       end
     end
 
