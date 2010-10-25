@@ -1,4 +1,6 @@
 
+require 'java'
+
 module Redcar
   class WebBookmarks
 
@@ -22,15 +24,21 @@ module Redcar
         end
       end
     end
-    
+
     class FileWebPreview < Redcar::EditTabCommand
       def execute
-        path  = doc.mirror.path
-        if File.exists?(path)
+        mirror  = doc.mirror
+        if mirror and path = mirror.path and File.exists?(path)
           name = "Preview: " +File.basename(path)
-          url  = "file://" + path
-          DisplayWebContent.new(name,url).run
+        else
+          name    = "Preview: (untitled)"
+          preview = java.io.File.createTempFile("preview","html")
+          preview.deleteOnExit
+          path    = preview.getAbsolutePath
+          File.open(path,'w') {|f| f.puts(doc.get_all_text)}
         end
+        url  = "file://" + path
+        DisplayWebContent.new(name,url).run
       end
     end
 
@@ -58,13 +66,13 @@ module Redcar
         window.open_speedbar(speedbar)
       end
     end
-    
+
     class AddBookmark < Redcar::ProjectCommand
       def initialize(url)
         @protocol = url.split("://")[0]
         @url      = url.split("://")[1]
       end
-      
+
       def execute
         @path = project.config_files(BOOKMARKS_FILE).detect { |pj|
            not pj.include?(Redcar.user_dir)
@@ -90,7 +98,7 @@ module Redcar
           end
         end
       end
-      
+
       def fill_field(name)
         title = "Add New Bookmark"
         msg   = "Choose a #{name} for this Bookmark"
