@@ -246,7 +246,7 @@ module Redcar
     class RevealInProjectCommand < ProjectCommand
       def execute
         tab = Redcar.app.focussed_window.focussed_notebook_tab
-        return unless tab.is_a?(EditTab)
+        return unless tab.is_a?(EditTab) && tab.edit_view.document.mirror
 
         path = tab.edit_view.document.mirror.path
         tree = project.tree
