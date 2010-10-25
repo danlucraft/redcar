@@ -41,9 +41,13 @@ module Redcar
       if ARGV.any?
         ARGV.each do |arg|
           if File.file?(arg) or File.directory?(arg)
-            if drb.open_item_drb(File.expand_path(arg)) != 'ok'
-              return
+            full_path = File.expand_path(arg)
+            if ARGV.include? "-w" and File.file?(arg)
+              drb_answer = drb.open_file_and_wait(full_path)
+            else
+              drb_answer = drb.open_item_drb(full_path)
             end
+            return unless drb_answer == 'ok'
           end
           if arg =~ /--untitled-file=(.*)/
             path = $1

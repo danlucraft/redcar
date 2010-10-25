@@ -68,7 +68,29 @@ module Redcar
         rescue Exception => e
           puts 'drb got exception:' + e.class + " " + e.message, e.backtrace
           raise e
-        end 
+        end
+      end
+
+      def open_file_and_wait(file)
+        semaphore = Mutex.new
+        handler = nil
+        tab = nil
+        Swt.sync_exec do
+          semaphore.lock
+          Project::Manager.restore_last_session if Redcar.app.windows.empty?
+          Project::Manager.open_file(file)
+          window = Redcar.app.focussed_window
+          window.controller.bring_to_front
+          tab = window.focussed_notebook_tab
+          handler = tab.add_listener(:close) { semaphore.unlock }
+        end
+        Thread.new(tab, handler) do
+          semaphore.synchronize { tab.remove_listener(handler) }
+        end.join # Wait until the tab's close event was fired
+        'ok'
+      rescue Exception => e
+        puts 'drb got exception:' + e.class + " " + e.message, e.backtrace
+        raise e
       end
       
     end
