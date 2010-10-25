@@ -20,6 +20,7 @@ Enhancements:
  * Web Preview files and Bookmarks (Delisa Mason)
  * -w commandline switch to block the prompt when piping into or opening files on an existing Redcar instance (Tim Felgentreff)
  * 'Open Default App' project context menu item for opening any type of file (Jeremy Wentworth)
+ * Changing to another tab reveals the associated file in the project tree (Johannes Wollert)
 
 Bugfixes:
 
