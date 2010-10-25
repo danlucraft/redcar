@@ -36,13 +36,13 @@ module Redcar
         map
       end
     end
-
+    
     def self.extensions_file;"comment_extensions.json";end
-
+    
     def self.comment_lib_path
       File.dirname(__FILE__) + "/../vendor/comment_lib.json"
     end
-
+    
     def self.comment_extension_paths
       project = Redcar::Project::Manager.focussed_project
       if project
@@ -143,7 +143,11 @@ module Redcar
       end
       
       def add_comment(line, offset)
-        line.clone.insert(offset, comment + " ")
+        if line.length < offset
+          line + " "*(offset - line.length) + comment + " "
+        else
+          line.clone.insert(offset, comment + " ")
+        end
       end
 
       def comment_insertion_point_for(line)
@@ -193,7 +197,10 @@ module Redcar
             
             (start_line..end_line).each do |line|
               text = doc.get_line(line)
-              insertion_column = [insertion_column, comment_insertion_point_for(text)].min
+              if text.length <= insertion_column + 1 and text =~ /^\s*$/
+              else
+                insertion_column = [insertion_column, comment_insertion_point_for(text)].min
+              end
               
               if line == start_point_line and selected
                 text = text[start_point_line_offset..-1]
