@@ -132,10 +132,11 @@ module Redcar
       end
 
       def comment_and_use_extra_space(text)
+        p [:comment_and_use_extra_space, text]
         unless text.split(//).length() < 1 or
-          text[0] == " " or text[0] == "\t"
+                text[0] == " " or text[0] == "\t"
           Comment.storage['insert_single_space'] and
-          text.split(//).length() > 2
+            text.split(//).length() > 2
         else
           false
         end
@@ -155,6 +156,9 @@ module Redcar
         range      = doc.selection_range
         start_line = doc.line_at_offset(range.first)
         end_line   = doc.line_at_offset(range.last)
+        if doc.offset_at_line(end_line) == (range.last) and start_line != end_line
+          end_line -= 1
+        end
         total_text = "" if selected
         doc.controllers(Redcar::AutoIndenter::DocumentController).first.disable do
           doc.compound do
@@ -179,7 +183,7 @@ module Redcar
             if selected
               tlength    = total_text.split(//).length() - 1
               offset     = doc.offset_at_line(start_line)
-              doc.set_selection_range(offset,offset+tlength)
+              doc.set_selection_range(offset+tlength, offset)
             end
           end
         end
