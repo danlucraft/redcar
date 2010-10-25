@@ -21,7 +21,13 @@ module Redcar
       end
 
       button :refresh, "Refresh", "F5" do
-        html_tab.controller.browser.refresh if html_tab
+        if tab = html_tab
+          url = tab.controller.browser.url.to_s
+          Redcar.plugin_manager.objects_implementing(:before_web_refresh).each do |obj|
+            obj.before_web_refresh(path)
+          end
+          tab.controller.browser.refresh
+        end
       end
 
       button :source, "Source", nil do
@@ -39,9 +45,9 @@ module Redcar
         tab.edit_view.reset_undo
         tab.focus
       end
-      
+
       button :add, "+", nil do
-        if tab = html_tab and 
+        if tab = html_tab and
           url = tab.controller.browser.url.to_s
           WebBookmarks::AddBookmark.new(url).run
         end
