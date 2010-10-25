@@ -139,14 +139,15 @@ module Redcar
         end
       end
       
-      def add_comment(line, offset=nil)
-        if offset and offset != 0
-          line.clone.insert(offset, comment + " ")
-        else
-          line.gsub(/^(\s*)([^\s])/, '\1' + comment + ' \2')
-        end
+      def add_comment(line, offset)
+        line.clone.insert(offset, comment + " ")
       end
 
+      def comment_insertion_point_for(line)
+        md = line.match(/^(\s*)([^\s])/)
+        md[1].length
+      end
+      
 	    def execute
         type = Comment.comment_map["#{tab.edit_view.grammar.gsub("\"","")}"]
         if type
@@ -181,24 +182,27 @@ module Redcar
           end_line -= 1
         end
         
-        
         doc.controllers(Redcar::AutoIndenter::DocumentController).first.disable do
           doc.compound do
             all_lines_are_already_commented = true
+            start_line_comment_offset       = nil
+            insertion_column                = selected ? cursor_line_offset : 1000
+            
             (start_line..end_line).each do |line|
               text = doc.get_line(line)
               if line == start_point_line and selected
                 text = text[start_point_line_offset..-1]
               end
+              insertion_column = [insertion_column, comment_insertion_point_for(text)].min
               
               unless starts_with_comment?(text)
                 all_lines_are_already_commented = false
               end
             end
             
-            (start_line..end_line).each do |line|
-              doc.replace_line(line) do |text|
-                if all_lines_are_already_commented
+            if all_lines_are_already_commented
+              (start_line..end_line).each do |line|
+                doc.replace_line(line) do |text|
                   new_text = if line == start_point_line and selected
                                strip_comment(text, start_point_line_offset)
                              else
@@ -211,11 +215,15 @@ module Redcar
                     cursor_offset -= diff
                   end
                   new_text
-                else
+                end
+              end
+            else
+              (start_line..end_line).each do |line|
+                doc.replace_line(line) do |text|
                   new_text = if line == start_point_line and selected
                                add_comment(text, start_point_line_offset)
                              else
-                               add_comment(text)
+                               add_comment(text, insertion_column)
                              end
                   diff = new_text.length - text.length
                   if cursor_offset < selection_offset

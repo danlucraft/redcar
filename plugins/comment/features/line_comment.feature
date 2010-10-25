@@ -1,7 +1,6 @@
 Feature: Commenting lines by prefixing a comment string
 
   Background:
-    Given insert single space after comment is disabled
     When I open a new edit tab
 
   Scenario: Commenting a single line
@@ -97,4 +96,18 @@ Feature: Commenting lines by prefixing a comment string
     When I toggle comment lines
     Then the contents should be "Tw<s>o pieces\nof<c> code"
 
+  Scenario: Commenting several lines, with mismatched indentation, beginning in the start
+    When I replace the contents with "    def foo\n      dfo\n    sdfj\n  asdf\nasdf"
+    And I switch the language to "Ruby"
+    And I select from 0 to 40
+    And I toggle comment lines
+    Then the contents should be "<s>#     def foo\n#       dfo\n#     sdfj\n#   asdf\n# as<c>df"
+
+  # This is pretty damn marginal, and I'm tired...
+  #Scenario: Commenting several lines, with mismatched indentation, beginning in the middle
+  #  When I replace the contents with "    def foo\n      dfo\n    sdfj\n  asdf\nasdf"
+  #  And I switch the language to "Ruby"
+  #  And I select from 6 to 40
+  #  And I toggle comment lines
+  #  Then the contents should be "    de<s># f foo\n    #       dfo\n    #     sdfj\n    #  asdf\n    # as<c>df"
 
