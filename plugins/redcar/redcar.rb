@@ -569,30 +569,34 @@ Redcar.environment: #{Redcar.environment}
         cursor_line  = doc.cursor_line
         cursor_line_offset = doc.cursor_line_offset
         diff = 0
-        doc.controllers(AutoIndenter::DocumentController).first.disable do
-          doc.selection_ranges.each do |range|
-            doc.delete(range.begin - diff, range.count)
-            diff += range.count
-          end
-          texts = Redcar.app.clipboard.last.dup
-          texts.each_with_index do |text, i|
-            line_ix = start_line + i
-            if line_ix == doc.line_count
-              doc.insert(doc.length, "\n" + " "*line_offset)
-            else
-              line = doc.get_line(line_ix).chomp
-              if line.length < line_offset
-                doc.insert(
-                doc.offset_at_inner_end_of_line(line_ix),
-                " "*(line_offset - line.length)
-                )
-              end
+        doc.controllers(AutoPairer::DocumentController).first.disable do
+          doc.controllers(AutoIndenter::DocumentController).first.disable do
+            doc.controllers(AutoCompleter::DocumentController).first.start_modification
+            doc.selection_ranges.each do |range|
+              doc.delete(range.begin - diff, range.count)
+              diff += range.count
             end
-            doc.insert(
-            doc.offset_at_line(line_ix) + line_offset,
-            text
-            )
-            doc.cursor_offset = doc.offset_at_line(line_ix) + line_offset + text.length
+            texts = Redcar.app.clipboard.last.dup
+            texts.each_with_index do |text, i|
+              line_ix = start_line + i
+              if line_ix == doc.line_count
+                doc.insert(doc.length, "\n" + " "*line_offset)
+              else
+                line = doc.get_line(line_ix).chomp
+                if line.length < line_offset
+                  doc.insert(
+                  doc.offset_at_inner_end_of_line(line_ix),
+                  " "*(line_offset - line.length)
+                  )
+                end
+              end
+              doc.insert(
+              doc.offset_at_line(line_ix) + line_offset,
+              text
+              )
+              doc.cursor_offset = doc.offset_at_line(line_ix) + line_offset + text.length
+            end
+            doc.controllers(AutoCompleter::DocumentController).first.end_modification
           end
         end
       end
@@ -1048,7 +1052,7 @@ Redcar.environment: #{Redcar.environment}
           end
         end
         sub_menu "Help", :priority => :last do
-          group(:priority => :first) do
+          group(:priority => :last) do
             item "About", AboutCommand
             item "New In This Version", ChangelogCommand
           end
