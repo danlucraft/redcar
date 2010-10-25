@@ -9,26 +9,10 @@ module Redcar
           puts 'warning--not starting listener (perhaps theres another Redcar already open?)' + e + ' ' + address
         end
       end
-    
-      def open_item_untitled(path)
+
+      def open_item_drb(full_path, untitled = false)
         begin
-          puts 'drb opening untitled ' + full_path if $VERBOSE
-          if File.file?(path)
-            Swt.sync_exec do
-              Project::Manager.open_untitled_path(path)
-              Redcar.app.focussed_window.controller.bring_to_front
-            end
-          end
-          'ok'
-        rescue Exception => e
-          puts 'drb got exception:' + e.class + " " + e.message, e.backtrace
-          raise e
-        end 
-      end
-      
-      def open_item_drb(full_path)
-        begin
-          puts 'drb opening ' + full_path if $VERBOSE
+          puts %{drb opening #{"untitled" if untitled} #{full_path}} if $VERBOSE
           if File.directory? full_path
             Swt.sync_exec do
               if Redcar.app.windows.length == 0 and Application.storage['last_open_dir'] == full_path
@@ -60,7 +44,11 @@ module Redcar
               if Redcar.app.windows.length == 0
                 Project::Manager.restore_last_session
               end
-              Project::Manager.open_file(full_path)
+              if untitled
+                Project::Manager.open_untitled_path(full_path)
+              else
+                Project::Manager.open_file(full_path)
+              end
               Redcar.app.focussed_window.controller.bring_to_front
             end
             'ok'            
@@ -68,7 +56,33 @@ module Redcar
         rescue Exception => e
           puts 'drb got exception:' + e.class + " " + e.message, e.backtrace
           raise e
-        end 
+        end
+      end
+
+      def open_file_and_wait(file, untitled = false)
+        semaphore = Mutex.new
+        handler = nil
+        tab = nil
+        Swt.sync_exec do
+          semaphore.lock
+          Project::Manager.restore_last_session if Redcar.app.windows.empty?
+          if untitled
+            Project::Manager.open_untitled_path(file)
+          else
+            Project::Manager.open_file(file)
+          end
+          window = Redcar.app.focussed_window
+          window.controller.bring_to_front
+          tab = window.focussed_notebook_tab
+          handler = tab.add_listener(:close) { semaphore.unlock }
+        end
+        Thread.new(tab, handler) do
+          semaphore.synchronize { tab.remove_listener(handler) }
+        end.join # Wait until the tab's close event was fired
+        'ok'
+      rescue Exception => e
+        puts 'drb got exception:' + e.class + " " + e.message, e.backtrace
+        raise e
       end
       
     end

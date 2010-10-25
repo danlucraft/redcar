@@ -40,19 +40,19 @@ module Redcar
       
       if ARGV.any?
         ARGV.each do |arg|
-          if File.file?(arg) or File.directory?(arg)
-            if drb.open_item_drb(File.expand_path(arg)) != 'ok'
-              return
-            end
-          end
           if arg =~ /--untitled-file=(.*)/
-            path = $1
-            if File.file?(path)
-              if drb.open_item_untitled(File.expand_path(path)) != 'ok'
-                return
-              end
-            end
+            path = $1 if File.file?($1)
+            untitled = true
+          elsif File.file?(arg) or File.directory?(arg)
+            path = File.expand_path(arg)
           end
+          next unless path
+          if ARGV.include? "-w" and File.file?(path)
+            drb_answer = drb.open_file_and_wait(path, untitled)
+          else
+            drb_answer = drb.open_item_drb(path, untitled)
+          end
+          return unless drb_answer == 'ok'
         end
       else
         return unless drb.open_item_drb('just_bring_to_front')

@@ -18,6 +18,7 @@ Enhancements:
  * Toggle line and selection commenting (Delisa Mason)
  * Clipboard History Viewer and Paster (Delisa Mason)
  * Web Preview files and Bookmarks (Delisa Mason)
+ * -w commandline switch to block the prompt when piping into or opening files on an existing Redcar instance (Tim Felgentreff)
 
 Bugfixes:
 
