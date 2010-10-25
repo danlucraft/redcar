@@ -98,7 +98,7 @@ module DocumentSearch
             doc.replace_line(i, line.chomp)
             count += 1
           end
-        end while line != nil
+        end
       end
       if last_match_line
         line_offset = doc.offset_at_line(last_match_line)

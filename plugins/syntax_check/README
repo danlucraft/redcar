@@ -1,0 +1,6 @@
+== Abstract Syntax checking Redcar
+
+Get redcar from github.com/redcar/redcar and do a git clone in your 
+$HOME/.redcar/plugins of this repository. You will also need a
+concrete syntax checker for your language, Ruby is currently supported
+in timfel/redcar_syntax_check_ruby

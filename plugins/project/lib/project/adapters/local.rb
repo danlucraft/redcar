@@ -21,7 +21,9 @@ module Redcar
         end
 
         def directory?(path)
-          File.directory?(path)
+          # JRuby's File.directory? seems to have a problem with multi-byte strings
+          f = java.io.File.new(path.to_java)
+          f.directory?
         end
 
         def empty_directory?(path)
@@ -51,7 +53,7 @@ module Redcar
         end
 
         def mtime(file)
-          File.stat(file).mtime
+          File.mtime(file)
         end
 
         def exists?(file)

@@ -9,6 +9,9 @@ describe Redcar::Document do
     def reset_last_checked
     end
     
+    def remove_all_annotations(o = nil); end
+    def grammar; end
+
     def controller
       o = Object.new
       def o.method_missing(*_)
