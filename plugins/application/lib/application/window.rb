@@ -194,8 +194,7 @@ module Redcar
       end
     end
 
-    # Check all tabs for underlying files; mark if missing,
-    # Close if unmodified
+    # Check all tabs for underlying files; mark if missing
     def refresh_tabs
       all_tabs.each do |tab|
         if tab.is_a?(Redcar::EditTab)

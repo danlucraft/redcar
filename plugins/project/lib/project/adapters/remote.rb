@@ -68,6 +68,7 @@ module Redcar
 
         def delete(file)
           target.delete(file)
+          Manager.update_tab_for_path(file)
         end
 
         def exists?(path)

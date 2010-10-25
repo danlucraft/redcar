@@ -236,16 +236,14 @@ module Redcar
         found_path_args
       end
 
-      def self.update_tab_for_path(path,new_path)
+      def self.update_tab_for_path(path,new_path=nil)
         if tab = Manager.find_open_file_tab(path)
-          mirror = Project::FileMirror.new(new_path)
-          tab.edit_view.document.mirror = mirror
-        end
-      end
-
-      def self.delete_tab_for_path(path)
-        if tab = Manager.find_open_file_tab(path)
-          tab.update_for_file_changes
+          if new_path
+            mirror = Project::FileMirror.new(new_path)
+            tab.edit_view.document.mirror = mirror
+          else
+            tab.update_for_file_changes
+          end
         end
       end
 
