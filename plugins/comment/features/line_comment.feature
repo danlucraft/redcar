@@ -19,6 +19,15 @@ Feature: Commenting lines by prefixing a comment string
     And I toggle comment lines
     Then the contents should be "A p<c>iece of code"
 
+  Scenario: Commenting a single line among many
+    When I replace the contents with "foo\nbar\nbaz"
+    And I switch the language to "Ruby"
+    And I move the cursor to 4
+    And I toggle comment lines
+    Then the contents should be "foo\n<c># bar\nbaz"
+    When I toggle comment lines
+    Then the contents should be "foo\n<c>bar\nbaz"
+
   Scenario: Uncommenting a single line that doesn't have the space
     When I replace the contents with "#A piece of code"
     And I switch the language to "Ruby"

@@ -15,7 +15,7 @@ module Redcar
     def self.storage
       @storage ||=begin
         storage = Plugin::Storage.new('comment_plugin')
-        storage.set_default('default_line_comment'       , "//")
+        storage.set_default('default_line_comment'       , "#")
         storage.set_default('default_start_block'        , "/*")
         storage.set_default('default_end_block'          , "*/")
         storage.set_default('warning_for_using_defaults' , true)
@@ -133,9 +133,12 @@ module Redcar
         if offset and offset != 0
           new_line = line.clone
           new_line[offset..(offset + comment.length)] = ""
+          @point_comment_removed = offset
           new_line
         else
-          line.gsub(line_start_regex, '\1')
+          md = line.match(line_start_regex)
+          @point_comment_removed = md[1].length
+          md[1] + md.post_match
         end
       end
       
@@ -204,16 +207,19 @@ module Redcar
             if all_lines_are_already_commented
               (start_line..end_line).each do |line|
                 doc.replace_line(line) do |text|
-                  new_text = if line == start_point_line and selected
-                               strip_comment(text, start_point_line_offset)
-                             else
-                               strip_comment(text)
-                             end
+                  new_text = 
+                    if line == start_point_line and selected
+                      strip_comment(text, start_point_line_offset)
+                    else
+                      strip_comment(text)
+                    end
                   diff = text.length - new_text.length
                   if cursor_offset < selection_offset
                     selection_offset -= diff
                   else
-                    cursor_offset -= diff
+                    if cursor_line > line or (cursor_line == line and cursor_line_offset > @point_comment_removed)
+                      cursor_offset -= diff
+                    end
                   end
                   new_text
                 end
@@ -230,7 +236,9 @@ module Redcar
                   if cursor_offset < selection_offset
                     selection_offset += diff
                   else
-                    cursor_offset += diff
+                    if cursor_line > line or (cursor_line == line and cursor_line_offset > insertion_column)
+                      cursor_offset += diff
+                    end
                   end
                   new_text
                 end
