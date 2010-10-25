@@ -450,8 +450,16 @@ module Redcar
       controller.selection_offset
     end
     
+    def selection_offset=(value)
+      set_selection_range(cursor_offset, value)
+    end
+    
     def selection_line
       line_at_offset(selection_offset)
+    end
+    
+    def selection_line_offset
+      selection_offset - offset_at_line(selection_line)
     end
     
     # Set the range of text selected by the user. 

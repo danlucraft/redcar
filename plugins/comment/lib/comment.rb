@@ -18,7 +18,6 @@ module Redcar
         storage.set_default('default_line_comment'       , "//")
         storage.set_default('default_start_block'        , "/*")
         storage.set_default('default_end_block'          , "*/")
-        storage.set_default('insert_single_space'        , true)
         storage.set_default('warning_for_using_defaults' , true)
         storage
       end
@@ -119,73 +118,122 @@ module Redcar
     end
 
     class ToggleLineCommentCommand < Redcar::EditTabCommand
-
-      def uncomment_and_use_extra_space(end_pos,text)
-        if text.split(//).length() >= end_pos+2
-          f = text[end_pos+1,end_pos+1]
-          p = text[end_pos+2,end_pos+2]
-          Comment.storage['insert_single_space'] and
-          f =~ /^ / and p !=~ /^ /
+      
+      attr_reader :comment
+      
+      def line_start_regex
+        /^(\s*)#{comment}\s?/
+      end
+      
+      def starts_with_comment?(line)
+        line =~ line_start_regex
+      end
+      
+      def strip_comment(line, offset=nil)
+        if offset and offset != 0
+          new_line = line.clone
+          new_line[offset..(offset + comment.length)] = ""
+          new_line
         else
-          false
+          line.gsub(line_start_regex, '\1')
         end
       end
-
-      def comment_and_use_extra_space(text)
-        p [:comment_and_use_extra_space, text]
-        unless text.split(//).length() < 1 or
-                text[0] == " " or text[0] == "\t"
-          Comment.storage['insert_single_space'] and
-            text.split(//).length() > 2
+      
+      def add_comment(line, offset=nil)
+        if offset and offset != 0
+          line.clone.insert(offset, comment + " ")
         else
-          false
+          line.gsub(/^(\s*)([^\s])/, '\1' + comment + ' \2')
         end
       end
 
 	    def execute
         type = Comment.comment_map["#{tab.edit_view.grammar.gsub("\"","")}"]
         if type
-          comment = type["line_comment"]
+          @comment = type["line_comment"]
           return unless comment
         else
           Comment.grammar_missing(tab.edit_view.grammar)
-          comment = Comment.storage['default_line_comment']
+          @comment = Comment.storage['default_line_comment']
         end
-        selected   = doc.selection?
-        end_pos    = comment.split(//).length() -1
-        range      = doc.selection_range
-        start_line = doc.line_at_offset(range.first)
-        end_line   = doc.line_at_offset(range.last)
-        if doc.offset_at_line(end_line) == (range.last) and start_line != end_line
+        selected              = doc.selection?
+        cursor_offset         = doc.cursor_offset
+        selection_offset      = doc.selection_offset
+        cursor_line           = doc.cursor_line
+        selection_line        = doc.selection_line
+        cursor_line_offset    = doc.cursor_line_offset
+        selection_line_offset = doc.selection_line_offset
+        if cursor_offset < selection_offset
+          start_point_offset      = cursor_offset
+          end_point_offset        = selection_offset
+          start_point_line        = cursor_line
+          start_point_line_offset = cursor_line_offset
+        else
+          start_point_offset      = selection_offset
+          end_point_offset        = cursor_offset
+          start_point_line        = selection_line
+          start_point_line_offset = selection_line_offset
+        end
+        start_line            = doc.line_at_offset(start_point_offset)
+        end_line              = doc.line_at_offset(end_point_offset)
+        
+        if doc.offset_at_line(end_line) == end_point_offset and start_line != end_line
           end_line -= 1
         end
-        total_text = "" if selected
+        
+        
         doc.controllers(Redcar::AutoIndenter::DocumentController).first.disable do
           doc.compound do
+            all_lines_are_already_commented = true
             (start_line..end_line).each do |line|
-              text = doc.get_line(line).chomp
-              if text[0..end_pos] == comment
-                if uncomment_and_use_extra_space(end_pos,text)
-                  text = text[end_pos+2..-1]
+              text = doc.get_line(line)
+              if line == start_point_line and selected
+                text = text[start_point_line_offset..-1]
+              end
+              
+              unless starts_with_comment?(text)
+                all_lines_are_already_commented = false
+              end
+            end
+            
+            (start_line..end_line).each do |line|
+              doc.replace_line(line) do |text|
+                if all_lines_are_already_commented
+                  new_text = if line == start_point_line and selected
+                               strip_comment(text, start_point_line_offset)
+                             else
+                               strip_comment(text)
+                             end
+                  diff = text.length - new_text.length
+                  if cursor_offset < selection_offset
+                    selection_offset -= diff
+                  else
+                    cursor_offset -= diff
+                  end
+                  new_text
                 else
-                  text = text[end_pos+1..-1]
-                end
-              else
-                if comment_and_use_extra_space(text)
-                  text = comment + " " + text
-                else
-                  text = comment + text
+                  new_text = if line == start_point_line and selected
+                               add_comment(text, start_point_line_offset)
+                             else
+                               add_comment(text)
+                             end
+                  diff = new_text.length - text.length
+                  if cursor_offset < selection_offset
+                    selection_offset += diff
+                  else
+                    cursor_offset += diff
+                  end
+                  new_text
                 end
               end
-              total_text += text + " " if selected
-              doc.replace_line(line, text)
-            end
-            if selected
-              tlength    = total_text.split(//).length() - 1
-              offset     = doc.offset_at_line(start_line)
-              doc.set_selection_range(offset+tlength, offset)
             end
           end
+        end
+        
+        if selected
+          doc.set_selection_range(cursor_offset, selection_offset)
+        else
+          doc.set_selection_range(cursor_offset, cursor_offset)
         end
       end
     end
