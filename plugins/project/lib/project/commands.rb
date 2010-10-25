@@ -254,7 +254,7 @@ module Redcar
         while current.any?
           ancestor_node = current.detect {|node| path =~ /^#{node.path}($|\/)/}
           tree.expand(ancestor_node)
-          current = ancestor_node.children
+          current = ancestor_node.children if ancestor_node
         end
         tree.select(ancestor_node)
         project.window.treebook.focus_tree(project.tree)
