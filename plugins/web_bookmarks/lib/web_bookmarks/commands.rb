@@ -18,7 +18,7 @@ module Redcar
         tab = win.new_tab(HtmlTab)
         tab.html_view.controller = controller
         tab.focus
-        if @display_bar and
+        if @display_bar or
           WebBookmarks.storage['show_browser_bar_on_start']
           WebBookmarks::OpenBrowserBar.new.run
         end
