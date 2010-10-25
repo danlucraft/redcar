@@ -186,14 +186,15 @@ module Redcar
           doc.compound do
             all_lines_are_already_commented = true
             start_line_comment_offset       = nil
-            insertion_column                = selected ? cursor_line_offset : 1000
+            insertion_column                = 1000
             
             (start_line..end_line).each do |line|
               text = doc.get_line(line)
+              insertion_column = [insertion_column, comment_insertion_point_for(text)].min
+              
               if line == start_point_line and selected
                 text = text[start_point_line_offset..-1]
               end
-              insertion_column = [insertion_column, comment_insertion_point_for(text)].min
               
               unless starts_with_comment?(text)
                 all_lines_are_already_commented = false
@@ -221,7 +222,7 @@ module Redcar
               (start_line..end_line).each do |line|
                 doc.replace_line(line) do |text|
                   new_text = if line == start_point_line and selected
-                               add_comment(text, start_point_line_offset)
+                               add_comment(text, [start_point_line_offset, insertion_column].max)
                              else
                                add_comment(text, insertion_column)
                              end

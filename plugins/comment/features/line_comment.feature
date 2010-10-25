@@ -70,7 +70,6 @@ Feature: Commenting lines by prefixing a comment string
     Then the contents should be "<c>Two<s> pieces\nof code"
 
   Scenario: Inserting a single space after comments when a line has no indentation
-    Given insert single space after comment is enabled
     When I replace the contents with "A few\nlines\nof unindented\ncode"
     And I switch the language to "Ruby"
     And I select from 2 to 27
@@ -102,6 +101,13 @@ Feature: Commenting lines by prefixing a comment string
     And I select from 0 to 40
     And I toggle comment lines
     Then the contents should be "<s>#     def foo\n#       dfo\n#     sdfj\n#   asdf\n# as<c>df"
+
+  Scenario: Commenting several indented lines, beginning before the text starts
+    When I replace the contents with "      def foo\n        dfo"
+    And I switch the language to "Ruby"
+    And I select from 2 to 25
+    And I toggle comment lines
+    Then the contents should be "  <s>    # def foo\n      #   dfo<c>"
 
   # This is pretty damn marginal, and I'm tired...
   #Scenario: Commenting several lines, with mismatched indentation, beginning in the middle
