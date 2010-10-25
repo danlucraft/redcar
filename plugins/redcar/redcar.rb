@@ -1048,7 +1048,7 @@ Redcar.environment: #{Redcar.environment}
           end
         end
         sub_menu "Help", :priority => :last do
-          group(:priority => :first) do
+          group(:priority => :last) do
             item "About", AboutCommand
             item "New In This Version", ChangelogCommand
           end
