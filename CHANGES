@@ -21,6 +21,7 @@ Enhancements:
  * -w commandline switch to block the prompt when piping into or opening files on an existing Redcar instance (Tim Felgentreff)
  * 'Open Default App' project context menu item for opening any type of file (Jeremy Wentworth)
  * Changing to another tab reveals the associated file in the project tree (Johannes Wollert)
+ * Trees can be hidden or revealed by a keyboard shortcut (Delisa Mason)
 
 Bugfixes:
 
