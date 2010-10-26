@@ -20,19 +20,19 @@ module Redcar
     capture:  2
     type:     id
     kind:     class
-  - regex:    "^[^#]*def (self\\.)?(\\w+[?!]?)"
-    capture:  2
+  - regex:    "^[^#]*def ((self\\.)?(\\w+[?!=]?)(\(.*\))?)"
+    capture:  1
     type:     id
     kind:     method
   - regex:    "^[^#]*attr(_reader|_accessor|_writer)(.*)$"
     capture:  2
     type:     id-list
     kind:     attribute
-  - regex:    "^[^#]*alias\s+:(\\w+)"
+  - regex:    "^[^#]*alias\\s+:(\\w+)"
     capture:  1
     type:     id
     kind:     alias
-  - regex:    "^[^#]*alias_method\s+:(\\w+[?!]?)"
+  - regex:    "^[^#]*alias_method\\s+:(\\w+[?!]?)"
     capture:  1
     type:     id
     kind:     alias
