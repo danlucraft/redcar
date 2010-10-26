@@ -1,4 +1,10 @@
 
+Version 0.8.1 (26 October 2010)
+===============================
+
+ * Remove files with multi-byte names from the gem so windows rubygems is happy (Dan Lucraft)
+ * Replace all is a single undo operation (Steven Hancock)
+
 Version 0.8 (26 October 2010)
 =============================
 
