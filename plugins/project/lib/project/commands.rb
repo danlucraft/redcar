@@ -246,14 +246,13 @@ module Redcar
     class RevealInProjectCommand < ProjectCommand
       def execute
         tab = Redcar.app.focussed_window.focussed_notebook_tab
-        return unless tab.is_a?(EditTab) && tab.edit_view.document.mirror
+        return unless tab.is_a?(EditTab)
 
         path = tab.edit_view.document.mirror.path
         tree = project.tree
         current = tree.tree_mirror.top
         while current.any?
           ancestor_node = current.detect {|node| path =~ /^#{node.path}($|\/)/}
-          return unless ancestor_node
           tree.expand(ancestor_node)
           current = ancestor_node.children
         end
@@ -341,18 +340,34 @@ module Redcar
         preferred = Manager.storage['preferred_command_line']
         case Redcar.platform
         when :osx
-          unless preferred
-            preferred = "Terminal"
-            Manager.storage['preferred_command_line'] = preferred
-          end
-          command = <<-BASH.gsub(/^\s{12}/, '')
+          if preferred and preferred =~ /\AiTerm/ then
+            command = <<-BASH.gsub(/^\s{12}/, '')
             osascript <<END
               tell application "#{preferred}"
-                do script "cd \\\"#{path}\\\""
+                tell the first terminal
+                 launch session "Default Session"
+                  tell the last session
+                   write text "cd \\\"#{path}\\\""
+                  end tell
+                 end tell
                 activate
               end tell
             END
-          BASH
+            BASH
+          else
+            preferred = "Terminal"
+            Manager.storage['preferred_command_line'] = preferred
+
+            command = <<-BASH.gsub(/^\s{12}/, '')
+            osascript <<END
+              tell application "#{preferred}"
+                do script "cd \\\"#{path}\\\""
+                 activate
+              end tell
+            END
+            BASH
+          end
+          
           # Spoon doesn't seem to work with `osascript`
           system(command)
         when :windows
