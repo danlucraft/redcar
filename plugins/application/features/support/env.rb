@@ -147,10 +147,13 @@ def close_everything
     dialogs.each {|d| d.controller.model.close }
   end
   Redcar.app.windows.each do |win|
-    while tree = win.treebook.trees.first
+    win.treebook.trees.each do |tree|
       Swt.sync_exec do
         win.treebook.remove_tree(tree)
       end
+    end
+    if Redcar::Project::Manager.in_window(win)
+      Redcar::Project.window_projects.delete(win)
     end
     win.notebooks.each do |notebook|
       while tab = notebook.tabs.first
