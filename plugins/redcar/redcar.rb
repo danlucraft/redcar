@@ -221,9 +221,31 @@ module Redcar
 
     class CloseTreeCommand < Command
       def execute
-        treebook = Redcar.app.focussed_window.treebook
-        tree = treebook.focussed_tree
-        treebook.remove_tree(tree)
+        win = Redcar.app.focussed_window
+        if win and treebook = win.treebook
+          if tree = treebook.focussed_tree
+            if tree.tree_mirror.is_a?(Project::DirMirror)
+              Redcar::Application::Dialog.message_box(
+              "Use the \"Close Directory\" command to close this project"
+              )
+            else
+              treebook.remove_tree(tree)
+            end
+          end
+        end
+      end
+    end
+
+    class ToggleTreesCommand < Command
+      def execute
+        win = Redcar.app.focussed_window
+        if win and treebook = win.treebook
+          if win.trees_visible?
+            win.set_trees_visible(false)
+          else
+            win.set_trees_visible(true)
+          end
+        end
       end
     end
 
@@ -771,7 +793,6 @@ Redcar.environment: #{Redcar.environment}
         #link "Cmd+Ctrl+O",  Project::OpenRemoteCommand
         link "Cmd+S",       Project::FileSaveCommand
         link "Cmd+Shift+S", Project::FileSaveAsCommand
-        link "Cmd+Ctrl+R",  Project::RevealInProjectCommand
         link "Cmd+W",       CloseTabCommand
         link "Cmd+Shift+W", CloseWindowCommand
         link "Cmd+Q",       QuitCommand
@@ -826,6 +847,7 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+I",           OutlineView::OpenOutlineViewCommand
 
         link "Ctrl+Shift+P",    PrintScopeCommand
+        link "Cmd+Shift+H",     ToggleTreesCommand
 
         link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
 
@@ -848,7 +870,6 @@ Redcar.environment: #{Redcar.environment}
         #link "Alt+Shift+O",  Project::OpenRemoteCommand
         link "Ctrl+S",       Project::FileSaveCommand
         link "Ctrl+Shift+S", Project::FileSaveAsCommand
-        link "Ctrl+Shift+R", Project::RevealInProjectCommand
         link "Ctrl+W",       CloseTabCommand
         link "Ctrl+Shift+W", CloseWindowCommand
         link "Ctrl+Q",       QuitCommand
@@ -897,7 +918,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+P",    PrintScopeCommand
 
         link "Ctrl+Alt+O",       SwitchNotebookCommand
-
+        link "Ctrl+Shift+H",     ToggleTreesCommand
         link "Ctrl+Page Up",         SwitchTabDownCommand
         link "Ctrl+Page Down",       SwitchTabUpCommand
         link "Ctrl+Shift+Page Up",   MoveTabDownCommand
@@ -1018,6 +1039,7 @@ Redcar.environment: #{Redcar.environment}
             item "Font Size", SelectFontSize
             item "Theme", SelectTheme
           end
+          item "Toggle Tree Visibility", :command => ToggleTreesCommand
           item "Toggle Fullscreen", :command => ToggleFullscreen, :type => :check, :active => window ? window.fullscreen : false
           separator
           item "New Notebook", NewNotebookCommand

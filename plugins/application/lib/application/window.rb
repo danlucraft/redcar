@@ -21,9 +21,21 @@ module Redcar
       @notebooks = []
       @notebook_orientation = :horizontal
       create_notebook
-      @treebook = Treebook.new
-      @speedbar = nil
-      self.title = DEFAULT_TITLE
+      @treebook   = Treebook.new
+      @speedbar   = nil
+      self.title  = DEFAULT_TITLE
+    end
+
+    def set_trees_visible(value)
+      if value
+        notify_listeners(:toggle_trees_visible) unless trees_visible?
+      else
+        notify_listeners(:toggle_trees_visible) if trees_visible?
+      end
+    end
+
+    def trees_visible?
+      controller.treebook_visible?
     end
 
     def title

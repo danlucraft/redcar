@@ -322,7 +322,6 @@ module Redcar
 
             group(:priority => 11) do
               item "Close Directory", Project::DirectoryCloseCommand
-              item "Reveal in Project", Project::RevealInProjectCommand
             end
           end
           sub_menu "Project", :priority => 15 do
