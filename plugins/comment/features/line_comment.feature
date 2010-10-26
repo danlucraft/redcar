@@ -104,6 +104,15 @@ Feature: Commenting lines by prefixing a comment string
     When I toggle comment lines
     Then the contents should be "Tw<s>o pieces\nof<c> code"
 
+  Scenario: Commenting several lines, not from the start of one of them
+    When I replace the contents with "    foo\n    bar"
+    And I switch the language to "Ruby"
+    And I select from 2 to 15
+    And I toggle comment lines
+    Then the contents should be "  <s>  # foo\n    # bar<c>"
+    When I toggle comment lines
+    Then the contents should be "  <s>  foo\n    bar<c>"
+
   Scenario: Commenting several lines, with mismatched indentation, beginning in the start
     When I replace the contents with "    def foo\n      dfo\n    sdfj\n  asdf\nasdf"
     And I switch the language to "Ruby"
