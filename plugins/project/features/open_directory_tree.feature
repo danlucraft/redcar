@@ -11,7 +11,7 @@ Feature: Open directory tree
     Given I will choose "plugins" from the "open_directory" dialog
     When I open a directory
     Then I should see "core,application,tree" in the tree
-  
+
   Scenario: Title of window reflects open project
     Given I will choose "plugins/project/spec/fixtures/myproject" from the "open_directory" dialog
     When I open a directory
@@ -32,7 +32,20 @@ Feature: Open directory tree
     Then the tree width should be the default
     When I restore the window size
     Then the tree width should be the default
- 
+
+  Scenario: Toggle Tree Visibility hides the treebook if the sash is visible, else it opens it
+    Given I will choose "plugins/project/spec/fixtures/myproject" from the "open_directory" dialog
+    When I open a directory
+    Then the tree width should be the default
+    When I toggle tree visibility
+    Then the tree width should be 0
+    When I manually widen the treebook to show the sash
+    And I toggle tree visibility
+    Then the tree width should be 0
+    When I manually widen the treebook only a few pixels
+    And I toggle tree visibility
+    Then the tree width should be the default
+
 # RSpec matchers have trouble with the multibyte string
 #  Scenario: Multibyte files and directories
 #    Given I will choose "plugins/project/spec/fixtures/multi-byte-files" from the "open_directory" dialog

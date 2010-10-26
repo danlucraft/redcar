@@ -64,8 +64,10 @@ module Redcar
         @window.add_listener(:speedbar_opened, &method(:speedbar_opened))
         @window.add_listener(:speedbar_closed, &method(:speedbar_closed))
 
+        @window.add_listener(:toggle_trees_visible, &method(:toggle_sash_widths))
+
         @window.treebook.add_listener(:tree_added) do
-          if @treebook_unopened
+          if @treebook_unopened or not @window.trees_visible?
             reset_sash_widths
             @treebook_unopened = false
           end
@@ -76,15 +78,19 @@ module Redcar
         end
         @shell.add_key_listener(KeyListener.new(self))
       end
-      
+
+      def treebook_visible?
+        @sash.layout_data.left.offset > SASH_WIDTH
+      end
+
       def fullscreen
         @shell.fullScreen()
       end
-      
+
       def fullscreen=(value)
         @shell.setFullScreen(value)
       end
-      
+
       class KeyListener
         def initialize(edit_view_swt)
           @edit_view_swt = edit_view_swt
@@ -130,7 +136,7 @@ module Redcar
         shell.menu_bar = @menu_controller.menu_bar
         old_menu_bar.dispose if old_menu_bar
       end
-      
+
       def refresh_toolbar
 	if Redcar.app.show_toolbar?
 		@toolbar_controller = ApplicationSWT::ToolBar.new(self, Redcar.app.main_toolbar, Swt::SWT::HORIZONTAL | Swt::SWT::BORDER)
@@ -142,7 +148,7 @@ module Redcar
 	end
 	reset_sash_height
       end
-      
+
       def set_icon
         path = File.join(icon_dir, icon_file)
         icon = Swt::Graphics::Image.new(ApplicationSWT.display, path)
@@ -331,20 +337,34 @@ module Redcar
         @shell.layout
       end
 
+      def toggle_sash_widths
+        if not treebook_visible?
+          reset_sash_widths
+        else
+          @sash.layout_data.left = Swt::Layout::FormAttachment.new(0, 0)
+          @shell.layout
+        end
+      end
+
+      def set_sash_widths(offset)
+        @sash.layout_data.left = Swt::Layout::FormAttachment.new(0, offset)
+        @shell.layout
+      end
+
       def reset_notebook_sash_widths
         width = (100/@window.notebooks.length).to_i
         widths = [width]*@window.notebooks.length
       	@notebook_sash.setWeights(widths.to_java(:int))
       end
-      
+
       def reset_sash_height
         @sash.layout_data.top =  Swt::Layout::FormAttachment.new(0, @toolbar_height.to_i)
         @left_composite.layout_data.top = Swt::Layout::FormAttachment.new(0, 5 + @toolbar_height.to_i)
         @right_composite.layout_data.top = Swt::Layout::FormAttachment.new(0, 5 + @toolbar_height.to_i)
-	@shell.layout        
+	@shell.layout
         @shell.redraw
       end
-      
+
     end
   end
 end
