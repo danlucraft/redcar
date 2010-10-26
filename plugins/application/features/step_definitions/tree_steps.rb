@@ -6,6 +6,10 @@ When /^I expand the tree row "([^\"]*)"$/ do |row|
   viewer.expandToLevel(node, 1)
 end
 
+When /^I toggle tree visibility$/ do
+  Redcar::Top::ToggleTreesCommand.new.run
+end
+
 Then /^I should (not )?see "([^\"]*)" in the tree$/ do |negate, rows|
   item_names = visible_tree_items(top_tree).map(&:get_text)
   rows.split(',').map(&:strip).each do |row|
@@ -17,10 +21,14 @@ Then /^I should (not )?see "([^\"]*)" in the tree$/ do |negate, rows|
   end
 end
 
-Then /^the tree width should be the default$/ do
+Then /^the tree width should be (0|the default)$/ do |w|
   width = Redcar.app.focussed_window.treebook.controller.tab_folder.bounds.width
-  default = Redcar::ApplicationSWT::Window::TREEBOOK_WIDTH + Redcar::ApplicationSWT::Window::SASH_WIDTH - 5
-  raise "The tree width was #{width}, expected #{default}" unless width == default
+  if w == 0
+    width.should == 0
+  else
+    default = Redcar::ApplicationSWT::Window::TREEBOOK_WIDTH + Redcar::ApplicationSWT::Window::SASH_WIDTH - 5
+    raise "The tree width was #{width}, expected #{default}" unless width == default
+  end
 end
 
 When /^I activate the "([^"]*)" node in the tree$/ do |node_text|
