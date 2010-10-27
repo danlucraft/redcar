@@ -130,8 +130,9 @@ module Redcar
       end
       
       def strip_comment(line, offset=nil)
-        if offset and offset != 0
-          new_line = line.clone
+        new_line = line.clone
+        if offset and offset != 0 and 
+            new_line[0..offset] !~ /^\s*$/
           new_line[offset..(offset + comment.length)] = ""
           @point_comment_removed = offset
           new_line

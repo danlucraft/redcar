@@ -8,7 +8,7 @@
     <thead><th>Recently Copied Text</th></thead>
     <tbody>
       <% @list.each_with_index do |item, i|%>
-        <tr><td class="copied-item" id="item_<%=i%>"><pre><%= item %></pre></td></td>
+        <tr><td class="copied-item" id="item_<%=i%>"><pre><%= item.join("").gsub("<", "&lt;").gsub(">", "&gt;") %></pre></td></td>
       <% end %>
     </tbody>
   </table>
