@@ -63,7 +63,9 @@ module Redcar
           classpath = classpath(project)
           config.setClasspathList(classpath) if classpath
         end
-        GroovyShell.new(config)
+        shell = GroovyShell.new(config)
+        shell.setProperty("out",nil)
+        shell
       end
     end
   end
