@@ -27,11 +27,17 @@ module Redcar
       @map ||=begin
         c = File.read(Comment.comment_lib_path)
         map = JSON.parse(c)
-        Comment.comment_extension_paths.each do |path|
-          json = File.read(path)
-          JSON.parse(json).each do |item,content|
-            map[item] = content
+        begin
+          path = Comment.comment_extension_path
+          if File.exist?(path)
+            json = File.read(path)
+            JSON.parse(json).each do |item,content|
+              map[item] = content
+            end
           end
+        rescue Object => e
+          Redcar::Application::Dialog.message_box("There was an error parsing Comment extensions file: #{e.message}")
+          map = JSON.parse(c)
         end
         map
       end
@@ -40,16 +46,11 @@ module Redcar
     def self.extensions_file;"comment_extensions.json";end
     
     def self.comment_lib_path
-      File.dirname(__FILE__) + "/../vendor/comment_lib.json"
+      File.join(File.dirname(__FILE__),"..","vendor","comment_lib.json")
     end
     
-    def self.comment_extension_paths
-      project = Redcar::Project::Manager.focussed_project
-      if project
-        project.config_files(Comment.extensions_file)
-      else
-        Dir[File.join(Redcar.user_dir,Comment.extensions_file)]
-      end
+    def self.comment_extension_path
+      File.join(Redcar.user_dir,Comment.extensions_file)
     end
 
     def self.keymaps

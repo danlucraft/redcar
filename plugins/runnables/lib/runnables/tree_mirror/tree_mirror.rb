@@ -30,14 +30,19 @@ module Redcar
       end
 
       def load
-        groups = {}
-        runnable_file_paths.each do |path|
-          runnables = []
-          name = File.basename(path,".json")
-          json = File.read(path)
-          this_runnables = JSON(json)["commands"]
-          runnables += this_runnables || []
-          groups[name.to_s] = runnables.to_a
+        begin
+          groups = {}
+          runnable_file_paths.each do |path|
+            runnables = []
+            name = File.basename(path,".json")
+            json = File.read(path)
+            this_runnables = JSON(json)["commands"]
+            runnables += this_runnables || []
+            groups[name.to_s] = runnables.to_a
+          end
+        rescue Object => e
+          Redcar::Application::Dialog.message_box("There was an error parsing Runnables: #{e.message}")
+          groups = {}
         end
 
         if groups.any?

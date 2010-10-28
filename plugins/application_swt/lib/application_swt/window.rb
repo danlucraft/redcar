@@ -37,7 +37,7 @@ module Redcar
 
       def initialize(window)
         @window = window
-      	@notebook_handlers = Hash.new {|h,k| h[k] = []}
+        @notebook_handlers = Hash.new {|h,k| h[k] = []}
         create_shell
         create_sashes(window)
         new_notebook(window.notebooks.first)
@@ -138,32 +138,26 @@ module Redcar
       end
 
       def refresh_toolbar
-	if Redcar.app.show_toolbar?
-		@toolbar_controller = ApplicationSWT::ToolBar.new(self, Redcar.app.main_toolbar, Swt::SWT::HORIZONTAL | Swt::SWT::BORDER)
-    @toolbar_controller.show()
-		@toolbar_height = @toolbar_controller.height.to_i
-	else
-    @toolbar_controller.hide() if @toolbar_controller
-		@toolbar_height = 0
-	end
-	reset_sash_height
+        if Redcar.app.show_toolbar?
+          @toolbar_controller = ApplicationSWT::ToolBar.new(self, Redcar.app.main_toolbar, Swt::SWT::HORIZONTAL | Swt::SWT::BORDER)
+          @toolbar_controller.show()
+          @toolbar_height = @toolbar_controller.height.to_i
+        else
+          @toolbar_controller.hide() if @toolbar_controller
+          @toolbar_height = 0
+        end
+        reset_sash_height
       end
 
       def set_icon
-        path = File.join(icon_dir, icon_file)
-        icon = Swt::Graphics::Image.new(ApplicationSWT.display, path)
-        shell.image = icon
-      end
-
-      def icon_dir
-        File.join(Redcar.root, %w(plugins application icons))
+        shell.image = Icon.swt_image(icon_file)
       end
 
       def icon_file
         if Redcar::VERSION =~ /dev$/
-          "redcar_icon_beta_dev.png"
+          :redcar_icon_beta_dev
         else
-          "redcar_icon_beta.png"
+          :redcar_icon_beta
         end
       end
 
@@ -361,7 +355,7 @@ module Redcar
         @sash.layout_data.top =  Swt::Layout::FormAttachment.new(0, @toolbar_height.to_i)
         @left_composite.layout_data.top = Swt::Layout::FormAttachment.new(0, 5 + @toolbar_height.to_i)
         @right_composite.layout_data.top = Swt::Layout::FormAttachment.new(0, 5 + @toolbar_height.to_i)
-	@shell.layout
+        @shell.layout
         @shell.redraw
       end
 

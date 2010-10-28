@@ -33,47 +33,46 @@ module Redcar
 
       def initialize(window, toolbar_model, options={})
         s = Time.now
-	      @toolbars = {}
- 	@coolitems = {} 
+        @toolbars = {}
+        @coolitems = {} 
         @entries = Hash.new{|hash, key| hash[key] = Array.new}
         @coolbar = Swt::Widgets::CoolBar.new(window.shell, Swt::SWT::FLAT | Swt::SWT::HORIZONTAL)
         return unless toolbar_model
-      	toolbar_model.each do |entry|
+        toolbar_model.each do |entry|
           @name = entry.barname || :new
           if not @toolbars[@name]
             if @name == :core
-	            @coolitem = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::FLAT, 0)   	
-	          else
-   	          @coolitem = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::FLAT)   	
+              @coolitem = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::FLAT, 0)
+            else
+              @coolitem = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::FLAT)
             end
             
             @toolbars[@name] = create_toolbar(@coolbar)
             @coolitems[@name] = @coolitem
-	        else
-	          @toolbar = @toolbars[@name]
+          else
+            @toolbar = @toolbars[@name]
             @coolitem = @coolitems[@name]
           end
-	          @entries[@name] << entry
+            @entries[@name] << entry
         end
-        
-        @toolbars.each_key { |key|
-          
+
+        @toolbars.each_key do |key|
+
           @toolbar = @toolbars[key]
-	        @coolitem = @coolitems[key]
-	        @toolbar_data = @entries[key]       
-	        @coolitem.setControl(@toolbar)	  	  
-          
+          @coolitem = @coolitems[key]
+          @toolbar_data = @entries[key]
+          @coolitem.setControl(@toolbar)
+
           add_entries_to_toolbar(@toolbar, @toolbar_data)
           @p = @toolbar.computeSize(Swt::SWT::DEFAULT, Swt::SWT::DEFAULT)
           @point = @coolitem.computeSize(@p.x, @p.y)
           #@coolitem.setPreferredSize(@point)
           #@coolitem.setMinimumSize(@point)
           @coolitem.setSize(@point.x, @point.y)
-	      }
-	
+        end
+
         #puts "ApplicationSWT::ToolBar initialize took #{Time.now - s}s"
-        
-	      @coolbar.setLocked(true)
+        @coolbar.setLocked(true)
         @coolbar.pack()
       end
 

@@ -9,7 +9,11 @@ module Redcar
       end
 
       def activated(tree, node)
-        DisplayWebContent.new(node.text,node.url).run
+        if node.is_a?(Bookmark)
+          DisplayWebContent.new(node.text,node.url).run
+        elsif node.is_a?(BookmarkReloadItem)
+          tree.refresh
+        end
       end
     end
 
@@ -30,16 +34,23 @@ module Redcar
 
       def title; TREE_TITLE; end
 
-      def top; load; end
-
-      def load
+      def top
         bookmarks = []
+        begin
+          bookmarks_files_paths.each do |path|
+            json = File.read(path)
+            bookmarks += JSON(json)["bookmarks"]
+          end
+          load(bookmarks)
+        rescue Object => e
+          Redcar::Application::Dialog.message_box("There was an error parsing the Web Bookmarks file: #{e.message}")
+          [BookmarkReloadItem.new]
+        end
+      end
+
+      def load(bookmarks)
         spares = []
         groups = {}
-        bookmarks_files_paths.each do |path|
-          json = File.read(path)
-          bookmarks += JSON(json)["bookmarks"]
-        end
 
         if bookmarks.any?
           bookmarks.sort_by {|b| b["name"]}.map do |b|
