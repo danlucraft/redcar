@@ -17,7 +17,7 @@ module Redcar
         position ||= notebook.tab_folder.item_count
         if @item
           @item.dispose
-        end        
+        end
         @item = Swt::Custom::CTabItem.new(notebook.tab_folder, Swt::SWT::CLOSE, position)
         set_icon(@model.icon)
       end

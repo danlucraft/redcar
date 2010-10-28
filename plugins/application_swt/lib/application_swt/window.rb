@@ -37,7 +37,7 @@ module Redcar
 
       def initialize(window)
         @window = window
-      	@notebook_handlers = Hash.new {|h,k| h[k] = []}
+        @notebook_handlers = Hash.new {|h,k| h[k] = []}
         create_shell
         create_sashes(window)
         new_notebook(window.notebooks.first)
@@ -361,7 +361,7 @@ module Redcar
         @sash.layout_data.top =  Swt::Layout::FormAttachment.new(0, @toolbar_height.to_i)
         @left_composite.layout_data.top = Swt::Layout::FormAttachment.new(0, 5 + @toolbar_height.to_i)
         @right_composite.layout_data.top = Swt::Layout::FormAttachment.new(0, 5 + @toolbar_height.to_i)
-	@shell.layout
+        @shell.layout
         @shell.redraw
       end
 
