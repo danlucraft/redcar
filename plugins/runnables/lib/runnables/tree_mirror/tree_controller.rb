@@ -31,7 +31,7 @@ module Redcar
           Runnables.run_process(@project.home_dir, node.command, node.text, node.output)
         when HelpItem
           tab = Redcar.app.focussed_window.new_tab(HtmlTab)
-          tab.go_to_location("http://wiki.github.com/danlucraft/redcar/users-guide-runnables")
+          tab.go_to_location("http://github.com/redcar/redcar/wiki/Users-Guide---Runnables")
           tab.title = "Runnables Help"
           tab.focus
         end
