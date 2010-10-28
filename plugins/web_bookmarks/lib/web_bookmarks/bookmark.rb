@@ -1,7 +1,16 @@
 
 module Redcar
   class WebBookmarks
-     class Bookmark
+    class BookmarkReloadItem
+      include Redcar::Tree::Mirror::NodeMirror
+      
+      def leaf?; true; end
+      def text; "Reload Bookmarks"; end
+      def icon; :"arrow_circle"; end
+      def children; []; end
+    end
+    
+    class Bookmark
       include Redcar::Tree::Mirror::NodeMirror
       attr_reader :url
 
