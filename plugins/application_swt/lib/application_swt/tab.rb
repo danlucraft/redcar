@@ -4,8 +4,6 @@ module Redcar
       
       attr_reader :item, :model, :notebook, :widget
       
-      FILE_ICON = File.join(Redcar.root, %w(plugins application lib application assets file.png))
-      
       def initialize(model, notebook, position = nil)
         @model, @notebook = model, notebook
         create_item_widget(position || @notebook.tab_folder.item_count)

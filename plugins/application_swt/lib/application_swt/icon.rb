@@ -24,13 +24,11 @@ module Redcar
       end
       
       def self.dir_image
-        path = File.join(Redcar.root, %w(plugins application icons darwin-folder.png))
-        image(path)
+        swt_image(:darwin_folder)
       end
       
       def self.file_image
-        path = File.join(Redcar.root, %w(plugins application icons darwin-file.png))
-        image(path)
+        swt_image(:darwin_file)
       end
     end
   end
