@@ -9,7 +9,8 @@ module Swt
       include Swt::Events::MouseListener
       include Swt::Events::MouseTrackListener
 
-      CLOSE_ICON = Redcar::ApplicationSWT::Icon.swt_image(:close)
+      CLOSE_ICON   = Redcar::ApplicationSWT::Icon.swt_image(:close)
+      ICON_PADDING = 1
 
       def initialize(tab, parent, style)
         @label = Swt::Widgets::Label.new(parent, style)
@@ -58,7 +59,7 @@ module Swt
       def overlay_icon(icon, image)
         return unless icon
         gc = GraphicsUtils::GC.new(image)
-        gc.draw_image(@icon, 1, 1)
+        gc.draw_image(@icon, ICON_PADDING, ICON_PADDING)
         gc.dispose
       end
 
