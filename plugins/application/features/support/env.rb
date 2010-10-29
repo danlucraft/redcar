@@ -20,9 +20,17 @@ module SwtHelper
   def focussed_window
     Redcar.app.focussed_window
   end
+  
+  def focussed_treebook_width
+    Redcar.app.focussed_window.controller.treebook_width
+  end
 
   def focussed_tree
     focussed_window.treebook.focussed_tree
+  end
+  
+  def default_treebook_width
+    Redcar.app.focussed_window.controller.default_treebook_width
   end
 
   def dialog(type)
@@ -141,7 +149,7 @@ end
 
 World(SwtHelper)
 
-def close_everything
+def close_everything  
   Redcar.app.task_queue.cancel_all
   Swt.sync_exec do
     dialogs.each {|d| d.controller.model.close }

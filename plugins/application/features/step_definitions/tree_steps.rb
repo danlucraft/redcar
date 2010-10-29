@@ -21,13 +21,16 @@ Then /^I should (not )?see "([^\"]*)" in the tree$/ do |negate, rows|
   end
 end
 
-Then /^the tree width should be (0|the default)$/ do |w|
-  width = Redcar.app.focussed_window.treebook.controller.tab_folder.bounds.width
-  if w == 0
-    width.should == 0
+Then /^the tree width should be (the default|\d+ pixels|the minimum size)$/ do |w|
+  width = focussed_treebook_width
+  if w == "the default"
+    unless width == default_treebook_width
+      raise "The tree width was #{width}, expected #{default_treebook_width}"
+    end
+  elsif w == "the minimum size"
+    width.should == Redcar::ApplicationSWT::Window::MINIMUM_TREEBOOK_WIDTH
   else
-    default = Redcar::ApplicationSWT::Window::TREEBOOK_WIDTH + Redcar::ApplicationSWT::Window::SASH_WIDTH - 5
-    raise "The tree width was #{width}, expected #{default}" unless width == default
+    width.should == w.split(" ")[0].to_i
   end
 end
 

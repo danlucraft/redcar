@@ -47,7 +47,8 @@ module Redcar
         @tab_folder.add_selection_listener do |event|
           tab_item = event.item
           tree_view_swt = tab_item.control
-          @model.focus_tree(tree_view_swt.model)
+          tree = tree_view_swt.model
+          @model.focus_tree(tree)
         end
 
         @tab_folder.layout
