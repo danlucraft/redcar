@@ -7,6 +7,9 @@ module Swt
       attr_accessor :font
 
       include Swt::Events::MouseListener
+      include Swt::Events::MouseTrackListener
+
+      CLOSE_ICON = Redcar::ApplicationSWT::Icon.swt_image(:close)
 
       def initialize(tab, parent, style)
         @label = Swt::Widgets::Label.new(parent, style)
@@ -14,10 +17,12 @@ module Swt
         @tab = tab
         @parent = parent
         @title = ""
+        @icon = nil
 
         @label.image = label_image
         @label.add_paint_listener { |event| event.gc.draw_image(label_image, 0, 0) }
         @label.add_mouse_listener(self)
+        @label.add_mouse_track_listener(self)
       end
 
       def label_image
@@ -76,9 +81,20 @@ module Swt
         activate
       end
 
+      def mouseEnter(e)
+        @icon = CLOSE_ICON
+        redraw
+      end
+
+      def mouseExit(e)
+        @icon = nil
+        redraw
+      end
+
       # Unused
       def mouseDown(e); end
       def mouseDoubleClick(e); end
+      def mouseHover(e); end
     end
   end
 end
