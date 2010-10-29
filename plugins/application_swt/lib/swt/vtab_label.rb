@@ -50,8 +50,11 @@ module Swt
           gc.draw_rectangle(0, 0, extent.width - 1, extent.height - 1)
           gc.foreground, gc.background = fg, bg
         end
-        @dirty = false
         @img
+      end
+
+      def dirty!
+        @img = nil
       end
 
       def activate
@@ -69,7 +72,7 @@ module Swt
       end
 
       def redraw
-        @dirty = true
+        dirty!
         @label.image = label_image
       end
 
