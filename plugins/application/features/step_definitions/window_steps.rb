@@ -3,10 +3,15 @@ Then /^the window should have title "([^\"]*)"$/ do |expected_title|
   active_shell.get_text.should == expected_title
 end
 
-When /^I manually widen the treebook (only a few pixels|to show the sash)$/ do |w|
-  if w =~ /^only/
-    focussed_window.controller.send(:set_sash_widths, Redcar::ApplicationSWT::Window::SASH_WIDTH-1)
+When /^I set the treebook width to (the default|only a few pixels|the minimum width|\d+ pixels)$/ do |w|
+  if w == "only a few pixels"
+    width = 10
+  elsif w == "the minimum width"
+    width = Redcar::ApplicationSWT::Window::MINIMUM_TREEBOOK_WIDTH
+  elsif w == "the default"
+    width = default_treebook_width
   else
-    focussed_window.controller.send(:set_sash_widths, Redcar::ApplicationSWT::Window::SASH_WIDTH)
+    width = w.split(" ")[0].to_i
   end
+  focussed_window.controller.send(:set_sash_widths, width)
 end

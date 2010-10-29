@@ -35,7 +35,7 @@ module Redcar
     end
 
     def trees_visible?
-      controller.treebook_visible?
+      not controller.treebook_hidden?
     end
 
     def title
