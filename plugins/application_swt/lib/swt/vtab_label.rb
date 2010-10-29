@@ -27,28 +27,30 @@ module Swt
 
       def label_image
         display = Swt::Widgets::Display.current
-        @img = nil if @dirty
-        @img ||= GraphicsUtils.create_rotated_text(@title, @font, @parent.foreground, @parent.background, Swt::SWT::UP) do |gc, extent|
-          fg, bg = gc.foreground, gc.background
-          if @active
-            options = @tab.selection_color_options
-            options[:percents].each_with_index do |p, idx|
-              gc.foreground = options[:colors][idx]
-              gc.background = options[:colors][idx + 1]
-              if options[:vertical]
-                h = idx > 0 ? extent.height * options[:percents][idx - 1] : 0
-                gc.fill_gradient_rectangle(0, h, extent.width, extent.height * p, true)
-              else
-                h = idx > 0 ? extent.width * options[:percents][idx - 1] : 0
-                gc.fill_gradient_rectangle(w, 0, extent.width * p, extent.height, false)
+        unless @img
+          @img = GraphicsUtils.create_rotated_text(@title, @font, @parent.foreground, @parent.background, Swt::SWT::UP) do |gc, extent|
+            fg, bg = gc.foreground, gc.background
+            if @active
+              options = @tab.selection_color_options
+              options[:percents].each_with_index do |p, idx|
+                gc.foreground = options[:colors][idx]
+                gc.background = options[:colors][idx + 1]
+                if options[:vertical]
+                  h = idx > 0 ? extent.height * options[:percents][idx - 1] : 0
+                  gc.fill_gradient_rectangle(0, h, extent.width, extent.height * p, true)
+                else
+                  h = idx > 0 ? extent.width * options[:percents][idx - 1] : 0
+                  gc.fill_gradient_rectangle(w, 0, extent.width * p, extent.height, false)
+                end
               end
+            else
+              gc.fill_rectangle(0, 0, extent.width, extent.height)
             end
-          else
-            gc.fill_rectangle(0, 0, extent.width, extent.height)
+            gc.foreground = display.get_system_color(Swt::SWT::COLOR_WIDGET_NORMAL_SHADOW)
+            gc.draw_rectangle(0, 0, extent.width - 1, extent.height - 1)
+            gc.foreground, gc.background = fg, bg
           end
-          gc.foreground = display.get_system_color(Swt::SWT::COLOR_WIDGET_NORMAL_SHADOW)
-          gc.draw_rectangle(0, 0, extent.width - 1, extent.height - 1)
-          gc.foreground, gc.background = fg, bg
+          GraphicsUtils::GC.new(@img).draw_image(@icon, 1, 1) if @icon
         end
         @img
       end
