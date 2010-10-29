@@ -50,7 +50,12 @@ module Swt
             gc.draw_rectangle(0, 0, extent.width - 1, extent.height - 1)
             gc.foreground, gc.background = fg, bg
           end
-          GraphicsUtils::GC.new(@img).draw_image(@icon, 1, 1) if @icon
+          if @icon
+            GraphicsUtils::GC.new(@img).tap do |gc|
+              gc.draw_image(@icon, 1, 1)
+              gc.dispose
+            end
+          end
         end
         @img
       end
