@@ -343,19 +343,36 @@ module Redcar
         preferred = Manager.storage['preferred_command_line']
         case Redcar.platform
         when :osx
-          unless preferred
+          case preferred
+          when nil then
             preferred = "Terminal"
             Manager.storage['preferred_command_line'] = preferred
-          end
-          command = <<-BASH.gsub(/^\s{12}/, '')
+
+            command = <<-BASH.gsub(/^\s{12}/, '')
             osascript <<END
               tell application "#{preferred}"
                 do script "cd \\\"#{path}\\\""
                 activate
               end tell
             END
-          BASH
-          # Spoon doesn't seem to work with `osascript`
+            BASH
+          when /\AiTerm/ then
+            command = <<-BASH.gsub(/^\s{12}/, '')
+            osascript <<END
+              tell application "#{preferred}"
+                tell the first terminal
+                 launch session "Default Session"
+                  tell the last session
+                   write text "cd \\\"#{path}\\\""
+                  end tell
+                 end tell
+                activate
+              end tell
+            END
+            BASH
+          end
+
+            # Spoon doesn't seem to work with `osascript`
           system(command)
         when :windows
           run_application('start cmd.exe', '/kcd ' + path.gsub("/","\\"))
