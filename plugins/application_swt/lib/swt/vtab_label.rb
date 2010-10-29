@@ -90,7 +90,7 @@ module Swt
       end
 
       def mouseUp(e)
-        activate
+        activate if e.button == 1
       end
 
       def mouseEnter(e)
