@@ -50,14 +50,16 @@ module Swt
             gc.draw_rectangle(0, 0, extent.width - 1, extent.height - 1)
             gc.foreground, gc.background = fg, bg
           end
-          if @icon
-            GraphicsUtils::GC.new(@img).tap do |gc|
-              gc.draw_image(@icon, 1, 1)
-              gc.dispose
-            end
-          end
+          overlay_icon(@icon, @img)
         end
         @img
+      end
+
+      def overlay_icon(icon, image)
+        return unless icon
+        gc = GraphicsUtils::GC.new(image)
+        gc.draw_image(@icon, 1, 1)
+        gc.dispose
       end
 
       def dirty!
