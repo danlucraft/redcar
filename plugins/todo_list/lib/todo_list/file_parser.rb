@@ -16,7 +16,7 @@ module Redcar
 
       def find_dirs(path)
         return unless File.directory? path
-        unless TodoList.storage['excluded_dirs'].include?(path)
+        unless TodoList.storage['excluded_dirs'].include? File.basename(path)
           Dir["#{path}/*"].each {|subdir| find_dirs(subdir) }
           find_files(path)
         end
