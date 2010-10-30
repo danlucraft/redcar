@@ -20,7 +20,7 @@ class ProjectSearch
 
       @thread = Thread.new do
         
-        bits = query.gsub(/[^\w]/, " ").gsub("_", " ").split(/\s/).map {|b| b.strip}
+        bits = query.gsub(/[^\w]/, " ").gsub("_", " ").split(/\s/).map {|b| b.strip}.select {|b| b != ""}
         project = Redcar::Project::Manager.focussed_project
         index   = ProjectSearch.indexes[project.path].lucene_index
         doc_ids = nil
