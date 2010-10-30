@@ -60,6 +60,15 @@ Feature: Commenting lines by prefixing a comment string
     When I toggle comment lines
     Then the contents should be "# foo\n# bar\nbaz"
 
+  Scenario: Commenting when not all the lines begin with the comment symbol, reversed
+    When I replace the contents with "# foo\n# bar\nbaz"
+    And I switch the language to "Ruby"
+    And I select from 15 to 0
+    And I toggle comment lines
+    Then the contents should be "<c># # foo\n# # bar\n# baz<s>"
+    When I toggle comment lines
+    Then the contents should be "# foo\n# bar\nbaz"
+
   Scenario: Commenting a single line with the cursor on the next line
     When I replace the contents with "Two pieces\nof code"
     And I switch the language to "Ruby"
@@ -68,6 +77,15 @@ Feature: Commenting lines by prefixing a comment string
     Then the contents should be "<s># Two pieces\n<c>of code"
     When I toggle comment lines
     Then the contents should be "<s>Two pieces\n<c>of code"
+
+  Scenario: Commenting a single line with the cursor on the next line, reversed
+    When I replace the contents with "Two pieces\nof code"
+    And I switch the language to "Ruby"
+    And I select from 11 to 0
+    And I toggle comment lines
+    Then the contents should be "<c># Two pieces\n<s>of code"
+    When I toggle comment lines
+    Then the contents should be "<c>Two pieces\n<s>of code"
 
   Scenario: Commenting a single line with the cursor and selection point on the same line
     When I replace the contents with "Two pieces\nof code"
@@ -104,6 +122,15 @@ Feature: Commenting lines by prefixing a comment string
     When I toggle comment lines
     Then the contents should be "Tw<s>o pieces\nof<c> code"
 
+  Scenario: Commenting several lines, not from the start of one of them, reversed
+    When I replace the contents with "Two pieces\nof code"
+    And I switch the language to "Ruby"
+    And I select from 13 to 2
+    And I toggle comment lines
+    Then the contents should be "Tw<c># o pieces\n# of<s> code"
+    When I toggle comment lines
+    Then the contents should be "Tw<c>o pieces\nof<s> code"
+
   Scenario: Commenting several lines, not from the start of one of them
     When I replace the contents with "    foo\n    bar"
     And I switch the language to "Ruby"
@@ -121,12 +148,97 @@ Feature: Commenting lines by prefixing a comment string
     Then the contents should be "<s>#     def foo\n#       dfo\n#     sdfj\n#   asdf\n# as<c>df"
 
   Scenario: Commenting several indented lines, beginning before the text starts
-    When I replace the contents with "      def foo\n        dfo"
+    Given the content is:
+				"""
+				  <s>    def foo
+				        dfo<c>
+				"""
     And I switch the language to "Ruby"
-    And I select from 2 to 25
     And I toggle comment lines
-    Then the contents should be "  <s>    # def foo\n      #   dfo<c>"
+    Then the content should be:
+				"""
+				  <s>    # def foo
+				      #   dfo<c>
+				"""
 
+  Scenario: Commenting several indented lines, beginning before the text starts, reversed
+    Given the content is:
+				"""
+				  <c>    def foo
+				        dfo<s>
+				"""
+    And I switch the language to "Ruby"
+    And I toggle comment lines
+    Then the content should be:
+				"""
+				  <c>    # def foo
+				      #   dfo<s>
+				"""
+
+  Scenario: Commenting several indented lines, beginning where the text starts
+    Given the content is:
+				"""
+				      <s>def foo
+				        dfo<c>
+				"""
+    And I switch the language to "Ruby"
+    And I toggle comment lines
+    Then the content should be:
+				"""
+				      <s># def foo
+				      #   dfo<c>
+				"""
+    And I toggle comment lines
+    Then the content should be:
+				"""
+				      <s>def foo
+				        dfo<c>
+				"""
+
+  Scenario: Commenting several indented lines, with a whitespace only line in between
+    Given the content is:
+        """
+            <s>doc.compound do
+              all_lines_are_already_commented = true
+              start_line_comment_offset       = nil
+              insertion_column                = 1000
+              
+              <c>(start_line..end_line).each do |line|
+        """
+    And I switch the language to "Ruby"
+    And I toggle comment lines
+    Then the content should be:
+        """
+            <s># doc.compound do
+            #   all_lines_are_already_commented = true
+            #   start_line_comment_offset       = nil
+            #   insertion_column                = 1000
+            #   
+            #   <c>(start_line..end_line).each do |line|
+        """
+        
+  Scenario: Commenting several indented lines, with a blank line in between
+    Given the content is:
+        """
+            <s>doc.compound do
+              all_lines_are_already_commented = true
+              start_line_comment_offset       = nil
+              insertion_column                = 1000
+        
+              <c>(start_line..end_line).each do |line|
+        """
+    And I switch the language to "Ruby"
+    And I toggle comment lines
+    Then the content should be:
+        """
+            <s># doc.compound do
+            #   all_lines_are_already_commented = true
+            #   start_line_comment_offset       = nil
+            #   insertion_column                = 1000
+            # 
+            #   <c>(start_line..end_line).each do |line|
+        """
+        
   # This is pretty damn marginal, and I'm tired...
   #Scenario: Commenting several lines, with mismatched indentation, beginning in the middle
   #  When I replace the contents with "    def foo\n      dfo\n    sdfj\n  asdf\nasdf"

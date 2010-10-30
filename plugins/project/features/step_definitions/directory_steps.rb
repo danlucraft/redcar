@@ -4,7 +4,7 @@ When /I open a directory/ do
 end
 
 When /I close the directory/ do
-  Redcar::Project::DirectoryCloseCommand.new.run
+  Redcar::Project::Manager.focussed_project.close
 end
 
 When /^I refresh the directory tree$/ do

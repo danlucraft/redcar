@@ -96,9 +96,14 @@ module Redcar
     end
 
     def attach_listeners
+      attach_notebook_listeners
+      window.treebook.add_listener(:tree_removed, &method(:tree_removed))
+    end
+
+    def attach_notebook_listeners
       window.add_listener(:notebook_focussed, &method(:notebook_focussed))
-      window.add_listener(:notebook_closed, &method(:notebook_closed))
-      window.add_listener(:notebook_added, &method(:notebook_added))
+      window.add_listener(:notebook_removed, &method(:notebook_closed))
+      window.add_listener(:new_notebook, &method(:notebook_added))
       if notebooks = window.notebooks
         notebooks.each do |nb|
           notebook_added(nb)
@@ -118,6 +123,10 @@ module Redcar
 
     def notebook_closed(notebook)
       @listeners.delete(notebook)
+    end
+
+    def tree_removed(tree)
+      close if tree == @tree
     end
 
     # Refresh the DirMirror Tree for the given Window, if
