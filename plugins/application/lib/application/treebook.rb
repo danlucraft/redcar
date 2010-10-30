@@ -2,14 +2,14 @@ module Redcar
   class Treebook
     include Redcar::Observable
     include Redcar::Model
-    
+
     attr_reader :trees, :focussed_tree
-    
+
     def initialize
       @trees = []
       @focussed_tree = nil
     end
-    
+
     # Add a tree to this treebook
     #
     # @param [Redcar::Tree]
@@ -18,7 +18,7 @@ module Redcar
       @focussed_tree = tree
       notify_listeners(:tree_added, tree)
     end
-    
+
     # Bring the tree to the front
     #
     # @param [Redcar::Tree]
@@ -27,7 +27,7 @@ module Redcar
       @focussed_tree = tree
       notify_listeners(:tree_focussed, tree)
     end
-    
+
     # Remove a tree from this treebook
     #
     # @param [Redcar::Tree]
@@ -40,9 +40,9 @@ module Redcar
         end
       end
     end
-    
+
     private
-    
+
     # Tell the Treebook that this tree has been focussed in the GUI.
     def set_focussed_tree(tree)
       @focussed_tree = tree
