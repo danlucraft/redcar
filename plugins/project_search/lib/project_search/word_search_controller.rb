@@ -42,7 +42,6 @@ class ProjectSearch
           index   = ProjectSearch.indexes[project.path].lucene_index
           doc_ids = nil
           bits.each do |bit|
-            puts "searching for #{bit}"
             new_doc_ids = index.find(:contents => bit.downcase).map {|doc| doc.id }
             doc_ids = doc_ids ? (doc_ids & new_doc_ids) : new_doc_ids
           end

@@ -34,8 +34,8 @@ class ProjectSearch
   end
 
   def self.toolbars
-    ToolBar::Builder.build do
-      item "Project Word Search", :command => SearchCommand, 
+    Redcar::ToolBar::Builder.build do
+      item "Project Word Search", :command => WordSearchCommand, 
         :icon => File.join(Redcar::ICONS_DIRECTORY, "application-search-result.png"), 
         :barname => :project
     end
