@@ -224,13 +224,7 @@ module Redcar
         win = Redcar.app.focussed_window
         if win and treebook = win.treebook
           if tree = treebook.focussed_tree
-            if tree.tree_mirror.is_a?(Project::DirMirror)
-              Redcar::Application::Dialog.message_box(
-              "Use the \"Close Directory\" command to close this project"
-              )
-            else
-              treebook.remove_tree(tree)
-            end
+            treebook.remove_tree(tree)
           end
         end
       end
