@@ -157,7 +157,7 @@ module Redcar
         md[1].length
       end
       
-	    def execute
+      def execute
         type = Comment.comment_map["#{tab.edit_view.grammar.gsub("\"","")}"]
         if type
           @comment = type["line_comment"]
@@ -199,7 +199,8 @@ module Redcar
             
             (start_line..end_line).each do |line|
               text = doc.get_line(line)
-              if text.length <= insertion_column + 1 and text =~ /^\s*$/
+              
+              if text =~ /^\s*$/
               else
                 insertion_column = [insertion_column, comment_insertion_point_for(text)].min
               end
@@ -255,7 +256,7 @@ module Redcar
             end
           end
         end
-        
+
         if selected
           doc.set_selection_range(cursor_offset, selection_offset)
         else
