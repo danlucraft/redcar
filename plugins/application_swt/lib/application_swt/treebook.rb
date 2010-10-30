@@ -23,7 +23,7 @@ module Redcar
         i.text = tree.tree_mirror.title
         i.control = TreeViewSWT.new(@tab_folder, tree)
         tree.controller = i.control
-        @tab_folder.silent_selection(i)
+        @tab_folder.selection = i
       end
 
       def tree_removed(tree)
@@ -33,7 +33,7 @@ module Redcar
 
       def tree_focussed(tree)
         item = @tab_folder.get_item(tree.tree_mirror.title)
-        @tab_folder.silent_selection(item)
+        @tab_folder.selection = item
       end
 
       def create_tree_view
@@ -44,14 +44,26 @@ module Redcar
         percents = [60, 85]
         @tab_folder.set_selection_background(colors, percents, true)
 
+        attach_view_listeners
+
+        @tab_folder.layout
+        @window.left_composite.layout
+      end
+
+      def attach_view_listeners
+        @tab_folder.add_ctab_folder2_listener do |event|
+          # Close event
+          tab_item = event.item
+          tree_view_swt = tab_item.control
+          @model.remove_tree(tree_view_swt.model)
+        end
+
         @tab_folder.add_selection_listener do |event|
+          # Widget selected event
           tab_item = event.item
           tree_view_swt = tab_item.control
           @model.focus_tree(tree_view_swt.model)
         end
-
-        @tab_folder.layout
-        @window.left_composite.layout
       end
     end
   end
