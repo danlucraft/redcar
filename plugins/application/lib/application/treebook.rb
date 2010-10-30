@@ -23,6 +23,7 @@ module Redcar
     #
     # @param [Redcar::Tree]
     def focus_tree(tree)
+      return if @focussed_tree == tree
       @focussed_tree = tree
       notify_listeners(:tree_focussed, tree)
     end
