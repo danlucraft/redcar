@@ -71,33 +71,12 @@ module Swt
       end
 
       def selection=(tab)
-        return if tab.nil?
-        evt = SelectionEvent.new.tap do |e|
-          e.item = tab
-          e.doit = true
-        end
-        @selection_listeners.each do |l|
-          if l.respond_to? :call
-            l[evt]
-          else
-            l.widgetSelected(evt)
-          end
-        end
-        if evt.doit
-          silent_selection(tab)
-        end
-      end
+        tab = ensure_tab(tab)
+        return if tab.nil? or tab.active?
 
-      def silent_selection(tab)
-        return if tab.nil?
-        selection.active = false if selection
-        if tab.respond_to? :to_int
-          @items[tab].active = true
-        else
-          tab.active = true
-        end
-        layout
-        @tab_area.layout
+        evt = create_selection_event(tab)
+        call_listeners(@selection_listeners, evt, :method => :widgetSelected, :run_blocks => true)
+        do_selection(tab) if evt.doit
       end
 
       def selection_index
@@ -121,6 +100,45 @@ module Swt
       def font= swt_font
         @font = swt_font
         @items.each { |tab| tab.font = swt_font }
+      end
+
+      private
+
+      def ensure_tab(tab)
+        tab = @items[tab] if tab.respond_to? :to_int
+        tab
+      end
+
+      def do_selection(tab)
+        selection.active = false if selection
+        tab.active = true
+        relayout!
+      end
+
+      def relayout!
+        layout
+        @tab_area.layout
+      end
+
+      def create_selection_event(tab)
+        create_event(tab, SelectionEvent)
+      end
+
+      def create_event(tab, clazz)
+        clazz.new.tap do |e|
+          e.item = tab
+          e.doit = true
+        end
+      end
+
+      def call_listeners(list, evt, hash)
+        list.each do |l|
+          if hash[:run_blocks] and l.respond_to? :call
+            l[evt]
+          else
+            l.send(hash[:method], evt)
+          end
+        end
       end
     end
   end
