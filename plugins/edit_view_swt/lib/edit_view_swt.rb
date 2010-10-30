@@ -248,7 +248,7 @@ module Redcar
     def annotations(options = nil)
       return @mate_text.annotations unless options
       if options[:line]
-        @mate_text.annotationsOnLine(line + 1)
+        @mate_text.annotationsOnLine(options[:line] - 1)
       elsif options[:type]
         annotations_of_type(options[:type])
       end
