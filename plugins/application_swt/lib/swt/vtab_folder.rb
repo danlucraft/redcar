@@ -50,10 +50,11 @@ module Swt
       end
 
       def remove_item(tab)
-        @items.delete(tab)
-        tab.dispose
-        selection = @items.first if tab.active?
-        layout
+        return unless tab = ensure_tab(tab)
+
+        evt = create_ctab_folder_event(tab)
+        call_listeners(@ctab_folder2_listeners, evt, :method => :close, :run_blocks => true)
+        do_remove_item(tab) if evt.doit
       end
 
       def get_item(selector)
@@ -115,6 +116,13 @@ module Swt
         relayout!
       end
 
+      def do_remove_item(tab)
+        @items.delete(tab)
+        tab.dispose
+        selection = @items.first if tab.active?
+        relayout!
+      end
+
       def relayout!
         layout
         @tab_area.layout
@@ -122,6 +130,10 @@ module Swt
 
       def create_selection_event(tab)
         create_event(tab, SelectionEvent)
+      end
+
+      def create_ctab_folder_event(tab)
+        create_event(tab, CTabFolderEvent)
       end
 
       def create_event(tab, clazz)
