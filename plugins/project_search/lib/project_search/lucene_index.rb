@@ -38,8 +38,6 @@ class ProjectSearch
         fn.index(@project.config_dir)
       end
       Lucene::Transaction.run do 
-        i = 0
-        s = Time.now
         @lucene_index ||= Lucene::Index.new(File.join(@project.config_dir, "lucene")) 
         begin
           @lucene_index.field_infos[:contents][:store] = true 
@@ -49,13 +47,11 @@ class ProjectSearch
               unless BinaryDataDetector.binary?(contents[0..200])
                 adjusted_contents = contents.gsub(/\.([^\s])/, '. \1')
                 @lucene_index << { :id => fn, :contents => adjusted_contents }
-                i += 1
               end
             end
           end
           @lucene_index.commit
           @has_content = true
-          puts "took #{Time.now - s}s to index #{i} files"
         rescue => e
           puts e.message
           puts e.backtrace

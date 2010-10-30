@@ -9,6 +9,14 @@ module Redcar
       def title
         "Find In Project"
       end
+      
+      def search_copy
+        "Search with regular expressions or literal strings"
+      end
+      
+      def show_literal_match_option?
+        true
+      end
 
       def index
         @plugin_root   = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
@@ -17,6 +25,8 @@ module Redcar
         @literal_match = Redcar::FindInProject.storage['literal_match']
         @match_case    = Redcar::FindInProject.storage['match_case']
         @with_context  = Redcar::FindInProject.storage['with_context']
+        @show_literal_match_option = show_literal_match_option?
+        @search_copy               = search_copy
         render('index')
       end
 

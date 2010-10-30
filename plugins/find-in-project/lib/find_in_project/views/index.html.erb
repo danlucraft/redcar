@@ -34,12 +34,15 @@
         <td class="controls">
           <input id="search" type="submit" value="Find In Project" />
           <img id="spinner" src="<%= image_path %>/spinner.gif" style="display:none;" />
-          <input type="checkbox" id="literal_match" <%="checked=checked" if @literal_match %>>
-          <label for="literal_match">Literal Match</label>
+          <% if @show_literal_match_option %>
+            <input type="checkbox" id="literal_match" <%="checked=checked" if @literal_match %>>
+            <label for="literal_match">Literal Match</label>
+          <% end %>
           <input type="checkbox" id="match_case" <%="checked=checked" if @match_case %>>
           <label for="match_case">Match case</label>
           <input type="checkbox" id="with_context" <%="checked=checked" if @with_context %>>
           <label for="with_context">With context</label>
+          <%= @search_copy %>
         </td>
         <td></td>
       </tr>

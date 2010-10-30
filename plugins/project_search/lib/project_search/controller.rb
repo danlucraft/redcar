@@ -7,6 +7,14 @@ class ProjectSearch
       "Project Search"
     end
     
+    def search_copy
+      "Search for complete words only"
+    end
+    
+    def show_literal_match_option?
+      false
+    end
+
     def num_context_lines
       @settings['context_lines']
     end
@@ -14,7 +22,7 @@ class ProjectSearch
     def search(query, literal_match, match_case, with_context)
       @query = query
       Redcar::FindInProject.storage['recent_queries'] = add_or_move_to_top(@query, Redcar::FindInProject.storage['recent_queries'])
-      Redcar::FindInProject.storage['literal_match'] = (@literal_match = (literal_match == 'true'))
+      Redcar::FindInProject.storage['literal_match'] = (@literal_match = true)
       Redcar::FindInProject.storage['match_case'] = (@match_case = (match_case == 'true'))
       Redcar::FindInProject.storage['with_context'] = (@with_context = (with_context == 'true'))
       @regexp = create_regexp
