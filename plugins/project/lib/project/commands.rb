@@ -217,13 +217,6 @@ module Redcar
       end
     end
 
-    class DirectoryCloseCommand < ProjectCommand
-
-      def execute
-        project.close
-      end
-    end
-
     class RefreshDirectoryCommand < ProjectCommand
 
       def execute

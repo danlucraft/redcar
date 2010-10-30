@@ -319,10 +319,6 @@ module Redcar
               item "Save", Project::FileSaveCommand
               item "Save As", Project::FileSaveAsCommand
             end
-
-            group(:priority => 11) do
-              item "Close Directory", Project::DirectoryCloseCommand
-            end
           end
           sub_menu "Project", :priority => 15 do
             group(:priority => :first) do
