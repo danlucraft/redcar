@@ -102,8 +102,8 @@ module Redcar
 
     def attach_notebook_listeners
       window.add_listener(:notebook_focussed, &method(:notebook_focussed))
-      window.add_listener(:notebook_closed, &method(:notebook_closed))
-      window.add_listener(:notebook_added, &method(:notebook_added))
+      window.add_listener(:notebook_removed, &method(:notebook_closed))
+      window.add_listener(:new_notebook, &method(:notebook_added))
       if notebooks = window.notebooks
         notebooks.each do |nb|
           notebook_added(nb)

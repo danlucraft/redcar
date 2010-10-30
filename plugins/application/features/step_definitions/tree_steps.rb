@@ -10,6 +10,37 @@ When /^I toggle tree visibility$/ do
   Redcar::Top::ToggleTreesCommand.new.run
 end
 
+When "I close the tree" do
+  Redcar::Top::CloseTreeCommand.new.run
+end
+
+When "I click the close button" do
+  vtabitem = focussed_window.treebook.controller.tab_folder.selection
+  swtlabel = swt_label_for_item(vtabitem)
+
+  # Make sure the close icon is showing
+  FakeEvent.new(Swt::SWT::MouseEnter, swtlabel)
+
+  # Fire the click event
+  FakeEvent.new(Swt::SWT::MouseUp, swtlabel,
+    :x => Swt::Widgets::VTabLabel::ICON_PADDING + 1,
+    :y => Swt::Widgets::VTabLabel::ICON_PADDING + 1)
+end
+
+When /^I (?:(left|right)-)?click the (project|directory|"[^\"]*") tree tab$/ do |button, target|
+  if target =~ /(project|directory)/
+    path  = Redcar::Project::Manager.in_window(Redcar.app.focussed_window).path
+    target = File.basename(path) + "/"
+  end
+  target.gsub!('"', '')
+  vtabitem = focussed_window.treebook.controller.tab_folder.get_item(target)
+  swtlabel = swt_label_for_item(vtabitem)
+
+  button = (button == "right" ? 2 : 1)
+  FakeEvent.new(Swt::SWT::MouseEnter, swtlabel)
+  FakeEvent.new(Swt::SWT::MouseUp, swtlabel, :x => 1, :y => 1, :button => button)
+end
+
 Then /^I should (not )?see "([^\"]*)" in the tree$/ do |negate, rows|
   item_names = visible_tree_items(top_tree).map(&:get_text)
   rows.split(',').map(&:strip).each do |row|
