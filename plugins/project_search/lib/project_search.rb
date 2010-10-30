@@ -4,6 +4,7 @@ require 'lucene'
 
 require 'project_search/controller'
 require 'project_search/lucene_index'
+require 'project_search/binary_data_detector'
 
 class ProjectSearch
   

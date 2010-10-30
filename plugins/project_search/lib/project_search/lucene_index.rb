@@ -37,9 +37,14 @@ class ProjectSearch
         begin
           @lucene_index.field_infos[:contents][:store] = true 
           @lucene_index.field_infos[:contents][:tokenized] = true          changed_files.each do |fn, ts|
-            puts "lucene update: #{fn} @ #{ts}"
-            if fn =~ /rb$/
-              @lucene_index << { :id => fn, :contents => File.read(fn) }
+            unless File.basename(fn)[0..0] == "." or fn.include?(".git")
+              contents = File.read(fn)
+              if BinaryDataDetector.binary?(contents)
+                puts "skipping binary: #{fn}"
+              else
+                puts "lucene update: #{fn} @ #{ts}"
+                @lucene_index << { :id => fn, :contents => File.read(fn) }
+              end
             end
           end
           @lucene_index.commit
@@ -50,5 +55,6 @@ class ProjectSearch
       end
       dump
     end
+    
   end
 end
