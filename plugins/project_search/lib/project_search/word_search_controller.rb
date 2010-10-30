@@ -1,8 +1,8 @@
 
 
 class ProjectSearch
-  class Controller < Redcar::FindInProject::Controller
-    
+  class WordSearchController < ProjectSearch::RegexSearchController
+  
     def title
       "Project Search"
     end
@@ -21,10 +21,10 @@ class ProjectSearch
     
     def search(query, literal_match, match_case, with_context)
       @query = query
-      Redcar::FindInProject.storage['recent_queries'] = add_or_move_to_top(@query, Redcar::FindInProject.storage['recent_queries'])
-      Redcar::FindInProject.storage['literal_match'] = (@literal_match = true)
-      Redcar::FindInProject.storage['match_case'] = (@match_case = (match_case == 'true'))
-      Redcar::FindInProject.storage['with_context'] = (@with_context = (with_context == 'true'))
+      ProjectSearch.storage['recent_queries'] = add_or_move_to_top(@query, ProjectSearch.storage['recent_queries'])
+      ProjectSearch.storage['literal_match'] = (@literal_match = true)
+      ProjectSearch.storage['match_case'] = (@match_case = (match_case == 'true'))
+      ProjectSearch.storage['with_context'] = (@with_context = (with_context == 'true'))
       @regexp = create_regexp
 
       # kill any existing running search to prevent memory bloat

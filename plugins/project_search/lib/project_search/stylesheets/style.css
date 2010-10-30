@@ -35,6 +35,7 @@
 #search_form_container .input .field input {
   width: 100%;
   height: 20px;
+  font-family: monospace;
 }
 
 #search_form_container .input .expand {

@@ -1,4 +1,4 @@
-* Speed it up! (in particular, with context). Stats below.
+* Speed up regex search (in particular, with context). Stats below.
 
 Searching for "redcar" in the Redcar source code:
   - Without Context:

@@ -814,7 +814,6 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+H",       DocumentSearch::SearchAndReplaceCommand
         #link "Cmd+Shift+F", DocumentSearch::RepeatPreviousSearchForwardCommand
         link "Cmd+Ctrl+F",  DocumentSearch::SearchAndReplaceCommand
-        link "Cmd+Shift+F", Redcar::FindInProject::OpenSearch
         link "Cmd+A",       SelectAllCommand
         link "Ctrl+W",      SelectWordCommand
         link "Cmd+B",       ToggleBlockSelectionCommand
@@ -890,7 +889,6 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+F",       DocumentSearch::SearchForwardCommand
         link "Ctrl+H",       DocumentSearch::SearchAndReplaceCommand
         link "F3",           DocumentSearch::RepeatPreviousSearchForwardCommand
-        link "Ctrl+Shift+F", Redcar::FindInProject::OpenSearch
         link "Ctrl+A",       SelectAllCommand
         link "Ctrl+Alt+W",   SelectWordCommand
         link "Ctrl+B",       ToggleBlockSelectionCommand
