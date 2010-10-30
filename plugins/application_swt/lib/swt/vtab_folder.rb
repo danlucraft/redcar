@@ -4,7 +4,8 @@ module Swt
       attr_accessor :tab_area, :content_area
       attr_reader :selection_color_options, :font, :items
 
-      SelectionEvent = Struct.new("Event", :item, :doit)
+      SelectionEvent  = Struct.new("Event", :item, :doit)
+      CTabFolderEvent = SelectionEvent
 
       def initialize(parent, style)
         super(parent, style | Swt::SWT::BORDER)
@@ -17,6 +18,7 @@ module Swt
 
         @items = []
         @selection_listeners = []
+        @ctab_folder2_listeners = []
         @font = Swt::Widgets::Display.current.system_font
 
         @tab_area = Swt::Widgets::Composite.new(self, Swt::SWT::NONE).tap do |t|
