@@ -240,9 +240,13 @@ module Redcar
       def execute
         if project and project.window.trees_visible?
           tab = Redcar.app.focussed_window.focussed_notebook_tab
-          return unless tab.is_a?(EditTab) && tab.edit_view.document.mirror
+          if tab.is_a?(EditTab)
+            return unless mirror = tab.edit_view.document.mirror and mirror.respond_to? :path
+          else
+            return
+          end
 
-          path = tab.edit_view.document.mirror.path
+          path = mirror.path
           tree = project.tree
           current = tree.tree_mirror.top
           while current.any?
