@@ -43,7 +43,8 @@ class ProjectSearch
                 puts "skipping binary: #{fn}"
               else
                 puts "lucene update: #{fn} @ #{ts}"
-                @lucene_index << { :id => fn, :contents => File.read(fn) }
+                adjusted_contents = contents.gsub(/\.([^\s])/, '. \1')
+                @lucene_index << { :id => fn, :contents => adjusted_contents }
               end
             end
           end
