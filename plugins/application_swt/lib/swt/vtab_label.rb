@@ -10,7 +10,7 @@ module Swt
       include Swt::Events::MouseTrackListener
 
       CLOSE_ICON   = Redcar::ApplicationSWT::Icon.swt_image(:close)
-      ICON_PADDING = 1
+      ICON_PADDING = 3
 
       def initialize(tab, parent, style)
         @label = Swt::Widgets::Label.new(parent, style)
