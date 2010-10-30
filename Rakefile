@@ -56,7 +56,7 @@ def find_ci_reporter(filename)
 end
 
 def rcov_run(cmd, opts)
-  cmd = %{rcov --aggregate #{COVERAGE_DATA} -x "features/,spec/,vendor/,openssl/,yaml/,json/,yaml,gems,file:,(eval),(__FORWARDABLE__)" #{cmd} -- #{opts}}
+  cmd = %{rcov --aggregate #{COVERAGE_DATA} -x "jsignal_internal,(erb),features/,spec/,vendor/,openssl/,yaml/,json/,yaml,gems,file:,(eval),(__FORWARDABLE__)" #{cmd} -- #{opts}}
   jruby_run(cmd)
 end
 
