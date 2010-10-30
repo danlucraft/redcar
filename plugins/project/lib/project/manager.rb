@@ -175,10 +175,19 @@ module Redcar
       #
       # @param [String] path  the path of the directory to view
       def self.open_project_for_path(path)
-        win = Redcar.app.focussed_window
-        win = Redcar.app.new_window if !win or Manager.in_window(win)
-        project = Project.new(path).tap do |p|
-          p.open(win) if p.ready?
+        open_projects.each do |project|
+          if project.path == path
+            project.window.focus
+            return
+          end
+        end
+        project = Project.new(path)
+        if project.locked?
+          Application::Dialog.message_box("Project is locked by another Redcar process!\nClose the other project or delete .redcar/redcar.lock to continue.", :type => :warning)
+        else
+          win = Redcar.app.focussed_window
+          win = Redcar.app.new_window if !win or Manager.in_window(win)
+          project.open(win) if project.ready?
         end
       end
 

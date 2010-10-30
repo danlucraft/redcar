@@ -72,10 +72,15 @@ module Redcar
         Runnables::RunningProcessChecker.new(
           Redcar.app.all_tabs.select {|t| t.is_a?(HtmlTab)},
           "Kill all and quit?",
-          :none     => lambda { Redcar.app.quit },
-          :continue => lambda { Redcar.app.quit },
+          :none     => lambda { quit },
+          :continue => lambda { quit },
           :cancel   => nil
         ).check
+      end
+      
+      def quit
+        Project::Manager.open_projects.each {|pr| pr.close }
+        Redcar.app.quit
       end
     end
 
