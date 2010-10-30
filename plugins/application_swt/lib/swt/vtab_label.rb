@@ -3,7 +3,7 @@ require File.expand_path("../graphics_utils", __FILE__)
 module Swt
   module Widgets
     class VTabLabel
-      attr_reader :active, :title
+      attr_reader :active, :title, :show_close
       attr_accessor :font
 
       include Swt::Events::MouseListener
@@ -19,11 +19,12 @@ module Swt
         @parent = parent
         @title = ""
         @icon = nil
+        @show_close = false
 
         @label.image = label_image
         @label.add_paint_listener { |event| event.gc.draw_image(label_image, 0, 0) }
         @label.add_mouse_listener(self)
-        @label.add_mouse_track_listener(self)
+        self.show_close = true
       end
 
       def label_image
@@ -90,8 +91,18 @@ module Swt
         @label.dispose
       end
 
+      def show_close= boolean
+        return if @show_close == boolean
+        @show_close = boolean
+        @show_close ? @label.add_mouse_track_listener(self) : @label.remove_mouse_track_listener(self)
+      end
+
       def mouseUp(e)
-        activate if e.button == 1
+        if show_close and CLOSE_ICON.bounds.contains(e.x - ICON_PADDING, e.y - ICON_PADDING)
+          @tab.parent.remove_item(@tab)
+        else
+          activate if e.button == 1
+        end
       end
 
       def mouseEnter(e)
