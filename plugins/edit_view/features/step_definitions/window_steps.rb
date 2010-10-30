@@ -25,18 +25,6 @@ When /I open a new window(?: with title "(.*)")?/ do |title|
   Redcar::Top::NewWindowCommand.new(title).run
 end
 
-class FakeEvent
-  def initialize(event_type, widget)
-    untyped_event = Swt::Widgets::Event.new.tap do |e|
-      e.display = Swt.display
-      e.widget = widget
-      e.x = 0
-      e.y = 0
-    end
-    widget.notify_listeners(event_type, untyped_event)
-  end
-end
-                                                                                                                                             
 When /^I maximize the window size$/ do
   Redcar.app.focussed_window.controller.shell.maximized = true
 end
