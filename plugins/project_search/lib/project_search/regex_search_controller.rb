@@ -44,7 +44,7 @@ class ProjectSearch
     end
 
     def open_file(file, line, query, literal_match, match_case)
-      Project::Manager.open_file(File.expand_path(file, Project::Manager.focussed_project.path))
+      Redcar::Project::Manager.open_file(File.expand_path(file, Redcar::Project::Manager.focussed_project.path))
       doc.cursor_offset = doc.offset_at_line(line.to_i - 1)
       regexp_text = literal_match ? Regexp.escape(query) : query
       regex = match_case ? /(#{regexp_text})/ : /(#{regexp_text})/i
@@ -88,7 +88,7 @@ class ProjectSearch
     def search_in_background
       @plugin_root  = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
       @settings     = ProjectSearch.storage
-      @project_path = Project::Manager.focussed_project.path
+      @project_path = Redcar::Project::Manager.focussed_project.path
 
       # kill any existing running search to prevent memory bloat
       Thread.kill(@thread) if @thread

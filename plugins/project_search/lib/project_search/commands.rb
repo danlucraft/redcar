@@ -36,7 +36,7 @@ class ProjectSearch
     sensitize :open_project
     
     def execute
-      if Project::Manager.focussed_project
+      if Redcar::Project::Manager.focussed_project
         if (tab = find_open_instance)
           tab.html_view.controller = tab.html_view.controller # refresh
         else
@@ -46,7 +46,7 @@ class ProjectSearch
         tab.focus
       else
         # warning
-        Application::Dialog.message_box("You need an open project to be able to use Find In Project!", :type => :error)
+        Redcar::Application::Dialog.message_box("You need an open project to be able to use Find In Project!", :type => :error)
       end
     end
 
@@ -67,7 +67,7 @@ class ProjectSearch
       ProjectSearch.storage # populate the file if it isn't already
 
       tab  = Redcar.app.focussed_window.new_tab(Redcar::EditTab)
-      mirror = Project::FileMirror.new(File.join(Redcar.user_dir, "storage", "find_in_project.yaml"))
+      mirror = Redcar::Project::FileMirror.new(File.join(Redcar.user_dir, "storage", "find_in_project.yaml"))
       tab.edit_view.document.mirror = mirror
       tab.edit_view.reset_undo
       tab.focus

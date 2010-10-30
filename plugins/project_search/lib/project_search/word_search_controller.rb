@@ -58,9 +58,11 @@ class ProjectSearch
               matched_lines      = false
               last_matching_file = doc_id
               @line_index = 0 # reset line row styling
-              contents = File.readlines(doc_id)
+              contents = File.read(doc_id).split(/\n|\r/)
               need_context_after = 0
-              contents.each_with_index do |line, line_num|
+              contents.each_with_index do |line, line_num_minus_1|
+                line_num = line_num_minus_1 + 1
+                
                 if @with_context
                   context[:before].shift if context[:before].length == num_context_lines + 1
                   context[:before] << [line, line_num]
@@ -78,7 +80,7 @@ class ProjectSearch
                 
                 if parsing_new_file
                   increment_file_results_count
-                  add_break_row# if matched_lines
+                  add_break_row # if matched_lines
                   render_file_heading(doc_id, file_num)
                   @line_index = 0 # reset line row styling
                 end
