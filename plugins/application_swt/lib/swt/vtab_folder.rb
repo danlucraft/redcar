@@ -92,10 +92,23 @@ module Swt
         selection = tab
       end
 
+      # Mirrors the selection-listener behaviour of CTabFolder.
+      # Additionally accepts a block as listener. If a block is passed,
+      # only widgetSelected events will be passed, not widgetDefaultSelected.
       def add_selection_listener(listener = nil)
         return @selection_listeners << listener if listener
         raise ArgumentError, "Expected a listener or a block" unless block_given?
         @selection_listeners << Proc.new
+      end
+
+      # Mirrors the CTabFolder2Listener behaviour of CTabFolder.
+      # You can also pass a a block as listener. Note that when you pass a
+      # block, only close events will be passed to it, not the minimize, maximize,
+      # restore or showList events.
+      def add_ctab_folder2_listener(listener = nil)
+        return @ctab_folder2_listeners << listener if listener
+        raise ArgumentError, "Expected a listener or a block" unless block_given?
+        @ctab_folder2_listeners << Proc.new
       end
 
       def font= swt_font
