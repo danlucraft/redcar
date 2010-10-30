@@ -66,6 +66,11 @@ module SwtHelper
     find_node_with_text(all_children, node_text) unless all_children.empty?
   end
 
+  def swt_label_for_item(vtabitem)
+    vtablabel = vtabitem.instance_variable_get "@label"
+    vtablabel.instance_variable_get "@label"
+  end
+
   module TreeHelpers
     def items
       getItems.to_a
