@@ -6,7 +6,6 @@ class ProjectSearch
     def initialize(project)
       @project = project
       load
-      p File.join(@project.config_dir, "lucene")
     end
     
     def timestamp_file_path
@@ -33,22 +32,26 @@ class ProjectSearch
         fn.index(@project.config_dir)
       end
       Lucene::Transaction.run do 
+        i = 0
+        s = Time.now
         @lucene_index ||= Lucene::Index.new(File.join(@project.config_dir, "lucene")) 
         begin
           @lucene_index.field_infos[:contents][:store] = true 
           @lucene_index.field_infos[:contents][:tokenized] = true          changed_files.each do |fn, ts|
             unless File.basename(fn)[0..0] == "." or fn.include?(".git")
               contents = File.read(fn)
-              if BinaryDataDetector.binary?(contents)
-                puts "skipping binary: #{fn}"
+              if BinaryDataDetector.binary?(contents[0..200])
+                # puts "skipping binary: #{fn}"
               else
-                puts "lucene update: #{fn} @ #{ts}"
+                # puts "lucene update: #{fn} @ #{ts}"
                 adjusted_contents = contents.gsub(/\.([^\s])/, '. \1')
                 @lucene_index << { :id => fn, :contents => adjusted_contents }
+                i += 1
               end
             end
           end
           @lucene_index.commit
+          puts "took #{Time.now - s}s to index #{i} files"
         rescue => e
           puts e.message
           puts e.backtrace

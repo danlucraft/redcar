@@ -26,7 +26,6 @@ class ProjectSearch
     def execute
       return if @project.remote?
       unless index = ProjectSearch.indexes[@project.path]
-        p :creating_index
         index = ProjectSearch::LuceneIndex.new(@project)
         ProjectSearch.indexes[@project.path] = index
       end
@@ -56,7 +55,6 @@ class ProjectSearch
         end
         tab.focus
       else
-        # warning
         Application::Dialog.message_box("You need an open project to be able to use Find In Project!", :type => :error)
       end
       return
