@@ -45,7 +45,7 @@ module Swt
         @items << tab
         tab.draw_label(@tab_area)
         tab.font = @font
-        tab.active = true if @items.size == 1
+        selection = tab if @items.size == 1
         layout
       end
 
