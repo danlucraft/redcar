@@ -21,7 +21,8 @@ describe Redcar::TodoList::FileParser do
 
   it "should find only colon'ed tags if that requirement is set in the settings" do
     TodoList.storage['require_colon'] = true
-    tags = @parser.parse_files(@fixtures)
+    @parser   = Redcar::TodoList::FileParser.new
+    tags      = @parser.parse_files(@fixtures)
     tags.keys.should include "OPTIMIZE"
     tags.keys.should_not include "FIXME"
     TodoList.storage['require_colon'] = false
