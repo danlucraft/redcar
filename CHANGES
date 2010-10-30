@@ -1,16 +1,13 @@
 Version 0.9 (TBA)
 =================
 
- * 
+Enhancements:
+ * Vertical tree tabs now have a close button like edit view tabs (Tim Felgentreff)
 
 Version 0.8.1 (26 October 2010)
 ===============================
 
-Enhancements:
  * Replace all is a single undo operation (Steven Hancock)
- * Vertical tree tabs now have a close button like edit view tabs
-
-Bugfixes:
  * Remove files with multi-byte names from the gem so windows rubygems is happy (Dan Lucraft)
 
 Version 0.8 (26 October 2010)
