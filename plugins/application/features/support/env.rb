@@ -1,3 +1,5 @@
+require File.expand_path("../fake_event", __FILE__)
+
 class TestingError < StandardError
 end
 

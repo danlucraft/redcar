@@ -10,6 +10,24 @@ When /^I toggle tree visibility$/ do
   Redcar::Top::ToggleTreesCommand.new.run
 end
 
+When "close the tree" do
+  Redcar::Top::CloseTreeCommand.new.run
+end
+
+When "I click the close button" do
+  vtabitem  = focussed_window.treebook.controller.tab_folder.selection
+  vtablabel = vtabitem.instance_variable_get "@label"
+  swtlabel  = vtablabel.instance_variable_get "@label"
+
+  # Make sure the close icon is showing
+  FakeEvent.new(Swt::SWT::MouseEnter, swtlabel)
+
+  # Fire the click event
+  FakeEvent.new(Swt::SWT::MouseUp, swtlabel,
+    :x => Swt::Widgets::VTabLabel::ICON_PADDING + 1,
+    :y => Swt::Widgets::VTabLabel::ICON_PADDING + 1)
+end
+
 Then /^I should (not )?see "([^\"]*)" in the tree$/ do |negate, rows|
   item_names = visible_tree_items(top_tree).map(&:get_text)
   rows.split(',').map(&:strip).each do |row|
