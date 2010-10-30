@@ -4,7 +4,8 @@ class ProjectSearch
     attr_accessor :last_updated, :lucene_index
     
     def initialize(project)
-      @project = project
+      @project     = project
+      @has_content = false
       load
     end
     
@@ -16,6 +17,7 @@ class ProjectSearch
       @last_updated = Time.at(0)
       if File.exist?(timestamp_file_path)
         @last_updated = Time.at(File.read(timestamp_file_path).chomp.to_i)
+        @has_content = true
       end
     end
     
@@ -23,6 +25,10 @@ class ProjectSearch
       File.open(timestamp_file_path, "w") do |fout|
         fout.puts(last_updated.to_i.to_s)
       end
+    end
+    
+    def has_content?
+      @has_content
     end
     
     def update
@@ -51,6 +57,7 @@ class ProjectSearch
             end
           end
           @lucene_index.commit
+          @has_content = true
           puts "took #{Time.now - s}s to index #{i} files"
         rescue => e
           puts e.message

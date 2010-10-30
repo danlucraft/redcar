@@ -46,16 +46,22 @@ class ProjectSearch
     end
       
     def execute
-      if Redcar::Project::Manager.focussed_project
+      if project = Redcar::Project::Manager.focussed_project
         if (tab = find_open_instance)
           tab.html_view.controller = tab.html_view.controller # refresh
+          tab.focus
         else
-          tab = win.new_tab(Redcar::HtmlTab)
-          tab.html_view.controller = ProjectSearch::Controller.new
+          index = ProjectSearch.indexes[project.path]
+          if index and index.has_content?
+            tab = win.new_tab(Redcar::HtmlTab)
+            tab.html_view.controller = ProjectSearch::Controller.new
+            tab.focus
+          else
+            Redcar::Application::Dialog.message_box("Your project is still being indexed.", :type => :error)
+          end
         end
-        tab.focus
       else
-        Application::Dialog.message_box("You need an open project to be able to use Find In Project!", :type => :error)
+        Redcar::Application::Dialog.message_box("You need an open project to be able to use Find In Project!", :type => :error)
       end
       return
     end
