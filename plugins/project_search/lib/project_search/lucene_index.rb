@@ -46,10 +46,7 @@ class ProjectSearch
           @lucene_index.field_infos[:contents][:tokenized] = true          changed_files.each do |fn, ts|
             unless File.basename(fn)[0..0] == "." or fn.include?(".git")
               contents = File.read(fn)
-              if BinaryDataDetector.binary?(contents[0..200])
-                # puts "skipping binary: #{fn}"
-              else
-                # puts "lucene update: #{fn} @ #{ts}"
+              unless BinaryDataDetector.binary?(contents[0..200])
                 adjusted_contents = contents.gsub(/\.([^\s])/, '. \1')
                 @lucene_index << { :id => fn, :contents => adjusted_contents }
                 i += 1

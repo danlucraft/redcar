@@ -3,6 +3,10 @@
 class ProjectSearch
   class Controller < Redcar::FindInProject::Controller
     
+    def title
+      "Project Search"
+    end
+    
     def num_context_lines
       @settings['context_lines']
     end
@@ -46,7 +50,7 @@ class ProjectSearch
             need_context_after = 0
             contents.each_with_index do |line, line_num|
               if @with_context
-                context[:before].shift if context[:before].length == num_context_lines
+                context[:before].shift if context[:before].length == num_context_lines + 1
                 context[:before] << [line, line_num]
               end
               
