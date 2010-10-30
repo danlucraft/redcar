@@ -17,7 +17,7 @@ end
 
 When /^I select from (\d+) to (\d+)$/ do |start_offset, end_offset|
   doc = Redcar.app.focussed_window.focussed_notebook.focussed_tab.edit_view.document
-  doc.set_selection_range(start_offset.to_i, end_offset.to_i)
+  doc.set_selection_range(end_offset.to_i, start_offset.to_i)
 end
 
 When /^I copy text$/ do
@@ -108,13 +108,13 @@ Then /^the contents should be "(.*)"$/ do |text|
   doc = Redcar::EditView.focussed_edit_view_document
   actual = doc.to_s
   if expected.include?("<c>")
-    curoff = doc.cursor_offset
-    actual = actual.insert(curoff, "<c>")
-    seloff = doc.selection_offset
-    if seloff > curoff
-      seloff += 3
+    char_curoff = doc.cursor_offset
+    actual = actual.insert(actual.char_offset_to_byte_offset(char_curoff), "<c>")
+    char_seloff = doc.selection_offset
+    if char_seloff > char_curoff
+      char_seloff += 3
     end
-    actual = actual.insert(seloff, "<s>") unless curoff == seloff
+    actual = actual.insert(actual.char_offset_to_byte_offset(char_seloff), "<s>") unless char_curoff == char_seloff
   end
   actual.should == expected
 end
@@ -169,7 +169,7 @@ Then /^the cursor should be on line (\d+)$/ do |num|
   doc.cursor_line.should == num.to_i
 end
 
-When /^I replace the contents with "([^\"]*)"$/ do |contents|
+When /^I replace the contents with "((?:[^\"]|\\")*)"$/ do |contents|
   contents = unescape_text(contents)
   doc = Redcar::EditView.focussed_edit_view_document
   cursor_offset = (contents =~ /<c>/)
@@ -250,4 +250,59 @@ end
 Then /^the content? should be:$/ do |string|
   Then %{the contents should be "#{escape_text(string)}"}
 end
+
+
+When /^I type "((?:[^"]|\\")*)"$/ do |text|
+  text = text.gsub("\\t", "\t").gsub("\\n", "\n").gsub("\\\"", "\"")
+  text.split(//).each do |letter|
+    edit_view = Redcar::EditView.focussed_edit_view
+    edit_view.type_character(letter[0])
+  end
+end
+
+edit_view_action_steps = {
+  :LINE_UP                => "I move up",
+  :LINE_DOWN              => "I move down",
+  :LINE_START             => "I move to the start of the line",
+  :LINE_END               => "I move to the end of the line",
+  :COLUMN_PREVIOUS        => "I move left",
+  :COLUMN_NEXT            => "I move right",
+  :PAGE_UP                => "I page up",
+  :PAGE_DOWN              => "I page down",
+  :WORD_PREVIOUS          => "I move to the previous word",
+  :WORD_NEXT              => "I move to the next word",
+  :TEXT_START             => "I move to the start of the text",
+  :TEXT_END               => "I move to the end of the text",
+  :WINDOW_START           => "I move to the start of the window",
+  :WINDOW_END             => "I move to the end of the window",
+  :SELECT_ALL             => "I select all",
+  :SELECT_LINE_UP         => "I select up",
+  :SELECT_LINE_DOWN       => "I select down",
+  :SELECT_LINE_START      => "I select to the start of the line",
+  :SELECT_LINE_END        => "I select to the end of the line",
+  :SELECT_COLUMN_PREVIOUS => "I select left",
+  :SELECT_COLUMN_NEXT     => "I select right",
+  :SELECT_PAGE_UP         => "I select page up",
+  :SELECT_PAGE_DOWN       => "I select page down",
+  :SELECT_WORD_PREVIOUS   => "I select to the previous word",
+  :SELECT_WORD_NEXT       => "I select to the next word",
+  :SELECT_TEXT_START      => "I select to the start of the text",
+  :SELECT_TEXT_END        => "I select to the end of the text",
+  :SELECT_WINDOW_START    => "I select to the start of the window",
+  :SELECT_WINDOW_END      => "I select to the end of the window",
+  :CUT                    => "dsafjl;fjsadfk",
+  :COPY                   => "asdfkjalsgj",
+  :PASTE                  => "asdfasdfe",
+  :DELETE_PREVIOUS        => "I backspace",
+  :DELETE_NEXT            => "I delete",
+  :DELETE_WORD_PREVIOUS   => "I delete to the previous word",
+  :DELETE_WORD_NEXT       => "I delete to the next word"
+}
+
+edit_view_action_steps.each do |action_symbol, step_text|
+  When step_text do
+    Redcar::EditView.focussed_edit_view.invoke_action(action_symbol)
+  end
+end
+
 

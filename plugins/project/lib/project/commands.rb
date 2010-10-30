@@ -158,6 +158,7 @@ module Redcar
         else
           FileSaveAsCommand.new.run
         end
+        tab.update_for_file_changes
       end
     end
 
@@ -216,13 +217,6 @@ module Redcar
       end
     end
 
-    class DirectoryCloseCommand < ProjectCommand
-
-      def execute
-        project.close
-      end
-    end
-
     class RefreshDirectoryCommand < ProjectCommand
 
       def execute
@@ -244,19 +238,22 @@ module Redcar
 
     class RevealInProjectCommand < ProjectCommand
       def execute
-        tab = Redcar.app.focussed_window.focussed_notebook_tab
-        return unless tab.is_a?(EditTab)
+        if project and project.window.trees_visible?
+          tab = Redcar.app.focussed_window.focussed_notebook_tab
+          return unless tab.is_a?(EditTab) && tab.edit_view.document.mirror
 
-        path = tab.edit_view.document.mirror.path
-        tree = project.tree
-        current = tree.tree_mirror.top
-        while current.any?
-          ancestor_node = current.detect {|node| path =~ /^#{node.path}($|\/)/}
-          tree.expand(ancestor_node)
-          current = ancestor_node.children
+          path = tab.edit_view.document.mirror.path
+          tree = project.tree
+          current = tree.tree_mirror.top
+          while current.any?
+            ancestor_node = current.detect {|node| path =~ /^#{node.path}($|\/)/}
+            return unless ancestor_node
+            tree.expand(ancestor_node)
+            current = ancestor_node.children
+          end
+          tree.select(ancestor_node)
+          project.window.treebook.focus_tree(project.tree)
         end
-        tree.select(ancestor_node)
-        project.window.treebook.focus_tree(project.tree)
       end
     end
 
@@ -286,8 +283,11 @@ module Redcar
           ::Spoon.spawn(app, *options)
         else
           # TODO: This really needs proper escaping.
-          options = options.map {|o| "\"#{o}\""}.join(' ')
-          puts "Running: #{app} #{options}"
+          if options
+            options = options.map {|o| "\"#{o}\""}.join(' ')
+          else
+            options = ""
+          end
           Thread.new do
             system("#{app} #{options}")
             puts "  Finished: #{app} #{options}"
@@ -303,7 +303,8 @@ module Redcar
         preferred = Manager.storage['preferred_file_browser']
         case Redcar.platform
         when :osx
-          run_application('open', '-a', 'finder', path)
+          # Spoon doesn't seem to like `open`
+          system('open', '-a', 'Finder', path)
         when :windows
           run_application('explorer.exe', path.gsub("/","\\"))
         when :linux
@@ -335,7 +336,20 @@ module Redcar
         preferred = Manager.storage['preferred_command_line']
         case Redcar.platform
         when :osx
-          run_application('open', path)
+          unless preferred
+            preferred = "Terminal"
+            Manager.storage['preferred_command_line'] = preferred
+          end
+          command = <<-BASH.gsub(/^\s{12}/, '')
+            osascript <<END
+              tell application "#{preferred}"
+                do script "cd \\\"#{path}\\\""
+                activate
+              end tell
+            END
+          BASH
+          # Spoon doesn't seem to work with `osascript`
+          system(command)
         when :windows
           run_application('start cmd.exe', '/kcd ' + path.gsub("/","\\"))
         when :linux

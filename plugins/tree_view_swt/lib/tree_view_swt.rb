@@ -401,6 +401,8 @@ module Redcar
       def get_elements(tree_mirror)
         tree_mirror.top.to_java
       rescue => e
+        puts e.message
+        puts e.backtrace
         @tree_view_swt.handle_mirror_error(e)
       end
 
@@ -412,12 +414,16 @@ module Redcar
           children.any? if children
         end
       rescue => e
+        puts e.message
+        puts e.backtrace
         @tree_view_swt.handle_mirror_error(e)
       end
 
       def get_children(tree_node)
         tree_node.children.to_java
       rescue => e
+        puts e.message
+        puts e.backtrace
         @tree_view_swt.handle_mirror_error(e)
       end
       

@@ -1,7 +1,12 @@
-RequireSupportFiles File.dirname(__FILE__) + "/../../../application/features/"
 
 module SwtTabHelpers
+  def hide_toolbar
+    Redcar.app.show_toolbar = false
+    Redcar.app.refresh_toolbar!
+  end
+
   def get_tab_folders(shell=active_shell)
+    hide_toolbar
     right_composite = shell.children.to_a.last
     notebook_sash_form = right_composite.children.to_a[0]
     tab_folders = notebook_sash_form.children.to_a.select do |c| 
@@ -25,7 +30,8 @@ module SwtTabHelpers
   end
   
   def focussed_tab
-    Redcar.app.focussed_window.focussed_notebook.focussed_tab
+    # In case the focussed tab on the focussed window's notebook is empty, try another window
+    Redcar.app.focussed_window.focussed_notebook.focussed_tab or Redcar.app.windows.map {|w| w.focussed_notebook.focussed_tab}.first
   end
   
   def get_tabs

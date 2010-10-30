@@ -43,7 +43,7 @@ class Redcar::REPL
       it "should have a prompt" do
         wait_for_prompt
         @mirror.read.should == (<<-Groovy).chomp
-// Groovy REPL
+# Groovy REPL
 
 groovy> 
 Groovy

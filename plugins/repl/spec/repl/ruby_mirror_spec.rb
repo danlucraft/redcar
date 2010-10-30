@@ -10,7 +10,7 @@ class Redcar::REPL
     
     def commit_test_text1
       text = <<-RUBY
-# Redcar REPL
+# Ruby REPL
 
 >> $internal_repl_test = 707
 RUBY
@@ -19,7 +19,7 @@ RUBY
     
     def result_test_text1
       (<<-RUBY).chomp
-# Redcar REPL
+# Ruby REPL
 
 >> $internal_repl_test = 707
 => 707
@@ -29,7 +29,7 @@ RUBY
 
     def commit_test_text2
       text = <<-RUBY
-# Redcar REPL
+# Ruby REPL
 
 >> $internal_repl_test = 707
 => 707
@@ -41,7 +41,7 @@ RUBY
     
     def result_test_text2
       (<<-RUBY).chomp
-# Redcar REPL
+# Ruby REPL
 
 >> $internal_repl_test = 707
 => 707
@@ -54,7 +54,7 @@ RUBY
     
     def commit_no_input
       text = <<-RUBY
-# Redcar REPL
+# Ruby REPL
 
 >> 
 RUBY
@@ -62,7 +62,7 @@ RUBY
     end
     
     def prompt     
-      "# Redcar REPL\n\n"
+      "# Ruby REPL\n\n"
     end
     
     describe "with no history" do
@@ -72,7 +72,7 @@ RUBY
       
       it "should have a message and a prompt" do
         @mirror.read.should == (<<-RUBY).chomp
-# Redcar REPL
+# Ruby REPL
 
 >> 
 RUBY
@@ -94,13 +94,13 @@ RUBY
         
         it "should allow committing nothing as the first command" do
           commit_no_input
-          @mirror.read.should == "# Redcar REPL\n\n>> \n=> nil\n>> "
+          @mirror.read.should == "# Ruby REPL\n\n>> \n=> nil\n>> "
         end
         
         it "should allow committing nothing as an xth command" do
           committed = commit_test_text2
           @mirror.commit committed + "\n>> "
-          @mirror.read.should == "# Redcar REPL\n\n>> $internal_repl_test = 909\n=> 909\n>> \n=> nil\n>> "      
+          @mirror.read.should == "# Ruby REPL\n\n>> $internal_repl_test = 909\n=> 909\n>> \n=> nil\n>> "      
         end
         
         it "should emit changed event when text is executed" do
@@ -116,7 +116,7 @@ RUBY
         it "should display errors" do
           @mirror.commit(prompt + ">> nil.foo")
           @mirror.read.should == (<<-RUBY).chomp
-# Redcar REPL
+# Ruby REPL
 
 >> nil.foo
 x> NoMethodError: undefined method `foo' for nil:NilClass
@@ -164,7 +164,7 @@ RUBY
       it "should execute inside a main object" do
         @mirror.commit(prompt + ">> self")
         @mirror.read.should == (<<-RUBY).chomp
-# Redcar REPL
+# Ruby REPL
 
 >> self
 => main
@@ -177,7 +177,7 @@ RUBY
         @mirror.commit(sent)
         @mirror.commit(sent + "\n>> a")
         @mirror.read.should == (<<-RUBY).chomp
-# Redcar REPL
+# Ruby REPL
 
 >> a = 13
 => 13

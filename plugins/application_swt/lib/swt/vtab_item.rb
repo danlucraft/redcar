@@ -4,6 +4,7 @@ module Swt
   module Widgets
     class VTabItem
       attr_accessor :text, :control
+      attr_reader :parent
 
       def initialize(parent, style)
         @parent = parent
@@ -58,6 +59,14 @@ module Swt
 
       def font
         @label.font
+      end
+
+      def show_close= bool
+        @label.show_close = bool
+      end
+
+      def show_close
+        @label.show_close
       end
 
       def dispose

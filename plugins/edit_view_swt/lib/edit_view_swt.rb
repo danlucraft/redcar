@@ -201,12 +201,19 @@ module Redcar
 
     def undo
       @undo_manager.undo
+      unless @undo_manager.undoable?
+        @undoable_override = false
+      end
       EditView.undo_sensitivity.recompute
       EditView.redo_sensitivity.recompute
     end
 
     def undoable?
-      @undo_manager.undoable
+      # The override malarky is because the JFace::TextViewerUndoManager doesn't
+      # recognize that typing while in Block Selection mode makes the edit view 
+      # undoable. (Even though it faithfully records the actions, and responds
+      # correctly to "undo".) So we override the undo manager for this case.
+      @undoable_override || @undo_manager.undoable
     end
 
     def redo
@@ -221,6 +228,7 @@ module Redcar
 
     def reset_undo
       @undo_manager.reset
+      @undoable_override = false
     end
 
     def compound
@@ -237,6 +245,19 @@ module Redcar
       @undo_manager.end_compound_change
     end
 
+    def annotations(options = nil)
+      return @mate_text.annotations unless options
+      if options[:line]
+        @mate_text.annotationsOnLine(line + 1)
+      elsif options[:type]
+        annotations_of_type(options[:type])
+      end
+    end
+
+    def annotations_of_type(type)
+      annotations.select {|a| a.type == type }
+    end
+
     def add_annotation_type(name, image_path, rgb)
       rgb = Swt::Graphics::RGB.new(rgb[0], rgb[1], rgb[2])
       @mate_text.addAnnotationType(name, image_path, rgb)
@@ -244,6 +265,17 @@ module Redcar
 
     def add_annotation(annotation_name, line, text, start, length)
       @mate_text.addAnnotation(annotation_name, line, text, start, length)
+    end
+
+    def remove_annotation(mate_annotation)
+      @mate_text.removeAnnotation(mate_annotation)
+    end
+
+    def remove_all_annotations(options = nil)
+      return @mate_text.remove_all_annotations unless options
+      annotations(options).each do |ann|
+        remove_annotation(ann)
+      end
     end
 
     def create_document
@@ -281,6 +313,9 @@ module Redcar
           @mate_text.set_margin_column(-1)
         end
       end
+      h13 = @model.document.add_listener(:changed) do
+        @undoable_override = true
+      end
       @mate_text.getTextWidget.addMouseListener(MouseListener.new(self))
       @mate_text.getTextWidget.addFocusListener(FocusListener.new(self))
       @mate_text.getTextWidget.addVerifyListener(VerifyListener.new(@model.document, self))
@@ -289,7 +324,7 @@ module Redcar
       @mate_text.get_control.add_key_listener(KeyListener.new(self))
       @handlers << [@model.document, h1] << [@model, h2] << [@model, h3] << [@model, h4] <<
         [@model, h5] << [@model, h6] << [@model, h7] << [@model, h8] <<
-        [@model, h9] << [@model, h11]
+        [@model, h9] << [@model, h11] << [@model.document, h13]
     end
 
     def right_click(mouse_event)

@@ -236,6 +236,17 @@ module Redcar
         found_path_args
       end
 
+      def self.update_tab_for_path(path,new_path=nil)
+        if tab = Manager.find_open_file_tab(path)
+          if new_path
+            mirror = Project::FileMirror.new(new_path)
+            tab.edit_view.document.mirror = mirror
+          else
+            tab.update_for_file_changes
+          end
+        end
+      end
+
       def self.open_untitled_path(path)
         begin
           if File.file?(path) and contents = File.read(path)
@@ -307,11 +318,6 @@ module Redcar
               separator
               item "Save", Project::FileSaveCommand
               item "Save As", Project::FileSaveAsCommand
-            end
-
-            group(:priority => 11) do
-              item "Close Directory", Project::DirectoryCloseCommand
-              item "Reveal in Project", Project::RevealInProjectCommand
             end
           end
           sub_menu "Project", :priority => 15 do

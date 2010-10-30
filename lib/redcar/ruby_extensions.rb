@@ -20,6 +20,25 @@ class String
     downcase
   end
   
+  def chars
+    r = split(//)
+    def r.to_s
+      join("")
+    end
+    r
+  end
+  
+  def byte_offset_to_char_offset(byte_offset)
+    self[0...byte_offset].chars.length
+  end
+  
+  def char_offset_to_byte_offset(char_offset)
+    self.chars[0...char_offset].to_s.length
+  end
+  
+  def to_java
+    java.lang.String.new(to_java_bytes, "UTF8")
+  end
 end
 
 class Object

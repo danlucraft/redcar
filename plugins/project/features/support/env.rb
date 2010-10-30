@@ -1,4 +1,3 @@
-RequireSupportFiles File.dirname(__FILE__) + "/../../../edit_view/features/"
 
 def fixtures_path
   File.expand_path(File.dirname(__FILE__) + "/../../spec/fixtures")

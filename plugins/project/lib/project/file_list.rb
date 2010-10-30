@@ -41,7 +41,13 @@ module Redcar
         paths.collect!{|d| d.dup}
         while file = paths.shift
           begin
-            stat = File.lstat(file)
+            if File.symlink? file
+              real_file = File.expand_path(File.join("..", File.readlink(file)), file)
+              real_file = File.expand_path(File.join("..", File.readlink(real_file)), real_file) while File.symlink? real_file
+              stat = File.lstat(real_file)
+            else
+              stat = File.lstat(file)
+            end
             unless file =~ /\.git|\.yardoc|\.svn/
               unless stat.directory?
                 files[file.dup] = stat.mtime

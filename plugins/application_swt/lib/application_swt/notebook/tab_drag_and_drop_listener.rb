@@ -8,9 +8,9 @@ module Redcar
         # A TabPaintListener allows clients to draw 
         # indicators next to a tab in the tab folder
         class TabPaintListener
-          include org.eclipse.swt.events.PaintListener    
+          include org.eclipse.swt.events.PaintListener
           attr_writer :item, :indicate_front
-      
+
           def paintControl(event)
             event.gc.background = ApplicationSWT.display.system_color Swt::SWT::COLOR_DARK_GRAY
             if @item && @item.bounds
@@ -100,10 +100,10 @@ module Redcar
           tab_controller.move_tab_widget_to_position(position)
         end
         
-        # Find the CTabItem targeted by a given event        
+        # Find the CTabItem targeted by a given event
         def event_to_tab_widget(event)
           if tab_folder.item_count > 0
-            tab_folder.item(tab_folder.to_control(event.x, event.y)) or 
+            tab_folder.item(tab_folder.to_control(event.x, event.y)) or
             tab_folder.items[tab_folder.item_count - 1]
           end
         end

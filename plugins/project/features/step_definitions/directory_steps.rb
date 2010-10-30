@@ -4,7 +4,7 @@ When /I open a directory/ do
 end
 
 When /I close the directory/ do
-  Redcar::Project::DirectoryCloseCommand.new.run
+  Redcar::Project::Manager.focussed_project.close
 end
 
 When /^I refresh the directory tree$/ do
@@ -29,3 +29,7 @@ Then /^"([^"]*)" in the project configuration files$/ do |arg1|
   end
 end
 
+When /^"([^"]*)" goes missing$/ do |arg1|
+  FileUtils.rm(arg1)
+  File.exists?(arg1).should == false
+end

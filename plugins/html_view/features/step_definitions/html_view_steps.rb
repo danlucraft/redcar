@@ -14,9 +14,11 @@ Then /^the HTML tab (should say|says) "([^"]*)"$/ do |_, needle|
   end
   
   Redcar.gui.yield_until { started && !thread.alive? }
-  
-  # For now, just skip on windows. We can't get browser exec results
-  # on current version of SWT and XulRunner. More info at:
+
+  # For now, just skip on XUL platforms on which we can't get browser exec results
+  # (current version of SWT and XulRunner). More info at:
   # https://bugs.eclipse.org/bugs/show_bug.cgi?id=259687
-  contents.should match needle unless Redcar.platform == :windows
+  unless (contents.nil? or contents.empty?) and [:windows, :linux].include? Redcar.platform
+    contents.should match needle
+  end
 end

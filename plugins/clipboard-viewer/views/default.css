@@ -1,0 +1,43 @@
+body {
+  margin:0;
+}
+
+h1 {
+  background: #5f282d url("redcar_small_icon.png") no-repeat 10px 10px;
+  color: #dcb663;
+  height: 30px;
+  line-height: 30px;
+  padding: 10px 10px 10px 52px;
+  font-family: Palatino, Times, serif;
+  letter-spacing: 3px;
+  font-size: 100%;
+}
+
+.content {
+  margin: 10px;
+  font-size: 1.2em;
+}
+
+td.copied-item pre {
+  font-family: monospace;
+}
+
+.refresh {
+  padding: 5px;
+}
+
+.even {
+  background-color: #ddd;
+}
+
+table {
+  font-size: 80%;
+  border-collapse: collapse;
+  border: 1px solid #888;
+}
+
+td,th {
+  border-collapse: collapse;
+  border: 1px solid #888;
+  padding: 8px;
+}

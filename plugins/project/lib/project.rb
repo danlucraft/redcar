@@ -17,6 +17,8 @@ require "project/adapters/remote_protocols/ftp"
 require "project/adapters/local"
 require "project/adapters/remote"
 
+require "project/support/trash"
+
 require "project/commands"
 require "project/dir_mirror"
 require "project/dir_controller"
@@ -37,10 +39,12 @@ module Redcar
     end
 
     attr_reader :window, :tree, :path, :adapter
+    attr_accessor :listeners
 
     def initialize(path, adapter=Adapters::Local.new)
       @adapter = adapter
       @path   = File.expand_path(path)
+      @listeners ||= {}
       dir_mirror = Project::DirMirror.new(@path, adapter)
       if dir_mirror.exists?
         @tree   = Tree.new(dir_mirror, Project::DirController.new)
@@ -69,6 +73,7 @@ module Redcar
         current_project.close
       end
       window.treebook.add_tree(@tree)
+      attach_listeners
       window.title = File.basename(@tree.tree_mirror.path)
       Manager.open_project_sensitivity.recompute
       Redcar.plugin_manager.objects_implementing(:project_loaded).each do |i|
@@ -87,6 +92,41 @@ module Redcar
       Redcar.plugin_manager.objects_implementing(:project_closed).each do |i|
         i.project_closed(self)
       end
+      listeners = {}
+    end
+
+    def attach_listeners
+      attach_notebook_listeners
+      window.treebook.add_listener(:tree_removed, &method(:tree_removed))
+    end
+
+    def attach_notebook_listeners
+      window.add_listener(:notebook_focussed, &method(:notebook_focussed))
+      window.add_listener(:notebook_closed, &method(:notebook_closed))
+      window.add_listener(:notebook_added, &method(:notebook_added))
+      if notebooks = window.notebooks
+        notebooks.each do |nb|
+          notebook_added(nb)
+        end
+      end
+    end
+
+    def notebook_focussed(notebook)
+      RevealInProjectCommand.new.run if notebook.focussed_tab && tree
+    end
+
+    def notebook_added(notebook)
+      @listeners.merge!(notebook => notebook.add_listener(:tab_focussed) do |tab|
+        RevealInProjectCommand.new.run if tree
+      end)
+    end
+
+    def notebook_closed(notebook)
+      @listeners.delete(notebook)
+    end
+
+    def tree_removed(tree)
+      close if tree == @tree
     end
 
     # Refresh the DirMirror Tree for the given Window, if

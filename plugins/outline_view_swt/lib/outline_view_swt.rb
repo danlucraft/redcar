@@ -1,23 +1,21 @@
 module Redcar
   class OutlineViewSWT < Redcar::ApplicationSWT::FilterListDialogController
     include Redcar::Controller
-    
-    ICON_PATH = File.expand_path(File.dirname(__FILE__) + "/icons")
-    
+
     ICONS = {
-      :method => File.join(ICON_PATH, "method.png"),
-      :class => File.join(ICON_PATH, "class.png"),
-      :attribute => File.join(ICON_PATH, "attribute.png"),
-      :alias => File.join(ICON_PATH, "alias.png"),
-      :assignment => File.join(ICON_PATH, "assignment.png"),
-      :interface => File.join(ICON_PATH, "interface.png"),
+      :method => ApplicationSWT::Icon.swt_image(:node_insert),
+      :class => ApplicationSWT::Icon.swt_image(:open_source_flipped),
+      :attribute => ApplicationSWT::Icon.swt_image(:status),
+      :alias => ApplicationSWT::Icon.swt_image(:arrow_branch),
+      :assignment => ApplicationSWT::Icon.swt_image(:arrow),
+      :interface => ApplicationSWT::Icon.swt_image(:information),
       :none => nil
     }
-    
+
     class OutlineViewDialogSWT < Redcar::ApplicationSWT::FilterListDialogController::FilterListDialog
       attr_reader :list, :text
       attr_accessor :controller
-      
+
       def createDialogArea(parent)
         composite = Swt::Widgets::Composite.new(parent, Swt::SWT::NONE)
         layout = Swt::Layout::RowLayout.new(Swt::SWT::VERTICAL)
@@ -34,7 +32,7 @@ module Redcar
         @list.set_selection(0)
       end
     end
-    
+
     def initialize(model)
       @model = model
       @dialog = OutlineViewDialogSWT.new(Redcar.app.focussed_window.controller.shell)
@@ -46,7 +44,7 @@ module Redcar
       attach_model_listeners
       @associations = {}
     end
-    
+
     def update_list_sync
       if @dialog
         s = Time.now
@@ -56,13 +54,13 @@ module Redcar
         text_focus
       end
     end
-    
+
     def selected
       @model.selected(@associations[@dialog.list.get_selection.first])
     end
-    
+
     private
-    
+
     def populate_table(hash = {})
       @dialog.list.removeAll; @associations.clear
       hash.each do |match, props|
@@ -70,9 +68,8 @@ module Redcar
         item = Swt::Widgets::TableItem.new(@dialog.list, Swt::SWT::NONE)
         @associations[item] = match
         item.text = props[:name]
-        icon = ICONS[props[:kind].to_sym] if props[:kind]
-        if icon
-          image = Swt::Graphics::Image.new(ApplicationSWT.display, icon)
+        image = ICONS[props[:kind].to_sym] if props[:kind]
+        if image
           item.image = image
         end
       end

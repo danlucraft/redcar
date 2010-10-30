@@ -4,14 +4,14 @@ module Redcar
     module Adapters
       class Remote
         class PathDoesNotExist < StandardError; end
-        
+
         PROTOCOLS = {
           :ftp  => RemoteProtocols::FTP,
           :sftp => RemoteProtocols::SFTP
         }
-          
+
         attr_accessor :protocol, :host, :user, :password, :private_key_files
-        
+
         def initialize(protocol, host, user, password, private_key_files)
           @protocol = protocol
           @host = host
@@ -20,7 +20,7 @@ module Redcar
           @private_key_files = private_key_files
           target
         end
-        
+
         def target
           @target ||= PROTOCOLS[protocol].new(host, user, password, private_key_files)
         end
@@ -35,8 +35,9 @@ module Redcar
 
         def mv(path, new_path)
           target.mv(path, new_path)
+          Manager.update_tab_for_path(path,new_path)
         end
-        
+
         def mtime(file)
           target.mtime(file)
         end
@@ -44,11 +45,11 @@ module Redcar
         def file?(path)
           target.file?(path)
         end
-        
+
         def directory?(path)
           target.directory?(path)
         end
-        
+
         def fetch_contents(path)
           target.fetch_contents(path)
         end
@@ -60,27 +61,28 @@ module Redcar
         def save(file, contents)
           target.save(file)
         end
-        
+
         def stat(file)
           target.stat(file)
         end
-        
+
         def delete(file)
           target.delete(file)
+          Manager.update_tab_for_path(file)
         end
 
         def exists?(path)
           target.exists?(path)
         end
-        
+
         def load(file)
           target.load(file)
         end
-        
+
         def save(file, contents)
           target.save(file, contents)
         end
-        
+
         def refresh_operation(tree)
           visible_paths = tree.visible_nodes.map {|n| n.path}
           visible_dirs = visible_paths.map {|path| File.dirname(path) }.uniq

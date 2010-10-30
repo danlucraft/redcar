@@ -24,6 +24,9 @@ module Redcar
         puts "--untitled-file=PATH  Open the given file as an untitled tab."
         puts "      --ignore-stdin  Ignore stdin."
         puts "              --fork  Detach from the console."
+        puts "         --no-window  Don't force opening a window on Redcar startup"
+        puts "     --home-dir=PATH  Use the specified directory as Redcar home directory"
+        puts "                  -w  Open the specified files and wait until they are closed"
         #puts "To associate with right click in windows explorer:"
         #puts
         #puts "  C:> redcar --associate_with_any_right_click"
