@@ -26,7 +26,8 @@ module Redcar
         Redcar::FindInProject.storage['literal_match'] = (@literal_match = (literal_match == 'true'))
         Redcar::FindInProject.storage['match_case'] = (@match_case = (match_case == 'true'))
         Redcar::FindInProject.storage['with_context'] = (@with_context = (with_context == 'true'))
-
+        @regexp = create_regexp
+        
         initialize_search_output
         search_in_background
 
@@ -54,7 +55,12 @@ module Redcar
       end
 
       private
-
+      
+      def create_regexp
+        regexp_text = @literal_match ? Regexp.escape(@query) : @query
+        @match_case ? /#{regexp_text}/ : /#{regexp_text}/i
+      end
+          
       def render(view)
         rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "views", "#{view.to_s}.html.erb")))
         rhtml.result(binding)
@@ -181,10 +187,6 @@ module Redcar
       end
 
       def matching_line?(line_text)
-        @regexp ||= begin
-          regexp_text = @literal_match ? Regexp.escape(@query) : @query
-          @match_case ? /#{regexp_text}/ : /#{regexp_text}/i
-        end
         line_text =~ @regexp
       end
 
