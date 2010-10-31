@@ -58,7 +58,7 @@ If you are running a source version of Redcar and you have pulled changes from m
 
 ## TESTS
 
-NB. Redcar features are known to work with Cucumber 0.8.5, and known NOT to work with Cucumber >= 0.9
+NB. Redcar features are known to work with Cucumber 0.9.2, and known NOT to work with Cucumber < 0.9
 
 To run the tests you need JRuby installed. You also need rspec and cucumber installed as Jruby gems. See jruby.org for this, or install with rvm.
 
