@@ -286,78 +286,80 @@ module Redcar
     end
 
     class OpenDirectoryInExplorerCommand < OpenCommand
-      def execute(options=nil)
+      LinuxApps = { 'Thunar' => '%s',
+        'nautilus' => '%s',
+        'konqueror' => '%s',
+        'kfm' => '%s' }
+
+      def explorer_osx
+        ['open -a Finder', path]
+      end
+
+      def explorer_windows
+        ['explorer.exe', path.gsub("/", "\\")]
+      end
+
+      def explorer_linux
+        preferred = Manager.storage['preferred_file_browser']
+        run = preferred if LinuxApps[preferred] and find(preferred)
+        LinuxApps.keys.detect {|a| run = command.find(a) } unless run
+
+        Manager.storage['preferred_file_browser'] = run unless preferred
+
+        [run, LinuxApps[File.basename(run)] % path ] if run
+      end
+
+      def execute(options = nil)
         @path ||= options[:value]
         command = self
-        preferred = Manager.storage['preferred_file_browser']
-        case Redcar.platform
-        when :osx
-          # Spoon doesn't seem to like `open`
-          system('open', '-a', 'Finder', path)
-        when :windows
-          run_application('explorer.exe', path.gsub("/","\\"))
-        when :linux
-          app = {
-            'Thunar' => [path],
-            'nautilus' => [path],
-            'konqueror' => [path],
-            'kfm' => [path],
-          }
-          if preferred and app[preferred] and find(preferred)
-            run = preferred
-          else
-            run = app.keys.map {|a| command.find(a)}.find{|a| a}
-            Manager.storage['preferred_file_browser'] = run if not preferred
-          end
-          if run
-            run_application(run, *app[File.basename(run)])
-          else
-            Application::Dialog.message_box("Sorry, we couldn't find your file manager. Please let us know what file manager you use, so we can fix this!")
-          end
+        cmd = send(:"explorer_#{Redcar.platform}")
+        if cmd
+          run_application(*cmd)
+        else
+          Application::Dialog.message_box("Sorry, we couldn't start your file manager. Please let us know what file manager you use, so we can fix this!")
         end
       end
     end
 
     class OpenDirectoryInCommandLineCommand < OpenCommand
-      def execute(options=nil)
+      LinuxApps = { 'xfce4-terminal' => "--working-directory=%s",
+        'gnome-terminal' => "--working-directory=%s",
+        'konsole' => "--workdir %s" }
+
+      def commandline_osx
+        preferred = (Manager.storage['preferred_command_line'] ||= "Terminal")
+        <<-BASH.gsub(/^\s*/, '')
+          osascript <<END
+            tell application "#{preferred}"
+              do script "cd \\\"#{path}\\\""
+              activate
+            end tell
+          END
+        BASH
+      end
+
+      def commandline_windows
+        ['start cmd.exe /kcd ', path.gsub("/","\\")]
+      end
+
+      def commandline_linux
+        preferred = Manager.storage['preferred_command_line']
+        run = preferred if LinuxApps[preferred] and find(preferred)
+        LinuxApps.keys.detect {|a| run = command.find(a) } unless run
+
+        Manager.storage['preferred_command_line'] = run unless preferred
+
+        [run, LinuxApps[File.basename(run)] % path ] if run
+      end
+
+      def execute(options = nil)
         @path ||= options[:value]
         command = self
-        preferred = Manager.storage['preferred_command_line']
-        case Redcar.platform
-        when :osx
-          unless preferred
-            preferred = "Terminal"
-            Manager.storage['preferred_command_line'] = preferred
-          end
-          command = <<-BASH.gsub(/^\s{12}/, '')
-            osascript <<END
-              tell application "#{preferred}"
-                do script "cd \\\"#{path}\\\""
-                activate
-              end tell
-            END
-          BASH
-          # Spoon doesn't seem to work with `osascript`
-          system(command)
-        when :windows
-          run_application('start cmd.exe', '/kcd ' + path.gsub("/","\\"))
-        when :linux
-          app = {
-            'xfce4-terminal' => ["--working-directory=#{path}"],
-            'gnome-terminal' => ["--working-directory=#{path}"],
-            'konsole' => ["--workdir", path],
-          }
-          if preferred and app[preferred] and find(preferred)
-            run = preferred
-          else
-            run = app.keys.map {|a| command.find(a)}.find{|a| a}
-            Manager.storage['preferred_command_line'] = run if not preferred
-          end
-          if run and app[File.basename(run)]
-            run_application(run, *app[File.basename(run)])
-          else
-            Application::Dialog.message_box("Sorry, we couldn't find your command line. Please let us know what command line you use, so we can fix this!")
-          end
+        cmd = send(:"commandline_#{Redcar.platform}")
+        if cmd
+          run_application(*cmd)
+        else
+          Application::Dialog.message_box("Sorry, we couldn't start your command line. Please let us know what command line you use, so we can fix this!")
         end
       end
     end
