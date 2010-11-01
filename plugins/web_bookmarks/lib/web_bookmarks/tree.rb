@@ -1,12 +1,7 @@
 
 module Redcar
   class WebBookmarks
-    class TreeController
-      include Redcar::Tree::Controller
-
-      def initialize(project)
-        @project = project
-      end
+    class TreeController < Redcar::Project::ProjectTreeController
 
       def activated(tree, node)
         if node.is_a?(Bookmark)
