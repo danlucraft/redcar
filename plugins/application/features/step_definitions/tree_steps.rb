@@ -52,6 +52,14 @@ Then /^I should (not )?see "([^\"]*)" in the tree$/ do |negate, rows|
   end
 end
 
+Then /^there should (not )?be a tree titled "([^\"]*)"$/ do |negate,title|
+  if negate
+    tree_with_title(title).should == nil
+  else
+    tree_with_title(title).should_not == nil
+  end
+end
+
 Then /^the tree width should be (the default|\d+ pixels|the minimum size)$/ do |w|
   width = focussed_treebook_width
   if w == "the default"
