@@ -276,11 +276,7 @@ module Redcar
           ::Spoon.spawn(app, *options)
         else
           # TODO: This really needs proper escaping.
-          if options
-            options = options.map {|o| %{ "#{o}" } }.join(' ')
-          else
-            options = ""
-          end
+          options = options.map {|o| %{ "#{o}" } }.join(' ')
           Thread.new do
             system("#{app} #{options}")
             puts "  Finished: #{app} #{options}"
