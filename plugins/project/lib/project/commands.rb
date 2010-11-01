@@ -271,7 +271,8 @@ module Redcar
       end
 
       def run_application(app, *options)
-        if SPOON_AVAILABLE and ::Spoon.supported?
+        # TODO: Investigate why Spoon doesn't seem to work on osx
+        if SPOON_AVAILABLE and ::Spoon.supported? and Redcar.platform != :osx
           ::Spoon.spawn(app, *options)
         else
           # TODO: This really needs proper escaping.
