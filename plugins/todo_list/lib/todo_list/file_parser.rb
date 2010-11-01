@@ -1,9 +1,11 @@
 module Redcar
   class TodoList
     class FileParser
+      TodoItem = Struct.new("TodoItem", :path, :line, :action)
 
       def initialize
-        @tag_list = {}
+        @tag_list = Hash.new {|h,k| h[k] = [] }
+        @optional_colon = ":" if TodoList.storage['require_colon']
       end
 
       def parse_files(path)
@@ -13,19 +15,18 @@ module Redcar
       end
 
       def find_dirs(path)
-        unless TodoList.storage['excluded_dirs'].to_a.include?(path.to_s)
-          Dir["#{path.to_s}/*/"].map do |a|
-            find_dirs(a)
-          end
+        return unless File.directory? path
+        unless TodoList.storage['excluded_dirs'].include? File.basename(path)
+          Dir["#{path}/*"].each {|subdir| find_dirs(subdir) }
           find_files(path)
         end
       end
 
       def find_files(path)
         TodoList.storage['included_suffixes'].each do |suffix|
-          files = File.join(path.to_s, "*#{suffix}")
+          files = File.join(path, "*#{suffix}")
           Dir.glob(files).each do |file_path|
-            unless TodoList.storage['excluded_files'].to_a.include?(File.basename(file_path))
+            unless TodoList.storage['excluded_files'].include?(File.basename(file_path))
               find_tags(file_path)
             end
           end
@@ -33,20 +34,23 @@ module Redcar
       end
 
       def find_tags(file_path)
-        TodoList.storage['tags'].each do |tag|
-          if TodoList.storage['require_colon']
-            tag += ":"
+        tags = TodoList.storage['tags']
+        File.open(file_path) do |file|
+          file.readlines.each_with_index do |line, idx|
+            included_tags = tags.select {|tag| line.include? "#{tag}#{@optional_colon}" }
+            create_tag_items(included_tags, file_path, line, idx)
           end
-          file = File.new(file_path,"r")
-          i = 1
-          while(line = file.gets)
-            if(line.include?(tag))
-              action = line[line.index(tag.to_s)+tag.length,line.length]
-              @tag_list[tag+file_path.to_s+":#{i}"] = action
-            end
-            i +=1
+        end
+      end
+
+      def create_tag_items(included_tags, file, line, idx)
+        included_tags.each do |tag|
+          action = line[(line.index(tag) + tag.length)..-1]
+          @tag_list[tag] << TodoItem.new.tap do |t|
+            t.path   = file
+            t.line   = idx
+            t.action = (action.chars.first == ":" ? action[1..-1] : action).strip
           end
-          file.close
         end
       end
     end

@@ -89,8 +89,8 @@ module Redcar
       def tool_tip(message, location)
         tool_tip = Swt::Widgets::ToolTip.new(parent_shell, Swt::SWT::ICON_INFORMATION)
         tool_tip.set_message(message)
-        tool_tip.set_visible(true)
         tool_tip.set_location(*get_coordinates(location))
+        tool_tip.set_visible(true)
       end
       
       def popup_menu(menu, location)

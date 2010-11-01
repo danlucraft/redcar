@@ -5,7 +5,7 @@ Feature: Highlight the File of the focussed tab in tree
     And I open a directory
     And I have opened "plugins/project/features/highlight_focussed_tab.feature"
     Then there should be one edit tab
-    And "highlight_focussed_tab.feature" should be selected in the project tree
+    Then "highlight_focussed_tab.feature" should be selected in the project tree
 
   Scenario: Switching between tabs should highlight them in the tree
     Given I will choose "." from the "open_directory" dialog
@@ -37,3 +37,16 @@ Feature: Highlight the File of the focussed tab in tree
     Then "move_and_rename_files.feature" should be selected in the project tree
     And I switch notebooks
     Then "find_file.feature" should be selected in the project tree
+
+  Scenario: Project revelation doesn't get triggered on REPLs
+    Given I will choose "." from the "open_directory" dialog
+    And I open a directory
+    And I have opened "plugins/project/features/highlight_focussed_tab.feature"
+    Then there should be one edit tab
+    Then "highlight_focussed_tab.feature" should be selected in the project tree
+    And I open a "ruby" repl
+    Then "highlight_focussed_tab.feature" should be selected in the project tree
+    And I open a "clojure" repl
+    Then "highlight_focussed_tab.feature" should be selected in the project tree
+    And I open a "groovy" repl
+    Then "highlight_focussed_tab.feature" should be selected in the project tree
