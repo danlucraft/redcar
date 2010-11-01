@@ -40,10 +40,8 @@ module Redcar
 
       def execute
         if tab.edit_view.document.modified?
-          result = Application::Dialog.message_box(
-            "This tab has unsaved changes. \n\nReload?",
-            :buttons => :yes_no_cancel
-          )
+          result = Application::Dialog.message_box("This tab has unsaved changes. \n\nReload?",
+            :buttons => :yes_no_cancel)
           case result
           when :yes
             tab.edit_view.document.update_from_mirror
@@ -82,13 +80,8 @@ module Redcar
       button :connect, "Connect", "Return" do
         selected = self.class.connections.find { |c| c.name == connection.value }
 
-        Manager.connect_to_remote(
-          selected[:protocol],
-          selected[:host],
-          selected[:user],
-          selected[:path],
-          ConnectionManager::PrivateKeyStore.paths
-        )
+        Manager.connect_to_remote(selected[:protocol], selected[:host],
+          selected[:user], selected[:path], ConnectionManager::PrivateKeyStore.paths)
       end
 
       button :quick, "Quick Connection", "Ctrl+Q" do
@@ -123,13 +116,8 @@ module Redcar
       textbox :path
 
       button :connect, "Connect", "Return" do
-        Manager.connect_to_remote(
-            protocol.value,
-            host.value,
-            user.value,
-            path.value,
-            ConnectionManager::PrivateKeyStore.paths
-          )
+        Manager.connect_to_remote(protocol.value, host.value, user.value,
+          path.value, ConnectionManager::PrivateKeyStore.paths)
       end
     end
 
@@ -250,7 +238,7 @@ module Redcar
           tree = project.tree
           current = tree.tree_mirror.top
           while current.any?
-            ancestor_node = current.detect {|node| path =~ /^#{node.path}($|\/)/}
+            ancestor_node = current.detect {|node| path =~ /^#{node.path}($|\/)/ }
             return unless ancestor_node
             tree.expand(ancestor_node)
             current = ancestor_node.children
@@ -288,7 +276,7 @@ module Redcar
         else
           # TODO: This really needs proper escaping.
           if options
-            options = options.map {|o| "\"#{o}\""}.join(' ')
+            options = options.map {|o| %{ "#{o}" } }.join(' ')
           else
             options = ""
           end
