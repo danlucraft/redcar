@@ -34,6 +34,10 @@ module SwtHelper
   def default_treebook_width
     Redcar.app.focussed_window.controller.default_treebook_width
   end
+  
+  def tree_with_title(title)
+    focussed_window.treebook.trees.detect {|t| t.tree_mirror.title == title }
+  end
 
   def dialog(type)
     dialogs.detect {|d| d.is_a?(type) }

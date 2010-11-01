@@ -1,5 +1,6 @@
 module Redcar
   class Project
+    # FIXME: XXX: This is outright ugly. See the note on Redcar::Project::OpenCommand
     module Trash
       WINDOWS_SUPPORT_JS = File.expand_path("../recycle.js", __FILE__)
 

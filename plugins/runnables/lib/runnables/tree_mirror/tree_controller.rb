@@ -1,11 +1,6 @@
 module Redcar
   class Runnables
-    class TreeController
-      include Redcar::Tree::Controller
-
-      def initialize(project)
-        @project = project
-      end
+    class TreeController < Redcar::Project::ProjectTreeController
 
       def right_click(tree, node)
         controller = self

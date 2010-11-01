@@ -17,6 +17,7 @@ module Redcar
         controller = ViewController.new(@name,@url)
         tab = win.new_tab(HtmlTab)
         tab.html_view.controller = controller
+        tab.icon = :globe
         tab.focus
         if @display_bar or
           WebBookmarks.storage['show_browser_bar_on_start']
@@ -52,7 +53,7 @@ module Redcar
           project = Project::Manager.in_window(win)
           tree = Tree.new(
             TreeMirror.new(project),
-            TreeController.new(project)
+            TreeController.new(project,TREE_TITLE)
           )
           win.treebook.add_tree(tree)
         end
