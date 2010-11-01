@@ -31,3 +31,12 @@ Then /^the menu item "([^\"]*)\|([^\"]*)" should be (active|inactive)$/ do |menu
     item.enabled.should be_false
   end
 end
+
+When /^I open the "([^"]*)" from the "([^"]*)" menu$/ do |menu_item, menu_name|
+  items = main_menu.get_items.to_a
+  menu = items.detect {|i| i.text == menu_name }
+  items = menu.get_menu.get_items.to_a
+  item = items.detect {|i| i.text.split("\t").first == menu_item }
+  FakeEvent.new(Swt::SWT::Selection, item)
+end
+
