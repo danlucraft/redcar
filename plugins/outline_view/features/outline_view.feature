@@ -6,13 +6,13 @@ Background:
 
 Scenario: Outline View without anything to see
   Given I have opened "plugins/outline_view/spec/fixtures/some_project/nothing_to_see.rb"
-  And I open an outline view
+  And I run the command Redcar::OutlineView::OpenOutlineViewCommand
   Then there should be an outline view open
   And the outline view should have no entries
 
 Scenario: Outline View with something small
   Given I have opened "plugins/outline_view/spec/fixtures/some_project/one_lonely_class.rb"
-  And I open an outline view
+  And I run the command Redcar::OutlineView::OpenOutlineViewCommand
   Then there should be an outline view open
   And the outline view should have 1 entry
   And I should see "IAmAllAlone" at 0 with the "class" icon in the outline view
@@ -21,7 +21,7 @@ Scenario: Outline View with something small
 
 Scenario: Something fancier
   Given I have opened "plugins/outline_view/spec/fixtures/some_project/something_fancy.rb"
-  And I open an outline view
+  And I run the command Redcar::OutlineView::OpenOutlineViewCommand
   Then there should be an outline view open
   And the outline view should have 86 entries
   And I should see "Redcar" at 0 with the "class" icon in the outline view
