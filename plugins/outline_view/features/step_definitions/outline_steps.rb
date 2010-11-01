@@ -35,8 +35,11 @@ Then /^the outline view should have (no|\d+) entr(?:y|ies)$/ do |num|
   outline_view_items.length.should == num
 end
 
-Then /^I should see "(.*)" at (\d+) the outline view$/ do |text, pos|
+Then /^I should see "(.*)" at (\d+)(?: with the "(.*)" icon )in the outline view$/ do |text, pos, icon|
   pos = pos.to_i
-  outline_view[pos].should == text
+  outline_view_items[pos].text.should == text
+  icon = Redcar::OutlineViewSWT::ICONS[icon.to_sym]
+  item = outline_view_items[pos]
+  item.get_image.should == icon
 end
 
