@@ -249,6 +249,9 @@ module Redcar
       end
     end
 
+    # FIXME: XXX: The rest of this file is outright ugly. The Redcar.platform ultimately 
+    # needs to return a platform object which we can dispatch to for commandlines, 
+    # configuration, escaping and all that.
     class OpenCommand < Command
       attr_reader :path
 
