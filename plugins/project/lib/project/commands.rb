@@ -344,15 +344,6 @@ module Redcar
           when nil then
             preferred = "Terminal"
             Manager.storage['preferred_command_line'] = preferred
-
-            command = <<-BASH.gsub(/^\s{12}/, '')
-            osascript <<END
-              tell application "#{preferred}"
-                do script "cd \\\"#{path}\\\""
-                activate
-              end tell
-            END
-            BASH
           when /\AiTerm/ then
             command = <<-BASH.gsub(/^\s{12}/, '')
             osascript <<END
@@ -368,8 +359,17 @@ module Redcar
             END
             BASH
           end
-
-            # Spoon doesn't seem to work with `osascript`
+          unless command
+            command = <<-BASH.gsub(/^\s{12}/, '')
+            osascript <<END
+              tell application "#{preferred}"
+                do script "cd \\\"#{path}\\\""
+                activate
+              end tell
+            END
+            BASH
+          end
+          # Spoon doesn't seem to work with `osascript`
           system(command)
         when :windows
           run_application('start cmd.exe', '/kcd ' + path.gsub("/","\\"))
