@@ -38,9 +38,11 @@ module Redcar
 
       def create_tree_view
         @tab_folder = Swt::Widgets::VTabFolder.new(@window.tree_sash, Swt::SWT::NONE)
-        colors = [ Swt::Graphics::Color.new(display, 230, 240, 255),
-          Swt::Graphics::Color.new(display, 170, 199, 246),
-          Swt::Graphics::Color.new(display, 135, 178, 247) ]
+        colors = [
+          Swt::Graphics::Color.new(ApplicationSWT.display, 230, 240, 255),
+          Swt::Graphics::Color.new(ApplicationSWT.display, 170, 199, 246),
+          Swt::Graphics::Color.new(ApplicationSWT.display, 135, 178, 247)
+        ]
         percents = [60, 85]
         @tab_folder.set_selection_background(colors, percents, true)
 
