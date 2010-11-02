@@ -3,14 +3,14 @@ require 'drb'
 
 Given /^I open "([^"]*)" using the redcar command$/ do |path|
   drb = DRbObject.new(nil, "druby://127.0.0.1:#{Redcar::DRB_PORT}")
-  drb_answer = drb.open_item_drb(path, false)
+  drb_answer = drb.open_item_drb(File.expand_path(path), false)
   drb_answer.should == "ok"
 end
 
 Given /^I open "([^"]*)" using the redcar command with "-w"$/ do |path|
   drb = DRbObject.new(nil, "druby://127.0.0.1:#{Redcar::DRB_PORT}")
   DrbShelloutHelper.drb_system_thread = Thread.new(path) do
-    drb_answer = drb.open_file_and_wait(path, false)
+    drb_answer = drb.open_file_and_wait(File.expand_path(path), false)
   end
 end
 
