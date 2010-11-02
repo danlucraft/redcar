@@ -25,3 +25,8 @@ end
 Before do
   reset_web_fixtures
 end
+
+After do
+  reset_web_fixtures
+  FileUtils.rm(bookmarks_file) if File.exist?(bookmarks_file)
+end
