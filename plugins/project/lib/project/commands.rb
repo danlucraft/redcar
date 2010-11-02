@@ -40,10 +40,8 @@ module Redcar
 
       def execute
         if tab.edit_view.document.modified?
-          result = Application::Dialog.message_box(
-            "This tab has unsaved changes. \n\nReload?",
-            :buttons => :yes_no_cancel
-          )
+          result = Application::Dialog.message_box("This tab has unsaved changes. \n\nReload?",
+            :buttons => :yes_no_cancel)
           case result
           when :yes
             tab.edit_view.document.update_from_mirror
@@ -82,13 +80,8 @@ module Redcar
       button :connect, "Connect", "Return" do
         selected = self.class.connections.find { |c| c.name == connection.value }
 
-        Manager.connect_to_remote(
-          selected[:protocol],
-          selected[:host],
-          selected[:user],
-          selected[:path],
-          ConnectionManager::PrivateKeyStore.paths
-        )
+        Manager.connect_to_remote(selected[:protocol], selected[:host],
+          selected[:user], selected[:path], ConnectionManager::PrivateKeyStore.paths)
       end
 
       button :quick, "Quick Connection", "Ctrl+Q" do
@@ -123,13 +116,8 @@ module Redcar
       textbox :path
 
       button :connect, "Connect", "Return" do
-        Manager.connect_to_remote(
-            protocol.value,
-            host.value,
-            user.value,
-            path.value,
-            ConnectionManager::PrivateKeyStore.paths
-          )
+        Manager.connect_to_remote(protocol.value, host.value, user.value,
+          path.value, ConnectionManager::PrivateKeyStore.paths)
       end
     end
 
@@ -250,7 +238,7 @@ module Redcar
           tree = project.tree
           current = tree.tree_mirror.top
           while current.any?
-            ancestor_node = current.detect {|node| path =~ /^#{node.path}($|\/)/}
+            ancestor_node = current.detect {|node| path =~ /^#{node.path}($|\/)/ }
             return unless ancestor_node
             tree.expand(ancestor_node)
             current = ancestor_node.children
@@ -261,6 +249,9 @@ module Redcar
       end
     end
 
+    # FIXME: XXX: The rest of this file is outright ugly. The Redcar.platform ultimately 
+    # needs to return a platform object which we can dispatch to for commandlines, 
+    # configuration, escaping and all that.
     class OpenCommand < Command
       attr_reader :path
 
@@ -283,15 +274,12 @@ module Redcar
       end
 
       def run_application(app, *options)
-        if SPOON_AVAILABLE and ::Spoon.supported?
+        # TODO: Investigate why Spoon doesn't seem to work on osx
+        if SPOON_AVAILABLE and ::Spoon.supported? and Redcar.platform != :osx
           ::Spoon.spawn(app, *options)
         else
           # TODO: This really needs proper escaping.
-          if options
-            options = options.map {|o| "\"#{o}\""}.join(' ')
-          else
-            options = ""
-          end
+          options = options.map {|o| %{ "#{o}" } }.join(' ')
           Thread.new do
             system("#{app} #{options}")
             puts "  Finished: #{app} #{options}"
@@ -301,95 +289,95 @@ module Redcar
     end
 
     class OpenDirectoryInExplorerCommand < OpenCommand
-      def execute(options=nil)
+      LinuxApps = { 'Thunar' => '%s',
+        'nautilus' => '%s',
+        'konqueror' => '%s',
+        'kfm' => '%s' }
+
+      def explorer_osx
+        ['open -a Finder', path]
+      end
+
+      def explorer_windows
+        ['explorer.exe', path.gsub("/", "\\")]
+      end
+
+      def explorer_linux
+        preferred = Manager.storage['preferred_file_browser']
+        run = preferred if LinuxApps[preferred] and find(preferred)
+        LinuxApps.keys.detect {|a| run = command.find(a) } unless run
+
+        Manager.storage['preferred_file_browser'] = run unless preferred
+
+        [run, LinuxApps[File.basename(run)] % path ] if run
+      end
+
+      def execute(options = nil)
         @path ||= options[:value]
         command = self
-        preferred = Manager.storage['preferred_file_browser']
-        case Redcar.platform
-        when :osx
-          # Spoon doesn't seem to like `open`
-          system('open', '-a', 'Finder', path)
-        when :windows
-          run_application('explorer.exe', path.gsub("/","\\"))
-        when :linux
-          app = {
-            'Thunar' => [path],
-            'nautilus' => [path],
-            'konqueror' => [path],
-            'kfm' => [path],
-          }
-          if preferred and app[preferred] and find(preferred)
-            run = preferred
-          else
-            run = app.keys.map {|a| command.find(a)}.find{|a| a}
-            Manager.storage['preferred_file_browser'] = run if not preferred
-          end
-          if run
-            run_application(run, *app[File.basename(run)])
-          else
-            Application::Dialog.message_box("Sorry, we couldn't find your file manager. Please let us know what file manager you use, so we can fix this!")
-          end
+        cmd = send(:"explorer_#{Redcar.platform}")
+        if cmd
+          run_application(*cmd)
+        else
+          Application::Dialog.message_box("Sorry, we couldn't start your file manager. Please let us know what file manager you use, so we can fix this!")
         end
       end
     end
 
     class OpenDirectoryInCommandLineCommand < OpenCommand
-      def execute(options=nil)
+      LinuxApps = { 'xfce4-terminal' => "--working-directory=%s",
+        'gnome-terminal' => "--working-directory=%s",
+        'konsole' => "--workdir %s" }
+        
+      def osx_terminal_script(preferred)
+        if preferred.start_with? "iTerm"
+          <<-OSASCRIPT
+            tell the first terminal
+              launch session "Default Session"
+                tell the last session
+                write text "cd \\\"#{path}\\\""
+              end tell
+            end tell
+          OSASCRIPT
+        else
+          %{ do script "cd \\\"#{path}\\\"" }
+        end
+      end
+
+      def commandline_osx
+        preferred = (Manager.storage['preferred_command_line'] ||= "Terminal")
+        <<-BASH.gsub(/^\s*/, '')
+          osascript <<END
+            tell application "#{preferred}"
+              #{osx_terminal_script(preferred)}
+              activate
+            end tell
+          END
+        BASH
+      end
+
+      def commandline_windows
+        ['start cmd.exe /kcd ', path.gsub("/","\\")]
+      end
+
+      def commandline_linux
+        preferred = Manager.storage['preferred_command_line']
+        run = preferred if LinuxApps[preferred] and find(preferred)
+        LinuxApps.keys.detect {|a| run = command.find(a) } unless run
+
+        Manager.storage['preferred_command_line'] = run unless preferred
+
+        [run, LinuxApps[File.basename(run)] % path ] if run
+      end
+
+      def execute(options = nil)
         @path ||= options[:value]
         command = self
-        preferred = Manager.storage['preferred_command_line']
-        case Redcar.platform
-        when :osx
-          case preferred
-          when nil then
-            preferred = "Terminal"
-            Manager.storage['preferred_command_line'] = preferred
-          when /\AiTerm/ then
-            command = <<-BASH.gsub(/^\s{12}/, '')
-            osascript <<END
-              tell application "#{preferred}"
-                tell the first terminal
-                 launch session "Default Session"
-                  tell the last session
-                   write text "cd \\\"#{path}\\\""
-                  end tell
-                 end tell
-                activate
-              end tell
-            END
-            BASH
-          end
-          unless command
-            command = <<-BASH.gsub(/^\s{12}/, '')
-            osascript <<END
-              tell application "#{preferred}"
-                do script "cd \\\"#{path}\\\""
-                activate
-              end tell
-            END
-            BASH
-          end
-          # Spoon doesn't seem to work with `osascript`
-          system(command)
-        when :windows
-          run_application('start cmd.exe', '/kcd ' + path.gsub("/","\\"))
-        when :linux
-          app = {
-            'xfce4-terminal' => ["--working-directory=#{path}"],
-            'gnome-terminal' => ["--working-directory=#{path}"],
-            'konsole' => ["--workdir", path],
-          }
-          if preferred and app[preferred] and find(preferred)
-            run = preferred
-          else
-            run = app.keys.map {|a| command.find(a)}.find{|a| a}
-            Manager.storage['preferred_command_line'] = run if not preferred
-          end
-          if run and app[File.basename(run)]
-            run_application(run, *app[File.basename(run)])
-          else
-            Application::Dialog.message_box("Sorry, we couldn't find your command line. Please let us know what command line you use, so we can fix this!")
-          end
+        cmd = send(:"commandline_#{Redcar.platform}")
+        if cmd
+          run_application(*cmd)
+        else
+          Application::Dialog.message_box("Sorry, we couldn't start your command line. Please let us know what command line you use, so we can fix this!")
         end
       end
     end

@@ -53,7 +53,7 @@ module Redcar
           project = Project::Manager.in_window(win)
           tree = Tree.new(
             TreeMirror.new(project),
-            TreeController.new(project)
+            TreeController.new(project,TREE_TITLE)
           )
           win.treebook.add_tree(tree)
         end
