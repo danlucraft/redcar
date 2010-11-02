@@ -1,4 +1,12 @@
 #!/usr/bin/env ruby
+unless RUBY_PLATFORM == 'java'
+  puts 'This cucumber launcher must be run from JRuby'
+  exit 1
+end
+
+require 'jruby'
+JRuby.runtime.instance_config.run_ruby_in_process = false
+
 $KCODE='U'
 $redcar_process_start_time = Time.now
 
