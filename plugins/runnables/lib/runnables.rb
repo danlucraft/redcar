@@ -42,6 +42,7 @@ module Redcar
           end
           tab = window.new_tab(HtmlTab)
           tab.html_view.controller = controller
+          tab.icon = :cog
           tab.focus
         end
       end

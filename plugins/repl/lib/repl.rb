@@ -51,6 +51,7 @@ module Redcar
         edit_view.document.mirror = mirror
         edit_view.cursor_offset = edit_view.document.length
         edit_view.grammar = mirror.grammar_name
+        tab.icon = :application_terminal
         tab.focus
 
         mirror.add_listener(:change) do

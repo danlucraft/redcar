@@ -23,7 +23,9 @@ module Redcar
       def execute
         Redcar::WebBookmarks::DisplayWebContent.new(
           "Submit a Bug",
-          "https://redcar.lighthouseapp.com/projects/25090-redcar/tickets/new"
+          "https://redcar.lighthouseapp.com/projects/25090-redcar/tickets/new",
+          true,
+          :question
         ).run
       end
     end
@@ -32,7 +34,9 @@ module Redcar
       def execute
         Redcar::WebBookmarks::DisplayWebContent.new(
           "Online Help",
-          "http://github.com/redcar/redcar/wiki/Users-Guide"
+          "http://github.com/redcar/redcar/wiki/Users-Guide",
+          true,
+          :question
         ).run
       end
     end
