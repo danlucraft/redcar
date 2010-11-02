@@ -37,4 +37,22 @@ Scenario: Something fancier
   And I should see "selected_text" at 1 with the "method" icon in the outline view
   And I select the outline view
   Then the selected text should be "    def selection_range_changed"
+
+  Scenario: Simple Javascript
+  Given I have opened "plugins/outline_view/spec/fixtures/some_project/javascript.js"
+  And I run the command Redcar::OutlineView::OpenOutlineViewCommand
+  Then there should be an outline view open
+  And the outline view should have 3 entries
+  And I should see "SomeConstructor" at 0 with the "class" icon in the outline view
+  When I set the outline filter to "some"
+  And I wait 2 seconds
+  Then the outline view should have 2 entries
+  And I should see "someMethod" at 1 with the "method" icon in the outline view
+  And I should see "SomeConstructor" at 0 with the "class" icon in the outline view
+  When I set the outline filter to "another"
+  And I wait 2 seconds
+  Then the outline view should have 1 entry
+  And I should see "anotherMethod" at 0 with the "method" icon in the outline view
+  And I select the outline view
+  Then the selected text should be "function anotherMethod(a,b,c)"
   
