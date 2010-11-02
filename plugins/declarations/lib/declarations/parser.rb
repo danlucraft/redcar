@@ -57,12 +57,24 @@ module Redcar
     kind:     method
   YAML
   
+  JS_YAML=<<-YAML
+  - regex:    "function\\s+([A-Z]\\w*)\\(.*\\)"
+    capture:  1
+    type:     id
+    kind:     class
+  - regex:    "function\\s+([a-z]\\w*)\\(.*\\)"
+    capture:  1
+    type:     id
+    kind:     method
+  YAML
+
   class Declarations
     class Parser
       DEFINITIONS = {
         /\.rb$/   => YAML.load(RUBY_YAML),
         /\.java$/ => YAML.load(JAVA_YAML),
-        /\.php$/ => YAML.load(PHP_YAML)
+        /\.php$/ => YAML.load(PHP_YAML),
+        /\.js$/ => YAML.load(JS_YAML)
       }
       
       attr_reader :tags
