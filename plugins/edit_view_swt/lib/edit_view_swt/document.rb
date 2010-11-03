@@ -3,7 +3,7 @@ module Redcar
   class EditViewSWT
     class Document
       include Redcar::Observable
-      attr_reader :jface_document
+      attr_reader :jface_document, :swt_mate_document
 
       def initialize(model, swt_mate_document)
         @model          = model
