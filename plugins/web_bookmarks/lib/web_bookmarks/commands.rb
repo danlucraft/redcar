@@ -38,7 +38,7 @@ module Redcar
           path    = preview.getAbsolutePath
           File.open(path,'w') {|f| f.puts(doc.get_all_text)}
         end
-        url  = "file://" + path
+        url = "file://" + File.expand_path(path)
         DisplayWebContent.new(name,url).run
       end
     end

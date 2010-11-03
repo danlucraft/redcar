@@ -63,7 +63,7 @@ module Redcar
         <<-HTML
           <tr>
             <td bgcolor="#ccffcc" width="40%"><a class="action">#{item.action}</a></td>
-            <td bgcolor="#dddddd"><a class="file_path" href="controller/open_file?#{item.path}=#{item.line}">#{display_path}</a></td>
+            <td bgcolor="#dddddd"><a class="file_path" href="controller/open_file?#{item.path}=#{item.line}">#{display_path}:#{item.line+1}</a></td>
           </tr>
         HTML
       end

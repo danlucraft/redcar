@@ -249,8 +249,8 @@ module Redcar
       end
     end
 
-    # FIXME: XXX: The rest of this file is outright ugly. The Redcar.platform ultimately 
-    # needs to return a platform object which we can dispatch to for commandlines, 
+    # FIXME: XXX: The rest of this file is outright ugly. The Redcar.platform ultimately
+    # needs to return a platform object which we can dispatch to for commandlines,
     # configuration, escaping and all that.
     class OpenCommand < Command
       attr_reader :path
@@ -305,7 +305,7 @@ module Redcar
       def explorer_linux
         preferred = Manager.storage['preferred_file_browser']
         run = preferred if LinuxApps[preferred] and find(preferred)
-        LinuxApps.keys.detect {|a| run = command.find(a) } unless run
+        LinuxApps.keys.detect {|a| run = @command.find(a) } unless run
 
         Manager.storage['preferred_file_browser'] = run unless preferred
 
@@ -314,7 +314,7 @@ module Redcar
 
       def execute(options = nil)
         @path ||= options[:value]
-        command = self
+        @command = self
         cmd = send(:"explorer_#{Redcar.platform}")
         if cmd
           run_application(*cmd)
@@ -328,7 +328,7 @@ module Redcar
       LinuxApps = { 'xfce4-terminal' => "--working-directory=%s",
         'gnome-terminal' => "--working-directory=%s",
         'konsole' => "--workdir %s" }
-        
+
       def osx_terminal_script(preferred)
         if preferred.start_with? "iTerm"
           <<-OSASCRIPT
@@ -363,7 +363,7 @@ module Redcar
       def commandline_linux
         preferred = Manager.storage['preferred_command_line']
         run = preferred if LinuxApps[preferred] and find(preferred)
-        LinuxApps.keys.detect {|a| run = command.find(a) } unless run
+        LinuxApps.keys.detect {|a| run = @command.find(a) } unless run
 
         Manager.storage['preferred_command_line'] = run unless preferred
 
@@ -372,7 +372,7 @@ module Redcar
 
       def execute(options = nil)
         @path ||= options[:value]
-        command = self
+        @command = self
         cmd = send(:"commandline_#{Redcar.platform}")
         if cmd
           run_application(*cmd)
