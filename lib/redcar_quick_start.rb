@@ -47,11 +47,7 @@ module Redcar
             path = File.expand_path(arg)
           end
           next unless path
-          if ARGV.include? "-w" and File.file?(path)
-            drb_answer = drb.open_file_and_wait(path, untitled)
-          else
-            drb_answer = drb.open_item_drb(path, untitled)
-          end
+          drb_answer = drb.open_item_drb(path, untitled, ARGV.include?("-w"))
           return unless drb_answer == 'ok'
         end
       else
