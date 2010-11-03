@@ -8,6 +8,7 @@ Feature: Showing and opening bookmarks in a tree
     When I open the web bookmarks tree
     Then I should see "Online" in the tree
     And I should see "Sample" in the tree
+    And I should not see "Other" in the tree
 
   Scenario: Show individual bookmarks in groups
     When I open the web bookmarks tree
