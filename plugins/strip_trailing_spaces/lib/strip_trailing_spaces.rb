@@ -41,15 +41,7 @@ module Redcar
       if (doc.mirror.is_a?(Redcar::Project::FileMirror) && StripTrailingSpaces.enabled?)
         regex         = /[\t ]*$/ if StripTrailingSpaces.strip_blank_lines?
         regex       ||= /([^\s]+)[\t ]+$/
-        styled_text   = doc.controller.swt_mate_document.mateText.control
-        top_pixel     = styled_text.getTopPixel
-        caret         = styled_text.getCaretOffset
-        line          = styled_text.getLineAtOffset(caret)
-        caret         = caret - styled_text.getOffsetAtLine(line)
-        styled_text.setText(doc.get_all_text.gsub(regex, "\\1"))
-        styled_text.setTopPixel(pixel)
-        caret_offset  = styled_text.getOffsetAtLine(line)
-        styled_text.setCaretOffset([caret_offset + caret, styled_text.getOffsetAtLine(line + 1) - 1].min)
+        doc.replace(0, doc.length, doc.get_all_text.gsub(regex, "\\1"))
       end
     end
 
