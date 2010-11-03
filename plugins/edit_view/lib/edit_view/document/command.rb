@@ -1,5 +1,5 @@
 module Redcar
-  class DocumentCommand < Command
+  class DocumentCommand < TabCommand
     sensitize :edit_view_focussed
     
     def _finished
