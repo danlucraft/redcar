@@ -1,5 +1,5 @@
 When /^I type the fixture path of "([^"]*)" in the "([^"]*)" field in the speedbar$/ do |filename,field|
-  path = File.join(fixtures_path,filename)
+  path = File.join(web_fixtures_path,filename)
   When "I type \"" + path + "\" into the \"" + field + "\" field in the speedbar"
 end
 
