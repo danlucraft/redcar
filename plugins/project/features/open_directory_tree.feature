@@ -5,12 +5,23 @@ Feature: Open directory tree
     When I open a directory
     Then I should see "bin,lib,plugins" in the tree
 
+  Scenario: Open a directory using another Redcar invocation
+    Given I open "plugins/project/spec/fixtures/myproject" using the redcar command
+    Then the window should have title "myproject"
+
   Scenario: Open directory then another directory
     Given I will choose "." from the "open_directory" dialog
     When I open a directory
     Given I will choose "plugins" from the "open_directory" dialog
     When I open a directory
     Then I should see "core,application,tree" in the tree
+
+  Scenario: Open a directory and then the same using another Redcar invocation
+    Given I will choose "plugins/project/spec/fixtures/myproject" from the "open_directory" dialog
+    When I open a directory
+    And I open "plugins/project/spec/fixtures/myproject" using the redcar command
+    Then there should be 1 windows
+    And the window should have title "myproject"
 
   Scenario: Title of window reflects open project
     Given I will choose "plugins/project/spec/fixtures/myproject" from the "open_directory" dialog

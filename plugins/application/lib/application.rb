@@ -57,6 +57,12 @@ module Redcar
             win.focussed_notebook.focussed_tab
           end
         end,
+        Sensitivity.new(:open_trees, Redcar.app, false, [:focussed_window, :tree_added, :tree_removed]) do |tree|
+          if win = Redcar.app.focussed_window
+            trees = win.treebook.trees
+            trees and trees.length > 0
+          end
+        end,
         Sensitivity.new(:single_notebook, Redcar.app, true, [:focussed_window, :notebook_change]) do
           if win = Redcar.app.focussed_window
             win.notebooks.length == 1

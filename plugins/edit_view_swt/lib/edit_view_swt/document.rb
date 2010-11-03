@@ -71,10 +71,21 @@ module Redcar
 
       def replace(offset, length, text)
         @model.verify_text(offset, offset+length, text)
-        jface_document.replace(offset, length, text)
-        #if length > text.length
-        #  @swt_mate_document.mateText.redraw
-        #end
+
+        styled_text = @swt_mate_document.mateText.control
+        top_pixel   = styled_text.getTopPixel
+        caret       = styled_text.getCaretOffset
+        line        = styled_text.getLineAtOffset(caret)
+        caret       = caret - styled_text.getOffsetAtLine(line)
+        styled_text.replaceTextRange(offset, length, text)
+
+        line_offset = styled_text.getOffsetAtLine(line)
+        unless line_offset > length
+          # The documents new text is still longer than our previous position, restore position
+          styled_text.setCaretOffset([line_offset + caret, styled_text.getOffsetAtLine(line + 1) - 1].min)
+          styled_text.setTopPixel(top_pixel)
+        end
+
         @model.modify_text
       end
 
