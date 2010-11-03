@@ -26,6 +26,10 @@ module Redcar
           shell.parse(io)
         rescue CompilationFailedException => e
           create_syntax_error(doc, e.message, name).annotate
+        rescue Object => e
+          Redcar::Application::Dialog.message_box(
+          "An error occurred while parsing #{name}: #{e.message}",
+          {:type => :error})
         end
       end
 
@@ -41,7 +45,7 @@ module Redcar
       end
 
       def classpath(project)
-        parts  = []
+        parts  = failed = []
         shell  = GroovyShell.new
         files  = classpath_files(project)
         return unless files.any?
@@ -50,9 +54,12 @@ module Redcar
             file  = java.io.File.new(path)
             part  = shell.run(file, [])
           rescue Object => e
-            Redcar::Application::Dialog.message_box("Error loading groovy classpath file #{path}: #{e.message}")
+            Redcar::Application::Dialog.message_box(
+            "An error occurred while loading groovy classpath file #{path}: #{e.message}",
+            {:type => :error})
+            return
           end
-          parts = parts + part if part
+          parts += part if part
         end
         parts
       end
