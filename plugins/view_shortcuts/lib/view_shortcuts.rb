@@ -21,9 +21,8 @@ module Redcar
     class ViewCommand < Redcar::Command
       def execute
         controller = Controller.new
-        tab = win.new_tab(HtmlTab)
+        tab = win.new_tab(HelpHtmlTab)
         tab.html_view.controller = controller
-        tab.icon = :question
         tab.focus
       end
     end

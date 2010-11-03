@@ -47,9 +47,8 @@ module Redcar
       def execute
         path = Redcar.user_dir + "/profile_output.html"
         JRubyProf.print_graph_html(Debug.profiling_result, path)
-        tab = win.new_tab(HtmlTab)
+        tab = win.new_tab(ConfigHtmlTab)
         tab.html_view.contents = File.read(path)
-        tab.icon = :hammer_screwdriver
         tab.focus
         FileUtils.rm_f(path)
       end
@@ -59,9 +58,8 @@ module Redcar
       def execute
         path = Redcar.user_dir + "/profile_output.html"
         JRubyProf.print_tree_html(Debug.profiling_result, path)
-        tab = win.new_tab(HtmlTab)
+        tab = win.new_tab(ConfigHtmlTab)
         tab.html_view.contents = File.read(path)
-        tab.icon = :hammer_screwdriver
         tab.focus
         FileUtils.rm_f(path)
       end
@@ -71,9 +69,8 @@ module Redcar
       
       def execute
         controller = Controller.new
-        tab = win.new_tab(HtmlTab)
+        tab = win.new_tab(ConfigHtmlTab)
         tab.html_view.controller = controller
-        tab.icon = :hammer_screwdriver
         tab.focus
       end
         

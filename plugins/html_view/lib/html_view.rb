@@ -1,5 +1,7 @@
 
 require 'html_view/html_tab'
+require 'html_view/help_tab'
+require 'html_view/config_tab'
 require 'html_controller'
 require 'json'
 

@@ -5,9 +5,8 @@ module Redcar
 
       def execute
         controller = Controller.new
-        tab = win.new_tab(HtmlTab)
+        tab = win.new_tab(ConfigHtmlTab)
         tab.html_view.controller = controller
-        tab.icon = :hammer_screwdriver
         tab.focus
       end
     end

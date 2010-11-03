@@ -25,7 +25,7 @@ module Redcar
           "Submit a Bug",
           "https://redcar.lighthouseapp.com/projects/25090-redcar/tickets/new",
           true,
-          :question
+          HelpHtmlTab
         ).run
       end
     end
@@ -36,7 +36,7 @@ module Redcar
           "Online Help",
           "http://github.com/redcar/redcar/wiki/Users-Guide",
           true,
-          :question
+          HelpHtmlTab
         ).run
       end
     end

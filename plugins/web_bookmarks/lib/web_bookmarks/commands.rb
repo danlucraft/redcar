@@ -6,19 +6,19 @@ module Redcar
 
     # Open a HtmlTab for displaying web content
     class DisplayWebContent < Redcar::Command
-      def initialize(name,url,display_bar=true,icon=:globe)
+      def initialize(name,url,display_bar=true,tab_class=HtmlTab)
         @name        = name
         @url         = url
         @display_bar = display_bar
-        @icon        = icon
+        @tab         = tab_class
       end
 
       def execute
         win = Redcar.app.focussed_window
         controller = ViewController.new(@name,@url)
-        tab = win.new_tab(HtmlTab)
+        tab = win.new_tab(@tab)
         tab.html_view.controller = controller
-        tab.icon = @icon
+        tab.icon = :globe if tab.is_a?(HtmlTab)
         tab.focus
         if @display_bar or
           WebBookmarks.storage['show_browser_bar_on_start']
