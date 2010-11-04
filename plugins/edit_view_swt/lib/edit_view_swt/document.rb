@@ -57,6 +57,7 @@ module Redcar
       end
 
       def offset_at_line(line_ix)
+        line_ix = [line_ix, line_count - 1].min
         jface_document.get_line_offset(line_ix)
       end
 
