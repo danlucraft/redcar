@@ -32,11 +32,12 @@ Then /^the menu item "([^\"]*)\|([^\"]*)" should be (active|inactive)$/ do |menu
   end
 end
 
-When /^I open the "([^"]*)" from the "([^"]*)" menu$/ do |menu_item, menu_name|
-  items = main_menu.get_items.to_a
-  menu = items.detect {|i| i.text == menu_name }
-  items = menu.get_menu.get_items.to_a
-  item = items.detect {|i| i.text.split("\t").first == menu_item }
+When /^I (?:open the|click) "([^"]*)" from the "([^"]*)" menu$/ do |menu_item, menu_name|
+  menu_items = menu_name.split("/").inject(main_menu.get_items.to_a.dup) do |items, item_name|
+    m = items.detect {|i| i.text == item_name }
+    items = m.get_menu.get_items.to_a
+  end
+  item = menu_items.detect {|i| i.text.split("\t").first == menu_item }
   FakeEvent.new(Swt::SWT::Selection, item)
 end
 
