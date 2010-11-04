@@ -41,7 +41,7 @@ module Redcar
       if (doc.mirror.is_a?(Redcar::Project::FileMirror) && StripTrailingSpaces.enabled?)
         regex         = /[\t ]*$/ if StripTrailingSpaces.strip_blank_lines?
         regex       ||= /([^\s]+)[\t ]+$/
-        doc.replace(0, doc.length, doc.get_all_text.gsub(regex, "\\1"))
+        doc.text = doc.get_all_text.gsub(regex, "\\1")
       end
     end
 
