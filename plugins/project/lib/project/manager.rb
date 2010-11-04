@@ -162,6 +162,33 @@ module Redcar
         window.focus
       end
 
+      def self.pop_first_line_option(args)
+        if args.include? '-l'
+          argix = args.index('-l')
+          raise ArgumentError, "The -l Option expects an Argument" unless args[argix + 1]
+          numbers = args[argix + 1].split(',')
+          first_num = numbers.delete_at(0)
+          if (args[argix + 1] = numbers.join(',')).empty?
+            args.delete_at(argix); args.delete_at(argix)
+          end
+          first_num
+        elsif match = args.select {|a| /^\-l\d+$/.match a }.first
+          args.delete(args.index(match))
+          match[2..-1]
+        end
+      end
+
+      def self.scroll_to_line(arg)
+        begin
+          doc = Redcar.app.focussed_notebook_tab.edit_view.document
+          lineix = arg.to_i - 1
+          doc.scroll_to_line(lineix)
+          doc.cursor_offset = doc.offset_at_line(lineix)
+        rescue Exception
+          raise ArgumentError, 'The "-l" Option expects a number as Argument'
+        end
+      end
+
       def self.open_tab_with_content(text)
         win = Redcar.app.focussed_window || Redcar.app.new_window
         tab = win.new_tab(Redcar::EditTab)
@@ -224,6 +251,8 @@ module Redcar
           elsif File.file?(arg)
             found_path_args = true
             open_file(arg)
+            linearg = pop_first_line_option(args)
+            scroll_to_line(linearg) if linearg
           end
         end
         args.each do |arg|
