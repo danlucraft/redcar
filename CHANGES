@@ -4,10 +4,16 @@ Version 0.9 (TBA)
 Enhancements:
 
  * Vertical tree tabs now have a close button like edit view tabs (Tim Felgentreff)
+ * Strip Trailing Spaces is now _much_ faster (Tim Felgentreff)
 
 Bug fixes:
 
  * Fix Application::Dialog#tool_tip to set the location correctly on Windows (Patrik Sundberg)
+
+Internal changes:
+
+  * Code coverage is above 70% (up from 60%) (everyone)
+  * Code cleanup and refactoring in various plugins (everyone)
 
 Version 0.8.1 (26 October 2010)
 ===============================
