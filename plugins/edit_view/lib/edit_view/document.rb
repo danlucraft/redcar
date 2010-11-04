@@ -83,7 +83,7 @@ module Redcar
         @edit_view.reset_last_checked
         set_modified(false)
         notify_listeners(:mirror_committed,@mirror)
-        Redcar.app.repeat_event(:mirror_committed)
+        Redcar.app.repeat_event(:mirror_committed) if Redcar.app
       end
     end
 
