@@ -83,7 +83,8 @@ module Redcar
         line        = line_at_offset(caret)
         caret       = caret - offset_at_line(line)
 
-        jface_document.set(text)
+        styledText.setRedraw(false)
+        styledText.setText(text)
 
         unless line > line_count - 1
           # The documents new text is still longer than our previous position, restore position
@@ -92,6 +93,7 @@ module Redcar
           styledText.setTopPixel(top_pixel)
         end
 
+        styledText.setRedraw(true)
         @model.modify_text
         notify_listeners(:set_text)
       end
