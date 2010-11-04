@@ -28,7 +28,7 @@ module Redcar
       :WINDOW_START           => 17039365,
       :WINDOW_END             => 17039366
     }
-    
+
     SELECTION_COMMANDS = {
       :SELECT_ALL             => 262209,
       :SELECT_LINE_UP         => 16908289,
@@ -46,7 +46,7 @@ module Redcar
       :SELECT_WINDOW_START    => 17170437,
       :SELECT_WINDOW_END      => 17170438
     }
-    
+
     MODIFICATION_COMMANDS = {
       :CUT                    => 131199,
       :COPY                   => 17039369,
@@ -56,7 +56,7 @@ module Redcar
       :DELETE_WORD_PREVIOUS   => 262152,
       :DELETE_WORD_NEXT       => 262271
     }
-    
+
     ALL_ACTIONS = NAVIGATION_COMMANDS.merge(SELECTION_COMMANDS).merge(MODIFICATION_COMMANDS)
 
     include Redcar::Observable
@@ -107,7 +107,7 @@ module Redcar
       mate_text.add_grammar_listener do |new_grammar|
         @model.set_grammar(new_grammar)
       end
-      
+
       create_model_listeners
     end
 
@@ -116,33 +116,33 @@ module Redcar
       @mate_text.set_font(EditView.font, EditView.font_size)
 
       @model.controller = self
-      
+
       add_styled_text_command_key_listeners
     end
-    
+
     class CommandKeyListener
-      
+
       attr_reader :st
-      
+
       def initialize(styled_text, edit_view)
         @edit_view = edit_view
         @st = styled_text
       end
-      
+
       def key_pressed(event)
       end
-      
+
       def key_released(event)
         record_action(event)
       end
-      
+
       # This pile of crap is copied from StyledText#handleKey. Wouldn't
       # it be great if this logic was accessible on StyledText somehow?
       def record_action(event)
         if (event.keyCode != 0)
           # special key pressed (e.g., F1)
           action = st.getKeyBinding(event.keyCode | event.stateMask)
-        else 
+        else
           # character key pressed
           action = st.getKeyBinding(event.character | event.stateMask)
           if (action == Swt::SWT::NULL)
@@ -155,31 +155,31 @@ module Redcar
             end
           end
         end
-        
+
         if (action == Swt::SWT::NULL)
 		      ignore = false
-		
+
           if (Redcar.platform == :osx)
-            # Ignore accelerator key combinations (we do not want to 
-            # insert a character in the text in this instance). Do not  
+            # Ignore accelerator key combinations (we do not want to
+            # insert a character in the text in this instance). Do not
             # ignore COMMAND+ALT combinations since that key sequence
             # produces characters on the mac.
             ignore = (event.stateMask & Swt::SWT::COMMAND) != 0 ||
               (event.stateMask & Swt::SWT::CTRL) != 0
           else
-    			  # Ignore accelerator key combinations (we do not want to 
-            # insert a character in the text in this instance). Don't  
-            # ignore CTRL+ALT combinations since that is the Alt Gr 
-            # key on some keyboards.  See bug 20953. 
-            ignore = (event.stateMask ^ Swt::SWT::ALT) == 0 || 
+    			  # Ignore accelerator key combinations (we do not want to
+            # insert a character in the text in this instance). Don't
+            # ignore CTRL+ALT combinations since that is the Alt Gr
+            # key on some keyboards.  See bug 20953.
+            ignore = (event.stateMask ^ Swt::SWT::ALT) == 0 ||
               (event.stateMask ^ Swt::SWT::CTRL) == 0 ||
               (event.stateMask ^ (Swt::SWT::ALT | Swt::SWT::SHIFT)) == 0 ||
               (event.stateMask ^ (Swt::SWT::CTRL | Swt::SWT::SHIFT)) == 0
           end
           # -ignore anything below SPACE except for line delimiter keys and tab.
-          # -ignore DEL 
-          if (!ignore && event.character > 31 && event.character != Swt::SWT::DEL || 
-            event.character == Swt::SWT::CR || event.character == Swt::SWT::LF || 
+          # -ignore DEL
+          if (!ignore && event.character > 31 && event.character != Swt::SWT::DEL ||
+            event.character == Swt::SWT::CR || event.character == Swt::SWT::LF ||
                 event.character == Swt::SWT::TAB)
             @edit_view.history.record(event.character)
           end
@@ -188,7 +188,7 @@ module Redcar
         end
       end
     end
-    
+
     def add_styled_text_command_key_listeners
       st = @mate_text.get_text_widget
       st.add_key_listener(CommandKeyListener.new(st, @model))
@@ -210,7 +210,7 @@ module Redcar
 
     def undoable?
       # The override malarky is because the JFace::TextViewerUndoManager doesn't
-      # recognize that typing while in Block Selection mode makes the edit view 
+      # recognize that typing while in Block Selection mode makes the edit view
       # undoable. (Even though it faithfully records the actions, and responds
       # correctly to "undo".) So we override the undo manager for this case.
       @undoable_override || @undo_manager.undoable
@@ -248,7 +248,7 @@ module Redcar
     def annotations(options = nil)
       return @mate_text.annotations unless options
       if options[:line]
-        @mate_text.annotationsOnLine(line + 1)
+        @mate_text.annotationsOnLine(options[:line] - 1)
       elsif options[:type]
         annotations_of_type(options[:type])
       end
@@ -336,19 +336,19 @@ module Redcar
         end
       end
     end
-    
+
     def type_character(character)
       mate_text.get_text_widget.doContent(character)
       mate_text.get_text_widget.update
     end
-    
+
     model_listener :type_character
-    
+
     def invoke_action(action_symbol)
       const = EditViewSWT::ALL_ACTIONS[action_symbol]
       mate_text.get_text_widget.invokeAction(const)
     end
-    
+
     model_listener :invoke_action
 
     class VerifyKeyListener

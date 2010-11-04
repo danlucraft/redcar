@@ -1,4 +1,4 @@
-REDCAR_VERSION = "0.8.0dev" # also change in lib/redcar.rb!
+REDCAR_VERSION = "0.9.0dev" # also change in lib/redcar.rb!
 require 'rubygems'
 require 'fileutils'
 require 'spec/rake/spectask'
@@ -56,7 +56,7 @@ def find_ci_reporter(filename)
 end
 
 def rcov_run(cmd, opts)
-  cmd = %{rcov --aggregate #{COVERAGE_DATA} -x "features/,spec/,vendor/,openssl/,yaml/,json/,yaml,gems,file:,(eval),(__FORWARDABLE__)" #{cmd} -- #{opts}}
+  cmd = %{rcov --aggregate #{COVERAGE_DATA} -x "jsignal_internal,(erb),features/,spec/,vendor/,openssl/,yaml/,json/,yaml,gems,file:,(eval),(__FORWARDABLE__)" #{cmd} -- #{opts}}
   jruby_run(cmd)
 end
 
@@ -129,6 +129,21 @@ def remove_matching_files(list, string)
   list.reject {|entry| entry.include?(string)}
 end
 
+def gem_manifest
+  r = %w(CHANGES LICENSE Rakefile README.md) + 
+                          Dir.glob("bin/redcar") + 
+                          Dir.glob("config/**/*") + 
+                          Dir.glob("share/**/*") + 
+                          remove_gitignored_files(Dir.glob("lib/**/*")) + 
+                          remove_matching_files(remove_gitignored_files(Dir.glob("plugins/**/*")), "redcar-bundles") + 
+                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Syntaxes/**/*") + 
+                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Preferences/**/*") + 
+                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Snippets/**/*") + 
+                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/info.plist") + 
+                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Themes/*.tmTheme")
+  remove_matching_files(r, "multi-byte")
+end
+
 Spec = spec = Gem::Specification.new do |s|
   s.name              = "redcar"
   s.version           = REDCAR_VERSION
@@ -140,20 +155,8 @@ Spec = spec = Gem::Specification.new do |s|
   s.has_rdoc          = true
   s.extra_rdoc_files  = %w(README.md)
   s.rdoc_options      = %w(--main README.md)
-
   
-  
-  s.files             = %w(CHANGES LICENSE Rakefile README.md) + 
-                          Dir.glob("bin/redcar") + 
-                          Dir.glob("config/**/*") + 
-                          Dir.glob("share/**/*") + 
-                          remove_gitignored_files(Dir.glob("lib/**/*")) + 
-                          remove_matching_files(remove_gitignored_files(Dir.glob("plugins/**/*")), "redcar-bundles") + 
-                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Syntaxes/**/*") + 
-                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Preferences/**/*") + 
-                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Snippets/**/*") + 
-                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/info.plist") + 
-                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Themes/*.tmTheme")
+  s.files             = gem_manifest
   s.executables       = FileList["bin/redcar"].map { |f| File.basename(f) }
    
   s.require_paths     = ["lib"]

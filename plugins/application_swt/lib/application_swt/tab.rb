@@ -4,8 +4,6 @@ module Redcar
       
       attr_reader :item, :model, :notebook, :widget
       
-      FILE_ICON = File.join(Redcar.root, %w(plugins application lib application assets file.png))
-      
       def initialize(model, notebook, position = nil)
         @model, @notebook = model, notebook
         create_item_widget(position || @notebook.tab_folder.item_count)
@@ -17,7 +15,7 @@ module Redcar
         position ||= notebook.tab_folder.item_count
         if @item
           @item.dispose
-        end        
+        end
         @item = Swt::Custom::CTabItem.new(notebook.tab_folder, Swt::SWT::CLOSE, position)
         set_icon(@model.icon)
       end

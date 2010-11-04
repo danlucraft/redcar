@@ -219,11 +219,27 @@ module Redcar
       end
     end
 
-    class CloseTreeCommand < Command
+    class CloseTreeCommand < TreeCommand
       def execute
-        treebook = Redcar.app.focussed_window.treebook
-        tree = treebook.focussed_tree
-        treebook.remove_tree(tree)
+        win = Redcar.app.focussed_window
+        if win and treebook = win.treebook
+          if tree = treebook.focussed_tree
+            treebook.remove_tree(tree)
+          end
+        end
+      end
+    end
+
+    class ToggleTreesCommand < TreeCommand
+      def execute
+        win = Redcar.app.focussed_window
+        if win and treebook = win.treebook
+          if win.trees_visible?
+            win.set_trees_visible(false)
+          else
+            win.set_trees_visible(true)
+          end
+        end
       end
     end
 
@@ -258,7 +274,7 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class PrintScopeCommand < Command
+    class PrintScopeCommand < DocumentCommand
       def execute
         Application::Dialog.tool_tip(tab.edit_view.document.cursor_scope.gsub(" ", "\n"), :cursor)
       end
@@ -325,28 +341,28 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class SwitchTabDownCommand < Command
+    class SwitchTabDownCommand < TabCommand
 
       def execute
         win.focussed_notebook.switch_down
       end
     end
 
-    class SwitchTabUpCommand < Command
+    class SwitchTabUpCommand < TabCommand
 
       def execute
         win.focussed_notebook.switch_up
       end
     end
 
-    class MoveTabUpCommand < Command
+    class MoveTabUpCommand < TabCommand
 
       def execute
         win.focussed_notebook.move_up
       end
     end
 
-    class MoveTabDownCommand < Command
+    class MoveTabDownCommand < TabCommand
 
       def execute
         win.focussed_notebook.move_down
@@ -569,30 +585,34 @@ Redcar.environment: #{Redcar.environment}
         cursor_line  = doc.cursor_line
         cursor_line_offset = doc.cursor_line_offset
         diff = 0
-        doc.controllers(AutoIndenter::DocumentController).first.disable do
-          doc.selection_ranges.each do |range|
-            doc.delete(range.begin - diff, range.count)
-            diff += range.count
-          end
-          texts = Redcar.app.clipboard.last.dup
-          texts.each_with_index do |text, i|
-            line_ix = start_line + i
-            if line_ix == doc.line_count
-              doc.insert(doc.length, "\n" + " "*line_offset)
-            else
-              line = doc.get_line(line_ix).chomp
-              if line.length < line_offset
-                doc.insert(
-                doc.offset_at_inner_end_of_line(line_ix),
-                " "*(line_offset - line.length)
-                )
-              end
+        doc.controllers(AutoPairer::DocumentController).first.disable do
+          doc.controllers(AutoIndenter::DocumentController).first.disable do
+            doc.controllers(AutoCompleter::DocumentController).first.start_modification
+            doc.selection_ranges.each do |range|
+              doc.delete(range.begin - diff, range.count)
+              diff += range.count
             end
-            doc.insert(
-            doc.offset_at_line(line_ix) + line_offset,
-            text
-            )
-            doc.cursor_offset = doc.offset_at_line(line_ix) + line_offset + text.length
+            texts = Redcar.app.clipboard.last.dup
+            texts.each_with_index do |text, i|
+              line_ix = start_line + i
+              if line_ix == doc.line_count
+                doc.insert(doc.length, "\n" + " "*line_offset)
+              else
+                line = doc.get_line(line_ix).chomp
+                if line.length < line_offset
+                  doc.insert(
+                  doc.offset_at_inner_end_of_line(line_ix),
+                  " "*(line_offset - line.length)
+                  )
+                end
+              end
+              doc.insert(
+              doc.offset_at_line(line_ix) + line_offset,
+              text
+              )
+              doc.cursor_offset = doc.offset_at_line(line_ix) + line_offset + text.length
+            end
+            doc.controllers(AutoCompleter::DocumentController).first.end_modification
           end
         end
       end
@@ -660,23 +680,22 @@ Redcar.environment: #{Redcar.environment}
 
         button :go, "Go", "Return" do
           new_line_ix = line.value.to_i - 1
-          if new_line_ix < doc.line_count and new_line_ix >= 0
-            doc.cursor_offset = doc.offset_at_line(new_line_ix)
-            doc.scroll_to_line(new_line_ix)
-            win.close_speedbar
+          if new_line_ix < @doc.line_count and new_line_ix >= 0
+            @doc.cursor_offset = @doc.offset_at_line(new_line_ix)
+            @doc.scroll_to_line(new_line_ix)
+            @win.close_speedbar
           end
         end
 
-        def initialize(command)
+        def initialize(command, win)
           @command = command
+          @doc     = command.doc
+          @win     = win
         end
-
-        def doc; @command.doc; end
-        def win; @command.send(:win); end
       end
 
       def execute
-        @speedbar = GotoLineCommand::Speedbar.new(self)
+        @speedbar = GotoLineCommand::Speedbar.new(self, win)
         win.open_speedbar(@speedbar)
       end
     end
@@ -692,7 +711,7 @@ Redcar.environment: #{Redcar.environment}
 
     # define commands from SelectTab1Command to SelectTab9Command
     (1..9).each do |tab_num|
-      const_set("SelectTab#{tab_num}Command", Class.new(Redcar::Command)).class_eval do
+      const_set("SelectTab#{tab_num}Command", Class.new(Redcar::TabCommand)).class_eval do
         define_method :execute do
           notebook = Redcar.app.focussed_window_notebook
           notebook.tabs[tab_num-1].focus if notebook.tabs[tab_num-1]
@@ -768,7 +787,6 @@ Redcar.environment: #{Redcar.environment}
         #link "Cmd+Ctrl+O",  Project::OpenRemoteCommand
         link "Cmd+S",       Project::FileSaveCommand
         link "Cmd+Shift+S", Project::FileSaveAsCommand
-        link "Cmd+Ctrl+R",  Project::RevealInProjectCommand
         link "Cmd+W",       CloseTabCommand
         link "Cmd+Shift+W", CloseWindowCommand
         link "Cmd+Q",       QuitCommand
@@ -823,6 +841,7 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+I",           OutlineView::OpenOutlineViewCommand
 
         link "Ctrl+Shift+P",    PrintScopeCommand
+        link "Cmd+Shift+H",     ToggleTreesCommand
 
         link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
 
@@ -845,7 +864,6 @@ Redcar.environment: #{Redcar.environment}
         #link "Alt+Shift+O",  Project::OpenRemoteCommand
         link "Ctrl+S",       Project::FileSaveCommand
         link "Ctrl+Shift+S", Project::FileSaveAsCommand
-        link "Ctrl+Shift+R", Project::RevealInProjectCommand
         link "Ctrl+W",       CloseTabCommand
         link "Ctrl+Shift+W", CloseWindowCommand
         link "Ctrl+Q",       QuitCommand
@@ -894,7 +912,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+P",    PrintScopeCommand
 
         link "Ctrl+Alt+O",       SwitchNotebookCommand
-
+        link "Ctrl+Shift+H",     ToggleTreesCommand
         link "Ctrl+Page Up",         SwitchTabDownCommand
         link "Ctrl+Page Down",       SwitchTabUpCommand
         link "Ctrl+Shift+Page Up",   MoveTabDownCommand
@@ -1015,6 +1033,7 @@ Redcar.environment: #{Redcar.environment}
             item "Font Size", SelectFontSize
             item "Theme", SelectTheme
           end
+          item "Toggle Tree Visibility", :command => ToggleTreesCommand
           item "Toggle Fullscreen", :command => ToggleFullscreen, :type => :check, :active => window ? window.fullscreen : false
           separator
           item "New Notebook", NewNotebookCommand
@@ -1049,7 +1068,7 @@ Redcar.environment: #{Redcar.environment}
           end
         end
         sub_menu "Help", :priority => :last do
-          group(:priority => :first) do
+          group(:priority => :last) do
             item "About", AboutCommand
             item "New In This Version", ChangelogCommand
           end

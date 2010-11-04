@@ -1,0 +1,21 @@
+{
+    "bookmarks" : [
+        {
+            "name" : "Google",
+            "url"  : "www.google.com",
+            "protocol" : "http",
+            "group" : "Online"
+        },
+        {
+            "name" : "Github",
+            "url"  : "github.com",
+            "protocol" : "http",
+            "group" : "Online"
+        },
+        {
+            "name" : "Sample",
+            "url"  : "__PROJECT_PATH__/sample.html",
+            "protocol" : "file"
+        }
+    ]
+}

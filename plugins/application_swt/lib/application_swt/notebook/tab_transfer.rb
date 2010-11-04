@@ -4,22 +4,22 @@ module Redcar
       class TabTransfer < Swt::DND::ByteArrayTransfer
         
         class TabType
-          # Empty class for now, until we figure out which 
+          # Empty class for now, until we figure out which
           # information we want to attach to the transfer.
           # This _will_ be needed to DnD tabs between windows
         end
-      	
+        
         TAB_TYPE = "TabType"
         TAB_TYPE_ID = register_type(TAB_TYPE)
         @@instance = nil
-       
+        
         def self.get_instance
           @@instance || TabTransfer.new
         end
         
         def javaToNative(types, transfer_data)
           return if (types.nil? || types.empty? || (types.first.class != TabType))
-   
+          
           begin
             # write data to a byte array and then ask super to convert to
             out = java.io.ByteArrayOutputStream.new
@@ -40,7 +40,7 @@ module Redcar
           if (is_supported_type(transfer_data))
             buffer = super
             return nil unless buffer
-       		
+            
             data = []
             begin
               input = java.io.ByteArrayInputStream.new(buffer)

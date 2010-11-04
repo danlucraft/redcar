@@ -78,21 +78,22 @@ Feature: Watch for modified files
   Scenario: The file being mirrored by the current unmodified tab is externally deleted
     Then there should be one edit tab
     And I should see "Wintersmith" in the edit tab
-    When I open a new window
-    And I wait "2" seconds
+    When I open a new window with title "new"
+    When I wait "2" seconds
     And "plugins/project/spec/fixtures/winter.txt" goes missing
-    And I close the window "Redcar" through the gui
+    And I close the window "new" through the gui
     And I focus the window "Redcar" through the gui
-    Then there should be 0 edit tabs
+    Then there should be one edit tab
+    And my active tab should have an "exclamation" icon
 
   Scenario: The file being mirrored by the current modified tab is externally deleted
     Then there should be one edit tab
     And I should see "Wintersmith" in the edit tab
     When I replace the contents with "Jenny Green Eyes"
-    And I open a new window
+    And I open a new window with title "new"
     And I wait "2" seconds
     And "plugins/project/spec/fixtures/winter.txt" goes missing
-    And I close the window "Redcar" through the gui
+    And I close the window "new" through the gui
     And I focus the window "Redcar" through the gui
     Then my active tab should have an "exclamation" icon
     When I save the tab

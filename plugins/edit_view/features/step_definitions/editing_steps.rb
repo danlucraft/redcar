@@ -17,7 +17,7 @@ end
 
 When /^I select from (\d+) to (\d+)$/ do |start_offset, end_offset|
   doc = Redcar.app.focussed_window.focussed_notebook.focussed_tab.edit_view.document
-  doc.set_selection_range(start_offset.to_i, end_offset.to_i)
+  doc.set_selection_range(end_offset.to_i, start_offset.to_i)
 end
 
 When /^I copy text$/ do

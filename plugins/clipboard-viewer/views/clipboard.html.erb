@@ -1,0 +1,15 @@
+
+<script type="text/javascript" src="file://<%= Redcar::HtmlView.jquery_path %>"></script>
+<% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins clipboard-viewer views default.css))) %>
+<link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
+<h1>Clipboard History</h1>
+<div class="content" id="copies">
+  <table>
+    <thead><th>Recently Copied Text</th></thead>
+    <tbody>
+      <% @list.each_with_index do |item, i|%>
+        <tr><td class="copied-item" id="item_<%=i%>"><pre><%= item.join("").gsub("<", "&lt;").gsub(">", "&gt;") %></pre></td></td>
+      <% end %>
+    </tbody>
+  </table>
+</div>

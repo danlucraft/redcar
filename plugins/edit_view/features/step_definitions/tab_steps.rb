@@ -93,3 +93,12 @@ Then /^my active tab should have an "([^"]*)" icon$/ do |arg1|
   focussed_tab.icon.should == :"#{arg1}"
 end
 
+Then /^the tab should (not )?have annotations$/ do |negated|
+  annotations = focussed_tab.controller.edit_view.annotations
+  negated ? (annotations.should be_empty) : (annotations.should_not be_empty)
+end
+
+Then /^the tab should (not )?have an annotation on line (\d+)$/ do |negated, num|
+  annotations = focussed_tab.controller.edit_view.annotations(:line => num.to_i)
+  negated ? (annotations.should be_empty) : (annotations.should_not be_empty)
+end

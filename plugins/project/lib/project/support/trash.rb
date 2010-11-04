@@ -1,5 +1,6 @@
 module Redcar
   class Project
+    # FIXME: XXX: This is outright ugly. See the note on Redcar::Project::OpenCommand
     module Trash
       WINDOWS_SUPPORT_JS = File.expand_path("../recycle.js", __FILE__)
 
@@ -53,7 +54,7 @@ module Redcar
             if File.directory? file
               # FileUtils.cp_r copies src-dir always _into_ dest-dir
               # But we want src-dir's contents to be the contents of dest-dir
-              File.mkdir_p deleted_path
+              FileUtils.mkdir_p deleted_path
               FileUtils.cp_r("#{file}/.", deleted_path)
             else
               FileUtils.cp(file, deleted_path)

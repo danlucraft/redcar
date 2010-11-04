@@ -31,3 +31,13 @@ Then /^the menu item "([^\"]*)\|([^\"]*)" should be (active|inactive)$/ do |menu
     item.enabled.should be_false
   end
 end
+
+When /^I (?:open the|click) "([^"]*)" from the "([^"]*)" menu$/ do |menu_item, menu_name|
+  menu_items = menu_name.split("/").inject(main_menu.get_items.to_a.dup) do |items, item_name|
+    m = items.detect {|i| i.text == item_name }
+    items = m.get_menu.get_items.to_a
+  end
+  item = menu_items.detect {|i| i.text.split("\t").first == menu_item }
+  FakeEvent.new(Swt::SWT::Selection, item)
+end
+

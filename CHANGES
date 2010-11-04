@@ -1,5 +1,29 @@
-Version 0.8 (TBA)
-============================
+Version 0.9 (TBA)
+=================
+
+Enhancements:
+
+ * Vertical tree tabs now have a close button like edit view tabs (Tim Felgentreff)
+ * Strip Trailing Spaces is now _much_ faster (Tim Felgentreff)
+
+Bug fixes:
+
+ * Fix Application::Dialog#tool_tip to set the location correctly on Windows (Patrik Sundberg)
+ * 64bit Soylatte JDK7 can now be used to run Redcar on Mac OS X
+
+Internal changes:
+
+  * Code coverage is above 70% (up from 60%) (everyone)
+  * Code cleanup and refactoring in various plugins (everyone)
+
+Version 0.8.1 (26 October 2010)
+===============================
+
+ * Replace all is a single undo operation (Steven Hancock)
+ * Remove files with multi-byte names from the gem so windows rubygems is happy (Dan Lucraft)
+
+Version 0.8 (26 October 2010)
+=============================
 
 Enhancements:
 
@@ -10,22 +34,35 @@ Enhancements:
  * Redcar can be started without opening a window (for boot-time startup) (Tim Felgentreff)
  * The Mac OS X app bundle comes with assets bundled (Tim Felgentreff)
  * The Runnables tree now nests runnables depending on slashes in the type definition (Tim Felgentreff)
- * Deleting or moving a file updates the tab title correctly. (Delisa Mason)
+ * Deleting or moving a file updates the tab title and file correctly. (Delisa Mason)
  * Paired characters are not inserted if it looks like you are closing a pair (Dan Lucraft)
  * Syntax checking for Ruby upon save (Tim Felgentreff)
  * Deleting a file from the project tree will move it to the trash, if the OS permits (Tim Felgentreff)
+ * Help Menu options for submitting bugs and viewing the users' guide (Delisa Mason)
+ * Toggle line and selection commenting (Delisa Mason)
+ * Clipboard History Viewer and Paster (Delisa Mason)
+ * Web Preview files and Bookmarks (Delisa Mason)
+ * -w commandline switch to block the prompt when piping into or opening files on an existing Redcar instance (Tim Felgentreff)
+ * 'Open Default App' project context menu item for opening any type of file (Jeremy Wentworth)
+ * Changing to another tab reveals the associated file in the project tree (Johannes Wollert)
+ * Trees can be hidden or revealed by a keyboard shortcut (Delisa Mason)
+ * Fullscreen mode! (Matt Scharley)
 
 Bugfixes:
 
+ * Snippet completion works even when preceded by other characters (Delisa Mason)
  * New files now open in the project window which is the closest ancestor (Delisa Mason)
  * Search-and-replace now operates on the user-selected text as well, not only after it (Tim Felgentreff)
  * Word back/forward movement is not confused by multi-byte characters. (Dan Lucraft)
  * Can load files with multi-byte characters and see them in the tree (Dan Lucraft)
  * Open in command line now works correctly with Terminal.app (Delisa Mason, Mat Schaffer)
  * Search-and-replace won't loop forever over a document anymore if it still finds the search string (Tim Felgentreff)
+ * Goto line command works again (Dan Lucraft)
+ * Run tab commands are now project-aware (Delisa Mason)
 
 New APIs:
  * after_save can be implemented by plugins to run code after an edit view was saved (Tim Felgentreff)
+ * before_web_refresh can be implemented by plugins to run code before a HtmlTab is refreshed (Delisa Mason)
 
 Version 0.7 (4 October 2010)
 ============================

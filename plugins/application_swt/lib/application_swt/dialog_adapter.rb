@@ -89,8 +89,8 @@ module Redcar
       def tool_tip(message, location)
         tool_tip = Swt::Widgets::ToolTip.new(parent_shell, Swt::SWT::ICON_INFORMATION)
         tool_tip.set_message(message)
-        tool_tip.set_visible(true)
         tool_tip.set_location(*get_coordinates(location))
+        tool_tip.set_visible(true)
       end
       
       def popup_menu(menu, location)
@@ -125,8 +125,8 @@ module Redcar
         dialog = Swt::Widgets::FileDialog.new(parent_shell, type)
         dialog.setText("Save File");
         if options[:filter_path]
-	  dialog.setText("Save File As") if type == Swt::SWT::SAVE
-	  dialog.setText("Open File") if type == Swt::SWT::OPEN
+          dialog.setText("Save File As") if type == Swt::SWT::SAVE
+          dialog.setText("Open File") if type == Swt::SWT::OPEN
           dialog.set_filter_path(options[:filter_path])
         end
         Redcar.app.protect_application_focus do
@@ -136,7 +136,7 @@ module Redcar
       
       def directory_dialog(options)
         dialog = Swt::Widgets::DirectoryDialog.new(parent_shell)
-	dialog.setText("Open Directory")
+        dialog.setText("Open Directory")
         if options[:filter_path]
           dialog.set_filter_path(options[:filter_path])
         end

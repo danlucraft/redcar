@@ -57,6 +57,12 @@ module Redcar
             win.focussed_notebook.focussed_tab
           end
         end,
+        Sensitivity.new(:open_trees, Redcar.app, false, [:focussed_window, :tree_added, :tree_removed]) do |tree|
+          if win = Redcar.app.focussed_window
+            trees = win.treebook.trees
+            trees and trees.length > 0
+          end
+        end,
         Sensitivity.new(:single_notebook, Redcar.app, true, [:focussed_window, :notebook_change]) do
           if win = Redcar.app.focussed_window
             win.notebooks.length == 1
@@ -86,13 +92,6 @@ module Redcar
       create_history
       @event_spewer = EventSpewer.new
       @task_queue   = TaskQueue.new
-
-      # Don't show the toolbar by default on Mac OS X
-      if Redcar.platform == :osx
-        Application.storage['show_toolbar'] = false
-      end
-
-      # Otherwise, use previous setting
       @show_toolbar = !!Application.storage['show_toolbar']
     end
 
@@ -149,10 +148,15 @@ module Redcar
 
     def self.storage
       @storage ||= begin
-         storage = Plugin::Storage.new('application_plugin')
-         storage.set_default('stay_resident_after_last_window_closed', false)
-         storage.set_default('show_toolbar', true)
-         storage
+        storage = Plugin::Storage.new('application_plugin')
+        storage.set_default('stay_resident_after_last_window_closed', false)
+        # Don't show the toolbar by default on Mac OS X
+        if Redcar.platform == :osx
+          storage.set_default('show_toolbar', false)
+        else
+          storage.set_default('show_toolbar', true)
+        end
+        storage
       end
     end
 

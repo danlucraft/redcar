@@ -63,7 +63,7 @@ module Redcar
         grid_data = Swt::Layout::GridData.new
         grid_data.grabExcessHorizontalSpace = true
         grid_data.horizontalAlignment = Swt::Layout::GridData::FILL
-      	@composite.setLayoutData(grid_data)
+        @composite.setLayoutData(grid_data)
         layout = Swt::Layout::GridLayout.new(num_columns + 1, false)
         layout.verticalSpacing = 0
         layout.marginHeight = 0

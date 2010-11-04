@@ -15,11 +15,7 @@ module Redcar
         if File.exists?(doc.path)
           @icon = :file if icon == :exclamation
         else
-          if doc.modified?
-            @icon = :exclamation
-          else
-            close
-          end
+          @icon = :exclamation
         end
       end
       notify_listeners(:changed_icon, @icon) if old_icon != @icon
