@@ -21,19 +21,27 @@ module Redcar
 
     class SubmitABugCommand < Redcar::Command
       def execute
-        Redcar::WebBookmarks::DisplayWebContent.new(
+        if OpenDefaultBrowserCommand.supported?
+          OpenDefaultBrowserCommand.new("https://redcar.lighthouseapp.com/projects/25090-redcar/tickets/new").run
+        else
+          Redcar::WebBookmarks::DisplayWebContent.new(
           "Submit a Bug",
           "https://redcar.lighthouseapp.com/projects/25090-redcar/tickets/new"
-        ).run
+          ).run
+        end
       end
     end
 
     class OnlineHelpCommand < Redcar::Command
       def execute
-        Redcar::WebBookmarks::DisplayWebContent.new(
+        if OpenDefaultBrowserCommand.supported?
+          OpenDefaultBrowserCommand.new("http://github.com/redcar/redcar/wiki/Users-Guide").run
+        else
+          Redcar::WebBookmarks::DisplayWebContent.new(
           "Online Help",
           "http://github.com/redcar/redcar/wiki/Users-Guide"
-        ).run
+          ).run
+        end
       end
     end
   end

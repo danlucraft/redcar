@@ -1,5 +1,6 @@
 
 require 'tree/controller'
+require 'tree/command'
 require 'tree/mirror'
 
 module Redcar

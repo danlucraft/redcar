@@ -219,7 +219,7 @@ module Redcar
       end
     end
 
-    class CloseTreeCommand < Command
+    class CloseTreeCommand < TreeCommand
       def execute
         win = Redcar.app.focussed_window
         if win and treebook = win.treebook
@@ -230,7 +230,7 @@ module Redcar
       end
     end
 
-    class ToggleTreesCommand < Command
+    class ToggleTreesCommand < TreeCommand
       def execute
         win = Redcar.app.focussed_window
         if win and treebook = win.treebook
@@ -274,7 +274,7 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class PrintScopeCommand < Command
+    class PrintScopeCommand < DocumentCommand
       def execute
         Application::Dialog.tool_tip(tab.edit_view.document.cursor_scope.gsub(" ", "\n"), :cursor)
       end
@@ -341,28 +341,28 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class SwitchTabDownCommand < Command
+    class SwitchTabDownCommand < TabCommand
 
       def execute
         win.focussed_notebook.switch_down
       end
     end
 
-    class SwitchTabUpCommand < Command
+    class SwitchTabUpCommand < TabCommand
 
       def execute
         win.focussed_notebook.switch_up
       end
     end
 
-    class MoveTabUpCommand < Command
+    class MoveTabUpCommand < TabCommand
 
       def execute
         win.focussed_notebook.move_up
       end
     end
 
-    class MoveTabDownCommand < Command
+    class MoveTabDownCommand < TabCommand
 
       def execute
         win.focussed_notebook.move_down
@@ -711,7 +711,7 @@ Redcar.environment: #{Redcar.environment}
 
     # define commands from SelectTab1Command to SelectTab9Command
     (1..9).each do |tab_num|
-      const_set("SelectTab#{tab_num}Command", Class.new(Redcar::Command)).class_eval do
+      const_set("SelectTab#{tab_num}Command", Class.new(Redcar::TabCommand)).class_eval do
         define_method :execute do
           notebook = Redcar.app.focussed_window_notebook
           notebook.tabs[tab_num-1].focus if notebook.tabs[tab_num-1]
