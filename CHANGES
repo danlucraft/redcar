@@ -9,6 +9,8 @@ Enhancements:
 Bug fixes:
 
  * Fix Application::Dialog#tool_tip to set the location correctly on Windows (Patrik Sundberg)
+ * 64bit Soylatte JDK7 can now be used to run Redcar on Mac OS X
+ * Run Tab now checks for underlying file (Delisa Mason)
 
 Internal changes:
 

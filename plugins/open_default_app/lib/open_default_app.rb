@@ -22,14 +22,40 @@ module Redcar
       def execute(options=nil)
         @path ||= options[:value]
         begin
-		    file  = java::io::File.new(path)
-        desktop = Desktop.get_desktop
-    		desktop.open(file)
+          file  = java::io::File.new(path)
+          if Desktop.is_desktop_supported()
+            desktop = Desktop.get_desktop
+            desktop.open(file)
+          end
         rescue Object => e
           Application::Dialog.message_box("A default application could not be found for this type of file.")
         end
       end
     end
+  end
 
+  class OpenDefaultBrowserCommand < Redcar::Command
+    import java.awt.Desktop
+
+    attr_reader :uri
+
+    def self.supported?
+      Desktop.is_desktop_supported()
+    end
+
+    def initialize(uri)
+      @uri = uri
+    end
+
+    def execute
+      begin
+        return unless OpenDefaultBrowserCommand.supported?
+        URI::parse(@uri)
+        parsed_uri = java.net.URI.new(@uri)
+        Desktop.get_desktop.browse(parsed_uri)
+      rescue URI::InvalidURIError
+        raise ArgumentError, "Invalid URI given"
+      end
+    end
   end
 end
