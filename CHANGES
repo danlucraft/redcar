@@ -5,9 +5,12 @@ Enhancements:
 
  * Vertical tree tabs now have a close button like edit view tabs (Tim Felgentreff)
  * Strip Trailing Spaces is now _much_ faster (Tim Felgentreff)
+ * "Online Help" and "Submit a Bug" open the default system browser (Johannes Wollert)
+ * -l command line switch to jump to a file number (Johannes Wollert)
 
 Bug fixes:
 
+ * Declarations Plugin is able to deal with similarly named ruby methods
  * Fix Application::Dialog#tool_tip to set the location correctly on Windows (Patrik Sundberg)
  * 64bit Soylatte JDK7 can now be used to run Redcar on Mac OS X
  * Run Tab now checks for underlying file (Delisa Mason)
