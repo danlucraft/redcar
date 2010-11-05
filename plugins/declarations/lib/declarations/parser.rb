@@ -14,13 +14,13 @@ module Redcar
     type:     id
     kind:     method
   YAML
-  
+
   RUBY_YAML=<<-YAML
   - regex:    "^[^#]*(class|module)\\s+(?:\\w*::)*(\\w+)(?:$|\\s|<)"
     capture:  2
     type:     id
     kind:     class
-  - regex:    "^[^#]*def ((self\\.)?\\w+[?!=]?(\\(.*\\))?(\\n|\\;)+)"
+  - regex:    "^[^#]*def ((self\\.)?\\w+[?!=]?(\\(.*\\))?)(\\n|\\;)+"
     capture:  1
     type:     id
     kind:     method
