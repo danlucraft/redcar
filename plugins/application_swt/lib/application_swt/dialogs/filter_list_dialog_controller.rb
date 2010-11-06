@@ -187,14 +187,17 @@ module Redcar
       end
       
       def move_down
-        curr_ix = @dialog.list.get_selection_index
-        new_ix = [curr_ix + 1, @dialog.list.get_item_count - 1].min
-        @dialog.list.set_selection(new_ix)
+        move_selection(1, @dialog.list.get_item_count - 1)
       end
       
       def move_up
+        move_selection(-1, 0)
+      end
+
+      def move_selection(step, border)
         curr_ix = @dialog.list.get_selection_index
-        new_ix = [curr_ix - 1, 0].max
+        new_ix = curr_ix + step
+        new_ix = border if (new_ix <=> border) == step
         @dialog.list.set_selection(new_ix)
       end
       
