@@ -12,7 +12,7 @@ module Swt
     case Config::CONFIG["host_os"]
     when /(darwin|linux)/i
       jar = ($1 == "linux" ? "linux" : "osx")
-      jar += '64' if %w(amd64 x86_64).include? Config::CONFIG["host_cpu"]
+      jar << '64' if %w(amd64 x86_64).include? Config::CONFIG["host_cpu"]
       jar
     when /windows|mswin/i
       'win32'

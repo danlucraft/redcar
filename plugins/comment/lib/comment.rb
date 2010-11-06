@@ -109,7 +109,7 @@ module Redcar
                 doc.replace_line(line,text)
               else
                 replacement  = "#{start}#{text}#{ending}"
-                replacement += "\n" if doc.get_line(line) =~ /\n$/
+                replacement << "\n" if doc.get_line(line) =~ /\n$/
                 doc.replace_line(line,replacement)
               end
             end

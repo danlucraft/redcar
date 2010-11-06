@@ -85,15 +85,15 @@ module Redcar
           icon = (@type == :file ? "notebook" : "folder")
           case
           when ((@file.type_raw == "??") or (@file.type_raw[0,1] == "A" and @indexed))
-            icon += "--plus"
+            icon << "--plus"
           when ((@file.type_raw[0,1] == "M" and @indexed) or (@file.type_raw[1,1] == "M" and (not @indexed)))
-            icon += "--pencil"
+            icon << "--pencil"
           when (['C', 'R'].include?(@file.type_raw[0,1]) and @indexed)
-            icon += "--arrow"
+            icon << "--arrow"
           when ((@file.type_raw[0,1] == "D" and @indexed) or (@file.type_raw[1,1] == "D" and (not @indexed)))
-            icon += "--minus"
+            icon << "--minus"
           when (@file.type_raw[0,1] == "U" and (not @indexed))
-            icon += "--exclamation"
+            icon << "--exclamation"
           else
             icon = (@type == :file ? :file : :directory)
           end
