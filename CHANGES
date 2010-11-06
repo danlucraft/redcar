@@ -7,6 +7,7 @@ Enhancements:
  * Strip Trailing Spaces is now _much_ faster (Tim Felgentreff)
  * "Online Help" and "Submit a Bug" open the default system browser (Johannes Wollert)
  * -l command line switch to jump to a file number (Johannes Wollert)
+ * Font and Theme dialogs now update the setting on selection change for instant feedback (Tim Felgentreff)
 
 Bug fixes:
 
