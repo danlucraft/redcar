@@ -9,30 +9,30 @@ module Redcar
     capture:  1
     type:     id
     kind:     interface
-  - regex:    "(public|private).*\\s+(\\w+)\s*\\("
+  - regex:    "(public|private).*\\s+(\\w+)\\s*\\("
     capture:  2
     type:     id
     kind:     method
   YAML
-  
+
   RUBY_YAML=<<-YAML
   - regex:    "^[^#]*(class|module)\\s+(?:\\w*::)*(\\w+)(?:$|\\s|<)"
     capture:  2
     type:     id
     kind:     class
-  - regex:    "^[^#]*def (self\\.)?(\\w+[?!]?)"
-    capture:  2
+  - regex:    "^[^#]*def ((self\\.)?\\w+[?!=]?(\\(.*\\))?)(\\n|\\;)+"
+    capture:  1
     type:     id
     kind:     method
   - regex:    "^[^#]*attr(_reader|_accessor|_writer)(.*)$"
     capture:  2
     type:     id-list
     kind:     attribute
-  - regex:    "^[^#]*alias\s+:(\\w+)"
+  - regex:    "^[^#]*alias\\s+:(\\w+)"
     capture:  1
     type:     id
     kind:     alias
-  - regex:    "^[^#]*alias_method\s+:(\\w+[?!]?)"
+  - regex:    "^[^#]*alias_method\\s+:(\\w+[?!]?)"
     capture:  1
     type:     id
     kind:     alias
@@ -56,7 +56,7 @@ module Redcar
     type:     id
     kind:     method
   YAML
-  
+
   JS_YAML=<<-YAML
   - regex:    "function\\s+([A-Z]\\w*)\\(.*\\)"
     capture:  1
@@ -76,19 +76,19 @@ module Redcar
         /\.php$/ => YAML.load(PHP_YAML),
         /\.js$/ => YAML.load(JS_YAML)
       }
-      
+
       attr_reader :tags
-      
+
       def initialize
         @tags = []
       end
-      
+
       def parse(files)
         files.each do |path|
           @tags += match_in_file(path)
         end
       end
-      
+
       def decls_for_file(path)
         DEFINITIONS.each do |fn_re, decls|
           if path =~ fn_re
@@ -97,7 +97,7 @@ module Redcar
         end
         nil
       end
-      
+
       def match_kind(path, match)
         if decls = decls_for_file(path)
           decls.each do |decl|
@@ -107,9 +107,9 @@ module Redcar
           end
         end
       end
-      
+
       private
-      
+
       def match_in_file(path)
         tags = []
         begin
@@ -129,7 +129,7 @@ module Redcar
           []
         end
       end
-      
+
       def process_file(path, &block)
         if decls = decls_for_file(path)
           decls.each do |decl|
@@ -139,11 +139,11 @@ module Redcar
           end
         end
       end
-      
+
       def file(path)
         ::File.read(path)
       end
-      
+
     end
   end
 end
