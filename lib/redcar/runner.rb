@@ -113,8 +113,9 @@ module Redcar
     end
 
     class JvmOptionsProbe
-      D32 = system("java -d32 > #{Redcar.null_device}")
-      Client = system("java -client > #{Redcar.null_device}")
+      Redirect = "> #{Redcar.null_device} 2>&1"
+      D32 = system("java -d32 #{Redirect}")
+      Client = system("java -client #{Redirect}")
     end
   end
 end
