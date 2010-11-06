@@ -34,6 +34,12 @@ module Redcar
         end
       end
 
+      def moved_to(text, ix)
+        if @last_list
+          Redcar::EditView.font = text
+        end
+      end
+
     end
   end
 end
