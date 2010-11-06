@@ -106,14 +106,15 @@ module Redcar
         str.push "-Djruby.debug.loadService.timing=true"
       end
 
-      require 'redcar/jvm_options_probe'
-      
-      jvm_options_probe = JvmOptionsProbe.new
-      
-      str.push "-d32" if jvm_options_probe.can_use_d32?
-      str.push "-client" if jvm_options_probe.can_use_client?
+      str.push "-d32" if JvmOptionsProbe::D32
+      str.push "-client" if JvmOptionsProbe::Client
       
       str
+    end
+
+    class JvmOptionsProbe
+      D32 = system("java -d32 > #{Redcar.null_device}")
+      Client = system("java -client > #{Redcar.null_device}")
     end
   end
 end
