@@ -2,7 +2,7 @@ module Redcar
   class ApplicationSWT
     class Speedbar
       class TextBoxItem
-        def initialize(composite, item)
+        def initialize(speedbar, composite, item)
           edit_view = EditView.new
           item.edit_view = edit_view
           edit_view_swt = EditViewSWT.new(edit_view, composite, :single_line => true)
@@ -19,16 +19,16 @@ module Redcar
           edit_view.document.add_listener(:changed) do
             ignore(item.name) do
               item.value = edit_view.document.to_s
-              execute_listener_in_model(item, item.value)
+              speedbar.execute_listener_in_model(item, item.value)
             end
           end
           item.add_listener(:changed_value) do |new_value|
-            ignore(item.name) do
+            speedbar.ignore(item.name) do
               mate_text.getControl.set_text(new_value)
             end
           end
-          keyable_widgets << mate_text.getControl
-          focussable_widgets << mate_text.getControl
+          speedbar.keyable_widgets << mate_text.getControl
+          speedbar.focussable_widgets << mate_text.getControl
         end
       end
     end
