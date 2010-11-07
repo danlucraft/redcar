@@ -1,3 +1,9 @@
+require 'application_swt/speedbar/button_item'
+require 'application_swt/speedbar/combo_item'
+require 'application_swt/speedbar/label_item'
+require 'application_swt/speedbar/text_box_item'
+require 'application_swt/speedbar/toggle_item'
+
 module Redcar
   class ApplicationSWT
     class Speedbar
@@ -88,101 +94,8 @@ module Redcar
       
       def create_item_widgets
         @model.__items.each do |item|
-          case item
-          when Redcar::Speedbar::LabelItem
-            label = Swt::Widgets::Label.new(@composite, 0)
-            label.set_text(item.text)
-            item.add_listener(:changed_text) do |new_text|
-              label.set_text(item.text)
-            end
-          when Redcar::Speedbar::TextBoxItem
-            edit_view = EditView.new
-            item.edit_view = edit_view
-            edit_view_swt = EditViewSWT.new(edit_view, @composite, :single_line => true)
-            mate_text = edit_view_swt.mate_text
-            mate_text.set_font(EditView.font, EditView.font_size)
-            mate_text.getControl.set_text(item.value)
-            mate_text.set_grammar_by_name "Ruby"
-            mate_text.set_theme_by_name(EditView.theme)
-            mate_text.set_root_scope_by_content_name("Ruby", "string.regexp.classic.ruby")
-            gridData = Swt::Layout::GridData.new
-            gridData.grabExcessHorizontalSpace = true
-            gridData.horizontalAlignment = Swt::Layout::GridData::FILL
-            mate_text.getControl.set_layout_data(gridData)
-            edit_view.document.add_listener(:changed) do
-              ignore(item.name) do
-                item.value = edit_view.document.to_s
-                execute_listener_in_model(item, item.value)
-              end
-            end
-            item.add_listener(:changed_value) do |new_value|
-              ignore(item.name) do
-                mate_text.getControl.set_text(new_value)
-              end
-            end
-            keyable_widgets << mate_text.getControl
-            focussable_widgets << mate_text.getControl
-          when Redcar::Speedbar::ButtonItem
-            button = Swt::Widgets::Button.new(@composite, 0)
-            button.set_text(item.text)
-            button.add_selection_listener do
-              execute_listener_in_model(item)
-            end
-            item.add_listener(:changed_text) do |new_text|
-              button.set_text(item.text)
-            end
-            keyable_widgets << button
-            focussable_widgets << button
-          when Redcar::Speedbar::ComboItem
-            combo = Swt::Widgets::Combo.new(@composite, Swt::SWT::READ_ONLY)
-            combo.items = item.items.to_java(:string)
-            if item.value
-              combo.select(item.items.index(item.value))
-            end
-            combo.add_selection_listener do
-              ignore(item.name) do
-                item.value = combo.text
-                execute_listener_in_model(item, item.value)
-              end
-            end
-            item.add_listener(:changed_items) do |new_items|
-              rescue_speedbar_errors do
-                ignore(item.name) do
-                  combo.items = item.items.to_java(:string)
-                  item.value = nil
-                end
-              end
-            end
-            item.add_listener(:changed_value) do |new_value|
-              rescue_speedbar_errors do
-                ignore(item.name) do
-                  combo.select(item.items.index(item.value))
-                end
-              end
-            end
-            keyable_widgets    << combo
-            focussable_widgets << combo
-          when Redcar::Speedbar::ToggleItem
-            button = Swt::Widgets::Button.new(@composite, Swt::SWT::CHECK)
-            button.set_text(item.text)
-            button.set_selection(!!item.value)
-            button.add_selection_listener do
-              item.value = button.get_selection
-              execute_listener_in_model(item, item.value)
-            end
-            item.add_listener(:changed_text) do |new_text|
-              rescue_speedbar_errors do
-                button.set_text = new_text
-              end
-            end
-            item.add_listener(:changed_value) do |new_value|
-              rescue_speedbar_errors do
-                button.set_selection(!!new_value)
-              end
-            end
-            keyable_widgets    << button
-            focussable_widgets << button
-          end
+          swt_klass = self.const_get(item.class.to_s.split("::").last)
+          swt_klass.new(@composite, item)
         end
       end
       
