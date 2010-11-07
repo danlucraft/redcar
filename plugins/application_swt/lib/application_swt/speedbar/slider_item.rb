@@ -12,9 +12,9 @@ module Redcar
             item.value = slider.selection
             execute_listener_in_model(item, item.value)
           end
-          item.add_listener(:changed_value) do |new_value|
-            rescue_speedbar_errors do
-              slider.selection = new_value
+          [:value, :minimum, :maximum, :increment, :enabled].each do |ivar|
+            item.add_listener(:"changed_#{ivar}") do |new_value|
+              rescue_speedbar_errors { slider.send(:"#{ivar}=", new_value) }
             end
           end
           focussable_widgets << slider
