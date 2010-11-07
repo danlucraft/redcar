@@ -8,6 +8,7 @@ module Redcar
     TextBoxItem = ObservableStruct.new(:name, :listener, :value, :edit_view)
     ButtonItem  = ObservableStruct.new(:name, :text, :key, :listener)
     ComboItem   = ObservableStruct.new(:name, :items, :value, :listener)
+    SliderItem  = ObservableStruct.new(:name, :value, :minimum, :maximum, :increment)
     KeyItem     = ObservableStruct.new(:key, :listener)
     
     def self.items
@@ -82,7 +83,12 @@ module Redcar
       append_item ComboItem.new(name, items, value, block)
       define_item_finder(name)
     end
-    
+
+    def self.slider(name, value = 50, minimum = 0, maximum = 100, increment = 5, &block)
+      append_item SliderItem.new(name, value, minimum, maximum, increment, block)
+      define_item_finder(name)
+    end
+
     def self.key(key, &block)
       append_item KeyItem.new(key, block)
     end

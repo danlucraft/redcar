@@ -1,6 +1,7 @@
 require 'application_swt/speedbar/button_item'
 require 'application_swt/speedbar/combo_item'
 require 'application_swt/speedbar/label_item'
+require 'application_swt/speedbar/slider_item'
 require 'application_swt/speedbar/text_box_item'
 require 'application_swt/speedbar/toggle_item'
 
