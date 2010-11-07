@@ -8,8 +8,8 @@ module Redcar
           slider.maximum   = item.maximum   || 100
           slider.minimum   = item.minimum   || 0
           slider.increment = item.increment || 5
-          button.add_selection_listener do
-            item.value = slider.get_selection
+          slider.add_selection_listener do
+            item.value = slider.selection
             execute_listener_in_model(item, item.value)
           end
           item.add_listener(:changed_value) do |new_value|
