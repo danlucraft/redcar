@@ -95,7 +95,7 @@ module Redcar
 
       def create_item_widgets
         @model.__items.each do |item|
-          swt_klass = self.const_get(item.class.to_s.split("::").last)
+          swt_klass = self.class.const_get(item.class.to_s.split("::").last)
           swt_klass.new(@composite, item)
         end
       end
