@@ -1,12 +1,12 @@
-
 module Redcar
-  class WebBookmarks
-    class ViewController
+  class HtmlView
+
+    class DefaultController
       include HtmlController
 
       def initialize(title,url)
         @title = title
-        @url = url
+        @url = HtmlView.tidy_url(url)
       end
 
       def title
@@ -14,7 +14,8 @@ module Redcar
       end
 
       def index
-        rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..","..", "views", "index.html.erb")))
+        rhtml = ERB.new(File.read(File.join(
+          File.dirname(__FILE__), "..", "..", "views", "index.html.erb")))
         rhtml.result(binding)
       end
     end

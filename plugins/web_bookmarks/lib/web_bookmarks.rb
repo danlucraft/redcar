@@ -1,8 +1,6 @@
 require 'web_bookmarks/commands'
 require 'web_bookmarks/bookmark'
-require 'web_bookmarks/browser_bar'
 require 'web_bookmarks/tree'
-require 'web_bookmarks/view_controller'
 
 module Redcar
   class WebBookmarks
@@ -19,14 +17,6 @@ module Redcar
 
     def self.menus
       Redcar::Menu::Builder.build do
-        sub_menu "File" do
-          item "Web Preview", :command => WebBookmarks::FileWebPreview, :priority => 8
-        end
-        sub_menu "Edit" do
-          sub_menu "Document Navigation" do
-            item "Open Browser Bar", :command => WebBookmarks::OpenBrowserBar, :priority => 5
-          end
-        end
         sub_menu "Project" do
           item "Web Bookmarks", :command => WebBookmarks::ShowTree, :priority => 40
         end

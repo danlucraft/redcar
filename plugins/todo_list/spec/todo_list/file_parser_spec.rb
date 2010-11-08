@@ -13,12 +13,12 @@ describe Redcar::TodoList::FileParser do
   end
 
   it "should find only colon'ed tags if that requirement is set in the settings" do
-    TodoList.storage['require_colon'] = true
+    Redcar::TodoList.storage['require_colon'] = true
     @parser = Redcar::TodoList::FileParser.new
     tags    = @parser.parse_files(TodoListSpecHelper::Fixtures)
     tags.keys.should include "OPTIMIZE"
     tags.keys.should_not include "FIXME"
-    TodoList.storage['require_colon'] = false
+    Redcar::TodoList.storage['require_colon'] = false
   end
 
   it "should not search files without included suffixes" do

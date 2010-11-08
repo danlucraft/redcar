@@ -8,6 +8,9 @@ Enhancements:
  * "Online Help" and "Submit a Bug" open the default system browser (Johannes Wollert)
  * -l command line switch to jump to a file number (Johannes Wollert)
  * Font and Theme dialogs now update the setting on selection change for instant feedback (Tim Felgentreff)
+ * Tabs now display an alert icon if the underlying file is unwritable (Delisa Mason)
+ * Browser bar URL field now supports project-relative paths (Delisa Mason)
+ * URLs can be opened in the internal browser or the OS-default based on preferences (Delisa Mason)
 
 Bug fixes:
 

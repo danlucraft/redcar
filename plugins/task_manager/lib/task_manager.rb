@@ -8,7 +8,7 @@ module Redcar
       
       def execute
         controller = Controller.new
-        tab = win.new_tab(HtmlTab)
+        tab = win.new_tab(ConfigTab)
         tab.html_view.controller = controller
         tab.focus
       end
