@@ -78,7 +78,7 @@ module Redcar
     class MacroManagerCommand < Redcar::Command
       def execute
         controller = ManagerController.new
-        tab = win.new_tab(ConfigHtmlTab)
+        tab = win.new_tab(ConfigTab)
         tab.html_view.controller = controller
         tab.focus
       end

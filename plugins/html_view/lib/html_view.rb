@@ -1,6 +1,7 @@
 
+require 'html_view/commands'
+require 'html_view/browser_bar'
 require 'html_view/html_tab'
-require 'html_view/config_tab'
 require 'html_controller'
 require 'json'
 
@@ -9,18 +10,54 @@ module Redcar
     def self.default_css_path
       File.expand_path(File.join(Redcar.root, %w(plugins html_view assets redcar.css)))
     end
-    
+
     def self.jquery_path
       File.expand_path(File.join(Redcar.root, %w(plugins html_view assets jquery-1.4.min.js)))
     end
-    
+
+    def self.menus
+      Redcar::Menu::Builder.build do
+        sub_menu "File" do
+          item "Web Preview", :command => HtmlView::FileWebPreview, :priority => 8
+        end
+        sub_menu "Edit" do
+          sub_menu "Document Navigation" do
+            item "Open Browser Bar", :command => HtmlView::OpenBrowserBar, :priority => 5
+          end
+        end
+      end
+    end
+
+    def self.storage
+      @storage ||= begin
+         storage = Plugin::Storage.new('html_view')
+         storage.set_default('use_external_browser_for_urls', false)
+         storage
+      end
+    end
+
+    def self.tidy_url(url)
+      unless url.include?("://")
+        if File.exists?(url)
+          url = "file://#{url}"
+        elsif project = Redcar::Project.focussed_project and
+          relpath = File.join(project.path,url) and
+          File.exists?(relpath)
+          url = "file://#{relpath}"
+        else
+          url = "http://#{url}"
+        end
+      end
+      url
+    end
+
     attr_reader :controller
-  
+
     def initialize(html_tab)
       @html_tab = html_tab
       @html_tab.add_listener(:controller_action, &method(:controller_action))
     end
-    
+
     def controller=(new_controller)
       @controller = new_controller
       @html_tab.title = controller.title
@@ -29,7 +66,7 @@ module Redcar
       controller_action("index")
       attach_controller_listeners
     end
-    
+
     def attach_controller_listeners
       @controller.add_listener(:reload_index) { controller_action("index") }
 
@@ -54,7 +91,7 @@ module Redcar
         result
       end
     end
-    
+
     def controller_action(action_name, params=nil)
       text = nil
       begin
@@ -79,13 +116,13 @@ module Redcar
         end
       end
     end
-    
+
     def contents=(source)
       @html_tab.controller.browser.set_text(source)
     end
-    
+
     private
-    
+
     class RubyFunc < Swt::Browser::BrowserFunction
       def function(args)
         begin
@@ -102,7 +139,7 @@ module Redcar
           puts e.backtrace
         end
       end
-      
+
       attr_accessor :controller
     end
 

@@ -2,23 +2,38 @@
 module Redcar
   module HtmlController
     include Redcar::Observable
-    
+    class DefaultController
+      include HtmlController
+      def initialize(title,url)
+        @title = title
+        @url = HtmlView.tidy_url(url)
+      end
+
+      def title
+        @title
+      end
+
+      def index
+        rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "views", "index.html.erb")))
+        rhtml.result(binding)
+      end
+    end
     # Reload the index page
     def reload_index
       notify_listeners(:reload_index)
     end
-    
+
     # Override this to return a message if the user should be prompted
     # before closing the tab.
     def ask_before_closing
       nil
     end
-    
+
     # Override this to run code right before the tab is closed.
     def close
       nil
     end
-    
+
     # Call execute with a string of javascript to execute the script
     # in the context of the browser widget.
     def execute(script)
@@ -46,5 +61,6 @@ module Redcar
         </script>
       JS
     end
+
   end
 end

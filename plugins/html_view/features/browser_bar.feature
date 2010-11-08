@@ -1,14 +1,14 @@
 Feature: Navigating web content in HtmlTabs using the browser bar
 
   Background:
-    When I will choose "plugins/web_bookmarks/features/fixtures" from the "open_directory" dialog
+    When I will choose "plugins/html_view/features/fixtures" from the "open_directory" dialog
     And I open a directory
-    When I open the web bookmarks tree
-    And I activate the "Sample" node in the tree
-    Then the HTML tab should say "Hello!!"
+    And I open the browser bar
+    And I type the fixture path of "sample.html" in the "New URL:" field in the speedbar
+    And I press "Go!" in the speedbar
 
   Scenario: Refresh a tab
-    Given I will choose "plugins/web_bookmarks/features/fixtures/sample.html" from the "open_file" dialog
+    Given I will choose "plugins/html_view/features/fixtures/sample.html" from the "open_file" dialog
     When I open a file
     And I replace the contents with "<html>I see you!</html>"
     And I save the tab

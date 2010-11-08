@@ -4,46 +4,6 @@ require 'java'
 module Redcar
   class WebBookmarks
 
-    # Open a HtmlTab for displaying web content
-    class DisplayWebContent < Redcar::Command
-      def initialize(name,url,display_bar=true,tab_class=HtmlTab)
-        @name        = name
-        @url         = url
-        @display_bar = display_bar
-        @tab         = tab_class
-      end
-
-      def execute
-        win = Redcar.app.focussed_window
-        controller = ViewController.new(@name,@url)
-        tab = win.new_tab(@tab)
-        tab.html_view.controller = controller
-        tab.icon = :globe if tab.is_a?(HtmlTab)
-        tab.focus
-        if @display_bar or
-          WebBookmarks.storage['show_browser_bar_on_start']
-          WebBookmarks::OpenBrowserBar.new.run
-        end
-      end
-    end
-
-    class FileWebPreview < Redcar::EditTabCommand
-      def execute
-        mirror  = doc.mirror
-        if mirror and path = mirror.path and File.exists?(path)
-          name = "Preview: " +File.basename(path)
-        else
-          name    = "Preview: (untitled)"
-          preview = java.io.File.createTempFile("preview","html")
-          preview.deleteOnExit
-          path    = preview.getAbsolutePath
-          File.open(path,'w') {|f| f.puts(doc.get_all_text)}
-        end
-        url = "file://" + File.expand_path(path)
-        DisplayWebContent.new(name,url).run
-      end
-    end
-
     class ShowTree < Redcar::Command
       sensitize :open_project
       def execute
@@ -58,14 +18,6 @@ module Redcar
           )
           win.treebook.add_tree(tree)
         end
-      end
-    end
-
-    class OpenBrowserBar < Redcar::Command
-      def execute
-        window = Redcar.app.focussed_window
-        speedbar = Redcar::WebBookmarks::BrowserBar.new
-        window.open_speedbar(speedbar)
       end
     end
 

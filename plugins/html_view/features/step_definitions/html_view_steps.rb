@@ -54,3 +54,16 @@ When /^I click "([^\"]+)" in the HTML tab$/ do |link|
 
   html_view.controller.execute(js)
 end
+
+When /^I type the fixture path of "([^"]*)" in the "([^"]*)" field in the speedbar$/ do |filename,field|
+  path = File.join(htmlview_fixtures_path,filename)
+  When "I type \"" + path + "\" into the \"" + field + "\" field in the speedbar"
+end
+
+When /^I open the browser bar$/ do
+  Redcar::HtmlView::OpenBrowserBar.new.run
+end
+
+When /^I open a web preview$/ do
+  Redcar::HtmlView::FileWebPreview.new.run
+end
