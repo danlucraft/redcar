@@ -84,7 +84,7 @@ module Redcar
       define_item_finder(name)
     end
 
-    def self.slider(name, value = 50, minimum = 0, maximum = 100, increment = 5, &block)
+    def self.slider(name, value = 50, minimum = 0, maximum = 100, increment = 1, &block)
       append_item SliderItem.new(name, value, minimum, maximum, increment, true, block)
       define_item_finder(name)
     end
