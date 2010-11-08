@@ -40,7 +40,7 @@ module Redcar
       unless url.include?("://")
         if File.exists?(url)
           url = "file://#{url}"
-        elsif project = Redcar::Project.focussed_project and
+        elsif project = Redcar::Project::Manager.focussed_project and
           relpath = File.join(project.path,url) and
           File.exists?(relpath)
           url = "file://#{relpath}"

@@ -62,7 +62,7 @@ module Redcar
           url = new_url.value
           if tab = html_tab
             tab.title=url
-            tab.controller.go_to_location(url)
+            tab.controller.go_to_location(HtmlView.tidy_url(url))
           else
             Redcar::HtmlView::DisplayWebContent.new(url,url).run
           end
