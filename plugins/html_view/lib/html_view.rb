@@ -3,6 +3,7 @@ require 'html_view/commands'
 require 'html_view/browser_bar'
 require 'html_view/html_tab'
 require 'html_controller'
+require 'html_view/default_controller'
 require 'json'
 
 module Redcar

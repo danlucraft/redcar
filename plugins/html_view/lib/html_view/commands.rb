@@ -18,10 +18,10 @@ module Redcar
           OpenDefaultBrowserCommand.new(@url).run
         else
           win = Redcar.app.focussed_window
-          controller = Redcar::HtmlController::DefaultController.new(@name,@url)
+          controller = DefaultController.new(@name,@url)
           tab = win.new_tab(@tab)
           tab.html_view.controller = controller
-          tab.icon = :globe if tab.is_a?(HtmlTab)
+          tab.icon = HtmlTab.web_content_icon if tab.is_a?(HtmlTab)
           tab.focus
           if @display_bar
             HtmlView::OpenBrowserBar.new.run

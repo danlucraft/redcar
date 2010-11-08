@@ -61,8 +61,10 @@ module Redcar
         unless new_url.value == ""
           url = new_url.value
           if tab = html_tab
-            tab.title=url
+            tab.title = url
             tab.controller.go_to_location(HtmlView.tidy_url(url))
+            icon = HtmlTab.web_content_icon
+            tab.icon = icon unless tab.icon == icon
           else
             Redcar::HtmlView::DisplayWebContent.new(url,url).run
           end

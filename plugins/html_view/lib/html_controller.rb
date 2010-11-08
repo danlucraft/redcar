@@ -2,22 +2,7 @@
 module Redcar
   module HtmlController
     include Redcar::Observable
-    class DefaultController
-      include HtmlController
-      def initialize(title,url)
-        @title = title
-        @url = HtmlView.tidy_url(url)
-      end
 
-      def title
-        @title
-      end
-
-      def index
-        rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "views", "index.html.erb")))
-        rhtml.result(binding)
-      end
-    end
     # Reload the index page
     def reload_index
       notify_listeners(:reload_index)
@@ -61,6 +46,5 @@ module Redcar
         </script>
       JS
     end
-
   end
 end

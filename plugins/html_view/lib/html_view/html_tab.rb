@@ -1,5 +1,4 @@
 
-
 module Redcar
   class HtmlTab < Tab
     attr_reader :html_view
@@ -7,6 +6,10 @@ module Redcar
     def initialize(*args)
       super
       create_html_view
+    end
+
+    def self.web_content_icon
+      WEB_ICON
     end
 
     def close
