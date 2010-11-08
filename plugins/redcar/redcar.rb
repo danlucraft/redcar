@@ -164,6 +164,21 @@ module Redcar
       end
     end
 
+    class GenerateWindowsMenu < Command
+      def initialize(builder)
+        @builder = builder
+      end
+
+      def execute
+        window = Redcar.app.focussed_window
+        Redcar.app.windows.each do |win|
+          @builder.item(win.title, :type => :radio, :active => (win == window)) do
+            FocusWindowCommand.new(win).run
+          end
+        end
+      end
+    end
+
     class FocusWindowCommand < Command
       def initialize(window=nil)
         @window = window
@@ -1036,20 +1051,26 @@ Redcar.environment: #{Redcar.environment}
           item "Toggle Tree Visibility", :command => ToggleTreesCommand
           item "Toggle Fullscreen", :command => ToggleFullscreen, :type => :check, :active => window ? window.fullscreen : false
           separator
-          item "New Notebook", NewNotebookCommand
-          item "Close Notebook", CloseNotebookCommand
-          item "Rotate Notebooks", RotateNotebooksCommand
-          item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
-          item "Switch Notebooks", SwitchNotebookCommand
-          separator
-          item "Previous Tab", SwitchTabDownCommand
-          item "Next Tab", SwitchTabUpCommand
-          item "Move Tab Left", MoveTabDownCommand
-          item "Move Tab Right", MoveTabUpCommand
-          sub_menu "Switch Tab" do
-             (1..9).each do |num|
-               item "Tab #{num}", Top.const_get("SelectTab#{num}Command")
-             end
+          lazy_sub_menu "Windows" do
+            GenerateWindowsMenu.new(self).run
+          end
+          sub_menu "Notebooks" do
+            item "New Notebook", NewNotebookCommand
+            item "Close Notebook", CloseNotebookCommand
+            item "Rotate Notebooks", RotateNotebooksCommand
+            item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
+            item "Switch Notebooks", SwitchNotebookCommand
+          end
+          sub_menu "Tabs" do
+            item "Previous Tab", SwitchTabDownCommand
+            item "Next Tab", SwitchTabUpCommand
+            item "Move Tab Left", MoveTabDownCommand
+            item "Move Tab Right", MoveTabUpCommand
+            sub_menu "Switch Tab" do
+              (1..9).each do |num|
+                 item "Tab #{num}", Top.const_get("SelectTab#{num}Command")
+              end
+            end
           end
           separator
           item "Show Toolbar", :command => ToggleToolbar, :type => :check, :active => Redcar.app.show_toolbar?
