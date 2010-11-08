@@ -15,7 +15,7 @@ module Redcar
             end
           end
           item.add_listener(:changed_items) do |new_items|
-            rescue_speedbar_errors do
+            speedbar.rescue_speedbar_errors do
               speedbar.ignore(item.name) do
                 combo.items = item.items.to_java(:string)
                 item.value = nil
