@@ -17,7 +17,7 @@ module Redcar
           gridData.horizontalAlignment = Swt::Layout::GridData::FILL
           mate_text.getControl.set_layout_data(gridData)
           edit_view.document.add_listener(:changed) do
-            ignore(item.name) do
+            speedbar.ignore(item.name) do
               item.value = edit_view.document.to_s
               speedbar.execute_listener_in_model(item, item.value)
             end
