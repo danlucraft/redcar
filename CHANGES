@@ -11,6 +11,7 @@ Enhancements:
  * Tabs now display an alert icon if the underlying file is unwritable (Delisa Mason)
  * Browser bar URL field now supports project-relative paths (Delisa Mason)
  * URLs can be opened in the internal browser or the OS-default based on preferences (Delisa Mason)
+ * Syntax checking for groovy
 
 Bug fixes:
 
