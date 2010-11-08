@@ -48,11 +48,11 @@ module Redcar
             close_ansi_spans(:clear)
           else
             style = ""          
-            style += "ansi-regular "               if match[2] == "0"
-            style += "ansi-bold "                  if match[2] == "1"
-            style += "ansi-light "                 if match[4] == "9"
-            style += "ansi-on-#{color(match[5])} " if match[4] == "4"
-            style += "ansi-#{color(match[5])}"     if match[4] == "3" || match[4] == "9"
+            style << "ansi-regular "               if match[2] == "0"
+            style << "ansi-bold "                  if match[2] == "1"
+            style << "ansi-light "                 if match[4] == "9"
+            style << "ansi-on-#{color(match[5])} " if match[4] == "4"
+            style << "ansi-#{color(match[5])}"     if match[4] == "3" || match[4] == "9"
             @ansi_stack << style unless style.empty?
             ansi_span(style)
           end

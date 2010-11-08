@@ -48,8 +48,8 @@ module Redcar
           value = ""
           r=0
           l.to_s.each_line do |line|
-            value += line  if r <= @line_limit - 1
-            value += "..." if r == @line_limit
+            value << line  if r <= @line_limit - 1
+            value << "..." if r == @line_limit
             r+=1
             break if r > @line_limit - 1
           end
