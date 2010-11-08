@@ -4,6 +4,10 @@ module Redcar
       class SliderItem
         def initialize(speedbar, composite, item)
           slider = Swt::Widgets::Slider.new(composite, Swt::SWT::HORIZONTAL)
+          grid_data = Swt::Layout::GridData.new
+          grid_data.grabExcessHorizontalSpace = true
+          grid_data.horizontalAlignment = Swt::Layout::GridData::FILL
+          slider.layout_data = grid_data
           slider.selection = item.value
           slider.maximum   = item.maximum   || 100
           slider.minimum   = item.minimum   || 0
