@@ -1061,14 +1061,22 @@ Redcar.environment: #{Redcar.environment}
             item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
             item "Switch Notebooks", SwitchNotebookCommand
           end
-          sub_menu "Tabs" do
+          lazy_sub_menu "Tabs" do
             item "Previous Tab", SwitchTabDownCommand
             item "Next Tab", SwitchTabUpCommand
             item "Move Tab Left", MoveTabDownCommand
             item "Move Tab Right", MoveTabUpCommand
-            sub_menu "Switch Tab" do
-              (1..9).each do |num|
-                 item "Tab #{num}", Top.const_get("SelectTab#{num}Command")
+            if win = Redcar.app.focussed_window and 
+              book = win.focussed_notebook and book.tabs.any?
+              focussed_tab = book.focussed_tab
+              separator
+              book.tabs.each_with_index do |tab,i|
+                num = i + 1
+                if num < 10
+                  item "Tab #{num}: #{tab.title}", :type => :radio, :active => (tab == focussed_tab), :command => Top.const_get("SelectTab#{num}Command")
+                else
+                  item("Tab #{num}: #{tab.title}", :type => :radio, :active => (tab == focussed_tab)) {tab.focus}
+                end
               end
             end
           end
