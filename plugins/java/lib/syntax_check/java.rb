@@ -18,20 +18,17 @@ module Redcar
             message = java.lang.String.new(errors.toByteArray).to_s
             message.each_line do |msg|
               if msg =~ /#{Regexp.escape(name)}:(\d+):(.*)/
-                create_syntax_error(doc, msg, name).annotate
+                SyntaxCheck::Error.new(doc, $1.to_i - 1, $2).annotate
               end
             end
           end
         rescue Object => e
-          p e
+          SyntaxCheck.message(
+          "An error occurred while parsing #{name}: #{e.message}", :error)
         end
-      end
-
-      def create_syntax_error(doc, message, name)
-        message  =~ /#{Regexp.escape(name)}:(\d+):(.*)/
-        line     = $1.to_i - 1
-        message  = $2
-        SyntaxCheck::Error.new(doc, line, message)
+        class_files = File.join(File.dirname(path),"*.class")
+        junk  = Dir.glob(class_files)
+        junk.each {|f| FileUtils.rm_rf(f) }
       end
     end
   end
