@@ -24,6 +24,7 @@ Internal changes:
 
   * Code coverage is above 70% (up from 60%) (everyone)
   * Code cleanup and refactoring in various plugins (everyone)
+  * Speedbar can now contain sliders (Tim Felgentreff)
 
 Version 0.8.1 (26 October 2010)
 ===============================
