@@ -2,6 +2,7 @@ require 'repl/repl_mirror'
 require 'repl/ruby_mirror'
 require 'repl/clojure_mirror'
 require 'repl/groovy_mirror'
+require 'repl/repl_tab'
 
 module Redcar
   class REPL
@@ -37,7 +38,7 @@ module Redcar
       [
         Sensitivity.new(:open_repl_tab, Redcar.app, false, [:tab_focussed]) do |tab|
           tab and
-          tab.is_a?(EditTab) and
+          tab.is_a?(REPL::ReplTab) and
           tab.edit_view.document.mirror.is_a?(REPL::ReplMirror)
         end
       ]
@@ -46,17 +47,9 @@ module Redcar
     class OpenREPL < Command
 
       def open_repl(mirror)
-        tab = win.new_tab(Redcar::EditTab)
-        edit_view = tab.edit_view
-        edit_view.document.mirror = mirror
-        edit_view.cursor_offset = edit_view.document.length
-        edit_view.grammar = mirror.grammar_name
+        tab = win.new_tab(REPL::ReplTab)
+        tab.repl_mirror = mirror
         tab.focus
-
-        mirror.add_listener(:change) do
-          edit_view.cursor_offset = edit_view.document.length
-          edit_view.scroll_to_line(edit_view.document.line_count)
-        end
       end
     end
 

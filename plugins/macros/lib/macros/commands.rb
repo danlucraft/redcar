@@ -24,7 +24,7 @@ module Redcar
             Macros.last_run_or_recorded = macro
           end
           Macros.recording.delete(edit_view)
-          tab.icon = Redcar::Tab::DEFAULT_ICON
+          tab.update_for_file_changes
         else
           ev = edit_view
           h = ev.history.subscribe do |action|
@@ -37,7 +37,7 @@ module Redcar
             :actions => [], 
             :start_in_block_selection_mode? => ev.document.block_selection_mode?
           }
-          tab.icon = :"control-record"
+          tab.icon = :control_record
         end
         Redcar.app.repeat_event(:macro_record_changed)
       end
@@ -78,7 +78,7 @@ module Redcar
     class MacroManagerCommand < Redcar::Command
       def execute
         controller = ManagerController.new
-        tab = win.new_tab(HtmlTab)
+        tab = win.new_tab(ConfigTab)
         tab.html_view.controller = controller
         tab.focus
       end

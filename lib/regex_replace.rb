@@ -45,12 +45,12 @@ class RegexReplace
       while left.length > 0
         md = re.match(left)
         if md
-          newstr += md.pre_match
+          newstr << md.pre_match
           r  = yield md
-          newstr += r
+          newstr << r
           left = md.post_match
         else
-          newstr += left
+          newstr << left
           left = ""
         end
       end

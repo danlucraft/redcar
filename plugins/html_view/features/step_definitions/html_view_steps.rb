@@ -54,3 +54,11 @@ When /^I click "([^\"]+)" in the HTML tab$/ do |link|
 
   html_view.controller.execute(js)
 end
+
+When /^I open the browser bar$/ do
+  Redcar::HtmlView::OpenBrowserBar.new.run
+end
+
+When /^I open a web preview$/ do
+  Redcar::HtmlView::FileWebPreview.new.run
+end

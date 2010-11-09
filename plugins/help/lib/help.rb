@@ -1,4 +1,7 @@
 
+require 'help/view_controller'
+require 'help/help_tab'
+
 module Redcar
   class Help
     def self.menus
@@ -7,6 +10,7 @@ module Redcar
           group(:priority => :first) do
             item "Online Help", :command => OnlineHelpCommand
             item "Submit a Bug", :command => SubmitABugCommand
+            item "Keyboard Shortcuts", :command => ViewShortcutsCommand
           end
         end
       end
@@ -19,29 +23,41 @@ module Redcar
       [map]
     end
 
+    def self.toolbars
+      ToolBar::Builder.build do
+        item "Keyboard Shortcuts", :command => ViewShortcutsCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "/keyboard.png"), :barname => :help
+        item "Help", :command => OnlineHelpCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "/question.png"), :barname => :help
+      end
+    end
+
+    class ViewShortcutsCommand < Redcar::Command
+      def execute
+        controller = Help::ViewController.new
+        tab = win.new_tab(Help::HelpTab)
+        tab.html_view.controller = controller
+        tab.focus
+      end
+    end
+
     class SubmitABugCommand < Redcar::Command
       def execute
-        if OpenDefaultBrowserCommand.supported?
-          OpenDefaultBrowserCommand.new("https://redcar.lighthouseapp.com/projects/25090-redcar/tickets/new").run
-        else
-          Redcar::WebBookmarks::DisplayWebContent.new(
+        Redcar::HtmlView::DisplayWebContent.new(
           "Submit a Bug",
-          "https://redcar.lighthouseapp.com/projects/25090-redcar/tickets/new"
-          ).run
-        end
+          "https://redcar.lighthouseapp.com/projects/25090-redcar/tickets/new",
+          true,
+          Help::HelpTab
+        ).run
       end
     end
 
     class OnlineHelpCommand < Redcar::Command
       def execute
-        if OpenDefaultBrowserCommand.supported?
-          OpenDefaultBrowserCommand.new("http://github.com/redcar/redcar/wiki/Users-Guide").run
-        else
-          Redcar::WebBookmarks::DisplayWebContent.new(
+        Redcar::HtmlView::DisplayWebContent.new(
           "Online Help",
-          "http://github.com/redcar/redcar/wiki/Users-Guide"
-          ).run
-        end
+          "http://github.com/redcar/redcar/wiki/Users-Guide",
+          true,
+          Help::HelpTab
+        ).run
       end
     end
   end

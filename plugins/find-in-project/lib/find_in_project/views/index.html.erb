@@ -40,6 +40,7 @@
           <label for="match_case">Match case</label>
           <input type="checkbox" id="with_context" <%="checked=checked" if @with_context %>>
           <label for="with_context">With context</label>
+          <a href="#" title="Edit Preferences" id="edit_preferences">Edit Preferences...</a>
         </td>
         <td></td>
       </tr>
@@ -93,6 +94,10 @@
       } else {
         $('#recent_queries').show();
       }
+    });
+    
+    $('#edit_preferences').click(function(ev) {
+      Controller.preferences();
     });
 
     // in the case the user wants to search for things like <table>, we need to unescape the entities

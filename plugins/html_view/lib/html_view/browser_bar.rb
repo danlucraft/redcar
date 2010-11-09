@@ -1,6 +1,6 @@
 
 module Redcar
-  class WebBookmarks
+  class HtmlView
     class BrowserBar < Redcar::Speedbar
 
       def html_tab
@@ -31,25 +31,26 @@ module Redcar
       end
 
       button :source, "Source", nil do
-        tab  = Redcar.app.focussed_window.new_tab(Redcar::EditTab)
-        url = html_tab.controller.browser.url.to_s
-        if url =~ /^file:\/\//
-          file_path = url[7,url.length]
-          mirror = Project::FileMirror.new(file_path)
-          tab.edit_view.document.mirror = mirror
-        else
-          tab.edit_view.document.text = html_tab.controller.browser.text
-          tab.title = "Page Source"
+        if html = html_tab and url = html.controller.browser.url.to_s
+          tab  = Redcar.app.focussed_window.new_tab(Redcar::EditTab)
+          if url =~ /^file:\/\//
+            file_path = url[7,url.length]
+            mirror = Redcar::Project::FileMirror.new(file_path)
+            tab.edit_view.document.mirror = mirror
+          else
+            tab.edit_view.document.text = html_tab.controller.browser.text
+            tab.title = "Page Source"
+          end
+          tab.edit_view.grammar = "HTML"
+          tab.edit_view.reset_undo
+          tab.focus
         end
-        tab.edit_view.grammar = "HTML"
-        tab.edit_view.reset_undo
-        tab.focus
       end
 
       button :add, "+", nil do
         if tab = html_tab and
           url = tab.controller.browser.url.to_s
-          WebBookmarks::AddBookmark.new(url).run
+          Redcar::WebBookmarks::AddBookmark.new(url).run
         end
       end
 
@@ -57,11 +58,15 @@ module Redcar
       textbox :new_url
 
       button :go_to_url, "Go!", "Return" do
-        @tab = html_tab
-        if @tab
-          unless new_url.value == ""
-            @tab.title=new_url.value
-            @tab.controller.go_to_location(new_url.value)
+        unless new_url.value == ""
+          url = new_url.value
+          if tab = html_tab
+            tab.title = url
+            tab.controller.go_to_location(HtmlView.tidy_url(url))
+            icon = HtmlTab.web_content_icon
+            tab.icon = icon unless tab.icon == icon
+          else
+            Redcar::HtmlView::DisplayWebContent.new(url,url).run
           end
         end
       end
