@@ -1,43 +1,32 @@
 require 'java'
-
+require 'open3'
 module Redcar
   module SyntaxCheck
     class Java < Checker
       supported_grammars "Java"
 
       def check(*args)
-        import 'javax.tools.ToolProvider'
-        import 'java.io.ByteArrayOutputStream'
-
-        path    = manifest_path(doc)
-        name    = File.basename(path)
-        shell   = ToolProvider.getSystemJavaCompiler
-        errors  = ByteArrayOutputStream.new
-        begin
-          if project = Project::Manager.focussed_project and
-            cpath = classpath(project)
-            p cpath
-            out = shell.run(nil,nil,errors,path, "classpath=#cpath")
-          else
-            out = shell.run(nil,nil,errors,path)
-          end
-          if out != 0
-            message = java.lang.String.new(errors.toByteArray).to_s
-            message.each_line do |msg|
+        path = manifest_path(doc)
+        name = File.basename(path)
+        temp = java.lang.System.getProperty('java.io.tmpdir')
+        Thread.new do
+          begin
+            cmd = "javac -d #{temp}"
+            if project = Project::Manager.focussed_project and
+              cpath = classpath(project)
+              cmd << " -cp \"#{cpath}\""
+            end
+            stdin,stdout,err = Open3.popen3("#{cmd} #{path}")
+            err.each_line do |msg|
               if msg =~ /#{Regexp.escape(name)}:(\d+):(.*)/
                 SyntaxCheck::Error.new(doc, $1.to_i - 1, $2).annotate
               end
             end
+          rescue Object => e
+            SyntaxCheck.message(
+            "An error occurred while parsing #{name}: #{e.message}", :error)
           end
-        rescue java.lang.Exception => e
-          p e.stackTrace
-        # rescue Object => e
-        #   SyntaxCheck.message(
-        #   "An error occurred while parsing #{name}: #{e.message}", :error)
         end
-        class_files = File.join(File.dirname(path),"*.class")
-        junk  = Dir.glob(class_files)
-        junk.each {|f| FileUtils.rm_f(f) }
       end
 
       def classpath_files(project)
@@ -70,10 +59,10 @@ module Redcar
       end
 
       def build_classpath(parts)
-        p parts
         composite = ""
-        parts.each {|p| composite << p+';'}
-        composite[0,composite.length-1] if composite =~ /;$/
+        separator = java.lang.System.getProperty('path.separator')
+        parts.each {|p| composite << p+separator}
+        composite[0,composite.length-1] if composite.length > 0
         composite
       end
     end

@@ -13,20 +13,24 @@ Feature: Syntax Checking for Java
   Scenario: A syntax-error in a Java file should cause syntax error annotations
     When I replace the contents with "class Foo {\n    int\n}"
     And I save the tab
+    And I wait "1.5" seconds
     Then the tab should have annotations
     And the tab should have an annotation on line 2
 
   Scenario: Fixing a syntax-error in a Java file should cause syntax error annotations to vanish
     When I replace the contents with "class Foo {\n    int\n}"
     And I save the tab
+    And I wait "1.5" seconds
     Then the tab should have annotations
     When I replace the contents with "class Foo {\n\n}"
+    And I wait "1.5" seconds
     And I save the tab
     Then the tab should not have annotations
 
   Scenario: A file which references unknown java classes should cause syntax error annotations
     And I replace the contents with "class Foo {\n    Bar x = new Bar(10);\n    FooBar y = new FooBar();\n}"
     And I save the tab
+    And I wait "1.5" seconds
     Then the tab should have annotations
     And the tab should have an annotation on line 2
 
@@ -35,6 +39,7 @@ Feature: Syntax Checking for Java
     And I open a directory
     And I replace the contents with "class Foo {\n    Bar x = new Bar(10);\n    FooBar y = new FooBar();\n}"
     And I save the tab
+    And I wait "1.5" seconds
     Then the tab should not have annotations
 
   Scenario: If a project classpath.java file has syntax errors, there should be an error message and annotations
@@ -64,9 +69,11 @@ Feature: Syntax Checking for Java
     And I have opened "plugins/java/features/fixtures/.redcar/classpath.groovy"
     And I replace the contents with "sdef"
     And I save the tab
+    And I wait "1.5" seconds
     Then the tab should not have annotations
     When I close the focussed tab
     And I add "lib2" to the "java" classpath
     And I replace the contents with "class Foo {\n    Bar x = new Bar(10);\n    FooBaz y = new FooBaz();\n}"
     And I save the tab
-    And the tab should not have annotations
+    And I wait "1.5" seconds
+    And the tab should have annotations
