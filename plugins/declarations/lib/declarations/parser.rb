@@ -1,5 +1,24 @@
 
 module Redcar
+  GROOVY_YAML=<<-YAML
+  - regex:    "class\\s+(\\w+)"
+    capture:  1
+    type:     id
+    kind:     class
+  - regex:    "interface\\s+(\\w+)"
+    capture:  1
+    type:     id
+    kind:     interface
+  - regex:    "(public|private|def).*\\s+(\\w+)\\s*\\("
+    capture:  2
+    type:     id
+    kind:     method
+  - regex:    "(def|static)\\s+(\\w+)\\s*=\\s*\\{"
+    capture:  2
+    type:     id
+    kind:     closure
+  YAML
+
   JAVA_YAML=<<-YAML
   - regex:    "class\\s+(\\w+)"
     capture:  1
@@ -71,10 +90,11 @@ module Redcar
   class Declarations
     class Parser
       DEFINITIONS = {
-        /\.rb$/   => YAML.load(RUBY_YAML),
-        /\.java$/ => YAML.load(JAVA_YAML),
-        /\.php$/ => YAML.load(PHP_YAML),
-        /\.js$/ => YAML.load(JS_YAML)
+        /\.rb$/     => YAML.load(RUBY_YAML),
+        /\.java$/   => YAML.load(JAVA_YAML),
+        /\.groovy$/ => YAML.load(GROOVY_YAML),
+        /\.php$/    => YAML.load(PHP_YAML),
+        /\.js$/     => YAML.load(JS_YAML)
       }
 
       attr_reader :tags
