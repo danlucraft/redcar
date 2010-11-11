@@ -179,6 +179,41 @@ module Redcar
       end
     end
 
+    class GenerateTabsMenu < Command
+      def initialize(builder)
+        @builder = builder
+      end
+
+      def trim(title)
+        title = title[0,13]+'...' if title.length > 13
+        title
+      end
+
+      def execute
+        if win = Redcar.app.focussed_window and
+          book = win.focussed_notebook and book.tabs.any?
+          focussed_tab = book.focussed_tab
+          @builder.separator
+          @builder.item "Focussed Notebook", ShowTitle
+          book.tabs.each_with_index do |tab,i|
+            num = i + 1
+            if num < 10
+              @builder.item "Tab #{num}: #{trim(tab.title)}", :type => :radio, :active => (tab == focussed_tab), :command => Top.const_get("SelectTab#{num}Command")
+            else
+              @builder.item("Tab #{num}: #{trim(tab.title)}", :type => :radio, :active => (tab == focussed_tab)) {tab.focus}
+            end
+          end
+          if book = win.nonfocussed_notebook and book.tabs.any?
+            @builder.separator
+            @builder.item "Nonfocussed Notebook", ShowTitle
+            book.tabs.each_with_index do |tab,i|
+              @builder.item("Tab #{i+1}: #{trim(tab.title)}") {tab.focus}
+            end
+          end
+        end
+      end
+    end
+
     class FocusWindowCommand < Command
       def initialize(window=nil)
         @window = window
@@ -778,6 +813,11 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
+    class ShowTitle < Command
+      sensitize :always_disabled
+      def execute; end
+    end
+
     class SelectFontSize < Command
       def execute
         result = Application::Dialog.input("Font Size", "Please enter new font size", Redcar::EditView.font_size.to_s) do |text|
@@ -1066,19 +1106,7 @@ Redcar.environment: #{Redcar.environment}
             item "Next Tab", SwitchTabUpCommand
             item "Move Tab Left", MoveTabDownCommand
             item "Move Tab Right", MoveTabUpCommand
-            if win = Redcar.app.focussed_window and 
-              book = win.focussed_notebook and book.tabs.any?
-              focussed_tab = book.focussed_tab
-              separator
-              book.tabs.each_with_index do |tab,i|
-                num = i + 1
-                if num < 10
-                  item "Tab #{num}: #{tab.title}", :type => :radio, :active => (tab == focussed_tab), :command => Top.const_get("SelectTab#{num}Command")
-                else
-                  item("Tab #{num}: #{tab.title}", :type => :radio, :active => (tab == focussed_tab)) {tab.focus}
-                end
-              end
-            end
+            GenerateTabsMenu.new(self).run
           end
           separator
           item "Show Toolbar", :command => ToggleToolbar, :type => :check, :active => Redcar.app.show_toolbar?

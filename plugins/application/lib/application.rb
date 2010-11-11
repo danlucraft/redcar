@@ -84,7 +84,8 @@ module Redcar
           if win = Redcar.app.focussed_window and notebook = win.nonfocussed_notebook
             notebook.tabs.any?
           end
-        end
+        end,
+        Sensitivity.new(:always_disabled, Redcar.app, false,[]) do; false; end
       ]
     end
 
