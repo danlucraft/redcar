@@ -1,5 +1,32 @@
 
 module Redcar
+  GROOVY_YAML=<<-YAML
+  - regex:    "class\\s+(\\w+)"
+    capture:  1
+    type:     id
+    kind:     class
+  - regex:    "interface\\s+(\\w+)"
+    capture:  1
+    type:     id
+    kind:     interface
+  - regex:    "^\\s*((public|private|protected|)\\s+|)(static\\s+|)([A-Z]\\w*(<\\w+>|)|int|boolean|byte|short|long|char|float|def)\\s+(\\w+)\\s*\\("
+    capture:  6
+    type:     id
+    kind:     method
+  - regex:    "(def|static)\\s+(\\w+)\\s*=\\s*\\{"
+    capture:  2
+    type:     id
+    kind:     closure
+  - regex:    "enum\\s+(\\w+)"
+    capture:  1
+    type:     id
+    kind:     attribute
+  - regex:    "^\\s*(public|private|protected)\\s+(static\\s+|)([A-Z]\\w+|int|boolean|byte|short|long|char|float|def)\s+(\\w+)\\s*(=|\\n)"
+    capture:  4
+    type:     id
+    kind:     assignment
+  YAML
+
   JAVA_YAML=<<-YAML
   - regex:    "class\\s+(\\w+)"
     capture:  1
@@ -9,10 +36,18 @@ module Redcar
     capture:  1
     type:     id
     kind:     interface
-  - regex:    "(public|private).*\\s+(\\w+)\\s*\\("
-    capture:  2
+  - regex:    "((public|private|protected|)\\s+|)(static\\s+|)([A-Z]\\w*(<\\w+>|)|int|boolean|byte|short|long|char|float)\\s+(\\w+)\\s*\\("
+    capture:  6
     type:     id
     kind:     method
+  - regex:    "enum\\s+(\\w*)"
+    capture:  1
+    type:     id
+    kind:     attribute
+  - regex:    "^\\s*(public|private|protected)\\s+(static\\s+|)([A-Z]\\w+|int|boolean|byte|short|long|char|float|def)\s+(\\w+)\\s*(=|;)"
+    capture:  4
+    type:     id
+    kind:     assignment
   YAML
 
   RUBY_YAML=<<-YAML
@@ -71,10 +106,11 @@ module Redcar
   class Declarations
     class Parser
       DEFINITIONS = {
-        /\.rb$/   => YAML.load(RUBY_YAML),
-        /\.java$/ => YAML.load(JAVA_YAML),
-        /\.php$/ => YAML.load(PHP_YAML),
-        /\.js$/ => YAML.load(JS_YAML)
+        /\.rb$/     => YAML.load(RUBY_YAML),
+        /\.java$/   => YAML.load(JAVA_YAML),
+        /\.groovy$/ => YAML.load(GROOVY_YAML),
+        /\.php$/    => YAML.load(PHP_YAML),
+        /\.js$/     => YAML.load(JS_YAML)
       }
 
       attr_reader :tags
