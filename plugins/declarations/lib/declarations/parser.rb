@@ -9,14 +9,22 @@ module Redcar
     capture:  1
     type:     id
     kind:     interface
-  - regex:    "(public|private|def).*\\s+(\\w+)\\s*\\("
-    capture:  2
+  - regex:    "^\\s*((public|private|protected|)\\s+|)(static\\s+|)([A-Z]\\w*(<\\w+>|)|int|boolean|byte|short|long|char|float|def)\\s+(\\w+)\\s*\\("
+    capture:  6
     type:     id
     kind:     method
   - regex:    "(def|static)\\s+(\\w+)\\s*=\\s*\\{"
     capture:  2
     type:     id
     kind:     closure
+  - regex:    "enum\\s+(\\w+)"
+    capture:  1
+    type:     id
+    kind:     attribute
+  - regex:    "^\\s*(public|private|protected)\\s+(static\\s+|)([A-Z]\\w+|int|boolean|byte|short|long|char|float|def)\s+(\\w+)\\s*(=|\\n)"
+    capture:  4
+    type:     id
+    kind:     assignment
   YAML
 
   JAVA_YAML=<<-YAML
@@ -28,10 +36,18 @@ module Redcar
     capture:  1
     type:     id
     kind:     interface
-  - regex:    "(public|private).*\\s+(\\w+)\\s*\\("
-    capture:  2
+  - regex:    "((public|private|protected|)\\s+|)(static\\s+|)([A-Z]\\w*(<\\w+>|)|int|boolean|byte|short|long|char|float)\\s+(\\w+)\\s*\\("
+    capture:  6
     type:     id
     kind:     method
+  - regex:    "enum\\s+(\\w*)"
+    capture:  1
+    type:     id
+    kind:     attribute
+  - regex:    "^\\s*(public|private|protected)\\s+(static\\s+|)([A-Z]\\w+|int|boolean|byte|short|long|char|float|def)\s+(\\w+)\\s*(=|;)"
+    capture:  4
+    type:     id
+    kind:     assignment
   YAML
 
   RUBY_YAML=<<-YAML
