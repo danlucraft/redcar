@@ -1101,12 +1101,16 @@ Redcar.environment: #{Redcar.environment}
             item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
             item "Switch Notebooks", SwitchNotebookCommand
           end
-          lazy_sub_menu "Tabs" do
+          sub_menu "Tabs" do
             item "Previous Tab", SwitchTabDownCommand
             item "Next Tab", SwitchTabUpCommand
             item "Move Tab Left", MoveTabDownCommand
             item "Move Tab Right", MoveTabUpCommand
-            GenerateTabsMenu.new(self).run
+            separator
+            item "Focussed Notebook", ShowTitle
+            (1..9).each do |num|
+              item "Tab #{num}", Top.const_get("SelectTab#{num}Command")
+            end
           end
           separator
           item "Show Toolbar", :command => ToggleToolbar, :type => :check, :active => Redcar.app.show_toolbar?
