@@ -36,7 +36,7 @@ module Redcar
     capture:  1
     type:     id
     kind:     interface
-  - regex:    "((public|private|protected|)\\s+|)(static\\s+|)(([\\.\\w]+|)[A-Z]\\w*(<\\w+>|)|void|int|boolean|byte|short|long|char|float)\\s+(\\w+\\s*\\((.*)\\))"
+  - regex:    "^\\s*((public|private|protected|)\\s+|)(static\\s+|)(([\\.\\w]+|)[A-Z]\\w*(<\\w+>|)|void|int|boolean|byte|short|long|char|float)\\s+(\\w+\\s*\\((.*)\\))"
     capture:  7
     type:     id
     kind:     method
