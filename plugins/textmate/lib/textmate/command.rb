@@ -70,11 +70,20 @@ module Redcar
         if @project = Project.window_projects[Redcar.app.focussed_window]
           write_command_script
           out = ("tab" if output?) || "none"
-          environment = { "TM_PROJECT_DIRECTORY" => project.home_dir,
-              "PRJNAME" => File.basename(project.home_dir),
-              "TM_BUNDLE_SUPPORT" => File.join(@bundle.path, "Support").gsub(" ", '\ ') }
           Runnables.run_process(project.home_dir, command_script, name, out, environment)
         end
+      end
+
+      def environment
+        tab = Redcar.app.focussed_notebook_tab
+        path = tab.edit_view.document.path if tab.edit_tab?
+        environment = {
+          "TM_FILEPATH" => path,
+          "TM_DIRECTORY" => (File.dirname(path) if path),
+          "TM_PROJECT_DIRECTORY" => project.home_dir,
+          "PRJNAME" => File.basename(project.home_dir),
+          "TM_BUNDLE_SUPPORT" => File.join(@bundle.path, "Support").gsub(" ", '\ ')
+        }
       end
 
       def input
