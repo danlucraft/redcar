@@ -8,7 +8,7 @@ module Redcar
     # TODO: Honour output options (discard, showAsHTML, openAsNewDocument)
     # TODO: Implement variable input
     class Command
-      attr_reader :key_equivalent
+      attr_reader :key_equivalent, :project
 
       def initialize(path, bundle)
         @path = path
@@ -25,6 +25,10 @@ module Redcar
 
       def name
         @plist["name"]
+      end
+
+      def file_name
+        name.gsub(/[ ()]/, "_")
       end
 
       def uuid
@@ -46,13 +50,30 @@ module Redcar
         @plist["command"]
       end
 
+      def command_dir
+        File.join(project.home_dir, ".redcar", "Commands")
+      end
+
+      def command_script
+        File.join(command_dir, file_name)
+      end
+
+      def write_command_script
+        Dir.mkdir(command_dir) unless File.exist? command_dir
+        File.open(command_script, "w") do |f|
+          f << command
+        end
+        File.chmod(511, command_script) # For some reason, 511 gives rwxrwxrwx
+      end
+
       def run
-        if project = Project.window_projects[Redcar.app.focussed_window]
+        if @project = Project.window_projects[Redcar.app.focussed_window]
+          write_command_script
           out = ("tab" if output?) || "none"
           environment = { "TM_PROJECT_DIRECTORY" => project.home_dir,
               "PRJNAME" => File.basename(project.home_dir),
               "TM_BUNDLE_SUPPORT" => File.join(@bundle.path, "Support").gsub(" ", '\ ') }
-          Runnables.run_process(project.home_dir, command, name, out, environment)
+          Runnables.run_process(project.home_dir, command_script, name, out, environment)
         end
       end
 
