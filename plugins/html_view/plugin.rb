@@ -8,6 +8,6 @@ Plugin.define do
   
   dependencies "core", ">0",
                "application", ">0",
-               "application_swt", ">0"
-  
+               "application_swt", ">0",
+               "edit_view", ">0"
 end

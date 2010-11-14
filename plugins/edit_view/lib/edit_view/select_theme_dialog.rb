@@ -31,6 +31,12 @@ module Redcar
         end
       end
 
+      def moved_to(text, ix)
+        if @last_list
+          Redcar::EditView.theme = text
+        end
+      end
+
     end
   end
 end

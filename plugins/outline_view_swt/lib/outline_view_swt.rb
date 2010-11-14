@@ -9,6 +9,7 @@ module Redcar
       :alias => ApplicationSWT::Icon.swt_image(:arrow_branch),
       :assignment => ApplicationSWT::Icon.swt_image(:arrow),
       :interface => ApplicationSWT::Icon.swt_image(:information),
+      :closure => ApplicationSWT::Icon.swt_image(:node_magnifier),
       :none => nil
     }
 

@@ -8,17 +8,31 @@ module Redcar
       create_edit_view
     end
 
-    def update_for_file_changes
-      old_icon = @icon
+    def icon
+      i = DEFAULT_ICON
       doc = @edit_view.document
       if doc and doc.path
-        if File.exists?(doc.path)
-          @icon = :file if icon == :exclamation
-        else
-          @icon = :exclamation
+        unless doc.mirror.adapter.is_a?(Redcar::Project::Adapters::Remote)
+          if File.exists?(doc.path)
+            if File.writable?(doc.path)
+              i = DEFAULT_ICON
+            else
+              i = NO_WRITE_ICON
+            end
+          else
+            i = MISSING_ICON
+          end
         end
       end
-      notify_listeners(:changed_icon, @icon) if old_icon != @icon
+      i
+    end
+
+    def update_for_file_changes
+      new_icon = icon
+      if new_icon and new_icon != @icon
+        @icon = new_icon
+        notify_listeners(:changed_icon, @icon)
+      end
     end
 
     def create_edit_view

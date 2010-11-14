@@ -14,12 +14,6 @@ end
 def reset_web_fixtures
   FileUtils.rm(bookmarks_file) if File.exist?(bookmarks_file)
   FileUtils.cp(bookmarks_backup,bookmarks_file)
-  File.open(web_fixtures_path + "/sample.html", "w") do |f|
-    f.print "<html><b>Hello!!</b></html>"
-  end
-  File.open(web_fixtures_path + "/other.html", "w") do |f|
-    f.print "<html><b>Is today Tuesday?</b></html>"
-  end
 end
 
 Before do

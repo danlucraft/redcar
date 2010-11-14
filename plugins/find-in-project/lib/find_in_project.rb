@@ -7,10 +7,7 @@ module Redcar
       Redcar::Menu::Builder.build do
         sub_menu "Edit" do
           sub_menu "Search" do
-            sub_menu "Find In Project", :priority => 64 do
-              item "Find In Project!", Redcar::FindInProject::OpenSearch
-              item "Edit Preferences", Redcar::FindInProject::EditPreferences
-            end
+            item "Find In Project!", Redcar::FindInProject::OpenSearch
           end
         end
       end

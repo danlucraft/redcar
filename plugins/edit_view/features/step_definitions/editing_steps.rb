@@ -143,7 +143,7 @@ Then /^the selection should be on line (.*)$/ do |line_num|
   doc.line_at_offset(r.begin).should == line_num
   doc.line_at_offset(r.end).should == line_num
 end
- 
+
 Then /^there should not be any text selected$/ do
   doc = Redcar::EditView.focussed_edit_view_document
   doc.selected_text.should == ""
@@ -151,7 +151,7 @@ end
 
 Then /^the selected text should be "([^"]*)"$/ do |selected_text|
   doc = Redcar::EditView.focussed_edit_view_document
-  doc.selected_text.should == selected_text
+  doc.selected_text.should == unescape_text(selected_text)
 end
 
 Then /the line delimiter should be "(.*)"/ do |delim|
@@ -234,8 +234,8 @@ Given /^the contents? is:$/ do |string|
   selection_index = string.index('<s>')
   string = string.gsub('<s>', '').gsub('<c>', '')
   When %{I replace the contents with "#{string}"}
-  
-  if cursor_index and selection_index 
+
+  if cursor_index and selection_index
     if cursor_index < selection_index
       selection_index -= 3
     else

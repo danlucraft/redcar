@@ -63,6 +63,12 @@ module Redcar
             trees and trees.length > 0
           end
         end,
+        Sensitivity.new(:focussed_committed_mirror, Redcar.app, false,
+          [:focussed_window, :notebook_change, :mirror_committed, :tab_focussed]) do
+          if win = Redcar.app.focussed_window and tab = win.focussed_notebook.focussed_tab
+            begin;tab.edit_view.document.mirror.path;rescue;false;end
+          end
+        end,
         Sensitivity.new(:single_notebook, Redcar.app, true, [:focussed_window, :notebook_change]) do
           if win = Redcar.app.focussed_window
             win.notebooks.length == 1
@@ -78,7 +84,8 @@ module Redcar
           if win = Redcar.app.focussed_window and notebook = win.nonfocussed_notebook
             notebook.tabs.any?
           end
-        end
+        end,
+        Sensitivity.new(:always_disabled, Redcar.app, false,[]) do; false; end
       ]
     end
 
