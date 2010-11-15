@@ -1083,39 +1083,47 @@ Redcar.environment: #{Redcar.environment}
           end
         end
         sub_menu "View", :priority => 30 do
-          sub_menu "Appearance" do
+          sub_menu "Appearance", :priority => 5 do
             item "Font", SelectNewFont
             item "Font Size", SelectFontSize
             item "Theme", SelectTheme
           end
-          item "Toggle Tree Visibility", :command => ToggleTreesCommand
-          item "Toggle Fullscreen", :command => ToggleFullscreen, :type => :check, :active => window ? window.fullscreen : false
-          separator
-          lazy_sub_menu "Windows" do
-            GenerateWindowsMenu.new(self).run
-          end
-          sub_menu "Notebooks" do
-            item "New Notebook", NewNotebookCommand
-            item "Close Notebook", CloseNotebookCommand
-            item "Rotate Notebooks", RotateNotebooksCommand
-            item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
-            item "Switch Notebooks", SwitchNotebookCommand
-          end
-          sub_menu "Tabs" do
-            item "Previous Tab", SwitchTabDownCommand
-            item "Next Tab", SwitchTabUpCommand
-            item "Move Tab Left", MoveTabDownCommand
-            item "Move Tab Right", MoveTabUpCommand
+          group(:priority => 10) do
             separator
-            item "Focussed Notebook", ShowTitle
-            (1..9).each do |num|
-              item "Tab #{num}", Top.const_get("SelectTab#{num}Command")
+            item "Toggle Tree Visibility", :command => ToggleTreesCommand
+            item "Toggle Fullscreen", :command => ToggleFullscreen, :type => :check, :active => window ? window.fullscreen : false
+          end
+          group(:priority => 15) do
+            separator
+            lazy_sub_menu "Windows" do
+              GenerateWindowsMenu.new(self).run
+            end
+            sub_menu "Notebooks" do
+              item "New Notebook", NewNotebookCommand
+              item "Close Notebook", CloseNotebookCommand
+              item "Rotate Notebooks", RotateNotebooksCommand
+              item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
+              item "Switch Notebooks", SwitchNotebookCommand
+            end
+            sub_menu "Tabs" do
+              item "Previous Tab", SwitchTabDownCommand
+              item "Next Tab", SwitchTabUpCommand
+              item "Move Tab Left", MoveTabDownCommand
+              item "Move Tab Right", MoveTabUpCommand
+              separator
+              # GenerateTabsMenu.new(self).run # TODO: find a way to maintain keybindings with lazy menus
+              item "Focussed Notebook", ShowTitle
+              (1..9).each do |num|
+                item "Tab #{num}", Top.const_get("SelectTab#{num}Command")
+              end
             end
           end
-          separator
-          item "Show Toolbar", :command => ToggleToolbar, :type => :check, :active => Redcar.app.show_toolbar?
-          item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
-          item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
+          group(:priority => :last) do
+            separator
+            item "Show Toolbar", :command => ToggleToolbar, :type => :check, :active => Redcar.app.show_toolbar?
+            item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
+            item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
+          end
         end
         sub_menu "Bundles", :priority => 45 do
           group(:priority => :first) do

@@ -16,15 +16,20 @@ module Redcar
       File.expand_path(File.join(Redcar.root, %w(plugins html_view assets jquery-1.4.min.js)))
     end
 
+    def self.keymaps
+      map = Redcar::Keymap.build("main", [:osx, :linux, :windows]) do
+        link "Alt+Shift+B", ToggleBrowserBar
+      end
+      [map]
+    end
+
     def self.menus
       Redcar::Menu::Builder.build do
         sub_menu "File" do
-          item "Web Preview", :command => HtmlView::FileWebPreview, :priority => 8
+          item "Web Preview", :command => FileWebPreview, :priority => 8
         end
-        sub_menu "Edit" do
-          sub_menu "Document Navigation" do
-            item "Open Browser Bar", :command => HtmlView::OpenBrowserBar, :priority => 5
-          end
+        sub_menu "View" do
+          item "Toggle Browser Bar", :command => ToggleBrowserBar, :priority => 11
         end
       end
     end
@@ -35,6 +40,14 @@ module Redcar
          storage.set_default('use_external_browser_for_urls', false)
          storage
       end
+    end
+
+    def self.show_browser_bar?
+      if win = Redcar.app.focussed_window and
+        win.speedbar and win.speedbar.is_a?(BrowserBar)
+        return true
+      end
+      false
     end
 
     def self.tidy_url(url)

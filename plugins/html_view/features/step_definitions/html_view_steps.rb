@@ -56,7 +56,7 @@ When /^I click "([^\"]+)" in the HTML tab$/ do |link|
 end
 
 When /^I open the browser bar$/ do
-  Redcar::HtmlView::OpenBrowserBar.new.run
+  Redcar::HtmlView::ToggleBrowserBar.new.run
 end
 
 When /^I open a web preview$/ do
