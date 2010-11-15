@@ -24,6 +24,7 @@ module Redcar
       puts "Downloading >10MB of binary assets. This may take a while the first time."
       fetch_all_assets
       precache_textmate_bundles
+      ensure_user_plugins_directory_exists
       puts "Done! You're ready to run Redcar."
     end
   
@@ -131,6 +132,10 @@ module Redcar
       Runner.new.construct_command(["--no-gui", "--compute-textmate-cache-and-quit", "--multiple-instance"]) do |cmd|
         %x{#{cmd.join(' ')}}
       end
+    end
+    
+    def ensure_user_plugins_directory_exists
+      FileUtils.mkpath File.join(Redcar.user_dir, 'plugins')
     end
     
     # Xulrunner releases don't hang around very long, so we scrape their site to figure out 
