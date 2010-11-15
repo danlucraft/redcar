@@ -6,7 +6,7 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "View" do
-          item "Current Document Outline", OutlineView::OpenOutlineViewCommand
+          item "Current Document Outline", :command => OutlineView::OpenOutlineViewCommand, :priority => :first
         end
       end
     end

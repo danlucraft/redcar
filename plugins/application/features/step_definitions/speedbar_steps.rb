@@ -58,5 +58,11 @@ Then /^"([^"]*)" should not be checked in the speedbar$/ do |checkbox_name|
   item.value.should be_false
 end
 
-
-
+Then /^there should( not)? be an open speedbar$/ do |negate|
+  speedbar = Redcar.app.focussed_window.speedbar
+  if negate
+    speedbar.should == nil
+  else
+    speedbar.should_not == nil
+  end
+end

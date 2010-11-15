@@ -13,6 +13,7 @@ Feature: Navigating web content in HtmlTabs using the browser bar
     And I replace the contents with "<html>I see you!</html>"
     And I save the tab
     And I close the focussed tab
+    And I open the browser bar
     And I press "Refresh" in the speedbar
     Then the HTML tab should say "I see you!"
 
@@ -40,3 +41,7 @@ Feature: Navigating web content in HtmlTabs using the browser bar
     When I press "+" in the speedbar
     And I open the web bookmarks tree
     Then I should see "Other" in the tree
+
+  Scenario: When a HTML tab loses focus, the browser bar is hidden
+    When I open a new edit tab
+    Then there should not be an open speedbar
