@@ -9,8 +9,8 @@ module Redcar
     capture:  1
     type:     id
     kind:     interface
-  - regex:    "^\\s*((public|private|protected|)\\s+|)(static\\s+|)([A-Z]\\w*(<\\w+>|)|int|boolean|byte|short|long|char|float|def)\\s+(\\w+)\\s*\\("
-    capture:  6
+  - regex:    "^\\s*((public|private|protected|)\\s+|)(static\\s+|)(([\\.\\w]+|)[A-Z]\\w*(<\\w+>|)|void|int|boolean|byte|short|long|char|float|def)\\s+(\\w+\\s*\\((.*)\\))"
+    capture:  7
     type:     id
     kind:     method
   - regex:    "(def|static)\\s+(\\w+)\\s*=\\s*\\{"
@@ -36,8 +36,8 @@ module Redcar
     capture:  1
     type:     id
     kind:     interface
-  - regex:    "((public|private|protected|)\\s+|)(static\\s+|)([A-Z]\\w*(<\\w+>|)|int|boolean|byte|short|long|char|float)\\s+(\\w+)\\s*\\("
-    capture:  6
+  - regex:    "^\\s*((public|private|protected|)\\s+|)(static\\s+|)(([\\.\\w]+|)[A-Z]\\w*(<\\w+>|)|void|int|boolean|byte|short|long|char|float)\\s+(\\w+\\s*\\((.*)\\))"
+    capture:  7
     type:     id
     kind:     method
   - regex:    "enum\\s+(\\w*)"
