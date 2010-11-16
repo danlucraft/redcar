@@ -75,14 +75,11 @@ module Redcar
       end
       
       def find_pair(step, offset, search_char, current_char)
-        if offset == 0
-          return nil
-        end
         state = 1;
         quotes = false
         doublequotes = false
         
-        while offset > 0 and offset < document.length - 1
+        while offset >= 0 and offset < document.length
           offset = offset + step;
           @newchar = styledText.getTextRange(offset, 1)
           if @newchar == search_char and !quotes and !doublequotes
