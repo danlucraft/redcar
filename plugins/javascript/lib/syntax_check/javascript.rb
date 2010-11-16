@@ -6,11 +6,11 @@ module Redcar
       supported_grammars "JavaScript", "JavaScript (Rails)", "jQuery (JavaScript)"
 
       def jslint_path
-        File.join(File.dirname(__FILE__),'../../vendor/jslint.js')
+        File.join(File.dirname(__FILE__),'..','..','vendor','jslint.js')
       end
 
       def rhino_path
-        File.join(File.dirname(__FILE__),'../../vendor/js.jar')
+        File.join(Redcar.asset_dir,'js.jar')
       end
 
       def check(*args)

@@ -12,6 +12,7 @@ Enhancements:
  * Browser bar URL field now supports project-relative paths (Delisa Mason)
  * URLs can be opened in the internal browser or the OS-default based on preferences (Delisa Mason)
  * Syntax checking and declarations for groovy (Delisa Mason)
+ * Syntax checking for javascript (Delisa Mason)
 
 Bug fixes:
 
