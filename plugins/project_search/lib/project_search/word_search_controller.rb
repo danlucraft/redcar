@@ -1,5 +1,4 @@
 
-
 class ProjectSearch
   class WordSearchController < ProjectSearch::RegexSearchController
   

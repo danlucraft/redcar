@@ -3,9 +3,9 @@
 Searching for "redcar" in the Redcar source code:
   - Without Context:
     - Textmate AckMate: ~2 seconds
-    - Redcar find-in-project: ~50 seconds
+    - Redcar regex search: ~50 seconds
   - With Context:
     - Textmate AckMate: ~4 seconds
-    - Redcar find-in-project: ~5 minutes
+    - Redcar regex search: ~5 minutes
 
 * Per-project settings

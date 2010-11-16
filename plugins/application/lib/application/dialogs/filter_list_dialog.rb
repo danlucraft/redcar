@@ -7,7 +7,7 @@ module Redcar
   class FilterListDialog
     include Redcar::Model
     include Redcar::Observable
-    
+  
     def initialize
       self.controller = Redcar.gui.controller_for(self).new(self)
     end
@@ -91,3 +91,4 @@ module Redcar
     end
   end
 end
+

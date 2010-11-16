@@ -1,7 +1,7 @@
 require 'set'
 
 module Redcar
-  class Project
+  class Project    
 
     class FindFileDialog < FilterListDialog
       def self.storage
