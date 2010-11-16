@@ -3,4 +3,4 @@ gem 'rake'
 gem 'rspec', "<2.0.0"
 gem 'cucumber'
 gem 'ci_reporter', :group => "ci"
-gem 'rcov'
+gem 'rcov', "=0.9.9"
