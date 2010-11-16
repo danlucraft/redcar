@@ -52,11 +52,6 @@ Scenario: Matching kinda similar names
   When I set the outline filter to "file"
   And I wait 2 seconds
   Then the outline view should have 5 entries
-  When I set the outline filter to "self."
-  And I wait 1 seconds
-  Then the outline view should have 1 entry
-  When I select the outline view
-  Then the selected text should be "  def self.file\n"
 
   Scenario: Simple Javascript
   Given I have opened "plugins/outline_view/spec/fixtures/some_project/javascript.js"
