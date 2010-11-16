@@ -800,6 +800,25 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
+    ["First","Second"].each do |book|
+      const_set("Enlarge#{book}NotebookCommand", Class.new(Redcar::Command)).class_eval do
+        define_method :execute do
+          if win = Redcar.app.focussed_window
+            idx = book == "First" ? 0 : 1
+            win.enlarge_notebook(idx)
+          end
+        end
+      end
+    end
+
+    class ResetNotebookWidthsCommand < Command
+      def execute
+        if win = Redcar.app.focussed_window
+          win.reset_notebook_widths
+        end
+      end
+    end
+
     class ToggleFullscreen < Command
       def execute
         Redcar.app.focussed_window.fullscreen = !Redcar.app.focussed_window.fullscreen
@@ -922,6 +941,10 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+[",    MoveTabDownCommand
         link "Ctrl+Shift+]",    MoveTabUpCommand
         link "F11",             ToggleFullscreen
+        link "F6",              EnlargeFirstNotebookCommand
+        link "F7",              EnlargeSecondNotebookCommand
+        link "F8",              RotateNotebooksCommand
+        link "Alt+Shift+N",     CloseNotebookCommand
         link "Cmd+Alt+I",       ToggleInvisibles
         link "Ctrl+R",          Runnables::RunEditTabCommand
         link "Cmd+I",           OutlineView::OpenOutlineViewCommand
@@ -1005,6 +1028,10 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Page Down",       SwitchTabUpCommand
         link "Ctrl+Shift+Page Up",   MoveTabDownCommand
         link "Ctrl+Shift+Page Down", MoveTabUpCommand
+        link "F6",               EnlargeFirstNotebookCommand
+        link "F7",               EnlargeSecondNotebookCommand
+        link "F8",               RotateNotebooksCommand
+        link "Alt+Shift+N",      CloseNotebookCommand
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
         link "F11",              ToggleFullscreen
         link "Ctrl+Alt+I",       ToggleInvisibles
@@ -1139,6 +1166,10 @@ Redcar.environment: #{Redcar.environment}
               item "Rotate Notebooks", RotateNotebooksCommand
               item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
               item "Switch Notebooks", SwitchNotebookCommand
+              separator
+              item "Enlarge First Notebook", EnlargeFirstNotebookCommand
+              item "Enlarge Second Notebook", EnlargeSecondNotebookCommand
+              item "Reset Notebook Widths", ResetNotebookWidthsCommand
             end
             sub_menu "Tabs" do
               item "Previous Tab", SwitchTabDownCommand
