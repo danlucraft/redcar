@@ -13,6 +13,7 @@ Enhancements:
  * URLs can be opened in the internal browser or the OS-default based on preferences (Delisa Mason)
  * Syntax checking and declarations for groovy (Delisa Mason)
  * Draw an overlay if the margin is shown and the OS permits (Textmate-style), else draw a line (Tim Felgentreff)
+ * Syntax checking for javascript (Delisa Mason)
 
 Bug fixes:
 
