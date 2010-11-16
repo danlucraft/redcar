@@ -1,6 +1,6 @@
 [submodule "vendor/java-mateview"]
 	path = vendor/java-mateview
-	url = git://github.com/danlucraft/java-mateview.git
+	url = git://github.com/redcar/java-mateview.git
 [submodule "lib/plugin_manager"]
 	path = lib/plugin_manager
 	url = git://github.com/redcar/plugin_manager.git
