@@ -33,7 +33,7 @@ Scenario: Something fancier
   When I set the outline filter to "selected"
   And I wait 2 seconds
   Then the outline view should have 2 entries
-  And I should see "selection_range_changed(start_offset, end_offset)" at 0 with the "method" icon in the outline view
+  And I should see "selection_range_changed" at 0 with the "method" icon in the outline view
   And I should see "selected_text" at 1 with the "method" icon in the outline view
   And I select the outline view
   Then the selected text should be "    def selection_range_changed(start_offset, end_offset)\n"
@@ -48,7 +48,7 @@ Scenario: Matching kinda similar names
   And I should see "file_name" at 2 with the "method" icon in the outline view
   And I should see "file_type" at 3 with the "method" icon in the outline view
   And I should see "file_handle" at 4 with the "method" icon in the outline view
-  And I should see "self.file" at 5 with the "method" icon in the outline view
+  And I should see "file" at 5 with the "method" icon in the outline view
   When I set the outline filter to "file"
   And I wait 2 seconds
   Then the outline view should have 5 entries
