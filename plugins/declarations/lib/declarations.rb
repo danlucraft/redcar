@@ -17,7 +17,7 @@ module Redcar
 
     def self.keymaps
       linwin = Keymap.build("main", [:linux, :windows]) do
-        link "Ctrl+G", Declarations::GoToTagCommand
+        link "Alt+G", Declarations::GoToTagCommand
       end
 
       osx = Keymap.build("main", :osx) do

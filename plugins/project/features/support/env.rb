@@ -1,4 +1,20 @@
 
+module DrbShelloutHelper
+  def self.drb_system_thread
+    $drb_system_thread
+  end
+
+  def self.drb_system_thread= value
+    $drb_system_thread = value
+  end
+
+  def self.kill_thread
+    if !($drb_system_thread.nil?) and $drb_system_thread.status
+      $drb_system_thread.kill
+    end
+  end
+end
+
 def fixtures_path
   File.expand_path(File.dirname(__FILE__) + "/../../spec/fixtures")
 end
@@ -36,4 +52,5 @@ end
 After do
   reset_project_fixtures
   delete_subproject_fixtures
+  DrbShelloutHelper.kill_thread
 end

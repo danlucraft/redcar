@@ -62,6 +62,16 @@ class ProjectSearch
       @thread = nil
       super
     end
+    
+    def edit_preferences
+      Redcar.app.make_sure_at_least_one_window_open # open a new window if needed
+      Redcar::FindInProject.storage # populate the file if it isn't already
+      tab  = Redcar.app.focussed_window.new_tab(Redcar::EditTab)
+      mirror = Project::FileMirror.new(File.join(Redcar.user_dir, "storage", "find_in_project.yaml"))
+      tab.edit_view.document.mirror = mirror
+      tab.edit_view.reset_undo
+      tab.focus
+    end
 
     private
     

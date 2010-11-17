@@ -42,6 +42,14 @@ module Redcar
       puts "Hooray! You selected #{text} at index #{ix}"
     end
     
+    # Called by the controller when the user moves through the list.
+    #
+    # @param [String] the list row text that is now highlighted
+    # @param [Integer] the index of the row that is now highlighted
+    def moved_to(text, ix)
+      # Override with the code you wish you had
+    end
+
     # Helper method for fuzzily filtering a list
     #
     # @param [Array<A>]     list        the list to filter
@@ -83,6 +91,17 @@ module Redcar
       score_match_pairs.map {|a| a.last }
     end
     
+    # The time interval in seconds in which moved_to events are ignored
+    # Override to select different interval
+    def step_time
+      1
+    end
+
+    def step?
+      @last_step ||= Time.now - step_time
+      @last_step + step_time <= Time.now
+    end
+
     private
     
     def make_regex(text)

@@ -57,6 +57,7 @@ module Redcar
       end
 
       def offset_at_line(line_ix)
+        line_ix = [line_ix, line_count - 1].min
         jface_document.get_line_offset(line_ix)
       end
 
@@ -72,15 +73,27 @@ module Redcar
       def replace(offset, length, text)
         @model.verify_text(offset, offset+length, text)
         jface_document.replace(offset, length, text)
-        #if length > text.length
-        #  @swt_mate_document.mateText.redraw
-        #end
         @model.modify_text
       end
 
       def text=(text)
         @model.verify_text(0, length, text)
-        jface_document.set(text)
+        top_pixel   = styledText.getTopPixel
+        caret       = cursor_offset
+        line        = line_at_offset(caret)
+        caret       = caret - offset_at_line(line)
+
+        styledText.setRedraw(false)
+        styledText.setText(text)
+
+        unless line > line_count - 1
+          # The documents new text is still longer than our previous position, restore position
+          line_offset = offset_at_line(line)
+          styledText.setCaretOffset([line_offset + caret, offset_at_line(line + 1) - 1].min)
+          styledText.setTopPixel(top_pixel)
+        end
+
+        styledText.setRedraw(true)
         @model.modify_text
         notify_listeners(:set_text)
       end

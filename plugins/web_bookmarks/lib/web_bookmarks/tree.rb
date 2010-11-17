@@ -1,16 +1,12 @@
 
 module Redcar
   class WebBookmarks
-    class TreeController
-      include Redcar::Tree::Controller
-
-      def initialize(project)
-        @project = project
-      end
+    class TreeController < Redcar::Project::ProjectTreeController
 
       def activated(tree, node)
         if node.is_a?(Bookmark)
-          DisplayWebContent.new(node.text,node.url).run
+          display_bar = WebBookmarks.storage['show_browser_bar_on_start'] || true
+          Redcar::HtmlView::DisplayWebContent.new(node.text,node.url, display_bar).run
         elsif node.is_a?(BookmarkReloadItem)
           tree.refresh
         end

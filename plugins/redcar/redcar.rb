@@ -169,6 +169,56 @@ module Redcar
       end
     end
 
+    class GenerateWindowsMenu < Command
+      def initialize(builder)
+        @builder = builder
+      end
+
+      def execute
+        window = Redcar.app.focussed_window
+        Redcar.app.windows.each do |win|
+          @builder.item(win.title, :type => :radio, :active => (win == window)) do
+            FocusWindowCommand.new(win).run
+          end
+        end
+      end
+    end
+
+    class GenerateTabsMenu < Command
+      def initialize(builder)
+        @builder = builder
+      end
+
+      def trim(title)
+        title = title[0,13]+'...' if title.length > 13
+        title
+      end
+
+      def execute
+        if win = Redcar.app.focussed_window and
+          book = win.focussed_notebook and book.tabs.any?
+          focussed_tab = book.focussed_tab
+          @builder.separator
+          @builder.item "Focussed Notebook", ShowTitle
+          book.tabs.each_with_index do |tab,i|
+            num = i + 1
+            if num < 10
+              @builder.item "Tab #{num}: #{trim(tab.title)}", :type => :radio, :active => (tab == focussed_tab), :command => Top.const_get("SelectTab#{num}Command")
+            else
+              @builder.item("Tab #{num}: #{trim(tab.title)}", :type => :radio, :active => (tab == focussed_tab)) {tab.focus}
+            end
+          end
+          if book = win.nonfocussed_notebook and book.tabs.any?
+            @builder.separator
+            @builder.item "Nonfocussed Notebook", ShowTitle
+            book.tabs.each_with_index do |tab,i|
+              @builder.item("Tab #{i+1}: #{trim(tab.title)}") {tab.focus}
+            end
+          end
+        end
+      end
+    end
+
     class FocusWindowCommand < Command
       def initialize(window=nil)
         @window = window
@@ -224,7 +274,7 @@ module Redcar
       end
     end
 
-    class CloseTreeCommand < Command
+    class CloseTreeCommand < TreeCommand
       def execute
         win = Redcar.app.focussed_window
         if win and treebook = win.treebook
@@ -235,7 +285,7 @@ module Redcar
       end
     end
 
-    class ToggleTreesCommand < Command
+    class ToggleTreesCommand < TreeCommand
       def execute
         win = Redcar.app.focussed_window
         if win and treebook = win.treebook
@@ -279,7 +329,7 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class PrintScopeCommand < Command
+    class PrintScopeCommand < DocumentCommand
       def execute
         Application::Dialog.tool_tip(tab.edit_view.document.cursor_scope.gsub(" ", "\n"), :cursor)
       end
@@ -346,28 +396,28 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class SwitchTabDownCommand < Command
+    class SwitchTabDownCommand < TabCommand
 
       def execute
         win.focussed_notebook.switch_down
       end
     end
 
-    class SwitchTabUpCommand < Command
+    class SwitchTabUpCommand < TabCommand
 
       def execute
         win.focussed_notebook.switch_up
       end
     end
 
-    class MoveTabUpCommand < Command
+    class MoveTabUpCommand < TabCommand
 
       def execute
         win.focussed_notebook.move_up
       end
     end
 
-    class MoveTabDownCommand < Command
+    class MoveTabDownCommand < TabCommand
 
       def execute
         win.focussed_notebook.move_down
@@ -716,7 +766,7 @@ Redcar.environment: #{Redcar.environment}
 
     # define commands from SelectTab1Command to SelectTab9Command
     (1..9).each do |tab_num|
-      const_set("SelectTab#{tab_num}Command", Class.new(Redcar::Command)).class_eval do
+      const_set("SelectTab#{tab_num}Command", Class.new(Redcar::TabCommand)).class_eval do
         define_method :execute do
           notebook = Redcar.app.focussed_window_notebook
           notebook.tabs[tab_num-1].focus if notebook.tabs[tab_num-1]
@@ -766,6 +816,11 @@ Redcar.environment: #{Redcar.environment}
       def execute
 
       end
+    end
+
+    class ShowTitle < Command
+      sensitize :always_disabled
+      def execute; end
     end
 
     class SelectFontSize < Command
@@ -1031,33 +1086,47 @@ Redcar.environment: #{Redcar.environment}
           end
         end
         sub_menu "View", :priority => 30 do
-          sub_menu "Appearance" do
+          sub_menu "Appearance", :priority => 5 do
             item "Font", SelectNewFont
             item "Font Size", SelectFontSize
             item "Theme", SelectTheme
           end
-          item "Toggle Tree Visibility", :command => ToggleTreesCommand
-          item "Toggle Fullscreen", :command => ToggleFullscreen, :type => :check, :active => window ? window.fullscreen : false
-          separator
-          item "New Notebook", NewNotebookCommand
-          item "Close Notebook", CloseNotebookCommand
-          item "Rotate Notebooks", RotateNotebooksCommand
-          item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
-          item "Switch Notebooks", SwitchNotebookCommand
-          separator
-          item "Previous Tab", SwitchTabDownCommand
-          item "Next Tab", SwitchTabUpCommand
-          item "Move Tab Left", MoveTabDownCommand
-          item "Move Tab Right", MoveTabUpCommand
-          sub_menu "Switch Tab" do
-             (1..9).each do |num|
-               item "Tab #{num}", Top.const_get("SelectTab#{num}Command")
-             end
+          group(:priority => 10) do
+            separator
+            item "Toggle Tree Visibility", :command => ToggleTreesCommand
+            item "Toggle Fullscreen", :command => ToggleFullscreen, :type => :check, :active => window ? window.fullscreen : false
           end
-          separator
-          item "Show Toolbar", :command => ToggleToolbar, :type => :check, :active => Redcar.app.show_toolbar?
-          item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
-          item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
+          group(:priority => 15) do
+            separator
+            lazy_sub_menu "Windows" do
+              GenerateWindowsMenu.new(self).run
+            end
+            sub_menu "Notebooks" do
+              item "New Notebook", NewNotebookCommand
+              item "Close Notebook", CloseNotebookCommand
+              item "Rotate Notebooks", RotateNotebooksCommand
+              item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
+              item "Switch Notebooks", SwitchNotebookCommand
+            end
+            sub_menu "Tabs" do
+              item "Previous Tab", SwitchTabDownCommand
+              item "Next Tab", SwitchTabUpCommand
+              item "Move Tab Left", MoveTabDownCommand
+              item "Move Tab Right", MoveTabUpCommand
+              separator
+              # GenerateTabsMenu.new(self).run # TODO: find a way to maintain keybindings with lazy menus
+              item "Focussed Notebook", ShowTitle
+              (1..9).each do |num|
+                item "Tab #{num}", Top.const_get("SelectTab#{num}Command")
+              end
+            end
+          end
+          group(:priority => :last) do
+            separator
+            item "Show Toolbar", :command => ToggleToolbar, :type => :check, :active => Redcar.app.show_toolbar?
+            item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
+            item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
+          end
         end
         sub_menu "Bundles", :priority => 45 do
           group(:priority => :first) do

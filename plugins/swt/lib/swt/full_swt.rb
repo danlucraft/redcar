@@ -19,6 +19,7 @@ module Swt
     import org.eclipse.swt.widgets.CoolBar
     import org.eclipse.swt.widgets.CoolItem
     import org.eclipse.swt.widgets.Sash
+    import org.eclipse.swt.widgets.Slider
     import org.eclipse.swt.widgets.TabFolder
     import org.eclipse.swt.widgets.TabItem
     import org.eclipse.swt.widgets.Text

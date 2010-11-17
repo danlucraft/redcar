@@ -10,18 +10,10 @@ module Swt
   
   def self.jar_path
     case Config::CONFIG["host_os"]
-    when /darwin/i
-      if Config::CONFIG["host_cpu"] == "x86_64"
-        'osx64'
-      else
-        'osx'
-      end
-    when /linux/i
-      if %w(amd64 x84_64).include? Config::CONFIG["host_cpu"]
-        'linux64'
-      else
-        'linux'
-      end
+    when /(darwin|linux)/i
+      jar = ($1 == "linux" ? "linux" : "osx")
+      jar << '64' if %w(amd64 x86_64).include? Config::CONFIG["host_cpu"]
+      jar
     when /windows|mswin/i
       'win32'
     end

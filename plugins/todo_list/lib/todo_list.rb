@@ -34,6 +34,7 @@ module Redcar
         controller = TodoController.new(project.home_dir)
         tab = win.new_tab(HtmlTab)
         tab.html_view.controller = controller
+        tab.icon = :document_list
         tab.focus
       end
     end

@@ -17,6 +17,7 @@ module Redcar
       @trees << tree
       @focussed_tree = tree
       notify_listeners(:tree_added, tree)
+      Redcar.app.repeat_event(:tree_added) if Redcar.app
     end
 
     # Bring the tree to the front
@@ -38,6 +39,7 @@ module Redcar
         if tree == focussed_tree
           focus_tree(trees.first) if trees.any?
         end
+        Redcar.app.repeat_event(:tree_removed) if Redcar.app
       end
     end
 

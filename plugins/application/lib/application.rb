@@ -57,6 +57,24 @@ module Redcar
             win.focussed_notebook.focussed_tab
           end
         end,
+        Sensitivity.new(:open_htmltab, Redcar.app, false, [:focussed_window, :tab_focussed]) do |tab|
+          if win = Redcar.app.focussed_window and
+            tab = win.focussed_notebook.focussed_tab
+            tab.is_a?(HtmlTab)
+          end
+        end,
+        Sensitivity.new(:open_trees, Redcar.app, false, [:focussed_window, :tree_added, :tree_removed]) do |tree|
+          if win = Redcar.app.focussed_window
+            trees = win.treebook.trees
+            trees and trees.length > 0
+          end
+        end,
+        Sensitivity.new(:focussed_committed_mirror, Redcar.app, false,
+          [:focussed_window, :notebook_change, :mirror_committed, :tab_focussed]) do
+          if win = Redcar.app.focussed_window and tab = win.focussed_notebook.focussed_tab
+            begin;tab.edit_view.document.mirror.path;rescue;false;end
+          end
+        end,
         Sensitivity.new(:single_notebook, Redcar.app, true, [:focussed_window, :notebook_change]) do
           if win = Redcar.app.focussed_window
             win.notebooks.length == 1
@@ -72,7 +90,8 @@ module Redcar
           if win = Redcar.app.focussed_window and notebook = win.nonfocussed_notebook
             notebook.tabs.any?
           end
-        end
+        end,
+        Sensitivity.new(:always_disabled, Redcar.app, false,[]) do; false; end
       ]
     end
 
@@ -86,13 +105,6 @@ module Redcar
       create_history
       @event_spewer = EventSpewer.new
       @task_queue   = TaskQueue.new
-
-      # Don't show the toolbar by default on Mac OS X
-      if Redcar.platform == :osx
-        Application.storage['show_toolbar'] = false
-      end
-
-      # Otherwise, use previous setting
       @show_toolbar = !!Application.storage['show_toolbar']
     end
 
@@ -149,10 +161,15 @@ module Redcar
 
     def self.storage
       @storage ||= begin
-         storage = Plugin::Storage.new('application_plugin')
-         storage.set_default('stay_resident_after_last_window_closed', false)
-         storage.set_default('show_toolbar', true)
-         storage
+        storage = Plugin::Storage.new('application_plugin')
+        storage.set_default('stay_resident_after_last_window_closed', false)
+        # Don't show the toolbar by default on Mac OS X
+        if Redcar.platform == :osx
+          storage.set_default('show_toolbar', false)
+        else
+          storage.set_default('show_toolbar', true)
+        end
+        storage
       end
     end
 

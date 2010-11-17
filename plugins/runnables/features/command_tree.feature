@@ -42,6 +42,20 @@ Feature: Showing commands in a command tree
     Then I should not see "fixture_runnables" in the tree
     When I right-click the "Runnables" tree tab
     Then I should not see "fixture_runnables" in the tree
+    
+  Scenario: Closing the project via icon closes the runnables tree
+    And I open the runnables tree
+    And I click the project tree tab
+    And I click the close button
+    Then the tree width should be the minimum size
+    And there should not be a tree titled "Runnables"
+    
+  Scenario: Closing the project via menu item closes the runnables tree
+    And I open the runnables tree
+    And I click the project tree tab
+    And I close the tree
+    Then the tree width should be the minimum size
+    And there should not be a tree titled "Runnables"
 
   # TODO: Refresh on window changes
   # TODO: preserve expanding when refreshing
