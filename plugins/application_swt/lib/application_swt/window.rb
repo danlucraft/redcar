@@ -67,6 +67,8 @@ module Redcar
         @window.add_listener(:speedbar_closed, &method(:speedbar_closed))
         @window.add_listener(:enlarge_notebook, &method(:enlarge_notebook))
         @window.add_listener(:reset_notebook_widths, &method(:reset_notebook_sash_widths))
+        @window.add_listener(:increase_treebook_width, &method(:increase_treebook_width))
+        @window.add_listener(:decrease_treebook_width, &method(:decrease_treebook_width))
 
         @window.add_listener(:toggle_trees_visible, &method(:toggle_sash_widths))
         @window.treebook.add_listener(:tree_added) do
@@ -360,6 +362,17 @@ module Redcar
         end
       end
 
+      def decrease_treebook_width
+        width = treebook_width
+        unless width < MINIMUM_TREEBOOK_WIDTH + SASH_WIDTH
+          set_sash_widths(width-SASH_WIDTH)
+        end
+      end
+
+      def increase_treebook_width
+        set_sash_widths(treebook_width+SASH_WIDTH)
+      end
+
       def set_sash_widths(offset)
         @sash.layout_data.left = Swt::Layout::FormAttachment.new(0, offset)
         @shell.layout
@@ -377,8 +390,8 @@ module Redcar
           small = index == 0 ? 1 : 0
           total = widths[index] + widths[small]
           unless widths[index]/total > 0.95
-            widths[small] = widths[small].to_i - 5
-            widths[index] = widths[index].to_i + 5
+            widths[small] = widths[small].to_i - SASH_WIDTH
+            widths[index] = widths[index].to_i + SASH_WIDTH
             @notebook_sash.setWeights(widths.to_a.to_java(:int))
           end
         end

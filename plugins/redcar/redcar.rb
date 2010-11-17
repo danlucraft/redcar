@@ -790,6 +790,32 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
+    class TreebookWidthCommand < Command
+      sensitize :open_trees
+
+      def increment
+        raise "Please implement me!"
+      end
+
+      def execute
+        if win = Redcar.app.focussed_window
+          if increment > 0
+            win.adjust_treebook_width(true)
+          else
+            win.adjust_treebook_width(false)
+          end
+        end
+      end
+    end
+
+    ["In","De"].each do |prefix|
+      const_set("#{prefix}creaseTreebookWidthCommand", Class.new(TreebookWidthCommand)).class_eval do
+        define_method :increment do
+          prefix == "In" ? 1 : -1
+        end
+      end
+    end
+
     class EnlargeNotebookCommand < Command
       sensitize :multiple_notebooks
       def index
@@ -953,6 +979,8 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+[",    MoveTabDownCommand
         link "Ctrl+Shift+]",    MoveTabUpCommand
         link "F11",             ToggleFullscreen
+        link "Cmd+Shift+F7",    IncreaseTreebookWidthCommand
+        link "Alt+Shift+F7",    DecreaseTreebookWidthCommand
         link "Cmd+F6",          EnlargeFirstNotebookCommand
         link "Alt+F6",          EnlargeSecondNotebookCommand
         link "F6",              ResetNotebookWidthsCommand
@@ -1041,6 +1069,8 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Page Down",       SwitchTabUpCommand
         link "Ctrl+Shift+Page Up",   MoveTabDownCommand
         link "Ctrl+Shift+Page Down", MoveTabUpCommand
+        link "Ctrl+Shift+F7",        IncreaseTreebookWidthCommand
+        link "Alt+Shift+F7",         DecreaseTreebookWidthCommand
         link "Ctrl+F6",              EnlargeFirstNotebookCommand
         link "Alt+F6",               EnlargeSecondNotebookCommand
         link "F6",                   ResetNotebookWidthsCommand
@@ -1171,6 +1201,10 @@ Redcar.environment: #{Redcar.environment}
           end
           group(:priority => 15) do
             separator
+            sub_menu "Trees" do
+              item "Increase Tree Area Width", IncreaseTreebookWidthCommand
+              item "Decrease Tree Area Width", DecreaseTreebookWidthCommand
+            end
             lazy_sub_menu "Windows" do
               GenerateWindowsMenu.new(self).run
             end
