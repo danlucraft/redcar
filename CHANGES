@@ -12,6 +12,8 @@ Enhancements:
  * Browser bar URL field now supports project-relative paths (Delisa Mason)
  * URLs can be opened in the internal browser or the OS-default based on preferences (Delisa Mason)
  * Syntax checking and declarations for groovy (Delisa Mason)
+ * Draw an overlay if the margin is shown and the OS permits (Textmate-style), else draw a line (Tim Felgentreff)
+ * Syntax checking for javascript (Delisa Mason)
 
 Bug fixes:
 
@@ -19,6 +21,7 @@ Bug fixes:
  * Fix Application::Dialog#tool_tip to set the location correctly on Windows (Patrik Sundberg)
  * 64bit Soylatte JDK7 can now be used to run Redcar on Mac OS X
  * Run Tab now checks for underlying file (Delisa Mason)
+ * Hovering on annotations only displays the tooltip(s) under the cursor, not all of them (Delisa Mason)
 
 Internal changes:
 
