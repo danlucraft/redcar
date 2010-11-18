@@ -296,7 +296,11 @@ module Redcar
           if tree = @win.treebook.trees.detect do |tree|
               tree.tree_mirror.title == text
             end
-            @win.treebook.focus_tree(tree)
+            if @win.treebook.focussed_tree == tree
+              @win.set_trees_visible(true) if not @win.trees_visible?
+            else
+              @win.treebook.focus_tree(tree)
+            end
             close
           end
         end
