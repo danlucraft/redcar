@@ -19,6 +19,7 @@ module Redcar
     def self.keymaps
       map = Redcar::Keymap.build("main", [:osx, :linux, :windows]) do
         link "Alt+Shift+B", ToggleBrowserBar
+        link "Alt+Shift+P", FileWebPreview
       end
       [map]
     end

@@ -356,9 +356,9 @@ Redcar.environment: #{Redcar.environment}
       def execute
         new_tab = Top::NewCommand.new.run
         new_tab.document.text = File.read(File.join(File.dirname(__FILE__), "..", "..", "CHANGES"))
-        new_tab.title = 'Changes'
         new_tab.edit_view.reset_undo
         new_tab.edit_view.document.set_modified(false)
+        new_tab.title = 'Changes'
       end
     end
 
@@ -974,6 +974,7 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+Shift+S", Project::FileSaveAsCommand
         link "Cmd+W",       CloseTabCommand
         link "Cmd+Shift+W", CloseWindowCommand
+        link "Alt+Shift+W",   CloseTreeCommand
         link "Cmd+Q",       QuitCommand
 
         #link "Cmd+Return",   MoveNextLineCommand
@@ -1002,6 +1003,7 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+Shift+F", Redcar::FindInProject::OpenSearch
         link "Cmd+A",       SelectAllCommand
         link "Ctrl+W",      SelectWordCommand
+        link "Ctrl+L",      SelectLineCommand
         link "Cmd+B",       ToggleBlockSelectionCommand
         #link "Escape", AutoCompleter::AutoCompleteCommand
         link "Ctrl+Escape",  AutoCompleter::MenuAutoCompleterCommand
@@ -1012,6 +1014,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+G",       EditView::OppositeCaseTextCommand
         link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
         link "Ctrl+=",       EditView::AlignAssignmentCommand
+        link "Ctrl+Shift+^", SortLinesCommand
 
         link "Cmd+T",           Project::FindFileCommand
         link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
@@ -1022,12 +1025,12 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+]",    MoveTabUpCommand
         link "F11",             ToggleFullscreen
         link "Cmd+Shift+T",     FocusTreeCommand
-        link "Cmd+Shift+F7",    IncreaseTreebookWidthCommand
-        link "Alt+Shift+F7",    DecreaseTreebookWidthCommand
-        link "Cmd+F6",          EnlargeFirstNotebookCommand
-        link "Alt+F6",          EnlargeSecondNotebookCommand
-        link "F6",              ResetNotebookWidthsCommand
-        link "F8",              RotateNotebooksCommand
+        link "Alt+Shift+J",     IncreaseTreebookWidthCommand
+        link "Alt+Shift+H",     DecreaseTreebookWidthCommand
+        link "Cmd+Shift+>",     EnlargeFirstNotebookCommand
+        link "Cmd+Shift+<",     EnlargeSecondNotebookCommand
+        link "Cmd+Shift+L",     ResetNotebookWidthsCommand
+        link "Cmd+Shift+:",     RotateNotebooksCommand
         link "Alt+Shift+N",     CloseNotebookCommand
         link "Cmd+Alt+I",       ToggleInvisibles
         link "Ctrl+R",          Runnables::RunEditTabCommand
@@ -1059,6 +1062,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+S", Project::FileSaveAsCommand
         link "Ctrl+W",       CloseTabCommand
         link "Ctrl+Shift+W", CloseWindowCommand
+        link "Alt+Shift+W",  CloseTreeCommand
         link "Ctrl+Q",       QuitCommand
 
         link "Ctrl+Enter",   MoveNextLineCommand
@@ -1088,6 +1092,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+F", Redcar::FindInProject::OpenSearch
         link "Ctrl+Shift+A", SelectAllCommand
         link "Ctrl+Alt+W",   SelectWordCommand
+        link "Ctrl+Alt+L",   SelectLineCommand
         link "Ctrl+B",       ToggleBlockSelectionCommand
         link "Ctrl+Space",       AutoCompleter::AutoCompleteCommand
         link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleterCommand
@@ -1098,6 +1103,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+G",       EditView::OppositeCaseTextCommand
         link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
         link "Ctrl+=",       EditView::AlignAssignmentCommand
+        link "Ctrl+Shift+^", SortLinesCommand
 
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
@@ -1113,12 +1119,12 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+Page Up",   MoveTabDownCommand
         link "Ctrl+Shift+Page Down", MoveTabUpCommand
         link "Ctrl+Shift+T",         FocusTreeCommand
-        link "Ctrl+Shift+F7",        IncreaseTreebookWidthCommand
-        link "Alt+Shift+F7",         DecreaseTreebookWidthCommand
-        link "Ctrl+Shift+F6",        EnlargeFirstNotebookCommand
-        link "Alt+Shift+F6",         EnlargeSecondNotebookCommand
-        link "F6",                   ResetNotebookWidthsCommand
-        link "F8",               RotateNotebooksCommand
+        link "Alt+Shift+J",      IncreaseTreebookWidthCommand
+        link "Alt+Shift+H",      DecreaseTreebookWidthCommand
+        link "Ctrl+Shift+>",     EnlargeFirstNotebookCommand
+        link "Ctrl+Shift+<",     EnlargeSecondNotebookCommand
+        link "Ctrl+Shift+L",     ResetNotebookWidthsCommand
+        link "Ctrl+Shift+:",     RotateNotebooksCommand
         link "Alt+Shift+N",      CloseNotebookCommand
         link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
         link "F11",              ToggleFullscreen
