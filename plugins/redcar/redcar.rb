@@ -271,6 +271,44 @@ module Redcar
       end
     end
 
+    class FocusTreeCommand < TreeCommand
+
+      def execute
+        if win = Redcar.app.focussed_window
+          if trees = win.treebook.trees and trees.any?
+            titles = []
+            trees.each {|t| titles << t.tree_mirror.title}
+            dialog = TreeFuzzyFilter.new(win,titles)
+            dialog.open
+          end
+        end
+      end
+
+      class TreeFuzzyFilter < FilterListDialog
+
+        def initialize(win,titles)
+          super()
+          @win = win
+          @titles = titles
+        end
+
+        def selected(text,ix)
+          if tree = @win.treebook.trees.detect do |tree|
+              tree.tree_mirror.title == text
+            end
+            @win.treebook.focus_tree(tree)
+            close
+          end
+        end
+
+        def update_list(filter)
+          @titles.select do |t|
+            t.downcase.include?(filter.downcase)
+          end
+        end
+      end
+    end
+
     class CloseTreeCommand < TreeCommand
       def execute
         win = Redcar.app.focussed_window
@@ -304,9 +342,9 @@ Ruby Version: #{RUBY_VERSION}
 Jruby version: #{JRUBY_VERSION}
 Redcar.environment: #{Redcar.environment}
         TXT
-        new_tab.title= 'About'
         new_tab.edit_view.reset_undo
         new_tab.document.set_modified(false)
+        new_tab.title= 'About'
       end
     end
 
@@ -979,6 +1017,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+[",    MoveTabDownCommand
         link "Ctrl+Shift+]",    MoveTabUpCommand
         link "F11",             ToggleFullscreen
+        link "Cmd+Shift+T",     FocusTreeCommand
         link "Cmd+Shift+F7",    IncreaseTreebookWidthCommand
         link "Alt+Shift+F7",    DecreaseTreebookWidthCommand
         link "Cmd+F6",          EnlargeFirstNotebookCommand
@@ -1069,10 +1108,11 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Page Down",       SwitchTabUpCommand
         link "Ctrl+Shift+Page Up",   MoveTabDownCommand
         link "Ctrl+Shift+Page Down", MoveTabUpCommand
+        link "Ctrl+Shift+T",         FocusTreeCommand
         link "Ctrl+Shift+F7",        IncreaseTreebookWidthCommand
         link "Alt+Shift+F7",         DecreaseTreebookWidthCommand
-        link "Ctrl+F6",              EnlargeFirstNotebookCommand
-        link "Alt+F6",               EnlargeSecondNotebookCommand
+        link "Ctrl+Shift+F6",        EnlargeFirstNotebookCommand
+        link "Alt+Shift+F6",         EnlargeSecondNotebookCommand
         link "F6",                   ResetNotebookWidthsCommand
         link "F8",               RotateNotebooksCommand
         link "Alt+Shift+N",      CloseNotebookCommand
@@ -1196,14 +1236,15 @@ Redcar.environment: #{Redcar.environment}
           end
           group(:priority => 10) do
             separator
-            item "Toggle Tree Visibility", :command => ToggleTreesCommand
             item "Toggle Fullscreen", :command => ToggleFullscreen, :type => :check, :active => window ? window.fullscreen : false
           end
           group(:priority => 15) do
             separator
             sub_menu "Trees" do
-              item "Increase Tree Area Width", IncreaseTreebookWidthCommand
-              item "Decrease Tree Area Width", DecreaseTreebookWidthCommand
+              item "Focus Tree", FocusTreeCommand
+              item "Toggle Tree Visibility", ToggleTreesCommand
+              item "Increase Tree Width", IncreaseTreebookWidthCommand
+              item "Decrease Tree Width", DecreaseTreebookWidthCommand
             end
             lazy_sub_menu "Windows" do
               GenerateWindowsMenu.new(self).run
