@@ -9,7 +9,7 @@ Feature: Word search
     And I wait "3" seconds
 
   Scenario: See the search interface
-    Then the HTML tab should say "Search for complete words only"
+    Then I should see "Search for complete words only" in the web view
 
   Scenario: Run a search
     When I enter "foo" into "#query" in the HTML tab
