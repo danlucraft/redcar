@@ -58,6 +58,7 @@ module Redcar
         
         def reload_plugin(name)
           plugin = Redcar.plugin_manager.loaded_plugins.detect {|pl| pl.name == name }
+          plugin ||= Redcar.plugin_manager.unloaded_plugins.detect {|pl| pl.name == name }
           plugin.load
           Redcar.app.refresh_menu!
           PluginManagerUi.last_reloaded = plugin
