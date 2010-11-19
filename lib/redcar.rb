@@ -87,10 +87,14 @@ module Redcar
   def self.plugin_manager
     @plugin_manager ||= begin
       m = PluginManager.new
-      m.add_plugin_source(File.join(root, "plugins"))
-      m.add_plugin_source(File.join(user_dir, "plugins"))
+      add_plugin_sources(m)
       m
     end
+  end
+
+  def self.add_plugin_sources(manager)
+    manager.add_plugin_source(File.join(root, "plugins"))
+    manager.add_plugin_source(File.join(user_dir, "plugins"))
   end
 
   def self.load_prerequisites
