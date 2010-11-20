@@ -5,7 +5,7 @@ module DocumentSearch
       count = 0
       sc = StringScanner.new(doc.get_all_text)
       doc.compound do
-        while sc.scan(query)
+        while sc.scan_until(query)
           count += 1
           startoff = sc.pos - sc.matched_size
           text = doc.get_range(startoff, sc.matched_size)
