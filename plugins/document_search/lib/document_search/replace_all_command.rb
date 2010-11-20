@@ -1,19 +1,23 @@
 module DocumentSearch
   class ReplaceAllCommand < ReplaceCommand
     def execute
-      replacement_text, startoff = nil
+      startoff, endoff = nil
+      text = doc.get_all_text
       count = 0
-      sc = StringScanner.new(doc.get_all_text)
-      doc.compound do
-        while sc.scan_until(query)
-          count += 1
-          startoff = sc.pos - sc.matched_size
-          text = doc.get_range(startoff, sc.matched_size)
-          replacement_text = text.gsub(query, replace)
-          doc.replace(sc.pos - sc.matched_size, sc.matched_size, replacement_text)
-        end
+      sc = StringScanner.new(text)
+      while sc.scan_until(query)
+        count += 1
+
+        startoff = sc.pos - sc.matched_size
+        replacement_text = text.slice(startoff, sc.matched_size).gsub(query, replace)
+        endoff = startoff + replacement_text.length
+
+        text[startoff...sc.pos] = replacement_text
+        sc.string = text
+        sc.pos = startoff + replacement_text.length
       end
-      if replacement_text && startoff
+      if count > 0
+        doc.text = text
         doc.set_selection_range(startoff + replacement_text.length, startoff)
         doc.scroll_to_line(doc.line_at_offset(startoff))
       end
