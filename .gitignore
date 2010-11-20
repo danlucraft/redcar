@@ -36,5 +36,4 @@ vendor/swtbot
 .server.yaml
 .yardoc
 
-Gemfile.lock
 .bundle
