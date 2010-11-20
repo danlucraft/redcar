@@ -1,3 +1,4 @@
+require 'strscan'
 require "document_search/search"
 require "document_search/replace"
 require "document_search/search_and_replace"
@@ -107,44 +108,25 @@ module DocumentSearch
     end
     
     def execute
-      # first search the remainder of the current line
-      curr_line = doc.get_line(doc.cursor_line)
-      cursor_line_offset = doc.cursor_offset - doc.offset_at_line(doc.cursor_line)
-      curr_line = curr_line[cursor_line_offset..-1]
-      if curr_line =~ @re
-        line_start = doc.offset_at_line(doc.cursor_line)
-        startoff = line_start + $`.length + cursor_line_offset
-        endoff   = startoff + $&.length
-        doc.set_selection_range(endoff, startoff)
-      elsif doc.cursor_line < doc.line_count - 1
-        # next search the rest of the lines
-        found_line_offset = nil
-        found_line_num = nil
-        found_length = nil
-        line_nums = ((doc.cursor_line() + 1)..(doc.line_count() - 1)).to_a # the rest of the document
-        if @wrap
-          line_nums += (0..doc.cursor_line()).to_a
-        end
-        for line_num in line_nums do
-          curr_line = doc.get_line(line_num)
-          if new_offset = (curr_line.to_s =~ @re)
-            found_line_offset = new_offset
-            found_line_num = line_num
-            found_length = $&.length
-            break
-          end
-        end
-        if found_line_num
-          line_start = doc.offset_at_line(found_line_num)
-          startoff = line_start + found_line_offset
-          endoff   = startoff + found_length
-          doc.scroll_to_line(found_line_num)
-          doc.set_selection_range(endoff, startoff)
-          true
-        else
-          false
-        end
+      position = doc.cursor_offset
+      sc = StringScanner.new(doc.get_all_text)
+      sc.pos = position
+      sc.scan_until(@re)
+
+      if @wrap and !sc.matched?
+        # No match was found in the remainder of the document, search from beginning
+        sc.reset
+        sc.scan_until(@re)
       end
+
+      if sc.matched?
+        endoff   = sc.pos
+        startoff = sc.pos - sc.matched_size
+        doc.set_selection_range(sc.pos, sc.pos - sc.matched_size)
+        doc.scroll_to_line(doc.line_at_offset(startoff))
+        return true
+      end
+      false
     end
   end
     
