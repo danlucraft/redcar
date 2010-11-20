@@ -23,7 +23,7 @@ Scenario: Ruby methods with trailing space
   Given I have opened "plugins/outline_view/spec/fixtures/some_project/trailing_space.rb"
   And I run the command Redcar::OutlineView::OpenOutlineViewCommand
   Then there should be an outline view open
-  And the outline view should have 1 entry
+  And the outline view should have 2 entries
   And I should see "trailing_space" at 1 with the "method" icon in the outline view
 
 Scenario: Something fancier
