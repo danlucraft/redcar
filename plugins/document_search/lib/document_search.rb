@@ -1,6 +1,7 @@
 require 'strscan'
-require "document_search/search"
-require "document_search/replace"
+require "document_search/replace_command"
+require "document_search/replace_all_command"
+require "document_search/replace_next_command"
 require "document_search/search_and_replace"
 
 module DocumentSearch
