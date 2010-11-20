@@ -19,6 +19,13 @@ Scenario: Outline View with something small
   When I select the outline view
   Then the selected text should be "class IAmAllAlone"
 
+Scenario: Ruby methods with trailing space
+  Given I have opened "plugins/outline_view/spec/fixtures/some_project/trailing_space.rb"
+  And I run the command Redcar::OutlineView::OpenOutlineViewCommand
+  Then there should be an outline view open
+  And the outline view should have 1 entry
+  And I should see "trailing_space" at 1 with the "method" icon in the outline view
+
 Scenario: Something fancier
   Given I have opened "plugins/outline_view/spec/fixtures/some_project/something_fancy.rb"
   And I run the command Redcar::OutlineView::OpenOutlineViewCommand
@@ -53,7 +60,7 @@ Scenario: Matching kinda similar names
   And I wait 2 seconds
   Then the outline view should have 5 entries
 
-  Scenario: Simple Javascript
+Scenario: Simple Javascript
   Given I have opened "plugins/outline_view/spec/fixtures/some_project/javascript.js"
   And I run the command Redcar::OutlineView::OpenOutlineViewCommand
   Then there should be an outline view open
