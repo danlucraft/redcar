@@ -14,7 +14,7 @@ module DocumentSearch
         end
       end
       if replacement_text && startoff
-        doc.set_selection_range(startoff, replacement_text.length)
+        doc.set_selection_range(startoff + replacement_text.length, startoff)
         doc.scroll_to_line(doc.line_at_offset(startoff))
       end
       count
