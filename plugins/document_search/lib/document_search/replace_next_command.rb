@@ -19,7 +19,7 @@ module DocumentSearch
       text = doc.get_range(startoff, sc.matched_size)
       replacement_text = text.gsub(query, replace)
       doc.replace(sc.pos - sc.matched_size, sc.matched_size, replacement_text)
-      doc.set_selection_range(startoff, replacement_text.length)
+      doc.set_selection_range(startoff + replacement_text.length, startoff)
       doc.scroll_to_line(doc.line_at_offset(startoff))
       1
     end
