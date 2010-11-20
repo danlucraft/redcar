@@ -17,14 +17,14 @@ module DocumentSearch
       end
     end
   end
-  
+
   def self.toolbars
     Redcar::ToolBar::Builder.build do
       item "Search Document", :command => DocumentSearch::SearchForwardCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), :barname => :edit
       item "Repeat Last Search", :command => DocumentSearch::RepeatPreviousSearchForwardCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier--arrow.png"), :barname => :edit
     end
   end
-  
+
   class SearchSpeedbar < Redcar::Speedbar
     class << self
       attr_accessor :previous_query
@@ -33,7 +33,7 @@ module DocumentSearch
     end
 
     attr_accessor :initial_query
-    
+
     def after_draw
       SearchSpeedbar.previous_query ||= ""
       self.query.value = @initial_query || SearchSpeedbar.previous_query
@@ -41,26 +41,26 @@ module DocumentSearch
       self.match_case.value = SearchSpeedbar.previous_match_case
       self.query.edit_view.document.select_all
     end
-    
+
     label :label, "Search:"
     textbox :query
-    
+
     toggle :is_regex, 'Regex', nil, false do |v|
       # v is true or false
       SearchSpeedbar.previous_is_regex = v
     end
-    
+
     toggle :match_case, 'Match case', nil, false do |v|
       SearchSpeedbar.previous_match_case = v
     end
-    
+
     button :search, "Search", "Return" do
       SearchSpeedbar.previous_query = query.value
       SearchSpeedbar.previous_match_case = match_case.value
       SearchSpeedbar.previous_is_regex = is_regex.value
       success = SearchSpeedbar.repeat_query
     end
-    
+
     def self.repeat_query
       current_query = @previous_query
       if !@previous_is_regex
@@ -70,9 +70,9 @@ module DocumentSearch
       cmd.run_in_focussed_tab_edit_view
     end
   end
-    
+
   class SearchForwardCommand < Redcar::EditTabCommand
-    
+
     def execute
       @speedbar = SearchSpeedbar.new
       if doc.selection?
@@ -81,13 +81,13 @@ module DocumentSearch
       win.open_speedbar(@speedbar)
     end
   end
-  
+
   class RepeatPreviousSearchForwardCommand < Redcar::EditTabCommand
     def execute
       SearchSpeedbar.repeat_query
     end
   end
-  
+
   class SearchAndReplaceCommand < Redcar::EditTabCommand
     def execute
       @speedbar = SearchAndReplaceSpeedbar.new
@@ -103,11 +103,11 @@ module DocumentSearch
       @re = re
       @wrap = wrap
     end
-    
+
     def to_s
       "<#{self.class}: @re:#{@re.inspect} wrap:#{!!@wrap}>"
     end
-    
+
     def execute
       position = doc.cursor_offset
       sc = StringScanner.new(doc.get_all_text)
@@ -130,5 +130,5 @@ module DocumentSearch
       false
     end
   end
-    
+
 end
