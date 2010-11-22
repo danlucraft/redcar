@@ -2,7 +2,7 @@ desc "Build a MacOS X App bundle"
 task :app_bundle do
   require 'erb'
 
-  redcar_icon = "redcar_icon_beta.png"
+  redcar_icon = "redcar-icon-beta.png"
 
   bundle_contents = File.join("pkg", "Redcar.app", "Contents")
   FileUtils.rm_rf bundle_contents if File.exist? bundle_contents
@@ -56,7 +56,7 @@ task :app_bundle do
     end
   end
 
-  FileUtils.cp_r File.join(resources_dir, "plugins", "application", "icons", redcar_icon), resources_dir
+  FileUtils.cp_r File.join(resources_dir, "share", "icons", redcar_icon), resources_dir
 
   puts(install_cmd = "#{File.expand_path("../../bin/redcar", __FILE__)} --home-dir=#{resources_dir} install")
   system(install_cmd)
