@@ -12,8 +12,9 @@ Feature: Word search
     Then I should see "Search for complete words only" in the web view
 
   Scenario: Run a search
-    When I enter "foo" into "#query" in the HTML tab
-    And I press "Find In Project" in the HTML tab
+    When I fill in "#query" with "foo" in the web view
+    And I press "Find In Project" in the web view
+    Then I should see "foo bar baz" in the web view
 
   #Scenario: Opening the TODO list shows the todo items and their action texts without colons
   #  Then the HTML tab should say "a course of action"

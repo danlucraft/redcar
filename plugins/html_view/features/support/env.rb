@@ -34,7 +34,7 @@ $:.push("plugins/html_view/vendor/capybara/lib")
 require 'capybara'
 require 'capybara/dsl'
 
-$:.push("plugins/html_view/vendor/sweet/lib")
+$:.push("plugins/html_view/vendor/capybara-sweet/lib")
 require 'capybara/driver/sweet'
 
 Capybara.default_driver = :sweet
