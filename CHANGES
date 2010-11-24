@@ -12,8 +12,9 @@ Enhancements:
  * Browser bar URL field now supports project-relative paths (Delisa Mason)
  * URLs can be opened in the internal browser or the OS-default based on preferences (Delisa Mason)
  * Syntax checking and declarations for groovy (Delisa Mason)
- * Draw an overlay if the margin is shown and the OS permits (Textmate-style), else draw a line (Tim Felgentreff)
+ * Margin is drawn with a line or a shaded area (Tim Felgentreff)
  * Syntax checking for javascript (Delisa Mason)
+ * Word wrap wraps at the margin column (Daniel Lucraft)
 
 Bug fixes:
 
