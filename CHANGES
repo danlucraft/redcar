@@ -11,18 +11,27 @@ Enhancements:
  * Tabs now display an alert icon if the underlying file is unwritable (Delisa Mason)
  * Browser bar URL field now supports project-relative paths (Delisa Mason)
  * URLs can be opened in the internal browser or the OS-default based on preferences (Delisa Mason)
- * Syntax checking and declarations for groovy (Delisa Mason)
+ * Syntax checking for Groovy (Delisa Mason)
+ * Jump to declaration for Groovy (Delisa Mason)
  * Margin is drawn with a line or a shaded area (Tim Felgentreff)
- * Syntax checking for javascript (Delisa Mason)
+ * Syntax checking for JavaScript (Delisa Mason)
  * Word wrap wraps at the margin column (Daniel Lucraft)
+ * Improvements and optimizations to replace-all function (Tim Felgentreff)
+ * .redcar plugins dir is created on startup to help people know they can put plugins there (Philip Arndt)
+ * Add jruby jar to JVM bootclasspath to speedup startup marginally (Tim Felgentreff)
 
 Bug fixes:
 
- * Declarations Plugin is able to deal with similarly named ruby methods
+ * Declarations plugin is able to deal with similarly named ruby methods
+ * Declarations plugin lets Ruby methods have trailing spaces (Johannes Wollert)
  * Fix Application::Dialog#tool_tip to set the location correctly on Windows (Patrik Sundberg)
  * 64bit Soylatte JDK7 can now be used to run Redcar on Mac OS X
  * Run Tab now checks for underlying file (Delisa Mason)
  * Hovering on annotations only displays the tooltip(s) under the cursor, not all of them (Delisa Mason)
+ * Fix for installing on Ruby 1.8.6 (Dan Lucraft)
+ * Connection manager should not try and read directories and unreadable files when looking for private keys (Antono Vasiljev)
+ * Required cucumber version is specified in the Gemfile (Tianyi Cui)
+ * Pair highlighter works on first and last character in the document (Kirill Nikitin)
 
 Internal changes:
 
