@@ -92,6 +92,24 @@ Feature: Replace in file
     And the selected text should be "Rab"
     And the selection should be on line 3
 
+  Scenario: Replace all replaces two on the same line
+    When I replace the contents with "abcabc"
+    And I run the command DocumentSearch::SearchAndReplaceCommand
+    And I type "bc" into the "Search" field in the speedbar
+    And I type "xx" into the "Replace" field in the speedbar
+    Then I should see a message box containing "Replaced 2 occurrences"
+    When I press "Replace All" in the speedbar
+    Then the contents should be "axxaxx"
+
+  Scenario: Replace all replaces overlapping occurences on the same line
+    When I replace the contents with "deedeedeed"
+    And I run the command DocumentSearch::SearchAndReplaceCommand
+    And I type "deed" into the "Search" field in the speedbar
+    And I type "misdeed" into the "Replace" field in the speedbar
+    Then I should see a message box containing "Replaced 2 occurrences"
+    When I press "Replace All" in the speedbar
+    Then the contents should be "misdeedeemisdeed"
+
   Scenario: Replace next occurrence test bug
     When I replace the contents with "the\n* Speedbars have access to the properties of the widgets in them."
     And I move the cursor to 0

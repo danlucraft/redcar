@@ -110,7 +110,7 @@ module Redcar
 
       create_model_listeners
     end
-
+    
     def create_mate_text
       @mate_text = JavaMateView::MateText.new(@parent, !!@options[:single_line])
       @mate_text.set_font(EditView.font, EditView.font_size)
@@ -278,6 +278,32 @@ module Redcar
       end
     end
 
+    def reset_right_margin
+      return if @options[:single_line]
+      if @model.word_wrap?
+        size = @mate_text.get_text_widget.get_size
+        width = size.x
+        @mate_text.get_text_widget.right_margin = width - char_width*(@model.margin_column||0) - 3*char_width
+      else
+        @mate_text.get_text_widget.right_margin = 0
+      end
+    end
+    
+    def char_width
+      return 0 if !!@options[:single_line]
+      @char_width ||= begin
+        gc = Swt::Graphics::GC.new(@mate_text.get_text_widget)
+        fm = gc.getFontMetrics
+        width = fm.getAverageCharWidth
+        gc.dispose
+        width
+      end
+    end
+    
+    def clear_char_width
+      @char_width = nil
+    end
+    
     def create_document
       @document = EditViewSWT::Document.new(@model.document, @mate_text.mate_document)
       @model.document.controller = @document
@@ -291,27 +317,36 @@ module Redcar
       h5 = @model.add_listener(:invisibles_changed) do |new_bool|
         @mate_text.showInvisibles(new_bool)
       end
-      h6 = @model.add_listener(:word_wrap_changed) do |new_bool|
-        @mate_text.set_word_wrap(new_bool)
+      
+      h6 = @model.add_listener(:word_wrap_changed) do |should_word_wrap|
+        @mate_text.set_word_wrap(should_word_wrap)
+        reset_right_margin
       end
-      h7 = @model.add_listener(:font_changed) do
-        @mate_text.set_font(EditView.font, EditView.font_size)
-      end
-      h8 = @model.add_listener(:theme_changed) do
-        @mate_text.set_theme_by_name(EditView.theme)
-      end
-      h9 = @model.add_listener(:line_number_visibility_changed) do |new_bool|
-        @mate_text.set_line_numbers_visible(new_bool)
-      end
+      
       h11 = @model.add_listener(:margin_column_changed) do |new_column|
         @mate_text.set_margin_column(new_column)
+        reset_right_margin
       end
+      
       h12 = @model.add_listener(:show_margin_changed) do |new_bool|
         if new_bool
           @mate_text.set_margin_column(@model.margin_column)
         else
           @mate_text.set_margin_column(-1)
         end
+      end
+      
+      h7 = @model.add_listener(:font_changed) do
+        @mate_text.set_font(EditView.font, EditView.font_size)
+        clear_char_width
+        reset_right_margin
+      end
+      
+      h8 = @model.add_listener(:theme_changed) do
+        @mate_text.set_theme_by_name(EditView.theme)
+      end
+      h9 = @model.add_listener(:line_number_visibility_changed) do |new_bool|
+        @mate_text.set_line_numbers_visible(new_bool)
       end
       h13 = @model.document.add_listener(:changed) do
         @undoable_override = true
@@ -430,6 +465,20 @@ module Redcar
       # h = @document.add_listener(:set_text, &method(:reparse))
       # @handlers << [@document, h]
       @mate_text.get_text_widget.add_word_movement_listener(WordMoveListener.new(self))
+      @mate_text.get_text_widget.add_control_listener(ControlListener.new(self))
+    end
+    
+    class ControlListener
+      def initialize(edit_view_swt)
+        @edit_view_swt = edit_view_swt
+      end
+      
+      def controlMoved(*_)
+      end
+      
+      def controlResized(e)
+        @edit_view_swt.reset_right_margin
+      end
     end
 
     def reparse

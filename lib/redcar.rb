@@ -87,10 +87,14 @@ module Redcar
   def self.plugin_manager
     @plugin_manager ||= begin
       m = PluginManager.new
-      m.add_plugin_source(File.join(root, "plugins"))
-      m.add_plugin_source(File.join(user_dir, "plugins"))
+      add_plugin_sources(m)
       m
     end
+  end
+
+  def self.add_plugin_sources(manager)
+    manager.add_plugin_source(File.join(root, "plugins"))
+    manager.add_plugin_source(File.join(user_dir, "plugins"))
   end
 
   def self.load_prerequisites
@@ -201,17 +205,18 @@ module Redcar
   #
   # @return [String] expanded path
   def self.home_dir
-    @userdir ||= if arg = ARGV.detect {|v| v.start_with? "--home-dir=" }
-      arg =~ /\-\-home\-dir=(.*)/
-      File.expand_path($1)
-    elsif platform == :windows
-      if ENV['USERPROFILE'].nil?
-        "C:/My Documents/"
+    @userdir ||= begin
+      if arg = ARGV.map {|v| v[/^--home-dir=(.*)/, 1] }.compact.first
+        File.expand_path(arg)
+      elsif platform == :windows
+        if ENV['USERPROFILE'].nil?
+          "C:/My Documents/"
+        else
+          ENV['USERPROFILE']
+        end
       else
-        ENV['USERPROFILE']
+        ENV['HOME'] unless ENV['HOME'].nil?
       end
-    else
-      ENV['HOME'] unless ENV['HOME'].nil?
     end
   end
   
