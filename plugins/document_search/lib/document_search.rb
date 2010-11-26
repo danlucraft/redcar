@@ -1,5 +1,7 @@
-require "document_search/search"
-require "document_search/replace"
+require 'strscan'
+require "document_search/replace_command"
+require "document_search/replace_all_command"
+require "document_search/replace_next_command"
 require "document_search/search_and_replace"
 
 module DocumentSearch
@@ -15,14 +17,14 @@ module DocumentSearch
       end
     end
   end
-  
+
   def self.toolbars
     Redcar::ToolBar::Builder.build do
       item "Search Document", :command => DocumentSearch::SearchForwardCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), :barname => :edit
       item "Repeat Last Search", :command => DocumentSearch::RepeatPreviousSearchForwardCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier--arrow.png"), :barname => :edit
     end
   end
-  
+
   class SearchSpeedbar < Redcar::Speedbar
     class << self
       attr_accessor :previous_query
@@ -31,7 +33,7 @@ module DocumentSearch
     end
 
     attr_accessor :initial_query
-    
+
     def after_draw
       SearchSpeedbar.previous_query ||= ""
       self.query.value = @initial_query || SearchSpeedbar.previous_query
@@ -39,26 +41,26 @@ module DocumentSearch
       self.match_case.value = SearchSpeedbar.previous_match_case
       self.query.edit_view.document.select_all
     end
-    
+
     label :label, "Search:"
     textbox :query
-    
+
     toggle :is_regex, 'Regex', nil, false do |v|
       # v is true or false
       SearchSpeedbar.previous_is_regex = v
     end
-    
+
     toggle :match_case, 'Match case', nil, false do |v|
       SearchSpeedbar.previous_match_case = v
     end
-    
+
     button :search, "Search", "Return" do
       SearchSpeedbar.previous_query = query.value
       SearchSpeedbar.previous_match_case = match_case.value
       SearchSpeedbar.previous_is_regex = is_regex.value
       success = SearchSpeedbar.repeat_query
     end
-    
+
     def self.repeat_query
       current_query = @previous_query
       if !@previous_is_regex
@@ -68,9 +70,9 @@ module DocumentSearch
       cmd.run_in_focussed_tab_edit_view
     end
   end
-    
+
   class SearchForwardCommand < Redcar::EditTabCommand
-    
+
     def execute
       @speedbar = SearchSpeedbar.new
       if doc.selection?
@@ -79,13 +81,13 @@ module DocumentSearch
       win.open_speedbar(@speedbar)
     end
   end
-  
+
   class RepeatPreviousSearchForwardCommand < Redcar::EditTabCommand
     def execute
       SearchSpeedbar.repeat_query
     end
   end
-  
+
   class SearchAndReplaceCommand < Redcar::EditTabCommand
     def execute
       @speedbar = SearchAndReplaceSpeedbar.new
@@ -101,51 +103,32 @@ module DocumentSearch
       @re = re
       @wrap = wrap
     end
-    
+
     def to_s
       "<#{self.class}: @re:#{@re.inspect} wrap:#{!!@wrap}>"
     end
-    
+
     def execute
-      # first search the remainder of the current line
-      curr_line = doc.get_line(doc.cursor_line)
-      cursor_line_offset = doc.cursor_offset - doc.offset_at_line(doc.cursor_line)
-      curr_line = curr_line[cursor_line_offset..-1]
-      if curr_line =~ @re
-        line_start = doc.offset_at_line(doc.cursor_line)
-        startoff = line_start + $`.length + cursor_line_offset
-        endoff   = startoff + $&.length
-        doc.set_selection_range(endoff, startoff)
-      elsif doc.cursor_line < doc.line_count - 1
-        # next search the rest of the lines
-        found_line_offset = nil
-        found_line_num = nil
-        found_length = nil
-        line_nums = ((doc.cursor_line() + 1)..(doc.line_count() - 1)).to_a # the rest of the document
-        if @wrap
-          line_nums += (0..doc.cursor_line()).to_a
-        end
-        for line_num in line_nums do
-          curr_line = doc.get_line(line_num)
-          if new_offset = (curr_line.to_s =~ @re)
-            found_line_offset = new_offset
-            found_line_num = line_num
-            found_length = $&.length
-            break
-          end
-        end
-        if found_line_num
-          line_start = doc.offset_at_line(found_line_num)
-          startoff = line_start + found_line_offset
-          endoff   = startoff + found_length
-          doc.scroll_to_line(found_line_num)
-          doc.set_selection_range(endoff, startoff)
-          true
-        else
-          false
-        end
+      position = doc.cursor_offset
+      sc = StringScanner.new(doc.get_all_text)
+      sc.pos = position
+      sc.scan_until(@re)
+
+      if @wrap and !sc.matched?
+        # No match was found in the remainder of the document, search from beginning
+        sc.reset
+        sc.scan_until(@re)
       end
+
+      if sc.matched?
+        endoff   = sc.pos
+        startoff = sc.pos - sc.matched_size
+        doc.set_selection_range(sc.pos, sc.pos - sc.matched_size)
+        doc.scroll_to_line(doc.line_at_offset(startoff))
+        return true
+      end
+      false
     end
   end
-    
+
 end

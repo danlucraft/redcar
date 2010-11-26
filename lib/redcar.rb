@@ -51,7 +51,7 @@ end
 #
 # and so on.
 module Redcar
-  VERSION         = '0.9.0dev' # also change in the Rakefile!
+  VERSION         = '0.9.0' # also change in the Rakefile!
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 9
   VERSION_RELEASE = 0
@@ -205,17 +205,18 @@ module Redcar
   #
   # @return [String] expanded path
   def self.home_dir
-    @userdir ||= if arg = ARGV.detect {|v| v.start_with? "--home-dir=" }
-      arg =~ /\-\-home\-dir=(.*)/
-      File.expand_path($1)
-    elsif platform == :windows
-      if ENV['USERPROFILE'].nil?
-        "C:/My Documents/"
+    @userdir ||= begin
+      if arg = ARGV.map {|v| v[/^--home-dir=(.*)/, 1] }.compact.first
+        File.expand_path(arg)
+      elsif platform == :windows
+        if ENV['USERPROFILE'].nil?
+          "C:/My Documents/"
+        else
+          ENV['USERPROFILE']
+        end
       else
-        ENV['USERPROFILE']
+        ENV['HOME'] unless ENV['HOME'].nil?
       end
-    else
-      ENV['HOME'] unless ENV['HOME'].nil?
     end
   end
   
