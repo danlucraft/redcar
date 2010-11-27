@@ -40,12 +40,3 @@
 [submodule "plugins/textmate/vendor/redcar-bundles"]
 	path = plugins/textmate/vendor/redcar-bundles
 	url = git://github.com/redcar/redcar-bundles.git
-[submodule "plugins/html_view/vendor/nokogiri"]
-	path = plugins/html_view/vendor/nokogiri
-	url = https://github.com/tenderlove/nokogiri.git
-[submodule "plugins/html_view/vendor/capybara"]
-	path = plugins/html_view/vendor/capybara
-	url = https://github.com/jnicklas/capybara.git
-[submodule "plugins/html_view/vendor/capybara-sweet"]
-	path = plugins/html_view/vendor/capybara-sweet
-	url = git@github.com:danlucraft/capybara-sweet.git
