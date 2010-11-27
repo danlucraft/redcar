@@ -228,6 +228,7 @@ task :release => :gem do
   }
   
   s3_uploads.each do |source, target|
+    p [source, target]
     AWS::S3::S3Object.store(target, open(source), 'redcar', :access => :public_read)
   end
 end
