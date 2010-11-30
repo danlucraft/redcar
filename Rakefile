@@ -1,4 +1,6 @@
-REDCAR_VERSION = "0.9.0" # also change in lib/redcar.rb!
+
+REDCAR_VERSION = "0.10.0dev" # also change in lib/redcar.rb!
+
 require 'rubygems'
 require 'fileutils'
 require 'spec/rake/spectask'
@@ -228,6 +230,7 @@ task :release => :gem do
   }
   
   s3_uploads.each do |source, target|
+    p [source, target]
     AWS::S3::S3Object.store(target, open(source), 'redcar', :access => :public_read)
   end
 end
