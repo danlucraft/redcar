@@ -9,7 +9,12 @@ module Redcar
         path = manifest_path(doc)
         name = File.basename(path)
         temp = java.lang.System.getProperty('java.io.tmpdir')
-        Thread.new do
+        if t = Java.thread and t.alive? and t[:java]
+          t.exit
+          SyntaxCheck.remove_syntax_error_annotations(doc.edit_view)
+        end
+        Java.thread=Thread.new do
+          Thread.current[:java] = true
           begin
             cmd = "javac -d #{temp}"
             if project = Project::Manager.focussed_project and
@@ -64,6 +69,16 @@ module Redcar
         parts.each {|p| composite << p+separator}
         composite[0,composite.length-1] if composite.length > 0
         composite
+      end
+
+      private
+
+      def self.thread
+        @thread
+      end
+
+      def self.thread=(thread)
+        @thread = thread
       end
     end
   end
