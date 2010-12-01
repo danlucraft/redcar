@@ -950,14 +950,37 @@ Redcar.environment: #{Redcar.environment}
 
     class SelectFontSize < Command
       def execute
-        result = Application::Dialog.input("Font Size", "Please enter new font size", Redcar::EditView.font_size.to_s) do |text|
-          if text.to_i  > 1 and text.to_i < 25
-            nil
+        max    = Redcar::EditView::MAX_FONT_SIZE
+        min    = Redcar::EditView::MIN_FONT_SIZE
+        result = Application::Dialog.input(
+          "Font Size",
+          "Please enter new font size",
+          Redcar::EditView.font_size.to_s)
+        if result[:button] == :ok
+          value = result[:value].to_i
+          if value >= min and value <= max
+            Redcar::EditView.font_size = value
           else
-            "the font size must be > 1 and < 25"
+            Application::Dialog.message_box(
+              "The font size must be between #{min} and #{max}")
           end
-      	end
-        Redcar::EditView.font_size = result[:value].to_i if result[:button ] == :ok
+        end
+      end
+    end
+
+    class IncreaseFontSize < Command
+      def execute
+        unless (current = Redcar::EditView.font_size) >= Redcar::EditView::MAX_FONT_SIZE
+          Redcar::EditView.font_size = current+1
+        end
+      end
+    end
+
+    class DecreaseFontSize < Command
+      def execute
+        unless (current = Redcar::EditView.font_size) <= Redcar::EditView::MIN_FONT_SIZE
+          Redcar::EditView.font_size = current-1
+        end
       end
     end
 
@@ -1035,6 +1058,8 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+Alt+I",       ToggleInvisibles
         link "Ctrl+R",          Runnables::RunEditTabCommand
         link "Cmd+I",           OutlineView::OpenOutlineViewCommand
+        link "Cmd++",           IncreaseFontSize
+        link "Cmd+-",           DecreaseFontSize
 
         link "Ctrl+Shift+P",    PrintScopeCommand
         link "Cmd+Shift+H",     ToggleTreesCommand
@@ -1130,6 +1155,8 @@ Redcar.environment: #{Redcar.environment}
         link "F11",              ToggleFullscreen
         link "Ctrl+Alt+I",       ToggleInvisibles
         link "Ctrl+I",           OutlineView::OpenOutlineViewCommand
+        link "Ctrl++",           IncreaseFontSize
+        link "Ctrl+-",           DecreaseFontSize
 
         link "Ctrl+Alt+S", Snippets::OpenSnippetExplorer
 
@@ -1240,8 +1267,11 @@ Redcar.environment: #{Redcar.environment}
         end
         sub_menu "View", :priority => 30 do
           sub_menu "Appearance", :priority => 5 do
-            item "Font", SelectNewFont
-            item "Font Size", SelectFontSize
+            item "Select Font", SelectNewFont
+            item "Increase Font Size", IncreaseFontSize
+            item "Decrease Font Size", DecreaseFontSize
+            item "Select Font Size"  , SelectFontSize
+            separator
             item "Theme", SelectTheme
           end
           group(:priority => 10) do
