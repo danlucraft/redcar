@@ -5,8 +5,11 @@ require 'lucene'
 require 'project_search/regex_search_controller'
 require 'project_search/word_search_controller'
 require 'project_search/lucene_index'
+require 'project_search/lucene_refresh'
 require 'project_search/binary_data_detector'
 require 'project_search/commands'
+require 'project_search/word_search'
+require 'project_search/regex_search'
 
 class ProjectSearch
   def self.menus
@@ -62,24 +65,6 @@ class ProjectSearch
     config[:id_field]      = :id
   end
   
-  class LuceneRefresh < Redcar::Task
-    def initialize(project)
-      @project     = project
-    end
-    
-    def description
-      "#{@project.path}: refresh index"
-    end
-    
-    def execute
-      return if @project.remote?
-      unless index = ProjectSearch.indexes[@project.path]
-        index = ProjectSearch::LuceneIndex.new(@project)
-        ProjectSearch.indexes[@project.path] = index
-      end
-      index.update
-    end
-  end
   
   def self.project_refresh_task_type
     LuceneRefresh
