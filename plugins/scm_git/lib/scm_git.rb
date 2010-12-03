@@ -440,7 +440,8 @@ module Redcar
         #
         # @return [Array<String>]
         def branches
-          cache['branches'].map {|b| b[0]}
+          branch_list = cache['branches'].map {|b| b[0]}
+          branch_list + ['New...']
         end
 
         # REQUIRED for :switch_branch. Returns the name of the current branch.
@@ -452,7 +453,22 @@ module Redcar
 
         # REQUIRED for :switch_branch. Switches to the named branch.
         def switch!(branch)
-          @repo.checkout(branch)
+          if branch == 'New...'
+            result = Application::Dialog.input("New Branch Name",
+              "Please enter a new branch name","")
+            if value = result[:value] and value != ""
+              newbranch = value
+              begin
+                @repo.branch(newbranch)
+                @repo.branch(newbranch).checkout
+              rescue Object => e
+                Application::Dialog.message_box(e.to_s)
+                e.backtrace.each {|line| p line}
+              end
+            end
+          else
+            @repo.checkout(branch)
+          end
           cache.refresh
         end
 
