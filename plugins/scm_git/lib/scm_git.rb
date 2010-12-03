@@ -459,7 +459,6 @@ module Redcar
             if value = result[:value] and value != ""
               newbranch = value
               begin
-                @repo.branch(newbranch)
                 @repo.branch(newbranch).checkout
               rescue Object => e
                 Application::Dialog.message_box(e.to_s)
