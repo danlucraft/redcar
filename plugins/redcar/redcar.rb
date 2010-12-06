@@ -342,6 +342,7 @@ Redcar.environment: #{Redcar.environment}
       def execute
         if tab.is_a?(EditTab)
           if tab.edit_view.document.modified?
+            tab.focus
             result = Application::Dialog.message_box(
               "This tab has unsaved changes. \n\nSave before closing?",
               :buttons => :yes_no_cancel
@@ -359,6 +360,7 @@ Redcar.environment: #{Redcar.environment}
           end
         elsif tab.is_a?(HtmlTab)
           if tab.html_view.controller and message = tab.html_view.controller.ask_before_closing
+            tab.focus
             result = Application::Dialog.message_box(
               message,
               :buttons => :yes_no_cancel
@@ -390,7 +392,30 @@ Redcar.environment: #{Redcar.environment}
         #end
       end
     end
-
+    
+    class CloseAll < Redcar::Command
+      def execute
+        window = Redcar.app.focussed_window
+        tabs = window.all_tabs
+        tabs.each do |t|
+          Redcar::Top::CloseTabCommand.new(t).run
+        end
+      end
+    end
+    
+    class CloseOthers < Redcar::Command
+      def execute
+        window = Redcar.app.focussed_window
+        current_tab = Redcar.app.focussed_notebook_tab
+        tabs = window.all_tabs
+        tabs.each do |t|
+          unless t == current_tab
+            Redcar::Top::CloseTabCommand.new(t).run
+          end
+        end
+      end
+    end
+    
     class SwitchTabDownCommand < TabCommand
 
       def execute
@@ -1018,6 +1043,8 @@ Redcar.environment: #{Redcar.environment}
             item "Close Tab", CloseTabCommand
             item "Close Tree", CloseTreeCommand
             item "Close Window", CloseWindowCommand
+            item "Close Others", CloseOthers
+            item "Close All", CloseAll
           end
 
           group(:priority => :last) do
@@ -1206,3 +1233,4 @@ Redcar.environment: #{Redcar.environment}
     end
   end
 end
+
