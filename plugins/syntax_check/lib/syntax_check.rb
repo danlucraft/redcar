@@ -12,6 +12,7 @@ module Redcar
         storage = Plugin::Storage.new('syntax_checking')
         storage.set_default('suppress_message_dialogs',false)
         storage.set_default('suppress_syntax_checking',false)
+        storage.set_default('excluded_grammars',[])
         storage
       end
     end
@@ -24,7 +25,10 @@ module Redcar
     end
 
     def self.after_save(doc)
-      unless SyntaxCheck.storage['suppress_syntax_checking']
+      excluded = SyntaxCheck.storage['excluded_grammars']
+      unless SyntaxCheck.storage['suppress_syntax_checking'] or
+        excluded.include? doc.edit_view.grammar or
+        excluded.include? doc.edit_view.grammar.downcase
         remove_syntax_error_annotations(doc.edit_view)
         checker = Checker[doc.edit_view.grammar]
         checker.new(doc).check if checker
