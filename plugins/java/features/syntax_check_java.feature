@@ -27,6 +27,13 @@ Feature: Syntax Checking for Java
     And I save the tab
     Then the tab should not have annotations
 
+  Scenario: If java is excluded from being checked, I should see no syntax errors
+    Given I excluded "java" files from being checked for syntax errors
+    When I replace the contents with "class Foo {\n    int\n}"
+    And I save the tab
+    And I wait "1.5" seconds
+    Then the tab should not have annotations
+
   Scenario: A file which references unknown java classes should cause syntax error annotations
     And I replace the contents with "class Foo {\n    Bar x = new Bar(10);\n    FooBar y = new FooBar();\n}"
     And I save the tab
