@@ -26,9 +26,10 @@ module Redcar
 
     def self.after_save(doc)
       excluded = SyntaxCheck.storage['excluded_grammars']
+      grammar  = doc.edit_view.grammar
       unless SyntaxCheck.storage['suppress_syntax_checking'] or
-        excluded.include? doc.edit_view.grammar or
-        excluded.include? doc.edit_view.grammar.downcase
+        grammar and (excluded.include? grammar or
+        excluded.include? grammar.downcase)
         remove_syntax_error_annotations(doc.edit_view)
         checker = Checker[doc.edit_view.grammar]
         checker.new(doc).check if checker
