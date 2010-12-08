@@ -502,11 +502,11 @@ module Redcar
       @mate_text.get_text_widget.set_horizontal_index(offset)
     end
 
-    def smallest_horizontal_index
+    def smallest_visible_horizontal_index
       @mate_text.get_text_widget.get_horizontal_index
     end
 
-    def largest_horizontal_index
+    def largest_visible_horizontal_index
       wpix = @mate_text.get_text_widget.get_client_area.width
       gc   = org.eclipse.swt.graphics.GC.new(@mate_text.get_text_widget)
       inc  = gc.getFontMetrics().getAverageCharWidth()

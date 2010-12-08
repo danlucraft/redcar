@@ -49,6 +49,43 @@ module DocumentSearch
 
     label :label, "Search:"
     textbox :query do |value|
+      set_offset
+      start_search
+    end
+
+    toggle :is_regex, 'Regex', nil, false do |v|
+      # v is true or false
+      SearchSpeedbar.previous_is_regex = v
+      update_search
+    end
+
+    toggle :match_case, 'Match case', nil, false do |v|
+      SearchSpeedbar.previous_match_case = v
+      update_search
+    end
+
+    button :search, "Search", "Return" do
+      @offset = nil
+      doc.set_selection_range(doc.cursor_offset,0)
+      start_search
+    end
+
+    def start_search
+      SearchSpeedbar.previous_query = self.query.value
+      SearchSpeedbar.previous_match_case = self.match_case.value
+      SearchSpeedbar.previous_is_regex = self.is_regex.value
+      success = SearchSpeedbar.repeat_query
+    end
+
+    def update_search
+      if self.query.value and self.query.value != ""
+        set_offset
+        SearchSpeedbar.previous_query = self.query.value
+        SearchSpeedbar.repeat_query
+      end
+    end
+
+    def set_offset
       @offset = doc.cursor_offset unless @offset
       if doc.selection?
         if doc.selection_offset != @offset + doc.selected_text.length
@@ -58,28 +95,6 @@ module DocumentSearch
         @offset = doc.cursor_offset
       end
       doc.cursor_offset = @offset
-      start_search
-    end
-
-    toggle :is_regex, 'Regex', nil, false do |v|
-      # v is true or false
-      SearchSpeedbar.previous_is_regex = v
-    end
-
-    toggle :match_case, 'Match case', nil, false do |v|
-      SearchSpeedbar.previous_match_case = v
-    end
-
-    button :search, "Search", "Return" do
-      @offset = nil
-      start_search
-    end
-
-    def start_search
-      SearchSpeedbar.previous_query = self.query.value
-      SearchSpeedbar.previous_match_case = self.match_case.value
-      SearchSpeedbar.previous_is_regex = self.is_regex.value
-      success = SearchSpeedbar.repeat_query
     end
 
     def self.repeat_query
@@ -146,7 +161,7 @@ module DocumentSearch
         startoff = sc.pos - sc.matched_size
         line     = doc.line_at_offset(startoff)
         lineoff  = startoff - doc.offset_at_line(line)
-        if lineoff < doc.smallest_horizontal_index
+        if lineoff < doc.smallest_visible_horizontal_index
           horiz = lineoff
         else
           horiz = endoff - doc.offset_at_line(line)

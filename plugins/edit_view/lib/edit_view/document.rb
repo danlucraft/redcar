@@ -644,14 +644,14 @@ module Redcar
       line  = cursor_line
       start = offset_at_line(line)
       lend  = offset_at_inner_end_of_line(line)
-      dist = largest_horizontal_index - smallest_horizontal_index
+      dist = largest_visible_horizontal_index - smallest_visible_horizontal_index
       if offset > 0 and offset <= lend - start # if offset exists at line
         if offset < dist
           @edit_view.controller.scroll_to_horizontal_offset(0)
         else
-          if offset > largest_horizontal_index
+          if offset > largest_visible_horizontal_index
             @edit_view.controller.scroll_to_horizontal_offset(offset-dist)
-          elsif offset < smallest_horizontal_index
+          elsif offset < smallest_visible_horizontal_index
             @edit_view.controller.scroll_to_horizontal_offset(offset)
           end
         end
@@ -679,12 +679,12 @@ module Redcar
       @edit_view.controller.biggest_visible_line
     end
 
-    def largest_horizontal_index
-      @edit_view.controller.largest_horizontal_index
+    def largest_visible_horizontal_index
+      @edit_view.controller.largest_visible_horizontal_index
     end
 
-    def smallest_horizontal_index
-      @edit_view.controller.smallest_horizontal_index
+    def smallest_visible_horizontal_index
+      @edit_view.controller.smallest_visible_horizontal_index
     end
 
     def ensure_visible(offset)
