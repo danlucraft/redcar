@@ -498,6 +498,22 @@ module Redcar
       @mate_text.viewer.set_top_index(line_index)
     end
 
+    def scroll_to_horizontal_offset(offset)
+      @mate_text.get_text_widget.set_horizontal_index(offset)
+    end
+
+    def smallest_horizontal_index
+      @mate_text.get_text_widget.get_horizontal_index
+    end
+
+    def largest_horizontal_index
+      wpix = @mate_text.get_text_widget.get_client_area.width
+      gc   = org.eclipse.swt.graphics.GC.new(@mate_text.get_text_widget)
+      inc  = gc.getFontMetrics().getAverageCharWidth()
+      gc.dispose
+      @mate_text.get_text_widget.get_horizontal_index + (wpix/inc)
+    end
+
     def model_grammar_changed(name)
       @mate_text.set_grammar_by_name(name)
     end

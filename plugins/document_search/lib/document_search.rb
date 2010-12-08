@@ -34,6 +34,11 @@ module DocumentSearch
 
     attr_accessor :initial_query
 
+    def doc
+      win = Redcar.app.focussed_window
+      win.focussed_notebook_tab.document
+    end
+
     def after_draw
       SearchSpeedbar.previous_query ||= ""
       self.query.value = @initial_query || SearchSpeedbar.previous_query
@@ -43,7 +48,18 @@ module DocumentSearch
     end
 
     label :label, "Search:"
-    textbox :query
+    textbox :query do |value|
+      @offset = doc.cursor_offset unless @offset
+      if doc.selection?
+        if doc.selection_offset != @offset + doc.selected_text.length
+          @offset = [doc.cursor_offset, doc.selection_offset].min
+        end
+      else
+        @offset = doc.cursor_offset
+      end
+      doc.cursor_offset = @offset
+      start_search
+    end
 
     toggle :is_regex, 'Regex', nil, false do |v|
       # v is true or false
@@ -55,9 +71,14 @@ module DocumentSearch
     end
 
     button :search, "Search", "Return" do
-      SearchSpeedbar.previous_query = query.value
-      SearchSpeedbar.previous_match_case = match_case.value
-      SearchSpeedbar.previous_is_regex = is_regex.value
+      @offset = nil
+      start_search
+    end
+
+    def start_search
+      SearchSpeedbar.previous_query = self.query.value
+      SearchSpeedbar.previous_match_case = self.match_case.value
+      SearchSpeedbar.previous_is_regex = self.is_regex.value
       success = SearchSpeedbar.repeat_query
     end
 
@@ -110,8 +131,8 @@ module DocumentSearch
 
     def execute
       position = doc.cursor_offset
-      sc = StringScanner.new(doc.get_all_text)
-      sc.pos = position
+      sc       = StringScanner.new(doc.get_all_text)
+      sc.pos   = position
       sc.scan_until(@re)
 
       if @wrap and !sc.matched?
@@ -123,12 +144,19 @@ module DocumentSearch
       if sc.matched?
         endoff   = sc.pos
         startoff = sc.pos - sc.matched_size
+        line     = doc.line_at_offset(startoff)
+        lineoff  = startoff - doc.offset_at_line(line)
+        if lineoff < doc.smallest_horizontal_index
+          horiz = lineoff
+        else
+          horiz = endoff - doc.offset_at_line(line)
+        end
         doc.set_selection_range(sc.pos, sc.pos - sc.matched_size)
-        doc.scroll_to_line(doc.line_at_offset(startoff))
+        doc.scroll_to_line(line)
+        doc.scroll_to_horizontal_offset(horiz) if horiz
         return true
       end
       false
     end
   end
-
 end
