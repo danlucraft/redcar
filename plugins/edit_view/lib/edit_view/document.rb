@@ -6,7 +6,7 @@ module Redcar
     include Redcar::Model
     include Redcar::Observable
     extend Forwardable
-    
+
     def self.all_document_controller_types
       result = []
       Redcar.plugin_manager.objects_implementing(:document_controller_types).each do |object|
@@ -14,19 +14,19 @@ module Redcar
       end
       result
     end
-    
+
     class << self
       attr_accessor :default_mirror
     end
-    
+
     attr_reader :mirror, :edit_view
-    
+
     def initialize(edit_view)
       @edit_view = edit_view
       @grammar = Redcar::Grammar.new(self)
       get_controllers
     end
-    
+
     def get_controllers
       @controllers = {
         Controller::ModificationCallbacks => [],
@@ -54,7 +54,7 @@ module Redcar
       end
 
     end
-    
+
     def controllers(klass=nil)
       if klass
         @controllers.values.flatten.uniq.select {|c| c.is_a?(klass) }
@@ -90,11 +90,11 @@ module Redcar
     def modified?
       @modified
     end
-    
+
     def title
       @mirror ? @mirror.title : nil
     end
-    
+
     # helper method to get the mirror's path if it has one
     def path
       if @mirror and @mirror.respond_to?(:path) and @mirror.path
@@ -103,11 +103,11 @@ module Redcar
         nil
       end
     end
-    
+
     def exists?
       edit_view.exists?
     end
-    
+
     def mirror=(new_mirror)
       notify_listeners(:new_mirror, new_mirror) do
         @mirror = new_mirror
@@ -117,13 +117,13 @@ module Redcar
         update_from_mirror
       end
     end
-    
+
     def mirror_changed?
       mirror and mirror.changed?
     end
 
     def verify_text(start_offset, end_offset, text)
-      @change = [start_offset, end_offset, text]    
+      @change = [start_offset, end_offset, text]
       @controllers[Controller::ModificationCallbacks].each do |controller|
         rescue_document_controller_error(controller) do
           controller.before_modify(start_offset, end_offset, text)
@@ -146,33 +146,33 @@ module Redcar
           end
         end
       end
-      @change = nil      
+      @change = nil
       notify_listeners(:changed)
     end
-    
+
     def cursor_moved(new_offset)
       @controllers[Controller::CursorCallbacks].each do |controller|
         rescue_document_controller_error(controller) do
           controller.cursor_moved(new_offset)
         end
       end
-    end               
-    
+    end
+
     def about_to_be_changed(start_offset, length, text)
     end
-    
+
     def changed(start_offset, length, text)
       notify_listeners(:changed)
     end
-    
+
     def selection_range_changed(start_offset, end_offset)
       notify_listeners(:selection_range_changed, start_offset..end_offset)
     end
-    
+
     def single_line?
       controller.single_line?
     end
-    
+
     # Returns the line delimiter for this document. Either
     # \n or \r\n. It will attempt to detect the delimiter from the document
     # or it will default to the platform delimiter.
@@ -182,8 +182,8 @@ module Redcar
       controller.get_line_delimiter
     end
 
-    alias :delim :line_delimiter 
-    
+    alias :delim :line_delimiter
+
     # Is there any text selected? (Or equivalently, is the length
     # of the selection equal to 0)
     #
@@ -191,7 +191,7 @@ module Redcar
     def selection?
       selection_range.count > 0
     end
-    
+
     # Insert text
     #
     # @param [Integer] offset  character offset from the start of the document
@@ -201,14 +201,14 @@ module Redcar
       text = text.gsub(delim, "") if single_line?
       replace(offset, 0, text)
     end
-    
+
     # Insert text at the cursor offset
     #
     # @param [String] text  text to insert
     def insert_at_cursor(text)
       insert(cursor_offset, text)
     end
-    
+
     # Delete text
     #
     # @param [Integer] offset  character offset from the start of the document
@@ -226,39 +226,39 @@ module Redcar
       text = text.gsub(delim, "") if single_line?
       controller.replace(offset, length, text)
     end
-    
+
     # Length of the document in characters
     #
     # @return [Integer]
     def length
       controller.length
     end
-    
+
     # Number of lines.
     #
     # @return [Integer]
     def line_count
       controller.line_count
     end
-    
+
     # The entire contents of the document
     #
     # @return [String]
     def to_s
       controller.to_s
     end
-    
+
     # Set the contents of the document
     #
     # @param [String] text  new text
     def text=(text)
       controller.text = text
-    end    
-	
+    end
+
     def controller_text
       controller.text
     end
-    
+
     # Get the line index of the given offset
     #
     # @param [Integer] offset zero-based character offset
@@ -266,7 +266,7 @@ module Redcar
     def line_at_offset(offset)
       controller.line_at_offset(offset)
     end
-    
+
     # Get the character offset at the start of the given line
     #
     # @param [Integer] line   zero-based line index
@@ -274,40 +274,40 @@ module Redcar
     def offset_at_line(line)
       controller.offset_at_line(line)
     end
-    
+
     # Get the position of the cursor.
     #
     # @return [Integer] zero-based character offset
     def cursor_offset
       controller.cursor_offset
     end
-    
+
     def cursor_line_offset
       cursor_offset - offset_at_line(cursor_line)
     end
-    
+
     # Set the position of the cursor.
     #
     # @param [Integer] offset   zero-based character offset
     def cursor_offset=(offset)
       controller.cursor_offset = offset
     end
-    
+
     # The line index the cursor is on (zero-based)
     #
     # @return [Integer]
     def cursor_line
       line_at_offset(cursor_offset)
     end
-    
+
     def cursor_line_start_offset
       offset_at_line(cursor_line)
     end
-    
+
     def cursor_line_end_offset
       offset_at_line_end(cursor_line)
     end
-    
+
     def offset_at_line_end(line_ix)
       if line_ix == line_count - 1
         end_offset = length
@@ -315,7 +315,7 @@ module Redcar
         end_offset = offset_at_line(line_ix + 1)
       end
     end
-    
+
     def word
       @grammar.word
     end
@@ -328,20 +328,20 @@ module Redcar
       range = word_range_at_offset(offset)
       get_range(range.first, range.last - range.first)
     end
-    
+
     # The word found at the current cursor offset.
     #
     # @return [String] the text of the word
     def current_word
       word_at_offset(cursor_offset)
     end
-    
+
     # The range of the word at an offset.
     #
     # @param [Integer] an offset
     # @return [Range<Integer>] a range between two character offsets
     def word_range_at_offset(offset)
-      line_ix = line_at_offset(offset)      
+      line_ix = line_at_offset(offset)
       match_left = offset == 0 ? false : !/\s/.match(get_slice(offset - 1, offset))
       match_right = offset == length ? false : !/\s/.match(get_slice(offset, offset + 1))
       if match_left && match_right
@@ -354,7 +354,7 @@ module Redcar
         offset..offset
       end
     end
-    
+
     # Returns the range of the word located around an offset.
     # Before using this method, it's best to make sure there actually
     # might be a word around the offset. This means we are not at the beginning
@@ -379,7 +379,7 @@ module Redcar
       end
       matched_offsets
     end
-    
+
     # Returns the range of the word located left of an offset.
     # Before using this method, it's best to make sure there actually
     # might be a word left of the offset. This means we are not at the beginning
@@ -405,10 +405,10 @@ module Redcar
       end
       matched_offsets
     end
-    
+
     # Returns the range of the word located right of an offset.
     # Before using this method, it's best to make sure there actually
-    # might be a word right of the offset. This means we are not at the end of 
+    # might be a word right of the offset. This means we are not at the end of
     # the file and there are no spaces right of the offset.
     #
     # @param [Integer] an offset
@@ -426,14 +426,14 @@ module Redcar
       end
       matched_offsets
     end
-    
+
     # The range of the word at the current cursor position.
     #
     # @return [Range<Integer>] a range between two character offsets
     def current_word_range
       word_range_at_offset(cursor_offset)
     end
-    
+
     # The range of text selected by the user.
     #
     # @return [Range<Integer>] a range between two character offsets
@@ -447,36 +447,36 @@ module Redcar
     def selection_ranges
       controller.selection_ranges
     end
-    
+
     def selection_offset
       controller.selection_offset
     end
-    
+
     def selection_offset=(value)
       set_selection_range(cursor_offset, value)
     end
-    
+
     def selection_line
       line_at_offset(selection_offset)
     end
-    
+
     def selection_line_offset
       selection_offset - offset_at_line(selection_line)
     end
-    
-    # Set the range of text selected by the user. 
+
+    # Set the range of text selected by the user.
     #
     # @param [Integer] cursor_offset
     # @param [Integer] selection_offset
     def set_selection_range(cursor_offset, selection_offset)
       controller.set_selection_range(cursor_offset, selection_offset)
     end
-    
+
     # Select all text in the document.
     def select_all
       set_selection_range(length, 0)
     end
-    
+
     # Get the text selected by the user. If no text is selected
     # returns "".
     #
@@ -484,17 +484,17 @@ module Redcar
     def selected_text
       get_range(selection_range.begin, selection_range.count)
     end
-    
+
     # Is the document in block selection mode.
     def block_selection_mode?
       controller.block_selection_mode?
     end
-    
+
     # Turn the block selection mode on or off.
     def block_selection_mode=(boolean)
       controller.block_selection_mode = !!boolean
     end
-    
+
     # Get a range of text from the document.
     #
     # @param [Integer] start  the character offset of the start of the range
@@ -503,7 +503,7 @@ module Redcar
     def get_range(start, length)
       controller.get_range(start, length)
     end
-    
+
     # Get a slice of text from the document.
     #
     # @param [Integer] start_offset the character offset of the start of the slice
@@ -513,7 +513,7 @@ module Redcar
       get_range(start_offset, end_offset - start_offset)
     end
 
-    # Get the text of a line by index. (Includes a trailing "\n", 
+    # Get the text of a line by index. (Includes a trailing "\n",
     # unless it is the last line in the document.)
     #
     # @param [Integer] line_ix  the zero-based line number
@@ -524,7 +524,7 @@ module Redcar
         offset_at_line_end(line_ix) - offset_at_line(line_ix)
       )
     end
-    
+
     # Get the text of a line by index.
     #
     # @param [Integer] line_ix  the zero-based line number
@@ -535,19 +535,19 @@ module Redcar
         offset_at_inner_end_of_line(line_ix) - offset_at_line(line_ix)
       )
     end
-    
+
     # Get all text
     def get_all_text
       get_range(0, length)
     end
-    
-    # Replace a line in the document. This has two modes. In the first, 
+
+    # Replace a line in the document. This has two modes. In the first,
     # you supply the replacement text as an argument:
     #
     #     replace_line(10, "new line text")
     #
     # In the second, you supply a block. The block argument is the current
-    # text of the line, and the return value of the block is the 
+    # text of the line, and the return value of the block is the
     # replacement text:
     #
     #     replace_line(10) {|current_text| current_text.upcase }
@@ -557,20 +557,20 @@ module Redcar
       end_offset   = offset_at_inner_end_of_line(line_ix)
       replace(start_offset, end_offset - start_offset, text)
     end
-    
-    # Replace the currently selected text. This has two modes. In the first, 
+
+    # Replace the currently selected text. This has two modes. In the first,
     # you supply the replacement text as an argument:
     #
     #     replace_selection("new text")
     #
     # In the second, you supply a block. The block argument is the current
-    # selected text, and the return value of the block is the 
+    # selected text, and the return value of the block is the
     # replacement text:
     #
     #     replace_selection {|current_text| current_text.upcase }
     def replace_selection(new_text=nil)
       previous_cursor_offset = cursor_offset
-      
+
       sr = selection_range
       start_offset    = sr.first
       end_offset      = sr.last
@@ -579,36 +579,36 @@ module Redcar
       replace(start_offset, end_offset - start_offset, new_text)
 
       new_end_offset = start_offset + new_text.length
-      
+
       if previous_cursor_offset == end_offset
         self.set_selection_range(new_end_offset, start_offset)
       else
         self.set_selection_range(start_offset, new_end_offset)
       end
     end
-    
-    # Replace the current word. This has two modes. In the first, 
+
+    # Replace the current word. This has two modes. In the first,
     # you supply the replacement text as an argument:
     #
     #     replace_word_at_offset(offset, "new text")
     #
     # In the second, you supply a block. The block argument is the current
-    # word, and the return value of the block is the 
+    # word, and the return value of the block is the
     # replacement text:
     #
     #     replace_word_at_offset(offset) {|current_text| current_text.upcase }
     def replace_word_at_offset(offset, new_text=nil)
       previous_offset = cursor_offset
-      
+
       wr = word_range_at_offset(offset)
       start_offset    = wr.first
       end_offset      = wr.last
       new_text        = new_text || yield(word_at_offset(offset))
       replace(start_offset, end_offset - start_offset, new_text)
-      
+
       self.cursor_offset = [previous_offset, start_offset + new_text.length].min
     end
-    
+
     # Get the offset at the end of a given line, *before* the line delimiter.
     #
     # @param [Integer] line_ix  a zero-based line index
@@ -619,8 +619,8 @@ module Redcar
         offset_at_line(line_ix + 1) - delim.length
       end
     end
-    
-    # Does the minimum amount of scrolling that brings the given line 
+
+    # Does the minimum amount of scrolling that brings the given line
     # into the viewport. Which may be none at all.
     #
     # @param [Integer] line_ix  a zero-based line index
@@ -635,7 +635,7 @@ module Redcar
         scroll_to_line_at_top(bottom_line_ix)
       end
     end
-    
+
     # Tries to scroll so the given line is at the top of the viewport.
     #
     # @param [Integer] line_ix  a zero-based line index
@@ -645,14 +645,14 @@ module Redcar
 
     # The line_ix of the line at the top of the viewport.
     #
-    # @return [Integer] a zero-based line index    
+    # @return [Integer] a zero-based line index
     def smallest_visible_line
       @edit_view.controller.smallest_visible_line
     end
-    
+
     # The line_ix of the line at the bottom of the viewport.
     #
-    # @return [Integer] a zero-based line index    
+    # @return [Integer] a zero-based line index
     def biggest_visible_line
       @edit_view.controller.biggest_visible_line
     end
@@ -664,22 +664,22 @@ module Redcar
     def num_lines_visible
       biggest_visible_line - smallest_visible_line
     end
-    
+
     # The scope hierarchy at this point
     #
     # @param [String]
     def cursor_scope
       controller.scope_at(cursor_line, cursor_line_offset)
     end
-    
+
     def create_mark(offset, gravity=:right)
       controller.create_mark(offset, gravity)
     end
-    
+
     def delete_mark(mark)
       controller.delete_mark(mark)
     end
-    
+
     # Everything within the block will be treated as a single action
     # for the purposes of Undo.
     #
@@ -687,13 +687,13 @@ module Redcar
     def compound
       @edit_view.controller.compound { yield }
     end
-    
+
     def update_from_mirror
       previous_line      = cursor_line
       top_line           = smallest_visible_line
-      
+
       self.text          = mirror.read
-      
+
       @modified          = false
       @edit_view.title   = title_with_star
       if line_count > previous_line
@@ -701,18 +701,18 @@ module Redcar
         scroll_to_line_at_top(top_line)
       end
     end
-       
+
     def set_modified(boolean)
       @modified = boolean
       @edit_view.title = title_with_star
     end
- 
+
     def indentation
       Document::Indentation.new(self, @edit_view.tab_width, @edit_view.soft_tabs?)
     end
- 
-    private 
-   
+
+    private
+
     def title_with_star
       if mirror
         if @modified
@@ -724,7 +724,7 @@ module Redcar
         "untitled"
       end
     end
-    
+
     def rescue_document_controller_error(controller)
       begin
         yield
@@ -732,7 +732,7 @@ module Redcar
         puts "*** ERROR in Document controller: #{controller.inspect}"
         puts e.class.name + ": " + e.message
         puts e.backtrace
-      end   
+      end
     end
   end
 end
