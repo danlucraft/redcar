@@ -960,7 +960,9 @@ Redcar.environment: #{Redcar.environment}
 
         link "Ctrl+Home",    MoveTopCommand
         link "Home",         MoveHomeCommand
+        link "Ctrl+A",       MoveHomeCommand
         link "End",          MoveEndCommand
+        link "Ctrl+E",       MoveEndCommand
         link "Ctrl+End",     MoveBottomCommand
 
         link "Ctrl+[",       DecreaseIndentCommand
@@ -971,7 +973,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+H",       DocumentSearch::SearchAndReplaceCommand
         link "F3",           DocumentSearch::RepeatPreviousSearchForwardCommand
         link "Ctrl+Shift+F", Redcar::FindInProject::OpenSearch
-        link "Ctrl+A",       SelectAllCommand
+        link "Ctrl+Shift+A", SelectAllCommand
         link "Ctrl+Alt+W",   SelectWordCommand
         link "Ctrl+B",       ToggleBlockSelectionCommand
         link "Ctrl+Space",       AutoCompleter::AutoCompleteCommand
