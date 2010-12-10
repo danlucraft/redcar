@@ -92,7 +92,11 @@ module Redcar
           text = doc.get_slice(offset, doc.offset_at_line_end(line_ix))
         end
         doc.controllers(Redcar::AutoIndenter::DocumentController).first.disable do
-          doc.replace(offset, text.split(//).length, "\n")
+          if text == doc.line_delimiter or text == ""
+            doc.replace(offset, text.split(//).length, "")
+          else
+            doc.replace(offset, text.split(//).length, doc.line_delimiter)
+          end
         end
         #doc.cursor_offset = doc.cursor_offset - 1
       end
