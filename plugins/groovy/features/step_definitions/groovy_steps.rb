@@ -1,5 +1,5 @@
-When /^I add "([^"]*)" to the groovy classpath$/ do |dir|
-  File.open(File.expand_path("../../fixtures/.redcar/classpath.groovy", __FILE__), "a") do |f|
+When /^I add "([^"]*)" to the "([^"]*)" classpath$/ do |dir,plugin|
+  File.open(File.expand_path("plugins/#{plugin}/features/fixtures/.redcar/classpath.groovy"), "a") do |f|
     f.puts <<-CONFIG
     def redcar_config = new File(getClass().protectionDomain.codeSource.location.path).parentFile
     def project       = redcar_config.parentFile

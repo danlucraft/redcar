@@ -11,9 +11,11 @@ module Redcar
         paths = []
         default_key_globs.each do |default_key_glob|
           Dir[default_key_glob].each do |filename|
-            first = File.open(filename).read(100)
-            if first =~ /PRIVATE KEY/
-              paths << filename
+            unless File.directory?(filename) || !File.readable?(filename)
+              first = File.open(filename).read(100)
+              if first =~ /PRIVATE KEY/
+                paths << filename
+              end
             end
           end
         end

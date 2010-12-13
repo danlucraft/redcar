@@ -19,6 +19,13 @@ Scenario: Outline View with something small
   When I select the outline view
   Then the selected text should be "class IAmAllAlone"
 
+Scenario: Ruby methods with trailing space
+  Given I have opened "plugins/outline_view/spec/fixtures/some_project/trailing_space.rb"
+  And I run the command Redcar::OutlineView::OpenOutlineViewCommand
+  Then there should be an outline view open
+  And the outline view should have 2 entries
+  And I should see "trailing_space" at 1 with the "method" icon in the outline view
+
 Scenario: Something fancier
   Given I have opened "plugins/outline_view/spec/fixtures/some_project/something_fancy.rb"
   And I run the command Redcar::OutlineView::OpenOutlineViewCommand
@@ -33,7 +40,7 @@ Scenario: Something fancier
   When I set the outline filter to "selected"
   And I wait 2 seconds
   Then the outline view should have 2 entries
-  And I should see "selection_range_changed(start_offset, end_offset)" at 0 with the "method" icon in the outline view
+  And I should see "selection_range_changed" at 0 with the "method" icon in the outline view
   And I should see "selected_text" at 1 with the "method" icon in the outline view
   And I select the outline view
   Then the selected text should be "    def selection_range_changed(start_offset, end_offset)\n"
@@ -48,17 +55,12 @@ Scenario: Matching kinda similar names
   And I should see "file_name" at 2 with the "method" icon in the outline view
   And I should see "file_type" at 3 with the "method" icon in the outline view
   And I should see "file_handle" at 4 with the "method" icon in the outline view
-  And I should see "self.file" at 5 with the "method" icon in the outline view
+  And I should see "file" at 5 with the "method" icon in the outline view
   When I set the outline filter to "file"
   And I wait 2 seconds
   Then the outline view should have 5 entries
-  When I set the outline filter to "self."
-  And I wait 1 seconds
-  Then the outline view should have 1 entry
-  When I select the outline view
-  Then the selected text should be "  def self.file\n"
 
-  Scenario: Simple Javascript
+Scenario: Simple Javascript
   Given I have opened "plugins/outline_view/spec/fixtures/some_project/javascript.js"
   And I run the command Redcar::OutlineView::OpenOutlineViewCommand
   Then there should be an outline view open

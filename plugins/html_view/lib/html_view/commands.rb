@@ -23,8 +23,8 @@ module Redcar
           tab.html_view.controller = controller
           tab.icon = HtmlTab.web_content_icon if tab.is_a?(HtmlTab)
           tab.focus
-          if @display_bar
-            HtmlView::OpenBrowserBar.new.run
+          if @display_bar and not HtmlView.show_browser_bar?
+            HtmlView::ToggleBrowserBar.new.run
           end
         end
       end
@@ -47,11 +47,17 @@ module Redcar
       end
     end
 
-    class OpenBrowserBar < Redcar::Command
+    class ToggleBrowserBar < Redcar::Command
+      sensitize :open_htmltab
       def execute
-        window = Redcar.app.focussed_window
-        speedbar = Redcar::HtmlView::BrowserBar.new
-        window.open_speedbar(speedbar)
+        if win = Redcar.app.focussed_window
+          if HtmlView.show_browser_bar?
+            win.close_speedbar
+          else
+            speedbar = Redcar::HtmlView::BrowserBar.new
+            win.open_speedbar(speedbar)
+          end
+        end
       end
     end
   end

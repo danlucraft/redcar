@@ -4,7 +4,7 @@ module Redcar
     module Git
       class Change
         include Redcar::Scm::ScmChangesMirror::Change
-        
+
         STATUS_MAP_INDEXED = {
           'M ' => [:indexed],
           'A ' => [:indexed],
@@ -20,7 +20,7 @@ module Redcar
           'RD' => [:moved],
           'CD' => [:moved],
         }
-        
+
         STATUS_MAP_UNINDEXED = {
           '??' => [:new],
           'UU' => [:unmerged],
@@ -35,17 +35,17 @@ module Redcar
           ' M' => [:changed],
           ' D' => [:missing],
         }
-        
+
         attr_reader :repo, :type
-        
+
         def initialize(file, repo, type=:file, indexed=false, children=[])
-          @file = file
-          @repo = repo
-          @type = type
-          @indexed = indexed
+          @file     = file
+          @repo     = repo
+          @type     = type
+          @indexed  = indexed
           @children = children
         end
-        
+
         def path
           if @file.type_raw[0,1] == "R" or @file.type_raw[0,1] == "C"
             paths = @file.path.split(' -> ')
@@ -54,11 +54,11 @@ module Redcar
             @file.path
           end
         end
-        
+
         def git_status
           @file.type_raw
         end
-        
+
         def status
           # Subprojects should be commitable, but we can't update the
           # current index while they are dirty.
@@ -72,15 +72,24 @@ module Redcar
             STATUS_MAP_UNINDEXED[@file.type_raw] || []
           end
         end
-        
+
         def text
           if @file.type_raw[0,1] == "R" or @file.type_raw[0,1] == "C"
             @file.path
           else
-            "#{File.basename(@file.path)} (#{File.dirname(@file.path)})"
+            begin
+              pathname = Pathname.new(
+                File.expand_path(File.dirname(@file.path),@repo.repo.dir.path)
+              )
+              repopath = Pathname.new(@repo.path)
+              relpath  = pathname.relative_path_from(repopath).to_s
+            rescue Object => e
+              relpath = File.dirname(@file.path)
+            end
+            "#{File.basename(@file.path)} (#{relpath})"
           end
         end
-        
+
         def icon
           icon = (@type == :file ? "notebook" : "folder")
           case
@@ -99,15 +108,15 @@ module Redcar
           end
           icon.to_sym
         end
-        
+
         def leaf?
           icon == :file
         end
-        
+
         def children
           @children
         end
-        
+
         def diff
           if (not @indexed) and @file.type_raw == "??"
             # No diff available
@@ -118,7 +127,7 @@ module Redcar
             @repo.repo.lib.diff_full('HEAD', nil, {:path_limiter => path})
           end
         end
-        
+
         def to_data
           "#{@file.type_raw}:#{@file.path}:#{@repo.repo.dir.path}:#{@type.to_s}:#{@indexed}"
         end

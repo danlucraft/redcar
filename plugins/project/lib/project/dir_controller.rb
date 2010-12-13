@@ -33,10 +33,11 @@ module Redcar
         end
 
         def can_drop?(nodes, target, position)
-          nodes.all? {|node| droppable?(node, target)}
+          nodes and nodes.all? {|node| droppable?(node, target)}
         end
 
         def do_drop(nodes, target, position)
+          return unless nodes
           paths = nodes.map {|node| node.path }
           non_nested_paths = remove_nested_paths(paths)
           non_nested_paths.each do |path|
@@ -52,6 +53,8 @@ module Redcar
         private
 
         def droppable?(from_node, target_node)
+          return false unless from_node
+
           # you can always drop into the top level of the tree
           return true if target_node == nil
 

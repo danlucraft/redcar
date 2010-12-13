@@ -20,7 +20,7 @@ Feature: Replace in file
     And I press "Replace" in the speedbar
     Then the contents should be "Foo\nBar RABBIT Rab\nBaz"
     And the selected text should be "RABBIT"
-    And the selection range should be from 8 to 14 
+    And the selection range should be from 8 to 14
 
   Scenario: Replace next occurrence on the same line twice
     When I replace the contents with "Foo\nBar Rab Rab\nBaz"
@@ -92,6 +92,35 @@ Feature: Replace in file
     And the selected text should be "Rab"
     And the selection should be on line 3
 
+  Scenario: Replace all replaces two on the same line
+    When I replace the contents with "abcabc"
+    And I run the command DocumentSearch::SearchAndReplaceCommand
+    And I type "bc" into the "Search" field in the speedbar
+    And I type "xx" into the "Replace" field in the speedbar
+    Then I should see a message box containing "Replaced 2 occurrences"
+    When I press "Replace All" in the speedbar
+    Then the contents should be "axxaxx"
+
+  Scenario: Replace all replaces overlapping occurences on the same line
+    When I replace the contents with "deedeedeed"
+    And I run the command DocumentSearch::SearchAndReplaceCommand
+    And I type "deed" into the "Search" field in the speedbar
+    And I type "misdeed" into the "Replace" field in the speedbar
+    Then I should see a message box containing "Replaced 2 occurrences"
+    When I press "Replace All" in the speedbar
+    Then the contents should be "misdeedeemisdeed"
+
+  Scenario: Replace all is a single undo action
+    When I replace the contents with "abcabc"
+    And I run the command DocumentSearch::SearchAndReplaceCommand
+    And I type "bc" into the "Search" field in the speedbar
+    And I type "xx" into the "Replace" field in the speedbar
+    Then I should see a message box containing "Replaced 2 occurrences"
+    When I press "Replace All" in the speedbar
+    Then the contents should be "axxaxx"
+    When I undo
+    Then the contents should be "abcabc"
+
   Scenario: Replace next occurrence test bug
     When I replace the contents with "the\n* Speedbars have access to the properties of the widgets in them."
     And I move the cursor to 0
@@ -141,4 +170,3 @@ Feature: Replace in file
     And I press "Replace" in the speedbar
     Then the contents should be "Foo\nFoo\nFoo"
 
-  

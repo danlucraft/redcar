@@ -342,6 +342,7 @@ Redcar.environment: #{Redcar.environment}
       def execute
         if tab.is_a?(EditTab)
           if tab.edit_view.document.modified?
+            tab.focus
             result = Application::Dialog.message_box(
               "This tab has unsaved changes. \n\nSave before closing?",
               :buttons => :yes_no_cancel
@@ -359,6 +360,7 @@ Redcar.environment: #{Redcar.environment}
           end
         elsif tab.is_a?(HtmlTab)
           if tab.html_view.controller and message = tab.html_view.controller.ask_before_closing
+            tab.focus
             result = Application::Dialog.message_box(
               message,
               :buttons => :yes_no_cancel
@@ -390,7 +392,30 @@ Redcar.environment: #{Redcar.environment}
         #end
       end
     end
-
+    
+    class CloseAll < Redcar::Command
+      def execute
+        window = Redcar.app.focussed_window
+        tabs = window.all_tabs
+        tabs.each do |t|
+          Redcar::Top::CloseTabCommand.new(t).run
+        end
+      end
+    end
+    
+    class CloseOthers < Redcar::Command
+      def execute
+        window = Redcar.app.focussed_window
+        current_tab = Redcar.app.focussed_notebook_tab
+        tabs = window.all_tabs
+        tabs.each do |t|
+          unless t == current_tab
+            Redcar::Top::CloseTabCommand.new(t).run
+          end
+        end
+      end
+    end
+    
     class SwitchTabDownCommand < TabCommand
 
       def execute
@@ -1018,6 +1043,8 @@ Redcar.environment: #{Redcar.environment}
             item "Close Tab", CloseTabCommand
             item "Close Tree", CloseTreeCommand
             item "Close Window", CloseWindowCommand
+            item "Close Others", CloseOthers
+            item "Close All", CloseAll
           end
 
           group(:priority => :last) do
@@ -1083,39 +1110,47 @@ Redcar.environment: #{Redcar.environment}
           end
         end
         sub_menu "View", :priority => 30 do
-          sub_menu "Appearance" do
+          sub_menu "Appearance", :priority => 5 do
             item "Font", SelectNewFont
             item "Font Size", SelectFontSize
             item "Theme", SelectTheme
           end
-          item "Toggle Tree Visibility", :command => ToggleTreesCommand
-          item "Toggle Fullscreen", :command => ToggleFullscreen, :type => :check, :active => window ? window.fullscreen : false
-          separator
-          lazy_sub_menu "Windows" do
-            GenerateWindowsMenu.new(self).run
-          end
-          sub_menu "Notebooks" do
-            item "New Notebook", NewNotebookCommand
-            item "Close Notebook", CloseNotebookCommand
-            item "Rotate Notebooks", RotateNotebooksCommand
-            item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
-            item "Switch Notebooks", SwitchNotebookCommand
-          end
-          sub_menu "Tabs" do
-            item "Previous Tab", SwitchTabDownCommand
-            item "Next Tab", SwitchTabUpCommand
-            item "Move Tab Left", MoveTabDownCommand
-            item "Move Tab Right", MoveTabUpCommand
+          group(:priority => 10) do
             separator
-            item "Focussed Notebook", ShowTitle
-            (1..9).each do |num|
-              item "Tab #{num}", Top.const_get("SelectTab#{num}Command")
+            item "Toggle Tree Visibility", :command => ToggleTreesCommand
+            item "Toggle Fullscreen", :command => ToggleFullscreen, :type => :check, :active => window ? window.fullscreen : false
+          end
+          group(:priority => 15) do
+            separator
+            lazy_sub_menu "Windows" do
+              GenerateWindowsMenu.new(self).run
+            end
+            sub_menu "Notebooks" do
+              item "New Notebook", NewNotebookCommand
+              item "Close Notebook", CloseNotebookCommand
+              item "Rotate Notebooks", RotateNotebooksCommand
+              item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
+              item "Switch Notebooks", SwitchNotebookCommand
+            end
+            sub_menu "Tabs" do
+              item "Previous Tab", SwitchTabDownCommand
+              item "Next Tab", SwitchTabUpCommand
+              item "Move Tab Left", MoveTabDownCommand
+              item "Move Tab Right", MoveTabUpCommand
+              separator
+              # GenerateTabsMenu.new(self).run # TODO: find a way to maintain keybindings with lazy menus
+              item "Focussed Notebook", ShowTitle
+              (1..9).each do |num|
+                item "Tab #{num}", Top.const_get("SelectTab#{num}Command")
+              end
             end
           end
-          separator
-          item "Show Toolbar", :command => ToggleToolbar, :type => :check, :active => Redcar.app.show_toolbar?
-          item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
-          item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
+          group(:priority => :last) do
+            separator
+            item "Show Toolbar", :command => ToggleToolbar, :type => :check, :active => Redcar.app.show_toolbar?
+            item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
+            item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
+          end
         end
         sub_menu "Bundles", :priority => 45 do
           group(:priority => :first) do
@@ -1198,3 +1233,4 @@ Redcar.environment: #{Redcar.environment}
     end
   end
 end
+

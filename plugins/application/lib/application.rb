@@ -57,6 +57,12 @@ module Redcar
             win.focussed_notebook.focussed_tab
           end
         end,
+        Sensitivity.new(:open_htmltab, Redcar.app, false, [:focussed_window, :tab_focussed]) do |tab|
+          if win = Redcar.app.focussed_window and
+            tab = win.focussed_notebook.focussed_tab
+            tab.is_a?(HtmlTab)
+          end
+        end,
         Sensitivity.new(:open_trees, Redcar.app, false, [:focussed_window, :tree_added, :tree_removed]) do |tree|
           if win = Redcar.app.focussed_window
             trees = win.treebook.trees

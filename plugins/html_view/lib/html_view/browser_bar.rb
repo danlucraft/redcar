@@ -3,6 +3,13 @@ module Redcar
   class HtmlView
     class BrowserBar < Redcar::Speedbar
 
+      def tab_changed(tab)
+        unless tab.is_a?(HtmlTab)
+          win = Redcar.app.focussed_window
+          win.close_speedbar
+        end
+      end
+
       def html_tab
         tab = Redcar.app.focussed_window.focussed_notebook_tab
         tab if tab.is_a?(Redcar::HtmlTab)
