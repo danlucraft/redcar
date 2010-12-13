@@ -61,9 +61,10 @@ module Redcar
           "http://redcar.s3.amazonaws.com/clojure-1.2beta1.jar" => "/clojure.jar",
           "http://redcar.s3.amazonaws.com/clojure-contrib-1.2beta1.jar" => "/clojure-contrib.jar",
           "http://redcar.s3.amazonaws.com/org-enclojure-repl-server.jar" => nil,
-          "http://mirrors.ibiblio.org/pub/mirrors/maven2/org/codehaus/groovy/groovy-all/1.7.4/groovy-all-1.7.4.jar" => "/groovy-all.jar",
-          "http://mirrors.ibiblio.org/pub/mirrors/maven2/org/tmatesoft/svnkit/svnkit/1.3.4/svnkit-1.3.4.jar" => "/svnkit.jar",
+          #"http://mirrors.ibiblio.org/pub/mirrors/maven2/org/codehaus/groovy/groovy-all/1.7.4/groovy-all-1.7.4.jar" => "/groovy-all.jar",
+          #"http://mirrors.ibiblio.org/pub/mirrors/maven2/org/tmatesoft/svnkit/svnkit/1.3.4/svnkit-1.3.4.jar" => "/svnkit.jar",
           # "http://mirrors.ibiblio.org/pub/mirrors/maven2/rhino/js/1.7R2/js-1.7R2.jar" => "/js.jar",
+          "http://redcar.s3.amazonaws.com/deps/svnkit-1.3.4.jar" => "/svnkit.jar",
           "http://redcar.s3.amazonaws.com/deps/rhino-js-1.7R2.jar" => "/js.jar"
         },
         :windows => {
