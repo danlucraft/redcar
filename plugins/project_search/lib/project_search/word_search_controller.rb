@@ -16,12 +16,18 @@ class ProjectSearch
     end
 
     def num_context_lines
-      @settings['context_lines']
+      settings['context_lines']
+    end
+    
+    def plugin_root
+      File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
+    end
+    
+    def settings
+      ProjectSearch.storage
     end
     
     def index
-      @plugin_root   = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
-      @settings      = ProjectSearch.storage
       @query         = doc.selected_text if doc && doc.selection?
       @literal_match = ProjectSearch.storage['literal_match']
       @match_case    = ProjectSearch.storage['match_case']
