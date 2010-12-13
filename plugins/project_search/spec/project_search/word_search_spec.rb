@@ -31,13 +31,12 @@ describe ProjectSearch::WordSearch do
   end
   
   it "should find occurrences of full words" do
-    pending
     results = make_search("Foo").results
     results.length.should == 1
     result = results.first
     result.should be_an_instance_of(ProjectSearch::Hit)
     result.file.should == project_search_fixture_dir + "/foo.txt"
-    result.line.should == 0
+    result.line_num.should == 0
     result.text("<b>", "</b>").should == ["<b>Foo</b> Bar Baz"]
   end
 end
