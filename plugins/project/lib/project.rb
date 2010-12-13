@@ -220,7 +220,12 @@ module Redcar
 
     def send_refresh_to_plugins
       Redcar.plugin_manager.objects_implementing(:project_refresh_task_type).each do |object|
-        Redcar::Resource.task_queue.submit(object.project_refresh_task_type.new(self))
+        task = object.project_refresh_task_type.new(self)
+        if Redcar::Resource.compute_synchronously
+          task.execute
+        else
+          Redcar::Resource.task_queue.submit(task)
+        end
       end
     end
 
