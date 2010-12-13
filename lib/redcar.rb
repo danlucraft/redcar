@@ -51,10 +51,10 @@ end
 #
 # and so on.
 module Redcar
-  VERSION         = '0.9.1' # also change in the Rakefile!
+  VERSION         = '0.9.2' # also change in the Rakefile!
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 9
-  VERSION_RELEASE = 1
+  VERSION_RELEASE = 2
   
   ENVIRONMENTS = [:user, :debug, :test]
   
