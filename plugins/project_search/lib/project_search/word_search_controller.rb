@@ -27,13 +27,23 @@ class ProjectSearch
       ProjectSearch.storage
     end
     
+    def match_case?
+      ProjectSearch.storage['match_case']
+    end
+    
+    def context?
+      ProjectSearch.storage['with_context']
+    end
+    
+    def context_size
+      context? ? num_context_lines : 0
+    end
+    
+    def default_query
+      doc.selected_text if doc && doc.selection?
+    end
+    
     def index
-      @query         = doc.selected_text if doc && doc.selection?
-      @literal_match = ProjectSearch.storage['literal_match']
-      @match_case    = ProjectSearch.storage['match_case']
-      @with_context  = ProjectSearch.storage['with_context']
-      @show_literal_match_option = show_literal_match_option?
-      @search_copy               = search_copy
       render('index')
     end
 
@@ -84,15 +94,13 @@ class ProjectSearch
 
     def search(query, literal_match, match_case, with_context)
       ProjectSearch.storage['recent_queries'] = add_or_move_to_top(query, ProjectSearch.storage['recent_queries'])
-      ProjectSearch.storage['literal_match'] = (@literal_match = true)
-      ProjectSearch.storage['match_case'] = (@match_case = (match_case == 'true'))
-      ProjectSearch.storage['with_context'] = (@with_context = (with_context == 'true'))
-      project = Redcar::Project::Manager.focussed_project
-      size_of_context = @with_context ? 2 : 0
-      @word_search = WordSearch.new(project, query, @match_case, size_of_context)
+      ProjectSearch.storage['match_case']     = (match_case == 'true')
+      ProjectSearch.storage['with_context']   = (with_context == 'true')
       
-      #@regexp = create_regexp
-
+      project = Redcar::Project::Manager.focussed_project
+      
+      @word_search = WordSearch.new(project, query, match_case?, context_size)
+      
       # kill any existing running search to prevent memory bloat
       Thread.kill(@thread) if @thread
       @thread = nil
@@ -104,7 +112,7 @@ class ProjectSearch
                     split(/\s/).
                     map {|b| b.strip}.
                     reject {|b| b == "" or org.apache.lucene.analysis.standard.StandardAnalyzer::STOP_WORDS_SET.to_a.include?(b)}
-                    if bits.any?
+          if bits.any?
             project = Redcar::Project::Manager.focussed_project
             index   = ProjectSearch.indexes[project.path].lucene_index
             doc_ids = nil
@@ -129,7 +137,7 @@ class ProjectSearch
                 contents.each_with_index do |line, line_num_minus_1|
                   line_num = line_num_minus_1 + 1
                   
-                  if @with_context
+                  if context?
                     context[:before].shift if context[:before].length == num_context_lines + 1
                     context[:before] << [line, line_num]
                   end
@@ -150,10 +158,10 @@ class ProjectSearch
                     render_file_heading(doc_id, file_num)
                     @line_index = 0 # reset line row styling
                   end
-                  if @with_context && !parsing_new_file && (line_num - last_matching_line_num) > (num_context_lines * 2)
+                  if context? && !parsing_new_file && (line_num - last_matching_line_num) > (num_context_lines * 2)
                     render_divider(file_num)
                   end
-                  if @with_context
+                  if context?
                     context[:before].each { |line, line_num| render_line(file_num, line_num, doc_id, line) }
                     context[:before].clear
                   end
@@ -164,8 +172,8 @@ class ProjectSearch
                   matched_lines          = true
                   parsing_new_file       = false
                   last_matching_line_num = line_num
-                  if @with_context
-                    need_context_after     = num_context_lines
+                  if context?
+                    need_context_after = num_context_lines
                   end
                 end
                 file_num += 1
