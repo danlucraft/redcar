@@ -4,6 +4,7 @@ require File.dirname(__FILE__) + "/../spec_helper"
 describe ProjectSearch::WordSearch do
   after do
     FileUtils.rm_rf(project_search_fixture_dir + "/.redcar")
+    ProjectSearch.indexes.clear
   end
   
   describe "options of the search" do
@@ -39,4 +40,17 @@ describe ProjectSearch::WordSearch do
     result.line_num.should == 0
     result.line("<b>", "</b>").should == "<b>Foo</b> Bar Baz"
   end
+  
+  it "should enwrap every occurrence" do
+    results = make_search("Corge").results
+    results.length.should == 1
+    result = results.first
+    result.should be_an_instance_of(ProjectSearch::Hit)
+    result.file.should == project_search_fixture_dir + "/foo.txt"
+    result.line_num.should == 2
+    result.line("<b>", "</b>").should == "<b>Corge</b> <b>Corge</b> <b>Corge</b>"
+  end
 end
+
+
+
