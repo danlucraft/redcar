@@ -34,10 +34,30 @@ class ProjectSearch
         hits = []
         doc_ids.each do |doc_id|
           contents = File.read(doc_id).split(/\n|\r/)
+          pre_context = []
+          hits_needing_post_context = []
+          remove_hits = []
           contents.each_with_index do |line, line_num|
-            if matching_line?(line)
-              hits << Hit.new(doc_id, line_num, line, regex)
+            hits_needing_post_context.each do |hit|
+              hit.post_context << line
+              if hit.post_context.length == context_size
+                remove_hits << hit
+              end
             end
+            hits_needing_post_context -= remove_hits
+            
+            if matching_line?(line)
+              hit = Hit.new(doc_id, line_num, line, regex, pre_context.dup, [])
+              hits << hit
+              if context_size > 0
+                hits_needing_post_context << hit
+              end
+            end
+            
+            if pre_context.length == context_size
+              pre_context.shift
+            end
+            pre_context << line
           end
         end
         hits
