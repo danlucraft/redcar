@@ -13,26 +13,28 @@ module Redcar
         File.join(Redcar.asset_dir,'js.jar')
       end
 
+      def main_method
+        "org.mozilla.javascript.tools.shell.Main"
+      end
+
       def check(*args)
         path = manifest_path(doc)
         name = File.basename(path)
-        if t = JavaScript.thread and t.alive? and t[:js]
-          tdoc = t[:doc]
-          t.exit
-          if tdoc and tdoc != doc
-            SyntaxCheck.remove_syntax_error_annotations(tdoc.edit_view)
+        if t = JavaScript.thread and t.alive?
+          if t[:doc] and t[:doc] == doc
+            t.exit
+            SyntaxCheck.remove_syntax_error_annotations(doc.edit_view)
           end
         end
         JavaScript.thread=Thread.new do
           SyntaxCheck.remove_syntax_error_annotations(doc.edit_view)
-          Thread.current[:js]  = true
           Thread.current[:doc] = doc
           begin
-            output = `java -cp #{rhino_path} org.mozilla.javascript.tools.shell.Main #{jslint_path} #{path}`
+            output = `java -cp #{rhino_path} #{main_method} #{jslint_path} #{path}`
             output.each_line do |line|
               if line =~ /Lint at line (\d+) character (\d+): (.*)/
                 SyntaxCheck::Error.new(doc, $1.to_i-1, $3).annotate
-                break # only marking one error to avoid swt concurrency errors
+                sleep 1
               end
             end
           rescue Object => e
