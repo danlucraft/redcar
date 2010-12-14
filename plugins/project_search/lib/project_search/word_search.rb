@@ -14,6 +14,10 @@ class ProjectSearch
       @match_case
     end
     
+    def context?
+      @context_size > 0
+    end
+    
     def matching_line?(line)
       line =~ regex
     end
@@ -26,7 +30,18 @@ class ProjectSearch
     end
     
     def results
-      []
+      @results ||= begin
+        hits = []
+        doc_ids.each do |doc_id|
+          contents = File.read(doc_id).split(/\n|\r/)
+          contents.each_with_index do |line, line_num|
+            if matching_line?(line)
+              hits << Hit.new(doc_id, line_num, line, regex)
+            end
+          end
+        end
+        hits
+      end
     end
     
     def bits

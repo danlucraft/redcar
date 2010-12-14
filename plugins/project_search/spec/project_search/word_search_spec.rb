@@ -37,6 +37,6 @@ describe ProjectSearch::WordSearch do
     result.should be_an_instance_of(ProjectSearch::Hit)
     result.file.should == project_search_fixture_dir + "/foo.txt"
     result.line_num.should == 0
-    result.text("<b>", "</b>").should == ["<b>Foo</b> Bar Baz"]
+    result.line("<b>", "</b>").should == "<b>Foo</b> Bar Baz"
   end
 end

@@ -7,6 +7,7 @@ require 'project_search/lucene_index'
 require 'project_search/lucene_refresh'
 require 'project_search/binary_data_detector'
 require 'project_search/commands'
+require 'project_search/hit'
 require 'project_search/word_search'
 
 class ProjectSearch

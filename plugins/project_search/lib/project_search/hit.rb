@@ -1,14 +1,14 @@
 
 class ProjectSearch
   class Hit
-    attr_reader :file, :line_num, :line, :begin_ix, :end_ix
+    attr_reader :file, :line_num
     
-    def initialize(file, line_num, line, begin_ix, end_ix)
-      @file, @line_num, @line, @begin_ix, @end_ix = file, line_num, line, begin_ix, end_ix
+    def initialize(file, line_num, line, regex)
+      @file, @line_num, @line, @regex = file, line_num, line, regex
     end
     
-    def text(start_with, end_with)
-      "asdf"
+    def line(start_with=nil, end_with=nil)
+      @line.gsub(@regex) { start_with.to_s + $& + end_with.to_s }
     end
   end
 end

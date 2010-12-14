@@ -107,18 +107,16 @@ class ProjectSearch
       @thread = Thread.new do
         begin
           initialize_search_output
-          if @word_search.doc_ids.any?
+          if @word_search.results.any?
             add_initial_table
             file_num = 1
             last_matching_line_num = nil
-            
-            @word_search.doc_ids.each do |doc_id|
+            @word_search.results.each do |hit|
               context            = {:before => []}
               parsing_new_file   = true
               matched_lines      = false
               last_matching_file = doc_id
               @line_index = 0 # reset line row styling
-              contents = File.read(doc_id).split(/\n|\r/)
               need_context_after = 0
               contents.each_with_index do |line, line_num_minus_1|
                 line_num = line_num_minus_1 + 1
