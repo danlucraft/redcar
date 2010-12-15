@@ -109,58 +109,44 @@ class ProjectSearch
           initialize_search_output
           if @word_search.results.any?
             add_initial_table
-            file_num = 1
+            file_num = 0
             last_matching_line_num = nil
+            previous_file = nil
             @word_search.results.each do |hit|
-              context            = {:before => []}
-              parsing_new_file   = true
+              file_num += 1 if hit.file != previous_file
               matched_lines      = false
-              last_matching_file = doc_id
               @line_index = 0 # reset line row styling
               need_context_after = 0
-              contents.each_with_index do |line, line_num_minus_1|
-                line_num = line_num_minus_1 + 1
-                
-                if context?
-                  context[:before].shift if context[:before].length == num_context_lines + 1
-                  context[:before] << [line, line_num]
-                end
-
-                unless @word_search.matching_line?(line)
-                  if need_context_after > 0
-                    render_line(file_num, line_num, doc_id, line)
-                    need_context_after -= 1
-                  end
-                  next
-                end
-                
-                add_initial_table
-                
-                if parsing_new_file
-                  increment_file_results_count
-                  add_break_row # if matched_lines
-                  render_file_heading(doc_id, file_num)
-                  @line_index = 0 # reset line row styling
-                end
-                if context? && !parsing_new_file && (line_num - last_matching_line_num) > (num_context_lines * 2)
-                  render_divider(file_num)
-                end
-                if context?
-                  context[:before].each { |line, line_num| render_line(file_num, line_num, doc_id, line) }
-                  context[:before].clear
-                end
-                render_line(file_num, line_num, doc_id, line)
-                
-                increment_line_results_count
-                
-                matched_lines          = true
-                parsing_new_file       = false
-                last_matching_line_num = line_num
-                if context?
-                  need_context_after = num_context_lines
-                end
+              
+              add_initial_table
+              
+              if hit.file != previous_file
+                increment_file_results_count
+                add_break_row # if matched_lines
+                render_file_heading(hit.file, file_num)
+                @line_index = 0 # reset line row styling
               end
-              file_num += 1
+              
+              if @word_search.context? && !(hit.file != previous_file) && (hit.line_num - last_matching_line_num) > (@word_search.context_size * 2)
+                render_divider(file_num)
+              end
+              
+              hit.pre_context.each_with_index do |context_line, i|
+                render_line(file_num, hit.line_num - @word_search.context_size + i, hit.file, context_line)
+              end
+              
+              render_line(file_num, hit.line_num, hit.file, hit.line)
+              
+              hit.post_context.each_with_index do |context_line, i|
+                render_line(file_num, hit.line_num + i + 1, hit.file, context_line)
+              end
+              
+              increment_line_results_count
+              
+              matched_lines          = true
+              last_matching_line_num = hit.line_num
+              
+              previous_file = hit.file
             end
             remove_initial_blank_tr
           else

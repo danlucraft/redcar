@@ -976,7 +976,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+F",       DocumentSearch::SearchForwardCommand
         link "Ctrl+H",       DocumentSearch::SearchAndReplaceCommand
         link "F3",           DocumentSearch::RepeatPreviousSearchForwardCommand
-        link "Ctrl+Shift+F", Redcar::FindInProject::OpenSearch
+
         link "Ctrl+Shift+A", SelectAllCommand
         link "Ctrl+Alt+W",   SelectWordCommand
         link "Ctrl+B",       ToggleBlockSelectionCommand
