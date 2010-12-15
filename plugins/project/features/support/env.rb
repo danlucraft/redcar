@@ -50,6 +50,7 @@ Before do
 end
 
 After do
+  Redcar::Project::Manager.reveal_files = true
   reset_project_fixtures
   delete_subproject_fixtures
   DrbShelloutHelper.kill_thread

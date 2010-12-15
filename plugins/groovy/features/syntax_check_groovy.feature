@@ -51,7 +51,7 @@ Feature: Syntax Checking for Groovy
     Given I have not suppressed syntax checking message dialogs
     When I will choose "plugins/groovy/features/fixtures" from the "open_directory" dialog
     And I open a directory
-    And I add "lib2" to the groovy classpath
+    And I add "lib2" to the "groovy" classpath
     And I replace the contents with "class Foo {\n    def x = new Bar(10)\n    def y = new FooBaz()\n}"
     And I save the tab
     Then I should see a message box containing "An error occurred while parsing"
@@ -66,7 +66,7 @@ Feature: Syntax Checking for Groovy
     And I save the tab
     Then the tab should not have annotations
     When I close the focussed tab
-    And I add "lib2" to the groovy classpath
+    And I add "lib2" to the "groovy" classpath
     And I replace the contents with "class Foo {\n    def x = new Bar(10)\n    def y = new FooBaz()\n}"
     And I save the tab
     Then the tab should have an annotation on line 2

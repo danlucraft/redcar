@@ -92,7 +92,35 @@ module Redcar
       end
 
       def self.storage
-        @storage = Plugin::Storage.new('project_plugin')
+        @storage ||= begin
+          storage = Plugin::Storage.new('project_plugin')
+          storage.set_default('reveal_files_in_project_tree',true)
+          storage.set_default('reveal_files_only_when_tree_is_focussed',true)
+          storage
+        end
+      end
+
+      def self.reveal_files?
+        storage['reveal_files_in_project_tree']
+      end
+
+      def self.reveal_files=(toggle)
+        storage['reveal_files_in_project_tree'] = toggle
+      end
+
+      def self.reveal_file_only_when_tree_focussed?
+        storage['reveal_files_only_when_tree_is_focussed']
+      end
+
+      def self.reveal_file?(project)
+        if project and tree = project.tree
+          if reveal_files? and project.window.trees_visible?
+            ftree = project.window.treebook.focussed_tree
+            unless tree != ftree and reveal_file_only_when_tree_focussed?
+              true
+            end
+          end
+        end
       end
 
       def self.filter_path
@@ -363,6 +391,7 @@ module Redcar
               item "Find File", Project::FindFileCommand
               item "Refresh Directory", Project::RefreshDirectoryCommand
             end
+            item "Reveal Open File in Tree", :command => Project::ToggleRevealInProject, :type => :check, :active => Project::Manager.reveal_files?
           end
         end
       end
