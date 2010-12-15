@@ -98,14 +98,14 @@ module Redcar
       end
       
       def find_files_from_list(text, file_list)
-        re = make_regex(text)
+        re = make_regex(text.gsub(/\s/, ""))
         file_list.select { |fn| 
           fn.split('/').last =~ re
         }.compact
       end
       
       def find_files(text, directories)
-        filter_and_rank_by(project.all_files.sort, text) do |fn|
+        filter_and_rank_by(project.all_files.sort, text.gsub(/\s/, "")) do |fn|
           fn.split("/").last
         end
       end
