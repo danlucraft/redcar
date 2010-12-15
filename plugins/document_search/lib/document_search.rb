@@ -36,7 +36,8 @@ module DocumentSearch
 
     def doc
       win = Redcar.app.focussed_window
-      win.focussed_notebook_tab.document
+      tab = win.focussed_notebook_tab
+      tab.document if tab
     end
 
     def after_draw
@@ -49,8 +50,10 @@ module DocumentSearch
 
     label :label, "Search:"
     textbox :query do |value|
-      set_offset
-      start_search
+      if doc
+        set_offset
+        start_search
+      end
     end
 
     toggle :is_regex, 'Regex', nil, false do |v|
@@ -65,20 +68,24 @@ module DocumentSearch
     end
 
     button :search, "Search", "Return" do
-      @offset = nil
-      doc.set_selection_range(doc.cursor_offset,0)
-      start_search
+      if doc
+        @offset = nil
+        doc.set_selection_range(doc.cursor_offset,0)
+        start_search
+      end
     end
 
     def start_search
-      SearchSpeedbar.previous_query = self.query.value
-      SearchSpeedbar.previous_match_case = self.match_case.value
-      SearchSpeedbar.previous_is_regex = self.is_regex.value
-      success = SearchSpeedbar.repeat_query
+      if doc
+        SearchSpeedbar.previous_query = self.query.value
+        SearchSpeedbar.previous_match_case = self.match_case.value
+        SearchSpeedbar.previous_is_regex = self.is_regex.value
+        success = SearchSpeedbar.repeat_query
+      end
     end
 
     def update_search
-      if self.query.value and self.query.value != ""
+      if doc and self.query.value and self.query.value != ""
         set_offset
         SearchSpeedbar.previous_query = self.query.value
         SearchSpeedbar.repeat_query
