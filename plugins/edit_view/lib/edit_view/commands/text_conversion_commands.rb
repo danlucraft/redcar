@@ -28,7 +28,7 @@ module Redcar
     
     class TitlizeTextCommand < TextConversionCommand
       def convert(text)
-        text.gsub(/\b('?[a-z])/) { $1.capitalize }
+        text.downcase.gsub(/\b('?[a-z])/) { $1.capitalize }
       end
     end
     

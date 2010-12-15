@@ -32,25 +32,29 @@ Feature: Change Case
     And I select from 0 to 13
     And I run the command Redcar::EditView::TitlizeTextCommand
     Then the contents should be "<s>Curry Chicken<c>"
-  
+    When I replace the contents with "CURRY CHICKEN"
+    And I select from 0 to 13
+    And I run the command Redcar::EditView::TitlizeTextCommand
+    Then the contents should be "<s>Curry Chicken<c>"
+
   Scenario: Opposite case
     When I replace the contents with "Curry Chicken"
     And I select from 0 to 13
     And I run the command Redcar::EditView::OppositeCaseTextCommand
     Then the contents should be "<s>cURRY cHICKEN<c>"
-  
+
   Scenario: Camel case
     When I replace the contents with "curry_chicken"
     And I move the cursor to 13
     And I run the command Redcar::EditView::CamelCaseTextCommand
     Then the contents should be "CurryChicken<c>"
-  
+
   Scenario: Underscore
     When I replace the contents with "CurryChicken"
     And I move the cursor to 12
     And I run the command Redcar::EditView::UnderscoreTextCommand
     Then the contents should be "curry_chicke<c>n"
-    
+
   Scenario: Pascal to Underscore to Camel Case rotation
     When I replace the contents with "CurryChicken"
     And I move the cursor to 12
@@ -60,4 +64,4 @@ Feature: Change Case
     Then the contents should be "curryChicken<c>"
     When I run the command Redcar::EditView::CamelSnakePascalRotateTextCommand
     Then the contents should be "CurryChicken<c>"
-  
+
