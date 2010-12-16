@@ -110,7 +110,7 @@ module Redcar
 
       create_model_listeners
     end
-    
+
     def create_mate_text
       @mate_text = JavaMateView::MateText.new(@parent, !!@options[:single_line])
       @mate_text.set_font(EditView.font, EditView.font_size)
@@ -288,7 +288,7 @@ module Redcar
         @mate_text.get_text_widget.right_margin = 0
       end
     end
-    
+
     def char_width
       return 0 if !!@options[:single_line]
       @char_width ||= begin
@@ -299,11 +299,11 @@ module Redcar
         width
       end
     end
-    
+
     def clear_char_width
       @char_width = nil
     end
-    
+
     def create_document
       @document = EditViewSWT::Document.new(@model.document, @mate_text.mate_document)
       @model.document.controller = @document
@@ -317,17 +317,17 @@ module Redcar
       h5 = @model.add_listener(:invisibles_changed) do |new_bool|
         @mate_text.showInvisibles(new_bool)
       end
-      
+
       h6 = @model.add_listener(:word_wrap_changed) do |should_word_wrap|
         @mate_text.set_word_wrap(should_word_wrap)
         reset_right_margin
       end
-      
+
       h11 = @model.add_listener(:margin_column_changed) do |new_column|
         @mate_text.set_margin_column(new_column)
         reset_right_margin
       end
-      
+
       h12 = @model.add_listener(:show_margin_changed) do |new_bool|
         if new_bool
           @mate_text.set_margin_column(@model.margin_column)
@@ -335,13 +335,13 @@ module Redcar
           @mate_text.set_margin_column(-1)
         end
       end
-      
+
       h7 = @model.add_listener(:font_changed) do
         @mate_text.set_font(EditView.font, EditView.font_size)
         clear_char_width
         reset_right_margin
       end
-      
+
       h8 = @model.add_listener(:theme_changed) do
         @mate_text.set_theme_by_name(EditView.theme)
       end
@@ -467,15 +467,15 @@ module Redcar
       @mate_text.get_text_widget.add_word_movement_listener(WordMoveListener.new(self))
       @mate_text.get_text_widget.add_control_listener(ControlListener.new(self))
     end
-    
+
     class ControlListener
       def initialize(edit_view_swt)
         @edit_view_swt = edit_view_swt
       end
-      
+
       def controlMoved(*_)
       end
-      
+
       def controlResized(e)
         @edit_view_swt.reset_right_margin
       end
@@ -496,6 +496,22 @@ module Redcar
     def scroll_to_line(line_index)
       @mate_text.parser.parserScheduler.last_visible_line_changed(line_index + 100)
       @mate_text.viewer.set_top_index(line_index)
+    end
+
+    def scroll_to_horizontal_offset(offset)
+      @mate_text.get_text_widget.set_horizontal_index(offset)
+    end
+
+    def smallest_visible_horizontal_index
+      @mate_text.get_text_widget.get_horizontal_index
+    end
+
+    def largest_visible_horizontal_index
+      wpix = @mate_text.get_text_widget.get_client_area.width
+      gc   = org.eclipse.swt.graphics.GC.new(@mate_text.get_text_widget)
+      inc  = gc.getFontMetrics().getAverageCharWidth()
+      gc.dispose
+      @mate_text.get_text_widget.get_horizontal_index + (wpix/inc)
     end
 
     def model_grammar_changed(name)

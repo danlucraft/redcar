@@ -60,6 +60,10 @@ Then /^there should (not )?be a tree titled "([^\"]*)"$/ do |negate,title|
   end
 end
 
+Then /^the focussed tree should be titled "([^\"]*)"$/ do |title|
+  focussed_tree.title.should == title
+end
+
 Then /^the tree width should be (the default|\d+ pixels|the minimum size)$/ do |w|
   width = focussed_treebook_width
   if w == "the default"

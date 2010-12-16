@@ -226,7 +226,7 @@ module Redcar
 
     class RevealInProjectCommand < ProjectCommand
       def execute
-        if project and project.window.trees_visible?
+        if Project::Manager.reveal_file?(project)
           tab = Redcar.app.focussed_window.focussed_notebook_tab
           if tab.is_a?(EditTab)
             return unless mirror = tab.edit_view.document.mirror and mirror.respond_to? :path
@@ -246,6 +246,13 @@ module Redcar
           tree.select(ancestor_node)
           project.window.treebook.focus_tree(project.tree)
         end
+      end
+    end
+
+    class ToggleRevealInProject < ProjectCommand
+      def execute
+        toggle = Project::Manager.reveal_files?
+        Project::Manager.reveal_files = !toggle
       end
     end
 
