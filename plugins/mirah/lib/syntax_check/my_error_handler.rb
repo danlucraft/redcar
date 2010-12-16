@@ -1,4 +1,3 @@
-puts "LOADED"
 
 module Redcar
   module SyntaxCheck
