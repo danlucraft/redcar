@@ -77,9 +77,9 @@ class ProjectSearch
       super
     end
     
-    def render(view)
+    def render(view, bg=nil)
       rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "views", "#{view.to_s}.html.erb")))
-      rhtml.result(binding)
+      rhtml.result(bg || binding)
     end
 
     def doc
@@ -108,45 +108,24 @@ class ProjectSearch
         begin
           initialize_search_output
           if @word_search.results.any?
-            add_initial_table
+            prepare_results_table
             file_num = 0
-            last_matching_line_num = nil
-            previous_file = nil
+            
+            results_by_file = {}
+            
             @word_search.results.each do |hit|
-              file_num += 1 if hit.file != previous_file
-              matched_lines      = false
-              @line_index = 0 # reset line row styling
-              need_context_after = 0
+              (results_by_file[hit.file] ||= []) << hit
+            end
+            
+            set_file_count(results_by_file.length)
+            set_line_count(@word_search.results.length)
+            
+            results_by_file.each do |file, hits|
+              file_num += 1
               
-              add_initial_table
-              
-              if hit.file != previous_file
-                increment_file_results_count
-                add_break_row # if matched_lines
-                render_file_heading(hit.file, file_num)
-                @line_index = 0 # reset line row styling
-              end
-              
-              if @word_search.context? && !(hit.file != previous_file) && (hit.line_num - last_matching_line_num) > (@word_search.context_size * 2)
-                render_divider(file_num)
-              end
-              
-              hit.pre_context.each_with_index do |context_line, i|
-                render_line(file_num, hit.line_num - @word_search.context_size + i, hit.file, context_line)
-              end
-              
-              render_line(file_num, hit.line_num, hit.file, hit.line)
-              
-              hit.post_context.each_with_index do |context_line, i|
-                render_line(file_num, hit.line_num + i + 1, hit.file, context_line)
-              end
-              
-              increment_line_results_count
-              
-              matched_lines          = true
-              last_matching_line_num = hit.line_num
-              
-              previous_file = hit.file
+              file_html = render('_file', binding)
+              escaped_file_html = escape_javascript(file_html)
+              execute("$('#results table tr:last').after(\"#{escaped_file_html}\");")
             end
             remove_initial_blank_tr
           else
@@ -172,32 +151,17 @@ class ProjectSearch
       execute("$('#line_results_count').html(0);")
     end
     
-    def add_initial_table
-      # Add an initial <tr></tr>  so that tr:last can be used
+    def prepare_results_table
       execute("if ($('#results table').size() == 0) { $('#results').html(\"<table><tr></tr></table>\"); }")
       execute("if ($('#results_summary').first().is(':hidden')) { $('#results_summary').show(); }")
     end
     
-    def increment_file_results_count
-      execute("$('#file_results_count').html(parseInt($('#file_results_count').html()) + 1);")
+    def set_file_count(value)
+      execute("$('#file_results_count').html(\"#{value}\");")
     end
     
-    def add_break_row
-      execute("$('#results table tr:last').after(\"<tr><td class='break' colspan='2'></td></tr>\");")
-    end
-    
-    def render_file_heading(name, num)
-      @file_name, @file_num = name, num
-      execute("$('#results table tr:last').after(\"#{escape_javascript(render('_file_heading'))}\");")
-    end
-    
-    def render_divider(line_file_num)
-      @line_file_num = line_file_num
-      execute("$('#results table tr:last').after(\"#{escape_javascript(render('_divider'))}\");")
-    end
-    
-    def increment_line_results_count
-      execute("$('#line_results_count').html(parseInt($('#line_results_count').html()) + 1);")
+    def set_line_count(value)
+      execute("$('#line_results_count').html(\"#{value}\");")
     end
     
     def remove_initial_blank_tr
@@ -222,12 +186,8 @@ class ProjectSearch
       text.to_s.gsub(/(\\|<\/|\r\n|[\n\r"'])/) { escape_map[$1] }
     end
 
-    def render_line(file_num, line_num, file_name, line_text)
-      @line_index += 1
-      @file_num, @line_num, @file_name, @line_text = file_num, line_num, file_name, line_text
-      execute("if ($('#results tr.file_#{file_num}.line_#{line_num}').size() == 0) {
-        $('#results table tr:last').after(\"#{escape_javascript(render('_file_line'))}\");
-      }")
+    def image_path
+      File.expand_path(File.join(plugin_root, %w(lib project_search images)))
     end
   end
 end
