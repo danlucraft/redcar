@@ -10,6 +10,7 @@ Enhancements:
  * Trim line deletes newline if rest of line is empty (Tomasz Wegrzanowski)
  * Fuzzy finders (e.g. find file) ignore spaces. (Tomasz Wegrzanowski)
  * Highlighting the current file in the project tree is now optional and is in the Project menu (Delisa Mason)
+ * Document Search is now incremental (Delisa Mason)
 
 Bugfixes:
 
