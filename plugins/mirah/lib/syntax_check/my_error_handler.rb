@@ -1,32 +1,26 @@
 
 module Redcar
   module SyntaxCheck
-    class MirahCheck < Checker
+    class Mirah < Checker
 
-      require 'mirah-parser.jar'
-      import 'mirah.impl.MirahParser'
-      import 'jmeta.ErrorHandler'
-      
+        require File.join(File.dirname(__FILE__),'..','..','vendor','mirah-parser.jar')
+        import 'mirah.impl.MirahParser'
+        import 'jmeta.ErrorHandler'
+
       class MyErrorHandler
         include ErrorHandler
 
         def problem(m)
           (@problems||=[]) << m
         end
-        
+
         def problems
           @problems || []
         end
 
         def warning(messages, positions)
           messages.length.times { |i|
-            problem "Warning: #{messages[i]} #{positions[i]}"             
-          }
-        end
-
-        def error(messages, positions)
-          messages.length.times { |i|
-            problem "Warning: #{messages[i]} #{positions[i]}"              
+            problem "Warning: #{messages[i]} #{positions[i]}"
           }
         end
       end

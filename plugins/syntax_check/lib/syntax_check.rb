@@ -1,10 +1,12 @@
 require 'syntax_check/checker'
-require 'syntax_check/error'
+require 'syntax_check/annotation'
 
 module Redcar
   module SyntaxCheck
     def self.remove_syntax_error_annotations(edit_view)
-      edit_view.remove_all_annotations :type => Error::Type
+      edit_view.remove_all_annotations :type => Annotation.type
+      edit_view.remove_all_annotations :type => Warning.type
+      edit_view.remove_all_annotations :type => Error.type
     end
 
     def self.menus
