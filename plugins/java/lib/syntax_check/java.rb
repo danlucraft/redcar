@@ -25,6 +25,7 @@ module Redcar
             err.each_line do |msg|
               if msg =~ /#{Regexp.escape(name)}:(\d+):(.*)/
                 SyntaxCheck::Error.new(doc, $1.to_i - 1, $2).annotate
+                sleep 1
               end
             end
           rescue Object => e

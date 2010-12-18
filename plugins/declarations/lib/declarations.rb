@@ -34,17 +34,17 @@ module Redcar
     def self.file_path(project)
       ::File.join(project.config_dir, 'tags')
     end
-    
+
     class ProjectRefresh < Task
       def initialize(project)
         @file_list   = project.file_list
         @project     = project
       end
-      
+
       def description
         "#{@project.path}: reparse files for declarations"
       end
-      
+
       def execute
         return if @project.remote?
         file = Declarations::File.new(Declarations.file_path(@project))
@@ -53,7 +53,7 @@ module Redcar
         Declarations.clear_tags_for_path(file.path)
       end
     end
-    
+
     def self.project_refresh_task_type
       ProjectRefresh
     end
@@ -92,13 +92,14 @@ module Redcar
     end
 
     class GoToTagCommand < EditTabCommand
+      sensitize :open_project
 
       def execute
         if Project::Manager.focussed_project.remote?
           Application::Dialog.message_box("Go to declaration doesn't work in remote projects yet :(")
           return
         end
-          
+
         if doc.selection?
           handle_tag(doc.selected_text)
         else

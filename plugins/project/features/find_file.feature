@@ -22,6 +22,13 @@ Feature: Find file
     Then the filter dialog should have 1 entry
     And I should see "foo_spec.rb (myproject/spec)" at 0 the filter dialog
 
+  Scenario: One matching file - spaces ignored
+    When I run the command Redcar::Project::FindFileCommand
+    And I set the filter to "foo spec"
+    And I wait "0.4" seconds
+    Then the filter dialog should have 1 entry
+    And I should see "foo_spec.rb (myproject/spec)" at 0 the filter dialog
+
   Scenario: Two matching files
     When I run the command Redcar::Project::FindFileCommand
     And I set the filter to "foo"
@@ -31,7 +38,16 @@ Feature: Find file
     And I should see "foo_lib.rb (myproject/lib_symlink)" at 1 the filter dialog
     And I should see "foo_spec.rb (myproject/spec)" at 2 the filter dialog
     
-  Scenario: One matching file with arbitrary letters
+  Scenario: Two matching files - spaces ignored
+    When I run the command Redcar::Project::FindFileCommand
+    And I set the filter to "foo rb"
+    And I wait "0.4" seconds
+    Then the filter dialog should have 3 entries
+    And I should see "foo_lib.rb (myproject/lib)" at 0 the filter dialog
+    And I should see "foo_lib.rb (myproject/lib_symlink)" at 1 the filter dialog
+    And I should see "foo_spec.rb (myproject/spec)" at 2 the filter dialog
+
+Scenario: One matching file with arbitrary letters
     When I run the command Redcar::Project::FindFileCommand
     And I set the filter to "fsc"
     And I wait "0.4" seconds

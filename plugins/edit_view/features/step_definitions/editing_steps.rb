@@ -184,6 +184,13 @@ When /^I replace the contents with 100 lines of "([^"]*)" then "([^"]*)"$/ do |c
   doc.text = (contents1 + "\n")*100 + contents2
 end
 
+When /^I replace the contents with (\d+) "([^"]*)" then "([^"]*)"$/ do |count, contents1, contents2|
+  contents1 = unescape_text(contents1)
+  contents2 = unescape_text(contents2)
+  doc = Redcar::EditView.focussed_edit_view_document
+  doc.text = (contents1)*count.to_i + contents2
+end
+
 When /^I scroll to the top of the document$/ do
   doc = Redcar::EditView.focussed_edit_view_document
   doc.scroll_to_line(0)
@@ -194,6 +201,13 @@ Then /^line number (\d+) should be visible$/ do |line_num|
   doc = Redcar::EditView.focussed_edit_view_document
   (doc.biggest_visible_line >= line_num).should be_true
   (doc.smallest_visible_line <= line_num).should be_true
+end
+
+Then /^horizontal offset (\d+) should be visible$/ do |offset|
+  offset = offset.to_i
+  doc    = Redcar::EditView.focussed_edit_view_document
+  (doc.largest_visible_horizontal_index  >= offset).should be_true
+  (doc.smallest_visible_horizontal_index <= offset).should be_true
 end
 
 When /^I select the word (right of|left of|around|at) (\d+)$/ do |direction, offset|
