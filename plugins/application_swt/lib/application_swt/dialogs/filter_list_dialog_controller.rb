@@ -58,7 +58,7 @@ module Redcar
         end
       end    
       
-      attr_reader :model
+      attr_reader :model, :dialog
       
       def initialize(model)
         @model = model
@@ -145,12 +145,23 @@ module Redcar
       def update_list_sync
         if @dialog
           s = Time.now
-          @update_thread = Thread.new(@dialog.text.get_text) do |text|
-            @model.update_list(text)
+          dialog = @dialog
+          this = self
+          Thread.new(@dialog.text.get_text) do |text|
+            begin
+              list = @model.update_list(text)
+              Redcar.update_gui do
+                this.populate_list(list)
+                if this.dialog
+                  this.dialog.list.set_selection(0)
+                  this.text_focus
+                end
+              end
+            rescue => e
+              puts e.message
+              puts e.backtrace
+            end
           end
-          populate_list(@update_thread.value)
-          @dialog.list.set_selection(0)
-          text_focus
         end
       end
       
@@ -209,12 +220,12 @@ module Redcar
         widget_selected
       end
       
-      private
-      
       def populate_list(contents)
-        @dialog.list.removeAll
-        contents.each do |text|
-          @dialog.list.add(text)
+        if @dialog
+          @dialog.list.removeAll
+          contents.each do |text|
+            @dialog.list.add(text)
+          end
         end
       end
     end

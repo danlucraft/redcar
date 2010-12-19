@@ -16,11 +16,13 @@ module Redcar
   end
 
   def self.update_gui
+    result = nil
     Swt.sync_exec do
       safely do
-        yield
+        result = yield
       end
     end
+    result
   end
 
   class TimeoutError < StandardError; end
