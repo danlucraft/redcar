@@ -1,4 +1,5 @@
 require 'repl/repl_mirror'
+require 'repl/shell_mirror'
 require 'repl/repl_tab'
 
 module Redcar
@@ -7,6 +8,7 @@ module Redcar
       Menu::Builder.build do
         sub_menu "Plugins" do
           sub_menu "REPL", :priority => 180 do
+            item "Open Shell REPL", REPL::ShellOpenREPL
             item "Execute", REPL::CommitREPL
             item "Clear History", REPL::ClearHistoryREPL
           end
@@ -45,7 +47,13 @@ module Redcar
       end
     end
 
-    class ReplCommand < Command
+    class ShellOpenREPL < OpenREPL
+      def execute
+        open_repl(ShellMirror.new)
+      end
+    end
+
+   class ReplCommand < Command
       sensitize :open_repl_tab
     end
 
