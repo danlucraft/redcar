@@ -22,9 +22,12 @@ module Redcar
 
     def self.keymaps
       osx = Redcar::Keymap.build("main", :osx) do
-        link "Cmd+Shift+T", RunTestCommand
+        link "Cmd+Alt+T", RunTestCommand
       end
-      [osx]
+      linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
+        link "Ctrl+Alt+T", RunTestCommand
+      end
+      [osx, linwin]
     end
     
   end
