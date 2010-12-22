@@ -38,6 +38,15 @@ module Redcar
       ]
     end
 
+    def self.storage
+      @storage ||= begin
+        storage = Plugin::Storage.new('repl')
+        storage.set_default('command_history_buffer_size', 15)
+        storage.set_default('command_history', {})
+        storage
+      end
+    end
+
     class OpenREPL < Command
 
       def open_repl(mirror)

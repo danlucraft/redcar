@@ -7,11 +7,16 @@ module Redcar
       include Redcar::Document::Mirror
 
       def initialize
-        @command_history = []
-        @command_history_buffer_size = 15
         @history = initial_preamble
-        set_current_offset
         @mutex = Mutex.new
+        initialize_command_history
+      end
+
+      def initialize_command_history
+        @command_history = REPL.storage['command_history'][title] || []
+        @command_history_buffer_size = REPL.storage['command_history_buffer_size']
+        @current_command = @command_history.size
+        set_current_offset
       end
 
       # What to display when the REPL is opened. Defaults to the title followed
@@ -121,7 +126,9 @@ module Redcar
 
       def add_command(expr)
         @command_history.push expr
-        @command_history.shift if @command_history.size > @command_history_buffer_size
+        size = @command_history.size
+        buffer_size = @command_history_buffer_size
+        @command_history.shift(size - buffer_size) if size > buffer_size
         @current_command = @command_history.size
       end
 

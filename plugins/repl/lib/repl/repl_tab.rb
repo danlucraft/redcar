@@ -15,6 +15,14 @@ module Redcar
         DEFAULT_ICON
       end
 
+      def close
+        mirror = edit_view.document.mirror
+        history = REPL.storage['command_history']
+        history[mirror.title] = mirror.command_history
+        REPL.storage['command_history'] = history
+        notify_listeners(:close)
+      end
+
       def repl_mirror=(mirror)
         edit_view.document.mirror = mirror
         edit_view.cursor_offset = edit_view.document.length
@@ -31,8 +39,6 @@ module Redcar
         offset     = edit_view.document.mirror.current_offset.to_i
         end_offset = edit_view.document.length
         length     = end_offset.to_i - offset.to_i
-        p length
-        p text
         if length > 0
           edit_view.document.replace(offset,length,text.to_s)
         else
