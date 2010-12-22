@@ -103,7 +103,8 @@ module Redcar
       # Evaluate an expression. Calls execute on the return value of evaluator
       def evaluate(expr)
         @current_command = :last
-        @command_history << expr
+        @command_history.push expr
+        @command_history.pop if @command_history.size > 15
         if expr == 'clear'
           clear_history
         else
