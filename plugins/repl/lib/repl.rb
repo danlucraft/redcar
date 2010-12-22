@@ -1,7 +1,4 @@
 require 'repl/repl_mirror'
-require 'repl/ruby_mirror'
-require 'repl/clojure_mirror'
-require 'repl/groovy_mirror'
 require 'repl/repl_tab'
 
 module Redcar
@@ -10,9 +7,6 @@ module Redcar
       Menu::Builder.build do
         sub_menu "Plugins" do
           sub_menu "REPL", :priority => 180 do
-            item "Open Ruby REPL",    REPL::RubyOpenREPL
-            item "Open Clojure REPL", REPL::ClojureOpenREPL
-            item "Open Groovy REPL", REPL::GroovyOpenREPL
             item "Execute", REPL::CommitREPL
             item "Clear History", REPL::ClearHistoryREPL
           end
@@ -22,13 +16,11 @@ module Redcar
 
     def self.keymaps
       osx = Keymap.build("main", :osx) do
-        link "Cmd+Shift+R", REPL::RubyOpenREPL
-        link "Cmd+M",       REPL::CommitREPL
+        link "Cmd+M", REPL::CommitREPL
       end
 
       linwin = Keymap.build("main", [:linux, :windows]) do
-        link "Ctrl+Shift+R", REPL::RubyOpenREPL
-        link "Ctrl+M",       REPL::CommitREPL
+        link "Ctrl+M", REPL::CommitREPL
       end
 
       [linwin, osx]
@@ -53,24 +45,6 @@ module Redcar
       end
     end
 
-    class RubyOpenREPL < OpenREPL
-      def execute
-        open_repl(RubyMirror.new)
-      end
-    end
-
-    class ClojureOpenREPL < OpenREPL
-      def execute
-        open_repl(ClojureMirror.new)
-      end
-    end
-
-    class GroovyOpenREPL < OpenREPL
-      def execute
-        open_repl(GroovyMirror.new)
-      end
-    end
-
     class ReplCommand < Command
       sensitize :open_repl_tab
     end
@@ -90,8 +64,5 @@ module Redcar
         mirror.clear_history
       end
     end
-
   end
 end
-
-
