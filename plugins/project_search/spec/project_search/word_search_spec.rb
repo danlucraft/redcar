@@ -136,6 +136,19 @@ describe ProjectSearch::WordSearch do
       search.results.map {|r| File.expand_path(r.file)}.should_not include(test_file)
     end
   end
+  
+  describe "streaming search results" do
+    it "should stream by file" do
+      search = make_search("Christmas")
+      results_by_file = []
+      search.on_file_results do |file_hits|
+        results_by_file << file_hits
+      end
+      search.results
+      results_by_file.length.should == 2
+      results_by_file.map {|r| r.first.file.split("/").last}.sort.should == ["foo.txt", "qux.rb"].sort
+    end
+  end
 end
   
   

@@ -29,40 +29,55 @@ class ProjectSearch
       end
     end
     
-    def results
-      @results ||= begin
-        hits = []
-        doc_ids.each do |doc_id|
-          next unless File.exist?(doc_id)
-          contents = File.read(doc_id).split(/\n|\r/)
-          pre_context = []
-          hits_needing_post_context = []
-          remove_hits = []
-          contents.each_with_index do |line, line_num|
-            hits_needing_post_context.each do |hit|
-              hit.post_context << line
-              if hit.post_context.length == context_size
-                remove_hits << hit
-              end
+    def on_file_results(&block)
+      @on_file_results_block = block
+    end
+    
+    def generate_results
+      hits = []
+      doc_ids.each do |doc_id|
+        next unless File.exist?(doc_id)
+        contents = File.read(doc_id).split(/\n|\r/)
+        pre_context = []
+        hits_needing_post_context = []
+        remove_hits = []
+        file_hits = []
+        contents.each_with_index do |line, line_num|
+          hits_needing_post_context.each do |hit|
+            hit.post_context << line
+            if hit.post_context.length == context_size
+              remove_hits << hit
             end
-            hits_needing_post_context -= remove_hits
-            
-            if matching_line?(line)
-              hit = Hit.new(doc_id, line_num, line, regex, pre_context.dup, [])
-              hits << hit
-              if context_size > 0
-                hits_needing_post_context << hit
-              end
-            end
-            
-            if pre_context.length == context_size
-              pre_context.shift
-            end
-            pre_context << line
           end
+          hits_needing_post_context -= remove_hits
+          
+          if matching_line?(line)
+            hit = Hit.new(doc_id, line_num, line, regex, pre_context.dup, [])
+            hits << hit
+            file_hits << hit
+            if context_size > 0
+              hits_needing_post_context << hit
+            end
+          end
+          
+          if pre_context.length == context_size
+            pre_context.shift
+          end
+          pre_context << line
         end
-        hits
+        send_file_results(file_hits)
       end
+      hits
+    end
+    
+    def send_file_results(hits)
+      if @on_file_results_block
+        @on_file_results_block.call(hits)
+      end
+    end
+    
+    def results
+      @results ||= generate_results
     end
     
     def bits

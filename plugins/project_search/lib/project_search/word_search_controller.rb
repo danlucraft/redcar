@@ -117,30 +117,37 @@ class ProjectSearch
       @thread = Thread.new do
         begin
           initialize_search_output
-          if @word_search.results.any?
-            prepare_results_table
-            file_num = 0
+          file_num = 0
+          line_num = 0
+          have_prepared_table = false
+          have_results = false
+          
+          @word_search.on_file_results do |hits|
+            have_results = true
+            file_num += 1
+            line_num += hits.length
+            set_file_count(file_num)
+            set_line_count(line_num)
+            file = hits.first.file
             
-            results_by_file = {}
-            
-            @word_search.results.each do |hit|
-              (results_by_file[hit.file] ||= []) << hit
+            unless have_prepared_table
+              prepare_results_table
+              have_prepared_table = true
             end
-            
-            set_file_count(results_by_file.length)
-            set_line_count(@word_search.results.length)
-            
-            results_by_file.each do |file, hits|
-              file_num += 1
-              
-              file_html = render_file(binding)
-              escaped_file_html = escape_javascript(file_html)
-              execute("$('#results table tr:last').after(\"#{escaped_file_html}\");")
-            end
+
+            file_html = render_file(binding)
+            escaped_file_html = escape_javascript(file_html)
+            execute("$('#results table tr:last').after(\"#{escaped_file_html}\");")
+          end
+          
+          @word_search.generate_results
+          
+          if have_results
             remove_initial_blank_tr
           else
             render_no_results
           end
+          
           hide_spinner
           Thread.kill(@thread) if @thread
           @thread = nil
