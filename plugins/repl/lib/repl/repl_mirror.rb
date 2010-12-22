@@ -81,7 +81,6 @@ module Redcar
             command = @command_history[@current_command]
           end
         end
-        p command
         command
       end
 
@@ -94,7 +93,6 @@ module Redcar
             command = @command_history[@current_command]
           end
         end
-        p command
         command
       end
 
@@ -106,15 +104,19 @@ module Redcar
       def evaluate(expr)
         @current_command = :last
         @command_history << expr
-        @history += expr + "\n"
-        begin
-          @history += "=> " + evaluator.execute(expr)
-        rescue Object => e
-          @history += "x> " + format_error(e)
+        if expr == 'clear'
+          clear_history
+        else
+          @history += expr + "\n"
+          begin
+            @history += "=> " + evaluator.execute(expr)
+          rescue Object => e
+            @history += "x> " + format_error(e)
+          end
+          @history += "\n" + prompt + " "
+          set_current_offset
+          notify_listeners(:change)
         end
-        @history += "\n" + prompt + " "
-        set_current_offset
-        notify_listeners(:change)
       end
 
       # Get the complete history as a pretty formatted string.
