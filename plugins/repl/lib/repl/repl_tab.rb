@@ -31,6 +31,8 @@ module Redcar
         offset     = edit_view.document.mirror.current_offset.to_i
         end_offset = edit_view.document.length
         length     = end_offset.to_i - offset.to_i
+        p length
+        p text
         if length > 0
           edit_view.document.replace(offset,length,text.to_s)
         else
@@ -73,7 +75,7 @@ module Redcar
               Redcar::REPL::CommitREPL.new.run
             end
           when Swt::SWT::BS, Swt::SWT::DEL
-            p e.doit
+            # FIXME: find a way to disable these
           else
             if e.stateMask == Swt::SWT::CTRL
               # TODO: kill running process

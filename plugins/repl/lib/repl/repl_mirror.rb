@@ -8,6 +8,7 @@ module Redcar
 
       def initialize
         @command_history = []
+        @command_history_buffer_size = 15
         @history = initial_preamble
         set_current_offset
         @mutex = Mutex.new
@@ -34,6 +35,14 @@ module Redcar
       # @return [String]
       def prompt
         ">>"
+      end
+
+      # The tab title and preamble to display
+      # Default: "REPL"
+      #
+      # @return [String]
+      def title
+        "REPL"
       end
 
       # This returns an object that implements:
@@ -68,32 +77,52 @@ module Redcar
         if contents.split("\n").last =~ /#{prompt}\s+$/
           ""
         else
-          contents.split(prompt).last.strip
+          last = contents.split(prompt).last
+          if last
+            last.strip
+          else
+            ""
+          end
         end
       end
 
+      def command_history_buffer_size
+        @command_history_buffer_size
+      end
+
+      def command_history_buffer_size=(size)
+        @command_history_buffer_size = size
+      end
+
+      # The previous command to the command currently displayed,
+      # or the last one executed, if none.
       def previous_command
-        if not @current_command or @current_command == :last
-          command = @command_history.last
-        else
-          if @command_history.size > 0 and @current_command > 0
-            @current_command = @current_command - 1
+        command = @command_history.last
+        current = @current_command
+        if current
+          if @command_history.size > 0 and current > 0
+            @current_command = current - 1
             command = @command_history[@current_command]
           end
         end
         command
       end
 
+      # The next command to the command currently displayed,
+      # or blank, if none.
       def next_command
-        if @current_command == :last
-          command = @command_history.last
-        else
+        command = ""
           if @current_command and @command_history.size > @current_command + 1
             @current_command = @current_command + 1
             command = @command_history[@current_command]
           end
-        end
         command
+      end
+
+      def add_command(expr)
+        @command_history.push expr
+        @command_history.shift if @command_history.size > @command_history_buffer_size
+        @current_command = @command_history.size
       end
 
       def set_current_offset
@@ -102,9 +131,7 @@ module Redcar
 
       # Evaluate an expression. Calls execute on the return value of evaluator
       def evaluate(expr)
-        @current_command = :last
-        @command_history.push expr
-        @command_history.pop if @command_history.size > 15
+        add_command(expr)
         if expr == 'clear'
           clear_history
         else
