@@ -3,8 +3,10 @@ class ProjectSearch
   class WordSearchController
     include Redcar::HtmlController
 
+    TITLE = "Project Search"
+
     def title
-      "Project Search"
+      TITLE
     end
     
     def search_copy
@@ -78,8 +80,16 @@ class ProjectSearch
     end
     
     def render(view, bg=nil)
-      rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "views", "#{view.to_s}.html.erb")))
-      rhtml.result(bg || binding)
+      erb(view).result(bg || binding)
+    end
+    
+    def render_file(bg)
+      @erb ||= erb("_file")
+      @erb.result(bg)
+    end
+    
+    def erb(view)
+      ERB.new(File.read(File.join(File.dirname(__FILE__), "views", "#{view.to_s}.html.erb")))
     end
 
     def doc
@@ -121,10 +131,13 @@ class ProjectSearch
             set_line_count(@word_search.results.length)
             
             results_by_file.each do |file, hits|
+              puts
+              p [file, hits]
               file_num += 1
               
-              file_html = render('_file', binding)
+              file_html = render_file(binding)
               escaped_file_html = escape_javascript(file_html)
+              p file_html
               execute("$('#results table tr:last').after(\"#{escaped_file_html}\");")
             end
             remove_initial_blank_tr

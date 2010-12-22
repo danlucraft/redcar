@@ -6,7 +6,7 @@ class ProjectSearch
     def find_open_instance
       all_tabs = Redcar.app.focussed_window.notebooks.map { |nb| nb.tabs }.flatten
       all_tabs.find do |t|
-        t.is_a?(Redcar::HtmlTab) && t.title == ProjectSearch::WordSearchController.new.title
+        t.is_a?(Redcar::HtmlTab) && t.title == ProjectSearch::WordSearchController::TITLE
       end
     end
     
