@@ -29,11 +29,21 @@ module Redcar
 
       # What to display when the help command is run.
       def help
-        <<-HELP
-I am a #{title}. I am here to assist you in exploring language APIs.
-Use the 'clear' command to clear command output, or 'reset' to clear
-all command history.
-HELP
+        help = "I am a #{title}. I am here to assist you in exploring language APIs.\nCommands:\n"
+        special_commands.each do |cmd,description|
+          help << "#{cmd} : #{description}\n"
+        end
+        help
+      end
+
+      def special_commands
+        {
+          'clear'        => 'Clear command output',
+          'reset'        => 'Reset REPL to initial state and clear all command history',
+          'help'         => 'Display the help dialog',
+          'buffer'       => 'Displays command history buffer size',
+          'buffer [int]' => 'Sets command history buffer size'
+        }
       end
 
       # The name of the textmate grammar to apply to the repl history.
@@ -106,6 +116,7 @@ HELP
 
       def command_history_buffer_size=(size)
         @command_history_buffer_size = size
+        REPL.storage['command_history_buffer_size'] = size
       end
 
       # The previous command to the command currently displayed,
@@ -134,6 +145,7 @@ HELP
       end
 
       def add_command(expr)
+        @history += expr + "\n"
         @command_history.push expr
         size = @command_history.size
         buffer_size = @command_history_buffer_size
@@ -145,23 +157,34 @@ HELP
         @current_offset = @history.split(//).length
       end
 
+      # Execute a special REPL command
+      def evaluate_special_command(expr)
+        if expr == 'clear'
+          clear_history
+        elsif expr == 'help'
+          append_to_history help
+        elsif expr == 'reset'
+          reset_history
+        elsif expr == 'buffer'
+          append_to_history "Current buffer size is #{command_history_buffer_size}"
+        elsif expr =~ /^buffer (\d+)$/
+          command_history_buffer_size = $1.to_i
+          append_to_history "Buffer size set to #{command_history_buffer_size}"
+        else
+          raise "Special REPL Command not found: #{expr}"
+        end
+      end
+
       # Evaluate an expression. Calls execute on the return value of evaluator
       def evaluate(expr)
         add_command(expr)
-        if expr == 'clear'
-          clear_history
-        elsif expr == 'reset'
-          reset_history
+        if special_commands[expr] or expr =~ /^buffer (\d+)$/
+          evaluate_special_command(expr)
         else
-          @history += expr + "\n"
-          if expr == 'help'
-            @history += "=> " + help
-          else
-            begin
-              @history += "=> " + evaluator.execute(expr)
-            rescue Object => e
-              @history += "x> " + format_error(e)
-            end
+          begin
+            @history += "=> " + evaluator.execute(expr)
+          rescue Object => e
+            @history += "x> " + format_error(e)
           end
           @history += "\n" + prompt + " "
           set_current_offset
@@ -176,8 +199,15 @@ HELP
         @history
       end
 
+      def append_to_history(text)
+        @history += "=> " + text
+        @history += "\n" + prompt + " "
+        set_current_offset
+        notify_listeners(:change)
+      end
+
       def clear_history
-        @history = @history.split("\n").last
+        @history = prompt + " "
         notify_listeners(:change)
       end
 
