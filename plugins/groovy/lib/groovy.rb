@@ -16,7 +16,7 @@ module Redcar
     def self.menus
       Redcar::Menu::Builder.build do
         sub_menu "Plugins" do
-          sub_menu "REPL", :priority => 180 do
+          sub_menu "REPL" do
             item "Open Groovy REPL", GroovyOpenREPL
           end
         end
