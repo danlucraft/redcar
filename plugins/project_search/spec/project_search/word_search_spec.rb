@@ -24,7 +24,7 @@ describe ProjectSearch::WordSearch do
   end
   
   def fixture_project
-    Redcar::Project.new(project_search_fixture_dir)
+    @fixture_project ||= Redcar::Project.new(project_search_fixture_dir)
   end
   
   def make_search(query, match_case=true, context=0)
@@ -115,6 +115,25 @@ describe ProjectSearch::WordSearch do
       results = make_search("xxx", true, 2).results
       results[0].post_context.should == ["ccc xxx", "ddd"]
       results[1].post_context.should == ["ddd", "eee xxx"]
+    end
+  end
+  
+  describe "when there are changes to the file system" do
+    it "should not return results for deleted files" do
+      test_file = File.expand_path(project_search_fixture_dir + "/jscar.txt")
+      File.open(test_file, "w") do |fout|
+        fout.puts "aa testword bb"
+      end
+      
+      # indexing should have happened by now
+      search = make_search("testword")
+      search.results.map {|r| File.expand_path(r.file)}.should include(test_file)
+      
+      FileUtils.rm_rf(test_file)
+      
+      # should still work but should not include the result
+      search = make_search("testword")
+      search.results.map {|r| File.expand_path(r.file)}.should_not include(test_file)
     end
   end
 end

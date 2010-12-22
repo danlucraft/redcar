@@ -177,10 +177,6 @@ class ProjectSearch
       execute("$('#spinner').hide();")
     end
 
-    def matching_line?(line_text)
-      line_text =~ @regexp
-    end
-
     def escape_javascript(text)
       escape_map = { '\\' => '\\\\', '</' => '<\/', "\r\n" => '\n', "\n" => '\n', "\r" => '\n', '"' => '\\"', "'" => "\\'" }
       text.to_s.gsub(/(\\|<\/|\r\n|[\n\r"'])/) { escape_map[$1] }

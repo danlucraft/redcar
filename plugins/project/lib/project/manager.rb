@@ -225,6 +225,8 @@ module Redcar
         tab.focus
       end
 
+      PROJECT_LOCKED_MESSAGE = "Project appears to be locked by another Redcar process!\nOpen anway?"
+      
       # Opens a new Tree with a DirMirror and DirController for the given
       # path, in a new window.
       #
@@ -237,9 +239,11 @@ module Redcar
           end
         end
         project = Project.new(path)
+        should_open = true
         if project.locked?
-          Application::Dialog.message_box("Project is locked by another Redcar process!\nClose the other project or delete .redcar/redcar.lock to continue.", :type => :warning)
-        else
+          should_open = Application::Dialog.message_box(PROJECT_LOCKED_MESSAGE, :type => :warning, :buttons => :yes_no)
+        end
+        if should_open
           win = Redcar.app.focussed_window
           win = Redcar.app.new_window if !win or Manager.in_window(win)
           project.open(win) if project.ready?
