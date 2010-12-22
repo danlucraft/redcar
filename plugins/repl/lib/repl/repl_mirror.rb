@@ -9,7 +9,7 @@ module Redcar
       def initialize
         @command_history = []
         @history = initial_preamble
-        @current_offset = @history.split(//).length - 1
+        set_current_offset
         @mutex = Mutex.new
       end
 
@@ -98,6 +98,10 @@ module Redcar
         command
       end
 
+      def set_current_offset
+        @current_offset = @history.split(//).length
+      end
+
       # Evaluate an expression. Calls execute on the return value of evaluator
       def evaluate(expr)
         @current_command = :last
@@ -109,7 +113,7 @@ module Redcar
           @history += "x> " + format_error(e)
         end
         @history += "\n" + prompt + " "
-        @current_offset = @history.split(//).length -  1
+        set_current_offset
         notify_listeners(:change)
       end
 

@@ -28,10 +28,17 @@ module Redcar
       end
 
       def set_command(text)
-        offset = edit_view.document.mirror.current_offset
+        offset = edit_view.document.mirror.current_offset.to_i
         end_offset = edit_view.document.length - 1
-        if end_offset and edit_view.document.length > offset
-          edit_view.document.replace(offset.to_i,end_offset.to_i,text.to_s)
+        if end_offset and edit_view.document.length > end_offset
+          length = end_offset.to_i - offset.to_i
+          if length > 0
+            edit_view.document.replace(offset,length,text.to_s)
+          else
+            edit_view.document.cursor_offset = offset
+            edit_view.document.insert_at_cursor(text.to_s)
+            edit_view.document.cursor_offset = edit_view.document.length
+          end
         end
       end
 
@@ -39,7 +46,7 @@ module Redcar
         offset = edit_view.document.mirror.current_offset
         current_offset = edit_view.document.cursor_offset
         unless current_offset.to_i >= offset
-          edit_view.document.cursor_offset = offset
+          edit_view.document.cursor_offset = edit_view.document.length
         end
       end
 
@@ -63,9 +70,11 @@ module Redcar
             @controller.set_command(command) if command
           when Swt::SWT::CR
             Redcar::REPL::CommitREPL.new.run
+          when Swt::SWT::BS, Swt::SWT::DEL
+            p e.doit
           else
             if e.stateMask and e.stateMask == Swt::SWT::CTRL
-              # kill running process
+              # TODO: kill running process
             else
               @controller.check_cursor_location
               e.doit = true

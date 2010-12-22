@@ -3,7 +3,7 @@ module Redcar
   class REPL
     class ShellMirror < ReplMirror
       def title
-        "Shell REPL"
+        "Console"
       end
 
       def grammar_name
