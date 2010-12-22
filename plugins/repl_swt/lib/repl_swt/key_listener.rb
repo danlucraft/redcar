@@ -22,10 +22,19 @@ module Redcar
           if e.stateMask == Swt::SWT::SHIFT
             e.doit = true
           else
-            Redcar::REPL::CommitREPL.new.run
+            @controller.commit_changes
           end
         when Swt::SWT::BS, Swt::SWT::DEL
           # FIXME: find a way to disable these
+          e.keyCode = Swt::SWT::NONE
+          e.character = Swt::SWT::NONE
+        when Swt::SWT::TAB
+          if e.stateMask == Swt::SWT::SHIFT and
+            @controller.respond_to?(:autocomplete_menu)
+            @controller.autocomplete_menu(@controller.current_command)
+          else
+            e.doit = true
+          end
         else
           if e.stateMask == Swt::SWT::CTRL
             # TODO: kill running process

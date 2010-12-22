@@ -1,9 +1,19 @@
 
 module Redcar
-  class REPL
-    class ShellMirror < ReplMirror
+  class Terminal
+    class ReplMirror < Redcar::REPL::ReplMirror
       def title
-        "Console"
+        "Terminal"
+      end
+
+      def help
+        <<-HELP
+I am a Terminal REPL. I accept shell commands.
+Someday I hope to grow up to be a real Terminal,
+but for now I am only a "proof of concept".
+Use the 'clear' command to erase command output,
+or the 'reset' command to clear all command history.
+HELP
       end
 
       def grammar_name
@@ -15,7 +25,7 @@ module Redcar
       end
 
       def evaluator
-        @evaluator ||= ShellMirror::Evaluator.new
+        @evaluator ||= Evaluator.new
       end
 
       def format_error(e)
@@ -30,7 +40,7 @@ module Redcar
         end
 
         def inspect
-          "shellREPL main"
+          "terminalREPL main"
         end
 
         def execute(cmd)

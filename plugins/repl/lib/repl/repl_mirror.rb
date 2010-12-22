@@ -24,7 +24,16 @@ module Redcar
       #
       # @return [String]
       def initial_preamble
-        "# #{title}\n\n#{prompt} "
+        "# #{title}\n# type 'help' for help\n\n#{prompt} "
+      end
+
+      # What to display when the help command is run.
+      def help
+        <<-HELP
+I am a #{title}. I am here to assist you in exploring language APIs.
+Use the 'clear' command to clear command output, or 'reset' to clear
+all command history.
+HELP
       end
 
       # The name of the textmate grammar to apply to the repl history.
@@ -141,12 +150,18 @@ module Redcar
         add_command(expr)
         if expr == 'clear'
           clear_history
+        elsif expr == 'reset'
+          reset_history
         else
           @history += expr + "\n"
-          begin
-            @history += "=> " + evaluator.execute(expr)
-          rescue Object => e
-            @history += "x> " + format_error(e)
+          if expr == 'help'
+            @history += "=> " + help
+          else
+            begin
+              @history += "=> " + evaluator.execute(expr)
+            rescue Object => e
+              @history += "x> " + format_error(e)
+            end
           end
           @history += "\n" + prompt + " "
           set_current_offset
@@ -163,6 +178,15 @@ module Redcar
 
       def clear_history
         @history = @history.split("\n").last
+        notify_listeners(:change)
+      end
+
+      def reset_history
+        @history = initial_preamble
+        history = REPL.storage['command_history']
+        history[title] = []
+        REPL.storage['command_history'] = history
+        initialize_command_history
         notify_listeners(:change)
       end
 
