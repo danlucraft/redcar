@@ -13,7 +13,7 @@ class ProjectSearch
     def execute
       if project = Redcar::Project::Manager.focussed_project
         if (tab = find_open_instance)
-          tab.html_view.controller = tab.html_view.controller # refresh
+          tab.html_view.refresh
           tab.focus
         else
           index = ProjectSearch.indexes[project.path]

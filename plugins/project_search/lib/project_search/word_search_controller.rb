@@ -91,7 +91,7 @@ class ProjectSearch
     def erb(view)
       ERB.new(File.read(File.join(File.dirname(__FILE__), "views", "#{view.to_s}.html.erb")))
     end
-
+    
     def doc
       Redcar.app.focussed_window.focussed_notebook_tab.edit_view.document rescue false
     end
@@ -131,13 +131,10 @@ class ProjectSearch
             set_line_count(@word_search.results.length)
             
             results_by_file.each do |file, hits|
-              puts
-              p [file, hits]
               file_num += 1
               
               file_html = render_file(binding)
               escaped_file_html = escape_javascript(file_html)
-              p file_html
               execute("$('#results table tr:last').after(\"#{escaped_file_html}\");")
             end
             remove_initial_blank_tr
