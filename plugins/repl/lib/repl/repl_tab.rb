@@ -31,6 +31,8 @@ module Redcar
       def attach_listeners
         control = edit_view.controller.mate_text.get_control
         control.add_verify_key_listener(Redcar::ReplSWT::KeyListener.new(self))
+        control.remove_key_listener(edit_view.controller.key_listener)
+        control.remove_verify_key_listener(edit_view.controller.verify_key_listener)
         edit_view.document.mirror.add_listener(:change) do
           edit_view.cursor_offset = edit_view.document.length
           edit_view.scroll_to_line(edit_view.document.line_count)
@@ -70,6 +72,18 @@ module Redcar
         unless current_offset.to_i >= offset
           edit_view.document.cursor_offset = edit_view.document.length
         end
+      end
+
+      def backspace_possible?
+        check_cursor_location
+        length = current_command.split(//).length
+        length > 0
+      end
+
+      def delete_possible?
+        check_cursor_location
+        offset = edit_view.document.cursor_offset
+        edit_view.document.length - offset > 0
       end
     end
   end

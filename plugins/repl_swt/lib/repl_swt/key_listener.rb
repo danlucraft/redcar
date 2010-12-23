@@ -27,6 +27,10 @@ module Redcar
           else
             @controller.commit_changes
           end
+        when Swt::SWT::DEL
+          e.doit = @controller.delete_possible?
+        when Swt::SWT::BS
+          e.doit = @controller.backspace_possible?
         else
           @controller.check_cursor_location
           e.doit = true
