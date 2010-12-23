@@ -47,6 +47,7 @@ class Redcar::REPL
           @mirror.previous_command.should == "3"
           @mirror.previous_command.should == "2"
           @mirror.previous_command.should == "1"
+          @mirror.previous_command.should == nil
         end
 
         it "should retrieve next commands in order" do
@@ -55,7 +56,7 @@ class Redcar::REPL
           @mirror.previous_command.should == "1"
           @mirror.next_command.should == "2"
           @mirror.next_command.should == "3"
-          @mirror.next_command.should == ""
+          @mirror.next_command.should == nil
         end
 
         it "should have a maximum size" do
