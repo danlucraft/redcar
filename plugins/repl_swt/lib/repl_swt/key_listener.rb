@@ -16,11 +16,9 @@ module Redcar
         e.doit = false
         case e.keyCode
         when Swt::SWT::ARROW_UP
-          command = @controller.edit_view.document.mirror.previous_command
-          @controller.set_command(command) if command
+          @controller.go_to_previous_command
         when Swt::SWT::ARROW_DOWN
-          command = @controller.edit_view.document.mirror.next_command
-          @controller.set_command(command) if command
+          @controller.go_to_next_command
         when Swt::SWT::CR
           if e.stateMask == Swt::SWT::SHIFT
             e.doit = true

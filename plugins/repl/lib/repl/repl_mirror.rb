@@ -1,7 +1,7 @@
 module Redcar
   class REPL
     class ReplMirror
-      attr_reader :history, :command_history, :current_command, :current_offset
+      attr_reader :history, :command_history, :command_index, :current_offset
 
       # A ReplMirror is a type of Document::Mirror
       include Redcar::Document::Mirror
@@ -15,7 +15,7 @@ module Redcar
       def initialize_command_history
         @command_history = REPL.storage['command_history'][title] || []
         @command_history_buffer_size = REPL.storage['command_history_buffer_size']
-        @current_command = @command_history.size
+        @command_index = @command_history.size
         set_current_offset
       end
 
@@ -133,12 +133,10 @@ module Redcar
       #
       # @return [String]
       def previous_command
-        command = @command_history.last
-        current = @current_command
-        if current
+        if current = @command_index
           if @command_history.size > 0 and current > 0
-            @current_command = current - 1
-            command = @command_history[@current_command]
+            @command_index = current - 1
+            command = @command_history[@command_index]
           end
         end
         command
@@ -149,11 +147,12 @@ module Redcar
       #
       # @return [String]
       def next_command
-        command = ""
-          if @current_command and @command_history.size > @current_command + 1
-            @current_command = @current_command + 1
-            command = @command_history[@current_command]
-          end
+        if @command_index and @command_history.size > @command_index + 1
+          @command_index = @command_index + 1
+          command = @command_history[@command_index]
+        else
+          @command_index = @command_history.size
+        end
         command
       end
 
@@ -239,7 +238,7 @@ module Redcar
         size = @command_history.size
         buffer_size = @command_history_buffer_size
         @command_history.shift(size - buffer_size) if size > buffer_size
-        @current_command = @command_history.size
+        @command_index = @command_history.size
       end
 
       # Set the position at which a command can begin

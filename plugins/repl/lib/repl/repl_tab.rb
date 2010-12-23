@@ -14,17 +14,22 @@ module Redcar
       end
 
       def close
-        mirror = edit_view.document.mirror
         history = REPL.storage['command_history']
-        history[mirror.title] = mirror.command_history
+        history[repl_mirror.title] = repl_mirror.command_history
         REPL.storage['command_history'] = history
         notify_listeners(:close)
+      end
+
+      def repl_mirror
+        edit_view.document.mirror
       end
 
       def repl_mirror=(mirror)
         edit_view.document.mirror = mirror
         edit_view.cursor_offset = edit_view.document.length
         edit_view.grammar = mirror.grammar_name
+        indenters = edit_view.document.controllers(Redcar::AutoIndenter::DocumentController)
+        indenters.first.increase_ignore
         attach_listeners
       end
 
@@ -33,26 +38,27 @@ module Redcar
         control.add_verify_key_listener(Redcar::ReplSWT::KeyListener.new(self))
         control.remove_key_listener(edit_view.controller.key_listener)
         control.remove_verify_key_listener(edit_view.controller.verify_key_listener)
-        edit_view.document.mirror.add_listener(:change) do
+        repl_mirror.add_listener(:change) do
           edit_view.cursor_offset = edit_view.document.length
           edit_view.scroll_to_line(edit_view.document.line_count)
         end
       end
 
       def current_command
-        command    = ""
-        offset     = edit_view.document.mirror.current_offset.to_i
+        offset     = repl_mirror.current_offset.to_i
         end_offset = edit_view.document.length
         length     = end_offset.to_i - offset.to_i
-        if length > 0
-          command = edit_view.document.get_range(offset,length)
-        end
-        command
+        edit_view.document.get_range(offset,length) if length > 0
+      end
+
+      def cached_command
+        @cached_command
       end
 
       def set_command(text)
-        offset = edit_view.document.mirror.current_offset.to_i
-        length = current_command.split(//).length
+        offset = repl_mirror.current_offset.to_i
+        length = 0
+        length = current_command.split(//).length if current_command
         if length > 0
           edit_view.document.replace(offset,length,text.to_s)
         else
@@ -62,21 +68,46 @@ module Redcar
         end
       end
 
+      def go_to_previous_command
+        if repl_mirror.command_index == repl_mirror.command_history.size
+          @cached_command = current_command
+        end
+        command = repl_mirror.previous_command
+        set_command(command) if command
+      end
+
+      def go_to_next_command
+        command = repl_mirror.next_command || cached_command
+        command = "" if current_command and !command
+        set_command(command) if command
+      end
+
       def commit_changes
+        @cached_command = nil
         edit_view.document.save!
       end
 
       def check_cursor_location
-        offset = edit_view.document.mirror.current_offset
+        offset         = repl_mirror.current_offset
         current_offset = edit_view.document.cursor_offset
+        end_offset     = edit_view.document.selection_offset
+        if end_offset and end_offset < current_offset
+          current_offset = end_offset
+          end_offset     = edit_view.document.cursor_offset
+        end
         unless current_offset.to_i >= offset
-          edit_view.document.cursor_offset = edit_view.document.length
+          if edit_view.document.selection? and end_offset > offset
+            edit_view.document.set_selection_range(offset,end_offset)
+          else
+            edit_view.document.cursor_offset = edit_view.document.length
+          end
         end
       end
 
       def backspace_possible?
         check_cursor_location
-        length = current_command.split(//).length
+        length = 0
+        length = current_command.split(//).length if current_command
         length > 0
       end
 
