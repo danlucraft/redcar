@@ -27,15 +27,21 @@ module Redcar
         "# #{title}\n# type 'help' for help\n\n#{prompt} "
       end
 
-      # What to display when the help command is run.
+      # What to display when the help command is run
+      #
+      # @return [String]
       def help
-        help = "I am a #{title}. I am here to assist you in exploring language APIs.\nCommands:\n"
+        help = "Hello! I am a #{title}. I am here to assist you in exploring language APIs.\n\nCommands:\n"
         special_commands.each do |cmd,description|
           help << "#{cmd} : #{description}\n"
         end
         help
       end
 
+      # The special commands supported by the REPL outside of the
+      # standard REPL syntax. Each entry is a command and description.
+      #
+      # @return [Hash]
       def special_commands
         {
           'clear'        => 'Clear command output',
@@ -110,6 +116,9 @@ module Redcar
         end
       end
 
+      # How many commands will be stored in command history
+      #
+      # @return [Integer]
       def command_history_buffer_size
         @command_history_buffer_size
       end
@@ -121,6 +130,8 @@ module Redcar
 
       # The previous command to the command currently displayed,
       # or the last one executed, if none.
+      #
+      # @return [String]
       def previous_command
         command = @command_history.last
         current = @current_command
@@ -135,6 +146,8 @@ module Redcar
 
       # The next command to the command currently displayed,
       # or blank, if none.
+      #
+      # @return [String]
       def next_command
         command = ""
           if @current_command and @command_history.size > @current_command + 1
@@ -142,37 +155,6 @@ module Redcar
             command = @command_history[@current_command]
           end
         command
-      end
-
-      def add_command(expr)
-        @history += expr + "\n"
-        @command_history.push expr
-        size = @command_history.size
-        buffer_size = @command_history_buffer_size
-        @command_history.shift(size - buffer_size) if size > buffer_size
-        @current_command = @command_history.size
-      end
-
-      def set_current_offset
-        @current_offset = @history.split(//).length
-      end
-
-      # Execute a special REPL command
-      def evaluate_special_command(expr)
-        if expr == 'clear'
-          clear_history
-        elsif expr == 'help'
-          append_to_history help
-        elsif expr == 'reset'
-          reset_history
-        elsif expr == 'buffer'
-          append_to_history "Current buffer size is #{command_history_buffer_size}"
-        elsif expr =~ /^buffer (\d+)$/
-          command_history_buffer_size = $1.to_i
-          append_to_history "Buffer size set to #{command_history_buffer_size}"
-        else
-          raise "Special REPL Command not found: #{expr}"
-        end
       end
 
       # Evaluate an expression. Calls execute on the return value of evaluator
@@ -192,6 +174,24 @@ module Redcar
         end
       end
 
+      # Evaluate a special REPL command
+      def evaluate_special_command(expr)
+        if expr == 'clear'
+          clear_history
+        elsif expr == 'help'
+          append_to_history help
+        elsif expr == 'reset'
+          reset_history
+        elsif expr == 'buffer'
+          append_to_history "Current buffer size is #{command_history_buffer_size}"
+        elsif expr =~ /^buffer (\d+)$/
+          command_history_buffer_size = $1.to_i
+          append_to_history "Buffer size set to #{command_history_buffer_size}"
+        else
+          raise "Special REPL Command not found: #{expr}"
+        end
+      end
+
       # Get the complete history as a pretty formatted string.
       #
       # @return [String]
@@ -208,6 +208,7 @@ module Redcar
 
       def clear_history
         @history = prompt + " "
+        set_current_offset
         notify_listeners(:change)
       end
 
@@ -229,6 +230,21 @@ module Redcar
       # REPLs never change except for after commit operations.
       def changed?
         false
+      end
+
+      # Appends a command to history
+      def add_command(expr)
+        @history += expr + "\n"
+        @command_history.push expr
+        size = @command_history.size
+        buffer_size = @command_history_buffer_size
+        @command_history.shift(size - buffer_size) if size > buffer_size
+        @current_command = @command_history.size
+      end
+
+      # Set the position at which a command can begin
+      def set_current_offset
+        @current_offset = @history.split(//).length
       end
     end
   end

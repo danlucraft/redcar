@@ -4,6 +4,8 @@ require 'repl/repl_tab'
 module Redcar
   class REPL
 
+    DEFAULT_BUFFER_SIZE = 15
+
     def self.sensitivities
       [
         Sensitivity.new(:open_repl_tab, Redcar.app, false, [:tab_focussed]) do |tab|
@@ -17,7 +19,9 @@ module Redcar
     def self.storage
       @storage ||= begin
         storage = Plugin::Storage.new('repl')
-        storage.set_default('command_history_buffer_size', 15)
+        storage.set_default(
+          'command_history_buffer_size',
+          DEFAULT_BUFFER_SIZE)
         storage.set_default('command_history', {})
         storage
       end
