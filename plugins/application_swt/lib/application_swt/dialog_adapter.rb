@@ -100,6 +100,17 @@ module Redcar
         menu.show
       end
 
+      def popup_text(title, message, location,dimensions=nil)
+        if dimensions
+          box = ApplicationSWT::ModelessDialog.new(title,message,dimensions[0],dimensions[1])
+        else
+          box = ApplicationSWT::ModelessDialog.new(title,message)
+        end
+        text = box.createDialogArea(parent_shell)
+        text.set_location(*get_coordinates(location))
+        text.open
+      end
+
       private
 
       def get_coordinates(location)

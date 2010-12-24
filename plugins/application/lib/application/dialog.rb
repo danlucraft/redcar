@@ -5,7 +5,7 @@ module Redcar
       def self.in_dialog?
         @in_dialog
       end
-      
+
       # Do not call
       def self.in_dialog
         @in_dialog = true
@@ -13,12 +13,12 @@ module Redcar
         @in_dialog = false
         r
       end
-      
+
       # Prompt the user with an open file dialog. Returns a path.
       def self.open_file(options)
         in_dialog { Redcar.gui.dialog_adapter.open_file(options) }
       end
-      
+
       # Prompt the user with an open directory dialog. Returns a path.
       def self.open_directory(options)
         in_dialog { Redcar.gui.dialog_adapter.open_directory(options) }
@@ -28,7 +28,7 @@ module Redcar
       def self.save_file(options)
         in_dialog { Redcar.gui.dialog_adapter.save_file(options) }
       end
-      
+
       # Show a message to the user. Requires a message and
       # options can be:
       #
@@ -39,7 +39,7 @@ module Redcar
       #
       # For example:
       #
-      # >> Application::Dialog.message_box("YO!", :type => :info, 
+      # >> Application::Dialog.message_box("YO!", :type => :info,
       # >>                                        :buttons => :yes_no_cancel)
       # => :yes
       def self.message_box(text, options={})
@@ -51,19 +51,19 @@ module Redcar
         end
         in_dialog { Redcar.gui.dialog_adapter.message_box(text, options) }
       end
-      
+
       # Returns the list of valid button combos that can be passed
       # as an option to message_box.
       def self.available_message_box_button_combos
         in_dialog { Redcar.gui.dialog_adapter.available_message_box_button_combos }
       end
-      
+
       # Returns the list of valid message box types that can be passed
       # as an option to message_box
       def self.available_message_box_types
         in_dialog { Redcar.gui.dialog_adapter.available_message_box_types }
       end
-      
+
       # Show a dialog containing a text entry box to the user, and blocks
       # until they dismiss it.
       #
@@ -94,7 +94,7 @@ module Redcar
       def self.password_input(title, message)
         in_dialog { Redcar.gui.dialog_adapter.password_input(title, message) }
       end
-      
+
       # Shows a tool tip to the user, at the cursor location.
       #
       # Allowed locations:
@@ -108,7 +108,7 @@ module Redcar
       def self.tool_tip(message, location)
         Redcar.gui.dialog_adapter.tool_tip(message, location)
       end
-      
+
       # Shows a popup menu to the user.
       #
       # Allowed locations:
@@ -121,6 +121,23 @@ module Redcar
       # @param [Symbol] location
       def self.popup_menu(menu, location)
         Redcar.gui.dialog_adapter.popup_menu(menu, location)
+      end
+
+      # Shows a non-modal popup text box to the user which closes
+      # on keyboard input
+      #
+      # Allowed locations:
+      #  * :cursor - the location of the text cursor in the focussed text widget
+      #  * :pointer - the location of the mouse pointer
+      #
+      # If :cursor is specified with no open tab, it will default to :pointer.
+      #
+      # @param [String] title
+      # @param [String] message
+      # @param [Symbol] location
+      # @param [Array<Integer>] dimensions - The width and height of the text box
+      def self.popup_text(title, message, location,dimensions=nil)
+        Redcar.gui.dialog_adapter.popup_text(title,message,location,dimensions)
       end
     end
   end
