@@ -16,11 +16,11 @@ module Redcar
         layout.marginWidth     = 0
         layout.verticalSpacing = 0
         @shell.setLayout(layout)
-        @shell.set_size DEFAULT_WIDTH, DEFAULT_HEIGHT
         @list.set_layout_data(Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH))
         @key_listener = KeyListener.new(@model)
         @list.add_key_listener(@key_listener)
         @shell.pack
+        @shell.set_size DEFAULT_WIDTH, DEFAULT_HEIGHT
         attach_listeners
       end
 
@@ -29,7 +29,7 @@ module Redcar
       end
 
       def set_location(offset)
-        x, y = Swt::GraphicsUtils.below_pixel_location_at_offset
+        x, y = Swt::GraphicsUtils.below_pixel_location_at_offset(offset)
         @shell.set_location(x,y) if x and y
       end
 

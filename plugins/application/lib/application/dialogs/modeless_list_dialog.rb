@@ -7,7 +7,7 @@ module Redcar
   # and/or 'next_list' methods, which are called when a ARROW_LEFT or ARROW_RIGHT
   # key event is generated.
   #
-  # Subclasses should implement the 'update_list' and 'selected' methods,
+  # Subclasses should implement the 'selected' method,
   # and optionally 'previous_list' and 'next_list' if applicable.
   class ModelessListDialog
     include Redcar::Model
