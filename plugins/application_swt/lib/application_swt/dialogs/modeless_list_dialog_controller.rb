@@ -29,8 +29,8 @@ module Redcar
       end
 
       def set_location(offset)
-        x,y = Redcar.gui.dialog_adapter.calculate_pixel_offset(offset)
-        @shell.set_location(x,y)
+        x, y = Swt::GraphicsUtils.below_pixel_location_at_offset
+        @shell.set_location(x,y) if x and y
       end
 
       # The currently selected value

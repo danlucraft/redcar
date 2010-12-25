@@ -99,6 +99,7 @@ module Redcar
       #
       # Allowed locations:
       #  * :cursor - the location of the text cursor in the focussed text widget
+      #  * :below_cursor - on the line directly below :cursor
       #  * :pointer - the location of the mouse pointer
       #  * character offset - a position in the text
       #
@@ -114,6 +115,7 @@ module Redcar
       #
       # Allowed locations:
       #  * :cursor - the location of the text cursor in the focussed text widget
+      #  * :below_cursor - on the line directly below :cursor
       #  * :pointer - the location of the mouse pointer
       #  * character offset - a position in the text
       #
@@ -130,6 +132,7 @@ module Redcar
       #
       # Allowed locations:
       #  * :cursor - the location of the text cursor in the focussed text widget
+      #  * :below_cursor - on the line directly below :cursor
       #  * :pointer - the location of the mouse pointer
       #  * character offset - a position in the text
       #
