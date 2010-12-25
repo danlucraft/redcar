@@ -1,13 +1,8 @@
 
-require 'java'
-
 module Redcar
   class ApplicationSWT
     class ModelessDialog
-      import org.eclipse.swt.custom.StyledText
-      import org.eclipse.swt.custom.StyleRange
-
-      def initialize(title,message,width=250,height=100)
+      def initialize(title,message,width=300,height=100)
         @title   = title
         @message = message
         @width   = width
@@ -24,13 +19,13 @@ module Redcar
         shell.setLayout(layout)
         shell.set_size(@width,@height)
 
-        text = StyledText.new(shell, Swt::SWT::WRAP)
+        text = Swt::Custom::StyledText.new(shell, Swt::SWT::WRAP|Swt::SWT::V_SCROLL)
         text.setLayoutData(Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH))
         text.set_editable false
         new_line = "\n\n"
         new_line = "\r\n\r\n" if Redcar.platform == :windows
         text.set_text(@title + new_line + @message)
-        style1 = StyleRange.new
+        style1 = Swt::Custom::StyleRange.new
         style1.start = 0
         style1.length = @title.split(//).length
         style1.fontStyle = Swt::SWT::BOLD
@@ -39,14 +34,13 @@ module Redcar
         text.set_margins(2,2,2,2)
         text.setBackground(Swt::Graphics::Color.new(display, 230, 240, 255))
         text.setLineBackground(0, 1, Swt::Graphics::Color.new(display, 135, 178, 247))
-        text.set_caret(nil)
         @key_listener = KeyListener.new(self)
         @focus_listener = FocusListener.new(self)
         text.add_key_listener(@key_listener)
         text.add_focus_listener(@focus_listener)
+        ApplicationSWT.register_shell(shell)
         @text  = text
         @shell = shell
-        shell
       end
 
       def close
@@ -62,10 +56,24 @@ module Redcar
         end
 
         def key_pressed(e)
-          @text.close
         end
 
         def key_released(e)
+          if e.stateMask == Swt::SWT::CTRL
+            case e.keyCode
+            when 97
+              e.widget.select_all
+            when 99
+              e.widget.copy
+            end
+          else
+            case e.keyCode
+            when Swt::SWT::ARROW_DOWN, Swt::SWT::ARROW_UP
+            when Swt::SWT::ARROW_LEFT, Swt::SWT::ARROW_RIGHT
+            else
+              @text.close
+            end
+          end
         end
       end
 

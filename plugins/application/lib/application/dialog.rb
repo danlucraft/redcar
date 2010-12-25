@@ -100,6 +100,7 @@ module Redcar
       # Allowed locations:
       #  * :cursor - the location of the text cursor in the focussed text widget
       #  * :pointer - the location of the mouse pointer
+      #  * character offset - a position in the text
       #
       # If :cursor is specified with no open tab, it will default to :pointer.
       #
@@ -114,6 +115,7 @@ module Redcar
       # Allowed locations:
       #  * :cursor - the location of the text cursor in the focussed text widget
       #  * :pointer - the location of the mouse pointer
+      #  * character offset - a position in the text
       #
       # If :cursor is specified with no open tab, it will default to :pointer.
       #
@@ -129,6 +131,7 @@ module Redcar
       # Allowed locations:
       #  * :cursor - the location of the text cursor in the focussed text widget
       #  * :pointer - the location of the mouse pointer
+      #  * character offset - a position in the text
       #
       # If :cursor is specified with no open tab, it will default to :pointer.
       #

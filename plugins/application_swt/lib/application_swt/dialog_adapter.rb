@@ -111,23 +111,31 @@ module Redcar
         text.open
       end
 
+      def calculate_pixel_offset(char_offset)
+        edit_view = EditView.focussed_tab_edit_view
+        location  = edit_view.controller.mate_text.viewer.get_text_widget.get_location_at_offset(char_offset)
+        x, y = location.x, location.y
+        widget_offset = edit_view.controller.mate_text.viewer.get_text_widget.to_display(0,0)
+        x += widget_offset.x
+        y += widget_offset.y
+        [x, y]
+      end
+
       private
 
       def get_coordinates(location)
         edit_view = EditView.focussed_tab_edit_view
-        if location == :cursor and not edit_view
+        if (location == :cursor or location =~ /^(\d+)$/) and not edit_view
           location = :pointer
         end
         case location
         when :cursor
-          location = edit_view.controller.mate_text.viewer.get_text_widget.get_location_at_offset(edit_view.cursor_offset)
-          x, y = location.x, location.y
-          widget_offset = edit_view.controller.mate_text.viewer.get_text_widget.to_display(0,0)
-          x += widget_offset.x
-          y += widget_offset.y
+          x, y = calculate_pixel_offset(edit_view.cursor_offset)
         when :pointer
           location = ApplicationSWT.display.get_cursor_location
           x, y = location.x, location.y
+        when location.to_s =~ /^(\d+)$/
+          x, y = calculate_pixel_offset($1.to_i)
         end
         [x, y]
       end
