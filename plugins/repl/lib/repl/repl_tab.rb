@@ -82,6 +82,17 @@ module Redcar
         set_command(command) if command
       end
 
+      def go_to_home?
+        cursor_line = edit_view.document.cursor_line
+        prompt_line = edit_view.document.line_at_offset(repl_mirror.current_offset.to_i)
+        if cursor_line == prompt_line
+          edit_view.document.cursor_offset = repl_mirror.current_offset.to_i
+          false
+        else
+          true
+        end
+      end
+
       def commit_changes
         @cached_command = nil
         edit_view.document.save!

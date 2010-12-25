@@ -1,7 +1,9 @@
 module Redcar
   class REPL
     class ReplMirror
-      attr_reader :history, :command_history, :command_index, :current_offset
+      attr_reader :history, :command_history,
+              :command_index, :current_offset,
+              :last_output
 
       # A ReplMirror is a type of Document::Mirror
       include Redcar::Document::Mirror
@@ -163,7 +165,8 @@ module Redcar
           evaluate_special_command(expr)
         else
           begin
-            @history += "=> " + evaluator.execute(expr)
+            @last_output = evaluator.execute(expr)
+            @history += "=> " + @last_output
           rescue Object => e
             @history += "x> " + format_error(e)
           end

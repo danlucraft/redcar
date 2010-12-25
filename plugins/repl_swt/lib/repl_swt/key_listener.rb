@@ -25,6 +25,8 @@ module Redcar
           else
             @controller.commit_changes
           end
+        when Swt::SWT::HOME
+          e.doit = @controller.go_to_home?
         when Swt::SWT::DEL
           e.doit = @controller.delete_possible?
         when Swt::SWT::BS
