@@ -18,6 +18,10 @@ module Redcar
         @shell.setLayout(layout)
         @list.set_layout_data(Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH))
         @key_listener = KeyListener.new(@model)
+        if @model.close_on_lost_focus
+          @focus_listener = FocusListener.new(@model)
+          @list.add_focus_listener(@focus_listener)
+        end
         @list.add_key_listener(@key_listener)
         @shell.pack
         @shell.set_size DEFAULT_WIDTH, DEFAULT_HEIGHT
@@ -45,6 +49,7 @@ module Redcar
       # Close the dialog
       def close
         @list.remove_key_listener(@key_listener)
+        @list.remove_focus_listener(@focus_listener) if @focus_listener
         @shell.dispose
       end
 
@@ -90,6 +95,19 @@ module Redcar
         end
 
         def key_released(e)
+        end
+      end
+
+      class FocusListener
+        def initialize(model)
+          @model = model
+        end
+
+        def focus_gained(e)
+        end
+
+        def focus_lost(e)
+          @model.close
         end
       end
     end

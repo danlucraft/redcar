@@ -13,7 +13,8 @@ module Redcar
     include Redcar::Model
     include Redcar::Observable
 
-    def initialize
+    def initialize(close_on_lost_focus=true)
+      @close_on_lost_focus = close_on_lost_focus
       self.controller = Redcar.gui.controller_for(self).new(self)
     end
 
@@ -32,6 +33,11 @@ module Redcar
 
     def close
       notify_listeners(:close)
+    end
+
+    # Whether to close the list dialog when focus is lost
+    def close_on_lost_focus
+      @close_on_lost_focus
     end
 
     # Get a 'previous' list, where applicable, based on the
