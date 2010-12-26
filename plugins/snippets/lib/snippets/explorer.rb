@@ -11,7 +11,7 @@ module Redcar
         matching_snippets = filter_and_rank_by(all_snippets, query, 1000) do |s| 
           display(s)
         end
-        current_scope = @document.cursor_scope
+        current_scope = Redcar.update_gui { @document.cursor_scope }
         @last_list = matching_snippets.select do |snippet|
           if snippet.scope
             !!JavaMateView::ScopeMatcher.get_match(snippet.scope, current_scope)

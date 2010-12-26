@@ -17,6 +17,7 @@ Bugfixes:
  * TitleCase now works when the selected text has capital letters in it (Delisa Mason)
  * Go to Declaration is only available when a project is open (Delisa Mason)
  * Saving a file prompts before overwriting (Delisa Mason)
+ * Encrypt/Decrypt does not happen if a user cancels (Utkarsh Kukreti)
 
 Version 0.9.1 (2 December 2010)
 ===============================

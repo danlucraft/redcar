@@ -29,6 +29,7 @@ module Encryption
     def execute
       Encryption.lazy_load
       result = Redcar::Application::Dialog.input("Password", "Enter password")
+      return if result[:button] == :cancel
       pw = result[:value]
       begin
         doc.text = Encryption.decrypt(doc.to_s, pw)
@@ -42,6 +43,7 @@ module Encryption
     def execute
       Encryption.lazy_load
       result = Redcar::Application::Dialog.input("Password", "Enter password")
+      return if result[:button] == :cancel
       pw = result[:value]
       doc.text = Encryption.encrypt(doc.to_s, pw)
     end
