@@ -18,7 +18,8 @@ module Redcar
       self.controller = Redcar.gui.controller_for(self).new(self)
     end
 
-    # Set the size of the list dialog
+    # Set the size of the list dialog. The width is measured in pixels
+    # and the height in rows of text
     def set_size(width,height)
       notify_listeners(:set_size, width,height)
     end

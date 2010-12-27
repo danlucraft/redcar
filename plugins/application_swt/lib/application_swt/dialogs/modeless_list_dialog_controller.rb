@@ -3,7 +3,7 @@ module Redcar
   class ApplicationSWT
     class ModelessListDialogController
 
-      DEFAULT_HEIGHT = 100
+      DEFAULT_HEIGHT_IN_ROWS = 4
       DEFAULT_WIDTH  = 300
 
       def initialize(model)
@@ -24,12 +24,16 @@ module Redcar
         end
         @list.add_key_listener(@key_listener)
         @shell.pack
-        @shell.set_size DEFAULT_WIDTH, DEFAULT_HEIGHT
+        @shell.set_size DEFAULT_WIDTH, convert_to_pixels(DEFAULT_HEIGHT_IN_ROWS)
         attach_listeners
       end
 
       def set_size(width,height)
-        @shell.set_size width, height
+        @shell.set_size width, convert_to_pixels(height)
+      end
+
+      def convert_to_pixels(rows)
+        @list.get_item_height * rows
       end
 
       def set_location(offset)

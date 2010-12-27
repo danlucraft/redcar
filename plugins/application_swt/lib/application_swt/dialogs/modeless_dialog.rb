@@ -2,7 +2,11 @@
 module Redcar
   class ApplicationSWT
     class ModelessDialog
-      def initialize(title,message,width=300,height=100)
+
+      DEFAULT_WIDTH = 300
+      DEFAULT_HEIGHT_IN_ROWS = 4
+
+      def initialize(title,message,width=DEFAULT_WIDTH,height=DEFAULT_HEIGHT_IN_ROWS)
         @title   = title
         @message = message
         @width   = width
@@ -17,13 +21,12 @@ module Redcar
         layout.marginWidth     = 0
         layout.verticalSpacing = 0
         shell.setLayout(layout)
-        shell.set_size(@width,@height)
 
         text = Swt::Custom::StyledText.new(shell, Swt::SWT::WRAP|Swt::SWT::V_SCROLL)
         text.setLayoutData(Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH))
         text.set_editable false
-        new_line = "\n\n"
-        new_line = "\r\n\r\n" if Redcar.platform == :windows
+        new_line = "\n"
+        new_line = "\r\n" if Redcar.platform == :windows
         text.set_text(@title + new_line + @message)
         style1 = Swt::Custom::StyleRange.new
         style1.start = 0
@@ -41,6 +44,12 @@ module Redcar
         ApplicationSWT.register_shell(shell)
         @text  = text
         @shell = shell
+        shell.set_size(@width,convert_to_pixels(@height))
+        shell
+      end
+
+      def convert_to_pixels(rows)
+        @text.get_line_height * rows
       end
 
       def close

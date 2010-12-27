@@ -142,6 +142,7 @@ module Redcar
       # @param [String] message
       # @param [Symbol] location
       # @param [Array<Integer>] dimensions - The width and height of the text box
+      # the width is measured in pixels and the height in rows
       def self.popup_text(title, message, location,dimensions=nil)
         Redcar.gui.dialog_adapter.popup_text(title,message,location,dimensions)
       end

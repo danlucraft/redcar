@@ -115,9 +115,12 @@ module Redcar
         if prefix
           word_list = alternatives(prefix)
           cur_doc   = doc
+          key_list  = word_list.words.keys
+          height    = [key_list.size,8].min
           dialog    = ListDialog.new(prefix,cur_doc)
-          dialog.update_list(word_list.words.keys)
+          dialog.update_list(key_list)
           dialog.set_location(cur_doc.cursor_offset - prefix.length)
+          dialog.set_size 300, height
           dialog.open
         end
       end
