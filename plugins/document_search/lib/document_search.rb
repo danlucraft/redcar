@@ -3,6 +3,7 @@ require "document_search/replace_command"
 require "document_search/replace_all_command"
 require "document_search/replace_next_command"
 require "document_search/search_and_replace"
+require "document_search/search_and_replace_ext"
 
 module DocumentSearch
   def self.menus
@@ -12,6 +13,7 @@ module DocumentSearch
           item "Document Search",    SearchForwardCommand
           item "Repeat Last Search", RepeatPreviousSearchForwardCommand
           item "Search and Replace", SearchAndReplaceCommand
+					item "Search and Replace (Extended)", SearchAndReplaceExtCommand
         end
         separator
       end
@@ -134,6 +136,16 @@ module DocumentSearch
   class SearchAndReplaceCommand < Redcar::EditTabCommand
     def execute
       @speedbar = SearchAndReplaceSpeedbar.new
+      if doc.selection?
+        @speedbar.initial_query = doc.selected_text
+      end
+      win.open_speedbar(@speedbar)
+    end
+  end
+
+  class SearchAndReplaceExtCommand < Redcar::EditTabCommand
+    def execute
+      @speedbar = SearchAndReplaceExtSpeedbar.new
       if doc.selection?
         @speedbar.initial_query = doc.selected_text
       end
