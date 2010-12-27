@@ -75,11 +75,10 @@ module Redcar
             when 99
               e.widget.copy
             end
+          elsif e.stateMask == Swt::SWT::ALT
           else
             case e.keyCode
-            when Swt::SWT::ARROW_DOWN, Swt::SWT::ARROW_UP
-            when Swt::SWT::ARROW_LEFT, Swt::SWT::ARROW_RIGHT
-            else
+            when Swt::SWT::ESC
               @text.close
             end
           end
