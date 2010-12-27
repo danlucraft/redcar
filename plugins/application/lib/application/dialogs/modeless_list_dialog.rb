@@ -58,20 +58,20 @@ module Redcar
     #
     # @param [Array<String>] items
     def update_list(items)
-      self.controller.update_list items
+      notify_listeners :update_list, items
     end
 
-    # Do an action, based on the current selection
-    def selected
-      p "'#{selection_value}' (at index #{selection_index}) was selected!"
+    # Do an action, based on the index of the selected item
+    def selected(index)
+      p "'#{select(index)}' (at index #{index}) was selected!"
       close
     end
 
-    # The currently selected text
+    # Get the text of an item at an index
     #
     # @return [String]
-    def selection_value
-      self.controller.selection_value
+    def select(index)
+      self.controller.select index
     end
 
     # The index of the currently selected text

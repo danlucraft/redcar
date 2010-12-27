@@ -37,6 +37,16 @@ module Redcar
         @shell.set_location(x,y) if x and y
       end
 
+      # Item at a particular index
+      def select(index)
+        items = @list.get_items
+        if items.size > index
+          item = items[index]
+          item = item[2,item.length] if item =~ /^(\d)\s.*/
+        end
+        item
+      end
+
       # The currently selected value
       def selection_value
         @list.get_selection.first
@@ -63,6 +73,9 @@ module Redcar
       #
       # @param [Array<String>] items
       def update_list(items)
+        (0..9).each do |i|
+          items[i] = "#{i} #{items[i]}" if items.size > i
+        end
         @list.set_items items
       end
 
@@ -71,6 +84,7 @@ module Redcar
         @model.add_listener(:close, &method(:close))
         @model.add_listener(:set_location, &method(:set_location))
         @model.add_listener(:set_size, &method(:set_size))
+        @model.add_listener(:update_list, &method(:update_list))
       end
 
       class KeyListener
@@ -82,7 +96,8 @@ module Redcar
         def key_pressed(e)
           case e.keyCode
           when Swt::SWT::CR, Swt::SWT::LF
-            @model.selected
+            index = @model.selection_index
+            @model.selected(index)
           when Swt::SWT::ARROW_RIGHT
             items = @model.next_list
             @model.update_list(items) if items
@@ -91,6 +106,14 @@ module Redcar
             @model.update_list(items) if items
           when Swt::SWT::ESC
             @model.close
+          else
+            (0..9).each do |i|
+              if e.keyCode == Swt::SWT.const_get("KEYPAD_#{i}") or
+                e.keyCode == i + 48
+                @model.selected(i)
+                break
+              end
+            end
           end
         end
 

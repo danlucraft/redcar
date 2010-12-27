@@ -9,8 +9,8 @@ module Redcar
         @doc = document
       end
 
-      def selected
-        if text = selection_value
+      def selected(index)
+        if text = select(index)
           offset = @doc.cursor_offset - @prefix.length
           @doc.replace(offset, @prefix.length, text)
           close
