@@ -7,6 +7,7 @@ module Redcar
       def self.storage
         @storage ||= begin
           storage = Plugin::Storage.new('find_file_dialog')
+          storage.set_default('ignore_file_patterns', false)
           storage.set_default('ignore_files_that_match_these_regexes', [])
           storage.set_default('ignore_files_that_match_these_regexes_example_for_reference', [/.*\.class/i])
           storage
@@ -94,7 +95,9 @@ module Redcar
       end
 
       def ignore_file?(filename)
-        ignore_regexes.any? {|re| re =~ filename }
+        if self.class.storage['ignore_file_patterns']
+          ignore_regexes.any? {|re| re =~ filename }
+        end
       end
 
       def find_files_from_list(text, file_list)
