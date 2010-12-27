@@ -12,9 +12,9 @@ module Redcar
           storage
         end
       end
-      
+
       attr_reader :project
-      
+
       def initialize(project)
         super()
         @project = project
@@ -77,7 +77,7 @@ module Redcar
           # show the full subdirs in the case of collisions
           n = -100
         end
-        
+
         if path.count('/') > 0
           count_back = [-path.count('/'), n].max
           path.split("/").last +
@@ -88,24 +88,25 @@ module Redcar
           path
         end
       end
-      
+
       def ignore_regexes
         self.class.storage['ignore_files_that_match_these_regexes']
       end
-      
+
       def ignore_file?(filename)
         ignore_regexes.any? {|re| re =~ filename }
       end
-      
+
       def find_files_from_list(text, file_list)
         re = make_regex(text.gsub(/\s/, ""))
-        file_list.select { |fn| 
-          fn.split('/').last =~ re
+        file_list.select { |fn|
+          fn.split('/').last =~ re and not ignore_file?(fn)
         }.compact
       end
-      
+
       def find_files(text, directories)
-        filter_and_rank_by(project.all_files.sort, text.gsub(/\s/, "")) do |fn|
+        files = project.all_files.sort.select {|fn| not ignore_file?(fn)}
+        filter_and_rank_by(files, text.gsub(/\s/, "")) do |fn|
           fn.split("/").last
         end
       end
