@@ -60,7 +60,7 @@ class Redcar::REPL
         end
 
         it "should have a maximum size" do
-          @mirror.command_history_buffer_size = 3
+          @mirror.set_buffer_size 3
           ['4','5'].each {|cmd| @mirror.add_command(cmd)}
           @mirror.command_history.size.should == 3
           @mirror.command_history.should == ['3','4','5']

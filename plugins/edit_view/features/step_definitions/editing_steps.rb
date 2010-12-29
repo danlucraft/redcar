@@ -37,6 +37,11 @@ When /^I move the cursor to (\d+)$/ do |offset|
   doc.cursor_offset = offset.to_i
 end
 
+When /^I move the cursor to the end of the document$/ do
+  doc = Redcar.app.focussed_window.focussed_notebook.focussed_tab.edit_view.document
+  doc.cursor_offset = doc.length
+end
+
 Then /^the cursor should be at (\d+)$/ do |offset|
   doc = Redcar::EditView.focussed_tab_edit_view.document
   doc.cursor_offset.should == offset.to_i

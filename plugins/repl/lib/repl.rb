@@ -1,5 +1,7 @@
+
 require 'repl/repl_mirror'
 require 'repl/repl_tab'
+require 'repl/repl_command'
 
 module Redcar
   class REPL

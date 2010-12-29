@@ -1,8 +1,8 @@
 module Redcar
   class REPL
     class ReplMirror
-      attr_reader :history, :command_history,
-              :command_index, :current_offset,
+      attr_reader :history  , :command_history,
+              :command_index, :current_offset ,
               :last_output
 
       # A ReplMirror is a type of Document::Mirror
@@ -34,8 +34,8 @@ module Redcar
       # @return [String]
       def help
         help = "Hello! I am a #{title}. I am here to assist you in exploring language APIs.\n\nCommands:\n"
-        special_commands.each do |cmd,description|
-          help << "#{cmd} : #{description}\n"
+        special_commands.each do |cmd|
+          help << "#{cmd.title} : #{cmd.description}\n"
         end
         help
       end
@@ -45,13 +45,25 @@ module Redcar
       #
       # @return [Hash]
       def special_commands
-        {
-          'clear'        => 'Clear command output',
-          'reset'        => 'Reset REPL to initial state and clear all command history',
-          'help'         => 'Display the help dialog',
-          'buffer'       => 'Displays command history buffer size',
-          'buffer [int]' => 'Sets command history buffer size'
-        }
+        [
+          ReplCommand.new('clear', /^clear$/,'Clear command output') do |last|
+            clear_history
+          end,
+          ReplCommand.new('reset', /^reset$/,
+            'Reset REPL to initial state and clear all command history') do |last|
+            reset_history
+          end,
+          ReplCommand.new('help',/^help$/,'Display this help text') do |last|
+            append_to_history help
+          end,
+          ReplCommand.new('buffer',/^buffer$/,'Displays command history buffer size') do |last|
+            append_to_history "Current buffer size is #{command_history_buffer_size}"
+          end,
+          ReplCommand.new('buffer [int]',/buffer (\d+)$/, 'Sets command history buffer size') do |last|
+            set_buffer_size last.captures.first.to_i
+            append_to_history "Buffer size set to #{command_history_buffer_size}"
+          end
+        ]
       end
 
       # The name of the textmate grammar to apply to the repl history.
@@ -125,8 +137,12 @@ module Redcar
         @command_history_buffer_size
       end
 
-      def command_history_buffer_size=(size)
+      def set_buffer_size(size)
         @command_history_buffer_size = size
+        if @command_history.size > size
+          @command_history.shift(@command_history.size - size)
+        end
+        @command_index = @command_history.size
         REPL.storage['command_history_buffer_size'] = size
       end
 
@@ -161,8 +177,11 @@ module Redcar
       # Evaluate an expression. Calls execute on the return value of evaluator
       def evaluate(expr)
         add_command(expr)
-        if special_commands[expr] or expr =~ /^buffer (\d+)$/
-          evaluate_special_command(expr)
+        special = special_commands.select {|cmd| expr =~ cmd.regex}
+        if special.size > 0
+          cmd = special.first
+          expr =~ cmd.regex
+          cmd.call Regexp.last_match
         else
           begin
             @last_output = evaluator.execute(expr)
@@ -176,24 +195,6 @@ module Redcar
         end
       end
 
-      # Evaluate a special REPL command
-      def evaluate_special_command(expr)
-        if expr == 'clear'
-          clear_history
-        elsif expr == 'help'
-          append_to_history help
-        elsif expr == 'reset'
-          reset_history
-        elsif expr == 'buffer'
-          append_to_history "Current buffer size is #{command_history_buffer_size}"
-        elsif expr =~ /^buffer (\d+)$/
-          command_history_buffer_size = $1.to_i
-          append_to_history "Buffer size set to #{command_history_buffer_size}"
-        else
-          raise "Special REPL Command not found: #{expr}"
-        end
-      end
-
       # Get the complete history as a pretty formatted string.
       #
       # @return [String]
@@ -202,6 +203,7 @@ module Redcar
       end
 
       def append_to_history(text)
+        @last_output = text
         @history += "=> " + text
         @history += "\n" + prompt + " "
         set_current_offset
