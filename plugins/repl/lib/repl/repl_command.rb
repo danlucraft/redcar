@@ -8,7 +8,7 @@ module Redcar
       def initialize(title,regex,description,&block)
         @title = title
         @regex = regex
-        @desc  = description
+        @description  = description
         @block = block
       end
 

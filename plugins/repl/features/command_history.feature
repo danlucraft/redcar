@@ -37,6 +37,8 @@ Scenario: Command history can be reset
   Then the current command should be blank
   And I press the up arrow key
   Then the current command should be blank
+  And I press the down arrow key
+  Then the current command should be blank
 
 Scenario: Command history is saved between REPL sessions
   When I close the focussed tab
@@ -65,3 +67,9 @@ Scenario: Command history buffer size can be set
   Then the current command should be "x * y"
   And I press the up arrow key
   Then the current command should be "x * y"
+  When I press the return key
+  And I close the focussed tab
+  And I open a "ruby" repl
+  And I insert "buffer" at the cursor
+  And I press the return key
+  Then the REPL output should be "Current buffer size is 2"
