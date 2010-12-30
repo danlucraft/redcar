@@ -1,7 +1,7 @@
 Feature: Navigation and editing keys have special behaviour in a REPL
 
   Background:
-    When I open a "ruby" repl
+    When I open a new repl
     And I insert "clear" at the cursor
     And I press the return key
     And I insert "x = 4" at the cursor

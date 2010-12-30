@@ -2,6 +2,10 @@ When /^I open a "([^"]*)" repl$/ do |repl|
   Redcar.const_get(repl.camelize).const_get(repl.camelize + "OpenREPL").new.run
 end
 
+When /^I open a new repl$/ do
+  Redcar::REPL::FakeOpenREPL.new.run
+end
+
 Then /^the REPL output should be "([^"]*)"$/ do |output|
   current_tab.edit_view.document.mirror.last_output.should == output
 end

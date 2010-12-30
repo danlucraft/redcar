@@ -1,7 +1,7 @@
 Feature: Command history
 
 Background:
-  When I open a "ruby" repl
+  When I open a new repl
   And I insert "x = 4" at the cursor
   And I press the return key
   Then the current command should be blank
@@ -42,7 +42,7 @@ Scenario: Command history can be reset
 
 Scenario: Command history is saved between REPL sessions
   When I close the focussed tab
-  And I open a "ruby" repl
+  And I open a new repl
   When I press the up arrow key
   Then the current command should be "y = 5"
   When I press the up arrow key
@@ -69,7 +69,7 @@ Scenario: Command history buffer size can be set
   Then the current command should be "x * y"
   When I press the return key
   And I close the focussed tab
-  And I open a "ruby" repl
+  And I open a new repl
   And I insert "buffer" at the cursor
   And I press the return key
   Then the REPL output should be "Current buffer size is 2"
