@@ -2,8 +2,8 @@
 require 'java'
 
 module Redcar
-  class REPL
-    class GroovyMirror < ReplMirror
+  class Groovy
+    class ReplMirror < Redcar::REPL::ReplMirror
       def title
         "Groovy REPL"
       end
@@ -11,13 +11,13 @@ module Redcar
       def grammar_name
         "Groovy REPL"
       end
-      
+
       def prompt
         "groovy>"
-      end      
+      end
 
       def evaluator
-        @instance ||= GroovyMirror::Evaluator.new
+        @instance ||= ReplMirror::Evaluator.new
       end
 
       def format_error(e)
@@ -26,18 +26,18 @@ module Redcar
       end
 
       class Evaluator
-        def self.load_groovy_dependencies
+        def self.load_dependencies
           unless @loaded
-            require File.join(Redcar.asset_dir,"groovy-all")
+            Groovy.load_dependencies
             import 'groovy.lang.GroovyShell'
             import 'java.io.PrintWriter'
             import 'java.io.StringWriter'
             @loaded = true
           end
         end
-        
+
         def initialize
-          GroovyMirror::Evaluator.load_groovy_dependencies
+          Evaluator.load_dependencies
           @out = StringWriter.new
           @shell = GroovyShell.new
           @shell.setProperty('out',@out)

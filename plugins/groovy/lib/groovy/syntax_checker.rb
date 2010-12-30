@@ -1,19 +1,24 @@
+
 require 'java'
 
 module Redcar
-  module SyntaxCheck
-    class Groovy < Checker
+  class Groovy
+    class SyntaxChecker < Redcar::SyntaxCheck::Checker
       supported_grammars "Groovy", "Easyb"
 
-      def initialize(document)
-        super
+      def self.load_dependencies
         unless @loaded
-          require File.join(Redcar.asset_dir,"groovy-all")
+          Groovy.load_dependencies
           import 'groovy.lang.GroovyShell'
           import 'org.codehaus.groovy.control.CompilationFailedException'
           import 'org.codehaus.groovy.control.CompilerConfiguration'
           @loaded = true
         end
+      end
+
+      def initialize(document)
+        super
+        SyntaxChecker.load_dependencies
       end
 
       def check(*args)
@@ -27,7 +32,7 @@ module Redcar
         rescue CompilationFailedException => e
           create_syntax_error(doc, e.message, name).annotate
         rescue Object => e
-          SyntaxCheck.message(
+          Redcar::SyntaxCheck.message(
             "An error occurred while parsing #{name}: #{e.message}",:error)
         end
       end
@@ -36,7 +41,7 @@ module Redcar
         message  =~ /#{Regexp.escape(name)}: (\d+):(.*)/
         line     = $1.to_i - 1
         message  = $2
-        SyntaxCheck::Error.new(doc, line, message)
+        Redcar::SyntaxCheck::Error.new(doc, line, message)
       end
 
       def classpath_files(project)
@@ -54,7 +59,7 @@ module Redcar
             part  = shell.run(file, [])
             parts += part if part
           rescue Object => e
-            SyntaxCheck.message(
+            Redcar::SyntaxCheck.message(
               "An error occurred while loading groovy classpath file #{path}: #{e.message}",:error)
           end
         end
