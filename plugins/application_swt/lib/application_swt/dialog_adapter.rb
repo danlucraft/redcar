@@ -111,6 +111,15 @@ module Redcar
         text.open
       end
 
+      def popup_html(text,location,dimensions=nil)
+        if dimensions
+          box = ApplicationSWT::ModelessHtmlDialog.new(text,dimensions[0],dimensions[1])
+        else
+          box = ApplicationSWT::ModelessHtmlDialog.new(text)
+        end
+        box.open(parent_shell,*get_coordinates(location))
+      end
+
       private
 
       def get_coordinates(location)
