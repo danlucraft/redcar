@@ -1,9 +1,20 @@
 
 require 'java'
 require 'mirah/syntax_checker'
+require 'mirah/repl_mirror'
 
 module Redcar
   class Mirah
+
+    def self.menus
+      Menu::Builder.build do
+        sub_menu "Plugins" do
+          sub_menu "REPL" do
+            item "Open Mirah REPL", MirahOpenREPL
+          end
+        end
+      end
+    end
 
     def self.load_dependencies
       unless @loaded
@@ -20,6 +31,12 @@ module Redcar
         storage = Plugin::Storage.new('mirah')
         storage.set_default('check_for_warnings', true)
         storage
+      end
+    end
+
+    class MirahOpenREPL < Redcar::REPL::OpenREPL
+      def execute
+        open_repl(ReplMirror.new)
       end
     end
   end

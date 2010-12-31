@@ -3,5 +3,6 @@ Plugin.define do
   version "1.0"
   file    "lib", "mirah"
   object  "Redcar::Mirah"
-  dependencies "syntax_check", ">0"
+  dependencies "syntax_check", ">0",
+               "repl", ">0"
 end
