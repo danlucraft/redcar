@@ -36,6 +36,7 @@ class Redcar::REPL
 
       describe "adding and navigating command history" do
         before(:each) do
+          Redcar::REPL.storage['command_history'][@mirror.title] = []
           ['1','2','3'].each {|cmd| @mirror.add_command(cmd)}
         end
 

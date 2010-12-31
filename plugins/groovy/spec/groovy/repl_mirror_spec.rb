@@ -44,6 +44,7 @@ class Redcar::Groovy
         wait_for_prompt
         @mirror.read.should == (<<-Groovy).chomp
 # Groovy REPL
+# type 'help' for help
 
 groovy> 
 Groovy
