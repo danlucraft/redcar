@@ -985,7 +985,7 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class IncreaseFontSize < Command
+    class IncreaseFontSize < EditTabCommand
       def execute
         unless (current = Redcar::EditView.font_size) >= Redcar::EditView::MAX_FONT_SIZE
           Redcar::EditView.font_size = current+1
@@ -993,7 +993,7 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class DecreaseFontSize < Command
+    class DecreaseFontSize < EditTabCommand
       def execute
         unless (current = Redcar::EditView.font_size) <= Redcar::EditView::MIN_FONT_SIZE
           Redcar::EditView.font_size = current-1
