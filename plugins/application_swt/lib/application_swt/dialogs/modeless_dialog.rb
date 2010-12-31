@@ -13,49 +13,16 @@ module Redcar
         @height  = height
       end
 
-      def createDialogArea(parent)
-        display = ApplicationSWT.display
-        shell  = Swt::Widgets::Shell.new(parent, Swt::SWT::MODELESS)
-        layout = Swt::Layout::GridLayout.new
-        layout.marginHeight    = 0
-        layout.marginWidth     = 0
-        layout.verticalSpacing = 0
-        shell.setLayout(layout)
-
-        text = Swt::Custom::StyledText.new(shell, Swt::SWT::WRAP|Swt::SWT::V_SCROLL)
-        text.setLayoutData(Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH))
-        text.set_editable false
-        new_line = "\n"
-        new_line = "\r\n" if Redcar.platform == :windows
-        text.set_text(@title + new_line + @message)
-        style1 = Swt::Custom::StyleRange.new
-        style1.start = 0
-        style1.length = @title.split(//).length
-        style1.fontStyle = Swt::SWT::BOLD
-        style1.foreground = display.getSystemColor(Swt::SWT::COLOR_WHITE)
-        text.setStyleRange(style1)
-        text.set_margins(2,2,2,2)
-        text.setBackground(Swt::Graphics::Color.new(display, 230, 240, 255))
-        text.setLineBackground(0, 1, Swt::Graphics::Color.new(display, 135, 178, 247))
-        @key_listener = KeyListener.new(self)
-        @focus_listener = FocusListener.new(self)
-        text.add_key_listener(@key_listener)
-        text.add_focus_listener(@focus_listener)
-        ApplicationSWT.register_shell(shell)
-        @text  = text
-        @shell = shell
-        shell.set_size(@width,convert_to_pixels(@height))
-        shell
-      end
-
-      def convert_to_pixels(rows)
-        @text.get_line_height * rows
-      end
-
       def close
         @text.remove_key_listener(@key_listener)
         @text.remove_focus_listener(@focus_listener)
         @shell.dispose
+      end
+
+      def open(parent,*location)
+        createDialogArea(parent)
+        @shell.set_location(*location)
+        @shell.open
       end
 
       class KeyListener
@@ -96,6 +63,46 @@ module Redcar
         def focus_lost(e)
           @text.close
         end
+      end
+
+      private
+
+      def createDialogArea(parent)
+        display = ApplicationSWT.display
+        shell  = Swt::Widgets::Shell.new(parent, Swt::SWT::MODELESS)
+        layout = Swt::Layout::GridLayout.new
+        layout.marginHeight    = 0
+        layout.marginWidth     = 0
+        layout.verticalSpacing = 0
+        shell.setLayout(layout)
+
+        text = Swt::Custom::StyledText.new(shell, Swt::SWT::WRAP|Swt::SWT::V_SCROLL)
+        text.setLayoutData(Swt::Layout::GridData.new(Swt::Layout::GridData::FILL_BOTH))
+        text.set_editable false
+        new_line = "\n"
+        new_line = "\r\n" if Redcar.platform == :windows
+        text.set_text(@title + new_line + @message)
+        style1 = Swt::Custom::StyleRange.new
+        style1.start = 0
+        style1.length = @title.split(//).length
+        style1.fontStyle = Swt::SWT::BOLD
+        style1.foreground = display.getSystemColor(Swt::SWT::COLOR_WHITE)
+        text.setStyleRange(style1)
+        text.set_margins(2,2,2,2)
+        text.setBackground(Swt::Graphics::Color.new(display, 230, 240, 255))
+        text.setLineBackground(0, 1, Swt::Graphics::Color.new(display, 135, 178, 247))
+        @key_listener = KeyListener.new(self)
+        @focus_listener = FocusListener.new(self)
+        text.add_key_listener(@key_listener)
+        text.add_focus_listener(@focus_listener)
+        ApplicationSWT.register_shell(shell)
+        @text  = text
+        @shell = shell
+        shell.set_size(@width,convert_to_pixels(@height))
+      end
+
+      def convert_to_pixels(rows)
+        @text.get_line_height * rows
       end
     end
   end

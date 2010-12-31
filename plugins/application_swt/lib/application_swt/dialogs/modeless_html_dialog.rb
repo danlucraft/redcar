@@ -12,6 +12,25 @@ module Redcar
         @height = height
       end
 
+      def close
+        # @browser.remove_focus_listener(@focus_listener)
+        @browser.remove_key_listener(@key_listener)
+        @browser.dispose
+        @shell.dispose
+      end
+
+      def open(parent,*location)
+        createDialogArea(parent)
+        @shell.set_location(*location)
+        @shell.open
+        # getting browser focus events does not work - SWT #84532
+        # @focus_listener = ModelessDialog::FocusListener.new(self)
+        # @browser.add_focus_listener(@focus_listener)
+        # @browser.set_focus
+      end
+
+      private
+
       def createDialogArea(parent)
         display = ApplicationSWT.display
         @shell  = Swt::Widgets::Shell.new(parent, Swt::SWT::MODELESS)
@@ -28,25 +47,6 @@ module Redcar
         @browser.add_key_listener(@key_listener)
         @browser.set_text(@text)
         ApplicationSWT.register_shell(@shell)
-      end
-
-      def close
-        @browser.remove_key_listener(@key_listener)
-        # @browser.remove_focus_listener(@focus_listener)
-        @shell.dispose
-      end
-
-      def set_text(text)
-        @browser.set_text(text)
-      end
-
-      def open(parent,*location)
-        createDialogArea(parent)
-        @shell.set_location(*location)
-        @shell.open
-        @browser.set_focus
-        # @focus_listener = ModelessDialog::FocusListener.new(self)
-        # @browser.add_focus_listener(@focus_listener)
       end
     end
   end

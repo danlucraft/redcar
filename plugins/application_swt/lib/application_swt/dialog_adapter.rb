@@ -106,9 +106,7 @@ module Redcar
         else
           box = ApplicationSWT::ModelessDialog.new(title,message)
         end
-        text = box.createDialogArea(parent_shell)
-        text.set_location(*get_coordinates(location))
-        text.open
+        box.open(parent_shell,*get_coordinates(location))
       end
 
       def popup_html(text,location,dimensions=nil)

@@ -128,7 +128,7 @@ module Redcar
       end
 
       # Shows a non-modal popup text box to the user which closes
-      # on keyboard input
+      # on keyboard input or lost focus
       #
       # Allowed locations:
       #  * :cursor - the location of the text cursor in the focussed text widget
@@ -145,6 +145,25 @@ module Redcar
       # the width is measured in pixels and the height in rows
       def self.popup_text(title, message, location,dimensions=nil)
         Redcar.gui.dialog_adapter.popup_text(title,message,location,dimensions)
+      end
+
+      # Shows a non-modal popup html text box to the user which closes
+      # on keyboard input
+      #
+      # Allowed locations:
+      #  * :cursor - the location of the text cursor in the focussed text widget
+      #  * :below_cursor - on the line directly below :cursor
+      #  * :pointer - the location of the mouse pointer
+      #  * character offset - a position in the text
+      #
+      # If :cursor is specified with no open tab, it will default to :pointer.
+      #
+      # @param [String] text
+      # @param [Symbol] location
+      # @param [Array<Integer>] dimensions - The width and height of the text box
+      # in pixels
+      def self.popup_html(text, location, dimensions=nil)
+        Redcar.gui.dialog_adapter.popup_html(text,location,dimensions)
       end
     end
   end
