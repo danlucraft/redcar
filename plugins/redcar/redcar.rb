@@ -301,6 +301,7 @@ module Redcar
             else
               @win.treebook.focus_tree(tree)
             end
+            tree.focus
             close
           end
         end
@@ -457,6 +458,22 @@ Redcar.environment: #{Redcar.environment}
             Redcar::Top::CloseTabCommand.new(t).run
           end
         end
+      end
+    end
+    
+    class SwitchTreeDownCommand < TreeCommand
+      
+      def execute
+        win = Redcar.app.focussed_window
+        win.treebook.switch_down
+      end
+    end
+    
+    class SwitchTreeUpCommand < TreeCommand
+      
+      def execute
+        win = Redcar.app.focussed_window
+        win.treebook.switch_up
       end
     end
 
@@ -1042,6 +1059,8 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+T",           Project::FindFileCommand
         link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
         link "Cmd+Alt+O",       SwitchNotebookCommand
+        link "Alt+Shift+[",     SwitchTreeUpCommand
+        link "Alt+Shift+]",     SwitchTreeDownCommand
         link "Cmd+Shift+[",     SwitchTabDownCommand
         link "Cmd+Shift+]",     SwitchTabUpCommand
         link "Ctrl+Shift+[",    MoveTabDownCommand
@@ -1139,6 +1158,8 @@ Redcar.environment: #{Redcar.environment}
 
         link "Ctrl+Alt+O",       SwitchNotebookCommand
         link "Ctrl+Shift+H",     ToggleTreesCommand
+        link "Alt+Page Up",         SwitchTreeUpCommand
+        link "Alt+Page Down",       SwitchTreeDownCommand
         link "Ctrl+Page Up",         SwitchTabDownCommand
         link "Ctrl+Page Down",       SwitchTabUpCommand
         link "Ctrl+Shift+Page Up",   MoveTabDownCommand
@@ -1281,10 +1302,13 @@ Redcar.environment: #{Redcar.environment}
           group(:priority => 15) do
             separator
             sub_menu "Trees" do
-              item "Focus Tree", FocusTreeCommand
+              item "Tree Finder", FocusTreeCommand
               item "Toggle Tree Visibility", ToggleTreesCommand
               item "Increase Tree Width", IncreaseTreebookWidthCommand
               item "Decrease Tree Width", DecreaseTreebookWidthCommand
+              separator
+              item "Previous Tree", SwitchTreeUpCommand
+              item "Next Tree", SwitchTreeDownCommand
             end
             lazy_sub_menu "Windows" do
               GenerateWindowsMenu.new(self).run
