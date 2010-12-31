@@ -12,6 +12,7 @@ Enhancements:
  * Highlighting the current file in the project tree is now optional and is in the Project menu (Delisa Mason)
  * Document Search is now incremental (Delisa Mason)
  * REPL Enhancements, including commit on Return (Delisa Mason)
+ * Mirah syntax checking (Michal Hantl)
 
 Bugfixes:
 
