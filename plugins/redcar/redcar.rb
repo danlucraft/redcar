@@ -394,7 +394,7 @@ Redcar.environment: #{Redcar.environment}
         #end
       end
     end
-    
+
     class CloseAll < Redcar::Command
       def execute
         window = Redcar.app.focussed_window
@@ -404,7 +404,7 @@ Redcar.environment: #{Redcar.environment}
         end
       end
     end
-    
+
     class CloseOthers < Redcar::Command
       def execute
         window = Redcar.app.focussed_window
@@ -417,7 +417,7 @@ Redcar.environment: #{Redcar.environment}
         end
       end
     end
-    
+
     class SwitchTabDownCommand < TabCommand
 
       def execute
@@ -465,6 +465,10 @@ Redcar.environment: #{Redcar.environment}
     class MoveHomeCommand < DocumentCommand
 
       def execute
+        if doc.mirror.is_a?(Redcar::REPL::ReplMirror)
+          # do not do the default home command on a line with a prompt
+          return unless tab.go_to_home?
+        end
         line_ix = doc.line_at_offset(doc.cursor_offset)
         line    = doc.get_line(line_ix)
         prefix  = line[0...doc.cursor_line_offset]
