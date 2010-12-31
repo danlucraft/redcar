@@ -1046,7 +1046,7 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+Shift+]",     SwitchTabUpCommand
         link "Ctrl+Shift+[",    MoveTabDownCommand
         link "Ctrl+Shift+]",    MoveTabUpCommand
-        link "F11",             ToggleFullscreen
+        link "Cmd+Shift++",     ToggleFullscreen
         link "Cmd+Shift+T",     FocusTreeCommand
         link "Alt+Shift+J",     IncreaseTreebookWidthCommand
         link "Alt+Shift+H",     DecreaseTreebookWidthCommand
@@ -1267,12 +1267,12 @@ Redcar.environment: #{Redcar.environment}
         end
         sub_menu "View", :priority => 30 do
           sub_menu "Appearance", :priority => 5 do
-            item "Select Font", SelectNewFont
+            item "Select Theme", SelectTheme
+            separator
+            item "Select Font" , SelectNewFont
+            item "Select Font Size"  , SelectFontSize
             item "Increase Font Size", IncreaseFontSize
             item "Decrease Font Size", DecreaseFontSize
-            item "Select Font Size"  , SelectFontSize
-            separator
-            item "Theme", SelectTheme
           end
           group(:priority => 10) do
             separator
@@ -1401,4 +1401,3 @@ Redcar.environment: #{Redcar.environment}
     end
   end
 end
-
