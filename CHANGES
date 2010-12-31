@@ -6,11 +6,12 @@ Enhancements:
  * Add "Close others" and "Close all" commands to the File menu (Clinton R Nixon)
  * Syntax checking for Java (Delisa Mason)
  * Git integration is now available when the current project is a subdirectory of a repository (Delisa Mason)
- * Ctrl+A/E added for Linux (Tomasz Wegrzanowski)
+ * Ctrl+A/E (home and end) added for Linux (Tomasz Wegrzanowski)
  * Trim line deletes newline if rest of line is empty (Tomasz Wegrzanowski)
  * Fuzzy finders (e.g. find file) ignore spaces. (Tomasz Wegrzanowski)
  * Highlighting the current file in the project tree is now optional and is in the Project menu (Delisa Mason)
  * Document Search is now incremental (Delisa Mason)
+ * REPL Enhancements, including commit on Return (Delisa Mason)
 
 Bugfixes:
 
