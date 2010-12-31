@@ -45,3 +45,11 @@ Feature: Navigation and editing keys have special behaviour in a REPL
     Then the cursor should be at 5
     When I press the right arrow key
     Then the cursor should be at 6
+
+  Scenario: The left arrow key should not go beyond the prompt
+    When I press the return key
+    And I insert "clear" at the cursor
+    And I press the return key
+    Then the cursor should be at 3
+    When I press the left arrow key
+    Then the cursor should be at 3

@@ -19,6 +19,8 @@ module Redcar
           @controller.go_to_previous_command
         when Swt::SWT::ARROW_DOWN
           @controller.go_to_next_command
+        when Swt::SWT::ARROW_LEFT
+          e.doit = @controller.backspace_possible?
         when Swt::SWT::CR
           if e.stateMask == Swt::SWT::SHIFT
             e.doit = true
