@@ -1,9 +1,9 @@
 module Redcar
   module SyntaxCheck
     class Annotation
-    
-      def self.type 
-        "syntax.type"
+
+      def self.type
+        "syntax.annotation.type"
       end
 
       def icon
@@ -31,10 +31,10 @@ module Redcar
     end
 
     class Error < Annotation
-      def self.type 
-        "error.type"
+      def self.type
+        "syntax.error.type"
       end
-        
+
       def icon
         "compile-error"
       end
@@ -45,10 +45,10 @@ module Redcar
     end
 
     class Warning < Annotation
-      def self.type 
-        "warning.type"
+      def self.type
+        "syntax.warning.type"
       end
-      
+
       def icon
         "compile-warning"
       end

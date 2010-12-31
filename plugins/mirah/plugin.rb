@@ -1,7 +1,7 @@
 Plugin.define do
   name    "mirah"
-  version "0.1"
+  version "1.0"
   file    "lib", "mirah"
-  object  "Redcar::SyntaxCheck::Mirah"
+  object  "Redcar::Mirah"
   dependencies "syntax_check", ">0"
 end

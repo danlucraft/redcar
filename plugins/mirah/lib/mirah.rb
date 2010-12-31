@@ -1,45 +1,25 @@
+
 require 'java'
+require 'mirah/syntax_checker'
+
 module Redcar
-  module SyntaxCheck
-    class Mirah < Checker
-      supported_grammars "Mirah"
+  class Mirah
 
-       @@loaded = false
-
-      def initialize(document)
-        super
-        # load mirah-parser.jar with the firs use
-        unless @@loaded
-          require 'syntax_check/my_error_handler'
-          @@loaded = true
-        end
+    def self.load_dependencies
+      unless @loaded
+        require File.join(File.dirname(__FILE__),'..','vendor','mirah-parser')
+        import  'mirah.impl.MirahParser'
+        import  'jmeta.ErrorHandler'
+        require 'mirah/my_error_handler'
+        @loaded = true
       end
+    end
 
-      def check(*args)
-        path = manifest_path(doc)
-
-        parser = MirahParser.new
-        parser.filename = path
-        # If you want to get warnings
-        handler = MyErrorHandler.new
-        parser.errorHandler = handler
-        SyntaxCheck.remove_syntax_error_annotations(doc.edit_view)
-        begin
-          parser.parse(IO.read(path))
-        rescue
-          m = $!.message
-          error = m.split(" (").first
-          if info = m.match(/line: (\d+), char: (\d+)\)/)
-            SyntaxCheck::Error.new(doc, (info[1].to_i-1), error, info[2].to_i-1).annotate
-          end
-        end
-
-        handler.problems.each do |problem|
-          if info = problem.match(/line: (\d+), char: (\d+)\)/)
-            SyntaxCheck::Warning.new(doc, (info[1].to_i), problem.split(" (").first, info[2].to_i-1).annotate
-          end
-        end
-
+    def self.storage
+      @storage ||= begin
+        storage = Plugin::Storage.new('mirah')
+        storage.set_default('check_for_warnings', true)
+        storage
       end
     end
   end
