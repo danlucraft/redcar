@@ -3,7 +3,7 @@ module DocumentSearch
 	class SearchExtSpeedbar < Redcar::Speedbar
 	  @@previous_query = ''
 	  @@previous_replace = ''
-	  @@previous_options = ReplaceAndFindCommand::Options.new
+	  @@previous_options = SearchExt::Options.new
 
 	  attr_accessor :initial_query
 
@@ -37,8 +37,9 @@ module DocumentSearch
     textbox :replace
 
     button :replace_find, 'Replace && Find', "Return" do
-      update_options_from_ui(@@previous_options)
-      success = SearchExtSpeedbar.replace_and_find(@@previous_options)
+      update_options_from_ui
+      success = SearchExtSpeedbar.replace_and_find(@@previous_query, @@previous_replace,
+                                                   @@previous_options)
 		end
 
     button :replace_all, "Replace All", nil do
@@ -58,8 +59,8 @@ module DocumentSearch
 		# Initializes UI elements.
 		def after_draw
 		  SearchSpeedbar.previous_query ||= ""
-      self.query.value = @initial_query || SearchSpeedbar.previous_query || @@previous_options.query
-      self.replace.value = @@previous_options.replace || ""
+      self.query.value = @initial_query || SearchSpeedbar.previous_query || @@previous_query
+      self.replace.value = @@previous_replace || ""
       self.search_type.value = SearchExtSpeedbar.search_type_to_text(@@previous_options.search_type)
       self.match_case.value = @@previous_options.match_case
       self.wrap_around.value = @@previous_options.wrap_around
@@ -67,13 +68,13 @@ module DocumentSearch
 		end  # after_draw
 
     # description here
-    def update_options_from_ui(options)
-			options.query = query.value
-      options.replace = replace.value
-      options.search_type = SearchExtSpeedbar.search_type_to_symbol(search_type.value)
-      options.match_case = match_case.value
-      options.wrap_around = wrap_around.value
-    end  # update_options_from_ui()
+    def update_options_from_ui
+      @@previous_query = query.value
+      @@previous_replace = replace.value
+      @@previous_options.search_type = SearchExtSpeedbar.search_type_to_symbol(search_type.value)
+      @@previous_options.match_case = match_case.value
+      @@previous_options.wrap_around = wrap_around.value
+    end  # update_options_from_ui
 
 
     ### UTILITY ###
@@ -109,8 +110,8 @@ module DocumentSearch
     ### COMMANDS ###
 
     # description here
-    def self.replace_and_find(options)
-      cmd = ReplaceAndFindCommand.new(options)
+    def self.replace_and_find(query, replace, options)
+      cmd = ReplaceAndFindCommand.new(query, replace, options)
       found_match = cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
       if not found_match then
         Redcar::Application::Dialog.message_box("No instance of the search string were found",

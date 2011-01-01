@@ -1,41 +1,17 @@
 module DocumentSearch
-  # Replaces the currently selected text, if it matches the search criteria, then finds and selects
-  # the next match in the document.
-  #
-  # This command maintains the invariant no text is replaced without first being selected, so that
-  # the user always knows exactly what change is about to be made. A ramification of this policy is
-  # that, if not text is selected beforehand, or the selected text does not match the query, then
-  # "replace" portion of "replace and find" is essentially skipped, so that two button presses are
-  # required.
-  class ReplaceAndFindCommand < Redcar::DocumentCommand
-    attr_reader :query, :replace
-
+  module SearchExt
     class Options
-	    attr_accessor :query
-      attr_accessor :replace
       attr_accessor :search_type
-			attr_accessor :match_case
-			attr_accessor :wrap_around
+  		attr_accessor :match_case
+  		attr_accessor :wrap_around
 
-			# Initializes with default options.
-			def initialize
-			  @query = ''
-			  @replace = ''
-			  @search_type = :search_regex
-			  @match_case = false
-			  @wrap_around = true
-			end  # initialize
+  		# Initializes with default options.
+  		def initialize
+  		  @search_type = :search_regex
+  		  @match_case = false
+  		  @wrap_around = true
+  		end  # initialize
     end  # class Options
-
-    # description here
-    def initialize(options)
-      @options = options
-      @query = send(options.search_type, options.query, options)
-      @replace = options.replace
-    end  # initialize()
-
-
-    ### SEARCH ###
 
     # An instance of a search type method: Regular expression
     def search_regex(query, options)
@@ -64,6 +40,27 @@ module DocumentSearch
       end
       search_regex(new_query, options)
     end
+  end  # module SearchExt
+
+  # Replaces the currently selected text, if it matches the search criteria, then finds and selects
+  # the next match in the document.
+  #
+  # This command maintains the invariant no text is replaced without first being selected, so that
+  # the user always knows exactly what change is about to be made. A ramification of this policy is
+  # that, if not text is selected beforehand, or the selected text does not match the query, then
+  # "replace" portion of "replace and find" is essentially skipped, so that two button presses are
+  # required.
+  class ReplaceAndFindCommand < Redcar::DocumentCommand
+    include SearchExt
+
+    attr_reader :query, :replace
+
+    # description here
+    def initialize(query, replace, options)
+      @options = options
+      @query = send(options.search_type, query, options)
+      @replace = replace
+    end  # initialize()
 
     # def first_match_position
     #   offsets = [doc.cursor_offset, doc.selection_offset]
@@ -129,5 +126,5 @@ module DocumentSearch
       doc.scroll_to_line(doc.line_at_offset(selection_pos))
       true
     end  # select_next_match()
-  end
-end
+  end  # class ReplaceAndFindCommand
+end  # module DocumentSearch
