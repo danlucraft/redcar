@@ -113,8 +113,8 @@ module DocumentSearch
     def self.replace_and_find(query, replace, options)
       cmd = ReplaceAndFindCommand.new(query, replace, options)
       found_match = cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
-      if not found_match then
-        Redcar::Application::Dialog.message_box("No instance of the search string were found",
+      if not found_match
+        Redcar::Application::Dialog.message_box("The search string was not found.",
                                                 {:type => :info, :buttons => :ok})
       end
     end  # self.replace_and_find
