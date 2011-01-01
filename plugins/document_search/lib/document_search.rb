@@ -1,10 +1,10 @@
 require 'strscan'
 require "document_search/replace_command"
 require "document_search/replace_all_command"
-require "document_search/replace_and_find_command"
 require "document_search/replace_next_command"
+require "document_search/search_ext_command"
 require "document_search/search_and_replace"
-require "document_search/search_and_replace_ext"
+require "document_search/search_ext"
 
 module DocumentSearch
   def self.menus
@@ -14,7 +14,7 @@ module DocumentSearch
           item "Document Search",    SearchForwardCommand
           item "Repeat Last Search", RepeatPreviousSearchForwardCommand
           item "Search and Replace", SearchAndReplaceCommand
-					item "Search and Replace (Extended)", SearchAndReplaceExtCommand
+					item "Document Search (Extended)", SearchExtCommand
         end
         separator
       end
@@ -144,9 +144,9 @@ module DocumentSearch
     end
   end
 
-  class SearchAndReplaceExtCommand < Redcar::EditTabCommand
+  class SearchExtCommand < Redcar::EditTabCommand
     def execute
-      @speedbar = SearchAndReplaceExtSpeedbar.new
+      @speedbar = SearchExtSpeedbar.new
       if doc.selection?
         @speedbar.initial_query = doc.selected_text
       end

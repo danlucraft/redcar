@@ -8,13 +8,13 @@ Feature: Replace in file (Extended)
   Scenario: Open replace speedbar
     When I replace the contents with "Foo\nBar\nBaz"
     And I move the cursor to 0
-    And I run the command DocumentSearch::SearchAndReplaceExtCommand
-    Then the DocumentSearch::SearchAndReplaceExtSpeedbar speedbar should be open
+    And I run the command DocumentSearch::SearchExtCommand
+    Then the DocumentSearch::SearchExtSpeedbar speedbar should be open
 
   Scenario: Replace next occurrence on the same line
       When I replace the contents with "Foo\nBar Rab Rab\nBaz"
       And I move the cursor to 4
-      And I run the command DocumentSearch::SearchAndReplaceExtCommand
+      And I run the command DocumentSearch::SearchExtCommand
       And I type "Rab" into the "Search" field in the speedbar
       And I type "RABBIT" into the "Replace" field in the speedbar
       And I press "Replace && Find" in the speedbar
@@ -25,7 +25,7 @@ Feature: Replace in file (Extended)
   Scenario: Replace next occurrence on the same line twice
     When I replace the contents with "Foo\nBar Rab Rab\nBaz"
     And I move the cursor to 4
-    And I run the command DocumentSearch::SearchAndReplaceExtCommand
+    And I run the command DocumentSearch::SearchExtCommand
     And I type "Rab" into the "Search" field in the speedbar
     And I type "RAB" into the "Replace" field in the speedbar
     And I press "Replace && Find" in the speedbar
@@ -37,7 +37,7 @@ Feature: Replace in file (Extended)
   # Scenario: Replace next occurrence
   #   When I replace the contents with "Foo\nBar\nBaz\nBar\nQux"
   #   And I move the cursor to 0
-  #   And I run the command DocumentSearch::SearchAndReplaceExtCommand
+  #   And I run the command DocumentSearch::SearchExtCommand
   #   And I type "Bar" into the "Search" field in the speedbar
   #   And I type "Rab" into the "Replace" field in the speedbar
   #   And I press "Replace" in the speedbar
@@ -48,7 +48,7 @@ Feature: Replace in file (Extended)
   # Scenario: Replace next occurrence twice
   #   When I replace the contents with "Foo\nBar\nBaz\nBar\nQux"
   #   And I move the cursor to 0
-  #   And I run the command DocumentSearch::SearchAndReplaceExtCommand
+  #   And I run the command DocumentSearch::SearchExtCommand
   #   And I type "Bar" into the "Search" field in the speedbar
   #   And I type "Rab" into the "Replace" field in the speedbar
   #   And I press "Replace" in the speedbar
@@ -61,7 +61,7 @@ Feature: Replace in file (Extended)
   # Scenario: Replace next occurrence wraps
   #   When I replace the contents with "Foo\nBar\nBaz"
   #   And I move the cursor to 8
-  #   And I run the command DocumentSearch::SearchAndReplaceExtCommand
+  #   And I run the command DocumentSearch::SearchExtCommand
   #   And I type "Bar" into the "Search" field in the speedbar
   #   And I type "Rab" into the "Replace" field in the speedbar
   #   When I press "Replace" in the speedbar
@@ -71,7 +71,7 @@ Feature: Replace in file (Extended)
   # Scenario: Replace all replaces one
   #   When I replace the contents with "Foo\nBar\nBaz"
   #   And I move the cursor to 0
-  #   And I run the command DocumentSearch::SearchAndReplaceExtCommand
+  #   And I run the command DocumentSearch::SearchExtCommand
   #   And I type "Bar" into the "Search" field in the speedbar
   #   And I type "Rab" into the "Replace" field in the speedbar
   #   Then I should see a message box containing "Replaced 1 occurrence"
@@ -83,7 +83,7 @@ Feature: Replace in file (Extended)
   # Scenario: Replace all replaces two
   #   When I replace the contents with "Foo\nBar\nBaz\nBar\nQux"
   #   And I move the cursor to 0
-  #   And I run the command DocumentSearch::SearchAndReplaceExtCommand
+  #   And I run the command DocumentSearch::SearchExtCommand
   #   And I type "Bar" into the "Search" field in the speedbar
   #   And I type "Rab" into the "Replace" field in the speedbar
   #   Then I should see a message box containing "Replaced 2 occurrences"
@@ -94,7 +94,7 @@ Feature: Replace in file (Extended)
   # 
   # Scenario: Replace all replaces two on the same line
   #   When I replace the contents with "abcabc"
-  #   And I run the command DocumentSearch::SearchAndReplaceExtCommand
+  #   And I run the command DocumentSearch::SearchExtCommand
   #   And I type "bc" into the "Search" field in the speedbar
   #   And I type "xx" into the "Replace" field in the speedbar
   #   Then I should see a message box containing "Replaced 2 occurrences"
@@ -103,7 +103,7 @@ Feature: Replace in file (Extended)
   # 
   # Scenario: Replace all replaces overlapping occurences on the same line
   #   When I replace the contents with "deedeedeed"
-  #   And I run the command DocumentSearch::SearchAndReplaceExtCommand
+  #   And I run the command DocumentSearch::SearchExtCommand
   #   And I type "deed" into the "Search" field in the speedbar
   #   And I type "misdeed" into the "Replace" field in the speedbar
   #   Then I should see a message box containing "Replaced 2 occurrences"
@@ -112,7 +112,7 @@ Feature: Replace in file (Extended)
   # 
   # Scenario: Replace all is a single undo action
   #   When I replace the contents with "abcabc"
-  #   And I run the command DocumentSearch::SearchAndReplaceExtCommand
+  #   And I run the command DocumentSearch::SearchExtCommand
   #   And I type "bc" into the "Search" field in the speedbar
   #   And I type "xx" into the "Replace" field in the speedbar
   #   Then I should see a message box containing "Replaced 2 occurrences"
@@ -124,7 +124,7 @@ Feature: Replace in file (Extended)
   # Scenario: Replace next occurrence test bug
   #   When I replace the contents with "the\n* Speedbars have access to the properties of the widgets in them."
   #   And I move the cursor to 0
-  #   And I run the command DocumentSearch::SearchAndReplaceExtCommand
+  #   And I run the command DocumentSearch::SearchExtCommand
   #   And I type "the" into the "Search" field in the speedbar
   #   And I type "THE" into the "Replace" field in the speedbar
   #   And I press "Replace" in the speedbar
@@ -143,7 +143,7 @@ Feature: Replace in file (Extended)
   # Scenario: Replace regex with back-references
   #   When I replace the contents with "Curry chicken"
   #   And I move the cursor to 0
-  #   And I run the command DocumentSearch::SearchAndReplaceExtCommand
+  #   And I run the command DocumentSearch::SearchExtCommand
   #   And I type "(\w+) chicken" into the "Search" field in the speedbar
   #   And I type "\1 beef" into the "Replace" field in the speedbar
   #   And I press "Replace" in the speedbar
@@ -152,7 +152,7 @@ Feature: Replace in file (Extended)
   # Scenario: Replace should move past the current replacement if the query is a substring of the replacement
   #   When I replace the contents with "foo\nfoo\nfoo"
   #   And I move the cursor to 0
-  #   And I run the command DocumentSearch::SearchAndReplaceExtCommand
+  #   And I run the command DocumentSearch::SearchExtCommand
   #   And I type "foo" into the "Search" field in the speedbar
   #   And I type "foobar" into the "Replace" field in the speedbar
   #   And I press "Replace" in the speedbar
@@ -164,7 +164,7 @@ Feature: Replace in file (Extended)
   # Scenario: The Search-and-Replace Speedbar should get initialized with the currently selected text
   #   When I replace the contents with "Foo\nBar\nFoo"
   #   And I select from 4 to 7
-  #   When I run the command DocumentSearch::SearchAndReplaceExtCommand
+  #   When I run the command DocumentSearch::SearchExtCommand
   #   Then the "Search" field in the speedbar should have text "Bar"
   #   When I type "Foo" into the "Replace" field in the speedbar
   #   And I press "Replace" in the speedbar
