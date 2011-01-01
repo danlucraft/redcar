@@ -38,8 +38,7 @@ module DocumentSearch
 
     button :replace_find, 'Replace && Find', "Return" do
       update_options_from_ui
-      success = SearchExtSpeedbar.replace_and_find(@@previous_query, @@previous_replace,
-                                                   @@previous_options)
+      SearchExtSpeedbar.replace_and_find(@@previous_query, @@previous_replace, @@previous_options)
 		end
 
     button :replace_all, "Replace All", nil do
@@ -53,7 +52,8 @@ module DocumentSearch
 		end
 
 		button :next, "Next", nil do
-			puts 'Next'
+			update_options_from_ui
+      SearchExtSpeedbar.search_next(@@previous_query, @@previous_options)
 		end
 
 		# Initializes UI elements.
@@ -108,6 +108,15 @@ module DocumentSearch
     end  # self.search_type_to_text
 
     ### COMMANDS ###
+
+    def self.search_next(query, options)
+      cmd = SearchNextCommand.new(query, options)
+      found_match = cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
+      if not found_match
+        Redcar::Application::Dialog.message_box("The search string was not found.",
+                                                {:type => :info, :buttons => :ok})
+      end
+    end  # self.search_next()
 
     # description here
     def self.replace_and_find(query, replace, options)

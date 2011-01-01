@@ -67,8 +67,30 @@ module DocumentSearch
 
 
   class SearchNextCommand < Redcar::DocumentCommand
+    include SearchExt
 
+    attr_reader :query
+
+    # description here
+    def initialize(query, options)
+      @options = options
+      @query = send(options.search_type, query, options)
+    end  # initialize()
+
+    # description here
+    def execute
+      offsets = [doc.cursor_offset, doc.selection_offset]
+      start_pos = offsets.max
+      if select_next_match(doc, start_pos, query, @options.wrap_around)
+        true
+      else
+        # Clear selection as visual feedback that search failed.
+        doc.set_selection_range(start_pos, start_pos)
+        false
+      end
+    end  # execute
   end  # class SearchNextCommand
+
 
   # Replaces the currently selected text, if it matches the search criteria, then finds and selects
   # the next match in the document.
@@ -91,10 +113,7 @@ module DocumentSearch
     end  # initialize()
 
     def execute
-      # Check if the selection matches.
       offsets = [doc.cursor_offset, doc.selection_offset]
-     # scanner = StringScanner.new(doc.get_all_text)
-      #scanner.pos = offsets.min
       start_pos = offsets.min
       if query === doc.selected_text
         chars_replaced = ReplaceAndFindCommand.replace_selection(doc, start_pos, query, replace)
