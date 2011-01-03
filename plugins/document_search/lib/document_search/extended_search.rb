@@ -66,9 +66,9 @@ module DocumentSearch
   		# Initializes UI elements.
   		def after_draw
   		  clear_not_found
-  		  basic_search_speedbar = DocumentSearch::SearchSpeedbar
-  		  basic_search_speedbar.previous_query ||= ""
-        self.query.value = @initial_query || basic_search_speedbar.previous_query || @@previous_query
+  		  DocumentSearch::SearchSpeedbar.previous_query ||= ""
+        self.query.value = @initial_query || DocumentSearch::SearchSpeedbar.previous_query ||
+            @@previous_query
         self.replace.value = @@previous_replace || ""
         self.search_type.value = SearchSpeedbar.search_type_to_text(@@previous_options.search_type)
         self.match_case.value = @@previous_options.match_case
