@@ -2,9 +2,9 @@ require 'strscan'
 require "document_search/replace_command"
 require "document_search/replace_all_command"
 require "document_search/replace_next_command"
-require "document_search/search_ext_command"
 require "document_search/search_and_replace"
-require "document_search/search_ext"
+require "document_search/extended_search_command"
+require "document_search/extended_search"
 
 module DocumentSearch
   def self.menus
