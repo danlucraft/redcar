@@ -896,7 +896,7 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+H",       DocumentSearch::SearchAndReplaceCommand
         #link "Cmd+Shift+F", DocumentSearch::RepeatPreviousSearchForwardCommand
         link "Cmd+Ctrl+F",  DocumentSearch::SearchAndReplaceCommand
-        link "Cmd+Alt+F",   DocumentSearch::SearchExtCommand
+        link "Cmd+Alt+F",   DocumentSearch::ExtendedSearchCommand
         link "Cmd+Shift+F", Redcar::FindInProject::OpenSearch
         link "Cmd+A",       SelectAllCommand
         link "Ctrl+W",      SelectWordCommand
@@ -974,7 +974,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+L",       GotoLineCommand
         link "Ctrl+F",       DocumentSearch::SearchForwardCommand
         link "Ctrl+H",       DocumentSearch::SearchAndReplaceCommand
-        link "Ctrl+Alt+F",   DocumentSearch::SearchExtCommand
+        link "Ctrl+Alt+F",   DocumentSearch::ExtendedSearchCommand
         link "F3",           DocumentSearch::RepeatPreviousSearchForwardCommand
         link "Ctrl+Shift+F", Redcar::FindInProject::OpenSearch
         link "Ctrl+Shift+A", SelectAllCommand

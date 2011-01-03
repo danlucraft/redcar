@@ -14,7 +14,7 @@ module DocumentSearch
           item "Document Search",    SearchForwardCommand
           item "Repeat Last Search", RepeatPreviousSearchForwardCommand
           item "Search and Replace", SearchAndReplaceCommand
-					item "Document Search (Extended)", SearchExtCommand
+					item "Document Search (Extended)", ExtendedSearchCommand
         end
         separator
       end
@@ -144,9 +144,9 @@ module DocumentSearch
     end
   end
 
-  class SearchExtCommand < Redcar::EditTabCommand
+  class ExtendedSearchCommand < Redcar::EditTabCommand
     def execute
-      @speedbar = SearchExtSpeedbar.new
+      @speedbar = ExtendedSearch::SearchSpeedbar.new
       if doc.selection?
         @speedbar.initial_query = doc.selected_text
       end
