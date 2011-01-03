@@ -2,8 +2,9 @@
 module Redcar
   class ApplicationSWT
     class ModelessHtmlDialog
+      attr_reader :width, :height
 
-      DEFAULT_WIDTH = 300
+      DEFAULT_WIDTH  = 300
       DEFAULT_HEIGHT = 100
 
       def initialize(text,width=DEFAULT_WIDTH,height=DEFAULT_HEIGHT)
@@ -12,6 +13,7 @@ module Redcar
         @height = height
       end
 
+      # Close and dispose of the dialog
       def close
         # @browser.remove_focus_listener(@focus_listener)
         @browser.remove_key_listener(@key_listener)
@@ -19,6 +21,9 @@ module Redcar
         @shell.dispose
       end
 
+      # Opens the dialog.
+      #
+      # @returns the dialog
       def open(parent,*location)
         createDialogArea(parent)
         @shell.set_location(*location)
@@ -27,6 +32,33 @@ module Redcar
         # @focus_listener = ModelessDialog::FocusListener.new(self)
         # @browser.add_focus_listener(@focus_listener)
         # @browser.set_focus
+        self
+      end
+
+      # Set the text to be rendered by the dialog
+      def text=(text)
+        @browser.set_text text
+      end
+
+      # Set the dialog to render a given URL
+      def url=(url)
+        @browser.set_url url
+      end
+
+      # Change the dialog size
+      def set_size(width,height)
+        @width  = width
+        @height = height
+        @shell.set_size(@width, @height)
+      end
+
+      # Refresh the rendered content
+      def refresh
+        @browser.refresh
+      end
+
+      def inspect
+        "#<Redcar::ModelessHtmlDialog width=#{@width}, height=#{@height}, location=#{@shell.get_location}>"
       end
 
       private

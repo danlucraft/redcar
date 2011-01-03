@@ -43,6 +43,7 @@ module Redcar
 
       # Item at a particular index
       def select(index)
+        index = index - 1
         items = @list.get_items
         if items.size > index
           item = items[index]
@@ -56,6 +57,7 @@ module Redcar
         @list.get_selection.first
       end
 
+      # Zero-based selected index
       def selection_index
         @list.get_selection_index
       end
@@ -78,7 +80,7 @@ module Redcar
       # @param [Array<String>] items
       def update_list(items)
         (0..9).each do |i|
-          items[i] = "#{i} #{items[i]}" if items.size > i
+          items[i] = "#{i+1} #{items[i]}" if items.size > i
         end
         @list.set_items items
       end

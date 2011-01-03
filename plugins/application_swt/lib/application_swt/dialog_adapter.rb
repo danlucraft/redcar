@@ -133,8 +133,10 @@ module Redcar
         when :pointer
           location = ApplicationSWT.display.get_cursor_location
           x, y = location.x, location.y
-        when location.to_s =~ /^(\d+)$/
-          x, y = Swt::GraphicsUtils.pixel_location_at_offset($1.to_i)
+        else
+          if location.to_s =~ /^(\d+)$/
+            x, y = Swt::GraphicsUtils.pixel_location_at_offset($1.to_i)
+          end
         end
         [x, y]
       end

@@ -25,6 +25,10 @@ module Redcar
         @shell.open
       end
 
+      def inspect
+        "#<Redcar::ModelessDialog width=#{@width}, height=#{@height}, location=#{@shell.get_location}>"
+      end
+
       class KeyListener
 
         def initialize(text)
