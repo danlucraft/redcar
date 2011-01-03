@@ -1,6 +1,8 @@
 
 module DocumentSearch
 	class SearchExtSpeedbar < Redcar::Speedbar
+	  NotFoundMessage = 'Not found!'
+
 	  @@previous_query = ''
 	  @@previous_replace = ''
 	  @@previous_options = SearchExt::Options.new
@@ -29,8 +31,8 @@ module DocumentSearch
 		  @@previous_options.wrap_around = val
 		end
 
-		label :label_spacer_end_row1a, ""
-		label :label_spacer_end_row1b, ""
+		label :label_not_found, NotFoundMessage   # Hack: Set label for sizing, clear in after_draw
+		label :label_space_end_row1, ""
 		label :label_spacer_start_row2, ""
 
     label :label_replace, "Replace:"
@@ -38,26 +40,30 @@ module DocumentSearch
 
     button :replace_find, 'Replace && Find', "Return" do
       update_options_from_ui
-      SearchExtSpeedbar.replace_and_find(@@previous_query, @@previous_replace, @@previous_options)
+      SearchExtSpeedbar.replace_and_find(
+          @@previous_query, @@previous_replace, @@previous_options) or not_found
 		end
 
     button :replace_all, "Replace All", nil do
-			puts 'Replace All'
+			update_options_from_ui
+			SearchExtSpeedbar.replace_all(
+			    @@previous_query, @@previous_replace, @@previous_options) or not_found
 		end
 
 		label :label_spacer_mid_row2, ""
 
-		button :previous, "Previous", nil do
-			puts 'Previous'
-		end
+    button :find_previous, "Previous", nil do
 
-		button :next, "Next", nil do
+    end
+
+		button :find_next, "Next", nil do
 			update_options_from_ui
-      SearchExtSpeedbar.search_next(@@previous_query, @@previous_options)
+      SearchExtSpeedbar.search_next(@@previous_query, @@previous_options) or not_found
 		end
 
 		# Initializes UI elements.
 		def after_draw
+		  clear_not_found
 		  SearchSpeedbar.previous_query ||= ""
       self.query.value = @initial_query || SearchSpeedbar.previous_query || @@previous_query
       self.replace.value = @@previous_replace || ""
@@ -65,17 +71,29 @@ module DocumentSearch
       self.match_case.value = @@previous_options.match_case
       self.wrap_around.value = @@previous_options.wrap_around
       self.query.edit_view.document.select_all
-		end  # after_draw
+		end
 
-    # description here
+    # Store options specified in the UI, to be called before executing a command.
     def update_options_from_ui
+      clear_not_found
       @@previous_query = query.value
       @@previous_replace = replace.value
       @@previous_options.search_type = SearchExtSpeedbar.search_type_to_symbol(search_type.value)
       @@previous_options.match_case = match_case.value
       @@previous_options.wrap_around = wrap_around.value
-    end  # update_options_from_ui
+    end
 
+    # Sets the "Not found" label message, invoking the system beep.
+    def not_found
+      display = Swt::Widgets::Display.get_current
+      display.beep if display
+      self.label_not_found.text = NotFoundMessage
+    end
+
+    # Clears the "Not found" label message.
+    def clear_not_found
+      self.label_not_found.text = ''
+    end
 
     ### UTILITY ###
 
@@ -91,7 +109,7 @@ module DocumentSearch
         puts "WARNING - Invalid search type: #{search_type_text} (defaulting to :search_regex)"
         :search_regex
       end
-    end  # self.search_type_to_symbol
+    end
 
     def self.search_type_to_text(search_type_symbol)
       case search_type_symbol
@@ -105,27 +123,24 @@ module DocumentSearch
         puts "WARNING - Invalid search type: #{search_type_symbol} (defaulting to 'Regex')"
         'Regex'
       end
-    end  # self.search_type_to_text
+    end
 
     ### COMMANDS ###
 
     def self.search_next(query, options)
       cmd = SearchNextCommand.new(query, options)
-      found_match = cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
-      if not found_match
-        Redcar::Application::Dialog.message_box("The search string was not found.",
-                                                {:type => :info, :buttons => :ok})
-      end
-    end  # self.search_next()
+      cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
+    end
 
     # description here
     def self.replace_and_find(query, replace, options)
       cmd = ReplaceAndFindCommand.new(query, replace, options)
-      found_match = cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
-      if not found_match
-        Redcar::Application::Dialog.message_box("The search string was not found.",
-                                                {:type => :info, :buttons => :ok})
-      end
-    end  # self.replace_and_find
-	end  # class SearchExtSpeedbar
-end  # module DocumentSearch
+      cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
+    end
+
+    def self.replace_all(query, replace, options)
+      cmd = ReplaceAllExtCommand.new(query, replace, options)
+      cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
+    end
+	end
+end

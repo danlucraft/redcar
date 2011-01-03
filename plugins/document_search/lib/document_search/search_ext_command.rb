@@ -63,6 +63,23 @@ module DocumentSearch
       doc.scroll_to_line(doc.line_at_offset(selection_pos))
       true
     end  # select_next_match()
+
+    # description here
+    def maybe_replace_selection(doc, start_pos, query, replace)
+      scanner = StringScanner.new(doc.selected_text)
+      scanner.check(query)
+      if not scanner.matched?
+        puts "WARNING - Failed to match query=#{query} for selection=#{doc.selected_text}"
+        return 0
+      elsif scanner.matched_size != doc.selected_text.length
+        puts "WARNING - Failed to match query=#{query} for all of selection=#{doc.selected_text}"
+        return 0
+      end
+      matched_text = doc.get_range(start_pos, scanner.matched_size)
+      replacement_text = matched_text.gsub(query, replace)
+      doc.replace(start_pos, scanner.matched_size, replacement_text)
+      replacement_text.length
+    end  # replace_selection()
   end  # module SearchExt
 
 
@@ -115,9 +132,13 @@ module DocumentSearch
     def execute
       offsets = [doc.cursor_offset, doc.selection_offset]
       start_pos = offsets.min
-      if query === doc.selected_text
-        chars_replaced = ReplaceAndFindCommand.replace_selection(doc, start_pos, query, replace)
-        start_pos += chars_replaced
+      if doc.selected_text.length > 0
+        chars_replaced = maybe_replace_selection(doc, start_pos, query, replace)
+        if chars_replaced == 0
+          start_pos = offsets.max
+        else
+          start_pos += chars_replaced
+        end
       end
       if select_next_match(doc, start_pos, query, @options.wrap_around)
         true
@@ -127,20 +148,45 @@ module DocumentSearch
         false
       end
     end  # execute
+  end  # class ReplaceAndFindCommand
+
+
+  class ReplaceAllExtCommand < Redcar::DocumentCommand
+    include SearchExt
+
+    attr_reader :query, :replace
 
     # description here
-    def self.replace_selection(doc, start_pos, query, replace)
-      scanner = StringScanner.new(doc.selected_text)
-      scanner.check(query)
-      if not scanner.matched?
-        raise "Failed to match query=#{query} for selection=#{doc.selected_text}"
-      elsif scanner.matched_size != doc.selected_text.length
-        raise "Failed to match query=#{query} for all of selection=#{doc.selected_text}"
+    def initialize(query, replace, options)
+      @options = options
+      @query = send(options.search_type, query, options)
+      @replace = replace
+    end  # initialize()
+
+    def execute
+      startoff, endoff = nil
+      text = doc.get_all_text
+      count = 0
+      sc = StringScanner.new(text)
+      while sc.scan_until(query)
+        count += 1
+
+        startoff = sc.pos - sc.matched_size
+        replacement_text = text.slice(startoff, sc.matched_size).gsub(query, replace)
+        endoff = startoff + replacement_text.length
+
+        text[startoff...sc.pos] = replacement_text
+        sc.string = text
+        sc.pos = startoff + replacement_text.length
       end
-      matched_text = doc.get_range(start_pos, scanner.matched_size)
-      replacement_text = matched_text.gsub(query, replace)
-      doc.replace(start_pos, scanner.matched_size, replacement_text)
-      replacement_text.length
-    end  # self.replace_selection()
-  end  # class ReplaceAndFindCommand
+      if count > 0
+        doc.text = text
+        doc.set_selection_range(startoff + replacement_text.length, startoff)
+        doc.scroll_to_line(doc.line_at_offset(startoff))
+        true
+      else
+        false
+      end
+    end
+  end  # class ReplaceAllExtCommand
 end  # module DocumentSearch
