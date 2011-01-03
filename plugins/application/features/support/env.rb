@@ -22,7 +22,7 @@ module SwtHelper
   def focussed_window
     Redcar.app.focussed_window
   end
-  
+
   def focussed_treebook_width
     Redcar.app.focussed_window.controller.treebook_width
   end
@@ -30,11 +30,11 @@ module SwtHelper
   def focussed_tree
     focussed_window.treebook.focussed_tree
   end
-  
+
   def default_treebook_width
     Redcar.app.focussed_window.controller.default_treebook_width
   end
-  
+
   def tree_with_title(title)
     focussed_window.treebook.trees.detect {|t| t.tree_mirror.title == title }
   end
@@ -100,6 +100,36 @@ class FakeDialogAdapter
     @message = message
   end
 
+  def should_get_popup_message(title,text)
+    @popup_message = text
+    @popup_title   = title
+  end
+
+  def should_get_popup_html(text)
+    @popup_html = text
+  end
+
+  def popup_html(*args)
+    unless @popup_text
+      raise TestingError.new("got a popup html dialog with text #{@popup_html.inspect} where I didn't expect one")
+    end
+    unless @popup_text == args.first.inspect
+      raise TestingError.new("expected text #{@popup_text.inspect}, got #{args.first.inspect}")
+    end
+  end
+
+  def popup_text(*args)
+    unless @popup_title and @popup_message
+      raise TestingError.new("got a popup dialog titled #{@popup_title.inspect} with text #{@popup_message.inspect} where I didn't expect one")
+    end
+    unless @popup_title == args.first
+      raise TestingError.new("expected title #{@popup_title.inspect}, got #{args.first.inspect}")
+    end
+    unless @popup_message == args[1]
+      raise TestingError.new("expected text #{@popup_message.inspect}, got #{args[1].inspect}")
+    end
+  end
+
   def open_file(*args)
     check_for_raise(@responses[:open_file])
   end
@@ -160,7 +190,7 @@ end
 
 World(SwtHelper)
 
-def close_everything  
+def close_everything
   Redcar.app.task_queue.cancel_all
   Swt.sync_exec do
     dialogs.each {|d| d.controller.model.close }
