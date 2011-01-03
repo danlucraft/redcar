@@ -53,12 +53,13 @@ module DocumentSearch
 		label :label_spacer_mid_row2, ""
 
     button :find_previous, "Previous", nil do
-
+			update_options_from_ui
+      SearchExtSpeedbar.find_previous(@@previous_query, @@previous_options) or not_found
     end
 
 		button :find_next, "Next", nil do
 			update_options_from_ui
-      SearchExtSpeedbar.search_next(@@previous_query, @@previous_options) or not_found
+      SearchExtSpeedbar.find_next(@@previous_query, @@previous_options) or not_found
 		end
 
 		# Initializes UI elements.
@@ -85,8 +86,7 @@ module DocumentSearch
 
     # Sets the "Not found" label message, invoking the system beep.
     def not_found
-      display = Swt::Widgets::Display.get_current
-      display.beep if display
+      Swt::Widgets::Display.get_current.beep
       self.label_not_found.text = NotFoundMessage
     end
 
@@ -97,6 +97,7 @@ module DocumentSearch
 
     ### UTILITY ###
 
+    # Maps a search type combo box value to the corresponding search type symbol.
     def self.search_type_to_symbol(search_type_text)
       case search_type_text
       when "Regex"
@@ -111,6 +112,7 @@ module DocumentSearch
       end
     end
 
+    # Maps a search type symbol to a text value for the search type combo box.
     def self.search_type_to_text(search_type_symbol)
       case search_type_symbol
       when :search_regex
@@ -127,8 +129,13 @@ module DocumentSearch
 
     ### COMMANDS ###
 
-    def self.search_next(query, options)
-      cmd = SearchNextCommand.new(query, options)
+    def self.find_previous(query, options)
+      cmd = FindPreviousCommand.new(query, options)
+      cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
+    end
+
+    def self.find_next(query, options)
+      cmd = FindNextCommand.new(query, options)
       cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
     end
 

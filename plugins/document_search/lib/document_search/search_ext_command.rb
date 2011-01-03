@@ -10,8 +10,8 @@ module DocumentSearch
   		  @search_type = :search_regex
   		  @match_case = false
   		  @wrap_around = true
-  		end  # initialize
-    end  # class Options
+  		end
+    end
 
     ### SEARCH PATTERNS ###
 
@@ -59,10 +59,46 @@ module DocumentSearch
       end
 
       selection_pos = scanner.pos - scanner.matched_size
-      doc.set_selection_range(selection_pos, scanner.pos)
-      doc.scroll_to_line(doc.line_at_offset(selection_pos))
+      select_range(selection_pos, scanner.pos)
       true
-    end  # select_next_match()
+    end
+
+    def select_previous_match(doc, search_pos, query, wrap_around)
+      previous_match = nil
+      scanner = StringScanner.new(doc.get_all_text)
+      scanner.pos = 0
+      while scanner.scan_until(query)
+        start_pos = scanner.pos - scanner.matched_size
+        if start_pos < search_pos
+          previous_match = [start_pos, scanner.pos]
+        elsif previous_match
+          select_range(*previous_match)
+          return true
+        elsif not wrap_around
+          return false
+        else
+          break
+        end
+      end
+
+      # Find the last match in the document.
+      while scanner.scan_until(query)
+        start_pos = scanner.pos - scanner.matched_size
+        previous_match = [start_pos, scanner.pos]
+      end
+
+      if previous_match
+        select_range(*previous_match)
+        return true
+      else
+        return false
+      end
+    end
+
+    def select_range(start, stop)
+      doc.set_selection_range(start, stop)
+      doc.scroll_to_line(doc.line_at_offset(start))
+    end
 
     # description here
     def maybe_replace_selection(doc, start_pos, query, replace)
@@ -79,11 +115,11 @@ module DocumentSearch
       replacement_text = matched_text.gsub(query, replace)
       doc.replace(start_pos, scanner.matched_size, replacement_text)
       replacement_text.length
-    end  # replace_selection()
-  end  # module SearchExt
+    end
+  end
 
 
-  class SearchNextCommand < Redcar::DocumentCommand
+  class FindNextCommand < Redcar::DocumentCommand
     include SearchExt
 
     attr_reader :query
@@ -92,7 +128,7 @@ module DocumentSearch
     def initialize(query, options)
       @options = options
       @query = send(options.search_type, query, options)
-    end  # initialize()
+    end
 
     # description here
     def execute
@@ -105,8 +141,34 @@ module DocumentSearch
         doc.set_selection_range(start_pos, start_pos)
         false
       end
-    end  # execute
-  end  # class SearchNextCommand
+    end
+  end
+
+
+  class FindPreviousCommand < Redcar::DocumentCommand
+    include SearchExt
+
+    attr_reader :query
+
+    # description here
+    def initialize(query, options)
+      @options = options
+      @query = send(options.search_type, query, options)
+    end
+
+    # description here
+    def execute
+      offsets = [doc.cursor_offset, doc.selection_offset]
+      start_pos = offsets.min
+      if select_previous_match(doc, start_pos, query, @options.wrap_around)
+        true
+      else
+        # Clear selection as visual feedback that search failed.
+        doc.set_selection_range(start_pos, start_pos)
+        false
+      end
+    end
+  end
 
 
   # Replaces the currently selected text, if it matches the search criteria, then finds and selects
@@ -127,7 +189,7 @@ module DocumentSearch
       @options = options
       @query = send(options.search_type, query, options)
       @replace = replace
-    end  # initialize()
+    end
 
     def execute
       offsets = [doc.cursor_offset, doc.selection_offset]
@@ -147,8 +209,8 @@ module DocumentSearch
         doc.set_selection_range(start_pos, start_pos)
         false
       end
-    end  # execute
-  end  # class ReplaceAndFindCommand
+    end
+  end
 
 
   class ReplaceAllExtCommand < Redcar::DocumentCommand
@@ -161,7 +223,7 @@ module DocumentSearch
       @options = options
       @query = send(options.search_type, query, options)
       @replace = replace
-    end  # initialize()
+    end
 
     def execute
       startoff, endoff = nil
@@ -188,5 +250,5 @@ module DocumentSearch
         false
       end
     end
-  end  # class ReplaceAllExtCommand
-end  # module DocumentSearch
+  end
+end

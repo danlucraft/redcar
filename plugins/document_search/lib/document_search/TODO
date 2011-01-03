@@ -1,9 +1,4 @@
-* Factor query and replace out of options [DONE]
-* Add SearchBaseCommand for base class, put options there (move this class and others to same file)
-  [DONE]
-* Refactor ReplaceAndFindCommand to derive from SearchBaseCommand [DONE]
-* Add SearchNextCommand [DONE]
-* Add SearchPreviousCommand
-* Timeout on Not Found mesage
+* Add SearchPreviousCommand [DONE]
+* Timeout on Not Found message
 
 * Fix tab order: Should be Search, then Replace textboxes, then options
