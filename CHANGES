@@ -21,6 +21,10 @@ Bugfixes:
  * Saving a file prompts before overwriting (Delisa Mason)
  * Encrypt/Decrypt does not happen if a user cancels (Utkarsh Kukreti)
 
+New APIs:
+
+ * Non-modal text,list, and browser dialogs in Application::Dialog
+
 Version 0.9.1 (2 December 2010)
 ===============================
 
