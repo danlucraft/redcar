@@ -266,6 +266,10 @@ module Redcar
         keymap = Keymap.new("main", Redcar.platform)
         Redcar.plugin_manager.objects_implementing(:keymaps).each do |object|
           maps = object.keymaps
+          unless maps
+            puts "#{object.inspect} implements :keymaps but :keymaps returns nil"
+            maps = []
+          end
           keymaps = maps.select do |map|
             map.name == "main" and map.platforms.include?(Redcar.platform)
           end
