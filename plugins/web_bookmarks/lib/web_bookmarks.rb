@@ -23,6 +23,16 @@ module Redcar
       end
     end
 
+     def self.keymaps
+      osx = Keymap.build("main", :osx) do
+        link "Cmd+Shift+?", WebBookmarks::ShowTree
+      end
+      lin = Keymap.build("main", [:linux,:windows]) do
+        link "Ctrl+Shift+?", WebBookmarks::ShowTree
+      end
+      [osx,lin]
+    end
+
     def self.toolbars
       Redcar::ToolBar::Builder.build do
         item "Web Bookmarks", :command => WebBookmarks::ShowTree, :icon => File.join(Redcar::ICONS_DIRECTORY, "globe.png"), :barname => :project

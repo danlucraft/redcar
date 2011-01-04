@@ -6,7 +6,7 @@ require 'textmate/preference'
 require 'textmate/snippet'
 require 'textmate/tree_mirror'
 require 'textmate/commands'
-  
+
 module Redcar
   module Textmate
     def self.all_bundle_paths
@@ -26,7 +26,17 @@ module Redcar
         end
       end
     end
-    
+
+    def self.keymaps
+      osx = Redcar::Keymap.build("main", [:osx]) do
+        link "Cmd+Shift+B", ShowSnippetTree
+      end
+      lin = Redcar::Keymap.build("main", [:windows,:linux]) do
+        link "Ctrl+Shift+B", ShowSnippetTree
+      end
+      [osx,lin]
+    end
+
     def self.toolbars
       Redcar::ToolBar::Builder.build do
         item "Snippet Browser", :command => Textmate::ShowSnippetTree, :icon => File.join(Redcar::ICONS_DIRECTORY, "document-tree.png"), :barname => :help

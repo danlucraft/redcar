@@ -43,9 +43,8 @@ module Redcar
 
       # Item at a particular index
       def select(index)
-        index = index - 1
         items = @list.get_items
-        if items.size > index
+        if items.size > index and index >= 0
           item = items[index]
           item = item[2,item.length] if item =~ /^(\d)\s.*/
         end
@@ -116,7 +115,7 @@ module Redcar
             (0..9).each do |i|
               if e.keyCode == Swt::SWT.const_get("KEYPAD_#{i}") or
                 e.keyCode == i + 48
-                @model.selected(i)
+                @model.selected(i - 1)
                 break
               end
             end

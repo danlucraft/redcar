@@ -24,8 +24,10 @@ module Redcar
             document.cursor_offset = offset
             document.scroll_to_line(line)
           end
+          tab.focus
+        else
+          Application::Dialog.message_box "File #{path} could not be found."
         end
-        tab.focus
         false
       end
 
