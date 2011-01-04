@@ -13,6 +13,7 @@ Enhancements:
  * Document Search is now incremental (Delisa Mason)
  * REPL Enhancements, including commit on Return (Delisa Mason)
  * Mirah syntax checking (Michal Hantl)
+ * More keybindings for adjusting views, such as changing font size, notebook width, and focussed tree (Delisa Mason)
 
 Bugfixes:
 
