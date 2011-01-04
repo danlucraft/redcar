@@ -161,7 +161,7 @@ class FakeDialogAdapter
     end
     val = @inputs[0]
     @inputs.delete_at(0)
-    {:value => val} # no button to speak of...
+    {:value => val, :button => :ok}
   end
 
   def add_input(value)

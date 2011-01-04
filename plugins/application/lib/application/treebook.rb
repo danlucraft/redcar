@@ -42,6 +42,40 @@ module Redcar
         Redcar.app.repeat_event(:tree_removed) if Redcar.app
       end
     end
+    
+    def switch_down
+      if @trees.any?
+        if @focussed_tree
+          index = @trees.index @focussed_tree
+        else
+          index = -1
+        end
+        new_tree_index = index + 1
+        new_tree_index = 0 if new_tree_index < 0 or new_tree_index >= @trees.size
+        tree = @trees[new_tree_index]
+        if tree
+          focus_tree(tree)
+          tree.focus
+        end
+      end
+    end
+    
+    def switch_up
+      if @trees.any?
+        if @focussed_tree
+          index = @trees.index @focussed_tree
+        else
+          index = 1
+        end
+        new_tree_index = index - 1
+        new_tree_index = @trees.size - 1 if new_tree_index < 0 or new_tree_index >= @trees.size
+        tree = @trees[new_tree_index]
+        if tree
+          focus_tree(tree)
+          tree.focus
+        end
+      end
+    end
 
     private
 

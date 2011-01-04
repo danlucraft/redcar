@@ -17,7 +17,7 @@ module Redcar
             separator
           }
         end
-        if Redcar.platform == :linux or Redcar.platform == :windows
+        if [:linux,:windows].include?(Redcar.platform)
           sub_menu "Edit" do
             group(:priority => :last) do
               separator
@@ -25,6 +25,15 @@ module Redcar
             end
           end
         end
+      end
+    end
+
+    def self.keymaps
+      if [:linux,:windows].include?(Redcar.platform)
+        map = Redcar::Keymap.build("main", [:linux,:windows]) do
+          link "F2", PluginManagerUi::OpenPreferencesCommand
+        end
+        [map]
       end
     end
 

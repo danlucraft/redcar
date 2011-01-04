@@ -59,6 +59,7 @@ module Redcar
       @model.add_listener(:edit_element, &method(:edit_element))
       @model.add_listener(:expand_element, &method(:expand_element))
       @model.add_listener(:select_element, &method(:select_element))
+      @model.add_listener(:focus, &method(:focus))
     end
 
     def tree_mirror
@@ -206,6 +207,10 @@ module Redcar
       if item = element_to_item(element)
         @viewer.expandToLevel(element, 1)
       end
+    end
+    
+    def focus
+      @viewer.get_tree.set_focus
     end
 
     def select_element(element)
