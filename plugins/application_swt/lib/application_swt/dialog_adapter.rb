@@ -100,23 +100,43 @@ module Redcar
         menu.show
       end
 
+      def popup_text(title, message, location,dimensions=nil)
+        if dimensions
+          box = ApplicationSWT::ModelessDialog.new(title,message,dimensions[0],dimensions[1])
+        else
+          box = ApplicationSWT::ModelessDialog.new(title,message)
+        end
+        box.open(parent_shell,*get_coordinates(location))
+      end
+
+      def popup_html(text,location,dimensions=nil)
+        if dimensions
+          box = ApplicationSWT::ModelessHtmlDialog.new(text,dimensions[0],dimensions[1])
+        else
+          box = ApplicationSWT::ModelessHtmlDialog.new(text)
+        end
+        box.open(parent_shell,*get_coordinates(location))
+      end
+
       private
 
       def get_coordinates(location)
         edit_view = EditView.focussed_tab_edit_view
-        if location == :cursor and not edit_view
+        if (location == :cursor or location.to_s =~ /^(\d+)$/) and not edit_view
           location = :pointer
         end
         case location
         when :cursor
-          location = edit_view.controller.mate_text.viewer.get_text_widget.get_location_at_offset(edit_view.cursor_offset)
-          x, y = location.x, location.y
-          widget_offset = edit_view.controller.mate_text.viewer.get_text_widget.to_display(0,0)
-          x += widget_offset.x
-          y += widget_offset.y
+          x, y = Swt::GraphicsUtils.pixel_location_at_offset(edit_view.cursor_offset)
+        when :below_cursor
+          x, y = Swt::GraphicsUtils.below_pixel_location_at_offset(edit_view.cursor_offset)
         when :pointer
           location = ApplicationSWT.display.get_cursor_location
           x, y = location.x, location.y
+        else
+          if location.to_s =~ /^(\d+)$/
+            x, y = Swt::GraphicsUtils.pixel_location_at_offset($1.to_i)
+          end
         end
         [x, y]
       end
