@@ -271,7 +271,7 @@ module Redcar
       end
     end
 
-    class FocusTreeCommand < TreeCommand
+    class OpenTreeFinderCommand < TreeCommand
 
       def execute
         if win = Redcar.app.focussed_window
@@ -460,17 +460,17 @@ Redcar.environment: #{Redcar.environment}
         end
       end
     end
-    
+
     class SwitchTreeDownCommand < TreeCommand
-      
+
       def execute
         win = Redcar.app.focussed_window
         win.treebook.switch_down
       end
     end
-    
+
     class SwitchTreeUpCommand < TreeCommand
-      
+
       def execute
         win = Redcar.app.focussed_window
         win.treebook.switch_up
@@ -942,13 +942,13 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class SelectNewFont < Command
+    class SelectNewFont < EditTabCommand
       def execute
         Redcar::EditView::SelectFontDialog.new.open
       end
     end
 
-    class SelectTheme < Command
+    class SelectTheme < EditTabCommand
       def execute
         Redcar::EditView::SelectThemeDialog.new.open
       end
@@ -965,7 +965,7 @@ Redcar.environment: #{Redcar.environment}
       def execute; end
     end
 
-    class SelectFontSize < Command
+    class SelectFontSize < EditTabCommand
       def execute
         max    = Redcar::EditView::MAX_FONT_SIZE
         min    = Redcar::EditView::MIN_FONT_SIZE
@@ -1066,7 +1066,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+[",    MoveTabDownCommand
         link "Ctrl+Shift+]",    MoveTabUpCommand
         link "Cmd+Shift++",     ToggleFullscreen
-        link "Cmd+Shift+T",     FocusTreeCommand
+        link "Cmd+Shift+T",     OpenTreeFinderCommand
         link "Alt+Shift+J",     IncreaseTreebookWidthCommand
         link "Alt+Shift+H",     DecreaseTreebookWidthCommand
         link "Cmd+Shift+>",     EnlargeFirstNotebookCommand
@@ -1164,7 +1164,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Page Down",       SwitchTabUpCommand
         link "Ctrl+Shift+Page Up",   MoveTabDownCommand
         link "Ctrl+Shift+Page Down", MoveTabUpCommand
-        link "Ctrl+Shift+T",         FocusTreeCommand
+        link "Ctrl+Shift+T",         OpenTreeFinderCommand
         link "Alt+Shift+J",      IncreaseTreebookWidthCommand
         link "Alt+Shift+H",      DecreaseTreebookWidthCommand
         link "Ctrl+Shift+>",     EnlargeFirstNotebookCommand
@@ -1302,7 +1302,7 @@ Redcar.environment: #{Redcar.environment}
           group(:priority => 15) do
             separator
             sub_menu "Trees" do
-              item "Tree Finder", FocusTreeCommand
+              item "Open Tree Finder", OpenTreeFinderCommand
               item "Toggle Tree Visibility", ToggleTreesCommand
               item "Increase Tree Width", IncreaseTreebookWidthCommand
               item "Decrease Tree Width", DecreaseTreebookWidthCommand
