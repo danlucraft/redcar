@@ -80,14 +80,20 @@ module Redcar
       end
       
       def style_tab_folder
-        colors = [
-          Swt::Graphics::Color.new(ApplicationSWT.display, 230, 240, 255),
-          Swt::Graphics::Color.new(ApplicationSWT.display, 170, 199, 246),
-          Swt::Graphics::Color.new(ApplicationSWT.display, 135, 178, 247)
+        selected_colors = [
+          Swt::Graphics::Color.new(ApplicationSWT.display, 254, 254, 254),          
+          Swt::Graphics::Color.new(ApplicationSWT.display, 238, 238, 238)
         ].to_java(Swt::Graphics::Color)
-        percents = [60, 85].to_java(:int)
+        percents = [0].to_java(:int)
         
-        @tab_folder.setSelectionBackground(colors, percents, true)
+        unselected_colors = [
+          Swt::Graphics::Color.new(ApplicationSWT.display, 229, 229, 229),          
+          Swt::Graphics::Color.new(ApplicationSWT.display, 208, 208, 208)
+        ].to_java(Swt::Graphics::Color)
+        percents = [0].to_java(:int)
+        
+        @tab_folder.setSelectionBackground(selected_colors, percents, true)
+        @tab_folder.setBackground(unselected_colors, percents, true)
       end
       
       def attach_model_listeners

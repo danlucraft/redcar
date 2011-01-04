@@ -11,17 +11,23 @@ GEM
       json (~> 1.4.6)
       term-ansicolor (~> 1.0.5)
     diff-lcs (1.1.2)
+    gherkin (2.2.9)
+      json (~> 1.4.6)
+      term-ansicolor (~> 1.0.5)
     gherkin (2.2.9-java)
       json (~> 1.4.6)
       term-ansicolor (~> 1.0.5)
+    json (1.4.6)
     json (1.4.6-java)
     rake (0.8.7)
+    rcov (0.9.9)
     rcov (0.9.9-java)
     rspec (1.3.1)
     term-ansicolor (1.0.5)
 
 PLATFORMS
   java
+  ruby
 
 DEPENDENCIES
   ci_reporter
