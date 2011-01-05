@@ -20,7 +20,7 @@ module DocumentSearch
       label :label_search, "Search:"
       textbox :query
 
-      combo :search_type, ["Regex", "Plain", "Glob"], "Regex" do |val|
+      combo :search_type, ["Plain", "Regex", "Glob"], "Plain" do |val|
         @@previous_options.search_type = val
       end
 

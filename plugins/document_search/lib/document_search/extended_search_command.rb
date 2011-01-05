@@ -8,7 +8,7 @@ module DocumentSearch
 
   		# Initializes with default options.
   		def initialize
-  		  @search_type = :search_regex
+  		  @search_type = :search_plain
   		  @match_case = false
   		  @wrap_around = true
   		end

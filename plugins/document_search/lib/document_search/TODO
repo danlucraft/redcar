@@ -1,4 +1,2 @@
-* Add SearchPreviousCommand [DONE]
 * Timeout on Not Found message
-
 * Fix tab order: Should be Search, then Replace textboxes, then options
