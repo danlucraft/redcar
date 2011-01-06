@@ -45,6 +45,7 @@ module Redcar
       end
 
       def num_columns
+        return @model.num_columns if @model.respond_to?(:num_columns)
         @model.__items.select {|i| !i.is_a?(Redcar::Speedbar::KeyItem) }.length
       end
 
