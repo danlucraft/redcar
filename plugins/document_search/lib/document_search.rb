@@ -14,7 +14,7 @@ module DocumentSearch
           item "Document Search",    SearchForwardCommand
           item "Repeat Last Search", RepeatPreviousSearchForwardCommand
           item "Search and Replace", SearchAndReplaceCommand
-					item "Document Search (Extended)", ExtendedSearchCommand
+          item "Document Search (Extended)", ExtendedSearchCommand
         end
         separator
       end
