@@ -1,3 +1,4 @@
 * Add replace count message display
 * Add Replace in Selection button
+* Better implementation of Find Previous (reverse regex when feasible)
 * Fix tab order: Should be Search, then Replace textboxes, then options
