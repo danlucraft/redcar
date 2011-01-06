@@ -78,6 +78,22 @@ module Redcar
       notify_listeners(:new_notebook, notebook)
     end
 
+    def enlarge_notebook(index)
+      notify_listeners(:enlarge_notebook,index)
+    end
+
+    def adjust_treebook_width(more=true)
+      if more
+        notify_listeners(:increase_treebook_width)
+      else
+        notify_listeners(:decrease_treebook_width)
+      end
+    end
+
+    def reset_notebook_widths
+      notify_listeners(:reset_notebook_widths)
+    end
+
     def attach_notebook_listeners(notebook)
       notebook.add_listener(:tab_focussed) do |tab|
         notify_listeners(:tab_focussed, tab)

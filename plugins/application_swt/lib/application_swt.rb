@@ -9,6 +9,9 @@ require "application_swt/dialogs/no_buttons_dialog"
 require "application_swt/dialogs/text_and_file_dialog"
 require "application_swt/dialogs/filter_list_dialog_controller"
 require "application_swt/dialogs/input_dialog"
+require "application_swt/dialogs/modeless_dialog"
+require "application_swt/dialogs/modeless_html_dialog"
+require "application_swt/dialogs/modeless_list_dialog_controller"
 require "application_swt/html_tab"
 require "application_swt/icon"
 require "application_swt/menu"
@@ -35,9 +38,10 @@ module Redcar
     def self.start
       if Redcar.gui
         Redcar.gui.register_controllers(
-            Redcar::Tab              => ApplicationSWT::Tab,
-            Redcar::HtmlTab          => ApplicationSWT::HtmlTab,
-            Redcar::FilterListDialog => ApplicationSWT::FilterListDialogController
+            Redcar::Tab                => ApplicationSWT::Tab,
+            Redcar::HtmlTab            => ApplicationSWT::HtmlTab,
+            Redcar::FilterListDialog   => ApplicationSWT::FilterListDialogController,
+            Redcar::ModelessListDialog => ApplicationSWT::ModelessListDialogController
           )
         Redcar.gui.register_dialog_adapter(ApplicationSWT::DialogAdapter.new)
       end

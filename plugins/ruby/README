@@ -1,6 +1,0 @@
-== Syntax checking for Ruby in Redcar
-
-Get redcar from github.com/redcar/redcar and do a git clone in your 
-$HOME/.redcar/plugins of this repository. You will also need the 
-redcar_syntax_check plugin (timfel/redcar_syntax_check)
-

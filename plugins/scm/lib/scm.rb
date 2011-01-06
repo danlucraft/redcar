@@ -43,6 +43,7 @@ module Redcar
       def self.keymaps
         osx = Keymap.build("main", :osx) do
           link "Cmd+Shift+C", Scm::CommitMirror::SaveCommand
+          link "Cmd+Shift+.", :command => Scm::CommitMirror::SaveCommand, :value => [:commit, [Scm::ScmChangesMirror, Scm::ScmChangesController]]
         end
 
         linwin = Keymap.build("main", [:linux, :windows]) do
