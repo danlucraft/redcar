@@ -40,6 +40,13 @@ module Swt
           :percents => percents.collect { |i| i / 100.0 },
           :vertical => vertical }
       end
+      
+      def set_background(colors, percents, vertical = true)
+        @background_color_options = { :colors => colors,
+          :percents => percents.collect { |i| i / 100.0 },
+          :vertical => vertical }
+        @tab_area.background = colors[colors.size - 1]
+      end
 
       def add_item(tab)
         @items << tab
