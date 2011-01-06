@@ -3,15 +3,15 @@ module DocumentSearch
     # Encapsulates options for search queries.
     class SearchOptions
       attr_accessor :search_type
-  		attr_accessor :match_case
-  		attr_accessor :wrap_around
+      attr_accessor :match_case
+      attr_accessor :wrap_around
 
-  		# Initializes with default options.
-  		def initialize
-  		  @search_type = :search_plain
-  		  @match_case = false
-  		  @wrap_around = true
-  		end
+      # Initializes with default options.
+      def initialize
+        @search_type = :search_plain
+        @match_case = false
+        @wrap_around = true
+      end
     end
 
 
