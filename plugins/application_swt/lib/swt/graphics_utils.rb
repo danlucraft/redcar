@@ -166,5 +166,28 @@ module Swt
 
       return Image.new(display, dd)
     end
+
+    def self.pixel_location_at_offset(offset)
+      edit_view = Redcar::EditView.focussed_tab_edit_view
+      if edit_view
+        text_widget = edit_view.controller.mate_text.viewer.get_text_widget
+        location    = text_widget.get_location_at_offset(offset)
+        x, y = location.x, location.y
+        widget_offset = text_widget.to_display(0,0)
+        x += widget_offset.x
+        y += widget_offset.y
+        [x,y]
+      end
+    end
+
+    def self.below_pixel_location_at_offset(offset)
+      x, y = GraphicsUtils.pixel_location_at_offset(offset)
+      if x and y
+        edit_view = Redcar::EditView.focussed_tab_edit_view
+        text_widget = edit_view.controller.mate_text.viewer.get_text_widget
+        y += text_widget.get_line_height
+        [x, y]
+      end
+    end
   end
 end

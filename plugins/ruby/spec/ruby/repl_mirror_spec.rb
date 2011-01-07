@@ -11,6 +11,7 @@ class Redcar::Ruby
     def commit_test_text1
       text = <<-RUBY
 # Ruby REPL
+# type 'help' for help
 
 >> $internal_repl_test = 707
 RUBY
@@ -20,6 +21,7 @@ RUBY
     def result_test_text1
       (<<-RUBY).chomp
 # Ruby REPL
+# type 'help' for help
 
 >> $internal_repl_test = 707
 => 707
@@ -30,6 +32,7 @@ RUBY
     def commit_test_text2
       text = <<-RUBY
 # Ruby REPL
+# type 'help' for help
 
 >> $internal_repl_test = 707
 => 707
@@ -42,6 +45,7 @@ RUBY
     def result_test_text2
       (<<-RUBY).chomp
 # Ruby REPL
+# type 'help' for help
 
 >> $internal_repl_test = 707
 => 707
@@ -55,6 +59,7 @@ RUBY
     def commit_no_input
       text = <<-RUBY
 # Ruby REPL
+# type 'help' for help
 
 >> 
 RUBY
@@ -73,6 +78,7 @@ RUBY
       it "should have a message and a prompt" do
         @mirror.read.should == (<<-RUBY).chomp
 # Ruby REPL
+# type 'help' for help
 
 >> 
 RUBY
@@ -94,13 +100,13 @@ RUBY
 
         it "should allow committing nothing as the first command" do
           commit_no_input
-          @mirror.read.should == "# Ruby REPL\n\n>> \n=> nil\n>> "
+          @mirror.read.should == "# Ruby REPL\n# type 'help' for help\n\n>> \n=> nil\n>> "
         end
 
         it "should allow committing nothing as an xth command" do
           committed = commit_test_text2
           @mirror.commit committed + "\n>> "
-          @mirror.read.should == "# Ruby REPL\n\n>> $internal_repl_test = 909\n=> 909\n>> \n=> nil\n>> "
+          @mirror.read.should == "# Ruby REPL\n# type 'help' for help\n\n>> $internal_repl_test = 909\n=> 909\n>> \n=> nil\n>> "
         end
 
         it "should emit changed event when text is executed" do
@@ -117,6 +123,7 @@ RUBY
           @mirror.commit(prompt + ">> nil.foo")
           @mirror.read.should == (<<-RUBY).chomp
 # Ruby REPL
+# type 'help' for help
 
 >> nil.foo
 x> NoMethodError: undefined method `foo' for nil:NilClass
@@ -165,6 +172,7 @@ RUBY
         @mirror.commit(prompt + ">> self")
         @mirror.read.should == (<<-RUBY).chomp
 # Ruby REPL
+# type 'help' for help
 
 >> self
 => main
@@ -178,6 +186,7 @@ RUBY
         @mirror.commit(sent + "\n>> a")
         @mirror.read.should == (<<-RUBY).chomp
 # Ruby REPL
+# type 'help' for help
 
 >> a = 13
 => 13

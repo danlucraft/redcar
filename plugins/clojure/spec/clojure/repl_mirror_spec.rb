@@ -44,6 +44,7 @@ class Redcar::Clojure
         wait_for_prompt
         @mirror.read.should == (<<-CLOJURE).chomp
 # Clojure REPL
+# type 'help' for help
 
 user=> 
 CLOJURE

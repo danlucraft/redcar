@@ -12,3 +12,15 @@ class FakeEvent
     widget.notify_listeners(event_type, untyped_event)
   end
 end
+
+class FakeKeyEvent
+  def initialize(key_code, widget)
+    event = Swt::Widgets::Event.new
+    event.display = Swt.display
+    event.widget  = widget
+    event.type    = Swt::SWT::KeyDown
+    event.keyCode = key_code
+
+    widget.notify_listeners(event.type,event)
+  end
+end

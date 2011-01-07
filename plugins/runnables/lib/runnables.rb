@@ -104,11 +104,13 @@ module Redcar
 
     def self.keymaps
       linwin = Keymap.build("main", [:linux, :windows]) do
+        link "Ctrl+Alt+Shift+R", Runnables::ShowRunnables
         link "Ctrl+R", Runnables::RunEditTabCommand
         link "Ctrl+Alt+R", Runnables::RunAlternateEditTabCommand
       end
 
       osx = Keymap.build("main", :osx) do
+        link "Cmd+Alt+Shift+R", Runnables::ShowRunnables
         link "Cmd+R", Runnables::RunEditTabCommand
         link "Cmd+Alt+R", Runnables::RunAlternateEditTabCommand
       end

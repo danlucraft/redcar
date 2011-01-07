@@ -85,7 +85,7 @@ module Redcar
       JavaMateView::ThemeManager.load_themes(dir)
     end
 
-    attr_reader :mate_text, :widget, :model
+    attr_reader :mate_text, :widget, :model, :key_listener, :verify_key_listener
 
     def initialize(model, parent, options={})
       @options = options
@@ -355,8 +355,10 @@ module Redcar
       @mate_text.getTextWidget.addFocusListener(FocusListener.new(self))
       @mate_text.getTextWidget.addVerifyListener(VerifyListener.new(@model.document, self))
       @mate_text.getTextWidget.addModifyListener(ModifyListener.new(@model.document, self))
-      @mate_text.get_control.add_verify_key_listener(VerifyKeyListener.new(self))
-      @mate_text.get_control.add_key_listener(KeyListener.new(self))
+      @verify_key_listener = VerifyKeyListener.new(self)
+      @key_listener = KeyListener.new(self)
+      @mate_text.get_control.add_verify_key_listener(@verify_key_listener)
+      @mate_text.get_control.add_key_listener(@key_listener)
       @handlers << [@model.document, h1] << [@model, h2] << [@model, h3] << [@model, h4] <<
         [@model, h5] << [@model, h6] << [@model, h7] << [@model, h8] <<
         [@model, h9] << [@model, h11] << [@model.document, h13]

@@ -63,7 +63,10 @@ module Redcar
       :DELETE_WORD_PREVIOUS,
       :DELETE_WORD_NEXT
     ]
-    
+
+    MAX_FONT_SIZE = 25
+    MIN_FONT_SIZE = 1
+
     include Redcar::Model
     extend Redcar::Observable
     include Redcar::Observable
@@ -110,7 +113,7 @@ module Redcar
         end
       end
     end
-    
+
     def self.toolbars
       ToolBar::Builder.build do
         item "Cut", :command => Redcar::Top::CutCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "scissors-blue.png"), :barname => :edit
@@ -174,7 +177,7 @@ module Redcar
     def self.esc_handlers
       [Actions::EscapeHandler]
     end
-    
+
     def self.cmd_enter_handlers
       [Actions::CmdEnterHandler]
     end
@@ -202,7 +205,7 @@ module Redcar
     def self.all_backspace_handlers
       all_handlers(:backspace)
     end
-    
+
     def self.all_cmd_enter_handlers
       all_handlers(:cmd_enter)
     end
@@ -242,7 +245,7 @@ module Redcar
     def backspace_pressed(modifiers)
       handle_key(EditView.all_backspace_handlers, modifiers)
     end
-    
+
     def cmd_enter_pressed(modifiers)
       handle_key(EditView.all_cmd_enter_handlers, modifiers)
     end
@@ -380,7 +383,7 @@ module Redcar
       @focussed = nil
       create_history
     end
-    
+
     def create_history
       @history = Document::History.new(500)
       @history.subscribe do |action|
@@ -574,25 +577,25 @@ module Redcar
       end
       @last_checked = Time.now
     end
-    
+
     # This characters have custom Redcar behaviour.
     OVERRIDDEN_CHARACTERS = {
       9 => [:tab_pressed, []]
     }
-    
+
     def type_character(character)
       unless custom_character_handle(character)
         notify_listeners(:type_character, character)
       end
       history.record(character)
     end
-    
+
     def custom_character_handle(character)
       if method_call = OVERRIDDEN_CHARACTERS[character]
         send(*method_call)
       end
     end
-    
+
     # These actions have custom Redcar implementations that
     # override the default StyledText implementation. (Mainly for
     # soft tabs purposes.)
@@ -604,13 +607,13 @@ module Redcar
       :DELETE_PREVIOUS        => Actions::BackspaceHandler,
       :DELETE_NEXT            => Actions::DeleteHandler
     }
-    
+
     def invoke_overridden_action(action_symbol)
       if handler = OVERRIDDEN_ACTIONS[action_symbol]
         handler.send(action_symbol.to_s.downcase, self)
       end
     end
-    
+
     def invoke_action(action_symbol)
       unless invoke_overridden_action(action_symbol)
         notify_listeners(:invoke_action, action_symbol)
