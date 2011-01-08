@@ -66,9 +66,7 @@ module DocumentSearch
       # Initializes UI elements.
       def after_draw
         clear_not_found
-        DocumentSearch::SearchSpeedbar.previous_query ||= ""
-        self.query.value = @initial_query || DocumentSearch::SearchSpeedbar.previous_query ||
-            @@previous_query
+        self.query.value = @initial_query || @@previous_query
         self.replace.value = @@previous_replace || ""
         self.search_type.value = SearchSpeedbar.search_type_to_text(@@previous_options.search_type)
         self.match_case.value = @@previous_options.match_case
@@ -139,6 +137,14 @@ module DocumentSearch
       def self.find_next(query, options)
         cmd = FindNextCommand.new(query, options)
         cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
+      end
+
+      def self.repeat_find_next
+        find_next(@@previous_query, @@previous_options) or not_found
+      end
+
+      def self.repeat_find_previous
+        find_previous(@@previous_query, @@previous_options) or not_found
       end
 
       # description here
