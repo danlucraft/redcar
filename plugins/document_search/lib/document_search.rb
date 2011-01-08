@@ -6,11 +6,11 @@ module DocumentSearch
   def self.menus
     Redcar::Menu::Builder.build do
       sub_menu "Edit" do
-        sub_menu "Search", :priority => 50 do
-          item "Document Search", ExtendedSearchCommand
-          item "Next Search Result", RepeatFindNextCommand
-          item "Previous Search Result", RepeatFindPreviousCommand
-          item "Search and Replace", ExtendedSearchAndReplaceCommand
+        sub_menu "Find", :priority => 50 do
+          item "Find", ExtendedSearchCommand
+          item "Next Result", RepeatFindNextCommand
+          item "Previous Result", RepeatFindPreviousCommand
+          item "Find and Replace", ExtendedSearchAndReplaceCommand
         end
         separator
       end
