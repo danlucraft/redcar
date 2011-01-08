@@ -1,250 +1,280 @@
 module DocumentSearch
-  module ExtendedSearch
-    # Encapsulates options for search queries.
-    class SearchOptions
-      attr_accessor :search_type
-      attr_accessor :match_case
-      attr_accessor :wrap_around
+  # Encapsulates options for search queries.
+  class SearchOptions
+    attr_accessor :search_type
+    attr_accessor :match_case
+    attr_accessor :wrap_around
 
-      # Initializes with default options.
-      def initialize
-        @search_type = :search_plain
-        @match_case = false
-        @wrap_around = true
+    # Initializes with default options.
+    def initialize
+      @search_type = :search_plain
+      @match_case = false
+      @wrap_around = true
+    end
+
+    ### UTILITY ###
+
+    # Maps a search type combo box value to the corresponding search type symbol.
+    def self.search_type_to_symbol(search_type_text)
+      case search_type_text
+      when "Regex"
+        :search_regex
+      when "Plain"
+        :search_plain
+      when "Glob"
+        :search_glob
+      else
+        puts "WARNING - Invalid search type: #{search_type_text} (defaulting to :search_regex)"
+        :search_regex
       end
     end
 
-
-    # Utilities for extended search commands.
-    module SearchCommandMixin
-      ### SEARCH PATTERNS ###
-
-      # An instance of a search type method: Regular expression
-      def search_regex(query, options)
-        Regexp.new(query, !options.match_case)
+    # Maps a search type symbol to a text value for the search type combo box.
+    def self.search_type_to_text(search_type_symbol)
+      case search_type_symbol
+      when :search_regex
+        'Regex'
+      when :search_plain
+        'Plain'
+      when :search_glob
+        'Glob'
+      else
+        puts "WARNING - Invalid search type: #{search_type_symbol} (defaulting to 'Regex')"
+        'Regex'
       end
+    end
+  end
 
-      # An instance of a search type method: Plain text search
-      def search_plain(query, options)
-        search_regex(Regexp.escape(query), options)
-      end
 
-      # An instance of a search type method: Glob text search
-      # Converts a glob pattern (* or ?) into a regex pattern
-      def search_glob(query, options)
-        # convert the glob pattern to a regex pattern
-        new_query = ""
-        query.each_char do |c|
-          case c
-          when "*"
-            new_query << ".*"
-          when "?"
-            new_query << "."
-          else
-            new_query << Regexp.escape(c)
-          end
-        end
-        search_regex(new_query, options)
-      end
+  # Utilities for extended search commands.
+  module SearchCommandMixin
+    ### SEARCH PATTERNS ###
 
-      ### SELECTION ###
+    # An instance of a search type method: Regular expression
+    def search_regex(query, options)
+      Regexp.new(query, !options.match_case)
+    end
 
-      # Selects the first match of query, starting from the start_pos.
-      def select_next_match(doc, start_pos, query, wrap_around)
-        scanner = StringScanner.new(doc.get_all_text)
-        scanner.pos = start_pos
-        if not scanner.scan_until(query)
-          if not wrap_around
-            return false
-          end
+    # An instance of a search type method: Plain text search
+    def search_plain(query, options)
+      search_regex(Regexp.escape(query), options)
+    end
 
-          scanner.reset
-          if not scanner.scan_until(query)
-            return false
-          end
-        end
-
-        selection_pos = scanner.pos - scanner.matched_size
-        select_range(selection_pos, scanner.pos)
-        true
-      end
-
-      # Selects the match that first precedes the search position.
-      #
-      # The current implementation is brain-dead, but works: the document is scanned from the start
-      # up to the search position, retaining the most recent match. Many smarter, but more
-      # complicated strategies are possible; the best would be full reversal of the query regex, but
-      # that obviously has a lot of tricky aspects to it.
-      def select_previous_match(doc, search_pos, query, wrap_around)
-        previous_match = nil
-        scanner = StringScanner.new(doc.get_all_text)
-        scanner.pos = 0
-        while scanner.scan_until(query)
-          start_pos = scanner.pos - scanner.matched_size
-          if start_pos < search_pos
-            previous_match = [start_pos, scanner.pos]
-          elsif previous_match
-            select_range(*previous_match)
-            return true
-          elsif not wrap_around
-            return false
-          else
-            break
-          end
-        end
-
-        # Find the last match in the document.
-        while scanner.scan_until(query)
-          start_pos = scanner.pos - scanner.matched_size
-          previous_match = [start_pos, scanner.pos]
-        end
-
-        if previous_match
-          select_range(*previous_match)
-          return true
+    # An instance of a search type method: Glob text search
+    # Converts a glob pattern (* or ?) into a regex pattern
+    def search_glob(query, options)
+      # convert the glob pattern to a regex pattern
+      new_query = ""
+      query.each_char do |c|
+        case c
+        when "*"
+          new_query << ".*"
+        when "?"
+          new_query << "."
         else
+          new_query << Regexp.escape(c)
+        end
+      end
+      search_regex(new_query, options)
+    end
+
+    ### SELECTION ###
+
+    # Selects the first match of query, starting from the start_pos.
+    def select_next_match(doc, start_pos, query, wrap_around)
+      scanner = StringScanner.new(doc.get_all_text)
+      scanner.pos = start_pos
+      if not scanner.scan_until(query)
+        if not wrap_around
+          return false
+        end
+
+        scanner.reset
+        if not scanner.scan_until(query)
           return false
         end
       end
 
-      # Replaces the current selection, if it matches the query completely.
-      def replace_selection_if_match(doc, start_pos, query, replace)
-        scanner = StringScanner.new(doc.selected_text)
-        scanner.check(query)
-        if (not scanner.matched?) || (scanner.matched_size != doc.selected_text.length)
-          return 0
-        end
-        matched_text = doc.get_range(start_pos, scanner.matched_size)
-        replacement_text = matched_text.gsub(query, replace)
-        doc.replace(start_pos, scanner.matched_size, replacement_text)
-        replacement_text.length
-      end
-
-      # Selects the specified range and scrolls to the start.
-      def select_range(start, stop)
-        doc.set_selection_range(start, stop)
-        doc.scroll_to_line(doc.line_at_offset(start))
-      end
+      selection_pos = scanner.pos - scanner.matched_size
+      select_range(selection_pos, scanner.pos)
+      true
     end
 
-
-    # Base class for find commands.
-    class FindCommandBase < Redcar::DocumentCommand
-      include SearchCommandMixin
-
-      attr_reader :query
-
-      # description here
-      def initialize(query, options)
-        @options = options
-        @query = send(options.search_type, query, options)
-      end
-    end
-
-
-    # Finds the next match after the current location.
-    class FindNextCommand < FindCommandBase
-      def execute
-        offsets = [doc.cursor_offset, doc.selection_offset]
-        start_pos = offsets.max
-        if select_next_match(doc, start_pos, query, @options.wrap_around)
-          true
-        else
-          # Clear selection as visual feedback that search failed.
-          doc.set_selection_range(start_pos, start_pos)
-          false
-        end
-      end
-    end
-
-
-    # Finds the previous match before the current location.
-    class FindPreviousCommand < FindCommandBase
-      def execute
-        offsets = [doc.cursor_offset, doc.selection_offset]
-        start_pos = offsets.min
-        if select_previous_match(doc, start_pos, query, @options.wrap_around)
-          true
-        else
-          # Clear selection as visual feedback that search failed.
-          doc.set_selection_range(start_pos, start_pos)
-          false
-        end
-      end
-    end
-
-
-    # Base class for replace commands.
-    class ReplaceCommandBase < Redcar::DocumentCommand
-      include SearchCommandMixin
-
-      attr_reader :query, :replace
-
-      # description here
-      def initialize(query, replace, options)
-        @options = options
-        @query = send(options.search_type, query, options)
-        @replace = replace
-      end
-    end
-
-
-    # Replaces the currently selected text, if it matches the search criteria, then finds and
-    # selects the next match in the document.
+    # Selects the match that first precedes the search position.
     #
-    # This command maintains the invariant that no text is replaced without first being selected, so
-    # the user always knows exactly what change is about to be made. A ramification of this policy
-    # is that, if no text is selected beforehand, or the selected text does not match the query,
-    # then "replace" portion of "replace and find" is essentially skipped, so that two button
-    # presses are required.
-    class ReplaceAndFindCommand < ReplaceCommandBase
-      def execute
-        offsets = [doc.cursor_offset, doc.selection_offset]
-        start_pos = offsets.min
-        if doc.selected_text.length > 0
-          chars_replaced = replace_selection_if_match(doc, start_pos, query, replace)
-          if chars_replaced > 0
-            start_pos += chars_replaced
-          else
-            start_pos = offsets.max
-          end
-        end
-        if select_next_match(doc, start_pos, query, @options.wrap_around)
-          true
+    # The current implementation is brain-dead, but works: the document is scanned from the start
+    # up to the search position, retaining the most recent match. Many smarter, but more
+    # complicated strategies are possible; the best would be full reversal of the query regex, but
+    # that obviously has a lot of tricky aspects to it.
+    def select_previous_match(doc, search_pos, query, wrap_around)
+      previous_match = nil
+      scanner = StringScanner.new(doc.get_all_text)
+      scanner.pos = 0
+      while scanner.scan_until(query)
+        start_pos = scanner.pos - scanner.matched_size
+        if start_pos < search_pos
+          previous_match = [start_pos, scanner.pos]
+        elsif previous_match
+          select_range(*previous_match)
+          return true
+        elsif not wrap_around
+          return false
         else
-          # Clear selection as visual feedback that search failed.
-          doc.set_selection_range(start_pos, start_pos)
-          false
+          break
         end
+      end
+
+      # Find the last match in the document.
+      while scanner.scan_until(query)
+        start_pos = scanner.pos - scanner.matched_size
+        previous_match = [start_pos, scanner.pos]
+      end
+
+      if previous_match
+        select_range(*previous_match)
+        return true
+      else
+        return false
       end
     end
 
+    # Replaces the current selection, if it matches the query completely.
+    def replace_selection_if_match(doc, start_pos, query, replace)
+      scanner = StringScanner.new(doc.selected_text)
+      scanner.check(query)
+      if (not scanner.matched?) || (scanner.matched_size != doc.selected_text.length)
+        return 0
+      end
+      matched_text = doc.get_range(start_pos, scanner.matched_size)
+      replacement_text = matched_text.gsub(query, replace)
+      doc.replace(start_pos, scanner.matched_size, replacement_text)
+      replacement_text.length
+    end
 
-    # Replaces all query matches.
-    class ReplaceAllCommand < ReplaceCommandBase
-      def execute
-        startoff, endoff = nil
-        text = doc.get_all_text
-        count = 0
-        sc = StringScanner.new(text)
-        while sc.scan_until(query)
-          count += 1
+    # Selects the specified range and scrolls to the start.
+    def select_range(start, stop)
+      doc.set_selection_range(start, stop)
+      doc.scroll_to_line(doc.line_at_offset(start))
+    end
+  end
 
-          startoff = sc.pos - sc.matched_size
-          replacement_text = text.slice(startoff, sc.matched_size).gsub(query, replace)
-          endoff = startoff + replacement_text.length
 
-          text[startoff...sc.pos] = replacement_text
-          sc.string = text
-          sc.pos = startoff + replacement_text.length
-        end
-        if count > 0
-          doc.text = text
-          select_range(startoff + replacement_text.length, startoff)
-          true
+  # Base class for find commands.
+  class FindCommandBase < Redcar::DocumentCommand
+    include SearchCommandMixin
+
+    attr_reader :query
+
+    # description here
+    def initialize(query, options)
+      @options = options
+      @query = send(options.search_type, query, options)
+    end
+  end
+
+
+  # Finds the next match after the current location.
+  class FindNextCommand < FindCommandBase
+    def execute
+      offsets = [doc.cursor_offset, doc.selection_offset]
+      start_pos = offsets.max
+      if select_next_match(doc, start_pos, query, @options.wrap_around)
+        true
+      else
+        # Clear selection as visual feedback that search failed.
+        doc.set_selection_range(start_pos, start_pos)
+        false
+      end
+    end
+  end
+
+
+  # Finds the previous match before the current location.
+  class FindPreviousCommand < FindCommandBase
+    def execute
+      offsets = [doc.cursor_offset, doc.selection_offset]
+      start_pos = offsets.min
+      if select_previous_match(doc, start_pos, query, @options.wrap_around)
+        true
+      else
+        # Clear selection as visual feedback that search failed.
+        doc.set_selection_range(start_pos, start_pos)
+        false
+      end
+    end
+  end
+
+
+  # Base class for replace commands.
+  class ReplaceCommandBase < Redcar::DocumentCommand
+    include SearchCommandMixin
+
+    attr_reader :query, :replace
+
+    # description here
+    def initialize(query, replace, options)
+      @options = options
+      @query = send(options.search_type, query, options)
+      @replace = replace
+    end
+  end
+
+
+  # Replaces the currently selected text, if it matches the search criteria, then finds and
+  # selects the next match in the document.
+  #
+  # This command maintains the invariant that no text is replaced without first being selected, so
+  # the user always knows exactly what change is about to be made. A ramification of this policy
+  # is that, if no text is selected beforehand, or the selected text does not match the query,
+  # then "replace" portion of "replace and find" is essentially skipped, so that two button
+  # presses are required.
+  class ReplaceAndFindCommand < ReplaceCommandBase
+    def execute
+      offsets = [doc.cursor_offset, doc.selection_offset]
+      start_pos = offsets.min
+      if doc.selected_text.length > 0
+        chars_replaced = replace_selection_if_match(doc, start_pos, query, replace)
+        if chars_replaced > 0
+          start_pos += chars_replaced
         else
-          false
+          start_pos = offsets.max
         end
+      end
+      if select_next_match(doc, start_pos, query, @options.wrap_around)
+        true
+      else
+        # Clear selection as visual feedback that search failed.
+        doc.set_selection_range(start_pos, start_pos)
+        false
+      end
+    end
+  end
+
+
+  # Replaces all query matches.
+  class ReplaceAllCommand < ReplaceCommandBase
+    def execute
+      startoff, endoff = nil
+      text = doc.get_all_text
+      count = 0
+      sc = StringScanner.new(text)
+      while sc.scan_until(query)
+        count += 1
+
+        startoff = sc.pos - sc.matched_size
+        replacement_text = text.slice(startoff, sc.matched_size).gsub(query, replace)
+        endoff = startoff + replacement_text.length
+
+        text[startoff...sc.pos] = replacement_text
+        sc.string = text
+        sc.pos = startoff + replacement_text.length
+      end
+      if count > 0
+        doc.text = text
+        select_range(startoff + replacement_text.length, startoff)
+        true
+      else
+        false
       end
     end
   end

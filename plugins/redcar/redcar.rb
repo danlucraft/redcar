@@ -460,7 +460,7 @@ Redcar.environment: #{Redcar.environment}
         end
       end
     end
-    
+
     class SwitchTreeDownCommand < TreeCommand
 
       def execute
@@ -476,7 +476,7 @@ Redcar.environment: #{Redcar.environment}
         win.treebook.switch_up
       end
     end
-    
+
     class SwitchTabDownCommand < TabCommand
 
       def execute
@@ -1036,17 +1036,18 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+]",       IncreaseIndentCommand
         link "Cmd+Shift+I", AutoIndenter::IndentCommand
         link "Cmd+L",       GotoLineCommand
-        link "Cmd+F",       DocumentSearch::ExtendedSearchCommand
-        link "Cmd+H",       DocumentSearch::ExtendedSearchAndReplaceCommand
-        #link "Cmd+Shift+F", DocumentSearch::RepeatFindNextCommand
-        link "Cmd+Ctrl+F",  DocumentSearch::ExtendedSearchAndReplaceCommand
-        link "Cmd+Alt+F",   DocumentSearch::ExtendedSearchCommand
+        link "Cmd+F",       DocumentSearch::FindCommand
         link "Cmd+Shift+F", Redcar::FindInProject::OpenSearch
+        link "Cmd+H",       DocumentSearch::FindAndReplaceCommand
+        link "Cmd+G", DocumentSearch::RepeatFindNextCommand
+        link "Cmd+Shift+G",       DocumentSearch::RepeatFindPreviousCommand
+        link "Cmd+Alt+F",  DocumentSearch::FindAndReplaceCommand
+        #link "Cmd+Alt+F",   DocumentSearch::ExtendedSearchCommand
         link "Cmd+A",       SelectAllCommand
         link "Ctrl+W",      SelectWordCommand
         link "Ctrl+L",      SelectLineCommand
         link "Cmd+B",       ToggleBlockSelectionCommand
-        #link "Escape", AutoCompleter::AutoCompleteCommand
+        link "Escape", AutoCompleter::AutoCompleteCommand
         link "Ctrl+Escape",  AutoCompleter::MenuAutoCompleterCommand
 
         link "Ctrl+U",       EditView::UpcaseTextCommand
@@ -1131,11 +1132,11 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+]",       IncreaseIndentCommand
         link "Ctrl+Shift+[", AutoIndenter::IndentCommand
         link "Ctrl+L",       GotoLineCommand
-        link "Ctrl+F",   DocumentSearch::ExtendedSearchCommand
-        link "Ctrl+H",   DocumentSearch::ExtendedSearchAndReplaceCommand
+        link "Ctrl+F",   DocumentSearch::FindCommand
+        link "Ctrl+Shift+F", Redcar::FindInProject::OpenSearch
+        link "Ctrl+H",   DocumentSearch::FindAndReplaceCommand
         link "Ctrl+G",       DocumentSearch::RepeatFindNextCommand
         link "Ctrl+Shift+G",       DocumentSearch::RepeatFindPreviousCommand
-        link "Ctrl+Shift+F", Redcar::FindInProject::OpenSearch
         link "Ctrl+A", SelectAllCommand
         link "Ctrl+Alt+W",   SelectWordCommand
         link "Ctrl+Alt+L",   SelectLineCommand

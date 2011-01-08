@@ -1,5 +1,6 @@
 require 'strscan'
 require "document_search/extended_search_command"
+require "document_search/find_speedbar"
 require "document_search/extended_search"
 
 module DocumentSearch
@@ -7,10 +8,11 @@ module DocumentSearch
     Redcar::Menu::Builder.build do
       sub_menu "Edit" do
         sub_menu "Find", :priority => 50 do
-          item "Find", ExtendedSearchCommand
+          item "Find", :command => FindCommand, :priority => 1
+          item "Find and Replace", :command => FindAndReplaceCommand, :priority => 2
+          separator
           item "Next Result", RepeatFindNextCommand
           item "Previous Result", RepeatFindPreviousCommand
-          item "Find and Replace", ExtendedSearchAndReplaceCommand
         end
         separator
       end
@@ -19,14 +21,14 @@ module DocumentSearch
 
   def self.toolbars
     Redcar::ToolBar::Builder.build do
-      item "Search Document", :command => DocumentSearch::ExtendedSearchCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), :barname => :edit
+      item "Search Document", :command => DocumentSearch::FindCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), :barname => :edit
       item "Next Search Result", :command => DocumentSearch::RepeatFindNextCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier--arrow.png"), :barname => :edit
     end
   end
 
-  class ExtendedSearchCommand < Redcar::EditTabCommand
+  class FindCommand < Redcar::EditTabCommand
     def execute
-      @speedbar = ExtendedSearch::SearchSpeedbar.new
+      @speedbar = FindSpeedbar.new
       if doc.selection?
         @speedbar.initial_query = doc.selected_text
       end
@@ -34,18 +36,25 @@ module DocumentSearch
     end
   end
 
-  class ExtendedSearchAndReplaceCommand < ExtendedSearchCommand
+  class FindAndReplaceCommand < Redcar::EditTabCommand
+    def execute
+      @speedbar = FindAndReplaceSpeedbar.new
+      if doc.selection?
+        @speedbar.initial_query = doc.selected_text
+      end
+      win.open_speedbar(@speedbar)
+    end
   end
 
   class RepeatFindNextCommand < Redcar::EditTabCommand
     def execute
-      ExtendedSearch::SearchSpeedbar.repeat_find_next
+      FindAndReplaceSpeedbar.repeat_find_next
     end
   end
 
   class RepeatFindPreviousCommand < Redcar::EditTabCommand
     def execute
-      ExtendedSearch::SearchSpeedbar.repeat_find_previous
+      FindAndReplaceSpeedbar.repeat_find_previous
     end
   end
 
