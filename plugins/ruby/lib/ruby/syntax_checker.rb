@@ -1,8 +1,8 @@
 require 'java'
 
 module Redcar
-  module SyntaxCheck
-    class Ruby < Checker
+  class Ruby
+    class SyntaxChecker < Redcar::SyntaxCheck::Checker
       supported_grammars "Ruby", "Ruby on Rails"
 
       def check(*args)
@@ -21,7 +21,7 @@ module Redcar
         message  =~ /#{Regexp.escape(file)}:(\d+):(.*)/
         line     = $1.to_i - 1
         message  = $2
-        SyntaxCheck::Error.new(doc, line, message)
+        Redcar::SyntaxCheck::Error.new(doc, line, message)
       end
     end
   end

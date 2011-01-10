@@ -3,6 +3,7 @@ require File.join(File.dirname(__FILE__), "..", "..", "spec_helper")
 class Redcar::Command
   describe Executor do
     class FakeApp
+      def repeat_event(event); end
       attr_accessor :history
     end
     

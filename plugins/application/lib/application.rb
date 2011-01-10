@@ -10,6 +10,7 @@ require 'application/clipboard'
 require 'application/command'
 require 'application/dialog'
 require 'application/dialogs/filter_list_dialog'
+require 'application/dialogs/modeless_list_dialog'
 require 'application/event_spewer'
 require 'application/keymap'
 require 'application/keymap/builder'
@@ -265,6 +266,10 @@ module Redcar
         keymap = Keymap.new("main", Redcar.platform)
         Redcar.plugin_manager.objects_implementing(:keymaps).each do |object|
           maps = object.keymaps
+          unless maps
+            puts "#{object.inspect} implements :keymaps but :keymaps returns nil"
+            maps = []
+          end
           keymaps = maps.select do |map|
             map.name == "main" and map.platforms.include?(Redcar.platform)
           end
@@ -378,9 +383,3 @@ module Redcar
     end
   end
 end
-
-
-
-
-
-

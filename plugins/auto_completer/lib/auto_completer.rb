@@ -3,6 +3,7 @@ require 'auto_completer/current_document_completion_source'
 require 'auto_completer/document_controller'
 require 'auto_completer/word_iterator'
 require 'auto_completer/word_list'
+require 'auto_completer/list_dialog'
 
 module Redcar
   class AutoCompleter
@@ -23,22 +24,6 @@ module Redcar
       end
       result
     end
-
-    #def self.edit_view_context_menus(offset)
-    #  cmd = AutoCompleter::MenuAutoCompleterCommand.new
-    #  cmd.merge_menu(offset)
-    #  completions = cmd.run
-    #  Menu::Builder.build do
-    #    sub_menu "Auto Completion" do
-    #      if completions
-    #        completions.entries.each {|item| append item }
-    #      else
-    #        item "(No Suggestions)" do
-    #        end
-    #      end
-    #    end
-    #  end
-    #end
 
     def self.menus
       Menu::Builder.build do
@@ -122,38 +107,21 @@ module Redcar
 
     class MenuAutoCompleterCommand < AutoCompleteCommand
 
-      def merge_menu(offset)
-        @merge_menu = offset
-      end
-
       def execute
-        #TODO: something with offset?
         controller = doc.controllers(AutoCompleter::DocumentController).first
         input_word = ""
-        word_list = controller.word_list
+        word_list  = controller.word_list
         prefix, left, right = touched_prefix
         if prefix
           word_list = alternatives(prefix)
-          controller.word_list = word_list
-          controller.prefix    = prefix
-          controller.left      = left
-          controller.right     = right
-
-          cur_doc = doc
-          builder = Menu::Builder.new do
-            word_list.words.each do |current_word, word_distance|
-              item(current_word) do
-                offset = cur_doc.cursor_offset - prefix.length
-                text   = current_word[input_word.length..current_word.length]
-                cur_doc.replace(offset, prefix.length, text)
-              end
-            end
-          end
-          if @merge_menu
-            builder.menu
-          else
-            Application::Dialog.popup_menu(builder.menu, :cursor)
-          end
+          cur_doc   = doc
+          key_list  = word_list.words.keys
+          height    = [key_list.size,8].min
+          dialog    = ListDialog.new(prefix,cur_doc)
+          dialog.update_list(key_list)
+          dialog.set_location(cur_doc.cursor_offset - prefix.length)
+          dialog.set_size 300, height
+          dialog.open
         end
       end
     end
