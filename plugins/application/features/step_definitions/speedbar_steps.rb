@@ -38,6 +38,13 @@ When /^I uncheck "([^"]*)" in the speedbar$/ do |checkbox_name|
   speedbar.controller.execute_listener_in_model(item, false)
 end
 
+When /^I choose "([^"]*)" in the "([^"]*)" field in the speedbar$/ do |value, combo_name|
+  speedbar = Redcar.app.focussed_window.speedbar
+  item = speedbar.__get_item_by_text_or_name(combo_name)
+  item.set_value(value)
+  speedbar.controller.execute_listener_in_model(item, false)
+end
+
 When /^I close the speedbar$/ do
   Redcar.app.focussed_window.close_speedbar
 end

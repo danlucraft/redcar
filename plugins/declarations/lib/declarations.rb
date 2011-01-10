@@ -11,6 +11,7 @@ module Redcar
       Menu::Builder.build do
         sub_menu "Project" do
           item "Go to declaration", :command => Declarations::GoToTagCommand, :priority => 30
+          item "Rebuild tags file", :command => Declarations::RebuildTagsCommand, :priority => 31
         end
       end
     end
@@ -91,6 +92,15 @@ module Redcar
       DocumentSearch::FindNextRegex.new(regexp, true).run_in_focussed_tab_edit_view
     end
 
+    class RebuildTagsCommand < Command
+      def execute
+        project = Project::Manager.focussed_project
+        tags_path = Declarations.file_path(project)
+        FileUtils.rm tags_path
+        ProjectRefresh.new(project).execute
+      end
+    end
+    
     class GoToTagCommand < EditTabCommand
       sensitize :open_project
 

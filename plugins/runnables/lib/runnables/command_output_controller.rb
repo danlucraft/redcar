@@ -162,6 +162,11 @@ module Redcar
         scroll_to_end(output_container)
       end
 
+      def open_file(file, line)
+        puts "i got called: #{file}"
+        Project::Manager.open_file(file)
+      end
+      
       def index
         rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "..", "views", "command_output.html.erb")))
         command = @cmd
