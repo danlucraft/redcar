@@ -97,12 +97,12 @@ module Redcar
     end
 
     class NewNotebookCommand < Command
-      sensitize :single_notebook
+#      sensitize :single_notebook
 
       def execute
-        unless win.notebooks.length > 1
+        #unless win.notebooks.length > 1
           win.create_notebook
-        end
+       # end
       end
     end
 
@@ -265,7 +265,9 @@ module Redcar
 
       def execute
         current_notebook = tab.notebook
-        target_notebook = win.notebooks.detect {|nb| nb != current_notebook}
+        i = win.notebooks.index current_notebook
+        
+        target_notebook = win.notebooks[ (i + 1) % win.notebooks.length ] 
         target_notebook.grab_tab_from(current_notebook, tab)
         tab.focus
       end
