@@ -23,7 +23,7 @@ module Redcar
 
     # A Menu will initially have nothing in it.
     def initialize(text=nil, options={})
-      @text, @entries, @priority = parse(text), [], options[:priority]
+      @text, @entries, @priority = Menu.parse(text), [], options[:priority]
     end
 
     # Iterate over each entry, sorted by priority
@@ -105,7 +105,7 @@ module Redcar
     end
 
     # Get menu text from a string, adding mnemonics where applicable
-    def parse(menu_text)
+    def self.parse(menu_text)
       menu_text = "" unless menu_text
       if Redcar.platform != :osx and mnemonic = MNEMONICS[menu_text]
         mnemonic
