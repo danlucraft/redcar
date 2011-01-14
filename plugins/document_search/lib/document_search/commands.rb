@@ -1,68 +1,21 @@
 module DocumentSearch
-  # Encapsulates options for search queries.
-  class SearchOptions
-    attr_accessor :search_type
-    attr_accessor :match_case
-    attr_accessor :wrap_around
-
-    # Initializes with default options.
-    def initialize
-      @search_type = :search_plain
-      @match_case = false
-      @wrap_around = true
-    end
-
-    ### UTILITY ###
-
-    # Maps a search type combo box value to the corresponding search type symbol.
-    def self.search_type_to_symbol(search_type_text)
-      case search_type_text
-      when "Regex"
-        :search_regex
-      when "Plain"
-        :search_plain
-      when "Glob"
-        :search_glob
-      else
-        puts "WARNING - Invalid search type: #{search_type_text} (defaulting to :search_regex)"
-        :search_regex
-      end
-    end
-
-    # Maps a search type symbol to a text value for the search type combo box.
-    def self.search_type_to_text(search_type_symbol)
-      case search_type_symbol
-      when :search_regex
-        'Regex'
-      when :search_plain
-        'Plain'
-      when :search_glob
-        'Glob'
-      else
-        puts "WARNING - Invalid search type: #{search_type_symbol} (defaulting to 'Regex')"
-        'Regex'
-      end
-    end
-  end
-
-
   # Utilities for extended search commands.
-  module SearchCommandMixin
-    ### SEARCH PATTERNS ###
+  module FindCommandMixin
+    ### QUERY PATTERNS ###
 
     # An instance of a search type method: Regular expression
-    def search_regex(query, options)
+    def query_regex(query, options)
       Regexp.new(query, !options.match_case)
     end
 
     # An instance of a search type method: Plain text search
-    def search_plain(query, options)
-      search_regex(Regexp.escape(query), options)
+    def query_plain(query, options)
+      query_regex(Regexp.escape(query), options)
     end
 
     # An instance of a search type method: Glob text search
     # Converts a glob pattern (* or ?) into a regex pattern
-    def search_glob(query, options)
+    def query_glob(query, options)
       # convert the glob pattern to a regex pattern
       new_query = ""
       query.each_char do |c|
@@ -75,7 +28,7 @@ module DocumentSearch
           new_query << Regexp.escape(c)
         end
       end
-      search_regex(new_query, options)
+      query_regex(new_query, options)
     end
 
     ### SELECTION ###
@@ -161,14 +114,30 @@ module DocumentSearch
 
   # Base class for find commands.
   class FindCommandBase < Redcar::DocumentCommand
-    include SearchCommandMixin
+    include FindCommandMixin
 
     attr_reader :query
 
     # description here
     def initialize(query, options)
       @options = options
-      @query = send(options.search_type, query, options)
+      @query = send(options.query_type, query, options)
+    end
+  end
+
+
+  # Finds the next match after the current location.
+  class FindIncrementalCommand < FindCommandBase
+    def execute
+      offsets = [doc.cursor_offset, doc.selection_offset]
+      start_pos = offsets.min
+      if select_next_match(doc, start_pos, query, @options.wrap_around)
+        true
+      else
+        # Clear selection as visual feedback that search failed.
+        doc.set_selection_range(start_pos, start_pos)
+        false
+      end
     end
   end
 
@@ -207,14 +176,14 @@ module DocumentSearch
 
   # Base class for replace commands.
   class ReplaceCommandBase < Redcar::DocumentCommand
-    include SearchCommandMixin
+    include FindCommandMixin
 
     attr_reader :query, :replace
 
     # description here
     def initialize(query, replace, options)
       @options = options
-      @query = send(options.search_type, query, options)
+      @query = send(options.query_type, query, options)
       @replace = replace
     end
   end
