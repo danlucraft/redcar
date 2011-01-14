@@ -106,5 +106,15 @@ module DocumentSearch
       cmd = FindPreviousCommand.new(FindSpeedbar.previous_query, FindSpeedbar.previous_options)
       cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
     end
+
+    # Note: The assumption that we set find only from selected text means we don't have to update
+    # search.
+    def self.use_selection_for_find(doc, active_speedbar=nil)
+      return unless doc.selection?
+      FindSpeedbar.previous_query = doc.selected_text
+      if active_speedbar
+        active_speedbar.query.value = FindSpeedbar.previous_query
+      end
+    end
   end
 end

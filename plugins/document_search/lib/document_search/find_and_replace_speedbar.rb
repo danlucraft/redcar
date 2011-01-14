@@ -2,6 +2,9 @@ module DocumentSearch
   class FindAndReplaceSpeedbar < Redcar::Speedbar
     NotFoundMessage = 'Not found!'
 
+    class << self
+      attr_accessor :previous_replace
+    end
     @@previous_replace = ''
 
     attr_accessor :initial_query
@@ -58,14 +61,14 @@ module DocumentSearch
       set_offset
       update_options_from_ui
       FindAndReplaceSpeedbar.replace_and_find(
-          FindSpeedbar.previous_query, @@previous_replace, FindSpeedbar.previous_options) or not_found
+          FindSpeedbar.previous_query, FindAndReplaceSpeedbar.previous_replace, FindSpeedbar.previous_options) or not_found
     end
 
     button :replace_all, "Replace All", nil do
       set_offset
       update_options_from_ui
       FindAndReplaceSpeedbar.replace_all(
-          FindSpeedbar.previous_query, @@previous_replace, FindSpeedbar.previous_options) or not_found
+          FindSpeedbar.previous_query, FindAndReplaceSpeedbar.previous_replace, FindSpeedbar.previous_options) or not_found
     end
 
     label :label_spacer_mid_row2, ""
@@ -86,7 +89,7 @@ module DocumentSearch
     def after_draw
       clear_not_found
       self.query.value = @initial_query || FindSpeedbar.previous_query
-      self.replace.value = @@previous_replace || ""
+      self.replace.value = FindAndReplaceSpeedbar.previous_replace || ""
       self.query_type.value = QueryOptions.query_type_to_text(FindSpeedbar.previous_options.query_type)
       self.match_case.value = FindSpeedbar.previous_options.match_case
       self.wrap_around.value = FindSpeedbar.previous_options.wrap_around
@@ -109,7 +112,7 @@ module DocumentSearch
     def update_options_from_ui
       clear_not_found
       FindSpeedbar.previous_query = query.value
-      @@previous_replace = replace.value
+      FindAndReplaceSpeedbar.previous_replace = replace.value
       FindSpeedbar.previous_options.query_type = QueryOptions.query_type_to_symbol(query_type.value)
       FindSpeedbar.previous_options.match_case = match_case.value
       FindSpeedbar.previous_options.wrap_around = wrap_around.value
@@ -155,6 +158,14 @@ module DocumentSearch
     def self.replace_all(query, replace, options)
       cmd = ReplaceAllCommand.new(query, replace, options)
       cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
+    end
+
+    def self.use_selection_for_replace(doc, active_speedbar=nil)
+      return unless doc.selection?
+      FindAndReplaceSpeedbar.previous_replace = doc.selected_text
+      if active_speedbar && (active_speedbar.instance_of? FindAndReplaceSpeedbar)
+        active_speedbar.replace.value = FindAndReplaceSpeedbar.previous_replace
+      end
     end
   end
 end

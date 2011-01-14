@@ -1042,6 +1042,8 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+G", DocumentSearch::FindNextMenuCommand
         link "Cmd+Shift+G",       DocumentSearch::FindPreviousMenuCommand
         link "Cmd+Alt+F",  DocumentSearch::FindAndReplaceMenuCommand
+        link "Cmd+E",       DocumentSearch::UseSelectionForFindMenuCommand
+        link "Cmd+Shift+E", DocumentSearch::UseSelectionForReplaceMenuCommand
         link "Cmd+A",       SelectAllCommand
         link "Ctrl+W",      SelectWordCommand
         link "Ctrl+L",      SelectLineCommand
@@ -1136,6 +1138,8 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+H",   DocumentSearch::FindAndReplaceMenuCommand
         link "Ctrl+G",       DocumentSearch::FindNextMenuCommand
         link "Ctrl+Shift+G",       DocumentSearch::FindPreviousMenuCommand
+        link "Ctrl+E",       DocumentSearch::UseSelectionForFindMenuCommand
+        link "Ctrl+Shift+E", DocumentSearch::UseSelectionForReplaceMenuCommand
         link "Ctrl+A", SelectAllCommand
         link "Ctrl+Alt+W",   SelectWordCommand
         link "Ctrl+Alt+L",   SelectLineCommand

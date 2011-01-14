@@ -14,6 +14,9 @@ module DocumentSearch
           separator
           item "Next Result", FindNextMenuCommand
           item "Previous Result", FindPreviousMenuCommand
+          separator
+          item "Use Selection for Find", UseSelectionForFindMenuCommand
+          item "Use Selection for Replace", UseSelectionForReplaceMenuCommand
         end
         separator
       end
@@ -56,6 +59,18 @@ module DocumentSearch
   class FindPreviousMenuCommand < Redcar::EditTabCommand
     def execute
       FindSpeedbar.find_previous
+    end
+  end
+
+  class UseSelectionForFindMenuCommand  < Redcar::EditTabCommand
+    def execute
+      FindSpeedbar.use_selection_for_find(doc, win.speedbar)
+    end
+  end
+
+  class UseSelectionForReplaceMenuCommand  < Redcar::EditTabCommand
+    def execute
+      FindAndReplaceSpeedbar.use_selection_for_replace(doc, win.speedbar)
     end
   end
 
