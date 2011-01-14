@@ -9,11 +9,11 @@ module DocumentSearch
     Redcar::Menu::Builder.build do
       sub_menu "Edit" do
         sub_menu "Find", :priority => 50 do
-          item "Find", :command => FindCommand, :priority => 1
-          item "Find and Replace", :command => FindAndReplaceCommand, :priority => 2
+          item "Find", :command => FindMenuCommand, :priority => 1
+          item "Find and Replace", :command => FindAndReplaceMenuCommand, :priority => 2
           separator
-          item "Next Result", RepeatFindNextCommand
-          item "Previous Result", RepeatFindPreviousCommand
+          item "Next Result", FindNextMenuCommand
+          item "Previous Result", FindPreviousMenuCommand
         end
         separator
       end
@@ -22,12 +22,12 @@ module DocumentSearch
 
   def self.toolbars
     Redcar::ToolBar::Builder.build do
-      item "Search Document", :command => DocumentSearch::FindCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), :barname => :edit
-      item "Next Search Result", :command => DocumentSearch::RepeatFindNextCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier--arrow.png"), :barname => :edit
+      item "Search Document", :command => DocumentSearch::FindMenuCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), :barname => :edit
+      item "Next Search Result", :command => DocumentSearch::FindNextMenuCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier--arrow.png"), :barname => :edit
     end
   end
 
-  class FindCommand < Redcar::EditTabCommand
+  class FindMenuCommand < Redcar::EditTabCommand
     def execute
       @speedbar = FindSpeedbar.new
       if doc.selection?
@@ -37,7 +37,7 @@ module DocumentSearch
     end
   end
 
-  class FindAndReplaceCommand < Redcar::EditTabCommand
+  class FindAndReplaceMenuCommand < Redcar::EditTabCommand
     def execute
       @speedbar = FindAndReplaceSpeedbar.new
       if doc.selection?
@@ -47,18 +47,19 @@ module DocumentSearch
     end
   end
 
-  class RepeatFindNextCommand < Redcar::EditTabCommand
+  class FindNextMenuCommand < Redcar::EditTabCommand
     def execute
-      FindAndReplaceSpeedbar.repeat_find_next
+      FindSpeedbar.find_next
     end
   end
 
-  class RepeatFindPreviousCommand < Redcar::EditTabCommand
+  class FindPreviousMenuCommand < Redcar::EditTabCommand
     def execute
-      FindAndReplaceSpeedbar.repeat_find_previous
+      FindSpeedbar.find_previous
     end
   end
 
+  # TODO(yozhipozhi): Figure out if this is still needed.
   class FindNextRegex < Redcar::DocumentCommand
     def initialize(re, wrap=nil)
       @re = re

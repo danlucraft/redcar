@@ -1036,13 +1036,12 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+]",       IncreaseIndentCommand
         link "Cmd+Shift+I", AutoIndenter::IndentCommand
         link "Cmd+L",       GotoLineCommand
-        link "Cmd+F",       DocumentSearch::FindCommand
+        link "Cmd+F",       DocumentSearch::FindMenuCommand
         link "Cmd+Shift+F", Redcar::FindInProject::OpenSearch
-        link "Cmd+H",       DocumentSearch::FindAndReplaceCommand
-        link "Cmd+G", DocumentSearch::RepeatFindNextCommand
-        link "Cmd+Shift+G",       DocumentSearch::RepeatFindPreviousCommand
-        link "Cmd+Alt+F",  DocumentSearch::FindAndReplaceCommand
-        #link "Cmd+Alt+F",   DocumentSearch::ExtendedSearchCommand
+        link "Cmd+H",       DocumentSearch::FindAndReplaceMenuCommand
+        link "Cmd+G", DocumentSearch::FindNextMenuCommand
+        link "Cmd+Shift+G",       DocumentSearch::FindPreviousMenuCommand
+        link "Cmd+Alt+F",  DocumentSearch::FindAndReplaceMenuCommand
         link "Cmd+A",       SelectAllCommand
         link "Ctrl+W",      SelectWordCommand
         link "Ctrl+L",      SelectLineCommand
@@ -1132,11 +1131,11 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+]",       IncreaseIndentCommand
         link "Ctrl+Shift+[", AutoIndenter::IndentCommand
         link "Ctrl+L",       GotoLineCommand
-        link "Ctrl+F",   DocumentSearch::FindCommand
+        link "Ctrl+F",   DocumentSearch::FindMenuCommand
         link "Ctrl+Shift+F", Redcar::FindInProject::OpenSearch
-        link "Ctrl+H",   DocumentSearch::FindAndReplaceCommand
-        link "Ctrl+G",       DocumentSearch::RepeatFindNextCommand
-        link "Ctrl+Shift+G",       DocumentSearch::RepeatFindPreviousCommand
+        link "Ctrl+H",   DocumentSearch::FindAndReplaceMenuCommand
+        link "Ctrl+G",       DocumentSearch::FindNextMenuCommand
+        link "Ctrl+Shift+G",       DocumentSearch::FindPreviousMenuCommand
         link "Ctrl+A", SelectAllCommand
         link "Ctrl+Alt+W",   SelectWordCommand
         link "Ctrl+Alt+L",   SelectLineCommand
