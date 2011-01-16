@@ -2,3 +2,10 @@
 * Add Replace in Selection button
 * Better implementation of Find Previous (reverse regex when feasible)
 * Fix tab order: Should be Search, then Replace textboxes, then options
+
+
+Questions:
+* What to do about Ctrl+A, Ctrl+E, Ctrl+Shift+E?
+* General policies for key bindings across Mac and PC?
+* Need glob query type? Or just regex check box?
+  * Doesn't seem useful for editor. The * matches remainder of line, and ? is no better than . in regex.

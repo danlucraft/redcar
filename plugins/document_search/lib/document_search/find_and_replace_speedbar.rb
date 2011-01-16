@@ -36,18 +36,21 @@ module DocumentSearch
       FindSpeedbar.previous_options.query_type = QueryOptions.query_type_to_symbol(val)
       set_offset
       update_options_from_ui
+      FindSpeedbar.find_incremental
     end
 
     toggle :match_case, 'Match case', nil, false do |val|
       FindSpeedbar.previous_options.match_case = val
       set_offset
       update_options_from_ui
+      FindSpeedbar.find_incremental
     end
 
     toggle :wrap_around, 'Wrap around', nil, true do |val|
       FindSpeedbar.previous_options.wrap_around = val
       set_offset
       update_options_from_ui
+      FindSpeedbar.find_incremental
     end
 
     label :label_not_found, NotFoundMessage   # Hack: Set label for sizing, clear in after_draw

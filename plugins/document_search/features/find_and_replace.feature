@@ -1,23 +1,406 @@
+# Note: Because settings persist, even after the speedbar is closed, any setting changed in a
+# scenario will affect subsequent scenarios. To mitigate the chance of error, please inset a
+# "Current Settings" comment line after each scenario that changes settings.
+#
+# Because the Find speedbar and the find operations of the Find and Replace speedbar are supposed to
+# function identically, all scenarios here should be copied to find_and_replace.feature, with the
+# references to FindAndReplaceMenuCommand replaced by FindAndReplaceMenuCommand.
+
 @speedbar
 Feature: Find and Replace
 
   Background:
     Given I open a new edit tab
 
-  Scenario: Open find and replace speedbar
+  Scenario: Open Find and Replace speedbar
     When I replace the contents with "Foo\nBar\nBaz"
     And I move the cursor to 0
     And I run the command DocumentSearch::FindAndReplaceMenuCommand
-    Then the DocumentSearch::ExtendedSearch::SearchSpeedbar speedbar should be open
+    Then the DocumentSearch::FindAndReplaceSpeedbar speedbar should be open
+
+  Scenario: Change settings
+    When I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I choose "Plain" in the "query_type" field in the speedbar
+    And I uncheck "Match case" in the speedbar
+    And I check "Wrap around" in the speedbar
+    Then "Plain" should be chosen in the "query_type" field in the speedbar
+    And "Match case" should not be checked in the speedbar
+    And "Wrap around" should be checked in the speedbar
+
+  # Current Settings: Plain, No Match case, Wrap around
+
+  Scenario: Search for a word should select next occurrence
+    When I replace the contents with "Foo\nBar\nBaz"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I type "Bar" into the "Find" field in the speedbar
+    Then the selected text should be "Bar"
+
+  Scenario: Search twice should move to the next occurrence
+    When I replace the contents with "Foo\nBar\nFoo"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I type "Foo" into the "Find" field in the speedbar
+    Then the selection should be on line 0
+    When I press "Next" in the speedbar
+    Then the selected text should be "Foo"
+    And the selection should be on line 2
+
+  Scenario: Search should incrementally update
+    When I replace the contents with "Foo\nBaar\nBaaz"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I type "Ba" into the "Find" field in the speedbar
+    Then the selected text should be "Ba"
+    And the selection should be on line 1
+    When I type "Baa" into the "Find" field in the speedbar
+    And the selection should be on line 1
+    When I type "Baaz" into the "Find" field in the speedbar
+    Then the selected text should be "Baaz"
+    And the selection should be on line 2
+    When I type "Baa" into the "Find" field in the speedbar
+    Then the selection should be on line 2
+
+  Scenario: Search for a word adjacent to cursor should select word
+    When I replace the contents with "Foo\nBar\nBaz"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I type "Foo" into the "Find" field in the speedbar
+    Then the selected text should be "Foo"
+
+  Scenario: Search for a word should find occurrence after the cursor
+    When I replace the contents with "Foo\nBar\nBaz\nFoo"
+    And I move the cursor to 1
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I type "Foo" into the "Find" field in the speedbar
+    Then the selection should be on line 3
+    And the selected text should be "Foo"
+    When I press "Next" in the speedbar
+    Then the selected text should be "Foo"
+    And the selection should be on line 0
+
+  Scenario: Search for a word should wrap to earlier occurrence if none left
+    When I replace the contents with "Foo\nBar\nBaz"
+    And I move the cursor to 1
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I type "Foo" into the "Find" field in the speedbar
+    Then the selected text should be "Foo"
+    And the selection should be on line 0
+
+  Scenario: Doesn't search for a regex
+    When I replace the contents with "Foo\nBar\nBaz"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I type "Ba." into the "Find" field in the speedbar
+    Then there should not be any text selected
+
+  Scenario: Search for a regex
+    When I replace the contents with "Foo\nBar\nBaz"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I type "Ba." into the "Find" field in the speedbar
+    And I choose "Regex" in the "query_type" field in the speedbar
+    Then the selected text should be "Bar"
+    When I press "Next" in the speedbar
+    Then the selected text should be "Baz"
+
+  # Current Settings: Regex, No Match case, Wrap around
+
+  Scenario: Search for a regex matches a second time
+    When I replace the contents with "Foo\nBar\nBaz"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I type "Ba." into the "Find" field in the speedbar
+    Then the selected text should be "Bar"
+    When I press "Next" in the speedbar
+    Then the selected text should be "Baz"
+
+  Scenario: Doesn't search for a glob
+    When I replace the contents with "Foo\nBar\nBaz"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I choose "Plain" in the "query_type" field in the speedbar
+    And I type "Ba*" into the "Find" field in the speedbar
+    Then there should not be any text selected
+
+  Scenario: Search for a glob
+    When I replace the contents with "Foo\nBar none I said\nBaz"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I type "Ba*" into the "Find" field in the speedbar
+    And I choose "Glob" in the "query_type" field in the speedbar
+    Then the selected text should be "Bar none I said"
+    When I press "Next" in the speedbar
+    Then the selected text should be "Baz"
+
+  # Current Settings: Glob, No Match case, Wrap around
+
+  Scenario: Should not match case if unset
+    When I replace the contents with "Foo\nBar\nBaz"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I choose "Plain" in the "query_type" field in the speedbar
+    And I type "foo" into the "Find" field in the speedbar
+    Then the selected text should be "Foo"
+
+  # Current Settings: Plain, No Match case, Wrap around
+
+  Scenario: Should not match case if unset with regex
+    When I replace the contents with "Foo\nBar\nBaz"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I choose "Regex" in the "query_type" field in the speedbar
+    And I type "fo." into the "Find" field in the speedbar
+    Then the selected text should be "Foo"
+
+  # Current Settings: Regex, No Match case, Wrap around
+
+  Scenario: Should not match case if unset with glob
+    When I replace the contents with "Foo\nBar\nBaz"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I choose "Glob" in the "query_type" field in the speedbar
+    And I type "fo*" into the "Find" field in the speedbar
+    Then the selected text should be "Foo"
+
+  # Current Settings: Glob, No Match case, Wrap around
+
+  Scenario: Should match case if requested
+    When I replace the contents with "Foo\nBar\nBaz"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I choose "Plain" in the "query_type" field in the speedbar
+    And I uncheck "Match case" in the speedbar
+    And I type "foo" into the "Find" field in the speedbar
+    Then the selected text should be "Foo"
+    When I check "Match case" in the speedbar
+    Then there should not be any text selected
+
+  # Current Settings: Plain, Match case, Wrap around
+
+  Scenario: Should match case if requested with regex
+    When I replace the contents with "Foo\nBar\nBaz"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I choose "Regex" in the "query_type" field in the speedbar
+    And I uncheck "Match case" in the speedbar
+    And I type "fo." into the "Find" field in the speedbar
+    Then the selected text should be "Foo"
+    When I check "Match case" in the speedbar
+    Then there should not be any text selected
+
+  # Current Settings: Regex, Match case, Wrap around
+
+  Scenario: Should match case if requested with glob
+    When I replace the contents with "Foo\nBar\nBaz"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I choose "Glob" in the "query_type" field in the speedbar
+    And I uncheck "Match case" in the speedbar
+    And I type "fo*" into the "Find" field in the speedbar
+    Then the selected text should be "Foo"
+    When I check "Match case" in the speedbar
+    Then there should not be any text selected
+
+  # Current Settings: Glob, Match case, Wrap around
+
+  Scenario: Reset settings
+    When I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I choose "Plain" in the "query_type" field in the speedbar
+    And I uncheck "Match case" in the speedbar
+    And I check "Wrap around" in the speedbar
+    Then "Plain" should be chosen in the "query_type" field in the speedbar
+    And "Match case" should not be checked in the speedbar
+    And "Wrap around" should be checked in the speedbar
+
+  # Current Settings: Plain, No Match case, Wrap around
+
+  Scenario: Find next with wrap around
+    When I replace the contents with "Foo\nBar Foo\nHmm\nBaz"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I type "Foo" into the "Find" field in the speedbar
+    Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
+    And the selected text should be "Foo"
+    And the selection range should be from 0 to 3
+    When I press "Next" in the speedbar
+    Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
+    And the selected text should be "Foo"
+    And the selection range should be from 8 to 11
+    When I press "Next" in the speedbar
+    Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
+    And the selected text should be "Foo"
+    And the selection range should be from 0 to 3
+
+   Scenario: Find next without wrap around
+    When I replace the contents with "Foo\nBar Foo\nHmm\nBaz"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I uncheck "Wrap around" in the speedbar
+    And I type "Foo" into the "Find" field in the speedbar
+    Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
+    And the selected text should be "Foo"
+    And the selection range should be from 0 to 3
+    When I press "Next" in the speedbar
+    Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
+    And the selected text should be "Foo"
+    And the selection range should be from 8 to 11
+    When I press "Next" in the speedbar
+    Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
+    And there should not be any text selected
+
+  # Current Settings: Plain, No Match case, No Wrap around
+
+  Scenario: Find previous with wrap around
+    When I replace the contents with "Foo\nBar Foo\nHmm\nBaz"
+    And I move the cursor to 18
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I type "Foo" into the "Find" field in the speedbar
+    Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
+    And there should not be any text selected
+    When I press "Previous" in the speedbar
+    Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
+    And the selected text should be "Foo"
+    And the selection range should be from 8 to 11
+    When I press "Previous" in the speedbar
+    Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
+    And the selected text should be "Foo"
+    And the selection range should be from 0 to 3
+    When I check "Wrap around" in the speedbar
+    And I press "Previous" in the speedbar
+    Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
+    And the selected text should be "Foo"
+    And the selection range should be from 8 to 11
+
+  # Current Settings: Plain, No Match case, Wrap around
+
+  Scenario: Find previous without wrap around
+    When I replace the contents with "Foo\nBar Foo\nHmm\nBaz"
+    And I move the cursor to 18
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I uncheck "Wrap around" in the speedbar
+    And I type "Foo" into the "Find" field in the speedbar
+    Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
+    And there should not be any text selected
+    When I press "Previous" in the speedbar
+    Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
+    And the selected text should be "Foo"
+    And the selection range should be from 8 to 11
+    When I press "Previous" in the speedbar
+    Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
+    And the selected text should be "Foo"
+    And the selection range should be from 0 to 3
+    When I press "Previous" in the speedbar
+    Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
+    And there should not be any text selected
+
+  # Current Settings: Plain, No Match case, No Wrap around
+
+  Scenario: Should scroll vertically to the match
+    When I replace the contents with 100 lines of "xxx" then "Foo"
+    And I scroll to the top of the document
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I type "Foo" into the "Find" field in the speedbar
+    Then the selected text should be "Foo"
+    And line number 100 should be visible
+
+  Scenario: "Should scroll horizontally to the match"
+    When I replace the contents with 300 "x" then "Foo"
+    And I move the cursor to 0
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I type "Foo" into the "Find" field in the speedbar
+    Then the selected text should be "Foo"
+    And horizontal offset 302 should be visible
+
+  Scenario: Should reopen with the same text as the previous search
+    When I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I type "foo" into the "Find" field in the speedbar
+    And I close the speedbar
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    Then the "Find" field in the speedbar should have text "foo"
+
+  Scenario: Should reopen with the same value of query type as the previous search
+    When I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I choose "Plain" in the "query_type" field in the speedbar
+    And I close the speedbar
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    Then "Plain" should be chosen in the "query_type" field in the speedbar
+    When I choose "Regex" in the "query_type" field in the speedbar
+    And I close the speedbar
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    Then "Regex" should be chosen in the "query_type" field in the speedbar
+    When I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I choose "Glob" in the "query_type" field in the speedbar
+    And I close the speedbar
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    Then "Glob" should be chosen in the "query_type" field in the speedbar
+
+  # Current Settings: Glob, Match case, Wrap around
+
+  Scenario: Should reopen with the same value of Match case as the previous search
+    When I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I check "Match case" in the speedbar
+    And I close the speedbar
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    Then "Match case" should be checked in the speedbar
+    When I uncheck "Match case" in the speedbar
+    And I close the speedbar
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    Then "Match case" should not be checked in the speedbar
+
+  # Current Settings: Glob, No Match case, Wrap around
+
+  Scenario: Should reopen with the same value of Wrap around as the previous search
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I check "Wrap around" in the speedbar
+    And I close the speedbar
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    Then "Wrap around" should be checked in the speedbar
+    When I uncheck "Wrap around" in the speedbar
+    And I close the speedbar
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    Then "Wrap around" should not be checked in the speedbar
+
+  # Current Settings: Glob, No Match case, Wrap around
+
+  Scenario: Should initialize query with the currently selected text
+    When I replace the contents with "Flux\nBar\nFoo"
+    And I move the cursor to 0
+    And I select from 0 to 4
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    Then the "Find" field in the speedbar should have text "Flux"
+
+  Scenario: Search for a word should start from the start of a selection
+    When I replace the contents with "Foo\nBar\nBaz"
+    And I select from 5 to 8
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I type "Ba" into the "Find" field in the speedbar
+    Then the selected text should be "Ba"
+    And the selection should be on line 2
+
+  Scenario: Should match the next occurence of the currently selected text
+    When I replace the contents with "Foo\nBar\nFoo"
+    And I move the cursor to 0
+    And I select from 0 to 3
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I press "Next" in the speedbar
+    Then the selected text should be "Foo"
+    And line number 2 should be visible
+
+
+  # End of scenarios copied from Find speedbar
+
+  # Begin of scenarios specific to Find and Replace speedbar
 
   # Scenario: Open find and replace speedbar with initial selection
   #   When I replace the contents with "Foo\nBar\nBaz"
   #   And I select from 4 to 7
   #   And I run the command DocumentSearch::FindAndReplaceMenuCommand
   #   Then the DocumentSearch::ExtendedSearch::SearchSpeedbar speedbar should be open
-  #   And the "Search" field in the speedbar should have text "Bar"
+  #   And the "Find" field in the speedbar should have text "Bar"
   #   When I type "Foo" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "search_type" field in the speedbar
+  #   And I choose "Plain" in the "query_type" field in the speedbar
   #   And I check "Wrap Around" in the speedbar
   #   And I press "Replace && Find" in the speedbar
   #   Then the contents should be "Foo\nFoo\nBaz"
@@ -28,8 +411,8 @@ Feature: Find and Replace
   #   When I replace the contents with "Foo\nBar Foo\nHmm\nBaz"
   #   And I move the cursor to 0
   #   And I run the command DocumentSearch::FindAndReplaceMenuCommand
-  #   And I type "Foo" into the "Search" field in the speedbar
-  #   And I choose "Plain" in the "search_type" field in the speedbar
+  #   And I type "Foo" into the "Find" field in the speedbar
+  #   And I choose "Plain" in the "query_type" field in the speedbar
   #   And I check "Wrap Around" in the speedbar
   #   And I press "Next" in the speedbar
   #   Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
@@ -48,8 +431,8 @@ Feature: Find and Replace
   #   When I replace the contents with "Foo\nBar Foo\nHmm\nBaz"
   #   And I move the cursor to 0
   #   And I run the command DocumentSearch::FindAndReplaceMenuCommand
-  #   And I type "Foo" into the "Search" field in the speedbar
-  #   And I choose "Plain" in the "search_type" field in the speedbar
+  #   And I type "Foo" into the "Find" field in the speedbar
+  #   And I choose "Plain" in the "query_type" field in the speedbar
   #   And I uncheck "Wrap Around" in the speedbar
   #   And I press "Next" in the speedbar
   #   Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
@@ -68,8 +451,8 @@ Feature: Find and Replace
   #   When I replace the contents with "Foo\nBar Foo\nHmm\nBaz"
   #   And I move the cursor to 18
   #   And I run the command DocumentSearch::FindAndReplaceMenuCommand
-  #   And I type "Foo" into the "Search" field in the speedbar
-  #   And I choose "Plain" in the "search_type" field in the speedbar
+  #   And I type "Foo" into the "Find" field in the speedbar
+  #   And I choose "Plain" in the "query_type" field in the speedbar
   #   And I check "Wrap Around" in the speedbar
   #   And I press "Previous" in the speedbar
   #   Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
@@ -88,8 +471,8 @@ Feature: Find and Replace
   #   When I replace the contents with "Foo\nBar Foo\nHmm\nBaz"
   #   And I move the cursor to 18
   #   And I run the command DocumentSearch::FindAndReplaceMenuCommand
-  #   And I type "Foo" into the "Search" field in the speedbar
-  #   And I choose "Plain" in the "search_type" field in the speedbar
+  #   And I type "Foo" into the "Find" field in the speedbar
+  #   And I choose "Plain" in the "query_type" field in the speedbar
   #   And I uncheck "Wrap Around" in the speedbar
   #   And I press "Previous" in the speedbar
   #   Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
@@ -108,8 +491,8 @@ Feature: Find and Replace
   #   When I replace the contents with "Foo\nBar Foo\nHmm\nBaz"
   #   And I move the cursor to 0
   #   And I run the command DocumentSearch::FindAndReplaceMenuCommand
-  #   And I type "Fo." into the "Search" field in the speedbar
-  #   And I choose "Regex" in the "search_type" field in the speedbar
+  #   And I type "Fo." into the "Find" field in the speedbar
+  #   And I choose "Regex" in the "query_type" field in the speedbar
   #   And I check "Wrap Around" in the speedbar
   #   And I press "Next" in the speedbar
   #   Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
@@ -124,9 +507,9 @@ Feature: Find and Replace
   #   When I replace the contents with "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
   #   And I move the cursor to 0
   #   And I run the command DocumentSearch::FindAndReplaceMenuCommand
-  #   And I type "Rab" into the "Search" field in the speedbar
+  #   And I type "Rab" into the "Find" field in the speedbar
   #   And I type "RABBIT" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "search_type" field in the speedbar
+  #   And I choose "Plain" in the "query_type" field in the speedbar
   #   And I check "Wrap Around" in the speedbar
   #   And I press "Replace && Find" in the speedbar
   #   Then the contents should be "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
@@ -153,9 +536,9 @@ Feature: Find and Replace
   #   When I replace the contents with "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
   #   And I select from 12 to 15
   #   And I run the command DocumentSearch::FindAndReplaceMenuCommand
-  #   And I type "Rab" into the "Search" field in the speedbar
+  #   And I type "Rab" into the "Find" field in the speedbar
   #   And I type "RABBIT" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "search_type" field in the speedbar
+  #   And I choose "Plain" in the "query_type" field in the speedbar
   #   And I check "Wrap Around" in the speedbar
   #   And I press "Replace && Find" in the speedbar
   #   Then the contents should be "Foo\nBar Foo RABBIT Rab\nHmm\nRab\nFoo\nBaz"
@@ -178,9 +561,9 @@ Feature: Find and Replace
   #   When I replace the contents with "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
   #   And I select from 4 to 7
   #   And I run the command DocumentSearch::FindAndReplaceMenuCommand
-  #   And I type "Rab" into the "Search" field in the speedbar
+  #   And I type "Rab" into the "Find" field in the speedbar
   #   And I type "RABBIT" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "search_type" field in the speedbar
+  #   And I choose "Plain" in the "query_type" field in the speedbar
   #   And I check "Wrap Around" in the speedbar
   #   And I press "Replace && Find" in the speedbar
   #   Then the contents should be "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
@@ -207,9 +590,9 @@ Feature: Find and Replace
   #   When I replace the contents with "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
   #   And I select from 28 to 31
   #   And I run the command DocumentSearch::FindAndReplaceMenuCommand
-  #   And I type "Rab" into the "Search" field in the speedbar
+  #   And I type "Rab" into the "Find" field in the speedbar
   #   And I type "RABBIT" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "search_type" field in the speedbar
+  #   And I choose "Plain" in the "query_type" field in the speedbar
   #   And I check "Wrap Around" in the speedbar
   #   And I press "Replace && Find" in the speedbar
   #   Then the contents should be "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
@@ -236,9 +619,9 @@ Feature: Find and Replace
   #   When I replace the contents with "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
   #   And I select from 28 to 31
   #   And I run the command DocumentSearch::FindAndReplaceMenuCommand
-  #   And I type "Rab" into the "Search" field in the speedbar
+  #   And I type "Rab" into the "Find" field in the speedbar
   #   And I type "RABBIT" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "search_type" field in the speedbar
+  #   And I choose "Plain" in the "query_type" field in the speedbar
   #   And I uncheck "Wrap Around" in the speedbar
   #   And I press "Replace && Find" in the speedbar
   #   Then the contents should be "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
@@ -253,9 +636,9 @@ Feature: Find and Replace
   #   When I replace the contents with "Foo\nBar\nBaz"
   #   And I move the cursor to 0
   #   And I run the command DocumentSearch::FindAndReplaceMenuCommand
-  #   And I type "Bar" into the "Search" field in the speedbar
+  #   And I type "Bar" into the "Find" field in the speedbar
   #   And I type "Rab" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "search_type" field in the speedbar
+  #   And I choose "Plain" in the "query_type" field in the speedbar
   #   And I uncheck "Wrap Around" in the speedbar
   #   And I press "Replace All" in the speedbar
   #   Then the contents should be "Foo\nRab\nBaz"
@@ -266,9 +649,9 @@ Feature: Find and Replace
   #   When I replace the contents with "Foo\nBar\nBaz\nBar\nQux"
   #   And I move the cursor to 0
   #   And I run the command DocumentSearch::FindAndReplaceMenuCommand
-  #   And I type "Bar" into the "Search" field in the speedbar
+  #   And I type "Bar" into the "Find" field in the speedbar
   #   And I type "Rab" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "search_type" field in the speedbar
+  #   And I choose "Plain" in the "query_type" field in the speedbar
   #   And I uncheck "Wrap Around" in the speedbar
   #   And I press "Replace All" in the speedbar
   #   Then the contents should be "Foo\nRab\nBaz\nRab\nQux"
@@ -278,9 +661,9 @@ Feature: Find and Replace
   # Scenario: Replace all replaces two on the same line
   #   When I replace the contents with "abcabc"
   #   And I run the command DocumentSearch::FindAndReplaceMenuCommand
-  #   And I type "bc" into the "Search" field in the speedbar
+  #   And I type "bc" into the "Find" field in the speedbar
   #   And I type "xx" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "search_type" field in the speedbar
+  #   And I choose "Plain" in the "query_type" field in the speedbar
   #   And I uncheck "Wrap Around" in the speedbar
   #   And I press "Replace All" in the speedbar
   #   Then the contents should be "axxaxx"
@@ -294,9 +677,9 @@ Feature: Find and Replace
   # Scenario: Replace all replaces overlapping occurences on the same line
   #   When I replace the contents with "deedeedeed"
   #   And I run the command DocumentSearch::FindAndReplaceMenuCommand
-  #   And I type "deed" into the "Search" field in the speedbar
+  #   And I type "deed" into the "Find" field in the speedbar
   #   And I type "misdeed" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "search_type" field in the speedbar
+  #   And I choose "Plain" in the "query_type" field in the speedbar
   #   And I uncheck "Wrap Around" in the speedbar
   #   And I press "Replace All" in the speedbar
   #   Then the contents should be "misdeedeemisdeed"
@@ -306,9 +689,9 @@ Feature: Find and Replace
   # Scenario: Replace all is a single undo action
   #   When I replace the contents with "Foo\n\nabcabc\n\nBar"
   #   And I run the command DocumentSearch::FindAndReplaceMenuCommand
-  #   And I type "bc" into the "Search" field in the speedbar
+  #   And I type "bc" into the "Find" field in the speedbar
   #   And I type "xx" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "search_type" field in the speedbar
+  #   And I choose "Plain" in the "query_type" field in the speedbar
   #   And I uncheck "Wrap Around" in the speedbar
   #   And I press "Replace All" in the speedbar
   #   Then the contents should be "Foo\n\naxxaxx\n\nBar"
@@ -321,9 +704,9 @@ Feature: Find and Replace
   #   When I replace the contents with "One fish\ntwo fish\nred fish\nblue fish"
   #   And I move the cursor to 0
   #   And I run the command DocumentSearch::FindAndReplaceMenuCommand
-  #   And I type "(\w+) fish" into the "Search" field in the speedbar
+  #   And I type "(\w+) fish" into the "Find" field in the speedbar
   #   And I type "\1 car" into the "Replace" field in the speedbar
-  #   And I choose "Regex" in the "search_type" field in the speedbar
+  #   And I choose "Regex" in the "query_type" field in the speedbar
   #   And I uncheck "Wrap Around" in the speedbar
   #   And I press "Replace All" in the speedbar
   #   Then the contents should be "One car\ntwo car\nred car\nblue car"
