@@ -1019,7 +1019,7 @@ Redcar.environment: #{Redcar.environment}
 
         #link "Cmd+Return",   MoveNextLineCommand
 
-        link "Cmd+Shift+E", EditView::InfoSpeedbarCommand
+        link "Ctrl+Shift+E", EditView::InfoSpeedbarCommand
         link "Cmd+Z",       UndoCommand
         link "Cmd+Shift+Z", RedoCommand
         link "Cmd+X",       CutCommand
@@ -1048,8 +1048,10 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+W",      SelectWordCommand
         link "Ctrl+L",      SelectLineCommand
         link "Cmd+B",       ToggleBlockSelectionCommand
-        link "Escape", AutoCompleter::AutoCompleteCommand
-        link "Ctrl+Escape",  AutoCompleter::MenuAutoCompleterCommand
+        link "Escape",      AutoCompleter::AutoCompleteCommand
+        link "Ctrl+Escape", AutoCompleter::MenuAutoCompleteCommand
+        link "Ctrl+Space",   AutoCompleter::AutoCompleteCommand
+        link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleteCommand
 
         link "Ctrl+U",       EditView::UpcaseTextCommand
         link "Ctrl+Shift+U", EditView::DowncaseTextCommand
@@ -1144,9 +1146,10 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Alt+W",   SelectWordCommand
         link "Ctrl+Alt+L",   SelectLineCommand
         link "Ctrl+B",       ToggleBlockSelectionCommand
-        link "Ctrl+Escape",  AutoCompleter::AutoCompleteCommand
         link "Escape",       AutoCompleter::AutoCompleteCommand
-        link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleterCommand
+        link "Ctrl+Escape",  AutoCompleter::MenuAutoCompleteCommand
+        link "Ctrl+Space",   AutoCompleter::AutoCompleteCommand
+        link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleteCommand
 
         link "Ctrl+U",       EditView::UpcaseTextCommand
         link "Ctrl+Shift+U", EditView::DowncaseTextCommand
