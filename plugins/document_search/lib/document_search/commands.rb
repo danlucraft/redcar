@@ -106,8 +106,16 @@ module DocumentSearch
 
     # Selects the specified range and scrolls to the start.
     def select_range(start, stop)
+      line     = doc.line_at_offset(start)
+      lineoff  = start - doc.offset_at_line(line)
+      if lineoff < doc.smallest_visible_horizontal_index
+        horiz = lineoff
+      else
+        horiz = stop - doc.offset_at_line(line)
+      end
       doc.set_selection_range(start, stop)
-      doc.scroll_to_line(doc.line_at_offset(start))
+      doc.scroll_to_line(line)
+      doc.scroll_to_horizontal_offset(horiz) if horiz
     end
   end
 
