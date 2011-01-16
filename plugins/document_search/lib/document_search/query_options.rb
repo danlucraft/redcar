@@ -24,8 +24,7 @@ module DocumentSearch
       when "Glob"
         :query_glob
       else
-        puts "WARNING - Invalid query type: #{query_type_text} (defaulting to :query_plain)"
-        :query_plain
+        raise "Invalid query type: #{query_type_text}"
       end
     end
 
@@ -39,8 +38,7 @@ module DocumentSearch
       when :query_glob
         'Glob'
       else
-        puts "WARNING - Invalid query type symbol: #{query_type_symbol} (defaulting to 'Plain')"
-        'Plain'
+        raise "Invalid query type symbol: #{query_type_symbol}"
       end
     end
   end

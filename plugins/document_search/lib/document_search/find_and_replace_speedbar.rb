@@ -44,7 +44,7 @@ module DocumentSearch
       update_options_from_ui
     end
 
-    toggle :wrap_around, 'Wrap Around', nil, true do |val|
+    toggle :wrap_around, 'Wrap around', nil, true do |val|
       FindSpeedbar.previous_options.wrap_around = val
       set_offset
       update_options_from_ui
