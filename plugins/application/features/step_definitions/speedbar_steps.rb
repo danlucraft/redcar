@@ -49,9 +49,9 @@ end
 
 When /^I choose "([^"]*)" in the "([^"]*)" field in the speedbar$/ do |value, combo_name|
   speedbar = Redcar.app.focussed_window.speedbar
-  item = get_speedbar_field(combo_name, Redcar::Speedbar::ComboBoxItem)
+  item = get_speedbar_field(combo_name, Redcar::Speedbar::ComboItem)
   item.set_value(value)
-  speedbar.controller.execute_listener_in_model(item, false)
+  speedbar.controller.execute_listener_in_model(item, value)
 end
 
 When /^I close the speedbar$/ do
@@ -74,7 +74,7 @@ end
 
 Then /^"([^"]*)" should be chosen in the "([^"]*)" field in the speedbar$/ do |value, combo_name|
   speedbar = Redcar.app.focussed_window.speedbar
-  item = get_speedbar_field(combo_name, Redcar::Speedbar::ComboBoxItem, speedbar)
+  item = get_speedbar_field(combo_name, Redcar::Speedbar::ComboItem, speedbar)
   item.value.should == value
 end
 
