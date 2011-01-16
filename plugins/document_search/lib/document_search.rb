@@ -9,8 +9,8 @@ module DocumentSearch
     Redcar::Menu::Builder.build do
       sub_menu "Edit" do
         sub_menu "Find", :priority => 50 do
-          item "Find", :command => FindMenuCommand, :priority => 1
-          item "Find and Replace", :command => FindAndReplaceMenuCommand, :priority => 2
+          item "Find", :command => FindMenuCommand
+          item "Find and Replace", :command => FindAndReplaceMenuCommand
           separator
           item "Next Result", FindNextMenuCommand
           item "Previous Result", FindPreviousMenuCommand
@@ -25,8 +25,8 @@ module DocumentSearch
 
   def self.toolbars
     Redcar::ToolBar::Builder.build do
-      item "Search Document", :command => DocumentSearch::FindMenuCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), :barname => :edit
-      item "Next Search Result", :command => DocumentSearch::FindNextMenuCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier--arrow.png"), :barname => :edit
+      item "Find", :command => DocumentSearch::FindMenuCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), :barname => :edit
+      item "Find Next", :command => DocumentSearch::FindNextMenuCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier--arrow.png"), :barname => :edit
     end
   end
 
