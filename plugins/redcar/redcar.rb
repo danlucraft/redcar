@@ -266,8 +266,8 @@ module Redcar
       def execute
         current_notebook = tab.notebook
         i = win.notebooks.index current_notebook
-        
-        target_notebook = win.notebooks[ (i + 1) % win.notebooks.length ] 
+
+        target_notebook = win.notebooks[ (i + 1) % win.notebooks.length ]
         target_notebook.grab_tab_from(current_notebook, tab)
         tab.focus
       end
@@ -1075,15 +1075,13 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+Shift+:",     RotateNotebooksCommand
         link "Alt+Shift+N",     CloseNotebookCommand
         link "Cmd+Alt+I",       ToggleInvisibles
-        link "Ctrl+R",          Runnables::RunEditTabCommand
-        link "Cmd+I",           OutlineView::OpenOutlineViewCommand
         link "Cmd++",           IncreaseFontSize
         link "Cmd+-",           DecreaseFontSize
 
         link "Ctrl+Shift+P",    PrintScopeCommand
         link "Cmd+Shift+H",     ToggleTreesCommand
 
-        link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
+        # link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
 
         link "Cmd+Alt+S", Snippets::OpenSnippetExplorer
         #Textmate.attach_keybindings(self, :osx)
@@ -1151,8 +1149,6 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
 
-        link "Ctrl+R",           Runnables::RunEditTabCommand
-
         link "Ctrl+Shift+P",    PrintScopeCommand
 
         link "Ctrl+Alt+O",       SwitchNotebookCommand
@@ -1171,11 +1167,9 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+L",     ResetNotebookWidthsCommand
         link "Ctrl+Shift+:",     RotateNotebooksCommand
         link "Alt+Shift+N",      CloseNotebookCommand
-        link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
+        # link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
         link "F11",              ToggleFullscreen
         link "Ctrl+Alt+I",       ToggleInvisibles
-        link "Ctrl+I",           OutlineView::OpenOutlineViewCommand
-        link "Ctrl+Shift+T",     OutlineView::OpenOutlineViewCommand
         link "Ctrl++",           IncreaseFontSize
         link "Ctrl+-",           DecreaseFontSize
 

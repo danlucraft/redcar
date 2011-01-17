@@ -36,12 +36,12 @@ module DocumentSearch
     end
 
     linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
-      link "Ctrl+S",       DocumentSearch::FindMenuCommand
+      link "Alt+S",        DocumentSearch::FindMenuCommand
       link "Ctrl+F",       DocumentSearch::FindAndReplaceSpeedbarCommand
       link "Ctrl+G",       DocumentSearch::FindNextMenuCommand
       link "Ctrl+Shift+G", DocumentSearch::FindPreviousMenuCommand
       link "Ctrl+E",       DocumentSearch::UseSelectionForFindMenuCommand
-      link "Ctrl+Shift+E", DocumentSearch::UseSelectionForReplaceMenuCommand
+      link "Alt+E",        DocumentSearch::UseSelectionForReplaceMenuCommand
     end
 
     [linwin, osx]
@@ -89,8 +89,8 @@ module DocumentSearch
   class ReplaceAndFindMenuCommand < Redcar::EditTabCommand
     def execute
       FindAndReplaceSpeedbar.replace_and_find(
-        FindSpeedbar.previous_query, 
-        FindAndReplaceSpeedbar.previous_replace, 
+        FindSpeedbar.previous_query,
+        FindAndReplaceSpeedbar.previous_replace,
         FindSpeedbar.previous_options)
     end
   end
