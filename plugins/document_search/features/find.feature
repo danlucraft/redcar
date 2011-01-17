@@ -4,7 +4,7 @@
 #
 # Because the Find speedbar and the find operations of the Find and Replace speedbar are supposed to
 # function identically, all scenarios here should be copied to find_and_replace.feature, with the
-# references to FindMenuCommand replaced by FindAndReplaceMenuCommand.
+# references to FindMenuCommand and FindSpeedbar adjusted accordingly.
 
 @speedbar
 Feature: Find

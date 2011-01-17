@@ -3,8 +3,8 @@
 # "Current Settings" comment line after each scenario that changes settings.
 #
 # Because the Find speedbar and the find operations of the Find and Replace speedbar are supposed to
-# function identically, all scenarios here should be copied to find_and_replace.feature, with the
-# references to FindAndReplaceMenuCommand replaced by FindAndReplaceMenuCommand.
+# function identically, all scenarios from find.feature should be copied here, with the references
+# to FindMenuCommand and FindSpeedbar adjusted accordingly.
 
 @speedbar
 Feature: Find and Replace
@@ -388,25 +388,31 @@ Feature: Find and Replace
     Then the selected text should be "Foo"
     And line number 2 should be visible
 
-
   # End of scenarios copied from Find speedbar
 
   # Begin of scenarios specific to Find and Replace speedbar
 
-  # Scenario: Open find and replace speedbar with initial selection
-  #   When I replace the contents with "Foo\nBar\nBaz"
-  #   And I select from 4 to 7
-  #   And I run the command DocumentSearch::FindAndReplaceMenuCommand
-  #   Then the DocumentSearch::ExtendedSearch::SearchSpeedbar speedbar should be open
-  #   And the "Find" field in the speedbar should have text "Bar"
-  #   When I type "Foo" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "query_type" field in the speedbar
-  #   And I check "Wrap Around" in the speedbar
-  #   And I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nFoo\nBaz"
-  #   And the selected text should be ""
-  #   And the selection range should be from 7 to 7
-  #
+  Scenario: Reset settings for Find and Replace
+    When I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I choose "Plain" in the "query_type" field in the speedbar
+    And I uncheck "Match case" in the speedbar
+    And I check "Wrap around" in the speedbar
+    Then "Plain" should be chosen in the "query_type" field in the speedbar
+    And "Match case" should not be checked in the speedbar
+    And "Wrap around" should be checked in the speedbar
+
+  # Current Settings: Plain, No Match case, Wrap around
+
+  Scenario: Open find and replace speedbar with initial selection
+    When I replace the contents with "Foo\nBar\nBaz"
+    And I select from 4 to 7
+    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    Then the "Find" field in the speedbar should have text "Bar"
+    When I type "Foo" into the "Replace" field in the speedbar
+    And I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nFoo\nBaz"
+    And there should not be any text selected
+
   # Scenario: Find next with wrap around
   #   When I replace the contents with "Foo\nBar Foo\nHmm\nBaz"
   #   And I move the cursor to 0
