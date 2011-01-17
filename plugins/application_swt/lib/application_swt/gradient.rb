@@ -26,22 +26,26 @@ module Redcar
   
       def swt_colors
         hex_rgb_strings = @color_stops.sort.map { |position, color| color }
-        colors = hex_rgb_strings.map do |hex_rgb_string|
-          hex_string = case hex_rgb_string
-            when /[0-9A-Fa-f]{6}/
-              Regexp.last_match[0]
-            when /[0-9A-Fa-f]{3}/
-              Regexp.last_match[0].split('').map{ |hex_string| hex_string * 2 }.join('')
-            else
-              raise "Colors must be RGB hex strings"
+        swt_colors = hex_rgb_strings.map do |hex_rgb_string|
+          if hex_rgb_string =~ /^ (\W+)? ([0-9A-Fa-f]{3}{1,2}) (\W+)? $/x
+            hex_string = Regexp.last_match.captures[1]
+            if(hex_string.size == 3) # Shorthand
+              hex_string = hex_string.split('').map{ |hex_string| hex_string * 2 }.join('')
+            end
+            
+            color_components = hex_string.scan(/.{2}/)          
+            int_components = color_components.map { |component| component.to_i(16) }
+            Swt::Graphics::Color.new(ApplicationSWT.display, *int_components[0...3])
+            
+          elsif Swt::SWT.const_defined?(const_name = "COLOR_#{ hex_rgb_string.upcase }")
+            swt_const = Swt::SWT.const_get(const_name)
+            ApplicationSWT.display.get_system_color(swt_const)
+              
+          else
+            raise "Colors must be RGB hex strings or SWT color names"
           end
-          
-          color_components = hex_string.scan(/.{2}/)
-          
-          int_components = color_components.map { |component| component.to_i(16) }
         end
-    
-        swt_colors = colors.map { |color|  Swt::Graphics::Color.new(ApplicationSWT.display, *color[0...3])  }
+        
         swt_colors.to_java(Swt::Graphics::Color)
       end
       
