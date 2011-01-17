@@ -235,7 +235,7 @@ Feature: Find
    Scenario: Find next without wrap around
     When I replace the contents with "Foo\nBar Foo\nHmm\nBaz"
     And I move the cursor to 0
-    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I run the command DocumentSearch::FindAndReplaceSpeedbarCommand
     And I uncheck "Wrap around" in the speedbar
     And I type "Foo" into the "Find" field in the speedbar
     Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
@@ -254,7 +254,7 @@ Feature: Find
   Scenario: Find previous with wrap around
     When I replace the contents with "Foo\nBar Foo\nHmm\nBaz"
     And I move the cursor to 18
-    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I run the command DocumentSearch::FindAndReplaceSpeedbarCommand
     And I type "Foo" into the "Find" field in the speedbar
     Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
     And there should not be any text selected
@@ -277,7 +277,7 @@ Feature: Find
   Scenario: Find previous without wrap around
     When I replace the contents with "Foo\nBar Foo\nHmm\nBaz"
     And I move the cursor to 18
-    And I run the command DocumentSearch::FindAndReplaceMenuCommand
+    And I run the command DocumentSearch::FindAndReplaceSpeedbarCommand
     And I uncheck "Wrap around" in the speedbar
     And I type "Foo" into the "Find" field in the speedbar
     Then the contents should be "Foo\nBar Foo\nHmm\nBaz"
