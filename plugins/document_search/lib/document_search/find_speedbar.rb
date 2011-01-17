@@ -27,7 +27,6 @@ module DocumentSearch
     label :label, "Find:"
     textbox :query do |value|
       if doc
-        set_offset
         update_options_from_ui
         FindSpeedbar.find_incremental
       end
@@ -35,28 +34,24 @@ module DocumentSearch
 
     combo :query_type, ["Plain", "Regex", "Glob"], "Plain" do |val|
       FindSpeedbar.previous_options.query_type = QueryOptions.query_type_to_symbol(val)
-      set_offset
       update_options_from_ui
       FindSpeedbar.find_incremental
     end
 
     toggle :match_case, 'Match case', nil, false do |val|
       FindSpeedbar.previous_options.match_case = val
-      set_offset
       update_options_from_ui
       FindSpeedbar.find_incremental
     end
 
     toggle :wrap_around, 'Wrap around', nil, true do |val|
       FindSpeedbar.previous_options.wrap_around = val
-      set_offset
       update_options_from_ui
       FindSpeedbar.find_incremental
     end
 
     button :previous, "Previous", "Return" do
       if doc
-        set_offset
         update_options_from_ui
         FindSpeedbar.find_previous
       end
@@ -64,7 +59,6 @@ module DocumentSearch
 
     button :next, "Next", "Return" do
       if doc
-        set_offset
         update_options_from_ui
         FindSpeedbar.find_next
       end
@@ -78,18 +72,6 @@ module DocumentSearch
         FindSpeedbar.previous_options.match_case = self.match_case.value
         FindSpeedbar.previous_options.wrap_around = self.wrap_around.value
       end
-    end
-
-    def set_offset
-      @offset = doc.cursor_offset unless @offset
-      if doc.selection?
-        if doc.selection_offset != @offset + doc.selected_text.length
-          @offset = [doc.cursor_offset, doc.selection_offset].min
-        end
-      else
-        @offset = doc.cursor_offset
-      end
-      doc.cursor_offset = @offset
     end
 
     def self.find_incremental

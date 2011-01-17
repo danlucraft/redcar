@@ -25,30 +25,25 @@ module DocumentSearch
     label :label_find, "Find:"
     textbox :query do
       if doc
-        set_offset
         update_options_from_ui
         FindSpeedbar.find_incremental
       end
     end
 
-
     combo :query_type, ["Plain", "Regex", "Glob"], "Plain" do |val|
       FindSpeedbar.previous_options.query_type = QueryOptions.query_type_to_symbol(val)
-      set_offset
       update_options_from_ui
       FindSpeedbar.find_incremental
     end
 
     toggle :match_case, 'Match case', nil, false do |val|
       FindSpeedbar.previous_options.match_case = val
-      set_offset
       update_options_from_ui
       FindSpeedbar.find_incremental
     end
 
     toggle :wrap_around, 'Wrap around', nil, true do |val|
       FindSpeedbar.previous_options.wrap_around = val
-      set_offset
       update_options_from_ui
       FindSpeedbar.find_incremental
     end
@@ -60,15 +55,13 @@ module DocumentSearch
     label :label_replace, "Replace:"
     textbox :replace
 
-    button :replace_find, 'Replace && Find', "Return" do
-      set_offset
+    button :replace_find, 'Replace && Find', "Return" do      
       update_options_from_ui
       FindAndReplaceSpeedbar.replace_and_find(
           FindSpeedbar.previous_query, FindAndReplaceSpeedbar.previous_replace, FindSpeedbar.previous_options) or not_found
     end
 
-    button :replace_all, "Replace All", nil do
-      set_offset
+    button :replace_all, "Replace All", nil do      
       update_options_from_ui
       FindAndReplaceSpeedbar.replace_all(
           FindSpeedbar.previous_query, FindAndReplaceSpeedbar.previous_replace, FindSpeedbar.previous_options) or not_found
@@ -77,13 +70,11 @@ module DocumentSearch
     label :label_spacer_mid_row2, ""
 
     button :find_previous, "Previous", nil do
-      set_offset
       update_options_from_ui
       FindSpeedbar.find_previous or not_found
     end
 
     button :find_next, "Next", nil do
-      set_offset
       update_options_from_ui
       FindSpeedbar.find_next or not_found
     end
@@ -97,19 +88,7 @@ module DocumentSearch
       self.match_case.value = FindSpeedbar.previous_options.match_case
       self.wrap_around.value = FindSpeedbar.previous_options.wrap_around
       self.query.edit_view.document.select_all
-    end
-
-    def set_offset
-      @offset = doc.cursor_offset unless @offset
-      if doc.selection?
-        if doc.selection_offset != @offset + doc.selected_text.length
-          @offset = [doc.cursor_offset, doc.selection_offset].min
-        end
-      else
-        @offset = doc.cursor_offset
-      end
-      doc.cursor_offset = @offset
-    end
+    end    
 
     # Store options specified in the UI, to be called before executing a command.
     def update_options_from_ui
@@ -132,17 +111,7 @@ module DocumentSearch
       self.label_not_found.text = ''
     end
 
-    ### COMMANDS ###
-
-    # def self.find_previous(query, options)
-    #   cmd = FindPreviousCommand.new(query, options)
-    #   cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
-    # end
-    #
-    # def self.find_next(query, options)
-    #   cmd = FindNextCommand.new(query, options)
-    #   cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
-    # end
+    ### COMMANDS ###    
 
     def self.repeat_find_next
       find_next(FindSpeedbar.previous_query, FindSpeedbar.previous_options) or not_found
@@ -151,8 +120,7 @@ module DocumentSearch
     def self.repeat_find_previous
       find_previous(FindSpeedbar.previous_query, FindSpeedbar.previous_options) or not_found
     end
-
-    # description here
+    
     def self.replace_and_find(query, replace, options)
       cmd = ReplaceAndFindCommand.new(query, replace, options)
       cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
