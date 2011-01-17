@@ -462,7 +462,7 @@ Redcar.environment: #{Redcar.environment}
         end
       end
     end
-    
+
     class SwitchTreeDownCommand < TreeCommand
 
       def execute
@@ -478,7 +478,7 @@ Redcar.environment: #{Redcar.environment}
         win.treebook.switch_up
       end
     end
-    
+
     class SwitchTabDownCommand < TabCommand
 
       def execute
@@ -1021,7 +1021,7 @@ Redcar.environment: #{Redcar.environment}
 
         #link "Cmd+Return",   MoveNextLineCommand
 
-        link "Cmd+Shift+E", EditView::InfoSpeedbarCommand
+        link "Ctrl+Shift+E", EditView::InfoSpeedbarCommand
         link "Cmd+Z",       UndoCommand
         link "Cmd+Shift+Z", RedoCommand
         link "Cmd+X",       CutCommand
@@ -1038,18 +1038,22 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+]",       IncreaseIndentCommand
         link "Cmd+Shift+I", AutoIndenter::IndentCommand
         link "Cmd+L",       GotoLineCommand
-        link "Cmd+F",       DocumentSearch::SearchForwardCommand
-        link "Cmd+H",       DocumentSearch::SearchAndReplaceCommand
-        #link "Cmd+Shift+F", DocumentSearch::RepeatPreviousSearchForwardCommand
-        link "Cmd+Ctrl+F",  DocumentSearch::SearchAndReplaceCommand
-        link "Cmd+Alt+F",   DocumentSearch::ExtendedSearchCommand
+        link "Cmd+F",       DocumentSearch::FindMenuCommand
         link "Cmd+Shift+F", Redcar::FindInProject::OpenSearch
+        link "Cmd+H",       DocumentSearch::FindAndReplaceMenuCommand
+        link "Cmd+G", DocumentSearch::FindNextMenuCommand
+        link "Cmd+Shift+G",       DocumentSearch::FindPreviousMenuCommand
+        link "Cmd+Alt+F",  DocumentSearch::FindAndReplaceMenuCommand
+        link "Cmd+E",       DocumentSearch::UseSelectionForFindMenuCommand
+        link "Cmd+Shift+E", DocumentSearch::UseSelectionForReplaceMenuCommand
         link "Cmd+A",       SelectAllCommand
         link "Ctrl+W",      SelectWordCommand
         link "Ctrl+L",      SelectLineCommand
         link "Cmd+B",       ToggleBlockSelectionCommand
-        #link "Escape", AutoCompleter::AutoCompleteCommand
-        link "Ctrl+Escape",  AutoCompleter::MenuAutoCompleterCommand
+        link "Escape",      AutoCompleter::AutoCompleteCommand
+        link "Ctrl+Escape", AutoCompleter::MenuAutoCompleterCommand
+        link "Ctrl+Space",   AutoCompleter::AutoCompleteCommand
+        link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleterCommand
 
         link "Ctrl+U",       EditView::UpcaseTextCommand
         link "Ctrl+Shift+U", EditView::DowncaseTextCommand
@@ -1124,31 +1128,35 @@ Redcar.environment: #{Redcar.environment}
 
         link "Ctrl+Home",    MoveTopCommand
         link "Home",         MoveHomeCommand
-        link "Ctrl+A",       MoveHomeCommand
+        link "Ctrl+Alt+A",   MoveHomeCommand
         link "End",          MoveEndCommand
-        link "Ctrl+E",       MoveEndCommand
+        link "Ctrl+Alt+E",   MoveEndCommand
         link "Ctrl+End",     MoveBottomCommand
 
         link "Ctrl+[",       DecreaseIndentCommand
         link "Ctrl+]",       IncreaseIndentCommand
         link "Ctrl+Shift+[", AutoIndenter::IndentCommand
         link "Ctrl+L",       GotoLineCommand
-        link "Ctrl+F",       DocumentSearch::SearchForwardCommand
-        link "Ctrl+H",       DocumentSearch::SearchAndReplaceCommand
-        link "Ctrl+Alt+F",   DocumentSearch::ExtendedSearchCommand
-        link "F3",           DocumentSearch::RepeatPreviousSearchForwardCommand
+        link "Ctrl+F",   DocumentSearch::FindMenuCommand
         link "Ctrl+Shift+F", Redcar::FindInProject::OpenSearch
-        link "Ctrl+Shift+A", SelectAllCommand
+        link "Ctrl+H",   DocumentSearch::FindAndReplaceMenuCommand
+        link "Ctrl+G",       DocumentSearch::FindNextMenuCommand
+        link "Ctrl+Shift+G",       DocumentSearch::FindPreviousMenuCommand
+        link "Ctrl+E",       DocumentSearch::UseSelectionForFindMenuCommand
+        link "Ctrl+Shift+E", DocumentSearch::UseSelectionForReplaceMenuCommand
+        link "Ctrl+A", SelectAllCommand
         link "Ctrl+Alt+W",   SelectWordCommand
         link "Ctrl+Alt+L",   SelectLineCommand
         link "Ctrl+B",       ToggleBlockSelectionCommand
-        link "Ctrl+Space",       AutoCompleter::AutoCompleteCommand
+        link "Escape",       AutoCompleter::AutoCompleteCommand
+        link "Ctrl+Escape",  AutoCompleter::MenuAutoCompleterCommand
+        link "Ctrl+Space",   AutoCompleter::AutoCompleteCommand
         link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleterCommand
 
         link "Ctrl+U",       EditView::UpcaseTextCommand
         link "Ctrl+Shift+U", EditView::DowncaseTextCommand
         link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
-        link "Ctrl+G",       EditView::OppositeCaseTextCommand
+        link "Ctrl+Alt+Shift+U",   EditView::OppositeCaseTextCommand
         link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
         link "Ctrl+=",       EditView::AlignAssignmentCommand
         link "Ctrl+Shift+^", SortLinesCommand
@@ -1180,6 +1188,7 @@ Redcar.environment: #{Redcar.environment}
         link "F11",              ToggleFullscreen
         link "Ctrl+Alt+I",       ToggleInvisibles
         link "Ctrl+I",           OutlineView::OpenOutlineViewCommand
+        link "Ctrl+Shift+T",     OutlineView::OpenOutlineViewCommand
         link "Ctrl++",           IncreaseFontSize
         link "Ctrl+-",           DecreaseFontSize
 

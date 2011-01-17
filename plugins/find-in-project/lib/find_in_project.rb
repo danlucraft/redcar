@@ -6,13 +6,13 @@ module Redcar
     def self.menus
       Redcar::Menu::Builder.build do
         sub_menu "Edit" do
-          sub_menu "Search" do
-            item "Find In Project!", Redcar::FindInProject::OpenSearch
+          sub_menu "Find" do
+            item "Find in Project!", :command => Redcar::FindInProject::OpenSearch, :priority => 3
           end
         end
       end
     end
-    
+
   def self.toolbars
     ToolBar::Builder.build do
       item "Find in Project", :command => OpenSearch, :icon => File.join(Redcar::ICONS_DIRECTORY, "application-search-result.png"), :barname => :project
