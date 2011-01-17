@@ -31,6 +31,9 @@ module Redcar
     
     def merge(other)
       keymap = Keymap.new(@name, @platforms)
+      (@map.keys & other.map.keys).each do |key|
+        puts "conflicting keybinding #{key}"
+      end
       keymap.map = @map.merge(other.map)
       keymap
     end

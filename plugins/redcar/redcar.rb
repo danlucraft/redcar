@@ -1038,14 +1038,6 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+]",       IncreaseIndentCommand
         link "Cmd+Shift+I", AutoIndenter::IndentCommand
         link "Cmd+L",       GotoLineCommand
-        link "Cmd+F",       DocumentSearch::FindMenuCommand
-        link "Cmd+Shift+F", Redcar::FindInProject::OpenSearch
-        link "Cmd+H",       DocumentSearch::FindAndReplaceMenuCommand
-        link "Cmd+G", DocumentSearch::FindNextMenuCommand
-        link "Cmd+Shift+G",       DocumentSearch::FindPreviousMenuCommand
-        link "Cmd+Alt+F",  DocumentSearch::FindAndReplaceMenuCommand
-        link "Cmd+E",       DocumentSearch::UseSelectionForFindMenuCommand
-        link "Cmd+Shift+E", DocumentSearch::UseSelectionForReplaceMenuCommand
         link "Cmd+A",       SelectAllCommand
         link "Ctrl+W",      SelectWordCommand
         link "Ctrl+L",      SelectLineCommand
@@ -1063,6 +1055,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+=",       EditView::AlignAssignmentCommand
         link "Ctrl+Shift+^", SortLinesCommand
 
+        link "Cmd+Shift+F",     Redcar::FindInProject::OpenSearch
         link "Cmd+T",           Project::FindFileCommand
         link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
         link "Cmd+Alt+O",       SwitchNotebookCommand
@@ -1137,13 +1130,6 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+]",       IncreaseIndentCommand
         link "Ctrl+Shift+[", AutoIndenter::IndentCommand
         link "Ctrl+L",       GotoLineCommand
-        link "Ctrl+F",   DocumentSearch::FindMenuCommand
-        link "Ctrl+Shift+F", Redcar::FindInProject::OpenSearch
-        link "Ctrl+H",   DocumentSearch::FindAndReplaceMenuCommand
-        link "Ctrl+G",       DocumentSearch::FindNextMenuCommand
-        link "Ctrl+Shift+G",       DocumentSearch::FindPreviousMenuCommand
-        link "Ctrl+E",       DocumentSearch::UseSelectionForFindMenuCommand
-        link "Ctrl+Shift+E", DocumentSearch::UseSelectionForReplaceMenuCommand
         link "Ctrl+A", SelectAllCommand
         link "Ctrl+Alt+W",   SelectWordCommand
         link "Ctrl+Alt+L",   SelectLineCommand
@@ -1161,6 +1147,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+=",       EditView::AlignAssignmentCommand
         link "Ctrl+Shift+^", SortLinesCommand
 
+        link "Ctrl+Shift+F",     Redcar::FindInProject::OpenSearch
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
 

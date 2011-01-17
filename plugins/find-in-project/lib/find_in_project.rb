@@ -5,10 +5,8 @@ module Redcar
   class FindInProject
     def self.menus
       Redcar::Menu::Builder.build do
-        sub_menu "Edit" do
-          sub_menu "Find" do
-            item "Find in Project!", :command => Redcar::FindInProject::OpenSearch, :priority => 3
-          end
+        sub_menu "Project" do
+          item "Find in Project!", :command => Redcar::FindInProject::OpenSearch, :priority => 3
         end
       end
     end

@@ -9,11 +9,12 @@ module DocumentSearch
     Redcar::Menu::Builder.build do
       sub_menu "Edit" do
         sub_menu "Find", :priority => 50 do
-          item "Find", :command => FindMenuCommand
-          item "Find and Replace", :command => FindAndReplaceMenuCommand
+          item "Incremental Search", FindMenuCommand
+          item "Find...",            FindAndReplaceSpeedbarCommand
           separator
-          item "Next Result", FindNextMenuCommand
-          item "Previous Result", FindPreviousMenuCommand
+          item "Find Next",         FindNextMenuCommand
+          item "Find Previous",     FindPreviousMenuCommand
+          item "Replace and Find",    ReplaceAndFindMenuCommand
           separator
           item "Use Selection for Find", UseSelectionForFindMenuCommand
           item "Use Selection for Replace", UseSelectionForReplaceMenuCommand
@@ -21,6 +22,29 @@ module DocumentSearch
         separator
       end
     end
+  end
+
+  def self.keymaps
+    osx = Redcar::Keymap.build("main", :osx) do
+      link "Ctrl+S",      DocumentSearch::FindMenuCommand
+      link "Cmd+F",       DocumentSearch::FindAndReplaceSpeedbarCommand
+      link "Cmd+G",       DocumentSearch::FindNextMenuCommand
+      link "Cmd+Shift+G", DocumentSearch::FindPreviousMenuCommand
+      link "Cmd+Alt+F",   DocumentSearch::ReplaceAndFindMenuCommand
+      link "Cmd+E",       DocumentSearch::UseSelectionForFindMenuCommand
+      link "Cmd+Shift+E", DocumentSearch::UseSelectionForReplaceMenuCommand
+    end
+
+    linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
+      link "Ctrl+S",       DocumentSearch::FindMenuCommand
+      link "Ctrl+F",       DocumentSearch::FindAndReplaceSpeedbarCommand
+      link "Ctrl+G",       DocumentSearch::FindNextMenuCommand
+      link "Ctrl+Shift+G", DocumentSearch::FindPreviousMenuCommand
+      link "Ctrl+E",       DocumentSearch::UseSelectionForFindMenuCommand
+      link "Ctrl+Shift+E", DocumentSearch::UseSelectionForReplaceMenuCommand
+    end
+
+    [linwin, osx]
   end
 
   def self.toolbars
@@ -40,7 +64,7 @@ module DocumentSearch
     end
   end
 
-  class FindAndReplaceMenuCommand < Redcar::EditTabCommand
+  class FindAndReplaceSpeedbarCommand < Redcar::EditTabCommand
     def execute
       @speedbar = FindAndReplaceSpeedbar.new
       if doc.selection?
@@ -59,6 +83,15 @@ module DocumentSearch
   class FindPreviousMenuCommand < Redcar::EditTabCommand
     def execute
       FindSpeedbar.find_previous
+    end
+  end
+
+  class ReplaceAndFindMenuCommand < Redcar::EditTabCommand
+    def execute
+      FindAndReplaceSpeedbar.replace_and_find(
+        FindSpeedbar.previous_query, 
+        FindAndReplaceSpeedbar.previous_replace, 
+        FindSpeedbar.previous_options)
     end
   end
 
