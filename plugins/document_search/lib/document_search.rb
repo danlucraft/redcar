@@ -1,126 +1,62 @@
 require 'strscan'
-require "document_search/replace_command"
-require "document_search/replace_all_command"
-require "document_search/replace_next_command"
-require "document_search/search_and_replace"
-require "document_search/extended_search_command"
-require "document_search/extended_search"
+require "document_search/query_options"
+require "document_search/commands"
+require "document_search/find_speedbar"
+require "document_search/find_and_replace_speedbar"
 
 module DocumentSearch
   def self.menus
     Redcar::Menu::Builder.build do
       sub_menu "Edit" do
-        sub_menu "Search", :priority => 50 do
-          item "Document Search",    SearchForwardCommand
-          item "Repeat Last Search", RepeatPreviousSearchForwardCommand
-          item "Search and Replace", SearchAndReplaceCommand
-          item "Document Search (Extended)", ExtendedSearchCommand
+        sub_menu "Find", :priority => 50 do
+          item "Incremental Search", FindMenuCommand
+          item "Find...",            FindAndReplaceSpeedbarCommand
+          separator
+          item "Find Next",         FindNextMenuCommand
+          item "Find Previous",     FindPreviousMenuCommand
+          item "Replace and Find",    ReplaceAndFindMenuCommand
+          separator
+          item "Use Selection for Find", UseSelectionForFindMenuCommand
+          item "Use Selection for Replace", UseSelectionForReplaceMenuCommand
         end
         separator
       end
     end
   end
 
+  def self.keymaps
+    osx = Redcar::Keymap.build("main", :osx) do
+      link "Ctrl+S",      DocumentSearch::FindMenuCommand
+      link "Cmd+F",       DocumentSearch::FindAndReplaceSpeedbarCommand
+      link "Cmd+G",       DocumentSearch::FindNextMenuCommand
+      link "Cmd+Shift+G", DocumentSearch::FindPreviousMenuCommand
+      link "Cmd+Alt+F",   DocumentSearch::ReplaceAndFindMenuCommand
+      link "Cmd+E",       DocumentSearch::UseSelectionForFindMenuCommand
+      link "Cmd+Shift+E", DocumentSearch::UseSelectionForReplaceMenuCommand
+    end
+
+    linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
+      link "Alt+S",        DocumentSearch::FindMenuCommand
+      link "Ctrl+F",       DocumentSearch::FindAndReplaceSpeedbarCommand
+      link "Ctrl+G",       DocumentSearch::FindNextMenuCommand
+      link "Ctrl+Shift+G", DocumentSearch::FindPreviousMenuCommand
+      link "Ctrl+E",       DocumentSearch::UseSelectionForFindMenuCommand
+      link "Alt+E",        DocumentSearch::UseSelectionForReplaceMenuCommand
+    end
+
+    [linwin, osx]
+  end
+
   def self.toolbars
     Redcar::ToolBar::Builder.build do
-      item "Search Document", :command => DocumentSearch::SearchForwardCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), :barname => :edit
-      item "Repeat Last Search", :command => DocumentSearch::RepeatPreviousSearchForwardCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier--arrow.png"), :barname => :edit
+      item "Find", :command => DocumentSearch::FindMenuCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), :barname => :edit
+      item "Find Next", :command => DocumentSearch::FindNextMenuCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier--arrow.png"), :barname => :edit
     end
   end
 
-  class SearchSpeedbar < Redcar::Speedbar
-    class << self
-      attr_accessor :previous_query
-      attr_accessor :previous_is_regex
-      attr_accessor :previous_match_case
-    end
-
-    attr_accessor :initial_query
-
-    def doc
-      win = Redcar.app.focussed_window
-      tab = win.focussed_notebook_tab
-      tab.document if tab
-    end
-
-    def after_draw
-      SearchSpeedbar.previous_query ||= ""
-      self.query.value = @initial_query || SearchSpeedbar.previous_query
-      self.is_regex.value = SearchSpeedbar.previous_is_regex
-      self.match_case.value = SearchSpeedbar.previous_match_case
-      self.query.edit_view.document.select_all
-    end
-
-    label :label, "Search:"
-    textbox :query do |value|
-      if doc
-        set_offset
-        start_search
-      end
-    end
-
-    toggle :is_regex, 'Regex', nil, false do |v|
-      # v is true or false
-      SearchSpeedbar.previous_is_regex = v
-      update_search
-    end
-
-    toggle :match_case, 'Match case', nil, false do |v|
-      SearchSpeedbar.previous_match_case = v
-      update_search
-    end
-
-    button :search, "Search", "Return" do
-      if doc
-        @offset = nil
-        doc.set_selection_range(doc.cursor_offset,0)
-        start_search
-      end
-    end
-
-    def start_search
-      if doc
-        SearchSpeedbar.previous_query = self.query.value
-        SearchSpeedbar.previous_match_case = self.match_case.value
-        SearchSpeedbar.previous_is_regex = self.is_regex.value
-        success = SearchSpeedbar.repeat_query
-      end
-    end
-
-    def update_search
-      if doc and self.query.value and self.query.value != ""
-        set_offset
-        SearchSpeedbar.previous_query = self.query.value
-        SearchSpeedbar.repeat_query
-      end
-    end
-
-    def set_offset
-      @offset = doc.cursor_offset unless @offset
-      if doc.selection?
-        if doc.selection_offset != @offset + doc.selected_text.length
-          @offset = [doc.cursor_offset, doc.selection_offset].min
-        end
-      else
-        @offset = doc.cursor_offset
-      end
-      doc.cursor_offset = @offset
-    end
-
-    def self.repeat_query
-      current_query = @previous_query
-      if !@previous_is_regex
-        current_query = Regexp.escape(current_query)
-      end
-      cmd = FindNextRegex.new(Regexp.new(current_query, !@previous_match_case), true)
-      cmd.run_in_focussed_tab_edit_view
-    end
-  end
-
-  class SearchForwardCommand < Redcar::EditTabCommand
-
+  class FindMenuCommand < Redcar::EditTabCommand
     def execute
-      @speedbar = SearchSpeedbar.new
+      @speedbar = FindSpeedbar.new
       if doc.selection?
         @speedbar.initial_query = doc.selected_text
       end
@@ -128,15 +64,9 @@ module DocumentSearch
     end
   end
 
-  class RepeatPreviousSearchForwardCommand < Redcar::EditTabCommand
+  class FindAndReplaceSpeedbarCommand < Redcar::EditTabCommand
     def execute
-      SearchSpeedbar.repeat_query
-    end
-  end
-
-  class SearchAndReplaceCommand < Redcar::EditTabCommand
-    def execute
-      @speedbar = SearchAndReplaceSpeedbar.new
+      @speedbar = FindAndReplaceSpeedbar.new
       if doc.selection?
         @speedbar.initial_query = doc.selected_text
       end
@@ -144,16 +74,40 @@ module DocumentSearch
     end
   end
 
-  class ExtendedSearchCommand < Redcar::EditTabCommand
+  class FindNextMenuCommand < Redcar::EditTabCommand
     def execute
-      @speedbar = ExtendedSearch::SearchSpeedbar.new
-      if doc.selection?
-        @speedbar.initial_query = doc.selected_text
-      end
-      win.open_speedbar(@speedbar)
+      FindSpeedbar.find_next
     end
   end
 
+  class FindPreviousMenuCommand < Redcar::EditTabCommand
+    def execute
+      FindSpeedbar.find_previous
+    end
+  end
+
+  class ReplaceAndFindMenuCommand < Redcar::EditTabCommand
+    def execute
+      FindAndReplaceSpeedbar.replace_and_find(
+        FindSpeedbar.previous_query,
+        FindAndReplaceSpeedbar.previous_replace,
+        FindSpeedbar.previous_options)
+    end
+  end
+
+  class UseSelectionForFindMenuCommand  < Redcar::EditTabCommand
+    def execute
+      FindSpeedbar.use_selection_for_find(doc, win.speedbar)
+    end
+  end
+
+  class UseSelectionForReplaceMenuCommand  < Redcar::EditTabCommand
+    def execute
+      FindAndReplaceSpeedbar.use_selection_for_replace(doc, win.speedbar)
+    end
+  end
+
+  # TODO(yozhipozhi): Figure out if this is still needed.
   class FindNextRegex < Redcar::DocumentCommand
     def initialize(re, wrap=nil)
       @re = re
