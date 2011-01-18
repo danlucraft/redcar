@@ -1,14 +1,16 @@
-* Finish feature tests for Find and Replace
-* Add feature test for Ctrl+E, etc.
-* Add menu commands for Replace All, Replace All in Selection
-* Add replace count message display
-* Add Replace in Selection button
+* Rename find_speedbar.rb to incremental_search_speedbar.rb; feature file, too.
+* Remove Next and Previous from Incremental Search
+* Rename find_and_replace_speedbar.rb to find_speedbar.rb; feature file, too.
+* Make Find speedbar non-incremental; fix all feature tests.
+* Add Replace All in Selection speedbar button; add feature tests.
+* Add Replace All in Selection menu; add feature tests for this and other menu commands:
+  * Use selection for XXX; Replace All
+* Make Not found red.
+* Add replace count message for Replace All, Replace All in Selection.
 * Better implementation of Find Previous (reverse regex when feasible)
-* Fix tab order: Should be Search, then Replace textboxes, then options
+* Add support for SWT options in items.
+* Fix tab order as item option: Should be Search, then Replace textboxes, then options
 
-
-Questions:
-* What to do about Ctrl+A, Ctrl+E, Ctrl+Shift+E?
-* General policies for key bindings across Mac and PC?
-* Need glob query type? Or just regex check box?
-  * Doesn't seem useful for editor. The * matches remainder of line, and ? is no better than . in regex.
+Other
+* Find in Project like Textmate
+* Command filter list
