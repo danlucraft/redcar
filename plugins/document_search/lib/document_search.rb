@@ -81,7 +81,11 @@ module DocumentSearch
 
   class FindNextMenuCommand < Redcar::EditTabCommand
     def execute
-      FindSpeedbar.find_next
+      if win.speedbar && (win.speedbar.is_a? IncrementalSearchSpeedbar)
+        IncrementalSearchSpeedbar.find_next
+      else
+        FindSpeedbar.find_next
+      end
     end
   end
 

@@ -2,6 +2,7 @@
 * Remove Next and Previous from Incremental Search [DONE]
 * Rename find_and_replace_speedbar.rb to find_speedbar.rb; feature file, too. [DONE]
 * Make Find speedbar non-incremental. [DONE]
+* Make FindNext and FindPrevious menu work for Incremental Search speedbar if it is open
 * Fix all feature tests for Incremental Search.
 * Fix all feature tests for Find.
 * Add Replace All in Selection speedbar button; add feature tests.
