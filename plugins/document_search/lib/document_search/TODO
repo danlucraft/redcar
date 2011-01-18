@@ -1,7 +1,9 @@
 * Rename find_speedbar.rb to incremental_search_speedbar.rb; feature file, too. [DONE]
-* Remove Next and Previous from Incremental Search
-* Rename find_and_replace_speedbar.rb to find_speedbar.rb; feature file, too.
-* Make Find speedbar non-incremental; fix all feature tests.
+* Remove Next and Previous from Incremental Search [DONE]
+* Rename find_and_replace_speedbar.rb to find_speedbar.rb; feature file, too. [DONE]
+* Make Find speedbar non-incremental. [DONE]
+* Fix all feature tests for Incremental Search.
+* Fix all feature tests for Find.
 * Add Replace All in Selection speedbar button; add feature tests.
 * Add Replace All in Selection menu; add feature tests for this and other menu commands:
   * Use selection for XXX; Replace All
