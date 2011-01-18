@@ -28,7 +28,7 @@ require "project/file_list"
 require "project/file_mirror"
 require "project/find_file_dialog"
 require "project/manager"
-require "project/recent_directories"
+require "project/recent"
 require "project/sub_project"
 
 module Redcar
@@ -80,7 +80,7 @@ module Redcar
       Redcar.plugin_manager.objects_implementing(:project_loaded).each do |i|
         i.project_loaded(self)
       end
-      RecentDirectories.store_path(path)
+      Recent.store_path(path)
       Manager.storage['last_open_dir'] = path
       Project.window_projects[window] = self
     end

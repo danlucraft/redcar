@@ -185,6 +185,7 @@ module Redcar
           window = project.window
         else
           window = windows_without_projects.first || Redcar.app.new_window
+          Project::Recent.store_path(path)
         end
         open_file_in_window(path, window, adapter)
         window.focus
@@ -369,7 +370,7 @@ module Redcar
               item "Open Directory", Project::DirectoryOpenCommand
               #item "Open Remote...", Project::OpenRemoteCommand
               lazy_sub_menu "Open Recent" do
-                Project::RecentDirectories.generate_menu(self)
+                Project::Recent.generate_menu(self)
               end
 
               separator
