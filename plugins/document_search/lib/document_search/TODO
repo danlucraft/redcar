@@ -1,3 +1,6 @@
+* Finish feature tests for Find and Replace
+* Add feature test for Ctrl+E, etc.
+* Add menu commands for Replace All, Replace All in Selection
 * Add replace count message display
 * Add Replace in Selection button
 * Better implementation of Find Previous (reverse regex when feasible)
