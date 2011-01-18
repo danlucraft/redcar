@@ -118,7 +118,7 @@ module Redcar
         path = text.gsub(/\s/, "").split("/")
         folders = path[0...-1].map {|f| "(#{Regexp.escape(f)}).*/" }
         file = path.last.each_char.map {|c| "(#{Regexp.escape(c)})[^/]*" }.join
-        re_src = "#{folders.join}#{file}"
+        re_src = "#{folders.join}#{file}$"
         Regexp.new(re_src, :options => Regexp::IGNORECASE)
       end
     end
