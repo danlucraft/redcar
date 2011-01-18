@@ -1134,7 +1134,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+[", AutoIndenter::IndentCommand
         link "Ctrl+L",       GotoLineCommand
 
-        link "Ctrl+Shift+A", SelectAllCommand
+        link "Ctrl+A", SelectAllCommand
         link "Ctrl+Alt+W",   SelectWordCommand
         link "Ctrl+Alt+L",   SelectLineCommand
         link "Ctrl+B",       ToggleBlockSelectionCommand
