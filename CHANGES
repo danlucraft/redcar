@@ -1,5 +1,5 @@
-Version 0.10 (TBA)
-==================
+Version 0.10 (17 January 2011)
+==============================
 
 Enhancements:
 
@@ -13,7 +13,13 @@ Enhancements:
  * Document Search is now incremental (Delisa Mason)
  * REPL Enhancements, including commit on Return (Delisa Mason)
  * Mirah syntax checking (Michal Hantl)
+ * Mirah REPL (Delisa Mason)
  * More keybindings for adjusting views, such as changing font size, notebook width, and focussed tree (Delisa Mason)
+ * New look! (Max Hawkins)
+ * 3+ notebooks allowed at once (Dotan J. Nahum)
+ * Configurable test runner plugin (Chris Nelson)
+ * Added menu mnemonics for Linux and Windows (Delisa Mason)
+ * Much improved search and replace behaviour (Tom Murray)
 
 Bugfixes:
 
@@ -21,10 +27,12 @@ Bugfixes:
  * Go to Declaration is only available when a project is open (Delisa Mason)
  * Saving a file prompts before overwriting (Delisa Mason)
  * Encrypt/Decrypt does not happen if a user cancels (Utkarsh Kukreti)
+ * Fix the "Index out of bounds" errors in the pair highlighter (Delisa Mason)
+ * Searching will now scroll the window horizontally (#400) (Delisa Mason)
 
 New APIs:
 
- * Non-modal text,list, and browser dialogs in Application::Dialog
+ * Non-modal text, list, and browser dialogs in Application::Dialog (Delisa Mason)
 
 Version 0.9.1 (2 December 2010)
 ===============================

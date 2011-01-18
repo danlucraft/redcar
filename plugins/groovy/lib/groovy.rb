@@ -25,11 +25,11 @@ module Redcar
 
     def self.keymaps
       osx = Keymap.build("main", :osx) do
-        link "Cmd+Shift+G", GroovyOpenREPL
+        link "Cmd+Alt+G", GroovyOpenREPL
       end
 
       linwin = Keymap.build("main", [:linux, :windows]) do
-        link "Ctrl+Shift+G", GroovyOpenREPL
+        link "Ctrl+Alt+G", GroovyOpenREPL
       end
 
       [linwin, osx]

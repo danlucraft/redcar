@@ -3,6 +3,10 @@ require File.expand_path("../fake_event", __FILE__)
 class TestingError < StandardError
 end
 
+def get_menu_name text
+  Redcar::Menu.parse(text)
+end
+
 module SwtHelper
   def main_menu
     display = Redcar::ApplicationSWT.display
