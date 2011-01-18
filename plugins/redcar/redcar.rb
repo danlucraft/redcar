@@ -97,12 +97,12 @@ module Redcar
     end
 
     class NewNotebookCommand < Command
-      sensitize :single_notebook
+#      sensitize :single_notebook
 
       def execute
-        unless win.notebooks.length > 1
+        #unless win.notebooks.length > 1
           win.create_notebook
-        end
+       # end
       end
     end
 
@@ -265,7 +265,9 @@ module Redcar
 
       def execute
         current_notebook = tab.notebook
-        target_notebook = win.notebooks.detect {|nb| nb != current_notebook}
+        i = win.notebooks.index current_notebook
+
+        target_notebook = win.notebooks[ (i + 1) % win.notebooks.length ]
         target_notebook.grab_tab_from(current_notebook, tab)
         tab.focus
       end
@@ -1036,14 +1038,6 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+]",       IncreaseIndentCommand
         link "Cmd+Shift+I", AutoIndenter::IndentCommand
         link "Cmd+L",       GotoLineCommand
-        link "Cmd+F",       DocumentSearch::FindMenuCommand
-        link "Cmd+Shift+F", Redcar::FindInProject::OpenSearch
-        link "Cmd+H",       DocumentSearch::FindAndReplaceMenuCommand
-        link "Cmd+G", DocumentSearch::FindNextMenuCommand
-        link "Cmd+Shift+G",       DocumentSearch::FindPreviousMenuCommand
-        link "Cmd+Alt+F",  DocumentSearch::FindAndReplaceMenuCommand
-        link "Cmd+E",       DocumentSearch::UseSelectionForFindMenuCommand
-        link "Cmd+Shift+E", DocumentSearch::UseSelectionForReplaceMenuCommand
         link "Cmd+A",       SelectAllCommand
         link "Ctrl+W",      SelectWordCommand
         link "Ctrl+L",      SelectLineCommand
@@ -1061,6 +1055,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+=",       EditView::AlignAssignmentCommand
         link "Ctrl+Shift+^", SortLinesCommand
 
+        link "Cmd+Shift+F",     Redcar::FindInProject::OpenSearch
         link "Cmd+T",           Project::FindFileCommand
         link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
         link "Cmd+Alt+O",       SwitchNotebookCommand
@@ -1080,15 +1075,13 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+Shift+:",     RotateNotebooksCommand
         link "Alt+Shift+N",     CloseNotebookCommand
         link "Cmd+Alt+I",       ToggleInvisibles
-        link "Ctrl+R",          Runnables::RunEditTabCommand
-        link "Cmd+I",           OutlineView::OpenOutlineViewCommand
         link "Cmd++",           IncreaseFontSize
         link "Cmd+-",           DecreaseFontSize
 
         link "Ctrl+Shift+P",    PrintScopeCommand
         link "Cmd+Shift+H",     ToggleTreesCommand
 
-        link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
+        # link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
 
         link "Cmd+Alt+S", Snippets::OpenSnippetExplorer
         #Textmate.attach_keybindings(self, :osx)
@@ -1135,13 +1128,6 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+]",       IncreaseIndentCommand
         link "Ctrl+Shift+[", AutoIndenter::IndentCommand
         link "Ctrl+L",       GotoLineCommand
-        link "Ctrl+F",   DocumentSearch::FindMenuCommand
-        link "Ctrl+Shift+F", Redcar::FindInProject::OpenSearch
-        link "Ctrl+H",   DocumentSearch::FindAndReplaceMenuCommand
-        link "Ctrl+G",       DocumentSearch::FindNextMenuCommand
-        link "Ctrl+Shift+G",       DocumentSearch::FindPreviousMenuCommand
-        link "Ctrl+E",       DocumentSearch::UseSelectionForFindMenuCommand
-        link "Ctrl+Shift+E", DocumentSearch::UseSelectionForReplaceMenuCommand
         link "Ctrl+A", SelectAllCommand
         link "Ctrl+Alt+W",   SelectWordCommand
         link "Ctrl+Alt+L",   SelectLineCommand
@@ -1159,10 +1145,9 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+=",       EditView::AlignAssignmentCommand
         link "Ctrl+Shift+^", SortLinesCommand
 
+        link "Ctrl+Shift+F",     Redcar::FindInProject::OpenSearch
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
-
-        link "Ctrl+R",           Runnables::RunEditTabCommand
 
         link "Ctrl+Shift+P",    PrintScopeCommand
 
@@ -1182,11 +1167,9 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+L",     ResetNotebookWidthsCommand
         link "Ctrl+Shift+:",     RotateNotebooksCommand
         link "Alt+Shift+N",      CloseNotebookCommand
-        link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
+        # link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
         link "F11",              ToggleFullscreen
         link "Ctrl+Alt+I",       ToggleInvisibles
-        link "Ctrl+I",           OutlineView::OpenOutlineViewCommand
-        link "Ctrl+Shift+T",     OutlineView::OpenOutlineViewCommand
         link "Ctrl++",           IncreaseFontSize
         link "Ctrl+-",           DecreaseFontSize
 

@@ -68,7 +68,7 @@ module Redcar
     #
     # @events [(:new_notebook, notebook)]
     def create_notebook
-      return if @notebooks.length == 2
+    #  return if @notebooks.length == 2
       notebook = Redcar::Notebook.new(self)
       @notebooks << notebook
       if @notebooks.length == 1
@@ -159,7 +159,9 @@ module Redcar
     end
 
     def nonfocussed_notebook
-      @notebooks.find {|nb| nb != @focussed_notebook }
+        i = @notebooks.index @focussed_notebook
+        @notebooks[(i + 1) % @notebooks.length]
+      #@notebooks.find {|nb| nb != @focussed_notebook }
     end
 
     # Sets the orientation of the notebooks.

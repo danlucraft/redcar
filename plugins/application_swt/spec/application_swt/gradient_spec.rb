@@ -119,4 +119,24 @@ describe Redcar::ApplicationSWT::Gradient do
   
   end
   
+  context "when constructed with a color name" do
+    
+    subject { Redcar::ApplicationSWT::Gradient.new( "black" ) }
+    
+    it "should return the SWT system color corresponding to that name" do
+      subject.swt_colors[0].should == Redcar::ApplicationSWT.display.get_system_color(Swt::SWT::COLOR_BLACK)
+    end
+    
+  end
+  
+  context "when constructed with the color 'none'" do
+    
+    subject { Redcar::ApplicationSWT::Gradient.new( "none" ) }
+    
+    it "should return the SWT system color corresponding to that name" do
+      subject.swt_colors[0].should == Redcar::ApplicationSWT.display.get_system_color(Swt::SWT::NONE)
+    end
+    
+  end
+  
 end

@@ -22,7 +22,7 @@ module Redcar
       end
 
       osx = Keymap.build("main", :osx) do
-        link "Cmd+G", Declarations::GoToTagCommand
+        link "Ctrl+Alt+G", Declarations::GoToTagCommand
       end
 
       [linwin, osx]

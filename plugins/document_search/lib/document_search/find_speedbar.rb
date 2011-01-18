@@ -50,7 +50,7 @@ module DocumentSearch
       FindSpeedbar.find_incremental
     end
 
-    button :previous, "Previous", "Return" do
+    button :previous, "Previous", "Alt+Return" do
       if doc
         update_options_from_ui
         FindSpeedbar.find_previous
