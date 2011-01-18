@@ -1060,7 +1060,6 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+=",       EditView::AlignAssignmentCommand
         link "Ctrl+Shift+^", SortLinesCommand
 
-        link "Cmd+Shift+F",     Redcar::FindInProject::OpenSearch
         link "Cmd+T",           Project::FindFileCommand
         link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
         link "Cmd+Alt+O",       SwitchNotebookCommand
@@ -1151,7 +1150,6 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+=",       EditView::AlignAssignmentCommand
         link "Ctrl+Shift+^", SortLinesCommand
 
-        link "Ctrl+Shift+F",     Redcar::FindInProject::OpenSearch
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
 
