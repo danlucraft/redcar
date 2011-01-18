@@ -1,21 +1,17 @@
 module DocumentSearch
-  class FindAndReplaceSpeedbar < Redcar::Speedbar
-    NotFoundMessage = 'Not found!'
-
+  class FindSpeedbar < Redcar::Speedbar
     class << self
-      attr_accessor :previous_replace
+      attr_accessor :previous_query, :previous_replace, :previous_options
     end
-    @@previous_replace = ''
+    @previous_query = ''
+    @previous_replace = ''
+    @previous_options = QueryOptions.new
 
     attr_accessor :initial_query
 
-    def doc
-      win = Redcar.app.focussed_window
-      tab = win.focussed_notebook_tab
-      tab.document if tab
-    end
+    NotFoundMessage = 'Not found!'
 
-    ### UI ###
+    ### UI DEFINITION ###
 
     # Override num_columns to control number of rows.
     def num_columns
@@ -23,29 +19,18 @@ module DocumentSearch
     end
 
     label :label_find, "Find:"
-    textbox :query do
-      if doc
-        update_options_from_ui
-        FindSpeedbar.find_incremental
-      end
-    end
+    textbox :query
 
     combo :query_type, ["Plain", "Regex", "Glob"], "Plain" do |val|
       FindSpeedbar.previous_options.query_type = QueryOptions.query_type_to_symbol(val)
-      update_options_from_ui
-      FindSpeedbar.find_incremental
     end
 
     toggle :match_case, 'Match case', nil, false do |val|
       FindSpeedbar.previous_options.match_case = val
-      update_options_from_ui
-      FindSpeedbar.find_incremental
     end
 
     toggle :wrap_around, 'Wrap around', nil, true do |val|
       FindSpeedbar.previous_options.wrap_around = val
-      update_options_from_ui
-      FindSpeedbar.find_incremental
     end
 
     label :label_not_found, NotFoundMessage   # Hack: Set label for sizing, clear in after_draw
@@ -57,14 +42,18 @@ module DocumentSearch
 
     button :replace_find, 'Replace && Find', "Return" do      
       update_options_from_ui
-      FindAndReplaceSpeedbar.replace_and_find(
-          FindSpeedbar.previous_query, FindAndReplaceSpeedbar.previous_replace, FindSpeedbar.previous_options) or not_found
+      FindSpeedbar.replace_and_find(
+          FindSpeedbar.previous_query,
+          FindSpeedbar.previous_replace,
+          FindSpeedbar.previous_options) or not_found
     end
 
     button :replace_all, "Replace All", nil do      
       update_options_from_ui
-      FindAndReplaceSpeedbar.replace_all(
-          FindSpeedbar.previous_query, FindAndReplaceSpeedbar.previous_replace, FindSpeedbar.previous_options) or not_found
+      FindSpeedbar.replace_all(
+          FindSpeedbar.previous_query,
+          FindSpeedbar.previous_replace, 
+          FindSpeedbar.previous_options) or not_found
     end
 
     label :label_spacer_mid_row2, ""
@@ -78,13 +67,16 @@ module DocumentSearch
       update_options_from_ui
       FindSpeedbar.find_next or not_found
     end
+    
+    ### UI OPERATIONS ###
 
     # Initializes UI elements.
     def after_draw
       clear_not_found
       self.query.value = @initial_query || FindSpeedbar.previous_query
-      self.replace.value = FindAndReplaceSpeedbar.previous_replace || ""
-      self.query_type.value = QueryOptions.query_type_to_text(FindSpeedbar.previous_options.query_type)
+      self.replace.value = FindSpeedbar.previous_replace || ""
+      self.query_type.value = QueryOptions.query_type_to_text(
+          FindSpeedbar.previous_options.query_type)
       self.match_case.value = FindSpeedbar.previous_options.match_case
       self.wrap_around.value = FindSpeedbar.previous_options.wrap_around
       self.query.edit_view.document.select_all
@@ -94,7 +86,7 @@ module DocumentSearch
     def update_options_from_ui
       clear_not_found
       FindSpeedbar.previous_query = query.value
-      FindAndReplaceSpeedbar.previous_replace = replace.value
+      FindSpeedbar.previous_replace = replace.value
       FindSpeedbar.previous_options.query_type = QueryOptions.query_type_to_symbol(query_type.value)
       FindSpeedbar.previous_options.match_case = match_case.value
       FindSpeedbar.previous_options.wrap_around = wrap_around.value
@@ -111,7 +103,28 @@ module DocumentSearch
       self.label_not_found.text = ''
     end
 
-    ### COMMANDS ###    
+    ### COMMANDS ###
+    
+    def self.find_next
+      cmd = FindNextCommand.new(FindSpeedbar.previous_query, FindSpeedbar.previous_options)
+      cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
+    end
+
+    def self.find_previous
+      cmd = FindPreviousCommand.new(FindSpeedbar.previous_query, FindSpeedbar.previous_options)
+      cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
+    end
+
+    # Note: The assumption that we set find only from selected text means we don't have to update
+    # search.
+    def self.use_selection_for_find(doc, active_speedbar=nil)
+      return unless doc.selection?
+      FindSpeedbar.previous_query = doc.selected_text
+      if active_speedbar && (active_speedbar.is_a? FindSpeedbar)
+        active_speedbar.query.value = FindSpeedbar.previous_query
+      end
+    end
+
 
     def self.repeat_find_next
       find_next(FindSpeedbar.previous_query, FindSpeedbar.previous_options) or not_found
@@ -133,9 +146,9 @@ module DocumentSearch
 
     def self.use_selection_for_replace(doc, active_speedbar=nil)
       return unless doc.selection?
-      FindAndReplaceSpeedbar.previous_replace = doc.selected_text
-      if active_speedbar && (active_speedbar.instance_of? FindAndReplaceSpeedbar)
-        active_speedbar.replace.value = FindAndReplaceSpeedbar.previous_replace
+      FindSpeedbar.previous_replace = doc.selected_text
+      if active_speedbar && (active_speedbar.instance_of? FindSpeedbar)
+        active_speedbar.replace.value = FindSpeedbar.previous_replace
       end
     end
   end
