@@ -2,7 +2,7 @@ require 'strscan'
 require "document_search/query_options"
 require "document_search/commands"
 require "document_search/find_speedbar"
-require "document_search/find_and_replace_speedbar"
+require "document_search/incremental_search_speedbar"
 
 module DocumentSearch
   def self.menus

@@ -1,4 +1,4 @@
-* Rename find_speedbar.rb to incremental_search_speedbar.rb; feature file, too.
+* Rename find_speedbar.rb to incremental_search_speedbar.rb; feature file, too. [DONE]
 * Remove Next and Previous from Incremental Search
 * Rename find_and_replace_speedbar.rb to find_speedbar.rb; feature file, too.
 * Make Find speedbar non-incremental; fix all feature tests.
