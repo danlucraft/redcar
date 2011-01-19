@@ -14,6 +14,8 @@ module DocumentSearch
           separator
           item "Find Next",                 FindNextMenuCommand
           item "Find Previous",             FindPreviousMenuCommand
+          separator
+          item "Replace All",               ReplaceAllMenuCommand
           item "Replace and Find",          ReplaceAndFindMenuCommand
           separator
           item "Use Selection for Find",    UseSelectionForFindMenuCommand
@@ -30,6 +32,7 @@ module DocumentSearch
       link "Cmd+F",       DocumentSearch::FindSpeedbarCommand
       link "Cmd+G",       DocumentSearch::FindNextMenuCommand
       link "Cmd+Shift+G", DocumentSearch::FindPreviousMenuCommand
+      link "Ctrl+Cmd+F",  DocumentSearch::ReplaceAllMenuCommand
       link "Cmd+Alt+F",   DocumentSearch::ReplaceAndFindMenuCommand
       link "Cmd+E",       DocumentSearch::UseSelectionForFindMenuCommand
       link "Cmd+Shift+E", DocumentSearch::UseSelectionForReplaceMenuCommand
@@ -50,9 +53,9 @@ module DocumentSearch
   def self.toolbars
     # TODO(yozhipozhi): What should be on the toolbar?
     Redcar::ToolBar::Builder.build do
-      item "Find", 
-          :command => DocumentSearch::IncrementalSearchMenuCommand, 
-          :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), 
+      item "Find",
+          :command => DocumentSearch::IncrementalSearchMenuCommand,
+          :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"),
           :barname => :edit
       item "Find Next", :command => DocumentSearch::FindNextMenuCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier--arrow.png"), :barname => :edit
     end
@@ -60,7 +63,7 @@ module DocumentSearch
 
   class IncrementalSearchSpeedbarCommand < Redcar::EditTabCommand
     def execute
-      already_open = win.speedbar && (win.speedbar.is_a? IncrementalSearchSpeedbar)
+      already_open = win.speedbar.is_a? IncrementalSearchSpeedbar
       @speedbar = IncrementalSearchSpeedbar.new
       win.open_speedbar(@speedbar)
       if already_open
@@ -81,7 +84,7 @@ module DocumentSearch
 
   class FindNextMenuCommand < Redcar::EditTabCommand
     def execute
-      if win.speedbar && (win.speedbar.is_a? IncrementalSearchSpeedbar)
+      if win.speedbar.is_a? IncrementalSearchSpeedbar
         IncrementalSearchSpeedbar.find_next
       else
         FindSpeedbar.find_next
@@ -91,7 +94,11 @@ module DocumentSearch
 
   class FindPreviousMenuCommand < Redcar::EditTabCommand
     def execute
-      FindSpeedbar.find_previous
+      if win.speedbar.is_a? IncrementalSearchSpeedbar
+        IncrementalSearchSpeedbar.find_previous
+      else
+        FindSpeedbar.find_previous
+      end
     end
   end
 
@@ -101,6 +108,15 @@ module DocumentSearch
         FindSpeedbar.previous_query,
         FindSpeedbar.previous_replace,
         FindSpeedbar.previous_options)
+    end
+  end
+
+  class ReplaceAllMenuCommand < Redcar::EditTabCommand
+    def execute
+      FindSpeedbar.replace_all(
+          FindSpeedbar.previous_query,
+          FindSpeedbar.previous_replace,
+          FindSpeedbar.previous_options)
     end
   end
 

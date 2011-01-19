@@ -19,10 +19,12 @@ module DocumentSearch
     end
 
     label :label_find, "Find:"
-    textbox :query
+    textbox :query do |val|
+      FindSpeedbar.previous_query = val
+    end
 
-    combo :query_type, ["Plain", "Regex", "Glob"], "Plain" do |val|
-      FindSpeedbar.previous_options.query_type = QueryOptions.query_type_to_symbol(val)
+    toggle :is_regex, 'Regex', nil, false do |val|
+      FindSpeedbar.previous_options.is_regex = val
     end
 
     toggle :match_case, 'Match case', nil, false do |val|
@@ -38,36 +40,35 @@ module DocumentSearch
     label :label_spacer_start_row2, ""
 
     label :label_replace, "Replace:"
-    textbox :replace
+    textbox :replace do |val|
+      FindSpeedbar.previous_replace = val
+    end
 
-    button :replace_find, 'Replace && Find', "Return" do      
-      update_options_from_ui
+    button :replace_find, 'Replace && Find', "Return" do
       FindSpeedbar.replace_and_find(
           FindSpeedbar.previous_query,
           FindSpeedbar.previous_replace,
           FindSpeedbar.previous_options) or not_found
     end
 
-    button :replace_all, "Replace All", nil do      
+    button :replace_all, "Replace All", nil do
       update_options_from_ui
       FindSpeedbar.replace_all(
           FindSpeedbar.previous_query,
-          FindSpeedbar.previous_replace, 
+          FindSpeedbar.previous_replace,
           FindSpeedbar.previous_options) or not_found
     end
 
     label :label_spacer_mid_row2, ""
 
     button :find_previous, "Previous", nil do
-      update_options_from_ui
       FindSpeedbar.find_previous or not_found
     end
 
     button :find_next, "Next", nil do
-      update_options_from_ui
       FindSpeedbar.find_next or not_found
     end
-    
+
     ### UI OPERATIONS ###
 
     # Initializes UI elements.
@@ -75,21 +76,10 @@ module DocumentSearch
       clear_not_found
       self.query.value = @initial_query || FindSpeedbar.previous_query
       self.replace.value = FindSpeedbar.previous_replace || ""
-      self.query_type.value = QueryOptions.query_type_to_text(
-          FindSpeedbar.previous_options.query_type)
+      self.is_regex.value = FindSpeedbar.previous_options.is_regex
       self.match_case.value = FindSpeedbar.previous_options.match_case
       self.wrap_around.value = FindSpeedbar.previous_options.wrap_around
       self.query.edit_view.document.select_all
-    end    
-
-    # Store options specified in the UI, to be called before executing a command.
-    def update_options_from_ui
-      clear_not_found
-      FindSpeedbar.previous_query = query.value
-      FindSpeedbar.previous_replace = replace.value
-      FindSpeedbar.previous_options.query_type = QueryOptions.query_type_to_symbol(query_type.value)
-      FindSpeedbar.previous_options.match_case = match_case.value
-      FindSpeedbar.previous_options.wrap_around = wrap_around.value
     end
 
     # Sets the "Not found" label message, invoking the system beep.
@@ -104,7 +94,7 @@ module DocumentSearch
     end
 
     ### COMMANDS ###
-    
+
     def self.find_next
       cmd = FindNextCommand.new(FindSpeedbar.previous_query, FindSpeedbar.previous_options)
       cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
@@ -125,15 +115,6 @@ module DocumentSearch
       end
     end
 
-
-    def self.repeat_find_next
-      find_next(FindSpeedbar.previous_query, FindSpeedbar.previous_options) or not_found
-    end
-
-    def self.repeat_find_previous
-      find_previous(FindSpeedbar.previous_query, FindSpeedbar.previous_options) or not_found
-    end
-    
     def self.replace_and_find(query, replace, options)
       cmd = ReplaceAndFindCommand.new(query, replace, options)
       cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})

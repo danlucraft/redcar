@@ -4,31 +4,13 @@ module DocumentSearch
     ### QUERY PATTERNS ###
 
     # An instance of a search type method: Regular expression
-    def query_regex(query, options)
+    def make_regex_query(query, options)
       Regexp.new(query, !options.match_case)
     end
 
     # An instance of a search type method: Plain text search
-    def query_plain(query, options)
-      query_regex(Regexp.escape(query), options)
-    end
-
-    # An instance of a search type method: Glob text search
-    # Converts a glob pattern (* or ?) into a regex pattern
-    def query_glob(query, options)
-      # convert the glob pattern to a regex pattern
-      new_query = ""
-      query.each_char do |c|
-        case c
-        when "*"
-          new_query << ".*"
-        when "?"
-          new_query << "."
-        else
-          new_query << Regexp.escape(c)
-        end
-      end
-      query_regex(new_query, options)
+    def make_literal_query(query, options)
+      make_regex_query(Regexp.escape(query), options)
     end
 
     ### SELECTION ###
@@ -129,7 +111,8 @@ module DocumentSearch
     # description here
     def initialize(query, options)
       @options = options
-      @query = send(options.query_type, query, options)
+      @query =
+          options.is_regex ? make_regex_query(query, options) : make_literal_query(query, options)
     end
   end
 
@@ -191,7 +174,8 @@ module DocumentSearch
     # description here
     def initialize(query, replace, options)
       @options = options
-      @query = send(options.query_type, query, options)
+      @query =
+          options.is_regex ? make_regex_query(query, options) : make_literal_query(query, options)
       @replace = replace
     end
   end
