@@ -108,7 +108,7 @@ When /^I press the Backspace key in the edit tab$/ do
   edit_view.backspace_pressed([])
 end
 
-Then /^the contents should be "(.*)"$/ do |text|
+Then /^the contents should (not )?be "(.*)"$/ do |negative,text|
   expected = unescape_text(text)
   doc = Redcar::EditView.focussed_edit_view_document
   actual = doc.to_s
@@ -121,7 +121,11 @@ Then /^the contents should be "(.*)"$/ do |text|
     end
     actual = actual.insert(actual.char_offset_to_byte_offset(char_seloff), "<s>") unless char_curoff == char_seloff
   end
-  actual.should == expected
+  if negative
+    actual.should_not == expected
+  else
+    actual.should == expected
+  end
 end
 
 Then /^the contents of the edit tab should be "(.*)"$/ do |text|
