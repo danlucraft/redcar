@@ -124,6 +124,7 @@ describe Redcar::ApplicationSWT::Gradient do
     subject { Redcar::ApplicationSWT::Gradient.new( "black" ) }
     
     it "should return the SWT system color corresponding to that name" do
+      Redcar::ApplicationSWT.instance_variable_set("@display", Swt::Widgets::Display.current) if Redcar::ApplicationSWT.display.nil?
       subject.swt_colors[0].should == Redcar::ApplicationSWT.display.get_system_color(Swt::SWT::COLOR_BLACK)
     end
     
@@ -134,6 +135,7 @@ describe Redcar::ApplicationSWT::Gradient do
     subject { Redcar::ApplicationSWT::Gradient.new( "none" ) }
     
     it "should return the SWT system color corresponding to that name" do
+      Redcar::ApplicationSWT.instance_variable_set("@display", Swt::Widgets::Display.current) if Redcar::ApplicationSWT.display.nil?
       subject.swt_colors[0].should == Redcar::ApplicationSWT.display.get_system_color(Swt::SWT::NONE)
     end
     
