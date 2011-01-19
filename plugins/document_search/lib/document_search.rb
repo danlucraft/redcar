@@ -16,6 +16,7 @@ module DocumentSearch
           item "Find Previous",             FindPreviousMenuCommand
           separator
           item "Replace All",               ReplaceAllMenuCommand
+          item "Replace All in Selection",  ReplaceAllInSelectionMenuCommand
           item "Replace and Find",          ReplaceAndFindMenuCommand
           separator
           item "Use Selection for Find",    UseSelectionForFindMenuCommand
@@ -32,7 +33,8 @@ module DocumentSearch
       link "Cmd+F",       DocumentSearch::FindSpeedbarCommand
       link "Cmd+G",       DocumentSearch::FindNextMenuCommand
       link "Cmd+Shift+G", DocumentSearch::FindPreviousMenuCommand
-      link "Ctrl+Cmd+F",  DocumentSearch::ReplaceAllMenuCommand
+      link "Cmd+Ctrl+F",  DocumentSearch::ReplaceAllMenuCommand
+      link "Cmd+Ctrl+Shift+F",  DocumentSearch::ReplaceAllInSelectionMenuCommand
       link "Cmd+Alt+F",   DocumentSearch::ReplaceAndFindMenuCommand
       link "Cmd+E",       DocumentSearch::UseSelectionForFindMenuCommand
       link "Cmd+Shift+E", DocumentSearch::UseSelectionForReplaceMenuCommand
@@ -114,6 +116,15 @@ module DocumentSearch
   class ReplaceAllMenuCommand < Redcar::EditTabCommand
     def execute
       FindSpeedbar.replace_all(
+          FindSpeedbar.previous_query,
+          FindSpeedbar.previous_replace,
+          FindSpeedbar.previous_options)
+    end
+  end
+
+  class ReplaceAllInSelectionMenuCommand < Redcar::EditTabCommand
+    def execute
+      FindSpeedbar.replace_all_in_selection(
           FindSpeedbar.previous_query,
           FindSpeedbar.previous_replace,
           FindSpeedbar.previous_options)

@@ -214,9 +214,14 @@ module DocumentSearch
 
   # Replaces all query matches.
   class ReplaceAllCommand < ReplaceCommandBase
+    def initialize(query, replace, options, selection_only)
+      super(query, replace, options)
+      @selection_only = selection_only
+    end
+
     def execute
       startoff, endoff = nil
-      text = doc.get_all_text
+      text = @selection_only ? doc.selected_text : doc.get_all_text
       count = 0
       sc = StringScanner.new(text)
       while sc.scan_until(query)
@@ -231,8 +236,15 @@ module DocumentSearch
         sc.pos = startoff + replacement_text.length
       end
       if count > 0
-        doc.text = text
-        select_range(startoff + replacement_text.length, startoff)
+        if @selection_only
+          offsets = [doc.cursor_offset, doc.selection_offset]
+          startoff = offsets.min
+          doc.replace(startoff, doc.selected_text.length, text)
+          select_range(startoff, startoff + text.length)
+        else
+          doc.text = text
+          select_range(startoff, startoff + replacement_text.length)
+        end
         true
       else
         false

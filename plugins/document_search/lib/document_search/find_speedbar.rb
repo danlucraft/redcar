@@ -52,14 +52,18 @@ module DocumentSearch
     end
 
     button :replace_all, "Replace All", nil do
-      update_options_from_ui
       FindSpeedbar.replace_all(
           FindSpeedbar.previous_query,
           FindSpeedbar.previous_replace,
           FindSpeedbar.previous_options) or not_found
     end
 
-    label :label_spacer_mid_row2, ""
+    button :replace_all_in_selection, "Replace in Selection", nil do
+      FindSpeedbar.replace_all_in_selection(
+          FindSpeedbar.previous_query,
+          FindSpeedbar.previous_replace,
+          FindSpeedbar.previous_options) or not_found
+    end
 
     button :find_previous, "Previous", nil do
       FindSpeedbar.find_previous or not_found
@@ -121,7 +125,12 @@ module DocumentSearch
     end
 
     def self.replace_all(query, replace, options)
-      cmd = ReplaceAllCommand.new(query, replace, options)
+      cmd = ReplaceAllCommand.new(query, replace, options, false)
+      cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
+    end
+
+    def self.replace_all_in_selection(query, replace, options)
+      cmd = ReplaceAllCommand.new(query, replace, options, true)
       cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
     end
 
