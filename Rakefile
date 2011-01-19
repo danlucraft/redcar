@@ -67,12 +67,14 @@ namespace :ci do
       jruby_run(cmd)
     end
 
+    desc "Run the coverage task for specs"
     task :specs do
       cmd = rspec
       cmd, opts = cmd.split.first, cmd.split[1..-1].join(" ")
       rcov_run(cmd, opts)
     end
 
+    desc "Run the coverage task for features"
     task :cucumber do
       cmd = cucumber
       cmd, opts = cmd.split.first, cmd.split[1..-1].join(" ")
@@ -80,6 +82,7 @@ namespace :ci do
     end
   end
 
+  desc "Run the coverage task"
   task :rcov do
     FileUtils.rm COVERAGE_DATA if File.exist?(COVERAGE_DATA)
     Rake::Task["ci:rcov:specs"].invoke
@@ -92,12 +95,14 @@ namespace :ci do
     result || raise("Could not find ci_reporter gem in #{jruby_gem_path}")
   end
 
+  desc "Run the specs with JUnit output for the Hudson reporter"
   task :specs do
     rspec_loader = find_ci_reporter "rspec_loader"
     rspec_opts = "--require #{rspec_loader} --format CI::Reporter::RSpec"
     jruby_run(rspec(rspec_opts))
   end
   
+  desc "Run the features with JUnit output for the Hudson reporter"
   task :cucumber do
     reports_folder = "features/reports"
     FileUtils.rm_rf reports_folder if File.exist? reports_folder
@@ -105,6 +110,7 @@ namespace :ci do
   end
 end
 
+desc "Run specs and features with JUnit output"
 task :ci do
   Rake::Task["ci:specs"].invoke
   Rake::Task["ci:cucumber"].invoke
