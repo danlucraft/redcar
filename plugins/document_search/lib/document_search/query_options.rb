@@ -7,11 +7,15 @@ module Redcar
       attr_accessor :match_case
       attr_accessor :wrap_around
 
+      DEFAULT_QUERY_TYPE  = :query_plain
+      DEFAULT_MATCH_CASE  = false
+      DEFAULT_WRAP_AROUND = true
+
       # Initializes with default options.
       def initialize
-        @query_type = :query_plain
-        @match_case = false
-        @wrap_around = true
+        @query_type  = DEFAULT_QUERY_TYPE
+        @match_case  = DEFAULT_MATCH_CASE
+        @wrap_around = DEFAULT_WRAP_AROUND
       end
 
       ### UTILITY ###
