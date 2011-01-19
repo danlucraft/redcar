@@ -41,42 +41,75 @@ task :release_docs do
   sh "rsync -e 'ssh -p #{port}' -avz doc/ danlucraft.com:#{docs_dir}/latest/"
 end
 
-### CI
-COVERAGE_DATA = "coverage.data"
-task :ci do
-  FileUtils.rm COVERAGE_DATA if File.exist?(COVERAGE_DATA)
-  Rake::Task["specs_ci"].invoke
-  Rake::Task["cucumber_ci"].invoke
-end
-
-def find_ci_reporter(filename)
-  jruby_gem_path = %x[jruby -rubygems -e "p Gem.path.first"].gsub("\n", "").gsub('"', "")
-  result = Dir.glob("#{jruby_gem_path}/gems/ci_reporter-*/lib/ci/reporter/rake/#{filename}.rb").reverse.first
-  result || raise("Could not find ci_reporter gem in #{jruby_gem_path}")
-end
-
-def rcov_run(cmd, opts)
-  cmd = %{rcov --aggregate #{COVERAGE_DATA} -x "jsignal_internal,(erb),features/,spec/,vendor/,openssl/,yaml/,json/,yaml,gems,file:,(eval),(__FORWARDABLE__)" #{cmd} -- #{opts}}
-  jruby_run(cmd)
-end
-
 def jruby_run(cmd)
   opts = "-J-XstartOnFirstThread" if Config::CONFIG["host_os"] =~ /darwin/
   sh("jruby --debug #{opts} -S #{cmd}; echo 'done'")
 end
 
-task :specs_ci do
-  rspec_loader = find_ci_reporter "rspec_loader"
-  files = Dir['plugins/*/spec/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*/*_spec.rb']
-  rspec_opts = "--require #{rspec_loader} --format CI::Reporter::RSpec -c #{files.join(" ")}"
-  rcov_run('"$GEM_HOME"/bin/spec', rspec_opts)
+### CI
+namespace :ci do
+  def rspec(options = "")
+    files = Dir['plugins/*/spec/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*/*_spec.rb']
+    rspec_opts = "#{options} -c #{files.join(" ")}"
+    "$GEM_HOME/bin/spec #{rspec_opts}"
+  end
+
+  def cucumber(options = "")
+    "bin/cucumber #{options} plugins/*/features"
+  end
+
+  namespace :rcov do
+    COVERAGE_DATA = "coverage.data"
+
+    def rcov_run(cmd, opts)
+      excluded_files = "jsignal_internal,(erb),features/,spec/,vendor/,openssl/,yaml/,json/,yaml,gems,file:,(eval),(__FORWARDABLE__)"
+      cmd = %{rcov --aggregate #{COVERAGE_DATA} -x "#{excluded_files}" #{cmd} -- #{opts}}
+      jruby_run(cmd)
+    end
+
+    task :specs do
+      cmd = rspec
+      cmd, opts = cmd.split.first, cmd.split[1..-1].join(" ")
+      rcov_run(cmd, opts)
+    end
+
+    task :cucumber do
+      cmd = cucumber
+      cmd, opts = cmd.split.first, cmd.split[1..-1].join(" ")
+      rcov_run(cmd, opts)
+    end
+  end
+
+  task :rcov do
+    FileUtils.rm COVERAGE_DATA if File.exist?(COVERAGE_DATA)
+    Rake::Task["ci:rcov:specs"].invoke
+    Rake::Task["ci:rcov:cucumber"].invoke
+  end
+  
+  def find_ci_reporter(filename)
+    jruby_gem_path = %x[jruby -rubygems -e "p Gem.path.first"].gsub("\n", "").gsub('"', "")
+    result = Dir.glob("#{jruby_gem_path}/gems/ci_reporter-*/lib/ci/reporter/rake/#{filename}.rb").reverse.first
+    result || raise("Could not find ci_reporter gem in #{jruby_gem_path}")
+  end
+
+  task :specs do
+    rspec_loader = find_ci_reporter "rspec_loader"
+    rspec_opts = "--require #{rspec_loader} --format CI::Reporter::RSpec"
+    jruby_run(rspec(rspec_opts))
+  end
+  
+  task :cucumber do
+    reports_folder = "features/reports"
+    FileUtils.rm_rf reports_folder if File.exist? reports_folder
+    jruby_run(cucumber("-f progress -f junit --out #{reports_folder}"))
+  end
 end
 
-task :cucumber_ci do
-  reports_folder = "features/reports"
-  FileUtils.rm_rf reports_folder if File.exist? reports_folder
-  rcov_run("bin/cucumber", "-f progress -f junit --out #{reports_folder} plugins/*/features")
+task :ci do
+  Rake::Task["ci:specs"].invoke
+  Rake::Task["ci:cucumber"].invoke
 end
+
 
 ### TESTS
 
