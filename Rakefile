@@ -62,7 +62,7 @@ end
 
 def jruby_run(cmd)
   opts = "-J-XstartOnFirstThread" if Config::CONFIG["host_os"] =~ /darwin/
-  sh("jruby --debug #{opts} -S #{cmd} && echo 'done'")
+  sh("jruby --debug #{opts} -S #{cmd}; echo 'done'")
 end
 
 task :specs_ci do
