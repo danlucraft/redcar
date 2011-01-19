@@ -40,8 +40,9 @@ module DocumentSearch
       link "Ctrl+F",       DocumentSearch::FindAndReplaceSpeedbarCommand
       link "Ctrl+G",       DocumentSearch::FindNextMenuCommand
       link "Ctrl+Shift+G", DocumentSearch::FindPreviousMenuCommand
+      link "Ctrl+Alt+F",   DocumentSearch::ReplaceAndFindCommand
       link "Ctrl+E",       DocumentSearch::UseSelectionForFindMenuCommand
-      link "Alt+E",        DocumentSearch::UseSelectionForReplaceMenuCommand
+      link "Alt+Shift+E",  DocumentSearch::UseSelectionForReplaceMenuCommand
     end
 
     [linwin, osx]
