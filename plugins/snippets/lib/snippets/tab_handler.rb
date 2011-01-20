@@ -84,7 +84,7 @@ module Redcar
       def self.word_before_cursor(edit_view)
         document = edit_view.document
         line = document.get_slice(document.cursor_line_start_offset, document.cursor_offset).reverse
-        if line =~ /([\S]+)(\s|$|\.)/
+        if !line.empty? && !(line[0].chr =~ /\s/) && line =~ /([\S]+)(\s|$|\.)/
           word = $1.reverse
         end
         word
