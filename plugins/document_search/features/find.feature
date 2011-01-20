@@ -1,7 +1,3 @@
-# Note: Because settings persist, even after the speedbar is closed, any setting changed in a
-# scenario will affect subsequent scenarios. To mitigate the chance of error, please inset a
-# "Current Settings" comment line after each scenario that changes settings.
-#
 # Because the Find speedbar and the find operations of the Find and Replace speedbar are supposed to
 # function identically, all scenarios here should be copied to find_and_replace.feature, with the
 # references to OpenFindSpeedbarCommand and FindSpeedbar adjusted accordingly.
