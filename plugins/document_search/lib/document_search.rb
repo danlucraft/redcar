@@ -61,47 +61,50 @@ module Redcar
       end
     end
 
-  class OpenIncrementalSearchCommand < Redcar::EditTabCommand
-    def execute
-      already_open = win.speedbar.is_a? IncrementalSearchSpeedbar
-      @speedbar = IncrementalSearchSpeedbar.new
-      win.open_speedbar(@speedbar)
-      if already_open
-        IncrementalSearchSpeedbar.find_next
+    class OpenIncrementalSearchCommand < Redcar::EditTabCommand
+      def execute
+        already_open = win.speedbar.is_a? IncrementalSearchSpeedbar
+        @speedbar = IncrementalSearchSpeedbar.new
+        win.open_speedbar(@speedbar)
+        if already_open
+          IncrementalSearchSpeedbar.find_next
+        end
       end
     end
 
-  class OpenFindSpeedbarCommand < Redcar::EditTabCommand
-    def execute
-      @speedbar = FindSpeedbar.new
-      if doc.selection?
-        @speedbar.initial_query = doc.selected_text
-      end
-      win.open_speedbar(@speedbar)
-    end
-  end
-
-  class DoFindNextCommand < Redcar::EditTabCommand
-    def execute
-      if win.speedbar.is_a? IncrementalSearchSpeedbar
-        IncrementalSearchSpeedbar.find_next
-      else
-        FindSpeedbar.find_next
+    class OpenFindSpeedbarCommand < Redcar::EditTabCommand
+      def execute
+        @speedbar = FindSpeedbar.new
+        if doc.selection?
+          @speedbar.initial_query = doc.selected_text
+        end
+        win.open_speedbar(@speedbar)
       end
     end
 
-  class DoFindPreviousCommand < Redcar::EditTabCommand
-    def execute
-      if win.speedbar.is_a? IncrementalSearchSpeedbar
-        IncrementalSearchSpeedbar.find_previous
-      else
-        FindSpeedbar.find_previous
+    class DoFindNextCommand < Redcar::EditTabCommand
+      def execute
+        if win.speedbar.is_a? IncrementalSearchSpeedbar
+          IncrementalSearchSpeedbar.find_next
+        else
+          FindSpeedbar.find_next
+        end
       end
     end
 
-  class DoReplaceAndFindCommand < Redcar::EditTabCommand
-    def execute
-      FindSpeedbar.replace_and_find(
+    class DoFindPreviousCommand < Redcar::EditTabCommand
+      def execute
+        if win.speedbar.is_a? IncrementalSearchSpeedbar
+          IncrementalSearchSpeedbar.find_previous
+        else
+          FindSpeedbar.find_previous
+        end
+      end
+    end
+
+    class DoReplaceAndFindCommand < Redcar::EditTabCommand
+      def execute
+        FindSpeedbar.replace_and_find(
         FindSpeedbar.previous_query,
         FindSpeedbar.previous_replace,
         FindSpeedbar.previous_options)
@@ -112,18 +115,18 @@ module Redcar
   class DoReplaceAllCommand < Redcar::EditTabCommand
     def execute
       FindSpeedbar.replace_all(
-          FindSpeedbar.previous_query,
-          FindSpeedbar.previous_replace,
-          FindSpeedbar.previous_options)
+      FindSpeedbar.previous_query,
+      FindSpeedbar.previous_replace,
+      FindSpeedbar.previous_options)
     end
   end
 
   class DoReplaceAllInSelectionCommand < Redcar::EditTabCommand
     def execute
       FindSpeedbar.replace_all_in_selection(
-          FindSpeedbar.previous_query,
-          FindSpeedbar.previous_replace,
-          FindSpeedbar.previous_options)
+      FindSpeedbar.previous_query,
+      FindSpeedbar.previous_replace,
+      FindSpeedbar.previous_options)
     end
   end
 
