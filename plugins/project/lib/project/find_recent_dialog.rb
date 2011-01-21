@@ -7,7 +7,7 @@ module Redcar
         filter_and_rank_by(recent, filter)
       end
 
-      def selected(text, ix)
+      def selected(path, ix)
         if File.exist?(File.expand_path(path))
           if File.directory?(path)
             Project::Manager.open_project_for_path(path)
