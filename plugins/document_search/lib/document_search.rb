@@ -4,66 +4,64 @@ require "document_search/commands"
 require "document_search/find_speedbar"
 require "document_search/incremental_search_speedbar"
 
-module DocumentSearch
-  def self.menus
-    Redcar::Menu::Builder.build do
-      sub_menu "Edit" do
-        sub_menu "Find", :priority => 50 do
-          item "Incremental Search",        IncrementalSearchSpeedbarCommand
-          item "Find...",                   FindSpeedbarCommand
+module Redcar
+  module DocumentSearch
+    def self.menus
+      Redcar::Menu::Builder.build do
+        sub_menu "Edit" do
+          sub_menu "Find", :priority => 50 do
+            item "Incremental Search",        OpenIncrementalSearchCommand
+            item "Find...",                   OpenFindSpeedbarCommand
+            separator
+            item "Find Next",                 DoFindNextCommand
+            item "Find Previous",             DoFindPreviousCommand
+            separator
+            item "Replace All",               DoReplaceAllCommand
+            item "Replace All in Selection",  DoReplaceAllInSelectionCommand
+            item "Replace and Find",          DoReplaceAndFindCommand
+            separator
+            item "Use Selection for Find",    DoUseSelectionForFindCommand
+            item "Use Selection for Replace", DoUseSelectionForReplaceCommand
+          end
           separator
-          item "Find Next",                 FindNextMenuCommand
-          item "Find Previous",             FindPreviousMenuCommand
-          separator
-          item "Replace All",               ReplaceAllMenuCommand
-          item "Replace All in Selection",  ReplaceAllInSelectionMenuCommand
-          item "Replace and Find",          ReplaceAndFindMenuCommand
-          separator
-          item "Use Selection for Find",    UseSelectionForFindMenuCommand
-          item "Use Selection for Replace", UseSelectionForReplaceMenuCommand
         end
-        separator
       end
     end
-  end
 
-  def self.keymaps
-    osx = Redcar::Keymap.build("main", :osx) do
-      link "Ctrl+S",      DocumentSearch::IncrementalSearchSpeedbarCommand
-      link "Cmd+F",       DocumentSearch::FindSpeedbarCommand
-      link "Cmd+G",       DocumentSearch::FindNextMenuCommand
-      link "Cmd+Shift+G", DocumentSearch::FindPreviousMenuCommand
-      link "Cmd+Ctrl+F",  DocumentSearch::ReplaceAllMenuCommand
-      link "Cmd+Ctrl+Shift+F",  DocumentSearch::ReplaceAllInSelectionMenuCommand
-      link "Cmd+Alt+F",   DocumentSearch::ReplaceAndFindMenuCommand
-      link "Cmd+E",       DocumentSearch::UseSelectionForFindMenuCommand
-      link "Cmd+Shift+E", DocumentSearch::UseSelectionForReplaceMenuCommand
+    def self.keymaps
+      osx = Redcar::Keymap.build("main", :osx) do
+        link "Ctrl+S",      DocumentSearch::OpenIncrementalSearchCommand
+        link "Cmd+F",       DocumentSearch::OpenFindSpeedbarCommand
+        link "Cmd+G",       DocumentSearch::DoFindNextCommand
+        link "Cmd+Shift+G", DocumentSearch::DoFindPreviousCommand
+        link "Cmd+Ctrl+F",  DocumentSearch::DoReplaceAllCommand
+        link "Cmd+Ctrl+Shift+F",  DocumentSearch::DoReplaceAllInSelectionCommand
+        link "Cmd+Alt+F",   DocumentSearch::DoReplaceAndFindCommand
+        link "Cmd+E",       DocumentSearch::DoUseSelectionForFindCommand
+        link "Cmd+Shift+E", DocumentSearch::DoUseSelectionForReplaceCommand
+      end
+
+      linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
+        link "Alt+S",        DocumentSearch::OpenIncrementalSearchCommand
+        link "Ctrl+F",       DocumentSearch::OpenFindSpeedbarCommand
+        link "Ctrl+G",       DocumentSearch::DoFindNextCommand
+        link "Ctrl+Shift+G", DocumentSearch::DoFindPreviousCommand
+        link "Ctrl+Alt+F",   DocumentSearch::DoReplaceAndFindCommand
+        link "Ctrl+E",       DocumentSearch::DoUseSelectionForFindCommand
+        link "Alt+Shift+E",  DocumentSearch::DoUseSelectionForReplaceCommand
+      end
+
+      [linwin, osx]
     end
 
-    linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
-      link "Alt+S",        DocumentSearch::IncrementalSearchSpeedbarCommand
-      link "Ctrl+F",       DocumentSearch::FindSpeedbarCommand
-      link "Ctrl+G",       DocumentSearch::FindNextMenuCommand
-      link "Ctrl+Shift+G", DocumentSearch::FindPreviousMenuCommand
-      link "Ctrl+E",       DocumentSearch::UseSelectionForFindMenuCommand
-      link "Alt+E",        DocumentSearch::UseSelectionForReplaceMenuCommand
+    def self.toolbars
+      Redcar::ToolBar::Builder.build do
+        item "Find", :command => DocumentSearch::OpenIncrementalSearchCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), :barname => :edit
+        item "Find Next", :command => DocumentSearch::DoFindNextCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier--arrow.png"), :barname => :edit
+      end
     end
 
-    [linwin, osx]
-  end
-
-  def self.toolbars
-    # TODO(yozhipozhi): What should be on the toolbar?
-    Redcar::ToolBar::Builder.build do
-      item "Find",
-          :command => DocumentSearch::IncrementalSearchMenuCommand,
-          :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"),
-          :barname => :edit
-      item "Find Next", :command => DocumentSearch::FindNextMenuCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier--arrow.png"), :barname => :edit
-    end
-  end
-
-  class IncrementalSearchSpeedbarCommand < Redcar::EditTabCommand
+  class OpenIncrementalSearchCommand < Redcar::EditTabCommand
     def execute
       already_open = win.speedbar.is_a? IncrementalSearchSpeedbar
       @speedbar = IncrementalSearchSpeedbar.new
@@ -72,9 +70,8 @@ module DocumentSearch
         IncrementalSearchSpeedbar.find_next
       end
     end
-  end
 
-  class FindSpeedbarCommand < Redcar::EditTabCommand
+  class OpenFindSpeedbarCommand < Redcar::EditTabCommand
     def execute
       @speedbar = FindSpeedbar.new
       if doc.selection?
@@ -84,7 +81,7 @@ module DocumentSearch
     end
   end
 
-  class FindNextMenuCommand < Redcar::EditTabCommand
+  class DoFindNextCommand < Redcar::EditTabCommand
     def execute
       if win.speedbar.is_a? IncrementalSearchSpeedbar
         IncrementalSearchSpeedbar.find_next
@@ -92,9 +89,8 @@ module DocumentSearch
         FindSpeedbar.find_next
       end
     end
-  end
 
-  class FindPreviousMenuCommand < Redcar::EditTabCommand
+  class DoFindPreviousCommand < Redcar::EditTabCommand
     def execute
       if win.speedbar.is_a? IncrementalSearchSpeedbar
         IncrementalSearchSpeedbar.find_previous
@@ -102,18 +98,18 @@ module DocumentSearch
         FindSpeedbar.find_previous
       end
     end
-  end
 
-  class ReplaceAndFindMenuCommand < Redcar::EditTabCommand
+  class DoReplaceAndFindCommand < Redcar::EditTabCommand
     def execute
       FindSpeedbar.replace_and_find(
         FindSpeedbar.previous_query,
         FindSpeedbar.previous_replace,
         FindSpeedbar.previous_options)
+      end
     end
   end
 
-  class ReplaceAllMenuCommand < Redcar::EditTabCommand
+  class DoReplaceAllCommand < Redcar::EditTabCommand
     def execute
       FindSpeedbar.replace_all(
           FindSpeedbar.previous_query,
@@ -122,7 +118,7 @@ module DocumentSearch
     end
   end
 
-  class ReplaceAllInSelectionMenuCommand < Redcar::EditTabCommand
+  class DoReplaceAllInSelectionCommand < Redcar::EditTabCommand
     def execute
       FindSpeedbar.replace_all_in_selection(
           FindSpeedbar.previous_query,
@@ -131,13 +127,13 @@ module DocumentSearch
     end
   end
 
-  class UseSelectionForFindMenuCommand  < Redcar::EditTabCommand
+  class DoUseSelectionForFindCommand  < Redcar::EditTabCommand
     def execute
       FindSpeedbar.use_selection_for_find(doc, win.speedbar)
     end
   end
 
-  class UseSelectionForReplaceMenuCommand  < Redcar::EditTabCommand
+  class DoUseSelectionForReplaceCommand  < Redcar::EditTabCommand
     def execute
       FindSpeedbar.use_selection_for_replace(doc, win.speedbar)
     end

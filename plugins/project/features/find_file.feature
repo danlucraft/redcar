@@ -15,6 +15,12 @@ Feature: Find file
     And I wait "0.4" seconds
     Then the filter dialog should have 0 entries
 
+  Scenario: No matching files when typing a directory name only
+    When I open the find file dialog
+    And I set the filter to "vendor"
+    And I wait "0.4" seconds
+    Then the filter dialog should have 0 entries
+
   Scenario: One matching file
     When I open the find file dialog
     And I set the filter to "foo_spec"
@@ -28,6 +34,13 @@ Feature: Find file
     And I wait "0.4" seconds
     Then the filter dialog should have 1 entry
     And I should see "foo_spec.rb (myproject/spec)" at 0 the filter dialog
+
+  Scenario: One matching file when specifying a directory
+    When I open the find file dialog
+    And I set the filter to "lib_sym/foo"
+    And I wait "0.4" seconds
+    Then the filter dialog should have 1 entry
+    And I should see "foo_lib.rb (myproject/lib_symlink)" at 0 the filter dialog
 
   Scenario: Two matching files
     When I open the find file dialog
@@ -46,6 +59,21 @@ Feature: Find file
     And I should see "foo_lib.rb (myproject/lib)" at 0 the filter dialog
     And I should see "foo_lib.rb (myproject/lib_symlink)" at 1 the filter dialog
     And I should see "foo_spec.rb (myproject/spec)" at 2 the filter dialog
+
+ Scenario: Three matching files in similar directories
+    When I open the find file dialog
+    And I set the filter to "ven/bar"
+    And I wait "0.4" seconds
+    Then the filter dialog should have 2 entries
+    And I should see "bar.rb (myproject/vendor)" at 0 the filter dialog
+    And I should see "bar.rb (vendor/plugins)" at 1 the filter dialog
+
+ Scenario: Two matching files in similar nested directories
+    When I open the find file dialog
+    And I set the filter to "v/p/bar"
+    And I wait "0.4" seconds
+    Then the filter dialog should have 1 entry
+    And I should see "bar.rb (vendor/plugins)" at 0 the filter dialog
 
   Scenario: One matching file with arbitrary letters
     When I open the find file dialog

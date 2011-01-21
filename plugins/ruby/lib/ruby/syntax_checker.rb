@@ -3,7 +3,7 @@ require 'java'
 module Redcar
   class Ruby
     class SyntaxChecker < Redcar::SyntaxCheck::Checker
-      supported_grammars "Ruby", "Ruby on Rails"
+      supported_grammars "Ruby", "Ruby on Rails", "RSpec"
 
       def check(*args)
         path    = manifest_path(doc)

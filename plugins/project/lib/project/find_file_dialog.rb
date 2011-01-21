@@ -101,17 +101,28 @@ module Redcar
       end
 
       def find_files_from_list(text, file_list)
-        re = make_regex(text.gsub(/\s/, ""))
-        file_list.select { |fn|
-          fn.split('/').last =~ re and not ignore_file?(fn)
-        }.compact
+        re = make_regex(text)
+        file_list.select do |fn|
+          not ignore_file?(fn) and match_substring(fn) =~ re
+        end
       end
 
       def find_files(text, directories)
         files = project.all_files.sort.select {|fn| not ignore_file?(fn)}
-        filter_and_rank_by(files, text.gsub(/\s/, "")) do |fn|
-          fn.split("/").last
-        end
+        filter_and_rank_by(files, text) {|fn| match_substring(fn) }
+      end
+
+      def match_substring(filename)
+        @folder_search ? filename.sub(project.path, "") : filename.split("/").last
+      end
+
+      def make_regex(text)
+        path = text.gsub(/\s/, "").split("/")
+        @folder_search = path.size > 1
+        folders = path[0...-1].map {|f| "(#{Regexp.escape(f)}).*/" }
+        file = path.last.each_char.map {|c| "(#{Regexp.escape(c)})[^/]*?" }.join
+        re_src = "#{folders.join}#{file}$"
+        Regexp.new(re_src, :options => Regexp::IGNORECASE)
       end
     end
   end
