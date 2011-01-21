@@ -1207,6 +1207,7 @@ Redcar.environment: #{Redcar.environment}
           group(:priority => :first) do
             item "New", NewCommand
             item "New Window", NewWindowCommand
+            item "Open Recent...", Project::FindRecentCommand
           end
 
           group(:priority => 10) do
