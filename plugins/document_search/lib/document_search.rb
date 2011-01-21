@@ -110,77 +110,77 @@ module Redcar
         FindSpeedbar.previous_options)
       end
     end
-  end
 
-  class DoReplaceAllCommand < Redcar::EditTabCommand
-    def execute
-      FindSpeedbar.replace_all(
-      FindSpeedbar.previous_query,
-      FindSpeedbar.previous_replace,
-      FindSpeedbar.previous_options)
-    end
-  end
-
-  class DoReplaceAllInSelectionCommand < Redcar::EditTabCommand
-    def execute
-      FindSpeedbar.replace_all_in_selection(
-      FindSpeedbar.previous_query,
-      FindSpeedbar.previous_replace,
-      FindSpeedbar.previous_options)
-    end
-  end
-
-  class DoUseSelectionForFindCommand  < Redcar::EditTabCommand
-    def execute
-      FindSpeedbar.use_selection_for_find(doc, win.speedbar)
-    end
-  end
-
-  class DoUseSelectionForReplaceCommand  < Redcar::EditTabCommand
-    def execute
-      FindSpeedbar.use_selection_for_replace(doc, win.speedbar)
-    end
-  end
-
-  # TODO(yozhipozhi): Figure out if this is still needed.
-  class FindNextRegex < Redcar::DocumentCommand
-    def initialize(re, wrap=nil)
-      @re = re
-      @wrap = wrap
+    class DoReplaceAllCommand < Redcar::EditTabCommand
+      def execute
+        FindSpeedbar.replace_all(
+        FindSpeedbar.previous_query,
+        FindSpeedbar.previous_replace,
+        FindSpeedbar.previous_options)
+      end
     end
 
-    def to_s
-      "<#{self.class}: @re:#{@re.inspect} wrap:#{!!@wrap}>"
+    class DoReplaceAllInSelectionCommand < Redcar::EditTabCommand
+      def execute
+        FindSpeedbar.replace_all_in_selection(
+        FindSpeedbar.previous_query,
+        FindSpeedbar.previous_replace,
+        FindSpeedbar.previous_options)
+      end
     end
 
-    def execute
-      position = doc.cursor_offset
-      sc       = StringScanner.new(doc.get_all_text)
-      sc.pos   = position
-      sc.scan_until(@re)
+    class DoUseSelectionForFindCommand  < Redcar::EditTabCommand
+      def execute
+        FindSpeedbar.use_selection_for_find(doc, win.speedbar)
+      end
+    end
 
-      if @wrap and !sc.matched?
-        # No match was found in the remainder of the document, search from beginning
-        sc.reset
+    class DoUseSelectionForReplaceCommand  < Redcar::EditTabCommand
+      def execute
+        FindSpeedbar.use_selection_for_replace(doc, win.speedbar)
+      end
+    end
+
+    # TODO(yozhipozhi): Figure out if this is still needed.
+    class FindNextRegex < Redcar::DocumentCommand
+      def initialize(re, wrap=nil)
+        @re = re
+        @wrap = wrap
+      end
+
+      def to_s
+        "<#{self.class}: @re:#{@re.inspect} wrap:#{!!@wrap}>"
+      end
+
+      def execute
+        position = doc.cursor_offset
+        sc       = StringScanner.new(doc.get_all_text)
+        sc.pos   = position
         sc.scan_until(@re)
-      end
 
-      if sc.matched?
-        endoff   = sc.pos
-        startoff = sc.pos - sc.matched_size
-        line     = doc.line_at_offset(startoff)
-        lineoff  = startoff - doc.offset_at_line(line)
-        if lineoff < doc.smallest_visible_horizontal_index
-          horiz = lineoff
-        else
-          horiz = endoff - doc.offset_at_line(line)
+        if @wrap and !sc.matched?
+          # No match was found in the remainder of the document, search from beginning
+          sc.reset
+          sc.scan_until(@re)
         end
-        doc.set_selection_range(sc.pos, sc.pos - sc.matched_size)
-        doc.scroll_to_line(line)
-        doc.scroll_to_horizontal_offset(horiz) if horiz
-        return true
+
+        if sc.matched?
+          endoff   = sc.pos
+          startoff = sc.pos - sc.matched_size
+          line     = doc.line_at_offset(startoff)
+          lineoff  = startoff - doc.offset_at_line(line)
+          if lineoff < doc.smallest_visible_horizontal_index
+            horiz = lineoff
+          else
+            horiz = endoff - doc.offset_at_line(line)
+          end
+          doc.set_selection_range(sc.pos, sc.pos - sc.matched_size)
+          doc.scroll_to_line(line)
+          doc.scroll_to_horizontal_offset(horiz) if horiz
+          return true
+        end
+        false
       end
-      false
     end
   end
 end

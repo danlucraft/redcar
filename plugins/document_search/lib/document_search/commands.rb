@@ -186,76 +186,76 @@ module Redcar
         options.is_regex ? make_regex_query(query, options) : make_literal_query(query, options)
         @replace = replace
       end
+    end
 
 
-      # Replaces the currently selected text, if it matches the search criteria, then finds and
-      # selects the next match in the document.
-      #
-      # This command maintains the invariant that no text is replaced without first being
-      # selected, so the user always knows exactly what change is about to be made. A ramification
-      # of this policy is that, if no text is selected beforehand, or the selected text does not
-      # match the query, then "replace" portion of "replace and find" is essentially skipped, so
-      # that two button presses are required.
-      class ReplaceAndFindCommand < ReplaceCommandBase
-        def execute
-          offsets = [doc.cursor_offset, doc.selection_offset]
-          start_pos = offsets.min
-          if doc.selected_text.length > 0
-            chars_replaced = replace_selection_if_match(doc, start_pos, query, replace)
-            if chars_replaced > 0
-              start_pos += chars_replaced
-            else
-              start_pos = offsets.max
-            end
-          end
-          if select_next_match(doc, start_pos, query, @options.wrap_around)
-            true
+    # Replaces the currently selected text, if it matches the search criteria, then finds and
+    # selects the next match in the document.
+    #
+    # This command maintains the invariant that no text is replaced without first being
+    # selected, so the user always knows exactly what change is about to be made. A ramification
+    # of this policy is that, if no text is selected beforehand, or the selected text does not
+    # match the query, then "replace" portion of "replace and find" is essentially skipped, so
+    # that two button presses are required.
+    class ReplaceAndFindCommand < ReplaceCommandBase
+      def execute
+        offsets = [doc.cursor_offset, doc.selection_offset]
+        start_pos = offsets.min
+        if doc.selected_text.length > 0
+          chars_replaced = replace_selection_if_match(doc, start_pos, query, replace)
+          if chars_replaced > 0
+            start_pos += chars_replaced
           else
-            # Clear selection as visual feedback that search failed.
-            doc.set_selection_range(start_pos, start_pos)
-            false
+            start_pos = offsets.max
           end
+        end
+        if select_next_match(doc, start_pos, query, @options.wrap_around)
+          true
+        else
+          # Clear selection as visual feedback that search failed.
+          doc.set_selection_range(start_pos, start_pos)
+          false
         end
       end
+    end
 
 
-      # Replaces all query matches.
-      class ReplaceAllCommand < ReplaceCommandBase
-        def initialize(query, replace, options, selection_only)
-          super(query, replace, options)
-          @selection_only = selection_only
+    # Replaces all query matches.
+    class ReplaceAllCommand < ReplaceCommandBase
+      def initialize(query, replace, options, selection_only)
+        super(query, replace, options)
+        @selection_only = selection_only
+      end
+
+      def execute
+        startoff, endoff = nil
+        text = @selection_only ? doc.selected_text : doc.get_all_text
+        count = 0
+        sc = StringScanner.new(text)
+        while sc.scan_until(query)
+          count += 1
+
+          startoff = sc.pos - sc.matched_size
+          replacement_text = text.slice(startoff, sc.matched_size).gsub(query, replace)
+          endoff = startoff + replacement_text.length
+
+          text[startoff...sc.pos] = replacement_text
+          sc.string = text
+          sc.pos = startoff + replacement_text.length
         end
-
-        def execute
-          startoff, endoff = nil
-          text = @selection_only ? doc.selected_text : doc.get_all_text
-          count = 0
-          sc = StringScanner.new(text)
-          while sc.scan_until(query)
-            count += 1
-
-            startoff = sc.pos - sc.matched_size
-            replacement_text = text.slice(startoff, sc.matched_size).gsub(query, replace)
-            endoff = startoff + replacement_text.length
-
-            text[startoff...sc.pos] = replacement_text
-            sc.string = text
-            sc.pos = startoff + replacement_text.length
-          end
-          if count > 0
-            if @selection_only
-              offsets = [doc.cursor_offset, doc.selection_offset]
-              startoff = offsets.min
-              doc.replace(startoff, doc.selected_text.length, text)
-              select_range(startoff, startoff + text.length)
-            else
-              doc.text = text
-              select_range(startoff, startoff + replacement_text.length)
-            end
-            true
+        if count > 0
+          if @selection_only
+            offsets = [doc.cursor_offset, doc.selection_offset]
+            startoff = offsets.min
+            doc.replace(startoff, doc.selected_text.length, text)
+            select_range(startoff, startoff + text.length)
           else
-            false
+            doc.text = text
+            select_range(startoff, startoff + replacement_text.length)
           end
+          true
+        else
+          false
         end
       end
     end
