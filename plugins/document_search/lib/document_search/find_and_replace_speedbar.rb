@@ -57,7 +57,7 @@ module Redcar
       label :label_replace, "Replace:"
       textbox :replace
 
-      button :replace_find, 'Replace && Find', "Return" do
+      button :replace_find, 'Replace && Find', "Shift+Return" do
         update_options_from_ui
         FindAndReplaceSpeedbar.replace_and_find(
         FindSpeedbar.previous_query, FindAndReplaceSpeedbar.previous_replace, FindSpeedbar.previous_options) or not_found
@@ -71,12 +71,12 @@ module Redcar
 
       label :label_spacer_mid_row2, ""
 
-      button :find_previous, "Previous", nil do
+      button :find_previous, "Previous", "Return" do
         update_options_from_ui
         FindSpeedbar.find_previous or not_found
       end
 
-      button :find_next, "Next", nil do
+      button :find_next, "Next", "Alt+Return" do
         update_options_from_ui
         FindSpeedbar.find_next or not_found
       end
