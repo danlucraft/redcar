@@ -71,12 +71,12 @@ module Redcar
 
       label :label_spacer_mid_row2, ""
 
-      button :find_previous, "Previous", "Return" do
+      button :find_previous, "Previous", "Alt+Return" do
         update_options_from_ui
         FindSpeedbar.find_previous or not_found
       end
 
-      button :find_next, "Next", "Alt+Return" do
+      button :find_next, "Next", "Return" do
         update_options_from_ui
         FindSpeedbar.find_next or not_found
       end
