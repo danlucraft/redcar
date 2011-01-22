@@ -223,6 +223,12 @@ module Redcar
         dialog.open
       end
     end
+    
+    class FindRecentCommand < ProjectCommand
+      def execute
+        FindRecentDialog.new.open
+      end
+    end
 
     class RevealInProjectCommand < ProjectCommand
       def execute

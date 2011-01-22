@@ -1016,35 +1016,35 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+Shift+S", Project::FileSaveAsCommand
         link "Cmd+W",       CloseTabCommand
         link "Cmd+Shift+W", CloseWindowCommand
-        link "Alt+Shift+W",   CloseTreeCommand
+        link "Alt+Shift+W", CloseTreeCommand
         link "Cmd+Q",       QuitCommand
 
         #link "Cmd+Return",   MoveNextLineCommand
 
         link "Ctrl+Shift+E", EditView::InfoSpeedbarCommand
-        link "Cmd+Z",       UndoCommand
-        link "Cmd+Shift+Z", RedoCommand
-        link "Cmd+X",       CutCommand
-        link "Cmd+C",       CopyCommand
-        link "Cmd+V",       PasteCommand
-        link "Cmd+D",       DuplicateCommand
+        link "Cmd+Z",        UndoCommand
+        link "Cmd+Shift+Z",  RedoCommand
+        link "Cmd+X",        CutCommand
+        link "Cmd+C",        CopyCommand
+        link "Cmd+V",        PasteCommand
+        link "Cmd+D",        DuplicateCommand
 
-        link "Home",        MoveTopCommand
-        link "Ctrl+A",      MoveHomeCommand
-        link "Ctrl+E",      MoveEndCommand
-        link "End",         MoveBottomCommand
+        link "Home",   MoveTopCommand
+        link "Ctrl+A", MoveHomeCommand
+        link "Ctrl+E", MoveEndCommand
+        link "End",    MoveBottomCommand
 
-        link "Cmd+[",       DecreaseIndentCommand
-        link "Cmd+]",       IncreaseIndentCommand
-        link "Cmd+Shift+I", AutoIndenter::IndentCommand
-        link "Cmd+L",       GotoLineCommand
-        link "Cmd+A",       SelectAllCommand
-        link "Ctrl+W",      SelectWordCommand
-        link "Ctrl+L",      SelectLineCommand
-        link "Cmd+B",       ToggleBlockSelectionCommand
-        link "Escape",      AutoCompleter::AutoCompleteCommand
-        link "Ctrl+Escape", AutoCompleter::MenuAutoCompleterCommand
-        link "Ctrl+Space",   AutoCompleter::AutoCompleteCommand
+        link "Cmd+[",            DecreaseIndentCommand
+        link "Cmd+]",            IncreaseIndentCommand
+        link "Cmd+Shift+I",      AutoIndenter::IndentCommand
+        link "Cmd+L",            GotoLineCommand
+        link "Cmd+A",            SelectAllCommand
+        link "Ctrl+W",           SelectWordCommand
+        link "Ctrl+L",           SelectLineCommand
+        link "Cmd+B",            ToggleBlockSelectionCommand
+        link "Escape",           AutoCompleter::AutoCompleteCommand
+        link "Ctrl+Escape",      AutoCompleter::MenuAutoCompleterCommand
+        link "Ctrl+Space",       AutoCompleter::AutoCompleteCommand
         link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleterCommand
 
         link "Ctrl+U",       EditView::UpcaseTextCommand
@@ -1078,8 +1078,8 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd++",           IncreaseFontSize
         link "Cmd+-",           DecreaseFontSize
 
-        link "Ctrl+Shift+P",    PrintScopeCommand
-        link "Cmd+Shift+H",     ToggleTreesCommand
+        link "Ctrl+Shift+P", PrintScopeCommand
+        link "Cmd+Shift+H",  ToggleTreesCommand
 
         # link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
 
@@ -1117,61 +1117,61 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+V",       PasteCommand
         link "Ctrl+D",       DuplicateCommand
 
-        link "Ctrl+Home",    MoveTopCommand
-        link "Home",         MoveHomeCommand
-        link "Ctrl+Alt+A",   MoveHomeCommand
-        link "End",          MoveEndCommand
-        link "Ctrl+Alt+E",   MoveEndCommand
-        link "Ctrl+End",     MoveBottomCommand
+        link "Ctrl+Home",  MoveTopCommand
+        link "Home",       MoveHomeCommand
+        link "Ctrl+Alt+A", MoveHomeCommand
+        link "End",        MoveEndCommand
+        link "Ctrl+Alt+E", MoveEndCommand
+        link "Ctrl+End",   MoveBottomCommand
 
-        link "Ctrl+[",       DecreaseIndentCommand
-        link "Ctrl+]",       IncreaseIndentCommand
-        link "Ctrl+Shift+[", AutoIndenter::IndentCommand
-        link "Ctrl+L",       GotoLineCommand
-        link "Ctrl+A", SelectAllCommand
-        link "Ctrl+Alt+W",   SelectWordCommand
-        link "Ctrl+Alt+L",   SelectLineCommand
-        link "Ctrl+B",       ToggleBlockSelectionCommand
-        link "Escape",       AutoCompleter::AutoCompleteCommand
-        link "Ctrl+Escape",  AutoCompleter::MenuAutoCompleterCommand
-        link "Ctrl+Space",   AutoCompleter::AutoCompleteCommand
+        link "Ctrl+[",           DecreaseIndentCommand
+        link "Ctrl+]",           IncreaseIndentCommand
+        link "Ctrl+Shift+[",     AutoIndenter::IndentCommand
+        link "Ctrl+L",           GotoLineCommand
+        link "Ctrl+A",           SelectAllCommand
+        link "Ctrl+Alt+W",       SelectWordCommand
+        link "Ctrl+Alt+L",       SelectLineCommand
+        link "Ctrl+B",           ToggleBlockSelectionCommand
+        link "Escape",           AutoCompleter::AutoCompleteCommand
+        link "Ctrl+Escape",      AutoCompleter::MenuAutoCompleterCommand
+        link "Ctrl+Space",       AutoCompleter::AutoCompleteCommand
         link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleterCommand
 
-        link "Ctrl+U",       EditView::UpcaseTextCommand
-        link "Ctrl+Shift+U", EditView::DowncaseTextCommand
-        link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
-        link "Ctrl+Alt+Shift+U",   EditView::OppositeCaseTextCommand
-        link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
-        link "Ctrl+=",       EditView::AlignAssignmentCommand
-        link "Ctrl+Shift+^", SortLinesCommand
+        link "Ctrl+U",           EditView::UpcaseTextCommand
+        link "Ctrl+Shift+U",     EditView::DowncaseTextCommand
+        link "Ctrl+Alt+U",       EditView::TitlizeTextCommand
+        link "Ctrl+Alt+Shift+U", EditView::OppositeCaseTextCommand
+        link "Ctrl+_",           EditView::CamelSnakePascalRotateTextCommand
+        link "Ctrl+=",           EditView::AlignAssignmentCommand
+        link "Ctrl+Shift+^",     SortLinesCommand
 
         link "Ctrl+Shift+F",     Redcar::FindInProject::OpenSearch
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
 
-        link "Ctrl+Shift+P",    PrintScopeCommand
+        link "Ctrl+Shift+P", PrintScopeCommand
 
-        link "Ctrl+Alt+O",       SwitchNotebookCommand
-        link "Ctrl+Shift+H",     ToggleTreesCommand
-        link "Alt+Page Up",         SwitchTreeUpCommand
-        link "Alt+Page Down",       SwitchTreeDownCommand
+        link "Ctrl+Alt+O",           SwitchNotebookCommand
+        link "Ctrl+Shift+H",         ToggleTreesCommand
+        link "Alt+Page Up",          SwitchTreeUpCommand
+        link "Alt+Page Down",        SwitchTreeDownCommand
         link "Ctrl+Page Up",         SwitchTabDownCommand
         link "Ctrl+Page Down",       SwitchTabUpCommand
         link "Ctrl+Shift+Page Up",   MoveTabDownCommand
         link "Ctrl+Shift+Page Down", MoveTabUpCommand
         link "Ctrl+Shift+T",         OpenTreeFinderCommand
-        link "Alt+Shift+J",      IncreaseTreebookWidthCommand
-        link "Alt+Shift+H",      DecreaseTreebookWidthCommand
-        link "Ctrl+Shift+>",     EnlargeFirstNotebookCommand
-        link "Ctrl+Shift+<",     EnlargeSecondNotebookCommand
-        link "Ctrl+Shift+L",     ResetNotebookWidthsCommand
-        link "Ctrl+Shift+:",     RotateNotebooksCommand
-        link "Alt+Shift+N",      CloseNotebookCommand
+        link "Alt+Shift+J",          IncreaseTreebookWidthCommand
+        link "Alt+Shift+H",          DecreaseTreebookWidthCommand
+        link "Ctrl+Shift+>",         EnlargeFirstNotebookCommand
+        link "Ctrl+Shift+<",         EnlargeSecondNotebookCommand
+        link "Ctrl+Shift+L",         ResetNotebookWidthsCommand
+        link "Ctrl+Shift+:",         RotateNotebooksCommand
+        link "Alt+Shift+N",          CloseNotebookCommand
         # link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
-        link "F11",              ToggleFullscreen
-        link "Ctrl+Alt+I",       ToggleInvisibles
-        link "Ctrl++",           IncreaseFontSize
-        link "Ctrl+-",           DecreaseFontSize
+        link "F11",                  ToggleFullscreen
+        link "Ctrl+Alt+I",           ToggleInvisibles
+        link "Ctrl++",               IncreaseFontSize
+        link "Ctrl+-",               DecreaseFontSize
 
         link "Ctrl+Alt+S", Snippets::OpenSnippetExplorer
 
@@ -1207,6 +1207,7 @@ Redcar.environment: #{Redcar.environment}
           group(:priority => :first) do
             item "New", NewCommand
             item "New Window", NewWindowCommand
+            item "Open Recent...", Project::FindRecentCommand
           end
 
           group(:priority => 10) do
