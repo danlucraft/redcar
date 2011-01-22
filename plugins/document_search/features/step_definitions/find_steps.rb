@@ -1,3 +1,5 @@
+puts 'find_steps.rb'
+
 When /^I open the incremental search speedbar$/ do
   Redcar::DocumentSearch::OpenIncrementalSearchSpeedbarCommand.new.run
 end
