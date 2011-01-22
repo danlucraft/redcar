@@ -38,7 +38,7 @@ module Redcar
         end
 
         selection_pos = scanner.pos - scanner.matched_size
-        select_range(selection_pos, scanner.pos)
+        select_range_bytes(selection_pos, scanner.pos)
         true
       end
 
@@ -58,7 +58,7 @@ module Redcar
           if start_pos < search_pos
             previous_match = [start_pos, scanner.pos]
           elsif previous_match
-            select_range(*previous_match)
+            select_range_bytes(*previous_match)
             return true
           elsif not wrap_around
             return false
@@ -74,7 +74,7 @@ module Redcar
         end
 
         if previous_match
-          select_range(*previous_match)
+          select_range_bytes(*previous_match)
           return true
         else
           return false
@@ -106,6 +106,21 @@ module Redcar
         doc.set_selection_range(start, stop)
         doc.scroll_to_line(line)
         doc.scroll_to_horizontal_offset(horiz) if horiz
+      end
+
+      # Selects the specified byte range, mapping to character indices first.
+      #
+      # This method is necessary, because Ruby (1.8) strings really work in terms of bytes, and thus
+      # our regex and scanning matches return byte ranges, while the editor view deals in terms of
+      # character ranges.
+      def select_range_bytes(start, stop)
+        text = doc.get_all_text
+        # Unpack span up to start into array of Unicode chars and count for start_chars.
+        start_chars = text.slice(0, start).unpack('U*').size
+        # Do the same for the span between start and stop, and then use to compute stop_chars.
+        char_span   = text.slice(start, stop - start).unpack('U*').size
+        stop_chars  = start_chars + char_span
+        select_range(start_chars, stop_chars)
       end
     end
 
@@ -248,10 +263,10 @@ module Redcar
             offsets = [doc.cursor_offset, doc.selection_offset]
             startoff = offsets.min
             doc.replace(startoff, doc.selected_text.length, text)
-            select_range(startoff, startoff + text.length)
+            select_range_bytes(startoff, startoff + text.length)
           else
             doc.text = text
-            select_range(startoff, startoff + replacement_text.length)
+            select_range_bytes(startoff, startoff + replacement_text.length)
           end
           true
         else
