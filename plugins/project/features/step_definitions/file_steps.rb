@@ -3,6 +3,11 @@ Given /^I have open a file$/ do
   Redcar::Project::FileOpenCommand.new.run
 end
 
+Given /^I will open a large file from the "([^"]*)" dialog$/ do |arg1|
+  Given %Q|I will choose "plugins/project/spec/fixtures/winter.txt" from the "open_file" dialog|
+  Redcar::Project::Manager.file_size_limit = 1
+end
+
 When /^I open a file$/ do
   Redcar::Project::FileOpenCommand.new.run
 end

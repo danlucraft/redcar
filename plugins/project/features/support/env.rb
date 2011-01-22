@@ -51,6 +51,7 @@ end
 
 Before do
   reset_project_fixtures
+  @original_file_size_limit = Redcar::Project::Manager.file_size_limit
 end
 
 After do
@@ -58,4 +59,5 @@ After do
   reset_project_fixtures
   delete_subproject_fixtures
   DrbShelloutHelper.kill_thread
+  Redcar::Project::Manager.file_size_limit = @original_file_size_limit
 end
