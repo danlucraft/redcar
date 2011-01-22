@@ -10,7 +10,7 @@ module Redcar
       Redcar::Menu::Builder.build do
         sub_menu "Edit" do
           sub_menu "Find", :priority => 50 do
-            item "Incremental Search",        OpenIncrementalSearchCommand
+            item "Incremental Search",        OpenIncrementalSearchSpeedbarCommand
             item "Find...",                   OpenFindSpeedbarCommand
             separator
             item "Find Next",                 DoFindNextCommand
@@ -30,7 +30,7 @@ module Redcar
 
     def self.keymaps
       osx = Redcar::Keymap.build("main", :osx) do
-        link "Ctrl+S",      DocumentSearch::OpenIncrementalSearchCommand
+        link "Ctrl+S",      DocumentSearch::OpenIncrementalSearchSpeedbarCommand
         link "Cmd+F",       DocumentSearch::OpenFindSpeedbarCommand
         link "Cmd+G",       DocumentSearch::DoFindNextCommand
         link "Cmd+Shift+G", DocumentSearch::DoFindPreviousCommand
@@ -42,7 +42,7 @@ module Redcar
       end
 
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
-        link "Alt+S",        DocumentSearch::OpenIncrementalSearchCommand
+        link "Alt+S",        DocumentSearch::OpenIncrementalSearchSpeedbarCommand
         link "Ctrl+F",       DocumentSearch::OpenFindSpeedbarCommand
         link "Ctrl+G",       DocumentSearch::DoFindNextCommand
         link "Ctrl+Shift+G", DocumentSearch::DoFindPreviousCommand
@@ -56,12 +56,12 @@ module Redcar
 
     def self.toolbars
       Redcar::ToolBar::Builder.build do
-        item "Find", :command => DocumentSearch::OpenIncrementalSearchCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), :barname => :edit
+        item "Find", :command => DocumentSearch::OpenIncrementalSearchSpeedbarCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), :barname => :edit
         item "Find Next", :command => DocumentSearch::DoFindNextCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier--arrow.png"), :barname => :edit
       end
     end
 
-    class OpenIncrementalSearchCommand < Redcar::EditTabCommand
+    class OpenIncrementalSearchSpeedbarCommand < Redcar::EditTabCommand
       def execute
         already_open = win.speedbar.is_a? IncrementalSearchSpeedbar
         @speedbar = IncrementalSearchSpeedbar.new
