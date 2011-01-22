@@ -470,7 +470,7 @@ module Redcar
         attr_accessor :file_size_limit
         attr_reader :open_project_sensitivity
       end
-      self.file_size_limit = 10485760
+      self.file_size_limit = 5242880
     end
   end
 end
