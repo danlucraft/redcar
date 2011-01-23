@@ -21,6 +21,22 @@ module Redcar
 
       ### SELECTION ###
 
+      # Returns the document selection range as byte offsets, adjusting for multi-byte characters.
+      def selection_byte_offsets
+        char_offsets = [doc.cursor_offset, doc.selection_offset]
+        min_char_offset = char_offsets.min
+        max_char_offset = char_offsets.max
+
+        # For the min_byte_offset, get all document text before the selection, and count the bytes.
+        min_byte_offset = doc.get_range(0, min_char_offset).size
+        # If the selection is non-empty, count the bytes in the selection text, too.
+        max_byte_offset = (min_byte_offset +
+            (max_char_offset > min_char_offset ?
+             doc.get_slice(min_char_offset, max_char_offset).size :
+             0))
+        [min_byte_offset, max_byte_offset]
+      end
+
       # Selects the first match of query, starting from the start_pos.
       def select_next_match(doc, start_pos, query, wrap_around)
         return false unless is_valid(query)
@@ -162,9 +178,14 @@ module Redcar
         #   expand the selection to span "Foobar" as the next match.
         #
         # TODO(yozhipozhi): Test this behavior!
-        start_within_selection = (always_start_within_selection || !(query === doc.selected_text))
-        offsets = [doc.cursor_offset, doc.selection_offset]
-        start_pos = start_within_selection ? offsets.min : offsets.max
+        start_within_selection = true
+        if !@always_start_within_selection && (doc.selected_text.length > 0)
+          text = doc.selected_text
+          m = query.match(text)
+          if (m && (m[0].length == text.length))
+            start_within_selection = false
+          end
+        end
 
         # Do selection.
         if select_next_match(doc, start_pos, query, options.wrap_around)
@@ -181,7 +202,7 @@ module Redcar
     # Finds the previous match before the current location.
     class FindPreviousCommand < FindCommandBase
       def execute
-        offsets = [doc.cursor_offset, doc.selection_offset]
+        offsets = selection_byte_offsets
         start_pos = offsets.min
         if select_previous_match(doc, start_pos, query, @options.wrap_around)
           true
@@ -220,7 +241,7 @@ module Redcar
     # that two button presses are required.
     class ReplaceAndFindCommand < ReplaceCommandBase
       def execute
-        offsets = [doc.cursor_offset, doc.selection_offset]
+        offsets = selection_byte_offsets
         start_pos = offsets.min
         if doc.selected_text.length > 0
           chars_replaced = replace_selection_if_match(doc, start_pos, query, replace)
@@ -266,7 +287,7 @@ module Redcar
         end
         if count > 0
           if @selection_only
-            offsets = [doc.cursor_offset, doc.selection_offset]
+            offsets = selection_byte_offsets
             startoff = offsets.min
             doc.replace(startoff, doc.selected_text.length, text)
             select_range_bytes(startoff, startoff + text.length)
