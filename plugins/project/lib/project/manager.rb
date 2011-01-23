@@ -163,11 +163,28 @@ module Redcar
       # @path  [String] path the path of the file to be edited
       # @param [Window] win  the Window to open the File in
       def self.open_file_in_window(path, win, adapter)
+        return unless large_file_airbag(path)
         tab = win.new_tab(Redcar::EditTab)
         mirror = FileMirror.new(path, adapter)
         tab.edit_view.document.mirror = mirror
         tab.edit_view.reset_undo
         tab.focus
+      end
+
+      def self.file_too_large?(path)
+        File.size(path) > file_size_limit
+      end
+
+      # Prompts the user before opening the given path if it's above self.file_size_limit.
+      def self.large_file_airbag(path)
+        if file_too_large?(path)
+          Application::Dialog.message_box(
+            "This file is larger than 10MB which may crash Redcar.\n\nAre you sure you want to open it?",
+            :type => :warning,
+            :buttons => :yes_no) == :yes
+        else
+          true
+        end
       end
 
       def self.find_projects_containing_path(path)
@@ -450,8 +467,10 @@ module Redcar
       end
 
       class << self
+        attr_accessor :file_size_limit
         attr_reader :open_project_sensitivity
       end
+      self.file_size_limit = 5242880
     end
   end
 end
