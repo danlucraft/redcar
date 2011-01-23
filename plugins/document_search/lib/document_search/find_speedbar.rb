@@ -86,10 +86,11 @@ module Redcar
         # query; Select; Use selection for replace; Open Find speedbar. Without the fix, the prior
         # selection for the query gets overwritten with the current selection, which is annoying and
         # useless.
-        if (@initial_query == FindSpeedbar.previous_replace)
+        if ((FindSpeedbar.previous_replace.length > 0) &&
+            (@initial_query == FindSpeedbar.previous_replace))
           self.query.value = FindSpeedbar.previous_query
         else
-          @initial_query || FindSpeedbar.previous_query
+          self.query.value = @initial_query || FindSpeedbar.previous_query
         end
         self.replace.value = FindSpeedbar.previous_replace || ""
         self.is_regex.value = FindSpeedbar.previous_options.is_regex
