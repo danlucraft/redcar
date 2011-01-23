@@ -11,8 +11,11 @@ module Redcar
 
       label :label, 'Find:'
       textbox :query do |value|
-        IncrementalSearchSpeedbar.previous_query = self.query.value
-        IncrementalSearchSpeedbar.find_incremental
+        # Check to avoid multiple searches from duplicate text update events.
+        if IncrementalSearchSpeedbar.previous_query != self.query.value
+          IncrementalSearchSpeedbar.previous_query = self.query.value
+          IncrementalSearchSpeedbar.find_incremental
+        end
       end
 
       toggle :is_regex, 'Regex', nil, false do |val|
@@ -45,7 +48,7 @@ module Redcar
         cmd = FindNextCommand.new(
             IncrementalSearchSpeedbar.previous_query,
             IncrementalSearchSpeedbar.previous_options,
-            start_within_selection=true)
+            always_start_within_selection=true)
         cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
       end
 
