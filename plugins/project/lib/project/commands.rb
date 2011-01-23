@@ -341,9 +341,12 @@ module Redcar
     end
 
     class OpenDirectoryInCommandLineCommand < OpenCommand
-      LinuxApps = { 'xfce4-terminal' => "--working-directory=%s",
+      LinuxApps = {
+        'xfce4-terminal' => "--working-directory=%s",
         'gnome-terminal' => "--working-directory=%s",
-        'konsole' => "--workdir %s" }
+        'lxterminal'     => "--working-directory=%s",
+        'konsole'        => "--workdir %s"
+      }
 
       def osx_terminal_script(preferred)
         if preferred.start_with? "iTerm"
