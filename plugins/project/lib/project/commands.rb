@@ -223,7 +223,7 @@ module Redcar
         dialog.open
       end
     end
-    
+
     class FindRecentCommand < ProjectCommand
       def execute
         FindRecentDialog.new.open
@@ -302,10 +302,13 @@ module Redcar
     end
 
     class OpenDirectoryInExplorerCommand < OpenCommand
-      LinuxApps = { 'Thunar' => '%s',
-        'nautilus' => '%s',
+      LinuxApps = {
+        'Thunar'    => '%s',
+        'nautilus'  => '%s',
         'konqueror' => '%s',
-        'kfm' => '%s' }
+        'pcmanfm'   => '%s',
+        'kfm'       => '%s'
+      }
 
       def explorer_osx
         ['open -a Finder', path]
