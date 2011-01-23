@@ -1,3 +1,7 @@
+# Note: Most scenarios in this file can and should be adapted for the Find speedbar and added to
+# find.feature. Aside from different names, the tests will need to be adjusted to not rely on
+# incremental updating of query matches.
+
 @speedbar
 Feature: Incremental Search
 
@@ -75,7 +79,7 @@ Feature: Incremental Search
     And I type "ler" into the "Find" field in the speedbar
     Then the selected text should be "ler"
     And the selection range should be from 12 to 15
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         #
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
   Scenario: Not thrown off by multi-byte characters 2
     When I replace the contents with "Benedikt Müller\n foo "
     And I move the cursor to 0
