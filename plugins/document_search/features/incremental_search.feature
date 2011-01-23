@@ -79,7 +79,7 @@ Feature: Incremental Search
     And I type "ler" into the "Find" field in the speedbar
     Then the selected text should be "ler"
     And the selection range should be from 12 to 15
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+
   Scenario: Not thrown off by multi-byte characters 2
     When I replace the contents with "Benedikt Müller\n foo "
     And I move the cursor to 0
