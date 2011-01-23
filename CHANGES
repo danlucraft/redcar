@@ -7,7 +7,7 @@ Enhancements:
  * Fuzzy file finder now recognizes directories "a/c/repocontr" (Tim Felgentreff)
  * Open recent profile finder (Benedikt Müller)
  * Improved DocumentSearch, with UI refinements, added Replace All commands (Tom Murray)
- 
+
 Bugfixes:
  * Fixed Unicode problems in DocumentSearch (Tom Murray)
 
