@@ -129,39 +129,29 @@ module Redcar
     class FindCommandBase < Redcar::DocumentCommand
       include FindCommandMixin
 
-      attr_reader :query
+      attr_reader :query, :options, :always_start_within_selection
 
       # description here
-      def initialize(query, options)
-        @options = options
-        @query =
-        options.is_regex ? make_regex_query(query, options) : make_literal_query(query, options)
-      end
-    end
-
-
-    # Finds the next match after the current location.
-    class FindIncrementalCommand < FindCommandBase
-      def execute
-        offsets = [doc.cursor_offset, doc.selection_offset]
-        start_pos = offsets.min
-        if select_next_match(doc, start_pos, query, @options.wrap_around)
-          true
-        else
-          # Clear selection as visual feedback that search failed.
-          doc.set_selection_range(start_pos, start_pos)
-          false
-        end
+      def initialize(q, opt)
+        @options = opt
+        @query = opt.is_regex ? make_regex_query(q, opt) : make_literal_query(q, opt)
       end
     end
 
 
     # Finds the next match after the current location.
     class FindNextCommand < FindCommandBase
+      def initialize(q, opt, always_start_within_selection=false)
+        super(q, opt)
+        @always_start_within_selection = always_start_within_selection
+      end
+
       def execute
+        # TODO(yozhipozhi): Test the start_within_selection behavior.
         offsets = [doc.cursor_offset, doc.selection_offset]
-        start_pos = offsets.max
-        if select_next_match(doc, start_pos, query, @options.wrap_around)
+        start_within_selection = (always_start_within_selection || !(query === doc.selected_text))
+        start_pos = start_within_selection ? offsets.min : offsets.max
+        if select_next_match(doc, start_pos, query, options.wrap_around)
           true
         else
           # Clear selection as visual feedback that search failed.

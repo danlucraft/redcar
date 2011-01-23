@@ -42,23 +42,24 @@ module Redcar
       ### COMMANDS ###
 
       def self.find_incremental
-        cmd = FindIncrementalCommand.new(
-        IncrementalSearchSpeedbar.previous_query,
-        IncrementalSearchSpeedbar.previous_options)
+        cmd = FindNextCommand.new(
+            IncrementalSearchSpeedbar.previous_query,
+            IncrementalSearchSpeedbar.previous_options,
+            start_within_selection=true)
         cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
       end
 
       def self.find_next
         cmd = FindNextCommand.new(
-        IncrementalSearchSpeedbar.previous_query,
-        IncrementalSearchSpeedbar.previous_options)
+            IncrementalSearchSpeedbar.previous_query,
+            IncrementalSearchSpeedbar.previous_options)
         cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
       end
 
       def self.find_previous
         cmd = FindPreviousCommand.new(
-        IncrementalSearchSpeedbar.previous_query,
-        IncrementalSearchSpeedbar.previous_options)
+            IncrementalSearchSpeedbar.previous_query,
+            IncrementalSearchSpeedbar.previous_options)
         cmd.run(:env => {:edit_view => Redcar::EditView.focussed_tab_edit_view})
       end
     end
