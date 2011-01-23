@@ -147,15 +147,31 @@ module Redcar
       end
 
       def execute
-        # TODO(yozhipozhi): Test the start_within_selection behavior.
-        offsets = [doc.cursor_offset, doc.selection_offset]
+        # We first determine where to start the search, either from the begin or end of the current
+        # selection.
+        #
+        # If always_start_within_selection is true, then we always start at the beginning; this is
+        # needed for incremental search.
+        #
+        # Otherwise, we check if the current selection matches the query:
+        # * If it does match, we start after the selection, assuming that the selection matches
+        #   because of a prior search, and we want to move on to the next occurrence.
+        # * If it doesn't match, we start at the beginning of the selection, to handle cases where
+        #   the selection is actually the start of a match, e.g. the "Foo" portion of "Foobar" is
+        #   selected, and the user sets the query to "Foobar"; then we want Find Next to simply
+        #   expand the selection to span "Foobar" as the next match.
+        #
+        # TODO(yozhipozhi): Test this behavior!
         start_within_selection = (always_start_within_selection || !(query === doc.selected_text))
+        offsets = [doc.cursor_offset, doc.selection_offset]
         start_pos = start_within_selection ? offsets.min : offsets.max
+
+        # Do selection.
         if select_next_match(doc, start_pos, query, options.wrap_around)
           true
         else
           # Clear selection as visual feedback that search failed.
-          doc.set_selection_range(start_pos, start_pos)
+          select_range_bytes(start_pos, start_pos)
           false
         end
       end
@@ -171,7 +187,7 @@ module Redcar
           true
         else
           # Clear selection as visual feedback that search failed.
-          doc.set_selection_range(start_pos, start_pos)
+          select_range_bytes(start_pos, start_pos)
           false
         end
       end
@@ -218,7 +234,7 @@ module Redcar
           true
         else
           # Clear selection as visual feedback that search failed.
-          doc.set_selection_range(start_pos, start_pos)
+          select_range_bytes(start_pos, start_pos)
           false
         end
       end
