@@ -236,11 +236,11 @@ module Redcar
     # Replaces the currently selected text, if it matches the search criteria, then finds and
     # selects the next match in the document.
     #
-    # This command maintains the invariant that no text is replaced without first being
-    # selected, so the user always knows exactly what change is about to be made. A ramification
-    # of this policy is that, if no text is selected beforehand, or the selected text does not
-    # match the query, then "replace" portion of "replace and find" is essentially skipped, so
-    # that two button presses are required.
+    # This command maintains the invariant that no text is replaced without first being selected,
+    # so the user always knows exactly what change is about to be made. A ramification of this
+    # policy is that, if no text is selected beforehand, or the selected text does not match the
+    # query, then "replace" portion of "replace and find" is essentially skipped, so that two button
+    # presses are required.
     class ReplaceAndFindCommand < ReplaceCommandBase
       def execute
         offsets = selection_byte_offsets
