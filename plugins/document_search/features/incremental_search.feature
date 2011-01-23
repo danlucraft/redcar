@@ -92,6 +92,26 @@ Feature: Incremental Search
     Then the selected text should be "You"
     And the selection range should be from 7 to 10
 
+  Scenario: Handles repeated search across by multi-byte characters
+    When I replace the contents with "Foo\n你好, 凯兰\nFoo\nBar\nFoo\nBaz"
+    And I move the cursor to 0
+    And I open the incremental search speedbar
+    And I type "foo" into the "Find" field in the speedbar
+    Then the selected text should be "Foo"
+    And the selection should be on line 0
+    When I open the incremental search speedbar
+    Then the selected text should be "Foo"
+    And the selection should be on line 2
+    When I open the incremental search speedbar
+    Then the selected text should be "Foo"
+    And the selection should be on line 4
+    When I open the incremental search speedbar
+    Then the selected text should be "Foo"
+    And the selection should be on line 0
+    When I open the incremental search speedbar
+    Then the selected text should be "Foo"
+    And the selection should be on line 2
+
   Scenario: Should select multi-byte characters
     When I replace the contents with "Benedikt Müller"
     And I move the cursor to 0
@@ -304,19 +324,19 @@ Feature: Incremental Search
     Then the selected text should be "Foo"
     And horizontal offset 302 should be visible
 
-  Scenario: Should reopen with the same text as the previous search
+  Scenario: Should not reopen with the same text as the previous search
     When I open the incremental search speedbar
     And I type "foo" into the "Find" field in the speedbar
     And I close the speedbar
     And I open the incremental search speedbar
-    Then the "Find" field in the speedbar should have text "foo"
+    Then the "Find" field in the speedbar should have text ""
 
   Scenario: Should not initialize query with the currently selected text
     When I replace the contents with "Flux\nBar\nFoo"
     And I move the cursor to 0
     And I select from 0 to 4
     And I open the incremental search speedbar
-    Then the "Find" field in the speedbar should have text "foo"
+    Then the "Find" field in the speedbar should have text ""
 
   Scenario: Search for a word should start from the start of a selection
     When I replace the contents with "Foo\nBar\nBaz"
