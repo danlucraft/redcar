@@ -186,6 +186,8 @@ module Redcar
             start_within_selection = false
           end
         end
+        offsets = selection_byte_offsets
+        start_pos = start_within_selection ? offsets[0] : offsets[1]
 
         # Do selection.
         if select_next_match(doc, start_pos, query, options.wrap_around)
