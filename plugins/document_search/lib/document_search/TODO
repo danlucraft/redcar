@@ -6,8 +6,8 @@
 * Add Replace All in Selection speedbar button. [DONE]
 * Add Replace All in Selection menu. [DONE]
 * Fix/add feature tests:
-  * Incremental Search Speedbar
-  * Find Speedbar
+  * Incremental Search Speedbar [DONE]
+  * Find Speedbar [DONE]
   * Menu commands:
     * Use Selection for Find
     * Use Selection for Replace
@@ -16,6 +16,7 @@
     * Replace All
     * Replace All in Selection
     * Replace & Find Menu
+* Deal with bad state of open speedbar, after reloading plugin
 * Make Not found red.
 * Add replace count message for Replace All, Replace All in Selection.
 * Better implementation of Find Previous (reverse regex when feasible)
