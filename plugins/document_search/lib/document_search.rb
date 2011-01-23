@@ -65,8 +65,11 @@ module Redcar
       def execute
         already_open = win.speedbar.is_a? IncrementalSearchSpeedbar
         @speedbar = IncrementalSearchSpeedbar.new
-        win.open_speedbar(@speedbar)
-        if already_open
+        unless already_open
+          IncrementalSearchSpeedbar.previous_query = ''
+          win.open_speedbar(@speedbar)
+        else
+          win.open_speedbar(@speedbar)
           IncrementalSearchSpeedbar.find_next
         end
       end
