@@ -341,215 +341,201 @@ Feature: Find
   # End: Scenarios adapted from incremental_search.feature
 
   # Begin: Replacement scenarios specific to Find speedbar
-  #
-  # Scenario: Replace and find with no initial selection
-  #   When I replace the contents with "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
-  #   And I move the cursor to 0
-  #   And I open the find speedbar
-  #   And I type "Rab" into the "Find" field in the speedbar
-  #   And I type "RABBIT" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "query_type" field in the speedbar
-  #   And I check "Wrap Around" in the speedbar
-  #   And I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
-  #   And the selected text should be "Rab"
-  #   And the selection range should be from 12 to 15
-  #   When I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo RABBIT Rab\nHmm\nRab\nFoo\nBaz"
-  #   And the selected text should be "Rab"
-  #   And the selection range should be from 19 to 22
-  #   When I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo RABBIT RABBIT\nHmm\nRab\nFoo\nBaz"
-  #   And the selected text should be "Rab"
-  #   And the selection range should be from 30 to 33
-  #   When I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo RABBIT RABBIT\nHmm\nRABBIT\nFoo\nBaz"
-  #   And the selected text should be "RAB"
-  #   And the selection range should be from 12 to 15
-  #   When I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo RABBITBIT RABBIT\nHmm\nRABBIT\nFoo\nBaz"
-  #   And the selected text should be "RAB"
-  #   And the selection range should be from 22 to 25
-  #
-  # Scenario: Replace and find with matching initial selection
-  #   When I replace the contents with "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
-  #   And I select from 12 to 15
-  #   And I open the find speedbar
-  #   And I type "Rab" into the "Find" field in the speedbar
-  #   And I type "RABBIT" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "query_type" field in the speedbar
-  #   And I check "Wrap Around" in the speedbar
-  #   And I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo RABBIT Rab\nHmm\nRab\nFoo\nBaz"
-  #   And the selected text should be "Rab"
-  #   And the selection range should be from 19 to 22
-  #   When I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo RABBIT RABBIT\nHmm\nRab\nFoo\nBaz"
-  #   And the selected text should be "Rab"
-  #   And the selection range should be from 30 to 33
-  #   When I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo RABBIT RABBIT\nHmm\nRABBIT\nFoo\nBaz"
-  #   And the selected text should be "RAB"
-  #   And the selection range should be from 12 to 15
-  #   When I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo RABBITBIT RABBIT\nHmm\nRABBIT\nFoo\nBaz"
-  #   And the selected text should be "RAB"
-  #   And the selection range should be from 22 to 25
-  #
-  # Scenario: Replace and find with initial selection that doesn't match
-  #   When I replace the contents with "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
-  #   And I select from 4 to 7
-  #   And I open the find speedbar
-  #   And I type "Rab" into the "Find" field in the speedbar
-  #   And I type "RABBIT" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "query_type" field in the speedbar
-  #   And I check "Wrap Around" in the speedbar
-  #   And I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
-  #   And the selected text should be "Rab"
-  #   And the selection range should be from 12 to 15
-  #   When I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo RABBIT Rab\nHmm\nRab\nFoo\nBaz"
-  #   And the selected text should be "Rab"
-  #   And the selection range should be from 19 to 22
-  #   When I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo RABBIT RABBIT\nHmm\nRab\nFoo\nBaz"
-  #   And the selected text should be "Rab"
-  #   And the selection range should be from 30 to 33
-  #   When I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo RABBIT RABBIT\nHmm\nRABBIT\nFoo\nBaz"
-  #   And the selected text should be "RAB"
-  #   And the selection range should be from 12 to 15
-  #   When I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo RABBITBIT RABBIT\nHmm\nRABBIT\nFoo\nBaz"
-  #   And the selected text should be "RAB"
-  #   And the selection range should be from 22 to 25
-  #
-  # Scenario: Replace and find with initial selection that is after last match
-  #   When I replace the contents with "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
-  #   And I select from 28 to 31
-  #   And I open the find speedbar
-  #   And I type "Rab" into the "Find" field in the speedbar
-  #   And I type "RABBIT" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "query_type" field in the speedbar
-  #   And I check "Wrap Around" in the speedbar
-  #   And I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
-  #   And the selected text should be "Rab"
-  #   And the selection range should be from 12 to 15
-  #   When I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo RABBIT Rab\nHmm\nRab\nFoo\nBaz"
-  #   And the selected text should be "Rab"
-  #   And the selection range should be from 19 to 22
-  #   When I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo RABBIT RABBIT\nHmm\nRab\nFoo\nBaz"
-  #   And the selected text should be "Rab"
-  #   And the selection range should be from 30 to 33
-  #   When I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo RABBIT RABBIT\nHmm\nRABBIT\nFoo\nBaz"
-  #   And the selected text should be "RAB"
-  #   And the selection range should be from 12 to 15
-  #   When I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo RABBITBIT RABBIT\nHmm\nRABBIT\nFoo\nBaz"
-  #   And the selected text should be "RAB"
-  #   And the selection range should be from 22 to 25
-  #
-  # Scenario: Replace and find with initial selection that is after last match and no wrap around
-  #   When I replace the contents with "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
-  #   And I select from 28 to 31
-  #   And I open the find speedbar
-  #   And I type "Rab" into the "Find" field in the speedbar
-  #   And I type "RABBIT" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "query_type" field in the speedbar
-  #   And I uncheck "Wrap Around" in the speedbar
-  #   And I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
-  #   And the selected text should be ""
-  #   And the selection range should be from 31 to 31
-  #   When I press "Replace && Find" in the speedbar
-  #   Then the contents should be "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
-  #   And the selected text should be ""
-  #   And the selection range should be from 31 to 31
-  #
-  # Scenario: Replace all replaces one
-  #   When I replace the contents with "Foo\nBar\nBaz"
-  #   And I move the cursor to 0
-  #   And I open the find speedbar
-  #   And I type "Bar" into the "Find" field in the speedbar
-  #   And I type "Rab" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "query_type" field in the speedbar
-  #   And I uncheck "Wrap Around" in the speedbar
-  #   And I press "Replace All" in the speedbar
-  #   Then the contents should be "Foo\nRab\nBaz"
-  #   And the selected text should be "Rab"
-  #   And the selection range should be from 4 to 7
-  #
-  # Scenario: Replace all replaces two
-  #   When I replace the contents with "Foo\nBar\nBaz\nBar\nQux"
-  #   And I move the cursor to 0
-  #   And I open the find speedbar
-  #   And I type "Bar" into the "Find" field in the speedbar
-  #   And I type "Rab" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "query_type" field in the speedbar
-  #   And I uncheck "Wrap Around" in the speedbar
-  #   And I press "Replace All" in the speedbar
-  #   Then the contents should be "Foo\nRab\nBaz\nRab\nQux"
-  #   And the selected text should be "Rab"
-  #   And the selection range should be from 12 to 15
-  #
-  # Scenario: Replace all replaces two on the same line
-  #   When I replace the contents with "abcabc"
-  #   And I open the find speedbar
-  #   And I type "bc" into the "Find" field in the speedbar
-  #   And I type "xx" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "query_type" field in the speedbar
-  #   And I uncheck "Wrap Around" in the speedbar
-  #   And I press "Replace All" in the speedbar
-  #   Then the contents should be "axxaxx"
-  #   And the selected text should be "xx"
-  #   And the selection range should be from 4 to 6
-  #   When I press "Replace All" in the speedbar
-  #   Then the contents should be "axxaxx"
-  #   And the selected text should be "xx"
-  #   And the selection range should be from 4 to 6
-  #
-  # Scenario: Replace all replaces overlapping occurences on the same line
-  #   When I replace the contents with "deedeedeed"
-  #   And I open the find speedbar
-  #   And I type "deed" into the "Find" field in the speedbar
-  #   And I type "misdeed" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "query_type" field in the speedbar
-  #   And I uncheck "Wrap Around" in the speedbar
-  #   And I press "Replace All" in the speedbar
-  #   Then the contents should be "misdeedeemisdeed"
-  #   And the selected text should be "misdeed"
-  #   And the selection range should be from 9 to 16
-  #
-  # Scenario: Replace all is a single undo action
-  #   When I replace the contents with "Foo\n\nabcabc\n\nBar"
-  #   And I open the find speedbar
-  #   And I type "bc" into the "Find" field in the speedbar
-  #   And I type "xx" into the "Replace" field in the speedbar
-  #   And I choose "Plain" in the "query_type" field in the speedbar
-  #   And I uncheck "Wrap Around" in the speedbar
-  #   And I press "Replace All" in the speedbar
-  #   Then the contents should be "Foo\n\naxxaxx\n\nBar"
-  #   And the selected text should be "xx"
-  #   And the selection range should be from 9 to 11
-  #   When I undo
-  #   Then the contents should be "Foo\n\nabcabc\n\nBar"
-  #
-  # Scenario: Replace all regex with back-references
-  #   When I replace the contents with "One fish\ntwo fish\nred fish\nblue fish"
-  #   And I move the cursor to 0
-  #   And I open the find speedbar
-  #   And I type "(\w+) fish" into the "Find" field in the speedbar
-  #   And I type "\1 car" into the "Replace" field in the speedbar
-  #   And I check "Regex" in the speedbar
-  #   And I uncheck "Wrap Around" in the speedbar
-  #   And I press "Replace All" in the speedbar
-  #   Then the contents should be "One car\ntwo car\nred car\nblue car"
-  #   And the selected text should be "blue car"
-  #   And the selection range should be from 24 to 32
+  
+  Scenario: Replace and find with no initial selection
+    When I replace the contents with "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
+    And I move the cursor to 0
+    And I open the find speedbar
+    And I type "Rab" into the "Find" field in the speedbar
+    And I type "RABBIT" into the "Replace" field in the speedbar
+    And I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
+    And the selected text should be "Rab"
+    And the selection range should be from 12 to 15
+    When I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo RABBIT Rab\nHmm\nRab\nFoo\nBaz"
+    And the selected text should be "Rab"
+    And the selection range should be from 19 to 22
+    When I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo RABBIT RABBIT\nHmm\nRab\nFoo\nBaz"
+    And the selected text should be "Rab"
+    And the selection range should be from 30 to 33
+    When I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo RABBIT RABBIT\nHmm\nRABBIT\nFoo\nBaz"
+    And the selected text should be "RAB"
+    And the selection range should be from 12 to 15
+    When I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo RABBITBIT RABBIT\nHmm\nRABBIT\nFoo\nBaz"
+    And the selected text should be "RAB"
+    And the selection range should be from 22 to 25
+  
+  Scenario: Replace and find with matching initial selection
+    When I replace the contents with "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
+    And I select from 12 to 15
+    And I open the find speedbar
+    And I type "Rab" into the "Find" field in the speedbar
+    And I type "RABBIT" into the "Replace" field in the speedbar
+    And I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo RABBIT Rab\nHmm\nRab\nFoo\nBaz"
+    And the selected text should be "Rab"
+    And the selection range should be from 19 to 22
+    When I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo RABBIT RABBIT\nHmm\nRab\nFoo\nBaz"
+    And the selected text should be "Rab"
+    And the selection range should be from 30 to 33
+    When I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo RABBIT RABBIT\nHmm\nRABBIT\nFoo\nBaz"
+    And the selected text should be "RAB"
+    And the selection range should be from 12 to 15
+    When I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo RABBITBIT RABBIT\nHmm\nRABBIT\nFoo\nBaz"
+    And the selected text should be "RAB"
+    And the selection range should be from 22 to 25
+  
+  Scenario: Replace and find with initial selection that doesn't match
+    When I replace the contents with "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
+    And I select from 4 to 7
+    And I open the find speedbar
+    And I type "Rab" into the "Find" field in the speedbar
+    And I type "RABBIT" into the "Replace" field in the speedbar
+    And I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
+    And the selected text should be "Rab"
+    And the selection range should be from 12 to 15
+    When I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo RABBIT Rab\nHmm\nRab\nFoo\nBaz"
+    And the selected text should be "Rab"
+    And the selection range should be from 19 to 22
+    When I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo RABBIT RABBIT\nHmm\nRab\nFoo\nBaz"
+    And the selected text should be "Rab"
+    And the selection range should be from 30 to 33
+    When I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo RABBIT RABBIT\nHmm\nRABBIT\nFoo\nBaz"
+    And the selected text should be "RAB"
+    And the selection range should be from 12 to 15
+    When I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo RABBITBIT RABBIT\nHmm\nRABBIT\nFoo\nBaz"
+    And the selected text should be "RAB"
+    And the selection range should be from 22 to 25
+  
+  Scenario: Replace and find with initial selection that is after last match
+    When I replace the contents with "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
+    And I select from 28 to 31
+    And I open the find speedbar
+    And I type "Rab" into the "Find" field in the speedbar
+    And I type "RABBIT" into the "Replace" field in the speedbar
+    And I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
+    And the selected text should be "Rab"
+    And the selection range should be from 12 to 15
+    When I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo RABBIT Rab\nHmm\nRab\nFoo\nBaz"
+    And the selected text should be "Rab"
+    And the selection range should be from 19 to 22
+    When I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo RABBIT RABBIT\nHmm\nRab\nFoo\nBaz"
+    And the selected text should be "Rab"
+    And the selection range should be from 30 to 33
+    When I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo RABBIT RABBIT\nHmm\nRABBIT\nFoo\nBaz"
+    And the selected text should be "RAB"
+    And the selection range should be from 12 to 15
+    When I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo RABBITBIT RABBIT\nHmm\nRABBIT\nFoo\nBaz"
+    And the selected text should be "RAB"
+    And the selection range should be from 22 to 25
+  
+  Scenario: Replace and find with initial selection that is after last match and no wrap around
+    When I replace the contents with "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
+    And I select from 28 to 31
+    And I open the find speedbar
+    And I type "Rab" into the "Find" field in the speedbar
+    And I type "RABBIT" into the "Replace" field in the speedbar
+    And I uncheck "Wrap around" in the speedbar
+    And I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
+    And the selected text should be ""
+    And the selection range should be from 31 to 31
+    When I press "Replace && Find" in the speedbar
+    Then the contents should be "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
+    And the selected text should be ""
+    And the selection range should be from 31 to 31
+  
+  Scenario: Replace all replaces one
+    When I replace the contents with "Foo\nBar\nBaz"
+    And I move the cursor to 0
+    And I open the find speedbar
+    And I type "Bar" into the "Find" field in the speedbar
+    And I type "Rab" into the "Replace" field in the speedbar
+    And I uncheck "Wrap around" in the speedbar
+    And I press "Replace All" in the speedbar
+    Then the contents should be "Foo\nRab\nBaz"
+    And the selected text should be "Rab"
+    And the selection range should be from 4 to 7
+  
+  Scenario: Replace all replaces two
+    When I replace the contents with "Foo\nBar\nBaz\nBar\nQux"
+    And I move the cursor to 0
+    And I open the find speedbar
+    And I type "Bar" into the "Find" field in the speedbar
+    And I type "Rab" into the "Replace" field in the speedbar
+    And I uncheck "Wrap around" in the speedbar
+    And I press "Replace All" in the speedbar
+    Then the contents should be "Foo\nRab\nBaz\nRab\nQux"
+    And the selected text should be "Rab"
+    And the selection range should be from 12 to 15
+  
+  Scenario: Replace all replaces two on the same line
+    When I replace the contents with "abcabc"
+    And I open the find speedbar
+    And I type "bc" into the "Find" field in the speedbar
+    And I type "xx" into the "Replace" field in the speedbar
+    And I uncheck "Wrap around" in the speedbar
+    And I press "Replace All" in the speedbar
+    Then the contents should be "axxaxx"
+    And the selected text should be "xx"
+    And the selection range should be from 4 to 6
+    When I press "Replace All" in the speedbar
+    Then the contents should be "axxaxx"
+    And the selected text should be "xx"
+    And the selection range should be from 4 to 6
+  
+  Scenario: Replace all replaces overlapping occurences on the same line
+    When I replace the contents with "deedeedeed"
+    And I open the find speedbar
+    And I type "deed" into the "Find" field in the speedbar
+    And I type "misdeed" into the "Replace" field in the speedbar
+    And I uncheck "Wrap around" in the speedbar
+    And I press "Replace All" in the speedbar
+    Then the contents should be "misdeedeemisdeed"
+    And the selected text should be "misdeed"
+    And the selection range should be from 9 to 16
+  
+  Scenario: Replace all is a single undo action
+    When I replace the contents with "Foo\n\nabcabc\n\nBar"
+    And I open the find speedbar
+    And I type "bc" into the "Find" field in the speedbar
+    And I type "xx" into the "Replace" field in the speedbar
+    And I uncheck "Wrap around" in the speedbar
+    And I press "Replace All" in the speedbar
+    Then the contents should be "Foo\n\naxxaxx\n\nBar"
+    And the selected text should be "xx"
+    And the selection range should be from 9 to 11
+    When I undo
+    Then the contents should be "Foo\n\nabcabc\n\nBar"
+  
+  Scenario: Replace all regex with back-references
+    When I replace the contents with "One fish\ntwo fish\nred fish\nblue fish"
+    And I move the cursor to 0
+    And I open the find speedbar
+    And I type "(\w+) fish" into the "Find" field in the speedbar
+    And I type "\1 car" into the "Replace" field in the speedbar
+    And I check "Regex" in the speedbar
+    And I uncheck "Wrap around" in the speedbar
+    And I press "Replace All" in the speedbar
+    Then the contents should be "One car\ntwo car\nred car\nblue car"
+    And the selected text should be "blue car"
+    And the selection range should be from 24 to 32
 
   # End: Replacement scenarios specific to Find speedbar
