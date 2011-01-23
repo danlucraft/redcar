@@ -19,7 +19,7 @@ module Redcar
         return 7
       end
 
-      label :label_find, "Find:"
+      label :label_find, 'Find:'
       textbox :query do |val|
         FindSpeedbar.previous_query = val
       end
@@ -40,37 +40,37 @@ module Redcar
       label :label_space_end_row1, ""
       label :label_spacer_start_row2, ""
 
-      label :label_replace, "Replace:"
+      label :label_replace, 'Replace:'
       textbox :replace do |val|
         FindSpeedbar.previous_replace = val
       end
 
-      button :replace_find, 'Replace && Find', "Return" do
+      button :replace_find, 'Replace && Find', 'Alt+Return' do
         FindSpeedbar.replace_and_find(
-        FindSpeedbar.previous_query,
-        FindSpeedbar.previous_replace,
-        FindSpeedbar.previous_options) or not_found
+            FindSpeedbar.previous_query,
+            FindSpeedbar.previous_replace,
+            FindSpeedbar.previous_options) or not_found
       end
 
-      button :replace_all, "Replace All", nil do
+      button :replace_all, 'Replace All', nil do
         FindSpeedbar.replace_all(
-        FindSpeedbar.previous_query,
-        FindSpeedbar.previous_replace,
-        FindSpeedbar.previous_options) or not_found
+            FindSpeedbar.previous_query,
+            FindSpeedbar.previous_replace,
+            FindSpeedbar.previous_options) or not_found
       end
 
-      button :replace_all_in_selection, "Replace in Selection", nil do
+      button :replace_all_in_selection, 'Replace in Selection', nil do
         FindSpeedbar.replace_all_in_selection(
-        FindSpeedbar.previous_query,
-        FindSpeedbar.previous_replace,
-        FindSpeedbar.previous_options) or not_found
+            FindSpeedbar.previous_query,
+            FindSpeedbar.previous_replace,
+            FindSpeedbar.previous_options) or not_found
       end
 
-      button :find_previous, "Previous", nil do
+      button :find_previous, 'Previous', 'Shift+Return' do
         FindSpeedbar.find_previous or not_found
       end
 
-      button :find_next, "Next", nil do
+      button :find_next, 'Next', 'Return' do
         FindSpeedbar.find_next or not_found
       end
 
