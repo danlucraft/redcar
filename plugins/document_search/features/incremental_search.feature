@@ -84,6 +84,38 @@ Feature: Incremental Search
     Then the selected text should be "foo"
     And the selection range should be from 17 to 20
 
+  Scenario: Not thrown off by multi-byte characters 3
+    When I replace the contents with "你好, 凯兰\nYou make my heart super happy."
+    And I move the cursor to 0
+    And I open the incremental search speedbar
+    And I type "you" into the "Find" field in the speedbar
+    Then the selected text should be "You"
+    And the selection range should be from 7 to 10
+
+  Scenario: Should select multi-byte characters
+    When I replace the contents with "Benedikt Müller"
+    And I move the cursor to 0
+    And I open the incremental search speedbar
+    And I type "mül" into the "Find" field in the speedbar
+    Then the selected text should be "Mül"
+    And the selection range should be from 9 to 12
+
+  Scenario: Should select multi-byte characters
+    When I replace the contents with "Benedikt Müller"
+    And I move the cursor to 0
+    And I open the incremental search speedbar
+    And I type "mül" into the "Find" field in the speedbar
+    Then the selected text should be "Mül"
+    And the selection range should be from 9 to 12
+
+  Scenario: Should select multi-byte characters 2
+    When I replace the contents with "你好, 凯兰\nYou make my heart super happy."
+    And I move the cursor to 0
+    And I open the incremental search speedbar
+    And I type "凯兰" into the "Find" field in the speedbar
+    Then the selected text should be "凯兰"
+    And the selection range should be from 4 to 6
+
   Scenario: Doesn't search for a regex
     When I replace the contents with "Foo\nBar\nBaz"
     And I move the cursor to 0
