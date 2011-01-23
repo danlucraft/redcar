@@ -79,7 +79,18 @@ module Redcar
       # Initializes UI elements.
       def after_draw
         clear_not_found
-        self.query.value = @initial_query || FindSpeedbar.previous_query
+        # If the current selection (from @initial_query) is equal to previous_replace, we ignore
+        # that selection and just use the previous value for the query.
+        #
+        # This is especially important in the following command sequence: Select; Use selection for
+        # query; Select; Use selection for replace; Open Find speedbar. Without the fix, the prior
+        # selection for the query gets overwritten with the current selection, which is annoying and
+        # useless.
+        if (@initial_query == FindSpeedbar.previous_replace)
+          self.query.value = FindSpeedbar.previous_query
+        else
+          @initial_query || FindSpeedbar.previous_query
+        end
         self.replace.value = FindSpeedbar.previous_replace || ""
         self.is_regex.value = FindSpeedbar.previous_options.is_regex
         self.match_case.value = FindSpeedbar.previous_options.match_case
