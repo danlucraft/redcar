@@ -66,9 +66,11 @@ module Redcar
         already_open = win.speedbar.is_a? IncrementalSearchSpeedbar
         @speedbar = IncrementalSearchSpeedbar.new
         unless already_open
+          # Clear out previous query for new speedbar.
           IncrementalSearchSpeedbar.previous_query = ''
           win.open_speedbar(@speedbar)
         else
+          # If already open, find next match.
           win.open_speedbar(@speedbar)
           IncrementalSearchSpeedbar.find_next
         end
@@ -108,27 +110,27 @@ module Redcar
     class DoReplaceAndFindCommand < Redcar::EditTabCommand
       def execute
         FindSpeedbar.replace_and_find(
-        FindSpeedbar.previous_query,
-        FindSpeedbar.previous_replace,
-        FindSpeedbar.previous_options)
+            FindSpeedbar.previous_query,
+            FindSpeedbar.previous_replace,
+            FindSpeedbar.previous_options)
       end
     end
 
     class DoReplaceAllCommand < Redcar::EditTabCommand
       def execute
         FindSpeedbar.replace_all(
-        FindSpeedbar.previous_query,
-        FindSpeedbar.previous_replace,
-        FindSpeedbar.previous_options)
+            FindSpeedbar.previous_query,
+            FindSpeedbar.previous_replace,
+            FindSpeedbar.previous_options)
       end
     end
 
     class DoReplaceAllInSelectionCommand < Redcar::EditTabCommand
       def execute
         FindSpeedbar.replace_all_in_selection(
-        FindSpeedbar.previous_query,
-        FindSpeedbar.previous_replace,
-        FindSpeedbar.previous_options)
+            FindSpeedbar.previous_query,
+            FindSpeedbar.previous_replace,
+            FindSpeedbar.previous_options)
       end
     end
 
