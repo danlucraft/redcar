@@ -127,6 +127,14 @@ module Redcar
         if doc.selection?
           first_line_ix = doc.line_at_offset(doc.selection_range.begin)
           last_line_ix  = doc.line_at_offset(doc.selection_range.end)
+
+          if doc.selection_range.begin == doc.offset_at_inner_end_of_line(first_line_ix)
+            first_line_ix += 1
+          end
+          if doc.selection_range.end == doc.offset_at_line(last_line_ix)
+            last_line_ix -= 1
+          end
+
           text = doc.get_slice(doc.offset_at_line(first_line_ix),
                                doc.offset_at_line_end(last_line_ix))
           keep_selection = true
@@ -171,6 +179,14 @@ module Redcar
         if doc.selection?
           first_line_ix = doc.line_at_offset(doc.selection_range.begin)
           last_line_ix  = doc.line_at_offset(doc.selection_range.end)
+          
+          if doc.selection_range.begin == doc.offset_at_inner_end_of_line(first_line_ix)
+            first_line_ix += 1
+          end
+          if doc.selection_range.end == doc.offset_at_line(last_line_ix)
+            last_line_ix -= 1
+          end
+          
           text = doc.get_slice(doc.offset_at_line(first_line_ix),
                                doc.offset_at_line_end(last_line_ix))
           keep_selection = true
