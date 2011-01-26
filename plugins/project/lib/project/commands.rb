@@ -224,7 +224,7 @@ module Redcar
       end
     end
 
-    class FindRecentCommand < ProjectCommand
+    class FindRecentCommand < Command
       def execute
         FindRecentDialog.new.open
       end

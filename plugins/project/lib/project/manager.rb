@@ -385,16 +385,14 @@ module Redcar
               item "Open", Project::FileOpenCommand
               item "Reload File", Project::FileReloadCommand
               item "Open Directory", Project::DirectoryOpenCommand
-              #item "Open Remote...", Project::OpenRemoteCommand
-              lazy_sub_menu "Open Recent" do
-                Project::Recent.generate_menu(self)
-              end
-
+              item "Open Recent...", Project::FindRecentCommand
+              
               separator
               item "Save", Project::FileSaveCommand
               item "Save As", Project::FileSaveAsCommand
             end
           end
+          
           sub_menu "Project", :priority => 15 do
             group(:priority => :first) do
               item "Find File", Project::FindFileCommand

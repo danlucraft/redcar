@@ -3,9 +3,8 @@ Version 0.11 (TBA)
 
 Enhancements:
 
- * File/Recent menu now includes files as well as directories. (Benedikt Müller)
  * Fuzzy file finder now recognizes directories "a/c/repocontr" (Tim Felgentreff)
- * Open recent profile finder (Benedikt Müller)
+ * Recent project fuzzy finder (Benedikt Müller)
  * Improved DocumentSearch, with UI refinements, added Replace All commands (Tom Murray)
 
 Bugfixes:

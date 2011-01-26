@@ -1011,6 +1011,7 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+O",       Project::FileOpenCommand
         link "Cmd+U",       Project::FileReloadCommand
         link "Cmd+Shift+O", Project::DirectoryOpenCommand
+        link "Cmd+Alt+Ctrl+P",   Project::FindRecentCommand
         #link "Cmd+Ctrl+O",  Project::OpenRemoteCommand
         link "Cmd+S",       Project::FileSaveCommand
         link "Cmd+Shift+S", Project::FileSaveAsCommand
@@ -1099,6 +1100,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Alt+N",   NewWindowCommand
         link "Ctrl+O",       Project::FileOpenCommand
         link "Ctrl+Shift+O", Project::DirectoryOpenCommand
+        link "Ctrl+Alt+Shift+P",   Project::FindRecentCommand
         #link "Alt+Shift+O",  Project::OpenRemoteCommand
         link "Ctrl+S",       Project::FileSaveCommand
         link "Ctrl+Shift+S", Project::FileSaveAsCommand
@@ -1207,7 +1209,6 @@ Redcar.environment: #{Redcar.environment}
           group(:priority => :first) do
             item "New", NewCommand
             item "New Window", NewWindowCommand
-            item "Open Recent...", Project::FindRecentCommand
           end
 
           group(:priority => 10) do
