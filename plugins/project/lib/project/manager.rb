@@ -409,7 +409,7 @@ module Redcar
           sub_menu "Project", :priority => 15 do
             group(:priority => :first) do
               item "Find File", Project::FindFileCommand
-              item "Refresh Directory", Project::RefreshDirectoryCommand
+              # item "Refresh Directory", Project::RefreshDirectoryCommand
             end
             item "Reveal Open File in Tree", :command => Project::ToggleRevealInProject, :type => :check, :active => Project::Manager.reveal_files?
           end

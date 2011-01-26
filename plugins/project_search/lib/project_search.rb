@@ -14,10 +14,8 @@ class ProjectSearch
   def self.menus
     Redcar::Menu::Builder.build do
       sub_menu "Project" do
-        group :priority => 53 do
-          separator
-          item "Word Search",  :command => ProjectSearch::WordSearchCommand
-          item "Regex Search", :command => ProjectSearch::RegexSearchCommand
+        group :priority => 1 do
+          item "Search",  :command => ProjectSearch::WordSearchCommand
         end
       end
     end
@@ -26,18 +24,16 @@ class ProjectSearch
   def self.keymaps
     osx = Redcar::Keymap.build("main", :osx) do
       link "Cmd+Shift+F",     ProjectSearch::WordSearchCommand
-      link "Cmd+Shift+Alt+F", ProjectSearch::RegexSearchCommand
     end
     linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
       link "Ctrl+Shift+F",     ProjectSearch::WordSearchCommand
-      link "Ctrl+Shift+Alt+F", ProjectSearch::RegexSearchCommand
     end
     [osx, linwin]
   end
 
   def self.toolbars
     Redcar::ToolBar::Builder.build do
-      item "Project Word Search", :command => WordSearchCommand, 
+      item "Search", :command => WordSearchCommand, 
         :icon => File.join(Redcar::ICONS_DIRECTORY, "application-search-result.png"), 
         :barname => :project
     end
