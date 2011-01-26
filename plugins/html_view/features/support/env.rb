@@ -24,3 +24,19 @@ end
 After do
   reset_htmlview_fixtures
 end
+
+$:.push("plugins/html_view/vendor/nokogiri/lib")
+require 'nokogiri'
+
+p Nokogiri::HTML("<h1>afso</h1>")
+
+$:.push("plugins/html_view/vendor/capybara/lib")
+require 'capybara'
+require 'capybara/dsl'
+
+$:.push("plugins/html_view/vendor/capybara-sweet/lib")
+require 'capybara/driver/sweet'
+
+Capybara.default_driver = :sweet
+
+World(Capybara)

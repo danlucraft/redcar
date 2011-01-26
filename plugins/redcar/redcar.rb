@@ -74,10 +74,15 @@ module Redcar
         Runnables::RunningProcessChecker.new(
           Redcar.app.all_tabs.select {|t| t.is_a?(HtmlTab)},
           "Kill all and quit?",
-          :none     => lambda { Redcar.app.quit },
-          :continue => lambda { Redcar.app.quit },
+          :none     => lambda { quit },
+          :continue => lambda { quit },
           :cancel   => nil
         ).check
+      end
+      
+      def quit
+        Project::Manager.open_projects.each {|pr| pr.close }
+        Redcar.app.quit
       end
     end
 
@@ -1056,7 +1061,6 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+=",       EditView::AlignAssignmentCommand
         link "Ctrl+Shift+^", SortLinesCommand
 
-        link "Cmd+Shift+F",     Redcar::FindInProject::OpenSearch
         link "Cmd+T",           Project::FindFileCommand
         link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
         link "Cmd+Alt+O",       SwitchNotebookCommand
@@ -1137,6 +1141,7 @@ Redcar.environment: #{Redcar.environment}
         link "Escape",           AutoCompleter::AutoCompleteCommand
         link "Ctrl+Escape",      AutoCompleter::MenuAutoCompleterCommand
         link "Ctrl+Space",       AutoCompleter::AutoCompleteCommand
+        
         link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleterCommand
 
         link "Ctrl+U",           EditView::UpcaseTextCommand
@@ -1147,7 +1152,6 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+=",           EditView::AlignAssignmentCommand
         link "Ctrl+Shift+^",     SortLinesCommand
 
-        link "Ctrl+Shift+F",     Redcar::FindInProject::OpenSearch
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
 

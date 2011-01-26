@@ -70,6 +70,7 @@ module Redcar
     end
 
     def open(win)
+      lock
       @window = win
       if current_project = Project.window_projects[window]
         current_project.close
@@ -85,16 +86,52 @@ module Redcar
       Manager.storage['last_open_dir'] = path
       Project.window_projects[window] = self
     end
+    
+    def lock
+      File.open(lock_filename, "w") do |fout|
+        fout.puts "#{$$}: Locked by #{$$} at #{Time.now}"
+      end
+    end
+    
+    def lock_filename
+      File.join(config_dir, "redcar.lock")
+    end
+    
+    def locked?
+      File.exist?(lock_filename)
+    end
+    
+    def unlock
+      if locked?
+        if locked_by_this_process?
+          FileUtils.rm_rf(lock_filename)
+        else
+          raise "locked by another process"
+        end
+      else
+        raise "project not locked"
+      end
+    end
+    
+    def locked_by_this_process?
+      return false unless locked?
+      locking_pid = File.read(lock_filename).split(":").first
+      locking_pid == $$.to_s
+    end
 
     def close
-      window.treebook.remove_tree(@tree)
-      Project.window_projects.delete(window)
-      window.title = Window::DEFAULT_TITLE
+      return unless @window
+      this_window = window
+      @window = nil
+      this_window.treebook.remove_tree(@tree)
+      Project.window_projects.delete(this_window)
+      this_window.title = Window::DEFAULT_TITLE
       Manager.open_project_sensitivity.recompute
       Redcar.plugin_manager.objects_implementing(:project_closed).each do |i|
         i.project_closed(self)
       end
       listeners = {}
+      unlock
     end
 
     def attach_listeners
@@ -184,7 +221,12 @@ module Redcar
 
     def send_refresh_to_plugins
       Redcar.plugin_manager.objects_implementing(:project_refresh_task_type).each do |object|
-        Redcar.app.task_queue.submit(object.project_refresh_task_type.new(self))
+        task = object.project_refresh_task_type.new(self)
+        if Redcar::Resource.compute_synchronously
+          task.execute
+        else
+          Redcar::Resource.task_queue.submit(task)
+        end
       end
     end
 

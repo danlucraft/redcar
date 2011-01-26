@@ -1,6 +1,0 @@
-<tr class="result file_<%= @file.num %> line_<%= @line.num %> <%= (@line_index % 2 == 0 ? 'even' : 'odd') %>" data-href='<%= CGI::escapeHTML(@file.name) %>' data-line_num='<%= @line.num %>'>
-  <td class='line_num'><%= @line.num %></td>
-  <% regexp_text = CGI.escapeHTML((@literal_match ? Regexp.escape(@query) : @query)) %>
-  <% text = CGI.escapeHTML(@line.text).gsub((@match_case ? /(#{regexp_text})/ : /(#{regexp_text})/i)) { "<span>#{$1}</span>" } %>
-  <td class='text'><%= text %>&nbsp;</td> <!-- extra space to ensure line-height is respected -->
-</tr>

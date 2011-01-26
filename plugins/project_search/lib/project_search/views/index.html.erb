@@ -3,10 +3,10 @@
 <% json_path = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets json2.js))) %>
 <script type="text/javascript" src="file://<%= json_path %>"></script>
 
-<% plugin_css = File.expand_path(File.join(@plugin_root, %w(lib find_in_project stylesheets style.css))) %>
+<% plugin_css = File.expand_path(File.join(plugin_root, %w(lib project_search stylesheets style.css))) %>
 <link rel="stylesheet" href="file://<%= plugin_css %>" type="text/css" media="screen">
 
-<% image_path = File.expand_path(File.join(@plugin_root, %w(lib find_in_project images))) %>
+<% image_path = File.expand_path(File.join(plugin_root, %w(lib project_search images))) %>
 
 <div id="search_form_container">
   <form id="search_form">
@@ -14,14 +14,14 @@
       <tr class="input">
         <td class="label"><label for="query">Search Term</label></td>
         <td class="field">
-          <input id="query" type="text" value="<%= @query %>" />
-
+          <input id="query" type="text" value="<%= default_query %>" />
+          
           <!-- keeps a cache of the current query so if the user changes the query field, this remains the same as the results -->
           <input id="cached_query" type="hidden" />
 
           <div id="recent_queries" style="display: none;">
             <ul>
-              <% (@settings['recent_queries'] || []).each do |query| %>
+              <% (settings['recent_queries'] || []).each do |query| %>
                 <li><%= CGI::escapeHTML(query) %></li>
               <% end %>
             </ul>
@@ -36,12 +36,15 @@
         <td class="controls">
           <input id="search" type="submit" value="Find In Project" />
           <img id="spinner" src="<%= image_path %>/spinner.gif" style="display:none;" />
+          <% if show_literal_match_option? %>
           <input type="checkbox" id="literal_match" <%="checked=checked" if @literal_match %>>
-          <label for="literal_match">Literal Match</label>
-          <input type="checkbox" id="match_case" <%="checked=checked" if @match_case %>>
+            <label for="literal_match">Literal Match</label>
+          <% end %>
+          <input type="checkbox" id="match_case" <%="checked=checked" if match_case? %>>
           <label for="match_case">Match case</label>
-          <input type="checkbox" id="with_context" <%="checked=checked" if @with_context %>>
+          <input type="checkbox" id="with_context" <%="checked=checked" if context? %>>
           <label for="with_context">With context</label>
+          <%= search_copy %>
           <a href="#" title="Edit Preferences" id="edit_preferences">Edit Preferences...</a>
         </td>
         <td></td>
@@ -99,7 +102,7 @@
     });
     
     $('#edit_preferences').click(function(ev) {
-      Controller.preferences();
+      Controller.editPreferences();
     });
 
     // in the case the user wants to search for things like <table>, we need to unescape the entities

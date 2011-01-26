@@ -21,6 +21,11 @@ module Redcar
       self.skip_types = options['skip_types'] || [:executable, :mountpoint, :symlink, :zero]
     end
 
+    def directory?(pathname)
+      f = java.io.File.new(pathname.path.to_java)
+      f.directory?
+    end
+    
     def each_file(&block)
       file_index, excluded_paths = 0, []
       structure = Dir.glob("#{root_path}/**/*", File::FNM_DOTMATCH)
@@ -29,7 +34,7 @@ module Redcar
         next if excluded_paths.any? { |ep| fullpath =~ /^#{Regexp.escape(ep)}(\/|$)/ }
         path = Pathname.new(fullpath)
         is_excluded_pattern = excluded_patterns.any? { |pattern| fullpath =~ pattern }
-        if path.directory?
+        if directory?(path)
           excluded_paths << path if excluded_dirs.include?(path.basename.to_s) || is_excluded_pattern
         else
           skipped = skip_types.find { |st| path.send("#{st}?") }

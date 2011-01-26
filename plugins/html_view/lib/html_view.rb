@@ -78,8 +78,12 @@ module Redcar
       @html_tab.title = controller.title
       func = RubyFunc.new(@html_tab.controller.browser, "rubyCall")
       func.controller = @controller
-      controller_action("index")
+      refresh
       attach_controller_listeners
+    end
+    
+    def refresh
+      controller_action("index")
     end
 
     def attach_controller_listeners
