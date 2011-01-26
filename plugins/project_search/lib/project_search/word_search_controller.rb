@@ -123,6 +123,7 @@ class ProjectSearch
           have_results = false
           
           @word_search.on_file_results do |hits|
+            next unless hits.any?
             have_results = true
             file_num += 1
             line_num += hits.length
