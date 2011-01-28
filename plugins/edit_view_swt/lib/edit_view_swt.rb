@@ -195,7 +195,7 @@ module Redcar
     end
 
     def create_undo_manager
-      @undo_manager = JFace::Text::TextViewerUndoManager.new(500)
+      @undo_manager = JFace::Text::TextViewerUndoManager.new(5000)
       @undo_manager.connect(@mate_text.viewer)
     end
 
@@ -527,7 +527,7 @@ module Redcar
     def biggest_visible_line
       @mate_text.viewer.get_bottom_index
     end
-
+    
     def ensure_visible(offset)
       line = @document.line_at_offset(offset)
       line_start_offset = @document.offset_at_line(line)
