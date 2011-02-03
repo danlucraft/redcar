@@ -163,8 +163,8 @@ module Redcar
       end
 
       def open_file(file, line)
-        puts "i got called: #{file}"
-        Project::Manager.open_file(file)
+        Project::Manager.open_file(File.join(Project::Manager.focussed_project.path, file))
+        Redcar.app.focussed_window.focussed_notebook_tab.edit_view.document.scroll_to_line(line.to_i)
       end
       
       def index
