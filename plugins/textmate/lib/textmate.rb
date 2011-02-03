@@ -10,8 +10,12 @@ require 'textmate/commands'
 module Redcar
   module Textmate
     def self.all_bundle_paths
-      Dir[File.join(Redcar.root, "plugins", "textmate", "vendor", "redcar-bundles", "Bundles", "*")] +
+      @all_bundle_paths = Dir[File.join(Redcar.root, "plugins", "textmate", "vendor", "redcar-bundles", "Bundles", "*")] +
         Dir[File.join(Redcar.user_dir, "Bundles", "*")]
+      Redcar.plugin_manager.loaded_plugins.each do |plugin|
+        @all_bundle_paths += Dir[File.join(File.dirname(plugin.definition_file), "Bundles", "*")]
+      end
+      @all_bundle_paths
     end
 
     def self.menus
