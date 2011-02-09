@@ -96,8 +96,23 @@ module Redcar
           storage = Plugin::Storage.new('project_plugin')
           storage.set_default('reveal_files_in_project_tree',true)
           storage.set_default('reveal_files_only_when_tree_is_focussed',true)
+          storage.set_default('hidden_files_pattern', '(^\.|\.rbc$)')
+          storage.set_default('not_hidden_files', %w(.gitignore .gemtest))
           storage
         end
+      end
+
+      def self.hidden_files_pattern
+        Regexp.new storage['hidden_files_pattern']
+      end
+
+      def self.not_hidden_files
+        Array storage['not_hidden_files']
+      end
+
+      def self.hide_file?(file)
+        file = File.basename(file)
+        !not_hidden_files.include?(file) and file =~ hidden_files_pattern
       end
 
       def self.reveal_files?
