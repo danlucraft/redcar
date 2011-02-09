@@ -17,7 +17,7 @@ if ARGV.include? '--silent'
 end
 
 if ARGV.include? "install"
-  require File.expand_path(File.join(File.dirname(__FILE__), %w(.. lib redcar)))
+  require 'redcar'
   require 'redcar/installer'
   require 'redcar/runner'
   installer = Redcar::Installer.new
@@ -25,7 +25,7 @@ if ARGV.include? "install"
 else
   Redcar.read_stdin
   exit if Redcar.try_to_load_via_drb
-  require File.expand_path(File.join(File.dirname(__FILE__), %w(.. lib redcar)))
+  require 'redcar'
   Redcar.environment = :user
   Redcar.spin_up
   Redcar.load_threaded
