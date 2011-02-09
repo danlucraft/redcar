@@ -60,10 +60,11 @@ If you are running a source version of Redcar and you have pulled changes from m
 
 NB. Redcar features are known to work with Cucumber 0.9.2, and known NOT to work with Cucumber < 0.9
 
-To run the tests you need JRuby installed. You also need rspec and cucumber installed as Jruby gems. See jruby.org for this, or install with rvm.
+To run the tests you need JRuby installed. You also need rspec and cucumber installed as JRuby gems. See jruby.org for this, or install with rvm.
 
 To run all specs and features:
 
+    $ jruby -S bundle install
     $ jruby -S rake
 
 NB. You must leave the test window focussed while the features run. Some of the tests will fail if the test process is in the background.
