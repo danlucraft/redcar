@@ -37,7 +37,7 @@ describe ProjectSearch::WordSearch do
       results.length.should == 1
       result = results.first
       result.should be_an_instance_of(ProjectSearch::Hit)
-      result.file.should == project_search_fixture_dir + "/foo.txt"
+      File.expand_path(result.file).should == File.expand_path(project_search_fixture_dir + "/foo.txt")
       result.line_num.should == 0
       result.line("<b>", "</b>").should == "<b>Foo</b> Bar Baz"
     end
@@ -68,7 +68,7 @@ describe ProjectSearch::WordSearch do
       results.length.should == 1
       result = results.first
       result.should be_an_instance_of(ProjectSearch::Hit)
-      result.file.should == project_search_fixture_dir + "/foo.txt"
+      File.expand_path(result.file).should == File.expand_path(project_search_fixture_dir + "/foo.txt")
       result.line_num.should == 2
       result.line("<b>", "</b>").should == "<b>Corge</b> <b>Corge</b> <b>Corge</b>"
     end
