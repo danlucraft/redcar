@@ -3,7 +3,10 @@ $KCODE='U' unless RUBY_VERSION > "1.9.0"
 $redcar_process_start_time = Time.now
 $VERBOSE = true if ARGV.find{|arg| arg == '--verbose'}
 
-$:.push(File.join(File.dirname(__FILE__), %w(.. lib)))
+file = __FILE__
+file = File.readlink(file) while File.symlink?(file)
+
+$:.push(File.join(File.dirname(file), %w(.. lib)))
 require "redcar_quick_start"
 
 if ARGV.include? '--silent'
