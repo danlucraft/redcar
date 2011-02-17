@@ -1,0 +1,43 @@
+#!/bin/bash
+# A wrapper around zenity on Linux, to provide the CocoaDialog API some Textmate commands use
+
+CMD="zenity"
+OPTION_LENGTH=0
+for i in $@; do
+   OPTION_LENGTH=$[$OPTION_LENGTH + 1]
+done
+
+i=0
+while [ $i -lt $OPTION_LENGTH ]; do
+   opt=${@:$i:1}
+   case "$opt" in
+      "inputbox")
+         CMD="$CMD --entry"
+         ;;
+      "filesave")
+         CMD="$CMD --file-selection --save"
+         ;;
+      "--title")
+         i=$[$i+1]
+         CMD="$CMD --title \"${@:$i:1}\""
+         ;;
+      "--informative-text")
+         i=$[$i+1]
+         CMD="$CMD --text \"${@:$i:1}\""
+         ;;
+      "--text")
+         i=$[$i+1]
+         CMD="$CMD --text \"${@:$i:1}\""
+         ;;
+      "--with-file")
+         i=$[$i+1]
+         CMD="$CMD --filename \"${@:$i:1}\""
+         ;;
+      *)
+         ;;
+   esac
+   # echo "$opt => $CMD"
+   i=$[$i+1]
+done
+
+bash -c "$CMD"

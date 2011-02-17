@@ -99,7 +99,8 @@ module Redcar
           "TM_SELECTED_FILE" => (selected_files.first if selected_files),
           "TM_SOFT_TABS" => (tab.edit_view.soft_tabs? if edit_tab),
           "TM_TAB_SIZE" => (tab.edit_view.tab_width if edit_tab),
-          "TM_SUPPORT_PATH" => File.expand_path("../../../Support", __FILE__),
+          "TM_SUPPORT_PATH" => File.expand_path("../../../Support/#{Redcar.platform.to_s}/", __FILE__),
+          "TM_ORGANIZATION_NAME" => "redcareditor",
           "PRJNAME" => File.basename(project.home_dir),
         }
 
