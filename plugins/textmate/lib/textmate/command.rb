@@ -36,7 +36,9 @@ module Redcar
       end
 
       def output?
-        !(@plist["output"] && @plist["output"] == "discard")
+        # FIXME: Do we want to see all output, always?
+        # !(@plist["output"] && @plist["output"] == "discard")
+        true
       end
 
       # Command to run previously to the actual command
