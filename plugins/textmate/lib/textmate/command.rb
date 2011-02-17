@@ -28,7 +28,7 @@ module Redcar
       end
 
       def file_name
-        name.gsub(/[ ()]/, "_")
+        name.gsub(/[ ()&]/, "_")
       end
 
       def uuid
