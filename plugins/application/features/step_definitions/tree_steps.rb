@@ -14,6 +14,15 @@ When "I close the tree" do
   Redcar::Top::CloseTreeCommand.new.run
 end
 
+When /^I switch (up|down) a tree$/ do |type|
+  case type
+  when "down"
+    Redcar::Top::SwitchTreeDownCommand.new.run
+  when "up"
+    Redcar::Top::SwitchTreeUpCommand.new.run
+  end
+end
+
 When "I click the close button" do
   vtabitem = focussed_window.treebook.controller.tab_folder.selection
   swtlabel = swt_label_for_item(vtabitem)
@@ -58,6 +67,10 @@ Then /^there should (not )?be a tree titled "([^\"]*)"$/ do |negate,title|
   else
     tree_with_title(title).should_not == nil
   end
+end
+
+Then /^the focussed tree should be titled "([^\"]*)"$/ do |title|
+  focussed_tree.title.should == title
 end
 
 Then /^the tree width should be (the default|\d+ pixels|the minimum size)$/ do |w|

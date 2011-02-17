@@ -12,11 +12,12 @@ module Redcar
         sub_menu "Plugins", :priority => 40 do
           group(:priority => :first) {
             item "Plugin Manager", PluginManagerUi::OpenCommand
-            item "Reload Plugins", PluginManagerUi::ReloadLastReloadedCommand
+            item "Reload Plugins", PluginManagerUi::ReloadPluginsCommand
+            item "Reload Last Reloaded", PluginManagerUi::ReloadLastReloadedCommand
             separator
           }
         end
-        if Redcar.platform == :linux or Redcar.platform == :windows
+        if [:linux,:windows].include?(Redcar.platform)
           sub_menu "Edit" do
             group(:priority => :last) do
               separator
@@ -24,6 +25,15 @@ module Redcar
             end
           end
         end
+      end
+    end
+
+    def self.keymaps
+      if [:linux,:windows].include?(Redcar.platform)
+        map = Redcar::Keymap.build("main", [:linux,:windows]) do
+          link "F2", PluginManagerUi::OpenPreferencesCommand
+        end
+        [map]
       end
     end
 
@@ -42,7 +52,14 @@ module Redcar
         end
       end
     end
-    
+
+    class ReloadPluginsCommand < Redcar::Command
+      def execute
+        Redcar.add_plugin_sources(Redcar.plugin_manager)
+	Redcar.plugin_manager.load_maximal
+      end
+    end
+
     class OpenCommand < Redcar::Command
       class Controller
         include Redcar::HtmlController
@@ -58,6 +75,7 @@ module Redcar
         
         def reload_plugin(name)
           plugin = Redcar.plugin_manager.loaded_plugins.detect {|pl| pl.name == name }
+          plugin ||= Redcar.plugin_manager.unloaded_plugins.detect {|pl| pl.name == name }
           plugin.load
           Redcar.app.refresh_menu!
           PluginManagerUi.last_reloaded = plugin

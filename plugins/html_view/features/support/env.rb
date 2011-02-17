@@ -24,3 +24,4 @@ end
 After do
   reset_htmlview_fixtures
 end
+

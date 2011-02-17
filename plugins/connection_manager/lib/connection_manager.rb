@@ -13,10 +13,10 @@ module Redcar
     def self.open_connection(c)
       Project::Manager.connect_to_remote(c.protocol, c.host, c.user, c.path, PrivateKeyStore.paths)
     end
-    
+
     class Connection < CONNECTION_SUPER_CLASS
       def to_hash
-        { 
+        {
           "name" => name,
           "host" => host,
           "port" => port,
@@ -26,22 +26,22 @@ module Redcar
         }
       end
     end
-        
+
     class OpenRemoteFilter < Command
       def execute
         FilterDialog.new.open
       end
     end
-    
-    def self.keymaps
-      osx = Redcar::Keymap.build("main", :osx) do
-        link "Cmd+P", OpenRemoteFilter
-      end
-      linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
-        link "Ctrl+P", OpenRemoteFilter
-      end
-      [osx, linwin]
-    end
+
+    # def self.keymaps
+    #   osx = Redcar::Keymap.build("main", :osx) do
+    #     link "Cmd+P", OpenRemoteFilter
+    #   end
+    #   linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
+    #     link "Ctrl+P", OpenRemoteFilter
+    #   end
+    #   [osx, linwin]
+    # end
 
     def self.menus
       Menu::Builder.build do

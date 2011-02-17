@@ -55,8 +55,8 @@ module Redcar
     capture:  2
     type:     id
     kind:     class
-  - regex:    "^[^#]*def ((self\\.)?\\w+[?!=]?(\\(.*\\))?)(\\n|\\;)+"
-    capture:  1
+  - regex:    "^[^#]*def (self\\.)?(\\w+[?!=]?)(\\(.*\\))?(\\s|\\;)+"
+    capture:  2
     type:     id
     kind:     method
   - regex:    "^[^#]*attr(_reader|_accessor|_writer)(.*)$"

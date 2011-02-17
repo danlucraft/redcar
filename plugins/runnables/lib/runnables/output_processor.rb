@@ -7,18 +7,29 @@ module Redcar
       def process(str, opts = {})
         str = str.to_s.gsub("&", "&amp;").gsub("<", "&lt;")
         str = process_ansi(str)
+        str = process_file_line_numbers(str)
         str = str.gsub(/\t+/, '<span style="white-space:pre;">\0</span>')
         str = str.reverse.gsub(/ (?= |$)/, ';psbn&').reverse
         if opts[:no_newline_after_br].nil?
-          str.gsub("\n", "<br>\n")
+          str = str.gsub("\n", "<br>\n")
         else
-          str.gsub("\n", "<br>")
-        end 
+          str = str.gsub("\n", "<br>")
+        end
       end
       
+      def process_file_line_numbers(str)
+        file_number_regex = /(\S+)\:(\d+)/
+        if str =~ file_number_regex
+          str.gsub(file_number_regex,
+            %{<a class="file_line_link" href="javascript:Controller.openFile('#{$1}', '#{$2}');">#{$1}:#{$2}</a>})
+        else
+          str
+        end
+      end
+    
       def initialize
         @ansi_stack = []
-        @ansi_colors = %w(black red green yellow blue purple cyan gray) 
+        @ansi_colors = %w(black red green yellow blue purple cyan gray)
       end
       
       def color(num)
@@ -47,7 +58,7 @@ module Redcar
           if match[2] == "0" && match[4].nil?
             close_ansi_spans(:clear)
           else
-            style = ""          
+            style = ""
             style << "ansi-regular "               if match[2] == "0"
             style << "ansi-bold "                  if match[2] == "1"
             style << "ansi-light "                 if match[4] == "9"

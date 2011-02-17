@@ -16,11 +16,13 @@ module Redcar
   end
 
   def self.update_gui
+    result = nil
     Swt.sync_exec do
       safely do
-        yield
+        result = yield
       end
     end
+    result
   end
 
   class TimeoutError < StandardError; end
@@ -72,10 +74,15 @@ module Redcar
         Runnables::RunningProcessChecker.new(
           Redcar.app.all_tabs.select {|t| t.is_a?(HtmlTab)},
           "Kill all and quit?",
-          :none     => lambda { Redcar.app.quit },
-          :continue => lambda { Redcar.app.quit },
+          :none     => lambda { quit },
+          :continue => lambda { quit },
           :cancel   => nil
         ).check
+      end
+      
+      def quit
+        Project::Manager.open_projects.each {|pr| pr.close }
+        Redcar.app.quit
       end
     end
 
@@ -95,12 +102,12 @@ module Redcar
     end
 
     class NewNotebookCommand < Command
-      sensitize :single_notebook
+#      sensitize :single_notebook
 
       def execute
-        unless win.notebooks.length > 1
+        #unless win.notebooks.length > 1
           win.create_notebook
-        end
+       # end
       end
     end
 
@@ -263,9 +270,54 @@ module Redcar
 
       def execute
         current_notebook = tab.notebook
-        target_notebook = win.notebooks.detect {|nb| nb != current_notebook}
+        i = win.notebooks.index current_notebook
+
+        target_notebook = win.notebooks[ (i + 1) % win.notebooks.length ]
         target_notebook.grab_tab_from(current_notebook, tab)
         tab.focus
+      end
+    end
+
+    class OpenTreeFinderCommand < TreeCommand
+
+      def execute
+        if win = Redcar.app.focussed_window
+          if trees = win.treebook.trees and trees.any?
+            titles = []
+            trees.each {|t| titles << t.tree_mirror.title}
+            dialog = TreeFuzzyFilter.new(win,titles)
+            dialog.open
+          end
+        end
+      end
+
+      class TreeFuzzyFilter < FilterListDialog
+
+        def initialize(win,titles)
+          super()
+          @win = win
+          @titles = titles
+        end
+
+        def selected(text,ix)
+          if tree = @win.treebook.trees.detect do |tree|
+              tree.tree_mirror.title == text
+            end
+            if @win.treebook.focussed_tree == tree
+              @win.set_trees_visible(true) if not @win.trees_visible?
+            else
+              @win.treebook.focus_tree(tree)
+            end
+            tree.focus
+            close
+          end
+        end
+
+        def update_list(filter)
+          @titles.select do |t|
+            t.downcase.include?(filter.downcase)
+          end
+        end
       end
     end
 
@@ -302,9 +354,9 @@ Ruby Version: #{RUBY_VERSION}
 Jruby version: #{JRUBY_VERSION}
 Redcar.environment: #{Redcar.environment}
         TXT
-        new_tab.title= 'About'
         new_tab.edit_view.reset_undo
         new_tab.document.set_modified(false)
+        new_tab.title= 'About'
       end
     end
 
@@ -312,9 +364,9 @@ Redcar.environment: #{Redcar.environment}
       def execute
         new_tab = Top::NewCommand.new.run
         new_tab.document.text = File.read(File.join(File.dirname(__FILE__), "..", "..", "CHANGES"))
-        new_tab.title = 'Changes'
         new_tab.edit_view.reset_undo
         new_tab.edit_view.document.set_modified(false)
+        new_tab.title = 'Changes'
       end
     end
 
@@ -342,6 +394,7 @@ Redcar.environment: #{Redcar.environment}
       def execute
         if tab.is_a?(EditTab)
           if tab.edit_view.document.modified?
+            tab.focus
             result = Application::Dialog.message_box(
               "This tab has unsaved changes. \n\nSave before closing?",
               :buttons => :yes_no_cancel
@@ -359,6 +412,7 @@ Redcar.environment: #{Redcar.environment}
           end
         elsif tab.is_a?(HtmlTab)
           if tab.html_view.controller and message = tab.html_view.controller.ask_before_closing
+            tab.focus
             result = Application::Dialog.message_box(
               message,
               :buttons => :yes_no_cancel
@@ -388,6 +442,45 @@ Redcar.environment: #{Redcar.environment}
         #if win.all_tabs.empty? and not Project::Manager.in_window(win)
         #  win.close
         #end
+      end
+    end
+
+    class CloseAll < Redcar::Command
+      def execute
+        window = Redcar.app.focussed_window
+        tabs = window.all_tabs
+        tabs.each do |t|
+          Redcar::Top::CloseTabCommand.new(t).run
+        end
+      end
+    end
+
+    class CloseOthers < Redcar::Command
+      def execute
+        window = Redcar.app.focussed_window
+        current_tab = Redcar.app.focussed_notebook_tab
+        tabs = window.all_tabs
+        tabs.each do |t|
+          unless t == current_tab
+            Redcar::Top::CloseTabCommand.new(t).run
+          end
+        end
+      end
+    end
+
+    class SwitchTreeDownCommand < TreeCommand
+
+      def execute
+        win = Redcar.app.focussed_window
+        win.treebook.switch_down
+      end
+    end
+
+    class SwitchTreeUpCommand < TreeCommand
+
+      def execute
+        win = Redcar.app.focussed_window
+        win.treebook.switch_up
       end
     end
 
@@ -438,6 +531,10 @@ Redcar.environment: #{Redcar.environment}
     class MoveHomeCommand < DocumentCommand
 
       def execute
+        if doc.mirror.is_a?(Redcar::REPL::ReplMirror)
+          # do not do the default home command on a line with a prompt
+          return unless tab.go_to_home?
+        end
         line_ix = doc.line_at_offset(doc.cursor_offset)
         line    = doc.get_line(line_ix)
         prefix  = line[0...doc.cursor_line_offset]
@@ -759,12 +856,69 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
+    class TreebookWidthCommand < Command
+      sensitize :open_trees
+
+      def increment
+        raise "Please implement me!"
+      end
+
+      def execute
+        if win = Redcar.app.focussed_window
+          if increment > 0
+            win.adjust_treebook_width(true)
+          else
+            win.adjust_treebook_width(false)
+          end
+        end
+      end
+    end
+
+    ["In","De"].each do |prefix|
+      const_set("#{prefix}creaseTreebookWidthCommand", Class.new(TreebookWidthCommand)).class_eval do
+        define_method :increment do
+          prefix == "In" ? 1 : -1
+        end
+      end
+    end
+
+    class EnlargeNotebookCommand < Command
+      sensitize :multiple_notebooks
+      def index
+        raise "Please define me!"
+      end
+
+      def execute
+        if win = Redcar.app.focussed_window
+          win.enlarge_notebook(index)
+        end
+      end
+    end
+
+    ["First","Second"].each do |book|
+      const_set("Enlarge#{book}NotebookCommand", Class.new(EnlargeNotebookCommand)).class_eval do
+        define_method :index do
+          book == "First" ? 0 : 1
+        end
+      end
+    end
+
     # define commands from SelectTab1Command to SelectTab9Command
     (1..9).each do |tab_num|
       const_set("SelectTab#{tab_num}Command", Class.new(Redcar::TabCommand)).class_eval do
         define_method :execute do
           notebook = Redcar.app.focussed_window_notebook
           notebook.tabs[tab_num-1].focus if notebook.tabs[tab_num-1]
+        end
+      end
+    end
+
+    class ResetNotebookWidthsCommand < Command
+      sensitize :multiple_notebooks
+
+      def execute
+        if win = Redcar.app.focussed_window
+          win.reset_notebook_widths
         end
       end
     end
@@ -795,13 +949,13 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class SelectNewFont < Command
+    class SelectNewFont < EditTabCommand
       def execute
         Redcar::EditView::SelectFontDialog.new.open
       end
     end
 
-    class SelectTheme < Command
+    class SelectTheme < EditTabCommand
       def execute
         Redcar::EditView::SelectThemeDialog.new.open
       end
@@ -818,16 +972,39 @@ Redcar.environment: #{Redcar.environment}
       def execute; end
     end
 
-    class SelectFontSize < Command
+    class SelectFontSize < EditTabCommand
       def execute
-        result = Application::Dialog.input("Font Size", "Please enter new font size", Redcar::EditView.font_size.to_s) do |text|
-          if text.to_i  > 1 and text.to_i < 25
-            nil
+        max    = Redcar::EditView::MAX_FONT_SIZE
+        min    = Redcar::EditView::MIN_FONT_SIZE
+        result = Application::Dialog.input(
+          "Font Size",
+          "Please enter new font size",
+          Redcar::EditView.font_size.to_s)
+        if result[:button] == :ok
+          value = result[:value].to_i
+          if value >= min and value <= max
+            Redcar::EditView.font_size = value
           else
-            "the font size must be > 1 and < 25"
+            Application::Dialog.message_box(
+              "The font size must be between #{min} and #{max}")
           end
-      	end
-        Redcar::EditView.font_size = result[:value].to_i if result[:button ] == :ok
+        end
+      end
+    end
+
+    class IncreaseFontSize < EditTabCommand
+      def execute
+        unless (current = Redcar::EditView.font_size) >= Redcar::EditView::MAX_FONT_SIZE
+          Redcar::EditView.font_size = current+1
+        end
+      end
+    end
+
+    class DecreaseFontSize < EditTabCommand
+      def execute
+        unless (current = Redcar::EditView.font_size) <= Redcar::EditView::MIN_FONT_SIZE
+          Redcar::EditView.font_size = current-1
+        end
       end
     end
 
@@ -839,42 +1016,42 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+O",       Project::FileOpenCommand
         link "Cmd+U",       Project::FileReloadCommand
         link "Cmd+Shift+O", Project::DirectoryOpenCommand
+        link "Cmd+Alt+Ctrl+P",   Project::FindRecentCommand
         #link "Cmd+Ctrl+O",  Project::OpenRemoteCommand
         link "Cmd+S",       Project::FileSaveCommand
         link "Cmd+Shift+S", Project::FileSaveAsCommand
         link "Cmd+W",       CloseTabCommand
         link "Cmd+Shift+W", CloseWindowCommand
+        link "Alt+Shift+W", CloseTreeCommand
         link "Cmd+Q",       QuitCommand
 
         #link "Cmd+Return",   MoveNextLineCommand
 
-        link "Cmd+Shift+E", EditView::InfoSpeedbarCommand
-        link "Cmd+Z",       UndoCommand
-        link "Cmd+Shift+Z", RedoCommand
-        link "Cmd+X",       CutCommand
-        link "Cmd+C",       CopyCommand
-        link "Cmd+V",       PasteCommand
-        link "Cmd+D",       DuplicateCommand
+        link "Ctrl+Shift+E", EditView::InfoSpeedbarCommand
+        link "Cmd+Z",        UndoCommand
+        link "Cmd+Shift+Z",  RedoCommand
+        link "Cmd+X",        CutCommand
+        link "Cmd+C",        CopyCommand
+        link "Cmd+V",        PasteCommand
+        link "Cmd+D",        DuplicateCommand
 
-        link "Home",        MoveTopCommand
-        link "Ctrl+A",      MoveHomeCommand
-        link "Ctrl+E",      MoveEndCommand
-        link "End",         MoveBottomCommand
+        link "Home",   MoveTopCommand
+        link "Ctrl+A", MoveHomeCommand
+        link "Ctrl+E", MoveEndCommand
+        link "End",    MoveBottomCommand
 
-        link "Cmd+[",       DecreaseIndentCommand
-        link "Cmd+]",       IncreaseIndentCommand
-        link "Cmd+Shift+I", AutoIndenter::IndentCommand
-        link "Cmd+L",       GotoLineCommand
-        link "Cmd+F",       DocumentSearch::SearchForwardCommand
-        link "Cmd+H",       DocumentSearch::SearchAndReplaceCommand
-        #link "Cmd+Shift+F", DocumentSearch::RepeatPreviousSearchForwardCommand
-        link "Cmd+Ctrl+F",  DocumentSearch::SearchAndReplaceCommand
-        link "Cmd+Shift+F", Redcar::FindInProject::OpenSearch
-        link "Cmd+A",       SelectAllCommand
-        link "Ctrl+W",      SelectWordCommand
-        link "Cmd+B",       ToggleBlockSelectionCommand
-        #link "Escape", AutoCompleter::AutoCompleteCommand
-        link "Ctrl+Escape",  AutoCompleter::MenuAutoCompleterCommand
+        link "Cmd+[",            DecreaseIndentCommand
+        link "Cmd+]",            IncreaseIndentCommand
+        link "Cmd+Shift+I",      AutoIndenter::IndentCommand
+        link "Cmd+L",            GotoLineCommand
+        link "Cmd+A",            SelectAllCommand
+        link "Ctrl+W",           SelectWordCommand
+        link "Ctrl+L",           SelectLineCommand
+        link "Cmd+B",            ToggleBlockSelectionCommand
+        link "Escape",           AutoCompleter::AutoCompleteCommand
+        link "Ctrl+Escape",      AutoCompleter::MenuAutoCompleterCommand
+        link "Ctrl+Space",       AutoCompleter::AutoCompleteCommand
+        link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleterCommand
 
         link "Ctrl+U",       EditView::UpcaseTextCommand
         link "Ctrl+Shift+U", EditView::DowncaseTextCommand
@@ -882,23 +1059,34 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+G",       EditView::OppositeCaseTextCommand
         link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
         link "Ctrl+=",       EditView::AlignAssignmentCommand
+        link "Ctrl+Shift+^", SortLinesCommand
 
         link "Cmd+T",           Project::FindFileCommand
         link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
         link "Cmd+Alt+O",       SwitchNotebookCommand
+        link "Alt+Shift+[",     SwitchTreeUpCommand
+        link "Alt+Shift+]",     SwitchTreeDownCommand
         link "Cmd+Shift+[",     SwitchTabDownCommand
         link "Cmd+Shift+]",     SwitchTabUpCommand
         link "Ctrl+Shift+[",    MoveTabDownCommand
         link "Ctrl+Shift+]",    MoveTabUpCommand
-        link "F11",             ToggleFullscreen
+        link "Cmd+Shift++",     ToggleFullscreen
+        link "Cmd+Shift+T",     OpenTreeFinderCommand
+        link "Alt+Shift+J",     IncreaseTreebookWidthCommand
+        link "Alt+Shift+H",     DecreaseTreebookWidthCommand
+        link "Cmd+Shift+>",     EnlargeFirstNotebookCommand
+        link "Cmd+Shift+<",     EnlargeSecondNotebookCommand
+        link "Cmd+Shift+L",     ResetNotebookWidthsCommand
+        link "Cmd+Shift+:",     RotateNotebooksCommand
+        link "Alt+Shift+N",     CloseNotebookCommand
         link "Cmd+Alt+I",       ToggleInvisibles
-        link "Ctrl+R",          Runnables::RunEditTabCommand
-        link "Cmd+I",           OutlineView::OpenOutlineViewCommand
+        link "Cmd++",           IncreaseFontSize
+        link "Cmd+-",           DecreaseFontSize
 
-        link "Ctrl+Shift+P",    PrintScopeCommand
-        link "Cmd+Shift+H",     ToggleTreesCommand
+        link "Ctrl+Shift+P", PrintScopeCommand
+        link "Cmd+Shift+H",  ToggleTreesCommand
 
-        link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
+        # link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
 
         link "Cmd+Alt+S", Snippets::OpenSnippetExplorer
         #Textmate.attach_keybindings(self, :osx)
@@ -916,11 +1104,13 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Alt+N",   NewWindowCommand
         link "Ctrl+O",       Project::FileOpenCommand
         link "Ctrl+Shift+O", Project::DirectoryOpenCommand
+        link "Ctrl+Alt+Shift+P",   Project::FindRecentCommand
         #link "Alt+Shift+O",  Project::OpenRemoteCommand
         link "Ctrl+S",       Project::FileSaveCommand
         link "Ctrl+Shift+S", Project::FileSaveAsCommand
         link "Ctrl+W",       CloseTabCommand
         link "Ctrl+Shift+W", CloseWindowCommand
+        link "Alt+Shift+W",  CloseTreeCommand
         link "Ctrl+Q",       QuitCommand
 
         link "Ctrl+Enter",   MoveNextLineCommand
@@ -933,49 +1123,61 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+V",       PasteCommand
         link "Ctrl+D",       DuplicateCommand
 
-        link "Ctrl+Home",    MoveTopCommand
-        link "Home",         MoveHomeCommand
-        link "End",          MoveEndCommand
-        link "Ctrl+End",     MoveBottomCommand
+        link "Ctrl+Home",  MoveTopCommand
+        link "Home",       MoveHomeCommand
+        link "Ctrl+Alt+A", MoveHomeCommand
+        link "End",        MoveEndCommand
+        link "Ctrl+Alt+E", MoveEndCommand
+        link "Ctrl+End",   MoveBottomCommand
 
-        link "Ctrl+[",       DecreaseIndentCommand
-        link "Ctrl+]",       IncreaseIndentCommand
-        link "Ctrl+Shift+[", AutoIndenter::IndentCommand
-        link "Ctrl+L",       GotoLineCommand
-        link "Ctrl+F",       DocumentSearch::SearchForwardCommand
-        link "Ctrl+H",       DocumentSearch::SearchAndReplaceCommand
-        link "F3",           DocumentSearch::RepeatPreviousSearchForwardCommand
-        link "Ctrl+Shift+F", Redcar::FindInProject::OpenSearch
-        link "Ctrl+A",       SelectAllCommand
-        link "Ctrl+Alt+W",   SelectWordCommand
-        link "Ctrl+B",       ToggleBlockSelectionCommand
+        link "Ctrl+[",           DecreaseIndentCommand
+        link "Ctrl+]",           IncreaseIndentCommand
+        link "Ctrl+Shift+[",     AutoIndenter::IndentCommand
+        link "Ctrl+L",           GotoLineCommand
+        link "Ctrl+A",           SelectAllCommand
+        link "Ctrl+Alt+W",       SelectWordCommand
+        link "Ctrl+Alt+L",       SelectLineCommand
+        link "Ctrl+B",           ToggleBlockSelectionCommand
+        link "Escape",           AutoCompleter::AutoCompleteCommand
+        link "Ctrl+Escape",      AutoCompleter::MenuAutoCompleterCommand
         link "Ctrl+Space",       AutoCompleter::AutoCompleteCommand
+        
         link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleterCommand
 
-        link "Ctrl+U",       EditView::UpcaseTextCommand
-        link "Ctrl+Shift+U", EditView::DowncaseTextCommand
-        link "Ctrl+Alt+U",   EditView::TitlizeTextCommand
-        link "Ctrl+G",       EditView::OppositeCaseTextCommand
-        link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
-        link "Ctrl+=",       EditView::AlignAssignmentCommand
+        link "Ctrl+U",           EditView::UpcaseTextCommand
+        link "Ctrl+Shift+U",     EditView::DowncaseTextCommand
+        link "Ctrl+Alt+U",       EditView::TitlizeTextCommand
+        link "Ctrl+Alt+Shift+U", EditView::OppositeCaseTextCommand
+        link "Ctrl+_",           EditView::CamelSnakePascalRotateTextCommand
+        link "Ctrl+=",           EditView::AlignAssignmentCommand
+        link "Ctrl+Shift+^",     SortLinesCommand
 
         link "Ctrl+T",           Project::FindFileCommand
         link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
 
-        link "Ctrl+R",           Runnables::RunEditTabCommand
+        link "Ctrl+Shift+P", PrintScopeCommand
 
-        link "Ctrl+Shift+P",    PrintScopeCommand
-
-        link "Ctrl+Alt+O",       SwitchNotebookCommand
-        link "Ctrl+Shift+H",     ToggleTreesCommand
+        link "Ctrl+Alt+O",           SwitchNotebookCommand
+        link "Ctrl+Shift+H",         ToggleTreesCommand
+        link "Alt+Page Up",          SwitchTreeUpCommand
+        link "Alt+Page Down",        SwitchTreeDownCommand
         link "Ctrl+Page Up",         SwitchTabDownCommand
         link "Ctrl+Page Down",       SwitchTabUpCommand
         link "Ctrl+Shift+Page Up",   MoveTabDownCommand
         link "Ctrl+Shift+Page Down", MoveTabUpCommand
-        link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
-        link "F11",              ToggleFullscreen
-        link "Ctrl+Alt+I",       ToggleInvisibles
-        link "Ctrl+I",           OutlineView::OpenOutlineViewCommand
+        link "Ctrl+Shift+T",         OpenTreeFinderCommand
+        link "Alt+Shift+J",          IncreaseTreebookWidthCommand
+        link "Alt+Shift+H",          DecreaseTreebookWidthCommand
+        link "Ctrl+Shift+>",         EnlargeFirstNotebookCommand
+        link "Ctrl+Shift+<",         EnlargeSecondNotebookCommand
+        link "Ctrl+Shift+L",         ResetNotebookWidthsCommand
+        link "Ctrl+Shift+:",         RotateNotebooksCommand
+        link "Alt+Shift+N",          CloseNotebookCommand
+        # link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
+        link "F11",                  ToggleFullscreen
+        link "Ctrl+Alt+I",           ToggleInvisibles
+        link "Ctrl++",               IncreaseFontSize
+        link "Ctrl+-",               DecreaseFontSize
 
         link "Ctrl+Alt+S", Snippets::OpenSnippetExplorer
 
@@ -1018,6 +1220,8 @@ Redcar.environment: #{Redcar.environment}
             item "Close Tab", CloseTabCommand
             item "Close Tree", CloseTreeCommand
             item "Close Window", CloseWindowCommand
+            item "Close Others", CloseOthers
+            item "Close All", CloseAll
           end
 
           group(:priority => :last) do
@@ -1083,39 +1287,62 @@ Redcar.environment: #{Redcar.environment}
           end
         end
         sub_menu "View", :priority => 30 do
-          sub_menu "Appearance" do
-            item "Font", SelectNewFont
-            item "Font Size", SelectFontSize
-            item "Theme", SelectTheme
-          end
-          item "Toggle Tree Visibility", :command => ToggleTreesCommand
-          item "Toggle Fullscreen", :command => ToggleFullscreen, :type => :check, :active => window ? window.fullscreen : false
-          separator
-          lazy_sub_menu "Windows" do
-            GenerateWindowsMenu.new(self).run
-          end
-          sub_menu "Notebooks" do
-            item "New Notebook", NewNotebookCommand
-            item "Close Notebook", CloseNotebookCommand
-            item "Rotate Notebooks", RotateNotebooksCommand
-            item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
-            item "Switch Notebooks", SwitchNotebookCommand
-          end
-          sub_menu "Tabs" do
-            item "Previous Tab", SwitchTabDownCommand
-            item "Next Tab", SwitchTabUpCommand
-            item "Move Tab Left", MoveTabDownCommand
-            item "Move Tab Right", MoveTabUpCommand
+          sub_menu "Appearance", :priority => 5 do
+            item "Select Theme", SelectTheme
             separator
-            item "Focussed Notebook", ShowTitle
-            (1..9).each do |num|
-              item "Tab #{num}", Top.const_get("SelectTab#{num}Command")
+            item "Select Font" , SelectNewFont
+            item "Select Font Size"  , SelectFontSize
+            item "Increase Font Size", IncreaseFontSize
+            item "Decrease Font Size", DecreaseFontSize
+          end
+          group(:priority => 10) do
+            separator
+            item "Toggle Fullscreen", :command => ToggleFullscreen, :type => :check, :active => window ? window.fullscreen : false
+          end
+          group(:priority => 15) do
+            separator
+            sub_menu "Trees" do
+              item "Open Tree Finder", OpenTreeFinderCommand
+              item "Toggle Tree Visibility", ToggleTreesCommand
+              item "Increase Tree Width", IncreaseTreebookWidthCommand
+              item "Decrease Tree Width", DecreaseTreebookWidthCommand
+              separator
+              item "Previous Tree", SwitchTreeUpCommand
+              item "Next Tree", SwitchTreeDownCommand
+            end
+            lazy_sub_menu "Windows" do
+              GenerateWindowsMenu.new(self).run
+            end
+            sub_menu "Notebooks" do
+              item "New Notebook", NewNotebookCommand
+              item "Close Notebook", CloseNotebookCommand
+              item "Rotate Notebooks", RotateNotebooksCommand
+              item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
+              item "Switch Notebooks", SwitchNotebookCommand
+              separator
+              item "Enlarge First Notebook", EnlargeFirstNotebookCommand
+              item "Enlarge Second Notebook", EnlargeSecondNotebookCommand
+              item "Reset Notebook Widths", ResetNotebookWidthsCommand
+            end
+            sub_menu "Tabs" do
+              item "Previous Tab", SwitchTabDownCommand
+              item "Next Tab", SwitchTabUpCommand
+              item "Move Tab Left", MoveTabDownCommand
+              item "Move Tab Right", MoveTabUpCommand
+              separator
+              # GenerateTabsMenu.new(self).run # TODO: find a way to maintain keybindings with lazy menus
+              item "Focussed Notebook", ShowTitle
+              (1..9).each do |num|
+                item "Tab #{num}", Top.const_get("SelectTab#{num}Command")
+              end
             end
           end
-          separator
-          item "Show Toolbar", :command => ToggleToolbar, :type => :check, :active => Redcar.app.show_toolbar?
-          item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
-          item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
+          group(:priority => :last) do
+            separator
+            item "Show Toolbar", :command => ToggleToolbar, :type => :check, :active => Redcar.app.show_toolbar?
+            item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
+            item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
+          end
         end
         sub_menu "Bundles", :priority => 45 do
           group(:priority => :first) do

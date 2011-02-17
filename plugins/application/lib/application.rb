@@ -10,6 +10,7 @@ require 'application/clipboard'
 require 'application/command'
 require 'application/dialog'
 require 'application/dialogs/filter_list_dialog'
+require 'application/dialogs/modeless_list_dialog'
 require 'application/event_spewer'
 require 'application/keymap'
 require 'application/keymap/builder'
@@ -55,6 +56,12 @@ module Redcar
         Sensitivity.new(:open_tab, Redcar.app, false, [:focussed_window, :tab_focussed]) do |tab|
           if win = Redcar.app.focussed_window
             win.focussed_notebook.focussed_tab
+          end
+        end,
+        Sensitivity.new(:open_htmltab, Redcar.app, false, [:focussed_window, :tab_focussed]) do |tab|
+          if win = Redcar.app.focussed_window and
+            tab = win.focussed_notebook.focussed_tab
+            tab.is_a?(HtmlTab)
           end
         end,
         Sensitivity.new(:open_trees, Redcar.app, false, [:focussed_window, :tree_added, :tree_removed]) do |tree|
@@ -259,6 +266,10 @@ module Redcar
         keymap = Keymap.new("main", Redcar.platform)
         Redcar.plugin_manager.objects_implementing(:keymaps).each do |object|
           maps = object.keymaps
+          unless maps
+            puts "#{object.inspect} implements :keymaps but :keymaps returns nil"
+            maps = []
+          end
           keymaps = maps.select do |map|
             map.name == "main" and map.platforms.include?(Redcar.platform)
           end
@@ -372,9 +383,3 @@ module Redcar
     end
   end
 end
-
-
-
-
-
-

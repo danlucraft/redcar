@@ -224,9 +224,15 @@ module Redcar
       end
     end
 
+    class FindRecentCommand < Command
+      def execute
+        FindRecentDialog.new.open
+      end
+    end
+
     class RevealInProjectCommand < ProjectCommand
       def execute
-        if project and project.window.trees_visible?
+        if Project::Manager.reveal_file?(project)
           tab = Redcar.app.focussed_window.focussed_notebook_tab
           if tab.is_a?(EditTab)
             return unless mirror = tab.edit_view.document.mirror and mirror.respond_to? :path
@@ -246,6 +252,13 @@ module Redcar
           tree.select(ancestor_node)
           project.window.treebook.focus_tree(project.tree)
         end
+      end
+    end
+
+    class ToggleRevealInProject < ProjectCommand
+      def execute
+        toggle = Project::Manager.reveal_files?
+        Project::Manager.reveal_files = !toggle
       end
     end
 
@@ -289,10 +302,13 @@ module Redcar
     end
 
     class OpenDirectoryInExplorerCommand < OpenCommand
-      LinuxApps = { 'Thunar' => '%s',
-        'nautilus' => '%s',
+      LinuxApps = {
+        'Thunar'    => '%s',
+        'nautilus'  => '%s',
         'konqueror' => '%s',
-        'kfm' => '%s' }
+        'pcmanfm'   => '%s',
+        'kfm'       => '%s'
+      }
 
       def explorer_osx
         ['open -a Finder', path]
@@ -325,9 +341,12 @@ module Redcar
     end
 
     class OpenDirectoryInCommandLineCommand < OpenCommand
-      LinuxApps = { 'xfce4-terminal' => "--working-directory=%s",
+      LinuxApps = {
+        'xfce4-terminal' => "--working-directory=%s",
         'gnome-terminal' => "--working-directory=%s",
-        'konsole' => "--workdir %s" }
+        'lxterminal'     => "--working-directory=%s",
+        'konsole'        => "--workdir %s"
+      }
 
       def osx_terminal_script(preferred)
         if preferred.start_with? "iTerm"

@@ -1,4 +1,4 @@
-REDCAR_VERSION = "0.9.0dev" # also change in lib/redcar.rb!
+REDCAR_VERSION = "0.11.0dev" # also change in lib/redcar.rb!
 require 'rubygems'
 require 'fileutils'
 require 'spec/rake/spectask'
@@ -41,42 +41,81 @@ task :release_docs do
   sh "rsync -e 'ssh -p #{port}' -avz doc/ danlucraft.com:#{docs_dir}/latest/"
 end
 
-### CI
-COVERAGE_DATA = "coverage.data"
-task :ci do
-  FileUtils.rm COVERAGE_DATA if File.exist?(COVERAGE_DATA)
-  Rake::Task["specs_ci"].invoke
-  Rake::Task["cucumber_ci"].invoke
-end
-
-def find_ci_reporter(filename)
-  jruby_gem_path = %x[jruby -rubygems -e "p Gem.path.first"].gsub("\n", "").gsub('"', "")
-  result = Dir.glob("#{jruby_gem_path}/gems/ci_reporter-*/lib/ci/reporter/rake/#{filename}.rb").reverse.first
-  result || raise("Could not find ci_reporter gem in #{jruby_gem_path}")
-end
-
-def rcov_run(cmd, opts)
-  cmd = %{rcov --aggregate #{COVERAGE_DATA} -x "jsignal_internal,(erb),features/,spec/,vendor/,openssl/,yaml/,json/,yaml,gems,file:,(eval),(__FORWARDABLE__)" #{cmd} -- #{opts}}
-  jruby_run(cmd)
-end
-
 def jruby_run(cmd)
   opts = "-J-XstartOnFirstThread" if Config::CONFIG["host_os"] =~ /darwin/
-  sh("jruby --debug #{opts} -S #{cmd} && echo 'done'")
+  sh("jruby --debug #{opts} -S #{cmd}; echo 'done'")
 end
 
-task :specs_ci do
-  rspec_loader = find_ci_reporter "rspec_loader"
-  files = Dir['plugins/*/spec/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*/*_spec.rb']
-  rspec_opts = "--require #{rspec_loader} --format CI::Reporter::RSpec -c #{files.join(" ")}"
-  rcov_run('"$GEM_HOME"/bin/spec', rspec_opts)
+### CI
+namespace :ci do
+  def rspec(options = "")
+    files = Dir['plugins/*/spec/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*/*_spec.rb']
+    rspec_opts = "#{options} -c #{files.join(" ")}"
+    "$GEM_HOME/bin/spec #{rspec_opts}"
+  end
+
+  def cucumber(options = "")
+    "bin/cucumber #{options} plugins/*/features"
+  end
+
+  namespace :rcov do
+    COVERAGE_DATA = "coverage.data"
+
+    def rcov_run(cmd, opts)
+      excluded_files = "jsignal_internal,(erb),features/,spec/,vendor/,openssl/,yaml/,json/,yaml,gems,file:,(eval),(__FORWARDABLE__)"
+      cmd = %{rcov --aggregate #{COVERAGE_DATA} -x "#{excluded_files}" #{cmd} -- #{opts}}
+      jruby_run(cmd)
+    end
+
+    desc "Run the coverage task for specs"
+    task :specs do
+      cmd = rspec
+      cmd, opts = cmd.split.first, cmd.split[1..-1].join(" ")
+      rcov_run(cmd, opts)
+    end
+
+    desc "Run the coverage task for features"
+    task :cucumber do
+      cmd = cucumber
+      cmd, opts = cmd.split.first, cmd.split[1..-1].join(" ")
+      rcov_run(cmd, opts)
+    end
+  end
+
+  desc "Run the coverage task"
+  task :rcov do
+    FileUtils.rm COVERAGE_DATA if File.exist?(COVERAGE_DATA)
+    Rake::Task["ci:rcov:specs"].invoke
+    Rake::Task["ci:rcov:cucumber"].invoke
+  end
+  
+  def find_ci_reporter(filename)
+    jruby_gem_path = %x[jruby -rubygems -e "p Gem.path.first"].gsub("\n", "").gsub('"', "")
+    result = Dir.glob("#{jruby_gem_path}/gems/ci_reporter-*/lib/ci/reporter/rake/#{filename}.rb").reverse.first
+    result || raise("Could not find ci_reporter gem in #{jruby_gem_path}")
+  end
+
+  desc "Run the specs with JUnit output for the Hudson reporter"
+  task :specs do
+    rspec_loader = find_ci_reporter "rspec_loader"
+    rspec_opts = "--require #{rspec_loader} --format CI::Reporter::RSpec"
+    jruby_run(rspec(rspec_opts))
+  end
+  
+  desc "Run the features with JUnit output for the Hudson reporter"
+  task :cucumber do
+    reports_folder = "features/reports"
+    FileUtils.rm_rf reports_folder if File.exist? reports_folder
+    jruby_run(cucumber("-f progress -f junit --out #{reports_folder}"))
+  end
 end
 
-task :cucumber_ci do
-  reports_folder = "features/reports"
-  FileUtils.rm_rf reports_folder if File.exist? reports_folder
-  rcov_run("bin/cucumber", "-f progress -f junit --out #{reports_folder} plugins/*/features")
+desc "Run specs and features with JUnit output"
+task :ci do
+  Rake::Task["ci:specs"].invoke
+  Rake::Task["ci:cucumber"].invoke
 end
+
 
 ### TESTS
 
@@ -87,9 +126,9 @@ task :specs do
   files = Dir['plugins/*/spec/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*/*_spec.rb']
   case Config::CONFIG["host_os"]
   when "darwin"
-    sh("jruby -J-XstartOnFirstThread -S spec -c #{files.join(" ")} && echo 'done'")
+    sh("jruby -J-XstartOnFirstThread -S bundle exec spec -c #{files.join(" ")} && echo 'done'")
   else
-    sh("jruby -S spec -c #{files.join(" ")} && echo 'done'")
+    sh("jruby -S bundle exec spec -c #{files.join(" ")} && echo 'done'")
   end
 end
 
@@ -228,6 +267,7 @@ task :release => :gem do
   }
   
   s3_uploads.each do |source, target|
+    p [source, target]
     AWS::S3::S3Object.store(target, open(source), 'redcar', :access => :public_read)
   end
 end

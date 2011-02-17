@@ -32,9 +32,10 @@ module Redcar
             tab.is_a?(EditTab) and
             tab.edit_view.document.mirror.is_a?(Scm::CommitMirror)
           end,
-          Sensitivity.new(:open_scm, Redcar.app, false, [:window_focussed]) do |window|
+          Sensitivity.new(:open_scm, Redcar.app, false,
+            [:window_focussed,:tree_removed,:tree_added]) do |window|
             project = Project::Manager.focussed_project
-            not Scm::Manager.project_repositories[project].nil?
+            Scm::Manager.project_repositories[project]
           end
         ]
       end
@@ -42,6 +43,7 @@ module Redcar
       def self.keymaps
         osx = Keymap.build("main", :osx) do
           link "Cmd+Shift+C", Scm::CommitMirror::SaveCommand
+          link "Cmd+Shift+.", :command => Scm::CommitMirror::SaveCommand, :value => [:commit, [Scm::ScmChangesMirror, Scm::ScmChangesController]]
         end
 
         linwin = Keymap.build("main", [:linux, :windows]) do

@@ -15,6 +15,13 @@ module Redcar
       end
     end
 
+    def self.keymaps
+      map = Redcar::Keymap.build("main",[:osx,:linux,:windows]) do
+        link "Alt+Shift+T", TodoList::ViewListCommand
+      end
+      [map]
+    end
+
     def self.storage
       @storage ||= begin
         storage = Plugin::Storage.new('todo_list_plugin')

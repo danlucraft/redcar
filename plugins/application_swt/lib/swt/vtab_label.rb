@@ -41,7 +41,7 @@ module Swt
                   h = idx > 0 ? extent.height * options[:percents][idx - 1] : 0
                   gc.fill_gradient_rectangle(0, h, extent.width, extent.height * p, true)
                 else
-                  h = idx > 0 ? extent.width * options[:percents][idx - 1] : 0
+                  w = idx > 0 ? extent.width * options[:percents][idx - 1] : 0
                   gc.fill_gradient_rectangle(w, 0, extent.width * p, extent.height, false)
                 end
               end

@@ -68,7 +68,7 @@ module Redcar
     #
     # @events [(:new_notebook, notebook)]
     def create_notebook
-      return if @notebooks.length == 2
+    #  return if @notebooks.length == 2
       notebook = Redcar::Notebook.new(self)
       @notebooks << notebook
       if @notebooks.length == 1
@@ -76,6 +76,22 @@ module Redcar
       end
       attach_notebook_listeners(notebook)
       notify_listeners(:new_notebook, notebook)
+    end
+
+    def enlarge_notebook(index)
+      notify_listeners(:enlarge_notebook,index)
+    end
+
+    def adjust_treebook_width(more=true)
+      if more
+        notify_listeners(:increase_treebook_width)
+      else
+        notify_listeners(:decrease_treebook_width)
+      end
+    end
+
+    def reset_notebook_widths
+      notify_listeners(:reset_notebook_widths)
     end
 
     def attach_notebook_listeners(notebook)
@@ -143,7 +159,9 @@ module Redcar
     end
 
     def nonfocussed_notebook
-      @notebooks.find {|nb| nb != @focussed_notebook }
+        i = @notebooks.index @focussed_notebook
+        @notebooks[(i + 1) % @notebooks.length]
+      #@notebooks.find {|nb| nb != @focussed_notebook }
     end
 
     # Sets the orientation of the notebooks.

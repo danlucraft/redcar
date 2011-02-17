@@ -4,15 +4,15 @@ module Redcar
       def open_file(options)
         file_dialog(Swt::SWT::OPEN, options)
       end
-      
+
       def open_directory(options)
         directory_dialog(options)
       end
-      
+
       def save_file(options)
         file_dialog(Swt::SWT::SAVE, options)
       end
-      
+
       MESSAGE_BOX_TYPES = {
         :info     => Swt::SWT::ICON_INFORMATION,
         :error    => Swt::SWT::ICON_ERROR,
@@ -20,7 +20,7 @@ module Redcar
         :warning  => Swt::SWT::ICON_WARNING,
         :working  => Swt::SWT::ICON_WORKING
       }
-      
+
       BUTTONS = {
         :yes    => Swt::SWT::YES,
         :no     => Swt::SWT::NO,
@@ -30,16 +30,16 @@ module Redcar
         :abort  => Swt::SWT::ABORT,
         :ignore => Swt::SWT::IGNORE
       }
-      
+
       MESSAGE_BOX_BUTTON_COMBOS = {
         :ok                 => [:ok],
         :ok_cancel          => [:ok, :cancel],
-        :yes_no             => [:yes, :no], 
+        :yes_no             => [:yes, :no],
         :yes_no_cancel      => [:yes, :no, :cancel],
         :retry_cancel       => [:retry, :cancel],
         :abort_retry_ignore => [:abort, :retry, :ignore]
       }
-      
+
       def message_box(text, options)
         styles = 0
         styles = styles | MESSAGE_BOX_TYPES[options[:type]] if options[:type]
@@ -55,19 +55,19 @@ module Redcar
         end
         BUTTONS.invert[result]
       end
-      
+
       def buttons
         BUTTONS.keys
       end
-      
+
       def available_message_box_types
         MESSAGE_BOX_TYPES.keys
       end
-      
+
       def available_message_box_button_combos
         MESSAGE_BOX_BUTTON_COMBOS.keys
       end
-      
+
       def input(title, message, initial_value, &block)
         dialog = Dialogs::InputDialog.new(
                    parent_shell,
@@ -78,52 +78,73 @@ module Redcar
         button = (code == 0 ? :ok : :cancel)
         {:button => button, :value => dialog.value}
       end
-      
+
       def password_input(title, message)
         dialog = Dialogs::InputDialog.new(parent_shell, title, message, :password => true)
         code = dialog.open
         button = (code == 0 ? :ok : :cancel)
         {:button => button, :value => dialog.value}
       end
-      
+
       def tool_tip(message, location)
         tool_tip = Swt::Widgets::ToolTip.new(parent_shell, Swt::SWT::ICON_INFORMATION)
         tool_tip.set_message(message)
         tool_tip.set_location(*get_coordinates(location))
         tool_tip.set_visible(true)
       end
-      
+
       def popup_menu(menu, location)
         window = Redcar.app.focussed_window
         menu   = ApplicationSWT::Menu.new(window.controller, menu, nil, Swt::SWT::POP_UP)
         menu.move(*get_coordinates(location))
         menu.show
       end
-      
+
+      def popup_text(title, message, location,dimensions=nil)
+        if dimensions
+          box = ApplicationSWT::ModelessDialog.new(title,message,dimensions[0],dimensions[1])
+        else
+          box = ApplicationSWT::ModelessDialog.new(title,message)
+        end
+        box.open(parent_shell,*get_coordinates(location))
+      end
+
+      def popup_html(text,location,dimensions=nil)
+        if dimensions
+          box = ApplicationSWT::ModelessHtmlDialog.new(text,dimensions[0],dimensions[1])
+        else
+          box = ApplicationSWT::ModelessHtmlDialog.new(text)
+        end
+        box.open(parent_shell,*get_coordinates(location))
+      end
+
       private
-      
+
       def get_coordinates(location)
         edit_view = EditView.focussed_tab_edit_view
-        if location == :cursor and not edit_view
+        if (location == :cursor or location.to_s =~ /^(\d+)$/) and not edit_view
           location = :pointer
         end
         case location
         when :cursor
-          location = edit_view.controller.mate_text.viewer.get_text_widget.get_location_at_offset(edit_view.cursor_offset)
-          x, y = location.x, location.y
-          widget_offset = edit_view.controller.mate_text.viewer.get_text_widget.to_display(0,0)
-          x += widget_offset.x
-          y += widget_offset.y
+          x, y = Swt::GraphicsUtils.pixel_location_at_offset(edit_view.cursor_offset)
+        when :below_cursor
+          x, y = Swt::GraphicsUtils.below_pixel_location_at_offset(edit_view.cursor_offset)
         when :pointer
           location = ApplicationSWT.display.get_cursor_location
           x, y = location.x, location.y
+        else
+          if location.to_s =~ /^(\d+)$/
+            x, y = Swt::GraphicsUtils.pixel_location_at_offset($1.to_i)
+          end
         end
         [x, y]
       end
-      
+
       def file_dialog(type, options)
         dialog = Swt::Widgets::FileDialog.new(parent_shell, type)
-        dialog.setText("Save File");
+        dialog.setText("Save File")
+        dialog.setOverwrite(true)
         if options[:filter_path]
           dialog.setText("Save File As") if type == Swt::SWT::SAVE
           dialog.setText("Open File") if type == Swt::SWT::OPEN
@@ -133,7 +154,7 @@ module Redcar
           dialog.open
         end
       end
-      
+
       def directory_dialog(options)
         dialog = Swt::Widgets::DirectoryDialog.new(parent_shell)
         dialog.setText("Open Directory")
@@ -144,7 +165,7 @@ module Redcar
           dialog.open
         end
       end
-      
+
       def parent_shell
         if focussed_window = Redcar.app.focussed_window
           focussed_window.controller.shell

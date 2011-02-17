@@ -16,3 +16,10 @@ Then /^I should see a message box containing "([^"]*)"$/ do |arg1|
   Redcar.gui.dialog_adapter.should_get_message(arg1)
 end
 
+Then /^I should see a popup text box with title "([^"]*)" and containing "([^"]*)"$/ do |title,text|
+  Redcar.gui.dialog_adapter.should_get_popup_message(title,text)
+end
+
+Then /^I should see a popup html box containing "([^"]*)"$/ do |text|
+  Redcar.gui.dialog_adapter.should_get_popup_html(text)
+end

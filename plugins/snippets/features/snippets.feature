@@ -189,6 +189,18 @@ Feature: Snippets
     And I press the Tab key in the edit tab
     Then the contents should be "ABC Felix 4 Gaeta"
 
+  Scenario: Does not trigger snippet on tab trigger with trailing space
+    Given there is a snippet with tab trigger "if" and scope "text.plain" and content
+      """
+        if ${1:condition}\n\t$0\nend
+      """
+    When I replace the contents with "ABC if <c>"
+    And I press the Tab key in the edit tab
+    And I move the cursor to 0
+    And I press the Tab key in the edit tab
+    Then the contents should not be "\t<c>ABC if condition\n\t\nend"
+    And the contents should be "\t<c>ABC if \t"
+
   Scenario: Leaves snippet on cursor move
     Given there is a snippet with tab trigger "if" and scope "text.plain" and content
       """

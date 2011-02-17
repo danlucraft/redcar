@@ -1,5 +1,62 @@
-Version 0.9 (TBA)
-=================
+Version 0.11 (TBA)
+==================
+
+Enhancements:
+
+ * Fuzzy file finder now recognizes directories "a/c/repocontr" (Tim Felgentreff)
+ * Recent project fuzzy finder (Benedikt Müller)
+ * Improved DocumentSearch, with UI refinements, added Replace All commands (Tom Murray)
+ * Raise/lower region behaves better when you select multiple lines (Benedikt Müller)
+ * Project search backed by Lucene (Dan Lucraft)
+ * Which files are hidden in a project is now configurable (Konstantin Haase)
+
+Bugfixes:
+ * Fixed Unicode problems in DocumentSearch (Tom Murray)
+ * You can now symlink bin/redcar (Konstantin Haase)
+
+Version 0.10 (17 January 2011)
+==============================
+
+Enhancements:
+
+ * Add "Close others" and "Close all" commands to the File menu (Clinton R Nixon)
+ * Syntax checking for Java (Delisa Mason)
+ * Git integration is now available when the current project is a subdirectory of a repository (Delisa Mason)
+ * Ctrl+A/E (home and end) added for Linux (Tomasz Wegrzanowski)
+ * Trim line deletes newline if rest of line is empty (Tomasz Wegrzanowski)
+ * Fuzzy finders (e.g. find file) ignore spaces. (Tomasz Wegrzanowski)
+ * Highlighting the current file in the project tree is now optional and is in the Project menu (Delisa Mason)
+ * Document Search is now incremental (Delisa Mason)
+ * REPL Enhancements, including commit on Return (Delisa Mason)
+ * Mirah syntax checking (Michal Hantl)
+ * Mirah REPL (Delisa Mason)
+ * More keybindings for adjusting views, such as changing font size, notebook width, and focussed tree (Delisa Mason)
+ * New look! (Max Hawkins)
+ * 3+ notebooks allowed at once (Dotan J. Nahum)
+ * Configurable test runner plugin (Chris Nelson)
+ * Added menu mnemonics for Linux and Windows (Delisa Mason)
+ * Much improved search and replace behaviour (Tom Murray)
+
+Bugfixes:
+
+ * TitleCase now works when the selected text has capital letters in it (Delisa Mason)
+ * Go to Declaration is only available when a project is open (Delisa Mason)
+ * Saving a file prompts before overwriting (Delisa Mason)
+ * Encrypt/Decrypt does not happen if a user cancels (Utkarsh Kukreti)
+ * Fix the "Index out of bounds" errors in the pair highlighter (Delisa Mason)
+ * Searching will now scroll the window horizontally (#400) (Delisa Mason)
+
+New APIs:
+
+ * Non-modal text, list, and browser dialogs in Application::Dialog (Delisa Mason)
+
+Version 0.9.1 (2 December 2010)
+===============================
+
+ * Move rhino mirror (Dan Lucraft)
+
+Version 0.9 (25 November 2010)
+==============================
 
 Enhancements:
 
@@ -11,14 +68,27 @@ Enhancements:
  * Tabs now display an alert icon if the underlying file is unwritable (Delisa Mason)
  * Browser bar URL field now supports project-relative paths (Delisa Mason)
  * URLs can be opened in the internal browser or the OS-default based on preferences (Delisa Mason)
- * Syntax checking and declarations for groovy (Delisa Mason)
+ * Syntax checking for Groovy (Delisa Mason)
+ * Jump to declaration for Groovy (Delisa Mason)
+ * Margin is drawn with a line or a shaded area (Tim Felgentreff)
+ * Syntax checking for JavaScript (Delisa Mason)
+ * Word wrap wraps at the margin column (Daniel Lucraft)
+ * Improvements and optimizations to replace-all function (Tim Felgentreff)
+ * .redcar plugins dir is created on startup to help people know they can put plugins there (Philip Arndt)
+ * Add jruby jar to JVM bootclasspath to speedup startup marginally (Tim Felgentreff)
 
 Bug fixes:
 
- * Declarations Plugin is able to deal with similarly named ruby methods
+ * Declarations plugin is able to deal with similarly named ruby methods
+ * Declarations plugin lets Ruby methods have trailing spaces (Johannes Wollert)
  * Fix Application::Dialog#tool_tip to set the location correctly on Windows (Patrik Sundberg)
  * 64bit Soylatte JDK7 can now be used to run Redcar on Mac OS X
  * Run Tab now checks for underlying file (Delisa Mason)
+ * Hovering on annotations only displays the tooltip(s) under the cursor, not all of them (Delisa Mason)
+ * Fix for installing on Ruby 1.8.6 (Dan Lucraft)
+ * Connection manager should not try and read directories and unreadable files when looking for private keys (Antono Vasiljev)
+ * Required cucumber version is specified in the Gemfile (Tianyi Cui)
+ * Pair highlighter works on first and last character in the document (Kirill Nikitin)
 
 Internal changes:
 

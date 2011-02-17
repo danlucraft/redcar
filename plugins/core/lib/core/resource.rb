@@ -3,6 +3,10 @@ module Redcar
   class Resource
     attr_reader :block, :task
     
+    class << self
+      attr_accessor :compute_synchronously
+    end
+    
     def self.task_queue
       Redcar.app.task_queue
     end
@@ -44,11 +48,15 @@ module Redcar
     end
     
     def compute
-      @mutex.synchronize do
-        unless @task and @task.pending?
-          @task = Resource::Task.new(self)
-          @task.description = @description
-          @future = Resource.task_queue.submit(@task)
+      if Resource.compute_synchronously
+        @value = block.call
+      else
+        @mutex.synchronize do
+          unless @task and @task.pending?
+            @task = Resource::Task.new(self)
+            @task.description = @description
+            @future = Resource.task_queue.submit(@task)
+          end
         end
       end
     end

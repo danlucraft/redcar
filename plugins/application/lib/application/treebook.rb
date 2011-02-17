@@ -17,6 +17,7 @@ module Redcar
       @trees << tree
       @focussed_tree = tree
       notify_listeners(:tree_added, tree)
+      tree.focus
       Redcar.app.repeat_event(:tree_added) if Redcar.app
     end
 
@@ -27,6 +28,7 @@ module Redcar
       return if @focussed_tree == tree
       @focussed_tree = tree
       notify_listeners(:tree_focussed, tree)
+      tree.focus
     end
 
     # Remove a tree from this treebook
@@ -40,6 +42,34 @@ module Redcar
           focus_tree(trees.first) if trees.any?
         end
         Redcar.app.repeat_event(:tree_removed) if Redcar.app
+      end
+    end
+
+    def switch_down
+      if @trees.any?
+        if @focussed_tree
+          index = @trees.index @focussed_tree
+        else
+          index = -1
+        end
+        new_tree_index = index + 1
+        new_tree_index = 0 if new_tree_index < 0 or new_tree_index >= @trees.size
+        tree = @trees[new_tree_index]
+        focus_tree(tree) if tree
+      end
+    end
+
+    def switch_up
+      if @trees.any?
+        if @focussed_tree
+          index = @trees.index @focussed_tree
+        else
+          index = 1
+        end
+        new_tree_index = index - 1
+        new_tree_index = @trees.size - 1 if new_tree_index < 0 or new_tree_index >= @trees.size
+        tree = @trees[new_tree_index]
+        focus_tree(tree) if tree
       end
     end
 

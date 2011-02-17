@@ -75,6 +75,10 @@ module Redcar
       notify_listeners(:select_element, node)
     end
     
+    def focus
+      notify_listeners(:focus)
+    end
+    
     # @return [Array<NodeMirror>] the selected nodes
     def selection
       controller.selection

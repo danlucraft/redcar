@@ -71,3 +71,14 @@ Feature: Open and save files
     When I open a file
     Then the window "fixtures" should have 1 tab
 
+  Scenario: Choosing to open a large file
+    Given I will open a large file from the "open_file" dialog
+    And I will choose "yes" from the "message_box" dialog
+    When I open a file
+    Then there should be 1 edit tab
+
+  Scenario: Choosing not to open a large file
+    Given I will open a large file from the "open_file" dialog
+    And I will choose "no" from the "message_box" dialog
+    When I open a file
+    Then there should be 0 edit tabs

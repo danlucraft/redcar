@@ -92,7 +92,50 @@ module Redcar
       end
 
       def self.storage
-        @storage = Plugin::Storage.new('project_plugin')
+        @storage ||= begin
+          storage = Plugin::Storage.new('project_plugin')
+          storage.set_default('reveal_files_in_project_tree',true)
+          storage.set_default('reveal_files_only_when_tree_is_focussed',true)
+          storage.set_default('hidden_files_pattern', '(^\.|\.rbc$)')
+          storage.set_default('not_hidden_files', %w(.gitignore .gemtest))
+          storage
+        end
+      end
+
+      def self.hidden_files_pattern
+        Regexp.new storage['hidden_files_pattern']
+      end
+
+      def self.not_hidden_files
+        Array storage['not_hidden_files']
+      end
+
+      def self.hide_file?(file)
+        file = File.basename(file)
+        !not_hidden_files.include?(file) and file =~ hidden_files_pattern
+      end
+
+      def self.reveal_files?
+        storage['reveal_files_in_project_tree']
+      end
+
+      def self.reveal_files=(toggle)
+        storage['reveal_files_in_project_tree'] = toggle
+      end
+
+      def self.reveal_file_only_when_tree_focussed?
+        storage['reveal_files_only_when_tree_is_focussed']
+      end
+
+      def self.reveal_file?(project)
+        if project and tree = project.tree
+          if reveal_files? and project.window.trees_visible?
+            ftree = project.window.treebook.focussed_tree
+            unless tree != ftree and reveal_file_only_when_tree_focussed?
+              true
+            end
+          end
+        end
       end
 
       def self.filter_path
@@ -135,11 +178,28 @@ module Redcar
       # @path  [String] path the path of the file to be edited
       # @param [Window] win  the Window to open the File in
       def self.open_file_in_window(path, win, adapter)
+        return unless large_file_airbag(path)
         tab = win.new_tab(Redcar::EditTab)
         mirror = FileMirror.new(path, adapter)
         tab.edit_view.document.mirror = mirror
         tab.edit_view.reset_undo
         tab.focus
+      end
+
+      def self.file_too_large?(path)
+        File.size(path) > file_size_limit
+      end
+
+      # Prompts the user before opening the given path if it's above self.file_size_limit.
+      def self.large_file_airbag(path)
+        if file_too_large?(path)
+          Application::Dialog.message_box(
+            "This file is larger than 10MB which may crash Redcar.\n\nAre you sure you want to open it?",
+            :type => :warning,
+            :buttons => :yes_no) == :yes
+        else
+          true
+        end
       end
 
       def self.find_projects_containing_path(path)
@@ -157,6 +217,7 @@ module Redcar
           window = project.window
         else
           window = windows_without_projects.first || Redcar.app.new_window
+          Project::Recent.store_path(path)
         end
         open_file_in_window(path, window, adapter)
         window.focus
@@ -197,15 +258,28 @@ module Redcar
         tab.focus
       end
 
+      PROJECT_LOCKED_MESSAGE = "Project appears to be locked by another Redcar process!\nOpen anway?"
+      
       # Opens a new Tree with a DirMirror and DirController for the given
       # path, in a new window.
       #
       # @param [String] path  the path of the directory to view
       def self.open_project_for_path(path)
-        win = Redcar.app.focussed_window
-        win = Redcar.app.new_window if !win or Manager.in_window(win)
-        project = Project.new(path).tap do |p|
-          p.open(win) if p.ready?
+        open_projects.each do |project|
+          if project.path == path
+            project.window.focus
+            return
+          end
+        end
+        project = Project.new(path)
+        should_open = true
+        if project.locked?
+          should_open = Application::Dialog.message_box(PROJECT_LOCKED_MESSAGE, :type => :warning, :buttons => :yes_no)
+        end
+        if should_open
+          win = Redcar.app.focussed_window
+          win = Redcar.app.new_window if !win or Manager.in_window(win)
+          project.open(win) if project.ready?
         end
       end
 
@@ -339,21 +413,20 @@ module Redcar
               item "Open", Project::FileOpenCommand
               item "Reload File", Project::FileReloadCommand
               item "Open Directory", Project::DirectoryOpenCommand
-              #item "Open Remote...", Project::OpenRemoteCommand
-              lazy_sub_menu "Open Recent" do
-                Project::RecentDirectories.generate_menu(self)
-              end
-
+              item "Open Recent...", Project::FindRecentCommand
+              
               separator
               item "Save", Project::FileSaveCommand
               item "Save As", Project::FileSaveAsCommand
             end
           end
+          
           sub_menu "Project", :priority => 15 do
             group(:priority => :first) do
               item "Find File", Project::FindFileCommand
-              item "Refresh Directory", Project::RefreshDirectoryCommand
+              # item "Refresh Directory", Project::RefreshDirectoryCommand
             end
+            item "Reveal Open File in Tree", :command => Project::ToggleRevealInProject, :type => :check, :active => Project::Manager.reveal_files?
           end
         end
       end
@@ -420,8 +493,10 @@ module Redcar
       end
 
       class << self
+        attr_accessor :file_size_limit
         attr_reader :open_project_sensitivity
       end
+      self.file_size_limit = 5242880
     end
   end
 end

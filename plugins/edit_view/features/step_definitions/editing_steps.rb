@@ -37,6 +37,11 @@ When /^I move the cursor to (\d+)$/ do |offset|
   doc.cursor_offset = offset.to_i
 end
 
+When /^I move the cursor to the end of the document$/ do
+  doc = Redcar.app.focussed_window.focussed_notebook.focussed_tab.edit_view.document
+  doc.cursor_offset = doc.length
+end
+
 Then /^the cursor should be at (\d+)$/ do |offset|
   doc = Redcar::EditView.focussed_tab_edit_view.document
   doc.cursor_offset.should == offset.to_i
@@ -103,7 +108,7 @@ When /^I press the Backspace key in the edit tab$/ do
   edit_view.backspace_pressed([])
 end
 
-Then /^the contents should be "(.*)"$/ do |text|
+Then /^the contents should (not )?be "(.*)"$/ do |negative,text|
   expected = unescape_text(text)
   doc = Redcar::EditView.focussed_edit_view_document
   actual = doc.to_s
@@ -116,7 +121,11 @@ Then /^the contents should be "(.*)"$/ do |text|
     end
     actual = actual.insert(actual.char_offset_to_byte_offset(char_seloff), "<s>") unless char_curoff == char_seloff
   end
-  actual.should == expected
+  if negative
+    actual.should_not == expected
+  else
+    actual.should == expected
+  end
 end
 
 Then /^the contents of the edit tab should be "(.*)"$/ do |text|
@@ -184,6 +193,13 @@ When /^I replace the contents with 100 lines of "([^"]*)" then "([^"]*)"$/ do |c
   doc.text = (contents1 + "\n")*100 + contents2
 end
 
+When /^I replace the contents with (\d+) "([^"]*)" then "([^"]*)"$/ do |count, contents1, contents2|
+  contents1 = unescape_text(contents1)
+  contents2 = unescape_text(contents2)
+  doc = Redcar::EditView.focussed_edit_view_document
+  doc.text = (contents1)*count.to_i + contents2
+end
+
 When /^I scroll to the top of the document$/ do
   doc = Redcar::EditView.focussed_edit_view_document
   doc.scroll_to_line(0)
@@ -194,6 +210,13 @@ Then /^line number (\d+) should be visible$/ do |line_num|
   doc = Redcar::EditView.focussed_edit_view_document
   (doc.biggest_visible_line >= line_num).should be_true
   (doc.smallest_visible_line <= line_num).should be_true
+end
+
+Then /^horizontal offset (\d+) should be visible$/ do |offset|
+  offset = offset.to_i
+  doc    = Redcar::EditView.focussed_edit_view_document
+  (doc.largest_visible_horizontal_index  >= offset).should be_true
+  (doc.smallest_visible_horizontal_index <= offset).should be_true
 end
 
 When /^I select the word (right of|left of|around|at) (\d+)$/ do |direction, offset|

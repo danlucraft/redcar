@@ -45,12 +45,19 @@ def delete_subproject_fixtures
   FileUtils.rm_rf(fixtures_path + "/myproject/test2")
 end
 
+def filter_storage
+  Redcar::Project::FindFileDialog.storage
+end
+
 Before do
   reset_project_fixtures
+  @original_file_size_limit = Redcar::Project::Manager.file_size_limit
 end
 
 After do
+  Redcar::Project::Manager.reveal_files = true
   reset_project_fixtures
   delete_subproject_fixtures
   DrbShelloutHelper.kill_thread
+  Redcar::Project::Manager.file_size_limit = @original_file_size_limit
 end

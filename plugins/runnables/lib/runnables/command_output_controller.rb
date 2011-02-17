@@ -168,6 +168,11 @@ module Redcar
         scroll_to_end(output_container)
       end
 
+      def open_file(file, line)
+        Project::Manager.open_file(File.join(Project::Manager.focussed_project.path, file))
+        Redcar.app.focussed_window.focussed_notebook_tab.edit_view.document.scroll_to_line(line.to_i)
+      end
+      
       def index
         rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "..", "views", "command_output.html.erb")))
         command = @cmd
