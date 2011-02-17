@@ -6,12 +6,11 @@ module Redcar
       
       attr_accessor :cmd
 
-      def initialize(path, cmd, title, environment = {})
+      def initialize(path, cmd, title)
         @path = path
         @cmd = cmd
         @title = title
         @output_id = 0
-        @environment = environment
       end
       
       def title
@@ -33,16 +32,11 @@ module Redcar
       def run
         case Redcar.platform
         when :osx, :linux
-          export      = "export"
-          join_symbol = " ; "
-          path        = @path
+          cmd = "cd #{@path}; " + @cmd
         when :windows
-          export      = "set"
-          join_symbol = " & "
-          path        = %{"#{@path.gsub('/', '\\')}"}
+          cmd = "cd \"#{@path.gsub('/', '\\')}\" & #{@cmd}"
         end
-        environment = @environment.map {|k, v| "#{export} #{k}=#{v}" }.join(join_symbol)
-        cmd = [environment, "cd #{path}", @cmd].join(join_symbol)
+        
         run_command(cmd)
       end
       

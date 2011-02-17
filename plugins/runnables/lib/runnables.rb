@@ -18,9 +18,9 @@ module Redcar
     PATH_HOLDER         = "__PATH__"
     NAME_HOLDER         = "__NAME__"
 
-    def self.run_process(path, command, title, output = "tab", environment = {})
+    def self.run_process(path, command, title, output = "tab")
       window = Redcar.app.focussed_window
-      command = Runnables.substitute_variables(window, command)
+      command = Runnables.substitute_variables(window,command)
       return unless command
       if Runnables.storage['save_project_before_running'] == true
         window.notebooks.each do |notebook|
@@ -29,7 +29,7 @@ module Redcar
           end
         end
       end
-      controller = CommandOutputController.new(path, command, title, environment)
+      controller = CommandOutputController.new(path, command, title)
       if output == "none"
         controller.run
       else
