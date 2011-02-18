@@ -108,14 +108,15 @@ module Redcar
     
     $:.push File.expand_path(File.join(Redcar.asset_dir))
     
-    plugin_manager.load("swt")
-  end
-  
-  def self.load_useful_libraries
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "json", "lib"))
     require 'json'
 
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "openssl", "lib"))
+    
+    plugin_manager.load("swt")
+  end
+  
+  def self.load_useful_libraries
   end
 
   def self.load_plugins

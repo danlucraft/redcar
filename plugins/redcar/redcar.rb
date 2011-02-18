@@ -1407,12 +1407,12 @@ Redcar.environment: #{Redcar.environment}
         Redcar.log.info("initializing gui took #{Time.now - s}s")
       end
       Redcar.update_gui do
-        Swt.splash_screen.inc(2) if Swt.splash_screen
-        Redcar::Project::Manager.start(args)
-        Redcar.log.info("startup milestone: window open #{Time.now - Redcar.process_start_time}")
-        Redcar.log.info("startup milestone: project open #{Time.now - Redcar.process_start_time}")
         win = Redcar.app.make_sure_at_least_one_window_open
         win.close if win and args.include?("--no-window")
+        Redcar.log.info("startup milestone: window open #{Time.now - Redcar.process_start_time}")
+        Swt.splash_screen.inc(2) if Swt.splash_screen
+        Redcar::Project::Manager.start(args)
+        Redcar.log.info("startup milestone: project open #{Time.now - Redcar.process_start_time}")
       end
       Redcar.update_gui do
         Swt.splash_screen.close if Swt.splash_screen
