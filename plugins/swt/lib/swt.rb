@@ -66,6 +66,7 @@ module Swt
     
       @splash.setLocation(x, y)
       @splash.open
+      Redcar.log.debug("opened splash")
     end
     
     def inc(val = 1)
@@ -77,6 +78,7 @@ module Swt
       @splash.close
       @image.dispose
       Swt.instance_variable_set(:@splashscreen, nil)
+      Redcar.log.debug("closed splash")
     end
   end
   
