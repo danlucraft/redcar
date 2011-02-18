@@ -86,16 +86,16 @@ module Redcar
       def self.modules
         @modules ||= begin
           mods = []
-          puts "Loading Redcar SCM modules..." if debug
+          Redcar.log.debug "SCM Loading Redcar SCM modules..."
 
           Redcar.plugin_manager.objects_implementing(:scm_module).each do |i|
-            puts "  Found #{i.name}." if debug
+            Redcar.log.debug "SCM   Found #{i.name}."
             object = i.scm_module
 
             if object.supported?
               mods.push(object)
             elsif debug
-              puts "    but discarding because it isn't supported on the current system."
+              Redcar.log.debug  "SCM     but discarding because it isn't supported on the current system."
             end
           end
 
@@ -111,7 +111,7 @@ module Redcar
           begin
             assert_interface(mod, Redcar::Scm::Model)
           rescue RuntimeError => e
-            puts "Skipping SCM module #{m.name} because it has an invalid interface." if debug
+            Redcar.log.debug "SCM Skipping SCM module #{m.name} because it has an invalid interface."
             nil
           else
             mod
@@ -131,17 +131,17 @@ module Redcar
         # for now we only want to attempt to handle the local case
         return if project.remote?
 
-        puts "#{modules.count} SCM modules loaded." if debug
+        Redcar.log.debug "SCM #{modules.count} SCM modules loaded."
 
         repo = modules_instance.find do |m|
-          puts "Checking if #{project.path} is a #{m.repository_type} repository..." if debug
+          Redcar.log.debug "SCM Checking if #{project.path} is a #{m.repository_type} repository..."
           m.repository?(project.path)
         end
 
         # quit if we can't find something to handle this project
         return if repo.nil?
 
-        puts "  Yes it is!" if debug
+        Redcar.log.debug "SCM   Yes it is!"
 
         prepare(project, repo)
       end
@@ -156,7 +156,7 @@ module Redcar
           repo.load(project.path)
           adapter = repo.adapter(project.adapter)
           if not adapter.nil?
-            puts "Attaching a custom adapter to the project." if debug
+            Redcar.log.debug "SCM Attaching a custom adapter to the project."
             project.adapter = adapter
           end
 
@@ -165,11 +165,11 @@ module Redcar
           # cleanup
           info = project_repositories.delete project
 
-          puts "*** Error loading SCM: " + $!.message
+          Redcar.log.error "*** Error loading SCM: " + $!.message
           puts $!.backtrace
         end
 
-        puts "scm start took #{Time.now - start}s (included in project start time)" if debug
+        Redcar.log.debug "SCM start took #{Time.now - start}s"
       end
 
       def self.project_closed(project)
@@ -191,7 +191,7 @@ module Redcar
         # Search for the current project
         project = Project::Manager.in_window(Redcar.app.focussed_window)
         if project.nil?
-          puts "Couldn't detect the project in the current window."
+          Redcar.log.debug "SCM Couldn't detect the project in the current window."
         end
         repo_info = project_repositories[project]
         init_modules = Redcar::Scm::Manager.modules_with_init

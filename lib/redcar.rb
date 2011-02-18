@@ -8,6 +8,7 @@ require 'redcar/usage'
 require 'redcar/ruby_extensions'
 require 'redcar/instance_exec'
 require 'redcar/usage'
+require 'redcar/logger'
 require 'regex_replace'
 
 require 'forwardable'
@@ -230,6 +231,25 @@ module Redcar
     raise "can't set gui twice" if @gui
     return if Redcar.no_gui_mode?
     @gui = gui
+  end
+  
+  def self.log
+    @log ||= begin
+      targets = []
+      targets << STDOUT if show_log?
+      logger = Redcar::Logger.new(*targets)
+      logger.level = :debug if debug?
+      at_exit { logger.close }
+      logger
+    end
+  end
+  
+  def self.show_log?
+    ARGV.include?("--show-log")
+  end
+  
+  def self.debug?
+    ARGV.include?("--debug")
   end
 end
 

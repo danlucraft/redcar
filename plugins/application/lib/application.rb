@@ -267,7 +267,7 @@ module Redcar
         Redcar.plugin_manager.objects_implementing(:keymaps).each do |object|
           maps = object.keymaps
           unless maps
-            puts "#{object.inspect} implements :keymaps but :keymaps returns nil"
+            Redcar.log.warn("#{object.inspect} implements :keymaps but :keymaps returns nil")
             maps = []
           end
           keymaps = maps.select do |map|

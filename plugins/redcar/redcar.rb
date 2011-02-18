@@ -1391,7 +1391,7 @@ Redcar.environment: #{Redcar.environment}
     end
 
     def self.start(args=[])
-      puts "loading plugins took #{Time.now - PROCESS_START_TIME}"
+      Redcar.log.info("startup milestone: loading plugins took #{Time.now - PROCESS_START_TIME}")
       Redcar.update_gui do
         Application.start
         ApplicationSWT.start
@@ -1404,20 +1404,20 @@ Redcar.environment: #{Redcar.environment}
         end
         Redcar.app.refresh_menu!
         Redcar.app.load_sensitivities
-        puts "initializing gui took #{Time.now - s}s"
+        Redcar.log.info("initializing gui took #{Time.now - s}s")
       end
       Redcar.update_gui do
         Swt.splash_screen.inc(2) if Swt.splash_screen
-        s = Time.now
         Redcar::Project::Manager.start(args)
-        puts "project start took #{Time.now - s}s"
+        Redcar.log.info("startup milestone: window open #{Time.now - PROCESS_START_TIME}")
+        Redcar.log.info("startup milestone: project open #{Time.now - PROCESS_START_TIME}")
         win = Redcar.app.make_sure_at_least_one_window_open
         win.close if win and args.include?("--no-window")
       end
       Redcar.update_gui do
         Swt.splash_screen.close if Swt.splash_screen
       end
-      puts "start time: #{Time.now - $redcar_process_start_time}"
+      Redcar.log.info("startup milestone: complete: #{Time.now - PROCESS_START_TIME}")
       if args.include?("--compute-textmate-cache-and-quit")
         Redcar::Textmate.all_bundles
         exit
