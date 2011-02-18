@@ -235,7 +235,7 @@ module Redcar
   
   def self.log
     @log ||= begin
-      targets = []
+      targets = [log_file]
       targets << STDOUT if show_log?
       logger = Redcar::Logger.new(*targets)
       logger.level = :debug if debug?
@@ -244,12 +244,27 @@ module Redcar
     end
   end
   
+  def self.log_path
+    user_dir + "/#{environment}.log"
+  end
+  
+  def self.log_file
+    File.open(log_path, "a")
+  end
+  
   def self.show_log?
     ARGV.include?("--show-log")
   end
   
   def self.debug?
     ARGV.include?("--debug")
+  end
+  
+  def self.process_start_time
+    @process_start_time ||= begin
+      t = ARGV.map {|arg| arg =~ /--start-time=(\d+)$/; $1}.compact.first
+      t ? Time.at(t.to_i) : $redcar_process_start_time
+    end
   end
 end
 

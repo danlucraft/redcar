@@ -60,8 +60,8 @@ module Redcar
 
       # Windows XP updates
       if [:windows].include?(Redcar.platform)
-	bin = "\"#{bin}\""
-	jruby_complete = "\"#{jruby_complete}\""
+        bin = "\"#{bin}\""
+        jruby_complete = "\"#{jruby_complete}\""
       end      
 
       # unfortuanately, ruby doesn't support [a, *b, c]
@@ -74,6 +74,7 @@ module Redcar
       command.push(*cleaned_args)
       command.push("--no-sub-jruby", "--ignore-stdin")
       command.push(*args)
+      command.push "--start-time=#{$redcar_process_start_time.to_i}"
       
       puts command.join(' ')
       yield command
