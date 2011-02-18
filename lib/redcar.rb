@@ -241,7 +241,7 @@ module Redcar
       targets = [log_file]
       targets << STDOUT if show_log?
       logger = Redcar::Logger.new(*targets)
-      logger.level = :debug if debug?
+      logger.level = custom_log_level
       at_exit { logger.close }
       logger
     end
@@ -259,8 +259,8 @@ module Redcar
     ARGV.include?("--show-log")
   end
   
-  def self.debug?
-    ARGV.include?("--debug")
+  def self.custom_log_level
+    ARGV.map {|a| a =~ /--log-level=(info|debug|warn|error)/; $1}.compact.first
   end
   
   def self.process_start_time

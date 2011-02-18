@@ -3,14 +3,16 @@ module Redcar
   class Logger
     LEVELS = [:debug, :info, :warn, :error]
     
-    attr_writer :level
-    
     def initialize(*targets)
       @targets = targets
     end
     
     def level
       @level || :info
+    end
+    
+    def level=(val)
+      @level = val ? val.to_sym : nil
     end
     
     def close
