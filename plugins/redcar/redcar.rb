@@ -300,95 +300,6 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class CloseTabCommand < TabCommand
-      def initialize(tab=nil)
-        @tab = tab
-      end
-
-      def tab
-        @tab || super
-      end
-
-      def execute
-        if tab.is_a?(EditTab)
-          if tab.edit_view.document.modified?
-            tab.focus
-            result = Application::Dialog.message_box(
-              "This tab has unsaved changes. \n\nSave before closing?",
-              :buttons => :yes_no_cancel
-            )
-            case result
-            when :yes
-              # check if the tab was saved properly,
-              # it would return false for example if the permission is not granted
-              if Project::FileSaveCommand.new(tab).run
-                close_tab
-              end
-            when :no
-              close_tab
-            when :cancel
-            end
-          else
-            close_tab
-          end
-        elsif tab.is_a?(HtmlTab)
-          if tab.html_view.controller and message = tab.html_view.controller.ask_before_closing
-            tab.focus
-            result = Application::Dialog.message_box(
-              message,
-              :buttons => :yes_no_cancel
-            )
-            case result
-            when :yes
-              close_tab
-            when :no
-              close_tab
-            when :cancel
-            end
-          else
-            close_tab
-          end
-        else
-          close_tab
-        end
-        @tab = nil
-      end
-
-      private
-
-      def close_tab
-        win = tab.notebook.window
-        tab.close
-        # this will break a lot of features:
-        #if win.all_tabs.empty? and not Project::Manager.in_window(win)
-        #  win.close
-        #end
-      end
-    end
-
-    class CloseAll < Redcar::Command
-      def execute
-        window = Redcar.app.focussed_window
-        tabs = window.all_tabs
-        tabs.each do |t|
-          Redcar::Top::CloseTabCommand.new(t).run
-        end
-      end
-    end
-
-    class CloseOthers < Redcar::Command
-      def execute
-        window = Redcar.app.focussed_window
-        current_tab = Redcar.app.focussed_notebook_tab
-        tabs = window.all_tabs
-        tabs.each do |t|
-          unless t == current_tab
-            Redcar::Top::CloseTabCommand.new(t).run
-          end
-        end
-      end
-    end
-
     class SwitchTreeDownCommand < TreeCommand
 
       def execute
@@ -941,7 +852,7 @@ Redcar.environment: #{Redcar.environment}
         #link "Cmd+Ctrl+O",  Project::OpenRemoteCommand
         link "Cmd+S",       Project::FileSaveCommand
         link "Cmd+Shift+S", Project::FileSaveAsCommand
-        link "Cmd+W",       CloseTabCommand
+        link "Cmd+W",       Application::CloseTabCommand
         link "Cmd+Shift+W", Application::CloseWindowCommand
         link "Alt+Shift+W", CloseTreeCommand
         link "Cmd+Q",       Application::QuitCommand
@@ -1029,7 +940,7 @@ Redcar.environment: #{Redcar.environment}
         #link "Alt+Shift+O",  Project::OpenRemoteCommand
         link "Ctrl+S",       Project::FileSaveCommand
         link "Ctrl+Shift+S", Project::FileSaveAsCommand
-        link "Ctrl+W",       CloseTabCommand
+        link "Ctrl+W",       Application::CloseTabCommand
         link "Ctrl+Shift+W", Application::CloseWindowCommand
         link "Alt+Shift+W",  CloseTreeCommand
         link "Ctrl+Q",       Application::QuitCommand
@@ -1138,11 +1049,11 @@ Redcar.environment: #{Redcar.environment}
 
           group(:priority => 10) do
             separator
-            item "Close Tab", CloseTabCommand
+            item "Close Tab", Application::CloseTabCommand
             item "Close Tree", CloseTreeCommand
             item "Close Window", Application::CloseWindowCommand
-            item "Close Others", CloseOthers
-            item "Close All", CloseAll
+            item "Close Others", Application::CloseOthers
+            item "Close All", Application::CloseAll
           end
 
           group(:priority => :last) do
@@ -1291,7 +1202,7 @@ Redcar.environment: #{Redcar.environment}
       end
 
       def tab_close(tab)
-        CloseTabCommand.new(tab).run
+        Application::CloseTabCommand.new(tab).run
       end
 
       def window_close(win)

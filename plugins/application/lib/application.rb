@@ -31,8 +31,9 @@ require 'application/tab/command'
 require 'application/treebook'
 require 'application/window'
 
-require 'application/commands/close_window_command'
-require 'application/commands/quit_command'
+require 'application/commands/application_commands'
+require 'application/commands/tab_commands'
+require 'application/commands/window_commands'
 
 module Redcar
   # A Redcar process contains one Application instance. The application instance

@@ -1,7 +1,6 @@
 module Redcar
   class Application
     class QuitCommand < Command
-
       def execute
         Redcar.app.call_on_plugins(:quit_guard) do |guard|
           return unless guard
