@@ -20,7 +20,11 @@ module Redcar
           if File.readable? path
             Manager.open_file(path, @adapter)
           else
-            Application::Dialog.message_box("Can't read #{path}, you don't have the permissions.", :type => :error, :buttons => :ok)
+            Application::Dialog.message_box(
+              "Can't read #{path}, you don't have the permissions.",
+              :type => :error,
+              :buttons => :ok
+            )
           end
         end
       end
@@ -145,12 +149,23 @@ module Redcar
 
       def execute
         if tab.edit_view.document.mirror
-          tab.edit_view.document.save!
-          Project::Manager.refresh_modified_file(tab.edit_view.document.mirror.path)
+          if File.writable? tab.edit_view.document.mirror.path
+            tab.edit_view.document.save!
+            Project::Manager.refresh_modified_file(tab.edit_view.document.mirror.path)
+          else
+            Application::Dialog.message_box(
+              "Can't save #{tab.edit_view.document.mirror.path}, you don't have the permissions.",
+              :type => :error,
+              :buttons => :ok
+            )
+            result = false
+          end
         else
-          FileSaveAsCommand.new.run
+          result = FileSaveAsCommand.new.run
         end
         tab.update_for_file_changes
+        result ||= true
+        return result
       end
     end
 
@@ -164,12 +179,23 @@ module Redcar
       def execute
         path = get_path
         if path
-          contents = tab.edit_view.document.to_s
-          new_mirror = FileMirror.new(path)
-          new_mirror.commit(contents)
-          tab.edit_view.document.mirror = new_mirror
-          Project::Manager.refresh_modified_file(tab.edit_view.document.mirror.path)
+          if File.writable? path
+            contents = tab.edit_view.document.to_s
+            new_mirror = FileMirror.new(path)
+            new_mirror.commit(contents)
+            tab.edit_view.document.mirror = new_mirror
+            Project::Manager.refresh_modified_file(tab.edit_view.document.mirror.path)
+          else
+            Application::Dialog.message_box(
+              "Can't save #{path}, you don't have the permissions.",
+              :type => :error,
+              :buttons => :ok
+            )
+            result = false
+          end
         end
+        result ||= true
+        return result
       end
 
       private
