@@ -21,7 +21,6 @@ Some Redcar features:
 
 ![alt text](http://redcareditor.com/images/redcar-4-thumb.png "Title")
 ![alt text](http://redcareditor.com/images/redcar-1-thumb.png "Title")
-![alt text](http://redcareditor.com/images/redcar-5-thumb.png "Title")
 
 ## INSTALLATION
 
