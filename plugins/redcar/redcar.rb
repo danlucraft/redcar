@@ -1335,7 +1335,6 @@ Redcar.environment: #{Redcar.environment}
       end
       Redcar.load_useful_libraries
       EditViewSWT.start
-      Swt.splash_screen.inc(7) if Swt.splash_screen
       Redcar.log.info("startup milestone: complete: #{Time.now - Redcar.process_start_time}")
       if args.include?("--compute-textmate-cache-and-quit")
         Redcar::Textmate.all_bundles
