@@ -9,6 +9,7 @@ Enhancements:
  * Raise/lower region behaves better when you select multiple lines (Benedikt Müller)
  * Project search backed by Lucene (Dan Lucraft)
  * Which files are hidden in a project is now configurable (Konstantin Haase)
+ * Added logger at Redcar.log, goes to ~/.redcar/user.log (Dan Lucraft)
 
 Bugfixes:
  * Fixed Unicode problems in DocumentSearch (Tom Murray)
