@@ -9,5 +9,13 @@ module Redcar
         Redcar.app.quit
       end
     end
+    
+    class ToggleToolbar < Command
+
+      def execute
+        Redcar.app.toggle_show_toolbar
+        Redcar.app.refresh_toolbar!
+      end
+    end
   end
 end

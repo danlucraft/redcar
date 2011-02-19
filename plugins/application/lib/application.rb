@@ -37,7 +37,9 @@ require 'application/window'
 
 require 'application/commands/application_commands'
 require 'application/commands/tab_commands'
+require 'application/commands/notebook_commands'
 require 'application/commands/window_commands'
+require 'application/commands/treebook_commands'
 
 module Redcar
   # A Redcar process contains one Application instance. The application instance

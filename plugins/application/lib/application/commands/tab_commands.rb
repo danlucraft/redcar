@@ -1,6 +1,34 @@
 module Redcar
   class Application
 
+    class SwitchTabDownCommand < TabCommand
+
+      def execute
+        win.focussed_notebook.switch_down
+      end
+    end
+
+    class SwitchTabUpCommand < TabCommand
+
+      def execute
+        win.focussed_notebook.switch_up
+      end
+    end
+
+    class MoveTabUpCommand < TabCommand
+
+      def execute
+        win.focussed_notebook.move_up
+      end
+    end
+
+    class MoveTabDownCommand < TabCommand
+
+      def execute
+        win.focussed_notebook.move_down
+      end
+    end
+
     class CloseTabCommand < TabCommand
       def initialize(tab=nil)
         @tab = tab
@@ -52,5 +80,26 @@ module Redcar
         end
       end
     end
+    
+    # define commands from SelectTab1Command to SelectTab9Command
+    (1..9).each do |tab_num|
+      const_set("SelectTab#{tab_num}Command", Class.new(Redcar::TabCommand)).class_eval do
+        define_method :execute do
+          notebook = Redcar.app.focussed_window_notebook
+          notebook.tabs[tab_num-1].focus if notebook.tabs[tab_num-1]
+        end
+      end
+    end
   end
 end
+
+
+
+
+
+
+
+
+
+
+
