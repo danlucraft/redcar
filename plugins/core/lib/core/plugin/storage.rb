@@ -12,7 +12,7 @@ module Redcar
 
       # Open a storage file or create it if it doesn't exist.
       #
-      # @param [String] a (short) name, should be suitable for use as a filename
+      # @param [String] name  a (short) name, should be suitable for use as a filename
       def initialize(name)
         @name    = name
         unless File.exists?(Storage.storage_dir)
@@ -60,6 +60,7 @@ module Redcar
         value
       end
       
+      # Set a default value for a key and save it to disk
       def set_default(key, value)
         unless @storage.has_key?(key)
           self[key] = value
@@ -67,6 +68,8 @@ module Redcar
         value
       end
       
+      # Get all keys in the storage
+      # @return [Array] the Array with all keys
       def keys
         @storage.keys
       end
@@ -79,6 +82,32 @@ module Redcar
       
       def update_timestamp
         @last_modified_time = File.stat(path()).mtime
+      end
+    end
+    
+    # A Storage which is used by multiple plugins. This kind of storage can only
+    # contain arrays, because otherwise plugins could not set their defaults as
+    # addition to the existing ones of other plugins.
+    class SharedStorage < Plugin::Storage
+      # Set a default value for a key or update it, if it already exists
+      def set_or_update_default(key, value)
+        if @storage.has_key?(key)
+          update_default(key, value)
+        else
+          set_default(key, value)
+        end
+        @storage[key].uniq!
+        value
+      end
+      
+      private
+      
+      def update_default(key, value)
+        if value.instance_of? Array
+          self[key] = self[key] + value
+        else
+          self[key] << value
+        end
       end
     end
   end

@@ -1,16 +1,23 @@
 require 'set'
 
 module Redcar
-  class Project    
+  class Project
 
     class FindFileDialog < FilterListDialog
       def self.storage
         @storage ||= begin
           storage = Plugin::Storage.new('find_file_dialog')
           storage.set_default('ignore_file_patterns', false)
-          storage.set_default('ignore_files_that_match_these_regexes', [])
-          storage.set_default('ignore_files_that_match_these_regexes_example_for_reference', [/.*\.class/i])
           storage
+        end
+      end
+      
+      def self.shared_storage
+        @shared_storage ||= begin
+          storage = Plugin::SharedStorage.new('shared')
+          storage.set_or_update_default('ignored_file_patterns', [])
+          storage.set_or_update_default('not_hidden_files', [])
+          storage.save
         end
       end
 
@@ -91,7 +98,7 @@ module Redcar
       end
 
       def ignore_regexes
-        self.class.storage['ignore_files_that_match_these_regexes']
+        self.class.shared_storage['ignored_file_patterns']
       end
 
       def ignore_file?(filename)
