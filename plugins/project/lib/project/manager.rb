@@ -444,8 +444,8 @@ module Redcar
         if tab.respond_to?(:edit_view) && tab.edit_view.document.modified?
           tab.focus
           result = Application::Dialog.message_box(
-            "This tab has unsaved changes. \n\nSave before closing?",
-            :buttons => :yes_no_cancel
+          "This tab has unsaved changes. \n\nSave before closing?",
+          :buttons => :yes_no_cancel
           )
           case result
           when :yes
