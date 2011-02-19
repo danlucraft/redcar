@@ -155,5 +155,19 @@ module Redcar
         storage
       end
     end
+    
+    def self.quit_guard
+      Runnables::RunningProcessChecker.new(
+        Redcar.app.all_tabs.select {|t| t.is_a?(HtmlTab)},
+        "Kill all and quit?"
+      ).check
+    end
+    
+    def self.close_window_guard(win)
+      Runnables::RunningProcessChecker.new(
+        win.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(HtmlTab)},
+        "Kill them and close the window?"
+      ).check
+    end
   end
 end

@@ -80,9 +80,15 @@ module Redcar
     
     def run(opts = {})
       @executor = Executor.new(self, opts)
+      s = Time.now
       result = @executor.execute
       remove_instance_variable(:@executor)
+      Redcar.log.debug("command #{self.inspect} (#{Time.now - s})")
       result
+    end
+    
+    def inspect
+      "#<#{self.class.name}>"
     end
     
     private

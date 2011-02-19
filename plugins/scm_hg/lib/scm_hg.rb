@@ -11,7 +11,7 @@ module Redcar
         
         def self.supported?
           # not implemented, and hence never supported
-          puts "    Mercurial support is currently unimplemented" if debug
+          Redcar.log.debug "SCM     Mercurial support is currently unimplemented"
           false
         end
       

@@ -5,6 +5,7 @@ $VERBOSE = ARGV.include? '--verbose'
 
 file = __FILE__
 file = File.readlink(file) while File.symlink?(file)
+
 $LOAD_PATH.unshift File.expand_path('../../lib', file)
 
 require "redcar_quick_start"
@@ -27,6 +28,7 @@ else
   exit if Redcar.try_to_load_via_drb
   require 'redcar'
   Redcar.environment = :user
+  Redcar.log.info("REDCAR #{Redcar::VERSION} start (start time was #{Redcar.process_start_time})")
   Redcar.spin_up
   Redcar.load_threaded
   Redcar.show_splash

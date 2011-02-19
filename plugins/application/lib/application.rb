@@ -5,9 +5,9 @@ require 'application/command/executor'
 require 'application/command/history'
 require 'application/sensitive'
 require 'application/sensitivity'
-
 require 'application/clipboard'
 require 'application/command'
+
 require 'application/dialog'
 require 'application/dialogs/filter_list_dialog'
 require 'application/dialogs/modeless_list_dialog'
@@ -30,6 +30,9 @@ require 'application/tab'
 require 'application/tab/command'
 require 'application/treebook'
 require 'application/window'
+
+require 'application/commands/close_window_command'
+require 'application/commands/quit_command'
 
 module Redcar
   # A Redcar process contains one Application instance. The application instance
@@ -226,6 +229,17 @@ module Redcar
       windows.each {|window| window.refresh_toolbar }
       controller.refresh_toolbar
     end
+    
+    # For every plugin that implements it, call the method with the given 
+    # arguments and pass the result to the block.
+    #
+    # @param [Symbol] method_name
+    def call_on_plugins(method_name, *args)
+      Redcar.plugin_manager.objects_implementing(method_name).each do |object|
+        yield object.send(method_name, *args)
+      end
+      nil
+    end
 
     # Generate the main menu by combining menus from all plugins.
     #
@@ -267,7 +281,7 @@ module Redcar
         Redcar.plugin_manager.objects_implementing(:keymaps).each do |object|
           maps = object.keymaps
           unless maps
-            puts "#{object.inspect} implements :keymaps but :keymaps returns nil"
+            Redcar.log.warn("#{object.inspect} implements :keymaps but :keymaps returns nil")
             maps = []
           end
           keymaps = maps.select do |map|

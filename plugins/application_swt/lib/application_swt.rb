@@ -31,6 +31,8 @@ require "application_swt-#{Redcar::VERSION}"
 module Redcar
   class ApplicationSWT
     include Redcar::Controller
+    
+    attr_reader :fake_shell
 
     def self.display
       @display ||= Swt.display
@@ -143,7 +145,7 @@ module Redcar
     end
 
     def refresh_menu
-      if Redcar.platform == :osx
+      if Redcar.platform == :osx and @fake_shell
         old_menu_bar = @fake_shell.menu_bar
         fake_menu_controller = ApplicationSWT::Menu.new(FakeWindow.new(@fake_shell), Redcar.app.main_menu, Redcar.app.main_keymap, Swt::SWT::BAR)
         fake_shell.menu_bar = fake_menu_controller.menu_bar
@@ -152,7 +154,7 @@ module Redcar
     end
 
     def refresh_toolbar
-      if Redcar.platform == :osx
+      if Redcar.platform == :osx and @fake_shell
         fake_toolbar_controller = ApplicationSWT::ToolBar.new(FakeWindow.new(@fake_shell), Redcar.app.main_toolbar, Swt::SWT::FLAT)
       end
     end

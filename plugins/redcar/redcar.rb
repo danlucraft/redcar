@@ -52,40 +52,6 @@ module Redcar
   end
 
   module Top
-    class QuitCommand < Command
-
-      def execute
-        check_for_modified_tabs_and_quit
-      end
-
-      private
-
-      def check_for_modified_tabs_and_quit
-        EditView::ModifiedTabsChecker.new(
-          Redcar.app.all_tabs.select {|t| t.is_a?(EditTab)},
-          "Save all before quitting?",
-          :none     => lambda { check_for_running_processes_and_quit },
-          :continue => lambda { check_for_running_processes_and_quit },
-          :cancel   => nil
-        ).check
-      end
-
-      def check_for_running_processes_and_quit
-        Runnables::RunningProcessChecker.new(
-          Redcar.app.all_tabs.select {|t| t.is_a?(HtmlTab)},
-          "Kill all and quit?",
-          :none     => lambda { quit },
-          :continue => lambda { quit },
-          :cancel   => nil
-        ).check
-      end
-      
-      def quit
-        Project::Manager.open_projects.each {|pr| pr.close }
-        Redcar.app.quit
-      end
-    end
-
     class NewCommand < Command
 
       def execute
@@ -120,54 +86,6 @@ module Redcar
       def execute
         window = Redcar.app.new_window
         window.title = @title if @title
-      end
-    end
-
-    class CloseWindowCommand < Command
-      def initialize(window=nil)
-        @window = window
-      end
-
-      def execute
-        check_for_modified_tabs_and_close_window
-        quit_if_no_windows if [:linux, :windows].include?(Redcar.platform)
-        @window = nil
-      end
-
-      private
-
-      def quit_if_no_windows
-        if Redcar.app.windows.length == 0
-          if Application.storage['stay_resident_after_last_window_closed'] && !(ARGV.include?("--multiple-instance"))
-            puts 'continuing to run to wait for incoming drb connections later'
-          else
-            QuitCommand.new.run
-          end
-        end
-      end
-
-      def check_for_modified_tabs_and_close_window
-        EditView::ModifiedTabsChecker.new(
-          win.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(EditTab)},
-          "Save all before closing the window?",
-          :none     => lambda { check_for_running_processes_and_close_window },
-          :continue => lambda { check_for_running_processes_and_close_window },
-          :cancel   => nil
-        ).check
-      end
-
-      def check_for_running_processes_and_close_window
-        Runnables::RunningProcessChecker.new(
-          win.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(HtmlTab)},
-          "Kill them and close the window?",
-          :none     => lambda { win.close },
-          :continue => lambda { win.close },
-          :cancel   => nil
-        ).check
-      end
-
-      def win
-        @window || super
       end
     end
 
@@ -401,8 +319,11 @@ Redcar.environment: #{Redcar.environment}
             )
             case result
             when :yes
-              tab.edit_view.document.save!
-              close_tab
+              # check if the tab was saved properly,
+              # it would return false for example if the permission is not granted
+              if Project::FileSaveCommand.new(tab).run
+                close_tab
+              end
             when :no
               close_tab
             when :cancel
@@ -1021,9 +942,9 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+S",       Project::FileSaveCommand
         link "Cmd+Shift+S", Project::FileSaveAsCommand
         link "Cmd+W",       CloseTabCommand
-        link "Cmd+Shift+W", CloseWindowCommand
+        link "Cmd+Shift+W", Application::CloseWindowCommand
         link "Alt+Shift+W", CloseTreeCommand
-        link "Cmd+Q",       QuitCommand
+        link "Cmd+Q",       Application::QuitCommand
 
         #link "Cmd+Return",   MoveNextLineCommand
 
@@ -1109,9 +1030,9 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+S",       Project::FileSaveCommand
         link "Ctrl+Shift+S", Project::FileSaveAsCommand
         link "Ctrl+W",       CloseTabCommand
-        link "Ctrl+Shift+W", CloseWindowCommand
+        link "Ctrl+Shift+W", Application::CloseWindowCommand
         link "Alt+Shift+W",  CloseTreeCommand
-        link "Ctrl+Q",       QuitCommand
+        link "Ctrl+Q",       Application::QuitCommand
 
         link "Ctrl+Enter",   MoveNextLineCommand
 
@@ -1219,14 +1140,14 @@ Redcar.environment: #{Redcar.environment}
             separator
             item "Close Tab", CloseTabCommand
             item "Close Tree", CloseTreeCommand
-            item "Close Window", CloseWindowCommand
+            item "Close Window", Application::CloseWindowCommand
             item "Close Others", CloseOthers
             item "Close All", CloseAll
           end
 
           group(:priority => :last) do
             separator
-            item "Quit", QuitCommand
+            item "Quit", Application::QuitCommand
           end
         end
         sub_menu "Edit", :priority => 5 do
@@ -1374,11 +1295,11 @@ Redcar.environment: #{Redcar.environment}
       end
 
       def window_close(win)
-        CloseWindowCommand.new(win).run
+        Application::CloseWindowCommand.new(win).run
       end
 
       def application_close(app)
-        QuitCommand.new.run
+        Application::QuitCommand.new.run
       end
 
       def window_focus(win)
@@ -1391,33 +1312,30 @@ Redcar.environment: #{Redcar.environment}
     end
 
     def self.start(args=[])
-      puts "loading plugins took #{Time.now - PROCESS_START_TIME}"
+      Redcar.log.info("startup milestone: loading plugins took #{Time.now - Redcar.process_start_time}")
       Redcar.update_gui do
         Application.start
         ApplicationSWT.start
         Swt.splash_screen.inc(1) if Swt.splash_screen
-        EditViewSWT.start
-        Swt.splash_screen.inc(7) if Swt.splash_screen
         s = Time.now
         if Redcar.gui
           Redcar.app.controller = ApplicationSWT.new(Redcar.app)
         end
         Redcar.app.refresh_menu!
         Redcar.app.load_sensitivities
-        puts "initializing gui took #{Time.now - s}s"
-      end
-      Redcar.update_gui do
-        Swt.splash_screen.inc(2) if Swt.splash_screen
-        s = Time.now
-        Redcar::Project::Manager.start(args)
-        puts "project start took #{Time.now - s}s"
-        win = Redcar.app.make_sure_at_least_one_window_open
-        win.close if win and args.include?("--no-window")
+        Redcar.log.info("initializing gui took #{Time.now - s}s")
       end
       Redcar.update_gui do
         Swt.splash_screen.close if Swt.splash_screen
+        win = Redcar.app.make_sure_at_least_one_window_open
+        win.close if win and args.include?("--no-window")
+        Redcar.log.info("startup milestone: window open #{Time.now - Redcar.process_start_time}")
+        Redcar::Project::Manager.start(args)
+        Redcar.log.info("startup milestone: project open #{Time.now - Redcar.process_start_time}")
       end
-      puts "start time: #{Time.now - $redcar_process_start_time}"
+      Redcar.load_useful_libraries
+      EditViewSWT.start
+      Redcar.log.info("startup milestone: complete: #{Time.now - Redcar.process_start_time}")
       if args.include?("--compute-textmate-cache-and-quit")
         Redcar::Textmate.all_bundles
         exit
