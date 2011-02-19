@@ -17,10 +17,10 @@ module Redcar
       def execute
         path = get_path
         if path 
-          if path.readable?
+          if File.readable? path
             Manager.open_file(path, @adapter)
           else
-            Application::Dialog.message_box("Can't read #{path}, you don't have the permissions.", :type => :error, :buttons => :retry_cancel)
+            Application::Dialog.message_box("Can't read #{path}, you don't have the permissions.", :type => :error, :buttons => :ok)
           end
         end
       end
