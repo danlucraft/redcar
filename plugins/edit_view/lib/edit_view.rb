@@ -144,7 +144,21 @@ module Redcar
         end
       end
     end
-
+    
+    def self.quit_guard
+      EditView::ModifiedTabsChecker.new(
+        Redcar.app.all_tabs.select {|t| t.is_a?(EditTab)},
+        "Save all before quitting?"
+      ).check
+    end
+    
+    def self.close_window_guard(win)
+      EditView::ModifiedTabsChecker.new(
+        win.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(EditTab)},
+        "Save all before closing the window?"
+      ).check
+    end
+    
     def self.all_handlers(type)
       result = []
       method_name = :"#{type}_handlers"

@@ -1,8 +1,8 @@
 module Redcar
   class Runnables
     class RunningProcessChecker
-      def initialize(tabs, message, options)
-        @tabs, @message, @options = tabs, message, options
+      def initialize(tabs, message)
+        @tabs, @message = tabs, message
       end
       
       def check
@@ -19,14 +19,14 @@ module Redcar
               t.focus
               t.close
             end
-            @options[:continue] ? @options[:continue].call : nil
+            true
           when :no
-            @options[:continue] ? @options[:continue].call : nil
+            true
           when :cancel
-            @options[:cancel] ? @options[:cancel].call : nil
+            false
           end
         else
-          @options[:none] ? @options[:none].call : nil
+          true
         end
       end
     end

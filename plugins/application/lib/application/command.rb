@@ -87,6 +87,10 @@ module Redcar
       result
     end
     
+    def inspect
+      "#<#{self.class.name}>"
+    end
+    
     private
     
     def env
