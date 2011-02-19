@@ -1,15 +1,31 @@
 {Redcar}
 ========
 
-http://RedcarEditor.com/
+[http://redcareditor.com/](http://redcareditor.com/)
 
 ## DESCRIPTION
 
-A pure Ruby text editor running on JRuby. 
+A Ruby text editor.
+
+ * written in Ruby from the ground up
+ * runs on JRuby (a fast, compatible Ruby implementation)
+ * is cross-platform (Linux, Mac OS X, Windows)
+ * highly extensible
+
+Some Redcar features:
+
+ * supports Textmate themes and snippets
+ * split screen mode
+ * syntax checking for many languages
+ * built in REPLs for Ruby, Groovy, Clojure and Mirah.
+
+![alt text](http://redcareditor.com/images/redcar-4-thumb.png "Title")
+![alt text](http://redcareditor.com/images/redcar-1-thumb.png "Title")
+![alt text](http://redcareditor.com/images/redcar-5-thumb.png "Title")
 
 ## INSTALLATION
 
-You must have Java installed [1]. You will also need to run these commands for each user on your computer that needs access to Redcar.
+You must have Java installed [1]. Redcar is easiest to install as a gem. After installing the gem there is one further install step:
 
     $ sudo gem install redcar
     $ redcar install
@@ -49,7 +65,7 @@ To run:
 
     $ ruby bin/redcar
 
-## UPDATING A SOURCE BUILD
+### Updating a source build
 
 If you are running a source version of Redcar and you have pulled changes from master, then you may have to update your repo:
 
@@ -69,7 +85,7 @@ To run all specs and features:
 
 NB. You must leave the test window focussed while the features run. Some of the tests will fail if the test process is in the background.
 
-## TESTS (specs)
+### Specs
 
 On OSX:
 
@@ -80,7 +96,7 @@ On Linux:
     $ jruby -S spec plugins/#{plugin_name}/spec/
 
   
-## TESTS (features)
+### Features
 
 On OSX:
 
