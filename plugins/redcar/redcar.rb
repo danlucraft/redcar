@@ -1396,8 +1396,6 @@ Redcar.environment: #{Redcar.environment}
         Application.start
         ApplicationSWT.start
         Swt.splash_screen.inc(1) if Swt.splash_screen
-        EditViewSWT.start
-        Swt.splash_screen.inc(7) if Swt.splash_screen
         s = Time.now
         if Redcar.gui
           Redcar.app.controller = ApplicationSWT.new(Redcar.app)
@@ -1415,6 +1413,8 @@ Redcar.environment: #{Redcar.environment}
         Redcar.log.info("startup milestone: project open #{Time.now - Redcar.process_start_time}")
       end
       Redcar.load_useful_libraries
+      EditViewSWT.start
+      Swt.splash_screen.inc(7) if Swt.splash_screen
       Redcar.log.info("startup milestone: complete: #{Time.now - Redcar.process_start_time}")
       if args.include?("--compute-textmate-cache-and-quit")
         Redcar::Textmate.all_bundles
