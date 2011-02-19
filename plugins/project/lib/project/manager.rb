@@ -487,7 +487,7 @@ module Redcar
           group(:priority => 75) do
             separator
             
-            if node.leaf?
+            if node and node.leaf?
               item("Hide this file") do
                 input = Application::Dialog.input(
                   "Hide file",
