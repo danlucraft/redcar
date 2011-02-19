@@ -441,11 +441,12 @@ module Redcar
       end
   
       def self.close_tab_guard(tab)
+        return true unless tab.is_a?(EditTab)
         if tab.edit_view.document.modified?
           tab.focus
           result = Application::Dialog.message_box(
-            "This tab has unsaved changes. \n\nSave before closing?",
-            :buttons => :yes_no_cancel
+          "This tab has unsaved changes. \n\nSave before closing?",
+          :buttons => :yes_no_cancel
           )
           case result
           when :yes
