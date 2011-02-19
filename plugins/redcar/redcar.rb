@@ -401,8 +401,11 @@ Redcar.environment: #{Redcar.environment}
             )
             case result
             when :yes
-              tab.edit_view.document.save!
-              close_tab
+              # check if the tab was saved properly,
+              # it would return false for example if the permission is not granted
+              if Project::FileSaveCommand.new(tab).run
+                close_tab
+              end
             when :no
               close_tab
             when :cancel
