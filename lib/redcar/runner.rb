@@ -60,8 +60,8 @@ module Redcar
 
       # Windows XP updates
       if [:windows].include?(Redcar.platform)
-	bin = "\"#{bin}\""
-	jruby_complete = "\"#{jruby_complete}\""
+        bin = "\"#{bin}\""
+        jruby_complete = "\"#{jruby_complete}\""
       end      
 
       # unfortuanately, ruby doesn't support [a, *b, c]
@@ -74,6 +74,7 @@ module Redcar
       command.push(*cleaned_args)
       command.push("--no-sub-jruby", "--ignore-stdin")
       command.push(*args)
+      command.push "--start-time=#{$redcar_process_start_time.to_i}"
       
       puts command.join(' ')
       yield command
@@ -106,16 +107,24 @@ module Redcar
         str.push "-Djruby.debug.loadService.timing=true"
       end
 
-      str.push "-d32" if JvmOptionsProbe::D32
-      str.push "-client" if JvmOptionsProbe::Client
+      str.push "-d32" if JvmOptionsProbe.d32
+      str.push "-client" if JvmOptionsProbe.client
       
       str
     end
 
     class JvmOptionsProbe
-      Redirect = "> #{Redcar.null_device} 2>&1"
-      D32 = system("java -d32 #{Redirect}")
-      Client = system("java -client #{Redirect}")
+      def self.redirect
+        @redirect ||= "> #{Redcar.null_device} 2>&1"
+      end
+      
+      def self.d32
+        @d32 ||= system("java -d32 #{redirect}")
+      end
+      
+      def self.client 
+        @client ||= system("java -client #{redirect}")
+      end
     end
   end
 end

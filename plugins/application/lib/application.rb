@@ -5,9 +5,9 @@ require 'application/command/executor'
 require 'application/command/history'
 require 'application/sensitive'
 require 'application/sensitivity'
-
 require 'application/clipboard'
 require 'application/command'
+
 require 'application/dialog'
 require 'application/dialogs/filter_list_dialog'
 require 'application/dialogs/modeless_list_dialog'
@@ -28,8 +28,18 @@ require 'application/notebook'
 require 'application/speedbar'
 require 'application/tab'
 require 'application/tab/command'
+require 'application/tree'
+require 'application/tree/command'
+require 'application/tree/controller'
+require 'application/tree/mirror'
 require 'application/treebook'
 require 'application/window'
+
+require 'application/commands/application_commands'
+require 'application/commands/tab_commands'
+require 'application/commands/notebook_commands'
+require 'application/commands/window_commands'
+require 'application/commands/treebook_commands'
 
 module Redcar
   # A Redcar process contains one Application instance. The application instance
@@ -226,6 +236,17 @@ module Redcar
       windows.each {|window| window.refresh_toolbar }
       controller.refresh_toolbar
     end
+    
+    # For every plugin that implements it, call the method with the given 
+    # arguments and pass the result to the block.
+    #
+    # @param [Symbol] method_name
+    def call_on_plugins(method_name, *args)
+      Redcar.plugin_manager.objects_implementing(method_name).each do |object|
+        yield object.send(method_name, *args)
+      end
+      nil
+    end
 
     # Generate the main menu by combining menus from all plugins.
     #
@@ -267,7 +288,7 @@ module Redcar
         Redcar.plugin_manager.objects_implementing(:keymaps).each do |object|
           maps = object.keymaps
           unless maps
-            puts "#{object.inspect} implements :keymaps but :keymaps returns nil"
+            Redcar.log.warn("#{object.inspect} implements :keymaps but :keymaps returns nil")
             maps = []
           end
           keymaps = maps.select do |map|

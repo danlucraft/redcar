@@ -4,7 +4,6 @@ require 'html_view/browser_bar'
 require 'html_view/html_tab'
 require 'html_controller'
 require 'html_view/default_controller'
-require 'json'
 
 module Redcar
   class HtmlView
@@ -42,7 +41,7 @@ module Redcar
          storage
       end
     end
-
+    
     def self.show_browser_bar?
       if win = Redcar.app.focussed_window and
         win.speedbar and win.speedbar.is_a?(BrowserBar)

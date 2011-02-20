@@ -16,8 +16,16 @@ module Redcar
 
       def execute
         path = get_path
-        if path
-          Manager.open_file(path, @adapter)
+        if path 
+          if File.readable? path
+            Manager.open_file(path, @adapter)
+          else
+            Application::Dialog.message_box(
+              "Can't read #{path}, you don't have the permissions.",
+              :type => :error,
+              :buttons => :ok
+            )
+          end
         end
       end
 
@@ -141,12 +149,23 @@ module Redcar
 
       def execute
         if tab.edit_view.document.mirror
-          tab.edit_view.document.save!
-          Project::Manager.refresh_modified_file(tab.edit_view.document.mirror.path)
+          if File.writable? tab.edit_view.document.mirror.path
+            tab.edit_view.document.save!
+            Project::Manager.refresh_modified_file(tab.edit_view.document.mirror.path)
+          else
+            Application::Dialog.message_box(
+              "Can't save #{tab.edit_view.document.mirror.path}, you don't have the permissions.",
+              :type => :error,
+              :buttons => :ok
+            )
+            result = false
+          end
         else
-          FileSaveAsCommand.new.run
+          result = FileSaveAsCommand.new.run
         end
         tab.update_for_file_changes
+        result ||= true
+        return result
       end
     end
 
@@ -160,12 +179,23 @@ module Redcar
       def execute
         path = get_path
         if path
-          contents = tab.edit_view.document.to_s
-          new_mirror = FileMirror.new(path)
-          new_mirror.commit(contents)
-          tab.edit_view.document.mirror = new_mirror
-          Project::Manager.refresh_modified_file(tab.edit_view.document.mirror.path)
+          if File.writable? path
+            contents = tab.edit_view.document.to_s
+            new_mirror = FileMirror.new(path)
+            new_mirror.commit(contents)
+            tab.edit_view.document.mirror = new_mirror
+            Project::Manager.refresh_modified_file(tab.edit_view.document.mirror.path)
+          else
+            Application::Dialog.message_box(
+              "Can't save #{path}, you don't have the permissions.",
+              :type => :error,
+              :buttons => :ok
+            )
+            result = false
+          end
         end
+        result ||= true
+        return result
       end
 
       private
@@ -232,26 +262,24 @@ module Redcar
 
     class RevealInProjectCommand < ProjectCommand
       def execute
-        if Project::Manager.reveal_file?(project)
-          tab = Redcar.app.focussed_window.focussed_notebook_tab
-          if tab.is_a?(EditTab)
-            return unless mirror = tab.edit_view.document.mirror and mirror.respond_to? :path
-          else
-            return
-          end
-
-          path = mirror.path
-          tree = project.tree
-          current = tree.tree_mirror.top
-          while current.any?
-            ancestor_node = current.detect {|node| path =~ /^#{node.path}($|\/)/ }
-            return unless ancestor_node
-            tree.expand(ancestor_node)
-            current = ancestor_node.children
-          end
-          tree.select(ancestor_node)
-          project.window.treebook.focus_tree(project.tree)
+        tab = Redcar.app.focussed_window.focussed_notebook_tab
+        if tab.is_a?(EditTab)
+          return unless mirror = tab.edit_view.document.mirror and mirror.respond_to? :path
+        else
+          return
         end
+
+        path = mirror.path
+        tree = project.tree
+        current = tree.tree_mirror.top
+        while current.any?
+          ancestor_node = current.detect {|node| path =~ /^#{node.path}($|\/)/ }
+          return unless ancestor_node
+          tree.expand(ancestor_node)
+          current = ancestor_node.children
+        end
+        tree.select(ancestor_node)
+        project.window.treebook.focus_tree(project.tree)
       end
     end
 

@@ -8,6 +8,7 @@ require 'redcar/usage'
 require 'redcar/ruby_extensions'
 require 'redcar/instance_exec'
 require 'redcar/usage'
+require 'redcar/logger'
 require 'regex_replace'
 
 require 'forwardable'
@@ -105,14 +106,17 @@ module Redcar
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "plugin_manager", "lib"))
     require 'plugin_manager'
     
-    $:.push File.expand_path(File.join(File.dirname(__FILE__), "json", "lib"))
-    require 'json'
-    
     $:.push File.expand_path(File.join(Redcar.asset_dir))
     
+    $:.push File.expand_path(File.join(File.dirname(__FILE__), "json", "lib"))
+    require 'json'
+
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "openssl", "lib"))
     
     plugin_manager.load("swt")
+  end
+  
+  def self.load_useful_libraries
   end
 
   def self.load_plugins
@@ -230,6 +234,40 @@ module Redcar
     raise "can't set gui twice" if @gui
     return if Redcar.no_gui_mode?
     @gui = gui
+  end
+  
+  def self.log
+    @log ||= begin
+      targets = [log_file]
+      targets << STDOUT if show_log?
+      logger = Redcar::Logger.new(*targets)
+      logger.level = custom_log_level
+      at_exit { logger.close }
+      logger
+    end
+  end
+  
+  def self.log_path
+    user_dir + "/#{environment}.log"
+  end
+  
+  def self.log_file
+    File.open(log_path, "a")
+  end
+  
+  def self.show_log?
+    ARGV.include?("--show-log")
+  end
+  
+  def self.custom_log_level
+    ARGV.map {|a| a =~ /--log-level=(info|debug|warn|error)/; $1}.compact.first
+  end
+  
+  def self.process_start_time
+    @process_start_time ||= begin
+      t = ARGV.map {|arg| arg =~ /--start-time=(\d+)$/; $1}.compact.first
+      t ? Time.at(t.to_i) : $redcar_process_start_time
+    end
   end
 end
 

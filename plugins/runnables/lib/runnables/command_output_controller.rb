@@ -18,14 +18,14 @@ module Redcar
       end
       
       def ask_before_closing
-        if @shell
+        if @pid
           "This tab contains an unfinished process. \n\nKill the process and close?"
         end
       end
       
       def close
-        if @shell
-          Process.kill(9, @shell.pid.to_i + 1)
+        if @pid
+          Process.kill(9, @pid.to_i + 1)
         end
       end
       
@@ -82,19 +82,24 @@ module Redcar
           # TODO: Find browser's onload rather than sleeping
           sleep 1
           start_output_block
-          Redcar.logger.info "Running: #{cmd}"
+          Redcar.log.info "Running: #{cmd}"
           
           # JRuby-specific
-          pid, input, output, error = IO.popen4(cmd)
+          @pid, input, output, error = IO.popen4(cmd)
           @stdout_thread = output_thread(:stdout, output)
           @stderr_thread = output_thread(:stderr, error)
           
           Thread.new do
-            sleep 0.1 until @stdout_thread_started && @stderr_thread_started &&
-                            !@stdout_thread.alive? && !@stderr_thread.alive?
+            sleep 0.1 until finished?
+            @pid = nil
             end_output_block
           end
         end
+      end
+      
+      def finished?
+        @stdout_thread_started && @stderr_thread_started &&
+          !@stdout_thread.alive? && !@stderr_thread.alive?
       end
       
       def format_time(time)

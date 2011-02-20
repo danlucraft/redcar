@@ -80,7 +80,7 @@ module Redcar
           fs = adapter.fetch_contents(path)
           fs = fs.reject {|f| [".", ".."].include?(File.basename(f[:fullname]))}
           unless DirMirror.show_hidden_files?
-            fs = fs.reject {|f| File.basename(f[:fullname]) =~ /^\./ }
+            fs.reject! { |f| Project::Manager.hide_file? f[:fullname] }
           end
           fs.sort_by do |f|
             File.basename(f[:fullname]).downcase

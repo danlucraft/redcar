@@ -1,7 +1,6 @@
 
 require 'fileutils'
 
-require "core/logger"
 require "core/reentry_helpers"
 require "core/controller"
 require "core/gui"
@@ -32,10 +31,7 @@ module Redcar
   end
     
   class Core
-    include HasLogger
-    
     def self.loaded
-      Core::Logger.init
       unless File.exist?(Redcar.user_dir)
         FileUtils.mkdir(Redcar.user_dir)
       end

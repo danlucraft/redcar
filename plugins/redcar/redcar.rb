@@ -52,40 +52,6 @@ module Redcar
   end
 
   module Top
-    class QuitCommand < Command
-
-      def execute
-        check_for_modified_tabs_and_quit
-      end
-
-      private
-
-      def check_for_modified_tabs_and_quit
-        EditView::ModifiedTabsChecker.new(
-          Redcar.app.all_tabs.select {|t| t.is_a?(EditTab)},
-          "Save all before quitting?",
-          :none     => lambda { check_for_running_processes_and_quit },
-          :continue => lambda { check_for_running_processes_and_quit },
-          :cancel   => nil
-        ).check
-      end
-
-      def check_for_running_processes_and_quit
-        Runnables::RunningProcessChecker.new(
-          Redcar.app.all_tabs.select {|t| t.is_a?(HtmlTab)},
-          "Kill all and quit?",
-          :none     => lambda { quit },
-          :continue => lambda { quit },
-          :cancel   => nil
-        ).check
-      end
-      
-      def quit
-        Project::Manager.open_projects.each {|pr| pr.close }
-        Redcar.app.quit
-      end
-    end
-
     class NewCommand < Command
 
       def execute
@@ -98,76 +64,6 @@ module Redcar
         tab.title = "untitled"
         tab.focus
         tab
-      end
-    end
-
-    class NewNotebookCommand < Command
-#      sensitize :single_notebook
-
-      def execute
-        #unless win.notebooks.length > 1
-          win.create_notebook
-       # end
-      end
-    end
-
-    class NewWindowCommand < Command
-
-      def initialize(title=nil)
-        @title = title
-      end
-
-      def execute
-        window = Redcar.app.new_window
-        window.title = @title if @title
-      end
-    end
-
-    class CloseWindowCommand < Command
-      def initialize(window=nil)
-        @window = window
-      end
-
-      def execute
-        check_for_modified_tabs_and_close_window
-        quit_if_no_windows if [:linux, :windows].include?(Redcar.platform)
-        @window = nil
-      end
-
-      private
-
-      def quit_if_no_windows
-        if Redcar.app.windows.length == 0
-          if Application.storage['stay_resident_after_last_window_closed'] && !(ARGV.include?("--multiple-instance"))
-            puts 'continuing to run to wait for incoming drb connections later'
-          else
-            QuitCommand.new.run
-          end
-        end
-      end
-
-      def check_for_modified_tabs_and_close_window
-        EditView::ModifiedTabsChecker.new(
-          win.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(EditTab)},
-          "Save all before closing the window?",
-          :none     => lambda { check_for_running_processes_and_close_window },
-          :continue => lambda { check_for_running_processes_and_close_window },
-          :cancel   => nil
-        ).check
-      end
-
-      def check_for_running_processes_and_close_window
-        Runnables::RunningProcessChecker.new(
-          win.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(HtmlTab)},
-          "Kill them and close the window?",
-          :none     => lambda { win.close },
-          :continue => lambda { win.close },
-          :cancel   => nil
-        ).check
-      end
-
-      def win
-        @window || super
       end
     end
 
@@ -205,9 +101,15 @@ module Redcar
           book.tabs.each_with_index do |tab,i|
             num = i + 1
             if num < 10
-              @builder.item "Tab #{num}: #{trim(tab.title)}", :type => :radio, :active => (tab == focussed_tab), :command => Top.const_get("SelectTab#{num}Command")
+              @builder.item("Tab #{num}: #{trim(tab.title)}", 
+                :type => :radio, 
+                :active => (tab == focussed_tab), 
+                :command => Redcar::Application.const_get("SelectTab#{num}Command")
+              )
             else
-              @builder.item("Tab #{num}: #{trim(tab.title)}", :type => :radio, :active => (tab == focussed_tab)) {tab.focus}
+              @builder.item("Tab #{num}: #{trim(tab.title)}", 
+                :type => :radio, 
+                :active => (tab == focussed_tab)) { tab.focus }
             end
           end
           if book = win.nonfocussed_notebook and book.tabs.any?
@@ -216,130 +118,6 @@ module Redcar
             book.tabs.each_with_index do |tab,i|
               @builder.item("Tab #{i+1}: #{trim(tab.title)}") {tab.focus}
             end
-          end
-        end
-      end
-    end
-
-    class FocusWindowCommand < Command
-      def initialize(window=nil)
-        @window = window
-      end
-
-      def execute
-        win.focus
-        @window = nil
-      end
-
-      def win
-        @window || super
-      end
-    end
-
-    class RotateNotebooksCommand < Command
-      sensitize :multiple_notebooks
-
-      def execute
-        win.rotate_notebooks
-      end
-    end
-
-    class CloseNotebookCommand < Command
-      sensitize :multiple_notebooks
-
-      def execute
-        unless win.notebooks.length == 1
-          win.close_notebook
-        end
-      end
-    end
-
-    class SwitchNotebookCommand < Command
-      sensitize :multiple_notebooks, :other_notebook_has_tab
-
-      def execute
-        new_notebook = win.nonfocussed_notebook
-        if new_notebook.focussed_tab
-          new_notebook.focussed_tab.focus
-        end
-      end
-    end
-
-    class MoveTabToOtherNotebookCommand < Command
-      sensitize :multiple_notebooks, :open_tab
-
-      def execute
-        current_notebook = tab.notebook
-        i = win.notebooks.index current_notebook
-
-        target_notebook = win.notebooks[ (i + 1) % win.notebooks.length ]
-        target_notebook.grab_tab_from(current_notebook, tab)
-        tab.focus
-      end
-    end
-
-    class OpenTreeFinderCommand < TreeCommand
-
-      def execute
-        if win = Redcar.app.focussed_window
-          if trees = win.treebook.trees and trees.any?
-            titles = []
-            trees.each {|t| titles << t.tree_mirror.title}
-            dialog = TreeFuzzyFilter.new(win,titles)
-            dialog.open
-          end
-        end
-      end
-
-      class TreeFuzzyFilter < FilterListDialog
-
-        def initialize(win,titles)
-          super()
-          @win = win
-          @titles = titles
-        end
-
-        def selected(text,ix)
-          if tree = @win.treebook.trees.detect do |tree|
-              tree.tree_mirror.title == text
-            end
-            if @win.treebook.focussed_tree == tree
-              @win.set_trees_visible(true) if not @win.trees_visible?
-            else
-              @win.treebook.focus_tree(tree)
-            end
-            tree.focus
-            close
-          end
-        end
-
-        def update_list(filter)
-          @titles.select do |t|
-            t.downcase.include?(filter.downcase)
-          end
-        end
-      end
-    end
-
-    class CloseTreeCommand < TreeCommand
-      def execute
-        win = Redcar.app.focussed_window
-        if win and treebook = win.treebook
-          if tree = treebook.focussed_tree
-            treebook.remove_tree(tree)
-          end
-        end
-      end
-    end
-
-    class ToggleTreesCommand < TreeCommand
-      def execute
-        win = Redcar.app.focussed_window
-        if win and treebook = win.treebook
-          if win.trees_visible?
-            win.set_trees_visible(false)
-          else
-            win.set_trees_visible(true)
           end
         end
       end
@@ -381,136 +159,7 @@ Redcar.environment: #{Redcar.environment}
         Application::Dialog.tool_tip(tab.edit_view.document.cursor_scope.gsub(" ", "\n"), :cursor)
       end
     end
-
-    class CloseTabCommand < TabCommand
-      def initialize(tab=nil)
-        @tab = tab
-      end
-
-      def tab
-        @tab || super
-      end
-
-      def execute
-        if tab.is_a?(EditTab)
-          if tab.edit_view.document.modified?
-            tab.focus
-            result = Application::Dialog.message_box(
-              "This tab has unsaved changes. \n\nSave before closing?",
-              :buttons => :yes_no_cancel
-            )
-            case result
-            when :yes
-              tab.edit_view.document.save!
-              close_tab
-            when :no
-              close_tab
-            when :cancel
-            end
-          else
-            close_tab
-          end
-        elsif tab.is_a?(HtmlTab)
-          if tab.html_view.controller and message = tab.html_view.controller.ask_before_closing
-            tab.focus
-            result = Application::Dialog.message_box(
-              message,
-              :buttons => :yes_no_cancel
-            )
-            case result
-            when :yes
-              close_tab
-            when :no
-              close_tab
-            when :cancel
-            end
-          else
-            close_tab
-          end
-        else
-          close_tab
-        end
-        @tab = nil
-      end
-
-      private
-
-      def close_tab
-        win = tab.notebook.window
-        tab.close
-        # this will break a lot of features:
-        #if win.all_tabs.empty? and not Project::Manager.in_window(win)
-        #  win.close
-        #end
-      end
-    end
-
-    class CloseAll < Redcar::Command
-      def execute
-        window = Redcar.app.focussed_window
-        tabs = window.all_tabs
-        tabs.each do |t|
-          Redcar::Top::CloseTabCommand.new(t).run
-        end
-      end
-    end
-
-    class CloseOthers < Redcar::Command
-      def execute
-        window = Redcar.app.focussed_window
-        current_tab = Redcar.app.focussed_notebook_tab
-        tabs = window.all_tabs
-        tabs.each do |t|
-          unless t == current_tab
-            Redcar::Top::CloseTabCommand.new(t).run
-          end
-        end
-      end
-    end
-
-    class SwitchTreeDownCommand < TreeCommand
-
-      def execute
-        win = Redcar.app.focussed_window
-        win.treebook.switch_down
-      end
-    end
-
-    class SwitchTreeUpCommand < TreeCommand
-
-      def execute
-        win = Redcar.app.focussed_window
-        win.treebook.switch_up
-      end
-    end
-
-    class SwitchTabDownCommand < TabCommand
-
-      def execute
-        win.focussed_notebook.switch_down
-      end
-    end
-
-    class SwitchTabUpCommand < TabCommand
-
-      def execute
-        win.focussed_notebook.switch_up
-      end
-    end
-
-    class MoveTabUpCommand < TabCommand
-
-      def execute
-        win.focussed_notebook.move_up
-      end
-    end
-
-    class MoveTabDownCommand < TabCommand
-
-      def execute
-        win.focussed_notebook.move_down
-      end
-    end
+    
 
     class UndoCommand < EditTabCommand
       sensitize :undoable
@@ -802,22 +451,6 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class DialogExample < Redcar::Command
-      def execute
-      	builder = Menu::Builder.new do
-      	  item("Foo") { p :foo }
-      	  item("Bar") { p :bar }
-      	  separator
-      	  sub_menu "Baz" do
-      	    item("Qux") { p :qx }
-      	    item("Quux") { p :quux }
-      	    item("Corge") { p :corge }
-      	  end
-      	end
-      	win.popup_menu(builder.menu)
-      end
-    end
-
     class GotoLineCommand < Redcar::EditTabCommand
 
       class Speedbar < Redcar::Speedbar
@@ -856,79 +489,6 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
-    class TreebookWidthCommand < Command
-      sensitize :open_trees
-
-      def increment
-        raise "Please implement me!"
-      end
-
-      def execute
-        if win = Redcar.app.focussed_window
-          if increment > 0
-            win.adjust_treebook_width(true)
-          else
-            win.adjust_treebook_width(false)
-          end
-        end
-      end
-    end
-
-    ["In","De"].each do |prefix|
-      const_set("#{prefix}creaseTreebookWidthCommand", Class.new(TreebookWidthCommand)).class_eval do
-        define_method :increment do
-          prefix == "In" ? 1 : -1
-        end
-      end
-    end
-
-    class EnlargeNotebookCommand < Command
-      sensitize :multiple_notebooks
-      def index
-        raise "Please define me!"
-      end
-
-      def execute
-        if win = Redcar.app.focussed_window
-          win.enlarge_notebook(index)
-        end
-      end
-    end
-
-    ["First","Second"].each do |book|
-      const_set("Enlarge#{book}NotebookCommand", Class.new(EnlargeNotebookCommand)).class_eval do
-        define_method :index do
-          book == "First" ? 0 : 1
-        end
-      end
-    end
-
-    # define commands from SelectTab1Command to SelectTab9Command
-    (1..9).each do |tab_num|
-      const_set("SelectTab#{tab_num}Command", Class.new(Redcar::TabCommand)).class_eval do
-        define_method :execute do
-          notebook = Redcar.app.focussed_window_notebook
-          notebook.tabs[tab_num-1].focus if notebook.tabs[tab_num-1]
-        end
-      end
-    end
-
-    class ResetNotebookWidthsCommand < Command
-      sensitize :multiple_notebooks
-
-      def execute
-        if win = Redcar.app.focussed_window
-          win.reset_notebook_widths
-        end
-      end
-    end
-
-    class ToggleFullscreen < Command
-      def execute
-        Redcar.app.focussed_window.fullscreen = !Redcar.app.focussed_window.fullscreen
-      end
-    end
-
     class ToggleInvisibles < Redcar::EditTabCommand
       def execute
         EditView.show_invisibles = !EditView.show_invisibles?
@@ -938,14 +498,6 @@ Redcar.environment: #{Redcar.environment}
     class ToggleLineNumbers < Redcar::EditTabCommand
       def execute
         EditView.show_line_numbers = !EditView.show_line_numbers?
-      end
-    end
-
-    class ToggleToolbar < Command
-
-      def execute
-        Redcar.app.toggle_show_toolbar
-        Redcar.app.refresh_toolbar!
       end
     end
 
@@ -1011,8 +563,8 @@ Redcar.environment: #{Redcar.environment}
     def self.keymaps
       osx = Redcar::Keymap.build("main", :osx) do
         link "Cmd+N",       NewCommand
-        link "Cmd+Shift+N", NewNotebookCommand
-        link "Cmd+Alt+N",   NewWindowCommand
+        link "Cmd+Shift+N", Application::NewNotebookCommand
+        link "Cmd+Alt+N",   Application::NewWindowCommand
         link "Cmd+O",       Project::FileOpenCommand
         link "Cmd+U",       Project::FileReloadCommand
         link "Cmd+Shift+O", Project::DirectoryOpenCommand
@@ -1020,10 +572,10 @@ Redcar.environment: #{Redcar.environment}
         #link "Cmd+Ctrl+O",  Project::OpenRemoteCommand
         link "Cmd+S",       Project::FileSaveCommand
         link "Cmd+Shift+S", Project::FileSaveAsCommand
-        link "Cmd+W",       CloseTabCommand
-        link "Cmd+Shift+W", CloseWindowCommand
-        link "Alt+Shift+W", CloseTreeCommand
-        link "Cmd+Q",       QuitCommand
+        link "Cmd+W",       Application::CloseTabCommand
+        link "Cmd+Shift+W", Application::CloseWindowCommand
+        link "Alt+Shift+W", Application::CloseTreeCommand
+        link "Cmd+Q",       Application::QuitCommand
 
         #link "Cmd+Return",   MoveNextLineCommand
 
@@ -1062,29 +614,28 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+^", SortLinesCommand
 
         link "Cmd+T",           Project::FindFileCommand
-        link "Cmd+Shift+Alt+O", MoveTabToOtherNotebookCommand
-        link "Cmd+Alt+O",       SwitchNotebookCommand
-        link "Alt+Shift+[",     SwitchTreeUpCommand
-        link "Alt+Shift+]",     SwitchTreeDownCommand
-        link "Cmd+Shift+[",     SwitchTabDownCommand
-        link "Cmd+Shift+]",     SwitchTabUpCommand
-        link "Ctrl+Shift+[",    MoveTabDownCommand
-        link "Ctrl+Shift+]",    MoveTabUpCommand
-        link "Cmd+Shift++",     ToggleFullscreen
-        link "Cmd+Shift+T",     OpenTreeFinderCommand
-        link "Alt+Shift+J",     IncreaseTreebookWidthCommand
-        link "Alt+Shift+H",     DecreaseTreebookWidthCommand
-        link "Cmd+Shift+>",     EnlargeFirstNotebookCommand
-        link "Cmd+Shift+<",     EnlargeSecondNotebookCommand
-        link "Cmd+Shift+L",     ResetNotebookWidthsCommand
-        link "Cmd+Shift+:",     RotateNotebooksCommand
-        link "Alt+Shift+N",     CloseNotebookCommand
+        link "Cmd+Shift+Alt+O", Application::MoveTabToOtherNotebookCommand
+        link "Cmd+Alt+O",       Application::SwitchNotebookCommand
+        link "Alt+Shift+[",     Application::SwitchTreeUpCommand
+        link "Alt+Shift+]",     Application::SwitchTreeDownCommand
+        link "Cmd+Shift+[",     Application::SwitchTabDownCommand
+        link "Cmd+Shift+]",     Application::SwitchTabUpCommand
+        link "Ctrl+Shift+[",    Application::MoveTabDownCommand
+        link "Ctrl+Shift+]",    Application::MoveTabUpCommand
+        link "Cmd+Shift++",     Application::ToggleFullscreen
+        link "Cmd+Shift+T",     Application::OpenTreeFinderCommand
+        link "Alt+Shift+J",     Application::IncreaseTreebookWidthCommand
+        link "Alt+Shift+H",     Application::DecreaseTreebookWidthCommand
+        link "Cmd+Shift+>",     Application::EnlargeNotebookCommand
+        link "Cmd+Shift+L",     Application::ResetNotebookWidthsCommand
+        link "Cmd+Shift+:",     Application::RotateNotebooksCommand
+        link "Alt+Shift+N",     Application::CloseNotebookCommand
         link "Cmd+Alt+I",       ToggleInvisibles
         link "Cmd++",           IncreaseFontSize
         link "Cmd+-",           DecreaseFontSize
 
         link "Ctrl+Shift+P", PrintScopeCommand
-        link "Cmd+Shift+H",  ToggleTreesCommand
+        link "Cmd+Shift+H",  Application::ToggleTreesCommand
 
         # link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
 
@@ -1093,25 +644,25 @@ Redcar.environment: #{Redcar.environment}
 
         # map SelectTab<number>Command
         (1..9).each do |tab_num|
-          link "Cmd+#{tab_num}", Top.const_get("SelectTab#{tab_num}Command")
+          link "Cmd+#{tab_num}", Application.const_get("SelectTab#{tab_num}Command")
         end
 
       end
 
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
         link "Ctrl+N",       NewCommand
-        link "Ctrl+Shift+N", NewNotebookCommand
-        link "Ctrl+Alt+N",   NewWindowCommand
+        link "Ctrl+Shift+N", Application::NewNotebookCommand
+        link "Ctrl+Alt+N",   Application::NewWindowCommand
         link "Ctrl+O",       Project::FileOpenCommand
         link "Ctrl+Shift+O", Project::DirectoryOpenCommand
         link "Ctrl+Alt+Shift+P",   Project::FindRecentCommand
         #link "Alt+Shift+O",  Project::OpenRemoteCommand
         link "Ctrl+S",       Project::FileSaveCommand
         link "Ctrl+Shift+S", Project::FileSaveAsCommand
-        link "Ctrl+W",       CloseTabCommand
-        link "Ctrl+Shift+W", CloseWindowCommand
-        link "Alt+Shift+W",  CloseTreeCommand
-        link "Ctrl+Q",       QuitCommand
+        link "Ctrl+W",       Application::CloseTabCommand
+        link "Ctrl+Shift+W", Application::CloseWindowCommand
+        link "Alt+Shift+W",  Application::CloseTreeCommand
+        link "Ctrl+Q",       Application::QuitCommand
 
         link "Ctrl+Enter",   MoveNextLineCommand
 
@@ -1153,28 +704,26 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Shift+^",     SortLinesCommand
 
         link "Ctrl+T",           Project::FindFileCommand
-        link "Ctrl+Shift+Alt+O", MoveTabToOtherNotebookCommand
+        link "Ctrl+Shift+Alt+O", Application::MoveTabToOtherNotebookCommand
 
         link "Ctrl+Shift+P", PrintScopeCommand
 
-        link "Ctrl+Alt+O",           SwitchNotebookCommand
-        link "Ctrl+Shift+H",         ToggleTreesCommand
-        link "Alt+Page Up",          SwitchTreeUpCommand
-        link "Alt+Page Down",        SwitchTreeDownCommand
-        link "Ctrl+Page Up",         SwitchTabDownCommand
-        link "Ctrl+Page Down",       SwitchTabUpCommand
-        link "Ctrl+Shift+Page Up",   MoveTabDownCommand
-        link "Ctrl+Shift+Page Down", MoveTabUpCommand
-        link "Ctrl+Shift+T",         OpenTreeFinderCommand
-        link "Alt+Shift+J",          IncreaseTreebookWidthCommand
-        link "Alt+Shift+H",          DecreaseTreebookWidthCommand
-        link "Ctrl+Shift+>",         EnlargeFirstNotebookCommand
-        link "Ctrl+Shift+<",         EnlargeSecondNotebookCommand
-        link "Ctrl+Shift+L",         ResetNotebookWidthsCommand
-        link "Ctrl+Shift+:",         RotateNotebooksCommand
-        link "Alt+Shift+N",          CloseNotebookCommand
-        # link "Ctrl+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
-        link "F11",                  ToggleFullscreen
+        link "Ctrl+Alt+O",           Application::SwitchNotebookCommand
+        link "Ctrl+Shift+H",         Application::ToggleTreesCommand
+        link "Alt+Page Up",          Application::SwitchTreeUpCommand
+        link "Alt+Page Down",        Application::SwitchTreeDownCommand
+        link "Ctrl+Page Up",         Application::SwitchTabDownCommand
+        link "Ctrl+Page Down",       Application::SwitchTabUpCommand
+        link "Ctrl+Shift+Page Up",   Application::MoveTabDownCommand
+        link "Ctrl+Shift+Page Down", Application::MoveTabUpCommand
+        link "Ctrl+Shift+T",         Application::OpenTreeFinderCommand
+        link "Alt+Shift+J",          Application::IncreaseTreebookWidthCommand
+        link "Alt+Shift+H",          Application::DecreaseTreebookWidthCommand
+        link "Ctrl+Shift+>",         Application::EnlargeNotebookCommand
+        link "Ctrl+Shift+L",         Application::ResetNotebookWidthsCommand
+        link "Ctrl+Shift+:",         Application::RotateNotebooksCommand
+        link "Alt+Shift+N",          Application::CloseNotebookCommand
+        link "F11",                  Application::ToggleFullscreen
         link "Ctrl+Alt+I",           ToggleInvisibles
         link "Ctrl++",               IncreaseFontSize
         link "Ctrl+-",               DecreaseFontSize
@@ -1185,7 +734,7 @@ Redcar.environment: #{Redcar.environment}
 
         # map SelectTab<number>Command
         (1..9).each do |tab_num|
-          link "Alt+#{tab_num}", Top.const_get("SelectTab#{tab_num}Command")
+          link "Alt+#{tab_num}", Application.const_get("SelectTab#{tab_num}Command")
         end
 
       end
@@ -1202,8 +751,8 @@ Redcar.environment: #{Redcar.environment}
         item "Save File As", :command => Project::FileSaveAsCommand, :icon => :save_as, :barname => :core
         item "Undo", :command => UndoCommand, :icon => :undo, :barname => :core
         item "Redo", :command => RedoCommand, :icon => :redo, :barname => :core
-        item "New Notebook", :command => NewNotebookCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "book--plus.png"), :barname => :edit
-        item "Close Notebook", :command => CloseNotebookCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "book--minus.png"), :barname => :edit
+        item "New Notebook", :command => Application::NewNotebookCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "book--plus.png"), :barname => :edit
+        item "Close Notebook", :command => Application::CloseNotebookCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "book--minus.png"), :barname => :edit
       end
     end
 
@@ -1212,21 +761,21 @@ Redcar.environment: #{Redcar.environment}
         sub_menu "File", :priority => :first do
           group(:priority => :first) do
             item "New", NewCommand
-            item "New Window", NewWindowCommand
+            item "New Window", Application::NewWindowCommand
           end
 
           group(:priority => 10) do
             separator
-            item "Close Tab", CloseTabCommand
-            item "Close Tree", CloseTreeCommand
-            item "Close Window", CloseWindowCommand
-            item "Close Others", CloseOthers
-            item "Close All", CloseAll
+            item "Close Tab", Application::CloseTabCommand
+            item "Close Tree", Application::CloseTreeCommand
+            item "Close Window", Application::CloseWindowCommand
+            item "Close Others", Application::CloseOthers
+            item "Close All", Application::CloseAll
           end
 
           group(:priority => :last) do
             separator
-            item "Quit", QuitCommand
+            item "Quit", Application::QuitCommand
           end
         end
         sub_menu "Edit", :priority => 5 do
@@ -1297,49 +846,48 @@ Redcar.environment: #{Redcar.environment}
           end
           group(:priority => 10) do
             separator
-            item "Toggle Fullscreen", :command => ToggleFullscreen, :type => :check, :active => window ? window.fullscreen : false
+            item "Toggle Fullscreen", :command => Application::ToggleFullscreen, :type => :check, :active => window ? window.fullscreen : false
           end
           group(:priority => 15) do
             separator
             sub_menu "Trees" do
-              item "Open Tree Finder", OpenTreeFinderCommand
-              item "Toggle Tree Visibility", ToggleTreesCommand
-              item "Increase Tree Width", IncreaseTreebookWidthCommand
-              item "Decrease Tree Width", DecreaseTreebookWidthCommand
+              item "Open Tree Finder", Application::OpenTreeFinderCommand
+              item "Toggle Tree Visibility", Application::ToggleTreesCommand
+              item "Increase Tree Width", Application::IncreaseTreebookWidthCommand
+              item "Decrease Tree Width", Application::DecreaseTreebookWidthCommand
               separator
-              item "Previous Tree", SwitchTreeUpCommand
-              item "Next Tree", SwitchTreeDownCommand
+              item "Previous Tree", Application::SwitchTreeUpCommand
+              item "Next Tree", Application::SwitchTreeDownCommand
             end
             lazy_sub_menu "Windows" do
               GenerateWindowsMenu.new(self).run
             end
             sub_menu "Notebooks" do
-              item "New Notebook", NewNotebookCommand
-              item "Close Notebook", CloseNotebookCommand
-              item "Rotate Notebooks", RotateNotebooksCommand
-              item "Move Tab To Other Notebook", MoveTabToOtherNotebookCommand
-              item "Switch Notebooks", SwitchNotebookCommand
+              item "New Notebook", Application::NewNotebookCommand
+              item "Close Notebook", Application::CloseNotebookCommand
+              item "Rotate Notebooks", Application::RotateNotebooksCommand
+              item "Move Tab To Other Notebook", Application::MoveTabToOtherNotebookCommand
+              item "Switch Notebooks", Application::SwitchNotebookCommand
               separator
-              item "Enlarge First Notebook", EnlargeFirstNotebookCommand
-              item "Enlarge Second Notebook", EnlargeSecondNotebookCommand
-              item "Reset Notebook Widths", ResetNotebookWidthsCommand
+              item "Enlarge First Notebook", Application::EnlargeNotebookCommand
+              item "Reset Notebook Widths",  Application::ResetNotebookWidthsCommand
             end
             sub_menu "Tabs" do
-              item "Previous Tab", SwitchTabDownCommand
-              item "Next Tab", SwitchTabUpCommand
-              item "Move Tab Left", MoveTabDownCommand
-              item "Move Tab Right", MoveTabUpCommand
+              item "Previous Tab",   Application::SwitchTabDownCommand
+              item "Next Tab",       Application::SwitchTabUpCommand
+              item "Move Tab Left",  Application::MoveTabDownCommand
+              item "Move Tab Right", Application::MoveTabUpCommand
               separator
               # GenerateTabsMenu.new(self).run # TODO: find a way to maintain keybindings with lazy menus
               item "Focussed Notebook", ShowTitle
               (1..9).each do |num|
-                item "Tab #{num}", Top.const_get("SelectTab#{num}Command")
+                item "Tab #{num}", Application.const_get("SelectTab#{num}Command")
               end
             end
           end
           group(:priority => :last) do
             separator
-            item "Show Toolbar", :command => ToggleToolbar, :type => :check, :active => Redcar.app.show_toolbar?
+            item "Show Toolbar", :command => Application::ToggleToolbar, :type => :check, :active => Redcar.app.show_toolbar?
             item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
             item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
           end
@@ -1370,19 +918,19 @@ Redcar.environment: #{Redcar.environment}
       end
 
       def tab_close(tab)
-        CloseTabCommand.new(tab).run
+        Application::CloseTabCommand.new(tab).run
       end
 
       def window_close(win)
-        CloseWindowCommand.new(win).run
+        Application::CloseWindowCommand.new(win).run
       end
 
       def application_close(app)
-        QuitCommand.new.run
+        Application::QuitCommand.new.run
       end
 
       def window_focus(win)
-        FocusWindowCommand.new(win).run
+        Application::FocusWindowCommand.new(win).run
       end
     end
 
@@ -1391,33 +939,30 @@ Redcar.environment: #{Redcar.environment}
     end
 
     def self.start(args=[])
-      puts "loading plugins took #{Time.now - PROCESS_START_TIME}"
+      Redcar.log.info("startup milestone: loading plugins took #{Time.now - Redcar.process_start_time}")
       Redcar.update_gui do
         Application.start
         ApplicationSWT.start
         Swt.splash_screen.inc(1) if Swt.splash_screen
-        EditViewSWT.start
-        Swt.splash_screen.inc(7) if Swt.splash_screen
         s = Time.now
         if Redcar.gui
           Redcar.app.controller = ApplicationSWT.new(Redcar.app)
         end
         Redcar.app.refresh_menu!
         Redcar.app.load_sensitivities
-        puts "initializing gui took #{Time.now - s}s"
-      end
-      Redcar.update_gui do
-        Swt.splash_screen.inc(2) if Swt.splash_screen
-        s = Time.now
-        Redcar::Project::Manager.start(args)
-        puts "project start took #{Time.now - s}s"
-        win = Redcar.app.make_sure_at_least_one_window_open
-        win.close if win and args.include?("--no-window")
+        Redcar.log.info("initializing gui took #{Time.now - s}s")
       end
       Redcar.update_gui do
         Swt.splash_screen.close if Swt.splash_screen
+        win = Redcar.app.make_sure_at_least_one_window_open
+        win.close if win and args.include?("--no-window")
+        Redcar.log.info("startup milestone: window open #{Time.now - Redcar.process_start_time}")
+        Redcar::Project::Manager.start(args)
+        Redcar.log.info("startup milestone: project open #{Time.now - Redcar.process_start_time}")
       end
-      puts "start time: #{Time.now - $redcar_process_start_time}"
+      Redcar.load_useful_libraries
+      EditViewSWT.start
+      Redcar.log.info("startup milestone: complete: #{Time.now - Redcar.process_start_time}")
       if args.include?("--compute-textmate-cache-and-quit")
         Redcar::Textmate.all_bundles
         exit

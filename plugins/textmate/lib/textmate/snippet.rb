@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 module Redcar
   module Textmate
     class Snippet

@@ -126,9 +126,9 @@ task :specs do
   files = Dir['plugins/*/spec/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*/*_spec.rb']
   case Config::CONFIG["host_os"]
   when "darwin"
-    sh("jruby -J-XstartOnFirstThread -S spec -c #{files.join(" ")} && echo 'done'")
+    sh("jruby -J-XstartOnFirstThread -S bundle exec spec -c #{files.join(" ")} && echo 'done'")
   else
-    sh("jruby -S spec -c #{files.join(" ")} && echo 'done'")
+    sh("jruby -S bundle exec spec -c #{files.join(" ")} && echo 'done'")
   end
 end
 
