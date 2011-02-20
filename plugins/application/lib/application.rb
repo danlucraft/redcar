@@ -237,7 +237,7 @@ module Redcar
       controller.refresh_toolbar
     end
     
-    # For every plugin that implements it, call the method with the given 
+    # For every plugin that implements it, call the method with the given
     # arguments and pass the result to the block.
     #
     # @param [Symbol] method_name
@@ -296,10 +296,17 @@ module Redcar
           end
           keymap = keymaps.inject(keymap) {|k, nk| k.merge(nk) }
         end
-        keymap
+        apply_user_keybindings(keymap)
       end
     end
 
+    def apply_user_keybindings(keymap)
+      Redcar.plugin_manager.objects_implementing(:user_keybindings).each do |object|
+        keymap.map.merge!(object.user_keybindings)
+      end
+      keymap
+    end
+    
     # Loads sensitivities from all plugins.
     def load_sensitivities
       Redcar.plugin_manager.objects_implementing(:sensitivities).each do |object|
