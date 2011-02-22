@@ -19,6 +19,10 @@ Some Redcar features:
  * syntax checking for many languages
  * built in REPLs for Ruby, Groovy, Clojure and Mirah.
 
+Some (current) limitations:
+
+ * Only supports UTF-8 file encodings (and therefore ASCII)
+
 ![alt text](http://redcareditor.com/images/redcar-4-thumb.png "Title")
 ![alt text](http://redcareditor.com/images/redcar-1-thumb.png "Title")
 
