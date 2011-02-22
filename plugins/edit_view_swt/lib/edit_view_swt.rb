@@ -70,6 +70,7 @@ module Redcar
     end
 
     def self.load_textmate_assets
+      Redcar.log.info("loaded JavaMateView #{JavaMateView::MateText.VERSION}")
       Redcar.log.benchmark("load textmate assets") do
         load_textmate_assets_from_dir(Redcar.root + "/plugins/textmate/vendor/redcar-bundles")
         Redcar.plugin_manager.loaded_plugins.each do |plugin|

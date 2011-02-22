@@ -831,7 +831,7 @@ Redcar.environment: #{Redcar.environment}
           group(:priority => 10) do
             item "Task Manager", TaskManager::OpenCommand
             separator
-            #item "Print Scope Tree", PrintScopeTreeCommand
+            item "Print Scope Tree", PrintScopeTreeCommand
             item "Print Scope at Cursor", PrintScopeCommand
           end
         end
