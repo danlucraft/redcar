@@ -56,7 +56,7 @@ class ProjectSearch
   
   def self.shared_storage
     @shared_storage ||= begin
-      storage = Redcar::Plugin::SharedStorage.new('shared')
+      storage = Redcar::Plugin::SharedStorage.new('shared__ignored_files')
       storage.set_or_update_default('ignored_file_patterns', [/tags$/, /\.log$/])
       storage.save
     end

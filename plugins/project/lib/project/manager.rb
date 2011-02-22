@@ -102,7 +102,7 @@ module Redcar
       
       def self.shared_storage
         @shared_storage ||= begin
-          storage = Plugin::SharedStorage.new('shared')
+          storage = Plugin::SharedStorage.new('shared__ignored_files')
           storage.set_or_update_default('ignored_file_patterns', [/^\./, /\.rbc$/])
           storage.set_or_update_default('not_hidden_files', ['.gitignore', '.gemtest'])
           storage.save
@@ -123,11 +123,8 @@ module Redcar
 
       def self.hide_file?(file)
         file = File.basename(file)
-        hide = false
-        ignored_file_patterns.each do |p|
-          hide = true if file =~ p
-        end
-        !not_hidden_files.include?(file) and hide
+        return false if not_hidden_files.include? file
+        ignored_file_patterns.any? { |re| file =~ re }
       end
       
       # Adds a pattern to the ignored_file_patterns option
