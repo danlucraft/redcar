@@ -94,7 +94,11 @@ module Redcar
         if @storage.has_key?(key)
           update_default(key, value)
         else
-          set_default(key, value)
+          if value.instance_of? Array
+            set_default(key, value)
+          else
+            set_default(key, [value])
+          end
         end
         @storage[key].uniq!
         value
