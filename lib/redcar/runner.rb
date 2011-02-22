@@ -68,7 +68,7 @@ module Redcar
       command = ["java"]
       command.push(*java_args)
       command.push("-Xbootclasspath/a:#{jruby_complete}")
-      command.push("-Xmx320m", "-Xss1024k", "-Djruby.memory.max=320m", "-Djruby.stack.max=1024k", "org.jruby.Main")
+      command.push("-Dfile.encoding=UTF8", "-Xmx320m", "-Xss1024k", "-Djruby.memory.max=320m", "-Djruby.stack.max=1024k", "org.jruby.Main")
       command.push "--debug" if debug_mode?
       command.push(bin)
       command.push(*cleaned_args)
