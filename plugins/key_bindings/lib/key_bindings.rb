@@ -10,9 +10,12 @@ module Redcar
   class KeyBindings
     
     def self.user_keybindings
-      puts "binding alt+F10"
-      {"Alt+F10" => Redcar::Application::CloseOthers }
-      
+      @storage ||= Plugin::Storage.new('key_bindings')
+      key_bindings = @storage["key_bindings"].inject({}) do |h, (key, command_class)|
+        h[key] = eval(command_class)
+        h
+      end
+      key_bindings
     end
         
   end
