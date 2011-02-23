@@ -63,7 +63,7 @@ module Redcar
         window = Redcar.app.focussed_window
         tabs = window.all_tabs
         tabs.each do |t|
-          Redcar::Top::CloseTabCommand.new(t).run
+          CloseTabCommand.new(t).run
         end
       end
     end
@@ -75,7 +75,7 @@ module Redcar
         tabs = window.all_tabs
         tabs.each do |t|
           unless t == current_tab
-            Redcar::Top::CloseTabCommand.new(t).run
+            CloseTabCommand.new(t).run
           end
         end
       end
