@@ -939,33 +939,40 @@ Redcar.environment: #{Redcar.environment}
     end
 
     def self.start(args=[])
-      Redcar.log.info("startup milestone: loading plugins took #{Time.now - Redcar.process_start_time}")
-      Redcar.update_gui do
-        Application.start
-        ApplicationSWT.start
-        Swt.splash_screen.inc(1) if Swt.splash_screen
-        s = Time.now
-        if Redcar.gui
-          Redcar.app.controller = ApplicationSWT.new(Redcar.app)
+      begin
+        Redcar.log.info("startup milestone: loading plugins took #{Time.now - Redcar.process_start_time}")
+        Redcar.update_gui do
+          Application.start
+          ApplicationSWT.start
+          Swt.splash_screen.inc(1) if Swt.splash_screen
+          s = Time.now
+          if Redcar.gui
+            Redcar.app.controller = ApplicationSWT.new(Redcar.app)
+          end
+          Redcar.app.refresh_menu!
+          Redcar.app.load_sensitivities
+          Redcar.log.info("initializing gui took #{Time.now - s}s")
         end
-        Redcar.app.refresh_menu!
-        Redcar.app.load_sensitivities
-        Redcar.log.info("initializing gui took #{Time.now - s}s")
-      end
-      Redcar.update_gui do
-        Swt.splash_screen.close if Swt.splash_screen
-        win = Redcar.app.make_sure_at_least_one_window_open
-        win.close if win and args.include?("--no-window")
-        Redcar.log.info("startup milestone: window open #{Time.now - Redcar.process_start_time}")
-        Redcar::Project::Manager.start(args)
-        Redcar.log.info("startup milestone: project open #{Time.now - Redcar.process_start_time}")
-      end
-      Redcar.load_useful_libraries
-      EditViewSWT.start
-      Redcar.log.info("startup milestone: complete: #{Time.now - Redcar.process_start_time}")
-      if args.include?("--compute-textmate-cache-and-quit")
-        Redcar::Textmate.all_bundles
-        exit
+        Redcar.update_gui do
+          Swt.splash_screen.close if Swt.splash_screen
+          win = Redcar.app.make_sure_at_least_one_window_open
+          win.close if win and args.include?("--no-window")
+          Redcar.log.info("startup milestone: window open #{Time.now - Redcar.process_start_time}")
+          Redcar::Project::Manager.start(args)
+          Redcar.log.info("startup milestone: project open #{Time.now - Redcar.process_start_time}")
+        end
+        Redcar.load_useful_libraries
+        EditViewSWT.start
+        Redcar.log.info("startup milestone: complete: #{Time.now - Redcar.process_start_time}")
+        if args.include?("--compute-textmate-cache-and-quit")
+          Redcar::Textmate.all_bundles
+          exit
+        end
+      rescue => e
+        Redcar.log.error("error in startup: #{e.inspect}")
+        e.backtrace.each do |line|
+          Redcar.log.error(line)
+        end
       end
     end
   end
