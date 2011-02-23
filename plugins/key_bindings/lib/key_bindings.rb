@@ -10,8 +10,8 @@ module Redcar
   class KeyBindings
     
     def self.user_keybindings
-      puts "binding Cmd Shift U"
-      {"Cmd+Shift+U" => Redcar::RunTestCommand }
+      puts "binding alt+F10"
+      {"Alt+F10" => Redcar::Application::CloseOthers }
       
     end
         
