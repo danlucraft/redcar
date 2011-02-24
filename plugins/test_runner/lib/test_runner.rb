@@ -1,4 +1,5 @@
 require 'test_runner/runnable_test_runner'
+require 'test_runner/jasmine_test_runner'
 require 'test_runner/rspec_runner'
 require 'test_runner/run_test_command'
 #

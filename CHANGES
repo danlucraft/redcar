@@ -11,14 +11,16 @@ Enhancements:
  * Which files are hidden in a project is now configurable (Konstantin Haase)
  * Added logger at Redcar.log, goes to ~/.redcar/user.log (Dan Lucraft)
  * Can hide files and directories from the project context menu (Benedikt Müller)
- * Notification if Redcar doesn't have permission to save files (Benedikt Müller)
+ * Notification if Redcar doesn't have permission to save files (Benedikt Müller & Bill Siggelkow)
  * Tweaked the load order to make the window appear faster during startup (Dan Lucraft)
+ * All the plugins use a single preference value to ignore files (Benedikt Müller)
 
 Bugfixes:
  * Fixed Unicode problems in DocumentSearch (Tom Murray)
  * You can now symlink bin/redcar (Konstantin Haase)
  * Runnables are now terminated correctly when the tab is closed (Dan Lucraft)
  * You are once again prompted when you close a window with running Runnables in (Dan Lucraft)
+ * Fix encoding issue that broke highlighting when there are multi-byte characters in a line (Dan Lucraft)
 
 Version 0.10 (17 January 2011)
 ==============================

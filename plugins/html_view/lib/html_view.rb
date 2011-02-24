@@ -41,7 +41,7 @@ module Redcar
          storage
       end
     end
-
+    
     def self.show_browser_bar?
       if win = Redcar.app.focussed_window and
         win.speedbar and win.speedbar.is_a?(BrowserBar)

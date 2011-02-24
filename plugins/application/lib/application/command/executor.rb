@@ -2,7 +2,6 @@
 module Redcar
   class Command
     class Executor
-      include Redcar::Core::HasLogger
       
       attr_reader :options, :command_instance
       

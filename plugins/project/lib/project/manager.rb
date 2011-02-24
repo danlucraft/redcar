@@ -96,32 +96,42 @@ module Redcar
           storage = Plugin::Storage.new('project_plugin')
           storage.set_default('reveal_files_in_project_tree',true)
           storage.set_default('reveal_files_only_when_tree_is_focussed',true)
-          storage.set_default('hidden_files_pattern', '(^\.|\.rbc$)')
-          storage.set_default('not_hidden_files', %w(.gitignore .gemtest))
           storage
+        end
+      end
+      
+      def self.shared_storage
+        @shared_storage ||= begin
+          storage = Plugin::SharedStorage.new('shared__ignored_files')
+          storage.set_or_update_default('ignored_file_patterns', [/^\./, /\.rbc$/])
+          storage.set_or_update_default('not_hidden_files', ['.gitignore', '.gemtest'])
+          storage.save
         end
       end
 
       def self.hidden_files_pattern
-        Regexp.new storage['hidden_files_pattern']
+        ignored_file_patterns
+      end
+      
+      def self.ignored_file_patterns
+        shared_storage['ignored_file_patterns']
       end
 
       def self.not_hidden_files
-        Array storage['not_hidden_files']
+        shared_storage['not_hidden_files']
       end
 
       def self.hide_file?(file)
         file = File.basename(file)
-        !not_hidden_files.include?(file) and file =~ hidden_files_pattern
+        return false if not_hidden_files.include? file
+        ignored_file_patterns.any? { |re| file =~ re }
       end
       
-      # Adds a pattern to the hidden_files_pattern option
-      # 
+      # Adds a pattern to the ignored_file_patterns option
+      #
       # @param [String] file_pattern pattern of the file
       def self.add_hide_file_pattern(file_pattern)
-        old_pattern = hidden_files_pattern
-        new_pattern = old_pattern.source.chop + '|' + file_pattern + ')'
-        storage['hidden_files_pattern'] = new_pattern
+        shared_storage['ignored_file_patterns'] = shared_storage['ignored_file_patterns'] << Regexp.new(file_pattern)
       end
 
       def self.reveal_files?
@@ -439,6 +449,32 @@ module Redcar
           end
         end
       end
+  
+      def self.close_tab_guard(tab)
+        if tab.respond_to?(:edit_view) && tab.edit_view.document.modified?
+          tab.focus
+          result = Application::Dialog.message_box(
+          "This tab has unsaved changes. \n\nSave before closing?",
+          :buttons => :yes_no_cancel
+          )
+          case result
+          when :yes
+            # check if the tab was saved properly,
+            # it would return false for example if the permission is not granted
+            if Project::FileSaveCommand.new(tab).run
+              true
+            else
+              false
+            end
+          when :no
+            true
+          when :cancel
+            false
+          end
+        else
+          true
+        end
+      end
 
       # Uses our own context menu hook to provide context menu entries
       # @return [Menu]
@@ -455,7 +491,7 @@ module Redcar
         Menu::Builder.build do
           group(:priority => :first) do
             item("New File")        { controller.new_file(tree, node) }
-            item("New Directory")   { controller.new_dir(tree, node)  }            
+            item("New Directory")   { controller.new_dir(tree, node)  }
           end
           separator
           sub_menu "Open Directory" do

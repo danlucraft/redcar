@@ -33,8 +33,8 @@ class ProjectSearch
 
   def self.toolbars
     Redcar::ToolBar::Builder.build do
-      item "Search", :command => WordSearchCommand, 
-        :icon => File.join(Redcar::ICONS_DIRECTORY, "application-search-result.png"), 
+      item "Search", :command => WordSearchCommand,
+        :icon => File.join(Redcar::ICONS_DIRECTORY, "application-search-result.png"),
         :barname => :project
     end
   end
@@ -54,8 +54,16 @@ class ProjectSearch
     end
   end
   
-  Lucene::Config.use do |config| 
-    config[:store_on_file] = true 
+  def self.shared_storage
+    @shared_storage ||= begin
+      storage = Redcar::Plugin::SharedStorage.new('shared__ignored_files')
+      storage.set_or_update_default('ignored_file_patterns', [/tags$/, /\.log$/])
+      storage.save
+    end
+  end
+  
+  Lucene::Config.use do |config|
+    config[:store_on_file] = true
     config[:storage_path]  = ""
     config[:id_field]      = :id
   end

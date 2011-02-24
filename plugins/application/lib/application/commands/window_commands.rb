@@ -1,5 +1,32 @@
 module Redcar
   class Application
+    class NewWindowCommand < Command
+
+      def initialize(title=nil)
+        @title = title
+      end
+
+      def execute
+        window = Redcar.app.new_window
+        window.title = @title if @title
+      end
+    end
+
+    class FocusWindowCommand < Command
+      def initialize(window=nil)
+        @window = window
+      end
+
+      def execute
+        win.focus
+        @window = nil
+      end
+
+      def win
+        @window || super
+      end
+    end
+
     class CloseWindowCommand < Command
       def initialize(window=nil)
         @window = window
@@ -28,6 +55,12 @@ module Redcar
 
       def win
         @window || super
+      end
+    end
+
+    class ToggleFullscreen < Command
+      def execute
+        Redcar.app.focussed_window.fullscreen = !Redcar.app.focussed_window.fullscreen
       end
     end
 

@@ -1,8 +1,4 @@
 
-require 'tree/controller'
-require 'tree/command'
-require 'tree/mirror'
-
 module Redcar
   # Pass classes implementing Redcar::Tree::Mirror and 
   # Redcar::Tree::Controller to Tree#new to create a tree. Pass to

@@ -179,7 +179,7 @@ module Redcar
       def execute
         path = get_path
         if path
-          if File.writable? path
+          if File.exists?(path) ? File.writable?(path) : File.writable?(File.dirname(path))
             contents = tab.edit_view.document.to_s
             new_mirror = FileMirror.new(path)
             new_mirror.commit(contents)
