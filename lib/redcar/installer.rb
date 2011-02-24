@@ -84,7 +84,11 @@ module Redcar
     def fetch_asset(source, target)
       relative_target   = target || implicit_target(source)
       absolute_target   = File.join(Redcar.asset_dir, relative_target)
-      return if File.exist?(absolute_target)
+      if File.exist?(absolute_target)
+        unless source =~ /dev\.jar/
+          return
+        end
+      end
       download_file_to(source, absolute_target)
       unzip_file(absolute_target) if absolute_target =~ /\.zip$/
     end
