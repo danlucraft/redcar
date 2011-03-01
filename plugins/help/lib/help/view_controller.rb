@@ -20,6 +20,10 @@ module Redcar
         rhtml = ERB.new(File.read(File.join(File.dirname(__FILE__), "..", "..", "views", "index.html.erb")))
         rhtml.result(binding)
       end
+      
+      def add_key_binding(key, command)
+        Redcar::KeyBindings.add_key_binding key, command
+      end
     end
   end
 end

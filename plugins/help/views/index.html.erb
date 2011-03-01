@@ -3,6 +3,15 @@
     <title>Keyboard Shortcuts</title>
     <% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins help views default.css))) %>
     <link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
+    <%= javascript_controller_actions %>
+    <script type="text/javascript" src="file://<%= Redcar::HtmlView.jquery_path %>"></script>
+    <script>
+    function addKeyBinding(command) {
+      var key = prompt("Key for " + command, "");
+      Controller.addKeyBinding(key, command);
+      window.location.href = "controller/index";
+    }
+  </script>
   </head>
   <body>
     <h1>Keyboard Shortcuts</h1>
@@ -18,7 +27,7 @@
         <% i = 0 %>
         <% Redcar.app.main_keymap.map.sort_by{|key, command| clean_name(command)}.each do |key, command| %>
         <tr class="<%= i % 2 == 0 ? 'even':'odd'%>">
-          <td><%= clean_name(command) %></td>
+          <td><a href="javascript:addKeyBinding('<%=command %>');"><%= clean_name(command) %></a></td>
           <td><%= key %></td>
           <% i = i + 1%>
         </tr>
