@@ -68,9 +68,11 @@ module Redcar
 
       def clear
         if @highlight.on?
-	        styledText.redrawRange(@highlight.current, 1, false) if @highlight.current < document.length
-	        styledText.redrawRange(@highlight.pair, 1, false) # if on the same line
-          @highlight.clear
+          if @highlight.current < document.length
+            styledText.redrawRange(@highlight.current, 1, false)
+            styledText.redrawRange(@highlight.pair, 1, false) # if on the same line
+            @highlight.clear
+          end
         end
       end
 
