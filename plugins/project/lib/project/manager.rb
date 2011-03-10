@@ -80,9 +80,10 @@ module Redcar
 
       def self.init_window_closed_hooks
         Redcar.app.add_listener(:window_about_to_close) do |win|
-          project = in_window(win)
-          project.close if project
-          self.save_file_list(win)
+          if project = in_window(win)
+            project.close
+            self.save_file_list(win)
+          end
         end
       end
 
@@ -99,7 +100,7 @@ module Redcar
           storage
         end
       end
-      
+
       def self.shared_storage
         @shared_storage ||= begin
           storage = Plugin::SharedStorage.new('shared__ignored_files')
@@ -112,7 +113,7 @@ module Redcar
       def self.hidden_files_pattern
         ignored_file_patterns
       end
-      
+
       def self.ignored_file_patterns
         shared_storage['ignored_file_patterns']
       end
@@ -126,7 +127,7 @@ module Redcar
         return false if not_hidden_files.include? file
         ignored_file_patterns.any? { |re| file =~ re }
       end
-      
+
       # Adds a pattern to the ignored_file_patterns option
       #
       # @param [String] file_pattern pattern of the file
@@ -147,7 +148,7 @@ module Redcar
       end
 
       def self.reveal_file?(project)
-        if project and tree = project.tree
+        if project and project.window and tree = project.tree
           if reveal_files? and project.window.trees_visible?
             ftree = project.window.treebook.focussed_tree
             unless tree != ftree and reveal_file_only_when_tree_focussed?
@@ -278,7 +279,7 @@ module Redcar
       end
 
       PROJECT_LOCKED_MESSAGE = "Project appears to be locked by another Redcar process!\nOpen anway?"
-      
+
       # Opens a new Tree with a DirMirror and DirController for the given
       # path, in a new window.
       #
@@ -433,13 +434,13 @@ module Redcar
               item "Reload File", Project::FileReloadCommand
               item "Open Directory", Project::DirectoryOpenCommand
               item "Open Recent...", Project::FindRecentCommand
-              
+
               separator
               item "Save", Project::FileSaveCommand
               item "Save As", Project::FileSaveAsCommand
             end
           end
-          
+
           sub_menu "Project", :priority => 15 do
             group(:priority => :first) do
               item "Find File", Project::FindFileCommand
@@ -449,7 +450,7 @@ module Redcar
           end
         end
       end
-  
+
       def self.close_tab_guard(tab)
         if tab.respond_to?(:edit_view) && tab.edit_view.document.modified?
           tab.focus
@@ -522,7 +523,7 @@ module Redcar
           end
           group(:priority => 75) do
             separator
-            
+
             if node and node.leaf?
               item("Hide this file") do
                 input = Application::Dialog.input(
@@ -536,7 +537,7 @@ module Redcar
                 end
               end
             end
-            
+
             if DirMirror.show_hidden_files?
               item("Hide Hidden Files") do
                 DirMirror.show_hidden_files = false

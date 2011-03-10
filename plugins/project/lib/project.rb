@@ -86,21 +86,21 @@ module Redcar
       Manager.storage['last_open_dir'] = path
       Project.window_projects[window] = self
     end
-    
+
     def lock
       File.open(lock_filename, "w") do |fout|
         fout.puts "#{$$}: Locked by #{$$} at #{Time.now}"
       end
     end
-    
+
     def lock_filename
       File.join(config_dir, "redcar.lock")
     end
-    
+
     def locked?
       File.exist?(lock_filename)
     end
-    
+
     def unlock
       if locked?
         if locked_by_this_process?
@@ -112,7 +112,7 @@ module Redcar
         raise "project not locked"
       end
     end
-    
+
     def locked_by_this_process?
       return false unless locked?
       locking_pid = File.read(lock_filename).split(":").first
@@ -128,7 +128,7 @@ module Redcar
       this_window.title = Window::DEFAULT_TITLE
       Manager.open_project_sensitivity.recompute
       Redcar.plugin_manager.objects_implementing(:project_closed).each do |i|
-        i.project_closed(self)
+        i.project_closed(self,this_window)
       end
       listeners = {}
       unlock
