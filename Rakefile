@@ -1,6 +1,9 @@
 REDCAR_VERSION = "0.11.0dev" # also change in lib/redcar.rb!
 require 'rubygems'
 require 'fileutils'
+
+# explitely use rspec < 2.0
+gem 'rspec', '<2.0'
 require 'spec/rake/spectask'
 require 'cucumber/rake/task'
 require "rake/gempackagetask"
