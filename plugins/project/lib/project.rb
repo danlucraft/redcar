@@ -158,7 +158,7 @@ module Redcar
 
     def notebook_added(notebook)
       @listeners.merge!(notebook => notebook.add_listener(:tab_focussed) do |tab|
-        RevealInProjectCommand.new.run if tree and Project::Manager.reveal_file?(self)
+        RevealInProjectCommand.new.run if tree and window and Project::Manager.reveal_file?(self)
       end)
     end
 
