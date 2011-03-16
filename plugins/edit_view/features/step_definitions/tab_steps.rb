@@ -15,24 +15,24 @@ When /^I open a new edit tab$/ do
 end
 
 When /^I close the focussed tab$/ do
-  Redcar::Top::CloseTabCommand.new.run
+  Redcar::Application::CloseTabCommand.new.run
 end
 
 When /I switch (up|down) a tab/ do |type|
   case type
   when "down"
-    Redcar::Top::SwitchTabDownCommand.new.run
+    Redcar::Application::SwitchTabDownCommand.new.run
   when "up"
-    Redcar::Top::SwitchTabUpCommand.new.run
+    Redcar::Application::SwitchTabUpCommand.new.run
   end
 end
 
 When /I move (up|down) a tab/ do |type|
   case type
   when "down"
-    Redcar::Top::MoveTabDownCommand.new.run
+    Redcar::Application::MoveTabDownCommand.new.run
   when "up"
-    Redcar::Top::MoveTabUpCommand.new.run
+    Redcar::Application::MoveTabUpCommand.new.run
   end
 end
 

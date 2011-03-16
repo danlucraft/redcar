@@ -22,7 +22,7 @@ Then /^there should be (no|one|\d+) windows?$/ do |num|
 end
 
 When /I open a new window(?: with title "(.*)")?/ do |title|
-  Redcar::Top::NewWindowCommand.new(title).run
+  Redcar::Application::NewWindowCommand.new(title).run
 end
 
 When /^I maximize the window size$/ do
@@ -40,7 +40,7 @@ When /I close the window(?: "(.*)")?( with a command| through the gui)?/ do |tit
     win = nil
   end
   if how =~ /command/
-    Redcar::Top::CloseWindowCommand.new(win).run
+    Redcar::Application::CloseWindowCommand.new(win).run
   else
     unless win
       display = Swt::Widgets::Display.get_current
