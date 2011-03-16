@@ -120,6 +120,13 @@ class ProjectSearch
       end
     end
 
+    def inspect
+      if @results
+        "<ProjectSearch::WordSearch #{project.path} \"#{query_string}\" #{@results.length} hits>"
+      else
+        "<ProjectSearch::WordSearch #{project.path} \"#{query_string}\" ...>"
+      end
+    end
   end
 end
 

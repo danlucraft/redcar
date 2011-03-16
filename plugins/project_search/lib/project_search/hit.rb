@@ -13,5 +13,9 @@ class ProjectSearch
     def line(start_with=nil, end_with=nil)
       @line.gsub(@regex) { start_with.to_s + $& + end_with.to_s }
     end
+    
+    def inspect
+      "<Hit #{file}:#{line_num}>"
+    end
   end
 end
