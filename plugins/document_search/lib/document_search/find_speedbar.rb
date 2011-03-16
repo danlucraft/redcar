@@ -90,7 +90,10 @@ module Redcar
             (@initial_query == FindSpeedbar.previous_replace))
           self.query.value = FindSpeedbar.previous_query
         else
-          self.query.value = @initial_query || FindSpeedbar.previous_query
+          if (@initial_query)
+            FindSpeedbar.previous_query = @initial_query
+          end
+          self.query.value = FindSpeedbar.previous_query
         end
         self.replace.value = FindSpeedbar.previous_replace || ""
         self.is_regex.value = FindSpeedbar.previous_options.is_regex
