@@ -22,6 +22,7 @@ module Redcar
       end
       
       def add_key_binding(key, command)
+        return unless key && key.length > 0
         Redcar::KeyBindings.add_key_binding key, command
       end
     end
