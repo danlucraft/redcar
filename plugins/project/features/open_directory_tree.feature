@@ -14,7 +14,7 @@ Feature: Open directory tree
     When I open a directory
     Given I will choose "plugins" from the "open_directory" dialog
     When I open a directory
-    Then I should see "core,application,tree" in the tree
+    Then I should see "core,application,tree_view_swt" in the tree
 
   Scenario: Open a directory and then the same using another Redcar invocation
     Given I will choose "plugins/project/spec/fixtures/myproject" from the "open_directory" dialog
