@@ -255,5 +255,9 @@ module Redcar
       file_glob = File.join("{#{config_dir},#{Redcar.user_dir}}", glob)
       Dir[file_glob]
     end
+    
+    def search(query)
+      ProjectSearch::WordSearch.new(self, query, false, 0)
+    end
   end
 end
