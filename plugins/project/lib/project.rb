@@ -131,7 +131,7 @@ module Redcar
         i.project_closed(self,this_window)
       end
       listeners = {}
-      unlock
+      unlock if locked?
     end
 
     def attach_listeners
