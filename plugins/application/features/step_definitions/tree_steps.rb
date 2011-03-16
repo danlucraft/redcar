@@ -11,7 +11,7 @@ When /^I toggle tree visibility$/ do
 end
 
 When "I close the tree" do
-  Redcar::Top::CloseTreeCommand.new.run
+  Redcar::Application::CloseTreeCommand.new.run
 end
 
 When /^I switch (up|down) a tree$/ do |type|
