@@ -38,5 +38,12 @@ module Redcar
         item "Web Bookmarks", :command => WebBookmarks::ShowTree, :icon => File.join(Redcar::ICONS_DIRECTORY, "globe.png"), :barname => :project
       end
     end
+
+    def self.project_closed(project,window)
+      wtree = window.treebook.trees.detect { |t|
+        t.tree_mirror.is_a? WebBookmarks::TreeMirror
+      }
+      wtree.close if wtree
+    end
   end
 end
