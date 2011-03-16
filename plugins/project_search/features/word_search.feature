@@ -5,7 +5,7 @@ Feature: Word search
   Background:
     Given I will choose "plugins/project_search/spec/fixtures/project" from the "open_directory" dialog
     And I open a directory
-    When I open the "Word Search" from the "Project" menu
+    When I open the "Search" from the "Project" menu
     And I wait "3" seconds
 
   Scenario: See the search interface

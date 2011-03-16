@@ -11,13 +11,14 @@ module Redcar
           storage
         end
       end
-      
+
       def self.shared_storage
         @shared_storage ||= begin
           storage = Plugin::SharedStorage.new('shared__ignored_files')
           storage.set_or_update_default('ignored_file_patterns', [])
           storage.set_or_update_default('not_hidden_files', [])
           storage.save
+          storage
         end
       end
 

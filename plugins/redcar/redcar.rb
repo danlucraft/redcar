@@ -101,14 +101,14 @@ module Redcar
           book.tabs.each_with_index do |tab,i|
             num = i + 1
             if num < 10
-              @builder.item("Tab #{num}: #{trim(tab.title)}", 
-                :type => :radio, 
-                :active => (tab == focussed_tab), 
+              @builder.item("Tab #{num}: #{trim(tab.title)}",
+                :type => :radio,
+                :active => (tab == focussed_tab),
                 :command => Redcar::Application.const_get("SelectTab#{num}Command")
               )
             else
-              @builder.item("Tab #{num}: #{trim(tab.title)}", 
-                :type => :radio, 
+              @builder.item("Tab #{num}: #{trim(tab.title)}",
+                :type => :radio,
                 :active => (tab == focussed_tab)) { tab.focus }
             end
           end
@@ -159,7 +159,7 @@ Redcar.environment: #{Redcar.environment}
         Application::Dialog.tool_tip(tab.edit_view.document.cursor_scope.gsub(" ", "\n"), :cursor)
       end
     end
-    
+
 
     class UndoCommand < EditTabCommand
       sensitize :undoable
@@ -692,7 +692,7 @@ Redcar.environment: #{Redcar.environment}
         link "Escape",           AutoCompleter::AutoCompleteCommand
         link "Ctrl+Escape",      AutoCompleter::MenuAutoCompleterCommand
         link "Ctrl+Space",       AutoCompleter::AutoCompleteCommand
-        
+
         link "Ctrl+Shift+Space", AutoCompleter::MenuAutoCompleterCommand
 
         link "Ctrl+U",           EditView::UpcaseTextCommand
@@ -944,6 +944,7 @@ Redcar.environment: #{Redcar.environment}
         Redcar.update_gui do
           Application.start
           ApplicationSWT.start
+          EditViewSWT.start
           Swt.splash_screen.inc(1) if Swt.splash_screen
           s = Time.now
           if Redcar.gui
@@ -962,7 +963,6 @@ Redcar.environment: #{Redcar.environment}
           Redcar.log.info("startup milestone: project open #{Time.now - Redcar.process_start_time}")
         end
         Redcar.load_useful_libraries
-        EditViewSWT.start
         Redcar.log.info("startup milestone: complete: #{Time.now - Redcar.process_start_time}")
         if args.include?("--compute-textmate-cache-and-quit")
           Redcar::Textmate.all_bundles

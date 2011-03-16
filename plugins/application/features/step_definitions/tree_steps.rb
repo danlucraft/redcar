@@ -7,19 +7,19 @@ When /^I expand the tree row "([^\"]*)"$/ do |row|
 end
 
 When /^I toggle tree visibility$/ do
-  Redcar::Top::ToggleTreesCommand.new.run
+  Redcar::Application::ToggleTreesCommand.new.run
 end
 
 When "I close the tree" do
-  Redcar::Top::CloseTreeCommand.new.run
+  Redcar::Application::CloseTreeCommand.new.run
 end
 
 When /^I switch (up|down) a tree$/ do |type|
   case type
   when "down"
-    Redcar::Top::SwitchTreeDownCommand.new.run
+    Redcar::Application::SwitchTreeDownCommand.new.run
   when "up"
-    Redcar::Top::SwitchTreeUpCommand.new.run
+    Redcar::Application::SwitchTreeUpCommand.new.run
   end
 end
 

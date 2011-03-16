@@ -172,12 +172,12 @@ module Redcar
         Redcar.log.debug "SCM start took #{Time.now - start}s"
       end
 
-      def self.project_closed(project)
+      def self.project_closed(project,window)
         # disassociate this project with any repositories
         info = project_repositories.delete project
         return if info.nil?
 
-        info['trees'].each {|t| project.window.treebook.remove_tree(t)}
+        info['trees'].each {|t| window.treebook.remove_tree(t)}
       end
 
       def self.refresh_trees

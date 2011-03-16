@@ -49,6 +49,10 @@ def filter_storage
   Redcar::Project::FindFileDialog.storage
 end
 
+def shared_ignored_storage
+  Redcar::Project::FindFileDialog.shared_storage
+end
+
 Before do
   reset_project_fixtures
   @original_file_size_limit = Redcar::Project::Manager.file_size_limit

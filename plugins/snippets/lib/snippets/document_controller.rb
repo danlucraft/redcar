@@ -16,7 +16,7 @@ module Redcar
           @text         = text
         end
       end
-      
+
       def after_modify
         if in_snippet? and @start_offset and !@constructing
           left_marks = marks_at_offset(@start_offset)
@@ -53,25 +53,31 @@ module Redcar
             end
           end
         end
-        if in_snippet? and @end_offset > @start_offset and !@ignore
-          update_after_delete(@start_offset, @end_offset)
-        end
-        if in_snippet? and !@ignore and @start_offset
-          document.controllers(AutoPairer::DocumentController).first.ignore do
-            update_after_insert(@start_offset, @text.length)
+        if in_snippet?
+          if @end_offset
+            if @end_offset > @start_offset and !@ignore
+              update_after_delete(@start_offset, @end_offset)
+            end
+            if !@ignore and @start_offset
+              document.controllers(AutoPairer::DocumentController).first.ignore do
+                update_after_insert(@start_offset, @text.length)
+              end
+              @start_offset, @end_offset, @text = nil, nil, nil
+            end
+          else
+            clear_snippet
           end
-          @start_offset, @end_offset, @text = nil, nil, nil
         end
 
         false
       end
-      
+
       def cursor_moved(new_offset)
         if @current_snippet and !@ignore
           check_in_snippet
         end
       end
-      
+
       def start_snippet!(snippet)
         @current_snippet = snippet
         document.controllers(AutoPairer::DocumentController).first.ignore do
@@ -80,17 +86,17 @@ module Redcar
           end
         end
       end
-      
+
       def in_snippet?
         !!current_snippet
       end
-      
+
       SnippetMark ||= Struct.new(:mark, :order_id, :stop_id)
-      
+
       class SnippetMark
         attr_accessor :name
       end
-      
+
       def insert_snippet(snippet)
         @content = snippet.content
         @insert_line_num = document.cursor_line
@@ -102,7 +108,7 @@ module Redcar
         @marks = []
         @order_id = 0
         @stop_id = 0
-        
+
         @env = Textmate::Environment.new
         fix_line_endings
         # Not sure what to do about backticks. Currently they don't work in Redcar.
@@ -125,17 +131,17 @@ module Redcar
           select_tab_stop(@tab_stops.keys.sort.first)
         end
       end
-      
+
       def leading_whitespace(line)
         line[/^(\s*)([^\s]|$)/, 1].chomp
       end
-      
+
       def fix_line_endings
         if document.delim != "\n" # textmate uses "\n" everywhere
           @content = @content.gsub("\n", document.delim)
         end
       end
-      
+
       def compute_tab_stop(line, tab_width, soft_tabs)
         re = / {0,#{tab_width - 1}}\t|#{" "*tab_width}/
         sc = StringScanner.new(leading_whitespace(line))
@@ -143,7 +149,7 @@ module Redcar
         tab_stop += 1 while sc.skip(re)
         tab_stop
       end
-      
+
       def fix_indent
         tab_width = document.edit_view.tab_width
         soft_tabs  = document.edit_view.soft_tabs?
@@ -163,7 +169,7 @@ module Redcar
           document.delete(document.offset_at_line(line_ix) + new_indent.length, pre.length)
         end
       end
-        
+
       def unescape(text)
         text.gsub("\\$", "$").gsub("\\\\", "\\").gsub("\\}", "}").gsub("\\`", "`")
       end
@@ -172,7 +178,7 @@ module Redcar
         document.insert_at_cursor(text)
         document.cursor_offset += text.length
       end
-  
+
       def check_in_snippet
         clear_snippet unless find_current_tab_stop
       end
@@ -184,7 +190,7 @@ module Redcar
         while remaining_content.length > 0
           i += 1
           raise "Snippet failed to parse: #{text.inspect}" if i > 100
-  
+
           if md = Regexp.new("(?<!\\\\)\\$").match(remaining_content)
             insert_at_cursor_with_gravity(unescape(md.pre_match))
             @stop_id += 1
@@ -290,11 +296,11 @@ module Redcar
         end
         @end_line_num = document.cursor_line
       end
-            
+
       def onig_split(string, re)
         line = string.dup
         bits = []
-        while line.length > 0 and 
+        while line.length > 0 and
             md = re.match(line)
           line = md.post_match
           bits << md.pre_match
@@ -328,26 +334,26 @@ module Redcar
         @marks << snippet_mark
         snippet_mark
       end
-      
+
       def marks_at_cursor
         marks_at_offset(document.cursor_offset)
       end
-  
+
       def marks_at_offset(offset)
         marks.select {|m| m.mark.get_offset == offset }
       end
-      
+
       def marks
         @marks
       end
-  
+
       def update_after_insert(offset, length)
         #@buf.parser.stop_parsing
         update_mirrors(offset, offset+length)
         update_transformations(offset, offset+length)
         #@buf.parser.start_parsing
       end
-  
+
       def update_after_delete(offset1, offset2)
         #@buf.parser.stop_parsing
         delete_any_mirrors(offset1, offset2)
@@ -355,7 +361,7 @@ module Redcar
         update_transformations(offset1, offset2)
         #@buf.parser.start_parsing
       end
-  
+
       def delete_any_mirrors(offset1, offset2)
         @mirrors.each do |num, mirrors|
           (mirrors||[]).reject! do |mirror|
@@ -404,7 +410,7 @@ module Redcar
           end
         end
       end
-  
+
       def set_names
         @tab_stops.each do |i, h|
           h[:leftmark].name = "$#{i}l"
@@ -423,12 +429,12 @@ module Redcar
           end
         end
       end
-      
+
       def select_tab_stop(n)
-        document.set_selection_range(@tab_stops[n][:rightmark].mark.get_offset, 
+        document.set_selection_range(@tab_stops[n][:rightmark].mark.get_offset,
                                      @tab_stops[n][:leftmark].mark.get_offset)
       end
-  
+
       def move_forward_tab_stop
         current = find_current_tab_stop
         raise "unexpectedly outside snippet" unless current
@@ -462,7 +468,7 @@ module Redcar
           select_tab_stop(current-1)
         end
       end
-      
+
       def clear_snippet
         @current_snippet = false
         @word = nil
@@ -476,7 +482,7 @@ module Redcar
           document.delete_mark(mark.mark)
         end
       end
-      
+
       def find_current_tab_stop
         candidates = []
         @tab_stops.each do |num, hash|
@@ -495,13 +501,13 @@ module Redcar
           candidates.sort.first[1]
         end
       end
-      
+
       def get_tab_stop_range(num)
         off1 = @tab_stops[num][:leftmark].mark.get_offset
         off2 = @tab_stops[num][:rightmark].mark.get_offset
         off1..off2
       end
-  
+
       def get_tab_stop_text(num)
         i1 = @tab_stops[num][:leftmark].mark.get_offset
         i2 = @tab_stops[num][:rightmark].mark.get_offset
@@ -512,7 +518,7 @@ module Redcar
         update_mirrors
         update_transformations
       end
-  
+
       def update_mirrors(start=nil, stop=nil)
         @mirrors.each do |num, mirrors|
           next unless mirrors
@@ -541,7 +547,7 @@ module Redcar
         end
         @editing_stop_id = nil
       end
-  
+
       def update_transformations(start=nil, stop=nil)
         @transformations.each do |num, transformations|
           r = get_tab_stop_range(num)

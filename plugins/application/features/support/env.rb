@@ -200,13 +200,15 @@ def close_everything
     dialogs.each {|d| d.controller.model.close }
   end
   Redcar.app.windows.each do |win|
+    if p = Redcar::Project::Manager.in_window(win)
+      Swt.sync_exec do
+        p.close
+      end
+    end
     win.treebook.trees.each do |tree|
       Swt.sync_exec do
         win.treebook.remove_tree(tree)
       end
-    end
-    if Redcar::Project::Manager.in_window(win)
-      Redcar::Project.window_projects.delete(win)
     end
     win.notebooks.each do |notebook|
       while tab = notebook.tabs.first
@@ -215,7 +217,7 @@ def close_everything
         end
       end
     end
-    if win.notebooks.length == 2
+    while win.notebooks.length > 1
       Swt.sync_exec do
         win.close_notebook
       end
@@ -253,5 +255,3 @@ end
 at_exit {
   FileUtils.rm_rf(Redcar::Plugin::Storage.storage_dir)
 }
-
-

@@ -15,7 +15,7 @@ module Redcar
           if tree == @project.tree and r = win.treebook.trees.detect do |t|
             t.tree_mirror.title == @title
           end
-            r.close
+            @project.close
           end
         end
       end

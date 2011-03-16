@@ -16,19 +16,19 @@ end
 World(NotebookSwtHelper)
 
 When /^I make a new notebook$/ do
-  Redcar::Top::NewNotebookCommand.new.run
+  Redcar::Application::NewNotebookCommand.new.run
 end
 
 When /^I move the tab to the other notebook$/ do
-  Redcar::Top::MoveTabToOtherNotebookCommand.new.run
+  Redcar::Application::MoveTabToOtherNotebookCommand.new.run
 end
 
 When /^I close the current notebook$/ do
-  Redcar::Top::CloseNotebookCommand.new.run
+  Redcar::Application::CloseNotebookCommand.new.run
 end
 
 When /^I switch notebooks$/ do
-  Redcar::Top::SwitchNotebookCommand.new.run
+  Redcar::Application::SwitchNotebookCommand.new.run
 end
 
 When /^I focus on the edit_view in the tab in notebook (\d)$/ do |index|
