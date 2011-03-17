@@ -219,7 +219,7 @@ module Redcar
       def execute
         if path = get_path
           project = Manager.open_project_for_path(path)
-          project.refresh
+          project.refresh if project
         end
       end
 

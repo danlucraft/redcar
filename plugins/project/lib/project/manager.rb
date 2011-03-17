@@ -296,7 +296,7 @@ module Redcar
         if project.locked?
           should_open = Application::Dialog.message_box(PROJECT_LOCKED_MESSAGE, :type => :warning, :buttons => :yes_no)
         end
-        if should_open
+        if should_open == :yes
           win = Redcar.app.focussed_window
           win = Redcar.app.new_window if !win or Manager.in_window(win)
           project.open(win) if project.ready?
