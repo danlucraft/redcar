@@ -51,8 +51,7 @@ class ProjectSearch
         hits_needing_post_context = []
         remove_hits = []
         file_hits = []
-        contents.each_with_index do |line, line_num_1|
-          line_num = line_num_1 + 1
+        contents.each_with_index do |line, line_num|
           hits_needing_post_context.each do |hit|
             hit.post_context << line
             if hit.post_context.length == context_size
