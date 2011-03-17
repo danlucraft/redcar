@@ -78,9 +78,10 @@ module Redcar
 
         def self.create_all_from_path(adapter, path)
           fs = adapter.fetch_contents(path)
-          fs = fs.reject {|f| [".", ".."].include?(File.basename(f[:fullname]))}
+          fs.reject! { |f| [".", ".."].include?(File.basename(f[:fullname])) }
           unless DirMirror.show_hidden_files?
-            fs.reject! { |f| Project::Manager.hide_file? f[:fullname] }
+            fs.reject! { |f| Project::Manager.hide_file?(f[:fullname]) and f[:type] == :file  }
+            fs.reject! { |f| Project::Manager.hide_directory? f[:fullname] and f[:type] == :dir }
           end
           fs.sort_by do |f|
             File.basename(f[:fullname]).downcase
