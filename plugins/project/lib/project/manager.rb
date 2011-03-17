@@ -106,6 +106,8 @@ module Redcar
           storage = Plugin::SharedStorage.new('shared__ignored_files')
           storage.set_or_update_default('ignored_file_patterns', [/^\./, /\.rbc$/])
           storage.set_or_update_default('not_hidden_files', ['.gitignore', '.gemtest'])
+          storage.set_or_update_default('ignored_directory_patterns', [/^\./, /^\.(git|yardoc|svn)$/])
+          storage.set_or_update_default('not_hidden_directories', ['.directory_that_should_not_be_hidden'])
           storage.save
         end
       end
@@ -127,12 +129,33 @@ module Redcar
         return false if not_hidden_files.include? file
         ignored_file_patterns.any? { |re| file =~ re }
       end
+      
+      def self.ignored_directory_patterns
+        shared_storage['ignored_directory_patterns']
+      end
+
+      def self.not_hidden_directories
+        shared_storage['not_hidden_directories']
+      end
+
+      def self.hide_directory?(dir)
+        dir = File.basename(dir) # yeah, it's File.basename, but it works for directories as well :)
+        return false if not_hidden_directories.include? dir
+        ignored_directory_patterns.any? { |re| dir =~ re }
+      end
 
       # Adds a pattern to the ignored_file_patterns option
       #
       # @param [String] file_pattern pattern of the file
       def self.add_hide_file_pattern(file_pattern)
         shared_storage['ignored_file_patterns'] = shared_storage['ignored_file_patterns'] << Regexp.new(file_pattern)
+      end
+
+      # Adds a pattern to the ignored_directory_patterns option
+      # 
+      # @param [String] directory_pattern pattern of the directory
+      def self.add_hide_directory_pattern(directory_pattern)
+        shared_storage['ignored_directory_patterns'] = shared_storage['ignored_directory_patterns'] << Regexp.new(directory_pattern)
       end
 
       def self.reveal_files?
@@ -533,6 +556,20 @@ module Redcar
                 )
                 if input[:button] == :ok
                   Project::Manager.add_hide_file_pattern input[:value]
+                  Project::Manager.focussed_project.refresh
+                end
+              end
+            end
+
+            if node and node.directory?
+              item('Hide this direcotry') do
+                input = Application::Dialog.input(
+                  'Hide directory',
+                  'Please enter a pattern to hide this kind of directories or press OK to hide this directory only.',
+                  '^' + Regexp.escape(node.text) + '$'
+                )
+                if input[:button] == :ok
+                  Project::Manager.add_hide_directory_pattern input[:value]
                   Project::Manager.focussed_project.refresh
                 end
               end

@@ -48,28 +48,26 @@ module Redcar
             else
               stat = File.lstat(file)
             end
-            unless file =~ /\.git|\.yardoc|\.svn/
-              unless stat.directory?
-                files[file.dup] = stat.mtime
-              end
-              next unless File.exist? file
-              if stat.directory?
-                d = Dir.open(file)
-                begin
-                  for f in d
-                    next if f == "." or f == ".."
-                    if File::ALT_SEPARATOR and file =~ /^(?:[\/\\]|[A-Za-z]:[\/\\]?)$/
-                      f = file + f
-                    elsif file == "/"
-                      f = "/" + f
-                    else
-                      f = File.join(file, f)
-                    end
-                    paths.unshift f.untaint
+            unless stat.directory?
+              files[file.dup] = stat.mtime
+            end
+            next unless File.exist? file
+            if stat.directory?
+              d = Dir.open(file)
+              begin
+                for f in d
+                  next if f == "." or f == ".."
+                  if File::ALT_SEPARATOR and file =~ /^(?:[\/\\]|[A-Za-z]:[\/\\]?)$/
+                    f = file + f
+                  elsif file == "/"
+                    f = "/" + f
+                  else
+                    f = File.join(file, f)
                   end
-                ensure
-                  d.close
+                  paths.unshift f.untaint
                 end
+              ensure
+                d.close
               end
             end
           rescue Errno::ENOENT, Errno::EACCES
