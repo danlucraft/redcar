@@ -14,7 +14,8 @@ module Redcar
       #
       # @param [String] name  a (short) name, should be suitable for use as a filename
       def initialize(name)
-        @name    = name
+        @name  = name
+        @mutex = Mutex.new
         unless File.exists?(Storage.storage_dir)
           FileUtils.mkdir_p(Storage.storage_dir)
         end
@@ -23,8 +24,10 @@ module Redcar
 
       # Save the storage to disk.
       def save
-        File.open(path, "w") { |f| YAML.dump(@storage, f) }
-        update_timestamp
+        @mutex.synchronize do
+          File.open(path, "w") { |f| YAML.dump(@storage, f) }
+          update_timestamp
+        end
         self
       end
 
@@ -32,9 +35,11 @@ module Redcar
       # it hasn't been saved.
       def rollback
         if File.exists?(path)
-          @storage = YAML.load_file(path)
-          raise 'storage file is corrupted--please delete ' + path unless @storage.is_a? Hash
-          update_timestamp
+          @mutex.synchronize do
+            @storage = YAML.load_file(path)
+            raise 'storage file is corrupted--please delete ' + path unless @storage.is_a?(Hash)
+            update_timestamp
+          end
         else
           @storage = {}
         end
@@ -81,7 +86,7 @@ module Redcar
       end
       
       def update_timestamp
-        @last_modified_time = File.stat(path()).mtime
+        @last_modified_time = File.stat(path).mtime
       end
     end
     
@@ -100,7 +105,7 @@ module Redcar
             set_default(key, [value])
           end
         end
-        @storage[key].uniq!
+        @storage[key] = @storage[key].uniq
         value
       end
       
