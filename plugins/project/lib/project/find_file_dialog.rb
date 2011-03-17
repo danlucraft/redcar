@@ -4,24 +4,6 @@ module Redcar
   class Project
 
     class FindFileDialog < FilterListDialog
-      def self.storage
-        @storage ||= begin
-          storage = Plugin::Storage.new('find_file_dialog')
-          storage.set_default('ignore_file_patterns', false)
-          storage
-        end
-      end
-
-      def self.shared_storage
-        @shared_storage ||= begin
-          storage = Plugin::SharedStorage.new('shared__ignored_files')
-          storage.set_or_update_default('ignored_file_patterns', [])
-          storage.set_or_update_default('not_hidden_files', [])
-          storage.save
-          storage
-        end
-      end
-
       attr_reader :project
 
       def initialize(project)
@@ -98,25 +80,19 @@ module Redcar
         end
       end
 
-      def ignore_regexes
-        self.class.shared_storage['ignored_file_patterns']
-      end
-
-      def ignore_file?(filename)
-        if self.class.storage['ignore_file_patterns']
-          ignore_regexes.any? {|re| re =~ filename }
-        end
-      end
-
       def find_files_from_list(text, file_list)
         re = make_regex(text)
         file_list.select do |fn|
-          not ignore_file?(fn) and match_substring(fn) =~ re
+          match_substring(fn) =~ re
         end
       end
 
       def find_files(text, directories)
-        files = project.all_files.sort.select {|fn| not ignore_file?(fn)}
+        begin
+          files = project.all_files.sort
+        rescue => e
+          p e
+        end
         filter_and_rank_by(files, text) {|fn| match_substring(fn) }
       end
 

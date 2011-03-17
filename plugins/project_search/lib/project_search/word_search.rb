@@ -3,15 +3,6 @@ class ProjectSearch
   class WordSearch
     attr_reader :query_string, :context_size, :project
     
-    def self.shared_storage
-      @shared_storage ||= begin
-        storage = Redcar::Plugin::SharedStorage.new('shared__ignored_files')
-        storage.set_or_update_default('ignored_file_patterns', [])
-        storage.set_or_update_default('not_hidden_files', [])
-        storage.save
-      end
-    end
-
     def initialize(project, query_string, match_case, context_size)
       @project      = project
       @query_string = query_string
@@ -58,6 +49,7 @@ class ProjectSearch
               remove_hits << hit
             end
           end
+          
           hits_needing_post_context -= remove_hits
           
           if matching_line?(line)
@@ -105,7 +97,7 @@ class ProjectSearch
           new_doc_ids = index.find(:contents => bit.downcase).map {|doc| doc.id }
           doc_ids = doc_ids ? (doc_ids & new_doc_ids) : new_doc_ids
         end
-        doc_ids.reject {|doc_id| ignore_regexes.any? {|re| re =~ File.basename(doc_id) }}
+        doc_ids.reject {|doc_id| Redcar::Project::FileList.hide_file_path?(doc_id) }
       end
     end
   

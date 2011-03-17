@@ -101,63 +101,6 @@ module Redcar
         end
       end
 
-      def self.shared_storage
-        @shared_storage ||= begin
-          storage = Plugin::SharedStorage.new('shared__ignored_files')
-          storage.set_or_update_default('ignored_file_patterns', [/^\./, /\.rbc$/])
-          storage.set_or_update_default('not_hidden_files', ['.gitignore', '.gemtest'])
-          storage.set_or_update_default('ignored_directory_patterns', [/^\./, /^\.(git|yardoc|svn)$/])
-          storage.set_or_update_default('not_hidden_directories', ['.directory_that_should_not_be_hidden'])
-          storage.save
-        end
-      end
-
-      def self.hidden_files_pattern
-        ignored_file_patterns
-      end
-
-      def self.ignored_file_patterns
-        shared_storage['ignored_file_patterns']
-      end
-
-      def self.not_hidden_files
-        shared_storage['not_hidden_files']
-      end
-
-      def self.hide_file?(file)
-        file = File.basename(file)
-        return false if not_hidden_files.include? file
-        ignored_file_patterns.any? { |re| file =~ re }
-      end
-      
-      def self.ignored_directory_patterns
-        shared_storage['ignored_directory_patterns']
-      end
-
-      def self.not_hidden_directories
-        shared_storage['not_hidden_directories']
-      end
-
-      def self.hide_directory?(dir)
-        dir = File.basename(dir) # yeah, it's File.basename, but it works for directories as well :)
-        return false if not_hidden_directories.include? dir
-        ignored_directory_patterns.any? { |re| dir =~ re }
-      end
-
-      # Adds a pattern to the ignored_file_patterns option
-      #
-      # @param [String] file_pattern pattern of the file
-      def self.add_hide_file_pattern(file_pattern)
-        shared_storage['ignored_file_patterns'] = shared_storage['ignored_file_patterns'] << Regexp.new(file_pattern)
-      end
-
-      # Adds a pattern to the ignored_directory_patterns option
-      # 
-      # @param [String] directory_pattern pattern of the directory
-      def self.add_hide_directory_pattern(directory_pattern)
-        shared_storage['ignored_directory_patterns'] = shared_storage['ignored_directory_patterns'] << Regexp.new(directory_pattern)
-      end
-
       def self.reveal_files?
         storage['reveal_files_in_project_tree']
       end
@@ -555,7 +498,7 @@ module Redcar
                   '^' + Regexp.escape(node.text) + '$'
                 )
                 if input[:button] == :ok
-                  Project::Manager.add_hide_file_pattern input[:value]
+                  Project::FileList.add_hide_file_pattern(input[:value])
                   Project::Manager.focussed_project.refresh
                 end
               end
@@ -569,7 +512,7 @@ module Redcar
                   '^' + Regexp.escape(node.text) + '$'
                 )
                 if input[:button] == :ok
-                  Project::Manager.add_hide_directory_pattern input[:value]
+                  Project::FileList.add_hide_directory_pattern(input[:value])
                   Project::Manager.focussed_project.refresh
                 end
               end
