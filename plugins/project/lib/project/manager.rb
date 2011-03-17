@@ -315,7 +315,7 @@ module Redcar
           end
         end
         project = Project.new(path)
-        should_open = true
+        should_open = :yes
         if project.locked?
           should_open = Application::Dialog.message_box(PROJECT_LOCKED_MESSAGE, :type => :warning, :buttons => :yes_no)
         end
