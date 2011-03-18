@@ -23,6 +23,7 @@ Bugfixes:
  * Runnables are now terminated correctly when the tab is closed (Dan Lucraft)
  * You are once again prompted when you close a window with running Runnables in (Dan Lucraft)
  * Fix encoding issue that broke highlighting when there are multi-byte characters in a line (Dan Lucraft)
+ * Fixed project-dependent trees remaining open when project is closed (Delisa Mason)
 
 Version 0.10 (17 January 2011)
 ==============================
