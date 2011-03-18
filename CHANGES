@@ -13,7 +13,7 @@ Enhancements:
  * Can hide files and directories from the project context menu (Benedikt Müller)
  * Notification if Redcar doesn't have permission to save files (Benedikt Müller & Bill Siggelkow)
  * Tweaked the load order to make the window appear faster during startup (Dan Lucraft)
- * All the plugins use a single preference value to ignore files (Benedikt Müller)
+ * All the plugins use a single preference value to ignore files (Benedikt Müller & Daniel Lucraft)
  * Can ignore directories (Benedikt Müller)
 
 Bugfixes:
