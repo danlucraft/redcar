@@ -163,7 +163,7 @@ module Redcar
               doc.cursor_offset = insert_idx + cursor_line_offset
               if keep_selection
                 doc.set_selection_range(doc.offset_at_line(first_line_ix-1),
-                doc.offset_at_line(last_line_ix-1) + doc.get_line(last_line_ix-1).length - 1)
+                doc.offset_at_inner_end_of_line(last_line_ix-1))
               end
               doc.scroll_to_line(top)
             end
@@ -179,14 +179,14 @@ module Redcar
         if doc.selection?
           first_line_ix = doc.line_at_offset(doc.selection_range.begin)
           last_line_ix  = doc.line_at_offset(doc.selection_range.end)
-          
+
           if doc.selection_range.begin == doc.offset_at_inner_end_of_line(first_line_ix)
             first_line_ix += 1
           end
           if doc.selection_range.end == doc.offset_at_line(last_line_ix)
             last_line_ix -= 1
           end
-          
+
           text = doc.get_slice(doc.offset_at_line(first_line_ix),
                                doc.offset_at_line_end(last_line_ix))
           keep_selection = true
@@ -211,8 +211,9 @@ module Redcar
               doc.replace(doc.offset_at_line(first_line_ix), swap_text.split(//).length, new_text)
               doc.cursor_offset = doc.offset_at_line(last_line_ix+1) + cursor_line_offset
               if keep_selection
-                doc.set_selection_range(doc.offset_at_line(first_line_ix+1),
-                doc.offset_at_line(last_line_ix+1) + doc.get_line(last_line_ix+1).length - 1)
+                start_selection = doc.offset_at_line(first_line_ix+1)
+                end_selection = doc.offset_at_inner_end_of_line(last_line_ix+1)
+                doc.set_selection_range(start_selection, end_selection)
               end
               doc.scroll_to_line(last_line_ix+1)
             end
