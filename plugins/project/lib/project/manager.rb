@@ -505,7 +505,7 @@ module Redcar
             end
 
             if node and node.directory?
-              item('Hide this direcotry') do
+              item('Hide this directory') do
                 input = Application::Dialog.input(
                   'Hide directory',
                   'Please enter a pattern to hide this kind of directories or press OK to hide this directory only.',
