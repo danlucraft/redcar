@@ -13,6 +13,7 @@ Scenario: Lowering a multi-line selection
   And I select from 5 to 9
   And I lower the text
   Then I should see "foo\nbonne\nbar\nbaz" in the edit tab
+  And the selected text should be "bar\nbaz"
 
 Scenario: Lowering the last line of a document
   When I open a new edit tab
@@ -43,10 +44,11 @@ Scenario: Lowering a multi-line selection including the last line of a document
   And I lower the text
   Then I should see "foo\nbar\nbonne\nbaz" in the edit tab
   And I should not see "foo\nbar\n\nbaz\nbonne" in the edit tab
+  And the selected text should be "baz"
 
 Scenario: Should work with unicode
   When I open a new edit tab
   And I replace the contents with "foo\nbść\nbaz\nbonne"
   And I move the cursor to 5
   And I lower the text
-  Then the contents should be "foo\nbaz\nbść\nbonne" 
+  Then the contents should be "foo\nbaz\nbść\nbonne"
