@@ -15,6 +15,7 @@ Enhancements:
  * Tweaked the load order to make the window appear faster during startup (Dan Lucraft)
  * All the plugins use a single preference value to ignore files (Benedikt Müller & Daniel Lucraft)
  * Can ignore directories (Benedikt Müller)
+ * User definable keybindings (Chris Nelson)
 
 Bugfixes:
  * Fixed Unicode problems in DocumentSearch (Tom Murray)
