@@ -155,6 +155,8 @@ task :build do
   cd "plugins/application_swt" do
     sh "ant"
   end
+  cp "plugins/edit_view_swt/vendor/java-mateview.jar", "#{ENV['HOME']}/.redcar/assets/java-mateview-#{REDCAR_VERSION}.jar"
+  cp "plugins/application_swt/lib/dist/application_swt.jar", "#{ENV['HOME']}/.redcar/assets/application_swt-#{REDCAR_VERSION}.jar"
 end
 
 def remove_gitignored_files(filelist)

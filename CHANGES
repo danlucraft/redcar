@@ -3,11 +3,11 @@ Version 0.11 (TBA)
 
 Enhancements:
 
+ * Project search backed by Lucene (Dan Lucraft)
  * Fuzzy file finder now recognizes directories "a/c/repocontr" (Tim Felgentreff)
  * Recent project fuzzy finder (Benedikt Müller)
  * Improved DocumentSearch, with UI refinements, added Replace All commands (Tom Murray)
  * Raise/lower region behaves better when you select multiple lines (Benedikt Müller)
- * Project search backed by Lucene (Dan Lucraft)
  * Which files are hidden in a project is now configurable (Konstantin Haase)
  * Added logger at Redcar.log, goes to ~/.redcar/user.log (Dan Lucraft)
  * Can hide files and directories from the project context menu (Benedikt Müller)
