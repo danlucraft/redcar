@@ -75,6 +75,10 @@ module Redcar
     end
     
     class UnIndentedLinePatternSetting < Setting
+      def initialize(plist, scope)
+        @plist = plist
+        @scope = @scope || ""
+      end
       def pattern; @plist; end
     end
     
