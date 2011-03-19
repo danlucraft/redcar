@@ -9,8 +9,11 @@ module Swt
       include Swt::Events::MouseListener
       include Swt::Events::MouseTrackListener
 
-      CLOSE_ICON   = Redcar::ApplicationSWT::Icon.swt_image(:close)
       ICON_PADDING = 3
+
+      def close_icon
+        @@close_icon ||= Redcar::ApplicationSWT::Icon.swt_image(:close)
+      end
 
       def initialize(tab, parent, style)
         @label = Swt::Widgets::Label.new(parent, style)
@@ -98,7 +101,7 @@ module Swt
       end
 
       def mouseUp(e)
-        if show_close and CLOSE_ICON.bounds.contains(e.x - ICON_PADDING, e.y - ICON_PADDING)
+        if show_close and close_icon.bounds.contains(e.x - ICON_PADDING, e.y - ICON_PADDING)
           @tab.parent.remove_item(@tab)
         else
           activate if e.button == 1
@@ -106,7 +109,7 @@ module Swt
       end
 
       def mouseEnter(e)
-        @icon = CLOSE_ICON
+        @icon = close_icon
         redraw
       end
 
