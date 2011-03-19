@@ -21,7 +21,7 @@ module Redcar
       
       def activated(tree, node)
         if node.respond_to?(:status) and node.status == [:unmerged]
-          Project::FileOpenCommand.new(node.path).run
+          Project::FileCreateCommitCommand.new(node.path).run
         elsif node.respond_to?(:diff)
           diff = node.diff
           if diff

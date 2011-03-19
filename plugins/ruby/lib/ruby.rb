@@ -8,7 +8,7 @@ module Redcar
       Menu::Builder.build do
         sub_menu "Plugins" do
           sub_menu "REPL" do
-            item "Open Ruby REPL", RubyOpenREPL
+            item "Open Ruby REPL", OpenRubyREPL
           end
         end
       end
@@ -16,17 +16,17 @@ module Redcar
 
     def self.keymaps
       osx = Keymap.build("main", :osx) do
-        link "Cmd+Shift+R", RubyOpenREPL
+        link "Cmd+Shift+R", OpenRubyREPL
       end
 
       linwin = Keymap.build("main", [:linux, :windows]) do
-        link "Ctrl+Shift+R", RubyOpenREPL
+        link "Ctrl+Shift+R", OpenRubyREPL
       end
 
       [linwin, osx]
     end
 
-    class RubyOpenREPL < Redcar::REPL::OpenREPL
+    class OpenRubyREPL < Redcar::REPL::OpenREPL
       def execute
         open_repl(ReplMirror.new)
       end

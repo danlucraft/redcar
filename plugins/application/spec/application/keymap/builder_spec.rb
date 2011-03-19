@@ -9,7 +9,7 @@ describe "Redcar::Keymap::Builder DSL" do
   
   it "add entries to the keymap" do
     builder = Redcar::Keymap::Builder.new("test", :osx) do
-      link "Ctrl+S", :NewCommand
+      link "Ctrl+S", :OpenNewEditTabCommand
     end
     builder.keymap.length.should == 1
     builder.keymap.command("Ctrl+S")

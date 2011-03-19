@@ -1,4 +1,4 @@
 
 When /^I open the web bookmarks tree$/ do
-  Redcar::WebBookmarks::ShowTree.new.run
+  Redcar::WebBookmarks::ShowWebBookmarksCommand.new.run
 end

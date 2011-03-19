@@ -4,7 +4,7 @@ require 'java'
 module Redcar
   class WebBookmarks
 
-    class ShowTree < Redcar::Command
+    class ShowWebBookmarksCommand < Redcar::Command
       sensitize :open_project
       def execute
         if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }

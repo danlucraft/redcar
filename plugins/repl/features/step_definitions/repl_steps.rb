@@ -1,9 +1,9 @@
 When /^I open a "([^"]*)" repl$/ do |repl|
-  Redcar.const_get(repl.camelize).const_get(repl.camelize + "OpenREPL").new.run
+  Redcar.const_get(repl.camelize).const_get("Open" + repl.camelize + "REPL").new.run
 end
 
 When /^I open a new repl$/ do
-  Redcar::REPL::FakeOpenREPL.new.run
+  Redcar::REPL::OpenFakeREPL.new.run
 end
 
 Then /^the REPL output should be "([^"]*)"$/ do |output|

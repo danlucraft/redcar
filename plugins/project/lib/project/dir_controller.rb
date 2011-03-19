@@ -10,7 +10,7 @@ module Redcar
 
       def activated(tree, node)
         if node.leaf?
-          FileOpenCommand.new(node.path, node.adapter).run
+          OpenFileCommand.new(node.path, node.adapter).run
         end
       end
 

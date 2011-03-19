@@ -17,7 +17,7 @@ module Redcar
           when :yes
             modified_edit_tabs.each do |t|
               t.focus
-              Project::FileSaveCommand.new(t).run
+              Project::SaveFileCommand.new(t).run
             end
             true
           when :no

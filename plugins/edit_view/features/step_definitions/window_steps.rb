@@ -22,7 +22,7 @@ Then /^there should be (no|one|\d+) windows?$/ do |num|
 end
 
 When /I open a new window(?: with title "(.*)")?/ do |title|
-  Redcar::Application::NewWindowCommand.new(title).run
+  Redcar::Application::OpenNewWindowCommand.new(title).run
 end
 
 When /^I maximize the window size$/ do

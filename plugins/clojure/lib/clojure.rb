@@ -8,7 +8,7 @@ module Redcar
       Menu::Builder.build do
         sub_menu "Plugins" do
           sub_menu "REPL" do
-            item "Open Clojure REPL", ClojureOpenREPL
+            item "Open Clojure REPL", OpenClojureREPL
           end
         end
       end
@@ -24,7 +24,7 @@ module Redcar
       end
     end
 
-    class ClojureOpenREPL < Redcar::REPL::OpenREPL
+    class OpenClojureREPL < Redcar::REPL::OpenREPL
       def execute
         open_repl(ReplMirror.new)
       end

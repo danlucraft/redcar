@@ -18,24 +18,24 @@ module Redcar
     def self.menus
       Redcar::Menu::Builder.build do
         sub_menu "Project" do
-          item "Web Bookmarks", :command => WebBookmarks::ShowTree, :priority => 40
+          item "Web Bookmarks", :command => WebBookmarks::ShowWebBookmarksCommand, :priority => 40
         end
       end
     end
 
      def self.keymaps
       osx = Keymap.build("main", :osx) do
-        link "Cmd+Shift+?", WebBookmarks::ShowTree
+        link "Cmd+Shift+?", WebBookmarks::ShowWebBookmarksCommand
       end
       lin = Keymap.build("main", [:linux,:windows]) do
-        link "Ctrl+Shift+?", WebBookmarks::ShowTree
+        link "Ctrl+Shift+?", WebBookmarks::ShowWebBookmarksCommand
       end
       [osx,lin]
     end
 
     def self.toolbars
       Redcar::ToolBar::Builder.build do
-        item "Web Bookmarks", :command => WebBookmarks::ShowTree, :icon => File.join(Redcar::ICONS_DIRECTORY, "globe.png"), :barname => :project
+        item "Web Bookmarks", :command => WebBookmarks::ShowWebBookmarksCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "globe.png"), :barname => :project
       end
     end
 

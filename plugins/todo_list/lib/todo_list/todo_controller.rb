@@ -16,7 +16,7 @@ module Redcar
         path = options.keys.first
         line = options.values.first.first.to_i
         if File.exists? path
-          Project::FileOpenCommand.new(path).run
+          Project::OpenFileCommand.new(path).run
           tab = Redcar.app.focussed_notebook_tab
           document = tab.edit_view.document
           if line <= document.line_count

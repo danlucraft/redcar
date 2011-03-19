@@ -9,12 +9,12 @@ describe "Redcar::Menu::Builder DSL" do
   
   it "adds entries to the menu" do
     builder = Redcar::Menu::Builder.new do
-      item "New", :NewCommand
+      item "New", :OpenNewEditTabCommand
     end
     builder.menu.length.should == 1
     item = builder.menu.entries.first
     item.text.should == "New"
-    item.command.should == :NewCommand
+    item.command.should == :OpenNewEditTabCommand
   end
   
   it "adds separators to the menu" do

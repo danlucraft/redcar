@@ -1,6 +1,6 @@
 
 Given /^there is an edit tab containing "([^\"]*)"$/ do |contents|
-  tab = Redcar::Top::NewCommand.new.run
+  tab = Redcar::Top::OpenNewEditTabCommand.new.run
   contents = eval(contents.inspect.gsub("\\\\", "\\"))
   cursor_offset = (contents =~ /<c>/)
   contents = contents.gsub("<c>", "")
@@ -11,7 +11,7 @@ Given /^there is an edit tab containing "([^\"]*)"$/ do |contents|
 end
 
 When /^I open a new edit tab$/ do
-  Redcar::Top::NewCommand.new.run
+  Redcar::Top::OpenNewEditTabCommand.new.run
 end
 
 When /^I close the focussed tab$/ do
