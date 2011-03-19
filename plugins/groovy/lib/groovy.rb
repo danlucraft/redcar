@@ -17,7 +17,7 @@ module Redcar
       Redcar::Menu::Builder.build do
         sub_menu "Plugins" do
           sub_menu "REPL" do
-            item "Open Groovy REPL", GroovyOpenREPL
+            item "Open Groovy REPL", OpenGroovyREPL
           end
         end
       end
@@ -25,11 +25,11 @@ module Redcar
 
     def self.keymaps
       osx = Keymap.build("main", :osx) do
-        link "Cmd+Alt+G", GroovyOpenREPL
+        link "Cmd+Alt+G", OpenGroovyREPL
       end
 
       linwin = Keymap.build("main", [:linux, :windows]) do
-        link "Ctrl+Alt+G", GroovyOpenREPL
+        link "Ctrl+Alt+G", OpenGroovyREPL
       end
 
       [linwin, osx]

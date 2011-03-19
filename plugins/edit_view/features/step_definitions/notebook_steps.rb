@@ -16,7 +16,7 @@ end
 World(NotebookSwtHelper)
 
 When /^I make a new notebook$/ do
-  Redcar::Application::NewNotebookCommand.new.run
+  Redcar::Application::OpenNewNotebookCommand.new.run
 end
 
 When /^I move the tab to the other notebook$/ do

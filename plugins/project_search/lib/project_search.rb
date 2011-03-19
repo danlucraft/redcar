@@ -15,7 +15,7 @@ class ProjectSearch
     Redcar::Menu::Builder.build do
       sub_menu "Project" do
         group :priority => 1 do
-          item "Search",  :command => ProjectSearch::WordSearchCommand
+          item "Word Search",  :command => ProjectSearch::WordSearchCommand
         end
       end
     end
@@ -33,7 +33,7 @@ class ProjectSearch
 
   def self.toolbars
     Redcar::ToolBar::Builder.build do
-      item "Search", :command => WordSearchCommand,
+      item "Word Search", :command => WordSearchCommand,
         :icon => File.join(Redcar::ICONS_DIRECTORY, "application-search-result.png"),
         :barname => :project
     end

@@ -30,7 +30,7 @@ module Redcar
       end
     end
 
-    class FileWebPreview < Redcar::EditTabCommand
+    class ViewFileInWebBrowserCommand < Redcar::EditTabCommand
       def execute
         mirror  = doc.mirror
         if mirror and path = mirror.path and File.exists?(path)

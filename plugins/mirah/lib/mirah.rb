@@ -10,7 +10,7 @@ module Redcar
       Menu::Builder.build do
         sub_menu "Plugins" do
           sub_menu "REPL" do
-            item "Open Mirah REPL", MirahOpenREPL
+            item "Open Mirah REPL", OpenMirahREPL
           end
         end
       end
@@ -34,7 +34,7 @@ module Redcar
       end
     end
 
-    class MirahOpenREPL < Redcar::REPL::OpenREPL
+    class OpenMirahREPL < Redcar::REPL::OpenREPL
       def execute
         open_repl(ReplMirror.new)
       end

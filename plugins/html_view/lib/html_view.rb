@@ -18,7 +18,7 @@ module Redcar
     def self.keymaps
       map = Redcar::Keymap.build("main", [:osx, :linux, :windows]) do
         link "Alt+Shift+B", ToggleBrowserBar
-        link "Alt+Shift+P", FileWebPreview
+        link "Alt+Shift+P", ViewFileInWebBrowserCommand
       end
       [map]
     end
@@ -26,7 +26,7 @@ module Redcar
     def self.menus
       Redcar::Menu::Builder.build do
         sub_menu "File" do
-          item "Web Preview", :command => FileWebPreview, :priority => 8
+          item "Web Preview", :command => ViewFileInWebBrowserCommand, :priority => 8
         end
         sub_menu "View" do
           item "Toggle Browser Bar", :command => ToggleBrowserBar, :priority => 11

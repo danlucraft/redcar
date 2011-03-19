@@ -1,7 +1,7 @@
 
 module Redcar
   class Groovy
-    class GroovyOpenREPL < Redcar::REPL::OpenREPL
+    class OpenGroovyREPL < Redcar::REPL::OpenREPL
       def execute
         open_repl(ReplMirror.new)
       end

@@ -30,7 +30,7 @@ module Redcar
       
       def output_tab
         tabs = win.notebooks.map {|nb| nb.tabs }.flatten
-        tabs.detect {|t| t.title == TITLE} || Top::NewCommand.new.run
+        tabs.detect {|t| t.title == TITLE} || Top::OpenNewEditTabCommand.new.run
       end
 
       def execute_file(path)

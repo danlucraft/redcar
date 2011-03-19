@@ -43,7 +43,7 @@ module Redcar
         notify_listeners(:change)
       end
       
-      class SaveCommand < Command
+      class CommitChangesCommand < Command
         sensitize :open_commit_tab
         
         def execute
@@ -57,7 +57,7 @@ module Redcar
         end
       end
       
-      class OpenCommand < Command
+      class CreateCommitCommand < Command
         sensitize :open_scm
         
         def execute

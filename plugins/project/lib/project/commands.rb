@@ -8,7 +8,7 @@ module Redcar
   end
 
   class Project
-    class FileOpenCommand < Command
+    class OpenFileCommand < Command
       def initialize(path = nil, adapter = Adapters::Local.new)
         @path = path
         @adapter = adapter
@@ -142,7 +142,7 @@ module Redcar
     #  end
     #end
 
-    class FileSaveCommand < EditTabCommand
+    class SaveFileCommand < EditTabCommand
       def initialize(tab=nil)
         @tab = tab
       end
@@ -161,7 +161,7 @@ module Redcar
             result = false
           end
         else
-          result = FileSaveAsCommand.new.run
+          result = SaveFileAsCommand.new.run
         end
         tab.update_for_file_changes
         result ||= true
@@ -169,7 +169,7 @@ module Redcar
       end
     end
 
-    class FileSaveAsCommand < EditTabCommand
+    class SaveFileAsCommand < EditTabCommand
 
       def initialize(tab=nil, path=nil)
         @tab  = tab

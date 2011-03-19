@@ -52,7 +52,7 @@ module Redcar
   end
 
   module Top
-    class NewCommand < Command
+    class OpenNewEditTabCommand < Command
 
       def execute
         unless win.nil?
@@ -125,7 +125,7 @@ module Redcar
 
     class AboutCommand < Command
       def execute
-        new_tab = Top::NewCommand.new.run
+        new_tab = Top::OpenNewEditTabCommand.new.run
         new_tab.document.text = <<-TXT
 About: Redcar\nVersion: #{Redcar::VERSION}
 Ruby Version: #{RUBY_VERSION}
@@ -140,7 +140,7 @@ Redcar.environment: #{Redcar.environment}
 
     class ChangelogCommand < Command
       def execute
-        new_tab = Top::NewCommand.new.run
+        new_tab = Top::OpenNewEditTabCommand.new.run
         new_tab.document.text = File.read(File.join(File.dirname(__FILE__), "..", "..", "CHANGES"))
         new_tab.edit_view.reset_undo
         new_tab.edit_view.document.set_modified(false)
@@ -562,16 +562,16 @@ Redcar.environment: #{Redcar.environment}
 
     def self.keymaps
       osx = Redcar::Keymap.build("main", :osx) do
-        link "Cmd+N",       NewCommand
-        link "Cmd+Shift+N", Application::NewNotebookCommand
-        link "Cmd+Alt+N",   Application::NewWindowCommand
-        link "Cmd+O",       Project::FileOpenCommand
+        link "Cmd+N",       OpenNewEditTabCommand
+        link "Cmd+Shift+N", Application::OpenNewNotebookCommand
+        link "Cmd+Alt+N",   Application::OpenNewWindowCommand
+        link "Cmd+O",       Project::OpenFileCommand
         link "Cmd+U",       Project::FileReloadCommand
         link "Cmd+Shift+O", Project::DirectoryOpenCommand
         link "Cmd+Alt+Ctrl+P",   Project::FindRecentCommand
         #link "Cmd+Ctrl+O",  Project::OpenRemoteCommand
-        link "Cmd+S",       Project::FileSaveCommand
-        link "Cmd+Shift+S", Project::FileSaveAsCommand
+        link "Cmd+S",       Project::SaveFileCommand
+        link "Cmd+Shift+S", Project::SaveFileAsCommand
         link "Cmd+W",       Application::CloseTabCommand
         link "Cmd+Shift+W", Application::CloseWindowCommand
         link "Alt+Shift+W", Application::CloseTreeCommand
@@ -650,15 +650,15 @@ Redcar.environment: #{Redcar.environment}
       end
 
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
-        link "Ctrl+N",       NewCommand
-        link "Ctrl+Shift+N", Application::NewNotebookCommand
-        link "Ctrl+Alt+N",   Application::NewWindowCommand
-        link "Ctrl+O",       Project::FileOpenCommand
+        link "Ctrl+N",       OpenNewEditTabCommand
+        link "Ctrl+Shift+N", Application::OpenNewNotebookCommand
+        link "Ctrl+Alt+N",   Application::OpenNewWindowCommand
+        link "Ctrl+O",       Project::OpenFileCommand
         link "Ctrl+Shift+O", Project::DirectoryOpenCommand
         link "Ctrl+Alt+Shift+P",   Project::FindRecentCommand
         #link "Alt+Shift+O",  Project::OpenRemoteCommand
-        link "Ctrl+S",       Project::FileSaveCommand
-        link "Ctrl+Shift+S", Project::FileSaveAsCommand
+        link "Ctrl+S",       Project::SaveFileCommand
+        link "Ctrl+Shift+S", Project::SaveFileAsCommand
         link "Ctrl+W",       Application::CloseTabCommand
         link "Ctrl+Shift+W", Application::CloseWindowCommand
         link "Alt+Shift+W",  Application::CloseTreeCommand
@@ -744,14 +744,14 @@ Redcar.environment: #{Redcar.environment}
 
     def self.toolbars
       ToolBar::Builder.build do
-        item "New File", :command => NewCommand, :icon => :new, :barname => :core
-        item "Open File", :command => Project::FileOpenCommand, :icon => :open, :barname => :core
+        item "New File", :command => OpenNewEditTabCommand, :icon => :new, :barname => :core
+        item "Open File", :command => Project::OpenFileCommand, :icon => :open, :barname => :core
         item "Open Directory", :command => Project::DirectoryOpenCommand, :icon => :open_dir, :barname => :core
-        item "Save File", :command => Project::FileSaveCommand, :icon => :save, :barname => :core
-        item "Save File As", :command => Project::FileSaveAsCommand, :icon => :save_as, :barname => :core
+        item "Save File", :command => Project::SaveFileCommand, :icon => :save, :barname => :core
+        item "Save File As", :command => Project::SaveFileAsCommand, :icon => :save_as, :barname => :core
         item "Undo", :command => UndoCommand, :icon => :undo, :barname => :core
         item "Redo", :command => RedoCommand, :icon => :redo, :barname => :core
-        item "New Notebook", :command => Application::NewNotebookCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "book--plus.png"), :barname => :edit
+        item "New Notebook", :command => Application::OpenNewNotebookCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "book--plus.png"), :barname => :edit
         item "Close Notebook", :command => Application::CloseNotebookCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "book--minus.png"), :barname => :edit
       end
     end
@@ -760,8 +760,8 @@ Redcar.environment: #{Redcar.environment}
       Menu::Builder.build do
         sub_menu "File", :priority => :first do
           group(:priority => :first) do
-            item "New", NewCommand
-            item "New Window", Application::NewWindowCommand
+            item "New", OpenNewEditTabCommand
+            item "New Window", Application::OpenNewWindowCommand
           end
 
           group(:priority => 10) do
@@ -863,7 +863,7 @@ Redcar.environment: #{Redcar.environment}
               GenerateWindowsMenu.new(self).run
             end
             sub_menu "Notebooks" do
-              item "New Notebook", Application::NewNotebookCommand
+              item "New Notebook", Application::OpenNewNotebookCommand
               item "Close Notebook", Application::CloseNotebookCommand
               item "Rotate Notebooks", Application::RotateNotebooksCommand
               item "Move Tab To Other Notebook", Application::MoveTabToOtherNotebookCommand

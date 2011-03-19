@@ -45,7 +45,7 @@ module Redcar
       def selected(text, ix, closing=false)
         if @last_list
           close
-          FileOpenCommand.new(@last_list[ix]).run
+          OpenFileCommand.new(@last_list[ix]).run
         end
       end
 

@@ -60,5 +60,5 @@ When /^I open the browser bar$/ do
 end
 
 When /^I open a web preview$/ do
-  Redcar::HtmlView::FileWebPreview.new.run
+  Redcar::HtmlView::ViewFileInWebBrowserCommand.new.run
 end

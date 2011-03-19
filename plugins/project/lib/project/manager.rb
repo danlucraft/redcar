@@ -396,14 +396,14 @@ module Redcar
         Menu::Builder.build do
           sub_menu "File" do
             group(:priority => 0) do
-              item "Open", Project::FileOpenCommand
+              item "Open", Project::OpenFileCommand
               item "Reload File", Project::FileReloadCommand
               item "Open Directory", Project::DirectoryOpenCommand
               item "Open Recent...", Project::FindRecentCommand
 
               separator
-              item "Save", Project::FileSaveCommand
-              item "Save As", Project::FileSaveAsCommand
+              item "Save", Project::SaveFileCommand
+              item "Save As", Project::SaveFileAsCommand
             end
           end
 
@@ -428,7 +428,7 @@ module Redcar
           when :yes
             # check if the tab was saved properly,
             # it would return false for example if the permission is not granted
-            if Project::FileSaveCommand.new(tab).run
+            if Project::SaveFileCommand.new(tab).run
               true
             else
               false

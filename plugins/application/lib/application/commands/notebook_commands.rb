@@ -1,6 +1,6 @@
 module Redcar
   class Application
-    class NewNotebookCommand < Command
+    class OpenNewNotebookCommand < Command
       
       def execute
         win.create_notebook

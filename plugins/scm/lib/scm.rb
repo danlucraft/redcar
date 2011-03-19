@@ -42,12 +42,12 @@ module Redcar
 
       def self.keymaps
         osx = Keymap.build("main", :osx) do
-          link "Cmd+Shift+C", Scm::CommitMirror::SaveCommand
-          link "Cmd+Shift+.", :command => Scm::CommitMirror::SaveCommand, :value => [:commit, [Scm::ScmChangesMirror, Scm::ScmChangesController]]
+          link "Cmd+Shift+C", Scm::CommitMirror::CommitChangesCommand
+          link "Cmd+Shift+.", :command => Scm::CommitMirror::CommitChangesCommand, :value => [:commit, [Scm::ScmChangesMirror, Scm::ScmChangesController]]
         end
 
         linwin = Keymap.build("main", [:linux, :windows]) do
-          link "Ctrl+Shift+C", Scm::CommitMirror::SaveCommand
+          link "Ctrl+Shift+C", Scm::CommitMirror::CommitChangesCommand
         end
 
         [linwin, osx]
@@ -66,8 +66,8 @@ module Redcar
                 item "Toggle Changes Tree", :command => Scm::ToggleScmTreeCommand, :value => [:commit, [Scm::ScmChangesMirror, Scm::ScmChangesController]]
                 item "Toggle Commits Tree", :command => Scm::ToggleScmTreeCommand, :value => [:push, [Scm::ScmCommitsMirror, Scm::ScmCommitsController]]
                 separator
-                item "Create Commit", :command => Scm::CommitMirror::OpenCommand
-                item "Save Commit", :command => Scm::CommitMirror::SaveCommand
+                item "Create Commit", :command => Scm::CommitMirror::CreateCommitCommand
+                item "Save Commit", :command => Scm::CommitMirror::CommitChangesCommand
               end
             end
           end

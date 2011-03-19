@@ -1,6 +1,6 @@
 module Redcar
   class Application
-    class NewWindowCommand < Command
+    class OpenNewWindowCommand < Command
 
       def initialize(title=nil)
         @title = title
