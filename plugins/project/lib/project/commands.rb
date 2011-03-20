@@ -16,7 +16,7 @@ module Redcar
 
       def execute
         path = get_path
-        if path 
+        if path
           if File.readable? path
             Manager.open_file(path, @adapter)
           else
@@ -262,24 +262,26 @@ module Redcar
 
     class RevealInProjectCommand < ProjectCommand
       def execute
-        tab = Redcar.app.focussed_window.focussed_notebook_tab
-        if tab.is_a?(EditTab)
-          return unless mirror = tab.edit_view.document.mirror and mirror.respond_to? :path
-        else
-          return
-        end
+        if project
+          tab = Redcar.app.focussed_window.focussed_notebook_tab
+            if tab.is_a?(EditTab)
+            return unless mirror = tab.edit_view.document.mirror and mirror.respond_to? :path
+          else
+            return
+          end
 
-        path = mirror.path
-        tree = project.tree
-        current = tree.tree_mirror.top
-        while current.any?
-          ancestor_node = current.detect {|node| path =~ /^#{node.path}($|\/)/ }
-          return unless ancestor_node
-          tree.expand(ancestor_node)
-          current = ancestor_node.children
+          path = mirror.path
+          tree = project.tree
+          current = tree.tree_mirror.top
+          while current.any?
+            ancestor_node = current.detect {|node| path =~ /^#{node.path}($|\/)/ }
+            return unless ancestor_node
+            tree.expand(ancestor_node)
+            current = ancestor_node.children
+          end
+          tree.select(ancestor_node)
+          project.window.treebook.focus_tree(project.tree)
         end
-        tree.select(ancestor_node)
-        project.window.treebook.focus_tree(project.tree)
       end
     end
 
