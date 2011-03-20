@@ -86,8 +86,8 @@ module Redcar
     end
     
     class Storage < Plugin::BaseStorage
-      class << self
-        attr_writer :storage_dir
+      def self.storage_dir=(value)
+        @user_dir = value
       end
     
       def self.storage_dir
