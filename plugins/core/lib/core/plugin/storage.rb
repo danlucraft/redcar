@@ -1,23 +1,18 @@
 
 module Redcar
   class Plugin
-    class Storage
-      class << self
-        attr_writer :storage_dir
-      end
-    
-      def self.storage_dir
-        @user_dir ||= File.join(Redcar.user_dir, "storage")
-      end
-
+    class BaseStorage
+      
       # Open a storage file or create it if it doesn't exist.
       #
+      # @param [String] storage_dir  the path to the directory the storage file should exist in
       # @param [String] name  a (short) name, should be suitable for use as a filename
-      def initialize(name)
+      def initialize(storage_dir, name)
+        @storage_dir = storage_dir
         @name  = name
         @mutex = Mutex.new
-        unless File.exists?(Storage.storage_dir)
-          FileUtils.mkdir_p(Storage.storage_dir)
+        unless File.exists?(@storage_dir)
+          FileUtils.mkdir_p(@storage_dir)
         end
         rollback
       end
@@ -82,11 +77,25 @@ module Redcar
       private
       
       def path
-        File.join(Storage.storage_dir, @name + ".yaml")
+        File.join(@storage_dir, @name + ".yaml")
       end
       
       def update_timestamp
         @last_modified_time = File.stat(path).mtime
+      end
+    end
+    
+    class Storage < Plugin::BaseStorage
+      class << self
+        attr_writer :storage_dir
+      end
+    
+      def self.storage_dir
+        @user_dir ||= File.join(Redcar.user_dir, "storage")
+      end
+      
+      def initialize(name)
+        super(self.class.storage_dir, name)
       end
     end
     
