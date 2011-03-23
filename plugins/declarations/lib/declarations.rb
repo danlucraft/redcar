@@ -11,7 +11,9 @@ module Redcar
       Menu::Builder.build do
         sub_menu "Project" do
           item "Go to declaration", :command => Declarations::GoToTagCommand, :priority => 30
-          item "Rebuild tags file", :command => Declarations::RebuildTagsCommand, :priority => 31
+          sub_menu "Refresh", :priority => 31 do
+            item "Declarations file", :command => Declarations::RebuildTagsCommand
+          end
         end
       end
     end
