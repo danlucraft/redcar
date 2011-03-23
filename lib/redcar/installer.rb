@@ -64,7 +64,8 @@ module Redcar
           "http://mirrors.ibiblio.org/pub/mirrors/maven2/org/codehaus/groovy/groovy-all/1.7.4/groovy-all-1.7.4.jar" => "/groovy-all.jar",
           "http://mirrors.ibiblio.org/pub/mirrors/maven2/org/tmatesoft/svnkit/svnkit/1.3.4/svnkit-1.3.4.jar" => "/svnkit.jar",
           # "http://mirrors.ibiblio.org/pub/mirrors/maven2/rhino/js/1.7R2/js-1.7R2.jar" => "/js.jar",
-          "http://redcar.s3.amazonaws.com/deps/rhino-js-1.7R2.jar" => "/js.jar"
+          "http://redcar.s3.amazonaws.com/deps/rhino-js-1.7R2.jar" => "/js.jar",
+          "http://redcar.s3.amazonaws.com/lucene-core-2.9.1.jar" => "lucene/jars/lucene-core-2.9.1.jar"
         },
         :windows => {
           "http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/#{xulrunner_version}/runtimes/xulrunner-#{xulrunner_version}.en-US.win32.zip" => "xulrunner-#{xulrunner_version}.en-US.win32.zip",
