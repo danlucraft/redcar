@@ -49,7 +49,7 @@ module Redcar
       def self.hide_file_path?(file_path)
         basename = File.basename(file_path)
         if ignored_file_patterns.any? { |re| basename =~ re } and
-          !not_hidden_files.include?(file)
+          !not_hidden_files.include?(basename)
           return true
         end
         
@@ -68,7 +68,7 @@ module Redcar
       end
 
       # Adds a pattern to the ignored_directory_patterns option
-      # 
+      #
       # @param [String] directory_pattern pattern of the directory
       def self.add_hide_directory_pattern(directory_pattern)
         shared_storage['ignored_directory_patterns'] = shared_storage['ignored_directory_patterns'] + [Regexp.new(directory_pattern)]
