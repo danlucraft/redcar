@@ -1,4 +1,4 @@
-REDCAR_VERSION = "0.11.0dev" # also change in lib/redcar.rb!
+REDCAR_VERSION = "0.11" # also change in lib/redcar.rb!
 require 'rubygems'
 require 'fileutils'
 
@@ -32,7 +32,7 @@ begin
         'plugins/*/lib/**/*.rb'
       ]
     t.options = ['--markup', 'markdown']
-  end  
+  end
 rescue LoadError
 end
 
@@ -172,16 +172,16 @@ def remove_matching_files(list, string)
 end
 
 def gem_manifest
-  r = %w(CHANGES LICENSE Rakefile README.md) + 
-                          Dir.glob("bin/redcar") + 
-                          Dir.glob("config/**/*") + 
-                          Dir.glob("share/**/*") + 
-                          remove_gitignored_files(Dir.glob("lib/**/*")) + 
-                          remove_matching_files(remove_gitignored_files(Dir.glob("plugins/**/*")), "redcar-bundles") + 
-                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Syntaxes/**/*") + 
-                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Preferences/**/*") + 
-                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Snippets/**/*") + 
-                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/info.plist") + 
+  r = %w(CHANGES LICENSE Rakefile README.md) +
+                          Dir.glob("bin/redcar") +
+                          Dir.glob("config/**/*") +
+                          Dir.glob("share/**/*") +
+                          remove_gitignored_files(Dir.glob("lib/**/*")) +
+                          remove_matching_files(remove_gitignored_files(Dir.glob("plugins/**/*")), "redcar-bundles") +
+                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Syntaxes/**/*") +
+                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Preferences/**/*") +
+                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Snippets/**/*") +
+                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/info.plist") +
                           Dir.glob("plugins/textmate/vendor/redcar-bundles/Themes/*.tmTheme")
   remove_matching_files(r, "multi-byte")
 end
@@ -241,7 +241,7 @@ task :run_ci do
       a = "jruby -S spec #{filename} --backtrace"
       puts a
       system a
-    end  
+    end
   
     spec_filename = "#{filename[1]}_spec.rb"
     spec = Dir["**/#{spec_filename}"]
@@ -297,13 +297,13 @@ namespace :redcar do
     
     tasks = Rake::Task.tasks
     runnables = []
-    ruby_bin = Config::CONFIG["bindir"] + "/ruby -r#{File.dirname(__FILE__)}/.redcar/runnables/sync_stdout.rb " 
+    ruby_bin = Config::CONFIG["bindir"] + "/ruby -r#{File.dirname(__FILE__)}/.redcar/runnables/sync_stdout.rb "
     tasks.each do |task|
       name = task.name.gsub(":", "/")
       command = ruby_bin + $0 + " " + task.name
       runnables << {
         "name"        => name,
-        "command"     => command, 
+        "command"     => command,
         "description" => task.comment,
         "type"        => "task/ruby/rake"
       }
@@ -313,7 +313,7 @@ namespace :redcar do
       f.puts(JSON.pretty_generate(data))
     end
     File.open(".redcar/runnables/ruby.json", "w") do |f|
-      data = {"file_runners" => 
+      data = {"file_runners" =>
         [
           {
             "regex" =>    ".*.rb$",
