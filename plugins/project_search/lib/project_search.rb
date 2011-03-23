@@ -17,6 +17,9 @@ class ProjectSearch
         group :priority => 1 do
           item "Word Search",  :command => ProjectSearch::WordSearchCommand
         end
+        sub_menu "Refresh", :priority => 31 do
+          item "Search index", :command => ProjectSearch::RefreshIndex
+        end
       end
     end
   end
@@ -67,7 +70,6 @@ class ProjectSearch
     config[:storage_path]  = ""
     config[:id_field]      = :id
   end
-  
   
   def self.project_refresh_task_type
     LuceneRefresh
