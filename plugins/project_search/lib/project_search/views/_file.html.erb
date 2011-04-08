@@ -2,10 +2,7 @@
 <tr><td class='break' colspan='2'></td></tr>
 <tr>
   <td class="file_heading" colspan="2">
-    <a class="expand_collapse" data-file_num="<%= file %>">
-      <img src="<%= image_path %>/expanded.png" />
-      <%= CGI::escapeHTML(file.gsub(@word_search.project.path + "/", "")) %>
-    </a>
+    <%= CGI::escapeHTML(file.gsub(@word_search.project.path + "/", "")) %>
   </td>
 </tr>
 

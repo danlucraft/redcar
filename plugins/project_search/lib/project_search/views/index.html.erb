@@ -126,17 +126,5 @@
       }
     });
 
-    // need to use live here so that results added will be caught
-    $('.expand_collapse').live('click', function(ev) {
-      ev.preventDefault();
-      var file_num = $(this).attr('data-file_num');
-      if ($(".file_" + file_num).first().is(":visible")) {
-        $('img', this).attr('src', '<%= image_path %>/collapsed.png');
-        $(".file_" + file_num).hide();
-      } else {
-        $('img', this).attr('src', '<%= image_path %>/expanded.png');
-        $(".file_" + file_num).show();
-      }
-    });
   });
 </script>

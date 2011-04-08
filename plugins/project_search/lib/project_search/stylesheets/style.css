@@ -134,6 +134,7 @@
 #results .file_heading {
   background-color: #eee;
   padding: 4px;
+  font-weight: bold;
 }
 
 #results .file_heading img {
@@ -144,11 +145,6 @@
 #results .file_heading a {
   font-weight: bold;
   font-family: sans-serif;
-}
-
-#results .expand_collapse img {
-  width: 16px;
-  height: 16px;
 }
 
 #results .line_num {
