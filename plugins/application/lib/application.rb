@@ -243,7 +243,11 @@ module Redcar
     # @param [Symbol] method_name
     def call_on_plugins(method_name, *args)
       Redcar.plugin_manager.objects_implementing(method_name).each do |object|
-        yield object.send(method_name, *args)
+        if block_given?
+          yield object.send(method_name, *args)
+	else
+	  object.send(method_name, *args)
+	end
       end
       nil
     end
