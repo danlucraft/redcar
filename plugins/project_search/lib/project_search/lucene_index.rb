@@ -41,6 +41,8 @@ class ProjectSearch
       @has_content
     end
     
+    MAX_FILE_SIZE = 500 * 1024
+    
     def update
       changed_files = @project.file_list.changed_since(last_updated)
       @last_updated = Time.now
@@ -54,14 +56,16 @@ class ProjectSearch
           @lucene_index.field_infos[:contents][:tokenized] = true          changed_files.each do |fn, ts|
             begin
               unless File.basename(fn)[0..0] == "." or fn.include?(".git")
-                contents = File.read(fn)
-                unless BinaryDataDetector.binary?(contents[0..200])
+                next if File.size(fn) > MAX_FILE_SIZE
+                pre_contents = File.new(fn).read(200)
+                unless !pre_contents or BinaryDataDetector.binary?(pre_contents)
+                  contents = File.read(fn)
                   adjusted_contents = contents.gsub(/\.([^\s])/, '. \1')
                   @lucene_index << { :id => fn, :contents => adjusted_contents }
                 end
               end
             rescue => e
-              Redcar.log.error("[project_search] error indexing file #{fn}")
+              Redcar.log.error("[project_search] error indexing file #{fn}: #{e.message}")
             end
           end
           @lucene_index.commit
