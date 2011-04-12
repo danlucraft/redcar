@@ -52,7 +52,6 @@ module Redcar
           end
         end
       end
-
     end
 
     def controllers(klass=nil)
@@ -721,7 +720,7 @@ module Redcar
     def update_from_mirror
       previous_line      = cursor_line
       top_line           = smallest_visible_line
-
+      
       self.text          = mirror.read
 
       @modified          = false

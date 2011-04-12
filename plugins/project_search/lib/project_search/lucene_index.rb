@@ -52,12 +52,16 @@ class ProjectSearch
         begin
           @lucene_index.field_infos[:contents][:store] = true
           @lucene_index.field_infos[:contents][:tokenized] = true          changed_files.each do |fn, ts|
-            unless File.basename(fn)[0..0] == "." or fn.include?(".git")
-              contents = File.read(fn)
-              unless BinaryDataDetector.binary?(contents[0..200])
-                adjusted_contents = contents.gsub(/\.([^\s])/, '. \1')
-                @lucene_index << { :id => fn, :contents => adjusted_contents }
+            begin
+              unless File.basename(fn)[0..0] == "." or fn.include?(".git")
+                contents = File.read(fn)
+                unless BinaryDataDetector.binary?(contents[0..200])
+                  adjusted_contents = contents.gsub(/\.([^\s])/, '. \1')
+                  @lucene_index << { :id => fn, :contents => adjusted_contents }
+                end
               end
+            rescue => e
+              Redcar.log.error("[project_search] error indexing file #{fn}")
             end
           end
           @lucene_index.commit
