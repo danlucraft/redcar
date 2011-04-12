@@ -1,4 +1,4 @@
-REDCAR_VERSION = "0.11" # also change in lib/redcar.rb!
+REDCAR_VERSION = "0.12.0dev" # also change in lib/redcar.rb!
 require 'rubygems'
 require 'fileutils'
 
