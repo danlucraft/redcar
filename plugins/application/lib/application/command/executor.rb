@@ -47,7 +47,6 @@ module Redcar
       def set_environment
         env = Executor.current_environment || {}
         env = env.merge(options.delete(:env) || {})
-        
         @command_instance.environment(env)
       end
       
