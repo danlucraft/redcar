@@ -274,11 +274,19 @@ Then /^the content? should be:$/ do |string|
   Then %{the contents should be "#{escape_text(string)}"}
 end
 
+def implicit_edit_view
+  edit_views = Redcar::EditView.all_edit_views
+  if edit_views.length == 1
+    edit_views.first
+  else
+    Redcar::EditView.focussed_edit_view
+  end
+end
 
 When /^I type "((?:[^"]|\\")*)"$/ do |text|
   text = text.gsub("\\t", "\t").gsub("\\n", "\n").gsub("\\\"", "\"")
+  edit_view = implicit_edit_view
   text.split(//).each do |letter|
-    edit_view = Redcar::EditView.focussed_edit_view
     edit_view.type_character(letter[0])
   end
 end
@@ -324,7 +332,7 @@ edit_view_action_steps = {
 
 edit_view_action_steps.each do |action_symbol, step_text|
   When step_text do
-    Redcar::EditView.focussed_edit_view.invoke_action(action_symbol)
+    implicit_edit_view.invoke_action(action_symbol)
   end
 end
 
