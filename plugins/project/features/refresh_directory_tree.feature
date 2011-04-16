@@ -25,7 +25,7 @@ Feature: Refresh directory tree
     And I should not see "testyfile.txt" in the tree
     When I touch the file "plugins/project/spec/fixtures/myproject/testyfile.txt"
     When I open a new window
-    And I focus the working directory window with a command
+    And I focus the window "myproject" with a command
     Then I should see "lib,spec,README,testyfile.txt" in the tree
     
   Scenario: Refreshing the tree leaves rows expanded as they were before

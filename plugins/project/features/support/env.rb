@@ -25,7 +25,6 @@ end
 
 def create_project_fixtures
   clear_project_fixtures
-  p [:cp_r, original_fixtures_path, fixtures_path]
   FileUtils.cp_r(original_fixtures_path, fixtures_path)
 end
 
@@ -49,6 +48,7 @@ end
 
 Before("@project-fixtures") do
   create_project_fixtures
+  make_subproject_fixtures
   @original_file_size_limit = Redcar::Project::Manager.file_size_limit
 end
 
