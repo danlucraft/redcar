@@ -149,7 +149,13 @@ module Redcar
 
       def execute
         if tab.edit_view.document.mirror
-          if File.writable? tab.edit_view.document.mirror.path
+          path          = tab.edit_view.document.mirror.path
+          dir           = File.dirname(path)
+          writable_file = File.writable?(path)
+          writable_dir  = File.writable?(dir)
+          file_exists   = File.exist?(path)
+          can_write     = writable_file || (!file_exists && writable_dir)
+          if can_write
             tab.edit_view.document.save!
             Project::Manager.refresh_modified_file(tab.edit_view.document.mirror.path)
           else
