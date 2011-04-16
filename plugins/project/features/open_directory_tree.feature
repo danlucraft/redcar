@@ -1,20 +1,22 @@
+@project-fixtures
 Feature: Open directory tree
 
   Scenario: Open directory
-    Given I will choose "." from the "open_directory" dialog
+    Given I will choose "plugins/project/spec/fixtures/myproject" from the "open_directory" dialog
     When I open a directory
-    Then I should see "bin,lib,plugins" in the tree
+    Then the window should have title "myproject"
+    Then I should see "lib,spec,vendor,README" in the tree
 
   Scenario: Open a directory using another Redcar invocation
     Given I open "plugins/project/spec/fixtures/myproject" using the redcar command
     Then the window should have title "myproject"
 
   Scenario: Open directory then another directory
-    Given I will choose "." from the "open_directory" dialog
+    Given I will choose "plugins/project/spec/fixtures/myproject" from the "open_directory" dialog
     When I open a directory
-    Given I will choose "plugins" from the "open_directory" dialog
+    Given I will choose "plugins/project/spec/fixtures/myproject/lib" from the "open_directory" dialog
     When I open a directory
-    Then I should see "core,application,tree_view_swt" in the tree
+    Then I should see "foo_lib.rb" in the tree
 
   Scenario: Open a directory and then the same using another Redcar invocation
     Given I will choose "plugins/project/spec/fixtures/myproject" from the "open_directory" dialog

@@ -1,3 +1,4 @@
+@project-fixtures
 Feature: Watch for modified files
   If an open file has changed on disc since the last time the user looked at it,
   then reload the contents. Alert the user if they have made modifications.

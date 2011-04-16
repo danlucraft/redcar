@@ -1,3 +1,4 @@
+@project-fixtures
 Feature: Find file
 
   Background:
@@ -98,16 +99,6 @@ Feature: Find file
     And I open the find file dialog
     Then the filter dialog should have 1 entry
     And I should see "foo_spec.rb (myproject/spec)" at 0 the filter dialog
-
-  Scenario: Ignore patterns
-    When I prefer not to see files like ".*spec\.rb$" in the find file dialog
-    And I open the find file dialog
-    And I set the filter to "foo"
-    And I wait "0.4" seconds
-    And I select in the filter dialog
-    And I open the find file dialog
-    Then the filter dialog should have 1 entry
-    And I should see "foo_lib.rb (myproject/lib)" at 0 the filter dialog
 
   Scenario: Open two files then see the files in the initial list
     When I have opened "plugins/project/spec/fixtures/myproject/spec/foo_spec.rb"

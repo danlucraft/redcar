@@ -1,3 +1,4 @@
+@project-fixtures
 Feature: Opening subprojects with shared configuration files
 
   Background:

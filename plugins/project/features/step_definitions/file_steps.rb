@@ -16,6 +16,11 @@ Given /^I have opened "([^\"]*)"$/ do |arg1|
   Redcar::Project::OpenFileCommand.new(File.expand_path(arg1)).run
 end
 
+Given /^I have opened "([^\"]*)" from the project$/ do |arg1|
+  project = Redcar::Project::Manager.focussed_project
+  Redcar::Project::OpenFileCommand.new(project.path + "/" + arg1).run
+end
+
 When /^I save the tab$/ do
   Redcar::Project::SaveFileCommand.new.run
 end

@@ -36,3 +36,7 @@ Then /^I should see "(.*)" at (\d+) the filter dialog$/ do |text, pos|
   pos = pos.to_i
   filter_dialog_items[pos].should == text
 end
+
+Then /^I should not see "(.*)" in the filter dialog$/ do |text|
+  filter_dialog_items.include?(text).should be_false
+end

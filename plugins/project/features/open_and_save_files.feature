@@ -1,3 +1,4 @@
+@project-fixtures
 Feature: Open and save files
 
   Scenario: Open a file
