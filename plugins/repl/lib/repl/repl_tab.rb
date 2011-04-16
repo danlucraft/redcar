@@ -92,6 +92,9 @@ module Redcar
         if cursor_line == prompt_line
           edit_view.document.cursor_offset = repl_mirror.current_offset.to_i
           false
+        elsif cursor_line > prompt_line
+          edit_view.document.cursor_offset = edit_view.document.offset_at_line(cursor_line)
+          false
         else
           true
         end
