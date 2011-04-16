@@ -13,6 +13,7 @@ Feature: Watch for modified files
     And I wait "2" seconds
     And I put "Summer" into the file "plugins/project/spec/fixtures/winter.txt"
     And I close the focussed tab
+    And the edit tab updates its contents
     Then I should see "Summer" in the edit tab
 
   Scenario: With modifications, reloading from disc
@@ -24,6 +25,7 @@ Feature: Watch for modified files
     And I put "Summer" into the file "plugins/project/spec/fixtures/winter.txt"
     Given I will choose "yes" from the "message_box" dialog
     And I close the focussed tab
+    And the edit tab updates its contents
     Then I should see "Summer" in the edit tab
 
   Scenario: With modifications, keeping modified version
@@ -35,6 +37,7 @@ Feature: Watch for modified files
     And I put "Summer" into the file "plugins/project/spec/fixtures/winter.txt"
     Given I will choose "no" from the "message_box" dialog
     And I close the focussed tab
+    And the edit tab updates its contents
     Then I should see "Newton" in the edit tab
 
   Scenario: With modifications, keeping modified version, twice
@@ -46,6 +49,7 @@ Feature: Watch for modified files
     And I put "Summer" into the file "plugins/project/spec/fixtures/winter.txt"
     Given I will choose "no" from the "message_box" dialog
     And I close the focussed tab
+    And the edit tab updates its contents
     Then I should see "Newton" in the edit tab
     When I open a new edit tab
     Then I should not see a "message_box" dialog for the rest of the feature
@@ -73,6 +77,7 @@ Feature: Watch for modified files
     And I wait "2" seconds
     And I put "Summer" into the file "plugins/project/spec/fixtures/winter.txt"
     And I close the focussed tab
+    And the edit tab updates its contents
     Then the cursor should be on line 0
 
   Scenario: The file being mirrored by the current unmodified tab is externally deleted
@@ -84,6 +89,7 @@ Feature: Watch for modified files
     And I close the window "new" through the gui
     And I focus the window "Redcar" through the gui
     Then there should be one edit tab
+    And the edit tab updates its contents
     And my active tab should have an "exclamation" icon
 
   Scenario: The file being mirrored by the current modified tab is externally deleted

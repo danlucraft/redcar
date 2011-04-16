@@ -23,6 +23,10 @@ When /^I close the focussed tab$/ do
   Redcar::Application::CloseTabCommand.new.run
 end
 
+When /^the edit tab updates its contents$/ do
+  implicit_edit_view.check_for_updated_document
+end
+
 When /I switch (up|down) a tab/ do |type|
   case type
   when "down"
