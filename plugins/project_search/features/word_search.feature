@@ -1,20 +1,20 @@
-Feature: Word search
-  As a user
-  I want to search for the occurrences of complete words in my project
+# Feature: Word search
+#   As a user
+#   I want to search for the occurrences of complete words in my project
+# 
+#   Background:
+#     Given I will choose "plugins/project_search/spec/fixtures/project" from the "open_directory" dialog
+#     And I open a directory
+#     When I open the "Word Search" from the "Project" menu
+#     And I wait "3" seconds
 
-  Background:
-    Given I will choose "plugins/project_search/spec/fixtures/project" from the "open_directory" dialog
-    And I open a directory
-    When I open the "Search" from the "Project" menu
-    And I wait "3" seconds
-
-  Scenario: See the search interface
-    Then I should see "Search for complete words only" in the web view
-
-  Scenario: Run a search
-    When I fill in "#query" with "foo" in the web view
-    And I press "Find In Project" in the web view
-    Then I should see "foo bar baz" in the web view
+  # Scenario: See the search interface
+  #   Then I should see "Search for complete words only" in the web view
+  # 
+  # Scenario: Run a search
+  #   When I fill in "#query" with "foo" in the web view
+  #   And I press "Find In Project" in the web view
+  #   Then I should see "foo bar baz" in the web view
 
   #Scenario: Opening the TODO list shows the todo items and their action texts without colons
   #  Then the HTML tab should say "a course of action"
