@@ -65,7 +65,7 @@ module Redcar
     ]
 
     MAX_FONT_SIZE = 25
-    MIN_FONT_SIZE = 1
+    MIN_FONT_SIZE = 6
 
     include Redcar::Model
     extend Redcar::Observable
@@ -315,17 +315,27 @@ module Redcar
       ]
     end
 
-    def self.font_info
+    def self.default_font_size
       if Redcar.platform == :osx
-        default_font = "Monaco"
-        default_font_size = 15
+        15
       elsif Redcar.platform == :linux
-        default_font = "Monospace"
-        default_font_size = 11
+        11
       elsif Redcar.platform == :windows
-        default_font = "Courier New"
-        default_font_size = 9
+        9
       end
+    end
+    
+    def self.default_font
+      if Redcar.platform == :osx
+        "Monaco"
+      elsif Redcar.platform == :linux
+        "Monospace"
+      elsif Redcar.platform == :windows
+        "Courier New"
+      end
+    end
+
+    def self.font_info
       [ EditView.storage["font"] || default_font,
         EditView.storage["font-size"] || default_font_size ]
     end
