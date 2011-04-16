@@ -10,7 +10,7 @@ module Redcar
     class FileMirror
       include Redcar::Document::Mirror
       
-      attr_reader :path, :adapter
+      attr_reader :path, :adapter, :timestamp
       
       # @param [String] a path to a file
       def initialize(path, adapter=Adapters::Local.new)
@@ -49,7 +49,7 @@ module Redcar
       
       def changed_since?(time)
         begin
-          !@timestamp or (!time and changed?) or (time and time < File.mtime(@path))
+          !@timestamp or (!time and changed?) or (time and time < @adapter.mtime(@path))
         rescue Errno::ENOENT
           false
         end
@@ -61,7 +61,7 @@ module Redcar
       # @return [unspecified]
       def commit(contents)
         save_contents(contents)
-        @time = Time.now
+        @timestamp = @adapter.mtime(@path)
       end
       
       # The filename.
