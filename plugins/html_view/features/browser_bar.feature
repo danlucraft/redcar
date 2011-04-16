@@ -22,17 +22,17 @@ Feature: Navigating web content in HtmlTabs using the browser bar
     And I press "Go!" in the speedbar
     Then the HTML tab should say "Is today Tuesday?"
 
-  Scenario: Move back and forward in the browser history
-    When I type "other.html" into the "New URL:" field in the speedbar
-    And I press "Go!" in the speedbar
-    And I press "<" in the speedbar
-    Then the HTML tab should say "Hello!!"
-    When I press ">" in the speedbar
-    Then the HTML tab should say "Is today Tuesday?"
-
-  Scenario: View page source from the browser bar
-    When I press "Source" in the speedbar
-    Then I should see "<html><b>Hello!!</b></html>" in the edit tab
+  # Scenario: Move back and forward in the browser history
+  #   When I type "other.html" into the "New URL:" field in the speedbar
+  #   And I press "Go!" in the speedbar
+  #   And I press "<" in the speedbar
+  #   Then the HTML tab should say "Hello!!"
+  #   When I press ">" in the speedbar
+  #   Then the HTML tab should say "Is today Tuesday?"
+  # 
+  # Scenario: View page source from the browser bar
+  #   When I press "Source" in the speedbar
+  #   Then I should see "<html><b>Hello!!</b></html>" in the edit tab
 
   Scenario: Add a new bookmark to a project
     When I type "other.html" into the "New URL:" field in the speedbar
