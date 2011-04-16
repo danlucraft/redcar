@@ -23,9 +23,14 @@ def original_fixtures_path
   File.expand_path(File.dirname(__FILE__) + "/../../spec/fixtures.orig")
 end
 
-def reset_project_fixtures
+def create_project_fixtures
+  clear_project_fixtures
+  p [:cp_r, original_fixtures_path, fixtures_path]
+  FileUtils.cp_r(original_fixtures_path, fixtures_path)
+end
+
+def clear_project_fixtures
   FileUtils.rm_rf(fixtures_path)
-  FileUtils.mv(original_fixtures_path, fixtures_path)
 end
 
 def make_subproject_fixtures
@@ -43,13 +48,13 @@ def filter_storage
 end
 
 Before("@project-fixtures") do
-  reset_project_fixtures
+  create_project_fixtures
   @original_file_size_limit = Redcar::Project::Manager.file_size_limit
 end
 
 After("@project-fixtures") do
   Redcar::Project::Manager.reveal_files = true
-  reset_project_fixtures
+  clear_project_fixtures
   DrbShelloutHelper.kill_thread
   Redcar::Project::Manager.file_size_limit = @original_file_size_limit
 end
