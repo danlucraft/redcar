@@ -1,3 +1,4 @@
+@reset-font-size
 Feature: The font size can be increased and decreased within bounds
 
   Background:
