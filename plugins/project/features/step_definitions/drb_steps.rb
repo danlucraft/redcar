@@ -2,7 +2,7 @@ require 'timeout'
 require 'drb'
 
 def drb
-  DRbObject.new(nil, "druby://127.0.0.1:#{Redcar::DRB_PORT}")
+  DRbObject.new(nil, "druby://127.0.0.1:#{Redcar.drb_port}")
 end
 
 def tempfile(text)

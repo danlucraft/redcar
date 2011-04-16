@@ -2,7 +2,7 @@ module Redcar
   class Project
     class DrbService
       def initialize
-        address = "druby://127.0.0.1:#{DRB_PORT}"
+        address = "druby://127.0.0.1:#{Redcar.drb_port}"
         Redcar.log.benchmark("start drb service") do
           @drb = DRb.start_service(address, self)
         end
@@ -25,7 +25,6 @@ module Redcar
         raise e
       end
 
-      ##
       # Opens the specified directory in a new window, if it was not
       # already open. Brings the project's window to the front, if this
       # directory is already opened. If the specified directory was the last open
@@ -36,19 +35,24 @@ module Redcar
         end
 
         Redcar::Project.window_projects.each_pair do |window, project|
-          return window.controller.bring_to_front if project.path == full_path
+          return bring_window_to_front(window) if project.path == full_path
         end
         Project::Manager.open_project_for_path(full_path)
-        Redcar.app.focussed_window.controller.bring_to_front
+        bring_window_to_front
       end
 
       ## Focuses a Redcar window
       def bring_to_front
         Project::Manager.restore_last_session if Redcar.app.windows.empty?
-        Redcar.app.focussed_window.controller.bring_to_front
+        bring_window_to_front
+      end
+      
+      def bring_window_to_front(win = Redcar.app.focussed_window)
+        unless Redcar.environment == :test
+          win.controller.bring_to_front
+        end
       end
 
-      ##
       # Opens a file, optionally untitled, and waits for it to close, if requested
       def open_file(file, untitled, wait)
         file_open_block = Proc.new do
@@ -58,7 +62,7 @@ module Redcar
           else
             Project::Manager.open_file(file)
           end
-          Redcar.app.focussed_window.controller.bring_to_front
+          bring_window_to_front
         end
         wait ? open_file_and_wait(&file_open_block) : Swt.sync_exec(&file_open_block)
       end

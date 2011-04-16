@@ -2,8 +2,12 @@ require 'socket'
 require 'rbconfig'
 
 module Redcar
-  DRB_PORT = 10021
+  DRB_PORTS = {"user" => 10021, "test" => 10022, "development" => 10021}
   DONT_READ_STDIN_ARG = "--ignore-stdin"
+  
+  def self.drb_port
+    DRB_PORTS[Redcar.environment.to_s]
+  end
 
   def self.read_stdin
     if not $stdin.tty? and not ARGV.include?(DONT_READ_STDIN_ARG)
@@ -28,7 +32,7 @@ module Redcar
     return if ARGV.find {|arg| arg == "--multiple-instance" || arg == '--help' || arg == '-h'}
     begin
       begin
-        TCPSocket.new('127.0.0.1', DRB_PORT).close
+        TCPSocket.new('127.0.0.1', drb_port).close
       rescue Errno::ECONNREFUSED
         # no other instance is currently running...
         return
@@ -36,7 +40,7 @@ module Redcar
       puts 'attempting to start via running instance' if $VERBOSE
 
       require 'drb' # late require to avoid loadup time
-      drb = DRbObject.new(nil, "druby://127.0.0.1:#{DRB_PORT}")
+      drb = DRbObject.new(nil, "druby://127.0.0.1:#{drb_port}")
 
       if ARGV.any?
         ARGV.each do |arg|
