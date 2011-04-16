@@ -70,6 +70,16 @@ class Redcar::Project
           it "tells you it has changed" do
             @mirror.changed?.should be_true
           end
+          
+          describe "and since committed" do
+            before do
+              @mirror.commit("the queen")
+            end
+            
+            it "tells you it has not changed" do
+              @mirror.changed?.should be_false
+            end
+          end
         end
       end
     end
