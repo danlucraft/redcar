@@ -79,12 +79,13 @@ module Redcar
       attach_listeners
       window.title = File.basename(@tree.tree_mirror.path)
       Manager.open_project_sensitivity.recompute
+      Project.window_projects[window] = self
       Redcar.plugin_manager.objects_implementing(:project_loaded).each do |i|
         i.project_loaded(self)
       end
       Recent.store_path(path)
       Manager.storage['last_open_dir'] = path
-      Project.window_projects[window] = self
+      self
     end
 
     def lock
