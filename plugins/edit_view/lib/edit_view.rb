@@ -634,5 +634,9 @@ module Redcar
       end
       history.record(action_symbol)
     end
+    
+    def inspect
+      "#<Redcar::EditView document:#{document.inspect}>"
+    end
   end
 end

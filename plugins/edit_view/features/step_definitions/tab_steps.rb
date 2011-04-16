@@ -11,7 +11,12 @@ Given /^there is an edit tab containing "([^\"]*)"$/ do |contents|
 end
 
 When /^I open a new edit tab$/ do
-  Redcar::Top::OpenNewEditTabCommand.new.run
+  tab = Redcar::Top::OpenNewEditTabCommand.new.run
+end
+
+When /^I open a new edit tab titled "(.*)"$/ do |title|
+  tab = Redcar::Top::OpenNewEditTabCommand.new.run
+  tab.title = title
 end
 
 When /^I close the focussed tab$/ do

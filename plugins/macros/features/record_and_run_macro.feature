@@ -42,7 +42,7 @@ Feature: Clear Line
     And I stop recording a macro
     And I run the last recorded macro
     Then the contents should be "foXofoXo"
-    
+
   Scenario: Macro with typing, movement and commands
     When I replace the contents with "foo\nbar\nbaz\n"
     And I move the cursor to 1

@@ -50,28 +50,3 @@ Feature: Multiple notebooks
     When I make a new notebook
     And I close the current notebook
     Then there should be one notebook
-
-  Scenario Outline: Can focus on a notebook
-    When I open a new edit tab
-    And I open a new edit tab
-    And I make a new notebook
-    And I move the tab to the other notebook
-    And I focus on the edit_view in the tab in notebook <focus nb>
-    And I open a new edit tab
-    Then notebook 1 should have <num in 1> tabs
-    And notebook 2 should have <num in 2> tab
-
-    Examples:
-    | focus nb | num in 1 | num in 2 |
-    | 1        | 2        | 1        |
-    | 2        | 1        | 2        |
-    
-  Scenario: When you close a tab the focus moves to another notebook if required
-    When I open a new edit tab
-    And I make a new notebook
-    And I open a new edit tab
-    And I move the tab to the other notebook
-    And I close the focussed tab
-    Then there should be one edit tab
-    And the edit tab should have the focus
-  

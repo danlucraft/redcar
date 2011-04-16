@@ -78,9 +78,9 @@ Feature: Switch and move tabs within a notebook
     Then I should see "Anne Boleyn" in the edit tab
     
   Scenario: Move tab down
-    When I open a new edit tab
+    When I open a new edit tab titled "Anne"
     And I replace the contents with "Anne Boleyn"
-    And I open a new edit tab
+    And I open a new edit tab titled "Betty"
     And I replace the contents with "Elizabeth Woodville"
     Then I should see "Elizabeth Woodville" in the edit tab
     And I move down a tab

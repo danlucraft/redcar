@@ -31,13 +31,6 @@ When /^I switch notebooks$/ do
   Redcar::Application::SwitchNotebookCommand.new.run
 end
 
-When /^I focus on the edit_view in the tab in notebook (\d)$/ do |index|
-  index = index.to_i - 1
-  notebook = Redcar.app.windows.first.notebooks[index]
-  edit_view = notebook.focussed_tab.edit_view
-  edit_view.controller.swt_focus_gained
-end
-
 Then /^there should be (one|two) notebooks?$/ do |count_str|
   count = count_str == "one" ? 1 : 2
   # in the model

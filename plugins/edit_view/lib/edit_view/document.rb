@@ -740,6 +740,10 @@ module Redcar
       Document::Indentation.new(self, @edit_view.tab_width, @edit_view.soft_tabs?)
     end
 
+    def inspect
+      "#<Redcar::Document:#{object_id} #{title.inspect}>"
+    end
+    
     private
 
     def title_with_star

@@ -37,16 +37,11 @@ When /I close the window(?: "(.*)")?( with a command| through the gui)?/ do |tit
   if title
     win = Redcar.app.windows.detect{|win| win.title == title }
   else
-    win = nil
+    win = Redcar.app.focussed_window
   end
   if how =~ /command/
     Redcar::Application::CloseWindowCommand.new(win).run
   else
-    unless win
-      display = Swt::Widgets::Display.get_current
-      shell = display.get_active_shell
-      win = Redcar.app.windows.detect {|w| w.controller.shell == shell }
-    end
     FakeEvent.new(Swt::SWT::Close, win.controller.shell)
   end
 end
