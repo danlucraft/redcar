@@ -243,13 +243,13 @@ end
 After do
   close_everything
   errors = Redcar.app.history.select {|command| command.error }
+  Redcar.app.history.clear
   if errors.any?
     raise "Command errors #{errors.inspect}"
   end
-  Redcar.app.history.clear
-  total_mem = java.lang.Runtime.getRuntime.totalMemory
-  free_mem  = java.lang.Runtime.getRuntime.freeMemory
-  p [:total, total_mem/1000, :free, free_mem/1000, :diff, (total_mem - free_mem)/1000]
+  # total_mem = java.lang.Runtime.getRuntime.totalMemory
+  # free_mem  = java.lang.Runtime.getRuntime.freeMemory
+  # p [:total, total_mem/1000, :free, free_mem/1000, :diff, (total_mem - free_mem)/1000]
 end
 
 at_exit {
