@@ -136,10 +136,10 @@ task :specs do
 end
 
 desc "Run features"
-task :cucumber do
+task :features do
   cmd = "jruby "
-  cmd << "-J-XstartOnFirstThread " if Config::CONFIG["host_os"] == "darwin"
-  cmd << "bin/cucumber -cf progress plugins/*/features"
+  cmd << "-J-XstartOnFirstThread " if Config::CONFIG["host_os"] =~ /darwin/
+  cmd << "bin/cucumber -cf progress -e \".*fixtures.*\" plugins/*/features"
   sh("#{cmd} && echo 'done'")
 end
 
