@@ -1,3 +1,4 @@
+@runnables
 Feature: Using file properties in commands
   As a user
   I want to run commands that rely on the current edit view

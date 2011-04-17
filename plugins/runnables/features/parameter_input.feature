@@ -1,3 +1,4 @@
+@runnables
 Feature: Adding parameters to commands
   As a user
   I want to add parameters to commands

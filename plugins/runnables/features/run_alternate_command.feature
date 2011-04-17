@@ -1,3 +1,4 @@
+@runnables
 Feature: Running an alternate file runner
   As a user
   I want to run tabs in different ways

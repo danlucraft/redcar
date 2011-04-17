@@ -36,7 +36,6 @@ module Redcar
         when :windows
           cmd = "cd \"#{@path.gsub('/', '\\')}\" & #{@cmd}"
         end
-        
         run_command(cmd)
       end
       

@@ -1,3 +1,4 @@
+@runnables
 Feature: Showing commands in a command tree
 
   Background:

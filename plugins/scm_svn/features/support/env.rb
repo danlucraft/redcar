@@ -2,7 +2,7 @@ require File.join(Redcar.asset_dir, "svnkit")
 require 'java'
 import 'org.tmatesoft.svn.core.io.SVNRepositoryFactory'
 
-def fixtures
+def scm_svn_fixtures
   File.expand_path(File.dirname(__FILE__) + "/../fixtures")
 end
 
@@ -20,7 +20,7 @@ def parse_branch_path(branch_name)
 end
 
 def svn_repository
-  "#{fixtures}/test_repo"
+  "#{scm_svn_fixtures}/test_repo"
 end
 
 def working_copy
@@ -36,12 +36,12 @@ def svn_repository_url
 end
 
 def create_dir(path)
-  FileUtils.mkdir_p "#{fixtures}/#{path}"
-  File.expand_path("#{fixtures}/#{path}")
+  FileUtils.mkdir_p "#{scm_svn_fixtures}/#{path}"
+  File.expand_path("#{scm_svn_fixtures}/#{path}")
 end
 
 def get_dir(path)
-  File.expand_path("#{fixtures}/#{path}")
+  File.expand_path("#{scm_svn_fixtures}/#{path}")
 end
 
 def svn_module
@@ -53,8 +53,8 @@ def svn_module_2
 end
 
 def reset_fixtures
-  FileUtils.rm_rf fixtures
-  FileUtils.mkdir_p fixtures
+  FileUtils.rm_rf scm_svn_fixtures
+  FileUtils.mkdir_p scm_svn_fixtures
   FileUtils.mkdir_p File.dirname(svn_repository)
   SVNRepositoryFactory.createLocalRepository(Java::JavaIo::File.new(svn_repository),true,false)
   svn_module
@@ -66,6 +66,6 @@ Before do
 end
 
 After do
-  FileUtils.rm_rf fixtures
+  FileUtils.rm_rf(scm_svn_fixtures)
   @svn_module = nil
 end
