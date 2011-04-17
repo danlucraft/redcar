@@ -51,7 +51,7 @@ module Redcar
     # our vendored jarred one (useful for gems).
     def construct_command(args="")
       bin = File.expand_path(File.join(File.dirname(__FILE__), %w{.. .. bin redcar}))
-      jruby_complete = File.expand_path(File.join(Redcar.asset_dir, "jruby-complete-1.5.3.jar"))
+      jruby_complete = File.expand_path(File.join(Redcar.asset_dir, "jruby-complete-1.6.1.jar"))
       unless File.exist?(jruby_complete)
         puts "\nCan't find jruby jar at #{jruby_complete}, did you run 'redcar install' ?"
         exit 1

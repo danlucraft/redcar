@@ -39,7 +39,7 @@ module Redcar
 
     def assets_by_platform
       { :all => {
-          "http://jruby.org.s3.amazonaws.com/downloads/1.5.3/jruby-complete-1.5.3.jar" => "/jruby-complete-1.5.3.jar",
+          "http://jruby.org.s3.amazonaws.com/downloads/1.6.1/jruby-complete-1.6.1.jar" => "/jruby-complete-1.6.1.jar",
           "http://redcar.s3.amazonaws.com/jface/org.eclipse.core.commands.jar" => nil,
           "http://redcar.s3.amazonaws.com/jface/org.eclipse.core.runtime_3.5.0.v20090525.jar" => nil,
           "http://redcar.s3.amazonaws.com/jface/org.eclipse.equinox.common.jar" => nil,
