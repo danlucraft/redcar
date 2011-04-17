@@ -32,7 +32,9 @@ module Redcar
       
       # Close the HtmlTab, disposing of any resources along the way.
       def close
+        @browser.remove_location_listener(@location_listener)
         @browser.dispose
+        @location_listener = nil
         super
       end
       
@@ -58,7 +60,8 @@ module Redcar
       end
       
       def add_listeners
-        @browser.add_location_listener(LocationListener.new(@model))
+        @location_listener = LocationListener.new(@model)
+        @browser.add_location_listener(@location_listener)
       end
     end
   end

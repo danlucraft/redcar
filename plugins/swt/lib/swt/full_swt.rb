@@ -86,18 +86,6 @@ module Swt
   class Browser
     import org.eclipse.swt.browser.BrowserFunction
   end
-
-  class RRunnable
-    include java.lang.Runnable
-
-    def initialize(&block)
-      @block = block
-    end
-
-    def run
-      @block.call
-    end
-  end
 end
 
 module JFace

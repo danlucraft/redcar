@@ -75,7 +75,8 @@ module Redcar
       end
       
       def close
-        @item.dispose
+        @item.dispose if @item
+        @widget.dispose if @widget
       end
     end
   end

@@ -1,4 +1,7 @@
 
+When /^I do nothing$/ do
+end
+
 Given /^there is an edit tab containing "([^\"]*)"$/ do |contents|
   tab = Redcar::Top::OpenNewEditTabCommand.new.run
   contents = eval(contents.inspect.gsub("\\\\", "\\"))

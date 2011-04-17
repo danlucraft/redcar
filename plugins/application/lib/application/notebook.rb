@@ -55,6 +55,7 @@ module Redcar
     def remove_tab!(tab)
       @tabs.delete(tab)
       @tab_handlers[tab].each {|h| tab.remove_listener(h) }
+      @tab_handlers.delete(tab)
       select_tab!(nil) unless @tabs.any?
     end
     
@@ -65,7 +66,7 @@ module Redcar
     end
     
     def sort_tabs!(&block)
-      @tabs.sort! &block
+      @tabs.sort!(&block)
     end
     
     # Focus the next tab to the right from the currently focussed tab.
