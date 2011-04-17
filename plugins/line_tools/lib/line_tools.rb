@@ -39,8 +39,8 @@ module Redcar
 
     class ReplaceLineCommand < Redcar::DocumentCommand
       sensitize :clipboard_not_empty
+      
       def execute
-        doc = tab.edit_view.document
         if doc.selection?
           first_line_ix = doc.line_at_offset(doc.selection_range.begin)
           last_line_ix  = doc.line_at_offset(doc.selection_range.end)
@@ -52,14 +52,13 @@ module Redcar
         end
         doc.controllers(Redcar::AutoIndenter::DocumentController).first.disable do
           doc.replace(doc.offset_at_line(first_line_ix), text.split(//).length, "")
-          Redcar::Top::PasteCommand.new.run
+          Redcar::Top::PasteCommand.new.run(:env => {:edit_view => edit_view})
         end
       end
     end
 
     class ClearLineCommand < Redcar::DocumentCommand
       def execute
-        doc = tab.edit_view.document
         if doc.selection?
           line_ix = doc.line_at_offset(doc.selection_range.begin)
           last_line_ix  = doc.line_at_offset(doc.selection_range.end)
@@ -80,7 +79,6 @@ module Redcar
 
     class TrimLineAfterCursorCommand < Redcar::DocumentCommand
       def execute
-        doc = tab.edit_view.document
         if doc.selection?
           offset = doc.selection_range.begin
           line_ix = doc.line_at_offset(offset)
@@ -98,13 +96,11 @@ module Redcar
             doc.replace(offset, text.split(//).length, doc.line_delimiter)
           end
         end
-        #doc.cursor_offset = doc.cursor_offset - 1
       end
     end
 
     class KillLineCommand < Redcar::DocumentCommand
       def execute
-        doc = tab.edit_view.document
         if doc.selection?
           line_ix = doc.line_at_offset(doc.selection_range.begin)
           last_line_ix  = doc.line_at_offset(doc.selection_range.end)
@@ -122,7 +118,6 @@ module Redcar
 
     class RaiseTextCommand < Redcar::DocumentCommand
       def execute
-        doc = tab.edit_view.document
         cursor_line_offset = doc.cursor_line_offset
         if doc.selection?
           first_line_ix = doc.line_at_offset(doc.selection_range.begin)
@@ -174,7 +169,6 @@ module Redcar
 
     class LowerTextCommand < Redcar::DocumentCommand
       def execute
-        doc = tab.edit_view.document
         cursor_line_offset = doc.cursor_line_offset
         if doc.selection?
           first_line_ix = doc.line_at_offset(doc.selection_range.begin)
@@ -195,9 +189,7 @@ module Redcar
           last_line_ix = first_line_ix
           text = doc.get_line(doc.cursor_line)
         end
-        #if last_line_ix == (doc.line_count - 1)
-        #  text = "\n#{text}"
-        #end
+        
         if last_line_ix < doc.line_count - 1
           next_line = doc.get_line(last_line_ix+1)
           swap_text = "#{text}#{next_line}"
