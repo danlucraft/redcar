@@ -1,7 +1,8 @@
 Version 0.12 (TBA)
 ==================
 
- * ...
+ * Features run all the way through again, and can be run in the background 
+   (the test window no longer needs to be focussed) (Dan Lucraft)
 
 Version 0.11 (23 March 2011)
 ============================
