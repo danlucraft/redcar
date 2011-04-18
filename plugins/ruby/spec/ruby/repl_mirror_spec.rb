@@ -121,14 +121,13 @@ RUBY
 
         it "should display errors" do
           @mirror.commit(prompt + ">> nil.foo")
-          @mirror.read.should == (<<-RUBY).chomp
+          @mirror.read.should be_include(<<-RUBY)
 # Ruby REPL
 # type 'help' for help
 
 >> nil.foo
 x> NoMethodError: undefined method `foo' for nil:NilClass
         (repl):1
->> 
 RUBY
         # ` RUBY
         end
