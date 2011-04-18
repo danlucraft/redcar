@@ -4,6 +4,14 @@ require File.join(File.dirname(__FILE__), *%w".. spec_helper")
 FileList = Redcar::Project::FileList
 
 describe FileList do
+  before do
+    ProjectFixtureHelper.create_project_fixtures
+  end
+  
+  after do
+    ProjectFixtureHelper.clear_project_fixtures
+  end
+  
   def fixture_path
     File.expand_path(File.join(File.dirname(__FILE__), *%w".. fixtures myproject"))
   end

@@ -4,6 +4,8 @@ require 'redcar'
 Redcar.environment = :test
 Redcar.load_unthreaded
 
+require File.dirname(__FILE__) + "/fixture_helper"
+
 def write_dir_contents(dirname, files)
   FileUtils.mkdir_p(dirname)
   files.each do |filename, contents|
