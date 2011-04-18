@@ -114,13 +114,11 @@ def reset_runnable_fixtures
 end
 
 Before("@runnables") do
-  p :setup_fixtures
   reset_runnable_fixtures
   Redcar.gui.dialog_adapter.clear_input
 end
 
 After("@runnables") do
-  p :remove_fixtures
   FileUtils.rm_rf runnable_fixtures
   Redcar.gui.dialog_adapter.clear_input
 end
