@@ -187,7 +187,15 @@ module Redcar
     
     Redcar.gui.start
   end
-
+  
+  # Check if redcar was already installed (currently it just looks if the user_dir is present)
+  # 
+  # @return [Bool] true if redcar was installed previously
+  def self.installed?
+    return true if File.directory? user_dir
+    false
+  end
+  
   # Platform specific ~/.redcar
   #
   # @return [String] expanded path
