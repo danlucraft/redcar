@@ -262,6 +262,7 @@ module Redcar
 
     class FindRecentCommand < Command
       def execute
+        Redcar.app.make_sure_at_least_one_window_open
         FindRecentDialog.new.open
       end
     end
