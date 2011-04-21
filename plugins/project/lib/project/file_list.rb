@@ -105,6 +105,10 @@ module Redcar
         result
       end
       
+      def inspect
+        "#<FileList for #{path.inspect}: #{@files.size} files>"
+      end
+      
       private
       
       def find(*paths)
