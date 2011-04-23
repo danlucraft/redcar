@@ -144,7 +144,7 @@ task :specs do
 end
 
 desc "Run features"
-task :features do
+task :cucumber do
   cmd = "jruby "
   cmd << "-J-XstartOnFirstThread " if Config::CONFIG["host_os"] =~ /darwin/
   cmd << "bin/cucumber -cf progress -e \".*fixtures.*\" plugins/*/features"
