@@ -104,8 +104,20 @@ module Redcar
     require 'redcar_quick_start'
     
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "plugin_manager", "lib"))
-    require 'plugin_manager'
+    begin
+      require 'plugin_manager'
+    rescue LoadError
+      # TODO is there a project-wide developer error system? or do we just throw errors?
+      puts <<-ERROR
+
+The 'plugin_manager' portion is missing; you probably haven't loaded the git submodules.
+Try:
+    git submodule init
+    git submodule update
     
+      ERROR
+      exit 1
+    end
     $:.push File.expand_path(File.join(Redcar.asset_dir))
     
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "json", "lib"))
