@@ -112,8 +112,8 @@ module Redcar
 
 The 'plugin_manager' portion is missing; you probably haven't loaded the git submodules.
 Try:
-    git submodule init
-    git submodule update
+
+    rake initialise
     
       ERROR
       exit 1
