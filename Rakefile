@@ -1,5 +1,5 @@
+require 'bundler'
 REDCAR_VERSION = "0.12.0dev" # also change in lib/redcar.rb!
-require 'rubygems'
 require 'fileutils'
 
 # explitely use rspec < 2.0
@@ -17,6 +17,14 @@ if RUBY_PLATFORM =~ /mswin|mingw/
   rescue LoadError
     ARGV << "--nocolour"
   end
+end
+
+### GETTING STARTED IN DEVELOPMENT
+
+desc "Prepare code base for development"
+task :initialise do
+  sh "git submodule init"
+  sh "git submodule update"
 end
 
 ### DOCUMENTATION
