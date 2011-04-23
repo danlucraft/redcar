@@ -37,3 +37,5 @@ vendor/swtbot
 .yardoc
 
 .bundle
+
+.DS_Store
