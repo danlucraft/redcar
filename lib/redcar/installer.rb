@@ -21,11 +21,15 @@ module Redcar
 
     def install
       Redcar.environment = :user
-      puts "Downloading >10MB of binary assets. This may take a while the first time."
+      puts "Downloading >10MB of necessary assets..."
       fetch_all_assets
       precache_textmate_bundles
       ensure_user_plugins_directory_exists
-      puts "Done! You're ready to run Redcar."
+      puts "Success!"
+      puts ""
+      puts "To open just the editor:       redcar"
+      puts "To open the current directory: redcar ."
+      puts "More information:              http://redcareditor.com/"
     end
 
     def plugins_dir
