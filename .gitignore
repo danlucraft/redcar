@@ -29,6 +29,7 @@ plugins/*/lib/dist/
 pkg
 
 plugins/core/spec/core/*.yaml
+plugins/scm_svn/features/fixtures
 
 tmp
 plugins/repl/vendor/clojure-contrib.jar
