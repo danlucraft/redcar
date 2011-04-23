@@ -28,6 +28,8 @@ plugins/dans
 plugins/*/lib/dist/
 pkg
 
+plugins/core/spec/core/*.yaml
+
 tmp
 plugins/repl/vendor/clojure-contrib.jar
 plugins/repl/vendor/clojure.jar
