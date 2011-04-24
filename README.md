@@ -60,8 +60,8 @@ Download from github, checkout the submodules and install the jars.
 
     $ git clone git://github.com/redcar/redcar.git
     $ cd redcar
-    $ git submodule init
-    $ git submodule update
+    $ rake initialise
+    $ bundle
     $ ruby bin/redcar install
 
 To run:
@@ -72,7 +72,7 @@ To run:
 
 If you are running a source version of Redcar and you have pulled changes from master, then you may have to update your repo:
 
-    $ git submodule update
+    $ rake initialise
     $ ruby bin/redcar install
 
 ## TESTS
