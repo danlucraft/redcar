@@ -26,6 +26,8 @@ task :initialise do
   sh "git submodule update --init --recursive"
 end
 
+task :initialize => :initialise
+
 ### DOCUMENTATION
 
 begin
