@@ -23,8 +23,7 @@ end
 
 desc "Prepare code base for development"
 task :initialise do
-  sh "git submodule init"
-  sh "git submodule update"
+  sh "git submodule update --init --recursive"
 end
 
 ### DOCUMENTATION
