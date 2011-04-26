@@ -123,4 +123,4 @@ To just run all features:
 ## LICENSE
 
 Redcar is copyright 2007-2011 Daniel Lucraft and contributors.
-It is licensed under the GPL2. See the included LICENSE file for details.
+It is licensed under the GPLv2. See the included LICENSE file for details.
