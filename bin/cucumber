@@ -7,6 +7,8 @@ end
 $KCODE='U'
 $redcar_process_start_time = Time.now
 
+ARGV << "--no-color" if ENV['OS'] == 'Windows_NT'
+
 require 'rubygems'
 
 $:.push(File.join(File.dirname(__FILE__), %w(.. lib)))
