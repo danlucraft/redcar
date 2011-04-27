@@ -38,6 +38,11 @@ When /^I save the tab as$/ do
   Redcar::Project::SaveFileAsCommand.new.run
 end
 
+Then /^the file "([^"]*)" should be deletable$/ do |path|
+  File.delete path
+  raise if File.exist? path
+end
+
 Then /^the file "([^\"]*)" should contain "([^\"]*)"$/ do |arg1, arg2|
   File.read(arg1).should == arg2
 end

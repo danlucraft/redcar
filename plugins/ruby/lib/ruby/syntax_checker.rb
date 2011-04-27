@@ -14,6 +14,8 @@ module Redcar
           runtime.parse_from_main(io, file)
         rescue SyntaxError => e
           create_syntax_error(doc, e.exception.message, file).annotate
+        ensure
+          io.close
         end
       end
 

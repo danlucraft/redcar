@@ -9,6 +9,7 @@ Feature: Syntax Checking for Ruby
     When I replace the contents with "def foo\n  bar\nend"
     And I save the tab
     Then the tab should not have annotations
+    And the file "plugins/ruby/features/fixtures/test.rb" should be deletable
 
   Scenario: A syntax-error in a Ruby file should cause syntax error annotations
     When I replace the contents with "def foo\n  => bar\nend"
