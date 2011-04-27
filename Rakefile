@@ -144,11 +144,12 @@ task :specs do
   end
 end
 
-desc "Run features"
+desc "Run all features"
 task :cucumber do
   cmd = "jruby "
   cmd << "-J-XstartOnFirstThread " if Config::CONFIG["host_os"] =~ /darwin/
-  cmd << "bin/cucumber -cf progress -e \".*fixtures.*\" plugins/*/features"
+  all_feature_dirs = Dir['plugins/*/features'] # overcome a jruby windows bug http://jira.codehaus.org/browse/JRUBY-4527
+  cmd << "bin/cucumber -cf progress -e \".*fixtures.*\" #{all_feature_dirs.join(' ')}"
   sh("#{cmd} && echo 'done'")
 end
 
