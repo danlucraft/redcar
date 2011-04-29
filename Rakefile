@@ -218,19 +218,9 @@ Spec = spec = Gem::Specification.new do |s|
   
   s.post_install_message = <<TEXT
 
--------------------------------------------------------------------------------
-
-Please now run:
+To complete setup you need to have an active network connection and run:
 
   $ redcar install
-
-to complete the installation. (NB. do NOT use sudo. In previous versions,
-sudo was required for this step, but now it should be run as the user.)
-
-NB. This will download jars that Redcar needs to run from the internet.
-It will put them into ~/.redcar/assets.
-
--------------------------------------------------------------------------------
 
 TEXT
 end
