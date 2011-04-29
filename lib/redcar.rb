@@ -184,11 +184,12 @@ Try:
   
   def self.show_splash
     return if Redcar.no_gui_mode?
-    
-    Swt.create_splash_screen(plugin_manager.plugins.length + 10)
+    unless ARGV.include?("--no-splash")
+      Swt.create_splash_screen(plugin_manager.plugins.length + 10)
+    end
     plugin_manager.on_load do |plugin|
       Swt.sync_exec do
-        Swt.splash_screen.inc
+        Swt.splash_screen.inc if Swt.splash_screen
       end
     end
   end
