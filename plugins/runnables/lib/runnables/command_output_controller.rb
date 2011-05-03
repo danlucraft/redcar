@@ -32,7 +32,7 @@ module Redcar
       def run
         case Redcar.platform
         when :osx, :linux
-          cmd = "cd #{@path}; " + @cmd
+          cmd = "sh -c \"cd #{@path}; #{@cmd}\""
         when :windows
           cmd = "cd \"#{@path.gsub('/', '\\')}\" & #{@cmd}"
         end
