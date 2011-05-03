@@ -129,11 +129,10 @@ module Redcar
     end
 
     def create_fake_window
-      if Redcar.platform == :osx
-        @fake_shell = Swt::Widgets::Shell.new(ApplicationSWT.display, Swt::SWT::NO_TRIM)
-        @fake_shell.open
-        @fake_shell.set_size(0, 0)
-      end
+      @fake_shell = Swt::Widgets::Shell.new(ApplicationSWT.display, Swt::SWT::NO_TRIM)
+      @fake_shell.open
+      @fake_shell.set_size(0, 0)
+      @fake_shell.set_visible(false)
     end
 
     class FakeWindow
