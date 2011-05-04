@@ -51,7 +51,9 @@ module Redcar
         dialog.set_message(text)
         result = nil
         Redcar.app.protect_application_focus do
-          result = dialog.open
+          EditView.protect_edit_view_focus do
+            result = dialog.open
+          end
         end
         BUTTONS.invert[result]
       end

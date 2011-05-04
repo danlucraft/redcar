@@ -270,12 +270,19 @@ module Redcar
     # Will return nil if the application is not focussed or if
     # no edit view is focussed.
     def self.focussed_edit_view=(edit_view)
+      return if @protect_edit_view_focus
       if edit_view
         @last_focussed_edit_view = edit_view
       end
       @focussed_edit_view = edit_view
       edit_view.check_for_updated_document if edit_view
       notify_listeners(:focussed_edit_view, edit_view)
+    end
+    
+    def self.protect_edit_view_focus
+      @protect_edit_view_focus = true
+      yield
+      @protect_edit_view_focus = false
     end
 
     def self.current
