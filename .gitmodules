@@ -1,42 +1,42 @@
 [submodule "vendor/java-mateview"]
 	path = vendor/java-mateview
-	url = git://github.com/redcar/java-mateview.git
+	url = http://github.com/redcar/java-mateview.git
 [submodule "lib/plugin_manager"]
 	path = lib/plugin_manager
-	url = git://github.com/redcar/plugin_manager.git
+	url = http://github.com/redcar/plugin_manager.git
 [submodule "lib/openssl"]
 	path = lib/openssl
-	url = git://github.com/jruby/jruby-ossl.git
+	url = http://github.com/jruby/jruby-ossl.git
 [submodule "plugins/redcar_debug/vendor/jruby-prof"]
 	path = plugins/redcar_debug/vendor/jruby-prof
-	url = git://github.com/danlucraft/jruby-prof.git
+	url = http://github.com/danlucraft/jruby-prof.git
 [submodule "lib/json"]
 	path = lib/json
-	url = git://github.com/flori/json.git
+	url = http://github.com/flori/json.git
 [submodule "plugins/project/vendor/net-ssh"]
 	path = plugins/project/vendor/net-ssh
-	url = git://github.com/net-ssh/net-ssh.git
+	url = http://github.com/net-ssh/net-ssh.git
 [submodule "plugins/project/vendor/net-sftp"]
 	path = plugins/project/vendor/net-sftp
-	url = git://github.com/net-ssh/net-sftp.git
+	url = http://github.com/net-ssh/net-sftp.git
 [submodule "plugins/project/vendor/net-ftp-list"]
 	path = plugins/project/vendor/net-ftp-list
-	url = git://github.com/fcoury/net-ftp-list.git
+	url = http://github.com/fcoury/net-ftp-list.git
 [submodule "plugins/runnables/vendor/session"]
 	path = plugins/runnables/vendor/session
-	url = git://github.com/danlucraft/session.git
+	url = http://github.com/danlucraft/session.git
 [submodule "plugins/scm/vendor/ruby-blockcache"]
 	path = plugins/scm/vendor/ruby-blockcache
-	url = git://github.com/mscharley/ruby-blockcache.git
+	url = http://github.com/mscharley/ruby-blockcache.git
 [submodule "plugins/scm_git/vendor/ruby-git"]
 	path = plugins/scm_git/vendor/ruby-git
-	url = git://github.com/mscharley/ruby-git.git
+	url = http://github.com/mscharley/ruby-git.git
 [submodule "vendor/spoon"]
 	path = vendor/spoon
-	url = git://github.com/mscharley/spoon.git
+	url = http://github.com/mscharley/spoon.git
 [submodule "plugins/project_search/vendor/lucene"]
 	path = plugins/project_search/vendor/lucene
 	url = http://github.com/andreasronge/lucene.git
 [submodule "plugins/textmate/vendor/redcar-bundles"]
 	path = plugins/textmate/vendor/redcar-bundles
-	url = git://github.com/redcar/redcar-bundles.git
+	url = http://github.com/redcar/redcar-bundles.git
