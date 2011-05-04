@@ -94,20 +94,27 @@ On OSX:
 
     $ jruby -J-XstartOnFirstThread -S spec plugins/#{plugin_name}/spec/
 
-On Linux:
+On Linux/Windows:
 
     $ jruby -S spec plugins/#{plugin_name}/spec/
 
-  
+To run all specs:
+
+   $ jruby -S rake specs  
+
 ### Features
 
 On OSX:
 
     $ jruby -J-XstartOnFirstThread bin/cucumber plugins/#{plugin_name}/features
 
-On Linux:
+On Linux/Windows:
 
     $ jruby bin/cucumber plugins/#{plugin_name}/features/
+
+To run all features:
+
+    $ jruby -S rake cucumber
 
 ## LICENSE
 
