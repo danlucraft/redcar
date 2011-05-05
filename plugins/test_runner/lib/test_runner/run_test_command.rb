@@ -20,8 +20,8 @@ module Redcar
               /describe\s+\"(.*)\"/,
               /def\s+(test_.*)\s+/
             ],
-            "single_test_runner" => "ruby -Itest __FILE__ -n \"/__TEST_NAME__/\"",
-            "file_runner" => "ruby -Itest __FILE__"
+            "single_test_runner" => "ruby -Itest __PATH__ -n \"/__TEST_NAME__/\"",
+            "file_runner" => "ruby -Itest __PATH__"
           },
           {
             "runner_class" => "Redcar::RunnableTestRunner",
@@ -31,8 +31,8 @@ module Redcar
               /context\s+\"(.*)\"/,
               /describe\s+\"(.*)\"/
             ],
-            "single_test_runner" => "ruby -Ispec __FILE__ -e \"__TEST_NAME__\"",
-            "file_runner" => "ruby -Ispec __FILE__"
+            "single_test_runner" => "ruby -Ispec __PATH__ -e \"__TEST_NAME__\"",
+            "file_runner" => "ruby -Ispec __PATH__"
           },
         ])
         storage

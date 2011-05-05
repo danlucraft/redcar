@@ -1,0 +1,6 @@
+--readme README.md
+--title 'Redcar API Documentation'
+--charset utf-8
+--exclude "vendor|lib/openssl|spec/fixtures|lib/json"
+lib/**/*.rb
+plugins/**/*.rb
