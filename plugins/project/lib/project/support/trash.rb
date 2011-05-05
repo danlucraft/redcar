@@ -21,7 +21,7 @@ module Redcar
         end
 
         def windows(file)
-          system %{ cscript //nologo #{WINDOWS_SUPPORT_JS} "#{file}" }
+          system %{ cscript //nologo #{WINDOWS_SUPPORT_JS} "#{file.gsub('/', "\\")}" }
         end
 
         # Move paths to FreeDesktop Trash can
