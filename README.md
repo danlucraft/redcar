@@ -110,11 +110,11 @@ To just run all specs:
 
 On OSX:
 
-    $ jruby -J-XstartOnFirstThread bin/cucumber plugins/#{plugin_name}/features
+    $ jruby -J-XstartOnFirstThread bin/cucumber --exclude ".*fixtures.*" plugins/#{plugin_name}/features
 
 On Linux/Windows:
 
-    $ jruby bin/cucumber plugins/#{plugin_name}/features/
+    $ jruby bin/cucumber --exclude ".*fixtures.*" plugins/#{plugin_name}/features/
 
 To just run all features:
 

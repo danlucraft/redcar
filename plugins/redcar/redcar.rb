@@ -245,6 +245,29 @@ Redcar.environment: #{Redcar.environment}
         doc.ensure_visible(doc.length)
       end
     end
+    
+    class ForwardCharCommand < DocumentCommand
+      # TODO: make respect Unicode
+      def execute
+        doc.cursor_offset = [doc.cursor_offset + 1, doc.length].min
+      end
+    end
+    
+    class BackwardCharCommand < DocumentCommand
+      # TODO: make respect Unicode
+      def execute
+        doc.cursor_offset = [doc.cursor_offset - 1, 0].max
+      end
+    end
+    
+    class DeleteCharCommand < DocumentCommand
+      # TODO: make respect Unicode
+      def execute
+        if doc.cursor_offset < doc.length
+          doc.delete(doc.cursor_offset, 1)
+        end
+      end
+    end
 
     class ChangeIndentCommand < DocumentCommand
       def execute
@@ -587,10 +610,13 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+V",        PasteCommand
         link "Cmd+D",        DuplicateCommand
 
-        link "Home",   MoveTopCommand
-        link "Ctrl+A", MoveHomeCommand
-        link "Ctrl+E", MoveEndCommand
-        link "End",    MoveBottomCommand
+        link "Home",    MoveTopCommand
+        link "Ctrl+A",  MoveHomeCommand
+        link "Ctrl+E",  MoveEndCommand
+        link "End",     MoveBottomCommand
+        link "Ctrl+F",  ForwardCharCommand
+        link "Ctrl+B",  BackwardCharCommand
+        link "Ctrl+D",  DeleteCharCommand
 
         link "Cmd+[",            DecreaseIndentCommand
         link "Cmd+]",            IncreaseIndentCommand
@@ -756,6 +782,7 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
+
     def self.menus(window)
       Menu::Builder.build do
         sub_menu "File", :priority => :first do
@@ -778,6 +805,7 @@ Redcar.environment: #{Redcar.environment}
             item "Quit", Application::QuitCommand
           end
         end
+        
         sub_menu "Edit", :priority => 5 do
           group(:priority => :first) do
             item "Tab Info",  EditView::InfoSpeedbarCommand
@@ -816,6 +844,12 @@ Redcar.environment: #{Redcar.environment}
               item "Home",    MoveHomeCommand
               item "End",     MoveEndCommand
               item "Bottom",  MoveBottomCommand
+              
+              separator
+              
+              item "Forward Character",  ForwardCharCommand
+              item "Backward Character",  BackwardCharCommand
+              item "Delete Character",  DeleteCharCommand
             end
           end
 

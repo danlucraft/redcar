@@ -7,6 +7,7 @@ Version 0.12 (TBA)
  * Fix runnables for JRuby 1.6.1 (Chris Nelson)
  * Improved developer first experience (Dr Nic Williams)
  * Improved after install instruction language (Jeff Casimir)
+ * Added forward char, backward char, and delete char commands (Dan Lucraft)
 
 Version 0.11 (23 March 2011)
 ============================
