@@ -269,6 +269,15 @@ Redcar.environment: #{Redcar.environment}
       end
     end
 
+    class BackspaceCommand < DocumentCommand
+      # TODO: make respect Unicode
+      def execute
+        if doc.cursor_offset > 0
+          doc.delete(doc.cursor_offset - 1, 1)
+        end
+      end
+    end
+
     class ChangeIndentCommand < DocumentCommand
       def execute
         doc.compound do
@@ -617,6 +626,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+F",  ForwardCharCommand
         link "Ctrl+B",  BackwardCharCommand
         link "Ctrl+D",  DeleteCharCommand
+        link "Ctrl+H",  BackspaceCommand
 
         link "Cmd+[",            DecreaseIndentCommand
         link "Cmd+]",            IncreaseIndentCommand
@@ -848,8 +858,9 @@ Redcar.environment: #{Redcar.environment}
               separator
               
               item "Forward Character",  ForwardCharCommand
-              item "Backward Character",  BackwardCharCommand
-              item "Delete Character",  DeleteCharCommand
+              item "Backward Character", BackwardCharCommand
+              item "Delete Character",   DeleteCharCommand
+              item "Backspace",          BackspaceCommand
             end
           end
 
