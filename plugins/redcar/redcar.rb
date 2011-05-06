@@ -247,21 +247,18 @@ Redcar.environment: #{Redcar.environment}
     end
     
     class ForwardCharCommand < DocumentCommand
-      # TODO: make respect Unicode
       def execute
         doc.cursor_offset = [doc.cursor_offset + 1, doc.length].min
       end
     end
     
     class BackwardCharCommand < DocumentCommand
-      # TODO: make respect Unicode
       def execute
         doc.cursor_offset = [doc.cursor_offset - 1, 0].max
       end
     end
     
     class DeleteCharCommand < DocumentCommand
-      # TODO: make respect Unicode
       def execute
         if doc.cursor_offset < doc.length
           doc.delete(doc.cursor_offset, 1)
@@ -270,7 +267,6 @@ Redcar.environment: #{Redcar.environment}
     end
 
     class BackspaceCommand < DocumentCommand
-      # TODO: make respect Unicode
       def execute
         if doc.cursor_offset > 0
           doc.delete(doc.cursor_offset - 1, 1)
