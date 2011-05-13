@@ -12,7 +12,6 @@ module Redcar
         sub_menu "Plugins", :priority => 40 do
           group(:priority => :first) {
             item "Plugin Manager", PluginManagerUi::OpenCommand
-            item "Reload Plugins", PluginManagerUi::ReloadPluginsCommand
             item "Reload Last Reloaded", PluginManagerUi::ReloadLastReloadedCommand
             separator
           }
