@@ -152,13 +152,21 @@ module Redcar
           path          = tab.edit_view.document.mirror.path
           dir           = File.dirname(path)
           writable_file = File.writable?(path)
-          writable_dir  = File.writable?(dir)
+          writable_dir  = File.writable?(dir) # this method buggy in windows: http://redmine.ruby-lang.org/issues/4712
           file_exists   = File.exist?(path)
           can_write     = writable_file || (!file_exists && writable_dir)
           if can_write
-            tab.edit_view.document.save!
-            Project::Manager.refresh_modified_file(tab.edit_view.document.mirror.path)
+            begin
+              tab.edit_view.document.save!
+              Project::Manager.refresh_modified_file(tab.edit_view.document.mirror.path)
+            rescue Errno::EACCES # windows
+              show_dialog = true
+            end
           else
+            show_dialog = true
+          end
+          
+          if show_dialog
             Application::Dialog.message_box(
               "Can't save #{tab.edit_view.document.mirror.path}, you don't have the permissions.",
               :type => :error,
