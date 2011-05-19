@@ -134,6 +134,7 @@ end
 desc "Run all specs and features"
 task :default => ["specs", "cucumber"]
 
+desc "Run all specs"
 task :specs do
   files = Dir['plugins/*/spec/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*/*_spec.rb']
   case Config::CONFIG["host_os"]
