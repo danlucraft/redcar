@@ -58,7 +58,7 @@ module Redcar
             edit_view = document.edit_view
             analyzer = Analyzer.new(rules, document, edit_view.tab_width, edit_view.soft_tabs?)
             new_indentation = analyzer.calculate_for_line(start_line_ix, true)
-            if new_indentation >= 0
+            if new_indentation >= 0 and new_indentation < document.indentation.get_level(start_line_ix)
               increase_ignore
               document.indentation.set_level(start_line_ix, new_indentation)
               decrease_ignore
