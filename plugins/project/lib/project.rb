@@ -248,7 +248,12 @@ module Redcar
       else
         dir = File.join(path, ".redcar")
       end
-      FileUtils.mkdir_p(dir)
+      unless File.directory? dir
+        FileUtils.mkdir_p(dir)
+        if Redcar.platform == :windows
+          system("attrib.exe +H \"#{dir}") # make hidden for cmd directory listings
+        end
+      end
       dir
     end
 
