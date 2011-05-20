@@ -51,8 +51,13 @@ module Redcar
           if arg =~ /--untitled-file=(.*)/
             path = $1 if File.file?($1)
             untitled = true
-          elsif File.file?(arg) or File.directory?(arg)
+          elsif arg !~ /^--/ # not --something
             path = File.expand_path(arg)
+            if !File.exist?(path)
+              require 'fileutils'
+              FileUtils.mkdir_p File.dirname(path)
+              FileUtils.touch path
+            end
           end
           next unless path
           drb_answer = drb.open_item_drb(path, untitled, ARGV.include?("-w"))
