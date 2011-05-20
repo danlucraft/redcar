@@ -34,7 +34,7 @@ module Redcar
         if @path
           json = File.read(@path)
         else
-          @path = project.path + "/.redcar/#{BOOKMARKS_FILE}"
+          @path = project.config_dir + "/#{BOOKMARKS_FILE}"
           json = JSON.generate({"bookmarks"=>[]})
         end
         bookmarks = JSON(json)["bookmarks"]

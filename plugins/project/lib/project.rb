@@ -243,7 +243,11 @@ module Redcar
     end
 
     def config_dir
-      dir = File.join(path, ".redcar")
+      if Redcar.platform == :windows && Redcar.environment != :test 
+        dir = File.join(path, "._redcar")
+      else
+        dir = File.join(path, ".redcar")
+      end
       FileUtils.mkdir_p(dir)
       dir
     end
