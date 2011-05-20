@@ -104,7 +104,7 @@ On Linux/Windows:
 
 To just run all specs:
 
-   $ jruby -S rake specs  
+   $ rake specs  
 
 ### Features
 
@@ -118,7 +118,7 @@ On Linux/Windows:
 
 To just run all features:
 
-    $ jruby -S rake cucumber
+    $ rake cucumber
 
 ## LICENSE
 
