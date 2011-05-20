@@ -36,23 +36,23 @@ Feature: Find file
     Then the filter dialog should have 1 entry
     And I should see "foo_spec.rb (myproject/spec)" at 0 the filter dialog
 
-  Scenario: One matching file when specifying a directory
+  Scenario: One matching file when specifying a symlinked directory
     When I open the find file dialog
     And I set the filter to "lib_sym/foo"
     And I wait "0.4" seconds
     Then the filter dialog should have 1 entry
     And I should see "foo_lib.rb (myproject/lib_symlink)" at 0 the filter dialog
 
-  Scenario: Two matching files
+  Scenario: Two matching files, plus one in symlink
     When I open the find file dialog
     And I set the filter to "foo"
-    And I wait "0.4" seconds
+    And I wait "1.4" seconds
     Then the filter dialog should have 3 entries
     And I should see "foo_lib.rb (myproject/lib)" at 0 the filter dialog
     And I should see "foo_lib.rb (myproject/lib_symlink)" at 1 the filter dialog
     And I should see "foo_spec.rb (myproject/spec)" at 2 the filter dialog
 
-  Scenario: Two matching files - spaces ignored
+  Scenario: Two matching files, plus one in symlink - spaces ignored
     When I open the find file dialog
     And I set the filter to "foo rb"
     And I wait "0.4" seconds
