@@ -10,6 +10,7 @@ Version 0.12 (TBA)
  * Added forward char, backward char, and delete char commands (Dan Lucraft)
  * Fixed irritating bugs in the indenter (Dan Lucraft)
  * Pressing enter when between {} will expand the block (Dan Lucraft)
+ * Tweak to line numbers so highlighting isn't lost as doc passes 100 lines (Dan Lucraft)
 
 Version 0.11 (23 March 2011)
 ============================
