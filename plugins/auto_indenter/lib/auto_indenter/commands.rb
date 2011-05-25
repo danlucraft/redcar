@@ -39,7 +39,7 @@ module Redcar
       def execute
         selection = false
         start_line = 0
-	end_line = doc.line_count - 1
+        end_line = doc.line_count - 1
         rules = AutoIndenter.rules_for_scope(doc.cursor_scope)
         analyzer = Analyzer.new(rules, doc, doc.edit_view.tab_width, doc.edit_view.soft_tabs?)
         indentation = doc.indentation

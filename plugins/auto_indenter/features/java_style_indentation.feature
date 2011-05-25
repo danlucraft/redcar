@@ -20,3 +20,17 @@ Feature: Indents Java code correctly
 				  } e<c>
 				"""
 
+  Scenario: It should expand blocks
+    Given the content is:
+				"""
+				  if(condition) {<c>}
+				"""
+    When I insert "\n" at the cursor
+    Then the content should be:
+				"""
+				  if(condition) {
+				    <c>
+				  }
+				"""
+
+

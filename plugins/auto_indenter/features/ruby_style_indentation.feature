@@ -36,3 +36,7 @@ Feature: Indents Ruby code correctly
     Then the contents should be "def my_awesome_method\n\tfoo\nend"
     When I undo
     Then the contents should be "\tdef my_awesome_method\n\t\tfoo\n\tend"
+    
+    
+        
+        

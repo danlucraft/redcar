@@ -86,6 +86,15 @@ module Redcar
         current
       end
       
+      def expand_block?(line_ix)
+        return false if line_ix == 0
+        
+        prev_line = @doc.get_line(line_ix - 1)
+        next_line = @doc.get_line(line_ix)
+        
+        rules.increase_indent?(prev_line) and 
+          rules.decrease_indent?(next_line)
+      end
     end
   end
 end
