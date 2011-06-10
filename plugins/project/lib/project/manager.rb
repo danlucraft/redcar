@@ -418,7 +418,7 @@ module Redcar
       end
 
       def self.close_tab_guard(tab)
-        if tab.respond_to?(:edit_view) && tab.edit_view.document.modified?
+        if tab.respond_to?(:edit_view) && tab.edit_view.document.modified? && !tab.is_a?(REPL::Tab)
           tab.focus
           result = Application::Dialog.message_box(
           "This tab has unsaved changes. \n\nSave before closing?",
