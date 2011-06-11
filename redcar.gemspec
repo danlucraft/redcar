@@ -1,6 +1,6 @@
 
 Gem::Specification.new do |s|
-  s.name        = "redcar"
+  s.name        = "redcar-dev"
   s.version     = "0.12.0dev"
   s.platform    = "java"
   s.authors     = ["Daniel Lucraft"]

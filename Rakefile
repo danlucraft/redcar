@@ -196,7 +196,7 @@ def gem_manifest
 end
 
 Spec = spec = Gem::Specification.new do |s|
-  s.name              = "redcar"
+  s.name              = "redcar-dev"
   s.version           = REDCAR_VERSION
   s.summary           = "A JRuby text editor."
   s.author            = "Daniel Lucraft"
