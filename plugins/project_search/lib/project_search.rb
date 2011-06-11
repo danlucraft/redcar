@@ -1,5 +1,4 @@
 
-$:.push(File.dirname(__FILE__) + "/../vendor/lucene/lib")
 require 'lucene'
 
 require 'project_search/word_search_controller'

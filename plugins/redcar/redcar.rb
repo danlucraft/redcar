@@ -1040,7 +1040,7 @@ Redcar.environment: #{Redcar.environment}
           Application.start
           ApplicationSWT.start
           EditViewSWT.start
-          Swt.splash_screen.inc(1) if Swt.splash_screen
+          SplashScreen.splash_screen.inc(1) if SplashScreen.splash_screen
           s = Time.now
           if Redcar.gui
             Redcar.app.controller = ApplicationSWT.new(Redcar.app)
@@ -1050,7 +1050,7 @@ Redcar.environment: #{Redcar.environment}
           Redcar.log.info("initializing gui took #{Time.now - s}s")
         end
         Redcar.update_gui do
-          Swt.splash_screen.close if Swt.splash_screen
+          SplashScreen.splash_screen.close if SplashScreen.splash_screen
           win = Redcar.app.make_sure_at_least_one_window_open
           win.close if win and args.include?("--no-window")
           Redcar.log.info("startup milestone: window open #{Time.now - Redcar.process_start_time}")

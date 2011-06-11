@@ -1,5 +1,5 @@
 
-require 'swt/full_swt'
+require 'swt/full'
 
 require "application_swt/tab"
 
@@ -15,6 +15,7 @@ require "application_swt/dialogs/modeless_list_dialog_controller"
 require "application_swt/gradient"
 require "application_swt/html_tab"
 require "application_swt/icon"
+require "application_swt/listener_helpers"
 require "application_swt/menu"
 require "application_swt/menu/binding_translator"
 require "application_swt/toolbar"

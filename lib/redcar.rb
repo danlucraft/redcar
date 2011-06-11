@@ -14,6 +14,8 @@ require 'regex_replace'
 require 'forwardable'
 require 'uri'
 
+require 'rubygems'
+
 begin
   if Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby"
     require 'spoon'
@@ -96,6 +98,7 @@ module Redcar
   def self.add_plugin_sources(manager)
     manager.add_plugin_source(File.join(root, "plugins"))
     manager.add_plugin_source(File.join(user_dir, "plugins"))
+    manager.add_gem_plugin_source
   end
 
   def self.load_prerequisites
@@ -125,7 +128,18 @@ Try:
 
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "openssl", "lib"))
     
-    plugin_manager.load("swt")
+    plugin_manager.load("core")
+    
+    require 'java'
+    gem 'swt'
+    require 'swt/minimal'
+    
+    gui = Redcar::Gui.new("swt")
+    gui.register_event_loop(Swt::EventLoop.new)
+    gui.register_features_runner(Swt::CucumberRunner.new)
+    Redcar.gui = gui
+    
+    plugin_manager.load("splash_screen")
   end
   
   def self.load_useful_libraries
@@ -136,20 +150,17 @@ Try:
       exit if ARGV.include?("--quit-after-splash")
       
       plugin_manager.load
+      
       if plugin_manager.unreadable_definitions.any?
-        puts "Couldn't read definition files: "
-        puts plugin_manager.unreadable_definitions.map {|d| "  * " + d}
+        puts "Couldn't read definition files:  " + plugin_manager.unreadable_definitions.map {|pd| pd.name}.join(", ")
       end
       if plugin_manager.plugins_with_errors.any?
-        puts "There was an error loading plugins: "
-        puts plugin_manager.plugins_with_errors.map {|d| "  * " + d.name}
+        puts "There was an error loading plugins:  " + plugin_manager.plugins_with_errors.map {|pd| pd.name}.join(", ")
       end
       if ENV["PLUGIN_DEBUG"]
-        puts "Loaded plugins:"
-        puts plugin_manager.loaded_plugins.map {|d| "  * " + d.name}
+        puts "Loaded plugins:  " + plugin_manager.loaded_plugins.map {|pd| pd.name}.join(", ")
         puts
-        puts "Unloaded plugins:"
-        puts plugin_manager.unloaded_plugins.map {|d| "  * " + d.name}
+        puts "Unloaded plugins:  " + plugin_manager.unloaded_plugins.map {|pd| pd.name}.join(", ")
       end
     rescue => e
       puts e.message
@@ -185,11 +196,11 @@ Try:
   def self.show_splash
     return if Redcar.no_gui_mode?
     unless ARGV.include?("--no-splash")
-      Swt.create_splash_screen(plugin_manager.plugins.length + 10)
+      SplashScreen.create_splash_screen(plugin_manager.plugins.length + 10)
     end
     plugin_manager.on_load do |plugin|
       Swt.sync_exec do
-        Swt.splash_screen.inc if Swt.splash_screen
+        SplashScreen.splash_screen.inc if SplashScreen.splash_screen
       end
     end
   end

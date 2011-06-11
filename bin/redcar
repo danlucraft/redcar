@@ -9,7 +9,6 @@ file = File.readlink(file) while File.symlink?(file)
 $LOAD_PATH.unshift File.expand_path('../../lib', file)
 
 require "redcar_quick_start"
-
 if ARGV.include? '--silent'
   # reopen the standard pipes to nothingness if we were forked as part of jruby
   STDIN.reopen Redcar.null_device
@@ -24,6 +23,7 @@ if ARGV.include? "install"
   installer = Redcar::Installer.new
   installer.install
 else
+  SWT_APP_NAME = "Redcar"
   Redcar.read_stdin
   exit if Redcar.try_to_load_via_drb
   require 'redcar'
