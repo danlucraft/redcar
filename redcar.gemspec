@@ -18,12 +18,7 @@ class RedcarGemspecHelper
                             Dir.glob("config/**/*") +
                             Dir.glob("share/**/*") +
                             remove_gitignored_files(Dir.glob("lib/**/*")) +
-                            remove_matching_files(remove_gitignored_files(Dir.glob("plugins/**/*")), "redcar-bundles") +
-                            Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Syntaxes/**/*") +
-                            Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Preferences/**/*") +
-                            Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Snippets/**/*") +
-                            Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/info.plist") +
-                            Dir.glob("plugins/textmate/vendor/redcar-bundles/Themes/*.tmTheme")
+                            remove_gitignored_files(Dir.glob("plugins/**/*"))
     remove_matching_files(r, "multi-byte")
   end
 end
@@ -43,10 +38,13 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.extra_rdoc_files  = %w(README.md LICENSE CHANGES Rakefile)
 
-  s.add_dependency("rubyzip")
   s.add_dependency("swt")
-  s.add_dependency("lucene", "~> 0.5.0.beta.1")
   s.add_dependency("redcar-javamateview")
+  s.add_dependency("redcar-bundles")
+
+  s.add_dependency("rubyzip")
+  s.add_dependency("lucene", "~> 0.5.0.beta.1")
+  
   s.add_dependency("bouncy-castle-java")
   s.add_dependency("plugin_manager")
   s.add_dependency("jruby-openssl")
@@ -63,5 +61,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency("cucumber")
   s.add_development_dependency("rspec")
   s.add_development_dependency("watchr")
-  
 end
+

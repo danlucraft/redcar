@@ -1,3 +1,0 @@
-[submodule "plugins/textmate/vendor/redcar-bundles"]
-	path = plugins/textmate/vendor/redcar-bundles
-	url = http://github.com/redcar/redcar-bundles.git
