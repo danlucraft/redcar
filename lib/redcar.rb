@@ -209,6 +209,10 @@ module Redcar
     return true if File.directory? user_dir
     false
   end
+
+  def self.ensure_user_dir_config
+    FileUtils.mkdir_p(user_dir)
+  end
   
   # Platform specific ~/.redcar
   #

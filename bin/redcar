@@ -16,21 +16,14 @@ if ARGV.include? '--silent'
   STDERR.reopen STDOUT
 end
 
-if ARGV.include? "install"
-  require 'redcar'
-  require 'redcar/installer'
-  require 'redcar/runner'
-  installer = Redcar::Installer.new
-  installer.install
-else
-  SWT_APP_NAME = "Redcar"
-  Redcar.read_stdin
-  exit if Redcar.try_to_load_via_drb
-  require 'redcar'
-  Redcar.environment = :user
-  Redcar.log.info("REDCAR #{Redcar::VERSION} start (start time was #{Redcar.process_start_time})")
-  Redcar.spin_up
-  Redcar.load_threaded
-  Redcar.show_splash
-  Redcar.pump
-end
+SWT_APP_NAME = "Redcar"
+Redcar.read_stdin
+exit if Redcar.try_to_load_via_drb
+require 'redcar'
+Redcar.environment = :user
+Redcar.ensure_user_dir_config
+Redcar.log.info("REDCAR #{Redcar::VERSION} start (start time was #{Redcar.process_start_time})")
+Redcar.spin_up
+Redcar.load_threaded
+Redcar.show_splash
+Redcar.pump
