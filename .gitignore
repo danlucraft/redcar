@@ -23,9 +23,9 @@ plugins/application_swt/vendor/jface/
 plugins/application_swt/vendor/swtbot/
 plugins/application_swt/build/
 plugins/application_swt/dist
-plugins/edit_view_swt/vendor/*.jar
+#plugins/edit_view_swt/vendor/*.jar
 plugins/dans
-plugins/*/lib/dist/
+#plugins/*/lib/dist/
 pkg
 
 plugins/core/spec/core/*.yaml
@@ -42,3 +42,5 @@ vendor/swtbot
 .bundle
 
 .DS_Store
+
+*.gem

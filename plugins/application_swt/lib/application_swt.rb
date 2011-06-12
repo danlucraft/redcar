@@ -27,7 +27,7 @@ require "application_swt/speedbar"
 require "application_swt/treebook"
 require "application_swt/window"
 
-require "application_swt-#{Redcar::VERSION}"
+require "dist/application_swt"
 
 module Redcar
   class ApplicationSWT
