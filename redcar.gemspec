@@ -13,7 +13,7 @@ class RedcarGemspecHelper
   end
 
   def self.gem_manifest
-    r = %w(CHANGES LICENSE Rakefile README.md rubygems_plugin.rb) +
+    r = %w(CHANGES LICENSE Rakefile README.md) +
                             Dir.glob("bin/redcar") +
                             Dir.glob("config/**/*") +
                             Dir.glob("share/**/*") +
@@ -25,7 +25,7 @@ end
 
 Gem::Specification.new do |s|
   s.name        = "redcar-dev"
-  s.version     = "0.12.6dev" # also change in lib/redcar.rb
+  s.version     = "0.12.7dev" # also change in lib/redcar.rb
   s.platform    = "java"
   s.authors     = ["Daniel Lucraft"]
   s.email       = ["dan@fluentradical.com"]
@@ -37,7 +37,7 @@ Gem::Specification.new do |s|
   s.executables  = ["redcar"]
   s.require_path = 'lib'
   s.extra_rdoc_files  = %w(README.md LICENSE CHANGES Rakefile)
-
+  
   s.add_dependency("swt")
   s.add_dependency("redcar-javamateview")
   s.add_dependency("redcar-bundles")
