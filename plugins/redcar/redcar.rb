@@ -246,6 +246,18 @@ Redcar.environment: #{Redcar.environment}
       end
     end
     
+    class MoveUpCommand < EditTabCommand
+      def execute
+        tab.edit_view.invoke_action(:LINE_UP)
+      end
+    end
+    
+    class MoveDownCommand < EditTabCommand
+      def execute
+        tab.edit_view.invoke_action(:LINE_DOWN)
+      end
+    end
+    
     class ForwardCharCommand < DocumentCommand
       def execute
         doc.cursor_offset = [doc.cursor_offset + 1, doc.length].min
@@ -624,6 +636,9 @@ Redcar.environment: #{Redcar.environment}
         link "End",     MoveBottomCommand
         link "Ctrl+F",  ForwardCharCommand
         link "Ctrl+B",  BackwardCharCommand
+        link "Ctrl+P",  MoveUpCommand
+        link "Ctrl+N",  MoveDownCommand
+        link "Ctrl+B",  BackwardCharCommand
         link "Ctrl+D",  DeleteCharCommand
         link "Ctrl+H",  BackspaceCommand
 
@@ -858,6 +873,11 @@ Redcar.environment: #{Redcar.environment}
               
               item "Forward Character",  ForwardCharCommand
               item "Backward Character", BackwardCharCommand
+              item "Previous Line",      MoveUpCommand
+              item "Next Line",          MoveDownCommand
+              
+              separator
+              
               item "Delete Character",   DeleteCharCommand
               item "Backspace",          BackspaceCommand
             end
