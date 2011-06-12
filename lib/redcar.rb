@@ -105,7 +105,6 @@ module Redcar
     exit if ARGV.include?("--quit-immediately")
     
     require 'redcar_quick_start'
-    p Gem::SourceIndex.from_installed_gems.map {|n, _| n}.sort
     
     gem "plugin_manager"
     require 'plugin_manager'

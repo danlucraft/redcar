@@ -47,35 +47,26 @@ module Redcar
     
     # Trade in this Ruby instance for a JRuby instance, loading in a 
     # starter script and passing it some arguments.
-    # If --jruby is passed, use the installed version of jruby, instead of 
-    # our vendored jarred one (useful for gems).
     def construct_command(args="")
       bin = File.expand_path(File.join(File.dirname(__FILE__), %w{.. .. bin redcar}))
-      jruby_complete = File.expand_path(File.join(Redcar.asset_dir, "jruby-complete-1.6.1.jar"))
-      # unless File.exist?(jruby_complete)
-      #   puts "\nCan't find jruby jar at #{jruby_complete}, did you run 'redcar install' ?"
-      #   exit 1
-      # end
       ENV['RUBYOPT'] = nil # disable other native args
 
       # Windows XP updates
       if [:windows].include?(Redcar.platform)
         bin = "\"#{bin}\""
-        jruby_complete = "\"#{jruby_complete}\""
       end      
 
-      # unfortuanately, ruby doesn't support [a, *b, c]
-      command = ["java"]
+      command = ["jruby"]
       command.push(*java_args)
-      command.push("-Xbootclasspath/a:#{jruby_complete}")
-      command.push("-Dfile.encoding=UTF8", "-Xmx320m", "-Xss1024k", "-Djruby.memory.max=320m", "-Djruby.stack.max=1024k", "org.jruby.Main")
-      command.push "--debug" if debug_mode?
+      # command.push("-J-Xbootclasspath/a:#{jruby_complete}")
+      command.push("-J-Dfile.encoding=UTF8", "-J-Xmx320m", "-J-Xss1024k", "-J-Djruby.memory.max=320m", "-J-Djruby.stack.max=1024k")
       command.push(bin)
-      command.push(*cleaned_args)
       command.push("--no-sub-jruby", "--ignore-stdin")
-      command.push(*args)
       command.push "--start-time=#{$redcar_process_start_time.to_i}"
-      
+      command.push "--debug" if debug_mode?
+      command.push(*cleaned_args)
+      command.push(*args)
+      command.push(" && echo 'finished'")
       puts command.join(' ')
       yield command
     end
@@ -100,15 +91,15 @@ module Redcar
     def java_args
       str = []
       if Config::CONFIG["host_os"] =~ /darwin/
-        str.push "-XstartOnFirstThread"
+        str.push "-J-XstartOnFirstThread"
       end
       
       if ARGV.include?("--load-timings")
-        str.push "-Djruby.debug.loadService.timing=true"
+        str.push "-J-Djruby.debug.loadService.timing=true"
       end
 
-      str.push "-d32" if JvmOptionsProbe.d32
-      str.push "-client" if JvmOptionsProbe.client
+      str.push "-J-d32" if JvmOptionsProbe.d32
+      str.push "-J-client" if JvmOptionsProbe.client
       
       str
     end
