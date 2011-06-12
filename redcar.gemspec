@@ -13,7 +13,7 @@ class RedcarGemspecHelper
   end
 
   def self.gem_manifest
-    r = %w(CHANGES LICENSE Rakefile README.md) +
+    r = %w(CHANGES LICENSE Rakefile README.md rubygems_plugin.rb) +
                             Dir.glob("bin/redcar") +
                             Dir.glob("config/**/*") +
                             Dir.glob("share/**/*") +
@@ -55,10 +55,10 @@ Gem::Specification.new do |s|
   s.add_dependency("net-ssh")
   s.add_dependency("net-sftp")
   s.add_dependency("net-ftp-list")
-  s.add_dependency("ruby-blockcache")
+  # s.add_dependency("ruby-blockcache")
   s.add_dependency("spoon")
   s.add_dependency("ffi")
-  s.add_dependency("ruby-git")
+  # s.add_dependency("ruby-git")
   
   s.add_development_dependency("cucumber")
   s.add_development_dependency("rspec")
