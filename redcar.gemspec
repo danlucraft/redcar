@@ -1,3 +1,4 @@
+
 class RedcarGemspecHelper
   def self.remove_gitignored_files(filelist)
     ignores = File.readlines(".gitignore")
@@ -29,7 +30,7 @@ end
 
 Gem::Specification.new do |s|
   s.name        = "redcar-dev"
-  s.version     = "0.12.2dev"
+  s.version     = "0.12.3dev"
   s.platform    = "java"
   s.authors     = ["Daniel Lucraft"]
   s.email       = ["dan@fluentradical.com"]
