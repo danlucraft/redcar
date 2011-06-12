@@ -270,6 +270,14 @@ Redcar.environment: #{Redcar.environment}
       end
     end
     
+    class OpenLineCommand < DocumentCommand
+      def execute
+        prev = doc.cursor_offset
+        doc.insert_at_cursor("\n")
+        doc.cursor_offset = prev
+      end
+    end
+
     class DeleteCharCommand < DocumentCommand
       def execute
         if doc.cursor_offset < doc.length
@@ -639,6 +647,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+P",  MoveUpCommand
         link "Ctrl+N",  MoveDownCommand
         link "Ctrl+B",  BackwardCharCommand
+        link "Ctrl+O",  OpenLineCommand
         link "Ctrl+D",  DeleteCharCommand
         link "Ctrl+H",  BackspaceCommand
 
@@ -875,6 +884,7 @@ Redcar.environment: #{Redcar.environment}
               item "Backward Character", BackwardCharCommand
               item "Previous Line",      MoveUpCommand
               item "Next Line",          MoveDownCommand
+              item "Open Line",          OpenLineCommand
               
               separator
               
