@@ -12,6 +12,7 @@ module Redcar
           
           def connection
             require 'net/ftp'
+            gem "net-ftp-list"
             require 'net/ftp/list'
             @connection ||= Net::FTP.open(host, user, password)
           end

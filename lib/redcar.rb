@@ -18,6 +18,7 @@ require 'rubygems'
 
 begin
   if Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby"
+    gem "spoon"
     require 'spoon'
     module Redcar; SPOON_AVAILABLE = true; end
   else
@@ -103,6 +104,7 @@ module Redcar
 
   def self.load_prerequisites
     exit if ARGV.include?("--quit-immediately")
+    require 'java'
     
     require 'redcar_quick_start'
     
@@ -110,15 +112,15 @@ module Redcar
     require 'plugin_manager'
     
     $:.push File.expand_path(File.join(Redcar.asset_dir))
-    
-    $:.push File.expand_path(File.join(File.dirname(__FILE__), "json", "lib"))
+
+    gem "json"
     require 'json'
 
-    $:.push File.expand_path(File.join(File.dirname(__FILE__), "openssl", "lib"))
+    gem "jruby-openssl"
+    require 'openssl'
     
     plugin_manager.load("core")
     
-    require 'java'
     gem 'swt'
     require 'swt/minimal'
     

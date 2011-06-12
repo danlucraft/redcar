@@ -1,4 +1,7 @@
+
+gem "ffi"
 require 'ffi'
+
 module Redcar
   class ApplicationSWT
     class Window

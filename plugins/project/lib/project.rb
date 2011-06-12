@@ -1,14 +1,7 @@
-# require all the gems in vendor
-Dir.glob(File.dirname(__FILE__) + "/../vendor/*").each do |path|
-  gem_name = File.basename(path.gsub(/-[\d\.]+$/, ''))
-  $LOAD_PATH << path + "/lib/"
-end
 
 unless defined?(DRb)
   require 'drb/drb'
 end
-
-require 'openssl'
 
 require "project/adapters/remote_protocols/protocol"
 require "project/adapters/remote_protocols/sftp"
