@@ -29,7 +29,7 @@ end
 
 Gem::Specification.new do |s|
   s.name        = "redcar-dev"
-  s.version     = "0.12.1dev"
+  s.version     = "0.12.2dev"
   s.platform    = "java"
   s.authors     = ["Daniel Lucraft"]
   s.email       = ["dan@fluentradical.com"]
@@ -44,7 +44,10 @@ Gem::Specification.new do |s|
 
   s.add_dependency("rubyzip")
   s.add_dependency("swt")
-  s.add_dependency("lucene")
+  s.add_dependency("lucene", "~> 0.5.0.beta.1")
+  s.add_dependency("redcar-javamateview")
+  s.add_dependency("bouncy-castle-java")
+  s.add_dependency("plugin_manager")
   
   s.add_development_dependency("cucumber")
   s.add_development_dependency("rspec")

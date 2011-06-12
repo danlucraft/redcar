@@ -54,7 +54,7 @@ end
 #
 # and so on.
 module Redcar
-  VERSION         = '0.12.1dev' # also change in the Rakefile!
+  VERSION         = '0.12.2dev' # also change in the Rakefile!
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 12
   VERSION_RELEASE = 0
@@ -105,22 +105,11 @@ module Redcar
     exit if ARGV.include?("--quit-immediately")
     
     require 'redcar_quick_start'
+    p Gem::SourceIndex.from_installed_gems.map {|n, _| n}.sort
     
-    $:.push File.expand_path(File.join(File.dirname(__FILE__), "plugin_manager", "lib"))
-    begin
-      require 'plugin_manager'
-    rescue LoadError
-      # TODO is there a project-wide developer error system? or do we just throw errors?
-      puts <<-ERROR
-
-The 'plugin_manager' portion is missing; you probably haven't loaded the git submodules.
-Try:
-
-    rake initialise
+    gem "plugin_manager"
+    require 'plugin_manager'
     
-      ERROR
-      exit 1
-    end
     $:.push File.expand_path(File.join(Redcar.asset_dir))
     
     $:.push File.expand_path(File.join(File.dirname(__FILE__), "json", "lib"))
