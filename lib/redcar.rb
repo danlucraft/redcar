@@ -13,6 +13,7 @@ require 'regex_replace'
 
 require 'forwardable'
 require 'uri'
+require 'fileutils'
 
 require 'rubygems'
 
@@ -55,7 +56,7 @@ end
 #
 # and so on.
 module Redcar
-  VERSION         = '0.12.5dev' # also change in the gemspec!
+  VERSION         = '0.12.6dev' # also change in the gemspec!
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 12
   VERSION_RELEASE = 0
