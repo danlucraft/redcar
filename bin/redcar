@@ -28,13 +28,9 @@ else
   exit if Redcar.try_to_load_via_drb
   require 'redcar'
   Redcar.environment = :user
-  if Redcar.installed?
-    Redcar.log.info("REDCAR #{Redcar::VERSION} start (start time was #{Redcar.process_start_time})")
-    Redcar.spin_up
-    Redcar.load_threaded
-    Redcar.show_splash
-    Redcar.pump
-  else
-    puts 'It appears you haven\'t run `redcar install` yet. Please do this in order to run Redcar.'
-  end
+  Redcar.log.info("REDCAR #{Redcar::VERSION} start (start time was #{Redcar.process_start_time})")
+  Redcar.spin_up
+  Redcar.load_threaded
+  Redcar.show_splash
+  Redcar.pump
 end
