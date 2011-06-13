@@ -485,6 +485,25 @@ Redcar.environment: #{Redcar.environment}
         doc.scroll_to_line(last_line_ix + 1)
       end
     end
+    
+    class TransposeCharactersCommand < Redcar::DocumentCommand
+      def execute
+        line        = doc.get_line(doc.cursor_line)
+        line_offset = doc.cursor_line_offset
+        
+        if line_offset > 0 and line.length >= 2
+          if line_offset < line.length - 1
+            first_char  = line.chars[line_offset - 1].to_s
+            second_char = line.chars[line_offset].to_s
+            doc.replace(doc.cursor_offset - 1, 2, second_char + first_char)
+          elsif line_offset == line.length - 1
+            first_char  = line.chars[line_offset - 2].to_s
+            second_char = line.chars[line_offset - 1].to_s
+            doc.replace(doc.cursor_offset - 2, 2, second_char + first_char)
+          end
+        end
+      end
+    end
 
     class SortLinesCommand < Redcar::DocumentCommand
 
@@ -637,6 +656,7 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+C",        CopyCommand
         link "Cmd+V",        PasteCommand
         link "Cmd+D",        DuplicateCommand
+        link "Ctrl+T",       TransposeCharactersCommand
 
         link "Home",    MoveTopCommand
         link "Ctrl+A",  MoveHomeCommand
@@ -890,6 +910,7 @@ Redcar.environment: #{Redcar.environment}
               
               item "Delete Character",   DeleteCharCommand
               item "Backspace",          BackspaceCommand
+              item "Transpose",          TransposeCharactersCommand
             end
           end
 
