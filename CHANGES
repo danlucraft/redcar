@@ -11,6 +11,8 @@ Version 0.12 (TBA)
  * Fixed irritating bugs in the indenter (Dan Lucraft)
  * Pressing enter when between {} will expand the block (Dan Lucraft)
  * Tweak to line numbers so highlighting isn't lost as doc passes 100 lines (Dan Lucraft)
+ * Added next line, previous line bindings to Ctrl+N and Ctrl+P (Dan Lucraft)
+ * Added open line, transpose characters commands (Dan Lucraft)
 
 Version 0.11 (23 March 2011)
 ============================
