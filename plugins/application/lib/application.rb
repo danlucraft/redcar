@@ -138,7 +138,7 @@ module Redcar
     end
 
     # Create a new Application::Window, and the controller for it.
-    def new_window
+    def new_window(show=true)
       s = Time.now
       new_window = Window.new
       windows << new_window
@@ -146,15 +146,26 @@ module Redcar
       attach_window_listeners(new_window)
       new_window.refresh_menu
       new_window.refresh_toolbar
-      new_window.show
-      set_focussed_window(new_window)
-      #puts "App#new_window took #{Time.now - s}s"
+      show_window(new_window) if show
       new_window
+    end
+
+    def show_window(window)
+      window.show
+      set_focussed_window(window)
     end
 
     def make_sure_at_least_one_window_open
       if windows.length == 0
         new_window
+      end
+    end
+
+    def make_sure_at_least_one_window_there
+      if windows.length == 0
+        win = new_window(false)
+        set_focussed_window(win)
+        win
       end
     end
 
