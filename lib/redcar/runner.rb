@@ -66,9 +66,9 @@ module Redcar
 
       # unfortuanately, ruby doesn't support [a, *b, c]
       if ARGV.include?('--with-windows-console') then
-        command = (RUBY_PLATFORM.downcase =~ /mswin|mingw|win32/ ? ["javaw"] : ["java"])
-      else
         command = ["java"]
+      else
+        command = (RUBY_PLATFORM.downcase =~ /mswin|mingw|win32/ ? ["javaw"] : ["java"])
       end
       command.push(*java_args)
       command.push("-Xbootclasspath/a:#{jruby_complete}")
