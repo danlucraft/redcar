@@ -25,6 +25,7 @@ module Redcar
       fetch_all_assets
       precache_textmate_bundles
       ensure_user_plugins_directory_exists
+      replace_windows_batch_file
       puts "Success!"
       puts ""
       puts "To open just the editor:       redcar"
@@ -96,6 +97,29 @@ module Redcar
       end
       download_file_to(source, absolute_target)
       unzip_file(absolute_target) if absolute_target =~ /\.zip$/
+    end
+    
+    def replace_windows_batch_file
+      if RUBY_PLATFORM.downcase =~ /mswin|mingw|win32/
+        require 'rbconfig'
+
+	ruby_path = File.join(Config::CONFIG["bindir"],
+                                  "rubyw" +
+                                  Config::CONFIG["EXEEXT"])
+	script_path = File.join(Config::CONFIG["bindir"],"redcar.bat")
+        File.open script_path, 'w' do |file|
+	  file.puts <<-TEXT
+@Echo Off
+IF NOT "%~f0" == "~f0" GOTO :WinNT
+@"#{ruby_path}" "#{File.join(Config::CONFIG["bindir"],"redcar")}" %1 %2 %3 %4 %5 %6 %7 %8 %9
+GOTO :EOF
+:WinNT
+SET STARTUP=%*
+IF NOT "X"%STARTUP% == "X" SET STARTUP=%STARTUP:"="""%
+start "RedCar" "#{ruby_path}" "%~dpn0" %STARTUP%
+TEXT
+	end
+      end
     end
 
     def implicit_target(source)
