@@ -16,6 +16,7 @@ require 'uri'
 require 'fileutils'
 
 require 'rubygems'
+require 'redcar-icons'
 
 begin
   if Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby"
@@ -65,7 +66,9 @@ module Redcar
   
   PROCESS_START_TIME = Time.now
   
-  ICONS_DIRECTORY = File.expand_path(File.join(File.dirname(__FILE__), %w{.. share icons}))
+  def self.icons_directory
+    RedcarIcons.directory
+  end
 
   def self.environment=(env)
     unless ENVIRONMENTS.include?(env)

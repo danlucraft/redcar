@@ -23,7 +23,7 @@ module Redcar
       end
 
       def icon
-        File.join(Redcar::ICONS_DIRECTORY, "folder-open-small-gears.png")
+        File.join(Redcar.icons_directory, "folder-open-small-gears.png")
       end
     end
   end

@@ -21,7 +21,7 @@ module Redcar
     end
 
     def self.close_image_path
-      File.join(Redcar::ICONS_DIRECTORY, "/close.png")
+      File.join(Redcar.icons_directory, "/close.png")
     end
 
     def self.define_item_finder(name)

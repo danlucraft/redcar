@@ -16,7 +16,6 @@ class RedcarGemspecHelper
     r = %w(CHANGES LICENSE Rakefile README.md) +
                             Dir.glob("bin/redcar") +
                             Dir.glob("config/**/*") +
-                            Dir.glob("share/**/*") +
                             remove_gitignored_files(Dir.glob("lib/**/*")) +
                             remove_gitignored_files(Dir.glob("plugins/**/*"))
     remove_matching_files(r, "multi-byte")
@@ -39,23 +38,21 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files  = %w(README.md LICENSE CHANGES Rakefile)
   
   s.add_dependency("swt")
-  s.add_dependency("redcar-javamateview")
-  s.add_dependency("redcar-bundles")
-
-  s.add_dependency("rubyzip")
-  s.add_dependency("lucene", "~> 0.5.0.beta.1")
-  
-  s.add_dependency("bouncy-castle-java")
-  s.add_dependency("plugin_manager")
-  s.add_dependency("jruby-openssl")
-  s.add_dependency("jruby-openssl")
-  s.add_dependency("json")
-  s.add_dependency("net-ssh")
-  s.add_dependency("net-sftp")
-  s.add_dependency("net-ftp-list")
-  s.add_dependency("ruby-blockcache")
-  s.add_dependency("spoon")
   s.add_dependency("ffi")
+  s.add_dependency("json")
+  s.add_dependency("spoon")
+  s.add_dependency("lucene", "~> 0.5.0.beta.1")
+  s.add_dependency("net-ssh")
+  s.add_dependency("rubyzip")
+  s.add_dependency("net-sftp")
+  s.add_dependency("redcar-icons")
+  s.add_dependency("net-ftp-list")
+  s.add_dependency("jruby-openssl")
+  s.add_dependency("redcar-bundles")
+  s.add_dependency("plugin_manager")
+  s.add_dependency("ruby-blockcache")
+  s.add_dependency("bouncy-castle-java")
+  s.add_dependency("redcar-javamateview")
   # s.add_dependency("ruby-git")
   
   s.add_development_dependency("cucumber")

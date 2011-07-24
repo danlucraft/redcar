@@ -35,7 +35,7 @@ module Redcar
       end
 
       def icon
-        File.join(Redcar::ICONS_DIRECTORY, "cog.png")
+        File.join(Redcar.icons_directory, "cog.png")
       end
 
       def children

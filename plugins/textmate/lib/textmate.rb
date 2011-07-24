@@ -46,7 +46,7 @@ module Redcar
 
     def self.toolbars
       Redcar::ToolBar::Builder.build do
-        item "Snippet Browser", :command => Textmate::ShowSnippetTree, :icon => File.join(Redcar::ICONS_DIRECTORY, "document-tree.png"), :barname => :help
+        item "Snippet Browser", :command => Textmate::ShowSnippetTree, :icon => File.join(Redcar.icons_directory, "document-tree.png"), :barname => :help
       end
     end
 

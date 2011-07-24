@@ -116,9 +116,9 @@ module Redcar
 
     def self.toolbars
       ToolBar::Builder.build do
-        item "Cut", :command => Redcar::Top::CutCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "scissors-blue.png"), :barname => :edit
-        item "Copy", :command => Redcar::Top::CopyCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "blue-document-copy.png"), :barname => :edit
-        item "Paste", :command => Redcar::Top::PasteCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "clipboard.png"), :barname => :edit
+        item "Cut", :command => Redcar::Top::CutCommand, :icon => File.join(Redcar.icons_directory, "scissors-blue.png"), :barname => :edit
+        item "Copy", :command => Redcar::Top::CopyCommand, :icon => File.join(Redcar.icons_directory, "blue-document-copy.png"), :barname => :edit
+        item "Paste", :command => Redcar::Top::PasteCommand, :icon => File.join(Redcar.icons_directory, "clipboard.png"), :barname => :edit
       end
     end
 
@@ -559,7 +559,7 @@ module Redcar
     end
 
     def add_annotation_type(name, image, rgb)
-      controller.add_annotation_type(name, File.expand_path("#{image}.png", ICONS_DIRECTORY), rgb)
+      controller.add_annotation_type(name, File.expand_path("#{image}.png", Redcar.icons_directory), rgb)
     end
 
     def title=(title)
