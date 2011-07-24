@@ -53,7 +53,7 @@ Gem::Specification.new do |s|
   s.add_dependency("net-ssh")
   s.add_dependency("net-sftp")
   s.add_dependency("net-ftp-list")
-  # s.add_dependency("ruby-blockcache")
+  s.add_dependency("ruby-blockcache")
   s.add_dependency("spoon")
   s.add_dependency("ffi")
   # s.add_dependency("ruby-git")
