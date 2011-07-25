@@ -3,7 +3,11 @@ module Redcar
     class Speedbar
       class ComboItem
         def initialize(speedbar, composite, item)
-          combo = Swt::Widgets::Combo.new(composite, Swt::SWT::READ_ONLY)
+          if item.editable
+            combo = Swt::Widgets::Combo.new(composite, Swt::SWT::DROP_DOWN)
+          else
+            combo = Swt::Widgets::Combo.new(composite, Swt::SWT::READ_ONLY)
+          end
           combo.items = item.items.to_java(:string)
           if item.value
             combo.select(item.items.index(item.value))
