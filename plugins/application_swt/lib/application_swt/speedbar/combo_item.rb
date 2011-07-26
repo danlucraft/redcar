@@ -3,14 +3,23 @@ module Redcar
     class Speedbar
       class ComboItem
         def initialize(speedbar, composite, item)
-          if item.editable
-            combo = Swt::Widgets::Combo.new(composite, Swt::SWT::DROP_DOWN)
+          if @editable = item.editable
+            type = Swt::SWT::DROP_DOWN
           else
-            combo = Swt::Widgets::Combo.new(composite, Swt::SWT::READ_ONLY)
+            type = Swt::SWT::READ_ONLY
           end
+          combo = Swt::Widgets::Combo.new(composite, type)
           combo.items = item.items.to_java(:string)
-          if item.value
-            combo.select(item.items.index(item.value))
+          if @editable
+            combo.set_text(item.value || "")
+            combo.add_modify_listener do
+              speedbar.ignore(item.name) do
+                item.value = combo.text
+                speedbar.execute_listener_in_model(item, item.value)
+              end
+            end
+          else
+            combo.select(item.items.index(item.value)) if item.value
           end
           combo.add_selection_listener do
             speedbar.ignore(item.name) do
@@ -22,14 +31,18 @@ module Redcar
             speedbar.rescue_speedbar_errors do
               speedbar.ignore(item.name) do
                 combo.items = item.items.to_java(:string)
-                item.value = nil
+                item.value = @editable ? "" : nil
               end
             end
           end
           item.add_listener(:changed_value) do |new_value|
             speedbar.rescue_speedbar_errors do
               speedbar.ignore(item.name) do
-                combo.select(item.items.index(item.value))
+                if @editable
+                  combo.set_text(item.value)
+                else
+                  combo.select(item.items.index(item.value))
+                end
               end
             end
           end
