@@ -49,9 +49,9 @@ for more information.
         def self.load_dependencies
           unless @loaded
             Groovy.load_dependencies
-            import 'groovy.lang.GroovyShell'
-            import 'java.io.PrintWriter'
-            import 'java.io.StringWriter'
+            java_import 'groovy.lang.GroovyShell'
+            java_import 'java.io.PrintWriter'
+            java_import 'java.io.StringWriter'
             @loaded = true
           end
         end

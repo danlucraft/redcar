@@ -9,9 +9,9 @@ module Redcar
       def self.load_dependencies
         unless @loaded
           Groovy.load_dependencies
-          import 'groovy.lang.GroovyShell'
-          import 'org.codehaus.groovy.control.CompilationFailedException'
-          import 'org.codehaus.groovy.control.CompilerConfiguration'
+          java_import 'groovy.lang.GroovyShell'
+          java_import 'org.codehaus.groovy.control.CompilationFailedException'
+          java_import 'org.codehaus.groovy.control.CompilerConfiguration'
           @loaded = true
         end
       end
