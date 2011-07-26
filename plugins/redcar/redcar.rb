@@ -76,7 +76,7 @@ module Redcar
         window = Redcar.app.focussed_window
         Redcar.app.windows.each do |win|
           @builder.item(win.title, :type => :radio, :active => (win == window)) do
-            FocusWindowCommand.new(win).run
+            Application::FocusWindowCommand.new(win).run
           end
         end
       end
@@ -245,31 +245,31 @@ Redcar.environment: #{Redcar.environment}
         doc.ensure_visible(doc.length)
       end
     end
-    
+
     class MoveUpCommand < EditTabCommand
       def execute
         tab.edit_view.invoke_action(:LINE_UP)
       end
     end
-    
+
     class MoveDownCommand < EditTabCommand
       def execute
         tab.edit_view.invoke_action(:LINE_DOWN)
       end
     end
-    
+
     class ForwardCharCommand < DocumentCommand
       def execute
         doc.cursor_offset = [doc.cursor_offset + 1, doc.length].min
       end
     end
-    
+
     class BackwardCharCommand < DocumentCommand
       def execute
         doc.cursor_offset = [doc.cursor_offset - 1, 0].max
       end
     end
-    
+
     class OpenLineCommand < DocumentCommand
       def execute
         prev = doc.cursor_offset
@@ -485,12 +485,12 @@ Redcar.environment: #{Redcar.environment}
         doc.scroll_to_line(last_line_ix + 1)
       end
     end
-    
+
     class TransposeCharactersCommand < Redcar::DocumentCommand
       def execute
         line        = doc.get_line(doc.cursor_line)
         line_offset = doc.cursor_line_offset
-        
+
         if line_offset > 0 and line.length >= 2
           if line_offset < line.length - 1
             first_char  = line.chars[line_offset - 1].to_s
@@ -858,7 +858,7 @@ Redcar.environment: #{Redcar.environment}
             item "Quit", Application::QuitCommand
           end
         end
-        
+
         sub_menu "Edit", :priority => 5 do
           group(:priority => :first) do
             item "Tab Info",  EditView::InfoSpeedbarCommand
@@ -897,17 +897,17 @@ Redcar.environment: #{Redcar.environment}
               item "Home",    MoveHomeCommand
               item "End",     MoveEndCommand
               item "Bottom",  MoveBottomCommand
-              
+
               separator
-              
+
               item "Forward Character",  ForwardCharCommand
               item "Backward Character", BackwardCharCommand
               item "Previous Line",      MoveUpCommand
               item "Next Line",          MoveDownCommand
               item "Open Line",          OpenLineCommand
-              
+
               separator
-              
+
               item "Delete Character",   DeleteCharCommand
               item "Backspace",          BackspaceCommand
               item "Transpose",          TransposeCharactersCommand
