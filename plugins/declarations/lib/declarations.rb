@@ -87,7 +87,7 @@ module Redcar
       @tags_for_path.delete(path)
     end
 
-    def self.go_to_definition(match)
+    def self.go_to_definition(match)      
       path = match[:file]
       Project::Manager.open_file(path)
       regexp = Regexp.new(Regexp.escape(match[:match]))
@@ -127,6 +127,10 @@ module Redcar
           return
         end
         matches = find_tag(tags_path, token).uniq
+        
+        # save current cursor position before jump to another location.
+        Redcar.app.navigation_history.save(doc) if matches.size > 0
+        
         case matches.size
         when 0
           Application::Dialog.message_box("There is no declaration for '#{token}' in the 'tags' file.")
