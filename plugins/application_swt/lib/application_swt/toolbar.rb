@@ -3,21 +3,19 @@ module Redcar
   class ApplicationSWT
     class ToolBar
 
-      ICONS_DIR = File.join(Redcar.root, %w(share icons))
       DEFAULT_ICON = File.join(Redcar.root, %w(share icons document.png))
-
 
       def self.icons
         @icons = {
-          :new => File.join(ICONS_DIR, "document-text.png"),
-          :open => File.join(ICONS_DIR, "folder-open-document.png"),
-          :open_dir => File.join(ICONS_DIR, "blue-folder-horizontal-open.png"),
-          :save => File.join(ICONS_DIR, "disk.png"),
-          :save_as => File.join(ICONS_DIR, "disk--plus.png"),
+          :new => File.join(Redcar.icons_directory, "document-text.png"),
+          :open => File.join(Redcar.icons_directory, "folder-open-document.png"),
+          :open_dir => File.join(Redcar.icons_directory, "blue-folder-horizontal-open.png"),
+          :save => File.join(Redcar.icons_directory, "disk.png"),
+          :save_as => File.join(Redcar.icons_directory, "disk--plus.png"),
           #:save_all => File.join(ICONS_DIR, "save_all.png"),
-          :undo => File.join(ICONS_DIR, "arrow-circle-225-left.png"),
-          :redo => File.join(ICONS_DIR, "arrow-circle-315.png"),
-          :search => File.join(ICONS_DIR, "binocular.png")
+          :undo => File.join(Redcar.icons_directory, "arrow-circle-225-left.png"),
+          :redo => File.join(Redcar.icons_directory, "arrow-circle-315.png"),
+          :search => File.join(Redcar.icons_directory, "binocular.png")
         }
       end
 
@@ -32,46 +30,40 @@ module Redcar
       attr_reader :coolbar, :toolbar, :coolitem, :toolbars, :coolitems
 
       def initialize(window, toolbar_model, options={})
-        s = Time.now
         @toolbars = {}
         @coolitems = {} 
         @entries = Hash.new{|hash, key| hash[key] = Array.new}
         @coolbar = Swt::Widgets::CoolBar.new(window.shell, Swt::SWT::FLAT | Swt::SWT::HORIZONTAL)
         return unless toolbar_model
         toolbar_model.each do |entry|
-          @name = entry.barname || :new
-          if not @toolbars[@name]
-            if @name == :core
-              @coolitem = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::FLAT, 0)
+          name = entry.barname || :new
+          if not @toolbars[name]
+            if name == :core
+              coolitem = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::FLAT, 0)
             else
-              @coolitem = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::FLAT)
+              coolitem = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::FLAT)
             end
             
-            @toolbars[@name] = create_toolbar(@coolbar)
-            @coolitems[@name] = @coolitem
+            @toolbars[name] = create_toolbar(@coolbar)
+            @coolitems[name] = coolitem
           else
-            @toolbar = @toolbars[@name]
-            @coolitem = @coolitems[@name]
+            @toolbar = @toolbars[name]
+            coolitem = @coolitems[name]
           end
-            @entries[@name] << entry
+          @entries[name] << entry
         end
 
-        @toolbars.each_key do |key|
+        @toolbars.each do |name, toolbar|
+          coolitem = @coolitems[name]
+          toolbar_data = @entries[name]
+          coolitem.setControl(toolbar)
 
-          @toolbar = @toolbars[key]
-          @coolitem = @coolitems[key]
-          @toolbar_data = @entries[key]
-          @coolitem.setControl(@toolbar)
-
-          add_entries_to_toolbar(@toolbar, @toolbar_data)
-          @p = @toolbar.computeSize(Swt::SWT::DEFAULT, Swt::SWT::DEFAULT)
-          @point = @coolitem.computeSize(@p.x, @p.y)
-          #@coolitem.setPreferredSize(@point)
-          #@coolitem.setMinimumSize(@point)
-          @coolitem.setSize(@point.x, @point.y)
+          add_entries_to_toolbar(toolbar, toolbar_data)
+          p = toolbar.computeSize(Swt::SWT::DEFAULT, Swt::SWT::DEFAULT)
+          point = coolitem.computeSize(p.x, p.y)
+          coolitem.setSize(point.x, point.y)
         end
 
-        #puts "ApplicationSWT::ToolBar initialize took #{Time.now - s}s"
         @coolbar.setLocked(true)
         @coolbar.pack()
       end
