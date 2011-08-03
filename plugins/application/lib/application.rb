@@ -185,12 +185,7 @@ module Redcar
       @storage ||= begin
         storage = Plugin::Storage.new('application_plugin')
         storage.set_default('stay_resident_after_last_window_closed', false)
-        # Don't show the toolbar by default on Mac OS X
-        if Redcar.platform == :osx
-          storage.set_default('show_toolbar', false)
-        else
-          storage.set_default('show_toolbar', true)
-        end
+        storage.set_default('show_toolbar', true)
         storage
       end
     end

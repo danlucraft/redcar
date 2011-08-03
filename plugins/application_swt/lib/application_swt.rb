@@ -154,9 +154,9 @@ module Redcar
     end
 
     def refresh_toolbar
-      if Redcar.platform == :osx and @fake_shell
-        fake_toolbar_controller = ApplicationSWT::ToolBar.new(FakeWindow.new(@fake_shell), Redcar.app.main_toolbar, Swt::SWT::FLAT)
-      end
+      # if Redcar.platform == :osx and @fake_shell
+      #   fake_toolbar_controller = ApplicationSWT::ToolBar.new(FakeWindow.new(@fake_shell), Redcar.app.main_toolbar, Swt::SWT::FLAT)
+      # end
     end
 
     def add_listeners
