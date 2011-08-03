@@ -30,58 +30,65 @@ module Redcar
       attr_reader :coolbar, :toolbar, :coolitem, :toolbars, :coolitems
 
       def initialize(window, toolbar_model, options={})
-        @toolbars = {}
-        @coolitems = {} 
-        @entries = Hash.new{|hash, key| hash[key] = Array.new}
-        @coolbar = Swt::Widgets::CoolBar.new(window.shell, Swt::SWT::FLAT | Swt::SWT::HORIZONTAL)
+        # @toolbars = {}
+        # @coolitems = {} 
+        @entries = Hash.new {|h,k| h[k] = [] }
+        @toolbar = window.shell.getToolBar
+        p @toolbar
+        # @coolbar = Swt::Widgets::CoolBar.new(window.shell, Swt::SWT::FLAT | Swt::SWT::HORIZONTAL)
         return unless toolbar_model
         toolbar_model.each do |entry|
           name = entry.barname || :new
-          if not @toolbars[name]
-            if name == :core
-              coolitem = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::FLAT, 0)
-            else
-              coolitem = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::FLAT)
-            end
-            
-            @toolbars[name] = create_toolbar(@coolbar)
-            @coolitems[name] = coolitem
-          else
-            @toolbar = @toolbars[name]
-            coolitem = @coolitems[name]
-          end
           @entries[name] << entry
+        #   name = entry.barname || :new
+        #   if not @toolbars[name]
+        #     if name == :core
+        #       coolitem = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::FLAT, 0)
+        #     else
+        #       coolitem = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::FLAT)
+        #     end
+        #     
+        #     @toolbars[name] = create_toolbar(@coolbar)
+        #     @coolitems[name] = coolitem
+        #   else
+        #     @toolbar = @toolbars[name]
+        #     coolitem = @coolitems[name]
+        #   end
         end
-
-        @toolbars.each do |name, toolbar|
-          coolitem = @coolitems[name]
-          toolbar_data = @entries[name]
-          coolitem.setControl(toolbar)
-
-          add_entries_to_toolbar(toolbar, toolbar_data)
-          p = toolbar.computeSize(Swt::SWT::DEFAULT, Swt::SWT::DEFAULT)
-          point = coolitem.computeSize(p.x, p.y)
-          coolitem.setSize(point.x, point.y)
+        add_entries_to_toolbar(@toolbar, @entries[:core])
+        @entries.each do |name, es|
+          next if name == :core
+          add_entries_to_toolbar(@toolbar, es)
+          sep = Swt::Widgets::ToolItem.new(@toolbar, Swt::SWT::DEFAULT)
         end
-
-        @coolbar.setLocked(true)
-        @coolbar.pack()
+        # @toolbars.each do |name, toolbar|
+        #   coolitem = @coolitems[name]
+        #   toolbar_data = @entries[name]
+        #   coolitem.setControl(toolbar)
+        # 
+        #   p = toolbar.computeSize(Swt::SWT::DEFAULT, Swt::SWT::DEFAULT)
+        #   point = coolitem.computeSize(p.x, p.y)
+        #   coolitem.setSize(point.x, point.y)
+        # end
+        # 
+        # @coolbar.setLocked(true)
+        # @coolbar.pack()
       end
 
-      def create_toolbar(composite)
-        @toolbar = Swt::Widgets::ToolBar.new(composite, Swt::SWT::FLAT)
-        @toolbar.set_visible(false)
-        @toolbar
-      end
+      # def create_toolbar
+      #   @toolbar = Swt::Widgets::ToolBar.new(composite, Swt::SWT::FLAT)
+      #   @toolbar.set_visible(false)
+      #   @toolbar
+      # end
       
       def show
-        @toolbars.each_value { |toolbar| toolbar.set_visible(true) }
-        @coolbar.set_visible(true)
+        # @toolbars.each_value { |toolbar| toolbar.set_visible(true) }
+        @toolbar.set_visible(true)
       end
 
       def hide
-        @toolbars.each_value { |toolbar| toolbar.dispose() }
-        @coolbar.dispose()
+        # @toolbars.each_value { |toolbar| toolbar.dispose() }
+        @toolbar.dispose()
       end
 
       def close
@@ -90,11 +97,12 @@ module Redcar
       end
 
       def height
-        @h = 0
-        @coolbar.getItems.each do |i|
-          @h = ( @h > i.getSize.y ) ? @h : i.getSize.y
+        return 0
+        h = 0
+        @toolbar.getItems.each do |i|
+          h = ( h > i.getSize.y ) ? h : i.getSize.y
         end
-        @h
+        h
       end
 
       private
@@ -108,10 +116,10 @@ module Redcar
             #new_toolbar = Swt::Widgets::ToolBar.new(@window.shell, Swt::SWT::DROP_DOWN)
             new_toolbar = Swt::Widgets::ToolBar.new(toolbar)
             toolbar_header.toolbar = new_toolbar
-            toolbar_header.add_arm_listener do
-              new_toolbar.get_items.each {|i| i.dispose }
-              add_entries_to_toolbar(new_toolbar, entry)
-            end
+            # toolbar_header.add_arm_listener do
+            #   new_toolbar.get_items.each {|i| i.dispose }
+            #   add_entries_to_toolbar(new_toolbar, entry)
+            # end
           elsif entry.is_a?(Redcar::ToolBar)
             new_toolbar = Swt::Widgets::ToolBar.new(toolbar)
             add_entries_to_toolbar(new_toolbar, entry)
