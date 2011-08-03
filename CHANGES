@@ -14,6 +14,7 @@ Version 0.12 (TBA)
  * Added next line, previous line bindings to Ctrl+N and Ctrl+P (Dan Lucraft)
  * Added open line, transpose characters commands (Dan Lucraft)
  * OSX style unified toolbars (Dan Lucraft)
+ * Supports OS X Lion fullscreen mode (Dan Lucraft)
 
 Version 0.11 (23 March 2011)
 ============================
