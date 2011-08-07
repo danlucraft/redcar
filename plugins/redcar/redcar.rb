@@ -679,7 +679,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+P",  MoveUpCommand
         link "Ctrl+N",  MoveDownCommand
         link "Ctrl+B",  BackwardCharCommand
-       OpenLineCommand
+        link "Ctrl+O",  OpenLineCommand
         link "Ctrl+D",  DeleteCharCommand
         link "Ctrl+H",  BackspaceCommand
         
