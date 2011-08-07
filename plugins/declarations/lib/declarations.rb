@@ -139,6 +139,8 @@ module Redcar
         else
           open_select_tag_dialog(matches)
         end
+        
+        Redcar.app.navigation_history.save(doc) if matches.size > 0
       end
 
       def find_tag(tags_path, tag)

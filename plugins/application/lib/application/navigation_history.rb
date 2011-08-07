@@ -8,11 +8,12 @@ module Redcar
     end
     
     def save(doc)
+      return if last && last[:path] == doc.path && last[:cursor_offset] == doc.cursor_offset
+      
       # Invoking this method means new future is about to be created, so remove old one.
       self.slice!(@current...self.size)
       
       ensure_size_less_than_max
-      
       self << {:path => doc.path, :cursor_offset => doc.cursor_offset}
       @current += 1
     end
@@ -56,13 +57,12 @@ module Redcar
     end
     
     def save_current_doc
-      current_doc = Redcar.app.focussed_window.focussed_notebook_tab_document
-      if current_doc
-        history = {:path => current_doc.path, :cursor_offset => current_doc.cursor_offset}
+      if win = Redcar.app.focussed_window and cur_doc = win.focussed_notebook_tab_document
+        history = {:path => cur_doc.path, :cursor_offset => cur_doc.cursor_offset}
         if @current < self.size
           self[@current] = history
         else
-          self << history
+          save(cur_doc)
           @current = self.size - 1
         end
       end
