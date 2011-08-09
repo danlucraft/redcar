@@ -45,7 +45,12 @@ module Redcar
       def selected(text, ix, closing=false)
         if @last_list
           close
+          if win = Redcar.app.focussed_window and tab = win.focussed_notebook_tab and doc = tab.document
+            Redcar.app.navigation_history.save(doc)
+          end
           OpenFileCommand.new(@last_list[ix]).run
+          cur_doc = Redcar.app.focussed_window.focussed_notebook_tab.document
+          Redcar.app.navigation_history.save(cur_doc) if cur_doc
         end
       end
 
