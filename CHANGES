@@ -15,6 +15,7 @@ Version 0.12 (TBA)
  * Added open line, transpose characters commands (Dan Lucraft)
  * OSX style unified toolbars (Dan Lucraft)
  * Supports OS X Lion fullscreen mode (Dan Lucraft)
+ * Jump back and forward through navigation history (Shinichi Katayama)
 
 Version 0.11 (23 March 2011)
 ============================
