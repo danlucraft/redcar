@@ -24,6 +24,7 @@ require 'application/menu/item'
 require 'application/menu/lazy_menu'
 require 'application/menu/builder'
 require 'application/menu/builder/group'
+require 'application/navigation_history'
 require 'application/notebook'
 require 'application/speedbar'
 require 'application/tab'
@@ -106,7 +107,7 @@ module Redcar
       ]
     end
 
-    attr_reader :clipboard, :keymap, :menu, :toolbar, :history, :task_queue, :show_toolbar
+    attr_reader :clipboard, :keymap, :menu, :toolbar, :history, :task_queue, :show_toolbar, :navigation_history
 
     # Create an application instance with a Redcar::Clipboard and a Redcar::History.
     def initialize
@@ -114,6 +115,7 @@ module Redcar
       @window_handlers = Hash.new {|h,k| h[k] = []}
       create_clipboard
       create_history
+      @navigation_history = NavigationHistory.new
       @event_spewer = EventSpewer.new
       @task_queue   = TaskQueue.new
       @show_toolbar = !!Application.storage['show_toolbar']

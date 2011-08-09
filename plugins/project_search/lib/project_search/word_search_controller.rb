@@ -70,6 +70,7 @@ class ProjectSearch
         doc.set_selection_range(doc.cursor_line_start_offset + index, doc.cursor_line_start_offset + index + length)
       end
       doc.scroll_to_line(line.to_i)
+      Redcar.app.navigation_history.save(doc)
       nil
     end
 

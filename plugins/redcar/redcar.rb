@@ -293,6 +293,18 @@ Redcar.environment: #{Redcar.environment}
         end
       end
     end
+    
+    class BackwardNavigationCommand < Command
+      def execute
+        Redcar.app.navigation_history.backward
+      end
+    end
+    
+    class ForwardNavigationCommand < Command
+      def execute
+        Redcar.app.navigation_history.forward
+      end
+    end
 
     class ChangeIndentCommand < DocumentCommand
       def execute
@@ -670,6 +682,9 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+O",  OpenLineCommand
         link "Ctrl+D",  DeleteCharCommand
         link "Ctrl+H",  BackspaceCommand
+        
+        link "Ctrl+Alt+Left", BackwardNavigationCommand
+        link "Ctrl+Alt+Right", ForwardNavigationCommand
 
         link "Cmd+[",            DecreaseIndentCommand
         link "Cmd+]",            IncreaseIndentCommand
@@ -759,6 +774,9 @@ Redcar.environment: #{Redcar.environment}
         link "End",        MoveEndCommand
         link "Ctrl+Alt+E", MoveEndCommand
         link "Ctrl+End",   MoveBottomCommand
+        
+        link "Alt+[", BackwardNavigationCommand
+        link "Alt+]", ForwardNavigationCommand
 
         link "Ctrl+[",           DecreaseIndentCommand
         link "Ctrl+]",           IncreaseIndentCommand
@@ -911,6 +929,11 @@ Redcar.environment: #{Redcar.environment}
               item "Delete Character",   DeleteCharCommand
               item "Backspace",          BackspaceCommand
               item "Transpose",          TransposeCharactersCommand
+              
+              separator
+              
+              item "Backward Navigation", BackwardNavigationCommand
+              item "Forward Navigation", ForwardNavigationCommand
             end
           end
 

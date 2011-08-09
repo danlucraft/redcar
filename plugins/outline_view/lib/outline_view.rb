@@ -55,7 +55,9 @@ module Redcar
       
       def selected(match, closing=true)
         if @last_list
+          Redcar.app.navigation_history.save(@document)
           DocumentSearch::FindNextRegex.new(Regexp.new(Regexp.quote(match)), true).run_in_focussed_tab_edit_view
+          Redcar.app.navigation_history.save(@document)
           close if closing
         end
       end
