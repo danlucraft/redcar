@@ -118,12 +118,19 @@ module Redcar
         def icon
           case @type
           when :file
-            :file
+            key = text.split('.').last.split(//).first.downcase
+            if key =~ /[b-z]/
+              :"document_attribute_#{key}"
+            elsif key == 'a'
+              :document_attribute
+            else
+              :document
+            end
           when :dir
-            :directory
+            :blue_folder
           end
         end
-        
+
         def leaf?
           file?
         end
