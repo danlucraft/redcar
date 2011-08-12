@@ -4,7 +4,7 @@ require 'swt/vtab_item'
 module Redcar
   class ApplicationSWT
     class Treebook
-      attr_reader :tab_folder
+      attr_reader :tab_folder, :font
 
       def initialize(window, model)
         @window, @model = window, model
@@ -38,7 +38,13 @@ module Redcar
 
       def create_tree_view
         @tab_folder = Swt::Widgets::VTabFolder.new(@window.tree_sash, Swt::SWT::NONE)
-
+        font_data = @tab_folder.font.font_data.first
+        font = Swt::Graphics::Font.new(
+          ApplicationSWT.display,
+          font_data.name,
+          Redcar::EditView.font_size - 1,
+          Swt::SWT::NORMAL)
+        @tab_folder.font = font
         selected_tab_background = Redcar::ApplicationSWT.selected_tab_background
         @tab_folder.set_selection_background(selected_tab_background.swt_colors, selected_tab_background.swt_stops, true)
 
