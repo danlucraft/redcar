@@ -15,14 +15,14 @@ module Redcar
 
     def initialize(composite, model)
       @composite, @model = composite, model
-      color = Swt::Graphics::Color.new(Redcar::ApplicationSWT.display,202,211,216)
+      color = ApplicationSWT.tree_background.swt_colors.first
       font_data = @composite.font.font_data.first
       font = Swt::Graphics::Font.new(
         ApplicationSWT.display,
         font_data.name,
         Redcar::EditView.font_size - 1,
         Swt::SWT::NORMAL)
-      @composite.background = Swt::Graphics::Color.new(Redcar::ApplicationSWT.display,202,211,216)
+      @composite.background = color
       tree_style = Swt::SWT::MULTI | Swt::SWT::H_SCROLL | Swt::SWT::V_SCROLL
       @viewer = JFace::Viewers::TreeViewer.new(@composite, tree_style)
       grid_data = Swt::Layout::GridData.new
