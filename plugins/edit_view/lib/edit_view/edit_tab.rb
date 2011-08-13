@@ -15,7 +15,16 @@ module Redcar
         unless doc.mirror.adapter.is_a?(Redcar::Project::Adapters::Remote)
           if File.exists?(doc.path)
             if File.writable?(doc.path)
-              i = DEFAULT_ICON
+              key = File.basename(doc.path).split('.').last.split(//).first.downcase
+              if key =~ /[a-z]/
+                if key == 'a'
+                  i = :document_attribute
+                else
+                  i = :"document_attribute_#{key}"
+                end
+              else
+                i = DEFAULT_ICON
+              end
             else
               i = NO_WRITE_ICON
             end
