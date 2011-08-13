@@ -40,7 +40,7 @@ module Swt
     
     def show
       @image = Swt::Graphics::Image.new(Swt.display, Redcar::ICONS_DIRECTORY + "/redcar-splash.png")
-      @splash = Swt::Widgets::Shell.new(Swt::SWT::NONE)
+      @splash = Swt::Widgets::Shell.new(Swt::SWT::NO_TRIM)
       @bar = Swt::Widgets::ProgressBar.new(@splash, Swt::SWT::NONE)
       @bar.setMaximum(max)
       label = Swt::Widgets::Label.new(@splash, Swt::SWT::NONE)
@@ -52,9 +52,9 @@ module Swt
       labelData.bottom = Swt::Layout::FormAttachment.new(100, 0)
       label.setLayoutData(labelData)
       progressData = Swt::Layout::FormData.new
-      progressData.left   = Swt::Layout::FormAttachment.new(0, 5)
-      progressData.right  = Swt::Layout::FormAttachment.new(100, -5)
-      progressData.bottom = Swt::Layout::FormAttachment.new(100, -5)
+      progressData.left   = Swt::Layout::FormAttachment.new(0, 70)
+      progressData.right  = Swt::Layout::FormAttachment.new(100, -32)
+      progressData.bottom = Swt::Layout::FormAttachment.new(100, -30)
       @bar.setLayoutData(progressData)
       @splash.pack
       
