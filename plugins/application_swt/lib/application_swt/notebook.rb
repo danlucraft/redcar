@@ -53,10 +53,17 @@ module Redcar
         attach_model_listeners
         attach_view_listeners
       end
-      
+
       def create_tab_folder(sash)
-        folder_style = Swt::SWT::BORDER + Swt::SWT::CLOSE
+        folder_style = Swt::SWT::CLOSE
         @tab_folder = Swt::Custom::CTabFolder.new(sash, folder_style)
+        font_data = @tab_folder.font.font_data.first
+        font = Swt::Graphics::Font.new(
+          ApplicationSWT.display,
+          font_data.name,
+          Redcar::EditView.font_size - 1,
+          Swt::SWT::NORMAL)
+        @tab_folder.font = font
         grid_data = Swt::Layout::GridData.new
         grid_data.grabExcessHorizontalSpace = true
         grid_data.horizontalAlignment = Swt::Layout::GridData::FILL

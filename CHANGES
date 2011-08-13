@@ -16,6 +16,9 @@ Version 0.12 (TBA)
  * OSX style unified toolbars (Dan Lucraft)
  * Supports OS X Lion fullscreen mode (Dan Lucraft)
  * Jump back and forward through navigation history (Shinichi Katayama)
+ * Added option to add editable ComboItem widgets to Speedbars (Delisa Mason)
+ * Updated UI Styling (Delisa Mason)
+ * Added option to color tree background color via ApplicationSWT preferences (Delisa Mason)
 
 Version 0.11 (23 March 2011)
 ============================

@@ -12,9 +12,17 @@ module Redcar
          storage
       end
     end
-    
+
     def initialize(composite, model)
       @composite, @model = composite, model
+      color = ApplicationSWT.tree_background.swt_colors.first
+      font_data = @composite.font.font_data.first
+      font = Swt::Graphics::Font.new(
+        ApplicationSWT.display,
+        font_data.name,
+        Redcar::EditView.font_size - 1,
+        Swt::SWT::NORMAL)
+      @composite.background = color
       tree_style = Swt::SWT::MULTI | Swt::SWT::H_SCROLL | Swt::SWT::V_SCROLL
       @viewer = JFace::Viewers::TreeViewer.new(@composite, tree_style)
       grid_data = Swt::Layout::GridData.new
@@ -26,11 +34,13 @@ module Redcar
       @composite.layout
       JFace::Viewers::ColumnViewerToolTipSupport.enableFor(@viewer)
       @viewer.set_content_provider(TreeMirrorContentProvider.new(self))
+      @viewer.tree.font = font
+      @viewer.tree.background = color
       #@viewer.getTree.setLinesVisible(true)
 	    #@viewer.getTree.setHeaderVisible(true)
       @viewer.set_label_provider(TreeMirrorLabelProvider.new(self))
       @viewer.set_input(@model.tree_mirror)
-      
+
       if @model.tree_controller
         @viewer.add_tree_listener(@viewer.getControl, TreeListener.new)
         @viewer.add_double_click_listener(DoubleClickListener.new)
@@ -38,9 +48,9 @@ module Redcar
         @viewer.add_selection_changed_listener(SelectionChangedListener.new(@model, @viewer))
         control.add_mouse_listener(MouseListener.new(self))
       end
-      
+
       register_dnd if @model.tree_mirror.drag_and_drop?
-      
+
       @model.add_listener(:refresh) do
         begin
           @model.tree_mirror.refresh_operation(@model) do
@@ -50,12 +60,12 @@ module Redcar
           handle_mirror_error(e)
         end
       end
-      
+
       @editor = Swt::Custom::TreeEditor.new(control)
-      
+
       @editor.horizontalAlignment = Swt::SWT::LEFT
       @editor.grabHorizontal = true
-      
+
       @model.add_listener(:edit_element, &method(:edit_element))
       @model.add_listener(:expand_element, &method(:expand_element))
       @model.add_listener(:select_element, &method(:select_element))
@@ -70,12 +80,12 @@ module Redcar
 
     class DragSourceListener
       attr_reader :tree, :dragged_elements
-      
+
       def initialize(tree_view_swt, tree)
         @tree_view_swt = tree_view_swt
         @tree = tree
       end
-      
+
       def drag_start(event)
         selection = tree.get_selection
         if selection.length > 0
@@ -90,7 +100,7 @@ module Redcar
           event.doit = false
         end
       end
-      
+
       def drag_set_data(event)
         case tree_mirror.data_type
         when :file
@@ -107,28 +117,28 @@ module Redcar
           raise "unknown tree data_type #{tree.tree_mirror.data_type}"
         end
       end
-      
+
       def drag_finished(*_); end
-      
+
       def tree_mirror
         @tree_view_swt.model.tree_mirror
       end
     end
-    
+
     class DropAdapter < JFace::Viewers::ViewerDropAdapter
       def initialize(tree_view_swt, drag_source_listener, viewer)
         @tree_view_swt = tree_view_swt
         @drag_source_listener = drag_source_listener
         super(viewer)
       end
-      
+
       def validateDrop(target, operation, transfer_data_type)
         pos = location_to_position(get_current_location)
         Redcar.safely do
           @tree_view_swt.drag_controller.can_drop?(@drag_source_listener.dragged_elements, target, pos)
         end
       end
-      
+
       def performDrop(data)
         elements = data.to_a.map {|datum| @tree_view_swt.model.tree_mirror.from_data(datum) }
         pos = location_to_position(get_current_location)
@@ -139,9 +149,9 @@ module Redcar
         end
         true
       end
-      
+
       private
-      
+
       def location_to_position(location)
         if Redcar.safely { @tree_view_swt.drag_controller.reorderable? }
           {1 => :before, 2 => :after, 3 => :onto}[location]
@@ -150,7 +160,7 @@ module Redcar
         end
       end
     end
-    
+
     def register_dnd
       case Redcar.safely { @model.tree_mirror.data_type }
       when :file
@@ -161,31 +171,31 @@ module Redcar
         raise "unknown tree data_type #{Redcar.safely { tree.tree_mirror.data_type }}"
       end
       operations = Swt::DND::DND::DROP_MOVE | Swt::DND::DND::DROP_COPY
-      
+
       source_listener = DragSourceListener.new(self, @viewer.get_tree)
       drop_adapter = DropAdapter.new(self, source_listener, @viewer)
       drop_adapter.set_feedback_enabled(drag_controller.reorderable?)
-      
+
       @viewer.add_drag_support(operations, types, source_listener)
       @viewer.add_drop_support(operations, types, drop_adapter)
     end
-    
+
     def drag_controller
       @model.tree_controller.drag_controller(@model)
     end
-    
+
     def edit_element(element, select_from, select_to)
       item = element_to_item(element)
       unless item
         puts "ERROR: when trying to edit, no visible item for #{element.inspect}"
         return
       end
-      
+
       text = Swt::Widgets::Text.new(control, Swt::SWT::NONE)
       text.set_text(item.get_text)
       colour = ApplicationSWT.display.get_system_color(Swt::SWT::COLOR_GRAY)
       text.set_background(colour)
-      
+
       @editor.set_editor(text, item)
       text.set_selection(select_from || 0, select_to || text.get_text.length)
       listener = EditorListener.new(self, element, text)
@@ -194,7 +204,7 @@ module Redcar
 
       text.set_focus
     end
-    
+
     def edited_element(element, text)
       if @model.tree_controller and @model.tree_controller.respond_to?(:edited)
         Redcar.safely("edit element") do
@@ -202,13 +212,13 @@ module Redcar
         end
       end
     end
-    
+
     def expand_element(element)
       if item = element_to_item(element)
         @viewer.expandToLevel(element, 1)
       end
     end
-    
+
     def focus
       @viewer.get_tree.set_focus
     end
@@ -222,21 +232,21 @@ module Redcar
     def element_to_item(element)
       @viewer.test_find_item(element)
     end
-    
+
     def item_to_element(item)
       @viewer.getViewerRowFromItem(item).get_element
     end
-    
+
     def selection
       @viewer.get_tree.get_selection.map {|i| item_to_element(i) }
     end
-    
+
     def visible_nodes
       items = @viewer.get_tree.get_items
       all_items = items.map {|item| [item, visible_children_of(item)] }.flatten
       all_items.map {|item| item_to_element(item) }
     end
-    
+
     def visible_children_of(item)
       if item.get_expanded
         items = item.get_items
@@ -245,14 +255,14 @@ module Redcar
         []
       end
     end
-    
+
     class EditorListener
       def initialize(tree_view_swt, element, text_widget)
         @tree_view_swt = tree_view_swt
         @element = element
         @text = text_widget
       end
-      
+
       def handle_event(e)
         case e.type
         when Swt::SWT::FocusOut
@@ -273,11 +283,11 @@ module Redcar
         end
       end
     end
-    
+
     def control
       @viewer.get_control
     end
-    
+
     def close
       @viewer.getControl.dispose
     end
@@ -295,7 +305,7 @@ module Redcar
         end
       end
     end
-    
+
     def handle_mirror_error(e)
       if @model.tree_controller.respond_to?(:handle_error)
         begin
@@ -311,45 +321,45 @@ module Redcar
         Application::Dialog.message_box(e.message, :type => :error)
       end
     end
-    
+
     class TreeListener
       def tree_collapsed(e)
       end
-      
+
       def tree_expanded(e)
       end
     end
-    
+
     class SelectionListener
       def widget_default_selected(e)
       end
-      
+
       def widget_selected(e)
       end
     end
-    
+
     class MouseListener
       def initialize(tree_view_swt)
         @tree_view_swt = tree_view_swt
       end
-      
+
       def mouse_double_click(_); end
       def mouse_up(_)
       end
-      
+
       def mouse_down(e)
         if e.button == 3
           @tree_view_swt.right_click(e)
         end
       end
     end
-    
+
     class SelectionChangedListener
       def initialize(tree_model, viewer)
         @tree_model = tree_model
         @viewer = viewer
       end
-      
+
       def selection_changed(e)
         Redcar.safely do
           element = e.getSelection.toArray.to_a.first
@@ -359,7 +369,7 @@ module Redcar
         end
       end
     end
-    
+
     class DoubleClickListener
       def double_click(e)
 
@@ -369,7 +379,7 @@ module Redcar
         return if double_clicked_element.leaf?
 
         viewer = e.get_viewer
-        node_is_expanded = viewer.getExpandedState(double_clicked_element) 
+        node_is_expanded = viewer.getExpandedState(double_clicked_element)
 
         if node_is_expanded
           viewer.collapseToLevel(double_clicked_element, 1)
@@ -379,22 +389,22 @@ module Redcar
       rescue
       end
     end
-    
+
     class OpenListener
       def initialize(tree_model)
         @tree_model = tree_model
       end
-      
+
       def open(e)
         Redcar.safely("tree row activation") do
           @tree_model.tree_controller.activated(@tree_model, e.getSelection.toArray.to_a.first)
         end
       end
     end
-    
+
     class TreeMirrorContentProvider
       include JFace::Viewers::ITreeContentProvider
-      
+
       def initialize(tree_view_swt)
         @tree_view_swt = tree_view_swt
       end
@@ -431,7 +441,7 @@ module Redcar
         puts e.backtrace
         @tree_view_swt.handle_mirror_error(e)
       end
-      
+
       def get_parent(tree_node)
         # not sure why this is necessary
       end
@@ -442,7 +452,7 @@ module Redcar
 
     class TreeMirrorLabelProvider
       include JFace::Viewers::ILabelProvider
-      
+
       def initialize(tree_view_swt)
         @tree_view_swt = tree_view_swt
       end
@@ -463,7 +473,7 @@ module Redcar
 
       def dispose
       end
-      
+
       #def getToolTipShift(*_)
       #  Swt::Graphics::Point.new(5, 5)
       #end
@@ -480,7 +490,7 @@ module Redcar
       #def getToolTipTimeDisplayed(*_)
       #  5000
       #end
-      
+
     end
   end
 end

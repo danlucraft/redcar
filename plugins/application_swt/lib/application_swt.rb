@@ -50,20 +50,25 @@ module Redcar
         Redcar.gui.register_dialog_adapter(ApplicationSWT::DialogAdapter.new)
       end
     end
-    
+
     def self.selected_tab_background
       Gradient.new(Redcar::ApplicationSWT.storage['selected_tab_background'])
     end
-    
+
     def self.unselected_tab_background
       Gradient.new(Redcar::ApplicationSWT.storage['unselected_tab_background'])
     end
-    
+
+    def self.tree_background
+      Gradient.new(Redcar::ApplicationSWT.storage['tree_background'])
+    end
+
     def self.storage
       @storage ||= begin
         storage = Plugin::Storage.new('application_swt')
         storage.set_default('selected_tab_background', {0 => "#FEFEFE", 100 => "#EEEEEE"})
         storage.set_default('unselected_tab_background', {0 => "#E5E5E5", 100 => "#D0D0D0"})
+        storage.set_default('tree_background', "#FFFFFF")
         storage
       end
     end

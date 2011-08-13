@@ -3,7 +3,7 @@ module Redcar
     include Redcar::Model
     include Redcar::Observable
 
-    DEFAULT_ICON  = :file
+    DEFAULT_ICON  = :document
     NO_WRITE_ICON = :exclamation_red
     MISSING_ICON  = :exclamation
     CONFIG_ICON   = :hammer_screwdriver
