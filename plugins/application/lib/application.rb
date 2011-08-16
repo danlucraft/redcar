@@ -60,6 +60,9 @@ module Redcar
 
     def self.start
       Redcar.app = Application.new
+      Redcar.plugin_manager.objects_implementing(:app_started).each do |object|
+        object.app_started
+      end
     end
 
     def self.sensitivities
