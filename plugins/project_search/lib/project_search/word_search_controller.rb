@@ -8,11 +8,11 @@ class ProjectSearch
     def title
       TITLE
     end
-    
+
     def search_copy
       "Search for complete words only"
     end
-    
+
     def show_literal_match_option?
       false
     end
@@ -20,31 +20,31 @@ class ProjectSearch
     def num_context_lines
       settings['context_lines']
     end
-    
+
     def plugin_root
       File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
     end
-    
+
     def settings
       ProjectSearch.storage
     end
-    
+
     def match_case?
       ProjectSearch.storage['match_case']
     end
-    
+
     def context?
       ProjectSearch.storage['with_context']
     end
-    
+
     def context_size
       context? ? num_context_lines : 0
     end
-    
+
     def default_query
       doc.selected_text if doc && doc.selection?
     end
-    
+
     def index
       render('index')
     end
@@ -79,20 +79,20 @@ class ProjectSearch
       @thread = nil
       super
     end
-    
+
     def render(view, bg=nil)
       erb(view).result(bg || binding)
     end
-    
+
     def render_file(bg)
       @erb ||= erb("_file")
       @erb.result(bg)
     end
-    
+
     def erb(view)
       ERB.new(File.read(File.join(File.dirname(__FILE__), "views", "#{view.to_s}.html.erb")))
     end
-    
+
     def doc
       Redcar.app.focussed_window.focussed_notebook_tab.edit_view.document rescue false
     end
@@ -107,11 +107,11 @@ class ProjectSearch
       ProjectSearch.storage['recent_queries'] = add_or_move_to_top(query, ProjectSearch.storage['recent_queries'])
       ProjectSearch.storage['match_case']     = (match_case == 'true')
       ProjectSearch.storage['with_context']   = (with_context == 'true')
-      
+
       project = Redcar::Project::Manager.focussed_project
-      
+
       @word_search = WordSearch.new(project, query, match_case?, context_size)
-      
+
       # kill any existing running search to prevent memory bloat
       Thread.kill(@thread) if @thread
       @thread = nil
@@ -122,7 +122,7 @@ class ProjectSearch
           line_num = 0
           have_prepared_table = false
           have_results = false
-          
+
           @word_search.on_file_results do |hits|
             next unless hits.any?
             have_results = true
@@ -131,7 +131,7 @@ class ProjectSearch
             set_file_count(file_num)
             set_line_count(line_num)
             file = hits.first.file
-            
+
             unless have_prepared_table
               prepare_results_table
               have_prepared_table = true
@@ -141,15 +141,15 @@ class ProjectSearch
             escaped_file_html = escape_javascript(file_html)
             execute("$('#results table tr:last').after(\"#{escaped_file_html}\");")
           end
-          
+
           @word_search.generate_results
-          
+
           if have_results
             remove_initial_blank_tr
           else
             render_no_results
           end
-          
+
           hide_spinner
           Thread.kill(@thread) if @thread
           @thread = nil
@@ -160,29 +160,30 @@ class ProjectSearch
       end
       nil
     end
-    
+
     def initialize_search_output
+      image_path = File.expand_path(File.join(plugin_root, %w(lib project_search images)))
       execute("$('#cached_query').val(\"#{escape_javascript(@word_search.query_string)}\");")
-      execute("$('#results').html(\"<div id='no_results'>Searching...</div>\");")
+      execute("$('#results').html(\"<div id='no_results'>Searching...<br/><img id='spinner' src='#{image_path}/spinner.gif' style='display:none;'/></div>\");")
       execute("$('#spinner').show();")
       execute("$('#results_summary').hide();")
       execute("$('#file_results_count').html(0);")
       execute("$('#line_results_count').html(0);")
     end
-    
+
     def prepare_results_table
       execute("if ($('#results table').size() == 0) { $('#results').html(\"<table><tr></tr></table>\"); }")
       execute("if ($('#results_summary').first().is(':hidden')) { $('#results_summary').show(); }")
     end
-    
+
     def set_file_count(value)
       execute("$('#file_results_count').html(\"#{value}\");")
     end
-    
+
     def set_line_count(value)
       execute("$('#line_results_count').html(\"#{value}\");")
     end
-    
+
     def remove_initial_blank_tr
       execute("$('#results table tr:first').remove();")
     end
@@ -191,7 +192,7 @@ class ProjectSearch
       result = "<div id='no_results'>No results were found using the search terms you provided.</div>"
       execute("$('#results').html(\"#{escape_javascript(result)}\");")
     end
-    
+
     def hide_spinner
       execute("$('#spinner').hide();")
     end

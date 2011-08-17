@@ -1,4 +1,3 @@
-
 <tr><td class='break' colspan='2'></td></tr>
 <tr>
   <td class="file_heading" colspan="2">
@@ -15,7 +14,7 @@
   <% display_line_num = hit.line_num + 1%>
   <% if @word_search.context? and last_matching_line_num and (display_line_num - last_matching_line_num) > (@word_search.context_size * 2) %>
     <tr class="divider file_<%= file_num %>">
-      <td class="line_num">. . .</td>
+      <td class="line_num">&#8230;</td>
       <td class="text">&nbsp;</td> <!-- extra space to ensure line-height is respected -->
     </tr>
   <% end %>
