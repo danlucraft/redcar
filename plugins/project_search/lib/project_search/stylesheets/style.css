@@ -269,6 +269,11 @@ body {
   -moz-border-radius:3px;
 }
 
+#files_nav_container {
+  max-height:300px;
+  overflow-y:scroll;
+}
+
 ul {
   list-style-type: none;
 }

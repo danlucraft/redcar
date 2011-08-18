@@ -79,8 +79,8 @@
   <div class="text">
     <span id="line_results_count">0</span> lines matched in <span id="file_results_count">0</span> files
     <span style="float:right">&#9660;</span>
-    <div>
-      <ul id="files_nav" style="display: none;">
+    <div id="files_nav_container" style="display:none">
+      <ul id="files_nav">
       </ul>
     </div>
   </div>
@@ -143,7 +143,7 @@
     });
 
     $('.text').click(function() {
-      $('#files_nav').slideToggle();
+      $('#files_nav_container').slideToggle();
     });
 
     $('.file_link').live('click',function() {
