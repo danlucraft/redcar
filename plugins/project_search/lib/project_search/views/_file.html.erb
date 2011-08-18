@@ -1,7 +1,9 @@
 <tr><td class='break' colspan='2'></td></tr>
 <tr>
   <td class="file_heading" colspan="2">
-    <%= CGI::escapeHTML(file.gsub(@word_search.project.path + "/", "")) %>
+    <a id="<%=File.basename(file).gsub(/\.|:|\\|\//,"")%>">
+      <%= CGI::escapeHTML(file.gsub(@word_search.project.path + "/", "")) %>
+    </a>
   </td>
 </tr>
 

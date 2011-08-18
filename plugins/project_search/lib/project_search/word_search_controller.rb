@@ -130,12 +130,15 @@ class ProjectSearch
             line_num += hits.length
             set_file_count(file_num)
             set_line_count(line_num)
-            file = hits.first.file
 
             unless have_prepared_table
               prepare_results_table
               have_prepared_table = true
             end
+
+            file = hits.first.file
+            add_nav_link(file,hits.length)
+
 
             file_html = render_file(binding)
             escaped_file_html = escape_javascript(file_html)
@@ -174,6 +177,7 @@ class ProjectSearch
     def prepare_results_table
       execute("if ($('#results table').size() == 0) { $('#results').html(\"<table><tr></tr></table>\"); }")
       execute("if ($('#results_summary').first().is(':hidden')) { $('#results_summary').show(); }")
+      execute("$('#files_nav').html('<li></li>');")
     end
 
     def set_file_count(value)
@@ -182,6 +186,12 @@ class ProjectSearch
 
     def set_line_count(value)
       execute("$('#line_results_count').html(\"#{value}\");")
+    end
+
+    def add_nav_link(file,hit_count)
+      file = File.basename(file)
+      link= file.gsub(/\.|:|\\|\//,"")
+      execute("$('#files_nav').append('<li><a id=\"link_#{link}\" class=\"file_link\">#{file} (#{hit_count})</a></li>');")
     end
 
     def remove_initial_blank_tr

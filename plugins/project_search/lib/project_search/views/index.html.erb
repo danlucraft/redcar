@@ -78,6 +78,11 @@
 <div id="results_summary" style="display: none;">
   <div class="text">
     <span id="line_results_count">0</span> lines matched in <span id="file_results_count">0</span> files
+    <span style="float:right">&#9660;</span>
+    <div>
+      <ul id="files_nav" style="display: none;">
+      </ul>
+    </div>
   </div>
 </div>
 
@@ -108,11 +113,7 @@
 
     $('#toggle_recent_queries').click(function(ev) {
       ev.preventDefault();
-      if ($('#recent_queries').is(":visible")) {
-        $('#recent_queries').hide();
-      } else {
-        $('#recent_queries').show();
-      }
+      $('#recent_queries').slideToggle('fast');
     });
 
     // in the case the user wants to search for things like <table>, we need to unescape the entities
@@ -141,6 +142,15 @@
       }
     });
 
+    $('.text').click(function() {
+      $('#files_nav').slideToggle();
+    });
+
+    $('.file_link').live('click',function() {
+      $('body').animate({
+          scrollTop: $("#"+$(this).attr('id').replace("link_","")).offset().top - 120
+      }, 0);
+    });
   });
 </script>
 </body>
