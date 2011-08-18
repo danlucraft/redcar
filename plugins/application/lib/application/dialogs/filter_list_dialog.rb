@@ -58,27 +58,37 @@ module Redcar
     # @block A -> String    optionally turns an element from the list into a string to match on
     def filter_and_rank_by(list, query, max_length=20)
       re = make_regex(query)
-      score_match_pairs = []
+      ranked_list = []
       cutoff = 100000000
       results = list.each do |element|
-        bit = block_given? ? yield(element) : element
         begin
-          if m = bit.match(re)
-            cs = []
-            m.captures.each_with_index do |_, i|
-              prev = cs.last
-              if prev and m.begin(i + 1) == prev[0] - prev[1]
-                cs.last[1] -= 1
+          match_data = (block_given? ? yield(element) : element).match(re)
+          if match_data
+            captures = []
+            match_data.captures.each_with_index do |_, i|
+              i += 1 # Match group 0 is actually the complete regex, we are interested in the subgroups
+              previous_capture = captures.last
+              if previous_capture and match_data.begin(i) - previous_capture[:end] <= 1
+                # If the the current match starts where the previous match ended, or they even overlap, merge the matches
+                captures.last[:end] = match_data.end(i)
               else
-                cs << [m.begin(i + 1), m.begin(i + 1) - m.end(i + 1)]
+                # Record the match
+                captures << {:begin => match_data.begin(i), :end => match_data.end(i)}
               end
             end
-            if cs.first.first < cutoff
-              score_match_pairs << [cs, element]
-              score_match_pairs = score_match_pairs.sort_by {|a| a.first }
-              if score_match_pairs.length == max_length
-                cutoff = score_match_pairs.last.first.first.first
-                score_match_pairs.pop
+            if captures.first[:begin] < cutoff
+              # The penalty is calculated as such: The values of the beginnings of matches are penalty, the lengths are bonuses
+              # This way, matching early and continiously is rewarded. Matching late in a word or only at intervals is punished.
+              penalty = captures.inject(0) {|p,c| p + c[:begin] - (c[:end] - c[:begin]) }
+              ranked_list << {:penalty => penalty, :first_match => captures.first[:begin], :element => element}
+              ranked_list = ranked_list.sort_by {|a| a[:penalty] }
+
+              # Performance optimization: Once we reach the maximum length, remove elements (saves later sorting)
+              # Set the new cutoff to the beginning of the previously last element, to avoid later elements getting
+              # into the list which would have an even worse rank.
+              if ranked_list.length > max_length
+                cutoff = ranked_list.last[:first_match]
+                ranked_list.pop
               end
             end
           end
@@ -88,7 +98,7 @@ module Redcar
           # unicode in them.
         end
       end
-      score_match_pairs.map {|a| a.last }
+      ranked_list.map {|a| a[:element] }
     end
     
     # The time interval in seconds in which moved_to events are ignored
