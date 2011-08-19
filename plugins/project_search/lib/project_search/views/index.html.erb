@@ -9,16 +9,16 @@
 <style>
 <% font_size = (Redcar::EditView.font_size * 1.5).to_i %>
 #results .text pre, #results .text pre span, #query,#results .line_num, #recent_queries {
-  font-family: <%=Redcar::EditView.font%>;
-  font-size: <%=font_size%>px;
+  font-family: <%= Redcar::EditView.font %>;
+  font-size: <%= font_size - 6 %>px;
 }
 #results .line_num {
-  font-size:<%=font_size - 2%>px;
-  line-height:<%=font_size - 2%>px;
+  font-size:<%= font_size - 8 %>px;
+  line-height:<%= font_size - 8 %>px;
 }
 #results .text pre {
-  font-size: <%=font_size%>px;
-  line-height: <%=font_size + 3%>px;
+  font-size: <%= font_size - 6 %>px;
+  line-height: <%= font_size - 3 %>px;
 }
 </style>
 <link rel="stylesheet" href="file://<%= plugin_css %>" type="text/css" media="screen">
