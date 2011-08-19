@@ -96,10 +96,10 @@ class ProjectSearch
         StandardAnalyzer.new(Version::LUCENE_29)
       )
       begin
-        text = query_string.gsub(/^\W+/,"").strip
+        text = query_string.gsub(/^\W+/,"").gsub(/\(|\)/," ").strip
         unless text.empty?
           query = parser.parse(text)
-          return query.to_s.gsub("_*","*").gsub("_"," ").strip
+          return query.to_s.gsub("_*","*").gsub(/_|\./," ").strip
         end
       rescue => e
         p e.message
@@ -113,7 +113,7 @@ class ProjectSearch
         index = ProjectSearch.indexes[project.path].lucene_index
         doc_ids = nil
         if text = formatted_query and not text.empty?
-          doc_ids = index.find(text).map {|doc| doc.id}
+          doc_ids = index.find(text).map {|doc| doc.id}.uniq
           doc_ids.reject {|doc_id| Redcar::Project::FileList.hide_file_path?(doc_id) }
         else
           []
