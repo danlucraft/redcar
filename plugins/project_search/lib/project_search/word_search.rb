@@ -13,19 +13,19 @@ class ProjectSearch
       @match_case   = !!match_case
       @context_size = context_size
     end
-    
+
     def match_case?
       @match_case
     end
-    
+
     def context?
       @context_size > 0
     end
-    
+
     def matching_line?(line)
       line =~ regex
     end
-    
+
     def regex
       @regex ||= begin
         regexp_text = Regexp.escape(@query_string)
@@ -37,11 +37,11 @@ class ProjectSearch
         match_case? ? /#{regexp_text}/ : /#{regexp_text}/i
       end
     end
-    
+
     def on_file_results(&block)
       @on_file_results_block = block
     end
-    
+
     def generate_results
       hits = []
       doc_ids.each do |doc_id|
@@ -58,9 +58,9 @@ class ProjectSearch
               remove_hits << hit
             end
           end
-          
+
           hits_needing_post_context -= remove_hits
-          
+
           if matching_line?(line)
             hit = Hit.new(doc_id, line_num, line, regex, pre_context.dup, [])
             hits << hit
@@ -78,13 +78,13 @@ class ProjectSearch
       end
       hits
     end
-    
+
     def send_file_results(hits)
       if @on_file_results_block
         @on_file_results_block.call(hits)
       end
     end
-    
+
     def results
       @results ||= generate_results
     end
