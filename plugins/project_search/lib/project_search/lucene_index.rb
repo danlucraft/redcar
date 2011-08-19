@@ -60,7 +60,7 @@ class ProjectSearch
               pre_contents = File.new(fn).read(200)
               unless !pre_contents or BinaryDataDetector.binary?(pre_contents)
                 contents = File.read(fn)
-                adjusted_contents = contents.gsub(/\.([^\s])/, '. \1')
+                adjusted_contents = contents#.gsub(/\.([^\s])/, '. \1')
                 @lucene_index << { :id => fn, :contents => adjusted_contents }
               end
             rescue => e
