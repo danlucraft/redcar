@@ -19,6 +19,9 @@ Version 0.12 (TBA)
  * Added option to add editable ComboItem widgets to Speedbars (Delisa Mason)
  * Updated UI Styling (Delisa Mason)
  * Added option to color tree background color via ApplicationSWT preferences (Delisa Mason)
+ * Project tree has colourful icons (Delisa Mason)
+ * Uses gems to install everything (Dan Lucraft)
+ * Wildcards permitted in project search (Delisa Mason)
 
 Version 0.11 (23 March 2011)
 ============================
