@@ -32,6 +32,8 @@ class ProjectSearch
         # Replace Lucene wildcards with non-greedy Ruby regex equivalents
         # TODO: determine best (expected?) way of handling phrases
         regexp_text = regexp_text.gsub(/\\\s+or\\\s+/i,"|").gsub('\\*','.*?').gsub('\\?','.').gsub(/\\\s+/,".*?")
+        # Match to the next word boundary if the last char is '*'
+        regexp_text += "\\b" if regexp_text =~ /\.\*\?$/
         match_case? ? /#{regexp_text}/ : /#{regexp_text}/i
       end
     end
