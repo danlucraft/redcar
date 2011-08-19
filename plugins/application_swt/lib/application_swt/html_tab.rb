@@ -2,6 +2,7 @@
 module Redcar
   class ApplicationSWT
     class HtmlTab < Tab
+      
       attr_reader :browser
       
       def initialize(model, notebook)
@@ -13,7 +14,7 @@ module Redcar
         Swt::Graphics::Device.DEBUG = true
         if Redcar.platform == :windows
           java.lang.System.setProperty('org.eclipse.swt.browser.XULRunnerPath',
-                                      (Redcar.asset_dir + "/xulrunner").gsub("/", "\\"))
+                                      HtmlTab.windows_xulrunner_path.gsub("/", "\\"))
           @browser = Swt::Browser.new(notebook.tab_folder, Swt::SWT::MOZILLA)
         else
           @browser = Swt::Browser.new(notebook.tab_folder, Swt::SWT::NONE)
@@ -62,6 +63,16 @@ module Redcar
       def add_listeners
         @location_listener = LocationListener.new(@model)
         @browser.add_location_listener(@location_listener)
+      end
+      
+      def self.windows_xulrunner_path
+        begin
+          require 'redcar-xulrunner-win'
+        rescue LoadError => e
+          raise "Missing xulrunner browser widget, install gem redcar-xulrunner-win."
+        end
+        Redcar::XulrunnerWin.ensure_unpacked
+        Redcar::XulrunnerWin.path
       end
     end
   end

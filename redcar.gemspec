@@ -43,7 +43,6 @@ Gem::Specification.new do |s|
   s.add_dependency("spoon")
   s.add_dependency("lucene", "~> 0.5.0.beta.1")
   s.add_dependency("net-ssh")
-  s.add_dependency("rubyzip")
   s.add_dependency("net-sftp")
   s.add_dependency("net-ftp-list")
   s.add_dependency("jruby-openssl")
