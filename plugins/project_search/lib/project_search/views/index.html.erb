@@ -7,17 +7,17 @@
 
 <% plugin_css = File.expand_path(File.join(plugin_root, %w(lib project_search stylesheets style.css))) %>
 <style>
-<% font_size = (Redcar::EditView.font_size * 1.5).to_i %>
+<% font_size = 12 %>
 #results .text pre, #results .text pre span, #query,#results .line_num, #recent_queries {
   font-family: <%= Redcar::EditView.font %>;
-  font-size: <%= font_size - 6 %>px;
+  font-size: <%= font_size%>px;
 }
 #results .line_num {
-  font-size:<%= font_size - 8 %>px;
-  line-height:<%= font_size - 8 %>px;
+  font-size:<%= font_size - 2 %>px;
+  line-height:<%= font_size - 2 %>px;
 }
 #results .text pre {
-  font-size: <%= font_size - 6 %>px;
+  font-size: <%= font_size - 1 %>px;
   line-height: <%= font_size - 3 %>px;
 }
 </style>
