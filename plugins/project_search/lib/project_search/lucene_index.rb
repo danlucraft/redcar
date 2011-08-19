@@ -2,27 +2,27 @@
 class ProjectSearch
   class LuceneIndex
     attr_accessor :last_updated, :lucene_index
-    
+
     def initialize(project)
       @project     = project
       @has_content = false
       load
     end
-    
+
     def timestamp_file_path
       File.join(@project.config_dir, 'lucene_last_updated')
     end
-    
+
     def lucene_index_dir
       File.join(@project.config_dir, "lucene")
     end
-    
+
     def delete
       FileUtils.rm(timestamp_file_path)
       FileUtils.rm_r(lucene_index_dir)
       load
     end
-    
+
     def load
       @last_updated = Time.at(0)
       if File.exist?(timestamp_file_path)
@@ -30,19 +30,19 @@ class ProjectSearch
         @has_content = true
       end
     end
-    
+
     def dump
       File.open(timestamp_file_path, "w") do |fout|
         fout.puts(last_updated.to_i.to_s)
       end
     end
-    
+
     def has_content?
       @has_content
     end
-    
+
     MAX_FILE_SIZE = 500 * 1024
-    
+
     def update
       changed_files = @project.file_list.changed_since(last_updated)
       @last_updated = Time.now
@@ -76,6 +76,6 @@ class ProjectSearch
       end
       dump
     end
-    
+
   end
 end

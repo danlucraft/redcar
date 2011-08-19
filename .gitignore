@@ -6,10 +6,14 @@
 *.log
 *.log.*
 *.class
-
+*.gem
 *.swp
 
-lib/*.jar
+.yardoc
+.server.yaml
+.bundle
+
+.DS_Store
 
 doc/
 doc/html
@@ -22,23 +26,13 @@ plugins/application_swt/vendor/swt/win32/swt.jar
 plugins/application_swt/vendor/jface/
 plugins/application_swt/vendor/swtbot/
 plugins/application_swt/build/
-plugins/application_swt/dist
-plugins/edit_view_swt/vendor/*.jar
+#plugins/application_swt/dist
+#plugins/edit_view_swt/vendor/*.jar
 plugins/dans
-plugins/*/lib/dist/
+#plugins/*/lib/dist/
 pkg
 
 plugins/core/spec/core/*.yaml
 plugins/scm_svn/features/fixtures
 
 tmp
-plugins/repl/vendor/clojure-contrib.jar
-plugins/repl/vendor/clojure.jar
-plugins/repl/vendor/org-enclojure-repl-server.jar
-vendor/swtbot
-.server.yaml
-.yardoc
-
-.bundle
-
-.DS_Store

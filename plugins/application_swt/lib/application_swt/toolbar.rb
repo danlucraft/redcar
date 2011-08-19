@@ -3,21 +3,18 @@ module Redcar
   class ApplicationSWT
     class ToolBar
 
-      ICONS_DIR = File.join(Redcar.root, %w(share icons))
       DEFAULT_ICON = File.join(Redcar.root, %w(share icons document.png))
-
 
       def self.icons
         @icons = {
-          :new => File.join(ICONS_DIR, "document-text.png"),
-          :open => File.join(ICONS_DIR, "folder-open-document.png"),
-          :open_dir => File.join(ICONS_DIR, "blue-folder-horizontal-open.png"),
-          :save => File.join(ICONS_DIR, "disk.png"),
-          :save_as => File.join(ICONS_DIR, "disk--plus.png"),
-          #:save_all => File.join(ICONS_DIR, "save_all.png"),
-          :undo => File.join(ICONS_DIR, "arrow-circle-225-left.png"),
-          :redo => File.join(ICONS_DIR, "arrow-circle-315.png"),
-          :search => File.join(ICONS_DIR, "binocular.png")
+          :new       => File.join(Redcar.icons_directory, "document-text.png"),
+          :open      => File.join(Redcar.icons_directory, "folder-open-document.png"),
+          :open_dir  => File.join(Redcar.icons_directory, "blue-folder-horizontal-open.png"),
+          :save      => File.join(Redcar.icons_directory, "disk.png"),
+          :save_as   => File.join(Redcar.icons_directory, "disk--plus.png"),
+          :undo      => File.join(Redcar.icons_directory, "arrow-circle-225-left.png"),
+          :redo      => File.join(Redcar.icons_directory, "arrow-circle-315.png"),
+          :search    => File.join(Redcar.icons_directory, "binocular.png")
         }
       end
 
@@ -32,64 +29,41 @@ module Redcar
       attr_reader :coolbar, :toolbar, :coolitem, :toolbars, :coolitems
 
       def initialize(window, toolbar_model, options={})
-        s = Time.now
-        @toolbars = {}
-        @coolitems = {} 
-        @entries = Hash.new{|hash, key| hash[key] = Array.new}
-        @coolbar = Swt::Widgets::CoolBar.new(window.shell, Swt::SWT::FLAT | Swt::SWT::HORIZONTAL)
         return unless toolbar_model
+        
+        @entries = Hash.new {|h,k| h[k] = [] }
+        @toolbar = main_toolbar(window)
         toolbar_model.each do |entry|
-          @name = entry.barname || :new
-          if not @toolbars[@name]
-            if @name == :core
-              @coolitem = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::FLAT, 0)
-            else
-              @coolitem = Swt::Widgets::CoolItem.new(@coolbar, Swt::SWT::FLAT)
-            end
-            
-            @toolbars[@name] = create_toolbar(@coolbar)
-            @coolitems[@name] = @coolitem
-          else
-            @toolbar = @toolbars[@name]
-            @coolitem = @coolitems[@name]
-          end
-            @entries[@name] << entry
+          name = entry.barname || :new
+          @entries[name] << entry
         end
-
-        @toolbars.each_key do |key|
-
-          @toolbar = @toolbars[key]
-          @coolitem = @coolitems[key]
-          @toolbar_data = @entries[key]
-          @coolitem.setControl(@toolbar)
-
-          add_entries_to_toolbar(@toolbar, @toolbar_data)
-          @p = @toolbar.computeSize(Swt::SWT::DEFAULT, Swt::SWT::DEFAULT)
-          @point = @coolitem.computeSize(@p.x, @p.y)
-          #@coolitem.setPreferredSize(@point)
-          #@coolitem.setMinimumSize(@point)
-          @coolitem.setSize(@point.x, @point.y)
+        add_entries_to_toolbar(@toolbar, @entries[:core])
+        @entries.each do |name, es|
+          next if name == :core
+          add_entries_to_toolbar(@toolbar, es)
+          sep = Swt::Widgets::ToolItem.new(@toolbar, Swt::SWT::DEFAULT)
         end
-
-        #puts "ApplicationSWT::ToolBar initialize took #{Time.now - s}s"
-        @coolbar.setLocked(true)
-        @coolbar.pack()
+        @toolbar.pack unless Redcar.platform == :osx
       end
 
-      def create_toolbar(composite)
-        @toolbar = Swt::Widgets::ToolBar.new(composite, Swt::SWT::FLAT)
-        @toolbar.set_visible(false)
-        @toolbar
+      def main_toolbar(window)
+        if Redcar.platform == :osx
+          window.shell.getToolBar
+        else
+          Swt::Widgets::ToolBar.new(window.shell, Swt::SWT::FLAT | Swt::SWT::HORIZONTAL)
+        end
       end
       
       def show
-        @toolbars.each_value { |toolbar| toolbar.set_visible(true) }
-        @coolbar.set_visible(true)
+        @toolbar.set_visible(true)
       end
 
       def hide
-        @toolbars.each_value { |toolbar| toolbar.dispose() }
-        @coolbar.dispose()
+        unless @toolbar.disposed?
+          @toolbar.set_visible(false)
+          @toolbar.getItems.each {|i| i.dispose }
+          # @toolbar.dispose unless Redcar.platform == :osx
+        end
       end
 
       def close
@@ -98,22 +72,18 @@ module Redcar
       end
 
       def height
-        @h = 0
-        @coolbar.getItems.each do |i|
-          @h = ( @h > i.getSize.y ) ? @h : i.getSize.y
-        end
-        @h
+        return 0 if Redcar.platform == :osx
+        point = @toolbar.computeSize(Swt::SWT::DEFAULT, Swt::SWT::DEFAULT, true)
+        return point.y
       end
 
       private
 
       def add_entries_to_toolbar(toolbar, toolbar_model)
-
         toolbar_model.each do |entry|
           if entry.is_a?(Redcar::ToolBar::LazyToolBar)
             toolbar_header = Swt::Widgets::ToolItem.new(toolbar, Swt::SWT::CASCADE)
             toolbar_header.text = entry.text
-            #new_toolbar = Swt::Widgets::ToolBar.new(@window.shell, Swt::SWT::DROP_DOWN)
             new_toolbar = Swt::Widgets::ToolBar.new(toolbar)
             toolbar_header.toolbar = new_toolbar
             toolbar_header.add_arm_listener do

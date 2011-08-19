@@ -9,7 +9,6 @@ file = File.readlink(file) while File.symlink?(file)
 $LOAD_PATH.unshift File.expand_path('../../lib', file)
 
 require "redcar_quick_start"
-
 if ARGV.include? '--silent'
   # reopen the standard pipes to nothingness if we were forked as part of jruby
   STDIN.reopen Redcar.null_device
@@ -17,24 +16,14 @@ if ARGV.include? '--silent'
   STDERR.reopen STDOUT
 end
 
-if ARGV.include? "install"
-  require 'redcar'
-  require 'redcar/installer'
-  require 'redcar/runner'
-  installer = Redcar::Installer.new
-  installer.install
-else
-  Redcar.read_stdin
-  exit if Redcar.try_to_load_via_drb
-  require 'redcar'
-  Redcar.environment = :user
-  if Redcar.installed?
-    Redcar.log.info("REDCAR #{Redcar::VERSION} start (start time was #{Redcar.process_start_time})")
-    Redcar.spin_up
-    Redcar.load_threaded
-    Redcar.show_splash
-    Redcar.pump
-  else
-    puts 'It appears you haven\'t run `redcar install` yet. Please do this in order to run Redcar.'
-  end
-end
+SWT_APP_NAME = "Redcar"
+Redcar.read_stdin
+exit if Redcar.try_to_load_via_drb
+require 'redcar'
+Redcar.environment = :user
+Redcar.ensure_user_dir_config
+Redcar.log.info("REDCAR #{Redcar::VERSION} start (start time was #{Redcar.process_start_time})")
+Redcar.spin_up
+Redcar.load_threaded
+Redcar.show_splash
+Redcar.pump

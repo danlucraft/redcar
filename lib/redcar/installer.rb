@@ -44,17 +44,6 @@ module Redcar
 
     def assets_by_platform
       { :all => {
-          "http://jruby.org.s3.amazonaws.com/downloads/1.6.1/jruby-complete-1.6.1.jar" => "/jruby-complete-1.6.1.jar",
-          "http://redcar.s3.amazonaws.com/jface/org.eclipse.core.commands.jar" => nil,
-          "http://redcar.s3.amazonaws.com/jface/org.eclipse.core.runtime_3.5.0.v20090525.jar" => nil,
-          "http://redcar.s3.amazonaws.com/jface/org.eclipse.equinox.common.jar" => nil,
-          "http://redcar.s3.amazonaws.com/jface/org.eclipse.jface.databinding_1.3.0.I20090525-2000.jar" => nil,
-          "http://redcar.s3.amazonaws.com/jface/org.eclipse.jface.jar" => nil,
-          "http://redcar.s3.amazonaws.com/jface/org.eclipse.jface.text_3.5.0.jar" => nil,
-          "http://redcar.s3.amazonaws.com/jface/org.eclipse.osgi.jar" => nil,
-          "http://redcar.s3.amazonaws.com/jface/org.eclipse.text_3.5.0.v20090513-2000.jar" => nil,
-          "http://redcar.s3.amazonaws.com/jface/org.eclipse.core.resources.jar" => nil,
-          "http://redcar.s3.amazonaws.com/jface/org.eclipse.core.jobs.jar" => nil,
           "http://redcar.s3.amazonaws.com/jruby/jcodings.jar" => "/jcodings.jar",
           "http://redcar.s3.amazonaws.com/jruby/jdom.jar" => "/jdom.jar",
           "http://redcar.s3.amazonaws.com/jruby/joni.jar" => "/joni.jar",
@@ -66,23 +55,16 @@ module Redcar
           "http://redcar.s3.amazonaws.com/clojure-1.2beta1.jar" => "/clojure.jar",
           "http://redcar.s3.amazonaws.com/clojure-contrib-1.2beta1.jar" => "/clojure-contrib.jar",
           "http://redcar.s3.amazonaws.com/org-enclojure-repl-server.jar" => nil,
-          "http://mirrors.ibiblio.org/pub/mirrors/maven2/org/codehaus/groovy/groovy-all/1.7.4/groovy-all-1.7.4.jar" => "/groovy-all.jar",
           "http://mirrors.ibiblio.org/pub/mirrors/maven2/org/tmatesoft/svnkit/svnkit/1.3.4/svnkit-1.3.4.jar" => "/svnkit.jar",
           # "http://mirrors.ibiblio.org/pub/mirrors/maven2/rhino/js/1.7R2/js-1.7R2.jar" => "/js.jar",
           "http://redcar.s3.amazonaws.com/deps/rhino-js-1.7R2.jar" => "/js.jar",
-          "http://redcar.s3.amazonaws.com/lucene-core-2.9.1.jar" => "lucene/jars/lucene-core-2.9.1.jar"
         },
         :windows => {
           "http://releases.mozilla.org/pub/mozilla.org/xulrunner/releases/#{xulrunner_version}/runtimes/xulrunner-#{xulrunner_version}.en-US.win32.zip" => "xulrunner-#{xulrunner_version}.en-US.win32.zip",
-          "http://redcar.s3.amazonaws.com/swt/win32.jar"   => nil,
         },
         :linux => {
-          "http://redcar.s3.amazonaws.com/swt/linux.jar"     => nil,
-          "http://redcar.s3.amazonaws.com/swt/linux64.jar"   => nil
         },
         :osx => {
-          "http://redcar.s3.amazonaws.com/swt/osx.jar"     => nil,
-          "http://redcar.s3.amazonaws.com/swt/osx64.jar"   => nil
         }
       }
     end

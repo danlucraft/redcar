@@ -35,12 +35,12 @@ module Redcar
       def icon
         if leaf?
           if @url =~ /^file/
-            File.join(Redcar::ICONS_DIRECTORY, "document-globe.png")
+            File.join(Redcar.icons_directory, "document-globe.png")
           else
-            File.join(Redcar::ICONS_DIRECTORY, "globe.png")
+            File.join(Redcar.icons_directory, "globe.png")
           end
         else
-          File.join(Redcar::ICONS_DIRECTORY, "book-bookmark.png")
+          File.join(Redcar.icons_directory, "book-bookmark.png")
         end
       end
 

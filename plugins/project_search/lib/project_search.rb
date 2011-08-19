@@ -1,5 +1,4 @@
 
-$:.push(File.dirname(__FILE__) + "/../vendor/lucene/lib")
 require 'lucene'
 
 require 'project_search/word_search_controller'
@@ -37,7 +36,7 @@ class ProjectSearch
   def self.toolbars
     Redcar::ToolBar::Builder.build do
       item "Word Search", :command => WordSearchCommand,
-        :icon => File.join(Redcar::ICONS_DIRECTORY, "application-search-result.png"),
+        :icon => File.join(Redcar.icons_directory, "application-search-result.png"),
         :barname => :project
     end
   end

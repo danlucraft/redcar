@@ -11,6 +11,8 @@ module Redcar
           end
 
           def connection
+            gem "net-ssh"
+            gem "net-sftp"
             require 'net/ssh'
             require 'net/sftp'
             Redcar.timeout(10) do

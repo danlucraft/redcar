@@ -4,6 +4,5 @@ Plugin.define do
   version "1.1"
   file    "lib", "application_swt"
   object  "Redcar::ApplicationSWT"
-  dependencies "application", ">0",
-               "swt",         ">0"
+  dependencies "application", ">0"
 end

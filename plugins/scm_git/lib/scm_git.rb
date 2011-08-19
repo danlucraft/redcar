@@ -1,10 +1,7 @@
 
-$:.push(
-  File.expand_path(File.join(File.dirname(__FILE__), %w{.. vendor ruby-git lib}))
-)
-
 # Don't error if we don't have git installed
 begin
+  gem "git"
   require 'git'
 rescue
 end

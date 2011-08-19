@@ -3,12 +3,8 @@ require 'edit_view_swt/document'
 require 'edit_view_swt/edit_tab'
 require 'edit_view_swt/word_movement'
 
-require 'joni'
-require 'jcodings'
-require 'jdom'
-
-require "java-mateview-#{Redcar::VERSION}"
-require File.dirname(__FILE__) + '/../vendor/java-mateview'
+gem "redcar-javamateview"
+require "javamateview"
 
 module Redcar
   class EditViewSWT
@@ -72,7 +68,7 @@ module Redcar
     def self.load_textmate_assets
       Redcar.log.info("loaded JavaMateView #{JavaMateView::MateText.VERSION}")
       Redcar.log.benchmark("load textmate assets") do
-        load_textmate_assets_from_dir(Redcar.root + "/plugins/textmate/vendor/redcar-bundles")
+        load_textmate_assets_from_dir(RedcarBundles.dir)
         Redcar.plugin_manager.loaded_plugins.each do |plugin|
           load_textmate_assets_from_dir(File.dirname(plugin.definition_file) + "/")
         end

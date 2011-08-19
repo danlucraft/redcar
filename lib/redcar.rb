@@ -13,9 +13,14 @@ require 'regex_replace'
 
 require 'forwardable'
 require 'uri'
+require 'fileutils'
+
+require 'rubygems'
+require 'redcar-icons'
 
 begin
   if Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby"
+    gem "spoon"
     require 'spoon'
     module Redcar; SPOON_AVAILABLE = true; end
   else
@@ -52,7 +57,7 @@ end
 #
 # and so on.
 module Redcar
-  VERSION         = '0.12.0dev' # also change in the Rakefile!
+  VERSION         = '0.12.15dev' # also change in the gemspec!
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 12
   VERSION_RELEASE = 0
@@ -61,7 +66,9 @@ module Redcar
   
   PROCESS_START_TIME = Time.now
   
-  ICONS_DIRECTORY = File.expand_path(File.join(File.dirname(__FILE__), %w{.. share icons}))
+  def self.icons_directory
+    RedcarIcons.directory
+  end
 
   def self.environment=(env)
     unless ENVIRONMENTS.include?(env)
@@ -96,36 +103,37 @@ module Redcar
   def self.add_plugin_sources(manager)
     manager.add_plugin_source(File.join(root, "plugins"))
     manager.add_plugin_source(File.join(user_dir, "plugins"))
+    manager.add_gem_plugin_source
   end
 
   def self.load_prerequisites
     exit if ARGV.include?("--quit-immediately")
+    require 'java'
     
     require 'redcar_quick_start'
     
-    $:.push File.expand_path(File.join(File.dirname(__FILE__), "plugin_manager", "lib"))
-    begin
-      require 'plugin_manager'
-    rescue LoadError
-      # TODO is there a project-wide developer error system? or do we just throw errors?
-      puts <<-ERROR
-
-The 'plugin_manager' portion is missing; you probably haven't loaded the git submodules.
-Try:
-
-    rake initialise
+    gem "plugin_manager"
+    require 'plugin_manager'
     
-      ERROR
-      exit 1
-    end
     $:.push File.expand_path(File.join(Redcar.asset_dir))
-    
-    $:.push File.expand_path(File.join(File.dirname(__FILE__), "json", "lib"))
+
+    gem "json"
     require 'json'
 
-    $:.push File.expand_path(File.join(File.dirname(__FILE__), "openssl", "lib"))
+    gem "jruby-openssl"
+    require 'openssl'
     
-    plugin_manager.load("swt")
+    plugin_manager.load("core")
+    
+    gem 'swt'
+    require 'swt/minimal'
+    
+    gui = Redcar::Gui.new("swt")
+    gui.register_event_loop(Swt::EventLoop.new)
+    gui.register_features_runner(Swt::CucumberRunner.new)
+    Redcar.gui = gui
+    
+    plugin_manager.load("splash_screen")
   end
   
   def self.load_useful_libraries
@@ -136,20 +144,17 @@ Try:
       exit if ARGV.include?("--quit-after-splash")
       
       plugin_manager.load
+      
       if plugin_manager.unreadable_definitions.any?
-        puts "Couldn't read definition files: "
-        puts plugin_manager.unreadable_definitions.map {|d| "  * " + d}
+        puts "Couldn't read definition files:  " + plugin_manager.unreadable_definitions.map {|pd| pd.name}.join(", ")
       end
       if plugin_manager.plugins_with_errors.any?
-        puts "There was an error loading plugins: "
-        puts plugin_manager.plugins_with_errors.map {|d| "  * " + d.name}
+        puts "There was an error loading plugins:  " + plugin_manager.plugins_with_errors.map {|pd| pd.name}.join(", ")
       end
       if ENV["PLUGIN_DEBUG"]
-        puts "Loaded plugins:"
-        puts plugin_manager.loaded_plugins.map {|d| "  * " + d.name}
+        puts "Loaded plugins:  " + plugin_manager.loaded_plugins.map {|pd| pd.name}.join(", ")
         puts
-        puts "Unloaded plugins:"
-        puts plugin_manager.unloaded_plugins.map {|d| "  * " + d.name}
+        puts "Unloaded plugins:  " + plugin_manager.unloaded_plugins.map {|pd| pd.name}.join(", ")
       end
     rescue => e
       puts e.message
@@ -185,11 +190,11 @@ Try:
   def self.show_splash
     return if Redcar.no_gui_mode?
     unless ARGV.include?("--no-splash")
-      Swt.create_splash_screen(plugin_manager.plugins.length + 10)
+      SplashScreen.create_splash_screen(plugin_manager.plugins.length + 10)
     end
     plugin_manager.on_load do |plugin|
       Swt.sync_exec do
-        Swt.splash_screen.inc if Swt.splash_screen
+        SplashScreen.splash_screen.inc if SplashScreen.splash_screen
       end
     end
   end
@@ -207,6 +212,10 @@ Try:
   def self.installed?
     return true if File.directory? user_dir
     false
+  end
+
+  def self.ensure_user_dir_config
+    FileUtils.mkdir_p(user_dir)
   end
   
   # Platform specific ~/.redcar

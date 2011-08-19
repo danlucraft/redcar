@@ -56,8 +56,8 @@ module Redcar
 
     def self.toolbars
       Redcar::ToolBar::Builder.build do
-        item "Find", :command => DocumentSearch::OpenIncrementalSearchSpeedbarCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier.png"), :barname => :edit
-        item "Find Next", :command => DocumentSearch::DoFindNextCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "magnifier--arrow.png"), :barname => :edit
+        item "Find", :command => DocumentSearch::OpenIncrementalSearchSpeedbarCommand, :icon => File.join(Redcar.icons_directory, "magnifier.png"), :barname => :edit
+        item "Find Next", :command => DocumentSearch::DoFindNextCommand, :icon => File.join(Redcar.icons_directory, "magnifier--arrow.png"), :barname => :edit
       end
     end
 

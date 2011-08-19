@@ -1,9 +1,7 @@
 
-$:.push(
-  File.expand_path(File.join(File.dirname(__FILE__), %w{.. vendor ruby-blockcache lib}))
-)
-
+gem "ruby-blockcache"
 require 'blockcache'
+
 require 'scm/model'
 require 'scm/commands'
 require 'scm/commit_mirror'

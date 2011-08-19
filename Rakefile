@@ -8,7 +8,7 @@ require 'spec/rake/spectask'
 require 'cucumber/rake/task'
 require "rake/gempackagetask"
 require "rake/rdoctask"
-Dir[File.expand_path("../tasks/*.rake", __FILE__)].each { |f| load f }
+Dir[File.expand_path("../lib/tasks/*.rake", __FILE__)].each { |f| load f }
 
 if RUBY_PLATFORM =~ /mswin|mingw/
   begin
@@ -166,69 +166,6 @@ task :build do
   end
   cp "plugins/edit_view_swt/vendor/java-mateview.jar", "#{ENV['HOME']}/.redcar/assets/java-mateview-#{REDCAR_VERSION}.jar"
   cp "plugins/application_swt/lib/dist/application_swt.jar", "#{ENV['HOME']}/.redcar/assets/application_swt-#{REDCAR_VERSION}.jar"
-end
-
-def remove_gitignored_files(filelist)
-  ignores = File.readlines(".gitignore")
-  ignores = ignores.select {|ignore| ignore.chomp.strip != ""}
-  ignores = ignores.map {|ignore| Regexp.new(ignore.chomp.gsub(".", "\\.").gsub("*", ".*"))}
-  r = filelist.select {|fn| not ignores.any? {|ignore| fn =~ ignore }}
-  r.select {|fn| fn !~ /\.git/ }
-end
-
-def remove_matching_files(list, string)
-  list.reject {|entry| entry.include?(string)}
-end
-
-def gem_manifest
-  r = %w(CHANGES LICENSE Rakefile README.md) +
-                          Dir.glob("bin/redcar") +
-                          Dir.glob("config/**/*") +
-                          Dir.glob("share/**/*") +
-                          remove_gitignored_files(Dir.glob("lib/**/*")) +
-                          remove_matching_files(remove_gitignored_files(Dir.glob("plugins/**/*")), "redcar-bundles") +
-                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Syntaxes/**/*") +
-                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Preferences/**/*") +
-                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/Snippets/**/*") +
-                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Bundles/*.tmbundle/info.plist") +
-                          Dir.glob("plugins/textmate/vendor/redcar-bundles/Themes/*.tmTheme")
-  remove_matching_files(r, "multi-byte")
-end
-
-Spec = spec = Gem::Specification.new do |s|
-  s.name              = "redcar"
-  s.version           = REDCAR_VERSION
-  s.summary           = "A JRuby text editor."
-  s.author            = "Daniel Lucraft"
-  s.email             = "dan@fluentradical.com"
-  s.homepage          = "http://redcareditor.com"
-
-  s.has_rdoc          = true
-  s.extra_rdoc_files  = %w(README.md)
-  s.rdoc_options      = %w(--main README.md)
-  
-  s.files             = gem_manifest
-  s.executables       = FileList["bin/redcar"].map { |f| File.basename(f) }
-   
-  s.require_paths     = ["lib"]
-
-  s.add_dependency("rubyzip")
-  
-  s.add_development_dependency("cucumber")
-  s.add_development_dependency("rspec")
-  s.add_development_dependency("watchr")
-  
-  s.post_install_message = <<TEXT
-
-To complete setup you need to have an active network connection and run:
-
-  $ redcar install
-
-TEXT
-end
-
-Rake::GemPackageTask.new(spec) do |pkg|
-  pkg.gem_spec = spec
 end
 
 desc 'Run a watchr continuous integration daemon for the specs'

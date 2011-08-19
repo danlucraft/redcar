@@ -1,8 +1,9 @@
-
 <tr><td class='break' colspan='2'></td></tr>
 <tr>
   <td class="file_heading" colspan="2">
-    <%= CGI::escapeHTML(file.gsub(@word_search.project.path + "/", "")) %>
+    <a id="<%=File.basename(file).gsub(/\.|:|\\|\//,"")%>">
+      <%= CGI::escapeHTML(file.gsub(@word_search.project.path + "/", "")) %>
+    </a>
   </td>
 </tr>
 
@@ -15,7 +16,7 @@
   <% display_line_num = hit.line_num + 1%>
   <% if @word_search.context? and last_matching_line_num and (display_line_num - last_matching_line_num) > (@word_search.context_size * 2) %>
     <tr class="divider file_<%= file_num %>">
-      <td class="line_num">. . .</td>
+      <td class="line_num">&#8230;</td>
       <td class="text">&nbsp;</td> <!-- extra space to ensure line-height is respected -->
     </tr>
   <% end %>
@@ -26,8 +27,8 @@
       <% line_index += 1 %>
       <tr class="result file_<%= file_num %> line_<%= this_line_num %> <%= (line_index % 2 == 0 ? 'even' : 'odd') %>" data-href='<%= CGI::escapeHTML(file) %>' data-line_num='<%= this_line_num %>'>
         <td class='line_num'><%= this_line_num %></td>
-        <% text = CGI.escapeHTML(context_line).gsub(@word_search.regex) { "<span>#{$&}</span>" } %>
-        <td class='text'><pre><%= text.chomp + " " %></pre></td> <!-- extra space to ensure line-height is respected -->
+        <% text = CGI.escapeHTML(context_line.gsub(@word_search.regex) { "__span__#{$&}__span__" }) %>
+        <td class='text'><pre><%= text.gsub(/__span__(.*?)__span__/,"<span>\\1</span>").chomp + " " %></pre></td> <!-- extra space to ensure line-height is respected -->
       </tr>
     <% end %>
   <% end %>
@@ -36,8 +37,8 @@
   <% last_displayed_line_num = display_line_num %>
   <tr class="result file_<%= file_num %> line_<%= display_line_num %> <%= (line_index % 2 == 0 ? 'even' : 'odd') %>" data-href='<%= CGI::escapeHTML(file) %>' data-line_num='<%= display_line_num %>'>
   <td class='line_num'><%= display_line_num %></td>
-    <% text = CGI.escapeHTML(hit.line).gsub(@word_search.regex) { "<span>#{$&}</span>" } %>
-    <td class='text'><pre><%= text.chomp + " " %></pre></td> <!-- extra space to ensure line-height is respected -->
+    <% text = CGI.escapeHTML(hit.line.gsub(@word_search.regex) { "__span__#{$&}__span__" }) %>
+    <td class='text'><pre><%= text.gsub(/__span__(.*?)__span__/,"<span>\\1</span>").chomp + " " %></pre></td> <!-- extra space to ensure line-height is respected -->
   </tr>
 
   <% hit.post_context.each_with_index do |context_line, i| %>
@@ -47,8 +48,8 @@
       <% line_index += 1 %>
       <tr class="result file_<%= file_num %> line_<%= this_line_num %> <%= (line_index % 2 == 0 ? 'even' : 'odd') %>" data-href='<%= CGI::escapeHTML(file) %>' data-line_num='<%= this_line_num %>'>
       <td class='line_num'><%= this_line_num %></td>
-        <% text = CGI.escapeHTML(context_line).gsub(@word_search.regex) { "<span>#{$&}</span>" } %>
-        <td class='text'><pre><%= text.chomp + " " %></pre></td> <!-- extra space to ensure line-height is respected -->
+        <% text = CGI.escapeHTML(context_line.gsub(@word_search.regex) { "__span__#{$&}__span__" }) %>
+        <td class='text'><pre><%= text.gsub(/__span__(.*?)__span__/,"<span>\\1</span>").chomp + " " %></pre></td> <!-- extra space to ensure line-height is respected -->
       </tr>
     <% end %>
   <% end %>

@@ -25,8 +25,8 @@ module Redcar
 
     def self.toolbars
       ToolBar::Builder.build do
-        item "Keyboard Shortcuts", :command => ViewShortcutsCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "/keyboard.png"), :barname => :help
-        item "Help", :command => OnlineHelpCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "/question.png"), :barname => :help
+        item "Keyboard Shortcuts", :command => ViewShortcutsCommand, :icon => File.join(Redcar.icons_directory, "/keyboard.png"), :barname => :help
+        item "Help", :command => OnlineHelpCommand, :icon => File.join(Redcar.icons_directory, "/question.png"), :barname => :help
       end
     end
 

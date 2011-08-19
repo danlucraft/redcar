@@ -159,7 +159,7 @@ module Redcar
       def refresh_toolbar
         if Redcar.app.show_toolbar?
           @toolbar_controller = ApplicationSWT::ToolBar.new(self, Redcar.app.main_toolbar, Swt::SWT::HORIZONTAL | Swt::SWT::BORDER)
-          @toolbar_controller.show()
+          @toolbar_controller.show
           @toolbar_height = @toolbar_controller.height.to_i
         else
           @toolbar_controller.hide() if @toolbar_controller
@@ -262,9 +262,18 @@ module Redcar
             @sash.layout_data.left = Swt::Layout::FormAttachment.new(0, client_area.width - SASH_WIDTH)
           end
         end
+        activate_osx_fullscreen_option
         ApplicationSWT.register_shell(@shell)
       end
-
+      
+      FULL_SCREEN_SHELL_ICON = 1 << 7
+      
+      def activate_osx_fullscreen_option
+        if Redcar.platform == :osx
+          @shell.view.window.set_collection_behavior(FULL_SCREEN_SHELL_ICON)
+        end
+      end
+      
       def create_sashes(window_model)
         orientation = horizontal_vertical(window_model.notebook_orientation)
 

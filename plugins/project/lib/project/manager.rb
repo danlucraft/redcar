@@ -264,8 +264,10 @@ module Redcar
         end
         if should_open == :yes
           win = Redcar.app.focussed_window
-          win = Redcar.app.new_window if !win or Manager.in_window(win)
+          win = Redcar.app.new_window(false) if !win or Manager.in_window(win)
           project.open(win) if project.ready?
+          Redcar.app.show_window(win)
+          project
         end
       end
 

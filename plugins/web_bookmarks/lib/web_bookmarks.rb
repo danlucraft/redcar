@@ -35,7 +35,7 @@ module Redcar
 
     def self.toolbars
       Redcar::ToolBar::Builder.build do
-        item "Web Bookmarks", :command => WebBookmarks::ShowWebBookmarksCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "globe.png"), :barname => :project
+        item "Web Bookmarks", :command => WebBookmarks::ShowWebBookmarksCommand, :icon => File.join(Redcar.icons_directory, "globe.png"), :barname => :project
       end
     end
 

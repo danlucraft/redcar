@@ -30,30 +30,30 @@ module Redcar
           case @status
           when :unmerged
             if File.file?(@path)
-              File.join(Redcar::ICONS_DIRECTORY, "blue-document--exclamation.png")
+              File.join(Redcar.icons_directory, "blue-document--exclamation.png")
             else
-              File.join(Redcar::ICONS_DIRECTORY, "blue-folder--exclamation.png")
+              File.join(Redcar.icons_directory, "blue-folder--exclamation.png")
             end
           when :indexed
             if File.file?(@path)
-              File.join(Redcar::ICONS_DIRECTORY, "blue-document--plus.png")
+              File.join(Redcar.icons_directory, "blue-document--plus.png")
             else
-              File.join(Redcar::ICONS_DIRECTORY, "blue-folder--plus.png")
+              File.join(Redcar.icons_directory, "blue-folder--plus.png")
             end
           when :deleted
             if File.file?(@path)
-              File.join(Redcar::ICONS_DIRECTORY, "blue-document-shred.png")
+              File.join(Redcar.icons_directory, "blue-document-shred.png")
             else
-              File.join(Redcar::ICONS_DIRECTORY, "blue-folder-shred.png")
+              File.join(Redcar.icons_directory, "blue-folder-shred.png")
             end
           when :changed
             if File.file?(@path)
-              File.join(Redcar::ICONS_DIRECTORY, "blue-document--pencil.png")
+              File.join(Redcar.icons_directory, "blue-document--pencil.png")
             else
-              File.join(Redcar::ICONS_DIRECTORY, "blue-folder--pencil.png")
+              File.join(Redcar.icons_directory, "blue-folder--pencil.png")
             end
           when :missing
-            File.join(Redcar::ICONS_DIRECTORY, "question-white.png")
+            File.join(Redcar.icons_directory, "question-white.png")
           when :new
             if File.directory?(@path.to_s)
               :directory

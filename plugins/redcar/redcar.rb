@@ -848,8 +848,8 @@ Redcar.environment: #{Redcar.environment}
         item "Save File As", :command => Project::SaveFileAsCommand, :icon => :save_as, :barname => :core
         item "Undo", :command => UndoCommand, :icon => :undo, :barname => :core
         item "Redo", :command => RedoCommand, :icon => :redo, :barname => :core
-        item "New Notebook", :command => Application::OpenNewNotebookCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "book--plus.png"), :barname => :edit
-        item "Close Notebook", :command => Application::CloseNotebookCommand, :icon => File.join(Redcar::ICONS_DIRECTORY, "book--minus.png"), :barname => :edit
+        item "New Notebook", :command => Application::OpenNewNotebookCommand, :icon => File.join(Redcar.icons_directory, "book--plus.png"), :barname => :edit
+        item "Close Notebook", :command => Application::CloseNotebookCommand, :icon => File.join(Redcar.icons_directory, "book--minus.png"), :barname => :edit
       end
     end
 
@@ -1063,7 +1063,7 @@ Redcar.environment: #{Redcar.environment}
           Application.start
           ApplicationSWT.start
           EditViewSWT.start
-          Swt.splash_screen.inc(1) if Swt.splash_screen
+          SplashScreen.splash_screen.inc(1) if SplashScreen.splash_screen
           s = Time.now
           if Redcar.gui
             Redcar.app.controller = ApplicationSWT.new(Redcar.app)
@@ -1073,12 +1073,12 @@ Redcar.environment: #{Redcar.environment}
           Redcar.log.info("initializing gui took #{Time.now - s}s")
         end
         Redcar.update_gui do
-          Swt.splash_screen.close if Swt.splash_screen
-          win = Redcar.app.make_sure_at_least_one_window_open
-          win.close if win and args.include?("--no-window")
+          SplashScreen.splash_screen.close if SplashScreen.splash_screen
+          win = Redcar.app.make_sure_at_least_one_window_there
           Redcar.log.info("startup milestone: window open #{Time.now - Redcar.process_start_time}")
           Redcar::Project::Manager.start(args)
           Redcar.log.info("startup milestone: project open #{Time.now - Redcar.process_start_time}")
+          win.show if win and !args.include?("--no-window")
         end
         Redcar.load_useful_libraries
         Redcar.log.info("startup milestone: complete: #{Time.now - Redcar.process_start_time}")
