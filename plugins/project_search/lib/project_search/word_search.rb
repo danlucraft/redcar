@@ -95,18 +95,32 @@ class ProjectSearch
         "contents",
         StandardAnalyzer.new(Version::LUCENE_29)
       )
-      parser.parse(query_string).to_s
+      begin
+        text = query_string.gsub(/^\W+/,"").strip
+        unless text.empty?
+          query = parser.parse(text)
+          return query.to_s.gsub("_*","*").gsub("_"," ").strip
+        end
+      rescue => e
+        p e.message
+        p e.backtrace
+      end
+      return ""
     end
 
     def doc_ids
       @doc_ids ||= begin
         index = ProjectSearch.indexes[project.path].lucene_index
         doc_ids = nil
-        doc_ids = index.find(formatted_query).map {|doc| doc.id}
-        doc_ids.reject {|doc_id| Redcar::Project::FileList.hide_file_path?(doc_id) }
+        if text = formatted_query and not text.empty?
+          doc_ids = index.find(text).map {|doc| doc.id}
+          doc_ids.reject {|doc_id| Redcar::Project::FileList.hide_file_path?(doc_id) }
+        else
+          []
+        end
       end
     end
-  
+
     def ignore_regexes
       self.class.shared_storage['ignored_file_patterns']
     end
