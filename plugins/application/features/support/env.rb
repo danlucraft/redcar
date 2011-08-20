@@ -1,3 +1,13 @@
+$:.push(File.expand_path("../../../../../lib", __FILE__))
+require "redcar_quick_start"
+
+$redcar_process_start_time = Time.now
+
+require 'redcar'
+Redcar.environment = :test
+Redcar.load_unthreaded
+Redcar::Top.start
+
 require File.expand_path("../fake_event", __FILE__)
 
 class TestingError < StandardError

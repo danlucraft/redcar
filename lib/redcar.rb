@@ -103,7 +103,9 @@ module Redcar
   def self.add_plugin_sources(manager)
     manager.add_plugin_source(File.join(root, "plugins"))
     manager.add_plugin_source(File.join(user_dir, "plugins"))
-    manager.add_gem_plugin_source
+    unless Redcar.environment == :test
+      manager.add_gem_plugin_source
+    end
   end
 
   def self.load_prerequisites
@@ -286,7 +288,7 @@ module Redcar
   end
   
   def self.show_log?
-    ARGV.include?("--show-log")
+    ARGV.include?("--show-log") or ENV["REDCAR_SHOW_LOG"]
   end
   
   def self.custom_log_level
