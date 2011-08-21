@@ -52,16 +52,22 @@ module Redcar
 
     def self.bundle_context_menus(node)
       Menu::Builder.build do
-        if not node.nil? and node.is_a?(BundleNode)
-          if Textmate.storage['load_bundles_menu']
-            if Textmate.storage['loaded_bundles'].include?(node.text.downcase)
-              item ("Remove from Bundles Menu") do
-                RemovePinnedBundle.new(node.text).run
+        if not node.nil?
+          if node.is_a?(BundleNode)
+            if Textmate.storage['load_bundles_menu']
+              if Textmate.storage['loaded_bundles'].include?(node.text.downcase)
+                item ("Remove from Bundles Menu") do
+                  RemovePinnedBundle.new(node.text).run
+                end
+              else
+                item("Pin to Bundles Menu") do
+                  PinBundleToMenu.new(node.text).run
+                end
               end
-            else
-              item("Pin to Bundles Menu") do
-                PinBundleToMenu.new(node.text).run
-              end
+            end
+          elsif node.is_a?(SnippetNode)
+            item("Edit Snippet") do
+              OpenSnippetEditor.new(node.snippet).run
             end
           end
         end

@@ -39,19 +39,19 @@ module Redcar
       end
     end
 
-    def self.plist_to_xml1(element, xml_el)
+    def self.write_xml_element(element, xml_el)
       case element.class.to_s
       when "Hash"
         child = xml_el.add_element "dict"
         element.keys.sort.each do |key|
           e1 = child.add_element "key"
           e1.text = key
-          plist_to_xml1(element[key], child)
+          write_xml_element(element[key], child)
         end
       when "Array"
         child = xml_el.add_element "array"
         element.each do |arr_el|
-          plist_to_xml1(arr_el, child)
+          write_xml_element(arr_el, child)
         end
       when "String"
         el = xml_el.add_element "string"
@@ -63,11 +63,10 @@ module Redcar
 
     # Converts from a Ruby plist to an XML plist.
     def self.plist_to_xml(plist)
+      require 'rexml/document'
       doc = REXML::Document.new
       xml_el = doc.add_element "plist", {"version" => "1.0"}
-      plist.each do |el|
-        plist_to_xml1(el, xml_el)
-      end
+      write_xml_element(plist, xml_el)
       str = ""
       doc.write(str, 0)
       dt=<<END

@@ -175,11 +175,6 @@ module Redcar
 
       def initialize(snippet)
         @snippet = snippet
-        @name = snippet.name
-        #custom menu string
-        if snippet.tab_trigger
-          @name << " (#{snippet.tab_trigger})"
-        end
       end
 
       def icon
@@ -187,7 +182,11 @@ module Redcar
       end
 
       def text
-        @name
+        name = @snippet.name.clone
+        if t = @snippet.tab_trigger
+          name << " (#{t})"
+        end
+        name
       end
 
       def leaf?

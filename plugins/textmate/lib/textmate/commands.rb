@@ -35,6 +35,59 @@ module Redcar
       end
     end
 
+    class OpenSnippetEditor < Redcar::Command
+      def initialize snippet
+          @snippet = snippet
+      end
+
+      def execute
+        tab = Redcar.app.focussed_window.new_tab(Redcar::HtmlTab)
+        tab.html_view.controller = Controller.new(@snippet,tab)
+        tab.icon = :edit_code
+        tab.focus
+      end
+
+      class Controller
+        include Redcar::HtmlController
+
+        def initialize snippet, tab
+          @snippet, @tab = snippet, tab
+        end
+
+        def save content, trigger, scope
+          @snippet.plist['content'] = content
+          @snippet.plist['tabTrigger'] = trigger
+          @snippet.plist['scope'] = scope
+          File.open(@snippet.path, 'w') do |f|
+            f.puts(Plist.plist_to_xml(@snippet.plist))
+          end
+          Redcar.app.windows.map {|w|
+            w.treebook.trees
+          }.flatten.select {|t|
+            t.tree_mirror.is_a?(Redcar::Textmate::TreeMirror)
+          }.each {|t| t.refresh }
+          close_tab
+        end
+
+        def close_tab
+          @tab.close if @tab
+        end
+
+        def title
+          "Snippet Editor"
+        end
+
+        def resource file
+          File.join(File.expand_path(File.join(File.dirname(__FILE__),'..','..','views',file)))
+        end
+
+        def index
+          rhtml = ERB.new(File.read(resource("snippet_editor.html.erb")))
+          rhtml.result(binding)
+        end
+      end
+    end
+
 
     class ClearBundleMenu < Redcar::Command
       def execute
