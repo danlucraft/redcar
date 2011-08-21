@@ -5,6 +5,7 @@ require 'textmate/plist'
 require 'textmate/preference'
 require 'textmate/snippet'
 require 'textmate/tree_mirror'
+require 'textmate/editor'
 require 'textmate/commands'
 
 gem "redcar-bundles"
@@ -54,6 +55,9 @@ module Redcar
       Menu::Builder.build do
         if not node.nil?
           if node.is_a?(BundleNode)
+            item("Add new Snippet...") do
+              CreateNewSnippet.new(node.bundle).run
+            end
             if Textmate.storage['load_bundles_menu']
               if Textmate.storage['loaded_bundles'].include?(node.text.downcase)
                 item ("Remove from Bundles Menu") do

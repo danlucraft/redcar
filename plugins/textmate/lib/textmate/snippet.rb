@@ -1,7 +1,8 @@
 module Redcar
   module Textmate
     class Snippet
-      attr_reader :bundle_name, :key_equivalent, :plist, :path
+      attr_reader :bundle_name, :key_equivalent, :plist
+      attr_accessor :path
 
       def initialize(path, bundle_name)
         @path = path

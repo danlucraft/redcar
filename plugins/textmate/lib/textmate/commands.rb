@@ -35,60 +35,50 @@ module Redcar
       end
     end
 
-    class OpenSnippetEditor < Redcar::Command
-      def initialize snippet
-          @snippet = snippet
+    class CreateNewSnippet < Redcar::Command
+      def initialize bundle
+        @bundle = bundle
       end
 
       def execute
+        result = Redcar::Application::Dialog.input("Create Snippet","Choose a name for your new snippet:")
+        if result[:button] == :ok and not result[:value].empty?
+          snippet_dir = File.expand_path(File.join(@bundle.path,"Snippets"))
+          File.mkdirs(snippet_dir) unless File.exists?(snippet_dir)
+          name = result[:value]
+          path = File.expand_path(File.join(snippet_dir,name.gsub(/[^a-zA-Z0-9]/,"_")+".plist"))
+          plist = {
+            "name" => name,
+            "uuid" => Java::JavaUtil::UUID.randomUUID.to_s.upcase,
+            "tabTrigger" => "",
+            "scope" => "",
+            "content" => ""
+          }
+          xml = Redcar::Plist.plist_to_xml(plist)
+          temp = Java::JavaIo::File.create_temp_file(name,'.plist')
+          fake_path = temp.absolute_path
+          File.open(fake_path,'w') do |f|
+            f.puts(xml)
+          end
+          snippet = Textmate::Snippet.new(fake_path,@bundle.name)
+          snippet.path = path
+          temp.delete
+          OpenSnippetEditor.new(snippet,@bundle).run
+        end
+      end
+    end
+
+    class OpenSnippetEditor < Redcar::Command
+      def initialize snippet, bundle=nil,menu=nil
+        @snippet = snippet
+        @bundle, @menu = bundle, menu
+     end
+
+      def execute
         tab = Redcar.app.focussed_window.new_tab(Redcar::HtmlTab)
-        tab.html_view.controller = Controller.new(@snippet,tab)
+        tab.html_view.controller = Textmate::EditorController.new(@snippet,tab,@bundle,@menu)
         tab.icon = :edit_code
         tab.focus
-      end
-
-      class Controller
-        include Redcar::HtmlController
-
-        def initialize snippet, tab
-          @snippet, @tab = snippet, tab
-        end
-
-        def save content, trigger, scope
-          @snippet.plist['content'] = content
-          @snippet.plist['tabTrigger'] = trigger
-          @snippet.plist['scope'] = scope
-          File.open(@snippet.path, 'w') do |f|
-            f.puts(Plist.plist_to_xml(@snippet.plist))
-          end
-          Redcar.app.windows.map {|w|
-            w.treebook.trees
-          }.flatten.select {|t|
-            t.tree_mirror.is_a?(Redcar::Textmate::TreeMirror)
-          }.each {|t| t.refresh }
-          Redcar::Textmate.cache.clear
-          Redcar::Textmate.cache.cache do
-            Textmate.all_bundles
-          end
-          close_tab
-        end
-
-        def close_tab
-          @tab.close if @tab
-        end
-
-        def title
-          "Snippet Editor"
-        end
-
-        def resource file
-          File.join(File.expand_path(File.join(File.dirname(__FILE__),'..','..','views',file)))
-        end
-
-        def index
-          rhtml = ERB.new(File.read(resource("snippet_editor.html.erb")))
-          rhtml.result(binding)
-        end
       end
     end
 
