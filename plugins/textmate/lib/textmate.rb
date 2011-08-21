@@ -119,9 +119,12 @@ module Redcar
       end
     end
 
+    def self.cache
+      @cache ||= PersistentCache.new("textmate_bundles")
+    end
+
     def self.all_bundles
       @all_bundles ||= begin
-        cache = PersistentCache.new("textmate_bundles")
         cache.cache do
           all_bundle_paths.map {|path| Bundle.new(path) }
         end

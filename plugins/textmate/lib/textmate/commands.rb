@@ -66,6 +66,10 @@ module Redcar
           }.flatten.select {|t|
             t.tree_mirror.is_a?(Redcar::Textmate::TreeMirror)
           }.each {|t| t.refresh }
+          Redcar::Textmate.cache.clear
+          Redcar::Textmate.cache.cache do
+            Textmate.all_bundles
+          end
           close_tab
         end
 
