@@ -1,12 +1,12 @@
 body {
     font-family:Sawasdee, Lucida Grande, Helvetica Neue, Arial Narrow;
-    background:#eaeaea;
+    background:#ddd;
 }
 
 .inset {
     padding:10px;
     margin:8px;
-    background: #ddd;
+    background: #ccc;
     border-radius:5px;
     -moz-border-radius:5px;
     box-shadow: 2px 2px 5px #aaa inset;
