@@ -14,7 +14,9 @@ Given /^there is an edit tab containing "([^\"]*)"$/ do |contents|
 end
 
 When /^I open a new edit tab$/ do
-  tab = Redcar::Top::OpenNewEditTabCommand.new.run
+  Redcar.update_gui do
+    Redcar::Top::OpenNewEditTabCommand.new.run
+  end
 end
 
 When /^I open a new edit tab titled "(.*)"$/ do |title|
@@ -48,6 +50,13 @@ When /I move (up|down) a tab/ do |type|
   end
 end
 
+def get_tab_folder
+  c_tab_item = Swt.bot.c_tab_item
+  tab_folder = nil
+  Redcar.update_gui { tab_folder = c_tab_item.widget.parent }
+  tab_folder
+end
+
 Then /^there should be (one|\d+) (.*) tabs?$/ do |num, tab_type|
   if num == "one"
     num = 1
@@ -60,13 +69,8 @@ Then /^there should be (one|\d+) (.*) tabs?$/ do |num, tab_type|
   tabs.length.should == num
 
   # in the GUI
-  case tab_type
-  when "edit"
-    tab_class = Redcar::EditTab
-  end
-
-  tabs = get_tabs
-  tabs.length.should == num
+  c_tab_item = Swt.bot.c_tab_item
+  Redcar.update_gui { c_tab_item.widget.parent.children.to_a.length.should == num }
 end
 
 Then /^the edit tab should have the focus$/ do
@@ -79,7 +83,9 @@ end
 
 Then /^the tab should be focussed within the notebook$/ do
   tab_folder = get_tab_folder
-  tab_folder.get_selection.should == tab_folder.getItems.to_a.first
+  Redcar.update_gui do
+    tab_folder.get_selection.should == tab_folder.getItems.to_a.first
+  end
 end
 
 Then /^the tab should have the keyboard focus$/ do
