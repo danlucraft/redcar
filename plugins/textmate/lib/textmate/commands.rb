@@ -40,13 +40,22 @@ module Redcar
         @bundle = bundle
       end
 
+      def generate_path(dir, filename, index=nil)
+        File.expand_path(File.join(dir,"#{filename}#{index ? index : ''}.plist"))
+      end
+
       def execute
         result = Redcar::Application::Dialog.input("Create Snippet","Choose a name for your new snippet:")
         if result[:button] == :ok and not result[:value].empty?
           snippet_dir = File.expand_path(File.join(@bundle.path,"Snippets"))
           File.mkdirs(snippet_dir) unless File.exists?(snippet_dir)
           name = result[:value]
-          path = File.expand_path(File.join(snippet_dir,name.gsub(/[^a-zA-Z0-9]/,"_")+".plist"))
+          filename = name.gsub(/[^a-zA-Z0-9]/,"_")
+          path = generate_path(snippet_dir,filename)
+          index = 0
+          while File.exists?(path)
+            path = generate_path(snippet_dir, filename, index+=1)
+          end
           plist = {
             "name" => name,
             "uuid" => Java::JavaUtil::UUID.randomUUID.to_s.upcase,

@@ -50,8 +50,9 @@ module Redcar
         bundles.sort_by {|bundle| (bundle.name||"").downcase}.each_with_index do |b, i|
           if b.name and b.snippets and b.snippets.size() > 0
             name = b.name.downcase
-            unless Textmate.storage['select_bundles_for_tree'] and !Textmate.storage['loaded_bundles'].to_a.include?(name)
-              @top << BundleNode.new(b) if b.main_menu and b.main_menu['items']
+            unless Textmate.storage['select_bundles_for_tree'] and
+              !Textmate.storage['loaded_bundles'].to_a.include?(name)
+              @top << BundleNode.new(b)
             end
           end
         end

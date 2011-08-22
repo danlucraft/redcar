@@ -13,7 +13,7 @@
   </head>
   <body>
       <form>
-          <h1>Editing Snippet : <%= @snippet.name %></h1>
+        <h1>Editing Snippet : <input type="text" name="name" value="<%= @snippet.name %>"/></h1>
           <div id="snippet_editor">
               <div class="inset textarea">
                 <textarea id="snippet" name="snippet" class="text"><%=@snippet.content%></textarea>
@@ -39,7 +39,7 @@
               </div>
               <div class="buttons">
                   <input type="submit" name="save" id="save" value="Save Changes"
-                    onClick="Controller.save($('#snippet').val(),$('#trigger').val(),$('#scope').val());return false;"/>
+                    onClick="Controller.save($('#name').val(),$('#snippet').val(),$('#trigger').val(),$('#scope').val());return false;"/>
                   <input type="submit" name="cancel" id="cancel" value="Cancel"
                     onClick="Controller.close_tab();return false;"/>
               </div>

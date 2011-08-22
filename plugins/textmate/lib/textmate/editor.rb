@@ -9,7 +9,8 @@ module Redcar
         @bundle, @menu = bundle, menu
       end
 
-      def save content, trigger, scope
+      def save name, content, trigger, scope
+        @snippet.plist['name'] = name
         @snippet.plist['content'] = content
         @snippet.plist['tabTrigger'] = trigger
         @snippet.plist['scope'] = scope
