@@ -13,7 +13,7 @@
   </head>
   <body>
       <form>
-        <h1>Editing Snippet : <input type="text" name="name" value="<%= @snippet.name %>"/></h1>
+        <h1>Editing Snippet : <input type="text" name="name" id="name" value="<%= @snippet.name %>"/></h1>
           <div id="snippet_editor">
               <div class="inset textarea">
                 <textarea id="snippet" name="snippet" class="text"><%=@snippet.content%></textarea>

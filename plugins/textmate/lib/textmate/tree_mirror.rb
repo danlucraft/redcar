@@ -1,7 +1,7 @@
 module Redcar
   module Textmate
     TREE_TITLE = "Bundles"
-    
+
     # Some Icons by Yusuke Kamiyamane.
     # http://p.yusukekamiyamane.com/
     #
@@ -144,7 +144,7 @@ module Redcar
         #if item has submenus, make a group and add sub-items
         elsif sub_menu = bundle.sub_menus[item]
           unless sub_menu["items"].size() < 1
-            group = SnippetGroup.new(sub_menu["name"])
+            group = SnippetGroup.new(sub_menu["name"],item,bundle)
             sub_menu["items"].each do |sub_item|
               build_children(group.children, bundle, sub_item)
             end
@@ -158,10 +158,13 @@ module Redcar
       include Redcar::Tree::Mirror::NodeMirror
 
       attr_writer :children
+      attr_reader :uuid,:bundle
 
-      def initialize(name)
+      def initialize(name,uuid,bundle)
         @children = []
-        @text = name
+        @text     = name
+        @bundle   = bundle
+        @uuid     = uuid
       end
 
       def icon

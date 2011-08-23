@@ -19,10 +19,21 @@ module Redcar
         end
         if @bundle
           @bundle.ordering  = [] unless @bundle.ordering
-          @bundle.main_menu = {} unless @bundle.main_menu
-          @bundle.main_menu['items'] = [] unless @bundle.main_menu['items']
-          @bundle.main_menu['items'] << @snippet.plist['uuid']
-          @bundle.ordering << @snippet.plist['uuid']
+          if @menu
+            menu = @bundle.sub_menus[@menu]
+            @bundle.sub_menus['item'] = {} unless menu
+          else
+            menu = @bundle.main_menu
+          end
+          menu = {} unless menu
+          menu['items'] = [] unless menu['items']
+          menu['items'] << @snippet.plist['uuid']
+          if @menu
+            @bundle.sub_menus[@menu] = menu
+          else
+            @bundle.main_menu = menu
+          end
+          # @bundle.ordering << @snippet.plist['uuid']
           @bundle.snippets << @snippet
           Textmate.uuid_hash[@snippet.plist['uuid']] = @snippet
           File.open(File.expand_path(File.join(@bundle.path,'info.plist')), 'w') do |f|

@@ -36,8 +36,8 @@ module Redcar
     end
 
     class CreateNewSnippet < Redcar::Command
-      def initialize bundle
-        @bundle = bundle
+      def initialize bundle,menu=nil
+        @bundle,@menu = bundle,menu
       end
 
       def generate_path(dir, filename, index=nil)
@@ -72,7 +72,7 @@ module Redcar
           snippet = Textmate::Snippet.new(fake_path,@bundle.name)
           snippet.path = path
           temp.delete
-          OpenSnippetEditor.new(snippet,@bundle).run
+          OpenSnippetEditor.new(snippet,@bundle,@menu).run
         end
       end
     end

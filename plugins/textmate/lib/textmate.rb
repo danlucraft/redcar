@@ -73,6 +73,10 @@ module Redcar
             item("Edit Snippet") do
               OpenSnippetEditor.new(node.snippet).run
             end
+          elsif node.is_a?(SnippetGroup)
+            item("Add new Snippet...") do
+              CreateNewSnippet.new(node.bundle,node.uuid).run
+            end
           end
         end
       end
