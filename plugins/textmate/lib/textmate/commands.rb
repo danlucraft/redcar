@@ -58,7 +58,7 @@ module Redcar
           end
           plist = {
             "name" => name,
-            "uuid" => Java::JavaUtil::UUID.randomUUID.to_s.upcase,
+            "uuid" => BundleEditor.generate_id,
             "tabTrigger" => "",
             "scope" => "",
             "content" => ""
@@ -88,6 +88,34 @@ module Redcar
         tab.html_view.controller = Textmate::EditorController.new(@snippet,tab,@bundle,@menu)
         tab.icon = :edit_code
         tab.focus
+      end
+    end
+
+    class CreateNewSnippetGroup < Redcar::Command
+      def initialize bundle,menu=nil
+        @bundle, @menu = bundle, menu
+      end
+
+      def execute
+        result = Redcar::Application::Dialog.input("Create Snippet Menu","Choose a name for your new snippet menu:")
+        if result[:button] == :ok and not result[:value].empty?
+          @bundle.sub_menus = {} unless @bundle.sub_menus
+          uuid = BundleEditor.generate_id
+          @bundle.sub_menus[uuid] = {
+            "name"  => result[:value],
+            "items" => []
+          }
+          if @menu and @bundle.sub_menus[@menu]
+            @bundle.sub_menus[@menu]['items'] << uuid
+          else
+            @bundle.main_menu = {} unless @bundle.main_menu
+            @bundle.main_menu['items'] = [] unless @bundle.main_menu['items']
+            @bundle.main_menu['items'] << uuid
+          end
+          BundleEditor.write_bundle(@bundle)
+          BundleEditor.refresh_trees([@bundle.name])
+          BundleEditor.reload_cache
+        end
       end
     end
 

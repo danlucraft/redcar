@@ -58,6 +58,9 @@ module Redcar
             item("Add new Snippet...") do
               CreateNewSnippet.new(node.bundle).run
             end
+            item("Add new Snippet Menu...") do
+              CreateNewSnippetGroup.new(node.bundle).run
+            end
             if Textmate.storage['load_bundles_menu']
               if Textmate.storage['loaded_bundles'].include?(node.text.downcase)
                 item ("Remove from Bundles Menu") do
@@ -76,6 +79,9 @@ module Redcar
           elsif node.is_a?(SnippetGroup)
             item("Add new Snippet...") do
               CreateNewSnippet.new(node.bundle,node.uuid).run
+            end
+            item("Add new Snippet Menu...") do
+              CreateNewSnippetGroup.new(node.bundle,node.uuid).run
             end
           end
         end

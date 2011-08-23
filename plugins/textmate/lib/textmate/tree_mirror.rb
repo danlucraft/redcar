@@ -143,13 +143,13 @@ module Redcar
           list << SnippetNode.new(snippet)
         #if item has submenus, make a group and add sub-items
         elsif sub_menu = bundle.sub_menus[item]
-          unless sub_menu["items"].size() < 1
-            group = SnippetGroup.new(sub_menu["name"],item,bundle)
+          group = SnippetGroup.new(sub_menu["name"],item,bundle)
+          if sub_menu["items"] and sub_menu["items"].size > 0
             sub_menu["items"].each do |sub_item|
               build_children(group.children, bundle, sub_item)
             end
-            list << group
           end
+          list << group
         end
       end
     end
