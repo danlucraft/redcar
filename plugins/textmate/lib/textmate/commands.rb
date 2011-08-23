@@ -119,6 +119,23 @@ module Redcar
       end
     end
 
+    class RenameSnippetGroup < Redcar::Command
+      def initialize bundle,menu
+        @bundle,@menu = bundle,menu
+      end
+
+      def execute
+        if menu = @bundle.sub_menus[@menu]
+          result = Redcar::Application::Dialog.input("Rename Snippet Menu","Choose a new name for your new snippet menu:",menu['name'])
+          if result[:button] == :ok and not result[:value].empty?
+            menu['name'] = result[:value]
+            BundleEditor.write_bundle(@bundle)
+            BundleEditor.refresh_trees([@bundle.name])
+            BundleEditor.reload_cache
+          end
+        end
+      end
+    end
 
     class ClearBundleMenu < Redcar::Command
       def execute

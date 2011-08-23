@@ -77,6 +77,9 @@ module Redcar
               OpenSnippetEditor.new(node.snippet).run
             end
           elsif node.is_a?(SnippetGroup)
+            item("Rename...") do
+              RenameSnippetGroup.new(node.bundle,node.uuid).run
+            end
             item("Add new Snippet...") do
               CreateNewSnippet.new(node.bundle,node.uuid).run
             end
