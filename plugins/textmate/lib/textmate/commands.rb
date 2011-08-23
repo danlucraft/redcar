@@ -48,7 +48,7 @@ module Redcar
         result = Redcar::Application::Dialog.input("Create Snippet","Choose a name for your new snippet:")
         if result[:button] == :ok and not result[:value].empty?
           snippet_dir = File.expand_path(File.join(@bundle.path,"Snippets"))
-          File.mkdirs(snippet_dir) unless File.exists?(snippet_dir)
+          FileUtils.mkdir(snippet_dir) unless File.exists?(snippet_dir)
           name = result[:value]
           filename = name.gsub(/[^a-zA-Z0-9]/,"_")
           path = generate_path(snippet_dir,filename)

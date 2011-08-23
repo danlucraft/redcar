@@ -48,7 +48,7 @@ module Redcar
       def initialize(bundles)
         @top = []
         bundles.sort_by {|bundle| (bundle.name||"").downcase}.each_with_index do |b, i|
-          if b.name and b.snippets and b.snippets.size() > 0
+          if b.name and b.snippets #and b.snippets.size() > 0
             name = b.name.downcase
             unless Textmate.storage['select_bundles_for_tree'] and
               !Textmate.storage['loaded_bundles'].to_a.include?(name)

@@ -56,7 +56,6 @@ module Redcar
           f.puts(Plist.plist_to_xml(@snippet.plist))
         end
         if @bundle
-          @bundle.ordering  = [] unless @bundle.ordering
           if @menu
             menu = @bundle.sub_menus[@menu]
             @bundle.sub_menus['item'] = {} unless menu
@@ -66,22 +65,17 @@ module Redcar
           menu = {} unless menu
           menu['items'] = [] unless menu['items']
           menu['items'] << @snippet.plist['uuid']
-          if @menu
-            @bundle.sub_menus[@menu] = menu
-          else
-            @bundle.main_menu = menu
-          end
-          # @bundle.ordering << @snippet.plist['uuid']
+          @bundle.ordering << @snippet.plist['uuid']
           @bundle.snippets << @snippet
           Textmate.uuid_hash[@snippet.plist['uuid']] = @snippet
           BundleEditor.write_bundle(@bundle)
         end
+        BundleEditor.reload_cache
         if @bundle
           BundleEditor.refresh_trees([@bundle.name])
         else
           BundleEditor.refresh_trees
         end
-        BundleEditor.reload_cache
         close_tab
       end
 
