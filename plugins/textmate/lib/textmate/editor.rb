@@ -46,7 +46,11 @@ module Redcar
       def save name, content, trigger, scope
         @snippet.plist['name'] = name
         @snippet.plist['content'] = content
-        @snippet.plist['tabTrigger'] = trigger
+        if trigger.empty?
+          @snippet.plist.delete('tabTrigger')
+        else
+          @snippet.plist['tabTrigger'] = trigger
+        end
         @snippet.plist['scope'] = scope
         File.open(@snippet.path, 'w') do |f|
           f.puts(Plist.plist_to_xml(@snippet.plist))
