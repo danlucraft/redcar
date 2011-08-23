@@ -119,7 +119,7 @@ module Redcar
           children = []
           if @bundle.main_menu and @bundle.main_menu['items']
             @bundle.main_menu["items"].each do |item|
-              build_children(children, @bundle, item)
+              build_children(children, @bundle, item, self)
             end
           end
           children
@@ -136,17 +136,17 @@ module Redcar
 
       private
 
-      def build_children(list, bundle, item)
+      def build_children(list, bundle, item, parent_node)
         #if item is a snippet, add to list
         if snippet = Textmate.uuid_hash[item] and snippet.is_a?(Textmate::Snippet)
           return unless snippet.name and snippet.name != ""
-          list << SnippetNode.new(snippet)
+          list << SnippetNode.new(snippet,parent_node)
         #if item has submenus, make a group and add sub-items
         elsif sub_menu = bundle.sub_menus[item]
-          group = SnippetGroup.new(sub_menu["name"],item,bundle)
+          group = SnippetGroup.new(sub_menu["name"],item,bundle,parent_node)
           if sub_menu["items"] and sub_menu["items"].size > 0
             sub_menu["items"].each do |sub_item|
-              build_children(group.children, bundle, sub_item)
+              build_children(group.children, bundle, sub_item, group)
             end
           end
           list << group
@@ -158,13 +158,14 @@ module Redcar
       include Redcar::Tree::Mirror::NodeMirror
 
       attr_writer :children
-      attr_reader :uuid,:bundle
+      attr_reader :uuid,:bundle,:parent
 
-      def initialize(name,uuid,bundle)
+      def initialize(name,uuid,bundle,parent)
         @children = []
         @text     = name
         @bundle   = bundle
         @uuid     = uuid
+        @parent   = parent
       end
 
       def icon
@@ -187,8 +188,11 @@ module Redcar
     class SnippetNode
       include Redcar::Tree::Mirror::NodeMirror
 
-      def initialize(snippet)
+      attr_reader :parent, :snippet
+
+      def initialize(snippet,parent)
         @snippet = snippet
+        @parent = parent
       end
 
       def icon

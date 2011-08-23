@@ -54,7 +54,8 @@ module Redcar
     def self.bundle_context_menus(node)
       Menu::Builder.build do
         if not node.nil?
-          if node.is_a?(BundleNode)
+          case node
+          when BundleNode
             item("Add new Snippet...") do
               CreateNewSnippet.new(node.bundle).run
             end
@@ -72,11 +73,14 @@ module Redcar
                 end
               end
             end
-          elsif node.is_a?(SnippetNode)
+          when SnippetNode
             item("Edit Snippet") do
               OpenSnippetEditor.new(node.snippet).run
             end
-          elsif node.is_a?(SnippetGroup)
+            item("Delete Snippet") do
+              DeleteNode.new(node).run
+            end
+          when SnippetGroup
             item("Rename...") do
               RenameSnippetGroup.new(node.bundle,node.uuid).run
             end
@@ -85,6 +89,9 @@ module Redcar
             end
             item("Add new Snippet Menu...") do
               CreateNewSnippetGroup.new(node.bundle,node.uuid).run
+            end
+            item("Delete Menu") do
+              DeleteNode.new(node).run
             end
           end
         end

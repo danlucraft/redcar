@@ -137,6 +137,55 @@ module Redcar
       end
     end
 
+    class DeleteNode < Redcar::Command
+      def initialize node
+        @node = node
+      end
+
+      def execute
+        result = Redcar::Application::Dialog.message_box(
+          "Delete "+@node.text+" (and all children)?",{:buttons => :yes_no})
+        if result == :yes
+          delete(@node)
+          BundleEditor.write_bundle(@node.parent.bundle)
+          BundleEditor.refresh_trees([@node.parent.bundle.name])
+          BundleEditor.reload_cache
+        end
+      end
+
+      def delete node
+        if node.children
+          node.children.each do |child|
+            delete(child)
+          end
+        end
+        case node
+        when SnippetNode
+          case node.parent
+          when BundleNode
+            node.parent.bundle.main_menu['items'].delete(node.snippet.uuid)
+          when SnippetGroup
+            if menu = node.parent.bundle.sub_menus[node.parent.uuid]
+              menu['items'].delete(node.snippet.uuid)
+            else
+              p "no parent found for #{node.text}"
+              p "with parent #{node.parent.text} of class #{node.parent.class} (#{node.parent.uuid})"
+            end
+          end
+          node.parent.bundle.snippets.delete(node.snippet)
+          File.delete(node.snippet.path)
+        when SnippetGroup
+          case node.parent
+          when BundleNode
+            node.bundle.main_menu['items'].delete(node.uuid)
+          when SnippetGroup
+            node.bundle.sub_menus[node.parent.uuid]['items'].delete(node.uuid)
+          end
+          node.bundle.sub_menus.delete(node.uuid)
+        end
+      end
+    end
+
     class ClearBundleMenu < Redcar::Command
       def execute
         Textmate.storage['loaded_bundles'] = []
