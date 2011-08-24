@@ -1,7 +1,7 @@
 
 <html>
   <head>
-    <link type="text/css" rel="stylesheet" href="<%= resource('snippet.css') %>" media="screen">
+    <link type="text/css" rel="stylesheet" href="<%= BundleEditor.resource('editor.css') %>" media="screen">
     <%= javascript_controller_actions %>
     <script type="text/javascript" src="file://<%= Redcar::HtmlView.jquery_path %>"></script>
     <style>
@@ -41,7 +41,7 @@
                   <input type="submit" name="save" id="save" value="Save Changes"
                     onClick="Controller.save($('#name').val(),$('#snippet').val(),$('#trigger').val(),$('#scope').val());return false;"/>
                   <input type="submit" name="cancel" id="cancel" value="Cancel"
-                    onClick="Controller.close_tab();return false;"/>
+                    onClick="Controller.closeTab();return false;"/>
               </div>
           </div>
       </form>

@@ -1,0 +1,39 @@
+
+<html>
+  <head>
+    <link type="text/css" rel="stylesheet" href="<%= BundleEditor.resource('editor.css') %>" media="screen">
+    <%= javascript_controller_actions %>
+    <script type="text/javascript" src="file://<%= Redcar::HtmlView.jquery_path %>"></script>
+  </head>
+  <body>
+      <form>
+        <h1>Editing Bundle : <input type="text" id="name" value="<%=@bundle.name ? CGI::escapeHTML(@bundle.name) : ''%>"/></h1>
+          <div id="bundle_editor">
+              <div class="inset">
+                  <table>
+                      <tbody>
+                          <tr>
+                              <th>Description</th>
+                              <td><input type="text" id="description" class="text" value="<%=@bundle.description ? CGI::escapeHTML(@bundle.description) : ''%>"/></td>
+                          </tr>
+                          <tr>
+                              <th>Contact Name</th>
+                              <td><input type="text" id="contact" class="text" value="<%=@bundle.contact_name ?  CGI::escapeHTML(@bundle.contact_name) : ''%>"/></td>
+                          </tr>
+                          <tr>
+                              <th>Email</th>
+                              <td><input type="text" id="email" class="text" value="<%=@bundle.contact_email ? CGI::escapeHTML(BundleEditor.rot13(@bundle.contact_email)) : ''%>"/></td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+              <div class="buttons">
+                  <input type="submit" name="save" id="save" value="Save Changes"
+                    onClick="Controller.save($('#name').val(),$('#description').val(),$('#contact').val(),$('#email').val());return false;"/>
+                  <input type="submit" name="cancel" id="cancel" value="Cancel"
+                    onClick="Controller.closeTab();return false;"/>
+              </div>
+          </div>
+      </form>
+  </body>
+</html>

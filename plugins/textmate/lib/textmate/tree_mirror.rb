@@ -99,7 +99,6 @@ module Redcar
       def initialize(bundle)
         @bundle = bundle
         @children = nil
-        @text = @bundle.name
       end
 
       def leaf?
@@ -107,7 +106,7 @@ module Redcar
       end
 
       def text
-        @text
+        @bundle.name
       end
 
       def refresh

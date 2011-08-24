@@ -6,6 +6,8 @@ require 'textmate/preference'
 require 'textmate/snippet'
 require 'textmate/tree_mirror'
 require 'textmate/editor'
+require 'textmate/editor/bundle_controller'
+require 'textmate/editor/snippet_controller'
 require 'textmate/commands'
 
 gem "redcar-bundles"
@@ -56,6 +58,9 @@ module Redcar
         if not node.nil?
           case node
           when BundleNode
+            item("Edit Bundle") do
+              OpenBundleEditor.new(node.bundle).run
+            end
             item("Add new Snippet...") do
               CreateNewSnippet.new(node.bundle).run
             end

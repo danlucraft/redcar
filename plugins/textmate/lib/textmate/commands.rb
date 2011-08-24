@@ -85,7 +85,20 @@ module Redcar
 
       def execute
         tab = Redcar.app.focussed_window.new_tab(Redcar::HtmlTab)
-        tab.html_view.controller = Textmate::EditorController.new(@snippet,tab,@bundle,@menu)
+        tab.html_view.controller = Textmate::SnippetEditorController.new(@snippet,tab,@bundle,@menu)
+        tab.icon = :edit_code
+        tab.focus
+      end
+    end
+
+    class OpenBundleEditor < Redcar::Command
+      def initialize bundle
+        @bundle = bundle
+      end
+
+      def execute
+        tab = Redcar.app.focussed_window.new_tab(Redcar::HtmlTab)
+        tab.html_view.controller = Textmate::BundleEditorController.new(@bundle,tab)
         tab.icon = :edit_code
         tab.focus
       end

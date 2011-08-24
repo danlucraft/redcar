@@ -3,6 +3,10 @@ body {
     background:#ddd;
 }
 
+#bundle_editor {
+  margin-top:60px;
+}
+
 .inset {
     padding:10px;
     margin:8px;
