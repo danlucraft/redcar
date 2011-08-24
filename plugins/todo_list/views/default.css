@@ -1,18 +1,3 @@
-body {
-  margin:0;
-}
-
-h1 {
-  background: #5f282d url("redcar_small_icon.png") no-repeat 10px 10px;
-  color: #dcb663;
-  height: 30px;
-  line-height: 30px;
-  padding: 10px 10px 10px 52px;
-  font-family: Palatino, Times, serif;
-  letter-spacing: 3px;
-  font-size: 100%;
-}
-
 .content {
   margin: 10px;
 }
@@ -28,12 +13,12 @@ h1 {
 table {
   font-size: 80%;
   border-collapse: collapse;
-  border: 1px solid #888;
+  border: 1px solid #ccc;
 }
 
 td,th {
   border-collapse: collapse;
-  border: 1px solid #888;
+  border: 1px solid #ccc;
   padding: 8px;
 }
 
