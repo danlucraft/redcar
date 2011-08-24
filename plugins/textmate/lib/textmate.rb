@@ -100,6 +100,9 @@ module Redcar
             end
           end
         end
+        item("Create new Bundle") do
+          CreateNewBundle.new.run
+        end
       end
     end
 

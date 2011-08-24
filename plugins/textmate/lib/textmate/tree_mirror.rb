@@ -45,13 +45,36 @@ module Redcar
     class TreeMirror
       include Redcar::Tree::Mirror
 
-      def initialize(bundles)
+      def initialize
+        load
+      end
+
+      def refresh(bundle_names=nil,inserts=nil)
+        if bundle_names
+          bundle_names.each do |name|
+            node = @top.detect {|n| n.text == name }
+            node.refresh if node
+          end
+        end
+        if inserts
+          inserts.each do |b|
+            @top << BundleNode.new(b)
+          end
+          @top = @top.sort_by {|b| b.text.downcase }
+        end
+        cache = []
+        cache.concat(@top)
         @top = []
-        bundles.sort_by {|bundle| (bundle.name||"").downcase}.each_with_index do |b, i|
-          if b.name and b.snippets #and b.snippets.size() > 0
-            name = b.name.downcase
+        @top.concat(cache)
+        cache = nil
+      end
+
+      def load
+        @top = []
+        Textmate.all_bundles.sort_by {|bundle| (bundle.name||"").downcase}.each_with_index do |b, i|
+          if b.name and b.snippets
             unless Textmate.storage['select_bundles_for_tree'] and
-              !Textmate.storage['loaded_bundles'].to_a.include?(name)
+              !Textmate.storage['loaded_bundles'].to_a.include?(b.name.downcase)
               @top << BundleNode.new(b)
             end
           end
@@ -60,20 +83,6 @@ module Redcar
         if @top.size() < 1
           @top = [EmptyTree.new]
         end
-      end
-
-      def refresh(bundle_names = nil)
-        if bundle_names
-          bundle_names.each do |name|
-            node = @top.detect {|n| n.text == name }
-            node.refresh if node
-          end
-        end
-        cache = []
-        cache.concat(@top)
-        @top = []
-        @top.concat(cache)
-        cache = nil
       end
 
       def title

@@ -3,8 +3,8 @@ module Redcar
   module Textmate
     class Bundle
       include Redcar::Observable
-      attr_reader :path, :preferences, :plist
-      attr_accessor :snippets
+      attr_reader :preferences, :plist
+      attr_accessor :snippets, :path
 
       def initialize(path)
         @path = File.expand_path(path)

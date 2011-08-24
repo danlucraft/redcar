@@ -8,13 +8,13 @@ module Redcar
         end
       end
 
-      def self.refresh_trees bundle_names=nil
+      def self.refresh_trees bundle_names=nil, inserts=nil
         Redcar.app.windows.map {|w|
           w.treebook.trees
         }.flatten.select {|t|
           t.tree_mirror.is_a?(Redcar::Textmate::TreeMirror)
         }.each {|t|
-          t.tree_mirror.refresh(bundle_names) if bundle_names
+          t.tree_mirror.refresh(bundle_names,inserts) if bundle_names
           t.refresh
         }
       end

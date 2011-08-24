@@ -17,7 +17,7 @@ module Redcar
         if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
           win.treebook.focus_tree(tree)
         else
-          tree = Tree.new(TreeMirror.new(Textmate.all_bundles),TreeController.new)
+          tree = Tree.new(TreeMirror.new,TreeController.new)
           win.treebook.add_tree(tree)
         end
       end
@@ -27,7 +27,7 @@ module Redcar
       def execute
         if tree = win.treebook.trees.detect {|tree| tree.tree_mirror.title == TREE_TITLE }
           win.treebook.remove_tree(tree)
-          tree = Tree.new(TreeMirror.new(Textmate.all_bundles),TreeController.new)
+          tree = Tree.new(TreeMirror.new,TreeController.new)
           win.treebook.add_tree(tree)
         else
           ShowSnippetTree.new.run
@@ -101,6 +101,44 @@ module Redcar
         tab.html_view.controller = Textmate::BundleEditorController.new(@bundle,tab)
         tab.icon = :edit_code
         tab.focus
+      end
+    end
+
+    class CreateNewBundle < Redcar::Command
+      def execute
+        result = Redcar::Application::Dialog.input("Create Bundle","Choose a name for your new Bundle:")
+        if result[:button] == :ok and not result[:value].empty?
+          plist = {
+            "name" => result[:value],
+            "contactName" => "",
+            "contactEmailRot13" => "",
+            "description" => "",
+            "mainMenu" => {
+              'items' => [],
+              "submenus" => {}
+            },
+            "ordering" => [],
+            "uuid" => BundleEditor.generate_id
+          }
+          bundle_dir = File.join(Redcar.user_dir,"Bundles")
+          path = File.expand_path(File.join(bundle_dir,result[:value]))
+          path += ".tmbundle" unless path =~ /\.tmbundle$/
+          if File.exists?(path)
+            Redcar::Application::Dialog.message_box("A Bundle by that name already exists.")
+            return
+          end
+          FileUtils.mkdir(bundle_dir) unless File.exists?(bundle_dir)
+          FileUtils.mkdir(path)
+          xml = Redcar::Plist.plist_to_xml(plist)
+          fake_path = File.join(Java::JavaLang::System.getProperty("java.io.tmpdir"),'info.plist')
+          File.open(fake_path,'w') do |f|
+            f.puts(xml)
+          end
+          bundle = Bundle.new(File.dirname(fake_path))
+          bundle.path = path
+          File.delete(fake_path)
+          OpenBundleEditor.new(bundle).run
+        end
       end
     end
 
