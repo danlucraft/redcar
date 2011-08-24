@@ -1,25 +1,5 @@
-.content {
-  margin: 10px;
-}
-
-.refresh {
-  padding: 5px;
-}
-
-.even {
-  background-color: #ddd;
-}
-
 table {
   font-size: 80%;
-  border-collapse: collapse;
-  border: 1px solid #ccc;
-}
-
-td,th {
-  border-collapse: collapse;
-  border: 1px solid #ccc;
-  padding: 8px;
 }
 
 .status {

@@ -79,6 +79,14 @@ th {
   background-color: #ffffcc;
 }
 
+.odd {
+  background-color: #fefefe;
+}
+
+.even {
+  background-color: #eee;
+}
+
 table {
   border-collapse:collapse;
   border: 1px solid #ccc;

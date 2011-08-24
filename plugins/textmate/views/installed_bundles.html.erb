@@ -1,21 +1,24 @@
-<% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets redcar.css))) %>
+<% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins html_view views default.css))) %>
+<% watermark  = File.expand_path(File.join(Redcar.root, %w(plugins html_view views watermark-48.png))) %>
 <link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
-
-<h3>Installed Bundles</h3>
-
-<a href="controller/index">Refresh</a>
-<br /><br />
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>    
-  </tr>
-  <% Redcar::Textmate.all_bundles.sort{|a, b| a.name.to_s <=> b.name.to_s}.each do |one| %>
+<div id="top">
+  <img src="file://<%=watermark%>" id="watermark"/>
+  <h1>Installed Bundles</h1>
+  <a href="controller/index">Refresh</a>
+</div>
+<div class="main">
+  <table>
     <tr>
-      <td><%= one.name %></td>
-      <td><%= one.description %></td>
+      <th>Name</th>
+      <th>Description</th>
     </tr>
-  <% end %>
-</table>
+    <% Redcar::Textmate.all_bundles.sort{|a, b| a.name.to_s <=> b.name.to_s}.each do |one| %>
+      <tr>
+        <td><%= one.name %></td>
+        <td><%= one.description %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>
 
 

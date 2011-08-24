@@ -1,7 +1,8 @@
 <html>
   <head>
     <title>Keyboard Shortcuts</title>
-    <% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins help views default.css))) %>
+    <% watermark  = File.expand_path(File.join(Redcar.root, %w(plugins html_view views watermark-48.png))) %>
+    <% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins html_view views default.css))) %>
     <link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
     <%= javascript_controller_actions %>
     <script type="text/javascript" src="file://<%= Redcar::HtmlView.jquery_path %>"></script>
@@ -14,11 +15,13 @@
   </script>
   </head>
   <body>
-    <h1>Keyboard Shortcuts</h1>
-    <div class="content">
-      <div  class="refresh">
-        <a href="controller/index">Refresh List</a>
-      </div>
+    <div id="top">
+      <img src="file://<%=watermark%>" id="watermark"/>
+      <h1>Keyboard Shortcuts</h1>
+      <a href="controller/index">Refresh List</a>
+    </div>
+    <div class="main">
+      <p><i>Click an action name to change the shortcut</i><p>
       <table>
         <tr>
           <th>Action</th>
