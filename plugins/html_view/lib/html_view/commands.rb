@@ -52,7 +52,7 @@ module Redcar
       def execute
         if win = Redcar.app.focussed_window
           if HtmlView.show_browser_bar?
-            win.close_speedbar
+            win.close_speedbar if win.speedbar
           else
             speedbar = Redcar::HtmlView::BrowserBar.new
             win.open_speedbar(speedbar)
