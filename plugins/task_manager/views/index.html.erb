@@ -1,10 +1,12 @@
-<% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets redcar.css))) %>
-    <link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
-
-<h3>Task Manager</h3>
-
-<a href="controller/index">Refresh</a>
-
+<% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins html_view views default.css))) %>
+<% watermark  = File.expand_path(File.join(Redcar.root, %w(plugins html_view views watermark-48.png))) %>
+<link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
+<div id="top">
+  <img src="file://<%=watermark%>" id="watermark"/>
+  <h1>Task Manager</h1>
+  <a href="controller/index">Refresh</a>
+</div>
+<div class="main">
 <h4>Pending</h4>
 
 <table>
@@ -52,7 +54,7 @@
     <% if e = task.error %>
       <tr>
         <td colspan="3">
-          <strong><%= e.class %></strong> 
+          <strong><%= e.class %></strong>
           <%= CGI.escapeHTML(e.message) %>
           <br /><br />
           <% e.backtrace.each do |line| %>
@@ -63,5 +65,6 @@
     <% end %>
   <% end %>
 </table>
+</div>
 
 

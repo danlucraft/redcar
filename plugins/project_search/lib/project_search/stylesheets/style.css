@@ -122,7 +122,7 @@ body {
 }
 
 #recent_queries ul li:hover {
-  background-color: #EDEDFD;
+  background-color: #EDEDED;
   cursor: hand;
 }
 
@@ -210,7 +210,6 @@ body {
 #results .text pre span {
   background-color: #fff319;
   border:1px solid #efda17;
-  font-weight: bold;
   box-shadow:1px 1px 1px #c49e28;
   -moz-box-shadow:1px 1px 1px #c49e28;
   border-radius:3px;

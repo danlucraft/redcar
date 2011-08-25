@@ -1,0 +1,117 @@
+body {
+    font-family:Sawasdee, Lucida Grande, Helvetica Neue, Arial Narrow;
+    background:#ddd;
+}
+
+.inset {
+    padding:10px;
+    margin:8px;
+    background: #ccc;
+    border-radius:5px;
+    -moz-border-radius:5px;
+    box-shadow: 2px 2px 5px #aaa inset;
+    -moz-box-shadow: 2px 2px 5px #aaa inset;
+}
+
+.main {
+  margin-top:60px;
+}
+
+#top {
+    width:100%;
+    background:#eee;
+    padding:10px;
+    padding-left:52px;
+    top:0;
+    left:0;
+    margin-top:-1px;
+    position:fixed;
+    -webkit-box-shadow: 0px 0px 10px rgba(0,0,0,.5);
+    -moz-box-shadow: 0px 0px 10px rgba(0,0,0,.5);
+    box-shadow: 0px 0px 10px rgba(0,0,0,.5);
+    border-bottom:1px solid #ddd;
+}
+
+#top a {
+  text-decoration:none;
+  margin-left:12px;
+  font-family:Sawasdee, Lucida Grande, Helvetica Neue, Arial Narrow;
+  font-size:11px;
+  color:#555;
+}
+
+#top a:hover {
+  color:#000;
+}
+
+#top h1 {
+  display:inline;
+  margin-right:20px;
+}
+
+#watermark {
+  position:fixed;
+  top:-2px;
+  left:0;
+  z-index:9999;
+}
+
+a:link, a:visited {
+  text-decoration:underline;
+  font-family:Helvetica,sans-serif;
+  color:#222;
+}
+
+a:hover {
+  color:#000;
+}
+
+td, th {
+  padding:8px;
+  border: 1px solid #ccc;
+}
+
+td {
+  background-color:#fefefe;
+}
+
+th {
+  background-color: #ffffcc;
+}
+
+.odd {
+  background-color: #fefefe;
+}
+
+.even {
+  background-color: #eee;
+}
+
+table {
+  border-collapse:collapse;
+  border: 1px solid #ccc;
+  color:#333;
+}
+
+p, table {
+  font-size: 12px;
+  font-family: Helvetica, sans-serif;
+}
+
+h1 {
+    font-weight:bold;
+    font-size: 15px;
+}
+
+h3, h4, h5 {
+  margin-top:8px;
+  color: #444;
+}
+
+.buttons {
+    text-align:center;
+}
+
+.buttons input {
+    padding: 3px;
+}

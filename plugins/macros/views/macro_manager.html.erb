@@ -2,47 +2,53 @@
 <html>
   <head>
     <title>Macro Manager</title>
-    <% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets redcar.css))) %>
-    <link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
+    <% watermark  = File.expand_path(File.join(Redcar.root, %w(plugins html_view views watermark-48.png))) %>
+    <% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins html_view views default.css))) %>
     <% jquery_path = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets jquery-1.4.min.js))) %>
+    <link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
     <script type="text/javascript" src="file://<%= jquery_path %>"></script>
+<!--    <script type="text/javascript" src="file://<%= Redcar::HtmlView.jquery_path %>"></script>-->
   </head>
   <body>
-    <script type="text/javascript" src="file://<%= Redcar::HtmlView.jquery_path %>"></script>
-    <h3>Macro Manager</h3>
-    <h4>Unsaved Macros</h4>
-    <% if Macros.session_macros.any? %>
-      <table>
-        <% Macros.session_macros.each_with_index do |macro, i| %>
-          <tr>
-            <td class="macro-name"><%= macro.name %></td>
-            <td><a class="show-actions" href="#">Show Actions</a></td>
-            <td><a class="assign-name" href="#">Assign Name and Save</a></td>
-            <td><a class="delete-macro" href="#">Delete Macro</a></td>
-          </tr>
-          <%= macro_steps(macro) %>
-        <% end %>
-      </table>
-    <% else %>
-      None
-    <% end %>
+    <div id="top">
+      <img src="file://<%=watermark%>" id="watermark"/>
+      <h1>Macro Manager</h1>
+    </div>
+    <div class="main">
+      <h4>Unsaved Macros</h4>
+      <% if Macros.session_macros.any? %>
+        <table>
+          <% Macros.session_macros.each_with_index do |macro, i| %>
+            <tr>
+              <th class="macro-name"><%= macro.name %></th>
+              <td><a class="show-actions" href="#">Show Actions</a></td>
+              <td><a class="assign-name" href="#">Assign Name and Save</a></td>
+              <td><a class="delete-macro" href="#">Delete Macro</a></td>
+            </tr>
+            <%= macro_steps(macro) %>
+          <% end %>
+        </table>
+      <% else %>
+        <p>None</p>
+      <% end %>
 
-    <h4>Saved Macros</h4>
-    <% if Macros.saved_macros.any? %>
-      <table>
-        <% Macros.saved_macros.reverse.each do |macro| %>
-          <tr>
-            <td class="macro-name"><%= macro.name %></td>
-            <td><a class="show-actions" href="#">Show Actions</a></td>
-            <td><a class="rename-macro" href="#">Rename</a></td>
-            <td><a class="delete-macro" href="#">Delete Macro</a></td>
-          </tr>
-        <%= macro_steps(macro) %>
-        <% end %>
-      </table>
-    <% else %>
-      None
-    <% end %>
+      <h4>Saved Macros</h4>
+      <% if Macros.saved_macros.any? %>
+          <table>
+          <% Macros.saved_macros.reverse.each do |macro| %>
+            <tr>
+              <th class="macro-name"><%= macro.name %></th>
+              <td><a class="show-actions" href="#">Show Actions</a></td>
+              <td><a class="rename-macro" href="#">Rename</a></td>
+              <td><a class="delete-macro" href="#">Delete Macro</a></td>
+            </tr>
+          <%= macro_steps(macro) %>
+          <% end %>
+        </table>
+      <% else %>
+        <p>None</p>
+      <% end %>
+    </div>
   </body>
 </html>
 
@@ -60,9 +66,9 @@
   $("a.show-actions").click(function(e) {
     e.preventDefault();
     var actions = $(this).parent().parent().next(".macro-actions");
-    actions.show();
+    actions.toggle();
   });
-  
+
   $("a.rename-macro").click(function(e) {
     e.preventDefault();
     var macroName = $(this).parent().parent().find(".macro-name").text();

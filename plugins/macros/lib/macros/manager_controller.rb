@@ -32,10 +32,10 @@ module Redcar
         html = ""
         html << <<-HTML
         <tr style="display: none;" class="macro-actions">
-          <td>
+          <td colspan="4">
             <table>
         HTML
-        
+
         macro.actions.each do |action|
           case action
           when Fixnum
