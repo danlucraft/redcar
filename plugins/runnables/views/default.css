@@ -1,11 +1,15 @@
-h1 {
-  background: #5f282d url("redcar_small_icon.png") no-repeat 10px 10px;
-  color: #dcb663;
-  height: 30px;
-  line-height: 30px;
-  padding: 10px 10px 10px 52px;
-  font-family: Palatino, Times, serif;
-  letter-spacing: 3px;
+#top {
+  height:32px;
+}
+
+form {
+  height:32px;
+  display:inline;
+  margin-left:30px;
+}
+
+.main {
+  margin-top:72px;
 }
 
 .header {
@@ -15,7 +19,8 @@ h1 {
   font-weight: bold;
   padding: 3px 0 2px 20px;
   cursor: pointer;
-  background: #ddd url("wedgeDown.png") no-repeat 8px 9px;
+  background: #eee url("wedgeDown.png") no-repeat 8px 9px;
+  border: 1px solid #ccc;
 }
 
 .header.up {
@@ -34,7 +39,8 @@ h1 {
 }
 
 .output {
-  border: 1px solid #ddd;
+  border: 1px solid #ccc;
+  background-color: #fff;
 }
 
 .process {
