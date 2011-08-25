@@ -28,14 +28,7 @@ Some (current) limitations:
 
 ## INSTALLATION
 
-You must have Java installed [1]. Redcar is easiest to install as a gem. After installing the gem there is one further install step:
-
-    $ sudo gem install redcar
-    $ redcar install
-    
-The install will take a minute or so to complete as it has to download about 15MB of jar files.
-
-[1] Sun Java or OpenJDK work. Gcj is known not to work.
+[see User Guide: Installation](https://github.com/redcar/redcar/wiki/Installation)
 
 ## USAGE
 
