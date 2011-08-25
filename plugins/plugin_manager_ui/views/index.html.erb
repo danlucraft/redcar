@@ -8,15 +8,21 @@ td.yellow {
 }
 </style>
 
-<h3>Plugin Manager</h3>
 
 <% jquery_path = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets jquery-1.4.min.js))) %>
+<% json_path   = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets json2.js))) %>
+<% redcar_css  = File.expand_path(File.join(Redcar.root, %w(plugins html_view views default.css))) %>
+<% watermark   = File.expand_path(File.join(Redcar.root, %w(plugins html_view views watermark-48.png))) %>
 <script type="text/javascript" src="file://<%= jquery_path %>"></script>
-<% json_path = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets json2.js))) %>
 <script type="text/javascript" src="file://<%= json_path %>"></script>
-<% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets redcar.css))) %>
 <link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
 
+<div id="top">
+  <img src="file://<%=watermark%>" id="watermark"/>
+<h1>Plugin Manager</h1>
+</div>
+
+<div class="main">
 <h4>Loaded Plugins</h4>
 <%= plugin_table(Redcar.plugin_manager.loaded_plugins) %>
 
@@ -28,7 +34,7 @@ td.yellow {
 
 <h4>Plugins with Errors</h4>
 <%= plugin_table(Redcar.plugin_manager.plugins_with_errors) %>
-
+<h4>Browser Details</h4>
 <script language="javascript">
   $("a").click(function(e) {
     e.preventDefault();
@@ -47,8 +53,10 @@ var browser=navigator.appName;
 var b_version=navigator.appVersion;
 var version=parseFloat(b_version);
 
-document.write("Browser name: "+ browser);
+document.write("<div class='inset'>");
+document.write("<p><b>Browser name:</b> "+ browser);
 document.write("<br />");
-document.write("Browser version: "+ b_version);
+document.write("<b>Browser version:</b> "+ b_version);
+document.write("</p></div>");
 </script>
- 
+</div>
