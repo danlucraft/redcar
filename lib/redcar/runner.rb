@@ -19,7 +19,7 @@ module Redcar
             STDOUT.reopen Redcar.null_device, 'a'
             STDERR.reopen STDOUT
           end
-        elsif forking and SPOON_AVAILABLE and ::Spoon.supported?
+        elsif forking and SPOON_AVAILABLE
           # so we need to try something different...
           
           forking = false
@@ -56,7 +56,7 @@ module Redcar
         bin = "\"#{bin}\""
       end      
 
-      command = ["jruby"]
+      command = (RUBY_PLATFORM.downcase =~ /mswin|mingw|win32/ ? ["jrubyw"] : ["jruby"])
       command.push(*java_args)
       # command.push("-J-Xbootclasspath/a:#{jruby_complete}")
       command.push("-J-Dfile.encoding=UTF8", "-J-Xmx320m", "-J-Xss1024k", "-J-Djruby.memory.max=320m", "-J-Djruby.stack.max=1024k")

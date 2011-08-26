@@ -1,128 +1,134 @@
-<h3>Connection Manager</h3>
 
 <% jquery_path = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets jquery-1.4.min.js))) %>
+<% watermark  = File.expand_path(File.join(Redcar.root, %w(plugins html_view views watermark-48.png))) %>
+<% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins html_view views default.css))) %>
 <script type="text/javascript" src="file://<%= jquery_path %>"></script>
-
-<% redcar_css = File.expand_path(File.join(Redcar.root, %w(plugins html_view assets redcar.css))) %>
 <link rel="stylesheet" href="file://<%= redcar_css %>" type="text/css" media="screen">
+<div id="top">
+  <img src="file://<%=watermark%>" id="watermark"/>
+  <h1>Connection Manager</h1>
+</div>
+<div class="main">
+  <h4>Connections</h4>
+  <div class="inset">
+  <div id='connections'>
+  <% if connections and connections.any? %>
+    <table id='table'>
+      <tr class='grey' style='font-weight:bold;'>
+        <th>Name</th>
+        <th>Protocol</th>
+        <th>Host</th>
+        <th>Port</th>
+        <th>User</th>
+        <th>Remote Path</th>
+      </tr>
 
-<h5>Connections</h5>
-<div id='connections'>
-<% if connections and connections.any? %>
-  <table id='table'>
-    <tr class='grey' style='font-weight:bold;'>
-      <td>Name</td>
-      <td>Protocol</td>
-      <td>Host</td>
-      <td>Port</td>
-      <td>User</td>
-      <td>Remote Path</td>
-    </tr>
-    
-    <% connections.each do |c| %>
-      <tr id='row-<%= c.name %>'>
-        <td><a href='javascript:void(0);' class='activate connection-name'><%= c.name %></a></td>
-        <td><%= c.protocol %></td>
-        <td><%= c.host %></td>
-        <td><%= c.port %></td>
-        <td><%= c.user %></td>
-        <td><%= c.path %></td>
-        <td>
-          <a href='javascript:void(0);' class='delete'">Delete</a>
-          <a href='javascript:void(0);' class='modify'">Modify</a>
-        </td>
-      </tr>      
-    <% end %>
-  </table>
-<% else %>
-  <p>No connections</p>
-<% end %>
-
+      <% connections.each do |c| %>
+        <tr id='row-<%= c.name %>'>
+          <td><a href='javascript:void(0);' class='activate connection-name'><%= c.name %></a></td>
+          <td><%= c.protocol %></td>
+          <td><%= c.host %></td>
+          <td><%= c.port %></td>
+          <td><%= c.user %></td>
+          <td><%= c.path %></td>
+          <td>
+            <a href='javascript:void(0);' class='delete'">Delete</a>
+            <a href='javascript:void(0);' class='modify'">Modify</a>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  <% else %>
+    <p>No connections</p>
+  <% end %>
+    <p>
+      <input id='add' type='button' value='Add Connection'>
+    </p>
+  </div>
   <p>
-    <input id='add' type='button' value='Add Connection'>
+    <div id='add_div' style='display:none;'>
+      <div id='error' style='display:none;color:red;text-weight:bold;margin-bottom:20px;'></div>
+      <form id='new_connection'>
+        <input type='hidden' name='operation' id='operation'>
+        <table>
+          <tr class='grey'>
+            <th colspan=2><b><span id='conn_name'>New Connection</span></b></th>
+          </tr>
+          <tr><td>Name:     </td><td><input size='30' type='text' name='name' id='name'></td></tr>
+          <tr>
+            <td>Protocol: </td>
+            <td>
+              <select name='protocol' id='protocol'>
+                <option></option>
+                <option>SFTP</option>
+                <option>FTP</option>
+              </select>
+            </td>
+          </tr>
+          <tr><td>Host:        </td><td><input size="30" type='text' name='host' id='host'></td></tr>
+          <tr><td>Port:        </td><td><input type='text' name='port' id='port' size=2></td></tr>
+          <tr><td>User:        </td><td><input size="30" type='text' name='user' id='user'></td></tr>
+          <tr><td>Remote Path: </td><td><input size="30" type='text' name='path' id='path'></td></tr>
+          <tr>
+            <td colspan=2>
+              <input id='save' type='submit' value='Save'>
+              <input id='cancel' type='button' value='Cancel'>
+            </td>
+          </tr>
+        </table>
+      </form>
+    </div>
   </p>
 </div>
 
-<p>
-  <div id='add_div' style='display:none;'>
-    <div id='error' style='display:none;color:red;text-weight:bold;margin-bottom:20px;'></div>
-    <form id='new_connection'>
-      <input type='hidden' name='operation' id='operation'>
-      <table>
-        <tr class='grey'>
-          <td colspan=2><b><span id='conn_name'>New Connection</span></b></td>
-        </tr>
-        <tr><td>Name:     </td><td><input size='30' type='text' name='name' id='name'></td></tr>
-        <tr>
-          <td>Protocol: </td>
-          <td>
-            <select name='protocol' id='protocol'>
-              <option></option>
-              <option>SFTP</option>
-              <option>FTP</option>
-            </select>
-          </td>
-        </tr>
-        <tr><td>Host:        </td><td><input size="30" type='text' name='host' id='host'></td></tr>
-        <tr><td>Port:        </td><td><input type='text' name='port' id='port' size=2></td></tr>
-        <tr><td>User:        </td><td><input size="30" type='text' name='user' id='user'></td></tr>
-        <tr><td>Remote Path: </td><td><input size="30" type='text' name='path' id='path'></td></tr>
-        <tr>
-          <td colspan=2>
-            <input id='save' type='submit' value='Save'>
-            <input id='cancel' type='button' value='Cancel'>
-          </td>
-        </tr>
-      </table>
-    </form>
-  </div>
-</p>
-
-<h5>Private Keys</h5>
-<div id="private-keys">
-  <div class="list">
-    <% if (private_key_files + auto_detected_private_key_files).any? %>
-      <table>
-      <% auto_detected_private_key_files.each do |private_key| %>
-        <tr>
-          <td><%= private_key %></td>
-        </tr>
+  <h4>Private Keys</h4>
+<div class="inset">
+  <div id="private-keys">
+    <div class="list">
+      <% if (private_key_files + auto_detected_private_key_files).any? %>
+        <table>
+        <% auto_detected_private_key_files.each do |private_key| %>
+          <tr>
+            <td><%= private_key %></td>
+          </tr>
+        <% end %>
+        <% private_key_files.each do |private_key| %>
+          <tr>
+            <td><%= private_key %></td>
+            <td>
+              <a href='javascript:void(0);' class='delete-key' data-name="<%= private_key %>">Delete</a>
+            </td>
+          </tr>
+        <% end %>
+        </table>
+      <% else %>
+        No private keys.
       <% end %>
-      <% private_key_files.each do |private_key| %>
-        <tr>
-          <td><%= private_key %></td>
-          <td>
-            <a href='javascript:void(0);' class='delete-key' data-name="<%= private_key %>">Delete</a>
-          </td>
-        </tr>
-      <% end %>
-      </table>
-    <% else %>
-      No private keys.
-    <% end %>
-  </div>
-  <br />
-  <input id='add-private-key-button' type='button' value='Add Private Key'>
+    </div>
+    <br />
+    <input id='add-private-key-button' type='button' value='Add Private Key'>
 
-  <div id='add-private-key' style='display:none;'>
-    <div class='error' style='display:none;color:red;text-weight:bold;margin-bottom:20px;'></div>
-    
-    <form id='add-private-key-form'>
-      <input type='hidden' name='operation' class='operation'>
-      <table>
-        <tr class='grey'>
-          <td colspan=2><b><span>New Private Key</span></b></td>
-        </tr>
-        <tr><td>Key file: </td><td><input size="30" type='text' class="path" name='path'></td></tr>
-        <tr>
-          <td colspan=2>
-            <input class='save' type='submit' value='Save'>
-            <input class='cancel' type='button' value='Cancel'>
-          </td>
-        </tr>
-      </table>
-    </form>
+    <div id='add-private-key' style='display:none;'>
+      <div class='error' style='display:none;color:red;text-weight:bold;margin-bottom:20px;'></div>
+
+      <form id='add-private-key-form'>
+        <input type='hidden' name='operation' class='operation'>
+        <table>
+          <tr class='grey'>
+            <td colspan=2><b><span>New Private Key</span></b></td>
+          </tr>
+          <tr><td>Key file: </td><td><input size="30" type='text' class="path" name='path'></td></tr>
+          <tr>
+            <td colspan=2>
+              <input class='save' type='submit' value='Save'>
+              <input class='cancel' type='button' value='Cancel'>
+            </td>
+          </tr>
+        </table>
+      </form>
+    </div>
   </div>
+</div>
 </div>
 
 <script type="text/javascript">
@@ -132,7 +138,7 @@ $(document).ready(function() {
       .not(':button, :submit, :reset, :hidden')
       .val('')
       .removeAttr('checked')
-      .removeAttr('selected');  
+      .removeAttr('selected');
 
     $('#add_div').hide();
     $('#connections').show();
@@ -141,7 +147,7 @@ $(document).ready(function() {
   var PORTS = {
     'FTP': 21, 'SFTP': 22
   };
-  
+
   $('.delete').live('click', function() {
     var name = $(this).parent().parent().find(".connection-name").text();
     try {
@@ -154,7 +160,7 @@ $(document).ready(function() {
       alert("Error: " + err.message);
     }
   });
-  
+
   $('.modify').live('click', function() {
     var name = $(this).parent().parent().find(".connection-name").text();
     $('#error').html("");
@@ -210,7 +216,7 @@ $(document).ready(function() {
       else {
         result = Controller.updateConnection(name, protocol, host, port, user, path);
       }
-      
+
       if (result.success === false) {
         $('#error').html(result.error);
         $('#error').show();
@@ -225,12 +231,12 @@ $(document).ready(function() {
     }
     return false;
   });
-  
+
   $(".activate").click(function(e) {
     var name = $(this).parent().parent().find(".connection-name").text();
     Controller.activateConnection(name);
   });
-  
+
   $("#add-private-key-button").click(function() {
     $("#add-private-key-button").hide();
     $("#add-private-key").show();
