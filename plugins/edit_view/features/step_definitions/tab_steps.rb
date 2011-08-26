@@ -14,9 +14,7 @@ Given /^there is an edit tab containing "([^\"]*)"$/ do |contents|
 end
 
 When /^I open a new edit tab$/ do
-  Redcar.update_gui do
-    Redcar::Top::OpenNewEditTabCommand.new.run
-  end
+  Swt.bot.menu("File").menu("New").click
 end
 
 When /^I open a new edit tab titled "(.*)"$/ do |title|
@@ -25,7 +23,7 @@ When /^I open a new edit tab titled "(.*)"$/ do |title|
 end
 
 When /^I close the focussed tab$/ do
-  Redcar::Application::CloseTabCommand.new.run
+  Swt.bot.menu("File").menu("Close Tab").click
 end
 
 When /^the edit tab updates its contents$/ do
@@ -50,12 +48,23 @@ When /I move (up|down) a tab/ do |type|
   end
 end
 
-def get_tab_folder
-  c_tab_item = Swt.bot.c_tab_item
-  tab_folder = nil
-  Redcar.update_gui { tab_folder = c_tab_item.widget.parent }
-  tab_folder
+module SwtbotHelpers
+
+  def get_tab_folders(shell=Swt.bot.active_shell)
+    right_composite = shell.widget.children.to_a.last
+    notebook_sash_form = right_composite.children.to_a[0]
+    tab_folders = notebook_sash_form.children.to_a.select do |c|
+      c.class == Java::OrgEclipseSwtCustom::CTabFolder
+    end
+  end
+  
+  def get_tab_folder
+    get_tab_folders.length.should == 1
+    get_tab_folders.first
+  end
 end
+
+World(SwtbotHelpers)
 
 Then /^there should be (one|\d+) (.*) tabs?$/ do |num, tab_type|
   if num == "one"
@@ -67,7 +76,7 @@ Then /^there should be (one|\d+) (.*) tabs?$/ do |num, tab_type|
   # in the model
   tabs = Redcar.app.focussed_window.notebooks.map {|nb| nb.tabs }.flatten
   tabs.length.should == num
-
+  
   # in the GUI
   c_tab_item = Swt.bot.c_tab_item
   Redcar.update_gui { c_tab_item.widget.parent.children.to_a.length.should == num }
@@ -78,12 +87,12 @@ Then /^the edit tab should have the focus$/ do
 end
 
 Then /^there should be no open tabs$/ do
-  get_tab_folder.getItems.to_a.length.should == 0
+  Redcar.update_gui { get_tab_folder.getItems.to_a.length.should == 0 }
 end
 
 Then /^the tab should be focussed within the notebook$/ do
-  tab_folder = get_tab_folder
   Redcar.update_gui do
+    tab_folder = get_tab_folder
     tab_folder.get_selection.should == tab_folder.getItems.to_a.first
   end
 end
