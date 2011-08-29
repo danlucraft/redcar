@@ -165,7 +165,7 @@ module Redcar
           else
             show_dialog = true
           end
-          
+
           if show_dialog
             Application::Dialog.message_box(
               "Can't save #{tab.edit_view.document.mirror.path}, you don't have the permissions.",
@@ -333,7 +333,7 @@ module Redcar
 
       def run_application(app, *options)
         # TODO: Investigate why Spoon doesn't seem to work on osx
-        if SPOON_AVAILABLE and ::Spoon.supported? and Redcar.platform != :osx
+        if SPOON_AVAILABLE and Redcar.platform != :osx
           ::Spoon.spawn(app, *options)
         else
           # TODO: This really needs proper escaping.
