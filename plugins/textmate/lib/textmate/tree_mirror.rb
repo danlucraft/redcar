@@ -104,6 +104,7 @@ module Redcar
     class BundleNode
       include Redcar::Tree::Mirror::NodeMirror
       attr_reader :bundle
+      attr_accessor :children
 
       def initialize(bundle)
         @bundle = bundle
@@ -151,7 +152,7 @@ module Redcar
           list << SnippetNode.new(snippet,parent_node)
         #if item has submenus, make a group and add sub-items
         elsif sub_menu = bundle.sub_menus[item]
-          group = SnippetGroup.new(sub_menu["name"],item,bundle,parent_node)
+          group = SnippetGroup.new(sub_menu["name"],item,parent_node)
           if sub_menu["items"] and sub_menu["items"].size > 0
             sub_menu["items"].each do |sub_item|
               build_children(group.children, bundle, sub_item, group)
@@ -165,13 +166,12 @@ module Redcar
     class SnippetGroup
       include Redcar::Tree::Mirror::NodeMirror
 
-      attr_writer :children
-      attr_reader :uuid,:bundle,:parent
+      attr_accessor :parent, :children
+      attr_reader   :uuid
 
-      def initialize(name,uuid,bundle,parent)
+      def initialize(name,uuid,parent)
         @children = []
         @text     = name
-        @bundle   = bundle
         @uuid     = uuid
         @parent   = parent
       end
@@ -191,12 +191,17 @@ module Redcar
       def children
         @children
       end
+
+      def bundle
+        parent.bundle
+      end
     end
 
     class SnippetNode
       include Redcar::Tree::Mirror::NodeMirror
 
-      attr_reader :parent, :snippet
+      attr_accessor :parent
+      attr_reader :snippet
 
       def initialize(snippet,parent)
         @snippet = snippet
@@ -225,6 +230,10 @@ module Redcar
 
       def snippet
         @snippet
+      end
+
+      def bundle
+        parent.bundle
       end
     end
   end
