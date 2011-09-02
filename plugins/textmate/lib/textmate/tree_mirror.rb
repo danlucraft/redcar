@@ -10,6 +10,10 @@ module Redcar
     class TreeController
       include Redcar::Tree::Controller
 
+      def drag_controller(tree)
+        @drag_controller ||= Textmate::DragController.new(tree)
+      end
+
       def right_click(tree, node)
         controller = self
         menu = Menu.new
@@ -47,6 +51,23 @@ module Redcar
 
       def initialize
         load
+      end
+
+      def to_data nodes
+        # NOTE: this only works because all nodes are coming from the same bundle
+        @bundle_node = @top.detect {|n| n.bundle == nodes.first.bundle}
+        nodes.map {|n| n.uuid}.join('::')
+      end
+
+      def from_data raw
+        nodes = @bundle_node.all_children
+        raw.split('::').map do |uuid|
+          nodes.detect {|n| n.uuid == uuid}
+        end
+      end
+
+      def drag_and_drop?
+        true
       end
 
       def refresh(bundle_names=nil,inserts=nil)
@@ -135,6 +156,10 @@ module Redcar
         end
       end
 
+      def all_children
+        traverse_children(children,children.to_a)
+      end
+
       def icon
         if Textmate.storage['loaded_bundles'].include?(text.downcase)
           :"ui-menu-blue"
@@ -143,7 +168,21 @@ module Redcar
         end
       end
 
+      def parent
+        self
+      end
+
       private
+
+      def traverse_children items, append_to
+        items.each do |item|
+          if item.children
+            append_to += item.children
+            append_to = traverse_children(item.children, append_to)
+          end
+        end
+        append_to
+      end
 
       def build_children(list, bundle, item, parent_node)
         #if item is a snippet, add to list
@@ -210,6 +249,10 @@ module Redcar
 
       def icon
         :"document-snippet"
+      end
+
+      def uuid
+        @snippet.uuid
       end
 
       def text
