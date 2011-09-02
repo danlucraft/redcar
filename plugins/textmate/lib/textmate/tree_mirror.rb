@@ -18,16 +18,7 @@ module Redcar
         controller = self
         menu = Menu.new
         Redcar.plugin_manager.objects_implementing(:bundle_context_menus).each do |object|
-          case object.method(:bundle_context_menus).arity
-          when 1
-            menu.merge(object.bundle_context_menus(node))
-          when 2
-            menu.merge(object.bundle_context_menus(tree, node))
-          when 3
-            menu.merge(object.bundle_context_menus(tree, node, controller))
-          else
-            puts("Invalid bundle_context_menus hook detected in "+object.class.name)
-          end
+          menu.merge(object.bundle_context_menus(tree, node))
         end
         Application::Dialog.popup_menu(menu, :pointer)
       end
@@ -172,6 +163,14 @@ module Redcar
         self
       end
 
+      def menu
+        bundle.main_menu['items']
+      end
+
+      def menu= value
+        bundle.main_menu['items'] = value
+      end
+
       private
 
       def traverse_children items, append_to
@@ -233,6 +232,14 @@ module Redcar
 
       def bundle
         parent.bundle
+      end
+
+      def menu
+        bundle.sub_menus[uuid]['items']
+      end
+
+      def menu= value
+        bundle.sub_menus[uuid]['items'] = value
       end
     end
 

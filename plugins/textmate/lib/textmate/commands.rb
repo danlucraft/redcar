@@ -188,6 +188,25 @@ module Redcar
       end
     end
 
+    class SortNodes < Redcar::Command
+      def initialize tree,node
+        @tree, @node = tree, node
+      end
+
+      def execute
+        @node.children = @node.children.sort_by do |n|
+          n.text.downcase
+        end.sort_by do |n|
+          n.is_a?(SnippetGroup) ? 0 : 1
+        end
+        uuids = @node.children.map {|n| n.uuid}
+        @node.menu = @node.menu.sort_by{|id| uuids.index(id)}
+        BundleEditor.write_bundle(@node.bundle)
+        BundleEditor.reload_cache
+        @tree.refresh
+      end
+    end
+
     class DeleteNode < Redcar::Command
       def initialize node
         @node = node

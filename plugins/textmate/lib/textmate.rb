@@ -54,9 +54,14 @@ module Redcar
       end
     end
 
-    def self.bundle_context_menus(node)
+    def self.bundle_context_menus(tree,node)
       Menu::Builder.build do
         if not node.nil?
+          if node.children.size > 0
+            item("Sort") do
+              SortNodes.new(tree,node).run
+            end
+          end
           case node
           when BundleNode
             item("Edit Bundle") do
