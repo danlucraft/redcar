@@ -33,7 +33,7 @@ module Redcar
       end
 
       def contact_email
-        @plist["contactEmailRot13"]
+        BundleEditor.rot13(@plist["contactEmailRot13"])
       end
 
       def description

@@ -10,35 +10,9 @@ module Redcar
       end
 
       def save name, content, trigger, scope
-        @snippet.plist['name'] = name
-        @snippet.plist['content'] = content
-        if trigger.empty?
-          @snippet.plist.delete('tabTrigger')
-        else
-          @snippet.plist['tabTrigger'] = trigger
-        end
-        @snippet.plist['scope'] = scope
-        File.open(@snippet.path, 'w') do |f|
-          f.puts(Plist.plist_to_xml(@snippet.plist))
-        end
+        BundleEditor.update_snippet @snippet, name, content, trigger, scope
         if @bundle
-          if @menu
-            menu = @bundle.sub_menus[@menu]
-            @bundle.sub_menus['item'] = {} unless menu
-          else
-            menu = @bundle.main_menu
-          end
-          menu = {} unless menu
-          menu['items'] = [] unless menu['items']
-          menu['items'] << @snippet.plist['uuid']
-          @bundle.ordering << @snippet.plist['uuid']
-          @bundle.snippets << @snippet unless @bundle.snippets.include?(@snippet)
-          Textmate.uuid_hash[@snippet.plist['uuid']] = @snippet
-          BundleEditor.write_bundle(@bundle)
-        end
-        BundleEditor.reload_cache
-        if @bundle
-          BundleEditor.refresh_trees([@bundle.name])
+          BundleEditor.add_snippet_to_bundle(@snippet, @bundle, @menu)
         else
           BundleEditor.refresh_trees
         end

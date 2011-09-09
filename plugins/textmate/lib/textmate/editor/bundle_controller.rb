@@ -13,16 +13,7 @@ module Redcar
       end
 
       def save name, description, contact_name, email
-        @bundle.plist.tap do |p|
-          p['contactEmailRot13'] = BundleEditor.rot13(email)
-          p['contactName'] = contact_name
-          p['description'] = description
-          p['name'] = name
-        end
-        Textmate.all_bundles << @bundle unless Textmate.all_bundles.include?(@bundle)
-        BundleEditor.write_bundle(@bundle)
-        BundleEditor.refresh_trees([],[@bundle])
-        BundleEditor.reload_cache
+        BundleEditor.update_bundle @bundle, name, description, contact_name, email
         close_tab
       end
 
