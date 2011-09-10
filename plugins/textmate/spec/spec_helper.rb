@@ -47,6 +47,7 @@ def test_snippet
 end
 
 def create_fixtures
+  FileUtils.mkdir(textmate_fixtures) unless File.exists?(textmate_fixtures)
   FileUtils.mkdir(fake_bundle)
   FileUtils.mkdir(snippet_dir)
   File.open(test_snippet, 'w') do |f|
@@ -112,8 +113,7 @@ def create_fixtures
 end
 
 def delete_fixtures
-  File.delete(plist_file)
-  FileUtils.rm_r(fake_bundle)
+  FileUtils.rm_r(textmate_fixtures)
   fixtures.each {|p| FileUtils.rm_rf(p)}
   @fixtures = nil
 end

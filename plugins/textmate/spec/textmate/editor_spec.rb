@@ -20,7 +20,7 @@ describe BundleEditor do
     BundleEditor.rot13(BundleEditor.rot13(email)).should == email
   end
 
-  describe "Updating Bundles" do
+  describe "Bundle Editing" do
     before(:each) do
       create_fixtures
       @bundle = Bundle.new(fake_bundle)
@@ -97,6 +97,29 @@ describe BundleEditor do
       BundleEditor.delete_snippet(@bundle, @bundle.snippets.first)
       @bundle.snippets.size.should == size - 1
       @bundle.main_menu['items'].size.should == size - 1
+    end
+
+    it "should delete submenus" do
+      name  = 'Submenu A'
+      name2 = 'Submenu B'
+      name3 = 'Submenu C'
+      BundleEditor.create_submenu(name,@bundle)
+      sub = @bundle.sub_menus.detect {|k,v| v['name'] == name }
+      sub.should_not be_nil
+      BundleEditor.create_submenu(name2,@bundle, sub.first)
+      sub2 = @bundle.sub_menus.detect {|k,v| v['name'] == name2 }
+      sub2.should_not be_nil
+      sub[1]['items'].detect {|id| sub2.first == id }.should_not be_nil
+      @bundle.sub_menus[sub.first]['items'].detect {|id| sub2.first == id }.should_not be_nil
+      BundleEditor.create_submenu(name3,@bundle, sub.first)
+      sub3 = @bundle.sub_menus.detect {|k,v| v['name'] == name3 }
+      sub3.should_not be_nil
+      BundleEditor.delete_submenu @bundle, sub3.first, sub.first
+      @bundle.sub_menus.detect {|k,v| v['name'] == name3 }.should be_nil
+      sub[1]['items'].detect {|id| sub3.first == id }.should be_nil
+      BundleEditor.delete_submenu @bundle, sub.first
+      @bundle.sub_menus.detect {|k,v| v['name'] == name }.should be_nil
+      @bundle.sub_menus.detect {|k,v| v['name'] == name2 }.should be_nil
     end
 
     it "should add submenus" do

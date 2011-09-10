@@ -40,7 +40,7 @@ module Redcar
       end
 
       def self.create_snippet name,bundle,menu=nil
-        snippet_dir = File.expand_path(File.join(@bundle.path,"Snippets"))
+        snippet_dir = File.expand_path(File.join(bundle.path,"Snippets"))
         FileUtils.mkdir(snippet_dir) unless File.exists?(snippet_dir)
         filename = name.gsub(/[^a-zA-Z0-9]/,"_")
         path     = generate_path(snippet_dir,filename)
@@ -155,13 +155,20 @@ module Redcar
 
       def self.delete_snippet bundle,snippet, parent_menu_uuid=nil
         bundle.snippets.delete(snippet)
-        File.delete(snippet.path)
+        File.delete(snippet.path) if File.exists?(snippet.path)
         delete_item_from_parent(bundle,snippet.uuid,parent_menu_uuid)
       end
 
-      def self.delete_submenu bundle,menu, parent_menu_uuid=nil
+      def self.delete_submenu bundle, menu, parent_menu_uuid=nil
+        bundle.sub_menus[menu]['items'].clone.each do |item|
+          if snippet = Textmate.uuid_hash[item] # is snippet
+            delete_snippet(bundle, snippet, menu)
+          else
+            delete_submenu(bundle, item, menu)
+          end
+        end
         bundle.sub_menus.delete(menu)
-        delete_item_from_parent(bundle,snippet.uuid,parent_menu_uuid)
+        delete_item_from_parent(bundle,menu,parent_menu_uuid)
       end
 
       private

@@ -149,8 +149,8 @@ module Redcar
       end
 
       def delete node
-        node.children.each {|c| delete(c)} if node.children
-        uuid = node.parent.is_a?(SnippetNode) ? node.parent.uuid : nil
+        # node.children.each {|c| delete(c)} if node.children
+        uuid = node.parent.is_a?(SnippetGroup) ? node.parent.uuid : nil
         case node
         when SnippetNode
           BundleEditor.delete_snippet(node.bundle,node.snippet, uuid)
