@@ -20,7 +20,7 @@ module Redcar
       font = Swt::Graphics::Font.new(
         ApplicationSWT.display,
         font_data.name,
-        Redcar::EditView.font_size - 1,
+        Redcar::EditView.font_size - 4,
         Swt::SWT::NORMAL)
       @composite.background = color
       tree_style = Swt::SWT::MULTI | Swt::SWT::H_SCROLL | Swt::SWT::V_SCROLL
