@@ -25,7 +25,7 @@ end
 Gem::Specification.new do |s|
   s.name        = "redcar-dev"
   s.version     = "0.12.16dev" # also change in lib/redcar.rb
-  s.platform    = "java"
+  s.platform    = "ruby"
   s.authors     = ["Daniel Lucraft"]
   s.email       = ["dan@fluentradical.com"]
   s.homepage    = "http://github.com/danlucraft/redcar"
@@ -52,6 +52,7 @@ Gem::Specification.new do |s|
   s.add_dependency("swt")
   s.add_dependency("plugin_manager")
   s.add_dependency("redcar-icons")
+  s.add_dependency("redcar-jruby")
   s.add_dependency("redcar-svnkit")
   s.add_dependency("redcar-bundles")
   s.add_dependency("redcar-javamateview")

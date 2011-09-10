@@ -48,6 +48,9 @@ module Redcar
     # Trade in this Ruby instance for a JRuby instance, loading in a 
     # starter script and passing it some arguments.
     def construct_command(args="")
+      require 'rubygems'
+      require 'redcar-jruby'
+      
       bin = File.expand_path(File.join(File.dirname(__FILE__), %w{.. .. bin redcar}))
       ENV['RUBYOPT'] = nil # disable other native args
 
@@ -56,10 +59,16 @@ module Redcar
         bin = "\"#{bin}\""
       end      
 
-      command = (RUBY_PLATFORM.downcase =~ /mswin|mingw|win32/ ? ["jrubyw"] : ["jruby"])
+      jruby_complete = RedcarJRuby.jar_path
+      unless File.exist?(jruby_complete)
+        puts "\nCan't find jruby jar at #{jruby_complete}, did you run 'redcar install' ?"
+        exit 1
+      end
+
+      command = (RUBY_PLATFORM.downcase =~ /mswin|mingw|win32/ ? ["javaw"] : ["java"])
       command.push(*java_args)
-      # command.push("-J-Xbootclasspath/a:#{jruby_complete}")
-      command.push("-J-Dfile.encoding=UTF8", "-J-Xmx320m", "-J-Xss1024k", "-J-Djruby.memory.max=320m", "-J-Djruby.stack.max=1024k")
+      command.push("-Xbootclasspath/a:#{jruby_complete}")
+      command.push("-Dfile.encoding=UTF8", "-Xmx320m", "-Xss1024k", "-Djruby.memory.max=320m", "-Djruby.stack.max=1024k", "org.jruby.Main")
       command.push(bin)
       command.push("--no-sub-jruby", "--ignore-stdin")
       command.push "--start-time=#{$redcar_process_start_time.to_i}"
@@ -91,15 +100,15 @@ module Redcar
     def java_args
       str = []
       if Config::CONFIG["host_os"] =~ /darwin/
-        str.push "-J-XstartOnFirstThread"
+        str.push "-XstartOnFirstThread"
       end
       
       if ARGV.include?("--load-timings")
-        str.push "-J-Djruby.debug.loadService.timing=true"
+        str.push "-Djruby.debug.loadService.timing=true"
       end
 
-      str.push "-J-d32" if JvmOptionsProbe.d32
-      str.push "-J-client" if JvmOptionsProbe.client
+      str.push "-d32" if JvmOptionsProbe.d32
+      str.push "-client" if JvmOptionsProbe.client
       
       str
     end
