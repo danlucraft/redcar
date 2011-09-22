@@ -18,7 +18,7 @@ module Redcar
           layout = Swt::Layout::RowLayout.new(Swt::SWT::VERTICAL)
           composite.setLayout(layout)
 
-          @text = Swt::Widgets::Text.new(composite, Swt::SWT::SINGLE | Swt::SWT::LEFT | Swt::SWT::ICON_CANCEL)
+          @text = Swt::Widgets::Text.new(composite, Swt::SWT::SINGLE | Swt::SWT::LEFT | Swt::SWT::ICON_CANCEL | Swt::SWT::SEARCH)
           @text.set_layout_data(Swt::Layout::RowData.new(400, 20))
           @list = Swt::Widgets::List.new(composite, Swt::SWT::V_SCROLL | Swt::SWT::H_SCROLL | Swt::SWT::SINGLE)
           @list.set_layout_data(Swt::Layout::RowData.new(400, 200))
