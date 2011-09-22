@@ -48,7 +48,6 @@ To see full usage details.
 If you are running a source version of Redcar and you have pulled updates from master, then you may have to update your local repo:
 
     $ rake initialise
-    $ ruby bin/redcar install
 
 ## TESTS
 
