@@ -22,6 +22,8 @@ Version 0.12 (TBA)
  * Project tree has colourful icons (Delisa Mason)
  * Uses gems to install everything (Dan Lucraft)
  * Wildcards permitted in project search (Delisa Mason)
+ * Installation entirely through Rubygems (Dan Lucraft)
+ * Rad new icon (Delisa Mason)
 
 Version 0.11 (23 March 2011)
 ============================

@@ -55,7 +55,7 @@ module Redcar
     class ReloadPluginsCommand < Redcar::Command
       def execute
         Redcar.add_plugin_sources(Redcar.plugin_manager)
-	Redcar.plugin_manager.load_maximal
+        Redcar.plugin_manager.load_maximal
       end
     end
 

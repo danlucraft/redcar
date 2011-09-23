@@ -33,7 +33,14 @@ describe Redcar::Speedbar do
     class ComboSpeedbar < Redcar::Speedbar
       combo :tab_widths, %w"1 2 3 4", "1"
     end
-    ComboSpeedbar.items.should == [Redcar::Speedbar::ComboItem.new(:tab_widths, %w(1 2 3 4), "1")]
+    ComboSpeedbar.items.should == [Redcar::Speedbar::ComboItem.new(:tab_widths, %w(1 2 3 4), "1", false)]
+  end
+
+  it "should let you add editable combos" do
+    class EditComboSpeedbar < Redcar::Speedbar
+      combo :editable_combo, %w"1 2 3 4", "1", true 
+    end
+    EditComboSpeedbar.items.should == [Redcar::Speedbar::ComboItem.new(:editable_combo, %w(1 2 3 4), "1", true)]
   end
 
   it "should let you add keys" do

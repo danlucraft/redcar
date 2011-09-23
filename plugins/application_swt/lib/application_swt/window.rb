@@ -173,7 +173,7 @@ module Redcar
       end
 
       def icon_file
-        if Redcar::VERSION =~ /dev$/
+        if Redcar::VERSION =~ /dev$/ and !ARGV.include?("--red-icon")
           :redcar_icon_beta_dev
         else
           :redcar_icon_beta

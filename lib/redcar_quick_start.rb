@@ -51,7 +51,7 @@ module Redcar
           if arg =~ /--untitled-file=(.*)/
             path = $1 if File.file?($1)
             untitled = true
-          elsif arg !~ /^--/ # not --something
+          elsif arg !~ /^-/ # not --something
             path = File.expand_path(arg)
             if !File.exist?(path)
               require 'fileutils'
