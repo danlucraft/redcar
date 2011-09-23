@@ -43,12 +43,6 @@ To see full usage details.
 * Irc at #redcar on irc.freenode.net
 * Mailing list at http://groups.google.com/group/redcar-editor
 
-### Updating a source build
-
-If you are running a source version of Redcar and you have pulled updates from master, then you may have to update your local repo:
-
-    $ rake initialise
-
 ## TESTS
 
 NB. Redcar features are known to work with Cucumber 0.9.2, and known NOT to work with Cucumber < 0.9
