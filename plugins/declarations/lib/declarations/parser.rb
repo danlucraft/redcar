@@ -104,14 +104,14 @@ module Redcar
   YAML
 
   CUKE_YAML=<<-YAML
-  - regex:    "Scenario:\\s*(.*)"
-    capture:  1
-    type:     id
-    kind:     method
   - regex:    "Feature:\\s*(.*)"
     capture:  1
     type:     id
     kind:     class
+  - regex:    "Scenario:\\s*(.*)"
+    capture:  1
+    type:     id
+    kind:     method
   - regex:    "(When|Then|And)\\s*\\/\\^?(.*?)\\$?\\/\\s*do"
     capture:  2
     type:     id
@@ -121,7 +121,7 @@ module Redcar
   class Declarations
     class Parser
       DEFINITIONS = {
-        /_steps\.rb$/ => YAML.load(CUKE_YAML),
+        /_steps\.rb$/ => YAML.load(CUKE_YAML) + YAML.load(RUBY_YAML),
         /\.rb$/       => YAML.load(RUBY_YAML),
         /\.java$/     => YAML.load(JAVA_YAML),
         /\.groovy$/   => YAML.load(GROOVY_YAML),
