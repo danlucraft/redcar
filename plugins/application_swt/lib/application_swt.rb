@@ -63,12 +63,18 @@ module Redcar
       Gradient.new(Redcar::ApplicationSWT.storage['tree_background'])
     end
 
+    def self.tree_font_size
+      Redcar::ApplicationSWT.storage['tree_font_size']
+    end
+
     def self.storage
       @storage ||= begin
         storage = Plugin::Storage.new('application_swt')
         storage.set_default('selected_tab_background', {0 => "#FEFEFE", 100 => "#EEEEEE"})
         storage.set_default('unselected_tab_background', {0 => "#E5E5E5", 100 => "#D0D0D0"})
         storage.set_default('tree_background', "#FFFFFF")
+        font_size_offset = Redcar.platform == :osx ? 4 : 2
+        storage.set_default('tree_font_size', Redcar::EditView.font_size - font_size_offset)
         storage
       end
     end
