@@ -30,9 +30,13 @@ When /^I wait (\d+) seconds$/ do |time|
   Cucumber::Ast::StepInvocation.wait_time = time.to_f
 end
 
-Then /^the outline view should have (no|\d+) entr(?:y|ies)$/ do |num|
-  num = (num == "no" ? 0 : num.to_i)
-  outline_view_items.length.should == num
+Then /^the outline view should have (no|some|\d+) entr(?:y|ies)$/ do |num|
+  if num == "some"
+    outline_view_items.length.should > 0
+  else
+    num = (num == "no" ? 0 : num.to_i)
+    outline_view_items.length.should == num
+  end
 end
 
 Then /^I should see "(.*)" at (\d+)(?: with the "(.*)" icon )in the outline view$/ do |text, pos, icon|
