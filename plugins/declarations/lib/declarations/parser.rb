@@ -55,7 +55,7 @@ module Redcar
     capture:  2
     type:     id
     kind:     class
-  - regex:    "^[^#]*def (self\\.)?(\\w+[?!=]?)(\\(.*\\))?(\\s|\\;)+"
+  - regex:    "^[^#]*def (self\\.)?(\\w+[?!=]?)(\\(.*\\))?(\\s|\\;|\\z|\\b)"
     capture:  2
     type:     id
     kind:     method
@@ -103,14 +103,31 @@ module Redcar
     kind:     method
   YAML
 
+  CUKE_YAML=<<-YAML
+  - regex:    "Scenario:\\s*(.*)"
+    capture:  1
+    type:     id
+    kind:     method
+  - regex:    "Feature:\\s*(.*)"
+    capture:  1
+    type:     id
+    kind:     class
+  - regex:    "(When|Then|And)\\s*\\/\\^?(.*?)\\$?\\/\\s*do"
+    capture:  2
+    type:     id
+    kind:     closure
+  YAML
+
   class Declarations
     class Parser
       DEFINITIONS = {
-        /\.rb$/     => YAML.load(RUBY_YAML),
-        /\.java$/   => YAML.load(JAVA_YAML),
-        /\.groovy$/ => YAML.load(GROOVY_YAML),
-        /\.php$/    => YAML.load(PHP_YAML),
-        /\.js$/     => YAML.load(JS_YAML)
+        /_steps\.rb$/ => YAML.load(CUKE_YAML),
+        /\.rb$/       => YAML.load(RUBY_YAML),
+        /\.java$/     => YAML.load(JAVA_YAML),
+        /\.groovy$/   => YAML.load(GROOVY_YAML),
+        /\.php$/      => YAML.load(PHP_YAML),
+        /\.js$/       => YAML.load(JS_YAML),
+        /\.feature$/  => YAML.load(CUKE_YAML)
       }
 
       attr_reader :tags
