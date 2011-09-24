@@ -118,10 +118,22 @@ module Redcar
     kind:     closure
   YAML
 
+  SPEC_YAML=<<-YAML
+  - regex:    "describe\\s*\\"(.*?)\\"\\s*do"
+    capture:  1
+    type:     id
+    kind:     method
+  - regex:    "it\\s*\\"(.*?)\\"\\s*do"
+    capture:  1
+    type:     id
+    kind:     closure
+  YAML
+
   class Declarations
     class Parser
       DEFINITIONS = {
         /_steps\.rb$/ => YAML.load(CUKE_YAML) + YAML.load(RUBY_YAML),
+        /_spec\.rb$/ => YAML.load(RUBY_YAML) + YAML.load(SPEC_YAML),
         /\.rb$/       => YAML.load(RUBY_YAML),
         /\.java$/     => YAML.load(JAVA_YAML),
         /\.groovy$/   => YAML.load(GROOVY_YAML),
