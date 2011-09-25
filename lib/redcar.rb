@@ -16,6 +16,7 @@ require 'uri'
 require 'fileutils'
 
 require 'rubygems'
+require "bundler/setup"
 require 'redcar-icons'
 
 begin

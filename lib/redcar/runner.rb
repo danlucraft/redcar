@@ -2,7 +2,7 @@ module Redcar
   # Cribbed from ruby-processing. Many thanks!
   class Runner
     def run
-      forking = ARGV.include?("--fork") and ARGV.first != "install"
+      forking = ARGV.include?("--fork")
       no_runner = ARGV.include?("--no-sub-jruby")
       jruby = Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby"
       osx = (not [:linux, :windows].include?(Redcar.platform))
@@ -60,11 +60,6 @@ module Redcar
       end      
 
       jruby_complete = RedcarJRuby.jar_path
-      unless File.exist?(jruby_complete)
-        puts "\nCan't find jruby jar at #{jruby_complete}, did you run 'redcar install' ?"
-        exit 1
-      end
-
       command = (RUBY_PLATFORM.downcase =~ /mswin|mingw|win32/ ? ["javaw"] : ["java"])
       command.push(*java_args)
       command.push("-Xbootclasspath/a:#{jruby_complete}")
@@ -89,7 +84,6 @@ module Redcar
           arg
         end
       end
-      result.delete("install")
       result
     end
     

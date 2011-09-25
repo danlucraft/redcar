@@ -43,34 +43,6 @@ To see full usage details.
 * Irc at #redcar on irc.freenode.net
 * Mailing list at http://groups.google.com/group/redcar-editor
 
-## INSTALLING FROM SOURCE
-
-If you want to contribute to Redcar, you can install it from the source code and make modifications before submitting a patch.
-
-If you're on any platform, you'll need the bundler and rake gems installed as prerequisites.
-If you're running Windows, you'll also need to install the rubyzip gem:
-
-    $ gem install rubyzip
-
-Download from github, checkout the submodules and install the jars:
-
-    $ git clone http://github.com/redcar/redcar.git
-    $ cd redcar
-    $ bundle
-    $ rake initialise
-    $ ruby bin/redcar install
-
-To run:
-
-    $ ruby bin/redcar
-
-### Updating a source build
-
-If you are running a source version of Redcar and you have pulled updates from master, then you may have to update your local repo:
-
-    $ rake initialise
-    $ ruby bin/redcar install
-
 ## TESTS
 
 NB. Redcar features are known to work with Cucumber 0.9.2, and known NOT to work with Cucumber < 0.9
