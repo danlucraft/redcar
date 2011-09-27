@@ -142,6 +142,17 @@ module Redcar
         /\.feature$/  => YAML.load(CUKE_YAML)
       }
 
+      def self.definitions
+        @definitions = nil
+        @definitions ||= begin
+          definitions = DEFINITIONS.clone
+          Redcar.plugin_manager.objects_implementing(:declaration_definitions).each do
+            definitions.merge(object.declaration_definitions)
+          end
+          definitions
+        end
+      end
+
       attr_reader :tags
 
       def initialize
@@ -155,7 +166,7 @@ module Redcar
       end
 
       def decls_for_file(path)
-        DEFINITIONS.each do |fn_re, decls|
+        Parser.definitions.each do |fn_re, decls|
           if path =~ fn_re
             return decls
           end
@@ -208,7 +219,6 @@ module Redcar
       def file(path)
         ::File.read(path)
       end
-
     end
   end
 end
