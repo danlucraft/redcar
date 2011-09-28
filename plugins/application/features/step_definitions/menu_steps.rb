@@ -33,3 +33,13 @@ When /^I (?:open the|click) "([^"]*)" from the "([^"]*)" menu$/ do |menu_item, m
   item = menu_items.detect {|i| i.text.split("\t").first == menu_item }
   FakeEvent.new(Swt::SWT::Selection, item)
 end
+
+When /I select menu item "(.*)"/ do |menu_path|
+  bits = menu_path.split("|")
+  curr = Swt.bot
+  bits.each { |bit| curr = curr.menu(bit) }
+  curr.click
+end
+
+
+

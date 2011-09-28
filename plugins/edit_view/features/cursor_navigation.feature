@@ -5,7 +5,7 @@ Feature: Cursor navigation
 
   Scenario: Move forward word works with multi-byte chars
     When I replace the contents with "<h1>'Oáy z' wee"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     When I move to the next word
     Then the contents should be "<h1<c>>'Oáy z' wee"
     When I move to the next word
@@ -21,7 +21,7 @@ Feature: Cursor navigation
 
   Scenario: Move backward word works with multi-byte chars
     When I replace the contents with "<h1>'Oáy z' wee"
-    And I move the cursor to 15
+    And I move the cursor to (0,15)
     When I move to the previous word
     Then the contents should be "<h1>'Oáy z' <c>wee"
     When I move to the previous word

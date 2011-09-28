@@ -4,15 +4,15 @@ Feature: Align Assignment
     When I open a new edit tab
 
   Scenario: align simple assignments
-    When I replace the contents with "a = 4\nbc = 5\nd = 123"
+    When I type "a = 4\nbc = 5\nd = 123"
     And I select all
-    And I run the command Redcar::EditView::AlignAssignmentCommand
+    And I choose "Edit|Formatting|Align Assignments" from the menus
     Then the contents should be "<c>a  = 4\nbc = 5\nd  = 123<s>"
 
   Scenario: align rows that have empty lines
-    When I replace the contents with "a = 1\n\nab = 123"
+    When I type "a = 1\n\nab = 123"
     And I select all
-    And I run the command Redcar::EditView::AlignAssignmentCommand
+    And I choose "Edit|Formatting|Align Assignments" from the menus
     Then the contents should be "<c>a  = 1\n\nab = 123<s>"
 
   Scenario: preserve trailing newline
@@ -24,7 +24,7 @@ Feature: Align Assignment
           ccc = 3
         <s>end
         """
-    When I run the command Redcar::EditView::AlignAssignmentCommand
+    And I choose "Edit|Formatting|Align Assignments" from the menus
     Then the content should be:
         """
         def foo
@@ -43,7 +43,7 @@ Feature: Align Assignment
           ccc = 3<s>
         end
         """
-    When I run the command Redcar::EditView::AlignAssignmentCommand
+    And I choose "Edit|Formatting|Align Assignments" from the menus
     Then the content should be:
         """
         def foo
@@ -62,7 +62,7 @@ Feature: Align Assignment
           ccc = 3<s>
         end
         """
-    When I run the command Redcar::EditView::AlignAssignmentCommand
+    And I choose "Edit|Formatting|Align Assignments" from the menus
     Then the content should be:
         """
         def foo
@@ -80,7 +80,7 @@ Feature: Align Assignment
         bits &= 0b101010
         """
     And I select all
-    When I run the command Redcar::EditView::AlignAssignmentCommand
+    And I choose "Edit|Formatting|Align Assignments" from the menus
     Then the content should be:
         """
         <c>Integer === 1
@@ -97,7 +97,7 @@ Feature: Align Assignment
         :threee => 333}
         """
     And I select all
-    When I run the command Redcar::EditView::AlignAssignmentCommand
+    And I choose "Edit|Formatting|Align Assignments" from the menus
     Then the content should be:
         """
         <c>{:one   => 1,

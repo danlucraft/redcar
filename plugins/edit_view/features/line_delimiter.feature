@@ -8,14 +8,14 @@ Feature: Line delimiter
   Scenario: Delete at end of line deletes delimiter (Windows)
     When I open a new edit tab
     And I replace the contents with "foo\r\nbar\r\nbaz\r\n"
-    And I move the cursor to 3
+    And I move the cursor to (0,3)
     And I press the Delete key in the edit tab
     Then the contents should be "foobar\r\nbaz\r\n"
     
   Scenario: Backspace at start of line deletes delimiter (Windows)
     When I open a new edit tab
     And I replace the contents with "foo\r\nbar\r\nbaz\r\n"
-    And I move the cursor to 5
+    And I move the cursor to (1,0)
     And I press the Backspace key in the edit tab
     Then the contents should be "foobar\r\nbaz\r\n"
     
@@ -27,21 +27,21 @@ Feature: Line delimiter
   Scenario: Delete at end of line deletes delimiter (Unix)
     When I open a new edit tab
     And I replace the contents with "foo\nbar\nbaz\n"
-    And I move the cursor to 3
+    And I move the cursor to (0,3)
     And I press the Delete key in the edit tab
     Then the contents should be "foobar\nbaz\n"
     
   Scenario: Backspace at start of line deletes delimiter (Windows)
     When I open a new edit tab
     And I replace the contents with "foo\nbar\nbaz\n"
-    And I move the cursor to 4
+    And I move the cursor to (1,0)
     And I press the Backspace key in the edit tab
     Then the contents should be "foobar\nbaz\n"
     
   Scenario: End goes to end of line (Windows)
     When I open a new edit tab
     And I replace the contents with "foo\r\nbar\r\nbaz\r\n"
-    And I move the cursor to 0
-    And I run the command Redcar::Top::MoveEndCommand
-    Then the cursor should be at 3
+    And I move the cursor to (0,0)
+    And I select menu item "Edit|Document Navigation|End"
+    Then the cursor should be at (0,3)
     

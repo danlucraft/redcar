@@ -15,26 +15,29 @@ When /^I redo$/ do
   Redcar::Top::RedoCommand.new.run(:env => {:edit_view => implicit_edit_view})
 end
 
-When /^I select from (\d+) to (\d+)$/ do |start_offset, end_offset|
-  doc = implicit_edit_view.document
-  doc.set_selection_range(end_offset.to_i, start_offset.to_i)
+When /^I select (-?)(\d+) from \((\d+),(\d+)\)$/ do |minus, length, start_line, start_line_offset|
+  length = length.to_i
+  length = length * -1 if minus == "-"
+  Swt.bot.styled_text.select_range(start_line.to_i, start_line_offset.to_i, length)
 end
 
 When /^I copy text$/ do
-  Redcar::Top::CopyCommand.new.run(:env => {:edit_view => implicit_edit_view})
+#  Redcar::Top::CopyCommand.new.run(:env => {:edit_view => implicit_edit_view})
+  When "I select menu item \"Edit|Copy\""
 end
 
 When /^I cut text$/ do
-  Redcar::Top::CutCommand.new.run(:env => {:edit_view => implicit_edit_view})
+  # Redcar::Top::CutCommand.new.run(:env => {:edit_view => implicit_edit_view})
+  When "I select menu item \"Edit|Cut\""
 end
 
 When /^I paste text$/ do
-  Redcar::Top::PasteCommand.new.run(:env => {:edit_view => implicit_edit_view})
+  # Redcar::Top::PasteCommand.new.run(:env => {:edit_view => implicit_edit_view})
+  When "I select menu item \"Edit|Paste\""
 end
 
-When /^I move the cursor to (\d+)$/ do |offset|
-  doc = implicit_edit_view.document
-  doc.cursor_offset = offset.to_i
+When /^I move the cursor to \((\d+),(\d+)\)$/ do |line, line_offset|
+  Swt.bot.styled_text.navigate_to(line.to_i, line_offset.to_i)
 end
 
 When /^I move the cursor to the end of the document$/ do
@@ -42,18 +45,23 @@ When /^I move the cursor to the end of the document$/ do
   doc.cursor_offset = doc.length
 end
 
-Then /^the cursor should be at (\d+)$/ do |offset|
-  doc = implicit_edit_view.document
-  doc.cursor_offset.should == offset.to_i
+Then /^the cursor should be at \((\d+),(\d+)\)$/ do |line, line_offset|
+  position = Swt.bot.styled_text.cursor_position
+  position.line.should == line.to_i
+  position.column.should == line_offset.to_i
 end
 
 When /^tabs are hard$/ do
-  implicit_edit_view.soft_tabs = false
+  Swt.sync_exec do
+    implicit_edit_view.soft_tabs = false
+  end
 end
 
 When /^tabs are soft, (\d+) spaces$/ do |int|
-  implicit_edit_view.soft_tabs = true
-  implicit_edit_view.tab_width = int.to_i
+  Swt.sync_exec do
+    implicit_edit_view.soft_tabs = true
+    implicit_edit_view.tab_width = int.to_i
+  end
 end
 
 When /^I insert "(.*)" at the cursor$/ do |text|
@@ -93,31 +101,34 @@ When /^I press Shift\+Right key in the edit tab$/ do
 end
 
 When /^I press the Delete key in the edit tab$/ do
-  implicit_edit_view.delete_pressed([])
+  Swt.sync_exec do
+    implicit_edit_view.delete_pressed([])
+  end
 end
 
 When /^I press the Backspace key in the edit tab$/ do
-  edit_view = implicit_edit_view
-  edit_view.backspace_pressed([])
+  Swt.bot.styled_text.type_text("\b")
 end
 
 Then /^the contents should (not )?be "(.*)"$/ do |negative,text|
-  expected = unescape_text(text)
-  doc = implicit_edit_view.document
-  actual = doc.to_s
-  if expected.include?("<c>")
-    char_curoff = doc.cursor_offset
-    actual = actual.insert(actual.char_offset_to_byte_offset(char_curoff), "<c>")
-    char_seloff = doc.selection_offset
-    if char_seloff > char_curoff
-      char_seloff += 3
+  Swt.sync_exec do
+    expected = unescape_text(text)
+    doc = implicit_edit_view.document
+    actual = doc.to_s
+    if expected.include?("<c>")
+      char_curoff = doc.cursor_offset
+      actual = actual.insert(actual.char_offset_to_byte_offset(char_curoff), "<c>")
+      char_seloff = doc.selection_offset
+      if char_seloff > char_curoff
+        char_seloff += 3
+      end
+      actual = actual.insert(actual.char_offset_to_byte_offset(char_seloff), "<s>") unless char_curoff == char_seloff
     end
-    actual = actual.insert(actual.char_offset_to_byte_offset(char_seloff), "<s>") unless char_curoff == char_seloff
-  end
-  if negative
-    actual.should_not == expected
-  else
-    actual.should == expected
+    if negative
+      actual.should_not == expected
+    else
+      actual.should == expected
+    end
   end
 end
 
@@ -152,13 +163,14 @@ Then /^there should not be any text selected$/ do
 end
 
 Then /^the selected text should be "([^"]*)"$/ do |selected_text|
-  doc = implicit_edit_view.document
-  doc.selected_text.should == unescape_text(selected_text)
+  Swt.bot.styled_text.selection.should == unescape_text(selected_text)
 end
 
 Then /the line delimiter should be "(.*)"/ do |delim|
-  doc = implicit_edit_view.document
-  doc.delim.should == unescape_text(delim)
+  Swt.sync_exec do
+    doc = implicit_edit_view.document
+    doc.delim.should == unescape_text(delim)
+  end
 end
 
 When /^I move to line (\d+)$/ do |num|
@@ -172,11 +184,13 @@ Then /^the cursor should be on line (\d+)$/ do |num|
 end
 
 When /^I replace the contents with "((?:[^\"]|\\")*)"$/ do |contents|
-  contents = unescape_text(contents)
-  doc = implicit_edit_view.document
-  cursor_offset = (contents =~ /<c>/)
-  doc.text = contents.gsub("<c>", "")
-  doc.cursor_offset = cursor_offset if cursor_offset
+  Redcar.update_gui do
+    contents = unescape_text(contents)
+    doc = implicit_edit_view.document
+    cursor_offset = (contents =~ /<c>/)
+    doc.text = contents.gsub("<c>", "")
+    doc.cursor_offset = cursor_offset if cursor_offset
+  end
 end
 
 When /^I replace the contents with 100 lines of "([^"]*)" then "([^"]*)"$/ do |contents1, contents2|
@@ -213,22 +227,24 @@ Then /^horizontal offset (\d+) should be visible$/ do |offset|
 end
 
 When /^I select the word (right of|left of|around|at) (\d+)$/ do |direction, offset|
-  offset = offset.to_i
-  doc = implicit_edit_view.document
-  case direction
-  when "right of"
-    range = doc.match_word_right_of(offset)
-  when "left of"
-    range = doc.match_word_left_of(offset)
-  when "around"
-    range = doc.match_word_around(offset)
-  when "at"
-    range = doc.word_range_at_offset(offset)
-  else
-    warn "unrecognized direction"
-    range = offset..offset
+  Swt.sync_exec do
+    offset = offset.to_i
+    doc = implicit_edit_view.document
+    case direction
+    when "right of"
+      range = doc.match_word_right_of(offset)
+    when "left of"
+      range = doc.match_word_left_of(offset)
+    when "around"
+      range = doc.match_word_around(offset)
+    when "at"
+      range = doc.word_range_at_offset(offset)
+    else
+      warn "unrecognized direction"
+      range = offset..offset
+    end
+    doc.set_selection_range(range.first, range.last)
   end
-  doc.set_selection_range(range.first, range.last)
 end
 
 When /^I turn block selection on$/ do
@@ -246,20 +262,22 @@ def escape_text(text)
 end
 
 Given /^the contents? is:$/ do |string|
-  cursor_index    = string.index('<c>')
-  selection_index = string.index('<s>')
-  string = string.gsub('<s>', '').gsub('<c>', '')
-  When %{I replace the contents with "#{string}"}
-
-  if cursor_index and selection_index
-    if cursor_index < selection_index
-      selection_index -= 3
-    else
-      cursor_index -= 3
+  Redcar.update_gui do
+    cursor_index    = string.index('<c>')
+    selection_index = string.index('<s>')
+    string = string.gsub('<s>', '').gsub('<c>', '')
+    When %{I replace the contents with "#{string}"}
+  
+    if cursor_index and selection_index
+      if cursor_index < selection_index
+        selection_index -= 3
+      else
+        cursor_index -= 3
+      end
+      When %{I select from #{selection_index} to #{cursor_index}}
+    elsif cursor_index
+      When "I move the cursor to #{cursor_index}"
     end
-    When %{I select from #{selection_index} to #{cursor_index}}
-  elsif cursor_index
-    When "I move the cursor to #{cursor_index}"
   end
 end
 
@@ -296,10 +314,7 @@ end
 
 When /^I type "((?:[^"]|\\")*)"$/ do |text|
   text = text.gsub("\\t", "\t").gsub("\\n", "\n").gsub("\\\"", "\"")
-  edit_view = implicit_edit_view
-  text.split(//).each do |letter|
-    edit_view.type_character(letter[0])
-  end
+  Swt.bot.styled_text.type_text(text)
 end
 
 edit_view_action_steps = {
@@ -317,7 +332,7 @@ edit_view_action_steps = {
   :TEXT_END               => "I move to the end of the text",
   :WINDOW_START           => "I move to the start of the window",
   :WINDOW_END             => "I move to the end of the window",
-  :SELECT_ALL             => "I select all",
+  # :SELECT_ALL             => "I select all",
   :SELECT_LINE_UP         => "I select up",
   :SELECT_LINE_DOWN       => "I select down",
   :SELECT_LINE_START      => "I select to the start of the line",
@@ -341,9 +356,18 @@ edit_view_action_steps = {
   :DELETE_WORD_NEXT       => "I delete to the next word"
 }
 
+When "I select all" do
+  char_count = Redcar.update_gui do
+    Swt.bot.styled_text.widget.get_char_count
+  end
+  Swt.bot.styled_text.select_range(0, 0, char_count)
+end
+
 edit_view_action_steps.each do |action_symbol, step_text|
   When step_text do
-    implicit_edit_view.invoke_action(action_symbol)
+    Swt.sync_exec do
+      implicit_edit_view.invoke_action(action_symbol)
+    end
   end
 end
 
