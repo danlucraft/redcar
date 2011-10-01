@@ -109,7 +109,7 @@ module Redcar
     end
   end
 
-  def self.load_prerequisites
+  def self.load_prerequisites(options={})
     exit if ARGV.include?("--quit-immediately")
     require 'java'
     
@@ -130,18 +130,17 @@ module Redcar
     
     gem 'swt'
     require 'swt/minimal'
+      
+    unless no_gui_mode?
+      gui = Redcar::Gui.new("swt")
+      gui.register_event_loop(Swt::EventLoop.new)
+      gui.register_features_runner(Swt::CucumberRunner.new)
+      Redcar.gui = gui
     
-    gui = Redcar::Gui.new("swt")
-    gui.register_event_loop(Swt::EventLoop.new)
-    gui.register_features_runner(Swt::CucumberRunner.new)
-    Redcar.gui = gui
-    
-    plugin_manager.load("splash_screen")
+      plugin_manager.load("splash_screen")
+    end
   end
   
-  def self.load_useful_libraries
-  end
-
   def self.load_plugins
     begin
       exit if ARGV.include?("--quit-after-splash")
@@ -177,8 +176,8 @@ module Redcar
     end
   end
   
-  def self.load_unthreaded
-    load_prerequisites
+  def self.load_unthreaded(options={})
+    load_prerequisites(options)
     load_plugins
   end
   

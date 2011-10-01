@@ -59,17 +59,9 @@ To run all specs and all features:
 
 ### Specs
 
-On OSX:
+To run all specs:
 
-    $ jruby -J-XstartOnFirstThread -S spec plugins/#{plugin_name}/spec/
-
-On Linux/Windows:
-
-    $ jruby -S spec plugins/#{plugin_name}/spec/
-
-To just run all specs:
-
-   $ rake specs  
+   $ rspec plugins/*/spec/
 
 ### Features
 

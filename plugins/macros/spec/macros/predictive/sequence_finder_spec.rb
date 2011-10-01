@@ -1,5 +1,5 @@
 
-require File.dirname(__FILE__) + '/../../spec_helper'
+require "spec_helper"
 
 describe Redcar::Macros::Predictive::SequenceFinder do
   SequenceFinder = Redcar::Macros::Predictive::SequenceFinder

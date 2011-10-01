@@ -1,13 +1,8 @@
 require 'bundler'
-REDCAR_VERSION = "0.12.0dev" # also change in lib/redcar.rb!
 require 'fileutils'
 
-# explitely use rspec < 2.0
-gem 'rspec', '<2.0'
-require 'spec/rake/spectask'
 require 'cucumber/rake/task'
-require "rake/gempackagetask"
-require "rake/rdoctask"
+
 Dir[File.expand_path("../lib/tasks/*.rake", __FILE__)].each { |f| load f }
 
 if RUBY_PLATFORM =~ /mswin|mingw/
@@ -136,13 +131,8 @@ task :default => ["specs", "cucumber"]
 
 desc "Run all specs"
 task :specs do
-  files = Dir['plugins/*/spec/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*_spec.rb'] + Dir['plugins/*/spec/*/*/*/*_spec.rb']
-  case Config::CONFIG["host_os"]
-  when "darwin"
-    sh("jruby -J-XstartOnFirstThread -S bundle exec spec -c #{files.join(" ")} && echo 'done'")
-  else
-    sh("jruby -S bundle exec spec -c #{files.join(" ")} && echo 'done'")
-  end
+  plugin_spec_dirs = Dir["plugins/*/spec"]
+  sh("jruby -S bundle exec rspec -c #{plugin_spec_dirs.join(" ")}")
 end
 
 desc "Run all features"
@@ -189,28 +179,6 @@ task :run_ci do
   }
   contrl = Watchr::Controller.new(script, Watchr.handler.new)
   contrl.run
-end
-
-desc "Release gem"
-task :release => :gem do
-  require 'aws/s3'
-  credentials = YAML.load(File.read("/Users/danlucraft/.s3-creds.yaml"))
-  AWS::S3::Base.establish_connection!(
-    :access_key_id     => credentials['access_key_id'],
-    :secret_access_key => credentials["secret_access_key"]
-  )
-  
-  redcar_bucket = AWS::S3::Bucket.find('redcar')
-  s3_uploads = {
-    "vendor/java-mateview/release/java-mateview.jar" => "java-mateview-#{REDCAR_VERSION}.jar",
-    "plugins/application_swt/lib/dist/application_swt.jar"   => "application_swt-#{REDCAR_VERSION}.jar",
-    "pkg/redcar-#{REDCAR_VERSION}.gem"                       => "redcar-#{REDCAR_VERSION}.gem"
-  }
-  
-  s3_uploads.each do |source, target|
-    p [source, target]
-    AWS::S3::S3Object.store(target, open(source), 'redcar', :access => :public_read)
-  end
 end
 
 namespace :redcar do

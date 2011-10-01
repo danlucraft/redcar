@@ -1,3 +1,5 @@
+require "spec_helper"
+
 describe Redcar::NavigationHistory do
   module NavigationHistoryTest
     class TestEditView

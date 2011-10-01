@@ -1,7 +1,5 @@
 
-require 'java'
-
-require File.join(File.dirname(__FILE__), *%w".. spec_helper")
+require "spec_helper"
 
 describe Redcar::TaskQueue do
   before do

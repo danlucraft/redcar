@@ -1,5 +1,5 @@
 
-require File.join(File.dirname(__FILE__), *%w".. spec_helper")
+require "spec_helper"
 
 FileList = Redcar::Project::FileList
 

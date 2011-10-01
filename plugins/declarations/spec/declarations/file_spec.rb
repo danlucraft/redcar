@@ -1,5 +1,5 @@
 
-require File.join(File.dirname(__FILE__), "..", "spec_helper")
+require "spec_helper"
 
 module Redcar
   describe Declarations::File do

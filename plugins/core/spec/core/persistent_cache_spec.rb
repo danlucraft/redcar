@@ -1,5 +1,5 @@
 
-require File.join(File.dirname(__FILE__), *%w".. .. lib core persistent_cache")
+require "spec_helper"
 
 PersistentCache = Redcar::PersistentCache
 

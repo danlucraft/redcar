@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), "..", "..", "spec_helper")
+require "spec_helper"
 
 describe Redcar::Command::History do
   class HistoryTestCommand1 < Redcar::Command
