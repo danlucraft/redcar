@@ -25,32 +25,6 @@ module Redcar
     result
   end
 
-  class TimeoutError < StandardError; end
-
-  def self.timeout(limit)
-    x = Thread.current
-    result = nil
-    y = Thread.new do
-      begin
-        result = yield
-      rescue Object => e
-        x.raise e
-      end
-    end
-    s = Time.now
-    loop do
-      if not y.alive?
-        break
-      elsif Time.now - s > limit
-        y.kill
-        raise Redcar::TimeoutError, "timed out after #{Time.now - s}s"
-        break
-      end
-      sleep 0.1
-    end
-    result
-  end
-
   module Top
     class OpenNewEditTabCommand < Command
 
