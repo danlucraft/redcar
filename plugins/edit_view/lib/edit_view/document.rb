@@ -475,6 +475,29 @@ module Redcar
     def select_all
       set_selection_range(length, 0)
     end
+    
+    # Ensures the selection runs from the start of a line to the end of that 
+    # or another line, by widening it.
+    def expand_selection_to_full_lines
+      #are the selections in the right order?
+      start_offset, end_offset = cursor_offset, selection_offset
+      if start_offset > end_offset
+        end_offset, start_offset = start_offset, end_offset
+      end
+
+      start_index = line_at_offset(start_offset)
+      end_index   = line_at_offset(end_offset)
+
+      # is the selection of the last line empty?
+      if end_offset == offset_at_line(end_index)
+        end_index -= 1
+      end
+
+      start_offset = offset_at_line(start_index)
+      end_offset = offset_at_inner_end_of_line(end_index)
+      
+      set_selection_range(start_offset, end_offset)
+    end
 
     # Get the text selected by the user. If no text is selected
     # returns "".

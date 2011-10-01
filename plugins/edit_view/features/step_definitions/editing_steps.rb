@@ -15,9 +15,23 @@ When /^I redo$/ do
   Redcar::Top::RedoCommand.new.run(:env => {:edit_view => implicit_edit_view})
 end
 
-When /^I select (-?)(\d+) from \((\d+),(\d+)\)$/ do |minus, length, start_line, start_line_offset|
+When /^I select (-?)(\d+) from \((\d+), ?(\d+)\)$/ do |minus, length, start_line, start_line_offset|
   length = length.to_i
   length = length * -1 if minus == "-"
+  Swt.bot.styled_text.select_range(start_line.to_i, start_line_offset.to_i, length)
+end
+
+When /^I select from \((\d+), ?(\d+)\) to \((\d+), ?(\d+)\)$/ do |start_line, start_line_offset, end_line, end_line_offset|
+  length = nil
+  Swt.sync_exec do
+    doc = implicit_edit_view.document
+    start_of_end_line = doc.offset_at_line(end_line.to_i)
+    end_offset = start_of_end_line + end_line_offset.to_i
+    
+    start_of_start_line = doc.offset_at_line(start_line.to_i)
+    start_offset = start_of_start_line + start_line_offset.to_i
+    length = end_offset - start_offset
+  end
   Swt.bot.styled_text.select_range(start_line.to_i, start_line_offset.to_i, length)
 end
 
@@ -274,7 +288,7 @@ Given /^the contents? is:$/ do |string|
       else
         cursor_index -= 3
       end
-      When %{I select from #{selection_index} to #{cursor_index}}
+      When %{I select #{cursor_index - selection_index} from #{selection_index}}
     elsif cursor_index
       When "I move the cursor to #{cursor_index}"
     end
