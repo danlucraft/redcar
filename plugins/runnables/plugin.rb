@@ -4,6 +4,6 @@ Plugin.define do
   version "1.0"
   file    "lib", "runnables"
   object  "Redcar::Runnables"
-  dependencies "application", ">=1.1",
-               "HTML View",   ">0"
+  dependencies "HTML View",   ">0",
+               "project", ">0"
 end

@@ -4,5 +4,5 @@ Plugin.define do
   version "1.1"
   file    "lib", "repl"
   object  "Redcar::REPL"
-  dependencies "redcar", ">0"
+  dependencies "edit_view", ">0"
 end
