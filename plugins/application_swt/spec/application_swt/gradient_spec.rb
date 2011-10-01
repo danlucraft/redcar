@@ -28,9 +28,9 @@ describe Redcar::ApplicationSWT::Gradient do
   describe "swt_colors" do
   
     it "should be Swt::Color versions of the gradient colors in increasing order by stop position" do
-      subject.swt_colors[0].should == Swt::Graphics::Color.new(Redcar::ApplicationSWT.display, 255, 255, 255)
-      subject.swt_colors[1].should == Swt::Graphics::Color.new(Redcar::ApplicationSWT.display, 153, 153, 153)
-      subject.swt_colors[2].should == Swt::Graphics::Color.new(Redcar::ApplicationSWT.display, 0, 0, 0)
+      subject.colors[0].should == [:components, [255, 255, 255]]
+      subject.colors[1].should == [:components, [153, 153, 153]]
+      subject.colors[2].should == [:components, [0, 0, 0]]
     end
     
   end
@@ -50,9 +50,9 @@ describe Redcar::ApplicationSWT::Gradient do
     describe "swt_colors" do
       
       it "should have the gradient's first color as its first two elements" do
-        first_color = Swt::Graphics::Color.new(Redcar::ApplicationSWT.display, 0, 0, 0)
-        subject.swt_colors[0].should == first_color
-        subject.swt_colors[1].should == first_color
+        first_color = [:components, [0, 0, 0]]
+        subject.colors[0].should == first_color
+        subject.colors[1].should == first_color
       end
       
     end
@@ -74,9 +74,9 @@ describe Redcar::ApplicationSWT::Gradient do
     describe "swt_colors" do
       
       it "should have the gradient's last color as its last two elements" do
-        last_color = Swt::Graphics::Color.new(Redcar::ApplicationSWT.display, 255, 255, 255)
-        subject.swt_colors[1].should == last_color
-        subject.swt_colors[2].should == last_color
+        last_color = [:components, [255, 255, 255]]
+        subject.colors[1].should == last_color
+        subject.colors[2].should == last_color
       end
       
     end
@@ -104,7 +104,7 @@ describe Redcar::ApplicationSWT::Gradient do
     subject { Redcar::ApplicationSWT::Gradient.new( 50 => "#F0F" ) }
     
     it "should process the colors correctly" do
-      subject.swt_colors[0].should == Swt::Graphics::Color.new(Redcar::ApplicationSWT.display, 255, 0, 255)
+      subject.colors[0].should == [:components, [255, 0, 255]]
     end
     
   end
@@ -114,7 +114,7 @@ describe Redcar::ApplicationSWT::Gradient do
     subject { Redcar::ApplicationSWT::Gradient.new( "#FFFFFF" ) }
   
     it "it should construct a gradient with that color" do
-      subject.swt_colors[0].should == Swt::Graphics::Color.new(Redcar::ApplicationSWT.display, 255, 255, 255)
+      subject.colors[0].should == [:components, [255, 255, 255]]
     end
   
   end
@@ -124,8 +124,7 @@ describe Redcar::ApplicationSWT::Gradient do
     subject { Redcar::ApplicationSWT::Gradient.new( "black" ) }
     
     it "should return the SWT system color corresponding to that name" do
-      Redcar::ApplicationSWT.instance_variable_set("@display", Swt::Widgets::Display.current) if Redcar::ApplicationSWT.display.nil?
-      subject.swt_colors[0].should == Redcar::ApplicationSWT.display.get_system_color(Swt::SWT::COLOR_BLACK)
+      subject.colors[0].should == [:constant, Swt::SWT::COLOR_BLACK]
     end
     
   end
