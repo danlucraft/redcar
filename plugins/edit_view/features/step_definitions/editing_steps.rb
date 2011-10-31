@@ -103,39 +103,57 @@ When /^tabs are soft, (\d+) spaces$/ do |int|
 end
 
 When /^I insert "(.*)" at the cursor$/ do |text|
-  implicit_edit_view.document.insert_at_cursor(unescape_text(text))
+  Swt.sync_exec do
+    implicit_edit_view.document.insert_at_cursor(unescape_text(text))
+  end
 end
 
 When /^I insert "(.*)" at (\d+)$/ do |text, offset_s|
-  implicit_edit_view.document.insert(offset_s.to_i, unescape_text(text))
+  Swt.sync_exec do
+    implicit_edit_view.document.insert(offset_s.to_i, unescape_text(text))
+  end
 end
 
 When /^I replace (\d+) to (\d+) with "(.*)"$/ do |from, to, text|
-  implicit_edit_view.document.replace(from.to_i, to.to_i - from.to_i, unescape_text(text))
+  Swt.sync_exec do
+    implicit_edit_view.document.replace(from.to_i, to.to_i - from.to_i, unescape_text(text))
+  end
 end
 
 When /^I press the Tab key in the edit tab$/ do
-  implicit_edit_view.tab_pressed([])
+  Swt.sync_exec do
+    implicit_edit_view.tab_pressed([])
+  end
 end
 
 When /^I press Shift\+Tab in the edit tab$/ do
-  implicit_edit_view.tab_pressed(["Shift"])
+  Swt.sync_exec do
+    implicit_edit_view.tab_pressed(["Shift"])
+  end
 end
 
 When /^I press the Left key in the edit tab$/ do
-  implicit_edit_view.left_pressed([])
+  Swt.sync_exec do
+    implicit_edit_view.left_pressed([])
+  end
 end
 
 When /^I press the Right key in the edit tab$/ do
-  implicit_edit_view.right_pressed([])
+  Swt.sync_exec do
+    implicit_edit_view.right_pressed([])
+  end
 end
 
 When /^I press Shift\+Left key in the edit tab$/ do
-  implicit_edit_view.left_pressed(["Shift"])
+  Swt.sync_exec do
+    implicit_edit_view.left_pressed(["Shift"])
+  end
 end
 
 When /^I press Shift\+Right key in the edit tab$/ do
-  implicit_edit_view.right_pressed(["Shift"])
+  Swt.sync_exec do
+    implicit_edit_view.right_pressed(["Shift"])
+  end
 end
 
 When /^I press the Delete key in the edit tab$/ do
