@@ -8,21 +8,21 @@ Feature: Find
 
   Scenario: Open Find speedbar
     When I replace the contents with "Foo\nBar\nBaz"
-    And I move the cursor to 0
-    And I open the find speedbar
+    And I move the cursor to (0,0)
+    And I select menu item "Edit|Find|Find..."
     Then I should see the find speedbar
 
   Scenario: Search for a word should select next occurrence
     When I replace the contents with "Foo\nBar\nBaz"
-    And I move the cursor to 0
-    And I open the find speedbar
+    And I move the cursor to (0,0)
+    And I select menu item "Edit|Find|Find..."
     And I type "Bar" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
     Then the selected text should be "Bar"
 
   Scenario: Search twice should move to the next occurrence
     When I replace the contents with "Foo\nBar\nFoo"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "Foo" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -33,7 +33,7 @@ Feature: Find
 
   Scenario: Search for a word adjacent to cursor should select word
     When I replace the contents with "Foo\nBar\nBaz"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "Foo" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -41,7 +41,7 @@ Feature: Find
 
   Scenario: Search for a word should find occurrence after the cursor
     When I replace the contents with "Foo\nBar\nBaz\nFoo"
-    And I move the cursor to 1
+    And I move the cursor to (0,1)
     And I open the find speedbar
     And I type "Foo" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -53,7 +53,7 @@ Feature: Find
 
   Scenario: Search for a word should wrap to earlier occurrence if none left
     When I replace the contents with "Foo\nBar\nBaz"
-    And I move the cursor to 3
+    And I move the cursor to (0,3)
     And I open the find speedbar
     And I type "Foo" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -62,7 +62,7 @@ Feature: Find
 
   Scenario: Should start searching after the selection if the query matches exactly
     When I replace the contents with "Foobar\nBarfoo\nBazhmm\nFoobar"
-    And I select from 0 to 6
+    And I select from (0,0) to (0,6)
     And I open the find speedbar
     And I type "Foobar" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -71,7 +71,7 @@ Feature: Find
 
   Scenario: Should start search within the selection if it matches the beginning of the query
     When I replace the contents with "Foobar\nBarfoo\nBazhmm\nFoobar"
-    And I select from 0 to 3
+    And I select from (0,0) to (0,3)
     And I open the find speedbar
     And I type "Foobar" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -80,7 +80,7 @@ Feature: Find
 
   Scenario: Should start search within the selection if the query matches partially
     When I replace the contents with "Foobar\nBarfoo\nBazhmm\nFoobar"
-    And I select from 0 to 6
+    And I select from (0,0) to (0,6)
     And I open the find speedbar
     And I type "Foo" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -89,7 +89,7 @@ Feature: Find
 
   Scenario: Not thrown off by multi-byte characters
     When I replace the contents with "Benedikt Müller"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "ler" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -98,7 +98,7 @@ Feature: Find
 
   Scenario: Not thrown off by multi-byte characters 2
     When I replace the contents with "Benedikt Müller\n foo "
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "foo" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -107,7 +107,7 @@ Feature: Find
 
   Scenario: Not thrown off by multi-byte characters 3
     When I replace the contents with "你好, 凯兰\nYou make my heart super happy."
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "you" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -116,7 +116,7 @@ Feature: Find
 
   Scenario: Handles repeated search across by multi-byte characters
     When I replace the contents with "Foo\n你好, 凯兰\nFoo\nBar\nFoo\nBaz"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "foo" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -137,7 +137,7 @@ Feature: Find
 
   Scenario: Should select multi-byte characters
     When I replace the contents with "Benedikt Müller"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "mül" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -146,7 +146,7 @@ Feature: Find
 
   Scenario: Should select multi-byte characters
     When I replace the contents with "Benedikt Müller"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "mül" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -155,7 +155,7 @@ Feature: Find
 
   Scenario: Should select multi-byte characters 2
     When I replace the contents with "你好, 凯兰\nYou make my heart super happy."
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "凯兰" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -164,7 +164,7 @@ Feature: Find
 
   Scenario: Doesn't search for a regex
     When I replace the contents with "Foo\nBar\nBaz"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "Ba." into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -172,7 +172,7 @@ Feature: Find
 
   Scenario: Search for a regex
     When I replace the contents with "Foo\nBar\nBaz"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "Ba." into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -185,7 +185,7 @@ Feature: Find
 
   Scenario: Should not match case by default
     When I replace the contents with "Foo\nBar\nBaz"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "foo" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -193,7 +193,7 @@ Feature: Find
 
   Scenario: Should not match case with regex by default
     When I replace the contents with "Foo\nBar\nBaz"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "fo." into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -204,36 +204,36 @@ Feature: Find
 
   Scenario: Should match case if requested
     When I replace the contents with "Foo\nBar\nBaz"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "foo" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
     Then the selected text should be "Foo"
     When I check "Match case" in the speedbar
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I press "Next" in the speedbar
     Then there should not be any text selected
     When I type "Foo" into the "Find" field in the speedbar
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I press "Next" in the speedbar
     Then the selected text should be "Foo"
 
   Scenario: Should match case if requested with regex
     When I replace the contents with "Foo\nBar\nBaz"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I check "Regex" in the speedbar
     And I type "fo." into the "Find" field in the speedbar
     And I press "Next" in the speedbar
     Then the selected text should be "Foo"
     When I check "Match case" in the speedbar
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I press "Next" in the speedbar
     Then there should not be any text selected
 
   Scenario: Find next with wrap around
     When I replace the contents with "Foo\nBar Foo\nHmm\nBaz"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "Foo" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -251,7 +251,7 @@ Feature: Find
 
    Scenario: Find next without wrap around
     When I replace the contents with "Foo\nBar Foo\nHmm\nBaz"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I uncheck "Wrap around" in the speedbar
     And I type "foo" into the "Find" field in the speedbar
@@ -269,7 +269,7 @@ Feature: Find
 
   Scenario: Find previous with wrap around by default
     When I replace the contents with "Foo\nBar Foo\nHmm\nBaz"
-    And I move the cursor to 18
+    And I move the cursor to (3,2)
     And I open the find speedbar
     And I type "foo" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -287,7 +287,7 @@ Feature: Find
 
   Scenario: Find previous without wrap around
     When I replace the contents with "Foo\nBar Foo\nHmm\nBaz"
-    And I move the cursor to 18
+    And I move the cursor to (3,2)
     And I open the find speedbar
     And I uncheck "Wrap around" in the speedbar
     And I type "Foo" into the "Find" field in the speedbar
@@ -308,7 +308,7 @@ Feature: Find
   Scenario: Should scroll vertically to the match
     When I replace the contents with 100 lines of "xxx" then "Foo"
     And I scroll to the top of the document
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "foo" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -317,7 +317,7 @@ Feature: Find
 
   Scenario: "Should scroll horizontally to the match"
     When I replace the contents with 300 "x" then "Foo"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "foo" into the "Find" field in the speedbar
     And I press "Next" in the speedbar
@@ -333,8 +333,8 @@ Feature: Find
 
   Scenario: Should initialize query with the currently selected text
     When I replace the contents with "Flux\nBar\nFoo"
-    And I move the cursor to 0
-    And I select from 0 to 4
+    And I move the cursor to (0,0)
+    And I select from (0,0) to (0,4)
     And I open the find speedbar
     Then the "Find" field in the speedbar should have text "Flux"
 
@@ -344,7 +344,7 @@ Feature: Find
 
   Scenario: Replace and find with no initial selection
     When I replace the contents with "Foo\nBar Foo Rab Rab\nHmm\nRab\nFoo\nBaz"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "Rab" into the "Find" field in the speedbar
     And I type "RABBIT" into the "Replace" field in the speedbar
@@ -464,7 +464,7 @@ Feature: Find
 
   Scenario: Replace all replaces one
     When I replace the contents with "Foo\nBar\nBaz"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "Bar" into the "Find" field in the speedbar
     And I type "Rab" into the "Replace" field in the speedbar
@@ -476,7 +476,7 @@ Feature: Find
 
   Scenario: Replace all replaces two
     When I replace the contents with "Foo\nBar\nBaz\nBar\nQux"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "Bar" into the "Find" field in the speedbar
     And I type "Rab" into the "Replace" field in the speedbar
@@ -527,7 +527,7 @@ Feature: Find
 
   Scenario: Replace all regex with back-references
     When I replace the contents with "One fish\ntwo fish\nred fish\nblue fish"
-    And I move the cursor to 0
+    And I move the cursor to (0,0)
     And I open the find speedbar
     And I type "(\w+) fish" into the "Find" field in the speedbar
     And I type "\1 car" into the "Replace" field in the speedbar

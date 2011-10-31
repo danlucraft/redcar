@@ -6,32 +6,32 @@ Feature: Indents Ruby code correctly
     And tabs are hard
     
   Scenario: It should increase indentation after 'def's
-    When I insert "def f" at the cursor
-    And I move the cursor to 5
-    And I insert "\n" at the cursor
+    Given I replace the contents with "def f"
+    And I move the cursor to (0,5)
+    And I type "\n"
     Then the contents should be "def f\n\t"
     
   Scenario: It should decrease indentation on 'end' line
-    When I insert "def f\n\t1\n\ten" at the cursor
-    And I move the cursor to 12
-    And I insert "d" at the cursor
+    When I replace the contents with "def f\n\t1\n\ten"
+    And I move the cursor to (2,3)
+    And I type "d"
     Then the contents should be "def f\n\t1\nend"
     
   Scenario: It should keep indentation the same if no change
-    When I insert "\tfoo" at the cursor
-    And I move the cursor to 4
-    And I insert "\n" at the cursor
+    When I replace the contents with "\tfoo"
+    And I move the cursor to (0,4)
+    And I type "\n"
     Then the contents should be "\tfoo\n\t"
     
   Scenario: It should autoindent correctly
-    When I insert "\tdef my_awesome_method\n\t\tfoo\n\tend" at the cursor
-    And I select from 0 to 33
+    When I replace the contents with "\tdef my_awesome_method\n\t\tfoo\n\tend"
+    And I select from (0,0) to (2,4)
     And I auto-indent
     Then the contents should be "def my_awesome_method\n\tfoo\nend"
     
   Scenario: It should autoindent correctly
-    When I insert "\tdef my_awesome_method\n\t\tfoo\n\tend" at the cursor
-    And I select from 0 to 33
+    When I replace the contents with "\tdef my_awesome_method\n\t\tfoo\n\tend"
+    And I select from (0,0) to (2,4)
     And I auto-indent
     Then the contents should be "def my_awesome_method\n\tfoo\nend"
     When I undo

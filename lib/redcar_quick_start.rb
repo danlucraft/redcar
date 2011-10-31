@@ -5,12 +5,12 @@ module Redcar
   DRB_PORTS = {"user" => 10021, "test" => 10022, "development" => 10021}
   DONT_READ_STDIN_ARG = "--ignore-stdin"
 
-  def self.environment
-    :user
-  end
-  
   def self.drb_port
     DRB_PORTS[Redcar.environment.to_s]
+  end
+
+  def self.environment
+    :user
   end
 
   def self.read_stdin

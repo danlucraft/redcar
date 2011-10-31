@@ -39,7 +39,7 @@ Feature: Automatically insert paired characters
   Scenario: Wrap selected text
     When I open a new edit tab
     And I type "Boris"
-    And I select from 0 to 5
+    And I select from (0,0) to (0,5)
     And I type "("
     Then the contents should be "(Boris)<c>"
 

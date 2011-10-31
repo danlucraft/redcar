@@ -1,3 +1,4 @@
+puts "loading edit_view env.rb"
 
 require File.expand_path("../../../../application/features/support/env", __FILE__)
 

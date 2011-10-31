@@ -25,37 +25,49 @@ def get_speedbar_field(field_name, expected_klass, speedbar=nil)
 end
 
 When /^I type "([^"]*)" into the "([^"]*)" field in the speedbar$/ do |text, field_name|
-  get_speedbar_text_field(field_name).edit_view.document.text = text
+  Swt.sync_exec do
+    get_speedbar_text_field(field_name).edit_view.document.text = text
+  end
 end
 
 When /^I press "([^"]*)" in the speedbar$/ do |button_name|
-  speedbar = Redcar.app.focussed_window.speedbar
-  speedbar.controller.execute_listener_in_model(speedbar.__get_item_by_text_or_name(button_name))
+  Swt.sync_exec do
+    speedbar = Redcar.app.focussed_window.speedbar
+    speedbar.controller.execute_listener_in_model(speedbar.__get_item_by_text_or_name(button_name))
+  end
 end
 
 When /^I check "([^"]*)" in the speedbar$/ do |checkbox_name|
-  speedbar = Redcar.app.focussed_window.speedbar
-  item = speedbar.__get_item_by_text_or_name(checkbox_name)
-  item.set_value(true)
-  speedbar.controller.execute_listener_in_model(item, true)
+  Swt.sync_exec do
+    speedbar = Redcar.app.focussed_window.speedbar
+    item = speedbar.__get_item_by_text_or_name(checkbox_name)
+    item.set_value(true)
+    speedbar.controller.execute_listener_in_model(item, true)
+  end
 end
 
 When /^I uncheck "([^"]*)" in the speedbar$/ do |checkbox_name|
-  speedbar = Redcar.app.focussed_window.speedbar
-  item = speedbar.__get_item_by_text_or_name(checkbox_name)
-  item.set_value(false)
-  speedbar.controller.execute_listener_in_model(item, false)
+  Swt.sync_exec do
+    speedbar = Redcar.app.focussed_window.speedbar
+    item = speedbar.__get_item_by_text_or_name(checkbox_name)
+    item.set_value(false)
+    speedbar.controller.execute_listener_in_model(item, false)
+  end
 end
 
 When /^I choose "([^"]*)" in the "([^"]*)" field in the speedbar$/ do |value, combo_name|
-  speedbar = Redcar.app.focussed_window.speedbar
-  item = get_speedbar_field(combo_name, Redcar::Speedbar::ComboItem)
-  item.set_value(value)
-  speedbar.controller.execute_listener_in_model(item, value)
+  Swt.sync_exec do
+    speedbar = Redcar.app.focussed_window.speedbar
+    item = get_speedbar_field(combo_name, Redcar::Speedbar::ComboItem)
+    item.set_value(value)
+    speedbar.controller.execute_listener_in_model(item, value)
+  end
 end
 
 When /^I close the speedbar$/ do
-  Redcar.app.focussed_window.close_speedbar
+  Swt.sync_exec do
+    Redcar.app.focussed_window.close_speedbar
+  end
 end
 
 Then /^the "([^"]*)" field in the speedbar should have text "([^"]*)"$/ do |field_name, text|

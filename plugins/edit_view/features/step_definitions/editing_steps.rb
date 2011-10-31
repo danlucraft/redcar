@@ -8,11 +8,15 @@ def escape_text(text)
 end
 
 When /^I undo$/ do
-  Redcar::Top::UndoCommand.new.run(:env => {:edit_view => implicit_edit_view})
+  Swt.sync_exec do
+    Redcar::Top::UndoCommand.new.run(:env => {:edit_view => implicit_edit_view})
+  end
 end
 
 When /^I redo$/ do
-  Redcar::Top::RedoCommand.new.run(:env => {:edit_view => implicit_edit_view})
+  Swt.sync_exec do
+    Redcar::Top::RedoCommand.new.run(:env => {:edit_view => implicit_edit_view})
+  end
 end
 
 When /^I select (-?)(\d+) from \((\d+), ?(\d+)\)$/ do |minus, length, start_line, start_line_offset|
@@ -35,6 +39,13 @@ When /^I select from \((\d+), ?(\d+)\) to \((\d+), ?(\d+)\)$/ do |start_line, st
   Swt.bot.styled_text.select_range(start_line.to_i, start_line_offset.to_i, length)
 end
 
+When /^I select from (\d+) to (\d+)$/ do |start_offset, end_offset|
+  Swt.sync_exec do
+    doc = implicit_edit_view.document
+    doc.set_selection_range(start_offset.to_i, end_offset.to_i)
+  end
+end
+
 When /^I copy text$/ do
 #  Redcar::Top::CopyCommand.new.run(:env => {:edit_view => implicit_edit_view})
   When "I select menu item \"Edit|Copy\""
@@ -50,6 +61,12 @@ When /^I paste text$/ do
   When "I select menu item \"Edit|Paste\""
 end
 
+When /^I move the cursor to (\d+)$/ do |offset|
+  Swt.sync_exec do
+    implicit_edit_view.document.cursor_offset = offset.to_i
+  end
+end
+
 When /^I move the cursor to \((\d+),(\d+)\)$/ do |line, line_offset|
   Swt.bot.styled_text.navigate_to(line.to_i, line_offset.to_i)
 end
@@ -63,6 +80,13 @@ Then /^the cursor should be at \((\d+),(\d+)\)$/ do |line, line_offset|
   position = Swt.bot.styled_text.cursor_position
   position.line.should == line.to_i
   position.column.should == line_offset.to_i
+end
+
+Then /^the cursor should be at (\d+)$/ do |offset|
+  Swt.sync_exec do
+    doc = implicit_edit_view.document
+    doc.cursor_offset.should == offset.to_i
+  end
 end
 
 When /^tabs are hard$/ do
@@ -147,33 +171,43 @@ Then /^the contents should (not )?be "(.*)"$/ do |negative,text|
 end
 
 Then /^the contents of the edit tab should be "(.*)"$/ do |text|
-  implicit_edit_view.document.to_s.should == unescape_text(text)
+  Swt.sync_exec do
+    implicit_edit_view.document.to_s.should == unescape_text(text)
+  end
 end
 
 When /^I block select from (\d+) to (\d+)$/ do |from_str, to_str|
-  doc = implicit_edit_view.document
-  doc.block_selection_mode = true
-  doc.set_selection_range(from_str.to_i, to_str.to_i)
+  Swt.sync_exec do
+    doc = implicit_edit_view.document
+    doc.block_selection_mode = true
+    doc.set_selection_range(from_str.to_i, to_str.to_i)
+  end
 end
 
 Then /^the selection range should be from (\d+) to (\d+)$/ do |from_str, to_str|
-  doc = implicit_edit_view.document
-  r = doc.selection_range
-  r.begin.should == from_str.to_i
-  r.end.should == to_str.to_i
+  Swt.sync_exec do
+    doc = implicit_edit_view.document
+    r = doc.selection_range
+    r.begin.should == from_str.to_i
+    r.end.should == to_str.to_i
+  end
 end
 
 Then /^the selection should be on line (.*)$/ do |line_num|
-  line_num = line_num.to_i
-  doc = implicit_edit_view.document
-  r = doc.selection_range
-  doc.line_at_offset(r.begin).should == line_num
-  doc.line_at_offset(r.end).should == line_num
+  Swt.sync_exec do
+    line_num = line_num.to_i
+    doc = implicit_edit_view.document
+    r = doc.selection_range
+    doc.line_at_offset(r.begin).should == line_num
+    doc.line_at_offset(r.end).should == line_num
+  end
 end
 
 Then /^there should not be any text selected$/ do
-  doc = implicit_edit_view.document
-  doc.selected_text.should == ""
+  Swt.sync_exec do
+    doc = implicit_edit_view.document
+    doc.selected_text.should == ""
+  end
 end
 
 Then /^the selected text should be "([^"]*)"$/ do |selected_text|
@@ -188,17 +222,21 @@ Then /the line delimiter should be "(.*)"/ do |delim|
 end
 
 When /^I move to line (\d+)$/ do |num|
-  doc = implicit_edit_view.document
-  doc.cursor_offset = doc.offset_at_line(num.to_i)
+  Swt.sync_exec do
+    doc = implicit_edit_view.document
+    doc.cursor_offset = doc.offset_at_line(num.to_i)
+  end
 end
 
 Then /^the cursor should be on line (\d+)$/ do |num|
-  doc = implicit_edit_view.document
-  doc.cursor_line.should == num.to_i
+  Swt.sync_exec do
+    doc = implicit_edit_view.document
+    doc.cursor_line.should == num.to_i
+  end
 end
 
 When /^I replace the contents with "((?:[^\"]|\\")*)"$/ do |contents|
-  Redcar.update_gui do
+  Swt.sync_exec do
     contents = unescape_text(contents)
     doc = implicit_edit_view.document
     cursor_offset = (contents =~ /<c>/)
@@ -208,36 +246,46 @@ When /^I replace the contents with "((?:[^\"]|\\")*)"$/ do |contents|
 end
 
 When /^I replace the contents with 100 lines of "([^"]*)" then "([^"]*)"$/ do |contents1, contents2|
-  contents1 = unescape_text(contents1)
-  contents2 = unescape_text(contents2)
-  doc = implicit_edit_view.document
-  doc.text = (contents1 + "\n")*100 + contents2
+  Swt.sync_exec do
+    contents1 = unescape_text(contents1)
+    contents2 = unescape_text(contents2)
+    doc = implicit_edit_view.document
+    doc.text = (contents1 + "\n")*100 + contents2
+  end
 end
 
 When /^I replace the contents with (\d+) "([^"]*)" then "([^"]*)"$/ do |count, contents1, contents2|
-  contents1 = unescape_text(contents1)
-  contents2 = unescape_text(contents2)
-  doc = implicit_edit_view.document
-  doc.text = (contents1)*count.to_i + contents2
+  Swt.sync_exec do
+    contents1 = unescape_text(contents1)
+    contents2 = unescape_text(contents2)
+    doc = implicit_edit_view.document
+    doc.text = (contents1)*count.to_i + contents2
+  end
 end
 
 When /^I scroll to the top of the document$/ do
-  doc = implicit_edit_view.document
-  doc.scroll_to_line(0)
+  Swt.sync_exec do
+    doc = implicit_edit_view.document
+    doc.scroll_to_line(0)
+  end
 end
 
 Then /^line number (\d+) should be visible$/ do |line_num|
-  line_num = line_num.to_i
-  doc = implicit_edit_view.document
-  (doc.biggest_visible_line >= line_num).should be_true
-  (doc.smallest_visible_line <= line_num).should be_true
+  Swt.sync_exec do
+    line_num = line_num.to_i
+    doc = implicit_edit_view.document
+    (doc.biggest_visible_line >= line_num).should be_true
+    (doc.smallest_visible_line <= line_num).should be_true
+  end
 end
 
 Then /^horizontal offset (\d+) should be visible$/ do |offset|
-  offset = offset.to_i
-  doc    = implicit_edit_view.document
-  (doc.largest_visible_horizontal_index  >= offset).should be_true
-  (doc.smallest_visible_horizontal_index <= offset).should be_true
+  Swt.sync_exec do
+    offset = offset.to_i
+    doc    = implicit_edit_view.document
+    (doc.largest_visible_horizontal_index  >= offset).should be_true
+    (doc.smallest_visible_horizontal_index <= offset).should be_true
+  end
 end
 
 When /^I select the word (right of|left of|around|at) (\d+)$/ do |direction, offset|
@@ -262,13 +310,17 @@ When /^I select the word (right of|left of|around|at) (\d+)$/ do |direction, off
 end
 
 When /^I turn block selection on$/ do
-  implicit_edit_view.document.block_selection_mode?.should == false
-  Redcar::Top::ToggleBlockSelectionCommand.new.run(:env => {:edit_view => implicit_edit_view})
+  Swt.sync_exec do
+    implicit_edit_view.document.block_selection_mode?.should == false
+    Redcar::Top::ToggleBlockSelectionCommand.new.run(:env => {:edit_view => implicit_edit_view})
+  end
 end
 
 When /^I turn block selection off$/ do
-  implicit_edit_view.document.block_selection_mode?.should == true
-  Redcar::Top::ToggleBlockSelectionCommand.new.run(:env => {:edit_view => implicit_edit_view})
+  Swt.sync_exec do
+    implicit_edit_view.document.block_selection_mode?.should == true
+    Redcar::Top::ToggleBlockSelectionCommand.new.run(:env => {:edit_view => implicit_edit_view})
+  end
 end
 
 def escape_text(text)
@@ -276,7 +328,7 @@ def escape_text(text)
 end
 
 Given /^the contents? is:$/ do |string|
-  Redcar.update_gui do
+  Swt.sync_exec do
     cursor_index    = string.index('<c>')
     selection_index = string.index('<s>')
     string = string.gsub('<s>', '').gsub('<c>', '')

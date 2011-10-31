@@ -10,8 +10,9 @@ Feature: Indents Java code correctly
 				"""
 				  if(condition) {
 				    // stuff goes here...
-				  } <c>
+				  } 
 				"""
+    And I move the cursor to (2,4)
     When I type "e"
     Then the content should be:
 				"""
@@ -23,9 +24,10 @@ Feature: Indents Java code correctly
   Scenario: It should expand blocks
     Given the content is:
 				"""
-				  if(condition) {<c>}
+				  if(condition) {}
 				"""
-    When I insert "\n" at the cursor
+    And I move the cursor to (0,17)
+    When I type "\n"
     Then the content should be:
 				"""
 				  if(condition) {

@@ -1,7 +1,11 @@
 When /^I toggle block comment$/ do
-  Redcar::Comment::ToggleSelectionCommentCommand.new.run
+  Swt.sync_exec do
+    Redcar::Comment::ToggleSelectionCommentCommand.new.run
+  end
 end
 
 When /^I toggle comment lines$/ do
-  Redcar::Comment::ToggleLineCommentCommand.new.run
+  Swt.sync_exec do
+    Redcar::Comment::ToggleLineCommentCommand.new.run
+  end
 end

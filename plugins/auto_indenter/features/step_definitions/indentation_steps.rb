@@ -11,5 +11,7 @@ Given /^the indentation rules are like Java's$/ do
 end
 
 When /^I auto-indent/ do
-  Redcar::AutoIndenter::IndentCommand.new.run
+  Swt.sync_exec do
+    Redcar::AutoIndenter::IndentCommand.new.run
+  end
 end

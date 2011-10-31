@@ -1,10 +1,14 @@
 
 When /^I open the incremental search speedbar$/ do
-  Redcar::DocumentSearch::OpenIncrementalSearchSpeedbarCommand.new.run
+  Swt.sync_exec do
+    Redcar::DocumentSearch::OpenIncrementalSearchSpeedbarCommand.new.run
+  end
 end
 
 When /^I open the find speedbar$/ do
-  Redcar::DocumentSearch::OpenFindSpeedbarCommand.new.run
+  Swt.sync_exec do
+    Redcar::DocumentSearch::OpenFindSpeedbarCommand.new.run
+  end
 end
 
 Then /^I should see the incremental search speedbar$/ do

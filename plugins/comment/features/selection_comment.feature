@@ -14,7 +14,7 @@ Feature: Commenting a selected area of text
   Scenario: Commenting a selection spanning several lines
     When I replace the contents with "a piece\nof code"
     And I switch the language to "C++"
-    And I select from 4 to 9
+    And I select from (0,4) to (1,1)
     And I toggle block comment
     Then I should see "a pi/*ece\no*/f code" in the edit tab
     And I toggle block comment
