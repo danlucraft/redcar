@@ -1,14 +1,20 @@
 
 When /I open a directory/ do
-  Redcar::Project::DirectoryOpenCommand.new.run
+  Swt.sync_exec do
+    Redcar::Project::DirectoryOpenCommand.new.run
+  end
 end
 
 When /I close the directory/ do
-  Redcar::Project::Manager.focussed_project.close
+  Swt.sync_exec do
+    Redcar::Project::Manager.focussed_project.close
+  end
 end
 
 When /^I refresh the directory tree$/ do
-  Redcar::Project::Manager.focussed_project.refresh
+  Swt.sync_exec do
+    Redcar::Project::Manager.focussed_project.refresh
+  end
 end
 
 When /^I move the myproject fixture away$/ do
@@ -18,8 +24,10 @@ When /^I move the myproject fixture away$/ do
 end
 
 When /^I open a "([^"]*)" as a subproject of the current directory$/ do |arg1|
-  path = Redcar::Project::Manager.focussed_project.path
-  Redcar::Project::Manager.open_subproject(path,path + arg1)
+  Swt.sync_exec do
+    path = Redcar::Project::Manager.focussed_project.path
+    Redcar::Project::Manager.open_subproject(path,path + arg1)
+  end
 end
 
 Then /^"([^"]*)" in the project configuration files$/ do |arg1|

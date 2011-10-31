@@ -1,4 +1,4 @@
 
 When /^I open the web bookmarks tree$/ do
-  Redcar::WebBookmarks::ShowWebBookmarksCommand.new.run
+  Swt.sync_exec { Redcar::WebBookmarks::ShowWebBookmarksCommand.new.run }
 end

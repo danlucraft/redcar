@@ -1,28 +1,40 @@
 
 Given /^I have open a file$/ do
-  Redcar::Project::OpenFileCommand.new.run
+  Swt.sync_exec do
+    Redcar::Project::OpenFileCommand.new.run
+  end
 end
 
 Given /^I will open a large file from the "([^"]*)" dialog$/ do |arg1|
-  Given %Q|I will choose "plugins/project/spec/fixtures/winter.txt" from the "open_file" dialog|
-  Redcar::Project::Manager.file_size_limit = 1
+  Swt.sync_exec do
+    Given %Q|I will choose "plugins/project/spec/fixtures/winter.txt" from the "open_file" dialog|
+    Redcar::Project::Manager.file_size_limit = 1
+  end
 end
 
 When /^I open a file$/ do
-  Redcar::Project::OpenFileCommand.new.run
+  Swt.sync_exec do
+    Redcar::Project::OpenFileCommand.new.run
+  end
 end
 
 Given /^I have opened "([^\"]*)"$/ do |arg1|
-  Redcar::Project::OpenFileCommand.new(File.expand_path(arg1)).run
+  Swt.sync_exec do
+    Redcar::Project::OpenFileCommand.new(File.expand_path(arg1)).run
+  end
 end
 
 Given /^I have opened "([^\"]*)" from the project$/ do |arg1|
-  project = Redcar::Project::Manager.focussed_project
-  Redcar::Project::OpenFileCommand.new(project.path + "/" + arg1).run
+  Swt.sync_exec do
+    project = Redcar::Project::Manager.focussed_project
+    Redcar::Project::OpenFileCommand.new(project.path + "/" + arg1).run
+  end
 end
 
 When /^I save the tab$/ do
-  Redcar::Project::SaveFileCommand.new.run
+  Swt.sync_exec do
+    Redcar::Project::SaveFileCommand.new.run
+  end
 end
 
 When /^I touch the file "([^\"]*)"$/ do |fn|
@@ -35,7 +47,9 @@ When /^I put "([^\"]*)" into the file "([^\"]*)"$/ do |contents, path|
 end
 
 When /^I save the tab as$/ do
-  Redcar::Project::SaveFileAsCommand.new.run
+  Swt.sync_exec do
+    Redcar::Project::SaveFileAsCommand.new.run
+  end
 end
 
 Then /^the file "([^"]*)" should be deletable$/ do |path|
