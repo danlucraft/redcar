@@ -1,14 +1,16 @@
+
 source :rubygems
 
 group :dev do
   gem 'rake'
-  gem 'rspec', "<2.0.0"
-  gem 'cucumber', "~>0.9"
+  gem 'rspec'
+  gem 'cucumber'
   gem 'ci_reporter', :group => "ci"
   gem 'rcov', "=0.9.9", :group => "ci"
 end
 
-gem "swt",                 "~> 0.1"
+gem "plugin_manager",      :path => "../plugin_manager"
+gem "swt",                 :path => "../swt"
 gem "lucene",              "~> 0.5.0.beta.1"
 gem "ffi"
 gem "json"
@@ -19,7 +21,6 @@ gem "net-ftp-list"
 gem "jruby-openssl"
 gem "ruby-blockcache"
 gem "bouncy-castle-java"
-gem "plugin_manager"
 gem "redcar-icons"
 gem "redcar-jruby"
 gem "redcar-svnkit"

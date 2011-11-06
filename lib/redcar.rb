@@ -1,7 +1,5 @@
 
 $:.push(File.expand_path(File.join(File.dirname(__FILE__))))
-$:.push(File.expand_path(File.join(File.dirname(__FILE__), %w{.. vendor spoon lib})))
-$:.push(File.expand_path(File.join(File.dirname(__FILE__), %w{.. vendor ffi lib})))
 
 require 'redcar/usage'
 
@@ -21,10 +19,12 @@ require 'redcar-icons'
 
 begin
   if Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby"
+=begin
     gem "spoon"
     require 'spoon'
     module Redcar; SPOON_AVAILABLE = true; end
   else
+=end
     module Redcar; SPOON_AVAILABLE = false; end
   end
 rescue LoadError
