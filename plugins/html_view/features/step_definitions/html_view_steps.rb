@@ -3,17 +3,13 @@ Then /^the HTML tab (should (not )?say|says) "([^"]*)"$/ do |_, negation, needle
   contents = nil
   started = false
 
-  thread = Thread.new do
-    started = true
-    start = Time.now
+  start = Time.now
+  contents = Swt.sync_exec { get_browser_contents }
+  while !contents or (contents and !contents.match(needle)) && Time.now - start < limit
     contents = Swt.sync_exec { get_browser_contents }
-    while !contents or (contents and !contents.match(needle)) && Time.now - start < limit
-      contents = Swt.sync_exec { get_browser_contents }
-      sleep 0.1
-    end
+    p contents
+    sleep 0.1
   end
-
-  true until started && !thread.alive?
 
   # For now, just skip on XUL platforms on which we can't get browser exec results
   # (current version of SWT and XulRunner). More info at:
