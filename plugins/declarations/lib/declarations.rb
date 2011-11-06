@@ -98,7 +98,7 @@ module Redcar
       def execute
         project = Project::Manager.focussed_project
         tags_path = Declarations.file_path(project)
-        FileUtils.rm tags_path
+        FileUtils.rm tags_path if ::File.exists? tags_path
         ProjectRefresh.new(project).execute
       end
     end
