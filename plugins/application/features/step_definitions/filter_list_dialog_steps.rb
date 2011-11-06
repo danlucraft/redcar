@@ -24,7 +24,8 @@ When /^I select in the filter dialog$/ do
 end
 
 When /^I wait "(.*)" seconds?$/ do |time|
-  Cucumber::Ast::StepInvocation.wait_time = time.to_f
+  s = Time.now + time.to_f
+  sleep 0.1 until Time.now > s
 end
 
 Then /^the filter dialog should have (no|\d+) entr(?:y|ies)$/ do |num|
