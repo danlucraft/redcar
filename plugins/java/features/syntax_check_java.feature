@@ -41,23 +41,25 @@ Feature: Syntax Checking for Java
     Then the tab should have annotations
     And the tab should have an annotation on line 2
 
-  Scenario: A project can add libraries and compiled class directories to the java classpath
-    When I will choose "plugins/java/features/fixtures" from the "open_directory" dialog
-    And I open a directory
-    And I replace the contents with "class Foo {\n    Bar x = new Bar(10);\n    FooBar y = new FooBar();\n}"
-    And I save the tab
-    And I wait "2.5" seconds
-    Then the tab should not have annotations
+  # NOT without groovy it can't.
+  # TODO: remove java plugins dependency on groovy plugin, then uncomment these
+  # Scenario: A project can add libraries and compiled class directories to the java classpath
+  #   When I will choose "plugins/java/features/fixtures" from the "open_directory" dialog
+  #   And I open a directory
+  #   And I replace the contents with "class Foo {\n    Bar x = new Bar(10);\n    FooBar y = new FooBar();\n}"
+  #   And I save the tab
+  #   And I wait "2.5" seconds
+  #   Then the tab should not have annotations
 
-  Scenario: If a project classpath.java file has syntax errors, there should be an error message and annotations
-    And I close the focussed tab
-    Given I have not suppressed syntax checking message dialogs
-    When I will choose "plugins/java/features/fixtures" from the "open_directory" dialog
-    And I open a directory
-    And I have opened "plugins/java/features/fixtures/.redcar/classpath.groovy"
-    And I replace the contents with "def x = 4\nsdef"
-    And I save the tab
-    Then I should see a message box containing "An error occurred while loading classpath file"
+  # Scenario: If a project classpath.java file has syntax errors, there should be an error message and annotations
+  #   And I close the focussed tab
+  #   Given I have not suppressed syntax checking message dialogs
+  #   When I will choose "plugins/java/features/fixtures" from the "open_directory" dialog
+  #   And I open a directory
+  #   And I have opened "plugins/java/features/fixtures/.redcar/classpath.groovy"
+  #   And I replace the contents with "def x = 4\nsdef"
+  #   And I save the tab
+  #   Then I should see a message box containing "An error occurred while loading classpath file"
 
   Scenario: If an error occurs while parsing a java file, there should be an error message
     Given I have not suppressed syntax checking message dialogs
