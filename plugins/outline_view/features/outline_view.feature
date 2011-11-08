@@ -33,12 +33,12 @@ Scenario: Something fancier
   And the outline view should have 88 entries
   And I should see "Redcar" at 0 with the "class" icon in the outline view
   When I set the outline filter to "delim"
-  And I wait 2 seconds
+  And I wait "2" seconds
   Then the outline view should have 2 entries
   And I should see "delim" at 1 with the "alias" icon in the outline view
   And I should see "line_delimiter" at 0 with the "method" icon in the outline view
   When I set the outline filter to "selected"
-  And I wait 2 seconds
+  And I wait "2" seconds
   Then the outline view should have 2 entries
   And I should see "selection_range_changed" at 0 with the "method" icon in the outline view
   And I should see "selected_text" at 1 with the "method" icon in the outline view
@@ -57,7 +57,7 @@ Scenario: Matching kinda similar names
   And I should see "file_handle" at 4 with the "method" icon in the outline view
   And I should see "file" at 5 with the "method" icon in the outline view
   When I set the outline filter to "file"
-  And I wait 2 seconds
+  And I wait "2" seconds
   Then the outline view should have 5 entries
 
 Scenario: Simple Javascript
@@ -67,12 +67,12 @@ Scenario: Simple Javascript
   And the outline view should have 3 entries
   And I should see "SomeConstructor" at 0 with the "class" icon in the outline view
   When I set the outline filter to "some"
-  And I wait 2 seconds
+  And I wait "2" seconds
   Then the outline view should have 2 entries
   And I should see "someMethod" at 1 with the "method" icon in the outline view
   And I should see "SomeConstructor" at 0 with the "class" icon in the outline view
   When I set the outline filter to "another"
-  And I wait 2 seconds
+  And I wait "2" seconds
   Then the outline view should have 1 entry
   And I should see "anotherMethod" at 0 with the "method" icon in the outline view
   And I select the outline view

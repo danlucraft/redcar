@@ -1,13 +1,13 @@
 
 module NotebookSwtHelper
-  def notebook_sash
+  def notebook_sash(shell=active_shell)
     Redcar.app.show_toolbar = false
     Redcar.app.refresh_toolbar!
-    active_shell.children.to_a[-2].children.to_a[0]
+    shell.children.to_a[2].children.to_a[0]
   end
   
-  def ctab_folders
-    notebook_sash.children.to_a.select do |c| 
+  def ctab_folders(shell=active_shell)
+    notebook_sash(shell).children.to_a.select do |c| 
       c.class == Java::OrgEclipseSwtCustom::CTabFolder
     end
   end

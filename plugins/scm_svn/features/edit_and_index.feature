@@ -1,3 +1,4 @@
+@svn
 Feature: Editing and indexing files in a working copy
 
   Scenario: Editing a file and viewing unindexed modified files

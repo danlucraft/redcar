@@ -1,3 +1,4 @@
+@svn
 Feature: Adding and committing files in a working copy
 
   Scenario: Adding and committing new files to a repository

@@ -1,6 +1,8 @@
 
 When /^I click Show Bundles in Tree$/ do
+  Swt.sync_exec do
     Redcar::Textmate::ShowSnippetTree.new.run
+  end
 end
 
 Then /^I should see a tree mirror titled "([^"]*)"$/ do |arg1|

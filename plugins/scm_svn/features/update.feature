@@ -1,3 +1,4 @@
+@svn
 Feature: Updating a working copy from a remote repository
 
   Scenario: Updating a working copy

@@ -1,3 +1,4 @@
+@svn
 Feature: Ignoring external files within a working directory
 
   Scenario: Ignoring certain files

@@ -1,7 +1,4 @@
-
-# require File.join(Redcar.asset_dir, "svnkit")
-# require 'java'
-# import 'org.tmatesoft.svn.core.io.SVNRepositoryFactory'
+import 'org.tmatesoft.svn.core.io.SVNRepositoryFactory'
 
 def scm_svn_fixtures
   File.expand_path(File.dirname(__FILE__) + "/../fixtures")
@@ -61,12 +58,14 @@ def reset_fixtures
   svn_module
 end
 
-# Before do
-#   @svn_module = nil
-#   reset_fixtures
-# end
-# 
-# After do
-#   FileUtils.rm_rf(scm_svn_fixtures)
-#   @svn_module = nil
-# end
+Before("@svn") do
+  p :svn_fixture_before
+  @svn_module = nil
+  reset_fixtures
+end
+
+After("@svn") do
+  p :svn_fixture_after
+  FileUtils.rm_rf(scm_svn_fixtures)
+  @svn_module = nil
+end

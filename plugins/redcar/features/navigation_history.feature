@@ -5,12 +5,12 @@ Background:
   And I move to line 2
   And I run the command Redcar::OutlineView::OpenOutlineViewCommand
   And I select the outline view
-  Then the cursor should be on line 1
+  Then the cursor should be on line 3
   And I run the command Redcar::OutlineView::OpenOutlineViewCommand
   When I set the outline filter to "con"
-  And I wait 2 seconds
+  And I wait "2" seconds
   And I select the outline view
-  Then the cursor should be on line 14
+  Then the cursor should be on line 16
   Given I have opened "plugins/application/lib/application/navigation_history.rb"
   And I move to line 5
   And I run the command Redcar::OutlineView::OpenOutlineViewCommand
@@ -23,19 +23,19 @@ Scenario: Backward/forward history
   And the cursor should be on line 5
   When I run the command Redcar::Top::BackwardNavigationCommand
   Then the focussed document path is "plugins/application/spec/application/navigation_history_spec.rb"
-  And the cursor should be on line 14
+  And the cursor should be on line 16
   When I run the command Redcar::Top::BackwardNavigationCommand
   Then the focussed document path is "plugins/application/spec/application/navigation_history_spec.rb"
-  And the cursor should be on line 1
+  And the cursor should be on line 3
   When I run the command Redcar::Top::BackwardNavigationCommand
   Then the focussed document path is "plugins/application/spec/application/navigation_history_spec.rb"
   And the cursor should be on line 2
   When I run the command Redcar::Top::ForwardNavigationCommand
   Then the focussed document path is "plugins/application/spec/application/navigation_history_spec.rb"
-  And the cursor should be on line 1
+  And the cursor should be on line 3
   When I run the command Redcar::Top::ForwardNavigationCommand
   Then the focussed document path is "plugins/application/spec/application/navigation_history_spec.rb"
-  And the cursor should be on line 14
+  And the cursor should be on line 16
   When I run the command Redcar::Top::ForwardNavigationCommand
   Then the focussed document path is "plugins/application/lib/application/navigation_history.rb"
   And the cursor should be on line 5
@@ -55,7 +55,7 @@ Scenario: Change middle history
   And the cursor should be on line 5
   And I run the command Redcar::OutlineView::OpenOutlineViewCommand
   When I set the outline filter to "can"
-  And I wait 2 seconds
+  And I wait "2" seconds
   And I select the outline view
   Then the cursor should be on line 21
   When I run the command Redcar::Top::BackwardNavigationCommand

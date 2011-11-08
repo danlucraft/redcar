@@ -102,3 +102,6 @@ Then /the window "(.*)" should have (\d+) tabs?/ do |win_title, tab_num|
     items.map {|i| model_tab_for_item(i)}.length.should == tab_num
   end
 end
+
+
+

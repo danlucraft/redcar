@@ -22,8 +22,7 @@ Feature: Open directory tree
     Given I will choose "plugins/project/spec/fixtures/myproject" from the "open_directory" dialog
     When I open a directory
     And I open "plugins/project/spec/fixtures/myproject" using the redcar command
-    Then there should be 1 windows
-    And the window should have title "myproject"
+    Then the window should have title "myproject"
 
   Scenario: Title of window reflects open project
     Given I will choose "plugins/project/spec/fixtures/myproject" from the "open_directory" dialog

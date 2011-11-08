@@ -1,3 +1,4 @@
+@svn
 Feature: Opening other branches as new projects
 
   Scenario: Opening a branch from trunk

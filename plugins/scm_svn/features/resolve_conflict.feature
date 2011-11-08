@@ -1,3 +1,4 @@
+@svn
 Feature: Resolving conflicts
 
   Scenario: Resolving a file content conflict

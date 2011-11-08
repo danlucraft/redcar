@@ -1,3 +1,4 @@
+@svn
 Feature: Reverting and deleting files in a working copy
 
   Scenario: Reverting a dirty file to base revision

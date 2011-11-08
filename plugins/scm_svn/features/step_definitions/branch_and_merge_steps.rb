@@ -1,9 +1,11 @@
 Given /^I will open "([^"]*)" branch as a new project$/ do |branch_name|
-  path = parse_branch_path(branch_name)
-  if path
-    Redcar.gui.dialog_adapter.set(:open_directory, path)
-    @svn_module = Redcar::Scm::Subversion::Manager.new
-    @svn_module.load(path)
+  Swt.sync_exec do
+    path = parse_branch_path(branch_name)
+    if path
+      Redcar.gui.dialog_adapter.set(:open_directory, path)
+      @svn_module = Redcar::Scm::Subversion::Manager.new
+      @svn_module.load(path)
+    end
   end
 end
 

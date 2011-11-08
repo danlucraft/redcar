@@ -1,3 +1,4 @@
+@svn
 Feature: Checking out a repository
 
   Scenario: Checking out a repository via the 'file' protocol

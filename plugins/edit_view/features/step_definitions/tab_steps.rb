@@ -61,7 +61,7 @@ end
 module SwtbotHelpers
 
   def get_tab_folders(shell=active_shell)
-    tab_folders = notebook_sash.children.to_a.select do |c|
+    tab_folders = notebook_sash(shell).children.to_a.select do |c|
       c.class == Java::OrgEclipseSwtCustom::CTabFolder
     end
   end
@@ -75,20 +75,19 @@ end
 World(SwtbotHelpers)
 
 Then /^there should be (one|\d+) (.*) tabs?$/ do |num, tab_type|
-  Swt.sync_exec do
-    if num == "one"
-      num = 1
-    else
-      num = num.to_i
-    end
+  if num == "one"
+    num = 1
+  else
+    num = num.to_i
+  end
+
+  # in the model
+  tabs = Redcar.app.focussed_window.notebooks.map {|nb| nb.tabs }.flatten
+  tabs.length.should == num
   
-    # in the model
-    tabs = Redcar.app.focussed_window.notebooks.map {|nb| nb.tabs }.flatten
-    tabs.length.should == num
-    
-    # in the GUI
-    c_tab_item = Swt.bot.c_tab_item
-    c_tab_item.widget.parent.children.to_a.length.should == num
+  # in the GUI
+  Swt.sync_exec do
+    get_tab_folder.children.to_a.length.should == num
   end
 end
 

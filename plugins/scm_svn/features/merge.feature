@@ -1,3 +1,4 @@
+@svn
 Feature: Merging two branches together
 
   Scenario: Merging a branch into trunk

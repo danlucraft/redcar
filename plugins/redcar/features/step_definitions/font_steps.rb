@@ -11,15 +11,19 @@ When /^I set the font size to (\d+|maximum|minimum)$/ do |arg1|
 end
 
 When /^I (de|in)crease the font size$/ do |direction|
-  if direction == 'in'
-    Redcar::Top::IncreaseFontSize.new.run
-  else
-    Redcar::Top::DecreaseFontSize.new.run
+  Swt.sync_exec do
+    if direction == 'in'
+      Redcar::Top::IncreaseFontSize.new.run
+    else
+      Redcar::Top::DecreaseFontSize.new.run
+    end
   end
 end
 
 When /^I set the font size$/ do
-  Redcar::Top::SelectFontSize.new.run
+  Swt.sync_exec do
+    Redcar::Top::SelectFontSize.new.run
+  end
 end
 
 Then /^the font size should be (\d+|maximum|minimum)$/ do |size|

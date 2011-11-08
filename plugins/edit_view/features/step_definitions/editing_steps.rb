@@ -72,8 +72,10 @@ When /^I move the cursor to \((\d+),(\d+)\)$/ do |line, line_offset|
 end
 
 When /^I move the cursor to the end of the document$/ do
-  doc = implicit_edit_view.document
-  doc.cursor_offset = doc.length
+  Swt.sync_exec do
+    doc = implicit_edit_view.document
+    doc.cursor_offset = doc.length
+  end
 end
 
 Then /^the cursor should be at \((\d+),(\d+)\)$/ do |line, line_offset|
