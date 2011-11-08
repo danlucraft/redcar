@@ -1,5 +1,7 @@
 When /^I open the runnables tree$/ do
-  Redcar::Runnables::ShowRunnables.new.run
+  Swt.sync_exec do
+    Redcar::Runnables::ShowRunnables.new.run
+  end
 end
 
 When /^I change the command to "([^"]*)"$/ do |name|
@@ -10,7 +12,9 @@ When /^I change the command to "([^"]*)"$/ do |name|
 end
 
 When /^I go back to the "([^"]*)" window$/ do |title|
-  Redcar.app.windows.detect { |w| w.title == title }.focus
+  Swt.sync_exec do
+    Redcar.app.windows.detect { |w| w.title == title }.focus
+  end
 end
 
 When /^I note the number of windows$/ do
@@ -24,5 +28,7 @@ end
 When /^I append parameters to the "([^"]*)" node in the tree$/ do |node_text|
   mirror     = Redcar.app.focussed_window.treebook.focussed_tree.tree_mirror
   node       = find_node_with_text(mirror.top, node_text)
-  Redcar::Runnables::AppendParamsAndRunCommand.new(node).run
+  Swt.sync_exec do
+    Redcar::Runnables::AppendParamsAndRunCommand.new(node).run
+  end
 end
