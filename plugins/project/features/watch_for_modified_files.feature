@@ -104,6 +104,6 @@ Feature: Watch for modified files
     And I focus the window "Redcar" through the gui
     Then my active tab should have an "exclamation" icon
     When I save the tab
-    Then my active tab should have an "file" icon
+    Then my active tab should have an "document_attribute_t" icon
 
 
