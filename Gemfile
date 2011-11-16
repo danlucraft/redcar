@@ -9,8 +9,8 @@ group :dev do
   gem 'rcov', "=0.9.9", :group => "ci"
 end
 
-gem "plugin_manager",      :path => "../plugin_manager"
-gem "swt",                 :path => "../swt"
+gem "plugin_manager"
+gem "swt"
 gem "lucene",              "~> 0.5.0.beta.1"
 gem "ffi"
 gem "json"
@@ -26,6 +26,5 @@ gem "redcar-jruby"
 gem "redcar-svnkit"
 gem "redcar-bundles"
 gem "redcar-javamateview"
-# gem "watchr"
 gem "git"
  
