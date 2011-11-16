@@ -32,7 +32,7 @@ end
 
 When /I select menu item "(.*)"/ do |menu_path|
   Swt.sync_exec do
-    bits = menu_path.split("|")
+    bits = menu_path.split(/\||\//)
     curr = Swt.bot
     bits.each { |bit| curr = curr.menu(bit) }
     curr.click

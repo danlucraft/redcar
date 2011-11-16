@@ -5,7 +5,7 @@ Feature: Adding parameters to commands
   Background:
     Given I will choose "plugins/todo_list/spec/fixtures/project" from the "open_directory" dialog
     And I open a directory
-    When I open the "Todo List" from the "Project" menu
+    When I select menu item "Project/Todo List"
     And I wait "2" seconds
 
   Scenario: Opening the TODO list shows the todo items and their action texts without colons

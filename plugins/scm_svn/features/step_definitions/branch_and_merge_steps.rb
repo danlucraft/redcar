@@ -1,3 +1,4 @@
+
 Given /^I will open "([^"]*)" branch as a new project$/ do |branch_name|
   Swt.sync_exec do
     path = parse_branch_path(branch_name)
@@ -10,10 +11,12 @@ Given /^I will open "([^"]*)" branch as a new project$/ do |branch_name|
 end
 
 When /^I switch to "([^"]*)" branch$/ do |branch_name|
-  path = parse_branch_path(branch_name)
-  Redcar.gui.dialog_adapter.set(:open_directory, path) if path
-  svn_module.switch!(branch_name)
-  svn_module.repository?(path).should == true
+  Swt.sync_exec do
+    path = parse_branch_path(branch_name)
+    Redcar.gui.dialog_adapter.set(:open_directory, path) if path
+    svn_module.switch!(branch_name)
+    svn_module.repository?(path).should == true
+  end
 end
 
 When /^I merge the "([^"]*)" branch$/ do |branch_name|

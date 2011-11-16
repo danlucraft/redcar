@@ -8,8 +8,8 @@ Feature: Strip Trailing Spaces
     And I replace the contents with "Hi \n \n Foo \n"
 
   Scenario: Strip spaces on save
-    When I click "Enabled" from the "Plugins/Strip Trailing Spaces" menu
-    When I click "Strip Blank Lines" from the "Plugins/Strip Trailing Spaces" menu
+    When I select menu item "Plugins/Strip Trailing Spaces/Enabled"
+    When I select menu item "Plugins/Strip Trailing Spaces/Strip Blank Lines" menu
     And I save the tab
     Then I should see "Hi\n\n Foo\n" in the edit tab
 
@@ -24,11 +24,11 @@ Feature: Strip Trailing Spaces
     Then the contents should be "Hi\n<c>\n Foo\n"
 
   Scenario: Strip spaces, but not newlines on save
-    When I click "Strip Blank Lines" from the "Plugins/Strip Trailing Spaces" menu
+    When I select menu item "Plugins/Strip Trailing Spaces/Strip Blank Lines" menu
     And I save the tab
     Then I should see "Hi\n \n Foo\n" in the edit tab
 
   Scenario: Strip nothing on save
-    When I click "Enabled" from the "Plugins/Strip Trailing Spaces" menu
+    When I select menu item "Plugins/Strip Trailing Spaces/Enabled"
     And I save the tab
     Then I should see "Hi \n \n Foo \n" in the edit tab

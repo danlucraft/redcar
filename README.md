@@ -51,7 +51,7 @@ To run the tests you need JRuby installed. You also need rspec and cucumber inst
 
 To install the necessary gems:
 
-$ jruby -S bundle install
+    $ jruby -S bundle install
 
 To run all specs and all features:
 

@@ -7,7 +7,6 @@ Then /^the HTML tab (should (not )?say|says) "([^"]*)"$/ do |_, negation, needle
   contents = Swt.sync_exec { get_browser_contents }
   while !contents or (contents and !contents.match(needle)) && Time.now - start < limit
     contents = Swt.sync_exec { get_browser_contents }
-    p contents
     sleep 0.1
   end
 
