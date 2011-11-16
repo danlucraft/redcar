@@ -24,7 +24,7 @@ end
 
 Gem::Specification.new do |s|
   s.name        = "redcar-dev"
-  s.version     = "0.12.18dev" # also change in lib/redcar.rb
+  s.version     = "0.12.19dev" # also change in lib/redcar.rb
   s.platform    = "ruby"
   s.authors     = ["Daniel Lucraft"]
   s.email       = ["dan@fluentradical.com"]
@@ -35,9 +35,9 @@ Gem::Specification.new do |s|
   s.files        = RedcarGemspecHelper.gem_manifest
   s.executables  = ["redcar"]
   s.require_path = 'lib'
-  s.extra_rdoc_files  = %w(README.md LICENSE CHANGES Rakefile)
+  s.extra_rdoc_files  = %w(README.md LICENSE CHANGES Gemfile Rakefile)
   
-  s.add_dependency("ffi")
+  s.add_dependency("ffi", "= 1.0.10")
   s.add_dependency("git")
   s.add_dependency("json")
   s.add_dependency("spoon")
