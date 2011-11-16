@@ -8,7 +8,7 @@ module Redcar
       def initialize(path)
         @path = path
         @tags = []
-        load
+        load unless path.nil?
       end
       
       def load
