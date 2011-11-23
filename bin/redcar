@@ -27,3 +27,9 @@ Redcar.spin_up
 Redcar.load_threaded
 Redcar.show_splash
 Redcar.pump
+
+# enforce a GC run to help with a clean exit.
+# When mixing SWT and Swing this is necessary.
+mem_bean = java.lang.management.ManagementFactory.getMemoryMXBean()
+mem_bean.gc
+
