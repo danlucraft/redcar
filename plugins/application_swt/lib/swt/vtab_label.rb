@@ -101,7 +101,8 @@ module Swt
       end
 
       def mouseUp(e)
-        if show_close and close_icon.bounds.contains(e.x - ICON_PADDING, e.y - ICON_PADDING)
+        # Close tab if close button is clicked, or tab is middle-clicked
+        if (show_close && close_icon.bounds.contains(e.x - ICON_PADDING, e.y - ICON_PADDING)) || e.button == 2
           @tab.parent.remove_item(@tab)
         else
           activate if e.button == 1
