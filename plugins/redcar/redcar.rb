@@ -1054,7 +1054,6 @@ Redcar.environment: #{Redcar.environment}
           Redcar.log.info("startup milestone: project open #{Time.now - Redcar.process_start_time}")
           win.show if win and !args.include?("--no-window")
         end
-        Redcar.load_useful_libraries
         Redcar.log.info("startup milestone: complete: #{Time.now - Redcar.process_start_time}")
         if args.include?("--compute-textmate-cache-and-quit")
           Redcar::Textmate.all_bundles
