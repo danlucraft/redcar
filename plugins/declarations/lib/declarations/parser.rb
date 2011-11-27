@@ -9,7 +9,7 @@ module Redcar
     capture:  1
     type:     id
     kind:     interface
-  - regex:    "^\\s*((public|private|protected|)\\s+|)(static\\s+|)(([\\.\\w]+|)[A-Z]\\w*(<\\w+>|)|void|int|boolean|byte|short|long|char|float|def)\\s+(\\w+\\s*\\((.*)\\))"
+  - regex:    "^\\s*((public|private|protected|)\\s+|)(static\\s+|)(([\\.\\w]+|)[A-Z]\\w*(<\\w+>|)|void|int|boolean|byte|short|long|char|float|def)\\s+(\\w+\\s*\\((.*)\\))?"
     capture:  7
     type:     id
     kind:     method
@@ -36,7 +36,7 @@ module Redcar
     capture:  1
     type:     id
     kind:     interface
-  - regex:    "^\\s*((public|private|protected|)\\s+|)(static\\s+|)(([\\.\\w]+|)[A-Z]\\w*(<\\w+>|)|void|int|boolean|byte|short|long|char|float)\\s+(\\w+\\s*\\((.*)\\))"
+  - regex:    "^\\s*((public|private|protected|)\\s+|)(static\\s+|)(([\\.\\w]+|)[A-Z]\\w*(<\\w+>|)|void|int|boolean|byte|short|long|char|float)\\s+(\\w+\\s*\\((.*)\\))?"
     capture:  7
     type:     id
     kind:     method
@@ -55,7 +55,7 @@ module Redcar
     capture:  2
     type:     id
     kind:     class
-  - regex:    "^[^#]*def (self\\.)?(\\w+[?!=]?)(\\(.*\\))?(\\s|\\;)+"
+  - regex:    "^[^#]*def (self\\.)?(\\w+[?!=]?)(\\(.*\\))?(\\s|\\;|\\z|\\b)"
     capture:  2
     type:     id
     kind:     method
@@ -103,15 +103,55 @@ module Redcar
     kind:     method
   YAML
 
+  CUKE_YAML=<<-YAML
+  - regex:    "Feature:\\s*(.*)"
+    capture:  1
+    type:     id
+    kind:     class
+  - regex:    "Scenario:\\s*(.*)"
+    capture:  1
+    type:     id
+    kind:     method
+  - regex:    "(When|Then|And)\\s*\\/\\^?(.*?)\\$?\\/\\s*do"
+    capture:  2
+    type:     id
+    kind:     closure
+  YAML
+
+  SPEC_YAML=<<-YAML
+  - regex:    "describe\\s*\\"(.*?)\\"\\s*do"
+    capture:  1
+    type:     id
+    kind:     method
+  - regex:    "it\\s*\\"(.*?)\\"\\s*do"
+    capture:  1
+    type:     id
+    kind:     closure
+  YAML
+
   class Declarations
     class Parser
       DEFINITIONS = {
-        /\.rb$/     => YAML.load(RUBY_YAML),
-        /\.java$/   => YAML.load(JAVA_YAML),
-        /\.groovy$/ => YAML.load(GROOVY_YAML),
-        /\.php$/    => YAML.load(PHP_YAML),
-        /\.js$/     => YAML.load(JS_YAML)
+        /_steps\.rb$/ => YAML.load(CUKE_YAML) + YAML.load(RUBY_YAML),
+        /_spec\.rb$/ => YAML.load(RUBY_YAML) + YAML.load(SPEC_YAML),
+        /\.rb$/       => YAML.load(RUBY_YAML),
+        /\.java$/     => YAML.load(JAVA_YAML),
+        /\.groovy$/   => YAML.load(GROOVY_YAML),
+        /\.php$/      => YAML.load(PHP_YAML),
+        /\.js$/       => YAML.load(JS_YAML),
+        /\.feature$/  => YAML.load(CUKE_YAML)
       }
+
+      def self.definitions
+        @definitions = nil
+        @definitions ||= begin
+          definitions = DEFINITIONS.clone
+          Redcar.plugin_manager.objects_implementing(:declaration_definitions).each do
+            definitions.merge(object.declaration_definitions)
+          end
+          definitions
+        end
+      end
 
       attr_reader :tags
 
@@ -126,7 +166,7 @@ module Redcar
       end
 
       def decls_for_file(path)
-        DEFINITIONS.each do |fn_re, decls|
+        Parser.definitions.each do |fn_re, decls|
           if path =~ fn_re
             return decls
           end
@@ -179,7 +219,6 @@ module Redcar
       def file(path)
         ::File.read(path)
       end
-
     end
   end
 end

@@ -9,5 +9,11 @@ module Redcar
         end
       end
     end
+
+    class OpenProjectOutlineViewCommand < Redcar::ProjectCommand
+      def execute
+        OutlineView::ProjectOutlineViewDialog.new(project).open if project
+      end
+    end
   end
 end
