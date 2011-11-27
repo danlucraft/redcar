@@ -17,11 +17,10 @@ module Redcar
       @composite, @model = composite, model
       color = ApplicationSWT.tree_background.swt_colors.first
       font_data = @composite.font.font_data.first
-      font_size = Redcar.platform == :osx ? 14 : 12
       font = Swt::Graphics::Font.new(
         ApplicationSWT.display,
         font_data.name,
-        font_size,
+        ApplicationSWT.tree_font_size,
         Swt::SWT::NORMAL)
       @composite.background = color
       tree_style = Swt::SWT::MULTI | Swt::SWT::H_SCROLL | Swt::SWT::V_SCROLL

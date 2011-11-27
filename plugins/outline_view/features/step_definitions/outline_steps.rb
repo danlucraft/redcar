@@ -38,10 +38,14 @@ When /^I select the outline view$/ do
   end
 end
 
-Then /^the outline view should have (no|\d+) entr(?:y|ies)$/ do |num|
+Then /^the outline view should have (no|some|\d+) entr(?:y|ies)$/ do |num|
   Swt.sync_exec do
-    num = (num == "no" ? 0 : num.to_i)
-    outline_view_items.length.should == num
+    if num == "some"
+      outline_view_items.length.should > 0
+    else
+      num = (num == "no" ? 0 : num.to_i)
+      outline_view_items.length.should == num
+    end
   end
 end
 
