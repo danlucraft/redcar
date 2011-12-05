@@ -57,7 +57,7 @@ Gem::Specification.new do |s|
   s.add_dependency("redcar-bundles")
   s.add_dependency("redcar-javamateview")
   
-  s.add_development_dependency("cucumber")
+  s.add_development_dependency("cucumber", "=1.1.2")
   s.add_development_dependency("rspec")
   s.add_development_dependency("watchr")
 end
