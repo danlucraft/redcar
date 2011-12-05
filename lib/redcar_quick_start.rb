@@ -10,7 +10,7 @@ module Redcar
   end
 
   def self.environment
-    :user
+    @environment || :user
   end
 
   def self.read_stdin
