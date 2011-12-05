@@ -67,15 +67,18 @@ To run all specs:
 
 On OSX:
 
-    $ jruby -J-XstartOnFirstThread swt_cucumber plugins/#{plugin_name}/features
+    $ jruby -J-XstartOnFirstThread -S swt_cucumber -renv.rb plugins/#{plugin_name}/features
 
 On Linux/Windows:
 
-    $ jruby -J-XstartOnFirstThread swt_cucumber plugins/#{plugin_name}/features
+    $ jruby -S swt_cucumber -renv.rb plugins/#{plugin_name}/features
 
 To just run all features:
 
     $ rake cucumber
+
+If the tests complain about missing keyboard layouts, you can try running with the `-J-Dorg.eclipse.swtbot.keyboard.layout=MAC_EN_US` option. 
+The tests use a small subset of the keyboard, so depending how close your keyboard layout is to US, they may well work.
 
 ## LICENSE
 
