@@ -128,12 +128,18 @@ module Redcar
       Application.storage["instance_id"]
     end
 
+    UPDATE_CHECK_INTERVAL = 24*60*60
+
     def self.check_for_new_version
-      latest_version = Net::HTTP.get(URI.parse("http://s3.amazonaws.com/redcar/current_version.txt?instance_id=#{instance_id}"))
-      Redcar.log.info("latest version is: #{latest_version}")
-      latest_version_bits = latest_version.split(".").map(&:to_i)
-      if [latest_version_bits, [Redcar::VERSION_MAJOR, Redcar::VERSION_MINOR, Redcar::VERSION_RELEASE]].sort.last == latest_version_bits
-        Redcar.log.info("newer version available")
+      previous_check = Application.storage["last_checked_for_new_version"]
+      if !previous_check or previous_check < Time.now - UPDATE_CHECK_INTERVAL
+        latest_version = Net::HTTP.get(URI.parse("http://s3.amazonaws.com/redcar/current_version.txt?instance_id=#{instance_id}"))
+        Redcar.log.info("latest version is: #{latest_version}")
+        latest_version_bits = latest_version.split(".").map(&:to_i)
+        if [latest_version_bits, [Redcar::VERSION_MAJOR, Redcar::VERSION_MINOR, Redcar::VERSION_RELEASE]].sort.last == latest_version_bits
+          Redcar.log.info("newer version available")
+        end
+        Application.storage["last_checked_for_new_version"] = Time.now
       end
     end
 
@@ -355,6 +361,7 @@ module Redcar
         @application_focus = true
         notify_listeners(:focussed, self)
       end
+      Application.check_for_new_version
     end
 
     def has_focus?
