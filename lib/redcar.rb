@@ -12,6 +12,7 @@ require 'regex_replace'
 require 'forwardable'
 require 'uri'
 require 'fileutils'
+require 'net/http'
 
 require 'rubygems'
 require "bundler/setup"

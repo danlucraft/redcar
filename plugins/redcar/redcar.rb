@@ -1059,6 +1059,9 @@ Redcar.environment: #{Redcar.environment}
           Redcar::Textmate.all_bundles
           exit
         end
+        Thread.new do
+          Application.check_for_new_version
+        end
       rescue => e
         Redcar.log.error("error in startup: #{e.inspect}")
         e.backtrace.each do |line|

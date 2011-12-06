@@ -123,6 +123,19 @@ module Redcar
       @task_queue   = TaskQueue.new
       @show_toolbar = !!Application.storage['show_toolbar']
     end
+    
+    def self.instance_id
+      Application.storage["instance_id"]
+    end
+
+    def self.check_for_new_version
+      latest_version = Net::HTTP.get(URI.parse("http://s3.amazonaws.com/redcar/current_version.txt?instance_id=#{instance_id}"))
+      Redcar.log.info("latest version is: #{latest_version}")
+      latest_version_bits = latest_version.split(".").map(&:to_i)
+      if [latest_version_bits, [Redcar::VERSION_MAJOR, Redcar::VERSION_MINOR, Redcar::VERSION_RELEASE]].sort.last == latest_version_bits
+        Redcar.log.info("newer version available")
+      end
+    end
 
     def events
       @event_spewer
@@ -191,6 +204,7 @@ module Redcar
         storage = Plugin::Storage.new('application_plugin')
         storage.set_default('stay_resident_after_last_window_closed', false)
         storage.set_default('show_toolbar', true)
+        storage.set_default('instance_id', java.util.UUID.randomUUID.to_s)
         storage
       end
     end
