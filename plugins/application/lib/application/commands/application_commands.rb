@@ -17,5 +17,11 @@ module Redcar
         Redcar.app.refresh_toolbar!
       end
     end
+    
+    class ToggleCheckForUpdatesCommand < Command
+      def execute
+        Application::Updates.toggle_checking_for_updates
+      end
+    end
   end
 end

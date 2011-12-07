@@ -34,6 +34,7 @@ require 'application/tree/command'
 require 'application/tree/controller'
 require 'application/tree/mirror'
 require 'application/treebook'
+require 'application/updates'
 require 'application/window'
 
 require 'application/commands/application_commands'
@@ -128,21 +129,6 @@ module Redcar
       Application.storage["instance_id"]
     end
 
-    UPDATE_CHECK_INTERVAL = 24*60*60
-
-    def self.check_for_new_version
-      previous_check = Application.storage["last_checked_for_new_version"]
-      if !previous_check or previous_check < Time.now - UPDATE_CHECK_INTERVAL
-        latest_version = Net::HTTP.get(URI.parse("http://s3.amazonaws.com/redcar/current_version.txt?instance_id=#{instance_id}"))
-        Redcar.log.info("latest version is: #{latest_version}")
-        latest_version_bits = latest_version.split(".").map(&:to_i)
-        if [latest_version_bits, [Redcar::VERSION_MAJOR, Redcar::VERSION_MINOR, Redcar::VERSION_RELEASE]].sort.last == latest_version_bits
-          Redcar.log.info("newer version available")
-        end
-        Application.storage["last_checked_for_new_version"] = Time.now
-      end
-    end
-
     def events
       @event_spewer
     end
@@ -211,6 +197,7 @@ module Redcar
         storage.set_default('stay_resident_after_last_window_closed', false)
         storage.set_default('show_toolbar', true)
         storage.set_default('instance_id', java.util.UUID.randomUUID.to_s)
+        storage.set_default('should_check_for_updates', true)
         storage
       end
     end
@@ -361,7 +348,7 @@ module Redcar
         @application_focus = true
         notify_listeners(:focussed, self)
       end
-      Application.check_for_new_version
+      Application::Updates.check_for_new_version
     end
 
     def has_focus?

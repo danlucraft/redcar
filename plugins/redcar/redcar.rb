@@ -999,6 +999,10 @@ Redcar.environment: #{Redcar.environment}
           group(:priority => :last) do
             item "About", AboutCommand
             item "New In This Version", ChangelogCommand
+            separator
+            item "Check for Updates", :command => Application::ToggleCheckForUpdatesCommand, 
+                                      :type => :check, 
+                                      :active => Application::Updates.check_for_updates?
           end
         end
       end
