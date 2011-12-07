@@ -1003,6 +1003,7 @@ Redcar.environment: #{Redcar.environment}
             item "Check for Updates", :command => Application::ToggleCheckForUpdatesCommand, 
                                       :type => :check, 
                                       :active => Application::Updates.check_for_updates?
+            item "Update Available",  Application::OpenUpdateCommand
           end
         end
       end

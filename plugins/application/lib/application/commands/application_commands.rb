@@ -23,5 +23,23 @@ module Redcar
         Application::Updates.toggle_checking_for_updates
       end
     end
+    
+    class OpenUpdateCommand < Command
+      sensitize :update_available
+      
+      def execute
+        new_tab = Top::OpenNewEditTabCommand.new.run
+        new_tab.document.text = <<-TXT
+Latest version is #{Application::Updates.latest_version}, you have #{Redcar::VERSION}.
+
+Upgrade with:
+
+  gem install redcar
+        TXT
+        new_tab.edit_view.reset_undo
+        new_tab.document.set_modified(false)
+        new_tab.title= 'Update'
+      end
+    end
   end
 end

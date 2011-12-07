@@ -107,7 +107,10 @@ module Redcar
             notebook.tabs.any?
           end
         end,
-        Sensitivity.new(:always_disabled, Redcar.app, false,[]) do; false; end
+        Sensitivity.new(:always_disabled, Redcar.app, false, []) { false },
+        Sensitivity.new(:update_available, Redcar.app, false, [:update_available]) do
+          Application::Updates.update_available?
+        end
       ]
     end
 
@@ -348,7 +351,14 @@ module Redcar
         @application_focus = true
         notify_listeners(:focussed, self)
       end
-      Application::Updates.check_for_new_version
+      Thread.new do
+        Application::Updates.check_for_new_version
+        if Application::Updates.update_available?
+          Redcar.update_gui do
+            notify_listeners(:update_available, self)
+          end
+        end
+      end
     end
 
     def has_focus?
