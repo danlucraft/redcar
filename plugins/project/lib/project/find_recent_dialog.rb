@@ -9,7 +9,7 @@ module Redcar
       end
 
       def selected(path, ix)
-        unless path[0..0] == "/"
+        unless path[0..0] == "/" or path =~ /^[A-Z]:\//
           path = Redcar.home_dir + "/" + path
         end
         if File.exist?(File.expand_path(path))
