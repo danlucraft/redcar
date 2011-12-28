@@ -24,7 +24,7 @@ end
 
 Gem::Specification.new do |s|
   s.name        = "redcar-dev"
-  s.version     = "0.12.23dev" # also change in lib/redcar.rb
+  s.version     = "0.12.24dev" # also change in lib/redcar.rb
   s.platform    = "ruby"
   s.authors     = ["Daniel Lucraft"]
   s.email       = ["dan@fluentradical.com"]
@@ -38,7 +38,6 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files  = %w(README.md LICENSE CHANGES Gemfile Rakefile)
   
   s.add_dependency("git")
-  s.add_dependency("json")
   s.add_dependency("spoon")
   s.add_dependency("lucene", "~> 0.5.0.beta.1")
   s.add_dependency("bundler")
