@@ -158,7 +158,34 @@ module Redcar
         "Save all before closing the window?"
       ).check
     end
-    
+  
+    def self.close_tab_guard(tab)
+      if tab.respond_to?(:edit_view) && tab.edit_view.document.modified? && !tab.is_a?(REPL::Tab)
+        tab.focus
+        result = Application::Dialog.message_box(
+          "This tab has unsaved changes. \n\nSave before closing?",
+          :buttons => :yes_no_cancel
+        )
+        case result
+        when :yes
+          # check if the tab was saved properly,
+          # it would return false for example if the permission is not granted
+          t = Project::SaveFileCommand.new(tab).run
+          if t
+            true
+          else
+            false
+          end
+        when :no
+          true
+        when :cancel
+          false
+        end
+      else
+        true
+      end
+    end
+
     def self.all_handlers(type)
       result = []
       method_name = :"#{type}_handlers"

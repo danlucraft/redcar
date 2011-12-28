@@ -148,6 +148,7 @@ module Redcar
       end
 
       def execute
+        result = false
         if tab.edit_view.document.mirror
           path          = tab.edit_view.document.mirror.path
           dir           = File.dirname(path)
@@ -159,6 +160,7 @@ module Redcar
             begin
               tab.edit_view.document.save!
               Project::Manager.refresh_modified_file(tab.edit_view.document.mirror.path)
+              result = true
             rescue Errno::EACCES # windows
               show_dialog = true
             end
@@ -178,8 +180,7 @@ module Redcar
           result = SaveFileAsCommand.new.run
         end
         tab.update_for_file_changes
-        result ||= true
-        return result
+        result
       end
     end
 
@@ -199,17 +200,18 @@ module Redcar
             new_mirror.commit(contents)
             tab.edit_view.document.mirror = new_mirror
             Project::Manager.refresh_modified_file(tab.edit_view.document.mirror.path)
+            true
           else
             Application::Dialog.message_box(
               "Can't save #{path}, you don't have the permissions.",
               :type => :error,
               :buttons => :ok
             )
-            result = false
+            false
           end
+        else
+          false
         end
-        result ||= true
-        return result
       end
 
       private
