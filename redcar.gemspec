@@ -37,7 +37,6 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.extra_rdoc_files  = %w(README.md LICENSE CHANGES Gemfile Rakefile)
   
-  s.add_dependency("ffi", "= 1.0.10")
   s.add_dependency("git")
   s.add_dependency("json")
   s.add_dependency("spoon")
