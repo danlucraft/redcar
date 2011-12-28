@@ -17,7 +17,7 @@ Some Redcar features:
  * supports Textmate themes and snippets
  * split screen mode
  * syntax checking for many languages
- * built in REPLs for Ruby, Groovy, Clojure and Mirah.
+ * built in REPL for Ruby, plugins for Groovy, Clojure and Mirah.
 
 Some (current) limitations:
 

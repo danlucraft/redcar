@@ -419,32 +419,6 @@ module Redcar
         end
       end
 
-      def self.close_tab_guard(tab)
-        if tab.respond_to?(:edit_view) && tab.edit_view.document.modified? && !tab.is_a?(REPL::Tab)
-          tab.focus
-          result = Application::Dialog.message_box(
-          "This tab has unsaved changes. \n\nSave before closing?",
-          :buttons => :yes_no_cancel
-          )
-          case result
-          when :yes
-            # check if the tab was saved properly,
-            # it would return false for example if the permission is not granted
-            if Project::SaveFileCommand.new(tab).run
-              true
-            else
-              false
-            end
-          when :no
-            true
-          when :cancel
-            false
-          end
-        else
-          true
-        end
-      end
-
       # Uses our own context menu hook to provide context menu entries
       # @return [Menu]
       def self.project_context_menus(tree, node, controller)

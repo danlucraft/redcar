@@ -14,8 +14,17 @@ require 'uri'
 require 'fileutils'
 require 'net/http'
 
+# If we are running as a Gem, set the gem home so that our gemified
+# jruby can find the installed gems.
+#
+# (The Gemfile.lock file is never put into the gem, so if it
+# exists we must be running in a development environment.)
+unless File.exist?(File.expand_path("../../Gemfile.lock", __FILE__))
+  ENV["GEM_HOME"] = File.expand_path("../../../../", __FILE__)
+end
+
 require 'rubygems'
-require "bundler/setup"
+require 'bundler/setup'
 require 'redcar-icons'
 
 begin
@@ -59,7 +68,7 @@ end
 #
 # and so on.
 module Redcar
-  VERSION         = '0.12.19dev' # also change in the gemspec!
+  VERSION         = '0.12.26dev' # also change in the gemspec!
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 12
   VERSION_RELEASE = 0
@@ -121,8 +130,10 @@ module Redcar
     
     $:.push File.expand_path(File.join(Redcar.asset_dir))
 
-    gem "json"
-    require 'json'
+    unless defined?(JSON)
+      $:.unshift(File.expand_path("../../vendor/json-1.6.4-java/lib", __FILE__))
+      require 'json'
+    end
 
     gem "jruby-openssl"
     require 'openssl'

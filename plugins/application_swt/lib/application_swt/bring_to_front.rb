@@ -1,5 +1,5 @@
 
-gem "ffi"
+$:.unshift(File.expand_path("../../../../../vendor/ffi-1.0.11-java/lib", __FILE__))
 require 'ffi'
 
 module Redcar
