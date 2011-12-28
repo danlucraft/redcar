@@ -24,7 +24,7 @@ end
 
 Gem::Specification.new do |s|
   s.name        = "redcar-dev"
-  s.version     = "0.12.21dev" # also change in lib/redcar.rb
+  s.version     = "0.12.22dev" # also change in lib/redcar.rb
   s.platform    = "ruby"
   s.authors     = ["Daniel Lucraft"]
   s.email       = ["dan@fluentradical.com"]
