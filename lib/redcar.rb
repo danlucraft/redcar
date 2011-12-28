@@ -130,8 +130,10 @@ module Redcar
     
     $:.push File.expand_path(File.join(Redcar.asset_dir))
 
-    $:.unshift(File.expand_path("../../vendor/json-1.6.4-java/lib", __FILE__))
-    require 'json'
+    unless defined?(JSON)
+      $:.unshift(File.expand_path("../../vendor/json-1.6.4-java/lib", __FILE__))
+      require 'json'
+    end
 
     gem "jruby-openssl"
     require 'openssl'
