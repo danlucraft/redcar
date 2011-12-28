@@ -41,6 +41,7 @@ Gem::Specification.new do |s|
   s.add_dependency("json")
   s.add_dependency("spoon")
   s.add_dependency("lucene", "~> 0.5.0.beta.1")
+  s.add_dependency("bundler")
   s.add_dependency("net-ssh")
   s.add_dependency("net-sftp")
   s.add_dependency("net-ftp-list")
@@ -55,7 +56,6 @@ Gem::Specification.new do |s|
   s.add_dependency("redcar-svnkit")
   s.add_dependency("redcar-bundles")
   s.add_dependency("redcar-javamateview")
-  
   s.add_dependency("redcar-xulrunner-win") if s.platform.to_s =~ /win/
   
   s.add_development_dependency("cucumber", "=1.1.2")
