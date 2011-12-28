@@ -16,6 +16,7 @@ class RedcarGemspecHelper
     r = %w(CHANGES LICENSE Rakefile README.md) +
                             Dir.glob("bin/redcar") +
                             Dir.glob("config/**/*") +
+                            Dir.glob("vendor/**/*") +
                             remove_gitignored_files(Dir.glob("lib/**/*")) +
                             remove_gitignored_files(Dir.glob("plugins/**/*"))
     remove_matching_files(r, "multi-byte")
