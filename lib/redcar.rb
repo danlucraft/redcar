@@ -15,7 +15,7 @@ require 'fileutils'
 require 'net/http'
 
 require 'rubygems'
-require "bundler/setup"
+require 'bundler/setup'
 require 'redcar-icons'
 
 begin
@@ -121,7 +121,7 @@ module Redcar
     
     $:.push File.expand_path(File.join(Redcar.asset_dir))
 
-    gem "json"
+    $:.unshift(File.expand_path("../../vendor/json-1.6.4-java/lib", __FILE__))
     require 'json'
 
     gem "jruby-openssl"
