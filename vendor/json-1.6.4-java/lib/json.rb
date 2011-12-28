@@ -49,7 +49,7 @@
 #
 #   1.to_json => "1"
 #
-puts "loading vendored JSON"
+
 require 'json/common'
 module JSON
   require 'json/version'
