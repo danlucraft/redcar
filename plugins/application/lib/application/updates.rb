@@ -31,7 +31,11 @@ module Redcar
       end
       
       def self.latest_version
-        @latest_version ||= Net::HTTP.get(URI.parse("http://s3.amazonaws.com/redcar2/current_version.txt?instance_id=#{Application.instance_id}")).strip
+        @latest_version ||= Net::HTTP.get(URI.parse(latest_version_url)).strip
+      end
+      
+      def self.latest_version_url
+        "http://s3.amazonaws.com/redcar2/current_version.txt?instance_id=#{Application.instance_id}&version=#{Redcar::VERSION}"
       end
       
       def self.newer_version?
