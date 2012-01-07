@@ -39,8 +39,21 @@ module Redcar
       end
       
       def self.newer_version?
-        latest_version_bits = latest_version.split(".").map(&:to_i)
-        [latest_version_bits, [Redcar::VERSION_MAJOR, Redcar::VERSION_MINOR, Redcar::VERSION_RELEASE]].sort.last == latest_version_bits
+        latest_version_bits = latest_version.chomp.split(".").map(&:to_i)
+        newer_than?(latest_version_bits, [Redcar::VERSION_MAJOR, Redcar::VERSION_MINOR, Redcar::VERSION_RELEASE])
+      end
+      
+      def self.newer_than?(new_bits, old_bits)
+        # if they are not the same length, pad with 0's to make comparison
+        # valid. E.g. 0.10.0 == 0.10
+        if new_bits.length > old_bits.length
+          old_bits += [0]*(new_bits.length - old_bits.length)
+        elsif old_bits.length > new_bits.length
+          new_bits += [0]*(old_bits.length - new_bits.length)
+        end
+        
+        return false if new_bits == old_bits
+        [new_bits, old_bits].sort.last == new_bits
       end
       
     end
