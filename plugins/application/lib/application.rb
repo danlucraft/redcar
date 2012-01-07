@@ -152,7 +152,6 @@ module Redcar
 
     # Create a new Application::Window, and the controller for it.
     def new_window(show=true)
-      s = Time.now
       new_window = Window.new
       windows << new_window
       notify_listeners(:new_window, new_window)
@@ -198,7 +197,7 @@ module Redcar
       @storage ||= begin
         storage = Plugin::Storage.new('application_plugin')
         storage.set_default('stay_resident_after_last_window_closed', false)
-        storage.set_default('show_toolbar', true)
+        storage.set_default('show_toolbar', Redcar.platform != :osx)
         storage.set_default('instance_id', java.util.UUID.randomUUID.to_s)
         storage.set_default('should_check_for_updates', true)
         storage
