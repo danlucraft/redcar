@@ -1,5 +1,5 @@
-Version 0.12 (TBA)
-==================
+Version 0.12 (7th January 2012)
+===============================
 
  * Features run all the way through again, and use Swtbot in places to 
    allow us to simulate events more accurately (Helpful for macros) (Dan Lucraft)
@@ -21,6 +21,7 @@ Version 0.12 (TBA)
  * Added option to color tree background color via ApplicationSWT preferences (Delisa Mason)
  * Project tree has colourful icons (Delisa Mason)
  * Uses gems to install everything (Dan Lucraft)
+ * Uses Bundler to manage dependencies in development (Dan Lucraft)
  * Wildcards permitted in project search (Delisa Mason)
  * Installation entirely through Rubygems (Dan Lucraft)
  * Rad new icon (Delisa Mason)
