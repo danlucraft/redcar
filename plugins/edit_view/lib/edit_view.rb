@@ -15,7 +15,6 @@ require "edit_view/grammar"
 require "edit_view/edit_tab"
 require "edit_view/modified_tabs_checker"
 require "edit_view/tab_settings"
-require "edit_view/info_speedbar"
 require "edit_view/select_font_dialog"
 require "edit_view/select_theme_dialog"
 
