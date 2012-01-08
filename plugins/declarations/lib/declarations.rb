@@ -1,4 +1,5 @@
 
+require 'declarations/commands'
 require 'declarations/completion_source'
 require 'declarations/file'
 require 'declarations/parser'
@@ -9,8 +10,17 @@ module Redcar
   class Declarations
     def self.menus
       Menu::Builder.build do
+        sub_menu "Edit" do
+          group :priority => 30 do
+            item "Find declaration", :command => Declarations::OpenOutlineViewCommand
+          end
+        end
+        
         sub_menu "Project" do
-          item "Go to declaration", :command => Declarations::GoToTagCommand, :priority => 30
+          group :priority => 60 do
+            item "Go to declaration", :command => Declarations::GoToTagCommand, :priority => 30
+            item "Find declaration", :command => Declarations::OpenProjectOutlineViewCommand, :priority => :first
+          end
           sub_menu "Refresh", :priority => 31 do
             item "Declarations file", :command => Declarations::RebuildTagsCommand
           end
@@ -21,10 +31,14 @@ module Redcar
     def self.keymaps
       linwin = Keymap.build("main", [:linux, :windows]) do
         link "Alt+G", Declarations::GoToTagCommand
+        link "Ctrl+I", Declarations::OpenOutlineViewCommand
+        link "Ctrl+Shift+I", Declarations::OpenProjectOutlineViewCommand
       end
 
       osx = Keymap.build("main", :osx) do
         link "Ctrl+Alt+G", Declarations::GoToTagCommand
+        link "Cmd+I", Declarations::OpenOutlineViewCommand
+        link "Cmd+Ctrl+I", Declarations::OpenProjectOutlineViewCommand
       end
 
       [linwin, osx]
@@ -38,6 +52,20 @@ module Redcar
       ::File.join(project.config_dir, 'tags')
     end
 
+    def self.icon_for_kind(kind)
+      h = {
+        :method     => :node_insert,
+        :class      => :open_source_flipped,
+        :attribute  => :status,
+        :alias      => :arrow_branch,
+        :assignment => :arrow,
+        :interface  => :information,
+        :closure    => :node_magnifier,
+        :none       => nil
+      }
+      h[kind.to_sym]
+    end
+      
     class ProjectRefresh < Task
       def initialize(project)
         @file_list   = project.file_list
@@ -78,9 +106,9 @@ module Redcar
       end
     end
 
-	def self.match_kind(path, regex)
+    def self.match_kind(path, regex)
       Declarations::Parser.new.match_kind(path, regex)
-	end
+    end
 
     def self.clear_tags_for_path(path)
       @tags_for_path ||= {}
@@ -92,68 +120,6 @@ module Redcar
       Project::Manager.open_file(path)
       regexp = Regexp.new(Regexp.escape(match[:match]))
       DocumentSearch::FindNextRegex.new(regexp, true).run_in_focussed_tab_edit_view
-    end
-
-    class RebuildTagsCommand < Command
-      def execute
-        project = Project::Manager.focussed_project
-        tags_path = Declarations.file_path(project)
-        FileUtils.rm tags_path if ::File.exists? tags_path
-        ProjectRefresh.new(project).execute
-      end
-    end
-    
-    class GoToTagCommand < EditTabCommand
-      sensitize :open_project
-
-      def execute
-        if Project::Manager.focussed_project.remote?
-          Application::Dialog.message_box("Go to declaration doesn't work in remote projects yet :(")
-          return
-        end
-
-        if doc.selection?
-          handle_tag(doc.selected_text)
-        else
-          range = doc.current_word_range
-          handle_tag(doc.get_slice(range.first, range.last))
-        end
-      end
-
-      def handle_tag(token = '')
-        tags_path = Declarations.file_path(Project::Manager.focussed_project)
-        unless ::File.exist?(tags_path)
-          Application::Dialog.message_box("The declarations file 'tags' has not been generated yet.")
-          return
-        end
-        matches = find_tag(tags_path, token).uniq
-        
-        # save current cursor position before jump to another location.
-        Redcar.app.navigation_history.save(doc) if matches.size > 0
-        
-        case matches.size
-        when 0
-          Application::Dialog.message_box("There is no declaration for '#{token}' in the 'tags' file.")
-        when 1
-          Redcar::Declarations.go_to_definition(matches.first)
-        else
-          open_select_tag_dialog(matches)
-        end
-        
-        Redcar.app.navigation_history.save(doc) if matches.size > 0
-      end
-
-      def find_tag(tags_path, tag)
-        Declarations.tags_for_path(tags_path)[tag] || []
-      end
-
-      def open_select_tag_dialog(matches)
-        Declarations::SelectTagDialog.new(matches).open
-      end
-
-      def log(message)
-        puts("==> Ctags: #{message}")
-      end
     end
   end
 end

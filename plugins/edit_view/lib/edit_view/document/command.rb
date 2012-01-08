@@ -11,7 +11,7 @@ module Redcar
         run(:env => {:edit_view => edit_view})
       end
     end
-
+    
     private
 
     def edit_view

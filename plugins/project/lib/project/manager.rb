@@ -170,6 +170,7 @@ module Redcar
         tab.edit_view.document.mirror = mirror
         tab.edit_view.reset_undo
         tab.focus
+        tab
       end
 
       def self.file_too_large?(path)
@@ -197,7 +198,7 @@ module Redcar
       def self.open_file(path, adapter=Adapters::Local.new)
         if tab = find_open_file_tab(path)
           tab.focus
-          return
+          return tab
         end
         if project = find_projects_containing_path(path).first
           window = project.window
@@ -205,8 +206,9 @@ module Redcar
           window = windows_without_projects.first || Redcar.app.new_window
           Project::Recent.store_path(path)
         end
-        open_file_in_window(path, window, adapter)
+        tab = open_file_in_window(path, window, adapter)
         window.focus
+        tab
       end
 
       def self.pop_first_line_option(args)

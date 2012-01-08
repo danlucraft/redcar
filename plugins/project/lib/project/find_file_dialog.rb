@@ -21,34 +21,26 @@ module Redcar
         paths.uniq
       end
 
-      # search out and expand duplicates in shortened paths to their full length
-      def expand_duplicates(display_paths, full_paths)
-        duplicates = duplicates(display_paths)
-        display_paths.each_with_index do |dp, i|
-          if duplicates.include? dp
-            display_paths[i] = display_path(full_paths[i], project.path.split('/')[0..-2].join('/'))
-          end
-        end
-      end
-
-      def update_list(filter)
-        paths = paths_for filter
-        @last_list = paths
-        full_paths = paths
+      def update_list(filter) 
+        full_paths = paths_for(filter)
         display_paths = full_paths.map { |path| display_path(path) }
         if display_paths.uniq.length < full_paths.length
           display_paths = expand_duplicates(display_paths, full_paths)
         end
-        display_paths
+        result = []
+        display_paths.zip(full_paths) do |display_path, full_path|
+          result << {:name => display_path, :path => full_path, :icon => :file}
+        end
+        result
       end
 
-      def selected(text, ix, closing=false)
-        if @last_list
+      def selected(item, ix)
+        if item[:path] and File.exist?(item[:path])
           close
           if win = Redcar.app.focussed_window and tab = win.focussed_notebook_tab and doc = tab.document
             Redcar.app.navigation_history.save(doc)
           end
-          OpenFileCommand.new(@last_list[ix]).run
+          OpenFileCommand.new(item[:path]).run
           cur_doc = Redcar.app.focussed_window.focussed_notebook_tab.document
           Redcar.app.navigation_history.save(cur_doc) if cur_doc
         end
@@ -64,6 +56,16 @@ module Redcar
       # Find duplicates by checking if index from left and right equal
       def duplicates(enum)
         Set[*enum.select {|k| enum.index(k) != enum.rindex(k) }]
+      end
+
+      # search out and expand duplicates in shortened paths to their full length
+      def expand_duplicates(display_paths, full_paths)
+        duplicates = duplicates(display_paths)
+        display_paths.each_with_index do |dp, i|
+          if duplicates.include? dp
+            display_paths[i] = display_path(full_paths[i], project.path.split('/')[0..-2].join('/'))
+          end
+        end
       end
 
       def display_path(path, first_remove_this_prefix = nil)

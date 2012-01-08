@@ -50,7 +50,7 @@ module Redcar
       end
       
       def dump
-        @tags.sort!
+        @tags = @tags.select {|name, _, _| name}.sort_by {|name, _, _| name }
         tags_file_path = nil
         Tempfile.open('tags') do |tags_file|
           tags_file.puts(@last_updated.to_i.to_s)

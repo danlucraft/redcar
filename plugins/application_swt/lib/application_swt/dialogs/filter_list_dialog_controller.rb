@@ -14,20 +14,33 @@ module Redcar
         attr_accessor :controller
         
         def createDialogArea(parent)
+          # composite = Swt::Widgets::Composite.new(parent, Swt::SWT::NONE)
+          # layout = Swt::Layout::RowLayout.new(Swt::SWT::VERTICAL)
+          # composite.setLayout(layout)
+          # 
+          # @text = Swt::Widgets::Text.new(composite, Swt::SWT::SINGLE | Swt::SWT::LEFT | Swt::SWT::ICON_CANCEL | Swt::SWT::SEARCH)
+          # @text.set_layout_data(Swt::Layout::RowData.new(400, 20))
+          # @list = Swt::Widgets::List.new(composite, Swt::SWT::V_SCROLL | Swt::SWT::H_SCROLL | Swt::SWT::SINGLE)
+          # @list.set_layout_data(Swt::Layout::RowData.new(400, 200))
+          # controller.attach_listeners
+          # controller.update_list_sync
+          # get_shell.add_shell_listener(ShellListener.new(controller))
+          # ApplicationSWT.register_shell(get_shell)
+          # ApplicationSWT.register_dialog(get_shell, self)
+          # 
+          # @list.set_selection(0)
           composite = Swt::Widgets::Composite.new(parent, Swt::SWT::NONE)
           layout = Swt::Layout::RowLayout.new(Swt::SWT::VERTICAL)
           composite.setLayout(layout)
-
           @text = Swt::Widgets::Text.new(composite, Swt::SWT::SINGLE | Swt::SWT::LEFT | Swt::SWT::ICON_CANCEL | Swt::SWT::SEARCH)
           @text.set_layout_data(Swt::Layout::RowData.new(400, 20))
-          @list = Swt::Widgets::List.new(composite, Swt::SWT::V_SCROLL | Swt::SWT::H_SCROLL | Swt::SWT::SINGLE)
+          @list = Swt::Widgets::Table.new(composite, Swt::SWT::V_SCROLL | Swt::SWT::H_SCROLL | Swt::SWT::MULTI)
           @list.set_layout_data(Swt::Layout::RowData.new(400, 200))
           controller.attach_listeners
           controller.update_list_sync
           get_shell.add_shell_listener(ShellListener.new(controller))
-          ApplicationSWT.register_shell(get_shell)
-          ApplicationSWT.register_dialog(get_shell, self)
-
+          Redcar::ApplicationSWT.register_shell(get_shell)
+          Redcar::ApplicationSWT.register_dialog(get_shell, self)
           @list.set_selection(0)
         end
       end
@@ -167,7 +180,8 @@ module Redcar
       
       def widget_selected
         if @model.step?
-          @model.moved_to(@dialog.list.get_selection.first, @dialog.list.get_selection_index)
+          ix = @dialog.list.get_selection_index
+          @model.moved_to(@list[ix], ix)
         end
       end
 
@@ -185,7 +199,8 @@ module Redcar
 
       def selected
         wait_for_search if select_closest_match?
-        @model.selected(@dialog.list.get_selection.first, @dialog.list.get_selection_index)
+        ix = @dialog.list.get_selection_index
+        @model.selected(@list[ix], ix)
       end
       
       def key_pressed(key_event)
@@ -221,10 +236,20 @@ module Redcar
       end
       
       def populate_list(contents)
+        @list = contents
         if @dialog
-          @dialog.list.removeAll
-          contents.each do |text|
-            @dialog.list.add(text)
+          @dialog.list.remove_all
+          contents.each do |props|
+            if props.is_a?(String)
+              props = {:name => props}
+            end
+            props = {:name => ""}.merge(props)
+            item = Swt::Widgets::TableItem.new(@dialog.list, Swt::SWT::NONE)
+            item.text = props[:name]
+            image = ApplicationSWT::Icon.swt_image(props[:icon]) if props[:icon]
+            if image
+              item.image = image
+            end
           end
         end
       end

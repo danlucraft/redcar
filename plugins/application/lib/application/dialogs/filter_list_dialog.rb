@@ -20,10 +20,18 @@ module Redcar
       notify_listeners(:close)
     end
     
-    # Called by the controller when the user changes the filter.
+    # Called by the controller when the user changes the filter. 
+    #
+    # Should return either a list of strings, or a list of hashes, which must have at least
+    # the key :name set, and may also have the key :image.
+    #
+    # E.g. it returns ["feed.rb", "application_controller.rb"]
+    # or it returns [{:name => "feed.rb"}, {:name => "application_controller.rb"}]
+    #
+    # The methods selected and moved_to will be called with items from this list.
     #
     # @param [String] the filter entered by the user
-    # @return [Array<String>] the new list to display
+    # @return [Array<String> or Array<Hash>] the new list to display
     def update_list(filter)
       if filter == ""
         %w(foo bar baz qux quux corge)
@@ -36,9 +44,9 @@ module Redcar
     
     # Called by the controller when the user selects a row in the list.
     #
-    # @param [String] the list row text selected by the user
+    # @param [String or Hash] the item selected by the user
     # @param [Integer] the index of the row in the list selected by the user
-    def selected(text, ix)
+    def selected(item, ix)
       puts "Hooray! You selected #{text} at index #{ix}"
     end
     
@@ -46,7 +54,7 @@ module Redcar
     #
     # @param [String] the list row text that is now highlighted
     # @param [Integer] the index of the row that is now highlighted
-    def moved_to(text, ix)
+    def moved_to(item, ix)
       # Override with the code you wish you had
     end
 
