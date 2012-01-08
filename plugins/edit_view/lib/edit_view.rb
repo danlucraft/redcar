@@ -21,7 +21,8 @@ require "edit_view/select_theme_dialog"
 
 require "edit_view/commands/text_conversion_commands"
 require "edit_view/commands/align_assignment_command"
-
+require "edit_view/commands/change_language_command"
+require "edit_view/commands/language_settings_commands"
 
 module Redcar
   class EditView
@@ -97,6 +98,39 @@ module Redcar
     def self.menus
       Menu::Builder.build do
         sub_menu "Edit" do
+          group(:priority => 20) do
+            item "Change Language", ChangeLanguageCommand
+            
+            sub_menu "Tabs" do
+              item "Soft Tabs", :command => EditView::ToggleSoftTabsCommand,
+                                :type => :check, 
+                                :checked => lambda { tab and tab.edit_view.soft_tabs? }
+                                
+              sub_menu "Tab Width" do
+                TabSettings::TAB_WIDTHS.each do |width|
+                  command_klass = Class.new(SetTabWidthCommand)
+                  command_klass.width = width.to_i
+                  already_checker = lambda { tab and tab.edit_view.tab_width.to_s == width.to_s }
+                  item width, :command => command_klass, :type => :check, :checked => already_checker
+                end
+              end
+            end
+            
+            sub_menu "Margin" do
+              item "Word Wrap", :command => EditView::ToggleWordWrapCommand,
+                                :type => :check, 
+                                :checked => lambda { tab and tab.edit_view.word_wrap? }
+              
+              item "Show Margin", :command => EditView::ToggleShowMarginCommand,
+                                  :type => :check, 
+                                  :checked => lambda { tab and tab.edit_view.show_margin? }
+  
+              item lambda { tab ? "Margin Column: #{tab.edit_view.margin_column}" : "Margin Column" }, SetMarginColumnCommand
+            end
+
+            separator
+          end
+          
           sub_menu "Formatting" do
             item "Align Assignments", EditView::AlignAssignmentCommand
             sub_menu "Convert Text", :priority => 40 do

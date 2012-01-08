@@ -635,7 +635,6 @@ Redcar.environment: #{Redcar.environment}
 
         #link "Cmd+Return",   MoveNextLineCommand
 
-        link "Ctrl+Shift+E", EditView::InfoSpeedbarCommand
         link "Cmd+Z",        UndoCommand
         link "Cmd+Shift+Z",  RedoCommand
         link "Cmd+X",        CutCommand
@@ -679,6 +678,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+G",       EditView::OppositeCaseTextCommand
         link "Ctrl+_",       EditView::CamelSnakePascalRotateTextCommand
         link "Ctrl+=",       EditView::AlignAssignmentCommand
+        link "Cmd+Alt+Ctrl+L", EditView::ChangeLanguageCommand
         link "Ctrl+Shift+^", SortLinesCommand
 
         link "Cmd+T",           Project::FindFileCommand
@@ -734,7 +734,6 @@ Redcar.environment: #{Redcar.environment}
 
         link "Ctrl+Enter",   MoveNextLineCommand
 
-        link "Ctrl+Shift+E", EditView::InfoSpeedbarCommand
         link "Ctrl+Z",       UndoCommand
         link "Ctrl+Y",       RedoCommand
         link "Ctrl+X",       CutCommand
@@ -772,6 +771,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Alt+Shift+U", EditView::OppositeCaseTextCommand
         link "Ctrl+_",           EditView::CamelSnakePascalRotateTextCommand
         link "Ctrl+=",           EditView::AlignAssignmentCommand
+        link "Ctrl+Alt+Shift+L", EditView::ChangeLanguageCommand
         link "Ctrl+Shift+^",     SortLinesCommand
 
         link "Ctrl+T",           Project::FindFileCommand

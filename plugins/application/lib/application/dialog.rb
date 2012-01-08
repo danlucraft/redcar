@@ -84,7 +84,7 @@ module Redcar
       #
       # The return value is a hash containing :button and :value.
       def self.input(title, message, initial_value="", &validator)
-        in_dialog { Redcar.gui.dialog_adapter.input(title, message, initial_value, &validator) }
+        in_dialog { Redcar.gui.dialog_adapter.input(title.to_s, message.to_s, initial_value.to_s, &validator) }
       end
 
       # Show a dialog containing a password entry box to the user, and blocks

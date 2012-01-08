@@ -54,11 +54,13 @@ module Redcar
       end
       
       def text
-        @text.is_a?(Proc) ? @text.call : @text
+        @text.respond_to?(:call) ? 
+          Redcar::Application::GlobalState.new.instance_eval(&@text) :
+          @text
       end
       
       def lazy_text?
-        @text.is_a?(Proc)
+        @text.respond_to?(:call)
       end
       
       def merge(other)
