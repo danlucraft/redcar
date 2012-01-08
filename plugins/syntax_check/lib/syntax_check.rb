@@ -13,11 +13,11 @@ module Redcar
       Redcar::Menu::Builder.build do
         sub_menu "Plugins" do
           lazy_sub_menu "Syntax Checking" do
-            item "Enabled", :type => :check, :active => SyntaxCheck.enabled?, :command => ToggleSyntaxChecking
+            item "Enabled", :type => :check, :checked => lambda { SyntaxCheck.enabled? }, :command => ToggleSyntaxChecking
             separator
             Checker.checkers.each do |checker|
               grammar = checker[0]
-              item "#{grammar}", :type => :check, :active => SyntaxCheck.check_type?(grammar), :command => ToggleGrammarChecking, :value => grammar
+              item "#{grammar}", :type => :check, :checked => lambda { SyntaxCheck.check_type?(grammar) }, :command => ToggleGrammarChecking, :value => grammar
             end
           end
         end

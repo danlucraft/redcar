@@ -12,7 +12,7 @@ module Redcar
         end
       end
       
-      attr_reader :command, :priority, :value, :type, :active
+      attr_reader :command, :priority, :value, :type
   
       # Create a new Item, with the given text to display in the menu, and
       # either:
@@ -26,10 +26,9 @@ module Redcar
           @priority = options[:priority]
           @value = options[:value]
           @type = options[:type]
-          @active = options[:active] ? true : false
-        # This branch is for compatibility with old code. Please use :command 
-        # option in new code
-        # FIXME: Should this be removed at some point?
+          if [:check, :radio].include?(@type)
+            @checked = options[:checked]
+          end
         else
           @command = options || block
         end
@@ -73,6 +72,14 @@ module Redcar
       
       def is_unique?
         false
+      end
+      
+      def checked?
+        @checked and (
+          @checked.respond_to?(:call) ?
+            Redcar::Application::GlobalState.new.instance_eval(&@checked) :
+            @checked
+        )
       end
     end
   end

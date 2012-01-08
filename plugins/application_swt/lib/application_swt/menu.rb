@@ -31,11 +31,13 @@ module Redcar
         @keymap = keymap
         @menu_bar = Swt::Widgets::Menu.new(window.shell, type)
         @menu_bar.set_visible(false)
+        
         return unless menu_model
         @handlers = []
         @use_numbers = options[:numbers]
         @number = 1
-        add_entries_to_menu(@menu_bar, menu_model)
+        
+        add_entries_to_menu(@menu_bar, nil, menu_model)
         #puts "ApplicationSWT::Menu initialize took #{Time.now - s}s"
       end
 
@@ -59,7 +61,26 @@ module Redcar
         @use_numbers
       end
 
-      def add_entries_to_menu(menu, menu_model)
+      class MenuListener
+        attr_reader :items
+        
+        def initialize
+          @items = []
+        end
+        
+        def menu_shown(e)
+          items.each do |item, entry|
+            if entry.type == :check
+              item.setSelection(entry.checked?)
+            end
+          end
+        end
+        
+        def menu_hidden(e)
+        end
+      end
+
+      def add_entries_to_menu(menu, menu_listener, menu_model)
         menu_model.each do |entry|
           if entry.is_a?(Redcar::Menu::LazyMenu)
             menu_header = Swt::Widgets::MenuItem.new(menu, Swt::SWT::CASCADE)
@@ -68,7 +89,7 @@ module Redcar
             menu_header.menu = new_menu
             menu_header.add_arm_listener do
               new_menu.get_items.each {|i| i.dispose }
-              add_entries_to_menu(new_menu, entry)
+              add_entries_to_menu(new_menu, nil, entry)
             end
           elsif entry.is_a?(Redcar::Menu)
             menu_header = Swt::Widgets::MenuItem.new(menu, Swt::SWT::CASCADE)
@@ -76,7 +97,9 @@ module Redcar
             new_menu = Swt::Widgets::Menu.new(menu)
             menu_header.menu = new_menu
             menu_header.enabled = (entry.length > 0)
-            add_entries_to_menu(new_menu, entry)
+            new_menu_listener = MenuListener.new
+            add_entries_to_menu(new_menu, new_menu_listener, entry)
+            new_menu.add_menu_listener(new_menu_listener)
             menu_header.add_arm_listener do
               entry.entries.zip(new_menu.get_items) do |sub_entry, swt_item|
                 if sub_entry.lazy_text?
@@ -88,11 +111,14 @@ module Redcar
             item = Swt::Widgets::MenuItem.new(menu, Swt::SWT::SEPARATOR)
           elsif entry.is_a?(Redcar::Menu::Item)
             item = Swt::Widgets::MenuItem.new(menu, Menu.types[entry.type] || Swt::SWT::PUSH)
-            item.setSelection(entry.active)
             if entry.command.is_a?(Proc)
               connect_proc_to_item(item, entry)
             else
               connect_command_to_item(item, entry)
+            end
+            if [:check, :radio].include? entry.type
+              menu_listener.items << [item, entry] if menu_listener
+              item.setSelection(entry.checked?)
             end
           else
             raise "unknown object of type #{entry.class} in menu"

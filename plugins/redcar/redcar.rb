@@ -41,59 +41,59 @@ module Redcar
       end
     end
 
-    class GenerateWindowsMenu < Command
-      def initialize(builder)
-        @builder = builder
-      end
-
-      def execute
+    class GenerateWindowsMenu
+      def self.on(builder)
         window = Redcar.app.focussed_window
         Redcar.app.windows.each do |win|
-          @builder.item(win.title, :type => :radio, :active => (win == window)) do
+          builder.item(win.title, :type => :radio, :checked => (win == window)) do
             Application::FocusWindowCommand.new(win).run
           end
         end
       end
     end
 
-    class GenerateTabsMenu < Command
-      def initialize(builder)
-        @builder = builder
-      end
-
-      def trim(title)
+    class GenerateTabsMenu
+      def self.trim(title)
         title = title[0,13]+'...' if title.length > 13
         title
       end
 
-      def execute
+      def self.on(builder)
         if win = Redcar.app.focussed_window and
           book = win.focussed_notebook and book.tabs.any?
           focussed_tab = book.focussed_tab
-          @builder.separator
-          @builder.item "Focussed Notebook", ShowTitle
+          builder.separator
+          builder.item "Focussed Notebook", ShowTitle
           book.tabs.each_with_index do |tab,i|
             num = i + 1
             if num < 10
               @builder.item("Tab #{num}: #{trim(tab.title)}",
                 :type => :radio,
-                :active => (tab == focussed_tab),
+                :checked => (tab == focussed_tab),
                 :command => Redcar::Application.const_get("SelectTab#{num}Command")
               )
             else
               @builder.item("Tab #{num}: #{trim(tab.title)}",
-                :type => :radio,
-                :active => (tab == focussed_tab)) { tab.focus }
+                :type    => :radio,
+                :checked => (tab == focussed_tab)) { tab.focus }
             end
           end
           if book = win.nonfocussed_notebook and book.tabs.any?
-            @builder.separator
-            @builder.item "Nonfocussed Notebook", ShowTitle
+            builder.separator
+            builder.item "Nonfocussed Notebook", ShowTitle
             book.tabs.each_with_index do |tab,i|
-              @builder.item("Tab #{i+1}: #{trim(tab.title)}") {tab.focus}
+              builder.item("Tab #{i+1}: #{trim(tab.title)}") {tab.focus}
             end
           end
         end
+      end
+    end
+    
+    class GenerateGrammarsMenu
+      def self.on(builder)
+        builder.item "Ruby", AboutCommand
+        builder.item "Java", AboutCommand
+        builder.item "Python", AboutCommand
       end
     end
 
@@ -853,16 +853,12 @@ Redcar.environment: #{Redcar.environment}
 
         sub_menu "Edit", :priority => 5 do
           group(:priority => :first) do
-            item "Tab Info",  EditView::InfoSpeedbarCommand
-          end
-          group(:priority => 10) do
-            separator
             item "Undo", UndoCommand
             item "Redo", RedoCommand
+            separator
           end
 
           group(:priority => 15) do
-            separator
             item "Cut", CutCommand
             item "Copy", CopyCommand
             item "Paste", PasteCommand
@@ -870,19 +866,17 @@ Redcar.environment: #{Redcar.environment}
               item "Duplicate Region", DuplicateCommand
               item "Sort Lines in Region", SortLinesCommand
             end
+            separator
           end
 
           group(:priority => 30) do
-            separator
             sub_menu "Selection" do
               item "All", SelectAllCommand
               item "Line", SelectLineCommand
               item "Current Word", SelectWordCommand
               item "Toggle Block Selection", ToggleBlockSelectionCommand
             end
-          end
-
-          group(:priority => 40) do
+            
             sub_menu "Document Navigation" do
               item "Goto Line", GotoLineCommand
               item "Top",     MoveTopCommand
@@ -909,9 +903,7 @@ Redcar.environment: #{Redcar.environment}
               item "Backward Navigation", BackwardNavigationCommand
               item "Forward Navigation", ForwardNavigationCommand
             end
-          end
-
-          group(:priority => 50) do
+            
             sub_menu "Formatting" do
               item "Increase Indent", IncreaseIndentCommand
               item "Decrease Indent", DecreaseIndentCommand
@@ -938,7 +930,7 @@ Redcar.environment: #{Redcar.environment}
           end
           group(:priority => 10) do
             separator
-            item "Toggle Fullscreen", :command => Application::ToggleFullscreen, :type => :check, :active => window ? window.fullscreen : false
+            item "Toggle Fullscreen", :command => Application::ToggleFullscreen, :type => :check, :checked => window ? window.fullscreen : false
           end
           group(:priority => 15) do
             separator
@@ -952,7 +944,7 @@ Redcar.environment: #{Redcar.environment}
               item "Next Tree", Application::SwitchTreeDownCommand
             end
             lazy_sub_menu "Windows" do
-              GenerateWindowsMenu.new(self).run
+              GenerateWindowsMenu.on(self)
             end
             sub_menu "Notebooks" do
               item "New Notebook", Application::OpenNewNotebookCommand
@@ -979,9 +971,9 @@ Redcar.environment: #{Redcar.environment}
           end
           group(:priority => :last) do
             separator
-            item "Show Toolbar", :command => Application::ToggleToolbar, :type => :check, :active => Redcar.app.show_toolbar?
-            item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :active => EditView.show_invisibles?
-            item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :active => EditView.show_line_numbers?
+            item "Show Toolbar", :command => Application::ToggleToolbar, :type => :check, :checked => lambda { Redcar.app.show_toolbar? }
+            item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :checked => lambda { EditView.show_invisibles? }
+            item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :checked => lambda { EditView.show_line_numbers? }
           end
         end
         sub_menu "Bundles", :priority => 45 do
@@ -1002,7 +994,7 @@ Redcar.environment: #{Redcar.environment}
             separator
             item "Check for Updates", :command => Application::ToggleCheckForUpdatesCommand, 
                                       :type => :check, 
-                                      :active => Application::Updates.check_for_updates?
+                                      :checked => lambda { Application::Updates.check_for_updates? }
             item "Update Available",  Application::OpenUpdateCommand
           end
         end

@@ -265,7 +265,7 @@ module Redcar
                         end
                       }
 
-                      item branch, :type => :radio, :active => (branch == current), &action
+                      item branch, :type => :radio, :checked => (branch == current), &action
                     end
                   end
                 end

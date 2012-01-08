@@ -30,8 +30,8 @@ module Redcar
       Menu::Builder.build do
         sub_menu "Plugins" do
           sub_menu "Strip Trailing Spaces", :priority => 195 do
-            item "Enabled", :command => ToggleStripTrailingSpaces, :type => :check, :active => StripTrailingSpaces.enabled?
-            item "Strip Blank Lines", :command => ToggleStripBlankLines, :type => :check, :active => StripTrailingSpaces.strip_blank_lines?
+            item "Enabled",           :command => ToggleStripTrailingSpaces, :type => :check, :checked => lambda { StripTrailingSpaces.enabled? }
+            item "Strip Blank Lines", :command => ToggleStripBlankLines,     :type => :check, :checked => lambda { StripTrailingSpaces.strip_blank_lines? }
           end
         end
       end

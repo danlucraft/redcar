@@ -414,7 +414,7 @@ module Redcar
               item "Find File", Project::FindFileCommand
               # item "Refresh Directory", Project::RefreshDirectoryCommand
             end
-            item "Reveal Open File in Tree", :command => Project::ToggleRevealInProject, :type => :check, :active => Project::Manager.reveal_files?
+            item "Reveal Open File in Tree", :command => Project::ToggleRevealInProject, :type => :check, :checked => lambda { Project::Manager.reveal_files? }
           end
         end
       end
