@@ -23,8 +23,7 @@ entries_in_gem_home  = Dir[prospective_gem_home + "/*"].map {|path| File.basenam
 if (["cache", "gems"] - entries_in_gem_home).length == 0
   ENV["GEM_HOME"]       = prospective_gem_home
 else
-  require 'bundler'
-  Bundler.require(:default)
+  require 'bundler/setup'
 end
 
 require 'redcar-icons'
