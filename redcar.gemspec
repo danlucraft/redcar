@@ -1,11 +1,16 @@
 
 class RedcarGemspecHelper
   def self.remove_gitignored_files(filelist)
-    ignores = File.readlines(".gitignore")
-    ignores = ignores.select {|ignore| ignore.chomp.strip != "" and ignore !~ /^#/}
-    ignores = ignores.map {|ignore| Regexp.new(ignore.chomp.gsub(".", "\\.").gsub("*", ".*"))}
-    r = filelist.select {|fn| not ignores.any? {|ignore| fn =~ ignore }}
-    r.select {|fn| fn !~ /\.git/ }
+    gitignore_file = File.expand_path("../.gitignore", __FILE__)
+    if File.exist?(gitignore_file)
+      ignores = File.readlines(gitignore_file)
+      ignores = ignores.select {|ignore| ignore.chomp.strip != "" and ignore !~ /^#/}
+      ignores = ignores.map {|ignore| Regexp.new(ignore.chomp.gsub(".", "\\.").gsub("*", ".*"))}
+      r = filelist.select {|fn| not ignores.any? {|ignore| fn =~ ignore }}
+      r.select {|fn| fn !~ /\.git/ }
+    else
+      filelist
+    end
   end
   
   def self.remove_matching_files(list, string)

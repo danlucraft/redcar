@@ -14,13 +14,14 @@ require 'uri'
 require 'fileutils'
 require 'net/http'
 
-# If we are running as a Gem, set the gem home so that our gemified
-# jruby can find the installed gems.
+# If we are running as a Gem, set the gem home and the Bundle Gemfil so that
+# our gemified jruby can find the installed gems.
 #
 # (The Gemfile.lock file is never put into the gem, so if it
 # exists we must be running in a development environment.)
 unless File.exist?(File.expand_path("../../Gemfile.lock", __FILE__))
-  ENV["GEM_HOME"] = File.expand_path("../../../../", __FILE__)
+  ENV["GEM_HOME"]       = File.expand_path("../../../../", __FILE__)
+  ENV["BUNDLE_GEMFILE"] = File.expand_path("../../Gemfile", __FILE__)
 end
 
 require 'rubygems'
