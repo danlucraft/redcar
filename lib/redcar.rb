@@ -14,17 +14,19 @@ require 'uri'
 require 'fileutils'
 require 'net/http'
 
-# If we are running as a Gem, set the gem home and the Bundle Gemfile so that
-# our gemified jruby can find the installed gems.
+require 'rubygems'
+
+# If we are running as a Gem, don't use bundler and also set the gem home 
+# so our gemified jruby can find the installed gems.
 prospective_gem_home = File.expand_path("../../../../", __FILE__)
 entries_in_gem_home  = Dir[prospective_gem_home + "/*"].map {|path| File.basename(path) }
-if (["cache", "gems", "bin"] - entries_in_gem_home).length == 0
+if (["cache", "gems"] - entries_in_gem_home).length == 0
   ENV["GEM_HOME"]       = prospective_gem_home
-  ENV["BUNDLE_GEMFILE"] = File.expand_path("../../Gemfile", __FILE__)
+else
+  require 'bundler'
+  Bundler.require(:default)
 end
 
-require 'rubygems'
-require 'bundler/setup'
 require 'redcar-icons'
 
 begin
