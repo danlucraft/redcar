@@ -1,11 +1,16 @@
 
 class RedcarGemspecHelper
   def self.remove_gitignored_files(filelist)
-    ignores = File.readlines(".gitignore")
-    ignores = ignores.select {|ignore| ignore.chomp.strip != "" and ignore !~ /^#/}
-    ignores = ignores.map {|ignore| Regexp.new(ignore.chomp.gsub(".", "\\.").gsub("*", ".*"))}
-    r = filelist.select {|fn| not ignores.any? {|ignore| fn =~ ignore }}
-    r.select {|fn| fn !~ /\.git/ }
+    gitignore_file = File.expand_path("../.gitignore", __FILE__)
+    if File.exist?(gitignore_file)
+      ignores = File.readlines(gitignore_file)
+      ignores = ignores.select {|ignore| ignore.chomp.strip != "" and ignore !~ /^#/}
+      ignores = ignores.map {|ignore| Regexp.new(ignore.chomp.gsub(".", "\\.").gsub("*", ".*"))}
+      r = filelist.select {|fn| not ignores.any? {|ignore| fn =~ ignore }}
+      r.select {|fn| fn !~ /\.git/ }
+    else
+      filelist
+    end
   end
   
   def self.remove_matching_files(list, string)
@@ -13,9 +18,8 @@ class RedcarGemspecHelper
   end
 
   def self.gem_manifest
-    r = %w(CHANGES LICENSE Rakefile README.md) +
+    r = %w(CHANGES LICENSE Rakefile README.md Gemfile Rakefile redcar.gemspec) +
                             Dir.glob("bin/redcar") +
-                            Dir.glob("config/**/*") +
                             Dir.glob("vendor/**/*") +
                             remove_gitignored_files(Dir.glob("lib/**/*")) +
                             remove_gitignored_files(Dir.glob("plugins/**/*"))
@@ -36,7 +40,6 @@ Gem::Specification.new do |s|
   s.files        = RedcarGemspecHelper.gem_manifest
   s.executables  = ["redcar"]
   s.require_path = 'lib'
-  s.extra_rdoc_files  = %w(README.md LICENSE CHANGES Gemfile Rakefile)
   
   s.add_dependency("git")
   s.add_dependency("spoon")
