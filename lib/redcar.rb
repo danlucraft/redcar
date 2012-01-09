@@ -69,10 +69,10 @@ end
 #
 # and so on.
 module Redcar
-  VERSION         = '0.13.0dev' # also change in the gemspec!
+  VERSION         = '0.13.1dev' # also change in the gemspec!
   VERSION_MAJOR   = 0
   VERSION_MINOR   = 13
-  VERSION_RELEASE = 0
+  VERSION_RELEASE = 1
   
   ENVIRONMENTS = [:user, :debug, :test]
   
