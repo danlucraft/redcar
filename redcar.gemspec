@@ -36,7 +36,7 @@ Gem::Specification.new do |s|
   s.files        = RedcarGemspecHelper.gem_manifest
   s.executables  = ["redcar"]
   s.require_path = 'lib'
-  s.extra_rdoc_files  = %w(README.md LICENSE CHANGES Gemfile Rakefile)
+  s.extra_rdoc_files  = %w(README.md LICENSE CHANGES Gemfile Rakefile redcar.gemspec)
   
   s.add_dependency("git")
   s.add_dependency("spoon")
