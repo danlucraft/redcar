@@ -18,9 +18,8 @@ class RedcarGemspecHelper
   end
 
   def self.gem_manifest
-    r = %w(CHANGES LICENSE Rakefile README.md) +
+    r = %w(CHANGES LICENSE Rakefile README.md Gemfile Rakefile redcar.gemspec) +
                             Dir.glob("bin/redcar") +
-                            Dir.glob("config/**/*") +
                             Dir.glob("vendor/**/*") +
                             remove_gitignored_files(Dir.glob("lib/**/*")) +
                             remove_gitignored_files(Dir.glob("plugins/**/*"))
@@ -41,7 +40,6 @@ Gem::Specification.new do |s|
   s.files        = RedcarGemspecHelper.gem_manifest
   s.executables  = ["redcar"]
   s.require_path = 'lib'
-  s.extra_rdoc_files  = %w(README.md LICENSE CHANGES Gemfile Rakefile redcar.gemspec)
   
   s.add_dependency("git")
   s.add_dependency("spoon")
