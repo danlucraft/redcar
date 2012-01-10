@@ -5,6 +5,8 @@ Version 0.13 (TBA)
  * Move the change tab language command into the Edit menu, and make it a filter list. (Dan Lucraft)
  * extended the FilterListDialog class to support icons, by merging in the outline_view plugin (Dan Lucraft)
  * implemented project-wide Find declaration (Project/Find declaration) (Dan Lucraft)
+ * Don't use Bundler when running as a gem (Dan Lucraft)
+ * Parse Ruby with 1.9 syntax instead of 1.8 (Dan Lucraft)
 
 Version 0.12 (7th January 2012)
 ===============================
