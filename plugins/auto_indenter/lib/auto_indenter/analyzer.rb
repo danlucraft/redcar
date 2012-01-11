@@ -52,7 +52,7 @@ module Redcar
             return 0, indent_next_line
           end
           line = @doc.get_line(current)
-          if rules.unindented_line?(line)
+          if rules.unindented_line?(line) or line =~ /^\s*$/
             current -= 1
           else
             if indent_next_line == nil

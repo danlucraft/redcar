@@ -60,6 +60,15 @@ def foo
   end # should be dedented
 RUBY
     end
+    
+    it "should ignore blank lines as part of the indentation" do
+      should_indent(<<RUBY, :line => 3, :indent => 1)
+  def foo
+  end
+
+def foo
+RUBY
+    end
   end
   
   describe "with indentation rules like C's" do
