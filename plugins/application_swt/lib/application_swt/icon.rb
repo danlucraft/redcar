@@ -4,7 +4,7 @@ module Redcar
     module Icon
       def self.swt_image(icon)
         case icon
-        when :directory
+        when :directory, :dir
           dir_image
         when :file
           file_image

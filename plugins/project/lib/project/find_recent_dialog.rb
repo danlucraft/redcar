@@ -4,11 +4,14 @@ module Redcar
     class FindRecentDialog < FilterListDialog
       def update_list(filter)
         recent = Project::Recent.storage['list']
-        recent = recent.map {|path| path.gsub(/^#{Regexp.escape(Redcar.home_dir)}\/?/, "")}
-        filter_and_rank_by(recent, filter)
+        recent = recent.map do |path| 
+          {:name => path.gsub(/^#{Regexp.escape(Redcar.home_dir)}\/?/, ""), :icon => :dir}
+        end
+        filter_and_rank_by(recent, filter) {|h| h[:name] }
       end
 
-      def selected(path, ix)
+      def selected(item, ix)
+        path = item[:name]
         unless path[0..0] == "/" or path =~ /^[A-Z]:\//
           path = Redcar.home_dir + "/" + path
         end
