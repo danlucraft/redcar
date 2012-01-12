@@ -11,7 +11,11 @@ module Redcar
     
     def self.user_keybindings
       key_bindings = key_binding_prefs.inject({}) do |h, (key, command_class)|
-        h[key] = eval(command_class)
+        begin
+          h[key] = eval(command_class)
+        rescue
+          warn "WARNING: invalid key binding from \"#{key}\" to #{command_class.inspect} in file \"#{@storage.send(:path)}\""
+        end
         h
       end
       key_bindings
