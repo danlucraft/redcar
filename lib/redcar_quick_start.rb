@@ -33,7 +33,9 @@ module Redcar
   end
 
   def self.try_to_load_via_drb
-    return if ARGV.find {|arg| arg == "--multiple-instance" || arg == '--help' || arg == '-h'}
+    if ARGV.find {|arg| arg == "--multiple-instance" || arg == '--help' || arg == '-h' || arg == "-v"}
+      return false
+    end
     begin
       begin
         TCPSocket.new('127.0.0.1', drb_port).close

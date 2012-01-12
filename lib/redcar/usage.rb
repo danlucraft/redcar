@@ -9,7 +9,6 @@ module Redcar
     
     def version_requested
       if ARGV.include?("-v")
-        puts "Redcar #{Redcar::VERSION}"
         exit
       end
     end

@@ -9,6 +9,7 @@ file = File.readlink(file) while File.symlink?(file)
 $LOAD_PATH.unshift File.expand_path('../../lib', file)
 
 require "redcar_quick_start"
+
 if ARGV.include? '--silent'
   # reopen the standard pipes to nothingness if we were forked as part of jruby
   STDIN.reopen Redcar.null_device
