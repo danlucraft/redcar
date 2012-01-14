@@ -10,6 +10,7 @@ Version 0.13 (TBA)
  * Made the auto indenter ignore blank lines when deciding on indentation. (Dan Lucraft)
  * New API for tab context menus (Dan Lucraft)
  * Copy path of file to clipboard tab context menu item (Dan Lucraft)
+ * Remember project window location and size, and tree width (Markus Kahl)
 
 Version 0.12 (7th January 2012)
 ===============================
