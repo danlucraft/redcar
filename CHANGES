@@ -8,6 +8,8 @@ Version 0.13 (TBA)
  * Don't use Bundler when running as a gem (Dan Lucraft)
  * Parse Ruby with 1.9 syntax instead of 1.8 (Dan Lucraft)
  * Made the auto indenter ignore blank lines when deciding on indentation. (Dan Lucraft)
+ * New API for tab context menus (Dan Lucraft)
+ * Copy path of file to clipboard tab context menu item (Dan Lucraft)
 
 Version 0.12 (7th January 2012)
 ===============================
