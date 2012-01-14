@@ -16,8 +16,6 @@ module Redcar
 
       attr_reader :menu_bar
 
-
-
       def self.menu_types
         [Swt::SWT::BAR, Swt::SWT::POP_UP]
       end
@@ -147,7 +145,11 @@ module Redcar
         else
           item.text = entry.text
         end
-        item.addSelectionListener(ProcSelectionListener.new(entry))
+        if entry.enabled?
+          item.addSelectionListener(ProcSelectionListener.new(entry))
+        else
+          item.enabled = false
+        end
       end
 
       class SelectionListener
@@ -177,14 +179,18 @@ module Redcar
         else
           item.text = entry.text
         end
-        item.add_selection_listener(SelectionListener.new(entry))
-        h = entry.command.add_listener(:active_changed) do |value|
-          unless item.disposed
-            item.enabled = value
+        if entry.enabled?
+          item.add_selection_listener(SelectionListener.new(entry))
+          h = entry.command.add_listener(:active_changed) do |value|
+            unless item.disposed
+              item.enabled = value
+            end
           end
-        end
-        @handlers << [entry.command, h]
-        if not entry.command.active?
+          @handlers << [entry.command, h]
+          if not entry.command.active?
+            item.enabled = false
+          end
+        else
           item.enabled = false
         end
       end

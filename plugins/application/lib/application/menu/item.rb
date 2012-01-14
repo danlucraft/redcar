@@ -18,19 +18,31 @@ module Redcar
       # either:
       #   the Redcar::Command that is run when the item is selected.
       #   or a block to run when the item is selected
-      def initialize(text, options={}, &block)
+      #
+      # Instead of a command, a hash of options may be passed:
+      #  :command  - specify a command class
+      #  :priority - Integer, higher means lower in menus
+      #  :value    - if passed, the command class with be instantiation like:
+      #              Command.new(:value => value)
+      #  :enabled  - if set to false, this menu item will be permanently disabled
+      #  :type     - can be set to :check or :radio
+      #  :checked  - if type is check or radio, a block that will be run when 
+      #              the menu is displayed to determine whether this item is checked
+      def initialize(text, command_or_options={}, &block)
         @text = text
         
-        if options.respond_to?('[]')
+        if command_or_options.respond_to?('[]')
+          options = command_or_options
           @command = options[:command] || block
           @priority = options[:priority]
           @value = options[:value]
           @type = options[:type]
+          @enabled = (options.key?(:enabled) ? options[:enabled] : true)
           if [:check, :radio].include?(@type)
             @checked = options[:checked]
           end
         else
-          @command = options || block
+          @command = command_or_options || block
         end
         
         @priority ||= Menu::DEFAULT_PRIORITY
@@ -41,7 +53,7 @@ module Redcar
         if @value
           @command.new.run(:value => @value)
         else  
-          @command.new.run#(:with_key => with_key)
+          @command.new.run
         end
       end
       
@@ -74,6 +86,10 @@ module Redcar
       
       def is_unique?
         false
+      end
+      
+      def enabled?
+        @enabled
       end
       
       def checked?
