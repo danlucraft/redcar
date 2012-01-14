@@ -132,6 +132,18 @@ module Redcar
       end
       index
     end
+
+    # Triggers the display of the tab context menu at the current 
+    # cursor location.
+    def right_click_on_tab(tab)
+      menu = Menu.new
+      Redcar.plugin_manager.objects_implementing(:tab_context_menu).each do |object|
+        menu.merge(object.tab_context_menu(tab))
+      end
+
+      Application::Dialog.popup_menu(menu, :pointer)
+    end
+    
     
     def inspect
       "#<Redcar::Notebook #{object_id}>"

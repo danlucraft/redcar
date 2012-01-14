@@ -104,6 +104,12 @@ module Redcar
       def attach_view_listeners
         @tab_folder.add_ctab_folder2_listener(CTabFolder2Listener.new(self))
         @tab_folder.add_selection_listener(SelectionListener.new(self))
+        @tab_folder.add_listener(Swt::SWT::MenuDetect) do |event|
+          point = ApplicationSWT.display.map(nil, @tab_folder, Swt::Graphics::Point.new(event.x, event.y))
+          if item = @tab_folder.getItem(point)
+            @model.right_click_on_tab(tab_item_to_tab_model(item))
+          end
+        end
       end
       
       # Called by the models when a tab is selected by Redcar.
@@ -139,8 +145,11 @@ module Redcar
       private
       
       def focussed_tab
-        focussed_tab_item = tab_folder.get_selection
-        @model.tabs.detect {|tab| tab.controller.item == focussed_tab_item }
+        tab_item_to_tab_model(tab_folder.get_selection)
+      end
+      
+      def tab_item_to_tab_model(tab_item)
+        @model.tabs.detect {|tab| tab.controller.item == tab_item }
       end
       
     end
