@@ -42,6 +42,7 @@ module Redcar
             @checked = options[:checked]
           end
         else
+          @enabled = true
           @command = command_or_options || block
         end
         
