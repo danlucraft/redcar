@@ -421,6 +421,15 @@ module Redcar
         end
       end
 
+      def self.tab_context_menu(tab)
+        Menu::Builder.build do
+          if tab.is_a?(EditTab)
+            path = tab.edit_view.document.path
+            item("Copy path to clipboard", :enabled => !!path) { Redcar.app.clipboard << path if path }
+          end
+        end
+      end
+      
       # Uses our own context menu hook to provide context menu entries
       # @return [Menu]
       def self.project_context_menus(tree, node, controller)
