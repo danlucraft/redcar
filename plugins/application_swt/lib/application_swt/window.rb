@@ -123,6 +123,17 @@ module Redcar
       def fullscreen=(value)
         @shell.setFullScreen(value)
       end
+      
+      def bounds
+        rect = @shell.bounds
+        [rect.x, rect.y, rect.width, rect.height]
+      end
+      
+      def set_bounds(new_bounds)
+        @shell.set_bounds(
+          Java::OrgEclipseSwtGraphics::Rectangle.new(
+            new_bounds[0], new_bounds[1], new_bounds[2], new_bounds[3]))
+      end
 
       class KeyListener
         def initialize(edit_view_swt)

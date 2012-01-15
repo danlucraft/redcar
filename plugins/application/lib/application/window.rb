@@ -84,16 +84,34 @@ module Redcar
 
     # The width of a treebook in this window. (Even if there is none
     # this is the width it would be.)
-
     def treebook_width
       if controller
         controller.treebook_open_width
       end
     end
     
+    # Set treebook width (does not reopen a hidden tree)
     def treebook_width=(size)
       if controller
         controller.set_treebook_open_width(size)
+      end
+    end
+    
+    # Get dimensions and location of this window
+    #
+    # Returns: [x, y, width, height]
+    def bounds
+      if controller
+        controller.bounds
+      end
+    end
+    
+    # Set bounds of this window
+    #
+    # @dimensions [x, y, width, height]
+    def bounds=(new_bounds)
+      if controller
+        controller.set_bounds(new_bounds)
       end
     end
     
