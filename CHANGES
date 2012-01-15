@@ -14,6 +14,7 @@ Version 0.13 (TBA)
  * Remember project window location and size, and tree width between sessions (Markus Kahl)
  * Remember open files between sessions (Christopher Wade)
  * Remember cursor location and selection between sessions (Christopher Wade)
+ * Remove broken remote project support, and clean up Project classes. (Dan Lucraft)
 
 Version 0.12 (7th January 2012)
 ===============================
