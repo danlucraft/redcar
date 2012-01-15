@@ -126,9 +126,6 @@ module Redcar
       end
 
       def self.project_loaded(project)
-        # for now we only want to attempt to handle the local case
-        return if project.remote?
-
         Redcar.log.debug "SCM #{modules.count} SCM modules loaded."
 
         repo = modules_instance.find do |m|
@@ -149,15 +146,7 @@ module Redcar
         begin
           # associate this repository with a project internally
           project_repositories[project] = {'repo' => repo}
-
-          # load the repository and inject adapter if there is one
           repo.load(project.path)
-          adapter = repo.adapter(project.adapter)
-          if not adapter.nil?
-            Redcar.log.debug "SCM Attaching a custom adapter to the project."
-            project.adapter = adapter
-          end
-
           project_repositories[project]['trees'] = []
         rescue
           # cleanup

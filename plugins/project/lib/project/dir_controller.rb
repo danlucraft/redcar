@@ -3,14 +3,11 @@ module Redcar
   class Project
     class DirController
       include Redcar::Tree::Controller
-
-      def self.adapter(node, tree=nil)
-        node ? node.adapter : tree.tree_mirror.adapter
-      end
+      include LocalFilesystem
 
       def activated(tree, node)
         if node.leaf?
-          OpenFileCommand.new(node.path, node.adapter).run
+          OpenFileCommand.new(node.path).run
         end
       end
 
@@ -21,6 +18,7 @@ module Redcar
 
       class DragController
         include Redcar::Tree::Controller::DragController
+        include LocalFilesystem
 
         attr_reader :tree
 
@@ -43,8 +41,7 @@ module Redcar
           non_nested_paths.each do |path|
             dir = target ? target.directory : tree.tree_mirror.path
             unless File.dirname(path) == dir
-              adapter = DirController.adapter(target, tree)
-              adapter.mv(path, dir)
+              fs.mv(path, dir)
             end
           end
           tree.refresh
@@ -113,8 +110,7 @@ module Redcar
         new_file_name = uniq_name(enclosing_dir, "New File")
         new_file_path = File.join(enclosing_dir, new_file_name)
 
-        adapter = DirController.adapter(node, tree)
-        adapter.touch(new_file_path)
+        fs.touch(new_file_path)
         tree.refresh
         tree.expand(node)
         new_file_node = DirMirror::Node.cache[new_file_path]
@@ -125,8 +121,7 @@ module Redcar
         enclosing_dir = node ? node.directory : tree.tree_mirror.path
         new_dir_name = uniq_name(enclosing_dir, "New Directory")
         new_dir_path = File.join(enclosing_dir, new_dir_name)
-        adapter = DirController.adapter(node, tree)
-        adapter.mkdir(new_dir_path)
+        fs.mkdir(new_dir_path)
         tree.refresh
         tree.expand(node)
         new_dir_node = DirMirror::Node.cache[new_dir_path]
@@ -159,6 +154,7 @@ module Redcar
 
       class BulkRenameController
         include Redcar::HtmlController
+        include LocalFilesystem
 
         attr_reader :pairs, :match_pattern, :replace_pattern
 
@@ -168,7 +164,6 @@ module Redcar
           @pairs = nodes.map {|node| [node, File.basename(node.path)] }
           @match_pattern = ""
           @replace_pattern = ""
-          @adapter = DirController.adapter(nodes.first, tree)
         end
 
         def title
@@ -191,7 +186,7 @@ module Redcar
             old_name = File.basename(node.path)
             new_name = transform_name(old_name)
             new_path = File.join(File.dirname(node.path), new_name)
-            conflicts = (@adapter.exists?(new_path) and new_name != old_name)
+            conflicts = (fs.exists?(new_path) and new_name != old_name)
             legal     = (new_name != "" and legal_path?(new_path))
             [new_name, conflicts, legal]
           end
@@ -208,7 +203,7 @@ module Redcar
             new_name = transform_name(old_name)
             next if old_name == new_name
             new_path = File.join(File.dirname(node.path), new_name)
-            @adapter.mv(node.path, new_path)
+            fs.mv(node.path, new_path)
           end
           @tab.close
           @tree.refresh
@@ -240,7 +235,7 @@ module Redcar
         result = Application::Dialog.message_box(msg, :type => :question, :buttons => :yes_no)
         if result == :yes
           nodes.each do |node|
-            node.adapter.delete(node.path)
+            fs.delete(node.path)
           end
           tree.refresh
         end
@@ -250,10 +245,9 @@ module Redcar
         new_path = File.expand_path(File.join(File.dirname(node.path), text))
         return if node.path == new_path
 
-        adapter = DirController.adapter(node, tree)
-        adapter.mv(node.path, new_path)
+        fs.mv(node.path, new_path)
         tree.refresh
-        new_node = DirMirror::Node.create_from_path(adapter, {:fullname => new_path, :type => node.type})
+        new_node = DirMirror::Node.create_from_path(:fullname => new_path, :type => node.type)
         tree.select(new_node)
       end
 

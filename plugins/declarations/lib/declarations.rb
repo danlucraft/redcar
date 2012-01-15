@@ -77,7 +77,6 @@ module Redcar
       end
 
       def execute
-        return if @project.remote?
         file = Declarations::File.new(Declarations.file_path(@project))
         file.update_files(@file_list)
         file.dump

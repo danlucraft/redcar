@@ -11,7 +11,6 @@ class ProjectSearch
     end
     
     def execute
-      return if @project.remote?
       unless index = ProjectSearch.indexes[@project.path]
         index = ProjectSearch::LuceneIndex.new(@project)
         ProjectSearch.indexes[@project.path] = index

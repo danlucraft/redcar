@@ -3,58 +3,12 @@ module Redcar
   class Project
     class Manager
 
-      def self.connect_to_remote(protocol, host, user, path, private_key_files = [])
-        if protocol == "SFTP" and private_key_files.any?
-          begin
-            adapter = open_adapter(protocol, host, user, nil, private_key_files)
-            open_remote_project(adapter, path)
-          rescue Net::SSH::AuthenticationFailed
-            if pw = get_password
-              adapter = open_adapter(protocol, host, user, pw, [])
-              open_remote_project(adapter, path)
-            end
-          end
-        else
-          if pw = get_password
-            adapter = open_adapter(protocol, host, user, pw, [])
-            open_remote_project(adapter, path)
-          end
-        end
-      rescue => e
-        puts "Error connecting: #{e.class}: #{e.message}"
-        puts e.backtrace
-        Application::Dialog.message_box("Error connecting: #{e.message}", :type => :error)
-      end
-
-      def self.get_password
-        result = Redcar::Application::Dialog.password_input("Remote Connection", "Enter password")
-        result[:value] if result
-      end
-
-      # Opens a new Tree with a DirMirror and DirController for the given
-      # path, in a new window.
-      #
-      # @param [String] path  the path of the directory to view
-      def self.open_remote_project(adapter, path)
-        win = Redcar.app.focussed_window
-        win = Redcar.app.new_window if !win or Manager.in_window(win)
-        project = Project.new(path, adapter)
-        project.open(win) if project.ready?
-      end
-
-      def self.open_adapter(protocol, host, user, password, private_key_files)
-        Adapters::Remote.new(protocol.downcase.to_sym, host, user, password, private_key_files)
-      rescue Errno::ECONNREFUSED
-        raise "connection refused connecting to #{host}"
-      rescue SocketError
-        raise "Cannot connect to #{host}. Error: #{$!.message}."
-      end
-
       def self.open_projects
         Project.window_projects.values
       end
 
       # Returns the project in the given window
+      #
       # @param [Window] window
       # @return Project or nil
       def self.in_window(window)
@@ -65,14 +19,8 @@ module Redcar
         Redcar.app.windows.reject {|w| in_window(w) }
       end
 
-      # this will restore open files unless other files or dirs were passed
-      # as command line parameters
       def self.start(args)
-        unless handle_startup_arguments(args)
-          unless Redcar.environment == :test
-            #restore_last_session
-          end
-        end
+        handle_startup_arguments(args)
         init_current_files_hooks
         init_window_closed_hooks
         init_drb_listener
@@ -163,10 +111,10 @@ module Redcar
       #
       # @path  [String] path the path of the file to be edited
       # @param [Window] win  the Window to open the File in
-      def self.open_file_in_window(path, win, adapter)
+      def self.open_file_in_window(path, win)
         return unless large_file_airbag(path)
         tab = win.new_tab(Redcar::EditTab)
-        mirror = FileMirror.new(path, adapter)
+        mirror = FileMirror.new(path)
         tab.edit_view.document.mirror = mirror
         tab.edit_view.reset_undo
         tab.focus
@@ -195,7 +143,7 @@ module Redcar
         }.sort_by {|p| path.split(//).length-p.path.split(//).length}
       end
 
-      def self.open_file(path, adapter=Adapters::Local.new)
+      def self.open_file(path)
         if tab = find_open_file_tab(path)
           tab.focus
           return tab
@@ -206,7 +154,7 @@ module Redcar
           window = windows_without_projects.first || Redcar.app.new_window
           Project::Recent.store_path(path)
         end
-        tab = open_file_in_window(path, window, adapter)
+        tab = open_file_in_window(path, window)
         window.focus
         tab
       end
@@ -268,6 +216,7 @@ module Redcar
           win = Redcar.app.focussed_window
           win = Redcar.app.new_window(false) if !win or Manager.in_window(win)
           project.open(win) if project.ready?
+          p project
           Redcar.app.show_window(win)
           project
         end
@@ -375,20 +324,6 @@ module Redcar
         end
       end
 
-      # restores the directory/files in the last open window
-      def self.restore_last_session
-        if path = storage['last_open_dir']
-          s = Time.now
-          open_project_for_path(path)
-        end
-
-        if files = storage['files_open_last_session']
-          files.each do |path|
-            open_file(path)
-          end
-        end
-      end
-
       def self.refresh_modified_file(path)
         path = File.expand_path(path)
         find_projects_containing_path(path).each do |project|
@@ -463,7 +398,7 @@ module Redcar
               separator
               if tree.selection.length > 1
                 dirs = tree.selection.map {|node| node.parent_dir }
-                if dirs.uniq.length == 1 and node.adapter.is_a?(Adapters::Local)
+                if dirs.uniq.length == 1
                   item("Bulk Rename") { controller.rename(tree, node)   }
                 end
               else

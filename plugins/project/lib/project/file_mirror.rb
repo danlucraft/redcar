@@ -9,13 +9,13 @@ module Redcar
     # which reflects a file.
     class FileMirror
       include Redcar::Document::Mirror
+      include LocalFilesystem
       
-      attr_reader :path, :adapter, :timestamp
+      attr_reader :path, :timestamp
       
       # @param [String] a path to a file
-      def initialize(path, adapter=Adapters::Local.new)
+      def initialize(path)
         @path = path
-        @adapter = adapter
       end
       
       # Load the contents of the file from disk
@@ -24,7 +24,7 @@ module Redcar
       def read
         return "" unless exists?
         contents = load_contents
-        @timestamp = @adapter.mtime(@path)
+        @timestamp = fs.mtime(@path)
         contents
       end
       
@@ -32,7 +32,7 @@ module Redcar
       #
       # @return [Boolean]
       def exists?
-        @adapter.exists?(@path)
+        fs.exists?(@path)
       end
       
       # Has the file changed since the last time it was read or commited?
@@ -41,7 +41,7 @@ module Redcar
       # @return [Boolean]
       def changed?
         begin
-          !@timestamp or @timestamp < @adapter.mtime(@path)
+          !@timestamp or @timestamp < fs.mtime(@path)
         rescue Errno::ENOENT
           false
         end
@@ -49,7 +49,7 @@ module Redcar
       
       def changed_since?(time)
         begin
-          !@timestamp or (!time and changed?) or (time and time < @adapter.mtime(@path))
+          !@timestamp or (!time and changed?) or (time and time < fs.mtime(@path))
         rescue Errno::ENOENT
           false
         end
@@ -61,7 +61,7 @@ module Redcar
       # @return [unspecified]
       def commit(contents)
         save_contents(contents)
-        @timestamp = @adapter.mtime(@path)
+        @timestamp = fs.mtime(@path)
       end
       
       # The filename.
@@ -74,11 +74,11 @@ module Redcar
       private
       
       def load_contents
-        @adapter.load(@path)
+        fs.load(@path)
       end
       
       def save_contents(contents)
-        @adapter.save(@path, contents)
+        fs.save(@path, contents)
       end
     end
   end

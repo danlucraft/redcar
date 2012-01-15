@@ -12,25 +12,23 @@ module Redcar
       i = DEFAULT_ICON
       doc = @edit_view.document
       if doc and doc.path
-        unless doc.mirror.adapter.is_a?(Redcar::Project::Adapters::Remote)
-          if File.exists?(doc.path)
-            if File.writable?(doc.path)
-              key = File.basename(doc.path).split('.').last.split(//).first.downcase
-              if key =~ /[a-z]/
-                if key == 'a'
-                  i = :document_attribute
-                else
-                  i = :"document_attribute_#{key}"
-                end
+        if File.exists?(doc.path)
+          if File.writable?(doc.path)
+            key = File.basename(doc.path).split('.').last.split(//).first.downcase
+            if key =~ /[a-z]/
+              if key == 'a'
+                i = :document_attribute
               else
-                i = DEFAULT_ICON
+                i = :"document_attribute_#{key}"
               end
             else
-              i = NO_WRITE_ICON
+              i = DEFAULT_ICON
             end
           else
-            i = MISSING_ICON
+            i = NO_WRITE_ICON
           end
+        else
+          i = MISSING_ICON
         end
       end
       i

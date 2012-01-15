@@ -3,14 +3,8 @@ unless defined?(DRb)
   require 'drb/drb'
 end
 
-require "project/adapters/remote_protocols/protocol"
-require "project/adapters/remote_protocols/sftp"
-require "project/adapters/remote_protocols/ftp"
-
-require "project/adapters/local"
-require "project/adapters/remote"
-
 require "project/support/trash"
+require "project/local_filesystem"
 
 require "project/commands"
 require "project/dir_mirror"
@@ -33,18 +27,20 @@ module Redcar
       @window_projects ||= {}
     end
 
-    attr_reader :window, :tree, :path, :adapter
+    attr_reader :window, :tree, :path
     attr_accessor :listeners
 
-    def initialize(path, adapter=Adapters::Local.new)
-      @adapter = adapter
+    def initialize(path)
+      p [:new, path]
       @path   = File.expand_path(path)
       @listeners ||= {}
-      dir_mirror = Project::DirMirror.new(@path, adapter)
+      dir_mirror = Project::DirMirror.new(@path)
+      p dir_mirror
       if dir_mirror.exists?
         @tree   = Tree.new(dir_mirror, Project::DirController.new)
+        p @tree
         @window = nil
-        file_list_resource.compute unless remote?
+        file_list_resource.compute
       else
         raise "#{path} doesn't seem to exist"
       end
@@ -65,10 +61,6 @@ module Redcar
       dir
     end
     
-    def remote?
-      adapter.is_a?(Adapters::Remote)
-    end
-
     def ready?
       @tree && @path
     end
@@ -187,7 +179,7 @@ module Redcar
     # there is one.
     def refresh
       @tree.refresh
-      file_list_resource.compute unless remote?
+      file_list_resource.compute
     end
 
     def contains_path?(path)
@@ -213,7 +205,6 @@ module Redcar
     end
 
     def file_list
-      raise "can't access a file list for a remote project" if remote?
       @file_list ||= FileList.new(path)
     end
 

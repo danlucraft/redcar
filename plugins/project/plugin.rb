@@ -6,6 +6,5 @@ Plugin.define do
   object  "Redcar::Project::Manager"
   dependencies "edit_view", ">0",
                "HTML View", ">0",
-               "connection_manager", ">0",
                "application", ">=1.1"
 end

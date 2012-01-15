@@ -9,16 +9,15 @@ module Redcar
 
   class Project
     class OpenFileCommand < Command
-      def initialize(path = nil, adapter = Adapters::Local.new)
+      def initialize(path = nil)
         @path = path
-        @adapter = adapter
       end
 
       def execute
         path = get_path
         if path
           if File.readable? path
-            Manager.open_file(path, @adapter)
+            Manager.open_file(path)
           else
             Application::Dialog.message_box(
               "Can't read #{path}, you don't have the permissions.",
@@ -42,7 +41,7 @@ module Redcar
     end
 
     class FileReloadCommand < EditTabCommand
-      def initialize(path = nil, adapter = Adapters::Local.new)
+      def initialize(path = nil)
         @path = path
       end
 
@@ -61,86 +60,6 @@ module Redcar
         end
       end
     end
-
-    class OpenRemoteSpeedbar < Redcar::Speedbar
-
-      class << self
-        attr_accessor :connection
-
-        def connections
-          ConnectionManager::ConnectionStore.new.connections
-        end
-
-        def connection_names
-          if connections && connections.any?
-            ['Select...', connections.map { |c| c.name }].flatten
-          end
-        end
-      end
-
-      def initialize
-        connection.items = self.class.connection_names
-      end
-
-      label :connection_label, 'Connect to:'
-      combo :connection
-
-      button :connect, "Connect", "Return" do
-        selected = self.class.connections.find { |c| c.name == connection.value }
-
-        Manager.connect_to_remote(selected[:protocol], selected[:host],
-          selected[:user], selected[:path], ConnectionManager::PrivateKeyStore.paths)
-      end
-
-      button :quick, "Quick Connection", "Ctrl+Q" do
-        @speedbar = QuickOpenRemoteSpeedbar.new
-        Redcar.app.focussed_window.open_speedbar(@speedbar)
-      end
-
-      button :manage, "Connections Manager", "Ctrl+M" do
-        Redcar.app.focussed_window.close_speedbar
-        Redcar::ConnectionManager::OpenCommand.new.run
-      end
-    end
-
-    class QuickOpenRemoteSpeedbar < Redcar::Speedbar
-      class << self
-        attr_accessor :host
-        attr_accessor :user
-        attr_accessor :password
-        attr_accessor :path
-        attr_accessor :protocol
-      end
-
-      combo :protocol, %w(SFTP FTP), 'SFTP'
-
-      label :host_label, "Host:"
-      textbox :host
-
-      label :user_label, "User:"
-      textbox :user
-
-      label :path_label, "Path:"
-      textbox :path
-
-      button :connect, "Connect", "Return" do
-        Manager.connect_to_remote(protocol.value, host.value, user.value,
-          path.value, ConnectionManager::PrivateKeyStore.paths)
-      end
-    end
-
-    #class OpenRemoteCommand < Command
-    #  def initialize(url=nil)
-    #    @url = url
-    #  end
-    #
-    #  def execute
-    #    unless @url
-    #      @speedbar = OpenRemoteSpeedbar.new
-    #      win.open_speedbar(@speedbar)
-    #    end
-    #  end
-    #end
 
     class SaveFileCommand < EditTabCommand
       def initialize(tab=nil)
@@ -261,10 +180,6 @@ module Redcar
     class FindFileCommand < ProjectCommand
 
       def execute
-        if Manager.focussed_project.remote?
-          Application::Dialog.message_box("Find file doesn't work in remote projects yet :(")
-          return
-        end
         dialog = FindFileDialog.new(Manager.focussed_project)
         dialog.open
       end

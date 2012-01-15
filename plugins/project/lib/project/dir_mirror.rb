@@ -11,11 +11,12 @@ module Redcar
       end
         
       include Redcar::Tree::Mirror
-      attr_reader :path, :adapter
+      include LocalFilesystem
+      
+      attr_reader :path
       
       # @param [String] a path to a directory
-      def initialize(path, adapter=Adapters::Local.new)
-        @adapter = adapter
+      def initialize(path)
         @changed = true
         @path = path
       end
@@ -26,7 +27,7 @@ module Redcar
       
       # Does the directory exist?
       def exists?
-        @adapter.exists?(@path) && @adapter.directory?(@path)
+        fs.exists?(@path) && fs.directory?(@path)
       end
       
       # Have the toplevel nodes changed?
@@ -44,7 +45,7 @@ module Redcar
       # The files and directories in the top of the directory.
       def top
         @changed = false
-        Node.create_all_from_path(@adapter, @path)
+        Node.create_all_from_path(@path)
       end
       
       # We specify a :file data type to take advantage of OS integration.
@@ -56,7 +57,7 @@ module Redcar
       #
       # @return [Node]
       def from_data(path)
-        Node.create_from_path(@adapter, {:fullname => path})
+        Node.create_from_path(:fullname => path)
       end
       
       # Turn the nodes into data.
@@ -64,39 +65,34 @@ module Redcar
         nodes.map {|node| node.path }
       end
       
-      def refresh_operation(tree)
-        @adapter.refresh_operation(tree) do
-          yield
-        end
-      end
-      
       class Node
         include Redcar::Tree::Mirror::NodeMirror
+        extend LocalFilesystem
 
-        attr_reader :path, :adapter
+        attr_reader :path
         attr_accessor :type, :is_empty_directory
 
-        def self.create_all_from_path(adapter, path)
-          fs = adapter.fetch_contents(path)
-          fs.reject! { |f| [".", ".."].include?(File.basename(f[:fullname])) }
+        def self.create_all_from_path(path)
+          list = fs.fetch_contents(path)
+          list.reject! { |f| [".", ".."].include?(File.basename(f[:fullname])) }
           unless DirMirror.show_hidden_files?
-            fs.reject! { |f| f[:type] == :file and Project::FileList.hide_file?(f[:fullname]) }
-            fs.reject! { |f| f[:type] == :dir and Project::FileList.hide_directory? f[:fullname] }
+            list.reject! { |f| f[:type] == :file and Project::FileList.hide_file?(f[:fullname]) }
+            list.reject! { |f| f[:type] == :dir and Project::FileList.hide_directory? f[:fullname] }
           end
-          fs.sort_by do |f|
+          list.sort_by do |f|
             File.basename(f[:fullname]).downcase
           end.sort_by do |f|
             f[:type] == :dir ? -1 : 1
-          end.map {|f| create_from_path(adapter, f) }
+          end.map {|f| create_from_path(f) }
         end
         
-        def self.create_from_path(adapter, f)
+        def self.create_from_path(f)
           if result = cache[f[:fullname]]
             result.type               = f[:type]
             result.is_empty_directory = f[:empty]
             result
           else
-            cache[f[:fullname]] = Node.new(adapter, f[:fullname], f[:type], f[:empty])
+            cache[f[:fullname]] = Node.new(f[:fullname], f[:type], f[:empty])
           end
         end
 
@@ -104,8 +100,7 @@ module Redcar
           @cache ||= {}
         end
         
-        def initialize(adapter, path, type, is_empty_directory)
-          @adapter            = adapter
+        def initialize(path, type, is_empty_directory)
           @path               = path
           @type               = type
           @is_empty_directory = is_empty_directory
@@ -155,7 +150,7 @@ module Redcar
           if file? or @is_empty_directory
             []
           else
-            Node.create_all_from_path(adapter, @path)
+            Node.create_all_from_path(@path)
           end
         end
 
