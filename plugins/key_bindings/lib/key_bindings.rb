@@ -14,7 +14,7 @@ module Redcar
         begin
           h[key] = eval(command_class)
         rescue
-          warn "WARNING: invalid key binding from \"#{key}\" to #{command_class.inspect} in file \"#{@storage.send(:path)}\""
+          Redcar.log.warn "invalid key binding from \"#{key}\" to #{command_class.inspect} in file \"#{@storage.send(:path)}\""
         end
         h
       end
