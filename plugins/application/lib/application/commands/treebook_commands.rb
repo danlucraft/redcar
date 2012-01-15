@@ -42,32 +42,25 @@ module Redcar
     end
     
     class TreebookWidthCommand < Command
+      MINIMUM_TREEBOOK_WIDTH = 0
+      WIDTH_INCREMENT        = 5
       sensitize :open_trees
-
-      def increment
-        raise "Please implement me!"
-      end
-
-      def execute
-        if win = Redcar.app.focussed_window
-          if increment > 0
-            win.adjust_treebook_width(true)
-          else
-            win.adjust_treebook_width(false)
-          end
-        end
-      end
     end
     
     class IncreaseTreebookWidthCommand < TreebookWidthCommand
-      def increment
-        1
+      def execute
+        win = Redcar.app.focussed_window
+        win.treebook_width = win.treebook_width + WIDTH_INCREMENT
       end
     end
     
     class DecreaseTreebookWidthCommand < TreebookWidthCommand
-      def decrement
-        -1
+      def execute
+        win = Redcar.app.focussed_window
+        new_width = win.treebook_width - WIDTH_INCREMENT
+        unless new_width < MINIMUM_TREEBOOK_WIDTH
+          win.treebook_width = new_width
+        end
       end
     end
 

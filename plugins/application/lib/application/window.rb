@@ -63,7 +63,7 @@ module Redcar
     def fullscreen=(value)
       controller.fullscreen = value
     end
-
+    
     # Create a new notebook in this window.
     #
     # @events [(:new_notebook, notebook)]
@@ -82,14 +82,21 @@ module Redcar
       notify_listeners(:enlarge_notebook,index)
     end
 
-    def adjust_treebook_width(more=true)
-      if more
-        notify_listeners(:increase_treebook_width)
-      else
-        notify_listeners(:decrease_treebook_width)
+    # The width of a treebook in this window. (Even if there is none
+    # this is the width it would be.)
+
+    def treebook_width
+      if controller
+        controller.treebook_open_width
       end
     end
-
+    
+    def treebook_width=(size)
+      if controller
+        controller.set_treebook_open_width(size)
+      end
+    end
+    
     def reset_notebook_widths
       notify_listeners(:reset_notebook_widths)
     end

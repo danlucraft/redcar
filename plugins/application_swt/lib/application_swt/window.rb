@@ -2,11 +2,11 @@
 module Redcar
   class ApplicationSWT
     class Window
-      attr_reader :shell, :window
+      attr_reader :shell, :window, :sash
 
       SASH_WIDTH             = 5
-      TREEBOOK_WIDTH         = 200
       MINIMUM_TREEBOOK_WIDTH = 0
+      TREEBOOK_WIDTH         = 200
       VISIBLE_TREEBOOK_WIDTH = 25
       TOOLBAR_HEIGHT         = 25
       @toolbar_height        = 30
@@ -67,8 +67,7 @@ module Redcar
         @window.add_listener(:speedbar_closed, &method(:speedbar_closed))
         @window.add_listener(:enlarge_notebook, &method(:enlarge_notebook))
         @window.add_listener(:reset_notebook_widths, &method(:reset_notebook_sash_widths))
-        @window.add_listener(:increase_treebook_width, &method(:increase_treebook_width))
-        @window.add_listener(:decrease_treebook_width, &method(:decrease_treebook_width))
+        @window.add_listener(:treebook_width_changed, &method(:set_sash_widths))
 
         @window.add_listener(:toggle_trees_visible, &method(:toggle_sash_widths))
         @window.treebook.add_listener(:tree_added) do
@@ -87,19 +86,34 @@ module Redcar
         @window.treebook.add_listener(:tree_removed) do
           reset_sash_widths
         end
+        
         @shell.add_key_listener(KeyListener.new(self))
+        @sash.add_selection_listener do |e|
+          @treebook_open_width = e.x
+        end
       end
 
-      def treebook_hidden?
-        treebook_width <= VISIBLE_TREEBOOK_WIDTH
+      def default_treebook_width
+        TREEBOOK_WIDTH + SASH_WIDTH
       end
 
       def treebook_width
         @sash.layout_data.left.offset
       end
 
-      def default_treebook_width
-        TREEBOOK_WIDTH + SASH_WIDTH
+      def treebook_open_width
+        @treebook_open_width || default_treebook_width
+      end
+      
+      def set_treebook_open_width(width)
+        @treebook_open_width = width
+        unless treebook_hidden?
+          set_sash_widths(width)
+        end
+      end
+
+      def treebook_hidden?
+        treebook_width <= VISIBLE_TREEBOOK_WIDTH
       end
 
       def fullscreen
@@ -116,18 +130,13 @@ module Redcar
         end
 
         def key_pressed(key_event)
-          p key_event
           if key_event.character == Swt::SWT::TAB
-            p :tab_pressedwin
           elsif key_event.character == Swt::SWT::ESC
-            p :esc_pressedwin
           end
         end
 
         def verify_key(key_event)
-          p :verkey
           if key_event.character == Swt::SWT::TAB
-            p :tab_pressed
             key_event.doit = false
           end
         end
@@ -138,9 +147,7 @@ module Redcar
 
       def create_treebook_controller
         treebook = @window.treebook
-        controller = ApplicationSWT::Treebook.new(
-        self,
-        treebook)
+        controller = ApplicationSWT::Treebook.new(self, treebook)
         treebook.controller = controller
       end
 
@@ -353,11 +360,7 @@ module Redcar
         @treebook_unopened = !@window.treebook.trees.any?
         width = 0
         if @window.treebook.trees.any?
-          if @treebook_open_width
-            width = @treebook_open_width
-          else
-            width = default_treebook_width
-          end
+          width = treebook_open_width
         end
         set_sash_widths(width)
       end
@@ -370,23 +373,12 @@ module Redcar
           set_sash_widths(MINIMUM_TREEBOOK_WIDTH)
         end
       end
-
-      def decrease_treebook_width
-        width = treebook_width
-        unless width < MINIMUM_TREEBOOK_WIDTH + SASH_WIDTH
-          set_sash_widths(width-SASH_WIDTH)
-        end
-      end
-
-      def increase_treebook_width
-        set_sash_widths(treebook_width+SASH_WIDTH)
-      end
-
+      
       def set_sash_widths(offset)
         @sash.layout_data.left = Swt::Layout::FormAttachment.new(0, offset)
         @shell.layout
       end
-
+      
       def reset_notebook_sash_widths
         width = (100/@window.notebooks.length).to_i
         widths = [width]*@window.notebooks.length
