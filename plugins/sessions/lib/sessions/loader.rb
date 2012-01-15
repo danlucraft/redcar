@@ -95,48 +95,5 @@ class Sessions
       Redcar.log.info("Sessions::Loader: saving files last open for #{project.path}")
       self.saved_files = open_files
     end
-    
-    def self.menus
-      Redcar::Menu::Builder.build do
-        sub_menu "Project" do
-          group do
-            separator
-            item "Restore Open Files On Load",
-              :command => ToggleRestoreOnLoad,
-              :type => :check, :active => ProjectLoader.restore_files?
-            item "Save Open Files On Close",
-              :command => ToggleSaveOnLoad,
-              :type => :check, :active => ProjectLoader.save_files?
-            item "Open Project Files", OpenProjectFilesCommand
-            item "Save Project Files", SaveProjectFilesCommand
-          end
-        end
-      end
-    end
-    
-    class ToggleRestoreOnLoad < Redcar::Command
-      def execute
-        ProjectLoader.restore_files = !ProjectLoader.restore_files?
-      end
-    end
-    
-    class OpenProjectFilesCommand < Redcar::Command
-      def execute
-        ProjectLoader.restore_project_files(Redcar::Project::Manager.focussed_project)
-      end
-    end
-    
-    class ToggleSaveOnLoad < Redcar::Command
-      def execute
-        ProjectLoader.save_files = !ProjectLoader.save_files
-      end
-    end
-    
-    class SaveProjectFilesCommand < Redcar::Command
-      def execute
-        ProjectLoader.save_project_files(Redcar::Project::Manager.focussed_project)
-      end
-    end
-
   end
 end
