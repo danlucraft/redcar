@@ -81,7 +81,7 @@ class Sessions
     end
     
     def restore
-      Redcar.log.info("opening files last open for #{project.path}")
+      Redcar.log.info("Sessions::Loader: opening files last open for #{project.path}")
       unless (files = saved_files).empty?
         paths = files.each do |file|
           path = Pathname.new(file).expand_path(project.path)
@@ -92,7 +92,7 @@ class Sessions
     end
     
     def save
-      Redcar.log.info("saving files last open for #{project.path}")
+      Redcar.log.info("Sessions::Loader: saving files last open for #{project.path}")
       self.saved_files = open_files
     end
     

@@ -39,7 +39,7 @@ class Sessions
         data[:block_selection_mode] = document.block_selection_mode?
       end
       restored_paths.delete(document.path) # FIXME(chrislwade): see note on <restored_paths>
-      Redcar.log.debug("saving cursor data: #{data.inspect}")
+      Redcar.log.debug("Sessions::CursorSaver: saving cursor data: #{data.inspect}")
       save_file_data(data, project)
     end
     
@@ -48,11 +48,11 @@ class Sessions
       data = get_file_data(document.path)
       return if data.nil?
       restored_paths[document.path] = true # FIXME(chrislwade): see note on <restored_paths>
-      Redcar.log.debug("restoring cursor data: #{data.inspect}")
+      Redcar.log.debug("Sessions::CursorSaver: restoring cursor data: #{data.inspect}")
       if data[:cursor_offset] > document.length
-        Redcar.log.debug("offset #{data[:cursor_offset]} doesn't exist, truncated file? [max offset = #{document.length}]")
+        Redcar.log.debug("Sessions::CursorSaver: offset #{data[:cursor_offset]} doesn't exist, truncated file? [max offset = #{document.length}]")
       elsif user_storage['check_timestamps'] && data[:timestamp] != document.mirror.timestamp
-        Redcar.log.debug("timestamp #{data[:timestamp]} doesn't match! [new timestamp = #{document.mirror.timestamp}]")
+        Redcar.log.debug("Sessions::CursorSaver: timestamp #{data[:timestamp]} doesn't match! [new timestamp = #{document.mirror.timestamp}]")
       else
         if user_storage['restore_selection'] && data.has_key?(:selection_offset) && data[:selection_offset] <= document.length
           document.set_selection_range(data[:cursor_offset], data[:selection_offset])
@@ -106,9 +106,9 @@ class Sessions
     end
     
     def self.project_for_path(path)
-      Redcar.log.debug("searching for open project for #{path}")
+      Redcar.log.debug("Sessions::CursorSaver: searching for open project for #{path}")
       project = Redcar::Project::Manager.find_projects_containing_path(path).last
-      Redcar.log.debug("found: #{project.inspect}")
+      Redcar.log.debug("Sessions::CursorSaver: found: #{project.inspect}")
       project
     end
     
@@ -132,12 +132,12 @@ class Sessions
       if project ||= project_for_path(data[:path])
         storage = project_storage(project)
         data[:path] = data[:path][(project.path.length + 1) .. data[:path].length]
-        Redcar.log.debug("using project storage to store offset for #{data[:path]}")
+        Redcar.log.debug("Sessions::CursorSaver: using project storage to store offset for #{data[:path]}")
       else
         storage = user_storage
         pathname = Pathname.new(data[:path])
         data[:path] = pathname.absolute? ? pathname.to_s : pathname.expand_path.to_s
-        Redcar.log.debug("using user storage to store offset for #{data[:path]}")
+        Redcar.log.debug("Sessions::CursorSaver: using user storage to store offset for #{data[:path]}")
       end
       storage['cursor_positions'].delete_if {|obj| obj[:path] == data[:path]}
       storage['cursor_positions'] << data
@@ -149,12 +149,12 @@ class Sessions
       if project = project_for_path(path)
         storage = project_storage(project)
         scoped_path = path[(project.path.length + 1) .. path.length]
-        Redcar.log.debug("restoring offset from project storage for #{scoped_path}")
+        Redcar.log.debug("Sessions::CursorSaver: restoring offset from project storage for #{scoped_path}")
       else
         storage = user_storage
         pathname = Pathname.new(path)
         scoped_path = pathname.absolute? ? pathname.to_s : pathname.expand_path.to_s
-        Redcar.log.debug("restoring offset from user storage for #{scoped_path}")
+        Redcar.log.debug("Sessions::CursorSaver: restoring offset from user storage for #{scoped_path}")
       end
       storage['cursor_positions'].find {|obj| obj[:path] == scoped_path}
     end
