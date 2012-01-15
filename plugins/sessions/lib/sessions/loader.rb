@@ -55,7 +55,7 @@ class Sessions
     
     def storage
       @storage ||= begin
-        storage = Redcar::Plugin::BaseStorage.new(project.config_dir, 'project_loader')
+        storage = project.storage('project_loader')
         storage.set_default('open_files', [])
         storage
       end

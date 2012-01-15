@@ -99,7 +99,7 @@ class Sessions
     end
     
     def self.project_storage(project)
-      storage = Redcar::Plugin::BaseStorage.new(project.config_dir, 'cursor_saver')
+      storage = project.storage('cursor_saver')
       storage.set_default('cursor_positions', [])
       storage.set_default('files_to_retain', 0)
       storage
