@@ -50,6 +50,21 @@ module Redcar
       end
     end
 
+    def config_dir
+      if Redcar.platform == :windows && Redcar.environment != :test 
+        dir = File.join(path, "._redcar")
+      else
+        dir = File.join(path, ".redcar")
+      end
+      unless File.directory? dir
+        FileUtils.mkdir_p(dir)
+        if Redcar.platform == :windows
+          system("attrib.exe +H \"#{dir}") # make hidden for cmd directory listings
+        end
+      end
+      dir
+    end
+    
     def remote?
       adapter.is_a?(Adapters::Remote)
     end
@@ -128,6 +143,10 @@ module Redcar
       unlock if locked?
     end
 
+    def storage(name)
+      Redcar::Plugin::BaseStorage.new(File.join(config_dir, "storage"), name)
+    end
+    
     def attach_listeners
       attach_notebook_listeners
       window.treebook.add_listener(:tree_removed, &method(:tree_removed))
@@ -233,21 +252,6 @@ module Redcar
     def gained_focus
       refresh
       @lost_application_focus = nil
-    end
-
-    def config_dir
-      if Redcar.platform == :windows && Redcar.environment != :test 
-        dir = File.join(path, "._redcar")
-      else
-        dir = File.join(path, ".redcar")
-      end
-      unless File.directory? dir
-        FileUtils.mkdir_p(dir)
-        if Redcar.platform == :windows
-          system("attrib.exe +H \"#{dir}") # make hidden for cmd directory listings
-        end
-      end
-      dir
     end
 
     def home_dir

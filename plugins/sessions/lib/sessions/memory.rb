@@ -1,40 +1,16 @@
-module Redcar
-
-  class ApplicationSWT
-    class Window
-      def sash
-        @sash
-      end
-    end
-  end
-end
-
 class Sessions
-
   class Memory
     attr_reader :project, :storage
 
     def initialize(project)
       @project = project
-      @storage = Redcar::Plugin::BaseStorage.new "#{project.path}/.redcar/storage", 'sessions'
-      sash.add_selection_listener do |e|
-        @current_tree_width = e.x
-      end
-    end
-
-    def shell(window=self.project.window)
-      window.controller.shell
-    end
-
-    def sash(window=self.project.window)
-      window.controller.sash
+      @storage = project.storage('sessions')
     end
 
     def last_bounds
       return unless storage["bounds"]
       rect = storage["bounds"]
-      Java::OrgEclipseSwtGraphics::Rectangle.new(
-        rect["x"], rect["y"], rect["width"], rect["height"])
+      [rect["x"], rect["y"], rect["width"], rect["height"]]
     end
 
     def tree_width
@@ -43,32 +19,27 @@ class Sessions
     end
 
     def save(window)
-      self.last_bounds = shell(window).getBounds
-      storage["tree_width"] = @current_tree_width if @current_tree_width
+      bs = window.bounds
+      storage["bounds"] = {
+        "x"      => bs[0],
+        "y"      => bs[1],
+        "width"  => bs[2],
+        "height" => bs[3]
+      }
+      storage["tree_width"] = window.treebook_width
       storage.save
     end
 
     def recall
       if last_bounds
-        shell.setBounds last_bounds
+        project.window.bounds = last_bounds
       end
       if tree_width
-        sash.layout_data.left = Swt::Layout::FormAttachment.new 0, tree_width
-        shell.layout
+        project.window.treebook_width = tree_width
       end
       self
     end
 
-    private
-
-    def last_bounds=(rect)
-      storage["bounds"] = {
-        "x"      => rect.x,
-        "y"      => rect.y,
-        "width"  => rect.width,
-        "height" => rect.height
-      }
-    end
   end
 
 end
