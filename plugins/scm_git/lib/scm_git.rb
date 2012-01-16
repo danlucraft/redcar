@@ -182,9 +182,7 @@ module Redcar
 
         def load(path)
           raise "Already loaded repository" if @repo
-          p :adfs
           @repo = ::Git.open(repository_path(path))
-          p @repo
           @path = path
           cache.refresh
           self
