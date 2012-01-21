@@ -28,8 +28,8 @@ class RedcarGemspecHelper
 end
 
 Gem::Specification.new do |s|
-  s.name        = "redcar-dev"
-  s.version     = "0.13.5dev" # also change in lib/redcar.rb
+  s.name        = "redcar"
+  s.version     = "0.13" # also change in lib/redcar.rb
   s.platform    = "ruby"
   s.authors     = ["Daniel Lucraft"]
   s.email       = ["dan@fluentradical.com"]
