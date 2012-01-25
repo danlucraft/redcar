@@ -23,6 +23,12 @@ module Redcar
         Application::Dialog.popup_menu(menu, :pointer)
       end
 
+      def edited(tree, node, text)
+        if node.text != text and menu = node.bundle.sub_menus[node.uuid]
+          BundleEditor.rename_submenu text, node.bundle, menu
+        end
+      end
+
       def activated(tree, node)
         if node.leaf? and
             tab = Redcar.app.focussed_notebook_tab and
@@ -61,10 +67,14 @@ module Redcar
         true
       end
 
+      def bundle_node_by_name name
+        @top.detect {|n| n.text == name }
+      end
+
       def refresh(bundle_names=nil,inserts=nil)
         if bundle_names
           bundle_names.each do |name|
-            node = @top.detect {|n| n.text == name }
+            node = bundle_node_by_name(name)
             node.refresh if node
           end
         end
@@ -145,6 +155,12 @@ module Redcar
           end
           children
         end
+      end
+
+      def child_by_uuid uuid
+        all_children.detect {|child|
+          child.uuid == uuid
+        }
       end
 
       def all_children

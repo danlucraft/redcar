@@ -144,6 +144,7 @@ module Redcar
         write_bundle(bundle)
         refresh_trees([bundle.name])
         reload_cache
+        uuid
       end
 
       def self.rename_submenu name,bundle,menu

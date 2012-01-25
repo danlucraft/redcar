@@ -1,16 +1,6 @@
 
 module Redcar
   module Textmate
-    # A test for leaks
-    #class RefreshMenuTenTimes < Redcar::Command
-    #  def execute
-    #    puts "Refreshing menu ten times."
-    #    10.times do
-    #  	  Redcar.app.refresh_menu!
-    #      puts "Refreshing the menu!"
-    #    end
-    #  end
-    #end
 
     class ShowSnippetTree < Redcar::Command
       def execute
@@ -86,30 +76,32 @@ module Redcar
     end
 
     class CreateNewSnippetGroup < Redcar::Command
-      def initialize bundle,menu=nil
-        @bundle, @menu = bundle, menu
+      def initialize tree,node
+        @tree, @node = tree, node
       end
 
       def execute
-        result = Redcar::Application::Dialog.input("Create Snippet Menu","Choose a name for your new snippet menu:")
-        if result[:button] == :ok and not result[:value].empty?
-          BundleEditor.create_submenu result[:value], @bundle, @menu
+        target_uuid = @node.is_a?(BundleNode) ? nil : @node.uuid
+        group_uuid  = BundleEditor.create_submenu "New Menu", @node.bundle, target_uuid
+        bundle_node = @tree.tree_mirror.bundle_node_by_name(@node.bundle.name)
+        if new_group = bundle_node.child_by_uuid(group_uuid)
+          @node = bundle_node.child_by_uuid target_uuid
+          @tree.expand(@node)
+          @tree.edit(new_group)
+          @node = bundle_node.child_by_uuid target_uuid
+          @tree.expand(@node)
+          @tree.select(new_group)
         end
       end
     end
 
     class RenameSnippetGroup < Redcar::Command
-      def initialize bundle,menu
-        @bundle,@menu = bundle,menu
+      def initialize tree, node
+        @tree, @node = tree, node
       end
 
       def execute
-        if menu = @bundle.sub_menus[@menu]
-          result = Redcar::Application::Dialog.input("Rename Snippet Menu","Choose a new name for your new snippet menu:",menu['name'])
-          if result[:button] == :ok and not result[:value].empty?
-            BundleEditor.rename_submenu result[:value],@bundle, menu
-          end
-        end
+        @tree.edit(@node)
       end
     end
 
