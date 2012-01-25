@@ -22,7 +22,7 @@
                           </tr>
                           <tr>
                               <th>Email</th>
-                              <td><input type="text" id="email" class="text" value="<%=@bundle.contact_email ? CGI::escapeHTML(BundleEditor.rot13(@bundle.contact_email)) : ''%>"/></td>
+                              <td><input type="text" id="email" class="text" value="<%=@bundle.contact_email ? CGI::escapeHTML(@bundle.contact_email) : ''%>"/></td>
                           </tr>
                       </tbody>
                   </table>
