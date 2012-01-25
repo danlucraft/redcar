@@ -29,7 +29,9 @@ module Redcar
         end
         result = []
         display_paths.zip(full_paths) do |display_path, full_path|
-          result << {:name => display_path, :path => full_path, :icon => :file}
+          icon = File.basename(full_path).split(".").last.split(//).first
+          icon = icon == "a" ? "" : "-#{icon}"
+          result << {:name => display_path, :path => full_path, :icon => :"document-attribute#{icon}"}
         end
         result
       end
