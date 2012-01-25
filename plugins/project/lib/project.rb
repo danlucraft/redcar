@@ -31,14 +31,11 @@ module Redcar
     attr_accessor :listeners
 
     def initialize(path)
-      p [:new, path]
       @path   = File.expand_path(path)
       @listeners ||= {}
       dir_mirror = Project::DirMirror.new(@path)
-      p dir_mirror
       if dir_mirror.exists?
         @tree   = Tree.new(dir_mirror, Project::DirController.new)
-        p @tree
         @window = nil
         file_list_resource.compute
       else
