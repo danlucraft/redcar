@@ -130,14 +130,22 @@ module Redcar
       end
 
       def execute
-        result = Redcar::Application::Dialog.message_box(
-          "Delete "+@node.text+" (and all children)?",{:buttons => :yes_no})
-        if result == :yes
+        if @node.is_a? SnippetGroup and @node.children.size == 0
+          process_deletion
+        else
+          result = Redcar::Application::Dialog.message_box(
+            "Delete "+@node.text+" (and all children)?",{:buttons => :yes_no})
+          if result == :yes
+            process_deletion
+          end
+        end
+      end
+
+      def process_deletion
           delete(@node)
           BundleEditor.write_bundle(@node.bundle)
           BundleEditor.refresh_trees([@node.bundle.name])
           BundleEditor.reload_cache
-        end
       end
 
       def delete node
