@@ -29,7 +29,7 @@ end
 
 Gem::Specification.new do |s|
   s.name        = "redcar"
-  s.version     = "0.13" # also change in lib/redcar.rb
+  s.version     = "0.14.0dev" # also change in lib/redcar.rb
   s.platform    = "ruby"
   s.authors     = ["Daniel Lucraft"]
   s.email       = ["dan@fluentradical.com"]

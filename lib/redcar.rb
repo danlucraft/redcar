@@ -69,15 +69,15 @@ end
 #
 # and so on.
 module Redcar
-  VERSION         = '0.13' # also change in the gemspec!
+  VERSION         = '0.14.0dev' # also change in the gemspec!
   VERSION_MAJOR   = 0
-  VERSION_MINOR   = 13
+  VERSION_MINOR   = 14
   VERSION_RELEASE = 0
-  
+
   ENVIRONMENTS = [:user, :debug, :test]
-  
+
   PROCESS_START_TIME = Time.now
-  
+
   def self.icons_directory
     RedcarIcons.directory
   end
