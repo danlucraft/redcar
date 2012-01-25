@@ -3,7 +3,8 @@ module Redcar
   module Textmate
     class Bundle
       include Redcar::Observable
-      attr_reader :path, :snippets, :preferences
+      attr_reader :preferences, :plist
+      attr_accessor :snippets, :path
 
       def initialize(path)
         @path = File.expand_path(path)
@@ -32,7 +33,7 @@ module Redcar
       end
 
       def contact_email
-        @plist["contactEmailRot13"]
+        BundleEditor.rot13(@plist["contactEmailRot13"])
       end
 
       def description

@@ -1,7 +1,7 @@
 module Redcar
   module Textmate
     TREE_TITLE = "Bundles"
-    
+
     # Some Icons by Yusuke Kamiyamane.
     # http://p.yusukekamiyamane.com/
     #
@@ -10,22 +10,23 @@ module Redcar
     class TreeController
       include Redcar::Tree::Controller
 
+      def drag_controller(tree)
+        @drag_controller ||= Textmate::DragController.new(tree)
+      end
+
       def right_click(tree, node)
         controller = self
         menu = Menu.new
         Redcar.plugin_manager.objects_implementing(:bundle_context_menus).each do |object|
-          case object.method(:bundle_context_menus).arity
-          when 1
-            menu.merge(object.bundle_context_menus(node))
-          when 2
-            menu.merge(object.bundle_context_menus(tree, node))
-          when 3
-            menu.merge(object.bundle_context_menus(tree, node, controller))
-          else
-            puts("Invalid bundle_context_menus hook detected in "+object.class.name)
-          end
+          menu.merge(object.bundle_context_menus(tree, node))
         end
         Application::Dialog.popup_menu(menu, :pointer)
+      end
+
+      def edited(tree, node, text)
+        if node.text != text and menu = node.bundle.sub_menus[node.uuid]
+          BundleEditor.rename_submenu text, node.bundle, menu
+        end
       end
 
       def activated(tree, node)
@@ -45,23 +46,44 @@ module Redcar
     class TreeMirror
       include Redcar::Tree::Mirror
 
-      def initialize(bundles)
-        @top = []
-        bundles.sort_by {|bundle| (bundle.name||"").downcase}.each_with_index do |b, i|
-          if b.name and b.snippets and b.snippets.size() > 0
-            name = b.name.downcase
-            unless Textmate.storage['select_bundles_for_tree'] and !Textmate.storage['loaded_bundles'].to_a.include?(name)
-              build_tree(@top, b)
-            end
-          end
-        end
+      def initialize
+        load
+      end
 
-        if @top.size() < 1
-          @top = [EmptyTree.new]
+      def to_data nodes
+        # NOTE: this only works because all nodes are coming from the same bundle
+        @bundle_node = @top.detect {|n| n.bundle == nodes.first.bundle}
+        nodes.map {|n| n.uuid}.join('::')
+      end
+
+      def from_data raw
+        nodes = @bundle_node.all_children
+        raw.split('::').map do |uuid|
+          nodes.detect {|n| n.uuid == uuid}
         end
       end
 
-      def refresh
+      def drag_and_drop?
+        true
+      end
+
+      def bundle_node_by_name name
+        @top.detect {|n| n.text == name }
+      end
+
+      def refresh(bundle_names=nil,inserts=nil)
+        if bundle_names
+          bundle_names.each do |name|
+            node = bundle_node_by_name(name)
+            node.refresh if node
+          end
+        end
+        if inserts
+          inserts.each do |b|
+            @top << BundleNode.new(b)
+          end
+          @top = @top.sort_by {|b| b.text.downcase }
+        end
         cache = []
         cache.concat(@top)
         @top = []
@@ -69,31 +91,19 @@ module Redcar
         cache = nil
       end
 
-      def build_tree(tree, bundle)
-        if bundle.main_menu and bundle.main_menu["items"]
-          main_menu = bundle.main_menu
-          group = BundleNode.new(bundle.name)
-          main_menu["items"].each do |item|
-            build_tree_from_item(group.children, bundle, item)
-          end
-          tree << group
-        end
-      end
-
-      def build_tree_from_item(tree, bundle, item)
-        #if item is a snippet, add to tree
-        if snippet = Textmate.uuid_hash[item] and snippet.is_a?(Textmate::Snippet)
-          return unless snippet.name and snippet.name != ""
-          tree << SnippetNode.new(snippet)
-        #if item has submenus, make a group and add sub-items
-        elsif sub_menu = bundle.sub_menus[item]
-          unless sub_menu["items"].size() < 1
-            group = SnippetGroup.new(sub_menu["name"])
-            sub_menu["items"].each do |sub_item|
-              build_tree_from_item(group.children, bundle, sub_item)
+      def load
+        @top = []
+        Textmate.all_bundles.sort_by {|bundle| (bundle.name||"").downcase}.each_with_index do |b, i|
+          if b.name and b.snippets
+            unless Textmate.storage['select_bundles_for_tree'] and
+              !Textmate.storage['loaded_bundles'].to_a.include?(b.name.downcase)
+              @top << BundleNode.new(b)
             end
-            tree << group
           end
+        end
+
+        if @top.size() < 1
+          @top = [EmptyTree.new]
         end
       end
 
@@ -115,11 +125,12 @@ module Redcar
 
     class BundleNode
       include Redcar::Tree::Mirror::NodeMirror
-      attr_writer :children
+      attr_reader :bundle
+      attr_accessor :children
 
-      def initialize(name)
-        @children = []
-        @text = name
+      def initialize(bundle)
+        @bundle = bundle
+        @children = nil
       end
 
       def leaf?
@@ -127,11 +138,33 @@ module Redcar
       end
 
       def text
-        @text
+        @bundle.name
+      end
+
+      def refresh
+        @children = nil
       end
 
       def children
-        @children
+        @children ||= begin
+          children = []
+          if @bundle.main_menu and @bundle.main_menu['items']
+            @bundle.main_menu["items"].each do |item|
+              build_children(children, @bundle, item, self)
+            end
+          end
+          children
+        end
+      end
+
+      def child_by_uuid uuid
+        all_children.detect {|child|
+          child.uuid == uuid
+        }
+      end
+
+      def all_children
+        traverse_children(children,children.to_a)
       end
 
       def icon
@@ -141,16 +174,60 @@ module Redcar
           :"document-tree"
         end
       end
+
+      def parent
+        self
+      end
+
+      def menu
+        bundle.main_menu['items']
+      end
+
+      def menu= value
+        bundle.main_menu['items'] = value
+      end
+
+      private
+
+      def traverse_children items, append_to
+        items.each do |item|
+          if item.children
+            append_to += item.children
+            append_to = traverse_children(item.children, append_to)
+          end
+        end
+        append_to
+      end
+
+      def build_children(list, bundle, item, parent_node)
+        #if item is a snippet, add to list
+        if snippet = Textmate.uuid_hash[item] and snippet.is_a?(Textmate::Snippet)
+          return unless snippet.name and snippet.name != ""
+          list << SnippetNode.new(snippet,parent_node)
+        #if item has submenus, make a group and add sub-items
+        elsif sub_menu = bundle.sub_menus[item]
+          group = SnippetGroup.new(sub_menu["name"],item,parent_node)
+          if sub_menu["items"] and sub_menu["items"].size > 0
+            sub_menu["items"].each do |sub_item|
+              build_children(group.children, bundle, sub_item, group)
+            end
+          end
+          list << group
+        end
+      end
     end
 
     class SnippetGroup
       include Redcar::Tree::Mirror::NodeMirror
 
-      attr_writer :children
+      attr_accessor :parent, :children
+      attr_reader   :uuid
 
-      def initialize(name)
+      def initialize(name,uuid,parent)
         @children = []
-        @text = name
+        @text     = name
+        @uuid     = uuid
+        @parent   = parent
       end
 
       def icon
@@ -168,26 +245,45 @@ module Redcar
       def children
         @children
       end
+
+      def bundle
+        parent.bundle
+      end
+
+      def menu
+        bundle.sub_menus[uuid]['items']
+      end
+
+      def menu= value
+        bundle.sub_menus[uuid]['items'] = value
+      end
     end
 
     class SnippetNode
       include Redcar::Tree::Mirror::NodeMirror
 
-      def initialize(snippet)
+      attr_accessor :parent
+      attr_reader :snippet
+
+      def initialize(snippet,parent)
         @snippet = snippet
-        @name = snippet.name
-        #custom menu string
-        if snippet.tab_trigger
-          @name << " (#{snippet.tab_trigger})"
-        end
+        @parent = parent
       end
 
       def icon
         :"document-snippet"
       end
 
+      def uuid
+        @snippet.uuid
+      end
+
       def text
-        @name
+        name = @snippet.name.clone
+        if t = @snippet.tab_trigger
+          name << " (#{t})"
+        end
+        name
       end
 
       def leaf?
@@ -200,6 +296,10 @@ module Redcar
 
       def snippet
         @snippet
+      end
+
+      def bundle
+        parent.bundle
       end
     end
   end

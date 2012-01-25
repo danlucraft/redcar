@@ -1,0 +1,49 @@
+
+<html>
+  <head>
+    <link type="text/css" rel="stylesheet" href="<%= BundleEditor.resource('editor.css') %>" media="screen">
+    <%= javascript_controller_actions %>
+    <script type="text/javascript" src="file://<%= Redcar::HtmlView.jquery_path %>"></script>
+    <style>
+      textarea {
+        font-family:<%=Redcar::EditView.font%>,monospace;
+        font-size:11px;
+      }
+    </style>
+  </head>
+  <body>
+      <form>
+        <h1>Editing Snippet : <input type="text" name="name" id="name" value="<%= @snippet.name %>"/></h1>
+          <div id="snippet_editor">
+              <div class="inset textarea">
+                <textarea id="snippet" name="snippet" class="text"><%=@snippet.content%></textarea>
+                <p>
+                  Use "$#" as a placeholder, where '#' is a number between 1 and 90. After inserting a snippet, tab/shift-tab moves between placeholders.
+                  Use "${#:value}" to give a placeholder a default value. To insert a literal dollar sign, use \$. Use \\ for backslash, and \` for a backtick.
+                  Optionally, use $0 to reposition the cursor after the last tab-stop.
+                </p>
+              </div>
+              <div class="inset">
+                  <table>
+                      <tbody>
+                          <tr>
+                              <th>Tab Trigger</th>
+                              <td><input type="text" name="trigger" id="trigger" class="text" value="<%=@snippet.tab_trigger%>"/></td>
+                          </tr>
+                          <tr>
+                              <th>Scope Selector</th>
+                              <td><input type="text" name="scope" id="scope" class="text" value="<%=@snippet.scope%>"/></td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+              <div class="buttons">
+                  <input type="submit" name="save" id="save" value="Save Changes"
+                    onClick="Controller.save($('#name').val(),$('#snippet').val(),$('#trigger').val(),$('#scope').val());return false;"/>
+                  <input type="submit" name="cancel" id="cancel" value="Cancel"
+                    onClick="Controller.closeTab();return false;"/>
+              </div>
+          </div>
+      </form>
+  </body>
+</html>

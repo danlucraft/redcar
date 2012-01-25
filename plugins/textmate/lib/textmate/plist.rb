@@ -2,6 +2,9 @@
 module Redcar
   # An Apple Plist parser.
   class Plist
+    require 'rexml/document'
+    require 'rexml/formatters/pretty'
+
     class PlistException < StandardError
     end
 
@@ -12,7 +15,6 @@ module Redcar
     end
 
     def self.plist_from_xml(xml_string) # :nodoc:
-      require 'rexml/document'
       REXML::Text::VALID_CHAR << 0x3 if RUBY_VERSION >= '1.9.1'
       xml = REXML::Document.new(xml_string)
       plist_from_xml1(xml.root.elements.to_a.first)
@@ -39,19 +41,19 @@ module Redcar
       end
     end
 
-    def self.plist_to_xml1(element, xml_el)
+    def self.write_xml_element(element, xml_el)
       case element.class.to_s
       when "Hash"
         child = xml_el.add_element "dict"
         element.keys.sort.each do |key|
           e1 = child.add_element "key"
           e1.text = key
-          plist_to_xml1(element[key], child)
+          write_xml_element(element[key], child)
         end
       when "Array"
         child = xml_el.add_element "array"
         element.each do |arr_el|
-          plist_to_xml1(arr_el, child)
+          write_xml_element(arr_el, child)
         end
       when "String"
         el = xml_el.add_element "string"
@@ -65,16 +67,48 @@ module Redcar
     def self.plist_to_xml(plist)
       doc = REXML::Document.new
       xml_el = doc.add_element "plist", {"version" => "1.0"}
-      plist.each do |el|
-        plist_to_xml1(el, xml_el)
-      end
+      write_xml_element(plist, xml_el)
+      formatter = Formatter.new(4)
       str = ""
-      doc.write(str, 0)
+      formatter.write(doc,str)
       dt=<<END
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 END
       (dt+str).gsub("\'", "\"")
+    end
+
+    class Formatter < REXML::Formatters::Pretty
+      def write_text(node, output)
+        output << node.to_s
+      end
+
+      def write_element(node, output)
+        output << ' '*@level
+        output << "<#{node.expanded_name}"
+
+        node.attributes.each_attribute do |attr|
+          output << " "
+          attr.write(output)
+        end unless node.attributes.empty?
+
+        if node.children.empty?
+          output << "/"
+        else
+          output << ">"
+          @level += @indentation
+          node.children.each_with_index { |child,i|
+            output << "\n" if i == 0 and not child.is_a?(REXML::Text)
+            next if child.kind_of?(REXML::Text) and child.to_s.strip.length == 0
+            write( child, output )
+            output << "\n" unless child.is_a?(REXML::Text)
+          }
+          @level -= @indentation
+          output << ' '*@level unless node.children.last.is_a?(REXML::Text)
+          output << "</#{node.expanded_name}"
+        end
+        output << ">"
+      end
     end
   end
 end

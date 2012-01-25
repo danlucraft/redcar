@@ -4,7 +4,11 @@ require 'textmate/environment'
 require 'textmate/plist'
 require 'textmate/preference'
 require 'textmate/snippet'
+require 'textmate/editor/drag_controller'
 require 'textmate/tree_mirror'
+require 'textmate/editor'
+require 'textmate/editor/bundle_controller'
+require 'textmate/editor/snippet_controller'
 require 'textmate/commands'
 
 gem "redcar-bundles"
@@ -50,20 +54,60 @@ module Redcar
       end
     end
 
-    def self.bundle_context_menus(node)
+    def self.bundle_context_menus(tree,node)
       Menu::Builder.build do
-        if not node.nil? and node.is_a?(BundleNode)
-          if Textmate.storage['load_bundles_menu']
-            if Textmate.storage['loaded_bundles'].include?(node.text.downcase)
-              item ("Remove from Bundles Menu") do
-                RemovePinnedBundle.new(node.text).run
-              end
-            else
-              item("Pin to Bundles Menu") do
-                PinBundleToMenu.new(node.text).run
-              end
+        if not node.nil?
+          if node.children.size > 0
+            item("Sort") do
+              SortNodes.new(tree,node).run
             end
           end
+          case node
+          when BundleNode
+            item("Edit Bundle") do
+              OpenBundleEditor.new(node.bundle).run
+            end
+            item("Add new Snippet...") do
+              CreateNewSnippet.new(node.bundle).run
+            end
+            item("Add new Snippet Menu...") do
+              CreateNewSnippetGroup.new(tree, node).run
+            end
+            if Textmate.storage['load_bundles_menu']
+              if Textmate.storage['loaded_bundles'].include?(node.text.downcase)
+                item ("Remove from Bundles Menu") do
+                  RemovePinnedBundle.new(node.text).run
+                end
+              else
+                item("Pin to Bundles Menu") do
+                  PinBundleToMenu.new(node.text).run
+                end
+              end
+            end
+          when SnippetNode
+            item("Edit Snippet") do
+              OpenSnippetEditor.new(node.snippet).run
+            end
+            item("Delete Snippet") do
+              DeleteNode.new(node).run
+            end
+          when SnippetGroup
+            item("Rename...") do
+              RenameSnippetGroup.new(tree,node).run
+            end
+            item("Add new Snippet...") do
+              CreateNewSnippet.new(node.bundle,node.uuid).run
+            end
+            item("Add new Snippet Menu...") do
+              CreateNewSnippetGroup.new(tree, node).run
+            end
+            item("Delete Menu") do
+              DeleteNode.new(node).run
+            end
+          end
+        end
+        item("Create new Bundle") do
+          CreateNewBundle.new.run
         end
       end
     end
@@ -113,9 +157,12 @@ module Redcar
       end
     end
 
+    def self.cache
+      @cache ||= PersistentCache.new("textmate_bundles")
+    end
+
     def self.all_bundles
       @all_bundles ||= begin
-        cache = PersistentCache.new("textmate_bundles")
         cache.cache do
           all_bundle_paths.map {|path| Bundle.new(path) }
         end
