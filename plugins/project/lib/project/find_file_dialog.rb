@@ -21,7 +21,7 @@ module Redcar
         paths.uniq
       end
 
-      def update_list(filter) 
+      def update_list(filter)
         full_paths = paths_for(filter)
         display_paths = full_paths.map { |path| display_path(path) }
         if display_paths.uniq.length < full_paths.length
@@ -29,9 +29,13 @@ module Redcar
         end
         result = []
         display_paths.zip(full_paths) do |display_path, full_path|
-          icon = File.basename(full_path).split(".").last.split(//).first
-          icon = icon == "a" ? "" : "-#{icon}"
-          result << {:name => display_path, :path => full_path, :icon => :"document-attribute#{icon}"}
+          icon = File.basename(full_path).split(".").last.split(//).first.downcase
+          if icon =~ /[a-z]/
+            icon = icon == "a" ? "document-attribute" : "document-attribute-#{icon}"
+          else
+            icon = "document"
+          end
+          result << {:name => display_path, :path => full_path, :icon => :"#{icon}"}
         end
         result
       end
