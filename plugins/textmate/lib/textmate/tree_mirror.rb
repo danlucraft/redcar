@@ -200,12 +200,14 @@ module Redcar
       end
 
       def build_children(list, bundle, item, parent_node)
-        #if item is a snippet, add to list
-        if snippet = Textmate.uuid_hash[item] and snippet.is_a?(Textmate::Snippet)
+        if bundle.deleted.include?(item)
+          #do nothing
+        elsif snippet = Textmate.uuid_hash[item] and snippet.is_a?(Textmate::Snippet)
+          #if item is a snippet, add to list
           return unless snippet.name and snippet.name != ""
           list << SnippetNode.new(snippet,parent_node)
-        #if item has submenus, make a group and add sub-items
         elsif sub_menu = bundle.sub_menus[item]
+          #if item has submenus, make a group and add sub-items
           group = SnippetGroup.new(sub_menu["name"],item,parent_node)
           if sub_menu["items"] and sub_menu["items"].size > 0
             sub_menu["items"].each do |sub_item|

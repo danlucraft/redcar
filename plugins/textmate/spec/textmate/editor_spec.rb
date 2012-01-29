@@ -27,6 +27,8 @@ describe BundleEditor do
       @app = mock
       Redcar.stub!(:app).and_return(@app)
       @app.stub!(:windows).and_return([])
+      Redcar::Textmate.stub!(:user_bundle_dir).and_return(textmate_fixtures)
+      Redcar::Textmate.stub!(:all_bundles).and_return([@bundle])
     end
 
     after(:each) do
@@ -39,7 +41,7 @@ describe BundleEditor do
       content = 'I see a unicorn'
       trigger = 'uni'
       scope   = 'text.fake'
-      snippet = Snippet.new(test_snippet,@bundle.name)
+      snippet = Snippet.new(test_snippet,@bundle.name,@bundle.uuid)
       BundleEditor.update_snippet snippet, name, content, trigger, scope
       snippet.name.should    == name
       snippet.content.should == content
@@ -56,7 +58,7 @@ describe BundleEditor do
       }
       xml = Redcar::Plist.plist_to_xml(plist)
       file = write_file('snippet','.tmSnippet',xml)
-      snippet = Snippet.new(file.path,@bundle.name)
+      snippet = Snippet.new(file.path,@bundle.name,@bundle.uuid)
       BundleEditor.add_snippet_to_bundle snippet, @bundle
       @bundle.snippets.include?(snippet).should be_true
     end
@@ -93,9 +95,11 @@ describe BundleEditor do
     end
 
     it "should delete snippets" do
+      uuid = @bundle.snippets.first.uuid
       size = @bundle.snippets.size
       BundleEditor.delete_snippet(@bundle, @bundle.snippets.first)
       @bundle.snippets.size.should == size - 1
+      @bundle.deleted.include?(uuid).should be_true
       @bundle.main_menu['items'].size.should == size - 1
     end
 
