@@ -53,7 +53,7 @@ Gem::Specification.new do |s|
   s.add_dependency("bouncy-castle-java")
   
   s.add_dependency("swt")
-  s.add_dependency("plugin_manager")
+  s.add_dependency("plugin_manager", ">= 1.5")
   s.add_dependency("redcar-icons")
   s.add_dependency("redcar-jruby")
   s.add_dependency("redcar-svnkit")
