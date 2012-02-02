@@ -4,6 +4,18 @@ require 'cgi'
 
 module Redcar
   class TaskManager
+
+    def self.menus
+      Menu::Builder.build do
+        sub_menu "Debug", :priority => 20 do
+          group(:priority => 5) do
+            item "Task Manager", TaskManager::OpenCommand
+            separator
+          end
+        end
+      end
+    end
+
     class OpenCommand < Redcar::Command
       
       def execute
