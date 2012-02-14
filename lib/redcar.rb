@@ -108,6 +108,7 @@ module Redcar
     @plugin_manager ||= begin
       m = PluginManager.new
       add_plugin_sources(m)
+      m.disabled_plugins = disabled_plugins
       m
     end
   end
@@ -176,6 +177,18 @@ module Redcar
       puts e.backtrace
     end
   end
+
+  # Pulls the list of plugins the user has selected to disable from
+  # storage/disabled_plugins.yaml an array of plugin name.
+  def self.disabled_plugins
+    return @disabled_plugins if @disabled_plugins
+    path = File.join Redcar.user_dir, 'storage/disabled_plugins.yaml'
+    if File.exists? path
+      list = YAML.load_file path
+      return @disabled_plugins = list if list.is_a? Array 
+    end
+    @disabled_plugins = []
+  end
   
   # Tells the plugin manager to load plugins, and prints debug output.
   def self.load_threaded
@@ -205,7 +218,7 @@ module Redcar
   def self.show_splash
     return if Redcar.no_gui_mode?
     unless ARGV.include?("--no-splash")
-      SplashScreen.create_splash_screen(plugin_manager.plugins.length + 10)
+      SplashScreen.create_splash_screen(plugin_manager.plugins.length - plugin_manager.disabled_plugins.size + 10)
     end
     plugin_manager.on_load do |plugin|
       Swt.sync_exec do

@@ -12,8 +12,15 @@ module Redcar
         if File.exist?(info_path)
           @plist = Plist.xml_to_plist(File.read(info_path))
         end
-        @snippets = snippet_paths.map {|path| Snippet.new(path, self.name) }
+        @snippets = snippet_paths.map {|path|
+          s = Snippet.new(path, self.name,self.uuid)
+          deleted.include?(s.uuid) ? nil : s
+        }.compact
         @preferences = preference_paths.map {|path| Preference.new(path) }
+      end
+
+      def writable?
+        File.writable?(path)
       end
 
       def name
@@ -41,7 +48,7 @@ module Redcar
       end
 
       def deleted
-        @plist["deleted"]
+        @plist["deleted"] ||= []
       end
 
       def main_menu
@@ -63,24 +70,26 @@ module Redcar
       end
 
       def build_menu_from_item(builder, item)
-        if item =~ /^$/ #is a separator
-          builder.separator
-        elsif sub_menus[item] #is a submenu
-          sub_menu = sub_menus[item]
-          builder.sub_menu(sub_menu["name"]) do |sub_builder|
-            sub_menu["items"].each do |sub_item|
-              build_menu_from_item(sub_builder, sub_item)
+        unless deleted.include?(item)
+          if item =~ /^$/ #is a separator
+            builder.separator
+          elsif sub_menus[item] #is a submenu
+            sub_menu = sub_menus[item]
+            builder.sub_menu(sub_menu["name"]) do |sub_builder|
+              sub_menu["items"].each do |sub_item|
+                build_menu_from_item(sub_builder, sub_item)
+              end
             end
-          end
-        elsif Textmate.uuid_hash[item] #is a snippet
-          snippet = Textmate.uuid_hash[item]
-          if snippet.is_a?(Textmate::Snippet)
-            return unless snippet.name and snippet.name != "" #has a name
-            builder.item(snippet.to_menu_string) do
-              doc = EditView.focussed_edit_view_document
-              if doc
-                controller = doc.controllers(Snippets::DocumentController).first
-                controller.start_snippet!(snippet)
+          elsif Textmate.uuid_hash[item] #is a snippet
+            snippet = Textmate.uuid_hash[item]
+            if snippet.is_a?(Textmate::Snippet)
+              return unless snippet.name and snippet.name != "" #has a name
+              builder.item(snippet.to_menu_string) do
+                doc = EditView.focussed_edit_view_document
+                if doc
+                  controller = doc.controllers(Snippets::DocumentController).first
+                  controller.start_snippet!(snippet)
+                end
               end
             end
           end

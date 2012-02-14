@@ -913,8 +913,6 @@ Redcar.environment: #{Redcar.environment}
         end
         sub_menu "Debug", :priority => 20 do
           group(:priority => 10) do
-            item "Task Manager", TaskManager::OpenCommand
-            separator
             item "Print Scope Tree", PrintScopeTreeCommand
             item "Print Scope at Cursor", PrintScopeCommand
           end

@@ -16,9 +16,13 @@ require 'redcar-bundles'
 
 module Redcar
   module Textmate
+    def self.user_bundle_dir
+      File.join(Redcar.user_dir, "Bundles")
+    end
+
     def self.all_bundle_paths
-      @all_bundle_paths = Dir[File.join(RedcarBundles.dir, "Bundles", "*")]
-      @all_bundle_paths += Dir[File.join(Redcar.user_dir, "Bundles", "*")]
+      @all_bundle_paths = Dir[File.join(user_bundle_dir, "*")]
+      @all_bundle_paths += Dir[File.join(RedcarBundles.dir, "Bundles", "*")]
       Redcar.plugin_manager.loaded_plugins.each do |plugin|
         @all_bundle_paths += Dir[File.join(File.dirname(plugin.definition_file), "Bundles", "*")]
       end
@@ -27,9 +31,6 @@ module Redcar
 
     def self.menus
       Menu::Builder.build do
-        #sub_menu "Debug" do
-        #  item "Refresh Menu Test", :command => RefreshMenuTenTimes, :priority => 20
-        #end
         sub_menu "Bundles" do
           if Textmate.storage['loaded_bundles'].size() > 0 and Textmate.storage['load_bundles_menu']
             item "Clear Bundle Menu", :command => ClearBundleMenu, :priority => 20
@@ -123,9 +124,11 @@ module Redcar
       @uuid_hash ||= begin
         h = {}
         all_bundles.each do |b|
-          h[b.uuid] = b
-          b.snippets.each {|s| h[s.uuid] = s }
-          b.preferences.each {|p| h[p.uuid] = p }
+          if h[b.uuid].nil?
+            h[b.uuid] = b
+            b.snippets.each {|s| h[s.uuid] = s }
+            b.preferences.each {|p| h[p.uuid] = p }
+          end
         end
         h
       end
@@ -164,7 +167,17 @@ module Redcar
     def self.all_bundles
       @all_bundles ||= begin
         cache.cache do
-          all_bundle_paths.map {|path| Bundle.new(path) }
+          dups = []
+          uuids = []
+          bundles = all_bundle_paths.map {|path|
+            b = Bundle.new(path)
+            dups << b.uuid if uuids.include?(b.uuid)
+            uuids << b.uuid
+            b
+          }
+          bundles.reject! {|b|
+            dups.include?(b.uuid) and File.dirname(b.path) != user_bundle_dir}
+          bundles
         end
       end
     end

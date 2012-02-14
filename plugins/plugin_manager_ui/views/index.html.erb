@@ -6,6 +6,7 @@ td.red {
 td.yellow {
   background-color: #FFFFCC;
 }
+.derivatives {font-size: 80%; color: gray}
 </style>
 
 
@@ -26,6 +27,9 @@ td.yellow {
 <h4>Loaded Plugins</h4>
 <%= plugin_table(Redcar.plugin_manager.loaded_plugins) %>
 
+<h4>Disabled Plugins</h4>
+<%= plugin_table(Redcar.plugin_manager.disabled_plugins) %>
+
 <h4>Unloaded Plugins</h4>
 <%= plugin_table(Redcar.plugin_manager.unloaded_plugins) %>
 
@@ -34,13 +38,21 @@ td.yellow {
 
 <h4>Plugins with Errors</h4>
 <%= plugin_table(Redcar.plugin_manager.plugins_with_errors) %>
+
 <h4>Browser Details</h4>
 <script language="javascript">
   $("a").click(function(e) {
     e.preventDefault();
-    var pluginName = $(this).parent().parent().find(".plugin-name").text();
+    var action = this.innerText.toLowerCase() + 'Plugin';
+    var record = $(this).parent().parent();
+    var pluginName = record.find(".plugin-name").text();
     try {
-      Controller.reloadPlugin(pluginName);
+      response = Controller[action](pluginName);
+
+      if( response ) {
+        if( response['message'] ) alert(response['message']);
+        if( response['label'] ) this.innerText = response['label'];
+      }
     } catch(e) {
       alert(e.message);
     }
