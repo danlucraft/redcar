@@ -1,4 +1,3 @@
-require 'bundler'
 require 'fileutils'
 
 require 'cucumber/rake/task'

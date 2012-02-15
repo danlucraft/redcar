@@ -16,14 +16,12 @@ require 'net/http'
 
 require 'rubygems'
 
-# If we are running as a Gem, don't use bundler and also set the gem home 
+# If we are running as a Gem, set the gem home 
 # so our gemified jruby can find the installed gems.
 prospective_gem_home = File.expand_path("../../../../", __FILE__)
 entries_in_gem_home  = Dir[prospective_gem_home + "/*"].map {|path| File.basename(path) }
 if (["cache", "gems"] - entries_in_gem_home).length == 0
   ENV["GEM_HOME"]       = prospective_gem_home
-else
-  require 'bundler/setup'
 end
 
 require 'redcar-icons'
