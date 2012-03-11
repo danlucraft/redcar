@@ -57,7 +57,7 @@ class ProjectSearch
           changed_files.each do |fn, ts|
             begin
               next if File.size(fn) > MAX_FILE_SIZE
-              pre_contents = File.new(fn).read(200)
+              pre_contents = File.open(fn) {|f| f.read(200) }
               unless !pre_contents or BinaryDataDetector.binary?(pre_contents)
                 contents = File.read(fn)
                 adjusted_contents = contents.gsub(/\.([^\s])/, '. \1')
