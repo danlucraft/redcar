@@ -1,4 +1,3 @@
-
 class RedcarGemspecHelper
   def self.remove_gitignored_files(filelist)
     gitignore_file = File.expand_path("../.gitignore", __FILE__)
@@ -49,7 +48,7 @@ Gem::Specification.new do |s|
   s.add_dependency("net-sftp")
   s.add_dependency("net-ftp-list")
   s.add_dependency("jruby-openssl")
-  s.add_dependency("ruby-blockcache")
+  s.add_dependency("blockcache")
   s.add_dependency("bouncy-castle-java")
   
   s.add_dependency("swt")
