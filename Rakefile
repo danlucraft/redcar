@@ -1,3 +1,6 @@
+JRUBY_JAR_LOCATION = "http://jruby.org.s3.amazonaws.com/downloads/1.6.7/jruby-complete-1.6.7.jar"
+REDCAR_ROOT = File.expand_path("../", __FILE__)
+
 require 'fileutils'
 
 require 'cucumber/rake/task'
@@ -15,7 +18,6 @@ if RUBY_PLATFORM =~ /mswin|mingw/
   end
 end
 
-JRUBY_JAR_LOCATION = "http://jruby.org.s3.amazonaws.com/downloads/1.6.7/jruby-complete-1.6.7.jar"
 
 desc "Download dependencies"
 task :init do
@@ -43,6 +45,54 @@ task :init do
     rm("#{gem_dir}/data.tar.gz")
   end
 end  
+
+namespace :installers do
+  desc "Generate an OSX app-bundle"
+  task :osx do
+    rm_rf(REDCAR_ROOT + "/pkg/Redcar.app")
+    mkdir_p(REDCAR_ROOT + "/pkg/Redcar.app")
+    bundle_content_dir = REDCAR_ROOT + "/pkg/Redcar.app/Contents"
+    mkdir_p(bundle_content_dir)
+    mkdir_p("#{bundle_content_dir}/MacOS")
+    mkdir_p("#{bundle_content_dir}/Resources")
+  
+    info_plist = <<-XML
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleExecutable</key>
+	<string>redcar.sh</string>
+	<key>CFBundleIconFile</key>
+	<string>redcar-icon-beta-dev.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.redcareditor.Redcar</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string></string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.5</string>
+</dict>
+</plist>
+XML
+    File.open(File.join(bundle_content_dir, "Info.plist"), "w") {|f| f.puts info_plist}
+    cp(REDCAR_ROOT + "/assets/redcar.sh", bundle_content_dir + "/MacOS")
+    cp(REDCAR_ROOT + "/assets/redcar-icons/redcar-icon-beta-dev.icns", bundle_content_dir + "/Resources")
+    
+    exclude = [/pkg/, /spec/, /\.git/, /\.redcar/, /\.gemspec/]
+    Dir[REDCAR_ROOT + "/*"].each do |item|
+      unless exclude.any? {|re| re =~ item}
+        cp_r(item, bundle_content_dir + "/MacOS/")
+      end
+    end
+    chmod(0755, bundle_content_dir + "/MacOS/redcar.sh")
+  end
+end
 
 ### DOCUMENTATION
 
