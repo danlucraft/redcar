@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>new Effect.Fade(${1:'${2:element}'}${3:, ${4:effect_options}});</string>
+	<key>name</key>
+	<string>Effect.Fade</string>
+	<key>scope</key>
+	<string>source.js.prototype</string>
+	<key>tabTrigger</key>
+	<string>eff</string>
+	<key>uuid</key>
+	<string>E325A572-79A1-4191-BF28-41556DA28BAA</string>
+</dict>
+</plist>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>this.controller.serviceRequest('${1:palm://com.palm.applicationManager}', {
+	method:'${2:open}',
+	parameters: {
+		target: "$3"
+	}
+});</string>
+	<key>name</key>
+	<string>controller.serviceRequest</string>
+	<key>scope</key>
+	<string>source.js</string>
+	<key>tabTrigger</key>
+	<string>csr</string>
+	<key>uuid</key>
+	<string>94CC67B1-CA48-4D91-A129-154B73838663</string>
+</dict>
+</plist>

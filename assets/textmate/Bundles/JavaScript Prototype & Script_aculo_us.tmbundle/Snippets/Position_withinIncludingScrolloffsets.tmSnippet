@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>Position.withinIncludingScrolloffsets(${1:'${2:element}'}, ${3:x}, ${4:y});</string>
+	<key>name</key>
+	<string>Position.withinIncludingScrolloffsets</string>
+	<key>scope</key>
+	<string>source.js.prototype</string>
+	<key>tabTrigger</key>
+	<string>pos</string>
+	<key>uuid</key>
+	<string>DD4553A1-633C-4293-8E71-1D7F2E024664</string>
+</dict>
+</plist>

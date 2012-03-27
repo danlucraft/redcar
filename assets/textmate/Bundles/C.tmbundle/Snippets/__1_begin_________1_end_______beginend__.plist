@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${1:v}${1/^.*?(-)?(&gt;)?$/(?2::(?1:&gt;:.))/}begin(), ${1:v}${1/^.*?(-)?(&gt;)?$/(?2::(?1:&gt;:.))/}end()</string>
+	<key>name</key>
+	<string>$1.begin(), $1.end()</string>
+	<key>scope</key>
+	<string>source.c++, source.objc++</string>
+	<key>tabTrigger</key>
+	<string>beginend</string>
+	<key>uuid</key>
+	<string>62D59E1C-1DF1-490E-86E9-DFF8A461AD9C</string>
+</dict>
+</plist>

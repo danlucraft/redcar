@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>puevf@pwnpx.pbz</string>
+	<key>contactName</key>
+	<string>Chris Thomas</string>
+	<key>description</key>
+	<string>A &lt;a href="http://kevin.sb.org/articles/2006/06/06/the-rez-file-format"&gt;resource description file&lt;/a&gt; is Mac-specific and used to compile the resource fork of a file using the &lt;tt&gt;rez&lt;/tt&gt; shell command.</string>
+	<key>name</key>
+	<string>Rez</string>
+	<key>ordering</key>
+	<array>
+		<string>F3EB29E9-8DB7-4052-9D48-5CDD2491D8D3</string>
+		<string>41DDC38F-A053-46D3-982A-202157A76F32</string>
+	</array>
+	<key>uuid</key>
+	<string>B5254936-065A-4E65-8F58-3540179AC959</string>
+</dict>
+</plist>

@@ -17,7 +17,7 @@ module Redcar
     end
     
     def show
-      @image = Swt::Graphics::Image.new(Swt.display, Redcar.icons_directory + "/redcar-splash.png")
+      @image = Swt::Graphics::Image.new(Swt.display, Redcar.root + "/assets/redcar-icons/redcar-splash.png")
       @splash = Swt::Widgets::Shell.new(Swt::SWT::NO_TRIM)
       @bar = Swt::Widgets::ProgressBar.new(@splash, Swt::SWT::NONE)
       @bar.setMaximum(max)

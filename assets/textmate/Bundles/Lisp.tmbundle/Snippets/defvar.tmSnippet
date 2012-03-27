@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>(defvar *${1:name}* ${2:value}
+	"${3:Documentation for $1.}")</string>
+	<key>name</key>
+	<string>defvar</string>
+	<key>scope</key>
+	<string>source.lisp</string>
+	<key>tabTrigger</key>
+	<string>var</string>
+	<key>uuid</key>
+	<string>0CB4BA46-D1CF-4E54-9479-B1159779C2F4</string>
+</dict>
+</plist>

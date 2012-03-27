@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>test${1:SomeFeature} := method(
+	$0
+)</string>
+	<key>name</key>
+	<string>testMethod</string>
+	<key>scope</key>
+	<string>source.io</string>
+	<key>tabTrigger</key>
+	<string>ts</string>
+	<key>uuid</key>
+	<string>086D0C3A-130F-4C93-B1E5-1522DDAF58FA</string>
+</dict>
+</plist>

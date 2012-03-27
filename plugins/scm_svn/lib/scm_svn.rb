@@ -1,8 +1,7 @@
 
 require 'java'
 require 'scm_svn/change'
-require 'redcar-svnkit'
-require Redcar::SvnKit.jar_path
+require Redcar.root + "/assets/svnkit-1.3.5.jar"
 
 module Redcar
   module Scm

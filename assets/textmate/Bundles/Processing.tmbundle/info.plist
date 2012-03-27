@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>punaqyre@cer-phefbe.pbz</string>
+	<key>contactName</key>
+	<string>Chandler McWilliams</string>
+	<key>description</key>
+	<string>&lt;a href="http://processing.org/"&gt;Processing&lt;/a&gt; is an open source programming language and environment for people who want to program images, animation, and sound.</string>
+	<key>mainMenu</key>
+	<dict>
+		<key>items</key>
+		<array>
+			<string>740EC8D5-6590-4635-B76A-A032681898C8</string>
+			<string>------------------------------------</string>
+			<string>78A35FDC-F40B-48AC-93D2-97D303A51FF4</string>
+			<string>8CA89D0B-7B33-45C1-971C-F197D3C6A693</string>
+			<string>9B78606A-BEAB-4234-8DD1-E52C25FC2836</string>
+			<string>5EBF77EA-9E6C-43CB-9B22-159C70735DA6</string>
+			<string>1D075382-1F2C-47B0-8A48-1906480D6239</string>
+			<string>49F7D289-0893-4F93-9AFF-39A5CF3E1CE6</string>
+			<string>1D2C24EC-3F88-4FA7-B419-8356046F19FA</string>
+			<string>B66B064F-4B0C-4674-86E8-F8ABF29272D3</string>
+			<string>4410834F-F43B-4BE9-BC3C-B05CB8E13382</string>
+			<string>2D3DBFE5-4075-4189-B00C-2BF4090802B1</string>
+			<string>5974F040-26BB-41DC-B943-8A9560074B04</string>
+		</array>
+		<key>submenus</key>
+		<dict/>
+	</dict>
+	<key>name</key>
+	<string>Processing</string>
+	<key>ordering</key>
+	<array>
+		<string>740EC8D5-6590-4635-B76A-A032681898C8</string>
+		<string>5974F040-26BB-41DC-B943-8A9560074B04</string>
+		<string>1D2C24EC-3F88-4FA7-B419-8356046F19FA</string>
+		<string>78A35FDC-F40B-48AC-93D2-97D303A51FF4</string>
+		<string>B66B064F-4B0C-4674-86E8-F8ABF29272D3</string>
+		<string>49F7D289-0893-4F93-9AFF-39A5CF3E1CE6</string>
+		<string>5EBF77EA-9E6C-43CB-9B22-159C70735DA6</string>
+		<string>4410834F-F43B-4BE9-BC3C-B05CB8E13382</string>
+		<string>1D075382-1F2C-47B0-8A48-1906480D6239</string>
+		<string>9B78606A-BEAB-4234-8DD1-E52C25FC2836</string>
+		<string>2D3DBFE5-4075-4189-B00C-2BF4090802B1</string>
+		<string>8CA89D0B-7B33-45C1-971C-F197D3C6A693</string>
+		<string>EF0D256C-2FCB-4A87-9250-0F5F82A366B9</string>
+		<string>9C2FA03B-5DEB-4814-9BC0-A2E4F83D1F99</string>
+	</array>
+	<key>uuid</key>
+	<string>DC9271C5-8267-4C5F-93A9-3E3FFC741BEA</string>
+</dict>
+</plist>

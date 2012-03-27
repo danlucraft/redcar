@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>class ${1:Name}Controller {
+	def index = {
+		 $0
+	}
+}</string>
+	<key>name</key>
+	<string>New Controller</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>cont</string>
+	<key>uuid</key>
+	<string>602B1BBF-315A-4F64-B0D9-B9B211058A27</string>
+</dict>
+</plist>

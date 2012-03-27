@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>(gen-interface
+	:name ${1:package.qualified.name}${4:
+	:extends [${5:Interfaces}]}${12:
+	:methods [[${13:a-name} [${14:param.Types}] ${15:return.Type}]${16:, ...}]})
+$0</string>
+	<key>name</key>
+	<string>gen-interface</string>
+	<key>scope</key>
+	<string>source.clojure</string>
+	<key>tabTrigger</key>
+	<string>inter</string>
+	<key>uuid</key>
+	<string>6E408655-7567-41CB-813D-C568BAE89A5D</string>
+</dict>
+</plist>

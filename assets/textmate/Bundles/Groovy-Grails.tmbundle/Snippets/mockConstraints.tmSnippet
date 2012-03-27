@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>mockForConstraintsTests(${1:DomainClass})
+def test${1} = new ${1}()
+assertFalse test${1}.validate()
+assertEquals "${2:nullable}", test${1}.errors["${3:someproperty}"]</string>
+	<key>name</key>
+	<string>mockConstraints</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>mc</string>
+	<key>uuid</key>
+	<string>EAED6F03-BBDF-43CE-9536-C965EA21840B</string>
+</dict>
+</plist>

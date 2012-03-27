@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>\section{${1:section name}} % (fold)
+\label{sec:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3)/g}}}
+${0:$TM_SELECTED_TEXT}
+% section $2 (end)</string>
+	<key>name</key>
+	<string>Section</string>
+	<key>scope</key>
+	<string>text.tex.latex</string>
+	<key>tabTrigger</key>
+	<string>sec</string>
+	<key>uuid</key>
+	<string>24282E70-BE2C-11D9-8F93-000D93589AF6</string>
+</dict>
+</plist>

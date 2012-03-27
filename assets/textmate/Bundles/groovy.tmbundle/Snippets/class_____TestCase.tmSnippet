@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>class ${2:${TM_FILENAME/(.*?)(\..+)/$1/}} extends GroovyTestCase {
+
+	$0
+}</string>
+	<key>name</key>
+	<string>class … extends GroovyTestCase { … }</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>tc</string>
+	<key>uuid</key>
+	<string>3B408AF5-B3E7-4B8E-9056-79CEA2E61F25</string>
+</dict>
+</plist>

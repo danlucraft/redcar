@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>Form.disable(${1:form});</string>
+	<key>name</key>
+	<string>Form.disable</string>
+	<key>scope</key>
+	<string>source.js.prototype</string>
+	<key>tabTrigger</key>
+	<string>form</string>
+	<key>uuid</key>
+	<string>E42163B8-77BD-49C8-A13A-AC476F5EF1F3</string>
+</dict>
+</plist>

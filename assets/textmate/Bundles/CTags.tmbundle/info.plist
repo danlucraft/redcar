@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>tregv-grkgzngr@ovgneg.pbz</string>
+	<key>contactName</key>
+	<string>Gerd Knops</string>
+	<key>description</key>
+	<string>The &lt;a href="http://ctags.sourceforge.net/"&gt;ctags&lt;/a&gt; system allows you to jump to the definition of a symbol. This bundle adds such support to TextMate.</string>
+	<key>name</key>
+	<string>CTags</string>
+	<key>ordering</key>
+	<array>
+		<string>F82D2DF8-6914-4EEC-BA46-F1E4B1716108</string>
+		<string>4E4A0404-8560-483A-B975-E53F6A6B7E25</string>
+	</array>
+	<key>uuid</key>
+	<string>0D39D7BD-CD02-48EF-BB9C-2210BFFC5AD7</string>
+</dict>
+</plist>

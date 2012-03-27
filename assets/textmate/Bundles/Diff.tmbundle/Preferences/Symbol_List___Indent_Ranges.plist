@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Symbol List: Indent Ranges</string>
+	<key>scope</key>
+	<string>source.diff meta.diff.range</string>
+	<key>settings</key>
+	<dict>
+		<key>comment</key>
+		<string>Insert (figure space) padding
+		so that “+nnn,n” becomes “+ nnn, n”</string>
+		<key>symbolTransformation</key>
+		<string>
+		s/[-+](\d)(\d)?(\d)?(\d)?,/(?4:: (?3:: (?2:: )))$0/g;
+		s/,(\d)\b/, $1/g;
+		s/^/ /;
+	</string>
+	</dict>
+	<key>uuid</key>
+	<string>A0B3B6D2-59B1-407F-B310-7FA67222B37A</string>
+</dict>
+</plist>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>private var ${4:field}: ${2:String}
+
+def ${1:fieldName}_=(${3:arg}: ${2:String}) = ${4:field} = ${3:arg}
+
+def ${1:fieldName} = ${4:field}
+</string>
+	<key>name</key>
+	<string>var bean</string>
+	<key>scope</key>
+	<string>source.scala</string>
+	<key>tabTrigger</key>
+	<string>varbean</string>
+	<key>uuid</key>
+	<string>BC8B9506-5F16-11D9-B9C3-000D93589AF6</string>
+</dict>
+</plist>

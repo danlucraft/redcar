@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundlePath</key>
+	<string>/Users/kumar/Library/Application Support/TextMate/Bundles/PHPDoc.tmbundle</string>
+	<key>content</key>
+	<string>/**
+ * ${1:undocumented function}
+ *
+ * @return ${2:void}
+ * @author ${PHPDOC_AUTHOR:$TM_FULLNAME}$3
+ **/$0</string>
+	<key>name</key>
+	<string>Function - post doc</string>
+	<key>scope</key>
+	<string>source.php</string>
+	<key>tabTrigger</key>
+	<string>doc_fp</string>
+	<key>uuid</key>
+	<string>2CDD1B21-956E-11D9-B0A1-000D93382786</string>
+</dict>
+</plist>

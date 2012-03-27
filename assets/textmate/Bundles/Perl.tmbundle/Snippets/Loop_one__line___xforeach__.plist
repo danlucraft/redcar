@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${1:expression} foreach @${2:array};
+</string>
+	<key>name</key>
+	<string>Loop One-line</string>
+	<key>scope</key>
+	<string>source.perl</string>
+	<key>tabTrigger</key>
+	<string>xfore</string>
+	<key>uuid</key>
+	<string>0130788D-F714-4964-83A3-26EC0E01D3C9</string>
+</dict>
+</plist>

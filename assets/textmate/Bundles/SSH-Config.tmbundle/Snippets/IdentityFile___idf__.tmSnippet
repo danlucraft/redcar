@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>IdentityFile ${1:~/.ssh/filename}</string>
+	<key>name</key>
+	<string>IdentityFile</string>
+	<key>scope</key>
+	<string>source.ssh-config</string>
+	<key>tabTrigger</key>
+	<string>idf</string>
+	<key>uuid</key>
+	<string>4E6A957C-0BFD-4265-A701-43088ED0A365</string>
+</dict>
+</plist>

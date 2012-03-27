@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>fileTypes</key>
+	<array>
+		<string>(internal)</string>
+	</array>
+	<key>name</key>
+	<string>Clojure REPL</string>
+	<key>scopeName</key>
+	<string>repl.clojure</string>
+	<key>patterns</key>
+	<array>
+		<dict>
+			<key>begin</key>
+			<string>^user=></string>
+			<key>beginCaptures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.control.repl</string>
+				</dict>
+			</dict>
+			<key>end</key>
+			<string>^(?=&gt;|x&gt;)</string>
+			<key>name</key>
+			<string>repl.entry source.clojure</string>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>source.clojure</string>
+				</dict>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

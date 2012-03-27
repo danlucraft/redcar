@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>{% regroup $1 by $2 as $3 %}</string>
+	<key>name</key>
+	<string>regroup</string>
+	<key>scope</key>
+	<string>text.html.django</string>
+	<key>tabTrigger</key>
+	<string>regroup</string>
+	<key>uuid</key>
+	<string>3E8EC5B9-FF4F-4441-88A7-63C6844E1635</string>
+</dict>
+</plist>

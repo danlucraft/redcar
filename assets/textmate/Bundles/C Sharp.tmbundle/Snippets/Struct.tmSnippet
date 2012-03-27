@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>/// &lt;summary&gt;
+///   Description of struct goes here
+/// &lt;/summary&gt;
+${1:public} struct ${2:StructName}
+{
+	$0
+}</string>
+	<key>name</key>
+	<string>Struct</string>
+	<key>scope</key>
+	<string>source.cs</string>
+	<key>tabTrigger</key>
+	<string>struct</string>
+	<key>uuid</key>
+	<string>C1C6324B-5AA9-4FD7-967F-CC518A02B137</string>
+</dict>
+</plist>

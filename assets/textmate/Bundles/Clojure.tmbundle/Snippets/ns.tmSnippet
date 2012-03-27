@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>(ns ${1:name}
+    ${2:(:refer-clojure :exclude [${3:...}])
+    }${4:(:require (${5:...} ${6::as ${7:...}})$8)
+    }${9:(:use     (${10:...} ${11::only (${12:...})})$13)
+    }${14:(:import (${15:..})$16)})</string>
+	<key>name</key>
+	<string>ns</string>
+	<key>scope</key>
+	<string>source.clojure</string>
+	<key>tabTrigger</key>
+	<string>ns</string>
+	<key>uuid</key>
+	<string>25D2B51D-F088-4108-A0D1-A2511A491040</string>
+</dict>
+</plist>

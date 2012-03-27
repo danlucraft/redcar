@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>gz-ohaqyrf@znpebzngrf.pbz</string>
+	<key>contactName</key>
+	<string>Allan Odgaard</string>
+	<key>description</key>
+	<string>Minimal syntax highlight and a build (&lt;a href="http://www.gnu.org/software/make/"&gt;make&lt;/a&gt;) command.</string>
+	<key>name</key>
+	<string>Make</string>
+	<key>ordering</key>
+	<array>
+		<string>19F9C045-7BCC-429B-8C68-967B6BD15B84</string>
+		<string>6E5653CE-68E0-42E5-BF29-B3AB323BC218</string>
+		<string>FF1825E8-6B1C-11D9-B883-000D93589AF6</string>
+		<string>E05AF624-5BD8-4A54-A0E8-F80E8191D69E</string>
+	</array>
+	<key>uuid</key>
+	<string>4679297D-6227-11D9-BFB1-000D93589AF6</string>
+</dict>
+</plist>

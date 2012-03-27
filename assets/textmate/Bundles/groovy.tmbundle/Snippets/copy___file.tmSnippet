@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>copy(file:"${1:sourceFile}", tofile:"${2:targetFile}")</string>
+	<key>name</key>
+	<string>copy(file: …, tofile: …) </string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>copy</string>
+	<key>uuid</key>
+	<string>4D6B8D48-40DA-45EC-8D4E-BCC63C0A454B</string>
+</dict>
+</plist>

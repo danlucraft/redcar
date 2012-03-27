@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>assertNotNull(${1/(.+)/(?1:")/}${1:message}${1/(.+)/(?1:", )/}${2:instance})$0</string>
+	<key>name</key>
+	<string>assertNotNull</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>asnn</string>
+	<key>uuid</key>
+	<string>3D0A86B2-648D-4A35-9B55-A2A2A9EEE38D</string>
+</dict>
+</plist>

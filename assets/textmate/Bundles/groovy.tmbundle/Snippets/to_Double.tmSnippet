@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>toDouble()</string>
+	<key>name</key>
+	<string>to Double</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>to</string>
+	<key>uuid</key>
+	<string>F83A236B-1ED3-4D66-88D2-D5F4464B242D</string>
+</dict>
+</plist>

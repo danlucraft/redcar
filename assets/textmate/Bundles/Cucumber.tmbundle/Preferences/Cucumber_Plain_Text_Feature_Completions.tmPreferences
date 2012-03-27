@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Gherkin Completions</string>
+	<key>scope</key>
+	<string>text.gherkin.feature</string>
+	<key>settings</key>
+	<dict>
+		<key>completions</key>
+		<array>
+			<string>As a</string>
+			<string>As an</string>
+			<string>I want to</string>
+			<string>So that</string>
+			<string>Story:</string>
+			<string>Scenario:</string>
+			<string>Scenario Outline:</string>
+			<string>Given</string>
+			<string>Then</string>
+			<string>When</string>
+			<string>And</string>
+			<string>But</string>
+		</array>
+	</dict>
+	<key>uuid</key>
+	<string>8B547854-6A6A-4E45-B51E-9324F0E9D364</string>
+</dict>
+</plist>

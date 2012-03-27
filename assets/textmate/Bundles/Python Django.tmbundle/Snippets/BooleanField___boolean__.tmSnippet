@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${1:FIELDNAME} = models.BooleanField(${2:default=True})</string>
+	<key>name</key>
+	<string>BooleanField</string>
+	<key>scope</key>
+	<string>source.python.django</string>
+	<key>tabTrigger</key>
+	<string>boolean</string>
+	<key>uuid</key>
+	<string>27531D3B-899B-4872-A16D-7275E4E91B02</string>
+</dict>
+</plist>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>(when ${1:cond} 
+  $0)</string>
+	<key>name</key>
+	<string>when</string>
+	<key>scope</key>
+	<string>source.clojure</string>
+	<key>tabTrigger</key>
+	<string>wh</string>
+	<key>uuid</key>
+	<string>78C8F23C-2881-4A4E-96A9-5DBC403EF724</string>
+</dict>
+</plist>

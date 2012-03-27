@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${TM_SELECTED_TEXT/([\t ]*).*/$1/m}try {
+	${3:${TM_SELECTED_TEXT/(\A.*)|(.+)|\n\z/(?1:$0:(?2:\t$0))/g}}
+${TM_SELECTED_TEXT/([\t ]*).*/$1/m}} catch (${1:Exception} ${2:\$e}) {
+${TM_SELECTED_TEXT/([\t ]*).*/$1/m}	$0
+${TM_SELECTED_TEXT/([\t ]*).*/$1/m}}</string>
+	<key>keyEquivalent</key>
+	<string>^@W</string>
+	<key>name</key>
+	<string>Wrap in try { … } catch (…) { … }</string>
+	<key>scope</key>
+	<string>source.php</string>
+	<key>tabTrigger</key>
+	<string>try</string>
+	<key>uuid</key>
+	<string>F7751DAF-AC95-4D47-955F-FE2534FDE4F5</string>
+</dict>
+</plist>

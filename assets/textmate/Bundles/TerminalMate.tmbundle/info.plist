@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>qunecyr@trarenypbafhzcgvba.bet</string>
+	<key>contactName</key>
+	<string>Daniel Harple</string>
+	<key>description</key>
+	<string>&lt;a href="http://generalconsumption.org/projects/TerminalMate/"&gt;TerminalMate&lt;/a&gt; is a terminal for TextMate. It is inspired by emacs’s inferior-modes.</string>
+	<key>name</key>
+	<string>TerminalMate</string>
+	<key>ordering</key>
+	<array>
+		<string>A464AA15-5064-4A4D-9742-6BE2A5F3999B</string>
+		<string>9A374A7A-22A2-4969-BF9B-46DE9B356A84</string>
+		<string>5CD9D96B-B721-4AFD-AD55-51788292619B</string>
+		<string>8F305E73-F68F-4A5D-B04B-A8646F2CC695</string>
+		<string>964A0E53-3896-4EC6-AC15-038DC8FCEEE2</string>
+		<string>3B47B103-857B-4A75-938B-4D57D4803BC2</string>
+		<string>893492E6-754F-440E-BA86-0A3EFC311839</string>
+		<string>FA21F17D-ACEE-4FB7-BBDD-DA5590DEAD75</string>
+	</array>
+	<key>uuid</key>
+	<string>70BFE5F6-B10E-408A-B1F6-C7B1661638F9</string>
+</dict>
+</plist>

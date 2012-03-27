@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>#!/usr/bin/perl -w
+
+use strict;
+use Test::More tests =&gt; ${1:1};
+use ${2:ModuleName};
+
+ok(${3:assertion});
+</string>
+	<key>name</key>
+	<string>Test</string>
+	<key>scope</key>
+	<string>source.perl</string>
+	<key>tabTrigger</key>
+	<string>test</string>
+	<key>uuid</key>
+	<string>1B0FB64D-63C1-469E-B0B6-945477603B01</string>
+</dict>
+</plist>

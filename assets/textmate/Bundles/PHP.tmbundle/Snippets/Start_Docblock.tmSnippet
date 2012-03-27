@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>/**
+ * $0
+ */</string>
+	<key>name</key>
+	<string>Start Docblock</string>
+	<key>scope</key>
+	<string>source.php</string>
+	<key>tabTrigger</key>
+	<string>/**</string>
+	<key>uuid</key>
+	<string>775F7FCC-C43C-4C23-B935-9D5F6C25CF1D</string>
+</dict>
+</plist>

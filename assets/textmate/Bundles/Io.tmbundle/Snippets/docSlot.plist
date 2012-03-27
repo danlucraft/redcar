@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>docSlot("${1:slotName}", "${2:documentation}")</string>
+	<key>name</key>
+	<string>docSlot</string>
+	<key>scope</key>
+	<string>source.io</string>
+	<key>tabTrigger</key>
+	<string>ds</string>
+	<key>uuid</key>
+	<string>7BEB3C8C-641B-4BEA-9F92-6594A8D448DD</string>
+</dict>
+</plist>

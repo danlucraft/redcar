@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>private val ${3:field}: ${2:String}
+
+def ${1:fieldName} = ${3:field}
+</string>
+	<key>name</key>
+	<string>val bean</string>
+	<key>scope</key>
+	<string>source.scala</string>
+	<key>tabTrigger</key>
+	<string>valbean</string>
+	<key>uuid</key>
+	<string>F9526AC8-310C-46FD-9ADF-94B5F3617EAA</string>
+</dict>
+</plist>

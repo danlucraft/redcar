@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>(${0:object}):</string>
+	<key>keyEquivalent</key>
+	<string>(</string>
+	<key>name</key>
+	<string>Inside Class Def: Insert (..):</string>
+	<key>scope</key>
+	<string>source.python meta.class.python invalid.illegal.missing-inheritance.python</string>
+	<key>uuid</key>
+	<string>8CE4655C-3BAE-489F-BF42-89FB6B4C4119</string>
+</dict>
+</plist>

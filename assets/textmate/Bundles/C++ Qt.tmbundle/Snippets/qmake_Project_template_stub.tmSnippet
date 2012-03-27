@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>TEMPLATE = app
+CONFIG += qt
+QT += gui
+SOURCES += ${1:main.cpp}
+
+windows {
+	# otherwise we would get 'unresolved external _WinMainCRTStartup'
+	# when compiling with MSVC
+	MOC_DIR     = _moc
+	OBJECTS_DIR = _obj
+	UI_DIR      = _ui
+	RCC_DIR     = _rcc
+}
+!windows {
+	MOC_DIR     = .moc
+	OBJECTS_DIR = .obj
+	UI_DIR      = .ui
+	RCC_DIR     = .rcc
+}
+
+$0</string>
+	<key>name</key>
+	<string>qmake Project template stub</string>
+	<key>scope</key>
+	<string>source.qmake</string>
+	<key>tabTrigger</key>
+	<string>stub</string>
+	<key>uuid</key>
+	<string>C129BDA0-E887-4404-B8B5-3F6086468A5E</string>
+</dict>
+</plist>

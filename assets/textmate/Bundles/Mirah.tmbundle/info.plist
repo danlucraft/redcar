@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>name</key>
+  <string>Mirah</string>
+	<key>contactName</key>
+	<string>Delisa Mason</string>
+	<key>description</key>
+	<string>Syntax highlighting for &lt;a href="http://www.mirah.org"&gt;Mirah&lt;/a&gt;</string>
+	<key>uuid</key>
+	<string>934B53DB-CE02-48CD-AEDD-190093FB53D8</string>
+</dict>
+</plist>

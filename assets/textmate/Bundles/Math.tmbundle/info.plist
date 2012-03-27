@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>contactEmailRot13</key>
+        <string>gz-ohaqyrf@znpebzngrf.pbz</string>
+        <key>contactName</key>
+        <string>Allan Odgaard</string>
+        <key>deleted</key>
+        <array>
+            <string>4BDDCE4F-634B-4BAD-BAB5-6B5754F38EAA</string>
+        </array>
+        <key>description</key>
+        <string>Support for performing different calculations inside TextMate.</string>
+        <key>mainMenu</key>
+        <dict>
+            <key>items</key>
+            <array>
+                <string>93A395CC-77E8-11D9-B5A8-000D93589AF6</string>
+                <string>D1DFE75D-EAAD-4662-8F1F-F5556402054B</string>
+                <string>A8369DD4-4424-4A64-B0B1-FB8BD7D8E02C</string>
+                <string>------------------------------------</string>
+                <string>4BDDCE4F-634B-4BAD-BAB5-6B5754F38EAA</string>
+                <string>D6EEB6EA-77E9-11D9-B36F-000D93589AF6</string>
+                <string>F1541E0F-77EB-11D9-B807-000D93589AF6</string>
+                <string>------------------------------------</string>
+                <string>D44B7356-0598-4AF3-B216-3E8B0F0715F3</string>
+                <string>------------------------------------</string>
+                <string>BA9536B4-5A7E-46D2-A268-E0ADAB9782BC</string>
+            </array>
+            <key>submenus</key>
+            <dict>
+                <key>D44B7356-0598-4AF3-B216-3E8B0F0715F3</key>
+                <dict>
+                    <key>items</key>
+                    <array>
+                        <string>6E8B4CDA-07CD-4BFA-ABFE-5ABA14F35B8A</string>
+                        <string>93992270-EA57-4AE0-BF91-16C9110A41E1</string>
+                        <string>C688B837-D48A-4088-9374-F93E7B4CCD3C</string>
+                    </array>
+                    <key>name</key>
+                    <string>Convert</string>
+                </dict>
+            </dict>
+        </dict>
+        <key>name</key>
+        <string>Math</string>
+        <key>ordering</key>
+        <array>
+            <string>93A395CC-77E8-11D9-B5A8-000D93589AF6</string>
+            <string>D1DFE75D-EAAD-4662-8F1F-F5556402054B</string>
+            <string>A8369DD4-4424-4A64-B0B1-FB8BD7D8E02C</string>
+            <string>D6EEB6EA-77E9-11D9-B36F-000D93589AF6</string>
+            <string>F1541E0F-77EB-11D9-B807-000D93589AF6</string>
+            <string>6E8B4CDA-07CD-4BFA-ABFE-5ABA14F35B8A</string>
+            <string>93992270-EA57-4AE0-BF91-16C9110A41E1</string>
+            <string>C688B837-D48A-4088-9374-F93E7B4CCD3C</string>
+        </array>
+        <key>uuid</key>
+        <string>8A9DDCA2-77E8-11D9-B5A8-000D93589AF6</string>
+    </dict>
+</plist>

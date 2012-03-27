@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>mainMenu</key>
+	<dict>
+		<key>items</key>
+		<array>
+			<string>1530D367-DCDF-4F89-8BDB-896FAA16830E</string>
+			<string>E6FBAE52-8B70-47EE-8F22-3A58D4A088F9</string>
+			<string>FEB590E8-C0CB-4DF2-95C9-3E7B56C7758E</string>
+			<string>6AD6154B-3EE8-43D0-B87F-6261C859AD07</string>
+			<string>2BCE4864-D70A-4C52-B49D-FB3220130B74</string>
+		</array>
+		<key>submenus</key>
+		<dict/>
+	</dict>
+	<key>name</key>
+	<string>Cucumber</string>
+	<key>ordering</key>
+	<array>
+		<string>75E08730-A1D7-4D0F-B594-EAFD9DD49B4D</string>
+		<string>8B547854-6A6A-4E45-B51E-9324F0E9D364</string>
+		<string>90F0D309-13C4-4286-88DE-60F61DDEF094</string>
+		<string>0843B907-3EC2-4F51-A1F6-85EFDB88464B</string>
+		<string>41A25845-3142-47FE-A225-FDF453C1D59D</string>
+		<string>E7E79650-2A87-44A0-8226-3113A94FCE53</string>
+		<string>85E2C52C-9B16-4A54-81E7-6D8D3ADAEFA8</string>
+		<string>B269B8F3-3A6D-4169-9E70-DD89A679416A</string>
+	</array>
+	<key>uuid</key>
+	<string>10DCDBF3-71B9-424F-AE10-17BFB8C4CD69</string>
+  <key>description</key>
+	<string>Support for &lt;a href="http://cukes.info"&gt;Cucumber&lt;/a&gt;.</string>
+</dict>
+</plist>

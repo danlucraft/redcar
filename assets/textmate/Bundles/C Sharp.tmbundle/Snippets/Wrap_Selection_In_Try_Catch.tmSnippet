@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${TM_SELECTED_TEXT/\A(\s*).*/$1/m}try
+${TM_SELECTED_TEXT/\A(\s*).*/$1/m}{
+${TM_SELECTED_TEXT/^.+$/\t$0/g}${TM_SELECTED_TEXT/\A(\s*).*/$1/m}
+${TM_SELECTED_TEXT/\A(\s*).*/$1/m}}
+${TM_SELECTED_TEXT/\A(\s*).*/$1/m}catch (System.Exception e)
+${TM_SELECTED_TEXT/\A(\s*).*/$1/m}{
+${TM_SELECTED_TEXT/\A(\s*).*/$1/m}	Console.WriteLine("Generic Exception Handler: {0}", e.ToString());
+${TM_SELECTED_TEXT/\A(\s*).*/$1/m}}</string>
+	<key>keyEquivalent</key>
+	<string>^W</string>
+	<key>name</key>
+	<string>Wrap Selection In Try / Catch</string>
+	<key>scope</key>
+	<string>source.cs</string>
+	<key>uuid</key>
+	<string>00D42E85-D1BC-4137-93CB-B4055C55C099</string>
+</dict>
+</plist>

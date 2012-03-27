@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>{% url ${1:package.module.view_fn} ${2:value1,kwarg=value2} %}</string>
+	<key>name</key>
+	<string>url</string>
+	<key>scope</key>
+	<string>text.html.django</string>
+	<key>tabTrigger</key>
+	<string>url</string>
+	<key>uuid</key>
+	<string>7E005925-3346-4AA4-B8BB-49A938BA192A</string>
+</dict>
+</plist>

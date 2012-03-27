@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>class ${1:${TM_FILENAME/(.+)\..+|.*/(?1:\L$1_t:name)/}}
+{
+public:
+	${1/(\w+).*/$1/} (${2:arguments});
+	virtual ~${1/(\w+).*/$1/} ();
+
+private:
+	${0:/* data */}
+};</string>
+	<key>name</key>
+	<string>Class</string>
+	<key>scope</key>
+	<string>source.c++, source.objc++</string>
+	<key>tabTrigger</key>
+	<string>cl</string>
+	<key>uuid</key>
+	<string>523B30D4-C28A-11D9-8CEF-000D93589AF6</string>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${1:slug} = models.SlugField(${2:prepopulate_from=("$3",$4)})</string>
+	<key>name</key>
+	<string>SlugField</string>
+	<key>scope</key>
+	<string>source.python.django</string>
+	<key>tabTrigger</key>
+	<string>slug</string>
+	<key>uuid</key>
+	<string>8F14D580-0910-40DE-95B4-10825F3CD656</string>
+</dict>
+</plist>

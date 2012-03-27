@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>GNU Smalltalk</string>
+	<key>scope</key>
+	<string>source.smalltalk.gnu</string>
+	<key>settings</key>
+	<dict>
+		<key>shellVariables</key>
+		<array>
+			<dict>
+				<key>name</key>
+				<string>TM_COMMENT_START</string>
+				<key>value</key>
+				<string>"</string>
+			</dict>
+			<dict>
+				<key>name</key>
+				<string>TM_COMMENT_END</string>
+				<key>value</key>
+				<string>"</string>
+			</dict>
+		</array>
+		<key>spellChecking</key>
+		<integer>0</integer>
+	</dict>
+	<key>uuid</key>
+	<string>D2CCB64E-AB74-4825-827B-A857B73D3134</string>
+</dict>
+</plist>

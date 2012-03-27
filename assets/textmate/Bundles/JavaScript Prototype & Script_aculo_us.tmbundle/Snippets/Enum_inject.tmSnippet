@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>inject(${1:initial_value}, function(${2:accumulator}, ${3:value}) {
+	$0
+	return $2;
+});</string>
+	<key>name</key>
+	<string>Enum.inject</string>
+	<key>scope</key>
+	<string>source.js.prototype</string>
+	<key>tabTrigger</key>
+	<string>inj</string>
+	<key>uuid</key>
+	<string>7B44C545-36C9-41F5-BD41-F115ED323C73</string>
+</dict>
+</plist>

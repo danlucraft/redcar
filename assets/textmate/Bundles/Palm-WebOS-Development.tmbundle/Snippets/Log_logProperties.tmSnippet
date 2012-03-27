@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>Mojo.Log.logProperties($1, ${2:false})</string>
+	<key>name</key>
+	<string>Log.logProperties</string>
+	<key>scope</key>
+	<string>source.js</string>
+	<key>tabTrigger</key>
+	<string>lprop</string>
+	<key>uuid</key>
+	<string>05DFBAFC-3460-412A-9600-369FB8BFAB94</string>
+</dict>
+</plist>

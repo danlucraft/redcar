@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>oenq@oenqpubngr.pbz</string>
+	<key>contactName</key>
+	<string>Brad Choate</string>
+	<key>deleted</key>
+	<array>
+		<string>44FCEFFC-8F21-4BC4-BBA2-33D79367EE29</string>
+	</array>
+	<key>description</key>
+	<string>&lt;a href="http://macromates.com/blog/archives/2006/06/19/blogging-from-textmate/"&gt;Post directly to your blog&lt;/a&gt; with this bundle.</string>
+	<key>mainMenu</key>
+	<dict>
+		<key>items</key>
+		<array>
+			<string>10CFDE4C-E433-48F8-AB94-17E1FBEFC074</string>
+			<string>BD6E6210-F4A3-4821-BA43-A9DFF4178704</string>
+			<string>------------------------------------</string>
+			<string>60853977-B0D2-4776-A3D9-4B6C09E18596</string>
+			<string>FA5DC73E-AAE0-4C69-86E1-87B9E0390FD0</string>
+			<string>------------------------------------</string>
+			<string>3E064A5D-EC5C-48F8-B3BC-15F4CD442827</string>
+			<string>6F1CF327-E4C8-49D8-BD30-FD6F987AE23A</string>
+			<string>------------------------------------</string>
+			<string>17B2F39B-5CCB-4B0E-B305-8C27BED56887</string>
+			<string>8DCBE1EB-A3CC-4559-872E-34A3643F0BC4</string>
+		</array>
+		<key>submenus</key>
+		<dict>
+			<key>3E064A5D-EC5C-48F8-B3BC-15F4CD442827</key>
+			<dict>
+				<key>items</key>
+				<array>
+					<string>C316CEDC-A4E1-41DE-B102-CDF78845ACF3</string>
+					<string>40318F5D-111F-4451-BBB0-F282DEAC881F</string>
+					<string>6CEE1440-987D-4E37-BA50-9AD23784D2E5</string>
+					<string>B55BA9A1-0F22-45F4-B7C8-B216BF038AF9</string>
+					<string>5CCBC664-2477-4C8C-8B8B-7B57DB15DB23</string>
+					<string>853BB979-1DA2-4D78-B50D-092B80A1877F</string>
+					<string>2238B6A6-0961-4DC6-917D-477F776CAF9D</string>
+					<string>D947660B-DD37-44C3-B4A5-7003B90CD0DD</string>
+					<string>5C0A6073-6592-4841-83A0-C03D742074E5</string>
+				</array>
+				<key>name</key>
+				<string>Headers</string>
+			</dict>
+		</dict>
+	</dict>
+	<key>name</key>
+	<string>Blogging</string>
+	<key>ordering</key>
+	<array>
+		<string>10CFDE4C-E433-48F8-AB94-17E1FBEFC074</string>
+		<string>BD6E6210-F4A3-4821-BA43-A9DFF4178704</string>
+		<string>60853977-B0D2-4776-A3D9-4B6C09E18596</string>
+		<string>FA5DC73E-AAE0-4C69-86E1-87B9E0390FD0</string>
+		<string>17B2F39B-5CCB-4B0E-B305-8C27BED56887</string>
+		<string>8DCBE1EB-A3CC-4559-872E-34A3643F0BC4</string>
+		<string>C316CEDC-A4E1-41DE-B102-CDF78845ACF3</string>
+		<string>40318F5D-111F-4451-BBB0-F282DEAC881F</string>
+		<string>6CEE1440-987D-4E37-BA50-9AD23784D2E5</string>
+		<string>6F1CF327-E4C8-49D8-BD30-FD6F987AE23A</string>
+		<string>B55BA9A1-0F22-45F4-B7C8-B216BF038AF9</string>
+		<string>5CCBC664-2477-4C8C-8B8B-7B57DB15DB23</string>
+		<string>853BB979-1DA2-4D78-B50D-092B80A1877F</string>
+		<string>2238B6A6-0961-4DC6-917D-477F776CAF9D</string>
+		<string>D947660B-DD37-44C3-B4A5-7003B90CD0DD</string>
+		<string>5C0A6073-6592-4841-83A0-C03D742074E5</string>
+		<string>6AA68B5B-18B8-4922-9CED-0E2295582955</string>
+		<string>32E65853-CDBD-401A-ADBE-F94F195249BE</string>
+		<string>E46F5C50-5D16-4B5C-8FBB-686BD3768284</string>
+		<string>B2CCDFF8-0FB3-492A-8761-D31FF0FAC448</string>
+		<string>7A2373C1-A300-49B5-9F83-676612D8D5B5</string>
+		<string>F0B36FAE-07A0-46C9-992F-5901327FE266</string>
+		<string>60F07B75-41FD-473F-A390-9E821D880469</string>
+		<string>E7B58845-506D-4065-9835-0D37DCFC02D2</string>
+		<string>96F84D65-3CD5-4088-9360-15131E1611DF</string>
+	</array>
+	<key>uuid</key>
+	<string>79741B2E-271D-4CBC-A61A-380C83D36863</string>
+</dict>
+</plist>

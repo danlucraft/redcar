@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>qSort(${1:list}.begin(), ${1}.end())</string>
+	<key>name</key>
+	<string>qSort(...)</string>
+	<key>scope</key>
+	<string>source.c++.qt</string>
+	<key>tabTrigger</key>
+	<string>qSort</string>
+	<key>uuid</key>
+	<string>D05EDFB2-D456-420B-87EB-BD4CBEDAA58E</string>
+</dict>
+</plist>

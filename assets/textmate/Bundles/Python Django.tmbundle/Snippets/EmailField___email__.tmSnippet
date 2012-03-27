@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${1:FIELDNAME} = models.EmailField()</string>
+	<key>name</key>
+	<string>EmailField</string>
+	<key>scope</key>
+	<string>source.python.django</string>
+	<key>tabTrigger</key>
+	<string>email</string>
+	<key>uuid</key>
+	<string>23AA908D-8DC6-4657-89A4-83214B85497D</string>
+</dict>
+</plist>

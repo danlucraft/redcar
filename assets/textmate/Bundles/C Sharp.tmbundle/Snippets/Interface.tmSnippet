@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>/// &lt;summary&gt;
+///   Description of interface goes here
+/// &lt;/summary&gt;
+interface ${1:InterfaceName}
+{
+	$0
+}</string>
+	<key>name</key>
+	<string>Interface</string>
+	<key>scope</key>
+	<string>source.cs</string>
+	<key>tabTrigger</key>
+	<string>interface</string>
+	<key>uuid</key>
+	<string>CD2EA246-E142-47E1-890F-599616512764</string>
+</dict>
+</plist>

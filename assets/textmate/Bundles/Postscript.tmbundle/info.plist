@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>tregv-grkgzngr@ovgneg.pbz</string>
+	<key>contactName</key>
+	<string>Gerd Knops</string>
+	<key>description</key>
+	<string>Support for the &lt;a href="http://www.adobe.com/products/postscript/"&gt;Postscript&lt;/a&gt; langauge, generally associated with printers.</string>
+	<key>name</key>
+	<string>Postscript</string>
+	<key>ordering</key>
+	<array>
+		<string>B89483CD-6AE0-4517-BE2C-82F8083B7359</string>
+		<string>26898EAD-9BC4-4809-A836-A9F2F705CB1A</string>
+	</array>
+	<key>uuid</key>
+	<string>73C53C31-8AFA-4369-A92F-E5D6904EF628</string>
+</dict>
+</plist>

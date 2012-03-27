@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>reject(function(${1:value}) {
+	$0
+});</string>
+	<key>name</key>
+	<string>Enum.reject</string>
+	<key>scope</key>
+	<string>source.js.prototype</string>
+	<key>tabTrigger</key>
+	<string>reject</string>
+	<key>uuid</key>
+	<string>B0B537B7-C5A0-4127-A090-D29A0DB367BB</string>
+</dict>
+</plist>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>case ${1:word} in
+	${2:pattern} )
+		$0;;
+esac</string>
+	<key>name</key>
+	<string>case … esac</string>
+	<key>scope</key>
+	<string>source.shell</string>
+	<key>tabTrigger</key>
+	<string>case</string>
+	<key>uuid</key>
+	<string>CA3AC214-9EB9-4018-AA1C-D3FF71B1FC72</string>
+</dict>
+</plist>

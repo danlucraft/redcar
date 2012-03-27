@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Miscellaneous</string>
+	<key>scope</key>
+	<string>source.apache-config</string>
+	<key>settings</key>
+	<dict>
+		<key>shellVariables</key>
+		<array>
+			<dict>
+				<key>name</key>
+				<string>TM_DEFAULT_TAG</string>
+				<key>value</key>
+				<string>VirtualHost</string>
+			</dict>
+		</array>
+		<key>smartTypingPairs</key>
+		<array>
+			<array>
+				<string>&lt;</string>
+				<string>&gt;</string>
+			</array>
+		</array>
+	</dict>
+	<key>uuid</key>
+	<string>3FFEAB5C-E41D-466A-B253-98952059DC3B</string>
+</dict>
+</plist>

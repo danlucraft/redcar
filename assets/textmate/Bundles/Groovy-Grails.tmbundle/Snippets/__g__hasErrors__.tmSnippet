@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;g:hasErrors ${1:bean="$2" }${3:model="$4" }${5:field="$6" }&gt;
+	$0
+&lt;/g:hasErrors&gt;
+</string>
+	<key>name</key>
+	<string>&lt;g:hasErrors&gt;</string>
+	<key>scope</key>
+	<string>text.html.grails</string>
+	<key>tabTrigger</key>
+	<string>haserrors</string>
+	<key>uuid</key>
+	<string>1422E213-5533-4F2E-90B8-A5D2F69E2CCC</string>
+</dict>
+</plist>

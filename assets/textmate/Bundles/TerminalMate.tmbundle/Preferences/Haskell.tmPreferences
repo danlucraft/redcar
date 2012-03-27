@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Haskell</string>
+	<key>scope</key>
+	<string>source.haskell</string>
+	<key>settings</key>
+	<dict>
+		<key>shellVariables</key>
+		<array>
+			<dict>
+				<key>name</key>
+				<string>TERMINAL_MATE_LOAD</string>
+				<key>value</key>
+				<string>:load %s</string>
+			</dict>
+			<dict>
+				<key>name</key>
+				<string>TERMINAL_MATE_NEW</string>
+				<key>value</key>
+				<string>ghci</string>
+			</dict>
+			<dict>
+				<key>name</key>
+				<string>TERMINAL_MATE_FILE_EXTENSION</string>
+				<key>value</key>
+				<string>.hs</string>
+			</dict>
+		</array>
+	</dict>
+	<key>uuid</key>
+	<string>893492E6-754F-440E-BA86-0A3EFC311839</string>
+</dict>
+</plist>

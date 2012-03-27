@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>try:
+	${1:pass}
+except${2: ${3:Exception}, ${4:e}}:
+	${5:raise}
+else:
+	${6:pass}
+finally:
+	${7:pass}</string>
+	<key>name</key>
+	<string>Try/Except/Else/Finally</string>
+	<key>scope</key>
+	<string>source.python</string>
+	<key>tabTrigger</key>
+	<string>try</string>
+	<key>uuid</key>
+	<string>2FB8153A-1ABE-44A7-A760-763BA141724B</string>
+</dict>
+</plist>

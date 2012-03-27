@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>oergg@pvepyrfvkqrfvta.pbz</string>
+	<key>contactName</key>
+	<string>Brett Terpstra</string>
+	<key>description</key>
+	<string>The commands in this bundle makes it easy to create hyper links for example by searching for the current word or using the clipboard contents. This bundle is much more useful than it sounds!</string>
+	<key>mainMenu</key>
+	<dict>
+		<key>items</key>
+		<array>
+			<string>A42DC78E-6588-476F-8A00-40B8CCC6D2E0</string>
+			<string>------------------------------------</string>
+			<string>D2F3BE59-1349-4762-9B17-A6F79A7F81B9</string>
+			<string>B94A2DF9-FC40-4281-80FB-35FB2917CDE7</string>
+			<string>------------------------------------</string>
+			<string>2E03E8C8-DC99-4D15-AE46-0E8DCE6BBE6F</string>
+			<string>6511380B-D4C7-408B-85FF-9E98C6AAEB4A</string>
+			<string>41D61EE6-B8A9-4C21-9ECE-E336588423DB</string>
+			<string>50A08D59-18D6-48C1-938D-6644906F5C83</string>
+			<string>------------------------------------</string>
+			<string>71C47F5F-41FA-40E8-A13A-238BC30984D1</string>
+		</array>
+		<key>submenus</key>
+		<dict/>
+	</dict>
+	<key>name</key>
+	<string>Hyperlink Helper</string>
+	<key>ordering</key>
+	<array>
+		<string>71C47F5F-41FA-40E8-A13A-238BC30984D1</string>
+		<string>D2F3BE59-1349-4762-9B17-A6F79A7F81B9</string>
+		<string>B94A2DF9-FC40-4281-80FB-35FB2917CDE7</string>
+		<string>41D61EE6-B8A9-4C21-9ECE-E336588423DB</string>
+		<string>6511380B-D4C7-408B-85FF-9E98C6AAEB4A</string>
+		<string>50A08D59-18D6-48C1-938D-6644906F5C83</string>
+		<string>2E03E8C8-DC99-4D15-AE46-0E8DCE6BBE6F</string>
+		<string>A42DC78E-6588-476F-8A00-40B8CCC6D2E0</string>
+		<string>CA3F1BC7-8F8A-464F-BC3A-322B437F9E8E</string>
+		<string>8CCCD8B6-9583-4B5D-8CBF-0867B14E86D7</string>
+		<string>9793A1A9-F6B5-421E-A147-123CCAE3D58E</string>
+		<string>7D88D7CF-AC5B-491E-801F-FD5AC1F525CB</string>
+		<string>86084226-4371-4593-BC83-FF2023817BCD</string>
+		<string>8B0130E3-6091-445A-BBDA-B1BFC01AADF7</string>
+		<string>1EA4CA8E-1A38-4383-A288-BEE6359A6966</string>
+		<string>F609EFEF-BFD8-4088-815D-1C17BB90FEAD</string>
+		<string>F514F82B-9C65-46BA-B264-D2F374372C54</string>
+		<string>3A357346-EC7D-4F9F-AE65-D61AD62080CA</string>
+	</array>
+	<key>uuid</key>
+	<string>7592B521-FC5E-4D69-A6DD-5A0DD7529CB4</string>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>new Effect.SwitchOff(${1:'${2:element}'}${3:, ${4:effect_options}});</string>
+	<key>name</key>
+	<string>Effect.SwitchOff</string>
+	<key>scope</key>
+	<string>source.js.prototype</string>
+	<key>tabTrigger</key>
+	<string>eff</string>
+	<key>uuid</key>
+	<string>2B1CDA6D-BF8F-4B8F-A946-EF2E5E46F6F3</string>
+</dict>
+</plist>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>.submit(${1:function() {
+	${0:// Act on the event}
+\}});</string>
+	<key>name</key>
+	<string>submit</string>
+	<key>scope</key>
+	<string>source.js.jquery</string>
+	<key>tabTrigger</key>
+	<string>.submit</string>
+	<key>uuid</key>
+	<string>882D10A6-D7B7-4FB4-A176-9FC4C600329A</string>
+</dict>
+</plist>

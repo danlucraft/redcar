@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>oevna.qbabina@tznvy.pbz</string>
+	<key>contactName</key>
+	<string>Brian Donovan</string>
+	<key>description</key>
+	<string>This bundle gives you easy access to most functions of the &lt;a href="http://www.nongnu.org/cvs/"&gt;CVS revision control system&lt;/a&gt;.</string>
+	<key>mainMenu</key>
+	<dict>
+		<key>items</key>
+		<array>
+			<string>ADCD4FCD-D39D-41B3-88D0-84C5BE115535</string>
+			<string>2C5DB599-04DC-40CC-BBE8-0A73620BC42A</string>
+			<string>BE6728A5-AFC4-4D98-9EC7-C2E951483B71</string>
+			<string>52464886-2584-4632-A105-12E3A9E6051F</string>
+			<string>2BABA244-2BB2-4F3C-BA72-66ADEA8FAA01</string>
+			<string>D2411BE8-CF0D-4F61-A51F-9587F267D6D0</string>
+			<string>20865252-80D2-4CA4-9834-391D09210C4F</string>
+		</array>
+		<key>submenus</key>
+		<dict>
+			<key>2BABA244-2BB2-4F3C-BA72-66ADEA8FAA01</key>
+			<dict>
+				<key>items</key>
+				<array>
+					<string>338A3670-DA8E-4036-87E0-DF2E212254C8</string>
+					<string>76E34DE2-1DCB-47B8-BA2F-4F3341A3AB9C</string>
+					<string>9EA691A5-A166-4D8F-955F-270490F02827</string>
+				</array>
+				<key>name</key>
+				<string>History</string>
+			</dict>
+			<key>52464886-2584-4632-A105-12E3A9E6051F</key>
+			<dict>
+				<key>items</key>
+				<array>
+					<string>22FC4CAB-4664-4CFC-BC8E-C2294616E464</string>
+					<string>00C541DE-9A5C-4C59-A075-E754BAEB25C2</string>
+					<string>E29C9E3B-B7FB-4ED1-94C3-2F702CD090B5</string>
+					<string>6416A49F-8B3E-47EE-81B4-F2F7F19C6B41</string>
+				</array>
+				<key>name</key>
+				<string>Diff</string>
+			</dict>
+			<key>D2411BE8-CF0D-4F61-A51F-9587F267D6D0</key>
+			<dict>
+				<key>items</key>
+				<array>
+					<string>473C6519-F164-4496-A699-F9DE2CAB56DD</string>
+					<string>1F22884A-6702-4FB6-B4E7-D49B2431BD4E</string>
+					<string>1FE7E10E-70B4-44D7-924D-879C54F19289</string>
+				</array>
+				<key>name</key>
+				<string>Tags</string>
+			</dict>
+		</dict>
+	</dict>
+	<key>name</key>
+	<string>CVS</string>
+	<key>ordering</key>
+	<array>
+		<string>ADCD4FCD-D39D-41B3-88D0-84C5BE115535</string>
+		<string>338A3670-DA8E-4036-87E0-DF2E212254C8</string>
+		<string>76E34DE2-1DCB-47B8-BA2F-4F3341A3AB9C</string>
+		<string>2C5DB599-04DC-40CC-BBE8-0A73620BC42A</string>
+		<string>BE6728A5-AFC4-4D98-9EC7-C2E951483B71</string>
+		<string>22FC4CAB-4664-4CFC-BC8E-C2294616E464</string>
+		<string>00C541DE-9A5C-4C59-A075-E754BAEB25C2</string>
+		<string>E29C9E3B-B7FB-4ED1-94C3-2F702CD090B5</string>
+		<string>6416A49F-8B3E-47EE-81B4-F2F7F19C6B41</string>
+		<string>9EA691A5-A166-4D8F-955F-270490F02827</string>
+		<string>20865252-80D2-4CA4-9834-391D09210C4F</string>
+		<string>1FE7E10E-70B4-44D7-924D-879C54F19289</string>
+		<string>473C6519-F164-4496-A699-F9DE2CAB56DD</string>
+		<string>1F22884A-6702-4FB6-B4E7-D49B2431BD4E</string>
+	</array>
+	<key>uuid</key>
+	<string>62FB4173-A31D-41D6-8201-16C7866F567E</string>
+</dict>
+</plist>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;?${TM_PHP_OPEN_TAG:php} foreach (\$${1:variable} as \$${2:key}${3: =&gt; \$${4:value}}): ?&gt;
+	${0}
+&lt;?${TM_PHP_OPEN_TAG:php} endforeach ?&gt;</string>
+	<key>name</key>
+	<string>&lt;?php foreach (…) … &lt;?php endforeach ?&gt;</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>foreach</string>
+	<key>uuid</key>
+	<string>1E34E416-CD16-4C16-A369-9CDC3FAFD4C4</string>
+</dict>
+</plist>

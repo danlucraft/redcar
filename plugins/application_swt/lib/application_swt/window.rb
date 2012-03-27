@@ -187,14 +187,14 @@ module Redcar
       end
 
       def set_icon
-        shell.image = Icon.swt_image(icon_file)
+        shell.image = Icon.image(icon_file)
       end
 
       def icon_file
         if Redcar::VERSION =~ /dev$/ and !ARGV.include?("--red-icon")
-          :redcar_icon_beta_dev
+          Redcar.root + "/assets/redcar-icons/redcar-icon-beta-dev.png"
         else
-          :redcar_icon_beta
+          Redcar.root + "/assets/redcar-icons/redcar-icon-beta.png"
         end
       end
 

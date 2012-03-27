@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>When ${1:event}</string>
+	<key>name</key>
+	<string>When Step Plaintext</string>
+	<key>scope</key>
+	<string>text.cucumber.feature</string>
+	<key>tabTrigger</key>
+	<string>whe</string>
+	<key>uuid</key>
+	<string>D7663DCB-65B4-434D-BAB4-021CA7B4FF78</string>
+</dict>
+</plist>

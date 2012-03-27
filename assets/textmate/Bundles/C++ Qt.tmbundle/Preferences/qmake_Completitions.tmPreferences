@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>qmake Completitions</string>
+	<key>scope</key>
+	<string>source.qmake</string>
+	<key>settings</key>
+	<dict>
+		<key>completions</key>
+		<array>
+			<string>CONFIG</string>
+			<string>DEFINES</string>
+			<string>DEF_FILE</string>
+			<string>DESTDIR</string>
+			<string>DISTFILES</string>
+			<string>DLLDESTDIR</string>
+			<string>FORMS</string>
+			<string>FORMS3</string>
+			<string>HEADERS</string>
+			<string>INCLUDEPATH</string>
+			<string>LEXSOURCES</string>
+			<string>LIBS</string>
+			<string>MOC_DIR</string>
+			<string>OBJECTS_DIR</string>
+			<string>RCC_DIR</string>
+			<string>REQUIRES</string>
+			<string>SOURCES</string>
+			<string>SUBDIRS</string>
+			<string>TARGET</string>
+			<string>TEMPLATE</string>
+			<string>TRANSLATIONS</string>
+			<string>UI_DIR</string>
+			<string>UI_HEADERS_DIR</string>
+			<string>UI_SOURCES_DIR</string>
+			<string>VERSION</string>
+			<string>YACCSOURCES</string>
+		</array>
+	</dict>
+	<key>uuid</key>
+	<string>8B8C14B7-9E15-448E-AE1B-BE87E6069F40</string>
+</dict>
+</plist>

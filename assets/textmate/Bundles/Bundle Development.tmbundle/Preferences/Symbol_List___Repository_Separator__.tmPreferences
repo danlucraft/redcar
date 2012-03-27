@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Symbol List (Repository Separator)</string>
+	<key>scope</key>
+	<string>support.constant.repository.tm-grammar</string>
+	<key>settings</key>
+	<dict>
+		<key>showInSymbolList</key>
+		<integer>1</integer>
+		<key>symbolTransformation</key>
+		<string>
+		s/^repository$/-/;				# repository = separator
+	</string>
+	</dict>
+	<key>uuid</key>
+	<string>1515233D-64A7-48B3-A032-895A2A2E9789</string>
+</dict>
+</plist>

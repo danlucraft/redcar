@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Symbol List: Virtual Host</string>
+	<key>scope</key>
+	<string>meta.toc-list.virtual-host.apache-config</string>
+	<key>settings</key>
+	<dict>
+		<key>showInSymbolList</key>
+		<integer>1</integer>
+		<key>symbolTransformation</key>
+		<string>s/^\s*/Host: /; s/\s+/ /g</string>
+	</dict>
+	<key>uuid</key>
+	<string>2722AC57-58BC-4B78-9DA7-889D007D6EE7</string>
+</dict>
+</plist>

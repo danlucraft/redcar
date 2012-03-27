@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>uncheck '${1:id_or_name_or_label}'</string>
+	<key>name</key>
+	<string>uncheck</string>
+	<key>scope</key>
+	<string>source.ruby.rspec.cucumber.steps,source.ruby.rspec.story.steps</string>
+	<key>tabTrigger</key>
+	<string>unc</string>
+	<key>uuid</key>
+	<string>0F7FB1AF-BF0F-4427-A886-1BAECFC09FB7</string>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>redirect(controller:"${1:c}",action:"${2:a}")</string>
+	<key>name</key>
+	<string>redirect(controller:.., action:..)</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>reca</string>
+	<key>uuid</key>
+	<string>1887D21A-3F26-438D-A12F-4C1E4AB78149</string>
+</dict>
+</plist>

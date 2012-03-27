@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>/// &lt;summary&gt;
+///   The main entry point for the application
+/// &lt;/summary&gt;
+[STAThread]
+public static void Main(string[] args)
+{
+	$0
+}
+</string>
+	<key>name</key>
+	<string>Main Method</string>
+	<key>scope</key>
+	<string>source.cs</string>
+	<key>tabTrigger</key>
+	<string>main</string>
+	<key>uuid</key>
+	<string>6915B574-5910-4255-802F-FD995500A0B2</string>
+</dict>
+</plist>

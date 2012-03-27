@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>package ${1}
+		
+import grails.test.*
+		
+class ${2:Name}Tests extends GrailsUnitTestCase {
+
+	protected void setUp() {
+        super.setUp()
+    }
+
+    protected void tearDown() {
+        super.tearDown()
+    }
+
+	void test${3:Something}() {
+		 $0
+	}
+	
+}</string>
+	<key>name</key>
+	<string>New Unit Test</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>unit</string>
+	<key>uuid</key>
+	<string>5E358AE7-2B58-4B13-B5DE-13834E7951B3</string>
+</dict>
+</plist>

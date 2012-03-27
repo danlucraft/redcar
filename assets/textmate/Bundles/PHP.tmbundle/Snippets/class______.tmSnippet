@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>/**
+* $1
+*/
+class ${2:ClassName}${3: extends ${4:AnotherClass}}
+{
+	$5
+	function ${6:__construct}(${7:argument})
+	{
+		${0:# code...}
+	}
+}
+</string>
+	<key>name</key>
+	<string>class …</string>
+	<key>scope</key>
+	<string>source.php</string>
+	<key>tabTrigger</key>
+	<string>class</string>
+	<key>uuid</key>
+	<string>0F39268F-8CD0-11D9-B507-000D93C8BE28</string>
+</dict>
+</plist>

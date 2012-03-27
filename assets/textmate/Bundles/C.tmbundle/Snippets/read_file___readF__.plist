@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>std::vector&lt;char&gt; v;
+if(FILE${TM_C_POINTER: *}fp = fopen(${1:"filename"}, "r"))
+{
+	char buf[1024];
+	while(size_t len = fread(buf, 1, sizeof(buf), fp))
+		v.insert(v.end(), buf, buf + len);
+	fclose(fp);
+}</string>
+	<key>name</key>
+	<string>Read File Into Vector</string>
+	<key>scope</key>
+	<string>source.c++, source.objc++</string>
+	<key>tabTrigger</key>
+	<string>readfile</string>
+	<key>uuid</key>
+	<string>E8C3B596-9045-11D9-AB38-000D93589AF6</string>
+</dict>
+</plist>

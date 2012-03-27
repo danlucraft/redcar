@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>switch(${1:value}) {
+	case ${2:CASE}:
+		$3
+	break$0
+}</string>
+	<key>name</key>
+	<string>switch … case</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>switch</string>
+	<key>uuid</key>
+	<string>A5C80D9B-2D0F-4E11-A261-01B48519A228</string>
+</dict>
+</plist>

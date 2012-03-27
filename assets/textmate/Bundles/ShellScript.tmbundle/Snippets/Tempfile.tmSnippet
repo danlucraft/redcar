@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${1:TMPFILE}="$(mktemp -t ${2:`echo "${TM_FILENAME%.*}" | sed -e 's/[^a-zA-Z]/_/g' -e 's/^$/untitled/'`})"
+${3:${4/(.+)/trap "/}${4:rm -f '\$${1/.*\s//}'}${4/(.+)/" 0               # EXIT
+/}${5/(.+)/trap "/}${5:rm -f '\$${1/.*\s//}'; exit 1}${5/(.+)/" 2       # INT
+/}${6/(.+)/trap "/}${6:rm -f '\$${1/.*\s//}'; exit 1}${6/(.+)/" 1 15    # HUP TERM
+/}}
+</string>
+	<key>name</key>
+	<string>Tempfile</string>
+	<key>scope</key>
+	<string>source.shell</string>
+	<key>tabTrigger</key>
+	<string>temp</string>
+	<key>uuid</key>
+	<string>23583387-4ACC-4A27-B6EC-58418A39EF30</string>
+</dict>
+</plist>

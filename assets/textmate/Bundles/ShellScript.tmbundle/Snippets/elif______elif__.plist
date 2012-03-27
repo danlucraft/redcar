@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>elif ${2:[[ ${1:condition} ]]}; then
+	${0:#statements}</string>
+	<key>name</key>
+	<string>elif …</string>
+	<key>scope</key>
+	<string>source.shell</string>
+	<key>tabTrigger</key>
+	<string>elif</string>
+	<key>uuid</key>
+	<string>A1E3D4D4-BFC6-11D9-BB97-000D93589AF6</string>
+</dict>
+</plist>

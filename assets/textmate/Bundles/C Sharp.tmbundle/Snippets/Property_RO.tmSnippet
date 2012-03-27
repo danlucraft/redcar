@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${1:public} ${2:Type} ${3:PropertyName}
+{
+	get
+	{
+		return ${4:${3/./\l$0/}};
+	}
+}
+</string>
+	<key>name</key>
+	<string>Property (Read-Only)</string>
+	<key>scope</key>
+	<string>source.cs</string>
+	<key>tabTrigger</key>
+	<string>r</string>
+	<key>uuid</key>
+	<string>18DBF19B-30B1-4218-8B4F-1D940A07D93B</string>
+</dict>
+</plist>

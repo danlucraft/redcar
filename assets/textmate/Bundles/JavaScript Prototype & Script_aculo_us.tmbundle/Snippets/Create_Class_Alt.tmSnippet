@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>var ${1:ClassName} = Class.create();
+${1:ClassName}.prototype = {
+  initialize : function(){
+    $0${10:${TM_SELECTED_TEXT:/*initialize*/}}
+  }${2:, /*Other methods?*/}
+};
+${4:${1:ClassName}.${3:instance} = new ${1:ClassName};
+}</string>
+	<key>name</key>
+	<string>Create Class Alt</string>
+	<key>scope</key>
+	<string>source.js.prototype</string>
+	<key>tabTrigger</key>
+	<string>class</string>
+	<key>uuid</key>
+	<string>937FC554-B597-4862-9A60-7605B13C81E8</string>
+</dict>
+</plist>

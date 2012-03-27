@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>.addClass('${1:class name}')$0</string>
+	<key>name</key>
+	<string>addClass</string>
+	<key>scope</key>
+	<string>source.js.jquery</string>
+	<key>tabTrigger</key>
+	<string>.addClass</string>
+	<key>uuid</key>
+	<string>CDCE5068-5596-43B6-B710-9A36E4163007</string>
+</dict>
+</plist>

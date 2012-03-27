@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>Mojo.Animation.animateStyle($1, '${2:left}', '${3:linear}', {
+	from: ${4:300},
+	to: ${5:toLeft},
+	duration: ${6:leftShrinkDuration},
+	onComplete: function() {
+		}
+	}
+});</string>
+	<key>name</key>
+	<string>Animation.animateStyle</string>
+	<key>scope</key>
+	<string>source.js</string>
+	<key>tabTrigger</key>
+	<string>aastyle</string>
+	<key>uuid</key>
+	<string>8B2C1225-9D25-4252-9A48-106227F3D972</string>
+</dict>
+</plist>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>fileTypes</key>
+	<array>
+		<string>tmReleaseNotes</string>
+	</array>
+	<key>name</key>
+	<string>Release Notes</string>
+	<key>patterns</key>
+	<array>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.separator.release-notes</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>meta.toc-list.release-notes</string>
+				</dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.separator.release-notes</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>^(\[)(?:[\d-]+: )?(REVISION (\d+|v[\d.b]+))(\])$\n</string>
+			<key>name</key>
+			<string>meta.separator.release-notes</string>
+		</dict>
+		<dict>
+			<key>begin</key>
+			<string>^([ \t]*)(?=\S)</string>
+			<key>contentName</key>
+			<string>meta.paragraph.release-notes</string>
+			<key>end</key>
+			<string>^(?!\1(?=\S))</string>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>match</key>
+					<string>(https?|ftp|mailto):\S+?(?=[)&gt;,.':;"]*(\s|$)|$)</string>
+					<key>name</key>
+					<string>markup.underline.link.release-notes</string>
+				</dict>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.other.release-notes</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>punctuation.definition.keyword.release-notes</string>
+						</dict>
+						<key>3</key>
+						<dict>
+							<key>name</key>
+							<string>punctuation.definition.keyword.release-notes</string>
+						</dict>
+						<key>4</key>
+						<dict>
+							<key>name</key>
+							<string>constant.other.bundle-name.release-notes</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>((\[)(?:NEW|FIXED|CHANGED|REMOVED|INFO)(\])) (?:(.+? bundle):)?</string>
+				</dict>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>storage.type.ticket.release-notes</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>constant.numeric.ticket.release-notes</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>([Tt]icket) ([0-9A-F]{8})\b</string>
+					<key>name</key>
+					<string>meta.ticket.release-notes</string>
+				</dict>
+				<dict>
+					<key>comment</key>
+					<string>I do not want spell checking for CamelCase words. Since this is generally when quoting various API’s, I have deliberately used A-Z and a-z (ASCII) -- Allan</string>
+					<key>match</key>
+					<string>\b[A-Z]*[a-z]+[A-Z]\w*\b</string>
+					<key>name</key>
+					<string>meta.word.camel-case.release-notes</string>
+				</dict>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>constant.other.committer-name.release-notes</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>\((G(erd Knops|a(vin Kistner|rrett J. Woodworth)|ra(nt Hollingworth|eme Rocher))|R(yan McCuaig|ich Barton|o(ss Harmes|ger Braunstein|b(ert Rainthorpe| (Rix|Bevan))))|M(i(cha(il Pishchagin|el Sheets)|tch Chapman|etek Bąk|k(e Mellor|ael Säker))|a(t(s Persson|t(hew Gilbert|eo Spinelli| Pelletier))|r(tin Ström|k Grimes)|x Williams))|B(ill Duenskie|ob Fleck|en(oit Gagnon|jamin Jackson| Perry)|arrett Clark|r(ian (Donovan|Lalor)|ett Terpstra|ad (Miller|Choate)))|H(enrik Nyh|adley Wickham)|S(t(ephen Skubik-Peplaski|éphane Payrard|anley Rost)|imon (Gregory|Strandgaard)|u(ne Foldager|dara Williams)|ebastian Gräßl|am DeVore)|Nathan Youngman|C(h(a(ndler McWilliams|rilaos Skiadas)|ris(topher Forsythe| (Thomas|Jenkins)))|iarán Walsh)|T(homas Aylott|o(rsten Becker|m Lazar|bias Luetke)|akaaki Kato|roy Mcilvena)|Ian (Joyner|White)|Ollivier Robert|D(om(inique Peretti|enico Carbotta)|uane Johnson|a(n(iel Harple| Kelley)|vid (Glasser|Bonnet|Hansson|Powers|Wikler))|rew Colthorp)|J(iun Wei Chia|o(shua Emmons|nathan (Ragan-Kelley|Chaffer)|e Maller|achim Mårtensson)|ustin French|eroen van der Ham|a(cob Rus|y Soffian|kub Nešetřil|m(is Buck|es (Edward Gray II|A. Baker))))|Paul(o Jorge Lopes de Moura| Bissex)|Eric Hsu|K(umar McMillan|evin Ballard)|F(ergus Bremner|abien POTENCIER|lorent Pillet|r(édéric Ballériaux|ank Brault))|Wil(son Miner|liam (D. Neumann|Prater))|A(n(thony Underwood|d(y Herbert|ers Thid|rew Henson))|dam Sanderson|urelio Marinho Jargas|parajita Fishman|l(e( Muñoz|xand(er John Ross|re Girard))|an Schussman|lan Odgaard)|mro Nasr))\)$</string>
+				</dict>
+			</array>
+		</dict>
+	</array>
+	<key>scopeName</key>
+	<string>text.plain.release-notes</string>
+	<key>uuid</key>
+	<string>8926CAFE-1CF3-4CF9-A056-4FF90F596E9A</string>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>(defmulti ${1:name} ${2:(fn [${3:params*}] $0)})</string>
+	<key>name</key>
+	<string>defmulti</string>
+	<key>scope</key>
+	<string>source.clojure</string>
+	<key>tabTrigger</key>
+	<string>mult</string>
+	<key>uuid</key>
+	<string>A20A307A-65B6-4086-8D57-0B3E4BC1C554</string>
+</dict>
+</plist>

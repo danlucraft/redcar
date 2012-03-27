@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Ruby Sass</string>
+	<key>contactEmailRot13</key>
+	<string>obo@fcbexzbatre.pbz</string>
+	<key>contactName</key>
+	<string>Bob Aman</string>
+	<key>description</key>
+	<string>Template language for easily creating CSS; implemented in ruby.</string>
+	<key>uuid</key>
+	<string>176253C8-5D97-4C20-AA34-3BE8BC73FBC9</string>
+</dict>
+</plist>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>\\begin{${1:t}${1/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}{${2:c}}
+$0${2/((?&lt;=.)c|l|r)|./(?1: &amp; )/g}
+\\end{${1:t}${1/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}</string>
+	<key>name</key>
+	<string>Tabular</string>
+	<key>scope</key>
+	<string>text.tex.latex</string>
+	<key>tabTrigger</key>
+	<string>tab</string>
+	<key>uuid</key>
+	<string>0E817E24-DC11-42A5-BBBD-EEF1FD282B2F</string>
+</dict>
+</plist>

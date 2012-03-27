@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>new Effect.BlindDown(${1:'${2:element}'}${3:, ${4:effect_options}});</string>
+	<key>name</key>
+	<string>Effect.BlindDown</string>
+	<key>scope</key>
+	<string>source.js.prototype</string>
+	<key>tabTrigger</key>
+	<string>eff</string>
+	<key>uuid</key>
+	<string>77E30D5F-FF83-4C7A-8D41-4369DD227FAA</string>
+</dict>
+</plist>

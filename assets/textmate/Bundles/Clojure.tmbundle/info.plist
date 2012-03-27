@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Clojure</string>
+	<key>ordering</key>
+	<array>
+		<string>4317DEFD-FB99-44EB-956C-6EA72E5314D7</string>
+		<string>7B019B03-16B7-4FED-89A9-FBBB4488DFB6</string>
+		<string>C2469123-D13D-4865-81A1-FB28D4DD805A</string>
+		<string>AA09D978-BE1F-4026-927F-817733923226</string>
+		<string>B22B0223-9874-4EBE-807C-F99D559D108D</string>
+		<string>8959979C-5AB6-4F36-BC83-3D5EA50D2DCD</string>
+		<string>95534E96-D85B-4E0B-8A29-7D9C50D79357</string>
+		<string>283BDF9E-E679-49D0-AF16-1EF1C02B1754</string>
+		<string>6A87759F-F746-4E84-B788-965B46363202</string>
+	</array>
+	<key>uuid</key>
+	<string>6B2BD209-0142-4CA6-A596-9250015AD8CA</string>
+  <key>description</key>
+	<string>Support for &lt;a href="http://clojure.org"&gt;Clojure&lt;/a&gt;.</string>
+</dict>
+</plist>

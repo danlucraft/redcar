@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${1:FIELDNAME} = models.ManyToManyField(${2:RELATED_MODEL})</string>
+	<key>name</key>
+	<string>ManyToManyField</string>
+	<key>scope</key>
+	<string>source.python.django</string>
+	<key>tabTrigger</key>
+	<string>manytomany</string>
+	<key>uuid</key>
+	<string>449AB31C-BAB7-4D30-AF04-6A070CBE4EF4</string>
+</dict>
+</plist>

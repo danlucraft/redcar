@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>zfurrgf@juvgrsnyyf.bet</string>
+	<key>contactName</key>
+	<string>Michael Sheets</string>
+	<key>deleted</key>
+	<array>
+		<string>2C49762A-794E-4ED4-82E4-E9956357D7A2</string>
+		<string>D95FD194-916E-47C4-A20F-A02CE8C80A95</string>
+	</array>
+	<key>description</key>
+	<string>Support for the various forms of Apple’s &lt;a href="http://developer.apple.com/documentation/Cocoa/Conceptual/PropertyLists/index.html"&gt;Property List format&lt;/a&gt; (originally from NeXT).</string>
+	<key>mainMenu</key>
+	<dict>
+		<key>items</key>
+		<array>
+			<string>827E8A23-2C7A-4BDD-987F-A3B67B51F239</string>
+			<string>000A245B-4BDD-4544-8200-C5BE3EFEDC20</string>
+			<string>------------------------------------</string>
+			<string>DA0A5096-5F16-11D9-B9C3-000D93589AF6</string>
+			<string>A7240D98-3452-42FC-A3D8-960F1E992AD2</string>
+			<string>------------------------------------</string>
+			<string>6D5D4F38-1A58-4E33-A2C0-2F9D98B6C436</string>
+		</array>
+		<key>submenus</key>
+		<dict>
+			<key>6D5D4F38-1A58-4E33-A2C0-2F9D98B6C436</key>
+			<dict>
+				<key>items</key>
+				<array>
+					<string>38A33B03-FD95-47C9-9525-423BCD737932</string>
+					<string>6F380BCA-86F8-411A-9570-8479727A40C6</string>
+					<string>8980A4DF-5255-4F70-8D4A-ED3BE0DAED0E</string>
+					<string>CB054597-2636-45F7-B620-93E3E1CBE917</string>
+					<string>------------------------------------</string>
+					<string>B454B512-8514-4293-AF58-60CE3FFDB05A</string>
+					<string>9A9CF12C-A358-48E2-A79D-4BA484164B21</string>
+					<string>E8DC4BC2-C315-4159-B0F7-24902F2C01BE</string>
+					<string>87529322-785A-4446-840F-6E669BE03063</string>
+					<string>9D710F5B-7E88-4CA1-B866-E00C3E52AAFC</string>
+					<string>651313F5-EC36-48F2-A815-838D47B67BEF</string>
+					<string>46E6D569-E146-4116-AB4C-D74D6463F160</string>
+				</array>
+				<key>name</key>
+				<string>XML Property List Elements</string>
+			</dict>
+		</dict>
+	</dict>
+	<key>name</key>
+	<string>Property List</string>
+	<key>ordering</key>
+	<array>
+		<string>827E8A23-2C7A-4BDD-987F-A3B67B51F239</string>
+		<string>000A245B-4BDD-4544-8200-C5BE3EFEDC20</string>
+		<string>DA0A5096-5F16-11D9-B9C3-000D93589AF6</string>
+		<string>A7240D98-3452-42FC-A3D8-960F1E992AD2</string>
+		<string>38A33B03-FD95-47C9-9525-423BCD737932</string>
+		<string>6F380BCA-86F8-411A-9570-8479727A40C6</string>
+		<string>8980A4DF-5255-4F70-8D4A-ED3BE0DAED0E</string>
+		<string>CB054597-2636-45F7-B620-93E3E1CBE917</string>
+		<string>B454B512-8514-4293-AF58-60CE3FFDB05A</string>
+		<string>9A9CF12C-A358-48E2-A79D-4BA484164B21</string>
+		<string>E8DC4BC2-C315-4159-B0F7-24902F2C01BE</string>
+		<string>87529322-785A-4446-840F-6E669BE03063</string>
+		<string>9D710F5B-7E88-4CA1-B866-E00C3E52AAFC</string>
+		<string>651313F5-EC36-48F2-A815-838D47B67BEF</string>
+		<string>46E6D569-E146-4116-AB4C-D74D6463F160</string>
+		<string>E62B2729-6B1C-11D9-AE35-000D93589AF6</string>
+		<string>0473E42E-A64E-4D3E-B20B-BA66E0145BC4</string>
+		<string>CDA3D2D7-63C8-4208-9ADA-2D5031128B34</string>
+		<string>F8D1160E-C397-45DD-86A8-BC1CC0C8676A</string>
+		<string>88C56C14-B8C2-409E-9E1E-55777FB354EE</string>
+	</array>
+	<key>uuid</key>
+	<string>467A3CB0-6227-11D9-BFB1-000D93589AF6</string>
+</dict>
+</plist>

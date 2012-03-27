@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>[% UNLESS ${1:condition} %]
+	$2
+[% END %]</string>
+	<key>name</key>
+	<string>unless</string>
+	<key>scope</key>
+	<string>text.html.tt</string>
+	<key>tabTrigger</key>
+	<string>unl</string>
+	<key>uuid</key>
+	<string>956498D2-745E-4C23-8463-702DF93FA1E5</string>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>.insertAfter('${1:selector expression}')$0</string>
+	<key>name</key>
+	<string>insertAfter</string>
+	<key>scope</key>
+	<string>source.js.jquery</string>
+	<key>tabTrigger</key>
+	<string>.insertAfter</string>
+	<key>uuid</key>
+	<string>03A18CFB-640C-4D87-A41B-15F01A2D1768</string>
+</dict>
+</plist>

@@ -48,9 +48,6 @@ module Redcar
     # Trade in this Ruby instance for a JRuby instance, loading in a 
     # starter script and passing it some arguments.
     def construct_command(args="")
-      require 'rubygems'
-      require 'redcar-jruby'
-      
       bin = File.expand_path(File.join(File.dirname(__FILE__), %w{.. .. bin redcar}))
       ENV['RUBYOPT'] = nil # disable other native args
 
@@ -59,7 +56,7 @@ module Redcar
         bin = "\"#{bin}\""
       end      
 
-      jruby_complete = RedcarJRuby.jar_path
+      jruby_complete = Redcar.root + "/vendor/jruby-complete.jar"
       command = (RUBY_PLATFORM.downcase =~ /mswin|mingw|win32/ ? ["javaw"] : ["java"])
       command.push(*java_args)
       command.push("-Xbootclasspath/a:#{jruby_complete}")

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>instance ${1:Class} ${2:Data} where
+	${3:func} = $0</string>
+	<key>name</key>
+	<string>Instance</string>
+	<key>scope</key>
+	<string>source.haskell</string>
+	<key>tabTrigger</key>
+	<string>instance</string>
+	<key>uuid</key>
+	<string>CE424A97-E486-4DE7-9328-C6ADB99B4ABD</string>
+</dict>
+</plist>

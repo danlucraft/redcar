@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${1:private}${1/(.+)/(?1: )/}${2:${TM_FILENAME/(.*?)(\..+)/$1/}}(${3:args}) {
+	$0
+}</string>
+	<key>name</key>
+	<string>constructor() { … }</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>con</string>
+	<key>uuid</key>
+	<string>35E301FB-00C4-4CE6-9164-E84057FE1E9F</string>
+</dict>
+</plist>

@@ -1,6 +1,8 @@
 require 'fileutils'
 
 require 'cucumber/rake/task'
+require 'net/http'
+require 'json'
 
 Dir[File.expand_path("../lib/tasks/*.rake", __FILE__)].each { |f| load f }
 
@@ -13,14 +15,34 @@ if RUBY_PLATFORM =~ /mswin|mingw/
   end
 end
 
-### GETTING STARTED IN DEVELOPMENT
+JRUBY_JAR_LOCATION = "http://jruby.org.s3.amazonaws.com/downloads/1.6.7/jruby-complete-1.6.7.jar"
 
-desc "Prepare code base for development"
-task :initialise do
-  sh "git submodule update --init --recursive"
-end
+desc "Download dependencies"
+task :init do
+  sh("curl -L #{JRUBY_JAR_LOCATION} > vendor/jruby-complete.jar")
 
-task :initialize => :initialise
+  gems = ["git",
+#            "spoon",
+          "lucene", #"~> 0.5.0.beta.1",
+          "jruby-openssl",
+          "ruby-blockcache",
+          "bouncy-castle-java",
+          "swt",
+          "plugin_manager"]#, ">= 1.5")
+  gems.each do |gem_name|
+    puts "fetching #{gem_name}"
+    data = JSON.parse(Net::HTTP.get(URI.parse("http://rubygems.org/api/v1/gems/#{gem_name}.json")))
+    gem_file = "vendor/#{gem_name}-#{data["version"]}.gem" 
+    sh("curl -L #{data["gem_uri"]} > #{gem_file}")
+    gem_dir = "vendor/#{gem_name}"
+    rm_rf(gem_dir)
+    mkdir_p(gem_dir)
+    sh("tar xzv -C #{gem_dir} -f #{gem_file}")
+    rm(gem_file)
+    sh("tar xzv -C #{gem_dir} -f #{gem_dir}/data.tar.gz")
+    rm("#{gem_dir}/data.tar.gz")
+  end
+end  
 
 ### DOCUMENTATION
 

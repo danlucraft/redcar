@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>my \$${1:var};
+{ local \$/ = undef; local *FILE; open FILE, "&lt;${2:file}"; \$$1 = &lt;FILE&gt;; close FILE }
+</string>
+	<key>name</key>
+	<string>Read File</string>
+	<key>scope</key>
+	<string>source.perl</string>
+	<key>tabTrigger</key>
+	<string>slurp</string>
+	<key>uuid</key>
+	<string>CEE866A5-FA4B-4C5D-A80C-137A620E825E</string>
+</dict>
+</plist>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>import scala.actors._
+import scala.actors.Actor._ 
+
+</string>
+	<key>name</key>
+	<string>import Actors</string>
+	<key>scope</key>
+	<string>source.scala</string>
+	<key>tabTrigger</key>
+	<string>ima</string>
+	<key>uuid</key>
+	<string>CEE55187-03FF-41D5-87CB-AD49D1EED3CB</string>
+</dict>
+</plist>

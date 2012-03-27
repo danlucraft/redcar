@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>if(${1:condition}) {
+	$2
+} else {
+	$3
+}</string>
+	<key>name</key>
+	<string>if … else</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>ifel</string>
+	<key>uuid</key>
+	<string>03D61D6C-ACC0-4BB3-AAB8-4B7D7A81523D</string>
+</dict>
+</plist>

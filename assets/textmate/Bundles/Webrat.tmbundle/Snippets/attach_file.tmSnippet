@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>attach_file '${1:id_or_name_or_label}', "${2:path}"</string>
+	<key>name</key>
+	<string>attach_file</string>
+	<key>scope</key>
+	<string>source.ruby.rspec.cucumber.steps,source.ruby.rspec.story.steps</string>
+	<key>tabTrigger</key>
+	<string>atf</string>
+	<key>uuid</key>
+	<string>A7AB1D2B-E64F-459B-AD8B-10CC203F73CB</string>
+</dict>
+</plist>

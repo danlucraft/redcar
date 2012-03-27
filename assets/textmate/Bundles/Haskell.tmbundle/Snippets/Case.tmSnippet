@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>case ${1:a} of ${2:True} -&gt; ${3:$1}
+	${1/./ /g}     ${4:otherwise} -&gt; ${0:$1}</string>
+	<key>name</key>
+	<string>Case</string>
+	<key>scope</key>
+	<string>source.haskell</string>
+	<key>tabTrigger</key>
+	<string>case</string>
+	<key>uuid</key>
+	<string>18F43074-566D-4AD9-8DCE-9C26B8516B64</string>
+</dict>
+</plist>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Disable spell checking in raw</string>
+	<key>scope</key>
+	<string>markup.raw.dokuwiki</string>
+	<key>settings</key>
+	<dict>
+		<key>spellChecking</key>
+		<integer>0</integer>
+	</dict>
+	<key>uuid</key>
+	<string>B5C7FF05-8484-44B6-8343-BE44A9027261</string>
+</dict>
+</plist>

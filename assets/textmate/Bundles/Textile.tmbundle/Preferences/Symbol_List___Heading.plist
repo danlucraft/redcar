@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Symbol List: Heading</string>
+	<key>scope</key>
+	<string>text.html.textile markup.heading.textile</string>
+	<key>settings</key>
+	<dict>
+		<key>showInSymbolList</key>
+		<integer>1</integer>
+		<key>symbolTransformation</key>
+		<string>
+		s/\s*$//;				# strip spaces
+		s/^\s*//;
+		s/(^(h[1-6])([&lt;&gt;=()]+)?)(\([^)]*\)|{[^}]*})*(\.)/$2/;
+		s/^h1//;				# indent headers
+		s/^h2/  /;
+		s/^h3/   /;
+		s/^h4/    /;
+		s/^h5/     /;
+		s/^h6/      /;
+	</string>
+	</dict>
+	<key>uuid</key>
+	<string>1D499ACC-5612-4D30-A405-2B0488AC6F74</string>
+</dict>
+</plist>

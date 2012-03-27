@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>''</string>
+	<key>keyEquivalent</key>
+	<string>'</string>
+	<key>name</key>
+	<string>Grammar - Single Quotes</string>
+	<key>scope</key>
+	<string>source.plist.tm-grammar string.quoted.single, source.plist.tm-grammar string.regexp.oniguruma.single</string>
+	<key>uuid</key>
+	<string>012C6C9B-07CC-40B8-A10B-B95B253A94A1</string>
+</dict>
+</plist>

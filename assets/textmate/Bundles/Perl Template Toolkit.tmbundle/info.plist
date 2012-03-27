@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>oenq@oenqpubngr.pbz</string>
+	<key>contactName</key>
+	<string>Brad Choate</string>
+	<key>description</key>
+	<string>&lt;a href="http://www.template-toolkit.org/"&gt;Template Toolkit&lt;/a&gt; is a fast, powerful and extensible template processing system for Perl.</string>
+	<key>name</key>
+	<string>Perl Template Toolkit</string>
+	<key>ordering</key>
+	<array>
+		<string>524B72D0-7196-4D65-AC9B-0F56F7FC94B0</string>
+		<string>30C5E785-BD38-4ECD-8F1E-E57E46D96659</string>
+		<string>956498D2-745E-4C23-8463-702DF93FA1E5</string>
+		<string>89E2CD88-5E20-4A30-988A-F9AA1FFDED09</string>
+		<string>57559761-BE40-418E-A0CB-BDED1020A3BD</string>
+		<string>67D0DEC7-9E8C-44B3-8FA5-ADD9BBA05DE3</string>
+		<string>D2C1547A-B175-410E-B3FD-C98439CCFE44</string>
+		<string>6DB1153B-D616-433C-8626-FE1AC0041F04</string>
+	</array>
+	<key>uuid</key>
+	<string>5E9C94DD-5808-4E73-ADFB-41DE30C675B3</string>
+</dict>
+</plist>

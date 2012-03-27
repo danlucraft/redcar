@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>Position.realOffset(${1:'${2:element}'});</string>
+	<key>name</key>
+	<string>Position.realOffset</string>
+	<key>scope</key>
+	<string>source.js.prototype</string>
+	<key>tabTrigger</key>
+	<string>pos</string>
+	<key>uuid</key>
+	<string>C1F16C49-270F-4BF3-AD4D-DD8EFFCF5A11</string>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>printf("${1:%s}\\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}</string>
+	<key>name</key>
+	<string>printf …</string>
+	<key>scope</key>
+	<string>source.c, source.objc, source.c++, source.objc++</string>
+	<key>tabTrigger</key>
+	<string>printf</string>
+	<key>uuid</key>
+	<string>5A086BE2-BCF6-11D9-82A9-000D93589AF6</string>
+</dict>
+</plist>

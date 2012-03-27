@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>
+	$0
+</string>
+	<key>keyEquivalent</key>
+	<string></string>
+	<key>name</key>
+	<string>Special: Return Between PHP Tags</string>
+	<key>scope</key>
+	<string>meta.consecutive-tags.php</string>
+	<key>uuid</key>
+	<string>89385241-0117-42AE-BDAE-0471554CC3DF</string>
+</dict>
+</plist>

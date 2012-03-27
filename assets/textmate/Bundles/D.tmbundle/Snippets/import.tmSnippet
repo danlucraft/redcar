@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>import ${1:${TM_FILEPATH/.+\/([^\/]+)\/[^\/]+\.d$/\l$1/}.};</string>
+	<key>name</key>
+	<string>import …</string>
+	<key>scope</key>
+	<string>source.d</string>
+	<key>tabTrigger</key>
+	<string>im</string>
+	<key>uuid</key>
+	<string>897B3073-FF95-4D71-A581-206EF3FF59D6</string>
+</dict>
+</plist>

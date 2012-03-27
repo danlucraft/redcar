@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${TM_CURRENT_LINE/(.*\*\/$)|.*?(\/\*(?!.*\*\/)).*|.*/(?1:
+:
+(?2: )* )/}</string>
+	<key>keyEquivalent</key>
+	<string></string>
+	<key>name</key>
+	<string>Continue Block Comment</string>
+	<key>scope</key>
+	<string>source.d comment.block</string>
+	<key>uuid</key>
+	<string>3B85C6F6-769C-4FF6-B70B-327BBEA574D7</string>
+</dict>
+</plist>

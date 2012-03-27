@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;?${TM_PHP_OPEN_TAG:php} if (${1:condition}): ?&gt;
+	$0
+&lt;?${TM_PHP_OPEN_TAG:php} endif ?&gt;</string>
+	<key>name</key>
+	<string>&lt;?php if (…) ?&gt; … &lt;?php endif ?&gt;</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>if</string>
+	<key>uuid</key>
+	<string>4F33617A-80FE-47D2-84AF-AA3D5D8A7128</string>
+</dict>
+</plist>

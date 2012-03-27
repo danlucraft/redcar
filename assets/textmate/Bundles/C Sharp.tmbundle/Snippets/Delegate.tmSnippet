@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>/// &lt;summary&gt;
+///   Description of delegate goes here
+/// &lt;/summary&gt;
+public delegate ${1:ReturnType} ${2:DelegateName}(${3:ParameterType} ${4:ParameterName});
+$0
+</string>
+	<key>name</key>
+	<string>Delegate</string>
+	<key>scope</key>
+	<string>source.cs</string>
+	<key>tabTrigger</key>
+	<string>delegate</string>
+	<key>uuid</key>
+	<string>EED18275-324E-4176-8806-89938FE0146B</string>
+</dict>
+</plist>

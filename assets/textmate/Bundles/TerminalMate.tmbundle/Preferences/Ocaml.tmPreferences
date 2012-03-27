@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Ocaml</string>
+	<key>scope</key>
+	<string>source.ocaml</string>
+	<key>settings</key>
+	<dict>
+		<key>shellVariables</key>
+		<array>
+			<dict>
+				<key>name</key>
+				<string>TERMINAL_MATE_LOAD</string>
+				<key>value</key>
+				<string></string>
+			</dict>
+			<dict>
+				<key>name</key>
+				<string>TERMINAL_MATE_NEW</string>
+				<key>value</key>
+				<string>ocaml</string>
+			</dict>
+		</array>
+	</dict>
+	<key>uuid</key>
+	<string>5CD9D96B-B721-4AFD-AD55-51788292619B</string>
+</dict>
+</plist>

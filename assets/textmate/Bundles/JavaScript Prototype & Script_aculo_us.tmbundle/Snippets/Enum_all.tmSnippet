@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>all(function(${1:value}) {
+	$0
+});</string>
+	<key>name</key>
+	<string>Enum.all</string>
+	<key>scope</key>
+	<string>source.js.prototype</string>
+	<key>tabTrigger</key>
+	<string>all</string>
+	<key>uuid</key>
+	<string>E9691BAF-FD09-46DF-9DE1-5E75C48492EA</string>
+</dict>
+</plist>

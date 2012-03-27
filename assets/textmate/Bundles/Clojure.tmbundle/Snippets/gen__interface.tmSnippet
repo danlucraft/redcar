@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>(gen-interface${34/((.|\n)+)/(?1:
+;;  Removing last comment will remove all.
+;;  
+;;  In all subsequent sections taking types, the primitive types can be
+;;  referred to by their Java names (int, float etc\), and classes in the
+;;  java.lang package can be used without a package qualifier. All other
+;;  classes must be fully qualified.
+;;  
+;;  Options should be a set of key value\/pairs, all \:except for name are
+;;  optional\:
+;;  )/}
+	:name ${1:package.qualified.name}${34/((.|\n)+)/(?1:
+;;  
+;;  The package-qualified name of the class to be generated
+;;  )/}${4:
+	:extends [${5:Interfaces}]${34/((.|\n)+)/(?1:
+;;  
+;;  One or more interfaces, which will be extended by this interface.
+;;  )/}}${12:
+	:methods [[${13:a-name} [${14:param.Types}] ${15:return.Type}]${16:, ...}]${34/((.|\n)+)/(?1:
+;;  
+;;  This parameter is used to specify the signatures of the methods of
+;;  the generated interface.  Do not repeat superinterface signatures
+;;  here.
+	)/}}${34:${35:${36:${37:${38:${39:${40:${41:
+;;  Remove this to clear previous comment
+;;  From Clojure documentation
+;;  Copyright (c) Rich Hickey. All rights reserved.
+    }}}}}}}})
+$0</string>
+	<key>name</key>
+	<string>gen-interface ;doc</string>
+	<key>scope</key>
+	<string>source.clojure</string>
+	<key>tabTrigger</key>
+	<string>inter</string>
+	<key>uuid</key>
+	<string>64349E99-EE38-4BC8-8741-3B7A1C1D94C1</string>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>{% templatetag closevariable %}</string>
+	<key>name</key>
+	<string>templatetag: closevariable</string>
+	<key>scope</key>
+	<string>text.html.django</string>
+	<key>tabTrigger</key>
+	<string>}}</string>
+	<key>uuid</key>
+	<string>373F257A-070E-4A98-90F9-573D4CF559D6</string>
+</dict>
+</plist>

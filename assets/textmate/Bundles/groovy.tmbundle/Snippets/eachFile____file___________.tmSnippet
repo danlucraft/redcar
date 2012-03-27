@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>eachFile {${1/(.+)/(?1: )/}${1:file}${1/(.+)/(?1: -&gt;)/}
+	$0
+}</string>
+	<key>name</key>
+	<string>eachFile { … }</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>eaf</string>
+	<key>uuid</key>
+	<string>B84B9BBC-B4B9-4169-8643-2BF45D7E0B98</string>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>typedef std::tr1::shared_ptr&lt;${2:${1:my_type}_t}&gt; ${3:${2/_t$/_ptr/}};</string>
+	<key>name</key>
+	<string>Shared Pointer</string>
+	<key>scope</key>
+	<string>source.c, source.objc, source.c++, source.objc++</string>
+	<key>tabTrigger</key>
+	<string>sp</string>
+	<key>uuid</key>
+	<string>986C0149-7802-4385-A237-90074D9D5ACD</string>
+</dict>
+</plist>

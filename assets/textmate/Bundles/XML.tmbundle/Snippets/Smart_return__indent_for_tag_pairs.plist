@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>
+	$0
+</string>
+	<key>keyEquivalent</key>
+	<string></string>
+	<key>name</key>
+	<string>Special: Return Inside Empty Open/Close Tags</string>
+	<key>scope</key>
+	<string>meta.scope.between-tag-pair.xml</string>
+	<key>uuid</key>
+	<string>121626EE-6774-4DFB-B7D5-6E5A8381F1D3</string>
+</dict>
+</plist>

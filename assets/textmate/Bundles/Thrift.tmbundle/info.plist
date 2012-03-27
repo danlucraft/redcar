@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>xriva@fo.bet</string>
+	<key>contactName</key>
+	<string>Kevin Ballard</string>
+	<key>description</key>
+	<string>&lt;a href="http://incubator.apache.org/thrift/"&gt;Thrift&lt;/a&gt; is a cross-language serialization and RPC framework.</string>
+	<key>mainMenu</key>
+	<dict>
+		<key>excludedItems</key>
+		<array>
+			<string>841E598E-C872-4A98-A4D5-F13272F51B6F</string>
+			<string>9240E318-0643-4BF7-8EBA-DD947C8CB7B9</string>
+			<string>908FD647-26E2-4A8E-BBC9-084233EFA5B7</string>
+			<string>C334A09A-D090-4EC1-AD14-23FB9AF4D287</string>
+		</array>
+		<key>items</key>
+		<array>
+			<string>FA5FBCA2-12D6-4C3B-A9A0-5B9C9AD141AD</string>
+			<string>C1341136-77B4-433A-A17D-C0ECE06A3402</string>
+		</array>
+		<key>submenus</key>
+		<dict/>
+	</dict>
+	<key>name</key>
+	<string>Thrift</string>
+	<key>ordering</key>
+	<array>
+		<string>9E5704AC-54ED-4D7C-946C-6DC3727BDC4C</string>
+		<string>B8D168EA-2ACF-4221-8DA8-FD7E6D620739</string>
+		<string>D7334D6A-DA82-428A-8425-0C9AC0D9969F</string>
+		<string>6D3EADC1-CF25-4897-AA50-F250B1627EA1</string>
+		<string>497C774E-4491-41D7-BE69-A0C23D8EE5D2</string>
+		<string>8825DD7F-9C98-474B-9242-C5406DB241F7</string>
+		<string>22F4E4F0-E729-4538-9954-68456E915A2E</string>
+		<string>90593423-A61F-4BAF-8368-EFA79DC347E1</string>
+		<string>FA5FBCA2-12D6-4C3B-A9A0-5B9C9AD141AD</string>
+		<string>908FD647-26E2-4A8E-BBC9-084233EFA5B7</string>
+		<string>9240E318-0643-4BF7-8EBA-DD947C8CB7B9</string>
+		<string>C1341136-77B4-433A-A17D-C0ECE06A3402</string>
+		<string>C334A09A-D090-4EC1-AD14-23FB9AF4D287</string>
+		<string>841E598E-C872-4A98-A4D5-F13272F51B6F</string>
+		<string>4B087906-E44D-48BF-8601-2BB95E285CAF</string>
+	</array>
+	<key>uuid</key>
+	<string>503C9BCE-892F-420D-86B5-B6B8E34F6742</string>
+</dict>
+</plist>

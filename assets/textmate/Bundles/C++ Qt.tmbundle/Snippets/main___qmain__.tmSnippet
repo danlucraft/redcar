@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>#include &lt;QApplication&gt;
+
+int main (int argc, char *argv[])
+{
+	QApplication app(argc, argv);
+	$0
+	return app.exec();
+}</string>
+	<key>name</key>
+	<string>main()</string>
+	<key>scope</key>
+	<string>source.c++.qt</string>
+	<key>tabTrigger</key>
+	<string>qmain</string>
+	<key>uuid</key>
+	<string>1BE36C25-5F22-45EE-9339-C0A3D1EACEA2</string>
+</dict>
+</plist>

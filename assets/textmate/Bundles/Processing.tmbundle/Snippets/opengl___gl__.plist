@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>import processing.opengl.*;</string>
+	<key>name</key>
+	<string>opengl</string>
+	<key>scope</key>
+	<string>source.processing</string>
+	<key>tabTrigger</key>
+	<string>gl</string>
+	<key>uuid</key>
+	<string>49F7D289-0893-4F93-9AFF-39A5CF3E1CE6</string>
+</dict>
+</plist>

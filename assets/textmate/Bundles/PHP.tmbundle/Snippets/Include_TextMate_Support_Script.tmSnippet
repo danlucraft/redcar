@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>// === TextMate error handling ===
+`if [[ "$TM_BUNDLE_SUPPORT" == "$HOME"* ]]; then
+  echo "// NOTE: Your PHP bundle is checked out to your home directory."
+  echo "// If the webserver process does not have permission to access"
+  echo "// the included file, you can replace"
+  echo "// ‘${TM_BUNDLE_SUPPORT%Bundles*}’ with"
+  echo "// ‘$(find_app TextMate.app)/Contents/SharedSupport/’."
+fi`
+@include_once '$TM_BUNDLE_SUPPORT/textmate.php';
+</string>
+	<key>name</key>
+	<string>Include TextMate Support Script</string>
+	<key>scope</key>
+	<string>source.php</string>
+	<key>tabTrigger</key>
+	<string>tmphp</string>
+	<key>uuid</key>
+	<string>6F3ABAC6-EEC9-4797-8D4A-6FD549094852</string>
+</dict>
+</plist>

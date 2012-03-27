@@ -14,17 +14,17 @@ require 'uri'
 require 'fileutils'
 require 'net/http'
 
-require 'rubygems'
-
-# If we are running as a Gem, set the gem home 
-# so our gemified jruby can find the installed gems.
-prospective_gem_home = File.expand_path("../../../../", __FILE__)
-entries_in_gem_home  = Dir[prospective_gem_home + "/*"].map {|path| File.basename(path) }
-if (["cache", "gems"] - entries_in_gem_home).length == 0
-  ENV["GEM_HOME"]       = prospective_gem_home
+class RedcarIcons
+  def self.directory
+    File.expand_path("../../assets/fugue-icons", __FILE__)
+  end
 end
 
-require 'redcar-icons'
+module RedcarBundles
+  def self.dir
+    File.expand_path("../../assets/textmate", __FILE__)
+  end
+end
 
 begin
   if Config::CONFIG["RUBY_INSTALL_NAME"] == "jruby"
@@ -114,9 +114,6 @@ module Redcar
   def self.add_plugin_sources(manager)
     manager.add_plugin_source(File.join(root, "plugins"))
     manager.add_plugin_source(File.join(user_dir, "plugins"))
-    unless Redcar.environment == :test
-      manager.add_gem_plugin_source
-    end
   end
 
   def self.load_prerequisites(options={})
@@ -124,8 +121,8 @@ module Redcar
     require 'java'
     
     require 'redcar_quick_start'
-    
-    gem "plugin_manager"
+
+    $:.push(File.expand_path("../../vendor/plugin_manager/lib", __FILE__))
     require 'plugin_manager'
     
     $:.push File.expand_path(File.join(Redcar.asset_dir))
@@ -135,12 +132,12 @@ module Redcar
       require 'json'
     end
 
-    gem "jruby-openssl"
+    $:.push(File.expand_path("../../vendor/jruby-openssl/lib", __FILE__))
     require 'openssl'
     
     plugin_manager.load("core")
     
-    gem 'swt'
+    $:.push(File.expand_path("../../vendor/swt/lib", __FILE__))
     require 'swt/minimal'
       
     unless no_gui_mode?

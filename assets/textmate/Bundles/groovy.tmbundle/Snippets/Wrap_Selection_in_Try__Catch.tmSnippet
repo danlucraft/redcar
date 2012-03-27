@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${TM_SELECTED_TEXT/\A(\s*).*/$1/m}try {
+${TM_SELECTED_TEXT/^.+$/\t$0/g}${TM_SELECTED_TEXT/\A(\s*).*/$1/m}}
+${TM_SELECTED_TEXT/\A(\s*).*/$1/m}catch ( Exception e) { 
+${TM_SELECTED_TEXT/\A(\s*).*/$1/m}	e.printStackTrace();
+${TM_SELECTED_TEXT/\A(\s*).*/$1/m}}
+</string>
+	<key>keyEquivalent</key>
+	<string>^W</string>
+	<key>name</key>
+	<string>Wrap Selection in Try/Catch</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>uuid</key>
+	<string>E9F61E6B-6821-4CFC-9FEF-946141E9F846</string>
+</dict>
+</plist>

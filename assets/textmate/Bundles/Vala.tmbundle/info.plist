@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>description</key>
+	<string>Support for &lt;a href="http://live.gnome.org/Vala"&gt;Vala&lt;/a&gt;.</string>
+	<key>name</key>
+	<string>Vala</string>
+	<key>uuid</key>
+	<string>13D9EB3C-D018-46A9-B74C-096DC9D83D30</string>
+</dict>
+</plist>

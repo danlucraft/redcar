@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>.toggle(function() {
+	${1:// Stuff to do every *odd* time the element is clicked;}
+}, function() {
+	${2:// Stuff to do every *even* time the element is clicked;}
+});
+$0</string>
+	<key>name</key>
+	<string>toggle (event)</string>
+	<key>scope</key>
+	<string>source.js.jquery</string>
+	<key>tabTrigger</key>
+	<string>.toggle</string>
+	<key>uuid</key>
+	<string>507957DA-32C6-4C15-996F-4C2215B1B7DD</string>
+</dict>
+</plist>

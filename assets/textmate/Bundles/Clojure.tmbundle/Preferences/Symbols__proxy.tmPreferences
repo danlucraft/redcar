@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Symbols-proxy</string>
+	<key>scope</key>
+	<string>entity.other.inherited-class.java.proxy.clojure</string>
+	<key>settings</key>
+	<dict>
+		<key>showInSymbolList</key>
+		<integer>1</integer>
+		<key>symbolTransformation</key>
+		<string>
+		s/^(.*)/    proxy [$1]/g;
+	</string>
+	</dict>
+	<key>uuid</key>
+	<string>505DA3DD-D6B5-435E-BBAB-EB8F62FBAFED</string>
+</dict>
+</plist>

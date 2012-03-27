@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>gz-ohaqyrf@znpebzngrf.pbz</string>
+	<key>contactName</key>
+	<string>Allan Odgaard</string>
+	<key>deleted</key>
+	<array>
+		<string>DA3A550A-F4AF-4CFD-935F-8687FA17DC4B</string>
+	</array>
+	<key>description</key>
+	<string>Syntax highlight and &lt;a href="http://en.wikipedia.org/wiki/Diff"&gt;diff&lt;/a&gt; related functionality, for example see differences between document and last saved version, use a diff file as a patch, etc.</string>
+	<key>mainMenu</key>
+	<dict>
+		<key>items</key>
+		<array>
+			<string>674E54F5-065E-4224-9626-673903B7C0E0</string>
+			<string>0979659D-126E-467F-AC07-599979A42D67</string>
+			<string>4050A252-C604-4D0C-8545-E50B22E2715B</string>
+			<string>------------------------------------</string>
+			<string>D04AFBD3-8110-11D9-8E5B-0011242E4184</string>
+			<string>6A811265-81DC-11D9-9AA2-000D9332809C</string>
+			<string>------------------------------------</string>
+			<string>239E196A-7106-4DC9-8FAE-0A9CA7540AFA</string>
+			<string>------------------------------------</string>
+			<string>B9091553-4317-415E-B381-4609BD453E01</string>
+			<string>------------------------------------</string>
+			<string>54D1CEF2-10AB-407B-AAB2-6AEA06B297B1</string>
+		</array>
+		<key>submenus</key>
+		<dict/>
+	</dict>
+	<key>name</key>
+	<string>Diff</string>
+	<key>ordering</key>
+	<array>
+		<string>674E54F5-065E-4224-9626-673903B7C0E0</string>
+		<string>0979659D-126E-467F-AC07-599979A42D67</string>
+		<string>4050A252-C604-4D0C-8545-E50B22E2715B</string>
+		<string>D04AFBD3-8110-11D9-8E5B-0011242E4184</string>
+		<string>6A811265-81DC-11D9-9AA2-000D9332809C</string>
+		<string>239E196A-7106-4DC9-8FAE-0A9CA7540AFA</string>
+		<string>B9091553-4317-415E-B381-4609BD453E01</string>
+		<string>54D1CEF2-10AB-407B-AAB2-6AEA06B297B1</string>
+		<string>46842464-574C-477F-9DFB-BB38EA3C85BE</string>
+		<string>7E848FF4-708E-11D9-97B4-0011242E4184</string>
+		<string>7D036841-43BD-49CA-892F-0A6837EF8FB7</string>
+		<string>FFF345C5-D3B4-4975-A610-69CC645FEE7C</string>
+		<string>EB0FD215-C2EE-4576-86FD-ABA3EDCB5A7B</string>
+		<string>F9C2B477-B6F7-4951-953B-32BFEF121F7C</string>
+		<string>ED5636AE-09EF-46C4-A4F8-B88F701763E2</string>
+		<string>71A420A8-0892-4622-BDA4-CC00D98C59E6</string>
+		<string>A0B3B6D2-59B1-407F-B310-7FA67222B37A</string>
+	</array>
+	<key>uuid</key>
+	<string>C2D2BFF9-708D-11D9-BD09-0011242E4184</string>
+</dict>
+</plist>

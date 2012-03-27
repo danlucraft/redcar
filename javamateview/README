@@ -1,0 +1,58 @@
+
+JavaMateView
+============
+
+Requirements
+------------
+
+* > jruby-1.3.1 installed and set up on your path
+* rspec gem installed via gem install rspec
+* make sure that JAVA_HOME points to a 1.6 type JDK (this is especially true on OSX Leopard)
+
+
+Running the Ant-based unit-tests
+--------------------------------
+    ant
+or
+    rake java:test
+
+
+Running the RSpec parsing specs
+-------------------------------
+
+Compile the java code and run the specs:
+
+    rake jruby:test
+
+If you want to run it manually, without compiling:
+On OSX:
+
+    jruby -J-XstartOnFirstThread -S spec spec
+    
+On Linux:
+
+    jruby -S spec spec/
+
+
+Contributing
+------------
+
+Just so you know: You're free to use whatever IDE or editor to code on java-mateview.
+You can use the rake tasks to compile your code and run the tests easily.
+
+If you do however use the Eclipse IDE you also get the Eclipse project settings right away
+when checking out the repository.
+Alas, there are platform dependent libraries this project relies on, you need to do one little
+thing to be on the way to code in eclipse (The rake + ant files do this in their own way).
+
+
+Eclipse Setup
+-------------
+
+* Clone the repository so you have your own version to work with.
+* Import the project.
+* Set up a variable to point to the lib/{your platform here}/swt.jar
+  - Go to: Window -> Preferences -> Java -> Build Path -> Classpath Variables
+  - Choose "new" -> File
+  - Name the variable SWT_JAR and point it to the lib/{platform}/swt.jar in the java-mateview folder.
+  

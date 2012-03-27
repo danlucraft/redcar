@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>new Ajax.Updater(${1:'${2:url}'}${3:, ${4:ajax_options}});</string>
+	<key>name</key>
+	<string>Ajax.Request</string>
+	<key>scope</key>
+	<string>source.js.prototype</string>
+	<key>tabTrigger</key>
+	<string>ajax</string>
+	<key>uuid</key>
+	<string>A5582955-3F83-4A35-86E5-27D4D19D864F</string>
+</dict>
+</plist>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${TM_CURRENT_LINE/(.*\*\/$)|.*?(\/\*(?!.*\*\/)).*|.*/(?1:
+:
+(?2: )* )/}</string>
+	<key>keyEquivalent</key>
+	<string></string>
+	<key>name</key>
+	<string>Continue Block Comment</string>
+	<key>scope</key>
+	<string>source.php comment.block</string>
+	<key>uuid</key>
+	<string>26BC937A-5A0B-493E-B51F-1AF6E6FEFAD4</string>
+</dict>
+</plist>

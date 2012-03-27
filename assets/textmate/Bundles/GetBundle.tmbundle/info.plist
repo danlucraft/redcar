@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>fronfgvna.tenrffy@inyvqpbqr.ng</string>
+	<key>contactName</key>
+	<string>Sebastian Gräßl</string>
+	<key>deleted</key>
+	<array>
+		<string>D48CE60E-EE6E-495E-8473-A7FE9796F87F</string>
+		<string>D48CE60E-EE6E-495E-8473-A7FE9796F87F</string>
+		<string>351E6A40-A0DA-4562-86B3-55FACF557429</string>
+		<string>351E6A40-A0DA-4562-86B3-55FACF557429</string>
+	</array>
+	<key>description</key>
+	<string>A bundle to &lt;a href="http://sg.validcode.at/stuff/textmate-getbundle-bundle"&gt;retrieve more bundles&lt;/a&gt; from the subversion repository at macromates.com.</string>
+	<key>mainMenu</key>
+	<dict>
+		<key>items</key>
+		<array>
+			<string>19B3B518-4B71-4AD6-BC0B-7B5477ABD2D9</string>
+			<string>667B3ED4-CA2B-402D-9445-904798AE1AA0</string>
+			<string>FBA5B6EB-2516-4940-9C8B-70645917F8BB</string>
+			<string>------------------------------------</string>
+			<string>A952F27C-2200-4C2C-ABC9-69BD36FF76DF</string>
+			<string>E11461A2-B186-4278-9CB9-95AAC8D9D7C0</string>
+			<string>------------------------------------</string>
+			<string>8C7398D7-1BC2-4F4D-9BA9-AE1520D764AD</string>
+		</array>
+		<key>submenus</key>
+		<dict/>
+	</dict>
+	<key>name</key>
+	<string>GetBundle</string>
+	<key>ordering</key>
+	<array>
+		<string>19B3B518-4B71-4AD6-BC0B-7B5477ABD2D9</string>
+		<string>FBA5B6EB-2516-4940-9C8B-70645917F8BB</string>
+		<string>667B3ED4-CA2B-402D-9445-904798AE1AA0</string>
+		<string>A952F27C-2200-4C2C-ABC9-69BD36FF76DF</string>
+		<string>E11461A2-B186-4278-9CB9-95AAC8D9D7C0</string>
+	</array>
+	<key>uuid</key>
+	<string>67CBC425-6A5B-4621-97A1-147C8CEC221C</string>
+</dict>
+</plist>

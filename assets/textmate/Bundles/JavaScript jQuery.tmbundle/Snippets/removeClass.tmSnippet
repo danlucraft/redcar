@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>.removeClass('${1:class name}')$0</string>
+	<key>name</key>
+	<string>removeClass</string>
+	<key>scope</key>
+	<string>source.js.jquery</string>
+	<key>tabTrigger</key>
+	<string>.removeClass</string>
+	<key>uuid</key>
+	<string>A9FA49D2-8F1F-4F01-9F91-F78F6B833B50</string>
+</dict>
+</plist>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>(gen-class
+	:name ${1:package.qualified.name}${2:
+	:extends ${3:Aclass}}${4:
+	:implements [${5:Interfaces}]}${6:
+	:init ${7:a-name}}${8:
+	:constructors {[${9:param.Types}] [${10:super.param.Types}]${11:, ...}\}}${12:
+	:methods [[${13:a-name} [${14:param.Types}] ${15:return.Type}]${16:, ...}]}${17:
+	:main true}${18:
+	:factory ${19:a-name}}${20:
+	:state ${21:a-name}}${22:
+	:exposes {${23:protected-field-name} {${24::get ${25:a-name}} ${26::set ${27:a-name}}\}${28:, ...}\}}${29:
+	:exposes-methods {${30:super-method-name} ${31:exposed-name}${32:, ...}\}}${34:
+	:prefix "${35:string}"}${36:
+	:impl-ns ${37:a-name}}${38:
+	:load-impl-ns false})
+$0</string>
+	<key>name</key>
+	<string>gen-class</string>
+	<key>scope</key>
+	<string>source.clojure</string>
+	<key>tabTrigger</key>
+	<string>class</string>
+	<key>uuid</key>
+	<string>FC3DB984-8D59-4997-BA96-5943A415ACBB</string>
+</dict>
+</plist>

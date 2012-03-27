@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>this.controller.showBanner(${1:notificationData.message}, {$2})</string>
+	<key>name</key>
+	<string>controller.showBanner</string>
+	<key>scope</key>
+	<string>source.js</string>
+	<key>tabTrigger</key>
+	<string>cbanner</string>
+	<key>uuid</key>
+	<string>7FEE9B34-3E1A-4760-B274-DF9E36586ED9</string>
+</dict>
+</plist>

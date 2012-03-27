@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>\\\\
+$0${TM_CURRENT_LINE/^[^&amp;]+|[^&amp;]+$|([^&amp;]+)/ (?1: )/g}</string>
+	<key>keyEquivalent</key>
+	<string></string>
+	<key>name</key>
+	<string>Add Row</string>
+	<key>scope</key>
+	<string>text.tex.latex meta.function.environment.tabular.latex</string>
+	<key>uuid</key>
+	<string>F59D0C3A-B5AC-40D6-AB07-05CE8CB784A9</string>
+</dict>
+</plist>

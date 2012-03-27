@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;g:select name="${1:name}" value="\${${2:value}}" from="\${${3:[1,2,3]}}" /&gt;</string>
+	<key>name</key>
+	<string>&lt;g:select from=".." &gt;</string>
+	<key>scope</key>
+	<string>text.html.grails</string>
+	<key>tabTrigger</key>
+	<string>select</string>
+	<key>uuid</key>
+	<string>230911E9-EE4E-4309-9C19-BD3BA5763AB7</string>
+</dict>
+</plist>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Label Completion</string>
+	<key>scope</key>
+	<string>text.tex.latex meta.reference.label</string>
+	<key>settings</key>
+	<dict>
+		<key>completionCommand</key>
+		<string>"$TM_SUPPORT_PATH/bin/LatexLabelCompletions.rb"</string>
+		<key>disableDefaultCompletion</key>
+		<integer>1</integer>
+	</dict>
+	<key>uuid</key>
+	<string>76086A65-97AA-48FE-B3C6-026B25E15958</string>
+</dict>
+</plist>

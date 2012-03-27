@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>g.message(code:"${1}"${2:, args:${3}}${4:, default:"${5}"})$0</string>
+	<key>name</key>
+	<string>g.message()</string>
+	<key>scope</key>
+	<string>source.groovy.embedded.html.grails</string>
+	<key>tabTrigger</key>
+	<string>msg</string>
+	<key>uuid</key>
+	<string>B2B2C397-3DBB-4C1F-9C01-19B63740456D</string>
+</dict>
+</plist>

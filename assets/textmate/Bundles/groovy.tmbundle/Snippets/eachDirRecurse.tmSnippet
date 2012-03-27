@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>eachDirRecurse {${1/(.+)/(?1: )/}${1:dir}${1/(.+)/(?1: -&gt;)/}
+	$0
+}</string>
+	<key>name</key>
+	<string>eachDirRecurse { … }</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>eadr</string>
+	<key>uuid</key>
+	<string>502CA3F8-ABED-4A0B-A8A9-6DA10AC32EB5</string>
+</dict>
+</plist>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Header Completion (System)</string>
+	<key>scope</key>
+	<string>meta.preprocessor.c.include string.quoted.other.lt-gt.include</string>
+	<key>settings</key>
+	<dict>
+		<key>completionCommand</key>
+		<string>#!/usr/bin/env ruby -wKU
+
+USR_HEAD  = Regexp.escape "#include \"...\" search starts here:\n"
+SYS_HEAD  = Regexp.escape "#include &lt;...&gt; search starts here:\n"
+FOOTER    = Regexp.escape "End of search list."
+
+COMPILER  = {
+  "source.c"      =&gt; "gcc 2&gt;&amp;1 &gt;/dev/null -E -v -x c /dev/null",
+  "source.c++"    =&gt; "g++ 2&gt;&amp;1 &gt;/dev/null -E -v -x c++ /dev/null",
+  "source.objc"   =&gt; "gcc 2&gt;&amp;1 &gt;/dev/null -E -v -x objective-c /dev/null",
+  "source.objc++" =&gt; "g++ 2&gt;&amp;1 &gt;/dev/null -E -v -x objective-c++ /dev/null",
+}
+
+def compiler_search_path(domain = :system)
+  scope        = "source.c"
+  scope        = $&amp; if ENV["TM_SCOPE"] =~ /source.(obj)?c(\+\+)?/
+
+  res = IO.popen(COMPILER[scope]) { |io| io.read }
+  if res =~ /#{USR_HEAD}(.*)#{SYS_HEAD}(.*)#{FOOTER}/m
+	case domain
+	  when :system  then $2
+	  when :user    then $1 + " .\n"
+	  when :all     then $1 + " .\n" + $2
+	end.scan(/ (\S*)(?: \(framework directory\)$)?/).flatten
+  else
+	abort "Failed to parse compiler output.\nCommand: " + COMPILER[scope]
+  end
+end
+
+def user_search_path(domain = :system)
+  usr = ENV["TM_USR_HEADER_PATH"].to_s
+  sys = ENV["TM_SYS_HEADER_PATH"].to_s
+
+  res = case domain
+	when :system  then sys
+	when :user    then usr
+	when :all     then "#{usr}:#{sys}"
+  end.split(":")
+  res.delete("")
+
+  res.empty? ? nil : res
+end
+
+def expand_dirs(entries)
+	entries.map do |entry|
+		if entry =~ /(.*)\.framework$/
+			if File.exists? "#$1.framework/Headers/#$1.h"
+				"#$1/#$1.h"
+			elsif File.exists? "#$1.framework/Headers"
+				Dir["#$1.framework/Headers/[A-Za-z]*.h"].sort.map do |e|
+					e.sub(/\.framework\/Headers\//, "/")
+				end
+			else
+				[ ]
+			end
+		elsif File.directory? entry
+			Dir[entry + "/[A-Za-z]*.h"].sort
+		else
+			entry
+		end
+	end
+end
+
+partial_word = ENV["TM_CURRENT_WORD"]
+
+dirs = user_search_path(:system) || compiler_search_path(:system)
+res = [ ] 
+dirs.each do |dir|
+	Dir.chdir(dir) { res &lt;&lt; expand_dirs(Dir[partial_word + "*"].sort) }
+end
+puts res.flatten.join("\n")</string>
+		<key>disableDefaultCompletion</key>
+		<integer>1</integer>
+	</dict>
+	<key>uuid</key>
+	<string>9136716A-CE06-4801-ABC9-3D64300869F8</string>
+</dict>
+</plist>

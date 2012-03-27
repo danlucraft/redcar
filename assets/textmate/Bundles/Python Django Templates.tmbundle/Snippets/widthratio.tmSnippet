@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>{% widthratio ${1:this_value} ${2:max_value} ${3:100} %}</string>
+	<key>name</key>
+	<string>widthratio</string>
+	<key>scope</key>
+	<string>text.html.django</string>
+	<key>tabTrigger</key>
+	<string>widthratio</string>
+	<key>uuid</key>
+	<string>17F3AFB0-F5BB-4C25-A5BE-454E5C929B67</string>
+</dict>
+</plist>

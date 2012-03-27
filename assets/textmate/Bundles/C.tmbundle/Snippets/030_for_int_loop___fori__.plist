@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>for(size_t ${2:i} = 0; $2 &lt; ${1:count}; ${3:++$2})
+{
+	${0:/* code */}
+}</string>
+	<key>name</key>
+	<string>For Loop</string>
+	<key>scope</key>
+	<string>source.c, source.objc, source.c++, source.objc++</string>
+	<key>tabTrigger</key>
+	<string>for</string>
+	<key>uuid</key>
+	<string>78EF7134-0859-4475-89C3-30927865E855</string>
+</dict>
+</plist>

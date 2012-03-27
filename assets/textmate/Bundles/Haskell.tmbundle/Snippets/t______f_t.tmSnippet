@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${1:t} &lt;- ${0:f t}</string>
+	<key>keyEquivalent</key>
+	<string>^,</string>
+	<key>name</key>
+	<string>t &lt;- f t</string>
+	<key>scope</key>
+	<string>source.haskell</string>
+	<key>uuid</key>
+	<string>4B154C05-D107-4316-9AAD-43A3DCF1860A</string>
+</dict>
+</plist>
