@@ -13,6 +13,7 @@ require 'forwardable'
 require 'uri'
 require 'fileutils'
 require 'net/http'
+require 'yaml'
 
 class RedcarIcons
   def self.directory
