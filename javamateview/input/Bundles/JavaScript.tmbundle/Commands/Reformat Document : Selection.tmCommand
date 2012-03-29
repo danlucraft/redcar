@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env php
+&lt;?php
+/*
+
+JS Beautifier
+
+(c) 2007, Einars "elfz" Lielmanis
+
+http://elfz.laacz.lv/beautify/
+
+You are free to use this in any way you want, in case you find this useful or working for you.
+
+Ported with permission to TextMate by Ale Muñoz.
+
+(Based on v42 of JS Beautifier)
+
+*/
+
+require($_ENV['TM_BUNDLE_SUPPORT'] . '/lib/beautify.php'); 
+
+if (isset($_ENV['TM_SELECTED_TEXT'])) {
+  $input = get_magic_quotes_gpc() ? stripslashes($_ENV['TM_SELECTED_TEXT']) : $_ENV['TM_SELECTED_TEXT'];
+} else {
+  $input = file_get_contents('php://stdin');
+}
+
+print js_beautify($input);
+
+?&gt;</string>
+	<key>input</key>
+	<string>selection</string>
+	<key>keyEquivalent</key>
+	<string>^H</string>
+	<key>name</key>
+	<string>Reformat Document / Selection</string>
+	<key>output</key>
+	<string>replaceSelectedText</string>
+	<key>scope</key>
+	<string>source.js</string>
+	<key>uuid</key>
+	<string>36EC03E9-EFF4-479A-AB90-8DFA16800642</string>
+</dict>
+</plist>

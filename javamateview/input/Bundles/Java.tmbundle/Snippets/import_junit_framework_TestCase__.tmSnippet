@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>import junit.framework.TestCase;
+$0</string>
+	<key>name</key>
+	<string>import junit.framework.TestCase;</string>
+	<key>scope</key>
+	<string>source.java</string>
+	<key>tabTrigger</key>
+	<string>imt</string>
+	<key>uuid</key>
+	<string>D8E7B79D-ADEC-437D-BFDE-F20D5362D892</string>
+</dict>
+</plist>

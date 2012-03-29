@@ -176,9 +176,13 @@ public class MateText {
 
 	}
 
-	public int getMarginColumn() {
-		return marginColumn;
-	}
+    public CompositeRuler getCompositeRuler() {
+        return compositeRuler;
+    }
+
+    public int getMarginColumn() {
+        return marginColumn;
+    }
 
 	public void setMarginColumn(int val) {
 		this.marginColumn = val;
@@ -437,8 +441,10 @@ public class MateText {
 	public void setFont(String name, int size) {
 		Font font = new Font(Display.getCurrent(), name, size, 0);
 		viewer.getTextWidget().setFont(font);
-        if (!singleLine)
-    		lineNumbers.setFont(font);
+        if (!singleLine) {
+            Font lineFont = new Font(Display.getCurrent(), name, size - 1, 0);
+            lineNumbers.setFont(lineFont);
+        }
 		if (getLineNumbersVisible()){
 			redrawRuler(true, getAnnotationsVisible());
 		}
@@ -448,11 +454,13 @@ public class MateText {
 	public void setGutterBackground(Color color) {
         if (singleLine) return;
 		lineNumbers.setBackground(color);
+        compositeRuler.getControl().setBackground(color);
 	}
 
 	public void setGutterForeground(Color color) {
         if (singleLine) return;
 		lineNumbers.setForeground(color);
+        compositeRuler.getControl().setForeground(color);
 	}
 
 	public void addGrammarListener(IGrammarListener listener) {

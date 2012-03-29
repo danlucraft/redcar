@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/java-mateview/bench/ch/mollusca/benchmarking/BenchmarkRunner.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="ch.mollusca.benchmarking.BenchmarkRunner"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="com.redcareditor.mate.GrammarBenchmark"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="java-mateview"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-server"/>
+</launchConfiguration>
