@@ -2,8 +2,6 @@ JRUBY_JAR_LOCATION = "http://jruby.org.s3.amazonaws.com/downloads/1.6.7/jruby-co
 REDCAR_ROOT = File.expand_path("../", __FILE__)
 
 require 'fileutils'
-
-require 'cucumber/rake/task'
 require 'net/http'
 require 'json'
 

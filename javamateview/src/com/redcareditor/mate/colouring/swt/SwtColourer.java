@@ -45,9 +45,9 @@ public class SwtColourer implements Colourer {
 
 	public SwtColourer(MateText mt) {
 		mateText = mt;
-
+		
 		control = mateText.getControl();
-
+		
 		this.control.addPaintListener(new MarginPaintListener(mateText));
 		this.control.addLineStyleListener(new LineStyleListener() {
 			public void lineGetStyle(LineStyleEvent event) {
@@ -56,38 +56,43 @@ public class SwtColourer implements Colourer {
 		});
 		this.control.addLineBackgroundListener(new LineBackgroundListener() {
 			public void lineGetBackground(LineBackgroundEvent event) {
-                int eventLine = control.getLineAtOffset(event.lineOffset);
-                int caretLine = control.getLineAtOffset(control.getCaretOffset());
+				int eventLine = control.getLineAtOffset(event.lineOffset);
+				int caretLine = control.getLineAtOffset(control.getCaretOffset());
 				if (eventLine == caretLine) {
-                    event.lineBackground = ColourUtil.getColour(globalLineBackground());
-                    highlightedLine = eventLine;
-                }
+					event.lineBackground = ColourUtil.getColour(globalLineBackground());
+					highlightedLine = eventLine;
+				}
 			}
 		});
-
+		
 		control.addCaretListener(new CaretListener() {
 			public void caretMoved(CaretEvent e) {
 				int line = control.getLineAtOffset(e.caretOffset);
 				if (line == highlightedLine) return;
-                if (Math.abs(highlightedLine - line) > 1) {
-                    redrawLines(highlightedLine);
-                }
-                redrawLines(line);
+				if (Math.abs(highlightedLine - line) > 1) {
+					redrawLines(highlightedLine);
+				}
+				redrawLines(line);
 			}
 		});
 	}
-
-    private void redrawLines(int line) {
-        int startOffset  = control.getOffsetAtLine(line - 1 > 0 ? line - 1 : 0);
-        int endingOffset = startOffset + 1;
-        if (line + 2 < control.getLineCount()) {
-            endingOffset = control.getOffsetAtLine(line + 2);
-        } else {
-            endingOffset = control.getText().length() - 1;
-        }
-        control.redrawRange(startOffset, endingOffset - startOffset, false);
-    }
-
+	
+	private void redrawLines(int line) {
+		int maxPossibleLine = control.getLineCount() - 1;
+		int startLine = (line - 1 > maxPossibleLine ? maxPossibleLine : line - 1);
+		startLine = (startLine < 0 ? 0 : startLine);
+		int startOffset  = control.getOffsetAtLine(startLine);
+		
+		int endingOffset = startOffset + 1;
+		if (line + 1 < maxPossibleLine) {
+			endingOffset = control.getOffsetAtLine(line + 2);
+		} else {
+			endingOffset = control.getText().length() - 1;
+		}
+		
+		control.redrawRange(startOffset, endingOffset - startOffset, false);
+	}
+	
 	public void setTheme(Theme theme) {
 		this.theme = theme;
 		theme.initForUse();
