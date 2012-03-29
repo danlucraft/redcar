@@ -79,7 +79,7 @@ namespace :installers do
 </plist>
 XML
     File.open(File.join(bundle_content_dir, "Info.plist"), "w") {|f| f.puts info_plist}
-    cp(REDCAR_ROOT + "/assets/redcar.sh", bundle_content_dir + "/MacOS")
+    cp(REDCAR_ROOT + "/assets/redcar_osx.sh", bundle_content_dir + "/MacOS/redcar.sh")
     cp(REDCAR_ROOT + "/assets/redcar-icons/redcar-icon-beta-dev.icns", bundle_content_dir + "/Resources")
     
     exclude = [/pkg/, /spec/, /\.git/, /\.redcar/, /\.gemspec/]
