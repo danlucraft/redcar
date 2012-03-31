@@ -40,7 +40,7 @@ You must have Java installed. On Ubuntu, you can install openjdk-7-jre if you do
     
  * [Windows]()
 
-   unzip, then run redcar.exe
+    unzip, then run redcar.exe
 
 ## Usage
 
