@@ -1,7 +1,12 @@
-REDCAR_VERSION = "0.14.0dev"
+REDCAR_VERSION     = "0.14.0dev"
+REDCAR_DESCRIPTION = "A Ruby programmer's text editor"
+REDCAR_MAINTAINER  = "Daniel Lucraft <dan@fluentradical.com>"
+REDCAR_LICENSE     = "GPL v2"
+REDCAR_VENDOR      = "n/a"
+REDCAR_URL         = "http://redcareditor.com"
 
 JRUBY_JAR_LOCATION = "http://jruby.org.s3.amazonaws.com/downloads/1.6.7/jruby-complete-1.6.7.jar"
-REDCAR_ROOT = File.expand_path("../", __FILE__)
+REDCAR_ROOT        = File.expand_path("../", __FILE__)
 
 require 'fileutils'
 require 'net/http'
@@ -76,7 +81,7 @@ namespace :installers do
     copy_all("#{deb_dir}/lib/redcar")
     cp(REDCAR_ROOT + "/assets/redcar_linux.sh", "#{deb_dir}/bin/redcar")
     chmod(0755, "#{deb_dir}/bin/redcar")
-    sh("fpm -a all -v #{REDCAR_VERSION} -s dir -t deb -n redcar --prefix /usr/local -C pkg/deb bin lib")
+    sh("fpm -a all -v #{REDCAR_VERSION} -s dir -t deb -n redcar --prefix /usr/local -C pkg/deb --url \"#{REDCAR_URL}\" --license \"#{REDCAR_LICENSE}\" --vendor \"#{REDCAR_VENDOR}\" --maintainer \"#{REDCAR_MAINTAINER}\" --description \"#{REDCAR_DESCRIPTION}\" bin lib")
     mv("redcar_#{REDCAR_VERSION}_all.deb", "pkg/")
   end
   
