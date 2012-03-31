@@ -55,20 +55,20 @@ namespace :installers do
   desc "Package for Windows"
   task :win do
     win_dir = REDCAR_ROOT + "/pkg/win"
-    rm_f(win_dir)
+    rm_rf(win_dir)
     mkdir_p(win_dir)
     mkdir_p(win_dir)
     copy_all(win_dir)
-    cp(REDCAR_ROOT + "/assets/redcar_win.bat", win_dir + "/redcar.bat")
-    chmod(0755, "#{win_dir}/redcar.bat")
+    cp(REDCAR_ROOT + "/assets/redcar_win.exe", win_dir + "/redcar.exe")
+    chmod(0755, "#{win_dir}/redcar.exe")
     sh("cd pkg/win; zip -r redcar-#{REDCAR_VERSION}.zip *; cd ../../; mv pkg/win/redcar-#{REDCAR_VERSION}.zip pkg/")
   end
   
   desc "Generate a debian package (uses fpm)"
   task :deb do
     deb_dir = REDCAR_ROOT + "/pkg/deb"
-    rm_f(deb_dir)
-    rm_f(REDCAR_ROOT + "/pkg/*.deb")
+    rm_rf(deb_dir)
+    rm_rf(REDCAR_ROOT + "/pkg/*.deb")
     mkdir_p("#{deb_dir}")
     mkdir_p("#{deb_dir}/bin")
     mkdir_p("#{deb_dir}/lib/redcar")
