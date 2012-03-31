@@ -76,7 +76,8 @@ namespace :installers do
     copy_all("#{deb_dir}/lib/redcar")
     cp(REDCAR_ROOT + "/assets/redcar_linux.sh", "#{deb_dir}/bin/redcar")
     chmod(0755, "#{deb_dir}/bin/redcar")
-    sh("fpm -a all -v #{REDCAR_VERSION} -s dir -t deb -n redcar --prefix /usr/local -C /Users/danlucraft/Redcar/redcar/pkg/deb/ bin lib")
+    sh("fpm -a all -v #{REDCAR_VERSION} -s dir -t deb -n redcar --prefix /usr/local -C pkg/deb bin lib")
+    mv("redcar_#{REDCAR_VERSION}_all.deb", "pkg/")
   end
   
   desc "Generate an OSX app-bundle"
@@ -117,6 +118,8 @@ XML
     cp(REDCAR_ROOT + "/assets/redcar-icons/redcar-icon-beta-dev.icns", bundle_content_dir + "/Resources")
     copy_all(bundle_content_dir + "/MacOS/")
     chmod(0755, bundle_content_dir + "/MacOS/redcar.sh")
+    sh("cd pkg; zip -r Redcar-#{REDCAR_VERSION}.app.zip Redcar.app; cd ../")
+    rm_r("pkg/Redcar.app")
   end
   
   def copy_all(target)

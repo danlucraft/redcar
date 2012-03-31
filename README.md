@@ -3,7 +3,7 @@
 
 [http://redcareditor.com/](http://redcareditor.com/)
 
-## DESCRIPTION
+## Description
 
 A Ruby text editor.
 
@@ -26,13 +26,30 @@ Some (current) limitations:
 ![alt text](http://redcareditor.com/images/redcar-4-thumb.png "Title")
 ![alt text](http://redcareditor.com/images/redcar-1-thumb.png "Title")
 
-## INSTALLATION
+## Installation
 
-Downloads:
+You must have Java installed. On Ubuntu, you can install openjdk-7-jre if you do not already have Java.
 
- * OS X app
- * Debian package (requires java; openjdk-7-jre on Ubuntu)
+ * [OS X]()
 
+    unzip, then double click Redcar.app
+    
+ * [Debian]()
+
+    install with sudo dpkg -i redcar_xx_all.deb
+    
+ * [Windows]()
+
+   unzip, then run redcar.exe
+
+## Installing From Source
+
+  git clone git://github.com/redcar/redcar.git
+  cd redcar
+  rake init
+  ruby bin/redcar
+
+  
 ## USAGE
 
 Run 
@@ -41,7 +58,7 @@ Run
 
 To see full usage details.
 
-## PROBLEMS?
+## Problems?
 
 * Irc at #redcar on irc.freenode.net
 * Mailing list at http://groups.google.com/group/redcar-editor
