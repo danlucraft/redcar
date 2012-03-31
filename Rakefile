@@ -47,6 +47,7 @@ task :init do
     rm(gem_file)
     sh("tar xzv -C #{gem_dir} -f #{gem_dir}/data.tar.gz")
     rm("#{gem_dir}/data.tar.gz")
+    rm("#{gem_dir}/metadata.gz")
   end
   sh("cd #{vendor}/redcar-xulrunner-win/vendor; unzip xulrunner*.zip; cd ../../../")
 end  
