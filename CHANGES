@@ -3,6 +3,7 @@ Version 0.14 (TBA)
 ================================
 
  * Add a basic, context menu-based bundle and snippet editor to Snippet Browser (Delisa Mason)
+ * Fix a bug in the Lucene plugin that was causing Redcar to hold files open (Dan Lucraft)
  * OSX platform application bundle (Dan Lucraft)
  * The line number gutter is coloured like the current theme (Delisa Mason)
 

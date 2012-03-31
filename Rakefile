@@ -21,7 +21,8 @@ end
 
 desc "Download dependencies"
 task :init do
-  sh("curl -L #{JRUBY_JAR_LOCATION} > vendor/jruby-complete.jar")
+  vendor = REDCAR_ROOT + "/vendor"
+  sh("curl -L #{JRUBY_JAR_LOCATION} > #{vendor}/jruby-complete.jar")
 
   gems = ["git",
 #            "spoon",
@@ -30,13 +31,16 @@ task :init do
           "ruby-blockcache",
           "bouncy-castle-java",
           "swt",
-          "plugin_manager"]#, ">= 1.5")
+          "plugin_manager",
+          "redcar-xulrunner-win",
+          "zip"
+          ]#, ">= 1.5")
   gems.each do |gem_name|
     puts "fetching #{gem_name}"
     data = JSON.parse(Net::HTTP.get(URI.parse("http://rubygems.org/api/v1/gems/#{gem_name}.json")))
-    gem_file = "vendor/#{gem_name}-#{data["version"]}.gem" 
+    gem_file = "#{vendor}/#{gem_name}-#{data["version"]}.gem" 
     sh("curl -L #{data["gem_uri"]} > #{gem_file}")
-    gem_dir = "vendor/#{gem_name}"
+    gem_dir = "#{vendor}/#{gem_name}"
     rm_rf(gem_dir)
     mkdir_p(gem_dir)
     sh("tar xzv -C #{gem_dir} -f #{gem_file}")
@@ -44,10 +48,22 @@ task :init do
     sh("tar xzv -C #{gem_dir} -f #{gem_dir}/data.tar.gz")
     rm("#{gem_dir}/data.tar.gz")
   end
+  sh("cd #{vendor}/redcar-xulrunner-win/vendor; unzip xulrunner*.zip; cd ../../../")
 end  
 
 namespace :installers do
-
+  desc "Package for Windows"
+  task :win do
+    win_dir = REDCAR_ROOT + "/pkg/win"
+    rm_f(win_dir)
+    mkdir_p(win_dir)
+    mkdir_p(win_dir)
+    copy_all(win_dir)
+    cp(REDCAR_ROOT + "/assets/redcar_win.bat", win_dir + "/redcar.bat")
+    chmod(0755, "#{win_dir}/redcar.bat")
+    sh("cd pkg/win; zip -r redcar-#{REDCAR_VERSION}.zip *; cd ../../; mv pkg/win/redcar-#{REDCAR_VERSION}.zip pkg/")
+  end
+  
   desc "Generate a debian package (uses fpm)"
   task :deb do
     deb_dir = REDCAR_ROOT + "/pkg/deb"
@@ -103,10 +119,23 @@ XML
   end
   
   def copy_all(target)
-    exclude = [/pkg/, /spec/, /\.git/, /\.redcar/, /\.gemspec/, /\.yardoc/]
-    Dir[REDCAR_ROOT + "/*"].each do |item|
+    exclude = [/pkg/, /spec/, /\.git/, /\.redcar/, /\.gemspec/, /\.yardoc/, /doc/]
+    Dir.glob(REDCAR_ROOT + "/*").each do |item|
       unless exclude.any? {|re| re =~ item}
-        cp_r(item, target)
+        sh("cp -r #{item} #{target}")
+      end
+    end
+    clean(target)
+  end
+  
+  def clean(target)
+    Dir.glob(target + "/*", File::FNM_DOTMATCH).each do |item|
+      next if [".", ".."].include?(File.basename(item))
+      if [".redcar", ".DS_Store"].include? File.basename(item) or
+          File.symlink?(item)
+        rm_rf(item)
+      elsif File.directory?(item)
+        clean(item)
       end
     end
   end

@@ -1,0 +1,1 @@
+start java -Dfile.encoding=UTF8 -classpath vendor\jruby-complete.jar org.jruby.Main bin\redcar --no-sub-jruby
