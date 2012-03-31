@@ -48,9 +48,8 @@ You must have Java installed. On Ubuntu, you can install openjdk-7-jre if you do
   cd redcar
   rake init
   ruby bin/redcar
-
   
-## USAGE
+## Usage
 
 Run 
 
@@ -63,7 +62,7 @@ To see full usage details.
 * Irc at #redcar on irc.freenode.net
 * Mailing list at http://groups.google.com/group/redcar-editor
 
-## LICENSE
+## License
 
 Redcar is copyright 2007-2012 Daniel Lucraft and contributors.
 It is licensed under the GPLv2. See the included LICENSE file for details.

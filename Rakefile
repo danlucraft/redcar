@@ -1,4 +1,4 @@
-REDCAR_VERSION = "0.14dev"
+REDCAR_VERSION = "0.14.0dev"
 
 JRUBY_JAR_LOCATION = "http://jruby.org.s3.amazonaws.com/downloads/1.6.7/jruby-complete-1.6.7.jar"
 REDCAR_ROOT = File.expand_path("../", __FILE__)
