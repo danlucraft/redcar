@@ -42,13 +42,6 @@ You must have Java installed. On Ubuntu, you can install openjdk-7-jre if you do
 
    unzip, then run redcar.exe
 
-## Installing From Source
-
-  git clone git://github.com/redcar/redcar.git
-  cd redcar
-  rake init
-  ruby bin/redcar
-  
 ## Usage
 
 Run 
@@ -56,6 +49,13 @@ Run
     $ redcar --help
 
 To see full usage details.
+
+## Installing From Source
+
+  git clone git://github.com/redcar/redcar.git
+  cd redcar
+  rake init
+  ruby bin/redcar
 
 ## Problems?
 
