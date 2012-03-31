@@ -28,9 +28,10 @@ Some (current) limitations:
 
 ## INSTALLATION
 
-    $ gem install redcar
+Downloads:
 
-for more details, see [User Guide: Installation](https://github.com/redcar/redcar/wiki/Installation)
+ * OS X app
+ * Debian package (requires java; openjdk-7-jre on Ubuntu)
 
 ## USAGE
 

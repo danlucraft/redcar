@@ -1,3 +1,5 @@
+REDCAR_VERSION = "0.14dev"
+
 JRUBY_JAR_LOCATION = "http://jruby.org.s3.amazonaws.com/downloads/1.6.7/jruby-complete-1.6.7.jar"
 REDCAR_ROOT = File.expand_path("../", __FILE__)
 
@@ -45,6 +47,21 @@ task :init do
 end  
 
 namespace :installers do
+
+  desc "Generate a debian package (uses fpm)"
+  task :deb do
+    deb_dir = REDCAR_ROOT + "/pkg/deb"
+    rm_f(deb_dir)
+    rm_f(REDCAR_ROOT + "/pkg/*.deb")
+    mkdir_p("#{deb_dir}")
+    mkdir_p("#{deb_dir}/bin")
+    mkdir_p("#{deb_dir}/lib/redcar")
+    copy_all("#{deb_dir}/lib/redcar")
+    cp(REDCAR_ROOT + "/assets/redcar_linux.sh", "#{deb_dir}/bin/redcar")
+    chmod(0755, "#{deb_dir}/bin/redcar")
+    sh("fpm -a all -v #{REDCAR_VERSION} -s dir -t deb -n redcar --prefix /usr/local -C /Users/danlucraft/Redcar/redcar/pkg/deb/ bin lib")
+  end
+  
   desc "Generate an OSX app-bundle"
   task :osx do
     rm_rf(REDCAR_ROOT + "/pkg/Redcar.app")
@@ -81,15 +98,19 @@ XML
     File.open(File.join(bundle_content_dir, "Info.plist"), "w") {|f| f.puts info_plist}
     cp(REDCAR_ROOT + "/assets/redcar_osx.sh", bundle_content_dir + "/MacOS/redcar.sh")
     cp(REDCAR_ROOT + "/assets/redcar-icons/redcar-icon-beta-dev.icns", bundle_content_dir + "/Resources")
-    
-    exclude = [/pkg/, /spec/, /\.git/, /\.redcar/, /\.gemspec/]
-    Dir[REDCAR_ROOT + "/*"].each do |item|
-      unless exclude.any? {|re| re =~ item}
-        cp_r(item, bundle_content_dir + "/MacOS/")
-      end
-    end
+    copy_all(bundle_content_dir + "/MacOS/")
     chmod(0755, bundle_content_dir + "/MacOS/redcar.sh")
   end
+  
+  def copy_all(target)
+    exclude = [/pkg/, /spec/, /\.git/, /\.redcar/, /\.gemspec/, /\.yardoc/]
+    Dir[REDCAR_ROOT + "/*"].each do |item|
+      unless exclude.any? {|re| re =~ item}
+        cp_r(item, target)
+      end
+    end
+  end
+  
 end
 
 ### DOCUMENTATION
