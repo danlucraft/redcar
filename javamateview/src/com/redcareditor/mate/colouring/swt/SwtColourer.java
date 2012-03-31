@@ -54,44 +54,44 @@ public class SwtColourer implements Colourer {
 				colourLine(event);
 			}
 		});
-		this.control.addLineBackgroundListener(new LineBackgroundListener() {
-			public void lineGetBackground(LineBackgroundEvent event) {
-				int eventLine = control.getLineAtOffset(event.lineOffset);
-				int caretLine = control.getLineAtOffset(control.getCaretOffset());
-				if (eventLine == caretLine) {
-					event.lineBackground = ColourUtil.getColour(globalLineBackground());
-					highlightedLine = eventLine;
-				}
-			}
-		});
-		
-		control.addCaretListener(new CaretListener() {
-			public void caretMoved(CaretEvent e) {
-				int line = control.getLineAtOffset(e.caretOffset);
-				if (line == highlightedLine) return;
-				if (Math.abs(highlightedLine - line) > 1) {
-					redrawLines(highlightedLine);
-				}
-				redrawLines(line);
-			}
-		});
+		// this.control.addLineBackgroundListener(new LineBackgroundListener() {
+		// 	public void lineGetBackground(LineBackgroundEvent event) {
+		// 		int eventLine = control.getLineAtOffset(event.lineOffset);
+		// 		int caretLine = control.getLineAtOffset(control.getCaretOffset());
+		// 		if (eventLine == caretLine) {
+		// 			event.lineBackground = ColourUtil.getColour(globalLineBackground());
+		// 			highlightedLine = eventLine;
+		// 		}
+		// 	}
+		// });
+		// 
+		// control.addCaretListener(new CaretListener() {
+		// 	public void caretMoved(CaretEvent e) {
+		// 		int line = control.getLineAtOffset(e.caretOffset);
+		// 		System.out.printf("caretMoved(%d)\n", line);
+		// 		if (line == highlightedLine) return;
+		// 		redrawLine(highlightedLine);
+		// 		redrawLine(line);
+		// 	}
+		// });
 	}
 	
-	private void redrawLines(int line) {
-		int maxPossibleLine = control.getLineCount() - 1;
-		int startLine = (line - 1 > maxPossibleLine ? maxPossibleLine : line - 1);
-		startLine = (startLine < 0 ? 0 : startLine);
-		int startOffset  = control.getOffsetAtLine(startLine);
-		
-		int endingOffset = startOffset + 1;
-		if (line + 1 < maxPossibleLine) {
-			endingOffset = control.getOffsetAtLine(line + 2);
-		} else {
-			endingOffset = control.getText().length() - 1;
-		}
-		
-		control.redrawRange(startOffset, endingOffset - startOffset, false);
-	}
+	// private void redrawLine(int line) {
+	// 	int maxPossibleLine = control.getLineCount() - 1;
+	// 	System.out.printf("redrawLine(%d) (maxPossibleLine: %d)\n", line, maxPossibleLine);
+	// 	if (line > maxPossibleLine) return;
+	// 	int startOffset = control.getOffsetAtLine(line);
+ // 
+	// 	int endOffset;		
+	// 	if (line == maxPossibleLine) {
+	// 		endOffset = control.getCharCount();
+	// 	} else {
+	// 		endOffset = control.getOffsetAtLine(line + 1);
+	// 	}
+	// 	int length = endOffset - startOffset;
+	// 	length = length < 0 ? 0 : length;
+	// 	control.redrawRange(startOffset, length, false);
+	// }
 	
 	public void setTheme(Theme theme) {
 		this.theme = theme;
