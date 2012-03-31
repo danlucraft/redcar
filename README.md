@@ -28,7 +28,7 @@ Some (current) limitations:
 
 ## Installation
 
-You must have Java installed. On Ubuntu, you can install openjdk-7-jre if you do not already have Java.
+You must have Java installed. On Ubuntu, you can install `openjdk-7-jre` if you do not already have Java.
 
  * [OS X]()
 
@@ -52,10 +52,10 @@ To see full usage details.
 
 ## Installing From Source
 
-  git clone git://github.com/redcar/redcar.git
-  cd redcar
-  rake init
-  ruby bin/redcar
+    git clone git://github.com/redcar/redcar.git
+    cd redcar
+    rake init
+    ruby bin/redcar
 
 ## Problems?
 
