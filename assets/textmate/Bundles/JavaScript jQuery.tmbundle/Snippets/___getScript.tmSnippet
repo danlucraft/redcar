@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>\$.getScript('${1:somescript.js}'${3/(.+)/(?1:, function\(\){
+ :)/}${3://optional stuff to do after getScript}${3/(.+)/(?1:;
+}:)/});
+$0</string>
+	<key>name</key>
+	<string>$.getScript</string>
+	<key>scope</key>
+	<string>source.js.jquery</string>
+	<key>tabTrigger</key>
+	<string>$.getScript</string>
+	<key>uuid</key>
+	<string>1E41CC95-3D42-4CC9-BD69-BA86FB8FE34A</string>
+</dict>
+</plist>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>Console.WriteLine($1);
+$0</string>
+	<key>name</key>
+	<string>Console.WriteLine (writeline)</string>
+	<key>scope</key>
+	<string>source.vala</string>
+	<key>tabTrigger</key>
+	<string>writeline</string>
+	<key>uuid</key>
+	<string>C11FE360-4D22-4C75-B12B-7A5D48D33488</string>
+</dict>
+</plist>

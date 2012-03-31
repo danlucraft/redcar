@@ -36,3 +36,14 @@ plugins/core/spec/core/*.yaml
 plugins/scm_svn/features/fixtures
 
 tmp
+
+vendor/bouncy-castle-java
+vendor/git
+vendor/jruby-openssl
+vendor/lucene
+vendor/plugin_manager
+vendor/ruby-blockcache
+vendor/swt
+vendor/jruby-complete.jar
+vendor/redcar-xulrunner-win
+vendor/zip

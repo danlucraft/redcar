@@ -1,0 +1,13 @@
+bin/com
+bin/test
+bin/test-reports
+bin/PropertyList-1.0.dtd
+release
+.DS_Store
+lib/*.jar
+release/
+tmp/
+lib/swt_jars
+lib/jface_jars
+.redcar
+*.gem

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>{% ifchanged %}$1{% endifchanged %}</string>
+	<key>name</key>
+	<string>ifchanged</string>
+	<key>scope</key>
+	<string>text.html.django</string>
+	<key>tabTrigger</key>
+	<string>ifchanged</string>
+	<key>uuid</key>
+	<string>3EAFA3AA-41D8-4C42-9D04-1FFB716EBAF0</string>
+</dict>
+</plist>

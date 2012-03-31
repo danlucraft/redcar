@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>oenq@oenqpubngr.pbz</string>
+	<key>contactName</key>
+	<string>Brad Choate</string>
+	<key>description</key>
+	<string>&lt;a href="http://html-template.sourceforge.net/"&gt;HTML::Template&lt;/a&gt; is a template processing system for Perl.</string>
+	<key>name</key>
+	<string>Perl HTML::Template</string>
+	<key>ordering</key>
+	<array>
+		<string>79287EAC-597A-480D-974C-837440298571</string>
+		<string>AA7F838B-1706-4373-8AD4-9FD1796C838F</string>
+		<string>907E21D1-ACD9-4CB6-9C20-C1BA813BFAED</string>
+		<string>22A827CA-B0B7-4468-9FCD-95B5842ABF90</string>
+		<string>826B32E3-9913-4D02-95E7-65716121F1F4</string>
+		<string>30FBFAAA-B7E5-4A2B-8092-C8367C0838B9</string>
+		<string>857B0182-F407-4ADC-B166-463C47A0369B</string>
+	</array>
+	<key>uuid</key>
+	<string>5A67ADDC-283A-4E0F-AA36-29E4E95B4A26</string>
+</dict>
+</plist>

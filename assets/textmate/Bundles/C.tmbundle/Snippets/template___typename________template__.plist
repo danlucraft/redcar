@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>template &lt;typename ${1:_InputIter}&gt;</string>
+	<key>name</key>
+	<string>template &lt;typename …&gt;</string>
+	<key>scope</key>
+	<string>source.c++, source.objc++</string>
+	<key>tabTrigger</key>
+	<string>tp</string>
+	<key>uuid</key>
+	<string>C5DEE118-4C9E-4F3E-97A4-0E01A250F142</string>
+</dict>
+</plist>

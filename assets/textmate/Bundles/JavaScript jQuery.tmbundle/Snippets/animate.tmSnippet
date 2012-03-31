@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>.animate({${1:param1: value1, param2: value2}}, ${2:speed})$0</string>
+	<key>name</key>
+	<string>animate</string>
+	<key>scope</key>
+	<string>source.js.jquery</string>
+	<key>tabTrigger</key>
+	<string>.animate</string>
+	<key>uuid</key>
+	<string>DDE3146C-FE63-465B-A9C6-4837DDF96475</string>
+</dict>
+</plist>

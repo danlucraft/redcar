@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>.ajaxSuccess(function() {
+	${1:// executes whenever an AJAX request completes successfully}
+});$0</string>
+	<key>name</key>
+	<string>$.ajaxSuccess</string>
+	<key>scope</key>
+	<string>source.js.jquery</string>
+	<key>tabTrigger</key>
+	<string>$.ajaxSuccess</string>
+	<key>uuid</key>
+	<string>154BF189-2645-45FD-8728-15C5A79E3FAF</string>
+</dict>
+</plist>

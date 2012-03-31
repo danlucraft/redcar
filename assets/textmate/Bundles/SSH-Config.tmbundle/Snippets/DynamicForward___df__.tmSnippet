@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>DynamicForward ${1:0000}</string>
+	<key>name</key>
+	<string>DynamicForward</string>
+	<key>scope</key>
+	<string>source.ssh-config</string>
+	<key>tabTrigger</key>
+	<string>df</string>
+	<key>uuid</key>
+	<string>C1383DD1-64AA-46E1-B9E9-5A243790B81B</string>
+</dict>
+</plist>

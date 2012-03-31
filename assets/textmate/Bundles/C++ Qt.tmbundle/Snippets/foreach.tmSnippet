@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>foreach( ${1:variable}, ${2:container} )
+{
+	${3:doSomething();} 
+}$0</string>
+	<key>name</key>
+	<string>foreach</string>
+	<key>scope</key>
+	<string>source.c++.qt</string>
+	<key>tabTrigger</key>
+	<string>fe</string>
+	<key>uuid</key>
+	<string>90F2231F-959B-4CA7-9CAF-7165E5160D04</string>
+</dict>
+</plist>

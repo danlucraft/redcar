@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${1:Something}Test := ${2:UnitTest} clone do(
+	$0
+)</string>
+	<key>name</key>
+	<string>UnitTest</string>
+	<key>scope</key>
+	<string>source.io</string>
+	<key>tabTrigger</key>
+	<string>ut</string>
+	<key>uuid</key>
+	<string>35D0E7C0-E396-4D8B-8361-89B88C3AFF0C</string>
+</dict>
+</plist>

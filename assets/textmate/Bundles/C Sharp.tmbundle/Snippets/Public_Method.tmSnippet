@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>/// &lt;summary&gt;
+///   Description of public method goes here
+/// &lt;/summary&gt;
+public ${1:ReturnType} ${2:MethodName}(${3:ParameterType} ${4:ParameterName})
+{
+	$0
+}</string>
+	<key>name</key>
+	<string>Public Method</string>
+	<key>scope</key>
+	<string>source.cs</string>
+	<key>tabTrigger</key>
+	<string>pum</string>
+	<key>uuid</key>
+	<string>58303EDB-6E36-4222-9422-4104932A8E51</string>
+</dict>
+</plist>

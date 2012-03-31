@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;g:radio name="${1:name}" value="${2:true}" checked="${3:true}" /&gt;</string>
+	<key>name</key>
+	<string>&lt;g:radio&gt; </string>
+	<key>scope</key>
+	<string>text.html.grails</string>
+	<key>tabTrigger</key>
+	<string>input</string>
+	<key>uuid</key>
+	<string>86EB0B0F-E050-44AA-89A9-841C36FF5991</string>
+</dict>
+</plist>

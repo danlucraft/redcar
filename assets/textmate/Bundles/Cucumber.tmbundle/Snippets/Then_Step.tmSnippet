@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>Then ${1:step name} do
+  $0
+end
+
+</string>
+	<key>name</key>
+	<string>Then Step</string>
+	<key>scope</key>
+	<string>source.ruby.rspec.cucumber.steps</string>
+	<key>tabTrigger</key>
+	<string>the</string>
+	<key>uuid</key>
+	<string>32B65923-8303-4635-BA62-1D8860E59EE4</string>
+</dict>
+</plist>

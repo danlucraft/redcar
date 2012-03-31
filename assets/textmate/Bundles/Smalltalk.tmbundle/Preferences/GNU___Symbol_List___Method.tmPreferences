@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>GNU: Symbol List: Method</string>
+	<key>scope</key>
+	<string>meta.declaration.methods.method.name.smalltalk</string>
+	<key>settings</key>
+	<dict>
+		<key>showInSymbolList</key>
+		<integer>1</integer>
+		<key>symbolTransformation</key>
+		<string>
+		s/^\s*(.*)$/$1/
+		s/([a-zA-Z0-9]+:)\s+[a-zA-Z0-9]+(?:\s|$)/$1/g
+		s/(.*)/\t$1/
+	</string>
+	</dict>
+	<key>uuid</key>
+	<string>663866CD-A1EA-40DB-82DF-72125695B331</string>
+</dict>
+</plist>

@@ -1,6 +1,11 @@
-require 'fileutils'
+REDCAR_VERSION = "0.14.0dev"
 
-require 'cucumber/rake/task'
+JRUBY_JAR_LOCATION = "http://jruby.org.s3.amazonaws.com/downloads/1.6.7/jruby-complete-1.6.7.jar"
+REDCAR_ROOT = File.expand_path("../", __FILE__)
+
+require 'fileutils'
+require 'net/http'
+require 'json'
 
 Dir[File.expand_path("../lib/tasks/*.rake", __FILE__)].each { |f| load f }
 
@@ -13,14 +18,133 @@ if RUBY_PLATFORM =~ /mswin|mingw/
   end
 end
 
-### GETTING STARTED IN DEVELOPMENT
 
-desc "Prepare code base for development"
-task :initialise do
-  sh "git submodule update --init --recursive"
+desc "Download dependencies"
+task :init do
+  vendor = REDCAR_ROOT + "/vendor"
+  sh("curl -L #{JRUBY_JAR_LOCATION} > #{vendor}/jruby-complete.jar")
+
+  gems = ["git",
+#            "spoon",
+          "lucene", #"~> 0.5.0.beta.1",
+          "jruby-openssl",
+          "ruby-blockcache",
+          "bouncy-castle-java",
+          "swt",
+          "plugin_manager",
+          "redcar-xulrunner-win",
+          "zip"
+          ]#, ">= 1.5")
+  gems.each do |gem_name|
+    puts "fetching #{gem_name}"
+    data = JSON.parse(Net::HTTP.get(URI.parse("http://rubygems.org/api/v1/gems/#{gem_name}.json")))
+    gem_file = "#{vendor}/#{gem_name}-#{data["version"]}.gem" 
+    sh("curl -L #{data["gem_uri"]} > #{gem_file}")
+    gem_dir = "#{vendor}/#{gem_name}"
+    rm_rf(gem_dir)
+    mkdir_p(gem_dir)
+    sh("tar xzv -C #{gem_dir} -f #{gem_file}")
+    rm(gem_file)
+    sh("tar xzv -C #{gem_dir} -f #{gem_dir}/data.tar.gz")
+    rm("#{gem_dir}/data.tar.gz")
+    rm("#{gem_dir}/metadata.gz")
+  end
+  sh("cd #{vendor}/redcar-xulrunner-win/vendor; unzip xulrunner*.zip; cd ../../../")
+end  
+
+namespace :installers do
+  desc "Package for Windows"
+  task :win do
+    win_dir = REDCAR_ROOT + "/pkg/win"
+    rm_rf(win_dir)
+    mkdir_p(win_dir)
+    mkdir_p(win_dir)
+    copy_all(win_dir)
+    cp(REDCAR_ROOT + "/assets/redcar_win.exe", win_dir + "/redcar.exe")
+    chmod(0755, "#{win_dir}/redcar.exe")
+    sh("cd pkg/win; zip -r redcar-#{REDCAR_VERSION}.zip *; cd ../../; mv pkg/win/redcar-#{REDCAR_VERSION}.zip pkg/")
+  end
+  
+  desc "Generate a debian package (uses fpm)"
+  task :deb do
+    deb_dir = REDCAR_ROOT + "/pkg/deb"
+    rm_rf(deb_dir)
+    rm_rf(REDCAR_ROOT + "/pkg/*.deb")
+    mkdir_p("#{deb_dir}")
+    mkdir_p("#{deb_dir}/bin")
+    mkdir_p("#{deb_dir}/lib/redcar")
+    copy_all("#{deb_dir}/lib/redcar")
+    cp(REDCAR_ROOT + "/assets/redcar_linux.sh", "#{deb_dir}/bin/redcar")
+    chmod(0755, "#{deb_dir}/bin/redcar")
+    sh("fpm -a all -v #{REDCAR_VERSION} -s dir -t deb -n redcar --prefix /usr/local -C pkg/deb bin lib")
+    mv("redcar_#{REDCAR_VERSION}_all.deb", "pkg/")
+  end
+  
+  desc "Generate an OSX app-bundle"
+  task :osx do
+    rm_rf(REDCAR_ROOT + "/pkg/Redcar.app")
+    mkdir_p(REDCAR_ROOT + "/pkg/Redcar.app")
+    bundle_content_dir = REDCAR_ROOT + "/pkg/Redcar.app/Contents"
+    mkdir_p(bundle_content_dir)
+    mkdir_p("#{bundle_content_dir}/MacOS")
+    mkdir_p("#{bundle_content_dir}/Resources")
+  
+    info_plist = <<-XML
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleExecutable</key>
+	<string>redcar.sh</string>
+	<key>CFBundleIconFile</key>
+	<string>redcar-icon-beta-dev.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.redcareditor.Redcar</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string></string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.5</string>
+</dict>
+</plist>
+XML
+    File.open(File.join(bundle_content_dir, "Info.plist"), "w") {|f| f.puts info_plist}
+    cp(REDCAR_ROOT + "/assets/redcar_osx.sh", bundle_content_dir + "/MacOS/redcar.sh")
+    cp(REDCAR_ROOT + "/assets/redcar-icons/redcar-icon-beta-dev.icns", bundle_content_dir + "/Resources")
+    copy_all(bundle_content_dir + "/MacOS/")
+    chmod(0755, bundle_content_dir + "/MacOS/redcar.sh")
+    sh("cd pkg; zip -r Redcar-#{REDCAR_VERSION}.app.zip Redcar.app; cd ../")
+    rm_r("pkg/Redcar.app")
+  end
+  
+  def copy_all(target)
+    exclude = [/pkg/, /spec/, /\.git/, /\.redcar/, /\.gemspec/, /\.yardoc/, /doc/]
+    Dir.glob(REDCAR_ROOT + "/*").each do |item|
+      unless exclude.any? {|re| re =~ item}
+        sh("cp -r #{item} #{target}")
+      end
+    end
+    clean(target)
+  end
+  
+  def clean(target)
+    Dir.glob(target + "/*", File::FNM_DOTMATCH).each do |item|
+      next if [".", ".."].include?(File.basename(item))
+      if [".redcar", ".DS_Store"].include? File.basename(item) or
+          File.symlink?(item)
+        rm_rf(item)
+      elsif File.directory?(item)
+        clean(item)
+      end
+    end
+  end
+  
 end
-
-task :initialize => :initialise
 
 ### DOCUMENTATION
 

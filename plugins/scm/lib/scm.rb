@@ -1,5 +1,5 @@
 
-gem "ruby-blockcache"
+$:.push(Redcar.root + "/vendor/ruby-blockcache/lib")
 require 'blockcache'
 
 require 'scm/model'

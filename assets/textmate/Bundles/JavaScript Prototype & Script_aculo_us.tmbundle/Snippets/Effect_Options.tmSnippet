@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>{
+	${1:${2:duration}: ${3:1}}${5:,
+	afterFinish: function() {
+		$6
+	\}}$0
+}</string>
+	<key>name</key>
+	<string>Effect Options</string>
+	<key>scope</key>
+	<string>source.js.prototype</string>
+	<key>tabTrigger</key>
+	<string>effect_options</string>
+	<key>uuid</key>
+	<string>43BBB5EB-10C8-4E27-8239-71354EFCD533</string>
+</dict>
+</plist>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Symbol List: enum</string>
+	<key>scope</key>
+	<string>entity.name.enum.thrift</string>
+	<key>settings</key>
+	<dict>
+		<key>showInSymbolList</key>
+		<integer>1</integer>
+		<key>symbolTransformation</key>
+		<string>s/^/enum /</string>
+	</dict>
+	<key>uuid</key>
+	<string>6D3EADC1-CF25-4897-AA50-F250B1627EA1</string>
+</dict>
+</plist>

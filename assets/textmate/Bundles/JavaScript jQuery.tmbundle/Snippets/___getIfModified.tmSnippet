@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>\$.getIfModified('${1:/test/test.cgi}'${3/(.+)/(?1:, function\(data\){
+ :)/}${3:alert( $"Data loaded: " + data )//optional stuff to do after get}${3/(.+)/(?1:;
+}:)/});
+$0</string>
+	<key>name</key>
+	<string>$.getIfModified</string>
+	<key>scope</key>
+	<string>source.js.jquery</string>
+	<key>tabTrigger</key>
+	<string>$.getIfModified</string>
+	<key>uuid</key>
+	<string>8B1184F0-1BC6-4DD9-B60A-1D3212A9B642</string>
+</dict>
+</plist>

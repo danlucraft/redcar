@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>\$.ajaxStop(function() {
+  ${1://stuff to do when all AJAX calls have completed};
+});
+$0</string>
+	<key>name</key>
+	<string>$.ajaxStop</string>
+	<key>scope</key>
+	<string>source.js.jquery</string>
+	<key>tabTrigger</key>
+	<string>$.ajaxStop</string>
+	<key>uuid</key>
+	<string>ED38CEB0-2038-4E45-9CDF-56824AF86968</string>
+</dict>
+</plist>

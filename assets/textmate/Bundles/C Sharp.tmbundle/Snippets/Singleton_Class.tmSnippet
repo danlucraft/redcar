@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>/// &lt;summary&gt;
+///   Description of singleton class goes here
+/// &lt;/summary&gt;
+public class ${1:Singleton}
+{
+   private static ${1:Singleton} ${3:${2/./\l$0/}};
+
+   private ${1:Singleton}()
+   {
+   }
+
+   public static ${1:Singleton} ${2:Instance}
+   {
+      get 
+      {
+         if (${3:${2/./\l$0/}} == null)
+         {
+            ${3:${2/./\l$0/}} = new ${1:Singleton}();
+         }
+         return ${3:${2/./\l$0/}};
+      }
+   }
+}
+</string>
+	<key>name</key>
+	<string>Singleton Class</string>
+	<key>scope</key>
+	<string>source.cs</string>
+	<key>tabTrigger</key>
+	<string>sinc</string>
+	<key>uuid</key>
+	<string>F1BB288E-0BAD-4833-BB6E-1C7E958041F6</string>
+</dict>
+</plist>

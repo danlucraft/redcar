@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>comment</key>
+	<string>From Why’s Poignant Guide to Ruby</string>
+	<key>name</key>
+	<string>Why's Poignant</string>
+	<key>settings</key>
+	<array>
+		<dict>
+			<key>settings</key>
+			<dict>
+				<key>background</key>
+				<string>#FFFEF9</string>
+				<key>caret</key>
+				<string>#340019</string>
+				<key>foreground</key>
+				<string>#2D669A</string>
+				<key>invisibles</key>
+				<string>#FF98CA</string>
+				<key>lineHighlight</key>
+				<string>#FFFFBE80</string>
+				<key>selection</key>
+				<string>#3B88CD4D</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Why’s (Poignant) Guide to Ruby</string>
+			<key>scope</key>
+			<string>markup.bold</string>
+			<key>settings</key>
+			<dict>
+				<key>fontStyle</key>
+				<string>bold</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>http://poignantguide.net/ruby/</string>
+			<key>scope</key>
+			<string>meta.link, markup.underline</string>
+			<key>settings</key>
+			<dict>
+				<key>fontStyle</key>
+				<string>underline</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string></string>
+			<key>settings</key>
+			<dict/>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Class name</string>
+			<key>scope</key>
+			<string>entity.name.class, entity.name.type.class, support.class, constant.language, variable.other.constant, entity.other.attribute-name, punctuation.definition.entity</string>
+			<key>settings</key>
+			<dict>
+				<key>fontStyle</key>
+				<string>bold</string>
+				<key>foreground</key>
+				<string>#4F1900</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Symbol</string>
+			<key>scope</key>
+			<string>constant.character, constant.other, punctuation.definition.constant</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#000000</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Keyword</string>
+			<key>scope</key>
+			<string>keyword, keyword.operator.setter, keyword.other.special-method, punctuation.delimiter.method, entity.name.tag</string>
+			<key>settings</key>
+			<dict>
+				<key>fontStyle</key>
+				<string>bold</string>
+				<key>foreground</key>
+				<string>#761B48</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Punctuation</string>
+			<key>scope</key>
+			<string>punctuation, punctuation.definition.string, variable.other, meta.tag, support.type.property-name</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#9D3266</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>String Punctuation</string>
+			<key>scope</key>
+			<string>punctuation.definition.string</string>
+			<key>settings</key>
+			<dict>
+				<key>background</key>
+				<string>#FFFEF9</string>
+				<key>foreground</key>
+				<string>#9D3266</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Number</string>
+			<key>scope</key>
+			<string>constant.numeric, constant.character.entity, constant.character.entity punctuation.definition.entity</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#2A9A66</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>String</string>
+			<key>scope</key>
+			<string>string</string>
+			<key>settings</key>
+			<dict>
+				<key>background</key>
+				<string>#E8F5F5</string>
+				<key>foreground</key>
+				<string>#2A9A66</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Regex</string>
+			<key>scope</key>
+			<string>string.regexp</string>
+			<key>settings</key>
+			<dict>
+				<key>background</key>
+				<string>#E8F1F5</string>
+				<key>foreground</key>
+				<string>#443355</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Variable</string>
+			<key>scope</key>
+			<string>variable.language, variable.other, variable.parameter.function, keyword.other.special-method, variable.other.block</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#2D669A</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Misc</string>
+			<key>scope</key>
+			<string>constant.character, punctuation.definition.comment, punctuation.delimiter.object</string>
+			<key>settings</key>
+			<dict>
+				<key>fontStyle</key>
+				<string>bold</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>Comment</string>
+			<key>scope</key>
+			<string>comment, punctuation.definition.comment</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#555555</string>
+			</dict>
+		</dict>
+	</array>
+	<key>uuid</key>
+	<string>FCBF0D29-1359-40DA-9CB6-C9BAF0F39617</string>
+</dict>
+</plist>

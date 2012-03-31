@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>connect( ${1:sender}, SIGNAL(${2:signal}(${3})), ${4:reciever}, ${5:SLOT}(${6:slot}($3)) );$0</string>
+	<key>name</key>
+	<string>connect</string>
+	<key>scope</key>
+	<string>source.c++.qt</string>
+	<key>tabTrigger</key>
+	<string>con</string>
+	<key>uuid</key>
+	<string>8D9D10AE-0531-11DB-8509-0011242E4184</string>
+</dict>
+</plist>

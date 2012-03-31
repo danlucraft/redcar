@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>\begin{equation}
+	$0
+\end{equation}</string>
+	<key>name</key>
+	<string>Equation</string>
+	<key>scope</key>
+	<string>text.tex.latex</string>
+	<key>tabTrigger</key>
+	<string>eq</string>
+	<key>uuid</key>
+	<string>23B04BBB-ACE7-44A7-B313-09DC4874B2C0</string>
+</dict>
+</plist>

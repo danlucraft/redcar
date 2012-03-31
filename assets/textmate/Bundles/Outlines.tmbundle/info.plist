@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>grkgzngr@orggresvyrpnovarg.pbz</string>
+	<key>contactName</key>
+	<string>Eric Hsu</string>
+	<key>description</key>
+	<string>Various commands for converting textual outlines (defined via indent) to other formats, such as HTML and LaTeX.</string>
+	<key>name</key>
+	<string>Outlines</string>
+	<key>ordering</key>
+	<array>
+		<string>3AE7D1AD-8300-11D9-B216-000D9332809C</string>
+		<string>E45D5856-8305-11D9-8AD4-000D9332809C</string>
+		<string>DC7A2CCA-8301-11D9-9E93-000D9332809C</string>
+		<string>4B6A441D-8307-11D9-A10F-000D9332809C</string>
+		<string>4BBD1C32-8316-11D9-968E-000D9332809C</string>
+		<string>DBF2B50A-8303-11D9-8C1E-000D9332809C</string>
+		<string>F60652D5-8316-11D9-8D63-000D9332809C</string>
+	</array>
+	<key>uuid</key>
+	<string>13FEBB9E-8300-11D9-B216-000D9332809C</string>
+</dict>
+</plist>

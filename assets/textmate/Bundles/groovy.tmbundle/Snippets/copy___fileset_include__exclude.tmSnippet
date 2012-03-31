@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>copy(todir:"${1:targetDir}") {
+	fileset(dir:"${2:sourceDir}") {
+		include(name:"${3:includeName}")
+		exclude(name:"${4:excludeName}")
+	}
+}</string>
+	<key>name</key>
+	<string>copy(todir: …) { fileset(dir: …) { include … exclude }</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>copy</string>
+	<key>uuid</key>
+	<string>0A9B1368-E4C0-4B94-BE1D-6B9EA1F27415</string>
+</dict>
+</plist>

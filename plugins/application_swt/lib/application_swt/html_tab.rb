@@ -66,11 +66,9 @@ module Redcar
       end
       
       def self.windows_xulrunner_path
-        begin
-          require 'redcar-xulrunner-win'
-        rescue LoadError => e
-          raise "Missing xulrunner browser widget, install gem redcar-xulrunner-win."
-        end
+        $:.push(File.expand_path("../../../../../vendor/zip/lib", __FILE__))
+        $:.push(File.expand_path("../../../../../vendor/redcar-xulrunner-win/lib", __FILE__))
+        require 'redcar-xulrunner-win'
         Redcar::XulrunnerWin.ensure_unpacked
         Redcar::XulrunnerWin.path
       end

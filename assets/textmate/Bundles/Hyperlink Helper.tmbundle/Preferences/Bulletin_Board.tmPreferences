@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Bulletin Board</string>
+	<key>scope</key>
+	<string>text.bbcode</string>
+	<key>settings</key>
+	<dict>
+		<key>shellVariables</key>
+		<array>
+			<dict>
+				<key>name</key>
+				<string>TM_LINK_FORMAT</string>
+				<key>value</key>
+				<string>[URL=&lt;%= e_sn url %&gt;]&lt;%= e_sn input %&gt;[/URL]</string>
+			</dict>
+		</array>
+	</dict>
+	<key>uuid</key>
+	<string>8CCCD8B6-9583-4B5D-8CBF-0867B14E86D7</string>
+</dict>
+</plist>

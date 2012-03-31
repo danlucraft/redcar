@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>.mousemove(${1:function() {
+	${0:// Act on the event}
+\}});</string>
+	<key>name</key>
+	<string>mousemove</string>
+	<key>scope</key>
+	<string>source.js.jquery</string>
+	<key>tabTrigger</key>
+	<string>.mousemove</string>
+	<key>uuid</key>
+	<string>0C0F0895-54E0-4CA5-AC82-B3D3E872675C</string>
+</dict>
+</plist>

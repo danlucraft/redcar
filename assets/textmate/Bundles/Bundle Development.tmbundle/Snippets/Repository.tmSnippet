@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>repository = {
+	${1:rule_name} = {
+		$0
+	};
+};</string>
+	<key>name</key>
+	<string>Repository</string>
+	<key>scope</key>
+	<string>source.plist.tm-grammar</string>
+	<key>tabTrigger</key>
+	<string>rep</string>
+	<key>uuid</key>
+	<string>A9191F2E-8FAC-41B9-B729-9663E42452DD</string>
+</dict>
+</plist>

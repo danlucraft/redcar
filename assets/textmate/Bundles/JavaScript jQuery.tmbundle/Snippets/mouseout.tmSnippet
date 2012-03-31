@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>.mouseout(${1:function() {
+	${0:// Act on the event}
+\}});</string>
+	<key>name</key>
+	<string>mouseout</string>
+	<key>scope</key>
+	<string>source.js.jquery</string>
+	<key>tabTrigger</key>
+	<string>.mouseout</string>
+	<key>uuid</key>
+	<string>39D8784D-FEC7-4DE3-9B34-DEEF98E1D865</string>
+</dict>
+</plist>

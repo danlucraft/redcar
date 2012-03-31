@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Symbol List: Location</string>
+	<key>scope</key>
+	<string>meta.toc-list.location.apache-config</string>
+	<key>settings</key>
+	<dict>
+		<key>showInSymbolList</key>
+		<integer>1</integer>
+		<key>symbolTransformation</key>
+		<string>s/^\s*/Loc: /; s/\s+/ /g; s/['"]//g</string>
+	</dict>
+	<key>uuid</key>
+	<string>028FCB49-F488-4B14-9E40-B96BE6DABB33</string>
+</dict>
+</plist>

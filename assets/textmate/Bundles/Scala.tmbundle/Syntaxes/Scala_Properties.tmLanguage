@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>fileTypes</key>
+	<array>
+		<string>properties</string>
+	</array>
+	<key>keyEquivalent</key>
+	<string>^~S</string>
+	<key>name</key>
+	<string>Scala Properties</string>
+	<key>patterns</key>
+	<array>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.comment.scala-props</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>([#!])(.+)?$\n?</string>
+			<key>name</key>
+			<string>comment.line.number-sign.scala-props</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.other.scala-props</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.separator.key-value.scala-props</string>
+				</dict>
+			</dict>
+			<key>comment</key>
+			<string>Not compliant with the properties file spec, but this works for me, and I'm the one who counts around here.</string>
+			<key>match</key>
+			<string>^([^:=]+)([:=])(.*)$</string>
+		</dict>
+	</array>
+	<key>scopeName</key>
+	<string>source.scala-props</string>
+	<key>uuid</key>
+	<string>2A28E50A-6B1D-11D9-8689-000D93589AF6</string>
+</dict>
+</plist>

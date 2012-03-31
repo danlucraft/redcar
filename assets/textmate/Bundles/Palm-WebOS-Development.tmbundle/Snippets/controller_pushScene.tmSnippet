@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>this.controller.pushScene("$1")</string>
+	<key>name</key>
+	<string>controller.pushScene</string>
+	<key>scope</key>
+	<string>source.js</string>
+	<key>tabTrigger</key>
+	<string>cpush</string>
+	<key>uuid</key>
+	<string>E23E4E87-ECBF-489C-A56A-C37E1A61D814</string>
+</dict>
+</plist>

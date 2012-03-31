@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>{	include = '$1'; },</string>
+	<key>name</key>
+	<string>Rule — Include</string>
+	<key>scope</key>
+	<string>source.plist.tm-grammar</string>
+	<key>tabTrigger</key>
+	<string>inc</string>
+	<key>uuid</key>
+	<string>D5BA7FE7-543F-47FC-BECD-750200B81762</string>
+</dict>
+</plist>

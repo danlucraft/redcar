@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>import tango.util.log.Log, tango.util.log.Configurator;
+
+protected static Logger log = null;
+static this() {
+	log = Log.getLogger(${1:__FILE__});${2:
+	//log.setLevel(log.Level.${3:Info});}
+}</string>
+	<key>name</key>
+	<string>Logger for Module</string>
+	<key>scope</key>
+	<string>source.d</string>
+	<key>tabTrigger</key>
+	<string>logger</string>
+	<key>uuid</key>
+	<string>4CF479D3-48FD-4FE4-847B-AD7570D383C3</string>
+</dict>
+</plist>

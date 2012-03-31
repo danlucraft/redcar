@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;g:render ${1:template="$2" }${3:bean="$4" }${5:model="$6" }${7:collection="$8" }${9:var="$10" }${11:plugin="$12" }/&gt;</string>
+	<key>name</key>
+	<string>&lt;g:render&gt;</string>
+	<key>scope</key>
+	<string>text.html.grails</string>
+	<key>tabTrigger</key>
+	<string>render</string>
+	<key>uuid</key>
+	<string>D0969043-B070-4CD5-9A23-3FFD9D45ADC6</string>
+</dict>
+</plist>

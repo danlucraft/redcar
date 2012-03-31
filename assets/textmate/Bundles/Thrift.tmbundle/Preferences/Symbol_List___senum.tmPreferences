@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Symbol List: senum</string>
+	<key>scope</key>
+	<string>entity.name.senum.thrift</string>
+	<key>settings</key>
+	<dict>
+		<key>showInSymbolList</key>
+		<integer>1</integer>
+		<key>symbolTransformation</key>
+		<string>s/^/senum /</string>
+	</dict>
+	<key>uuid</key>
+	<string>497C774E-4491-41D7-BE69-A0C23D8EE5D2</string>
+</dict>
+</plist>

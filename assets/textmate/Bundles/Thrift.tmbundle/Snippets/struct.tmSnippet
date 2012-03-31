@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>struct ${1:Name} {
+	${2:1}${2/.+/: /m}${3:i32} ${4:field}${5/.+/ = /m}${5:value},$0
+}</string>
+	<key>name</key>
+	<string>struct</string>
+	<key>scope</key>
+	<string>source.thrift -meta</string>
+	<key>tabTrigger</key>
+	<string>str</string>
+	<key>uuid</key>
+	<string>FA5FBCA2-12D6-4C3B-A9A0-5B9C9AD141AD</string>
+</dict>
+</plist>

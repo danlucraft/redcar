@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Style: Separator - Release Notes</string>
+	<key>scope</key>
+	<string>meta.separator - text.plain.release-notes</string>
+	<key>settings</key>
+	<dict>
+		<key>showInSymbolList</key>
+		<integer>1</integer>
+		<key>symbolTransformation</key>
+		<string>s/.+/-/m</string>
+	</dict>
+	<key>uuid</key>
+	<string>F243A037-6F40-4D98-BCBA-5E3B406728A6</string>
+</dict>
+</plist>

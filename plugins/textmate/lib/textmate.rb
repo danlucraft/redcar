@@ -11,9 +11,6 @@ require 'textmate/editor/bundle_controller'
 require 'textmate/editor/snippet_controller'
 require 'textmate/commands'
 
-gem "redcar-bundles"
-require 'redcar-bundles'
-
 module Redcar
   module Textmate
     def self.user_bundle_dir

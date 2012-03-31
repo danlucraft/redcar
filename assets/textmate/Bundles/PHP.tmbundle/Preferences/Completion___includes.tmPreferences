@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Completion: includes</string>
+	<key>scope</key>
+	<string>meta.include.php string.quoted</string>
+	<key>settings</key>
+	<dict>
+		<key>completionCommand</key>
+		<string>ruby &lt;&lt;-'RUBY'
+path = ENV["TM_CURRENT_LINE"].to_s[0..ENV["TM_COLUMN_NUMBER"].to_i-1].to_s[/['"]([^'"]+)['"]/,1].to_s + "*"
+Dir::chdir(File.dirname(ENV["TM_FILEPATH"])) if ENV["TM_FILEPATH"]
+include_paths = ENV["PHP_INCLUDE_PATH"] ? ENV["PHP_INCLUDE_PATH"].split(":") : ["."]
+matches = include_paths.inject([]) do |res, include_path|
+  include_path &lt;&lt; "/" unless include_path[-1] == ?/
+  res + Dir.glob(include_path + path).map {|file| 
+  file[include_path.size..-1][/[^\/]+$/] + (File.directory?(file) ? "/" : "")
+  }
+end
+puts matches.sort.uniq.join("\n")
+RUBY</string>
+		<key>disableDefaultCompletion</key>
+		<integer>1</integer>
+	</dict>
+	<key>uuid</key>
+	<string>CBE2288F-76FC-4813-B69B-B90FFAE3391C</string>
+</dict>
+</plist>

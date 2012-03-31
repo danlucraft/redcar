@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>\subparagraph{${1:subparagraph name}} % (fold)
+\label{subp:${2:${1/\\\w+\{(.*?)\}|\\(.)|(\w+)|([^\w\\]+)/(?4:_:\L$1$2$3)/g}}}
+${0:$TM_SELECTED_TEXT}
+% subparagraph $2 (end)</string>
+	<key>name</key>
+	<string>Sub Paragraph</string>
+	<key>scope</key>
+	<string>text.tex.latex</string>
+	<key>tabTrigger</key>
+	<string>subp</string>
+	<key>uuid</key>
+	<string>1475649F-2577-4BF0-A392-DD8D4B64DA91</string>
+</dict>
+</plist>

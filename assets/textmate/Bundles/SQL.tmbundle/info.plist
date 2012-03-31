@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>description</key>
+	<string>Support for SQL.</string>
+	<key>contactEmailRot13</key>
+	<string>pvnjny@tznvy.pbz</string>
+	<key>contactName</key>
+	<string>Ciarán Walsh</string>
+	<key>mainMenu</key>
+	<dict>
+		<key>items</key>
+		<array>
+			<string>C3045596-791D-11D9-9130-000A95766570</string>
+			<string>CDD74FE0-32E1-4604-BFC9-96173A557550</string>
+			<string>16D6B894-7DB9-4057-8CC7-C73584E5D77E</string>
+			<string>------------------------------------</string>
+			<string>37E7E7F5-DD1E-4306-B258-0F9176DC8D7E</string>
+			<string>AFBD4D3D-926A-44B1-91CD-2BF793BCB8FD</string>
+			<string>------------------------------------</string>
+			<string>245B2739-B3C5-4BBD-9772-C97C3C790BB6</string>
+			<string>------------------------------------</string>
+			<string>6374BC72-221E-4517-95DA-5D63B50E77BC</string>
+			<string>E9501041-21AA-4F55-BD5F-B7BDDF2C334D</string>
+		</array>
+		<key>submenus</key>
+		<dict/>
+	</dict>
+	<key>name</key>
+	<string>SQL</string>
+	<key>ordering</key>
+	<array>
+		<string>CDD74FE0-32E1-4604-BFC9-96173A557550</string>
+		<string>37E7E7F5-DD1E-4306-B258-0F9176DC8D7E</string>
+		<string>E9501041-21AA-4F55-BD5F-B7BDDF2C334D</string>
+		<string>245B2739-B3C5-4BBD-9772-C97C3C790BB6</string>
+		<string>C3045596-791D-11D9-9130-000A95766570</string>
+		<string>C9969F41-A409-4118-8753-CA95A9228FF7</string>
+		<string>9C3A0A63-E661-4B0B-855B-710EDBBDB00F</string>
+		<string>C49120AC-6ECC-11D9-ACC8-000D93589AF6</string>
+	</array>
+	<key>uuid</key>
+	<string>AAB4CBF7-73F9-11D9-B89A-000D93589AF6</string>
+</dict>
+</plist>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>wnpbobyhf@tznvy.pbz</string>
+	<key>contactName</key>
+	<string>Jacob Rus</string>
+	<key>description</key>
+	<string>Support for comma and tab separated values (&lt;a href="http://en.wikipedia.org/wiki/Comma-separated_values"&gt;CSV&lt;/a&gt; and TSV).</string>
+	<key>name</key>
+	<string>Tabular</string>
+	<key>ordering</key>
+	<array>
+		<string>B0691F9F-D279-48CB-8959-2C9426579002</string>
+		<string>7D87F38B-A972-4F61-B9C0-7D6D15EEED38</string>
+	</array>
+	<key>uuid</key>
+	<string>D587784E-13B0-4090-BF67-42717CC5F89F</string>
+</dict>
+</plist>

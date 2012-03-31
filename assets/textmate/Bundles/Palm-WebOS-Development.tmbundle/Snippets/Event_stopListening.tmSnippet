@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>Mojo.Event.stopListening($1, Mojo.Event.$2, $3, ${4:true})</string>
+	<key>name</key>
+	<string>Event.stopListening</string>
+	<key>scope</key>
+	<string>source.js</string>
+	<key>tabTrigger</key>
+	<string>estpl</string>
+	<key>uuid</key>
+	<string>4B2E64F1-C454-4564-A852-2EC543FD1F40</string>
+</dict>
+</plist>

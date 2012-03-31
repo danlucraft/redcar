@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>#!/usr/bin/env ${1:${TM_SCOPE/(?:source|.*)\.(?:(shell)|(\w+)).*/(?1:bash:$2)/}}
+</string>
+	<key>name</key>
+	<string>#!/usr/bin/env</string>
+	<key>scope</key>
+	<string></string>
+	<key>tabTrigger</key>
+	<string>!env</string>
+	<key>uuid</key>
+	<string>7C0F8C08-8860-4DBB-AB24-652B53E63E13</string>
+</dict>
+</plist>

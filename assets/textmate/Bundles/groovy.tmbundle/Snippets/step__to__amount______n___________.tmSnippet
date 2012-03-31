@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>step(${1:to}, ${2:amount}) {${3/(.+)/(?1: )/}${3:i}${3/(.+)/(?1: -&gt;)/}
+	$0
+}</string>
+	<key>name</key>
+	<string>step(to,amount) { … }</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>step</string>
+	<key>uuid</key>
+	<string>CD6EFDAB-0C62-4488-9D54-491974A9DB9E</string>
+</dict>
+</plist>

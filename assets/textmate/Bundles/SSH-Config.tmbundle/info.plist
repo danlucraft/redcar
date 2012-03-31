@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>gz-ohaqyrf@znpebzngrf.pbz</string>
+	<key>contactName</key>
+	<string>Allan Odgaard</string>
+	<key>description</key>
+	<string>Syntax highlight for &lt;a href="http://www.openssh.com/"&gt;ssh&lt;/a&gt; configuration files.</string>
+	<key>name</key>
+	<string>SSH Config</string>
+	<key>ordering</key>
+	<array>
+		<string>B5A64964-30AE-4732-B88E-C03785265DFD</string>
+		<string>215B06B5-5201-481E-87EC-6B912C3A33E9</string>
+		<string>C9DE9563-3446-49D3-B87C-8F12B0A2CC8B</string>
+		<string>C1383DD1-64AA-46E1-B9E9-5A243790B81B</string>
+		<string>4E6A957C-0BFD-4265-A701-43088ED0A365</string>
+		<string>B273855C-59D3-4DF3-9B7C-E68E0057D315</string>
+	</array>
+	<key>uuid</key>
+	<string>7A3C2CE9-C65D-4116-92B7-F10D684B1ED6</string>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${1:FIELDNAME} = models.AutoField()</string>
+	<key>name</key>
+	<string>AutoField</string>
+	<key>scope</key>
+	<string>source.python.django</string>
+	<key>tabTrigger</key>
+	<string>auto</string>
+	<key>uuid</key>
+	<string>5D4F70FB-4A51-41D4-B729-920F827E70D2</string>
+</dict>
+</plist>

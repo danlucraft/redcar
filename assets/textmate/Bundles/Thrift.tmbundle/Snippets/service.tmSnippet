@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>service ${1:Name}${2/.+/ extends /m}${2:Super} {
+	${3:void} ${4:method}(${5:args})
+}</string>
+	<key>name</key>
+	<string>service</string>
+	<key>scope</key>
+	<string>source.thrift -meta</string>
+	<key>tabTrigger</key>
+	<string>ser</string>
+	<key>uuid</key>
+	<string>90593423-A61F-4BAF-8368-EFA79DC347E1</string>
+</dict>
+</plist>

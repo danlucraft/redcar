@@ -1,7 +1,7 @@
 
 # Don't error if we don't have git installed
 begin
-  gem "git"
+  $:.push(Redcar.root + "/vendor/git/lib")
   require 'git'
 rescue
 end

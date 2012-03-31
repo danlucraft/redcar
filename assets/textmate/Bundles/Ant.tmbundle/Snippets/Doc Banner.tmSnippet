@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;!-- =================================
+      target: $1
+     ================================= --&gt;</string>
+	<key>keyEquivalent</key>
+	<string>^B</string>
+	<key>name</key>
+	<string>Insert Comment Banner</string>
+	<key>scope</key>
+	<string>text.xml.ant</string>
+	<key>tabTrigger</key>
+	<string>ban</string>
+	<key>uuid</key>
+	<string>000AF780-6688-4684-95DF-DE3498B48274</string>
+</dict>
+</plist>

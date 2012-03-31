@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>QTimer::singleShot(${1:0}, ${2:this}, SLOT(${3:slotName()}))</string>
+	<key>name</key>
+	<string>QTimer::singleShot(...)</string>
+	<key>scope</key>
+	<string>source.c++.qt</string>
+	<key>tabTrigger</key>
+	<string>singleShot</string>
+	<key>uuid</key>
+	<string>466A5E55-F2E9-4542-8CE7-5799B4DC9BF8</string>
+</dict>
+</plist>

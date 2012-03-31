@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Symbols-class-interface</string>
+	<key>scope</key>
+	<string>meta.other.genclass.name.clojure</string>
+	<key>settings</key>
+	<dict>
+		<key>showInSymbolList</key>
+		<integer>1</integer>
+		<key>symbolTransformation</key>
+		<string>
+		s/^:name (.*)/$1/g;
+	</string>
+	</dict>
+	<key>uuid</key>
+	<string>C44149F5-F211-4845-964C-384769B0CFE2</string>
+</dict>
+</plist>

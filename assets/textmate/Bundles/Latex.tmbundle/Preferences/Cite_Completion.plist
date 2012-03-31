@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Cite Completion</string>
+	<key>scope</key>
+	<string>text.tex.latex meta.citation.latex</string>
+	<key>settings</key>
+	<dict>
+		<key>completionCommand</key>
+		<string>"$TM_SUPPORT_PATH/bin/LatexCiteKeys.rb"</string>
+		<key>disableDefaultCompletion</key>
+		<integer>1</integer>
+	</dict>
+	<key>uuid</key>
+	<string>086F7794-CE1E-423A-9BF2-E27466A56067</string>
+</dict>
+</plist>

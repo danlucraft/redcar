@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>var ${1:MyClass} = Class.create(${2:MySuperClass}${2/.+/, /}{
+	initialize: function($4) {
+		$5
+	}
+});</string>
+	<key>name</key>
+	<string>Class.create</string>
+	<key>scope</key>
+	<string>source.js.prototype</string>
+	<key>tabTrigger</key>
+	<string>class</string>
+	<key>uuid</key>
+	<string>D6B9EA9B-DD59-4123-BEDA-27F4B9F60A3B</string>
+</dict>
+</plist>

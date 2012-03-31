@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>echo "&lt;!-- gotAPI.com search widget v2 begin --&gt;
+&lt;body onload=\"init();\"&gt;
+&lt;DIV&gt;
+&lt;STYLE&gt;
+.gaMenu{border:1px solid #505050;background-color:#FAFAFA;padding:0px 5px 0px 5px;}
+.gaHeaderRow{font:bold 8pt Arial;color:#359155;border-top:1px solid #C0C0C0;width:250px;}
+.gaRegularRow,.gaFooterRow{font:8pt Arial;cursor:pointer;}
+.gaSelectedRow{font:8pt Arial;background-color:#c1e0e6;cursor:pointer;}
+&lt;/STYLE&gt;
+&lt;SCRIPT&gt;&lt;!--
+gaMod='module_java15noui.js';gaTitle='J2SE v1.5 less UI';updateWhenLoaded=false;
+var gaL=false;function gaInit(){if(gaL)return;gaL=true;var s=document.createElement('script');
+s.type='text/javascript';s.src='http://www.gotapi.com/widgets/compiled/c1_module_java15noui.js.jsz';s.defer='defer';s.defered='yes';
+document.getElementById('gaInfo').parentNode.appendChild(s)}function gaSearching(){
+document.getElementById('gaWait').style.display='';updateWhenLoaded=true;
+document.getElementById('gaInfo').style.display='none'}
+//--&gt;
+&lt;/SCRIPT&gt;
+&lt;DIV style='font:bold 10pt Arial'&gt;Quick J2SE v1.5 less UI lookup&lt;/DIV&gt;
+&lt;INPUT id=gaSearch size=20 onfocus=\"gaInit()\" onkeydown=\"gaSearching()\"&gt;
+&lt;DIV id=gaInfo style='font:7pt Arial'&gt;powered by &lt;A href='http://www.gotapi.com' style='padding:0px'&gt;gotAPI.com&lt;/A&gt;&lt;/DIV&gt;
+&lt;DIV id=gaWait style='font:7pt Arial;display:none'&gt;Searching...&lt;/DIV&gt;
+&lt;/DIV&gt;
+&lt;/body&gt;
+&lt;!-- gotAPI.com search widget v2 end --&gt;"
+
+if [ $TM_CURRENT_WORD ] 
+then
+	echo "&lt;script&gt;function init() { document.getElementById('gaSearch').value = '$TM_CURRENT_WORD'; document.getElementById('gaSearch').focus(); gaSearching(); }&lt;/script&gt;"
+fi</string>
+	<key>input</key>
+	<string>none</string>
+	<key>keyEquivalent</key>
+	<string>^h</string>
+	<key>name</key>
+	<string>Documentation For Word</string>
+	<key>output</key>
+	<string>showAsHTML</string>
+	<key>scope</key>
+	<string>source.java</string>
+	<key>uuid</key>
+	<string>CE007C8C-9A0B-43B8-AEAF-45613BCD3DF7</string>
+</dict>
+</plist>

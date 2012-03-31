@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Header Completion (User)</string>
+	<key>scope</key>
+	<string>meta.preprocessor.c.include string.quoted.double</string>
+	<key>settings</key>
+	<dict>
+		<key>completionCommand</key>
+		<string>find "$TM_DIRECTORY" -name "$TM_CURRENT_WORD*.h" -maxdepth 2 -exec basename "{}" \;|sort</string>
+		<key>disableDefaultCompletion</key>
+		<integer>1</integer>
+	</dict>
+	<key>uuid</key>
+	<string>66EE7D45-6AA0-4AB9-9699-A3DF4E2B9AE7</string>
+</dict>
+</plist>

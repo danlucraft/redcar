@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${1:expression} while ${2:condition};
+</string>
+	<key>name</key>
+	<string>Loop One-line</string>
+	<key>scope</key>
+	<string>source.perl</string>
+	<key>tabTrigger</key>
+	<string>xwhile</string>
+	<key>uuid</key>
+	<string>0154A96A-844C-4C8A-909E-A2ED822320EE</string>
+</dict>
+</plist>

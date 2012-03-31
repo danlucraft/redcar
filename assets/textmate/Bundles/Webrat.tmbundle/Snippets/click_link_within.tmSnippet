@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>click_link_within '${2:selector}', '${1:link_text}'</string>
+	<key>name</key>
+	<string>click_link_within</string>
+	<key>scope</key>
+	<string>source.ruby.rspec.cucumber.steps,source.ruby.rspec.story.steps</string>
+	<key>tabTrigger</key>
+	<string>cli</string>
+	<key>uuid</key>
+	<string>1C6CA323-A600-458E-943B-BC3030A302B2</string>
+</dict>
+</plist>

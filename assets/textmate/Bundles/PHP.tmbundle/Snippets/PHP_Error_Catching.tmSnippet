@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>`cat "$TM_BUNDLE_SUPPORT/textmate_error_handler.html" | grep -E -v '^[ \t\s]*\/\/' | sed 's/\(.*\)[ \t]*--.*/\1/' | tr -s ' \n\t' ' ' | sed 's/.\{80\}[{};]/&amp;\
+/g'`</string>
+	<key>name</key>
+	<string>PHP Error Catching JavaScript</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>phperr</string>
+	<key>uuid</key>
+	<string>9C891C7B-CFA8-4860-B76F-4E3AD60B0E13</string>
+</dict>
+</plist>

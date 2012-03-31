@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Style: Index</string>
+	<key>scope</key>
+	<string>meta.diff.index</string>
+	<key>settings</key>
+	<dict>
+		<key>background</key>
+		<string>#3467D1</string>
+		<key>fontStyle</key>
+		<string>italic</string>
+		<key>foreground</key>
+		<string>#FFFFFF</string>
+	</dict>
+	<key>uuid</key>
+	<string>F9C2B477-B6F7-4951-953B-32BFEF121F7C</string>
+</dict>
+</plist>

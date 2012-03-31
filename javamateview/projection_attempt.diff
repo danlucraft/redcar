@@ -1,0 +1,61 @@
+diff --git a/src/com/redcareditor/mate/MateText.java b/src/com/redcareditor/mate/MateText.java
+index 209fec9..7159d85 100644
+--- a/src/com/redcareditor/mate/MateText.java
++++ b/src/com/redcareditor/mate/MateText.java
+@@ -11,6 +11,9 @@ import org.eclipse.jface.text.Document;
+ import org.eclipse.jface.text.IDocument;
+ import org.eclipse.jface.text.source.CompositeRuler;
+ import org.eclipse.jface.text.source.SourceViewer;
++import org.eclipse.jface.text.source.OverviewRuler;
++import org.eclipse.jface.text.source.projection.ProjectionViewer;
++import org.eclipse.jface.text.projection.*;
+ import org.eclipse.swt.SWT;
+ import org.eclipse.swt.custom.StyledText;
+ import org.eclipse.swt.graphics.Color;
+@@ -28,6 +31,7 @@ import com.redcareditor.mate.document.swt.SwtMateDocument;
+ import com.redcareditor.mate.undo.MateTextUndoManager;
+ import com.redcareditor.mate.undo.swt.SwtMateTextUndoManager;
+ import com.redcareditor.mate.WhitespaceCharacterPainter;
++import com.redcareditor.mate.SharedTextColors;
+ import com.redcareditor.mate.LineNumberRulerColumn;
+ import com.redcareditor.onig.NullRx;
+ import com.redcareditor.onig.Rx;
+@@ -55,6 +59,8 @@ public class MateText {
+ 	private CompositeRuler gutter;
+ 	private LineNumberRulerColumn lineNumbers;
+ 	private SwtMateDocument mateDocument;
++    private OverviewRuler overviewRuler;
++    private SharedTextColors sharedColors;
+ 
+ 	private MateTextUndoManager undoManager;
+ 	private List<IGrammarListener> grammarListeners;
+@@ -69,16 +75,23 @@ public class MateText {
+ 
+ 	public MateText(Composite parent, boolean thisSingleLine) {
+ 		singleLine = thisSingleLine;
+-		document = new Document();
+-		gutter = constructRuler();
++        document = new Document();
+ 		if (singleLine) {
+ 			viewer = new SourceViewer(parent, null, SWT.FULL_SELECTION | SWT.HORIZONTAL | SWT.VERTICAL | SWT.SINGLE);
++    		viewer.setDocument(document);
+ 		}
+ 		else {
+-			viewer = new SourceViewer(parent, gutter, SWT.FULL_SELECTION | SWT.HORIZONTAL | SWT.VERTICAL);
+-		}
+-		viewer.setDocument(document);
+-		
++            sharedColors = new SharedTextColors();
++            overviewRuler = new OverviewRuler(null, 20, sharedColors);
++    		gutter = constructRuler();
++			viewer = new ProjectionViewer(parent, gutter, overviewRuler, true, SWT.FULL_SELECTION | SWT.HORIZONTAL | SWT.VERTICAL);
++            viewer.doOperation(ProjectionViewer.TOGGLE);
++            
++            ProjectionDocumentManager manager = new ProjectionDocumentManager();
++            ProjectionDocument projectionDocument = (ProjectionDocument) manager.createSlaveDocument(document);		
++    		viewer.setDocument(projectionDocument);
++        }
++        
+ 		whitespaceCharacterPainter = new WhitespaceCharacterPainter(viewer);
+ 		showingInvisibles = false;
+ 		

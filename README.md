@@ -3,7 +3,7 @@
 
 [http://redcareditor.com/](http://redcareditor.com/)
 
-## DESCRIPTION
+## Description
 
 A Ruby text editor.
 
@@ -26,13 +26,23 @@ Some (current) limitations:
 ![alt text](http://redcareditor.com/images/redcar-4-thumb.png "Title")
 ![alt text](http://redcareditor.com/images/redcar-1-thumb.png "Title")
 
-## INSTALLATION
+## Installation
 
-    $ gem install redcar
+You must have Java installed. On Ubuntu, you can install `openjdk-7-jre` if you do not already have Java.
 
-for more details, see [User Guide: Installation](https://github.com/redcar/redcar/wiki/Installation)
+ * [OS X]()
 
-## USAGE
+    unzip, then double click Redcar.app
+    
+ * [Debian]()
+
+    install with sudo dpkg -i redcar_xx_all.deb
+    
+ * [Windows]()
+
+    unzip, then run redcar.exe
+
+## Usage
 
 Run 
 
@@ -40,12 +50,19 @@ Run
 
 To see full usage details.
 
-## PROBLEMS?
+## Installing From Source
+
+    git clone git://github.com/redcar/redcar.git
+    cd redcar
+    rake init
+    ruby bin/redcar
+
+## Problems?
 
 * Irc at #redcar on irc.freenode.net
 * Mailing list at http://groups.google.com/group/redcar-editor
 
-## LICENSE
+## License
 
 Redcar is copyright 2007-2012 Daniel Lucraft and contributors.
 It is licensed under the GPLv2. See the included LICENSE file for details.

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>(try $0
+  (catch ${2:Class} ${3:e}
+    )${1:
+  (finally
+    )})</string>
+	<key>name</key>
+	<string>try-catch-finally</string>
+	<key>scope</key>
+	<string>source.clojure</string>
+	<key>tabTrigger</key>
+	<string>try</string>
+	<key>uuid</key>
+	<string>3D645CA0-B8FE-4260-821F-CC32ACE51750</string>
+</dict>
+</plist>

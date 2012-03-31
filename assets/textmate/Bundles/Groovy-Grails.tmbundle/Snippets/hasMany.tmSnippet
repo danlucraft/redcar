@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>static hasMany = [${1:items}:${2:ClassName}]</string>
+	<key>name</key>
+	<string>hasMany</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>hm</string>
+	<key>uuid</key>
+	<string>2B2758A5-B0FD-4203-A8C8-38058E16CC68</string>
+</dict>
+</plist>

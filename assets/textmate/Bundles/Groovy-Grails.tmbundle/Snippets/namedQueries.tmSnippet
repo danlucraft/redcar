@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>static namedQueries = {
+    ${1:queryName} {
+        $0
+    }
+}</string>
+	<key>name</key>
+	<string>namedQueries</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>nq</string>
+	<key>uuid</key>
+	<string>72D7EC1C-E105-41F3-9D8D-9D48FB3B94DE</string>
+</dict>
+</plist>

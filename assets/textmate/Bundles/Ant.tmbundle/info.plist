@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>ohaqyrf@uryirpgbe.bet</string>
+	<key>contactName</key>
+	<string>Simon Gregory</string>
+	<key>description</key>
+	<string>&lt;a href="http://ant.apache.org/"&gt;Ant&lt;/a&gt; is a Java-based build tool.</string>
+	<key>mainMenu</key>
+	<dict>
+		<key>items</key>
+		<array>
+			<string>7B5E4852-8B66-461F-A32A-A820625256A5</string>
+			<string>C7888301-C304-4EF2-A15F-5681A7D6D13C</string>
+			<string>05BC9A24-B64E-42D6-8177-326518E65EE0</string>
+			<string>------------------------------------</string>
+			<string>4BCBC20D-A418-412D-AD95-1CBB62AF1760</string>
+			<string>080190AE-FCEF-47BF-86E2-6CC48C8B3E8B</string>
+			<string>------------------------------------</string>
+			<string>B34D55F6-17C3-4698-973F-FDE059BEB675</string>
+			<string>DADF5411-0178-43B9-A4E1-4FAADA22DF16</string>
+			<string>464D4A8B-64A9-4C9E-BC94-65DBD5D16117</string>
+			<string>------------------------------------</string>
+			<string>9BF3D042-E77C-4E89-9E8C-18A81AE3923B</string>
+			<string>62CAE21C-2269-489F-B5AB-3E652AE6E51F</string>
+		</array>
+		<key>submenus</key>
+		<dict/>
+	</dict>
+	<key>name</key>
+	<string>Ant</string>
+	<key>ordering</key>
+	<array>
+		<string>E1B78601-E584-4A7F-B011-A61710BFE035</string>
+		<string>4BCBC20D-A418-412D-AD95-1CBB62AF1760</string>
+		<string>C7888301-C304-4EF2-A15F-5681A7D6D13C</string>
+		<string>05BC9A24-B64E-42D6-8177-326518E65EE0</string>
+		<string>D8BB623D-E04A-4194-8D29-086F5F6B73A8</string>
+		<string>AE288C48-081B-4615-A8B6-03041B92652B</string>
+		<string>000AF780-6688-4684-95DF-DE3498B48274</string>
+		<string>464D4A8B-64A9-4C9E-BC94-65DBD5D16117</string>
+		<string>B34D55F6-17C3-4698-973F-FDE059BEB675</string>
+		<string>9BF3D042-E77C-4E89-9E8C-18A81AE3923B</string>
+		<string>DADF5411-0178-43B9-A4E1-4FAADA22DF16</string>
+		<string>7B5E4852-8B66-461F-A32A-A820625256A5</string>
+		<string>6078A7B7-1947-4A1A-9669-F9448479FA65</string>
+		<string>080190AE-FCEF-47BF-86E2-6CC48C8B3E8B</string>
+		<string>62CAE21C-2269-489F-B5AB-3E652AE6E51F</string>
+	</array>
+	<key>uuid</key>
+	<string>2BF448A1-9742-4137-80D2-C7AD8D7A0064</string>
+</dict>
+</plist>

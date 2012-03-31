@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;TMPL_VAR NAME="$1"${2:${3: DEFAULT="$4"}${5: ESCAPE="${6:html|js|url|none}"}}&gt;</string>
+	<key>name</key>
+	<string>Var</string>
+	<key>scope</key>
+	<string>text.html.html-template</string>
+	<key>tabTrigger</key>
+	<string>var</string>
+	<key>uuid</key>
+	<string>AA7F838B-1706-4373-8AD4-9FD1796C838F</string>
+</dict>
+</plist>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Symbol List: VHost Directory</string>
+	<key>scope</key>
+	<string>meta.vhost.apache-config meta.toc-list.directory.apache-config</string>
+	<key>settings</key>
+	<dict>
+		<key>showInSymbolList</key>
+		<integer>1</integer>
+		<key>symbolTransformation</key>
+		<string>s/^\s*//; s/\s+/ /g; s/['"]//g; s/^/   Dir: /</string>
+	</dict>
+	<key>uuid</key>
+	<string>520EFC4B-5F39-44B0-8BBF-30FE832E4BD9</string>
+</dict>
+</plist>

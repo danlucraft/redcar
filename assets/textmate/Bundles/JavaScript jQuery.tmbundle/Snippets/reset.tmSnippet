@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>.reset(${1:function() {
+	${0:// Act on the event}
+\}});</string>
+	<key>name</key>
+	<string>reset</string>
+	<key>scope</key>
+	<string>source.js.jquery</string>
+	<key>tabTrigger</key>
+	<string>.reset</string>
+	<key>uuid</key>
+	<string>CC06109D-EA88-4F6A-8986-918DCA5EE8F6</string>
+</dict>
+</plist>

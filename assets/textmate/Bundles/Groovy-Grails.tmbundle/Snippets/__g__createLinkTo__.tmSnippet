@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;g:createLinkTo ${1:dir="$2" }${3:file="$4" }${5:absolute="$6" }${7:base="$8" } /&gt;</string>
+	<key>name</key>
+	<string>&lt;g:createLinkTo&gt;</string>
+	<key>scope</key>
+	<string>text.html.grails</string>
+	<key>tabTrigger</key>
+	<string>createlinkto</string>
+	<key>uuid</key>
+	<string>3F5C0C2A-395A-4D96-9128-8A9B96DAAA64</string>
+</dict>
+</plist>

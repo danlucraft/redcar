@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Shell</string>
+	<key>scope</key>
+	<string>source.shell</string>
+	<key>settings</key>
+	<dict>
+		<key>shellVariables</key>
+		<array>
+			<dict>
+				<key>name</key>
+				<string>TERMINAL_MATE_LOAD</string>
+				<key>value</key>
+				<string>%s</string>
+			</dict>
+			<dict>
+				<key>name</key>
+				<string>TERMINAL_MATE_NEW</string>
+				<key>value</key>
+				<string></string>
+			</dict>
+			<dict>
+				<key>name</key>
+				<string>TERMINAL_MATE_FILE_EXTENSION</string>
+				<key>value</key>
+				<string>.sh</string>
+			</dict>
+		</array>
+	</dict>
+	<key>uuid</key>
+	<string>D320A79B-16FC-4C77-AB73-EF0E737AEBD7</string>
+</dict>
+</plist>

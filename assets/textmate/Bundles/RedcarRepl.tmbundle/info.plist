@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>name</key>
+  <string>Redcar REPL</string>
+	<key>contactName</key>
+	<string>Daniel Lucraft</string>
+	<key>description</key>
+	<string>Syntax highlighting for the Redcar REPLs.</string>
+	<key>uuid</key>
+	<string>900934B5-CE02-48CD-AEDD-105675DE37DB</string>
+</dict>
+</plist>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>Scenario Outline: ${1:title}
+  Given ${2:context}
+  When ${3:event}
+  Then ${4:outcome}
+</string>
+	<key>name</key>
+	<string>Scenario Outline</string>
+	<key>scope</key>
+	<string>text.cucumber.feature</string>
+	<key>tabTrigger</key>
+	<string>sco</string>
+	<key>uuid</key>
+	<string>823E1BF8-CEDF-439C-B58C-FB8EA7E694A2</string>
+</dict>
+</plist>

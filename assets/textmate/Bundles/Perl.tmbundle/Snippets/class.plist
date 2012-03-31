@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>package ${1:ClassName};
+
+${2:use base qw(${3:ParentClass});
+
+}sub new {
+	my \$class = shift;
+	\$class = ref \$class if ref \$class;
+	my \$self = bless {}, \$class;
+	\$self;
+}
+
+1;
+</string>
+	<key>name</key>
+	<string>Package</string>
+	<key>scope</key>
+	<string>source.perl</string>
+	<key>tabTrigger</key>
+	<string>class</string>
+	<key>uuid</key>
+	<string>4FB403FC-F441-447F-9AAD-E2BE13AD49ED</string>
+</dict>
+</plist>

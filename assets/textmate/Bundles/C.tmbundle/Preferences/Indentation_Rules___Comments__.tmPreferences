@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Indentation Rules (Comments)</string>
+	<key>scope</key>
+	<string>comment.block</string>
+	<key>settings</key>
+	<dict>
+		<key>decreaseIndentPattern</key>
+		<string>(?=not)possible</string>
+		<key>increaseIndentPattern</key>
+		<string>(?=not)possible</string>
+		<key>indentNextLinePattern</key>
+		<string>(?=not)possible</string>
+		<key>unIndentedLinePattern</key>
+		<string>(?=not)possible</string>
+	</dict>
+	<key>uuid</key>
+	<string>56BF3367-130A-4AA1-A136-755CB3702503</string>
+</dict>
+</plist>

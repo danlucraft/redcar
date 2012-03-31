@@ -1,4 +1,5 @@
 
+$:.push(Redcar.root + "/vendor/lucene/lib")
 require 'lucene'
 
 require 'project_search/word_search_controller'

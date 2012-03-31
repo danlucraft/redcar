@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${TM_SELECTED_TEXT/\A(\s*).*/$1/m}try {
+${TM_SELECTED_TEXT/^.+$/\t$0/g}${TM_SELECTED_TEXT/\A(\s*).*/$1/m}}
+${TM_SELECTED_TEXT/\A(\s*).*/$1/m}catch { 
+${TM_SELECTED_TEXT/\A(\s*).*/$1/m}  case e: Throwable =&gt; e.printStackTrace();
+${TM_SELECTED_TEXT/\A(\s*).*/$1/m}  case _ =&gt; 
+${TM_SELECTED_TEXT/\A(\s*).*/$1/m}} finally {
+${TM_SELECTED_TEXT/\A(\s*).*/$1/m}  $0
+${TM_SELECTED_TEXT/\A(\s*).*/$1/m}}
+</string>
+	<key>keyEquivalent</key>
+	<string>^W</string>
+	<key>name</key>
+	<string>Wrap Selection in Try/Catch/Finally</string>
+	<key>scope</key>
+	<string>source.scala</string>
+	<key>uuid</key>
+	<string>E8F79EC3-C20D-4063-924B-1A43E1E18D11</string>
+</dict>
+</plist>

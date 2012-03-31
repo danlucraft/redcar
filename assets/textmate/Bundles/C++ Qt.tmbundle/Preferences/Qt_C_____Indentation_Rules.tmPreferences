@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>C++ Qt Indentation Rules</string>
+	<key>scope</key>
+	<string>source.c++.qt</string>
+	<key>settings</key>
+	<dict>
+		<key>decreaseIndentPattern</key>
+		<string>^(.*\*/)?\s*\}([^}{"']*\{)?[;\s]*$|^\s*((public|private|protected)(\s+slots)?|signals):\s*$</string>
+		<key>increaseIndentPattern</key>
+		<string>^.*\{[^}"']*$|^\s*((public|private|protected)(\s+slots)?|signals):\s*$</string>
+	</dict>
+	<key>uuid</key>
+	<string>26796298-41FC-40F6-8B8F-D896A0EF2BDC</string>
+</dict>
+</plist>

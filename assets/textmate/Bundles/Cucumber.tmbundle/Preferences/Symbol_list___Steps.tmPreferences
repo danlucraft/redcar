@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Symbol list: Steps with Regexp</string>
+	<key>scope</key>
+	<string>source.ruby.rspec.cucumber.steps string.regexp.step.cucumber</string>
+	<key>settings</key>
+	<dict>
+		<key>showInSymbolList</key>
+		<integer>1</integer>
+	</dict>
+	<key>uuid</key>
+	<string>0843B907-3EC2-4F51-A1F6-85EFDB88464B</string>
+</dict>
+</plist>

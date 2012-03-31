@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>\$.ajaxSetup({
+  url: "${1:mydomain.com/url}",
+  type: "${2:POST}",
+${3/(.+)/(?1:  dataType\: ":)/}${3:xml/html/script/json}${3/(.+)/(?1:",
+:)/}${4/(.+)/(?1:  data\: $.param\( $\(":)/}${4:Element or Expression}${4/(.+)/(?1:"\) \),
+:)/}${5/(.+)/(?1:  complete\: function\(\) {:)/}${5:
+    //called when complete}${5/(.+)/(?1:  },
+:)/}${6/(.+)/(?1:  success\: function\(\) {:)/}${6:
+    //called when successful}${6/(.+)/(?1: },
+:)/}${7/(.+)/(?1:  error\: function\(\) {:)/}${7:
+    //called when there is an error}${7/(.+)/(?1:  },
+:)/}});
+$0</string>
+	<key>name</key>
+	<string>$.ajaxSetup</string>
+	<key>scope</key>
+	<string>source.js.jquery</string>
+	<key>tabTrigger</key>
+	<string>$.ajaxSetup</string>
+	<key>uuid</key>
+	<string>75F00CB6-8619-40F2-B482-5B258557D22C</string>
+</dict>
+</plist>

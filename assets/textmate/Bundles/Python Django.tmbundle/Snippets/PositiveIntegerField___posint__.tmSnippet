@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${1:FIELDNAME} = models.PositiveIntegerField(${2:blank=True, null=True})</string>
+	<key>name</key>
+	<string>PositiveIntegerField</string>
+	<key>scope</key>
+	<string>source.python.django</string>
+	<key>tabTrigger</key>
+	<string>positiveinteger</string>
+	<key>uuid</key>
+	<string>4EFDEB25-E308-4708-9F2F-594582B5CCE0</string>
+</dict>
+</plist>

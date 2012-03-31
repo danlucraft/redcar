@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>mockLogging(${1:ClassName})</string>
+	<key>name</key>
+	<string>mockLogging</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>ml</string>
+	<key>uuid</key>
+	<string>96BADBF6-D3F2-494E-B65F-3B4078DDF8C7</string>
+</dict>
+</plist>

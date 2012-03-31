@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;Directory ${1:/Library/WebServer/${2:example/}}&gt;
+	$0
+&lt;/Directory&gt;
+</string>
+	<key>name</key>
+	<string>Directory</string>
+	<key>scope</key>
+	<string>source.apache-config</string>
+	<key>tabTrigger</key>
+	<string>dir</string>
+	<key>uuid</key>
+	<string>894AF995-B54F-43CC-8810-2A0CCD56B168</string>
+</dict>
+</plist>

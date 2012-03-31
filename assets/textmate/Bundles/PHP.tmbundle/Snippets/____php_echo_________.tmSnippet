@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;?${TM_PHP_OPEN_TAG_WITH_ECHO:php echo} ${1:\$var} ?&gt;$0</string>
+	<key>name</key>
+	<string>&lt;?php echo … ?&gt;</string>
+	<key>scope</key>
+	<string>text.html</string>
+	<key>tabTrigger</key>
+	<string>echo</string>
+	<key>uuid</key>
+	<string>117476CE-7A7F-4DC4-9A4E-772D282983A3</string>
+</dict>
+</plist>

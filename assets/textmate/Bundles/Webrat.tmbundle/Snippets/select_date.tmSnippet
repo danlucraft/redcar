@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>select_date '${1:date_to_select_string_or_object}'${6:${3:, :from =&gt; '${2:dropdown}'}${5:, :id_prefix =&gt; '${4:fields_id_prefix}'}}$7</string>
+	<key>name</key>
+	<string>select_date</string>
+	<key>scope</key>
+	<string>source.ruby.rspec.cucumber.steps,source.ruby.rspec.story.steps</string>
+	<key>tabTrigger</key>
+	<string>sel</string>
+	<key>uuid</key>
+	<string>6F2E0800-36D6-4E4A-A38B-7ACB20BE7948</string>
+</dict>
+</plist>

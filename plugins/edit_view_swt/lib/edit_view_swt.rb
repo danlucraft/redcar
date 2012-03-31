@@ -3,7 +3,7 @@ require 'edit_view_swt/document'
 require 'edit_view_swt/edit_tab'
 require 'edit_view_swt/word_movement'
 
-gem "redcar-javamateview"
+$:.push(Redcar.root + "/javamateview/lib")
 require "javamateview"
 
 module Redcar

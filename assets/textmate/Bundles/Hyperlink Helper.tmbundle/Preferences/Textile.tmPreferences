@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Textile</string>
+	<key>scope</key>
+	<string>text.html.textile</string>
+	<key>settings</key>
+	<dict>
+		<key>shellVariables</key>
+		<array>
+			<dict>
+				<key>name</key>
+				<string>TM_LINK_FORMAT</string>
+				<key>value</key>
+				<string>"&lt;%= e_sn input %&gt;":&lt;%= e_sn url %&gt;</string>
+			</dict>
+		</array>
+	</dict>
+	<key>uuid</key>
+	<string>F514F82B-9C65-46BA-B264-D2F374372C54</string>
+</dict>
+</plist>

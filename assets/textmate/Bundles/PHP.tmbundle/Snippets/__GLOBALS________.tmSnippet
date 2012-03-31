@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>\$GLOBALS['${1:variable}']${2: = }${3:something}${4:;}$0</string>
+	<key>name</key>
+	<string>$GLOBALS['…']</string>
+	<key>scope</key>
+	<string>source.php</string>
+	<key>tabTrigger</key>
+	<string>globals</string>
+	<key>uuid</key>
+	<string>E8BDF86F-8CD0-11D9-B507-000D93C8BE28</string>
+</dict>
+</plist>

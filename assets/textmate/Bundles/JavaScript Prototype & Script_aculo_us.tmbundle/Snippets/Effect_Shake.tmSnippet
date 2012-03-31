@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>new Effect.Shake(${1:'${2:element}'}${3:, ${4:effect_options}});</string>
+	<key>name</key>
+	<string>Effect.Shake</string>
+	<key>scope</key>
+	<string>source.js.prototype</string>
+	<key>tabTrigger</key>
+	<string>eff</string>
+	<key>uuid</key>
+	<string>3DAFE08A-6F81-44D6-BDBD-47E5A80969AA</string>
+</dict>
+</plist>

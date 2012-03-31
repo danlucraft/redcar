@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>fileTypes</key>
+	<array/>
+	<key>foldingStartMarker</key>
+	<string>/\*\*|\{\s*$</string>
+	<key>foldingStopMarker</key>
+	<string>\*\*/|^\s*\}</string>
+	<key>name</key>
+	<string>Unity (C#)</string>
+	<key>patterns</key>
+	<array>
+		<dict>
+			<key>include</key>
+			<string>source.csharp</string>
+		</dict>
+		<dict>
+			<key>match</key>
+			<string>\b(AnimationPlayMode|AnisotropicFiltering|Application|AudioListener|AutoConnectBy|Bounds|CameraClearFlags|Collision|CollisionFlags|Color|ContactPoint|ControllerColliderHit|ControllerControllerHit|Debug|EditorUtility|FilterMode|ForceMode|GL|GizmoType|Gizmos|Graphics|Input|JointLimits|JointMotor|JointSpring|LayerMask|LightRenderMode|LightType|Mathf|Matrix4x4|MenuCommand|Object|AnimationClip|AudioClip|Component|Animation|AudioSource|Behaviour|Camera|ConstantForce|GUIElement|GUIText|GUITexture|GUILayer|LensFlare|Light|MonoBehaviour|Projector|ShaderLayer|Skybox|Collider|BoxCollider|CapsuleCollider|CharacterController|RaycastCollider|SphereCollider|Joint|CharacterJoint|HingeJoint|SpringJoint|LineRenderer|ParticleAnimator|ParticleEmitter|Renderer|ParticleRenderer|Rigidbody|TextMesh|Transform|Flare|GameObject|LodMesh|Material|PhysicMaterial|ScriptableObject|MeshImporter|ScriptableWizard|Shader|Texture|FileTexture|RenderTexture|ParticleRenderMode|PhysicMaterialCombine|Physics|PlayerPrefs|Quaternion|Random|Ray|RaycastHit|Rect|Resolution|RuntimePlatform|Screen|Selection|SelectionMode|SendMessageOptions|ShaderProperties|Space|Time|Vector3|Vector4|WWW|YieldInstruction|Coroutine|WaitForFixedUpdate|WaitForSeconds)\b</string>
+			<key>name</key>
+			<string>support.class.csharp.unity</string>
+		</dict>
+	</array>
+	<key>scopeName</key>
+	<string>source.csharp.unity</string>
+	<key>uuid</key>
+	<string>4150D499-19F4-436C-AEFC-C5A68E5048D2</string>
+</dict>
+</plist>

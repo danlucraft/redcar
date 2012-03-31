@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;g:createLink ${1:action="$2" }${3:controller="$4" }${5:id="$6" }${7:params="$8" }${9:url="$10" }${11:absolute="$12" }${13:base="$14" }&gt;$15&lt;/g:createLink&gt;</string>
+	<key>name</key>
+	<string>&lt;g:createLink&gt;</string>
+	<key>scope</key>
+	<string>text.html.grails</string>
+	<key>tabTrigger</key>
+	<string>createlink</string>
+	<key>uuid</key>
+	<string>0B125EC5-B157-428B-87B8-93DD46FB417C</string>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>Q_PROPERTY( ${1:type} ${2:name} READ ${3:$2} ${4:WRITE ${5:${2/.*/set\u$0/}} ${6:RESET ${7:${2/.*/reset\u$0/}} DESIGNABLE ${8:true} SCRIPTABLE ${9:true} STORED ${10:true} }})$0</string>
+	<key>name</key>
+	<string>Q_PROPERTY</string>
+	<key>scope</key>
+	<string>source.c++.qt</string>
+	<key>tabTrigger</key>
+	<string>qp</string>
+	<key>uuid</key>
+	<string>204E5213-CAF7-47FD-B272-34997632832D</string>
+</dict>
+</plist>

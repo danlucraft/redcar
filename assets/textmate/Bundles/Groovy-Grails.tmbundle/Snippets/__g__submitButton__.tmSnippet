@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;g:submitButton name="${1:name}" value="${2:someValue}" /&gt;</string>
+	<key>name</key>
+	<string>&lt;g:submitButton&gt;</string>
+	<key>scope</key>
+	<string>text.html.grails</string>
+	<key>tabTrigger</key>
+	<string>input</string>
+	<key>uuid</key>
+	<string>F97F4845-11BC-463E-9A6F-D5DB4B6DFDC4</string>
+</dict>
+</plist>

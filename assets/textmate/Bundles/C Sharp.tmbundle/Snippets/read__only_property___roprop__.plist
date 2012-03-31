@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>${1:public} ${2:Type} ${3:Name} {
+	get {
+		$0
+	}
+}</string>
+	<key>name</key>
+	<string>read-only property (roprop)</string>
+	<key>scope</key>
+	<string>source.csharp</string>
+	<key>tabTrigger</key>
+	<string>roprop</string>
+	<key>uuid</key>
+	<string>33BE9939-57EB-4642-AE87-38EFBA8ADD88</string>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;g:set ${1:var="$2" }${3:value="$4" }${5:scope="${6:request/page/flash/session}" }/&gt;</string>
+	<key>name</key>
+	<string>&lt;g:set&gt;</string>
+	<key>scope</key>
+	<string>text.html.grails</string>
+	<key>tabTrigger</key>
+	<string>set</string>
+	<key>uuid</key>
+	<string>D874BAA6-C6C8-4259-87EB-8764F187AA6F</string>
+</dict>
+</plist>

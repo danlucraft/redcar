@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>.find('${1:selector expression}')$0</string>
+	<key>name</key>
+	<string>find</string>
+	<key>scope</key>
+	<string>source.js.jquery</string>
+	<key>tabTrigger</key>
+	<string>.find</string>
+	<key>uuid</key>
+	<string>1DDD5103-FBE1-4105-B5A6-1D6B4BD1C30E</string>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>foreach { ${1:_.${2:foo}} }$0</string>
+	<key>name</key>
+	<string>for (each) -</string>
+	<key>scope</key>
+	<string>source.scala</string>
+	<key>tabTrigger</key>
+	<string>foreach-</string>
+	<key>uuid</key>
+	<string>4489B706-8EC5-47E1-B6CC-E3B73957A8A8</string>
+</dict>
+</plist>

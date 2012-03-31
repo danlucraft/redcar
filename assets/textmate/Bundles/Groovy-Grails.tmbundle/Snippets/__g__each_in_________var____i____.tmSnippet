@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>&lt;g:each in="\${${1:item}}" var="${2:i}"&gt;
+	${0:$TM_SELECTED_TEXT}
+&lt;/g:each&gt;</string>
+	<key>name</key>
+	<string>&lt;g:each in=".." var="i"&gt;</string>
+	<key>scope</key>
+	<string>text.html.grails</string>
+	<key>tabTrigger</key>
+	<string>eav</string>
+	<key>uuid</key>
+	<string>182781ED-932C-49BC-A455-F0FE029CDE13</string>
+</dict>
+</plist>

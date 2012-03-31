@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Webrat</string>
+  <key>description</key>
+	<string>Support for &lt;a href="http://rdoc.info/github/brynary/webrat/master/frames"&gt;Webrat&lt;/a&gt;.</string>
+	<key>ordering</key>
+	<array>
+		<string>A7AB1D2B-E64F-459B-AD8B-10CC203F73CB</string>
+		<string>AB1573AF-37ED-49C6-8D4C-1E59B36AEEA4</string>
+		<string>18E3A4FD-1B21-4776-A8CB-8908FB296630</string>
+		<string>BABBB3BF-0366-4612-86F9-BEC60D927303</string>
+		<string>01AE3FEA-B16B-47C7-BA36-A430BC64F443</string>
+		<string>81CF9D6F-12C7-4D64-9B9D-8923BC9AC6BE</string>
+		<string>FDB00A55-5FB7-4BEB-B027-0A50CECB7EE6</string>
+		<string>1C6CA323-A600-458E-943B-BC3030A302B2</string>
+		<string>D188BE63-7E67-4FDF-AB95-0EC6E007E583</string>
+		<string>0D2CF916-899F-478D-BE6D-031A8AB94E44</string>
+		<string>FB0865CE-4426-4894-BEFB-C2E4F1B3F8EE</string>
+		<string>0DC18EAD-E756-464C-BE97-3829821E9E58</string>
+		<string>D52608F7-0949-4DA9-A6D1-1B153A8FF189</string>
+		<string>6F2E0800-36D6-4E4A-A38B-7ACB20BE7948</string>
+		<string>A355B998-3818-4E45-B449-2EB02F0CCB70</string>
+		<string>A39276D6-DF29-462F-8722-7D4A3D75317B</string>
+		<string>0F7FB1AF-BF0F-4427-A886-1BAECFC09FB7</string>
+		<string>50635128-C1C2-4D88-A853-9F6E5C2C42F2</string>
+	</array>
+	<key>uuid</key>
+	<string>7A1D88BC-52FA-45CD-95D2-665B89F78481</string>
+</dict>
+</plist>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>try
+{
+	${2:// Code to try here}
+}
+catch (${1:System.Exception} e) 
+{
+	${3:// Code to handle exception here}
+}
+finally
+{
+	${0:// Code to execute after try (and possibly catch) here}
+}</string>
+	<key>name</key>
+	<string>Try / Catch / Finally</string>
+	<key>scope</key>
+	<string>source.cs</string>
+	<key>tabTrigger</key>
+	<string>try</string>
+	<key>uuid</key>
+	<string>9E4C6824-F9E0-4B64-B1F6-8DCF5F610DAC</string>
+</dict>
+</plist>

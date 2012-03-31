@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>LocalForward ${1:LocalPort} ${2:DestHost}:${3:DestPort}</string>
+	<key>name</key>
+	<string>LocalForward</string>
+	<key>scope</key>
+	<string>source.ssh-config</string>
+	<key>tabTrigger</key>
+	<string>lf</string>
+	<key>uuid</key>
+	<string>C9DE9563-3446-49D3-B87C-8F12B0A2CC8B</string>
+</dict>
+</plist>

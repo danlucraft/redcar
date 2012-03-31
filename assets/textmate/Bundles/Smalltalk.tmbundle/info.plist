@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Smalltalk</string>
+  <key>description</key>
+	<string>Support for &lt;a href="http://www.squeak.org/Smalltalk"&gt;Smalltalk&lt;/a&gt;.</string>
+	<key>ordering</key>
+	<array>
+		<string>86991D7E-6E4C-4C40-8ED2-CF52AD0F5DFE</string>
+		<string>8D5B0A47-F312-4E18-84FB-7186E302726F</string>
+		<string>D2CCB64E-AB74-4825-827B-A857B73D3134</string>
+		<string>29D51DE1-0FFD-439D-AB37-2F52C907D463</string>
+		<string>663866CD-A1EA-40DB-82DF-72125695B331</string>
+		<string>1580915C-91DD-4BEB-B65B-02F7A3614E58</string>
+		<string>09A69C90-642D-49B4-A7F8-6DC03CC25732</string>
+		<string>2D014D26-AC77-4989-9D11-D44D460B5021</string>
+	</array>
+	<key>uuid</key>
+	<string>FE096DA7-662E-496F-A32E-79E0F580223B</string>
+</dict>
+</plist>

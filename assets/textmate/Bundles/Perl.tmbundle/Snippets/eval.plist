@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>eval {
+	${1:# do something risky...}
+};
+if (\$@) {
+	${2:# handle failure...}
+}
+</string>
+	<key>name</key>
+	<string>Try/Except</string>
+	<key>scope</key>
+	<string>source.perl</string>
+	<key>tabTrigger</key>
+	<string>eval</string>
+	<key>uuid</key>
+	<string>3A524B0E-C793-429A-AC49-6FB8370D4B77</string>
+</dict>
+</plist>

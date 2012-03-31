@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>assertSame(${1/(.+)/(?1:")/}${1:message}${1/(.+)/(?1:", )/}${2:expected}, ${3:actual})$0</string>
+	<key>name</key>
+	<string>assertSame</string>
+	<key>scope</key>
+	<string>source.groovy</string>
+	<key>tabTrigger</key>
+	<string>ass</string>
+	<key>uuid</key>
+	<string>38625828-1187-476B-BB66-7A8EA5601415</string>
+</dict>
+</plist>

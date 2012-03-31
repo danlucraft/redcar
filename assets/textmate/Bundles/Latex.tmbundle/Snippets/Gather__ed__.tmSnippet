@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>\begin{gather`echo $TM_SCOPE|grep math|
+sed -e 's/.*math.*/ed/'`}
+	$0
+\end{gather`echo $TM_SCOPE|grep math|
+sed -e 's/.*math.*/ed/'`}</string>
+	<key>name</key>
+	<string>Gather(ed)</string>
+	<key>scope</key>
+	<string>text.tex.latex</string>
+	<key>tabTrigger</key>
+	<string>gat</string>
+	<key>uuid</key>
+	<string>BE56EE31-7C87-43A6-B0ED-7E5C31432C1C</string>
+</dict>
+</plist>

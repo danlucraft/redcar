@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>.dblclick(${1:function() {
+	${0:// Act on the event}
+\}});</string>
+	<key>name</key>
+	<string>dblclick</string>
+	<key>scope</key>
+	<string>source.js.jquery</string>
+	<key>tabTrigger</key>
+	<string>.dblclick</string>
+	<key>uuid</key>
+	<string>6DDA60D4-9051-49A4-90CC-F6F4E6E05E31</string>
+</dict>
+</plist>

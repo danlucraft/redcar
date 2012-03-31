@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>this.controller.setupWidget("${1:WidgetID}", ${2:this.widgetAttributes}, ${3:this.widgetModel})</string>
+	<key>name</key>
+	<string>controller.setupWidget</string>
+	<key>scope</key>
+	<string>source.js</string>
+	<key>tabTrigger</key>
+	<string>csetup</string>
+	<key>uuid</key>
+	<string>38974ECE-80A1-44A9-9568-3DB9F6D10C98</string>
+</dict>
+</plist>

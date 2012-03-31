@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>this.$1 = {
+	listTitle: $L('$2'),
+	items : [
+		{${3:name}:$L("$4"), ${5:value}:"$6"}
+	]
+};</string>
+	<key>name</key>
+	<string>List Model</string>
+	<key>scope</key>
+	<string>source.js</string>
+	<key>tabTrigger</key>
+	<string>lmodel</string>
+	<key>uuid</key>
+	<string>BF3F835B-C3CF-43FA-9408-4AEA44B598BD</string>
+</dict>
+</plist>

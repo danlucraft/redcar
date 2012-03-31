@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>{	name = '${1:name}';
+	begin = '$2';
+	end = '$3';
+},</string>
+	<key>name</key>
+	<string>Rule — Begin / End</string>
+	<key>scope</key>
+	<string>source.plist.tm-grammar meta.array.patterns</string>
+	<key>tabTrigger</key>
+	<string>beg</string>
+	<key>uuid</key>
+	<string>0D8A14ED-0701-4AD8-8A9C-15AD1BA60D8D</string>
+</dict>
+</plist>

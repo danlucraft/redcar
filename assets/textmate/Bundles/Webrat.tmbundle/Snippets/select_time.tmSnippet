@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>select_time '${1:time_to_select_string_or_object}'${6:${3:, :from =&gt; '${2:dropdown}'}${5:, :id_prefix =&gt; '${4:fields_id_prefix}'}}$7</string>
+	<key>name</key>
+	<string>select_time</string>
+	<key>scope</key>
+	<string>source.ruby.rspec.cucumber.steps,source.ruby.rspec.story.steps</string>
+	<key>tabTrigger</key>
+	<string>sel</string>
+	<key>uuid</key>
+	<string>A355B998-3818-4E45-B449-2EB02F0CCB70</string>
+</dict>
+</plist>

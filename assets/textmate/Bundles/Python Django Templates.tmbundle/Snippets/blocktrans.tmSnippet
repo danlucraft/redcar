@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>{% blocktrans ${1:with ${2:var1} as ${3:var2}} %}
+	$4{{ $3 }}
+{% endblocktrans %}</string>
+	<key>name</key>
+	<string>blocktrans</string>
+	<key>scope</key>
+	<string>text.html.django</string>
+	<key>tabTrigger</key>
+	<string>blocktrans</string>
+	<key>uuid</key>
+	<string>79E37710-CEE2-4C76-BB44-606C7679AD32</string>
+</dict>
+</plist>

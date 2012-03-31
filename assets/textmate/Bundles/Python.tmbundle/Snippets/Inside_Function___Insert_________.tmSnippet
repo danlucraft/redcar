@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>($0):</string>
+	<key>keyEquivalent</key>
+	<string>(</string>
+	<key>name</key>
+	<string>Inside Function Def: Insert (..):</string>
+	<key>scope</key>
+	<string>source.python meta.function.python invalid.illegal.missing-parameters.python</string>
+	<key>uuid</key>
+	<string>09C00F1F-859E-455D-BD1B-C8F48CEFB078</string>
+</dict>
+</plist>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Rails</string>
+	<key>scope</key>
+	<string>source.ruby.rails</string>
+	<key>settings</key>
+	<dict>
+		<key>shellVariables</key>
+		<array>
+			<dict>
+				<key>name</key>
+				<string>TERMINAL_MATE_LOAD</string>
+				<key>value</key>
+				<string>load "%s"</string>
+			</dict>
+			<dict>
+				<key>name</key>
+				<string>TERMINAL_MATE_NEW</string>
+				<key>value</key>
+				<string>./script/console</string>
+			</dict>
+		</array>
+	</dict>
+	<key>uuid</key>
+	<string>FA21F17D-ACEE-4FB7-BBDD-DA5590DEAD75</string>
+</dict>
+</plist>

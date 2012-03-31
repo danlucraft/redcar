@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>namespace${1/.+/ /m}${1:${TM_FILENAME/^((.*?)\..*)?$/(?1:\L$2:my)/}}
+{
+	$0
+}${1/.+/ \/* /m}$1${1/.+/ *\//m}</string>
+	<key>name</key>
+	<string>Namespace</string>
+	<key>scope</key>
+	<string>source.c++, source.objc++</string>
+	<key>tabTrigger</key>
+	<string>ns</string>
+	<key>uuid</key>
+	<string>CEE5F928-47A2-4648-96F0-99FF5C2A7419</string>
+</dict>
+</plist>

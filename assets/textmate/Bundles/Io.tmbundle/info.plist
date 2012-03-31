@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>contactEmailRot13</key>
+	<string>evk.ebo@tznvy.pbz</string>
+	<key>contactName</key>
+	<string>Rob Rix</string>
+	<key>deleted</key>
+	<array>
+		<string>937C187C-75F2-42F7-9AB8-972CBB9BABF5</string>
+	</array>
+	<key>description</key>
+	<string>Support for the &lt;a href="http://www.iolanguage.com/"&gt;Io&lt;/a&gt; prototype-based programming language.</string>
+	<key>mainMenu</key>
+	<dict>
+		<key>excludedItems</key>
+		<array>
+			<string>0F687653-BF6D-4C2C-A75E-C9193E870BBC</string>
+		</array>
+		<key>items</key>
+		<array>
+			<string>937C187C-75F2-42F7-9AB8-972CBB9BABF5</string>
+			<string>------------------------------------</string>
+			<string>D55B718A-71A6-41A0-98ED-07B72442DDE8</string>
+			<string>------------------------------------</string>
+			<string>E195E70E-E46F-4B42-B70E-3CE744AA920E</string>
+			<string>7BEB3C8C-641B-4BEA-9F92-6594A8D448DD</string>
+			<string>6D6682F0-5C77-4581-B0C3-A732D5B0A93E</string>
+			<string>08A134DC-B1D9-42D3-AF5F-3E1061AD8827</string>
+			<string>FEF230FE-43A6-423C-B9DF-D03E6066D1AC</string>
+			<string>------------------------------------</string>
+			<string>57E40ECD-AC15-4AB8-89D4-C123CA0B164C</string>
+			<string>086D0C3A-130F-4C93-B1E5-1522DDAF58FA</string>
+			<string>35D0E7C0-E396-4D8B-8361-89B88C3AFF0C</string>
+		</array>
+		<key>submenus</key>
+		<dict/>
+	</dict>
+	<key>name</key>
+	<string>Io</string>
+	<key>ordering</key>
+	<array>
+		<string>0F687653-BF6D-4C2C-A75E-C9193E870BBC</string>
+		<string>6D6682F0-5C77-4581-B0C3-A732D5B0A93E</string>
+		<string>FEF230FE-43A6-423C-B9DF-D03E6066D1AC</string>
+		<string>57E40ECD-AC15-4AB8-89D4-C123CA0B164C</string>
+		<string>E195E70E-E46F-4B42-B70E-3CE744AA920E</string>
+		<string>7BEB3C8C-641B-4BEA-9F92-6594A8D448DD</string>
+		<string>D55B718A-71A6-41A0-98ED-07B72442DDE8</string>
+		<string>08A134DC-B1D9-42D3-AF5F-3E1061AD8827</string>
+		<string>086D0C3A-130F-4C93-B1E5-1522DDAF58FA</string>
+		<string>35D0E7C0-E396-4D8B-8361-89B88C3AFF0C</string>
+		<string>BD798537-3548-47F3-A6AB-7FB95C45DB83</string>
+		<string>9D0E390E-145F-48F8-944A-E1349337DABF</string>
+		<string>6131549E-7BD0-4AB3-AC12-4BD971BE95B0</string>
+	</array>
+	<key>uuid</key>
+	<string>527BB215-1332-4CC8-AC6B-68E692D1421C</string>
+</dict>
+</plist>

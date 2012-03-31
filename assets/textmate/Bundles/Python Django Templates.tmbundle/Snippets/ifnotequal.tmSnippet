@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>{% ifnotequal $1 $2 %}
+	$3
+{% endifnotequal %}</string>
+	<key>name</key>
+	<string>ifnotequal</string>
+	<key>scope</key>
+	<string>text.html.django</string>
+	<key>tabTrigger</key>
+	<string>ifnotequal</string>
+	<key>uuid</key>
+	<string>36532EE4-CF10-48BB-B450-0A904F650668</string>
+</dict>
+</plist>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>content</key>
+	<string>Ping: ${1:http://www.example.com/post/ping/}
+</string>
+	<key>name</key>
+	<string>Ping</string>
+	<key>scope</key>
+	<string>text.blog</string>
+	<key>tabTrigger</key>
+	<string>ping</string>
+	<key>uuid</key>
+	<string>853BB979-1DA2-4D78-B50D-092B80A1877F</string>
+</dict>
+</plist>
