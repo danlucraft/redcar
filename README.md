@@ -30,15 +30,15 @@ Some (current) limitations:
 
 You must have Java installed. On Ubuntu, you can install `openjdk-7-jre` if you do not already have Java.
 
- * [OS X]()
+ * [OS X](https://github.com/downloads/redcar/redcar/Redcar-0.14.0dev.app.zip)
 
     unzip, then double click Redcar.app
     
- * [Debian]()
+ * [Debian](https://github.com/downloads/redcar/redcar/redcar_0.14.0dev_all.deb)
 
     install with sudo dpkg -i redcar_xx_all.deb
     
- * [Windows]()
+ * [Windows](https://github.com/downloads/redcar/redcar/redcar-0.14.0dev.zip)
 
     unzip, then run redcar.exe
 
