@@ -28,6 +28,20 @@ Some (current) limitations:
 
 ## Installation
 
+    $ gem install redcar
+
+for more details, see [User Guide: Installation](https://github.com/redcar/redcar/wiki/Installation)
+
+## Usage
+
+Run 
+
+    $ redcar --help
+
+To see full usage details.
+
+## Experimental Installers
+
 You must have Java installed. On Ubuntu, you can install `openjdk-7-jre` if you do not already have Java.
 
  * [OS X](https://github.com/downloads/redcar/redcar/Redcar-0.14.0dev.app.zip)
@@ -41,14 +55,6 @@ You must have Java installed. On Ubuntu, you can install `openjdk-7-jre` if you 
  * [Windows](https://github.com/downloads/redcar/redcar/redcar-0.14.0dev.zip)
 
     unzip, then run redcar.exe
-
-## Usage
-
-Run 
-
-    $ redcar --help
-
-To see full usage details.
 
 ## Installing From Source
 
