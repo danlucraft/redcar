@@ -21,19 +21,14 @@ module Redcar
         end
         'ok'
       rescue Exception => e
-        puts 'drb got exception:' + e.class + " " + e.message, e.backtrace
+        puts 'drb got exception:' + e.class.name + " " + e.message, e.backtrace
         raise e
       end
 
       # Opens the specified directory in a new window, if it was not
       # already open. Brings the project's window to the front, if this
-      # directory is already opened. If the specified directory was the last open
-      # directory, restores the complete session.
+      # directory is already opened. 
       def open_directory(full_path)
-        if Redcar.app.windows.empty? and Application.storage['last_open_dir'] == full_path
-          Project::Manager.restore_last_session
-        end
-
         Redcar::Project.window_projects.each_pair do |window, project|
           return bring_window_to_front(window) if project.path == full_path
         end
@@ -43,20 +38,19 @@ module Redcar
 
       ## Focuses a Redcar window
       def bring_to_front
-        Project::Manager.restore_last_session if Redcar.app.windows.empty?
         bring_window_to_front
       end
       
       def bring_window_to_front(win = Redcar.app.focussed_window)
         unless Redcar.environment == :test
-          win.controller.bring_to_front
+          win ||= Redcar.app.new_window true
+          win.controller.bring_to_front 
         end
       end
 
       # Opens a file, optionally untitled, and waits for it to close, if requested
       def open_file(file, untitled, wait)
         file_open_block = Proc.new do
-          Project::Manager.restore_last_session if Redcar.app.windows.empty?
           if untitled
             Project::Manager.open_untitled_path(file)
           else
