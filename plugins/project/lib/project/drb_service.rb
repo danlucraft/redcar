@@ -21,7 +21,7 @@ module Redcar
         end
         'ok'
       rescue Exception => e
-        puts 'drb got exception:' + e.class + " " + e.message, e.backtrace
+        puts 'drb got exception:' + e.class.to_s + " " + e.message, e.backtrace
         raise e
       end
 
