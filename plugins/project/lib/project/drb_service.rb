@@ -31,7 +31,7 @@ module Redcar
       # directory, restores the complete session.
       def open_directory(full_path)
         if Redcar.app.windows.empty? and Application.storage['last_open_dir'] == full_path
-          Project::Manager.restore_last_session
+          # Project::Manager.restore_last_session
         end
 
         Redcar::Project.window_projects.each_pair do |window, project|
@@ -43,7 +43,7 @@ module Redcar
 
       ## Focuses a Redcar window
       def bring_to_front
-        Project::Manager.restore_last_session if Redcar.app.windows.empty?
+        #Project::Manager.restore_last_session if Redcar.app.windows.empty?
         bring_window_to_front
       end
       
@@ -56,7 +56,7 @@ module Redcar
       # Opens a file, optionally untitled, and waits for it to close, if requested
       def open_file(file, untitled, wait)
         file_open_block = Proc.new do
-          Project::Manager.restore_last_session if Redcar.app.windows.empty?
+          #Project::Manager.restore_last_session if Redcar.app.windows.empty?
           if untitled
             Project::Manager.open_untitled_path(file)
           else
