@@ -134,6 +134,8 @@ XML
         sh("cp -r #{item} #{target}")
       end
     end
+    rm_rf(target + "/javamateview/bin/com")
+    rm_rf(target + "/vendor/swt/.git")
     clean(target)
   end
   
