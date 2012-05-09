@@ -97,7 +97,7 @@ module Redcar
     capture:  1
     type:     id
     kind:     class
-  - regex:    "function\\s+([a-z]\\w*)\\(.*\\)"
+  - regex:    "function\\s+([a-z]\\w*)\\s*\\(.*\\)"
     capture:  1
     type:     id
     kind:     method
