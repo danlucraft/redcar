@@ -29,32 +29,9 @@ task :init do
   vendor = REDCAR_ROOT + "/vendor"
   sh("curl -L #{JRUBY_JAR_LOCATION} > #{vendor}/jruby-complete.jar")
 
-  gems = ["git",
-#            "spoon",
-          "lucene", #"~> 0.5.0.beta.1",
-          "jruby-openssl",
-          "ruby-blockcache",
-          "bouncy-castle-java",
-          "swt",
-          "plugin_manager",
-          "redcar-xulrunner-win",
-          "zip"
-          ]#, ">= 1.5")
-  gems.each do |gem_name|
-    puts "fetching #{gem_name}"
-    data = JSON.parse(Net::HTTP.get(URI.parse("http://rubygems.org/api/v1/gems/#{gem_name}.json")))
-    gem_file = "#{vendor}/#{gem_name}-#{data["version"]}.gem" 
-    sh("curl -L #{data["gem_uri"]} > #{gem_file}")
-    gem_dir = "#{vendor}/#{gem_name}"
-    rm_rf(gem_dir)
-    mkdir_p(gem_dir)
-    sh("tar xzv -C #{gem_dir} -f #{gem_file}")
-    rm(gem_file)
-    sh("tar xzv -C #{gem_dir} -f #{gem_dir}/data.tar.gz")
-    rm("#{gem_dir}/data.tar.gz")
-    rm("#{gem_dir}/metadata.gz")
-  end
-  sh("cd #{vendor}/redcar-xulrunner-win/vendor; unzip xulrunner*.zip; cd ../../../")
+  puts "running Bundler"
+
+  sh("bundle install --standalone --path #{vendor}")
 end  
 
 namespace :installers do
