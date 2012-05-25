@@ -26,24 +26,37 @@ end
 
 desc "Download dependencies"
 task :init do
-  vendor = REDCAR_ROOT + "/vendor"
+  vendor = File.join(REDCAR_ROOT, "vendor")
   sh("curl -L #{JRUBY_JAR_LOCATION} > #{vendor}/jruby-complete.jar")
 
-  gems = ["git",
-#            "spoon",
-          "lucene", #"~> 0.5.0.beta.1",
-          "jruby-openssl",
-          "ruby-blockcache",
-          "bouncy-castle-java",
-          "swt",
-          "plugin_manager",
-          "redcar-xulrunner-win",
-          "zip"
-          ]#, ">= 1.5")
+  github_exts = {
+    "mscharley/ruby-git" => "git"
+  }
+
+  gems = [
+  # "git",
+  # "spoon",
+  "lucene", #"~> 0.5.0.beta.1",
+  "jruby-openssl",
+  "ruby-blockcache",
+  "bouncy-castle-java",
+  "swt",
+  "plugin_manager",
+  "redcar-xulrunner-win",
+  "zip"
+  ]#, ">= 1.5")
+
+  github_exts.each do |repo,reponame|
+    target = File.join(vendor,reponame)
+    unless File.exists?(target)
+      sh("git clone https://github.com/#{repo}.git #{target}")
+    end
+  end
+
   gems.each do |gem_name|
     puts "fetching #{gem_name}"
     data = JSON.parse(Net::HTTP.get(URI.parse("http://rubygems.org/api/v1/gems/#{gem_name}.json")))
-    gem_file = "#{vendor}/#{gem_name}-#{data["version"]}.gem" 
+    gem_file = "#{vendor}/#{gem_name}-#{data["version"]}.gem"
     sh("curl -L #{data["gem_uri"]} > #{gem_file}")
     gem_dir = "#{vendor}/#{gem_name}"
     rm_rf(gem_dir)
@@ -55,7 +68,7 @@ task :init do
     rm("#{gem_dir}/metadata.gz")
   end
   sh("cd #{vendor}/redcar-xulrunner-win/vendor; unzip xulrunner*.zip; cd ../../../")
-end  
+end
 
 namespace :installers do
   desc "Package for Windows"
@@ -69,7 +82,7 @@ namespace :installers do
     chmod(0755, "#{win_dir}/redcar.exe")
     sh("cd pkg/win; zip -r redcar-#{REDCAR_VERSION}.zip *; cd ../../; mv pkg/win/redcar-#{REDCAR_VERSION}.zip pkg/")
   end
-  
+
   desc "Generate a debian package (uses fpm)"
   task :deb do
     deb_dir = REDCAR_ROOT + "/pkg/deb"
@@ -84,7 +97,7 @@ namespace :installers do
     sh("fpm -a all -v #{REDCAR_VERSION} -s dir -t deb -n redcar --prefix /usr/local -C pkg/deb --url \"#{REDCAR_URL}\" --license \"#{REDCAR_LICENSE}\" --vendor \"#{REDCAR_VENDOR}\" --maintainer \"#{REDCAR_MAINTAINER}\" --description \"#{REDCAR_DESCRIPTION}\" bin lib")
     mv("redcar_#{REDCAR_VERSION}_all.deb", "pkg/")
   end
-  
+
   desc "Generate an OSX app-bundle"
   task :osx do
     rm_rf(REDCAR_ROOT + "/pkg/Redcar.app")
@@ -93,7 +106,7 @@ namespace :installers do
     mkdir_p(bundle_content_dir)
     mkdir_p("#{bundle_content_dir}/MacOS")
     mkdir_p("#{bundle_content_dir}/Resources")
-  
+
     info_plist = <<-XML
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -126,7 +139,7 @@ XML
     sh("cd pkg; zip -r Redcar-#{REDCAR_VERSION}.app.zip Redcar.app; cd ../")
     rm_r("pkg/Redcar.app")
   end
-  
+
   def copy_all(target)
     exclude = [/pkg/, /spec/, /\.git/, /\.redcar/, /\.gemspec/, /\.yardoc/, /doc/]
     Dir.glob(REDCAR_ROOT + "/*").each do |item|
@@ -138,7 +151,7 @@ XML
     rm_rf(target + "/vendor/swt/.git")
     clean(target)
   end
-  
+
   def clean(target)
     Dir.glob(target + "/*", File::FNM_DOTMATCH).each do |item|
       next if [".", ".."].include?(File.basename(item))
@@ -150,7 +163,7 @@ XML
       end
     end
   end
-  
+
 end
 
 ### DOCUMENTATION
@@ -225,7 +238,7 @@ namespace :ci do
     Rake::Task["ci:rcov:specs"].invoke
     Rake::Task["ci:rcov:cucumber"].invoke
   end
-  
+
   def find_ci_reporter(filename)
     jruby_gem_path = %x[jruby -rubygems -e "p Gem.path.first"].gsub("\n", "").gsub('"', "")
     result = Dir.glob("#{jruby_gem_path}/gems/ci_reporter-*/lib/ci/reporter/rake/#{filename}.rb").reverse.first
@@ -238,7 +251,7 @@ namespace :ci do
     rspec_opts = "--require #{rspec_loader} --format CI::Reporter::RSpec"
     jruby_run(rspec(rspec_opts))
   end
-  
+
   desc "Run the features with JUnit output for the Hudson reporter"
   task :cucumber do
     reports_folder = "features/reports"
@@ -298,7 +311,7 @@ task :run_ci do
       puts a
       system a
     end
-  
+
     spec_filename = "#{filename[1]}_spec.rb"
     spec = Dir["**/#{spec_filename}"]
     if spec.length > 0
@@ -317,7 +330,7 @@ namespace :redcar do
   end
 
   require 'json'
-  
+
   desc "Redcar Integration: output runnable info"
   task :runnables do
     mkdir_p(".redcar/runnables")
@@ -328,7 +341,7 @@ namespace :redcar do
         $stderr.sync = true
       RUBY
     end
-    
+
     tasks = Rake::Task.tasks
     runnables = []
     ruby_bin = Config::CONFIG["bindir"] + "/ruby -r#{File.dirname(__FILE__)}/.redcar/runnables/sync_stdout.rb "
@@ -360,7 +373,7 @@ namespace :redcar do
       f.puts(JSON.pretty_generate(data))
     end
   end
-  
+
   task :sample do
     5.times do |i|
       puts "out#{i}"
