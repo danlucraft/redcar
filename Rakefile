@@ -48,7 +48,7 @@ task :init do
     gem_dir = "#{vendor}/#{gem_name}"
     rm_rf(gem_dir)
     mkdir_p(gem_dir)
-    sh("tar xzv -C #{gem_dir} -f #{gem_file}")
+    sh("tar xv -C #{gem_dir} -f #{gem_file}")
     rm(gem_file)
     sh("tar xzv -C #{gem_dir} -f #{gem_dir}/data.tar.gz")
     rm("#{gem_dir}/data.tar.gz")
