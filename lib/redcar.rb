@@ -122,26 +122,18 @@ module Redcar
     require 'java'
     
     require 'redcar_quick_start'
-
-    $:.push(File.expand_path("../../vendor/plugin_manager/lib", __FILE__))
+    vendor_path = File.expand_path("../../vendor", __FILE__)
+    require "#{vendor_path}/bundler/setup.rb"
     require 'plugin_manager'
-    
-    $:.push File.expand_path(File.join(Redcar.asset_dir))
 
     unless defined?(JSON)
-      $:.unshift(File.expand_path("../../vendor/json-1.6.4-java/lib", __FILE__))
+      $:.unshift("#{vendor_path}/json-1.6.4-java/lib")
       require 'json'
     end
 
-    $:.push(File.expand_path("../../vendor/bouncy-castle-java/lib", __FILE__))
     require 'bouncy-castle-java'
-    
-    $:.push(File.expand_path("../../vendor/jruby-openssl/lib/shared", __FILE__))
     require 'openssl'
-    
     plugin_manager.load("core")
-    
-    $:.push(File.expand_path("../../vendor/swt/lib", __FILE__))
     require 'swt/minimal'
       
     unless no_gui_mode?
