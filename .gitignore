@@ -47,3 +47,4 @@ vendor/swt
 vendor/jruby-complete.jar
 vendor/redcar-xulrunner-win
 vendor/zip
+vendor/json

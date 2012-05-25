@@ -26,24 +26,37 @@ end
 
 desc "Download dependencies"
 task :init do
-  vendor = REDCAR_ROOT + "/vendor"
+  vendor = File.join(REDCAR_ROOT, "vendor")
   sh("curl -L #{JRUBY_JAR_LOCATION} > #{vendor}/jruby-complete.jar")
 
-  gems = ["git",
-#            "spoon",
-          "lucene", #"~> 0.5.0.beta.1",
-          "jruby-openssl",
-          "ruby-blockcache",
-          "bouncy-castle-java",
-          "swt",
-          "plugin_manager",
-          "redcar-xulrunner-win",
-          "zip"
-          ]#, ">= 1.5")
+  github_exts = {
+    "mscharley/ruby-git" => "git"
+  }
+
+  gems = [
+  # "git",
+  # "spoon",
+  "lucene", #"~> 0.5.0.beta.1",
+  "jruby-openssl",
+  "ruby-blockcache",
+  "bouncy-castle-java",
+  "swt",
+  "plugin_manager",
+  "redcar-xulrunner-win",
+  "zip"
+  ]#, ">= 1.5")
+
+  github_exts.each do |repo,reponame|
+    target = File.join(vendor,reponame)
+    unless File.exists?(target)
+      sh("git clone https://github.com/#{repo}.git #{target}")
+    end
+  end
+
   gems.each do |gem_name|
     puts "fetching #{gem_name}"
     data = JSON.parse(Net::HTTP.get(URI.parse("http://rubygems.org/api/v1/gems/#{gem_name}.json")))
-    gem_file = "#{vendor}/#{gem_name}-#{data["version"]}.gem" 
+    gem_file = "#{vendor}/#{gem_name}-#{data["version"]}.gem"
     sh("curl -L #{data["gem_uri"]} > #{gem_file}")
     gem_dir = "#{vendor}/#{gem_name}"
     rm_rf(gem_dir)
