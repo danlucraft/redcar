@@ -37,6 +37,6 @@ plugins/scm_svn/features/fixtures
 
 tmp
 
-vendor/ruby
+vendor/jruby
 vendor/bundler
 vendor/jruby-complete.jar

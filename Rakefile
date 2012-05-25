@@ -10,7 +10,7 @@ REDCAR_ROOT        = File.expand_path("../", __FILE__)
 
 require 'fileutils'
 require 'net/http'
-require 'json'
+require "#{REDCAR_ROOT}/vendor/bundler/setup"
 
 Dir[File.expand_path("../lib/tasks/*.rake", __FILE__)].each { |f| load f }
 
@@ -27,11 +27,11 @@ end
 desc "Download dependencies"
 task :init do
   vendor = REDCAR_ROOT + "/vendor"
-  sh("curl -L #{JRUBY_JAR_LOCATION} > #{vendor}/jruby-complete.jar")
+  # sh("curl -L #{JRUBY_JAR_LOCATION} > #{vendor}/jruby-complete.jar")
 
   puts "running Bundler"
 
-  sh("bundle install --standalone --path #{vendor}")
+  sh("jruby -ropenssl -S bundle install --standalone --path #{vendor}")
 end  
 
 namespace :installers do
@@ -293,10 +293,10 @@ namespace :redcar do
     Hash.new {|h,k| h[k] = hash_with_hash_default }
   end
 
-  require 'json'
   
   desc "Redcar Integration: output runnable info"
   task :runnables do
+    require "json"
     mkdir_p(".redcar/runnables")
     puts "Creating runnables"
     File.open(".redcar/runnables/sync_stdout.rb", "w") do |fout|

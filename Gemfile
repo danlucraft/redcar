@@ -1,4 +1,3 @@
-# A sample Gemfile
 source "https://rubygems.org"
 
 gem "git"
@@ -10,5 +9,5 @@ gem "swt"
 gem "plugin_manager"
 gem "redcar-xulrunner-win"
 gem "zip"
-
-# gem "rails"
+gem "json"
+gem "ffi"
