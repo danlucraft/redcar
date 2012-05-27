@@ -4,7 +4,32 @@ module Redcar
       include Redcar::Observable
       
       attr_reader :tab_folder, :model
-      
+
+      # Closes the tab under the cursor when the middle
+      # mouse button is released
+      class MiddleMouseListener
+        def initialize(controller)
+          @controller = controller
+        end
+
+        def mouseDown e
+        end
+
+        def mouseDoubleClick e
+        end
+
+        def mouseUp(event)
+          if event.button == 2 # middle mouse button == 2?
+            point = Swt::Graphics::Point.new(event.x,event.y)
+            item  = @controller.tab_folder.getItem(point)
+            tab   = @controller.tab_widget_to_tab_model(item)
+            unless Redcar.app.events.ignore?(:tab_close, tab)
+              Redcar.app.events.create(:tab_close, tab)
+            end
+          end
+        end
+      end
+
       class CTabFolder2Listener
         def initialize(controller)
           @controller = controller
@@ -71,7 +96,7 @@ module Redcar
         @tab_folder.pack
         register_tab_dnd(@tab_folder)
       end
-      
+
       def register_tab_dnd(tab_folder)
         dnd_listener = TabDragAndDropListener.new(self)
         operations = (Swt::DND::DND::DROP_COPY | Swt::DND::DND::DROP_DEFAULT | Swt::DND::DND::DROP_MOVE)
@@ -104,6 +129,7 @@ module Redcar
       def attach_view_listeners
         @tab_folder.add_ctab_folder2_listener(CTabFolder2Listener.new(self))
         @tab_folder.add_selection_listener(SelectionListener.new(self))
+        @tab_folder.addMouseListener(MiddleMouseListener.new(self))
         @tab_folder.add_listener(Swt::SWT::MenuDetect) do |event|
           point = ApplicationSWT.display.map(nil, @tab_folder, Swt::Graphics::Point.new(event.x, event.y))
           if item = @tab_folder.getItem(point)
