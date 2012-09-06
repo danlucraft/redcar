@@ -144,6 +144,22 @@ module Redcar
         end
       end
     end
+	
+	class SaveAllFilesCommand < Command
+
+      def execute
+	    window = Redcar.app.focussed_window
+		save_tabs(window.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(EditTab)})
+      end
+	  
+	  def save_tabs(tabs)
+		modified_edit_tabs = tabs.select {|t| t.edit_view.document.modified? }
+		modified_edit_tabs.each do |t|
+              t.focus
+              Project::SaveFileCommand.new(t).run
+            end
+	  end
+    end
 
     class DirectoryOpenCommand < Command
 
