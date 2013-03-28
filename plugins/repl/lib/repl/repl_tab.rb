@@ -1,7 +1,7 @@
 
 module Redcar
   class REPL
-    class Tab < Redcar::EditTab
+    class REPLTab < Redcar::EditTab
 
       DEFAULT_ICON = :application_terminal
 
@@ -36,7 +36,7 @@ module Redcar
 
       def attach_listeners
         control = edit_view.controller.mate_text.get_control
-        control.add_verify_key_listener(Redcar::ReplSWT::KeyListener.new(self))
+        control.add_verify_key_listener(Redcar::REPLSWT::KeyListener.new(self))
         control.remove_key_listener(edit_view.controller.key_listener)
         control.remove_verify_key_listener(edit_view.controller.verify_key_listener)
         repl_mirror.add_listener(:change) do

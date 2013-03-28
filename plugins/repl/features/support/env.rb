@@ -1,7 +1,7 @@
 
 require File.join File.dirname(__FILE__), 'fake_repl'
 
-Redcar::REPL::ReplMirror.class_eval do
+Redcar::REPL::REPLMirror.class_eval do
   def evaluator
     @eval ||= Redcar::REPL::FakeEvaluator.new
   end

@@ -154,7 +154,7 @@ Redcar.environment: #{Redcar.environment}
     class MoveHomeCommand < DocumentCommand
 
       def execute
-        if doc.mirror.is_a?(Redcar::REPL::ReplMirror)
+        if doc.mirror.is_a?(Redcar::REPL::REPLMirror)
           # do not do the default home command on a line with a prompt
           return unless tab.go_to_home?
         end

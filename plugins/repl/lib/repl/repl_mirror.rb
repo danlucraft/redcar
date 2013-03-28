@@ -1,11 +1,11 @@
 module Redcar
   class REPL
-    class ReplMirror
+    class REPLMirror
       attr_reader :history  , :command_history,
               :command_index, :current_offset ,
               :last_output
 
-      # A ReplMirror is a type of Document::Mirror
+      # A REPLMirror is a type of Document::Mirror
       include Redcar::Document::Mirror
 
       def initialize
@@ -46,20 +46,20 @@ module Redcar
       # @return [Hash]
       def special_commands
         [
-          ReplCommand.new('clear', /^clear$/,'Clear command output') do |last|
+          REPLCommand.new('clear', /^clear$/,'Clear command output') do |last|
             clear_history
           end,
-          ReplCommand.new('reset', /^reset$/,
+          REPLCommand.new('reset', /^reset$/,
             'Reset REPL to initial state and clear all command history') do |last|
             reset_history
           end,
-          ReplCommand.new('help',/^help$/,'Display this help text') do |last|
+          REPLCommand.new('help',/^help$/,'Display this help text') do |last|
             append_to_history help
           end,
-          ReplCommand.new('buffer',/^buffer$/,'Displays command history buffer size') do |last|
+          REPLCommand.new('buffer',/^buffer$/,'Displays command history buffer size') do |last|
             append_to_history "Current buffer size is #{command_history_buffer_size}"
           end,
-          ReplCommand.new('buffer [int]',/buffer (\d+)$/, 'Sets command history buffer size') do |last|
+          REPLCommand.new('buffer [int]',/buffer (\d+)$/, 'Sets command history buffer size') do |last|
             set_buffer_size last.captures.first.to_i
             append_to_history "Buffer size set to #{command_history_buffer_size}"
           end
@@ -95,7 +95,7 @@ module Redcar
         raise "implement evaluator on your REPL"
       end
 
-      # Format the language specific exception to be displayed in the Repl
+      # Format the language specific exception to be displayed in the REPL
       #
       # @param [Exception]
       # @return [String]
