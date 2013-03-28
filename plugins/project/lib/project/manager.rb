@@ -343,6 +343,7 @@ module Redcar
               separator
               item "Save", Project::SaveFileCommand
               item "Save As", Project::SaveFileAsCommand
+              item "Save All", Project::SaveAllFileCommand
             end
           end
 
