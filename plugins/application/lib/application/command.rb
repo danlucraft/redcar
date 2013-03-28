@@ -48,6 +48,7 @@ module Redcar
   #     end
   class Command
     attr_accessor :error
+    attr_accessor :tab
     
     extend Redcar::Observable
     extend Redcar::Sensitive
@@ -104,5 +105,6 @@ module Redcar
     def tab
       @tab || env[:tab]
     end
+
   end
 end
