@@ -1,6 +1,6 @@
 
 module Redcar
-  class ReplSWT
+  class REPLSWT
     class KeyListener
       def initialize(controller)
         @controller = controller

@@ -154,7 +154,7 @@ Redcar.environment: #{Redcar.environment}
     class MoveHomeCommand < DocumentCommand
 
       def execute
-        if doc.mirror.is_a?(Redcar::REPL::ReplMirror)
+        if doc.mirror.is_a?(Redcar::REPL::REPLMirror)
           # do not do the default home command on a line with a prompt
           return unless tab.go_to_home?
         end
@@ -1029,9 +1029,10 @@ Redcar.environment: #{Redcar.environment}
       begin
         Redcar.log.info("startup milestone: loading plugins took #{Time.now - Redcar.process_start_time}")
         Redcar.update_gui do
-          Application.start
-          ApplicationSWT.start
-          EditViewSWT.start
+          Redcar.plugin_manager.objects_implementing(:start_with_app).each do |object|
+            object.start_with_app
+          end
+
           SplashScreen.splash_screen.inc(1) if SplashScreen.splash_screen
           s = Time.now
           if Redcar.gui

@@ -1,7 +1,7 @@
 
 module Redcar
   class Ruby
-    class ReplMirror < Redcar::REPL::ReplMirror
+    class REPLMirror < Redcar::REPL::REPLMirror
 
       def title
         "Ruby REPL"
@@ -22,7 +22,7 @@ module Redcar
       end
 
       def evaluator
-        @evaluator ||= ReplMirror::Evaluator.new
+        @evaluator ||= REPLMirror::Evaluator.new
       end
 
       class Evaluator

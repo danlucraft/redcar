@@ -1,9 +1,9 @@
 require 'spec_helper'
 
 class Redcar::REPL
-  describe ReplMirror do
+  describe REPLMirror do
     before do
-      @mirror = ReplMirror.new
+      @mirror = REPLMirror.new
       @changed_event = false
       @mirror.add_listener(:change) { @changed_event = true }
     end

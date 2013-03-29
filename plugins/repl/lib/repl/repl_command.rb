@@ -1,7 +1,7 @@
 
 module Redcar
   class REPL
-    class ReplCommand
+    class REPLCommand
 
       attr_reader :title,:description,:regex
 

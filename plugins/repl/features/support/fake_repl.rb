@@ -9,7 +9,7 @@ module Redcar
 
     class OpenFakeREPL < OpenREPL
       def execute
-        open_repl(ReplMirror.new)
+        open_repl(REPLMirror.new)
       end
     end
   end

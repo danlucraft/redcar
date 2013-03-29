@@ -12,8 +12,8 @@ module Redcar
       [
         Sensitivity.new(:open_repl_tab, Redcar.app, false, [:tab_focussed]) do |tab|
           tab and
-          tab.is_a?(REPL::Tab) and
-          tab.edit_view.document.mirror.is_a?(REPL::ReplMirror)
+          tab.is_a?(REPLTab) and
+          tab.edit_view.document.mirror.is_a?(REPLMirror)
         end
       ]
     end
@@ -31,7 +31,7 @@ module Redcar
 
     class OpenREPL < Command
       def open_repl(mirror)
-        tab = win.new_tab(Redcar::REPL::Tab)
+        tab = win.new_tab(REPLTab)
         tab.repl_mirror = mirror
         tab.focus
       end

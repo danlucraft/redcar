@@ -32,14 +32,14 @@ require "dist/application_swt"
 module Redcar
   class ApplicationSWT
     include Redcar::Controller
-    
+
     attr_reader :fake_shell
 
     def self.display
       @display ||= Swt.display
     end
 
-    def self.start
+    def self.start_with_app
       if Redcar.gui
         Redcar.gui.register_controllers(
             Redcar::Tab                => ApplicationSWT::Tab,
