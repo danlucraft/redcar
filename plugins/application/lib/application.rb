@@ -60,7 +60,7 @@ module Redcar
     include Redcar::Model
     include Redcar::Observable
 
-    def self.start
+    def self.start_with_app
       Redcar.app = Application.new
       Redcar.plugin_manager.objects_implementing(:app_started).each do |object|
         object.app_started

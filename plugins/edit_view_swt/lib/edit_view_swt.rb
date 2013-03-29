@@ -58,7 +58,7 @@ module Redcar
     include Redcar::Observable
     include Redcar::Controller
 
-    def self.start
+    def self.start_with_app
       if gui = Redcar.gui
         gui.register_controllers(Redcar::EditTab => EditViewSWT::Tab)
       end
@@ -524,7 +524,7 @@ module Redcar
     def biggest_visible_line
       @mate_text.viewer.get_bottom_index
     end
-    
+
     def ensure_visible(offset)
       line = @document.line_at_offset(offset)
       line_start_offset = @document.offset_at_line(line)
