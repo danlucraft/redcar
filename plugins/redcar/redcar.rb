@@ -88,7 +88,7 @@ module Redcar
         end
       end
     end
-    
+
     class GenerateGrammarsMenu
       def self.on(builder)
         builder.item "Ruby", AboutCommand
@@ -267,13 +267,13 @@ Redcar.environment: #{Redcar.environment}
         end
       end
     end
-    
+
     class BackwardNavigationCommand < Command
       def execute
         Redcar.app.navigation_history.backward
       end
     end
-    
+
     class ForwardNavigationCommand < Command
       def execute
         Redcar.app.navigation_history.forward
@@ -625,9 +625,9 @@ Redcar.environment: #{Redcar.environment}
         link "Cmd+U",       Project::FileReloadCommand
         link "Cmd+Shift+O", Project::DirectoryOpenCommand
         link "Cmd+Alt+Ctrl+P",   Project::FindRecentCommand
-        #link "Cmd+Ctrl+O",  Project::OpenRemoteCommand
         link "Cmd+S",       Project::SaveFileCommand
         link "Cmd+Shift+S", Project::SaveFileAsCommand
+        link "Cmd+Alt+S",   Project::SaveAllFilesCommand
         link "Cmd+W",       Application::CloseTabCommand
         link "Cmd+Shift+W", Application::CloseWindowCommand
         link "Alt+Shift+W", Application::CloseTreeCommand
@@ -655,7 +655,7 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+O",  OpenLineCommand
         link "Ctrl+D",  DeleteCharCommand
         link "Ctrl+H",  BackspaceCommand
-        
+
         link "Ctrl+Alt+Left", BackwardNavigationCommand
         link "Ctrl+Alt+Right", ForwardNavigationCommand
 
@@ -707,7 +707,6 @@ Redcar.environment: #{Redcar.environment}
 
         # link "Cmd+Shift+R",     PluginManagerUi::ReloadLastReloadedCommand
 
-        link "Cmd+Alt+S", Snippets::OpenSnippetExplorer
         #Textmate.attach_keybindings(self, :osx)
 
         # map SelectTab<number>Command
@@ -724,9 +723,9 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+O",       Project::OpenFileCommand
         link "Ctrl+Shift+O", Project::DirectoryOpenCommand
         link "Ctrl+Alt+Shift+P",   Project::FindRecentCommand
-        #link "Alt+Shift+O",  Project::OpenRemoteCommand
         link "Ctrl+S",       Project::SaveFileCommand
         link "Ctrl+Shift+S", Project::SaveFileAsCommand
+        link "Ctrl+Alt+S",   Project::SaveAllFilesCommand
         link "Ctrl+W",       Application::CloseTabCommand
         link "Ctrl+Shift+W", Application::CloseWindowCommand
         link "Alt+Shift+W",  Application::CloseTreeCommand
@@ -747,7 +746,7 @@ Redcar.environment: #{Redcar.environment}
         link "End",        MoveEndCommand
         link "Ctrl+Alt+E", MoveEndCommand
         link "Ctrl+End",   MoveBottomCommand
-        
+
         link "Alt+[", BackwardNavigationCommand
         link "Alt+]", ForwardNavigationCommand
 
@@ -798,8 +797,6 @@ Redcar.environment: #{Redcar.environment}
         link "Ctrl+Alt+I",           ToggleInvisibles
         link "Ctrl++",               IncreaseFontSize
         link "Ctrl+-",               DecreaseFontSize
-
-        link "Ctrl+Alt+S", Snippets::OpenSnippetExplorer
 
         #Textmate.attach_keybindings(self, :linux)
 
@@ -876,7 +873,7 @@ Redcar.environment: #{Redcar.environment}
               item "Current Word", SelectWordCommand
               item "Toggle Block Selection", ToggleBlockSelectionCommand
             end
-            
+
             sub_menu "Document Navigation" do
               item "Goto Line", GotoLineCommand
               item "Top",     MoveTopCommand
@@ -897,13 +894,13 @@ Redcar.environment: #{Redcar.environment}
               item "Delete Character",   DeleteCharCommand
               item "Backspace",          BackspaceCommand
               item "Transpose",          TransposeCharactersCommand
-              
+
               separator
-              
+
               item "Backward Navigation", BackwardNavigationCommand
               item "Forward Navigation", ForwardNavigationCommand
             end
-            
+
             sub_menu "Formatting" do
               item "Increase Indent", IncreaseIndentCommand
               item "Decrease Indent", DecreaseIndentCommand
@@ -990,8 +987,8 @@ Redcar.environment: #{Redcar.environment}
             item "About", AboutCommand
             item "New In This Version", ChangelogCommand
             separator
-            item "Check for Updates", :command => Application::ToggleCheckForUpdatesCommand, 
-                                      :type => :check, 
+            item "Check for Updates", :command => Application::ToggleCheckForUpdatesCommand,
+                                      :type => :check,
                                       :checked => lambda { Application::Updates.check_for_updates? }
             item "Update Available",  Application::OpenUpdateCommand
           end
