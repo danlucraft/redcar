@@ -10,7 +10,16 @@ REDCAR_ROOT        = File.expand_path("../", __FILE__)
 
 require 'fileutils'
 require 'net/http'
-require "#{REDCAR_ROOT}/vendor/bundler/setup"
+
+bundler_dir = "#{REDCAR_ROOT}/vendor/bundler"
+bundler_setup_file =  "#{bundler_dir}/setup.rb"
+
+unless File.exists?(bundler_dir)
+  FileUtils.makedirs(bundler_dir)
+  FileUtils.touch(bundler_setup_file)
+end
+
+require bundler_setup_file
 
 Dir[File.expand_path("../lib/tasks/*.rake", __FILE__)].each { |f| load f }
 
@@ -26,12 +35,14 @@ end
 
 desc "Download dependencies"
 task :init do
-  vendor = REDCAR_ROOT + "/vendor"
-  # sh("curl -L #{JRUBY_JAR_LOCATION} > #{vendor}/jruby-complete.jar")
+  vendor    = REDCAR_ROOT + "/vendor"
+  jruby_jar = "#{vendor}/jruby-complete.jar"
+  unless File.exists? jruby_jar
+    sh("curl -L #{JRUBY_JAR_LOCATION} > #{jruby_jar}")
+  end
 
   puts "running Bundler"
-
-  sh("jruby -ropenssl -S bundle install --standalone --path #{vendor}")
+  sh("ruby -ropenssl -S bundle install --standalone --path #{vendor}")
 end  
 
 namespace :installers do
