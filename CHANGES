@@ -1,11 +1,16 @@
 
-Version 0.14 (TBA)
+Version 1.0 (TBA)
 ================================
 
  * Add a basic, context menu-based bundle and snippet editor to Snippet Browser (Delisa Mason)
  * Fix a bug in the Lucene plugin that was causing Redcar to hold files open (Dan Lucraft)
  * OSX platform application bundle (Dan Lucraft)
  * The line number gutter is coloured like the current theme (Delisa Mason)
+ * Add "Save All" to the File menu (Ninh Bui, hethert)
+ * Use bundler for installing development dependencies (Steven! Ragnarök)
+ * Add menu item for running the current tab with arguments (Daniel Jolicoeur)
+ * Add windows batch file for easily starting redcar with arguments (Chad Gorshing)
+ * Close tab when clicked with the middle mouse button (Delisa Mason)
 
 Version 0.13 (21st January 2012)
 ================================
@@ -28,7 +33,7 @@ Version 0.13 (21st January 2012)
 Version 0.12 (7th January 2012)
 ===============================
 
- * Features run all the way through again, and use Swtbot in places to 
+ * Features run all the way through again, and use Swtbot in places to
    allow us to simulate events more accurately (Helpful for macros) (Dan Lucraft)
  * Added --no-splash option (Dan Lucraft)
  * Fix runnables for JRuby 1.6.1 (Chris Nelson)
