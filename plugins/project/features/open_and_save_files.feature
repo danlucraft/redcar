@@ -42,6 +42,15 @@ Feature: Open and save files
     Then the file "plugins/project/spec/fixtures/winter2.txt" should contain "Wintersmith"
     And I should see "Wintersmith" in the edit tab
 
+  Scenario: Save all files
+    Given I have opened "plugins/project/spec/fixtures/winter.txt"
+    When I replace the contents with "Howdy!"
+    Given I have opened "plugins/project/spec/fixtures/winter2.txt"
+    When I replace the contents with "Howdy again!"
+    And I save all tabs
+    Then the file "plugins/project/spec/fixtures/winter2.txt" should contain "Howdy again!"
+    And the file "plugins/project/spec/fixtures/winter.txt" should contain "Howdy!"
+
   Scenario: Open a file using another Redcar invocation and waiting for the tab to be closed
     Given I open "plugins/project/spec/fixtures/winter.txt" using the redcar command with "-w"
     And I wait "2" seconds

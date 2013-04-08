@@ -68,7 +68,7 @@ module Redcar
 
       def execute
         result = false
-        if tab.edit_view.document.mirror
+        if mirror = tab.edit_view.document.mirror
           path          = tab.edit_view.document.mirror.path
           dir           = File.dirname(path)
           writable_file = File.writable?(path)
@@ -88,6 +88,7 @@ module Redcar
           end
 
           if show_dialog
+            tab.focus
             Application::Dialog.message_box(
               "Can't save #{tab.edit_view.document.mirror.path}, you don't have the permissions.",
               :type => :error,
@@ -142,6 +143,22 @@ module Redcar
             path
           end
         end
+      end
+    end
+
+    class SaveAllFilesCommand < Command
+
+      def execute
+        result = true
+        save_command = SaveFileCommand.new
+
+        win.all_tabs.select{|t| t.is_a? EditTab}.each do |tab|
+          tab.focus unless tab.document.mirror and tab.document.mirror.path # focus tab when a Save As dialog will appear
+          save_command.tab = tab
+          result &= save_command.run
+        end
+
+        result
       end
     end
 

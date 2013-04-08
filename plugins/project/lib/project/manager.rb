@@ -343,6 +343,7 @@ module Redcar
               separator
               item "Save", Project::SaveFileCommand
               item "Save As", Project::SaveFileAsCommand
+              item "Save All", Project::SaveAllFilesCommand
             end
           end
 
@@ -364,7 +365,7 @@ module Redcar
           end
         end
       end
-      
+
       # Uses our own context menu hook to provide context menu entries
       # @return [Menu]
       def self.project_context_menus(tree, node, controller)

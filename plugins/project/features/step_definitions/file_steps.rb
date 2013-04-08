@@ -37,6 +37,12 @@ When /^I save the tab$/ do
   end
 end
 
+When /^I save all tabs$/ do
+  Swt.sync_exec do
+    Redcar::Project::SaveAllFilesCommand.new.run
+  end
+end
+
 When /^I touch the file "([^\"]*)"$/ do |fn|
   FileUtils.touch(fn)
   add_test_file(fn)
