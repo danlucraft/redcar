@@ -443,7 +443,7 @@ Redcar.environment: #{Redcar.environment}
               doc.offset_at_line(line_ix) + line_offset,
               text
               )
-              doc.cursor_offset = doc.offset_at_line(line_ix) + line_offset + text.length
+              doc.cursor_offset = doc.offset_at_line(line_ix) + line_offset + text.split(//).length
             end
             doc.controllers(AutoCompleter::DocumentController).first.end_modification
           end
