@@ -68,7 +68,7 @@ module Redcar
 
       def execute
         result = false
-        if tab.edit_view.document.mirror
+        if mirror = tab.edit_view.document.mirror and mirror.respond_to? :path
           path          = tab.edit_view.document.mirror.path
           dir           = File.dirname(path)
           writable_file = File.writable?(path)
@@ -142,6 +142,24 @@ module Redcar
             path
           end
         end
+      end
+    end
+
+    ## TODO Finish implementing this.
+    class SaveAllFileCommand < Command
+      #sensitize :open_window
+      
+      def execute
+        result = true
+        
+        save_command = SaveFileCommand.new
+        
+        win.all_tabs.select{|t| t.is_a? EditTab}.each do |tab|
+          save_command.tab = tab
+          result &= save_command.run
+        end
+        
+        result
       end
     end
 
