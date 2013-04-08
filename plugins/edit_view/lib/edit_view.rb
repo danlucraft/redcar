@@ -89,9 +89,12 @@ module Redcar
       @tab_settings ||= TabSettings.new
     end
 
-    # unused?
     def self.storage
-      @storage ||= Plugin::Storage.new('edit_view_plugin')
+      @storage ||= begin
+        store = Plugin::Storage.new('edit_view_plugin')
+        store.set_default('indent_selection_on_tab', true)
+        store
+      end
     end
 
     def self.menus
@@ -99,12 +102,16 @@ module Redcar
         sub_menu "Edit" do
           group(:priority => 20) do
             item "Change Language", ChangeLanguageCommand
-            
+
             sub_menu "Tabs" do
               item "Soft Tabs", :command => EditView::ToggleSoftTabsCommand,
-                                :type => :check, 
+                                :type => :check,
                                 :checked => lambda { tab and tab.respond_to?(:edit_view) and tab.edit_view.soft_tabs? }
-                                
+
+              item "Indent Selection on Tab", :command => EditView::ToggleIndentSelectionOnTabCommand,
+                                :type => :check,
+                                :checked => lambda { EditView.indent_selection_on_tab? }
+
               sub_menu "Tab Width" do
                 TabSettings::TAB_WIDTHS.each do |width|
                   command_klass = Class.new(SetTabWidthCommand)
@@ -114,22 +121,22 @@ module Redcar
                 end
               end
             end
-            
+
             sub_menu "Margin" do
               item "Word Wrap", :command => EditView::ToggleWordWrapCommand,
-                                :type => :check, 
+                                :type => :check,
                                 :checked => lambda { tab and tab.respond_to?(:edit_view) and tab.edit_view.word_wrap? }
-              
+
               item "Show Margin", :command => EditView::ToggleShowMarginCommand,
-                                  :type => :check, 
+                                  :type => :check,
                                   :checked => lambda { tab and tab.respond_to?(:edit_view) and tab.edit_view.show_margin? }
-  
+
               item lambda { tab && tab.respond_to?(:edit_view) ? "Margin Column: #{tab.edit_view.margin_column}" : "Margin Column" }, SetMarginColumnCommand
             end
 
             separator
           end
-          
+
           sub_menu "Formatting" do
             item "Align Assignments", EditView::AlignAssignmentCommand
             sub_menu "Convert Text", :priority => 40 do
@@ -177,21 +184,21 @@ module Redcar
         end
       end
     end
-    
+
     def self.quit_guard
       EditView::ModifiedTabsChecker.new(
         Redcar.app.all_tabs.select {|t| t.is_a?(EditTab)},
         "Save all before quitting?"
       ).check
     end
-    
+
     def self.close_window_guard(win)
       EditView::ModifiedTabsChecker.new(
         win.notebooks.map(&:tabs).flatten.select {|t| t.is_a?(EditTab)},
         "Save all before closing the window?"
       ).check
     end
-  
+
     def self.close_tab_guard(tab)
       if tab.respond_to?(:edit_view) && tab.edit_view.document.modified?
         tab.focus
@@ -338,7 +345,7 @@ module Redcar
       edit_view.check_for_updated_document if edit_view
       notify_listeners(:focussed_edit_view, edit_view)
     end
-    
+
     def self.protect_edit_view_focus
       @protect_edit_view_focus = true
       yield
@@ -391,7 +398,7 @@ module Redcar
         9
       end
     end
-    
+
     def self.default_font
       if Redcar.platform == :osx
         "Monaco"
@@ -418,6 +425,14 @@ module Redcar
     def self.font=(font)
       EditView.storage["font"] = font
       all_edit_views.each {|ev| ev.refresh_font }
+    end
+
+    def self.indent_selection_on_tab?
+      EditView.storage["indent_selection_on_tab"]
+    end
+
+    def self.indent_selection_on_tab= doit
+      EditView.storage["indent_selection_on_tab"] = !!doit
     end
 
     def refresh_font
@@ -711,7 +726,7 @@ module Redcar
       end
       history.record(action_symbol)
     end
-    
+
     def inspect
       "#<Redcar::EditView document:#{document.inspect}>"
     end

@@ -5,7 +5,7 @@ Feature: Insert a tab
     And tabs are hard
     And I press the Tab key in the edit tab
     Then the contents of the edit tab should be "\t"
-    
+
   Scenario: Inserts hard tab at the end of a line
     When I open a new edit tab
     And tabs are hard
@@ -13,13 +13,13 @@ Feature: Insert a tab
     And I move the cursor to 6
     And I press the Tab key in the edit tab
     Then the contents of the edit tab should be "Hacker\t"
-    
+
   Scenario: Inserts 2 space soft tab at the start of a line
     When I open a new edit tab
     And tabs are soft, 2 spaces
     And I press the Tab key in the edit tab
     Then the contents of the edit tab should be "  "
-    
+
   Scenario: Inserts 2 space soft tab at the end of a line
     When I open a new edit tab
     And tabs are soft, 2 spaces
@@ -27,13 +27,13 @@ Feature: Insert a tab
     And I move the cursor to 6
     And I press the Tab key in the edit tab
     Then the contents of the edit tab should be "Hacker  "
-    
+
   Scenario: Inserts 4 space soft tab at the start of a line
     When I open a new edit tab
     And tabs are soft, 4 spaces
     And I press the Tab key in the edit tab
     Then the contents of the edit tab should be "    "
-    
+
   Scenario: Inserts 4 space soft tab at the end of a line
     When I open a new edit tab
     And tabs are soft, 4 spaces
@@ -50,7 +50,7 @@ Feature: Insert a tab
     And I press Shift+Right key in the edit tab
     And I press Shift+Right key in the edit tab
     And I press the Tab key in the edit tab
-    Then the contents of the edit tab should be "    "
+    Then the contents of the edit tab should be "    Ha"
 
   Scenario: Inserts hard tabs correctly if there is selected text
     When I open a new edit tab
@@ -60,7 +60,7 @@ Feature: Insert a tab
     And I press Shift+Right key in the edit tab
     And I press Shift+Right key in the edit tab
     And I press the Tab key in the edit tab
-    Then the contents of the edit tab should be "\t"
+    Then the contents of the edit tab should be "\tHa"
 
   Scenario: Inserts soft tabs correctly if there is selected text that covers a tab
     When I open a new edit tab
@@ -70,7 +70,7 @@ Feature: Insert a tab
     And I press Shift+Right key in the edit tab
     And I press Shift+Right key in the edit tab
     And I press the Tab key in the edit tab
-    Then the contents of the edit tab should be "    "
+    Then the contents of the edit tab should be "    H\t"
 
   Scenario: Inserts 4 space soft tab at the end of a line, with a tab character
     When I open a new edit tab
@@ -111,23 +111,23 @@ Feature: Insert a tab
     And the selection range should be from 4 to 23
 
   @block_selection
-  Scenario: In block selection mode inserts 4 space soft tab overwriting text on 1 line
+  Scenario: In block selection mode inserts 4 space soft tab
     When I open a new edit tab
     And tabs are soft, 4 spaces
     And I replace the contents with "Jim\nHacker"
     And I block select from 0 to 2
     And I press the Tab key in the edit tab
-    Then the contents of the edit tab should be "    m\nHacker"
+    Then the contents of the edit tab should be "    Jim\nHacker"
     And the selection range should be from 4 to 4
 
   @block_selection
-  Scenario: In block selection mode inserts 4 space soft tab overwriting text on 2 lines
+  Scenario: In block selection mode inserts 4 space soft tab
     When I open a new edit tab
     And tabs are soft, 4 spaces
     And I replace the contents with "Jim\nHacker"
     And I block select from 0 to 6
     And I press the Tab key in the edit tab
-    Then the contents of the edit tab should be "    m\n    cker"
+    Then the contents of the edit tab should be "    Jim\n    Hacker"
     And the selection range should be from 4 to 10
 
   @block_selection
@@ -137,10 +137,5 @@ Feature: Insert a tab
     And I replace the contents with "Jim\nHacker\nMP"
     And I block select from 0 to 13
     And I press the Tab key in the edit tab
-    Then the contents of the edit tab should be "    m\n    cker\n    "
+    Then the contents of the edit tab should be "    Jim\n    Hacker\n    MP"
     And the selection range should be from 4 to 19
-
-
-
-
-
