@@ -10,7 +10,16 @@ REDCAR_ROOT        = File.expand_path("../", __FILE__)
 
 require 'fileutils'
 require 'net/http'
-require 'json'
+
+bundler_dir = "#{REDCAR_ROOT}/vendor/bundler"
+bundler_setup_file =  "#{bundler_dir}/setup.rb"
+
+unless File.exists?(bundler_dir)
+  FileUtils.makedirs(bundler_dir)
+  FileUtils.touch(bundler_setup_file)
+end
+
+require bundler_setup_file
 
 Dir[File.expand_path("../lib/tasks/*.rake", __FILE__)].each { |f| load f }
 
@@ -26,49 +35,15 @@ end
 
 desc "Download dependencies"
 task :init do
-  vendor = File.join(REDCAR_ROOT, "vendor")
-  sh("curl -L #{JRUBY_JAR_LOCATION} > #{vendor}/jruby-complete.jar")
-
-  github_exts = {
-    "mscharley/ruby-git" => "git"
-  }
-
-  gems = [
-  # "git",
-  # "spoon",
-  "lucene", #"~> 0.5.0.beta.1",
-  "jruby-openssl",
-  "ruby-blockcache",
-  "bouncy-castle-java",
-  "swt",
-  "plugin_manager",
-  "redcar-xulrunner-win",
-  "zip"
-  ]#, ">= 1.5")
-
-  github_exts.each do |repo,reponame|
-    target = File.join(vendor,reponame)
-    unless File.exists?(target)
-      sh("git clone https://github.com/#{repo}.git #{target}")
-    end
+  vendor    = REDCAR_ROOT + "/vendor"
+  jruby_jar = "#{vendor}/jruby-complete.jar"
+  unless File.exists? jruby_jar
+    sh("curl -L #{JRUBY_JAR_LOCATION} > #{jruby_jar}")
   end
 
-  gems.each do |gem_name|
-    puts "fetching #{gem_name}"
-    data = JSON.parse(Net::HTTP.get(URI.parse("http://rubygems.org/api/v1/gems/#{gem_name}.json")))
-    gem_file = "#{vendor}/#{gem_name}-#{data["version"]}.gem"
-    sh("curl -L #{data["gem_uri"]} > #{gem_file}")
-    gem_dir = "#{vendor}/#{gem_name}"
-    rm_rf(gem_dir)
-    mkdir_p(gem_dir)
-    sh("tar xv -C #{gem_dir} -f #{gem_file}")
-    rm(gem_file)
-    sh("tar xzv -C #{gem_dir} -f #{gem_dir}/data.tar.gz")
-    rm("#{gem_dir}/data.tar.gz")
-    rm("#{gem_dir}/metadata.gz")
-  end
-  sh("cd #{vendor}/redcar-xulrunner-win/vendor; unzip xulrunner*.zip; cd ../../../")
-end
+  puts "running Bundler"
+  sh("ruby -ropenssl -S bundle install --standalone --path #{vendor}")
+end  
 
 namespace :installers do
   desc "Package for Windows"
@@ -329,10 +304,9 @@ namespace :redcar do
     Hash.new {|h,k| h[k] = hash_with_hash_default }
   end
 
-  require 'json'
-
   desc "Redcar Integration: output runnable info"
   task :runnables do
+    require "json"
     mkdir_p(".redcar/runnables")
     puts "Creating runnables"
     File.open(".redcar/runnables/sync_stdout.rb", "w") do |fout|

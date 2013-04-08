@@ -1,3 +1,0 @@
-== 0.3.0 / 2009-03-21
-Added write_pointer, read_array_of_pointer and write_array_of_pointer
-
