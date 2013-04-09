@@ -103,6 +103,15 @@ namespace :installers do
 	<string></string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.5</string>
+  <key>CFBundleDocumentTypes</key>
+  <array>
+    <dict>
+      <key>LSItemContentTypes</key>
+      <array>
+        <string>public.data</string>
+      </array>
+    </dict>
+  </array>
 </dict>
 </plist>
 XML
