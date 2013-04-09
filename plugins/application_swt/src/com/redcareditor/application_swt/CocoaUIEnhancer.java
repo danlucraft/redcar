@@ -53,6 +53,8 @@ public class CocoaUIEnhancer {
     static long sel_application_openFile_;
     static Callback proc4Args;
 
+    static long sel_application_shouldTerminate_;
+
     final private String appName;
 
     /**
@@ -189,7 +191,7 @@ public class CocoaUIEnhancer {
         // Schedule disposal of callback object
         display.disposeExec( new Runnable() {
             public void run() {
-                invoke( proc4Args, "dispose" );
+                proc4Args.dispose();
             }
         } );
     }
@@ -324,6 +326,7 @@ public class CocoaUIEnhancer {
         }
 
         sel_application_openFile_ = registerName( osCls, "application:openFile:" );
+        sel_application_shouldTerminate_ = registerName( osCls, "applicationShouldTerminate:");
 
         // Create an SWT Callback object that will invoke the actionProc method of our internal
         // callbackObject.
@@ -345,13 +348,6 @@ public class CocoaUIEnhancer {
         if (!result) {
             // Adding the callback method was unsuccesfull, likely due to the fact that the
             // method probably already exists. So we set the implementation instead.
-            Object appDelegateMethodImpl = invoke( osCls, "class_getMethodImplementation", new Object[] {
-                wrapPointer( appDelegateClsPtr ),
-                wrapPointer( sel_application_openFile_ )
-            });
-
-            long appDelegateMethodImplPtr = convertToLong(appDelegateMethodImpl);
-
             Object appDelegateMethod = invoke( osCls, "class_getInstanceMethod", new Object[] {
                 wrapPointer( appDelegateClsPtr ),
                 wrapPointer( sel_application_openFile_ )
