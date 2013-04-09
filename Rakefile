@@ -106,6 +106,8 @@ namespace :installers do
   <key>CFBundleDocumentTypes</key>
   <array>
     <dict>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
       <key>CFBundleTypeName</key>
       <string>public.data</string>
       <key>LSHandlerRank</key>
@@ -113,6 +115,8 @@ namespace :installers do
       <key>LSItemContentTypes</key>
       <array>
         <string>public.data</string>
+        <string>public.folder</string>
+        <string>public.symlink</string>
       </array>
     </dict>
   </array>
