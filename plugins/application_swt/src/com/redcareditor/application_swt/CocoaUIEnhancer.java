@@ -50,10 +50,7 @@ public class CocoaUIEnhancer {
     static long sel_aboutMenuItemSelected_;
     static Callback proc3Args;
 
-    static long sel_application_openFile_;
     static Callback proc4Args;
-
-    static long sel_application_shouldTerminate_;
 
     final private String appName;
 
@@ -116,11 +113,12 @@ public class CocoaUIEnhancer {
          * Will be called on 64bit SWT.
          */
         public long actionProc( long id, long sel, long arg0, long arg1 ) {
-            if ( sel == sel_application_openFile_ ) {
+            if ( sel == OS.sel_application_openFile_ ) {
                 System.out.println("HOORAY \\o/");
                 openFile.handleEvent(null);
             } else {
                 // Unknown selection!
+                System.out.println("UNKNOWN SELECTION!?");
             }
             // Return value is not used.
             return 99;
@@ -295,8 +293,6 @@ public class CocoaUIEnhancer {
 
         long appDelegatePtr = convertToLong(appDelegate);
 
-        //System.out.println("First found app delegate:" + appDelegatePtr);
-
         Object appDelegateCls = invoke (osCls, "object_getClass", new Object[] {
             wrapPointer( appDelegatePtr ),
         });
@@ -325,15 +321,11 @@ public class CocoaUIEnhancer {
             });
         }
 
-        sel_application_openFile_ = registerName( osCls, "application:openFile:" );
-        sel_application_shouldTerminate_ = registerName( osCls, "applicationShouldTerminate:");
-
         // Create an SWT Callback object that will invoke the actionProc method of our internal
         // callbackObject.
         proc4Args = new Callback( callbackObject, "actionProc", 4 );
-        Method getAddress = Callback.class.getMethod( "getAddress", new Class[0] );
-        Object object = getAddress.invoke( proc4Args, (Object[]) null );
-        long proc4 = convertToLong( object );
+        long proc4 = (long)proc4Args.getAddress();
+
         if ( proc4 == 0 ) {
             SWT.error( SWT.ERROR_NO_MORE_CALLBACKS );
         }
@@ -341,7 +333,7 @@ public class CocoaUIEnhancer {
         // Add the action callbacks for opening a file via drag & drop
         Boolean result = (Boolean)invoke( osCls, "class_addMethod", new Object[] {
                                                         wrapPointer( appDelegateClsPtr ),
-                                                        wrapPointer( sel_application_openFile_ ),
+                                                        wrapPointer( OS.sel_application_openFile_ ),
                                                         wrapPointer( proc4 ),
                                                         "B@:@@" } );
 
@@ -350,7 +342,7 @@ public class CocoaUIEnhancer {
             // method probably already exists. So we set the implementation instead.
             Object appDelegateMethod = invoke( osCls, "class_getInstanceMethod", new Object[] {
                 wrapPointer( appDelegateClsPtr ),
-                wrapPointer( sel_application_openFile_ )
+                wrapPointer( OS.sel_application_openFile_ )
             });
 
             long appDelegateMethodPtr = convertToLong(appDelegateMethod);
@@ -366,13 +358,6 @@ public class CocoaUIEnhancer {
 
             // TODO: dispose of oldMethod
         }
-
-        /*
-        Object appDelegateClassName = invoke (osCls, "class_getName", new Object[] {
-            wrapPointer( appDelegateClsPtr )
-        });
-
-        System.out.println("Delegate class name: " + appDelegateClassName);
         */
     }
 
