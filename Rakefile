@@ -106,6 +106,10 @@ namespace :installers do
   <key>CFBundleDocumentTypes</key>
   <array>
     <dict>
+      <key>CFBundleTypeName</key>
+      <string>public.data</string>
+      <key>LSHandlerRank</key>
+      <string>Alternate</string>
       <key>LSItemContentTypes</key>
       <array>
         <string>public.data</string>
@@ -120,8 +124,8 @@ XML
     cp(REDCAR_ROOT + "/assets/redcar-icons/redcar-icon-beta-dev.icns", bundle_content_dir + "/Resources")
     copy_all(bundle_content_dir + "/MacOS/")
     chmod(0755, bundle_content_dir + "/MacOS/redcar.sh")
-    sh("cd pkg; zip -r Redcar-#{REDCAR_VERSION}.app.zip Redcar.app; cd ../")
-    rm_r("pkg/Redcar.app")
+    #sh("cd pkg; zip -r Redcar-#{REDCAR_VERSION}.app.zip Redcar.app; cd ../")
+    #rm_r("pkg/Redcar.app")
   end
 
   def copy_all(target)
