@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.internal.cocoa.OS;
 import org.eclipse.swt.internal.cocoa.NSObject;
 import org.eclipse.swt.internal.cocoa.id;
+import org.eclipse.swt.internal.cocoa.NSString;
 
 
 /**
@@ -293,7 +294,7 @@ public class CocoaUIEnhancer {
 
         long appDelegatePtr = convertToLong(appDelegate);
 
-        Object appDelegateCls = invoke (osCls, "object_getClass", new Object[] {
+        Object appDelegateCls = invoke( osCls, "object_getClass", new Object[] {
             wrapPointer( appDelegatePtr ),
         });
 
@@ -335,7 +336,7 @@ public class CocoaUIEnhancer {
                                                         wrapPointer( appDelegateClsPtr ),
                                                         wrapPointer( OS.sel_application_openFile_ ),
                                                         wrapPointer( proc4 ),
-                                                        "B@:@@" } );
+                                                        "@:@@" } );
 
         if (!result) {
             // Adding the callback method was unsuccesfull, likely due to the fact that the
