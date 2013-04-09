@@ -358,7 +358,6 @@ public class CocoaUIEnhancer {
 
             // TODO: dispose of oldMethod
         }
-        */
     }
 
     private long registerName( Class<?> osCls, String name )

@@ -197,6 +197,7 @@ module Redcar
             Redcar.app.events.create(:application_close, Redcar.app)
           end
         elsif @name == :open_file
+          Application::Dialog.message_box("HELLO, thank you for dropping by!");
           puts "Caught open file via drag & drop \o/"
         else
           Application::Dialog.message_box("#{@name} menu is not hooked up yet")
