@@ -196,6 +196,8 @@ module Redcar
             e.doit = false
             Redcar.app.events.create(:application_close, Redcar.app)
           end
+        elsif @name == :open_file
+          puts "Caught open file via drag & drop \o/"
         else
           Application::Dialog.message_box("#{@name} menu is not hooked up yet")
         end
@@ -210,6 +212,11 @@ module Redcar
           CocoaUIListener.new(:quit),
           CocoaUIListener.new(:about),
           CocoaUIListener.new(:prefs)
+        )
+
+        enhancer.hook_application_open_file(
+          ApplicationSWT.display, # TODO: find a better object to run disposeExec on.
+          CocoaUIListener.new(:open_file)
         )
       end
     end

@@ -44,6 +44,9 @@ public class CocoaUIEnhancer {
     static long sel_aboutMenuItemSelected_;
     static Callback proc3Args;
 
+    static long sel_application_openFile_;
+    static Callback proc4Args;
+
     final private String appName;
 
     /**
@@ -78,6 +81,35 @@ public class CocoaUIEnhancer {
                 about.handleEvent(null);
             } else if ( sel == sel_preferencesMenuItemSelected_ ) {
                 pref.handleEvent(null);
+            } else {
+                // Unknown selection!
+            }
+            // Return value is not used.
+            return 99;
+        }
+    }
+
+    private static class OpenFileHookObject {
+        final Listener openFile;
+
+        public MenuHookObject( Listener openFile ) {
+            this.openFile = openFile;
+        }
+
+        /**
+         * Will be called on 32bit SWT.
+         */
+        @SuppressWarnings( "unused" )
+        public int actionProc( int id, int sel, int arg0, int arg1 ) {
+            return (int) actionProc( (long) id, (long) sel, (long) arg0, (long) arg1 );
+        }
+
+        /**
+         * Will be called on 64bit SWT.
+         */
+        public long actionProc( long id, long sel, long arg0, long arg1 ) {
+            if ( sel == sel_application_openFile_ ) {
+                openFile.handleEvent(null);
             } else {
                 // Unknown selection!
             }
@@ -137,7 +169,25 @@ public class CocoaUIEnhancer {
         } );
     }
 
-    private void initialize( Object callbackObject )
+    public void hookApplicationOpenFile( Display display, Listener openFileListener) {
+        OpenFileHookObject target = new OpenFileHookObject( openFileListener );
+
+        try {
+            // Initialize the openFile.
+            initialize( target );
+        } catch ( Exception e ) {
+            throw new IllegalStateException( e );
+        }
+
+        // Schedule disposal of callback object
+        display.disposeExec( new Runnable() {
+            public void run() {
+                invoke( proc4Args, "dispose" );
+            }
+        } );
+    }
+
+    private void initialize( MenuHookObject callbackObject )
             throws Exception {
 
         Class<?> osCls = classForName( "org.eclipse.swt.internal.cocoa.OS" );
@@ -219,6 +269,67 @@ public class CocoaUIEnhancer {
                 new Object[] { wrapPointer( sel_preferencesMenuItemSelected_ ) } );
         invoke( nsmenuitemCls, aboutMenuItem, "setAction",
                 new Object[] { wrapPointer( sel_aboutMenuItemSelected_ ) } );
+    }
+
+    private void initialize( OpenFileHookObject callbackObject )
+            throws Exception {
+
+
+
+        Class<?> osCls = classForName( "org.eclipse.swt.internal.cocoa.OS" );
+        Class<?> nsstringCls = classForName( "org.eclipse.swt.internal.cocoa.NSString" );
+        Class<?> nsapplicationCls = classForName( "org.eclipse.swt.internal.cocoa.NSApplication" );
+
+        Object sharedApplication = invoke( nsapplicationCls, "sharedApplication" );
+
+        Object appDelegate = invoke( sharedApplication, "delegate" );
+
+        if (appDelegate == null || appDelegate == 0)
+            System.out.println("APP DEL NULL");
+        else
+            System.out.println("APP DEL NOT NULL");
+
+        /*
+        if (appDelegate == null || appDelegate == 0) {
+
+
+            appDelegate = invoke( object, "new" );
+            invoke( sharedApplication, "setDelegate", new Object[] { delegate } );
+        }
+
+
+
+        sel_application_openFile_ = registerName( osCls, "application:openFile:" ); //$NON-NLS-1$
+
+        // Create an SWT Callback object that will invoke the actionProc method of our internal
+        // callbackObject.
+        proc4Args = new Callback( callbackObject, "actionProc", 4 ); //$NON-NLS-1$
+        Method getAddress = Callback.class.getMethod( "getAddress", new Class[0] );
+        Object object = getAddress.invoke( proc4Args, (Object[]) null );
+        long proc4 = convertToLong( object );
+        if ( proc4 == 0 ) {
+            SWT.error( SWT.ERROR_NO_MORE_CALLBACKS );
+        }
+
+        
+
+
+        // Instead of creating a new delegate class in objective-c,
+        // just use the current SWTApplicationDelegate. An instance of this
+        // is a field of the Cocoa Display object.
+        // So just get this class and add the new methods to it.
+        object = invoke( osCls, "objc_lookUpClass", new Object[] { "SWTApplicationDelegate" } );
+        long cls = convertToLong( object );
+
+        // Add the action callbacks for Preferences and About menu items.
+        invoke( osCls, "class_addMethod", new Object[] {
+                                                        wrapPointer( cls ),
+                                                        wrapPointer( sel_application_openFile_ ),
+                                                        wrapPointer( proc4 ),
+                                                        "@:@" } ); //$NON-NLS-1$
+
+*/
+        
     }
 
     private long registerName( Class<?> osCls, String name )
