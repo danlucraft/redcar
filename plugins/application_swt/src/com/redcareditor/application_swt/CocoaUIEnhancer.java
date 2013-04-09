@@ -10,6 +10,12 @@ import org.eclipse.swt.internal.Callback;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 
+
+import org.eclipse.swt.internal.cocoa.OS;
+import org.eclipse.swt.internal.cocoa.NSObject;
+import org.eclipse.swt.internal.cocoa.id;
+
+
 /**
  * Provide a hook to connecting the Preferences, About and Quit menu items of the Mac OS X
  * Application menu when using the SWT Cocoa bindings.
@@ -92,7 +98,7 @@ public class CocoaUIEnhancer {
     private static class OpenFileHookObject {
         final Listener openFile;
 
-        public MenuHookObject( Listener openFile ) {
+        public OpenFileHookObject( Listener openFile ) {
             this.openFile = openFile;
         }
 
@@ -109,6 +115,7 @@ public class CocoaUIEnhancer {
          */
         public long actionProc( long id, long sel, long arg0, long arg1 ) {
             if ( sel == sel_application_openFile_ ) {
+                System.out.println("HOORAY \\o/");
                 openFile.handleEvent(null);
             } else {
                 // Unknown selection!
@@ -274,36 +281,53 @@ public class CocoaUIEnhancer {
     private void initialize( OpenFileHookObject callbackObject )
             throws Exception {
 
-
-
         Class<?> osCls = classForName( "org.eclipse.swt.internal.cocoa.OS" );
-        Class<?> nsstringCls = classForName( "org.eclipse.swt.internal.cocoa.NSString" );
         Class<?> nsapplicationCls = classForName( "org.eclipse.swt.internal.cocoa.NSApplication" );
 
-        Object sharedApplication = invoke( nsapplicationCls, "sharedApplication" );
+        NSObject sharedApplication = (NSObject)invoke( nsapplicationCls, "sharedApplication" );
 
-        Object appDelegate = invoke( sharedApplication, "delegate" );
+        Object appDelegate = invoke( osCls, "objc_msgSend", new Object[] {
+            wrapPointer( convertToLong(sharedApplication.id) ),
+            OS.sel_delegate
+        });
 
-        if (appDelegate == null || appDelegate == 0)
-            System.out.println("APP DEL NULL");
-        else
-            System.out.println("APP DEL NOT NULL");
+        long appDelegatePtr = convertToLong(appDelegate);
 
-        /*
-        if (appDelegate == null || appDelegate == 0) {
+        //System.out.println("First found app delegate:" + appDelegatePtr);
 
+        Object appDelegateCls = invoke (osCls, "object_getClass", new Object[] {
+            wrapPointer( appDelegatePtr ),
+        });
 
-            appDelegate = invoke( object, "new" );
-            invoke( sharedApplication, "setDelegate", new Object[] { delegate } );
+        long appDelegateClsPtr = convertToLong( appDelegateCls );
+
+        if (appDelegatePtr == 0) {
+            System.out.println("App delegate was initially set to null");
+            Object object = invoke( osCls, "objc_lookUpClass", new Object[] { "SWTApplicationDelegate" } );
+            appDelegateClsPtr = convertToLong( object );
+
+            appDelegate = invoke( osCls, "objc_msgSend", new Object[] {
+                wrapPointer( appDelegateClsPtr ),
+                wrapPointer( OS.sel_alloc )
+            });
+
+            invoke( osCls, "objc_msgSend", new Object[] {
+                wrapPointer( convertToLong(appDelegate) ),
+                wrapPointer( OS.sel_init )
+            });
+
+            invoke( osCls, "objc_msgSend", new Object[] {
+                wrapPointer( convertToLong(sharedApplication.id) ),
+                OS.sel_setDelegate_,
+                wrapPointer( convertToLong(appDelegate) )
+            });
         }
 
-
-
-        sel_application_openFile_ = registerName( osCls, "application:openFile:" ); //$NON-NLS-1$
+        sel_application_openFile_ = registerName( osCls, "application:openFile:" );
 
         // Create an SWT Callback object that will invoke the actionProc method of our internal
         // callbackObject.
-        proc4Args = new Callback( callbackObject, "actionProc", 4 ); //$NON-NLS-1$
+        proc4Args = new Callback( callbackObject, "actionProc", 4 );
         Method getAddress = Callback.class.getMethod( "getAddress", new Class[0] );
         Object object = getAddress.invoke( proc4Args, (Object[]) null );
         long proc4 = convertToLong( object );
@@ -311,25 +335,49 @@ public class CocoaUIEnhancer {
             SWT.error( SWT.ERROR_NO_MORE_CALLBACKS );
         }
 
-        
-
-
-        // Instead of creating a new delegate class in objective-c,
-        // just use the current SWTApplicationDelegate. An instance of this
-        // is a field of the Cocoa Display object.
-        // So just get this class and add the new methods to it.
-        object = invoke( osCls, "objc_lookUpClass", new Object[] { "SWTApplicationDelegate" } );
-        long cls = convertToLong( object );
-
-        // Add the action callbacks for Preferences and About menu items.
-        invoke( osCls, "class_addMethod", new Object[] {
-                                                        wrapPointer( cls ),
+        // Add the action callbacks for opening a file via drag & drop
+        Boolean result = (Boolean)invoke( osCls, "class_addMethod", new Object[] {
+                                                        wrapPointer( appDelegateClsPtr ),
                                                         wrapPointer( sel_application_openFile_ ),
                                                         wrapPointer( proc4 ),
-                                                        "@:@" } ); //$NON-NLS-1$
+                                                        "B@:@@" } );
 
-*/
-        
+        if (!result) {
+            // Adding the callback method was unsuccesfull, likely due to the fact that the
+            // method probably already exists. So we set the implementation instead.
+            Object appDelegateMethodImpl = invoke( osCls, "class_getMethodImplementation", new Object[] {
+                wrapPointer( appDelegateClsPtr ),
+                wrapPointer( sel_application_openFile_ )
+            });
+
+            long appDelegateMethodImplPtr = convertToLong(appDelegateMethodImpl);
+
+            Object appDelegateMethod = invoke( osCls, "class_getInstanceMethod", new Object[] {
+                wrapPointer( appDelegateClsPtr ),
+                wrapPointer( sel_application_openFile_ )
+            });
+
+            long appDelegateMethodPtr = convertToLong(appDelegateMethod);
+            System.out.println("App delegate method ptr: " + appDelegateMethodPtr);
+
+            Object oldMethod = invoke( osCls, "method_setImplementation", new Object[] {
+                wrapPointer( appDelegateMethodPtr ),
+                wrapPointer( proc4 )
+            });
+
+            System.out.println("Old method: " + convertToLong(oldMethod));
+            System.out.println("Current method:" + wrapPointer(proc4));
+
+            // TODO: dispose of oldMethod
+        }
+
+        /*
+        Object appDelegateClassName = invoke (osCls, "class_getName", new Object[] {
+            wrapPointer( appDelegateClsPtr )
+        });
+
+        System.out.println("Delegate class name: " + appDelegateClassName);
+        */
     }
 
     private long registerName( Class<?> osCls, String name )
