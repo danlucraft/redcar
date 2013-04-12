@@ -64,17 +64,18 @@ module Redcar
           if word_list.completions.length == index
             index = 0
           end
-          completion = word_list.completions[index]
-          controller.index = index
+          if completion = word_list.completions[index]
+            controller.index = index
 
-          start_offset = right
-          doc.insert(right, completion[prefix.length..-1])
-          word_end_offset = right + completion.length - prefix.length
-          doc.cursor_offset = word_end_offset
+            start_offset = right
+            doc.insert(right, completion[prefix.length..-1])
+            word_end_offset = right + completion.length - prefix.length
+            doc.cursor_offset = word_end_offset
 
-          controller.length_of_previous = completion.length - prefix.length
+            controller.length_of_previous = completion.length - prefix.length
 
-          controller.start_completion
+            controller.start_completion
+          end
         end
         controller.end_modification
       end
