@@ -32,6 +32,8 @@ Some (current) limitations:
 
 for more details, see [User Guide: Installation](https://github.com/redcar/redcar/wiki/Installation)
 
+* Note: On OS X, you must have Xcode and Xcode Command Line Tools (available view `Xcode > Preferences > Downloads`) installed.
+
 ## Usage
 
 Run 
@@ -43,6 +45,7 @@ To see full usage details.
 ## Experimental Installers
 
 You must have Java installed. On Ubuntu, you can install `openjdk-7-jre` if you do not already have Java.
+
 
  * [OS X](https://github.com/downloads/redcar/redcar/Redcar-0.14.0dev.app.zip)
 
