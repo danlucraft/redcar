@@ -6,14 +6,14 @@ module Redcar
         def initialize(options={})
           super(nil, options)
         end
-        
+
         def is_unique?
           true
         end
       end
-      
+
       attr_reader :command, :priority, :value, :type
-  
+
       # Create a new Item, with the given text to display in the menu, and
       # either:
       #   the Redcar::Command that is run when the item is selected.
@@ -26,12 +26,12 @@ module Redcar
       #              Command.new(:value => value)
       #  :enabled  - if set to false, this menu item will be permanently disabled
       #  :type     - can be set to :check or :radio
-      #  :checked  - if type is check or radio, a block that will be run when 
+      #  :checked  - if type is check or radio, a block that will be run when
       #              the menu is displayed to determine whether this item is checked
       def initialize(text, command_or_options={}, &block)
         @text = text
-        
-        if command_or_options.respond_to?('[]')
+
+        if command_or_options.respond_to?(:key?)
           options = command_or_options
           @command = options[:command] || block
           @priority = options[:priority]
@@ -45,54 +45,54 @@ module Redcar
           @enabled = true
           @command = command_or_options || block
         end
-        
+
         @priority ||= Menu::DEFAULT_PRIORITY
       end
-      
+
       # Call this to signal that the menu item has been selected by the user.
       def selected(with_key=false)
         if @value
           @command.new.run(:value => @value)
-        else  
+        else
           @command.new.run
         end
       end
-      
+
       def type
         @type
       end
-      
+
       def type
         @type
       end
-      
+
       def text
-        @text.respond_to?(:call) ? 
+        @text.respond_to?(:call) ?
           Redcar::Application::GlobalState.new.instance_eval(&@text) :
           @text
       end
-      
+
       def lazy_text?
         @text.respond_to?(:call)
       end
-      
+
       def merge(other)
         @command = other.command
         @priority = other.priority
       end
-      
+
       def ==(other)
         text == other.text and command == other.command
       end
-      
+
       def is_unique?
         false
       end
-      
+
       def enabled?
         @enabled
       end
-      
+
       def checked?
         @checked and (
           @checked.respond_to?(:call) ?
