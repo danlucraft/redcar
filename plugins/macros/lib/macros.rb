@@ -10,33 +10,33 @@ require 'macros/predictive/document_controller'
 module Redcar
   module Macros
     DONT_RECORD_COMMANDS = [StartStopRecordingCommand, RunLastCommand, NameLastMacroCommand]
-    
+
     def self.recording
       @recording ||= {}
     end
-    
+
     def self.session_macros
       @session_macros ||= []
     end
-      
+
     def self.saved_macros
       @saved_macros ||= storage['saved_macros']
     end
-    
+
     def self.save_macro(macro)
       saved_macros << macro
       update_storage
     end
-    
+
     def self.update_storage
       storage['saved_macros'] = saved_macros
     end
-    
+
     class << self
       attr_accessor :last_run
       attr_accessor :last_run_or_recorded
     end
-    
+
     def self.storage
       @storage ||= begin
         storage = Plugin::Storage.new('macros')
@@ -44,10 +44,10 @@ module Redcar
         storage
       end
     end
-    
+
     def self.name_macro(macro_name, msg)
       if macro = Macros.session_macros.detect {|m| m.name == macro_name }
-        result = Application::Dialog.input("Macro Name", 
+        result = Application::Dialog.input("Macro Name",
               msg, macro.name)
         if result[:button] == :ok
           macro.name = result[:value]
@@ -57,10 +57,10 @@ module Redcar
         end
       end
     end
-    
+
     def self.rename_macro(macro_name)
       if macro = Macros.saved_macros.detect {|m| m.name == macro_name }
-        result = Application::Dialog.input("Macro Name", 
+        result = Application::Dialog.input("Macro Name",
               "Rename macro:", macro.name)
         if result[:button] == :ok
           macro.name = result[:value]
@@ -69,7 +69,7 @@ module Redcar
         end
       end
     end
-    
+
     def self.delete_macro(macro_name)
       if macro = Macros.saved_macros.detect {|m| m.name == macro_name }
         Macros.saved_macros.delete(macro)
@@ -78,12 +78,12 @@ module Redcar
         Macros.session_macros.delete(macro)
       end
     end
-    
+
     def self.menus
       Menu::Builder.build do
         sub_menu "Plugins" do
           sub_menu "Macros" do
-            item lambda {
+            item proc {
                 if Macros.recording[EditView.focussed_edit_view]
                   "Stop Recording"
                 else
@@ -111,7 +111,7 @@ module Redcar
         end
       end
     end
-    
+
     def self.keymaps
       osx = Redcar::Keymap.build("main", :osx) do
         link "Cmd+Alt+M", StartStopRecordingCommand
@@ -120,7 +120,7 @@ module Redcar
         link "Cmd+P", PredictCommand
         link "Cmd+Alt+P", AlternatePredictCommand
       end
-      
+
       linwin = Redcar::Keymap.build("main", [:linux, :windows]) do
         link "Ctrl+Alt+M", StartStopRecordingCommand
         link "Ctrl+Shift+M", RunLastCommand
@@ -130,11 +130,11 @@ module Redcar
       end
       [osx, linwin]
     end
-    
+
     def self.document_controller_types
       [Macros::Predictive::DocumentController]
     end
-    
+
     def self.sensitivities
       [
         Sensitivity.new(:not_recording_a_macro, Redcar.app, false, [:tab_focussed, :macro_record_changed]) do

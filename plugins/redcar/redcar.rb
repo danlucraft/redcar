@@ -966,9 +966,9 @@ Redcar.environment: #{Redcar.environment}
           end
           group(:priority => :last) do
             separator
-            item "Show Toolbar", :command => Application::ToggleToolbar, :type => :check, :checked => lambda { Redcar.app.show_toolbar? }
-            item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :checked => lambda { EditView.show_invisibles? }
-            item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :checked => lambda { EditView.show_line_numbers? }
+            item "Show Toolbar", :command => Application::ToggleToolbar, :type => :check, :checked => proc { Redcar.app.show_toolbar? }
+            item "Show Invisibles", :command => ToggleInvisibles, :type => :check, :checked => proc { EditView.show_invisibles? }
+            item "Show Line Numbers", :command => ToggleLineNumbers, :type => :check, :checked => proc { EditView.show_line_numbers? }
           end
         end
         sub_menu "Bundles", :priority => 45 do
@@ -989,7 +989,7 @@ Redcar.environment: #{Redcar.environment}
             separator
             item "Check for Updates", :command => Application::ToggleCheckForUpdatesCommand,
                                       :type => :check,
-                                      :checked => lambda { Application::Updates.check_for_updates? }
+                                      :checked => proc { Application::Updates.check_for_updates? }
             item "Update Available",  Application::OpenUpdateCommand
           end
         end
