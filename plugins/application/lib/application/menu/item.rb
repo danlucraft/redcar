@@ -67,7 +67,6 @@ module Redcar
       end
 
       def text
-        p @text if @text.respond_to?(:call) && @text.lambda?
         @text.respond_to?(:call) ?
           Redcar::Application::GlobalState.new.instance_eval(&@text) :
           @text
@@ -95,7 +94,6 @@ module Redcar
       end
 
       def checked?
-        p @checked if @checked.respond_to?(:lambda?) and @checked.lambda?
         @checked.respond_to?(:call) ?
           Redcar::Application::GlobalState.new.instance_eval(&@checked) :
           @checked
