@@ -31,7 +31,7 @@ When /^I select from \((\d+), ?(\d+)\) to \((\d+), ?(\d+)\)$/ do |start_line, st
     doc = implicit_edit_view.document
     start_of_end_line = doc.offset_at_line(end_line.to_i)
     end_offset = start_of_end_line + end_line_offset.to_i
-    
+
     start_of_start_line = doc.offset_at_line(start_line.to_i)
     start_offset = start_of_start_line + start_line_offset.to_i
     length = end_offset - start_offset
@@ -353,7 +353,7 @@ Given /^the contents? is:$/ do |string|
     selection_index = string.index('<s>')
     string = string.gsub('<s>', '').gsub('<c>', '')
     When %{I replace the contents with "#{string}"}
-  
+
     if cursor_index and selection_index
       if cursor_index < selection_index
         selection_index -= 3

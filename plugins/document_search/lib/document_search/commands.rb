@@ -28,11 +28,11 @@ module Redcar
         max_char_offset = char_offsets.max
 
         # For the min_byte_offset, get all document text before the selection, and count the bytes.
-        min_byte_offset = doc.get_range(0, min_char_offset).size
+        min_byte_offset = doc.get_range(0, min_char_offset).bytesize
         # If the selection is non-empty, count the bytes in the selection text, too.
         max_byte_offset = (min_byte_offset +
             (max_char_offset > min_char_offset ?
-             doc.get_slice(min_char_offset, max_char_offset).size :
+             doc.get_slice(min_char_offset, max_char_offset).bytesize :
              0))
         [min_byte_offset, max_byte_offset]
       end
@@ -126,15 +126,15 @@ module Redcar
 
       # Selects the specified byte range, mapping to character indices first.
       #
-      # This method is necessary, because Ruby (1.8) strings really work in terms of bytes, and thus
-      # our regex and scanning matches return byte ranges, while the editor view deals in terms of
+      # This method is necessary, because Ruby (1.9) strings and regexes understand unicode
+      # but scanning matches return byte ranges, so we need to pass the editor editor view
       # character ranges.
       def select_range_bytes(start, stop)
         text = doc.get_all_text
-        # Unpack span up to start into array of Unicode chars and count for start_chars.
-        start_chars = text.slice(0, start).unpack('U*').size
-        # Do the same for the span between start and stop, and then use to compute stop_chars.
-        char_span   = text.slice(start, stop - start).unpack('U*').size
+        # Get the character count for the start of the selection
+        start_chars = text.byteslice(0, start).size
+        # Now calculate the size of the selection and the end position
+        char_span   = text.byteslice(start, stop - start).size
         stop_chars  = start_chars + char_span
         select_range(start_chars, stop_chars)
       end
