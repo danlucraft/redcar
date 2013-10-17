@@ -65,7 +65,7 @@ module SwtbotHelpers
       c.class == Java::OrgEclipseSwtCustom::CTabFolder
     end
   end
-  
+
   def get_tab_folder
     get_tab_folders.length.should == 1
     get_tab_folders.first
@@ -84,10 +84,12 @@ Then /^there should be (one|\d+) (.*) tabs?$/ do |num, tab_type|
   # in the model
   tabs = Redcar.app.focussed_window.notebooks.map {|nb| nb.tabs }.flatten
   tabs.length.should == num
-  
+
   # in the GUI
   Swt.sync_exec do
-    get_tab_folder.children.to_a.length.should == num
+    get_tab_folder.children.to_a.reject { |c|
+      c.class == Java::OrgEclipseSwtWidgets::ToolBar
+    }.length.should == num
   end
 end
 
