@@ -2,7 +2,7 @@
 module Redcar
   class Plugin
     class BaseStorage
-      
+
       # Open a storage file or create it if it doesn't exist.
       #
       # @param [String] storage_dir  the path to the directory the storage file should exist in
@@ -12,16 +12,20 @@ module Redcar
         @name  = name
         @mutex = Mutex.new
         unless File.exists?(@storage_dir)
-          FileUtils.mkdir_p(@storage_dir)
+          FileUtils.mkdir_p(@storage_dir, verbose: true)
         end
         rollback
       end
 
       # Save the storage to disk.
       def save
-        @mutex.synchronize do
-          File.open(path, "w") { |f| YAML.dump(@storage, f) }
-          update_timestamp
+        if File.exists?(@storage_dir)
+          @mutex.synchronize do
+            File.open(path, "w") { |f| YAML.dump(@storage, f) }
+            update_timestamp
+          end
+        else
+          Redcar.log.warn("Save failed. #{@storage_dir} does not exist.")
         end
         self
       end
@@ -40,7 +44,7 @@ module Redcar
         end
         self
       end
-      
+
       # retrieve key value
       # note: it does not re-read from disk before returning you this value
       def [](key)
@@ -51,7 +55,7 @@ module Redcar
         end
         @storage[key]
       end
-      
+
       # set key to value
       # note: it automatically saves this to disk
       def []=(key, value)
@@ -59,7 +63,7 @@ module Redcar
         save
         value
       end
-      
+
       # Set a default value for a key and save it to disk
       def set_default(key, value)
         unless @storage.has_key?(key)
@@ -67,38 +71,38 @@ module Redcar
         end
         value
       end
-      
+
       # Get all keys in the storage
       # @return [Array] the Array with all keys
       def keys
         @storage.keys
       end
-      
+
       private
-      
+
       def path
         File.join(@storage_dir, @name + ".yaml")
       end
-      
+
       def update_timestamp
         @last_modified_time = File.stat(path).mtime
       end
     end
-    
+
     class Storage < Plugin::BaseStorage
       def self.storage_dir=(value)
         @user_dir = value
       end
-    
+
       def self.storage_dir
         @user_dir ||= File.join(Redcar.user_dir, "storage")
       end
-      
+
       def initialize(name)
         super(self.class.storage_dir, name)
       end
     end
-    
+
     # A Storage which is used by multiple plugins. This kind of storage can only
     # contain arrays, because otherwise plugins could not set their defaults as
     # addition to the existing ones of other plugins.
@@ -117,9 +121,9 @@ module Redcar
         @storage[key] = @storage[key].uniq
         value
       end
-      
+
       private
-      
+
       def update_default(key, value)
         if value.instance_of? Array
           self[key] = self[key] + value
