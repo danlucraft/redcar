@@ -5,7 +5,7 @@ REDCAR_LICENSE     = "GPL v2"
 REDCAR_VENDOR      = "n/a"
 REDCAR_URL         = "http://redcareditor.com"
 
-JRUBY_JAR_LOCATION = "http://jruby.org.s3.amazonaws.com/downloads/1.6.7/jruby-complete-1.6.7.jar"
+JRUBY_JAR_LOCATION = "http://jruby.org.s3.amazonaws.com/downloads/1.7.5/jruby-complete-1.7.5.jar"
 REDCAR_ROOT        = File.expand_path("../", __FILE__)
 
 require 'fileutils'
@@ -43,7 +43,7 @@ task :init do
 
   puts "running Bundler"
   sh("ruby -ropenssl -S bundle install --standalone --path #{vendor}")
-end  
+end
 
 namespace :installers do
   desc "Package for Windows"
@@ -256,7 +256,7 @@ end
 desc "Run all features"
 task :cucumber do
   cmd = "jruby "
-  cmd << "-J-XstartOnFirstThread " if Config::CONFIG["host_os"] =~ /darwin/
+  cmd << "-J-XstartOnFirstThread -J-Djava.awt.headless=false " if Config::CONFIG["host_os"] =~ /darwin/
   all_feature_dirs = Dir['plugins/*/features'] # overcome a jruby windows bug http://jira.codehaus.org/browse/JRUBY-4527
   cmd << "bin/cucumber -cf progress -e \".*fixtures.*\" #{all_feature_dirs.join(' ')}"
   sh("#{cmd} && echo 'done'")
