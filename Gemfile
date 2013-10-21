@@ -11,3 +11,11 @@ gem "redcar-xulrunner-win"
 gem "zip"
 gem "json"
 gem "ffi"
+gem "net-ssh"
+gem "net-ftp-list"
+gem "net-sftp"
+
+group :development do
+  gem "cucumber"
+  gem "rspec"
+end

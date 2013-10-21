@@ -106,17 +106,17 @@ module Redcar
             sub_menu "Tabs" do
               item "Soft Tabs", :command => EditView::ToggleSoftTabsCommand,
                                 :type => :check,
-                                :checked => lambda { tab and tab.respond_to?(:edit_view) and tab.edit_view.soft_tabs? }
+                                :checked => proc { tab and tab.respond_to?(:edit_view) and tab.edit_view.soft_tabs? }
 
               item "Indent Selection on Tab", :command => EditView::ToggleIndentSelectionOnTabCommand,
                                 :type => :check,
-                                :checked => lambda { EditView.indent_selection_on_tab? }
+                                :checked => proc { EditView.indent_selection_on_tab? }
 
               sub_menu "Tab Width" do
                 TabSettings::TAB_WIDTHS.each do |width|
                   command_klass = Class.new(SetTabWidthCommand)
                   command_klass.width = width.to_i
-                  already_checker = lambda { tab and tab.respond_to?(:edit_view) and tab.edit_view.tab_width.to_s == width.to_s }
+                  already_checker = proc { tab and tab.respond_to?(:edit_view) and tab.edit_view.tab_width.to_s == width.to_s }
                   item width, :command => command_klass, :type => :check, :checked => already_checker
                 end
               end
@@ -125,13 +125,13 @@ module Redcar
             sub_menu "Margin" do
               item "Word Wrap", :command => EditView::ToggleWordWrapCommand,
                                 :type => :check,
-                                :checked => lambda { tab and tab.respond_to?(:edit_view) and tab.edit_view.word_wrap? }
+                                :checked => proc { tab and tab.respond_to?(:edit_view) and tab.edit_view.word_wrap? }
 
               item "Show Margin", :command => EditView::ToggleShowMarginCommand,
                                   :type => :check,
-                                  :checked => lambda { tab and tab.respond_to?(:edit_view) and tab.edit_view.show_margin? }
+                                  :checked => proc { tab and tab.respond_to?(:edit_view) and tab.edit_view.show_margin? }
 
-              item lambda { tab && tab.respond_to?(:edit_view) ? "Margin Column: #{tab.edit_view.margin_column}" : "Margin Column" }, SetMarginColumnCommand
+              item proc { tab && tab.respond_to?(:edit_view) ? "Margin Column: #{tab.edit_view.margin_column}" : "Margin Column" }, SetMarginColumnCommand
             end
 
             separator

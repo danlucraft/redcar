@@ -1,13 +1,14 @@
+# encoding: UTF-8
 
 module Redcar
   class EditViewSWT
     class WordMoveListener
-      MOVE_FORWARD_RE = /\s{3,}|[^\w]{2,}|(\s|[^\w])?\w+/
-    
+      MOVE_FORWARD_RE = /\s{3,}|[^\p{Word}]{2,}|(\s|[^\p{Word}])?\p{Word}+/
+
       def initialize(controller)
         @controller = controller
       end
-      
+
       def get_next_offset(e)
         if [Swt::SWT::MOVEMENT_WORD, Swt::SWT::MOVEMENT_WORD_END].include? e.movement
           e.newOffset = next_offset(e.offset, e.lineOffset, e.lineText)
@@ -17,7 +18,7 @@ module Redcar
           end
         end
       end
-      
+
       def next_offset(chars_offset, chars_line_offset, line_text)
         if chars_offset == chars_line_offset + line_text.chars.length
           chars_offset + 1
@@ -35,7 +36,7 @@ module Redcar
           end
         end
       end
-      
+
       def get_previous_offset(e)
         if [Swt::SWT::MOVEMENT_WORD, Swt::SWT::MOVEMENT_WORD_START].include? e.movement
           e.newOffset = previous_offset(e.offset, e.lineOffset, e.lineText)
@@ -45,7 +46,7 @@ module Redcar
           end
         end
       end
-      
+
       def previous_offset(chars_offset, chars_line_offset, line_text)
         if chars_offset == chars_line_offset
           chars_offset - 1

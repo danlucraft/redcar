@@ -1,7 +1,5 @@
 module Redcar
   class Grammar
-    module RubyOnRails
-      include Ruby
-    end
+    RubyOnRails = Ruby
   end
 end

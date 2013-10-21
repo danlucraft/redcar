@@ -1,6 +1,10 @@
 module Redcar
   class Grammar
-    module Ruby
+    class Ruby
+
+      def self.instance
+        @instance ||= new
+      end
 
       def word
         /^(\w)+(\?|\!)?$/u

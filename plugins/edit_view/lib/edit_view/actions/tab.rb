@@ -10,15 +10,7 @@ module Redcar
           return false unless modifiers.empty? or modifiers.include?("Shift")
           doc = edit_view.document
 
-          if doc.selection? and EditView.indent_selection_on_tab?
-            if modifiers.include? "Shift"
-              Redcar::Top::DecreaseIndentCommand.new.run
-            else
-              Redcar::Top::IncreaseIndentCommand.new.run
-            end
-            true
-
-          elsif doc.block_selection_mode?
+          if doc.block_selection_mode?
             if edit_view.soft_tabs?
               selections = doc.selection_ranges.map do |selection_range|
                 line = doc.line_at_offset(selection_range.begin)
@@ -43,12 +35,6 @@ module Redcar
                 doc.insert(line_offset + line_offset_start, insert_string)
               end
               new_selection_ranges = selections.map do |line, line_offset_start, line_offset_end|
-            if doc.selection?
-              bits = [doc.cursor_offset, doc.selection_offset].sort
-              start = bits.first
-              length = bits.last - bits.first
-              doc.delete(start, length)
-            end
                 offset = doc.offset_at_line(line) + line_offset_end + insert_string.split(//).length
                 [offset, offset]
               end
@@ -57,6 +43,15 @@ module Redcar
             else
               false
             end
+
+          elsif doc.selection? and EditView.indent_selection_on_tab?
+            if modifiers.include? "Shift"
+              Redcar::Top::DecreaseIndentCommand.new.run
+            else
+              Redcar::Top::IncreaseIndentCommand.new.run
+            end
+            true
+
           else
             if doc.selection?
               bits = [doc.cursor_offset, doc.selection_offset].sort

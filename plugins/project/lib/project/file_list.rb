@@ -2,7 +2,7 @@ module Redcar
   class Project
     class FileList
       attr_reader :path
-    
+
       def self.shared_storage
         @shared_storage ||= begin
           storage = Plugin::SharedStorage.new('shared__ignored_files')
@@ -31,7 +31,7 @@ module Redcar
         return false if not_hidden_files.include?(file)
         ignored_file_patterns.any? { |re| file =~ re }
       end
-      
+
       def self.ignored_directory_patterns
         shared_storage['ignored_directory_patterns']
       end
@@ -45,21 +45,21 @@ module Redcar
         return false if not_hidden_directories.include?(dir)
         ignored_directory_patterns.any? { |re| dir =~ re }
       end
-      
+
       def self.hide_file_path?(file_path)
         basename = File.basename(file_path)
         if ignored_file_patterns.any? { |re| basename =~ re } and
           !not_hidden_files.include?(basename)
           return true
         end
-        
+
         dirs = file_path.split("/")[0..-2]
         if ignored_directory_patterns.any? { |re| dirs.any? { |dir| dir =~ re } }
           return true
         end
         false
       end
-      
+
       # Adds a pattern to the ignored_file_patterns option
       #
       # @param [String] file_pattern pattern of the file
@@ -78,15 +78,15 @@ module Redcar
         @path = File.expand_path(path)
         @files = {}
       end
-      
+
       def all_files
         @files.keys
       end
-      
+
       def contains?(file)
         @files[file]
       end
-      
+
       def update(paths=nil)
         if paths
           @files = @files.merge(find(*paths))
@@ -94,7 +94,7 @@ module Redcar
           @files = find(path)
         end
       end
-      
+
       def changed_since(time)
         result = {}
         @files.each do |file, mtime|
@@ -104,13 +104,13 @@ module Redcar
         end
         result
       end
-      
+
       def inspect
         "#<FileList for #{path.inspect}: #{@files.size} files>"
       end
-      
+
       private
-      
+
       def find(*paths)
         files = {}
         paths.collect!{|d| d.dup}
@@ -123,19 +123,19 @@ module Redcar
             else
               stat = File.lstat(file)
             end
-            
+
             if stat.directory?
               next if FileList.hide_directory?(file)
             else
               next if FileList.hide_file?(file)
             end
-            
+
             unless stat.directory?
               files[file.dup] = stat.mtime
             end
-            
+
             next unless File.exist?(file)
-            
+
             if stat.directory?
               d = Dir.open(file)
               begin

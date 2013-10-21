@@ -117,7 +117,7 @@ Feature: Insert a tab
     And I replace the contents with "Jim\nHacker"
     And I block select from 0 to 2
     And I press the Tab key in the edit tab
-    Then the contents of the edit tab should be "    Jim\nHacker"
+    Then the contents of the edit tab should be "    m\nHacker"
     And the selection range should be from 4 to 4
 
   @block_selection
@@ -127,7 +127,7 @@ Feature: Insert a tab
     And I replace the contents with "Jim\nHacker"
     And I block select from 0 to 6
     And I press the Tab key in the edit tab
-    Then the contents of the edit tab should be "    Jim\n    Hacker"
+    Then the contents of the edit tab should be "    m\n    cker"
     And the selection range should be from 4 to 10
 
   @block_selection
@@ -137,5 +137,5 @@ Feature: Insert a tab
     And I replace the contents with "Jim\nHacker\nMP"
     And I block select from 0 to 13
     And I press the Tab key in the edit tab
-    Then the contents of the edit tab should be "    Jim\n    Hacker\n    MP"
+    Then the contents of the edit tab should be "    m\n    cker\n    "
     And the selection range should be from 4 to 19

@@ -1,7 +1,11 @@
 module Redcar
   class Grammar
-    module Default
-      
+    class Default
+
+      def self.instance
+        @instance ||= new
+      end
+
       def word
         /^\w+$/u
       end

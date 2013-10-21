@@ -46,7 +46,7 @@ end
 Then /^I should see "(.*)" at (\d+) the filter dialog$/ do |text, pos|
   Swt.sync_exec do
     pos = pos.to_i
-    filter_dialog_items[pos].should == text
+    filter_dialog_items[pos].text.should == text
   end
 end
 

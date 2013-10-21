@@ -1,13 +1,13 @@
 module Redcar
   class EditView
     module Actions
-  
+
       class ArrowHandler
         def self.real_offset_to_imaginary(line, width, offset)
           before = line[0...offset]
           before.length + (width - 1)*before.scan("\t").length
         end
-  
+
         def self.imaginary_offset_to_real(line, width, offset)
           real_ix = 0
           imaginary_ix = 0
@@ -27,12 +27,12 @@ module Redcar
           end
           real_ix + offset - imaginary_ix
         end
-        
+
         def self.ensure_cursor_in_view(edit_view)
           edit_view.document.ensure_visible(edit_view.document.cursor_offset)
         end
       end
-      
+
       class ArrowLeftHandler < ArrowHandler
         def self.handle(edit_view, modifiers)
           return if (modifiers & %w(Alt Cmd Ctrl)).any?
@@ -42,7 +42,7 @@ module Redcar
             column_previous(edit_view)
           end
         end
-        
+
         def self.column_previous(edit_view)
           return false if edit_view.document.block_selection_mode?
           doc = edit_view.document
@@ -55,7 +55,7 @@ module Redcar
           ArrowHandler.ensure_cursor_in_view(edit_view)
           true
         end
-        
+
         def self.select_column_previous(edit_view)
           return false if edit_view.document.block_selection_mode?
           doc = edit_view.document
@@ -64,7 +64,7 @@ module Redcar
           ArrowHandler.ensure_cursor_in_view(edit_view)
           true
         end
-        
+
         def self.move_left_offset(edit_view)
           doc = edit_view.document
           return 0                                    if doc.cursor_offset == 0
@@ -95,7 +95,7 @@ module Redcar
           end
         end
       end
-      
+
       class ArrowRightHandler < ArrowHandler
         def self.handle(edit_view, modifiers)
           return if (modifiers & %w(Alt Cmd Ctrl)).any?
@@ -105,7 +105,7 @@ module Redcar
             column_next(edit_view)
           end
         end
-        
+
         def self.column_next(edit_view)
           return false if edit_view.document.block_selection_mode?
           doc = edit_view.document
@@ -118,7 +118,7 @@ module Redcar
           ArrowHandler.ensure_cursor_in_view(edit_view)
           true
         end
-        
+
         def self.select_column_next(edit_view)
           return false if edit_view.document.block_selection_mode?
           doc = edit_view.document
@@ -127,16 +127,16 @@ module Redcar
           ArrowHandler.ensure_cursor_in_view(edit_view)
           true
         end
-        
+
         def self.move_right_offset(edit_view)
           doc = edit_view.document
           [move_right_offset1(edit_view), doc.length].min
         end
-        
+
         def self.move_right_offset1(edit_view)
           doc = edit_view.document
           return doc.length if doc.cursor_offset == doc.length - 1
-          if doc.length >= doc.cursor_offset + doc.delim.length and 
+          if doc.length >= doc.cursor_offset + doc.delim.length and
               doc.get_range(doc.cursor_offset, doc.delim.length) == doc.delim
             return doc.cursor_offset + doc.delim.length
           end
@@ -160,7 +160,7 @@ module Redcar
             incremented_offset(doc)
           end
         end
-        
+
         def self.incremented_offset(doc)
           doc.cursor_offset + 1
         end

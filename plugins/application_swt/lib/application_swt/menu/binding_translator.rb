@@ -3,7 +3,7 @@ module Redcar
     class Menu
       module BindingTranslator
         MODIFIERS = %w(Cmd Ctrl Alt Shift)
-        
+
         def self.platform_key_string(key_specifier)
           if key_specifier.is_a?(Hash)
             key_string = key_specifier[Redcar.platform]
@@ -25,7 +25,7 @@ module Redcar
           if key_string =~ /Escape$/
             value += Swt::SWT::ESC
           elsif key_string =~ /Space$/
-            value += " "[0]
+            value += " ".ord
           elsif key_string =~ /(F\d+)/
             value += Swt::SWT.const_get $1
           elsif key_string =~ /Page Up$/
@@ -41,10 +41,10 @@ module Redcar
           elsif key_string =~ /End$/
             value += Swt::SWT::END
           else
-            value += key_string[-1]
+            value += key_string[-1].ord
           end
         end
-        
+
         def self.modifiers(key_event)
           modifiers = []
           modifier_values.each do |string, constant|
@@ -54,7 +54,7 @@ module Redcar
           end
           modifiers = modifiers.sort_by {|m| MODIFIERS.index(m) }
         end
-        
+
         def self.key_string(key_event)
           modifiers = modifiers(key_event)
           if key_event.character == 0
@@ -68,18 +68,18 @@ module Redcar
             end
           end
         end
-        
+
         def self.matches?(key_string, key_string2)
           key_string.split("+").sort ==
             key_string2.split("+").sort
         end
-        
+
         def self.pretty_letter(char_string)
           {"\r" => "Return"}[char_string]
         end
-        
+
         private
-        
+
         def self.modifier_values
           {
             "Cmd"   => Swt::SWT::COMMAND,
