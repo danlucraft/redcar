@@ -23,32 +23,36 @@ module Redcar
 
     class MarkdownPreviewCommand < Redcar::EditTabCommand
       def execute
-        mirror, text = doc.mirror, doc.get_all_text
+        begin
+          mirror, text = doc.mirror, doc.get_all_text
 
-        name, project_path = if mirror && path = mirror.path && File.exists?(mirror.path)
-           ["Preview: #{File.basename(mirror.path)}", File.dirname(mirror.path)]
-        else
-          ["Preview", Dir.home]
-        end
-
-        source = MarkdownConverter::Markdown4jProcessor.new.process(text)
-
-        preview = java.io.File.createTempFile("preview",".html")
-        preview.deleteOnExit
-        path    = preview.get_absolute_path
-
-        doc = REXML::Document.new("<html>#{source}</html>")
-
-        REXML::XPath.each(doc, "//img") do |img|
-          src = img.attribute("src")
-          if src && src.value && !src.value.start_with?("http")
-            img.add_attribute("src", File.absolute_path("#{project_path}/#{src.value}"))
+          name, project_path = if mirror && path = mirror.path && File.exists?(mirror.path)
+             ["Preview: #{File.basename(mirror.path)}", File.dirname(mirror.path)]
+          else
+            ["Preview", Dir.home]
           end
-        end
 
-        File.open(path,'w') {|f| f.puts(doc)}
+          source = MarkdownConverter::Markdown4jProcessor.new.process(text)
 
-        Redcar::HtmlView::DisplayWebContent.new(name, path, false).run
+          preview = java.io.File.createTempFile("preview",".html")
+          preview.deleteOnExit
+          path    = preview.get_absolute_path
+
+          doc = REXML::Document.new("<html>#{source}</html>")
+
+          REXML::XPath.each(doc, "//img") do |img|
+            src = img.attribute("src")
+            if src && src.value && !src.value.start_with?("http")
+              img.add_attribute("src", File.absolute_path("#{project_path}/#{src.value}"))
+            end
+          end
+
+          File.open(path,'w') {|f| f.puts(doc)}
+
+          Redcar::HtmlView::DisplayWebContent.new(name, path, false).run
+        rescue Exception => e 
+          Application::Dialog.message_box("Something went wrong :(")
+        end  
       end
     end
 
