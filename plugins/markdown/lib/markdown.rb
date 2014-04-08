@@ -1,4 +1,5 @@
 require "java"
+require "rexml/document"
 #load a markdown4j jar
 #depends: https://code.google.com/p/markdown4j/
 Dir[File.join(Redcar.root, %w(plugins markdown vendor *.jar))].each {|jar| require jar }
@@ -24,19 +25,28 @@ module Redcar
       def execute
         mirror, text = doc.mirror, doc.get_all_text
 
-        name = if mirror && path = mirror.path && File.exists?(mirror.path)
-           "Preview: #{File.basename(mirror.path)}"
+        name, project_path = if mirror && path = mirror.path && File.exists?(mirror.path)
+           ["Preview: #{File.basename(mirror.path)}", File.dirname(mirror.path)]
         else
-          "Preview"
+          ["Preview", Dir.home]
         end
 
-        html = MarkdownConverter::Markdown4jProcessor.new.process(text)
+        source = MarkdownConverter::Markdown4jProcessor.new.process(text)
 
         preview = java.io.File.createTempFile("preview",".html")
         preview.deleteOnExit
         path    = preview.get_absolute_path
 
-        File.open(path,'w') {|f| f.puts(html)}
+        doc = REXML::Document.new("<html>#{source}</html>")
+
+        REXML::XPath.each(doc, "//img") do |img|
+          src = img.attribute("src")
+          if src && src.value && !src.value.start_with?("http")
+            img.add_attribute("src", File.absolute_path("#{project_path}/#{src.value}"))
+          end
+        end
+
+        File.open(path,'w') {|f| f.puts(doc)}
 
         Redcar::HtmlView::DisplayWebContent.new(name, path, false).run
       end
