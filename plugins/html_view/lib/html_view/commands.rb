@@ -35,9 +35,9 @@ module Redcar
         mirror  = doc.mirror
         if mirror and path = mirror.path and File.exists?(path)
           name = "Preview: " +File.basename(path)
-        else
+        else 
           name    = "Preview"
-          preview = java.io.File.createTempFile("preview","html")
+          preview = java.io.File.createTempFile("preview",".html")
           preview.deleteOnExit
           path    = preview.getAbsolutePath
           File.open(path,'w') {|f| f.puts(doc.get_all_text)}
