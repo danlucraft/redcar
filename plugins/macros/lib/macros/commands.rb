@@ -3,9 +3,8 @@ module Redcar
   module Macros
     class StartStopRecordingCommand < Redcar::EditTabCommand
       def self.unique_session_id
-        @unique_id ||= 0
-        @unique_id += 1
-        @unique_id
+        @@unique_id ||= 0
+        @@unique_id += 1
       end
       
       def self.new_macro_message
