@@ -7,7 +7,7 @@
 
 A Ruby text editor.
 
- * written in Ruby from the ground up
+ * is written in Ruby from the ground up
  * runs on JRuby (a fast, compatible Ruby implementation)
  * is cross-platform (Linux, Mac OS X, Windows)
  * highly extensible
